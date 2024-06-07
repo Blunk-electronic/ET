@@ -196,7 +196,7 @@ package body et_schematic_ops.units is
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -732,7 +732,7 @@ package body et_schematic_ops.units is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -1008,7 +1008,7 @@ package body et_schematic_ops.units is
 												default_text_positions (device_cursor, name);
 						
 						-- Rotates the position by the given rotation rot:
-						function add_rot (p : in type_point) return type_rotation is begin
+						function add_rot (p : in type_vector_model) return type_rotation is begin
 							return get_rotation (p) + rot;
 						end;
 

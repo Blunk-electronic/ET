@@ -219,7 +219,7 @@ package et_canvas_board_texts is
 	--   The next call of this procedure assigns the final position 
 	--   to the selected_text:
 	procedure find_texts (
-		point : in type_point);
+		point : in type_vector_model);
 
 	
 	
@@ -238,7 +238,7 @@ package et_canvas_board_texts is
 	-- provided by preliminary_text.
 	-- Places the text at the given point:
 	procedure place_text (
-		point : in type_point);
+		point : in type_vector_model);
 
 	
 
@@ -254,7 +254,7 @@ package et_canvas_board_texts is
 	
 	procedure move_text (
 		tool	: in type_tool;
-		point	: in type_point);				   
+		point	: in type_vector_model);				   
 
 	
 	

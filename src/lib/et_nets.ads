@@ -227,7 +227,7 @@ package et_nets is
 	-- net segment:
 	function on_segment (
 		segment_cursor	: in pac_net_segments.cursor;
-		point			: in type_point)
+		point			: in type_vector_model)
 		return boolean;
 
 	

@@ -89,7 +89,7 @@ package body et_board_ops.conductors is
 
 	procedure no_net_segment_found (
 		layer		: in et_pcb_stack.type_signal_layer;
-		point		: in type_point; 
+		point		: in type_vector_model; 
 		accuracy	: in type_catch_zone) 
 	is begin
 		log (importance => WARNING, 
@@ -306,7 +306,7 @@ package body et_board_ops.conductors is
 			check_terminal_face_vs_layer (module_cursor, terminal_position, layer);
 			
 			-- Build the end point of the line. It is the start point moved in direction at given length:
-			--line.end_point := type_point (move (
+			--line.end_point := type_vector_model (move (
 					--point 		=> terminal_position.place,
 					--direction	=> direction,
 					--distance	=> length));
@@ -417,7 +417,7 @@ package body et_board_ops.conductors is
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in pac_terminal_name.bounded_string;
-		end_point		: in type_point;
+		end_point		: in type_vector_model;
 		log_threshold	: in type_log_level) 
 	is		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -538,7 +538,7 @@ package body et_board_ops.conductors is
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
-		point			: in type_point;
+		point			: in type_vector_model;
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_get_lines_result.list
@@ -694,7 +694,7 @@ package body et_board_ops.conductors is
 
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		layer			: in et_pcb_stack.type_signal_layer;
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		count			: in out natural; -- the number of affected devices
@@ -1057,8 +1057,8 @@ package body et_board_ops.conductors is
 	procedure move_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_conductor_line;
-		point_of_attack	: in type_point;
-		destination		: in type_point;
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model;
 		log_threshold	: in type_log_level;
 		net_name		: in pac_net_name.bounded_string := no_name) -- reset_n
 	is
@@ -1228,7 +1228,7 @@ package body et_board_ops.conductors is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level) 
 	is
@@ -1753,7 +1753,7 @@ package body et_board_ops.conductors is
 
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_point;
+		point			: in type_vector_model;
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_conductor_texts.list
@@ -1813,11 +1813,11 @@ package body et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_conductor_text;
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point;
+		point			: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is
-		old_position : constant type_point := get_place (text);
-		new_position : type_point;
+		old_position : constant type_vector_model := get_place (text);
+		new_position : type_vector_model;
 		offset : type_distance_relative;
 
 		

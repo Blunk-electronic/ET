@@ -306,7 +306,7 @@ package body et_scripting_interactive_schematic is
 		su : type_selected_unit;
 
 		use pac_geometry_2;
-		pos : type_point;
+		pos : type_vector_model;
 		use et_geometry;
 	begin
 		-- Append the cursors of the device and unit to the list of proposed units.
@@ -324,7 +324,7 @@ package body et_scripting_interactive_schematic is
 		su := element (selected_unit);
 
 		-- Get the x/y position of the unit:
-		--pos := pac_geometry_sch.type_point (position (
+		--pos := pac_geometry_sch.type_vector_model (position (
 				--device	=> su.device,
 				--unit	=> su.unit));
 
@@ -549,7 +549,7 @@ package body et_scripting_interactive_schematic is
 		sp : type_selected_placeholder;
 
 		use pac_geometry_2;
-		pos : type_point;
+		pos : type_vector_model;
 		use et_geometry;
 	begin
 		-- Append the cursors of the device and unit to the list of proposed placeholders.

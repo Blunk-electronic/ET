@@ -243,7 +243,7 @@ package body pac_canvas is
 	procedure set_cursor_position_x (self : access gtk.gentry.gtk_entry_record'class) is 
 		use et_general;
 		use gtk.gentry;
-		cp : type_point := cursor_main.position;
+		cp : type_vector_model := cursor_main.position;
 	begin
 		set (point => cp, axis => X, value => to_distance (get_text (self)));
 		move_cursor (canvas, ABSOLUTE, cursor_main, cp);
@@ -255,7 +255,7 @@ package body pac_canvas is
 	procedure set_cursor_position_y (self : access gtk.gentry.gtk_entry_record'class) is 
 		use et_general;
 		use gtk.gentry;
-		cp : type_point := cursor_main.position;
+		cp : type_vector_model := cursor_main.position;
 	begin
 		set (point => cp, axis => Y, value => to_distance (get_text (self)));
 		move_cursor (canvas, ABSOLUTE, cursor_main, cp);
@@ -481,10 +481,10 @@ package body pac_canvas is
 		use et_general;
 
 		-- The point in the drawing (in millimeters):
-		drawing_point : type_point;
+		drawing_point : type_vector_model;
 
 		-- The distance in x,y from cursor to mouse pointer:
-		distance_xy : type_point;
+		distance_xy : type_vector_model;
 
 		-- The distance in polar coordinates from cursor to mouse pointer:
 		distance_pol : type_distance_polar;
@@ -502,7 +502,7 @@ package body pac_canvas is
 		-- CS: Assumes a random value if mouse outside the window.
 		
 		-- Get the distance (in x and y) from cursor to mouse position:
-		distance_xy := type_point (to_point (
+		distance_xy := type_vector_model (to_point (
 			d		=> get_distance_relative (cursor_main.position, drawing_point),
 			clip	=> true));
 
@@ -662,7 +662,7 @@ package body pac_canvas is
 
 
 	function to_model_point (
-		point	: in type_point)
+		point	: in type_vector_model)
 		return type_model_point
 	is begin
 		return (type_float (get_x (point)), type_float (get_y (point)));
@@ -894,7 +894,7 @@ package body pac_canvas is
 -- CONVERSIONS BETWEEN COORDINATE SYSTEMS
 
 	function get_mouse_position
-		return type_point 
+		return type_vector_model 
 	is
 		-- The x/y position of the mouse pointer:
 		position_pointer_x : gint;
@@ -907,7 +907,7 @@ package body pac_canvas is
 		model_point : type_model_point;
 
 		-- The point in the drawing (in millimeters):
-		drawing_point : type_point;
+		drawing_point : type_vector_model;
 	begin
 		-- Get the mouse position:
 		canvas.get_pointer (position_pointer_x, position_pointer_y);
@@ -1207,7 +1207,7 @@ package body pac_canvas is
 		model_point : type_model_point;
 
 		-- The point in the drawing:
-		drawing_point : type_point;
+		drawing_point : type_vector_model;
 	begin
 		-- new_line;
 		-- put_line ("mouse movement ! new positions are:");
@@ -1241,7 +1241,7 @@ package body pac_canvas is
 	
 	procedure center_on (
 		self		: not null access type_view'class;
-		center_on	: type_point) -- in drawing
+		center_on	: type_vector_model) -- in drawing
 	is
 		-- Convert the given point to a point in the model:
 		center_on_model : type_model_point := drawing_to_model (self, center_on);
@@ -1272,11 +1272,11 @@ package body pac_canvas is
 			x => area.x + area.width * 0.5,
 			y => area.y + area.height * 0.5);
 
-		area_center_drawing : type_point := self.model_to_drawing (area_center);
+		area_center_drawing : type_vector_model := self.model_to_drawing (area_center);
 		
 		-- Calculate the position of the area in the drawing.
 		-- This is the upper left corner of the area:
-		p : constant type_point := self.model_to_drawing ((area.x, area.y));
+		p : constant type_vector_model := self.model_to_drawing ((area.x, area.y));
 		
 		-- Build the area of the drawing:
 		a : constant type_bounding_box := (
@@ -1296,14 +1296,14 @@ package body pac_canvas is
 		dyb : constant type_distance := border_bottom - get_y (cursor.position);
 	begin
 		if dxr >= zero then
-			self.center_on (type_point (move (point => area_center_drawing, direction => 0.0, distance => dxr)));
+			self.center_on (type_vector_model (move (point => area_center_drawing, direction => 0.0, distance => dxr)));
 		elsif dxl >= zero then
-			self.center_on (type_point (move (point => area_center_drawing, direction => 180.0, distance => dxl)));
+			self.center_on (type_vector_model (move (point => area_center_drawing, direction => 180.0, distance => dxl)));
 			
 		elsif dyt >= zero then
-			self.center_on (type_point (move (point => area_center_drawing, direction => 90.0, distance => dyt)));
+			self.center_on (type_vector_model (move (point => area_center_drawing, direction => 90.0, distance => dyt)));
 		elsif dyb >= zero then
-			self.center_on (type_point (move (point => area_center_drawing, direction => -90.0, distance => dyb)));
+			self.center_on (type_vector_model (move (point => area_center_drawing, direction => -90.0, distance => dyb)));
 		end if;
 		
 	end shift_area;
@@ -1562,7 +1562,7 @@ package body pac_canvas is
 		-- Convert from mouse pointer position to drawing point:
 		view_point		: constant type_view_point := (event.x, event.y);
 		model_point		: constant type_model_point := canvas.view_to_model (view_point);
-		drawing_point	: constant type_point := canvas.model_to_drawing (model_point);
+		drawing_point	: constant type_vector_model := canvas.model_to_drawing (model_point);
 	begin
 		--put_line ("mouse button " & to_string (mouse_button) & " at pos. " & to_string (drawing_point));
 
@@ -1803,11 +1803,11 @@ package body pac_canvas is
 
 	function snap_to_grid (
 		-- self	: not null access type_view'class;
-		point	: in type_point)
-		return type_point 
+		point	: in type_vector_model)
+		return type_vector_model 
 	is
 	begin
-		return type_point (round (point, canvas.get_grid));
+		return type_vector_model (round (point, canvas.get_grid));
 	end snap_to_grid;
 
 	
@@ -1984,9 +1984,9 @@ package body pac_canvas is
 	
 	function tool_position (
 		view : not null access type_view'class)
-		return type_point 
+		return type_vector_model 
 	is
-		point : type_point;
+		point : type_vector_model;
 	begin
 		case primary_tool is
 			when KEYBOARD	=> point := cursor_main.position;
@@ -2162,7 +2162,7 @@ package body pac_canvas is
 -- PATH FROM POINT TO POINT
 	
 	function to_path (
-		start_point, end_point	: in type_point;
+		start_point, end_point	: in type_vector_model;
 		style					: in type_bend_style)
 		return type_path
 	is
@@ -2171,13 +2171,13 @@ package body pac_canvas is
 		dx : constant type_distance := get_distance (start_point, end_point, X);
 		dy : constant type_distance := get_distance (start_point, end_point, Y);
 
-		sup_start, sup_end : type_point; -- support points near given start and end point
+		sup_start, sup_end : type_vector_model; -- support points near given start and end point
 
 		-- distance of support points from given start or end point:
 		ds : constant type_distance_positive := 1.0;
 
 		bended : type_bended := YES;
-		bend_point : type_point;
+		bend_point : type_vector_model;
 
 		-- CS this procedure should be made public as "intersection" or similar
 		-- CS use function get_intersection with S1, R1, S2, R2 as input
@@ -3091,7 +3091,7 @@ package body pac_canvas is
 
 	
 	procedure draw_rectangle (
-		position		: in type_point; -- the lower left corner
+		position		: in type_vector_model; -- the lower left corner
 		--width			: in pac_shapes.pac_geometry_1.type_distance;
 		width			: in type_float_positive;
 		--height			: in pac_shapes.pac_geometry_1.type_distance;
@@ -3368,7 +3368,7 @@ package body pac_canvas is
 		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font;
-		position	: in type_point; -- anchor point in the drawing, the origin
+		position	: in type_vector_model; -- anchor point in the drawing, the origin
 		origin		: in boolean;		
 		rotation	: in type_rotation;
 		alignment	: in type_text_alignment)
@@ -3540,11 +3540,11 @@ package body pac_canvas is
 			use et_frames.pac_lines;
 			-- CS use renames
 		begin
-			line.start_point := type_point (set (
+			line.start_point := type_vector_model (set (
 				x => type_distance_positive (element (cursor).start_point.x + tb_pos.x),
 				y => type_distance_positive (element (cursor).start_point.y + tb_pos.y)));
 
-			line.end_point := type_point (set (
+			line.end_point := type_vector_model (set (
 				x => type_distance_positive (element (cursor).end_point.x + tb_pos.x),
 				y => type_distance_positive (element (cursor).end_point.y + tb_pos.y)));
 
@@ -3575,7 +3575,7 @@ package body pac_canvas is
 		-- left line from bottom to top
 		line.start_point := origin;
 		
-		line.end_point := type_point (set (
+		line.end_point := type_vector_model (set (
 			x => 0.0,
 			y => type_distance_positive (frame_size.y))); 
 			-- CS use constant or renames
@@ -3583,11 +3583,11 @@ package body pac_canvas is
 		draw_line;
 
 		-- right line from bottom to top
-		line.start_point := type_point (set (
+		line.start_point := type_vector_model (set (
 			x => type_distance_positive (frame_size.x),
 			y => 0.0));
 		
-		line.end_point := type_point (set (
+		line.end_point := type_vector_model (set (
 			x => type_distance_positive (frame_size.x),
 			y => type_distance_positive (frame_size.y)));
 		
@@ -3595,18 +3595,18 @@ package body pac_canvas is
 
 		-- lower line from left to right
 		line.start_point := origin;
-		line.end_point := type_point (set (
+		line.end_point := type_vector_model (set (
 			x => type_distance_positive (frame_size.x),
 			y => 0.0));
 		
 		draw_line;
 
 		-- upper line from left to right
-		line.start_point := type_point (set (
+		line.start_point := type_vector_model (set (
 			x => 0.0,
 			y => type_distance_positive (frame_size.y)));
 		
-		line.end_point := type_point (set (
+		line.end_point := type_vector_model (set (
 			x => type_distance_positive (frame_size.x),
 			y => type_distance_positive (frame_size.y)));
 		
@@ -3615,44 +3615,44 @@ package body pac_canvas is
 		
 	-- INNER BORDER
 		-- left line from bottom to top
-		line.start_point := type_point (set (
+		line.start_point := type_vector_model (set (
 			x => type_distance_positive (border_width),
 			y => type_distance_positive (border_width)));
 		
-		line.end_point := type_point (set (
+		line.end_point := type_vector_model (set (
 			x => type_distance_positive (border_width),
 			y => type_distance_positive (frame_size.y - border_width)));
 		
 		draw_line;
 
 		-- right line from bottom to top
-		line.start_point := type_point (set (
+		line.start_point := type_vector_model (set (
 			x => type_distance_positive (frame_size.x - border_width),
 			y => type_distance_positive (border_width)));
 		
-		line.end_point := type_point (set (
+		line.end_point := type_vector_model (set (
 			x => type_distance_positive (frame_size.x - border_width),
 			y => type_distance_positive (frame_size.y - border_width)));
 		
 		draw_line;
 
 		-- lower line from left to right
-		line.start_point := type_point (set (
+		line.start_point := type_vector_model (set (
 			x => type_distance_positive (border_width),
 			y => type_distance_positive (border_width)));
 		
-		line.end_point := type_point (set (
+		line.end_point := type_vector_model (set (
 			x => type_distance_positive (frame_size.x - border_width),
 			y => type_distance_positive (border_width)));
 		
 		draw_line;
 
 		-- upper line from left to right
-		line.start_point := type_point (set (
+		line.start_point := type_vector_model (set (
 			x => type_distance_positive (border_width),
 			y => type_distance_positive (frame_size.y - border_width)));
 		
-		line.end_point := type_point (set (
+		line.end_point := type_vector_model (set (
 			x => type_distance_positive (frame_size.x - border_width),
 			y => type_distance_positive (frame_size.y - border_width)));
 		
@@ -3680,7 +3680,7 @@ package body pac_canvas is
 		
 		procedure draw_index (
 			content	: in pac_text_content.bounded_string;
-			pos		: in type_point) 
+			pos		: in type_vector_model) 
 		is begin
 			draw_text (
 				content		=> content,
@@ -3718,12 +3718,12 @@ package body pac_canvas is
 			
 			-- draw the line bottom-up:
 			-- lower end:
-			line.start_point := type_point (set (
+			line.start_point := type_vector_model (set (
 				x => x,
 				y => zero));
 
 			-- upper end:
-			line.end_point := type_point (set (
+			line.end_point := type_vector_model (set (
 				x => x,
 				y => type_distance_positive (border_width)));
 
@@ -3734,12 +3734,12 @@ package body pac_canvas is
 			-- UPPER BORDER
 			-- draw the line bottom-up:
 			-- lower end:
-			line.start_point := type_point (set (
+			line.start_point := type_vector_model (set (
 				x => x,
 				y => type_distance_positive (frame_size.y - border_width)));
 
 			-- upper end:
-			line.end_point := type_point (set (
+			line.end_point := type_vector_model (set (
 				x => x,
 				y => type_distance_positive (frame_size.y)));
 			
@@ -3758,12 +3758,12 @@ package body pac_canvas is
 			
 			-- draw the line from the left to the right:
 			-- left end:
-			line.start_point := type_point (set (
+			line.start_point := type_vector_model (set (
 				x => zero,
 				y => y));
 
 			-- right end:
-			line.end_point := type_point (set (
+			line.end_point := type_vector_model (set (
 				x => type_distance_positive (border_width),
 				y => y));
 
@@ -3772,12 +3772,12 @@ package body pac_canvas is
 			-- RIGHT BORDER
 			-- draw the line from the left to the right:
 			-- left end:
-			line.start_point := type_point (set (
+			line.start_point := type_vector_model (set (
 				x => type_distance_positive (frame_size.x - border_width),
 				y => y));
 
 			-- right end:
-			line.end_point := type_point (set (
+			line.end_point := type_vector_model (set (
 				x => type_distance_positive (frame_size.x),
 				y => y));
 			
@@ -3798,12 +3798,12 @@ package body pac_canvas is
 			-- draw index in lower border
 			draw_index (
 				content	=> to_content (to_string (i)),
-				pos		=> type_point (set (x, y)));
+				pos		=> type_vector_model (set (x, y)));
 
 			-- draw index in upper border
 			draw_index (
 				content	=> to_content (to_string (i)),
-				pos		=> type_point (set (
+				pos		=> type_vector_model (set (
 							x => x,
 							y => type_distance_positive (frame_size.y) - y)));
 			
@@ -3823,12 +3823,12 @@ package body pac_canvas is
 			-- draw index in left border
 			draw_index (
 				content	=> to_content (to_string (i)),
-				pos		=> type_point (set (x, y)));
+				pos		=> type_vector_model (set (x, y)));
 
 			-- draw index in right border
 			draw_index (
 				content	=> to_content (to_string (i)),
-				pos		=> type_point (set (
+				pos		=> type_vector_model (set (
 							x => type_distance_positive (frame_size.x) - x,
 							y => y)));
 			
@@ -3850,7 +3850,7 @@ package body pac_canvas is
 		-- The given position is given in frame coordinates and must be 
 		-- converted to schematic coordinates and shifted by the position
 		-- of the title block.
-		ps : constant type_point := type_point (set (
+		ps : constant type_vector_model := type_vector_model (set (
 				x => type_distance_positive (pos.x + tb_pos.x),
 				y => type_distance_positive (pos.y + tb_pos.y)));
 

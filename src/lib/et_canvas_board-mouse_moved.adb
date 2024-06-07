@@ -42,7 +42,7 @@ separate (et_canvas_board)
 
 procedure mouse_moved (
 	self	: not null access type_view;
-	point	: in type_point) 
+	point	: in type_vector_model) 
 is begin
 	case verb is
 		when VERB_DRAW =>

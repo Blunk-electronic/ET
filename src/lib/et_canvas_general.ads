@@ -412,7 +412,7 @@ package pac_canvas is
 
 	-- Converts from drawing point to model point:
 	function to_model_point (
-		point	: in type_point)
+		point	: in type_vector_model)
 		return type_model_point;
 
 
@@ -554,7 +554,7 @@ package pac_canvas is
 	
 	-- Returns the position of the pointer in the drawing:
 	function get_mouse_position
-		return type_point;
+		return type_vector_model;
 
 	
 	function vtm (
@@ -608,13 +608,13 @@ package pac_canvas is
 	function model_to_drawing (
 		self		: not null access type_view;
 		model_point : in type_model_point)
-		return type_point is abstract;
+		return type_vector_model is abstract;
 
 	
 	-- Converts a drawing point to a model point. See comments on function model_to_drawing.
 	function drawing_to_model (
 		self			: not null access type_view;
-		drawing_point	: in type_point)	
+		drawing_point	: in type_vector_model)	
 		return type_model_point is abstract;
 
 	
@@ -726,8 +726,8 @@ package pac_canvas is
 	
 	-- Returns the given point x/y rounded to the current grid.
 	function snap_to_grid (
-		point	: in type_point) 
-		return type_point;
+		point	: in type_vector_model) 
+		return type_vector_model;
 
 	
 	-- This procedure draws a grid on the given context for the given
@@ -745,7 +745,7 @@ package pac_canvas is
 	-- Uses the current scale and leaves it as it is.
 	procedure center_on (
 		self		: not null access type_view'class;
-		center_on	: type_point); -- in drawing
+		center_on	: type_vector_model); -- in drawing
 
 	
 	procedure zoom_in (
@@ -763,7 +763,7 @@ package pac_canvas is
 -- CURSOR
 	
 	type type_cursor is record
-		position	: type_point;
+		position	: type_vector_model;
 		-- CS blink, color, ...
 	end record;
 
@@ -777,7 +777,7 @@ package pac_canvas is
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;  -- relative/absolute
 		cursor		: in out type_cursor;
-		position	: in type_point) is null;
+		position	: in type_vector_model) is null;
 
 	
 	-- Moves the given cursor in the given direction by the current grid.
@@ -857,12 +857,12 @@ package pac_canvas is
 
 	procedure mouse_moved (
 		self	: not null access type_view;
-		point	: in type_point) is null;
+		point	: in type_vector_model) is null;
 	
 	procedure button_pressed (
 		self	: not null access type_view;
 		button	: in type_mouse_button;
-		point	: in type_point) is null;
+		point	: in type_vector_model) is null;
 
 
 	
@@ -910,7 +910,7 @@ package pac_canvas is
 	-- is always on a grid position (no snap required).
 	function tool_position (
 		view : not null access type_view'class)
-		return type_point;
+		return type_vector_model;
 
 	
 	
@@ -1010,17 +1010,17 @@ package pac_canvas is
 	-- If bended, then we get an extra point where the bending takes place
 	--  which will result in two lines that connect the two points:
 	type type_path (bended : type_bended) is record
-		start_point, end_point : type_point;
+		start_point, end_point : type_vector_model;
 		case bended is
 			when NO		=> null; -- no bend
-			when YES	=> bend_point : type_point;
+			when YES	=> bend_point : type_vector_model;
 		end case;
 	end record;
 
 	
 	-- Computes a path between two points according to the given bend style:
 	function to_path (
-		start_point, end_point	: in type_point;
+		start_point, end_point	: in type_vector_model;
 		style					: in type_bend_style)
 		return type_path;
 
@@ -1032,11 +1032,11 @@ package pac_canvas is
 	-- This type is required for all kinds of lines (nets, documentation, tracks, ...)
 	-- when being drawn via the GUI.
 	type type_path_live is record
-		start_point	: type_point;
-		end_point	: type_point;
+		start_point	: type_vector_model;
+		end_point	: type_vector_model;
 
 		bended		: type_bended := NO;
-		bend_point	: type_point;
+		bend_point	: type_vector_model;
 		bend_style	: type_bend_style := HORIZONTAL_THEN_VERTICAL;
 	end record;
 
@@ -1152,7 +1152,7 @@ package pac_canvas is
 	-- The rectangle will be drawn if its bounding box intersects the given area.
 	-- If area is no_rectangle then the rectangle would be drawn in any case.
 	procedure draw_rectangle (
-		position		: in type_point;	-- position of the rectangle (lower left corner)
+		position		: in type_vector_model;	-- position of the rectangle (lower left corner)
 		width			: in type_float_positive; -- widht of the rectangle
 		height			: in type_float_positive; -- height of the rectangle
 		extend_boundaries	: in boolean := false;
@@ -1200,7 +1200,7 @@ package pac_canvas is
 		content		: in pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font;
-		position	: in type_point; -- the anchor point in the drawing, the origin
+		position	: in type_vector_model; -- the anchor point in the drawing, the origin
 		origin		: in boolean; -- when true, an origin is drawn at the anchor point
 		rotation	: in type_rotation;
 		alignment	: in type_text_alignment); -- the height of the drawing frame

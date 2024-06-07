@@ -90,16 +90,16 @@ package et_kicad_coordinates is
 	-- If top_module = false, the name of the top module is omitted.
 
 	
-	--type type_position is new type_point with private;
+	--type type_position is new type_vector_model with private;
 	type type_position is private;
 
-	function get_point (position : in type_position) return type_point;
+	function get_point (position : in type_position) return type_vector_model;
 	function get_x (position : in type_position) return type_distance;
 	function get_y (position : in type_position) return type_distance;
 
 	procedure set_point (
 		position	: in out type_position;
-		place		: in type_point);
+		place		: in type_vector_model);
 
 	
 	procedure rotate_point (
@@ -157,9 +157,9 @@ package et_kicad_coordinates is
 	
 	private 
 	
-		--type type_position is new type_point with record
+		--type type_position is new type_vector_model with record
 		type type_position is record
-			point			: type_point;
+			point			: type_vector_model;
 			path            : type_path_to_submodule.list; 
 			sheet_number	: type_sheet := type_sheet'first;
 		end record;

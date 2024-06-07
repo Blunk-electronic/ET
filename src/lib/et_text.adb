@@ -315,7 +315,7 @@ package body et_text is
 		end get_position;
 		
 		function get_place (text : in type_text_fab)
-			return type_point
+			return type_vector_model
 		is begin
 			return text.position.place;
 		end get_place;
@@ -353,7 +353,7 @@ package body et_text is
 
 		procedure move_text (
 			text	: in out type_text_fab;
-			point	: in type_point)
+			point	: in type_vector_model)
 		is begin
 			text.position.place := point;
 		end move_text;
@@ -364,7 +364,7 @@ package body et_text is
 			return string 
 		is begin
 			return text_properties (type_text (text))
-				--& " pos " & to_string (type_point (text.position))
+				--& " pos " & to_string (type_vector_model (text.position))
 				& " pos " & to_string (text.position.place)
 				& " line width" & to_string (text.line_width)
 				& " rotation" & to_string (get_rotation (text.position));
@@ -461,8 +461,8 @@ package body et_text is
 				scratch.end_point   := set (char.segments (l).end_x,   char.segments (l).end_y);
 					
 				--append (result, (
-					----start_point => type_point (set (char (l).start_x, char (l).start_y)),
-					----end_point   => type_point (set (char (l).end_x, char (l).end_y))
+					----start_point => type_vector_model (set (char (l).start_x, char (l).start_y)),
+					----end_point   => type_vector_model (set (char (l).end_x, char (l).end_y))
 					--start_point => to_vector (set (char (l).start_x, char (l).start_y)),
 					--end_point   => to_vector (set (char (l).end_x, char (l).end_y))
 					--));
@@ -494,7 +494,7 @@ package body et_text is
 			content		: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
 			size		: in type_text_size;
 			rotation	: in pac_geometry_2.type_rotation; 
-			position	: in pac_geometry_2.type_point; -- the anchor point of the text (where the origin is)
+			position	: in pac_geometry_2.type_vector_model; -- the anchor point of the text (where the origin is)
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
 			line_width	: in pac_geometry_2.type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default;

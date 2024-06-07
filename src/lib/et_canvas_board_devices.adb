@@ -140,7 +140,7 @@ package body et_canvas_board_devices is
 
 	
 	procedure find_electrical_devices (
-		point : in type_point)
+		point : in type_vector_model)
 	is 
 		count : natural := 0;
 
@@ -197,7 +197,7 @@ package body et_canvas_board_devices is
 	
 	
 	procedure find_non_electrical_devices (
-		point : in type_point)
+		point : in type_vector_model)
 	is 
 		count : natural := 0;
 
@@ -257,7 +257,7 @@ package body et_canvas_board_devices is
 
 	procedure move_electrical_device (
 		tool	: in type_tool;
-		point	: in type_point)
+		point	: in type_vector_model)
 	is 
 
 		-- Assigns the final position after the move to the selected 
@@ -339,7 +339,7 @@ package body et_canvas_board_devices is
 	
 	procedure move_non_electrical_device (
 		tool	: in type_tool;
-		point	: in type_point)
+		point	: in type_vector_model)
 	is 
 		-- Assigns the final position after the move to the selected 
 		-- non-electrical device.
@@ -422,7 +422,7 @@ package body et_canvas_board_devices is
 
 	procedure rotate_electrical_device (
 		tool	: in type_tool;
-		point	: in type_point)
+		point	: in type_vector_model)
 	is 
 
 		-- Rotates the selected electrical device by default_rotation.
@@ -494,7 +494,7 @@ package body et_canvas_board_devices is
 	
 	procedure rotate_non_electrical_device (
 		tool	: in type_tool;
-		point	: in type_point)
+		point	: in type_vector_model)
 	is 
 
 		-- Rotates the selected non-electrical device by default_rotation.
@@ -568,7 +568,7 @@ package body et_canvas_board_devices is
 
 	procedure flip_electrical_device (
 		tool	: in type_tool;
-		point	: in type_point)
+		point	: in type_vector_model)
 	is 
 
 		-- Flips the selected electrical device.
@@ -643,7 +643,7 @@ package body et_canvas_board_devices is
 	
 	procedure flip_non_electrical_device (
 		tool	: in type_tool;
-		point	: in type_point)
+		point	: in type_vector_model)
 	is 
 
 		procedure finalize is
@@ -716,7 +716,7 @@ package body et_canvas_board_devices is
 	
 	procedure delete_non_electrical_device (
 		tool	: in type_tool;
-		point	: in type_point)
+		point	: in type_vector_model)
 	is 
 
 		procedure finalize is 

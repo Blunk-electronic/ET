@@ -63,7 +63,7 @@ package body et_board_ops is
 	procedure move_board (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -264,7 +264,7 @@ package body et_board_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified

@@ -79,7 +79,7 @@ package body et_pcb_coordinates is
 
 	
 	function to_package_position (
-		point 		: in type_point;
+		point 		: in type_vector_model;
 		rotation	: in type_rotation := zero_rotation;
 		face		: in type_face := TOP)
 		return type_package_position 
@@ -109,7 +109,7 @@ package body et_pcb_coordinates is
 	
 	
 	function to_terminal_position (
-		point		: in type_point;
+		point		: in type_vector_model;
 		rotation	: in type_rotation)
 		return type_position'class 
 	is

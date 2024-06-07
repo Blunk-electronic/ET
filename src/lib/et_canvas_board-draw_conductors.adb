@@ -76,7 +76,7 @@ procedure draw_conductors is
 		mirror : type_vector_text_mirrored;
 		
 		-- The place where the text shall be placed:
-		point : type_point;
+		point : type_vector_model;
 
 		-- The place where the text origin will be drawn:
 		origin : type_position;
@@ -214,7 +214,7 @@ procedure draw_conductors is
 						if preliminary_segment.ready then
 							declare
 								line_tmp : type_conductor_line := line;
-								POA : type_point renames preliminary_segment.point_of_attack;
+								POA : type_vector_model renames preliminary_segment.point_of_attack;
 							begin
 								case preliminary_segment.tool is
 									when MOUSE =>
@@ -532,7 +532,7 @@ procedure draw_conductors is
 							-- the place where the tool is pointing at:
 							declare
 								text_tmp	: type_conductor_text := text;
-								destination	: type_point;
+								destination	: type_vector_model;
 								offset		: type_distance_relative;
 							begin
 								case preliminary_text.tool is
@@ -639,7 +639,7 @@ procedure draw_conductors is
 		-- The text size is set automatically with the radius of the drill:
 		procedure draw_net_name is 
 			use et_text;
-			position : type_point := circle.center;
+			position : type_vector_model := circle.center;
 		begin
 			if not net_name_drawn then
 				
@@ -664,7 +664,7 @@ procedure draw_conductors is
 		-- The text size is set automatically with the radius of the drill:
 		procedure draw_numbers (from, to : in string) is 
 			use et_text;
-			position : type_point := circle.center;
+			position : type_vector_model := circle.center;
 			offset : constant type_distance_relative := to_distance_relative (
 				set (zero, + radius_base * text_position_layer_and_drill_factor));
 		begin
@@ -689,7 +689,7 @@ procedure draw_conductors is
 		-- The text size is set automatically with the radius of the drill:
 		procedure draw_drill_size is 
 			use et_text;
-			position : type_point := circle.center;
+			position : type_vector_model := circle.center;
 			offset : type_distance_relative;
 		begin
 			if not drill_size_drawn then
@@ -1046,7 +1046,7 @@ procedure draw_conductors is
 	-- Uses list vias_being_placed as storage place for the single via.
 	procedure draw_via_being_placed is 
 		-- The place where the via shall be placed:
-		position : type_point;
+		position : type_vector_model;
 	begin
 		if preliminary_via.ready then
 
@@ -1120,7 +1120,7 @@ procedure draw_conductors is
 		-- Takes the bend style given in preliminary_track into account.
 		-- Draws the path.
 		procedure compute_and_draw (
-			start_point, end_point : in type_point) 
+			start_point, end_point : in type_vector_model) 
 		is
 			use et_colors;
 			

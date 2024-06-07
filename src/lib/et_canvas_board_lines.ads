@@ -121,7 +121,7 @@ package et_canvas_board_lines is
 	-- with MOUSE and finish with KEYBOARD or vice versa.
 	procedure make_path (
 		tool	: in type_tool;
-		point	: in type_point);
+		point	: in type_vector_model);
 	
 
 	

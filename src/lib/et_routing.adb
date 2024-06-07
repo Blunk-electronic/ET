@@ -83,7 +83,7 @@ package body et_routing is
 
 	function get_distance_to_edge (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_point;
+		point			: in type_vector_model;
 		log_category	: in type_log_category;
 		lth				: in type_log_level)
 		return type_float_positive
@@ -159,7 +159,7 @@ package body et_routing is
 	
 	--function on_board (
 		--module_cursor	: in pac_generic_modules.cursor;
-		--point			: in type_point;
+		--point			: in type_vector_model;
 		--log_category	: in type_log_category;
 		--lth				: in type_log_level)		
 		--return boolean
@@ -257,14 +257,14 @@ package body et_routing is
 		--result : type_track_dimensions;
 
 		---- here the given track starts:
-		--track_start : constant type_point := to_point (track.center.v_start);
+		--track_start : constant type_vector_model := to_point (track.center.v_start);
 
 		---- the total track width (incl. clearance) is:
 		--width : constant type_track_width := track.width + 2.0 * track.clearance;
 
 		---- the start and end points of the upper and lower edge:
 		--upper_edge_start, upper_edge_end,
-		--lower_edge_start, lower_edge_end : type_point;
+		--lower_edge_start, lower_edge_end : type_vector_model;
 		
 	--begin
 		---- the given track travels in this direction:
@@ -276,7 +276,7 @@ package body et_routing is
 		---- build the line in the center of the track:
 		--result.center_line := (
 				--start_point	=> origin,
-				--end_point	=> type_point (set (
+				--end_point	=> type_vector_model (set (
 								--x => far_right - width * 0.5,
 								--y => zero)));
 
@@ -288,17 +288,17 @@ package body et_routing is
 
 		
 		---- build start and end points of upper and lower edge
-		--upper_edge_start := type_point (
+		--upper_edge_start := type_vector_model (
 			--set (result.boundaries.smallest_x, result.boundaries.greatest_y));
 
-		--upper_edge_end := type_point (
+		--upper_edge_end := type_vector_model (
 			--set (result.boundaries.greatest_x, result.boundaries.greatest_y));
 
 		----
-		--lower_edge_start := type_point (
+		--lower_edge_start := type_vector_model (
 			--set (result.boundaries.smallest_x, result.boundaries.smallest_y));
 
-		--lower_edge_end := type_point (
+		--lower_edge_end := type_vector_model (
 			--set (result.boundaries.greatest_x, result.boundaries.smallest_y));
 
 		---- build upper and lower edge:
@@ -353,10 +353,10 @@ package body et_routing is
 		---- Set the inital position of the cap:
 		--case place is
 			--when BEFORE =>
-				--c.center := type_point (set (init - c.radius, zero));
+				--c.center := type_vector_model (set (init - c.radius, zero));
 
 			--when AFTER =>
-				--c.center := type_point (set (init + c.radius, zero));
+				--c.center := type_vector_model (set (init + c.radius, zero));
 		--end case;
 
 		--if log_category = INSANE then
@@ -402,19 +402,19 @@ package body et_routing is
 					--when BEFORE =>
 						--if d_cap_to_obstacle > zero then
 							---- move cap right towards the obstacle:
-							--c.center := type_point (move (c.center, 0.0, step));
+							--c.center := type_vector_model (move (c.center, 0.0, step));
 						--else
 							---- move cap left away from the obstacle:
-							--c.center := type_point (move (c.center, 180.0, step));
+							--c.center := type_vector_model (move (c.center, 180.0, step));
 						--end if;
 						
 					--when AFTER =>
 						--if d_cap_to_obstacle > zero then
 							---- move cap left towards the obstacle:
-							--c.center := type_point (move (c.center, 180.0, step));
+							--c.center := type_vector_model (move (c.center, 180.0, step));
 						--else
 							---- move cap right away from the obstacle:
-							--c.center := type_point (move (c.center, 0.0, step));
+							--c.center := type_vector_model (move (c.center, 0.0, step));
 						--end if;
 				--end case;
 			--end if;
@@ -479,7 +479,7 @@ package body et_routing is
 		---- the place along the x-axis where the search for the break is to begin:
 		--start_point : type_distance;
 		
-		--bp : type_point;
+		--bp : type_vector_model;
 		--break_exists : boolean := false;
 
 		
@@ -528,10 +528,10 @@ package body et_routing is
 			---- left or right by the spacing:
 			--case place is
 				--when BEFORE =>
-					--bp := type_point (set (to_distance (get_x (i_center.intersection.vector)) - spacing, zero));
+					--bp := type_vector_model (set (to_distance (get_x (i_center.intersection.vector)) - spacing, zero));
 					
 				--when AFTER =>
-					--bp := type_point (set (to_distance (get_x (i_center.intersection.vector)) + spacing, zero));
+					--bp := type_vector_model (set (to_distance (get_x (i_center.intersection.vector)) + spacing, zero));
 			--end case;
 
 			--if log_category = INSANE then
@@ -583,7 +583,7 @@ package body et_routing is
 				--end case;
 
 				---- start the numerical search for the break point:
-				--bp := type_point (set (get_break (
+				--bp := type_vector_model (set (get_break (
 					--init			=> start_point,
 					--place			=> place,
 					--obstacle		=> (et_geometry.LINE, line_tmp),
@@ -602,7 +602,7 @@ package body et_routing is
 			--end if;
 		--end if;
 
-		----bp := type_point (round (bp));
+		----bp := type_vector_model (round (bp));
 
 		
 		---- The computed break point must be after the start of the track.
@@ -613,7 +613,7 @@ package body et_routing is
 			---- the track direction and offset:
 			--rotate_to (bp, track_dimensions.direction);
 			--move_by (bp, track_dimensions.offset);
-			----bp := type_point (round (bp));
+			----bp := type_vector_model (round (bp));
 			
 			--break_exists := true;
 
@@ -678,8 +678,8 @@ package body et_routing is
 		--clearance			: in type_distance_positive;						   
 		--place				: in type_place;
 		--arcs				: in type_arcs; -- arcs is an array of arc segments
-		--bp1					: in out type_point;
-		--bp2					: in out type_point;
+		--bp1					: in out type_vector_model;
+		--bp2					: in out type_vector_model;
 		--break_count			: in out type_break_count;
 		--log_category		: in type_log_category;
 		--lth					: in type_log_level)
@@ -754,7 +754,7 @@ package body et_routing is
 			--when 0 => null;
 			--when 1 => 
 				--x_cursor := x_values.first;
-				--bp1 := type_point (set (element (x_cursor), zero));
+				--bp1 := type_vector_model (set (element (x_cursor), zero));
 
 				---- Rotate and move the break point back according to
 				---- the track direction and offset:
@@ -768,9 +768,9 @@ package body et_routing is
 				
 			--when 2 =>
 				--x_cursor := x_values.first;					
-				--bp1 := type_point (set (element (x_cursor), zero));
+				--bp1 := type_vector_model (set (element (x_cursor), zero));
 				--next (x_cursor);
-				--bp2 := type_point (set (element (x_cursor), zero));
+				--bp2 := type_vector_model (set (element (x_cursor), zero));
 
 				---- Rotate and move the break points back according to
 				---- the track direction and offset:
@@ -837,7 +837,7 @@ package body et_routing is
 		
 		---- the possible break points and the number of break points:
 		--break_count : type_break_count := 0;
-		--bp1, bp2 : type_point;
+		--bp1, bp2 : type_vector_model;
 
 		---- Get all the intersections of the track with the arc.
 		---- The arc may intersect the upper and lower edge of the track.
@@ -888,7 +888,7 @@ package body et_routing is
 					--start_point := bi.intersection.greatest_x;
 			--end case;
 
-			--bp1 := type_point (set (get_break (
+			--bp1 := type_vector_model (set (get_break (
 				--init			=> start_point,
 				--place			=> place,
 				--obstacle		=> (et_geometry.ARC, arc_tmp),
@@ -1043,7 +1043,7 @@ package body et_routing is
 		
 		---- the possible break points and the number of break points:
 		--break_count : type_break_count := 0;
-		--bp1, bp2 : type_point;
+		--bp1, bp2 : type_vector_model;
 
 		---- Get all the intersections of the track with the arc.
 		---- The arc may intersect the upper and lower edge of the track.
@@ -1106,7 +1106,7 @@ package body et_routing is
 								--start_point := bi.intersection.greatest_x;
 						--end case;
 
-						--bp1 := type_point (set (get_break (
+						--bp1 := type_vector_model (set (get_break (
 							--init			=> start_point,
 							--place			=> place,
 							--obstacle		=> (et_geometry.CIRCLE, circle_tmp),
@@ -1183,10 +1183,10 @@ package body et_routing is
 
 	--function after_start_of_track (
 		--track	: in type_track;
-		--point	: in type_point)
+		--point	: in type_vector_model)
 		--return boolean
 	--is
-		--track_start : constant type_point := to_point (track.center.v_start);
+		--track_start : constant type_vector_model := to_point (track.center.v_start);
 		--track_direction : constant type_rotation := get_angle (track.center);
 		--point_direction : constant type_rotation := get_angle (get_distance (track_start, point));
 	--begin
@@ -1210,7 +1210,7 @@ package body et_routing is
 		--module_cursor	: in pac_generic_modules.cursor;
 		--design_rules	: in type_design_rules;
 		--bottom_layer	: in type_signal_layer;		
-		--start_point		: in type_point;
+		--start_point		: in type_vector_model;
 		--place			: in type_place := BEFORE;
 		--direction		: in type_rotation;
 		--net_cursor		: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
@@ -1228,7 +1228,7 @@ package body et_routing is
 		--module_cursor	: in pac_generic_modules.cursor;
 		--design_rules	: in type_design_rules;
 		--bottom_layer	: in type_signal_layer;
-		--start_point		: in type_point;
+		--start_point		: in type_vector_model;
 		--net_cursor		: in et_schematic.pac_nets.cursor;
 		--net_class		: in type_net_class;
 		--fill_zone		: in type_fill_zone;

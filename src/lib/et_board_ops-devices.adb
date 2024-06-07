@@ -64,7 +64,7 @@ package body et_board_ops.devices is
 	
 	function get_devices (
 		module			: in pac_generic_modules.cursor;
-		place			: in type_point;
+		place			: in type_vector_model;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_devices_sch.map
@@ -197,7 +197,7 @@ package body et_board_ops.devices is
 	
 	procedure propose_devices (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_point; -- x/y
+		place			: in type_vector_model; -- x/y
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		count			: in out natural; -- the number of affected devices
 		log_threshold	: in type_log_level)
@@ -435,7 +435,7 @@ package body et_board_ops.devices is
 	
 	function get_devices (
 		module			: in pac_generic_modules.cursor;
-		place			: in type_point;
+		place			: in type_vector_model;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_devices_non_electric.map
@@ -560,7 +560,7 @@ package body et_board_ops.devices is
 	
 	procedure propose_non_electrical_devices (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_point; -- x/y
+		place			: in type_vector_model; -- x/y
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		count			: in out natural; -- the number of affected devices
 		log_threshold	: in type_log_level)
@@ -900,7 +900,7 @@ package body et_board_ops.devices is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified

@@ -205,7 +205,7 @@ package body et_kicad_to_native is
 
 		
 		procedure move (
-			point_actual	: in out et_coordinates.pac_geometry_2.type_point;	-- the point it is about
+			point_actual	: in out et_coordinates.pac_geometry_2.type_vector_model;	-- the point it is about
 			point_help		: in et_kicad_coordinates.type_position) -- supportive point that provides the sheet number
 		is
 		-- Transposes the schematic point_actual from the kicad frame to the ET native frame.
@@ -259,8 +259,8 @@ package body et_kicad_to_native is
 		end prepare_layout_y_movements;
 
 		
-		--procedure move (point : in out et_pcb_coordinates.pac_geometry_brd.type_point'class) is
-		procedure move (point : in out et_pcb_coordinates.pac_geometry_2.type_point) is
+		--procedure move (point : in out et_pcb_coordinates.pac_geometry_brd.type_vector_model'class) is
+		procedure move (point : in out et_pcb_coordinates.pac_geometry_2.type_vector_model) is
 		-- Transposes the given point in layout from the kicad frame to the ET native frame.
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
@@ -2225,7 +2225,7 @@ package body et_kicad_to_native is
 			width, height : et_coordinates.type_distance;
 
 			-- These two points are required to form the final rectangle:
-			corner_C, corner_D : pac_geometry_2.type_point;
+			corner_C, corner_D : pac_geometry_2.type_vector_model;
 			
 			procedure append_line is begin
 				et_symbols.pac_symbol_lines.append (
@@ -2248,8 +2248,8 @@ package body et_kicad_to_native is
 			log (text => "width" & to_string (width), level => log_threshold + 2);
 			
 			if width < zero then
-				rectangle.corner_A := type_point (invert (rectangle.corner_A, X));
-				rectangle.corner_B := type_point (invert (rectangle.corner_B, X));
+				rectangle.corner_A := type_vector_model (invert (rectangle.corner_A, X));
+				rectangle.corner_B := type_vector_model (invert (rectangle.corner_B, X));
 				width := - width;
 			end if;
 			
@@ -2258,8 +2258,8 @@ package body et_kicad_to_native is
 			log (text => "height" & to_string (height), level => log_threshold + 2);
 			
 			if height < zero then
-				rectangle.corner_A := type_point (invert (rectangle.corner_A, Y));
-				rectangle.corner_B := type_point (invert (rectangle.corner_B, Y));
+				rectangle.corner_A := type_vector_model (invert (rectangle.corner_A, Y));
+				rectangle.corner_B := type_vector_model (invert (rectangle.corner_B, Y));
 				height := - height;
 			end if;
 
@@ -2272,13 +2272,13 @@ package body et_kicad_to_native is
 			-- corner_B is the upper right corner of the rectangle
 
 			-- corner_C is the lower right corner:
-			corner_C := type_point (set (
+			corner_C := type_vector_model (set (
 				x => get_x (rectangle.corner_A) + width,
 				y => get_y (rectangle.corner_A)
 				));
 
 			-- corner_D is the upper left corner:
-			corner_D := type_point (set (
+			corner_D := type_vector_model (set (
 				x => get_x (rectangle.corner_A),
 				y => get_y (rectangle.corner_A) + height
 				));
@@ -2373,7 +2373,7 @@ package body et_kicad_to_native is
 			begin
 				-- copy the coordinates x/y, sheet and rotation from kicad text to native text
 				--text_native.position := to_native_coordinates (text_kicad.position);
-				--text_native.position := et_coordinates.pac_geometry_2.type_point (text_kicad.position);
+				--text_native.position := et_coordinates.pac_geometry_2.type_vector_model (text_kicad.position);
 				text_native.position := et_kicad_coordinates.get_point (text_kicad.position);
 				text_native.sheet := et_kicad_coordinates.sheet (text_kicad.position);
 				text_native.rotation := snap (text_kicad.rotation);
@@ -2710,7 +2710,7 @@ package body et_kicad_to_native is
 						to_distance_relative (pac_geometry_sch.set (x => 1.0, y => 1.0));
 
 					-- the new label position after applying the offset:
-					simple_label_position : type_point;
+					simple_label_position : type_vector_model;
 					
 					use et_kicad.schematic.type_tag_labels;
 					tag_label_cursor : et_kicad.schematic.type_tag_labels.cursor := segment.label_list_tag.first;
@@ -2882,9 +2882,9 @@ package body et_kicad_to_native is
 -- 							-- calculate distance of port from segment
 
 -- 							dist := geometry.distance_point_line (
--- 								point 		=> et_coordinates.geometry.type_point (element (port_cursor_kicad).coordinates),
--- 								line_start	=> et_coordinates.geometry.type_point (segment.coordinates_start),
--- 								line_end	=> et_coordinates.geometry.type_point (segment.coordinates_end),
+-- 								point 		=> et_coordinates.geometry.type_vector_model (element (port_cursor_kicad).coordinates),
+-- 								line_start	=> et_coordinates.geometry.type_vector_model (segment.coordinates_start),
+-- 								line_end	=> et_coordinates.geometry.type_vector_model (segment.coordinates_end),
 -- 								line_range	=> WITH_END_POINTS);
 							-- CS
 

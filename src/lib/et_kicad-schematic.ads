@@ -396,7 +396,7 @@ package et_kicad.schematic is
 	-- Example: If the given name is "MOTOR_DRIVER/CLOCK" then the return is "CLOCK".
 
 	type type_net_label (label_appearance : type_net_label_appearance) is record
-		coordinates	: type_point;
+		coordinates	: type_vector_model;
 		rotation	: et_coordinates.type_rotation;
         text		: pac_net_name.bounded_string;
         size		: et_schematic_shapes_and_text.pac_text_schematic.type_text_size;
@@ -439,7 +439,7 @@ package et_kicad.schematic is
 
 	type type_net_segment_base is tagged record
 		coordinates_start 	: et_kicad_coordinates.type_position;
-		coordinates_end   	: et_kicad_coordinates.type_position; -- CS type_point ?
+		coordinates_end   	: et_kicad_coordinates.type_position; -- CS type_vector_model ?
 	end record;
 
 	function length (segment : in type_net_segment_base) 
@@ -780,7 +780,7 @@ package et_kicad.schematic is
 	type type_hierarchic_sheet_port is record
 		direction	: type_port_direction;
 		text_size	: et_schematic_shapes_and_text.pac_text_schematic.type_text_size;
-		coordinates	: type_point;
+		coordinates	: type_vector_model;
         orientation	: et_coordinates.type_rotation;
         processed   : boolean; -- used when linking hierarchic nets
 	end record;

@@ -224,7 +224,7 @@ package body et_canvas_schematic_nets is
 
 	
 	function between_start_and_end_point_of_sloping_segment (
-		point		: in type_point;
+		point		: in type_vector_model;
 		segments	: in pac_proposed_segments.list)
 		return boolean 
 	is 
@@ -347,7 +347,7 @@ package body et_canvas_schematic_nets is
 
 	
 	procedure delete_net_segment (
-		point : in type_point) 
+		point : in type_vector_model) 
 	is 
 		use et_schematic_ops.nets;
 		segment_cursor : pac_proposed_segments.cursor;
@@ -447,7 +447,7 @@ package body et_canvas_schematic_nets is
 
 	procedure make_path (
 		tool	: in type_tool;
-		point	: in type_point)
+		point	: in type_vector_model)
 	is 
 		PS : type_preliminary_segment renames preliminary_segment;
 	begin
@@ -726,7 +726,7 @@ package body et_canvas_schematic_nets is
 
 	
 	function valid_for_net_segment (
-		point			: in type_point;
+		point			: in type_vector_model;
 		log_threshold	: in type_log_level)
 		return boolean 
 	is
@@ -907,7 +907,7 @@ package body et_canvas_schematic_nets is
 -- DRAG/MOVE NET SEGMENT
 
 	
-	procedure find_segments (point : in type_point) is 
+	procedure find_segments (point : in type_vector_model) is 
 		use et_schematic_ops.nets;
 		use et_modes.schematic;
 	begin
@@ -1043,7 +1043,7 @@ package body et_canvas_schematic_nets is
 
 	procedure drag_segment (
 		tool		: in type_tool;
-		position	: in type_point)
+		position	: in type_vector_model)
 	is 
 		PS : type_preliminary_segment renames preliminary_segment;
 		use et_undo_redo;
@@ -1397,7 +1397,7 @@ package body et_canvas_schematic_nets is
 		log_indentation_down;
 	end delete_selected_label;
 	
-	procedure delete_label (point : in type_point) is begin
+	procedure delete_label (point : in type_vector_model) is begin
 		log (text => "deleting net label ...", level => log_threshold);
 		log_indentation_up;
 		
@@ -1471,7 +1471,7 @@ package body et_canvas_schematic_nets is
 	procedure place_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_selected_segment;
-		destination		: in type_point; -- x/y
+		destination		: in type_vector_model; -- x/y
 		appearance 		: in type_net_label_appearance; -- simple/tag
 		log_threshold	: in type_log_level) is
 
@@ -1507,7 +1507,7 @@ package body et_canvas_schematic_nets is
 									s : constant type_stub := query_stub (
 										module_cursor	=> module_cursor,
 										net_name		=> net_name,
-										position		=> to_position (type_point (destination), current_active_sheet),
+										position		=> to_position (type_vector_model (destination), current_active_sheet),
 										log_threshold	=> log_threshold + 1);
 
 									-- CS use a function query_stub that take a module cursor and
@@ -1563,7 +1563,7 @@ package body et_canvas_schematic_nets is
 
 	
 	procedure finalize_place_label (
-		destination		: in type_point;
+		destination		: in type_vector_model;
 		log_threshold	: in type_log_level) is
 	begin
 		log (text => "finalizing place net label ...", level => log_threshold);
@@ -1604,7 +1604,7 @@ package body et_canvas_schematic_nets is
 
 	procedure place_label (
 		tool		: in type_tool;
-		position	: in type_point)
+		position	: in type_vector_model)
 	is begin
 		if not label.ready then
 			
@@ -1629,7 +1629,7 @@ package body et_canvas_schematic_nets is
 
 	
 	procedure find_labels (
-		point		: in type_point;
+		point		: in type_vector_model;
 		category	: in type_label_category)
 	is begin
 		log (text => "locating net labels ...", level => log_threshold);
@@ -1672,7 +1672,7 @@ package body et_canvas_schematic_nets is
 	procedure move_selected_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		label			: in type_selected_label;
-		destination		: in type_point;
+		destination		: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is
 
@@ -1744,7 +1744,7 @@ package body et_canvas_schematic_nets is
 
 	
 	procedure finalize_move_label (
-		destination		: in type_point;
+		destination		: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is
 		sl : type_selected_label;
@@ -1771,7 +1771,7 @@ package body et_canvas_schematic_nets is
 
 	procedure move_label (
 		tool		: in type_tool;
-		position	: in type_point)
+		position	: in type_vector_model)
 	is begin
 		if not label.ready then
 

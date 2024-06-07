@@ -337,7 +337,7 @@ package body et_canvas_schematic_units is
 	end finalize_delete;
 
 	
-	procedure delete_unit (point : in type_point) is 
+	procedure delete_unit (point : in type_vector_model) is 
 		use et_schematic_ops.units;
 		unit_cursor : pac_proposed_units.cursor;
 	begin
@@ -401,7 +401,7 @@ package body et_canvas_schematic_units is
 
 	
 	procedure finalize_move (
-		destination		: in type_point;
+		destination		: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is
 		su : type_selected_unit;
@@ -450,7 +450,7 @@ package body et_canvas_schematic_units is
 
 	procedure move_unit (
 		tool		: in type_tool;
-		position	: in type_point)
+		position	: in type_vector_model)
 	is begin
 		if not unit_move.being_moved then
 
@@ -483,7 +483,7 @@ package body et_canvas_schematic_units is
 
 	
 	procedure finalize_drag (
-		destination		: in type_point;
+		destination		: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is
 		su : type_selected_unit;
@@ -530,7 +530,7 @@ package body et_canvas_schematic_units is
 
 	procedure drag_unit (
 		tool		: in type_tool;
-		position	: in type_point)
+		position	: in type_vector_model)
 	is begin
 		if not unit_move.being_moved then
 			
@@ -556,7 +556,7 @@ package body et_canvas_schematic_units is
 	end drag_unit;
 
 	
-	procedure find_units_for_move (point : in type_point) is 
+	procedure find_units_for_move (point : in type_vector_model) is 
 		use et_modes.schematic;
 	begin
 		log (text => "locating units for move/drag ...", level => log_threshold);
@@ -920,7 +920,7 @@ package body et_canvas_schematic_units is
 	end finalize_rotate_unit;
 
 	
-	procedure rotate_unit (point : in type_point) is 
+	procedure rotate_unit (point : in type_vector_model) is 
 		use et_schematic_ops.units;
 		unit_cursor : pac_proposed_units.cursor;
 	begin
@@ -1282,7 +1282,7 @@ package body et_canvas_schematic_units is
 
 	
 	procedure finalize_add_device (
-		position	: in type_point)
+		position	: in type_vector_model)
 	is 
 		use et_devices;
 		use pac_devices_lib;
@@ -1312,7 +1312,7 @@ package body et_canvas_schematic_units is
 
 	
 	procedure finalize_invoke (
-		position		: in type_point;
+		position		: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is 
 		use pac_unit_name;
@@ -1397,8 +1397,8 @@ package body et_canvas_schematic_units is
 		use glib;
 		--use et_coordinates.pac_geometry_sch;
 
-		--cp : type_point := cursor_main.position;
-		--mp : type_point := canvas.drawing_to_model (cursor_main.position);
+		--cp : type_vector_model := cursor_main.position;
+		--mp : type_vector_model := canvas.drawing_to_model (cursor_main.position);
 		--vp : type_view_point;
 
 		use gtk.widget;
@@ -1557,7 +1557,7 @@ package body et_canvas_schematic_units is
 	end show_units;
 
 	
-	procedure invoke_unit (point : in type_point) is 
+	procedure invoke_unit (point : in type_vector_model) is 
 		use et_schematic_ops.units;
 	begin
 		log (text => "invoking unit ...", level => log_threshold);
@@ -1636,7 +1636,7 @@ package body et_canvas_schematic_units is
 
 	
 	procedure finalize_move_placeholder (
-		destination		: in type_point;
+		destination		: in type_vector_model;
 		category		: in type_placeholder_meaning;
 		log_threshold	: in type_log_level)
 	is
@@ -1677,7 +1677,7 @@ package body et_canvas_schematic_units is
 
 	procedure move_placeholder (
 		tool		: in type_tool;
-		position	: in type_point;
+		position	: in type_vector_model;
 		category	: in type_placeholder_meaning)
 	is begin
 		if not placeholder_move.being_moved then
@@ -1733,7 +1733,7 @@ package body et_canvas_schematic_units is
 				use pac_units;
 				unit_cursor : pac_units.cursor := device.units.first;
 
-				placeholder_position : type_point;
+				placeholder_position : type_vector_model;
 
 				
 				procedure test_placeholder_position is 
@@ -1838,7 +1838,7 @@ package body et_canvas_schematic_units is
 	
 	
 	procedure find_placeholders (
-		point		: in type_point;
+		point		: in type_vector_model;
 		category	: in type_placeholder_meaning)
 	is begin
 		log (text => "locating placeholders of category " 
@@ -1983,7 +1983,7 @@ package body et_canvas_schematic_units is
 
 	
 	procedure rotate_placeholder (
-		point 		: in type_point;
+		point 		: in type_vector_model;
 		category	: in type_placeholder_meaning)
 	is begin
 		log (text => "rotating placeholder ...",
@@ -2202,7 +2202,7 @@ package body et_canvas_schematic_units is
 	end window_set_property;
 
 	
-	procedure set_property (point : in type_point) is begin
+	procedure set_property (point : in type_vector_model) is begin
 		-- If the properties window is already open, then it
 		-- is moved to the foreground.
 		if not window_properties_is_open then
@@ -2295,7 +2295,7 @@ package body et_canvas_schematic_units is
 	end show_properties_of_selected_device;
 
 	
-	procedure find_units_for_show (point : in type_point) is 
+	procedure find_units_for_show (point : in type_vector_model) is 
 		use et_modes.schematic;
 	begin
 		log (text => "locating units for show ...", level => log_threshold);

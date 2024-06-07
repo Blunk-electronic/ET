@@ -149,8 +149,8 @@ package body et_kicad_packages is
 		yn : constant type_position_axis := -(yp);
 
  		-- supportive corner points:
-		p11, p12 : type_point;
-		p21, p22 : type_point;
+		p11, p12 : type_vector_model;
+		p21, p22 : type_vector_model;
 
 		use pac_geometry_2;
 		
@@ -160,11 +160,11 @@ package body et_kicad_packages is
 
 	begin -- to_pad_shape_rectangle
 		-- set supportive cornert points
-		p11 := type_point (set (x => xn, y => yp));
-		p12 := type_point (set (x => xn, y => yn));
+		p11 := type_vector_model (set (x => xn, y => yp));
+		p12 := type_vector_model (set (x => xn, y => yn));
 
-		p21 := type_point (set (x => xp, y => yp));
-		p22 := type_point (set (x => xp, y => yn));
+		p21 := type_vector_model (set (x => xp, y => yp));
+		p22 := type_vector_model (set (x => xp, y => yn));
 
 		-- rotate supportive points
 		rotate_by (p11, angle);
@@ -232,9 +232,9 @@ package body et_kicad_packages is
 		x2n : constant type_position_axis := -(x2p);
 
 		-- supportive points:
-		p11, p12 : type_point; -- start/end point of upper line
-		p21, p22 : type_point; -- start/end point of lower line
-		p41, p42 : type_point; -- center of left/right arc
+		p11, p12 : type_vector_model; -- start/end point of upper line
+		p21, p22 : type_vector_model; -- start/end point of lower line
+		p41, p42 : type_vector_model; -- center of left/right arc
 
 		use pac_geometry_2;
 		
@@ -246,18 +246,18 @@ package body et_kicad_packages is
 
 		-- set supportive points
 		-- upper line
-		p11 := type_point (set (x => x2n, y => y1p));
-		p12 := type_point (set (x => x2p, y => y1p));
+		p11 := type_vector_model (set (x => x2n, y => y1p));
+		p12 := type_vector_model (set (x => x2p, y => y1p));
 
 		-- lower line
-		p21 := type_point (set (x => x2n, y => y1n));
-		p22 := type_point (set (x => x2p, y => y1n));
+		p21 := type_vector_model (set (x => x2n, y => y1n));
+		p22 := type_vector_model (set (x => x2p, y => y1n));
 
 		-- left arc
-		p41 := type_point (set (x => x2n,  y => zero));
+		p41 := type_vector_model (set (x => x2n,  y => zero));
 
 		-- right arc
-		p42 := type_point (set (x => x2p,  y => zero));
+		p42 := type_vector_model (set (x => x2p,  y => zero));
 		
 		-- rotate supportive points 
 		rotate_by (p11, angle);
@@ -331,8 +331,8 @@ package body et_kicad_packages is
 		yn : constant type_position_axis := -(yp);
 
  		-- supportive corner points:
-		p11, p12 : type_point;
-		p21, p22 : type_point;
+		p11, p12 : type_vector_model;
+		p21, p22 : type_vector_model;
 
 		-- These are the four lines we need for the rectangular pad contour:
 		line_1, line_2 : pac_geometry_2.type_line; -- left line, right line
@@ -340,11 +340,11 @@ package body et_kicad_packages is
 
 	begin -- to_pad_milling_contour
 		-- set supportive cornert points
-		p11 := type_point (set (x => xn, y => yp)); -- top left
-		p12 := type_point (set (x => xn, y => yn)); -- bottom left
+		p11 := type_vector_model (set (x => xn, y => yp)); -- top left
+		p12 := type_vector_model (set (x => xn, y => yn)); -- bottom left
 
-		p21 := type_point (set (x => xp, y => yp)); -- top right
-		p22 := type_point (set (x => xp, y => yn)); -- bottom right
+		p21 := type_vector_model (set (x => xp, y => yp)); -- top right
+		p22 := type_vector_model (set (x => xp, y => yn)); -- bottom right
 
 		-- rotate supportive points
 		rotate_by (p11, angle);
@@ -566,7 +566,7 @@ package body et_kicad_packages is
 		terminal_hole_shape			: type_tht_hole_shape; -- for slotted holes
 		terminal_milling_size_x		: type_pad_milling_size;  -- CS use a composite instead ?
 		terminal_milling_size_y		: type_pad_milling_size; 
-		terminal_pad_drill_offset	: pac_geometry_2.type_point;
+		terminal_pad_drill_offset	: pac_geometry_2.type_vector_model;
 
 		-- The center of an smt pad or the position of the drill of a tht pad:
 		terminal_position	: pac_geometry_2.type_position; 
@@ -1664,7 +1664,7 @@ package body et_kicad_packages is
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 				
 				-- compute end point of arc from center, start_point and angle
-				arc.end_point := type_point (arc_end_point (arc.center, arc.start_point, arc.angle));
+				arc.end_point := type_vector_model (arc_end_point (arc.center, arc.start_point, arc.angle));
 
 				-- The angle of the arc and its layer are now discarded
 				-- as the arc is converted back to its anchestor

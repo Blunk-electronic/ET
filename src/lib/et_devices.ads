@@ -322,7 +322,7 @@ package et_devices is
 	-- An internal unit is owned by the particular device exclusively.
 	type type_unit_internal (appearance : type_appearance) is record
 		symbol		: type_symbol (appearance);
-		position	: type_point; -- the position of the unit inside the device editor
+		position	: type_vector_model; -- the position of the unit inside the device editor
 		swap_level	: type_swap_level := swap_level_default;
 		add_level	: type_add_level := add_level_default;
 	end record;
@@ -336,7 +336,7 @@ package et_devices is
     type type_unit_external is record
         -- file is the link to the symbol in container "symbols":
         model		: pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
-       	position	: type_point := origin; -- the position within the device editor
+       	position	: type_vector_model := origin; -- the position within the device editor
 		swap_level	: type_swap_level := swap_level_default;
 		add_level	: type_add_level := type_add_level'first;
 	end record;

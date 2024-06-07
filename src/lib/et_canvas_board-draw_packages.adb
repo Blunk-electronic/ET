@@ -153,7 +153,7 @@ is
 		
 	
 		
-		procedure draw_text_origin (p : in type_point; f : in type_face) is
+		procedure draw_text_origin (p : in type_vector_model; f : in type_face) is
 			line_horizontal : constant type_line_fine := ( -- from left to right
 				start_point		=> to_vector (set (x => get_x (p) - pac_text_board.origin_half_size, y => get_y (p))),
 				end_point		=> to_vector (set (x => get_x (p) + pac_text_board.origin_half_size, y => get_y (p))));
@@ -1071,7 +1071,7 @@ is
 
 			procedure draw_tht_pad_with_circular_cutout (
 				outer_border	: in type_contour;
-				drill_position	: in type_point;
+				drill_position	: in type_vector_model;
 				drill_size		: in type_drill_size)
 			is 
 				ib : constant type_circle := (
@@ -1137,7 +1137,7 @@ is
 					pad_pos_in	: in type_position)  -- the center of the pad
 				is
 					use et_text;
-					pad_pos : type_point := pad_pos_in.place;
+					pad_pos : type_vector_model := pad_pos_in.place;
 					
 				begin
 					if conductors_enabled then

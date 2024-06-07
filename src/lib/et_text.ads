@@ -244,7 +244,7 @@ package et_text is
 		
 		-- Returns the x/y coordinates of a text:
 		function get_place (text : in type_text_fab)
-			return type_point;
+			return type_vector_model;
 		
 		-- Returns the rotation of a text:
 		function get_rotation (text : in type_text_fab)
@@ -271,7 +271,7 @@ package et_text is
 		-- Moves a text to the given point:
 		procedure move_text (
 			text	: in out type_text_fab;
-			point	: in type_point);
+			point	: in type_vector_model);
 
 		
 		-- Returns the properties of the given text in a long single string.	
@@ -1766,7 +1766,7 @@ package et_text is
 			content		: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
 			size		: in type_text_size;
 			rotation	: in pac_geometry_2.type_rotation;
-			position	: in pac_geometry_2.type_point;
+			position	: in pac_geometry_2.type_vector_model;
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
 			line_width	: in pac_geometry_2.type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default;

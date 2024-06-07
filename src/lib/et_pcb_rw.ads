@@ -163,7 +163,7 @@ package et_pcb_rw is
 	-- Returns a type_point_2d in the the layout.
 		line : in type_fields_of_line; -- "start x 44.5 y 53.5"
 		from : in count_type)
-		return type_point;
+		return type_vector_model;
 		
 	function to_position (
 	-- Returns a type_position in the layout.
@@ -172,7 +172,7 @@ package et_pcb_rw is
 		return type_position;
 
 	
-	--function position (point : in type_point'class) return string;
+	--function position (point : in type_vector_model'class) return string;
 	function position (point : in type_position'class) return string; -- CS rename to to_string
 
 	

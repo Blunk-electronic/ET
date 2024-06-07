@@ -117,7 +117,7 @@ package body et_canvas_board_assy_doc is
 
 
 	procedure find_objects (
-	   point : in type_point)
+	   point : in type_vector_model)
 	is 
 		face : type_face := TOP;
 
@@ -181,7 +181,7 @@ package body et_canvas_board_assy_doc is
 	
 	procedure move_object (
 		tool	: in type_tool;
-		point	: in type_point)
+		point	: in type_vector_model)
 	is
 
 		-- Assigns the final position after the move to the selected object.
@@ -278,7 +278,7 @@ package body et_canvas_board_assy_doc is
 -- DELETE:
 	
 	procedure delete_object (
-		point	: in type_point)
+		point	: in type_vector_model)
 	is
 		-- Deletes the selected object.
 		-- Resets variable preliminary_object:

@@ -2024,7 +2024,7 @@ is
 		
 		function to_field return type_text_placeholder is
 		-- Converts a field like "F 1 "green" H 2700 2750 50  0000 C CNN" to a type_text_placeholder
-			text_position : type_point;
+			text_position : type_vector_model;
 			size : et_kicad_libraries.pac_text.type_text_size;
 			use et_text;
 		begin
@@ -2036,8 +2036,8 @@ is
 
 			-- Kicad provides the absolute position of a text placeholder.
 			-- But ET requires the position relative to the unit:
-			--text_position := type_point (to_point (
-				--get_distance_relative (text_position, type_point (unit_position))));
+			--text_position := type_vector_model (to_point (
+				--get_distance_relative (text_position, type_vector_model (unit_position))));
 
 			text_position := to_point (
 				get_distance_relative (text_position, get_point (unit_position)));

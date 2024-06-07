@@ -506,7 +506,7 @@ package body et_canvas_board_lines is
 
 	procedure make_path (
 		tool	: in type_tool;
-		point	: in type_point)
+		point	: in type_vector_model)
 	is
 		PL : type_preliminary_line renames preliminary_line;
 		line : type_line;

@@ -50,7 +50,7 @@ package body et_submodules is
 	end;
 
 	function at_edge (
-		point	: in type_point; -- P
+		point	: in type_vector_model; -- P
 		size	: in type_submodule_size) -- sx, sy
 		return boolean is
 		-- O--------O

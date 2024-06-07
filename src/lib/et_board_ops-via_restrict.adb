@@ -157,7 +157,7 @@ package body et_board_ops.via_restrict is
 	
 	procedure delete_via_restrict (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 	is

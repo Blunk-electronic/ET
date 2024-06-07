@@ -195,8 +195,8 @@ package et_canvas_board_tracks is
 	-- airwire, depending on which of them is closer to the given point:
 	function get_nearest (
 		airwire	: in pac_proposed_airwires.cursor;
-		point	: in type_point)
-		return type_point;
+		point	: in type_vector_model)
+		return type_vector_model;
 
 
 	-- Builds a live path. This procedure requires to be called twice:
@@ -206,7 +206,7 @@ package et_canvas_board_tracks is
 	-- with MOUSE and finish with KEYBOARD or vice versa.
 	procedure make_path (
 		tool	: in type_tool;
-		point	: in type_point);
+		point	: in type_vector_model);
 
 
 
@@ -223,7 +223,7 @@ package et_canvas_board_tracks is
 		-- cursor position is to be used when drawing the segment:
 		tool			: type_tool := MOUSE;
 		
-		point_of_attack : type_point;
+		point_of_attack : type_vector_model;
 		
 		-- net_name		: pac_net_name.bounded_string := no_name;
 		shape			: type_shape := LINE;
@@ -257,12 +257,12 @@ package et_canvas_board_tracks is
 	-- - If more than one segment found, then clarification is requested.
 	--   The first segment of them is selected.
 	procedure find_segments (
-	   point : in type_point);
+	   point : in type_vector_model);
 	
 	
 	procedure move_track (
 		tool	: in type_tool;
-		point	: in type_point);				   
+		point	: in type_vector_model);				   
 
 
 	type type_ripup_mode is (
@@ -278,7 +278,7 @@ package et_canvas_board_tracks is
 	
 	
 	procedure ripup (
-		point	: in type_point);
+		point	: in type_vector_model);
 
 
 	-- CS change layer of track

@@ -124,7 +124,7 @@ package et_geometry_2.contours is
 	
 	function get_segment (
 		contour	: in type_contour;
-		point	: in type_point)
+		point	: in type_vector_model)
 		return pac_segments.cursor;
 
 
@@ -141,7 +141,7 @@ package et_geometry_2.contours is
 
 	function get_neigboring_segments (
 		contour	: in type_contour;
-		vertex	: in type_point)
+		vertex	: in type_vector_model)
 		return type_neigboring_segments;
 
 
@@ -150,7 +150,7 @@ package et_geometry_2.contours is
 	-- The point may be inside or outside the contour.
 	function get_shortest_distance (
 		contour	: in type_contour;
-		point	: in type_point)
+		point	: in type_vector_model)
 		return type_float_positive;
 
 
@@ -229,7 +229,7 @@ package et_geometry_2.contours is
 
 	-- A contour must have a properly closed outline.
 	-- The outline check returns a list of points (where the gaps are):
-	package pac_contour_gaps is new doubly_linked_lists (type_point); 
+	package pac_contour_gaps is new doubly_linked_lists (type_vector_model); 
 
 	
 	-- Returns the points where gaps of a contour begin:
@@ -286,7 +286,7 @@ package et_geometry_2.contours is
 	-- The general approach is:
 	-- A ray that starts at point and travels in zero degees 
 	-- may intersect the contour edges.
-	-- The result of such a query is the type_point_to_contour_status
+	-- The result of such a query is the type_vector_model_to_contour_status
 	-- that contains a status flag (inside/outside) and a list
 	-- of x values where the ray intersects the contour. For completeness
 	-- the original point where the probe line has started is also provided.
@@ -318,7 +318,7 @@ package et_geometry_2.contours is
 	-- the result of such a search operation is formed by
 	-- this type:
 	type type_lower_left_corner is record
-		point	: type_point := origin;
+		point	: type_vector_model := origin;
 		status	: type_lower_left_corner_status := REAL;
 	end record;
 
@@ -336,12 +336,12 @@ package et_geometry_2.contours is
 	-- Returns the corner that is closest to the origin of the drawing:
 	function get_corner_nearest_to_origin (
 		contour	: in type_contour)
-		return type_point;
+		return type_vector_model;
 
 	
 	function is_vertex (
 		contour	: in type_contour;
-		point	: in type_point)
+		point	: in type_vector_model)
 		return boolean;
 
 
@@ -384,7 +384,7 @@ package et_geometry_2.contours is
 
 	type type_point_to_contour_status (location : type_location) is record
 		-- The point where the probe line has started:
-		start			: type_point;
+		start			: type_vector_model;
 
 		-- The intersections of the probe line with the polygon edges:
 		intersections	: pac_probe_line_intersections_contour.list;
@@ -412,7 +412,7 @@ package et_geometry_2.contours is
 
 	function get_point_to_contour_status (
 		contour		: in type_contour;	
-		point		: in type_point)
+		point		: in type_vector_model)
 		return type_point_to_contour_status;
 
 

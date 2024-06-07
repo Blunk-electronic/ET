@@ -526,8 +526,8 @@ package body et_kicad.schematic is
 	end validate_prefix;
 
 	
-	function to_point (x_in, y_in : in string) return type_point is
-		point : type_point;
+	function to_point (x_in, y_in : in string) return type_vector_model is
+		point : type_vector_model;
 		x, y : type_position_axis;
 	begin
 		x := mil_to_distance (x_in);
@@ -4202,7 +4202,7 @@ package body et_kicad.schematic is
 					
 				begin -- add
 					-- Init port coordinates with the coordinates of the port found in the library.
-					-- The port position is a type_point and must be converted to type_position.
+					-- The port position is a type_vector_model and must be converted to type_position.
 					set_point (
 						position	=> port_coordinates,
 						place		=> element (port_cursor).position);

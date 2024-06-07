@@ -39,7 +39,7 @@ separate (et_canvas_schematic)
 
 procedure mouse_moved (
 	self	: not null access type_view;
-	point	: in type_point) 
+	point	: in type_vector_model) 
 is
 	use pac_devices_lib;
 begin

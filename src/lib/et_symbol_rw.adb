@@ -84,7 +84,7 @@ package body et_symbol_rw is
 	end to_grid;
 
 	
-	function position (pos : in type_point) return string is
+	function position (pos : in type_vector_model) return string is
 
 		function text return string is begin return 
 			keyword_x & to_string (get_x (pos)) 
@@ -99,11 +99,11 @@ package body et_symbol_rw is
 	function to_position (
 		line : in type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
 		from : in count_type)
-		return type_point 
+		return type_vector_model 
 	is
 		use et_string_processing;
 		
-		point : type_point; -- to be returned
+		point : type_vector_model; -- to be returned
 		place : count_type := from; -- the field being read from given line
 
 		-- CS: flags to detect missing x or y
@@ -431,7 +431,7 @@ package body et_symbol_rw is
 		symbol_cursor		: pac_symbols.cursor;
 		symbol_inserted		: boolean;
 		
-		symbol_text_position		: type_point;
+		symbol_text_position		: type_vector_model;
 		symbol_text_content			: et_text.pac_text_content.bounded_string;
 		symbol_placeholder_meaning	: type_placeholder_meaning := placeholder_meaning_default;
 		

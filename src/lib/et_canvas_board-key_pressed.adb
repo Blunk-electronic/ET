@@ -51,7 +51,7 @@ is
 
 	use et_modes;
 
-	point : type_point renames cursor_main.position;
+	point : type_vector_model renames cursor_main.position;
 	
 
 	procedure delete is begin

@@ -864,7 +864,7 @@ package body et_canvas_board_texts is
 	
 	
 	procedure find_texts (
-		point : in type_point)
+		point : in type_vector_model)
 	is 
 		use et_board_ops.assy_doc;
 		use et_board_ops.silkscreen;
@@ -959,7 +959,7 @@ package body et_canvas_board_texts is
 -- PLACE:
 	
 	procedure place_text (
-		point : in type_point) 
+		point : in type_vector_model) 
 	is 
 		use et_board_ops.conductors;
 		use et_board_ops.text;
@@ -997,7 +997,7 @@ package body et_canvas_board_texts is
 
 	procedure move_text (
 		tool	: in type_tool;
-		point	: in type_point)
+		point	: in type_vector_model)
 	is 
 
 		-- Assigns the final position after the move to the selected text.

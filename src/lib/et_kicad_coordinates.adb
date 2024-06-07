@@ -116,7 +116,7 @@ package body et_kicad_coordinates is
 	end to_string;
 
 
-	function get_point (position : in type_position) return type_point is begin
+	function get_point (position : in type_position) return type_vector_model is begin
 		return position.point;
 	end get_point;
 
@@ -133,7 +133,7 @@ package body et_kicad_coordinates is
 
 	procedure set_point (
 		position	: in out type_position;
-		place		: in type_point)
+		place		: in type_vector_model)
 	is begin
 		position.point := place;
 	end set_point;

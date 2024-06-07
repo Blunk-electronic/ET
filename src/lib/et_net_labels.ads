@@ -74,7 +74,7 @@ package et_net_labels is
 	
 	type type_net_label_base is tagged record
 		-- The position of the label is absolute (relative to drawing origin):
-		position	: type_point;
+		position	: type_vector_model;
 		
         size		: type_text_size := text_size_default;
 		width		: et_schematic_shapes_and_text.type_text_line_width := et_schematic_shapes_and_text.type_text_line_width'first;

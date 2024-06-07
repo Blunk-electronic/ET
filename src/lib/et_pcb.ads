@@ -373,7 +373,7 @@ package et_pcb is
 	-- The board origin is positioned x/y away from the lower left
 	-- corner of the drawing frame.
 	-- Unless specified by operator the board origin default is:
-	origin_default : constant type_point := (20.0, 65.0);
+	origin_default : constant type_vector_model := (20.0, 65.0);
 
 
 	
@@ -456,7 +456,7 @@ package et_pcb is
 	
 	-- This is non-electical board stuff:
 	type type_board is tagged record
-		origin			: type_point := origin_default;
+		origin			: type_vector_model := origin_default;
 		frame			: et_frames.type_frame_pcb; -- incl. template name
 		grid			: type_grid;  -- the drawing grid of the board
 		stack			: et_pcb_stack.type_stack;	-- the layer stack

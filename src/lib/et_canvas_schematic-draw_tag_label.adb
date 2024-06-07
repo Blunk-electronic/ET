@@ -49,7 +49,7 @@ is
 	
 	-- The position, width and height of the enshrouding box (lower left corner)
 	-- as if the box was drawn for a label in zero rotation:
-	box_position : type_point;
+	box_position : type_vector_model;
 	box_width	: type_float_positive;
 	--box_height	: constant type_distance_positive := type_distance_positive (label.size) * tag_label_height_to_size_ratio;
 	box_height	: constant type_float_positive := 
@@ -66,7 +66,7 @@ is
 
 	-- The text position is not the same as the label position, thus it must be 
 	-- calculated according to the label rotation and tag_label_text_offset (see et_schematic specs):
-	text_position : type_point;
+	text_position : type_vector_model;
 
 begin
 	set_line_width (context.cr, type_view_coordinate (tag_label_box_line_width));
@@ -79,41 +79,41 @@ begin
 
 	
 	if label.rotation_tag = zero_rotation then
-		box_position := type_point (set (get_x (label.position), get_y (label.position) - type_distance_positive (box_height) * 0.5));
+		box_position := type_vector_model (set (get_x (label.position), get_y (label.position) - type_distance_positive (box_height) * 0.5));
 		draw_rectangle (box_position, box_width, box_height);
 
 		text_rotation := zero_rotation;
-		text_position := type_point (set (get_x (label.position) + type_distance_positive (tag_label_text_offset), get_y (label.position)));
+		text_position := type_vector_model (set (get_x (label.position) + type_distance_positive (tag_label_text_offset), get_y (label.position)));
 		text_alignment.horizontal := LEFT;
 	end if;
 
 	
 	if label.rotation_tag = 90.0 then
-		box_position := type_point (set (get_x (label.position) - type_distance_positive (box_height) * 0.5, get_y (label.position)));
+		box_position := type_vector_model (set (get_x (label.position) - type_distance_positive (box_height) * 0.5, get_y (label.position)));
 		draw_rectangle (box_position, box_height, box_width);
 
 		text_rotation := 90.0;
-		text_position := type_point (set (get_x (label.position), get_y (label.position) + type_distance_positive (tag_label_text_offset)));
+		text_position := type_vector_model (set (get_x (label.position), get_y (label.position) + type_distance_positive (tag_label_text_offset)));
 		text_alignment.horizontal := LEFT;
 	end if;
 
 	
 	if label.rotation_tag = 180.0 then
-		box_position := type_point (set (get_x (label.position) - type_distance_positive (box_width), get_y (label.position) - type_distance_positive (box_height) * 0.5));
+		box_position := type_vector_model (set (get_x (label.position) - type_distance_positive (box_width), get_y (label.position) - type_distance_positive (box_height) * 0.5));
 		draw_rectangle (box_position, box_width, box_height);
 
 		text_rotation := zero_rotation;
-		text_position := type_point (set (get_x (label.position) - type_distance_positive (tag_label_text_offset), get_y (label.position)));
+		text_position := type_vector_model (set (get_x (label.position) - type_distance_positive (tag_label_text_offset), get_y (label.position)));
 		text_alignment.horizontal := RIGHT;
 	end if;
 
 	
 	if label.rotation_tag = -90.0 then
-		box_position := type_point (set (get_x (label.position) - type_distance_positive (box_height) * 0.5, get_y (label.position) - type_distance_positive (box_width)));
+		box_position := type_vector_model (set (get_x (label.position) - type_distance_positive (box_height) * 0.5, get_y (label.position) - type_distance_positive (box_width)));
 		draw_rectangle (box_position, box_height, box_width);
 
 		text_rotation := 90.0;
-		text_position := type_point (set (get_x (label.position), get_y (label.position) - type_distance_positive (tag_label_text_offset)));
+		text_position := type_vector_model (set (get_x (label.position), get_y (label.position) - type_distance_positive (tag_label_text_offset)));
 		text_alignment.horizontal := RIGHT;
 	end if;
 	

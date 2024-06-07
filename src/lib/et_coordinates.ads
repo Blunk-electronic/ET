@@ -175,14 +175,14 @@ package et_coordinates is
 
 	
 	function to_position (
-		point 		: in type_point;
+		point 		: in type_vector_model;
 		sheet		: in type_sheet;
 		rotation	: in type_rotation := zero_rotation)
 		return type_position;
 
 	
 	function to_position_relative (
-		point 		: in type_point;
+		point 		: in type_vector_model;
 		sheet		: in type_sheet_relative;
 		rotation	: in type_rotation := zero_rotation)		
 		return type_position_relative;

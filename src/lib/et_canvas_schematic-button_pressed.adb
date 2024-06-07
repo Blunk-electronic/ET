@@ -43,9 +43,9 @@ separate (et_canvas_schematic)
 procedure button_pressed (
 	self	: not null access type_view;
 	button	: in type_mouse_button;
-	point	: in type_point) 
+	point	: in type_vector_model) 
 is
-	snap_point : constant type_point := snap_to_grid (point);
+	snap_point : constant type_vector_model := snap_to_grid (point);
 
 	procedure left_button is 
 		use pac_devices_lib;

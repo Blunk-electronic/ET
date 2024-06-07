@@ -138,7 +138,7 @@ package body et_conductor_segment.boards is
 	
 	
 	function on_segment (
-		point		: in type_point; -- x/y
+		point		: in type_vector_model; -- x/y
 		layer		: in type_signal_layer;
 		line		: in pac_conductor_lines.cursor)
 		return boolean 
@@ -203,7 +203,7 @@ package body et_conductor_segment.boards is
 
 	
 	function on_segment (
-		point		: in type_point; -- x/y
+		point		: in type_vector_model; -- x/y
 		layer		: in type_signal_layer;
 		arc			: in pac_conductor_arcs.cursor)
 		return boolean 

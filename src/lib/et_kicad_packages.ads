@@ -152,7 +152,7 @@ package et_kicad_packages is
 
 	type type_circle is new pac_geometry_2.type_circle with record -- center and radius incl.
 		width 	: type_text_line_width;
-		point 	: type_point;
+		point 	: type_vector_model;
 		layer	: type_layer_abbrevation;
 	end record;
 

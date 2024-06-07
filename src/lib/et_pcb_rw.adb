@@ -309,11 +309,11 @@ package body et_pcb_rw is
 	-- Returns a type_point_2d in the the layout.
 		line : in type_fields_of_line; -- "start x 44.5 y 53.5"
 		from : in count_type)
-		return type_point 
+		return type_vector_model 
 	is
 		use et_string_processing;
 
-		point : type_point; -- to be returned
+		point : type_vector_model; -- to be returned
 		place : count_type := from; -- the field being read from given line
 
 		-- CS: flags to detect missing sheet, x or y
@@ -383,14 +383,14 @@ package body et_pcb_rw is
 	end to_position;
 
 	
-	--function position (point : in type_point'class) return string is
+	--function position (point : in type_vector_model'class) return string is
 	function position (point : in type_position'class) return string is
 		use ada.tags;
 
 		xy : constant string := space & keyword_x & to_string (get_x (point)) 
 				& space & keyword_y & to_string (get_y (point));
 	begin
-		--if point'tag = type_point'tag then
+		--if point'tag = type_vector_model'tag then
 			--return xy;
 			---- x 162.560 y 98.240
 			

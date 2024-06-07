@@ -272,7 +272,7 @@ is
 								s : constant type_stub := query_stub (
 										module_cursor	=> current_active_module,
 										net_name		=> selected_net,
-										position		=> to_position (type_point (l.position), current_active_sheet),
+										position		=> to_position (type_vector_model (l.position), current_active_sheet),
 										log_threshold	=> log_threshold + 1);
 
 									-- CS use a function query_stub that take a module cursor and
@@ -545,7 +545,7 @@ is
 				point	=> PS.point_of_attack,
 				line	=> element (original_segment));
 
-		destination : type_point;
+		destination : type_vector_model;
 		primary_segment : type_net_segment;
 
 		-- Moves net labels of the primary segment.
@@ -625,7 +625,7 @@ is
 	procedure draw_segment_being_dragged_along_with_unit (
 		s : in pac_net_segments.cursor) -- the original segment as given in database
 	is
-		tool_position : type_point;
+		tool_position : type_vector_model;
 		displacement : type_distance_relative;
 		
 		use pac_segments_being_dragged;
@@ -915,7 +915,7 @@ is
 		line : pac_geometry_2.type_line;
 
 		
-		procedure compute_route (s, e : in type_point) is 
+		procedure compute_route (s, e : in type_vector_model) is 
 
 			-- Do the actual route calculation.
 			r : type_path := to_path (s, e, PS.path.bend_style);

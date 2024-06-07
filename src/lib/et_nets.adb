@@ -192,7 +192,7 @@ package body et_nets is
 	procedure set_strand_position (
 		strand : in out type_strand) 
 	is
-		point_1, point_2 : type_point;
+		point_1, point_2 : type_vector_model;
 	
 		use pac_net_segments;
 
@@ -201,14 +201,14 @@ package body et_nets is
 		procedure query_strand (cursor : in pac_net_segments.cursor) is begin
 			-- Test start point of segment. 
 			-- if closer to orign than point_1 keep start point
-			point_2	:= type_point (element (cursor).start_point);
+			point_2	:= type_vector_model (element (cursor).start_point);
 			if get_distance_total (point_2, origin) < get_distance_total (point_1, origin) then
 				point_1 := point_2;
 			end if;
 
 			-- Test start point of segment.
 			-- if closer to orign than point_1 keep end point
-			point_2	:= type_point (element (cursor).end_point);
+			point_2	:= type_vector_model (element (cursor).end_point);
 			if get_distance_total (point_2, origin) < get_distance_total (point_1, origin) then
 				point_1 := point_2;
 			end if;
@@ -219,7 +219,7 @@ package body et_nets is
 		--log (text => "set strand position");
 		
 		-- init point_1 as the farest possible point from drawing origin
-		point_1 := type_point (set (
+		point_1 := type_vector_model (set (
 					x => type_position_axis'last,
 					y => type_position_axis'last));
 
@@ -243,7 +243,7 @@ package body et_nets is
 		procedure query_segments (strand : in type_strand) is
 			use pac_net_segments;
 
-			segment_position : type_point := far_upper_right;
+			segment_position : type_vector_model := far_upper_right;
 			
 			procedure query_segment (c : in pac_net_segments.cursor) is begin
 				if element (c).start_point < segment_position then
@@ -285,7 +285,7 @@ package body et_nets is
 
 	function on_segment (
 		segment_cursor	: in pac_net_segments.cursor;
-		point			: in type_point)
+		point			: in type_vector_model)
 		return boolean
 	is 
 		use pac_net_segments;
@@ -308,7 +308,7 @@ package body et_nets is
 		use pac_net_segments;
 		
 		procedure query_segment (s : in pac_net_segments.cursor) is begin
-			--if on_segment (s, type_point (place)) then
+			--if on_segment (s, type_vector_model (place)) then
 			if on_segment (s, place.place) then
 				proceed := false; -- abort iteration
 			end if;

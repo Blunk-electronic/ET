@@ -63,7 +63,7 @@ package et_board_ops.assy_doc is
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
-		point			: in type_point;
+		point			: in type_vector_model;
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_doc_lines.list;
@@ -81,7 +81,7 @@ package et_board_ops.assy_doc is
 	-- in the given zone around the given place.
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		face			: in type_face;
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		count			: in out natural; -- the number of affected lines
@@ -127,9 +127,9 @@ package et_board_ops.assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		line			: in type_doc_line;
-		point_of_attack	: in type_point;
+		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
-		destination		: in type_point;
+		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
 
 
@@ -156,7 +156,7 @@ package et_board_ops.assy_doc is
 	procedure delete (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
@@ -173,7 +173,7 @@ package et_board_ops.assy_doc is
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
-		point			: in type_point;		
+		point			: in type_vector_model;		
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_doc_texts.list;
@@ -185,7 +185,7 @@ package et_board_ops.assy_doc is
 		face			: in type_face;
 		text			: in type_doc_text;
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point;
+		point			: in type_vector_model;
 		log_threshold	: in type_log_level);
 	
 end et_board_ops.assy_doc;

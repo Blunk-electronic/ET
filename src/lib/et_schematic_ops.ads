@@ -203,7 +203,7 @@ package et_schematic_ops is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		meaning			: in type_placeholder_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level);
 
@@ -261,8 +261,8 @@ package et_schematic_ops is
 	
 	-- CS move to et_schematic ?
 	type type_drag is record
-		before		: type_point;
-		after		: type_point;
+		before		: type_vector_model;
+		after		: type_vector_model;
 	end record;
 
 	-- CS move to et_schematic ?	
@@ -548,7 +548,7 @@ package et_schematic_ops is
 		device		: in pac_devices_sch.cursor; -- R2
 		unit		: in et_schematic.pac_units.cursor;
 		category	: in type_placeholder_meaning)
-		return type_point;
+		return type_vector_model;
 
 	
 	-- Returns the sheet number of the given unit.
@@ -588,7 +588,7 @@ package et_schematic_ops is
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 	procedure drag_netchanger (
@@ -600,7 +600,7 @@ package et_schematic_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 	
@@ -629,7 +629,7 @@ package et_schematic_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		port_name		: in pac_net_name.bounded_string; -- clk_out
-		position		: in type_point; -- x/y along the edge of the box
+		position		: in type_vector_model; -- x/y along the edge of the box
 
 		direction		: in et_submodules.type_netchanger_port_name; -- master/slave. 
 		-- NOTE: has nothing to do with direction of energy flow. It is relevant when 
@@ -654,7 +654,7 @@ package et_schematic_ops is
 		instance		: in pac_module_instance_name.bounded_string; -- OSC
 		port_name		: in pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 	
@@ -668,7 +668,7 @@ package et_schematic_ops is
 		instance		: in pac_module_instance_name.bounded_string; -- OSC
 		port_name		: in pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 	
@@ -687,7 +687,7 @@ package et_schematic_ops is
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 	
@@ -700,7 +700,7 @@ package et_schematic_ops is
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 	

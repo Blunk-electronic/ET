@@ -53,7 +53,7 @@ is
 				content		=> element (cursor).content,
 				size		=> element (cursor).size,
 				font		=> text_font,
-				position	=> type_point (element (cursor).position),
+				position	=> type_vector_model (element (cursor).position),
 				origin		=> true,
 
 				-- This is documentational text. It is readable from the front or the right.

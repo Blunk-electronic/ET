@@ -69,7 +69,7 @@ package et_canvas_board_assy_doc is
 		-- cursor position is to be used when drawing the object:
 		tool	: type_tool := MOUSE;
 
-		point_of_attack : type_point;
+		point_of_attack : type_vector_model;
 		
 		face	: type_face := face_default;
 
@@ -106,7 +106,7 @@ package et_canvas_board_assy_doc is
 	-- - If more than one object found, then clarification is requested.
 	--   The first object of them is selected.
 	procedure find_objects (
-		point : in type_point);
+		point : in type_vector_model);
 
 	
 	
@@ -129,7 +129,7 @@ package et_canvas_board_assy_doc is
 	
 	procedure move_object (
 		tool	: in type_tool;
-		point	: in type_point);				   
+		point	: in type_vector_model);				   
 
 
 
@@ -144,7 +144,7 @@ package et_canvas_board_assy_doc is
 
 	
 	procedure delete_object (
-		point	: in type_point);				   
+		point	: in type_vector_model);				   
 
 	
 	

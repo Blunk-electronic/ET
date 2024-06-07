@@ -479,7 +479,7 @@ package body et_kicad.pcb is
 		segment			: type_segment;
 		via				: type_via;
 		polygon 		: type_polygon; -- NOTE: kicad allows polygons in copper layers exclusively
-		polygon_point	: type_point;
+		polygon_point	: type_vector_model;
 
 		-- Since SEC_POLYGON and SEC_FILLED_POLYGON have the same subsections (SEC_PTS/SEC_XY)
 		-- the flag section_polygon_entered is required. When section SEC_XY is executed,
@@ -544,7 +544,7 @@ package body et_kicad.pcb is
 		terminal_milling_size_x	: type_pad_milling_size;
 		terminal_milling_size_y	: type_pad_milling_size;
 
-		terminal_pad_drill_offset : type_point;
+		terminal_pad_drill_offset : type_vector_model;
 		
 		-- The center of an smt pad or the position of the drill of a tht pad:		
 		terminal_position	: pac_geometry_2.type_position;
@@ -3319,7 +3319,7 @@ package body et_kicad.pcb is
 			begin
 				-- Compute the arc end point from its center, start point and angle.
 				-- Later the angle is discarded.
-				board_arc.end_point := type_point (arc_end_point (
+				board_arc.end_point := type_vector_model (arc_end_point (
 					board_arc.center, board_arc.start_point, board_arc.angle));
 
 				-- The board_arc is converted back to its anchestor and
@@ -3589,7 +3589,7 @@ package body et_kicad.pcb is
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 
 				-- compute end point of arc from center, start_point and angle
-				package_arc.end_point := type_point (
+				package_arc.end_point := type_vector_model (
 					arc_end_point (package_arc.center, package_arc.start_point, package_arc.angle));
 
 				-- The angle of the arc and its layer are now discarded

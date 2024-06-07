@@ -188,9 +188,9 @@ package body et_canvas_schematic is
 	function model_to_drawing (
 		self		: not null access type_view;
 		model_point : in type_model_point)	
-		return type_point 
+		return type_vector_model 
 	is 
-		p : type_point; -- to be returned
+		p : type_vector_model; -- to be returned
 	begin
 		set (point	=> p,
 			 axis	=> X, 
@@ -210,7 +210,7 @@ package body et_canvas_schematic is
 
 	function drawing_to_model (
 		self			: not null access type_view;
-		drawing_point	: in type_point)	
+		drawing_point	: in type_vector_model)	
 		return type_model_point 
 	is 
 		p : type_model_point; -- to be returned
@@ -625,18 +625,18 @@ package body et_canvas_schematic is
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;
 		cursor		: in out type_cursor;
-		position	: in type_point) 
+		position	: in type_vector_model) 
 	is
 		use et_project.modules.pac_generic_modules;
 	begin
 		case coordinates is
 			when ABSOLUTE =>
-				--cursor.position := type_point (round (position, element (current_active_module).grid));
-				cursor.position := type_point (round (position, self.get_grid));
+				--cursor.position := type_vector_model (round (position, element (current_active_module).grid));
+				cursor.position := type_vector_model (round (position, self.get_grid));
 				
 			when RELATIVE =>
-				--cursor.position := type_point (round (cursor.position + position, element (current_active_module).grid));
-				cursor.position := type_point (round (cursor.position + position, self.get_grid));
+				--cursor.position := type_vector_model (round (cursor.position + position, element (current_active_module).grid));
+				cursor.position := type_vector_model (round (cursor.position + position, self.get_grid));
 		end case;
 
 		self.shift_area (cursor);		
@@ -654,23 +654,23 @@ package body et_canvas_schematic is
 		grid : constant type_grid := self.get_grid;
 
 		-- Find the grid point nearest available to the current cursor position:
-		position_snapped : constant type_point := type_point (round (
+		position_snapped : constant type_vector_model := type_vector_model (round (
 							point	=> cursor.position,
 							grid	=> grid));
 
 	begin
 		case direction is
 			when RIGHT =>
-				cursor.position := type_point (move (position_snapped, 0.0, grid.x, clip => true));
+				cursor.position := type_vector_model (move (position_snapped, 0.0, grid.x, clip => true));
 
 			when LEFT =>
-				cursor.position := type_point (move (position_snapped, 180.0, grid.x, clip => true));
+				cursor.position := type_vector_model (move (position_snapped, 180.0, grid.x, clip => true));
 
 			when UP =>
-				cursor.position := type_point (move (position_snapped, 90.0, grid.y, clip => true));
+				cursor.position := type_vector_model (move (position_snapped, 90.0, grid.y, clip => true));
 
 			when DOWN =>
-				cursor.position := type_point (move (position_snapped, -90.0, grid.y, clip => true));
+				cursor.position := type_vector_model (move (position_snapped, -90.0, grid.y, clip => true));
 		end case;
 		
 		self.shift_area (cursor);
@@ -690,20 +690,20 @@ package body et_canvas_schematic is
 		size := cursor_half_size / type_distance_positive (global_scale);
 		
 		-- set start and end point of horizontal line
-		lh.start_point := type_point (set (
+		lh.start_point := type_vector_model (set (
 			x	=> get_x (cursor.position) - size,
 			y	=> get_y (cursor.position)));
 
-		lh.end_point := type_point (set (
+		lh.end_point := type_vector_model (set (
 			x	=> get_x (cursor.position) + size,
 			y	=> get_y (cursor.position)));
 
 		-- set start and end point of vertical line
-		lv.start_point := type_point (set (
+		lv.start_point := type_vector_model (set (
 			x	=> get_x (cursor.position),
 			y	=> get_y (cursor.position) + size));
 
-		lv.end_point := type_point (set (
+		lv.end_point := type_vector_model (set (
 			x	=> get_x (cursor.position),
 			y	=> get_y (cursor.position) - size));
 
@@ -844,14 +844,14 @@ package body et_canvas_schematic is
 	
 	overriding procedure mouse_moved (
 		self	: not null access type_view;
-		point	: in type_point) 
+		point	: in type_vector_model) 
 	is separate;
 
 	
 	overriding procedure button_pressed (
 		self	: not null access type_view;
 		button	: in type_mouse_button;
-		point	: in type_point) 
+		point	: in type_vector_model) 
 	is separate;
 
 	

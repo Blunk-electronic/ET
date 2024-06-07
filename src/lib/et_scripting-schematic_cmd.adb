@@ -102,7 +102,7 @@ is
 	
 	procedure zoom_center is -- GUI related
 		-- Build the center point:
-		c : type_point := type_point (set (
+		c : type_vector_model := type_vector_model (set (
 				x => to_distance (f (5)),
 				y => to_distance (f (6))));
 	begin
@@ -139,7 +139,7 @@ is
 	procedure position_cursor is  -- GUI related
 		use et_geometry;
 		coordinates : type_coordinates := to_coordinates (f (5));
-		position : type_point := type_point (set (
+		position : type_vector_model := type_vector_model (set (
 				x => to_distance (f (6)),
 				y => to_distance (f (7))));
 	begin
@@ -612,7 +612,7 @@ is
 									destination		=> to_position 
 										(
 										sheet => to_sheet (f (6)),
-										point => type_point (set 
+										point => type_vector_model (set 
 													(
 													x => to_distance (f (7)),
 													y => to_distance (f (8))
@@ -631,7 +631,7 @@ is
 									destination		=> to_position 
 										(
 										sheet => to_sheet (f (6)),
-										point => type_point (set 
+										point => type_vector_model (set 
 													(
 													x => to_distance (f (7)),
 													y => to_distance (f (8))
@@ -655,7 +655,7 @@ is
 									place			=> to_position 
 										(
 										sheet => to_sheet (f (5)),
-										point => type_point (set 
+										point => type_vector_model (set 
 													(
 													x => to_distance (f (6)),
 													y => to_distance (f (7))
@@ -677,7 +677,7 @@ is
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)),
 									port_name		=> to_net_name (f (6)),
-									position		=> type_point (set 
+									position		=> type_vector_model (set 
 												(
 												x => to_distance (f (7)),
 												y => to_distance (f (8))
@@ -701,7 +701,7 @@ is
 									position		=> to_position 
 										(
 										sheet => to_sheet (f (7)),
-										point => type_point (set 
+										point => type_vector_model (set 
 													(
 													x => to_distance (f (8)),
 													y => to_distance (f (9))
@@ -771,7 +771,7 @@ is
 									destination		=> to_position 
 										(
 										sheet => to_sheet (f (6)),
-										point => type_point (set
+										point => type_vector_model (set
 													(
 													x => to_distance (f (7)),
 													y => to_distance (f (8))
@@ -797,7 +797,7 @@ is
 									destination		=> to_position 
 										(
 										sheet => to_sheet (f (7)),
-										point => type_point (set
+										point => type_vector_model (set
 													(
 													x => to_distance (f (8)),
 													y => to_distance (f (9))
@@ -866,7 +866,7 @@ is
 									module_cursor	=> current_active_module,
 
 									position		=> to_position (
-														point => type_point (set (
+														point => type_vector_model (set (
 															x => to_distance (f (6)),
 															y => to_distance (f (7)))),
 														sheet => to_sheet (f (5))), -- sheet number
@@ -928,7 +928,7 @@ is
 									net_name			=> to_net_name (f (5)), -- RESET
 									scope				=> STRAND,
 									place				=> to_position (
-															point => type_point (set (
+															point => type_vector_model (set (
 																x => to_distance (f (7)),
 																y => to_distance (f (8)))),
 															sheet => to_sheet (f (6))), -- sheet number
@@ -980,7 +980,7 @@ is
 									module_cursor	=> current_active_module,
 									net_name		=> to_net_name (f (5)), -- RESET
 									place			=> to_position (
-														point => type_point (set (
+														point => type_vector_model (set (
 															x => to_distance (f (7)),
 															y => to_distance (f (8)))),
 														sheet => to_sheet (f (6))), -- sheet number
@@ -1088,7 +1088,7 @@ is
 									device_name		=> to_device_name (f (5)),
 									unit_name		=> to_unit_name (f (6)),
 									coordinates		=> to_coordinates (f (7)), -- relative/absolute
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 														x => to_distance (f (8)),
 														y => to_distance (f (9)))),
 									log_threshold	=> log_threshold + 1
@@ -1106,7 +1106,7 @@ is
 									module_name 	=> module,
 									index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
 									coordinates		=> to_coordinates (f (6)), -- relative/absolute
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 														x => to_distance (f (7)),
 														y => to_distance (f (8)))),
 									log_threshold	=> log_threshold + 1
@@ -1125,7 +1125,7 @@ is
 									instance		=> et_general.to_instance_name (f (5)),
 									port_name		=> to_net_name (f (6)),
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 												x => to_distance (f (8)),
 												y => to_distance (f (9)))),
 									log_threshold	=> log_threshold + 1
@@ -1144,14 +1144,14 @@ is
 									module_cursor	=> current_active_module,
 									net_name		=> to_net_name (f (5)), -- RESET
 									point_of_attack	=> to_position (
-														point => type_point (set (
+														point => type_vector_model (set (
 															x => to_distance (f (7)),
 															y => to_distance (f (8)))),
 														sheet => to_sheet (f (6))), -- sheet number
 									
 									coordinates		=> to_coordinates (f (9)), -- relative/absolute
 									
-									destination		=> type_point (set (
+									destination		=> type_vector_model (set (
 														x => to_distance (f (10)),
 														y => to_distance (f (11)))),
 									
@@ -1169,7 +1169,7 @@ is
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)),
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 												x => to_distance (f (7)),
 												y => to_distance (f (8)))),
 									log_threshold	=> log_threshold + 1
@@ -1194,12 +1194,12 @@ is
 									module_cursor	=> current_active_module,
 									net_name		=> to_net_name (f (5)), -- RESET
 									start_point		=> to_position (
-															point => type_point (set (
+															point => type_vector_model (set (
 																x => to_distance (f (7)),
 																y => to_distance (f (8)))),
 															sheet => to_sheet (f (6))), -- sheet number
 									
-									end_point		=> type_point (set (
+									end_point		=> type_vector_model (set (
 														x => to_distance (f (9)),
 														y => to_distance (f (10)))),
 									
@@ -1245,7 +1245,7 @@ is
 									destination		=> to_position 
 										(
 										sheet => to_sheet (f (7)),
-										point => type_point (set
+										point => type_vector_model (set
 													(
 													x => to_distance (f (8)),
 													y => to_distance (f (9))
@@ -1276,7 +1276,7 @@ is
 									device_name		=> to_device_name (f (5)), -- IC1
 									unit_name		=> to_unit_name (f (6)), -- A
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 														x => to_distance (f (8)),
 														y => to_distance (f (9)))),
 									meaning			=> NAME,
@@ -1297,7 +1297,7 @@ is
 									device_name		=> to_device_name (f (5)), -- IC1
 									unit_name		=> to_unit_name (f (6)), -- A
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 														x => to_distance (f (8)),
 														y => to_distance (f (9)))),
 									meaning			=> VALUE,
@@ -1317,7 +1317,7 @@ is
 									instance		=> et_general.to_instance_name (f (5)),
 									port_name		=> to_net_name (f (6)),
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 												x => to_distance (f (8)),
 												y => to_distance (f (9)))),
 									log_threshold	=> log_threshold + 1
@@ -1337,7 +1337,7 @@ is
 									device_name		=> to_device_name (f (5)), -- IC1
 									unit_name		=> to_unit_name (f (6)), -- A
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 														x => to_distance (f (8)),
 														y => to_distance (f (9)))),
 									meaning			=> PURPOSE,
@@ -1358,7 +1358,7 @@ is
 									index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3, ...
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
 									sheet			=> to_sheet_relative (f (7)),
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 														x => to_distance (f (8)),
 														y => to_distance (f (9)))),
 										
@@ -1381,7 +1381,7 @@ is
 									instance		=> et_general.to_instance_name (f (5)),
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
 									sheet			=> to_sheet_relative (f (7)),
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 												x => to_distance (f (8)),
 												y => to_distance (f (9)))),
 									log_threshold	=> log_threshold + 1
@@ -1402,7 +1402,7 @@ is
 									unit_name		=> to_unit_name (f (6)), -- A
 									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 									sheet			=> to_sheet_relative (f (8)),
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 														x => to_distance (f (9)),
 														y => to_distance (f (10)))),
 										
@@ -1527,7 +1527,7 @@ is
 									place			=> to_position 
 														(
 														sheet => to_sheet (f (5)),
-														point => type_point (set (
+														point => type_vector_model (set (
 																	x => to_distance (f (6)),
 																	y => to_distance (f (7))
 																	))
@@ -1551,12 +1551,12 @@ is
 									module_cursor		=> current_active_module,
 
 									segment_position	=> to_position (
-															point => type_point (set (
+															point => type_vector_model (set (
 																x => to_distance (f (6)),
 																y => to_distance (f (7)))),
 															sheet => to_sheet (f (5))), -- sheet number
 
-									label_position		=> type_point (set (
+									label_position		=> type_vector_model (set (
 																x => to_distance (f (8)),
 																y => to_distance (f (9)))),
 
@@ -1578,7 +1578,7 @@ is
 									module_cursor		=> current_active_module,
 
 									segment_position	=> to_position (
-															point => type_point (set (
+															point => type_vector_model (set (
 																x => to_distance (f (6)),
 																y => to_distance (f (7)))),
 															sheet => to_sheet (f (5))), -- sheet number
@@ -1723,7 +1723,7 @@ is
 									net_name_after		=> to_net_name (f (6)), -- RESET_N
 									scope				=> STRAND,
 									place				=> to_position (
-															point => type_point (set (
+															point => type_vector_model (set (
 																x => to_distance (f (8)),
 																y => to_distance (f (9)))),
 															sheet => to_sheet (f (7))), -- sheet number

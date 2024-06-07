@@ -155,7 +155,7 @@ is
 						-- the place where the tool is pointing at:
 						declare
 							text_tmp	: type_stop_text := text;
-							destination	: type_point;
+							destination	: type_vector_model;
 							offset		: type_distance_relative;
 						begin
 							case preliminary_text.tool is

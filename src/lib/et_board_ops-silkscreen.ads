@@ -62,7 +62,7 @@ package et_board_ops.silkscreen is
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
-		point			: in type_point;
+		point			: in type_vector_model;
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_silk_lines.list;
@@ -72,8 +72,8 @@ package et_board_ops.silkscreen is
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		line			: in type_silk_line;
-		point_of_attack	: in type_point;
-		destination		: in type_point;
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
 	
 	
@@ -99,7 +99,7 @@ package et_board_ops.silkscreen is
 	procedure delete (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
@@ -116,7 +116,7 @@ package et_board_ops.silkscreen is
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
-		point			: in type_point;
+		point			: in type_vector_model;
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_silk_texts.list;
@@ -128,7 +128,7 @@ package et_board_ops.silkscreen is
 		face			: in type_face;
 		text			: in type_silk_text;
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point;
+		point			: in type_vector_model;
 		log_threshold	: in type_log_level);
 
 	

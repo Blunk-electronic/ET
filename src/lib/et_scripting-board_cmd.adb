@@ -418,7 +418,7 @@ is
 				-- delete a segment of board outline
 				delete_outline (
 					module_name 	=> module,
-					point			=> type_point (to_point (f (5), f (6))),
+					point			=> type_vector_model (to_point (f (5), f (6))),
 					accuracy		=> to_catch_zone (f (7)),					
 					log_threshold	=> log_threshold + 1);
 
@@ -437,7 +437,7 @@ is
 				-- delete a segment of a hole
 				delete_hole (
 					module_name 	=> module,
-					point			=> type_point (to_point (f (5), f (6))),
+					point			=> type_vector_model (to_point (f (5), f (6))),
 					accuracy		=> to_catch_zone (f (7)),
 					
 					log_threshold	=> log_threshold + 1);
@@ -462,8 +462,8 @@ is
 							face			=> to_face (f (5)),
 							line			=> (
 									width		=> to_distance (f (7)),
-									start_point	=> type_point (to_point (f (8), f (9))),
-									end_point	=> type_point (to_point (f (10), f (11))),
+									start_point	=> type_vector_model (to_point (f (8), f (9))),
+									end_point	=> type_vector_model (to_point (f (10), f (11))),
 									others		=> <>),
 
 							log_threshold	=> log_threshold + 1
@@ -485,9 +485,9 @@ is
 							face			=> to_face (f (5)),
 							arc				=> (
 								width	=> to_distance (f (7)),
-								center	=> type_point (to_point (f (8), f (9))),
-								start_point	=> type_point (to_point (f (10), f (11))),
-								end_point	=> type_point (to_point (f (12), f (13))),
+								center	=> type_vector_model (to_point (f (8), f (9))),
+								start_point	=> type_vector_model (to_point (f (10), f (11))),
+								end_point	=> type_vector_model (to_point (f (12), f (13))),
 								direction	=> to_direction (f (14)),
 								others		=> <>),
 
@@ -510,7 +510,7 @@ is
 							face			=> to_face (f (5)),
 							circle			=> (
 									width		=> to_distance (f (7)),
-									center		=> type_point (to_point (f (8), f (9))),
+									center		=> type_vector_model (to_point (f (8), f (9))),
 									radius		=> to_radius (f (10)),
 									others		=> <>),
 							log_threshold	=> log_threshold + 1);
@@ -540,8 +540,8 @@ is
 							face			=> to_face (f (5)),
 							line			=> (
 									width		=> to_distance (f (7)),
-									start_point	=> type_point (to_point (f (8), f (9))),
-									end_point	=> type_point (to_point (f (10), f (11))),
+									start_point	=> type_vector_model (to_point (f (8), f (9))),
+									end_point	=> type_vector_model (to_point (f (10), f (11))),
 									others		=> <>),
 							log_threshold	=> log_threshold + 1);
 						
@@ -561,9 +561,9 @@ is
 							face			=> to_face (f (5)),
 							arc				=> (
 								width		=> to_distance (f (7)),
-								center		=> type_point (to_point (f (8), f (9))),
-								start_point	=> type_point (to_point (f (10), f (11))),
-								end_point	=> type_point (to_point (f (12), f (13))),
+								center		=> type_vector_model (to_point (f (8), f (9))),
+								start_point	=> type_vector_model (to_point (f (10), f (11))),
+								end_point	=> type_vector_model (to_point (f (12), f (13))),
 								direction	=> to_direction (f (14)),
 								others		=> <>),
 							log_threshold	=> log_threshold + 1);
@@ -584,7 +584,7 @@ is
 							face			=> to_face (f (5)),
 							circle			=> (
 								width	=> to_distance (f (7)),
-								center	=> type_point (to_point (f (8), f (9))),
+								center	=> type_vector_model (to_point (f (8), f (9))),
 								radius	=> to_radius (f (10)),
 								others	=> <>),
 							log_threshold	=> log_threshold + 1);
@@ -625,8 +625,8 @@ is
 							line			=> (
 									layers		=> to_layers (f (5)), -- [1,3,5-9]
 									width		=> to_distance (f (6)), -- 0.15
-									start_point	=> type_point (to_point (f  (8), f  (9))),
-									end_point	=> type_point (to_point (f (10), f (11))),
+									start_point	=> type_vector_model (to_point (f  (8), f  (9))),
+									end_point	=> type_vector_model (to_point (f (10), f (11))),
 									others		=> <>),
 
 							log_threshold	=> log_threshold + 1);
@@ -646,9 +646,9 @@ is
 							arc				=> (
 									layers		=> to_layers (f (5)), -- [1,3,5-9]
 									width		=> to_distance (f (6)), -- 0.15
-									center		=> type_point (to_point (f  (8), f  (9))),										
-									start_point	=> type_point (to_point (f (10), f (11))),
-									end_point	=> type_point (to_point (f (12), f (13))),
+									center		=> type_vector_model (to_point (f  (8), f  (9))),										
+									start_point	=> type_vector_model (to_point (f (10), f (11))),
+									end_point	=> type_vector_model (to_point (f (12), f (13))),
 									direction	=> to_direction (f (14)),
 									others		=> <>),
 
@@ -672,7 +672,7 @@ is
 								circle			=> (
 									layers	=> to_layers (f (5)), -- [1,3,5-9]
 									width	=> to_distance (f (6)), -- 0.15
-									center	=> type_point (to_point (f (8), f (9))),
+									center	=> type_vector_model (to_point (f (8), f (9))),
 									radius	=> to_radius (f (10)), -- 40
 									others	=> <>),
 								log_threshold	=> log_threshold + 1);
@@ -692,7 +692,7 @@ is
 											--(
 											--layers		=> to_layers (f (5)), -- [1,3,5-9]
 											--filled		=> YES,
-											--center	=> type_point (to_point (f (8), f (9))),
+											--center	=> type_vector_model (to_point (f (8), f (9))),
 											--radius	=> to_radius (f (10)) -- 40
 											--),
 											
@@ -725,8 +725,8 @@ is
 							line			=> (
 									layers		=> to_layers (f (5)), -- [1,3,5-9]
 									width		=> to_distance (f (6)), -- 0.15
-									start_point	=> type_point (to_point (f  (8), f  (9))),
-									end_point	=> type_point (to_point (f (10), f (11))),
+									start_point	=> type_vector_model (to_point (f  (8), f  (9))),
+									end_point	=> type_vector_model (to_point (f (10), f (11))),
 									others		=> <>),
 
 							log_threshold	=> log_threshold + 1);
@@ -746,9 +746,9 @@ is
 							arc				=> (
 									layers		=> to_layers (f (5)), -- [1,3,5-9]
 									width		=> to_distance (f (6)), -- 0.15
-									center		=> type_point (to_point (f (8), f (9))),
-									start_point	=> type_point (to_point (f (10), f (11))),
-									end_point	=> type_point (to_point (f (12), f (13))),
+									center		=> type_vector_model (to_point (f (8), f (9))),
+									start_point	=> type_vector_model (to_point (f (10), f (11))),
+									end_point	=> type_vector_model (to_point (f (12), f (13))),
 									direction	=> to_direction (f (14)),
 									others		=> <>),
 						
@@ -772,7 +772,7 @@ is
 								circle			=> (
 										layers		=> to_layers (f (5)), -- [1,3,5-9]
 										width		=> to_distance (f (6)), -- 0.15
-										center		=> type_point (to_point (f (8), f (9))),
+										center		=> type_vector_model (to_point (f (8), f (9))),
 										radius		=> to_radius (f (10)), -- 40
 										others		=> <>),
 								
@@ -793,7 +793,7 @@ is
 -- 											(
 -- 											layers		=> to_layers (f (5)), -- [1,3,5-9]
 -- 											filled		=> YES,
--- 											center	=> type_point (to_point (f (8), f (9))),
+-- 											center	=> type_vector_model (to_point (f (8), f (9))),
 -- 											radius	=> to_radius (f (10)) -- 40
 -- 											),
 -- 											
@@ -825,8 +825,8 @@ is
 							face			=> to_face (f (5)),
 							line			=> (
 									width		=> to_distance (f (7)),
-									start_point	=> type_point (to_point (f (8), f (9))),
-									end_point	=> type_point (to_point (f (10), f (11))),
+									start_point	=> type_vector_model (to_point (f (8), f (9))),
+									end_point	=> type_vector_model (to_point (f (10), f (11))),
 									others		=> <>),
 
 							log_threshold	=> log_threshold + 1);
@@ -845,9 +845,9 @@ is
 							face			=> to_face (f (5)),
 							arc				=> (
 									width		=> to_distance (f (7)),
-									center		=> type_point (to_point (f (8), f (9))),
-									start_point	=> type_point (to_point (f (10), f (11))),
-									end_point	=> type_point (to_point (f (12), f (13))),
+									center		=> type_vector_model (to_point (f (8), f (9))),
+									start_point	=> type_vector_model (to_point (f (10), f (11))),
+									end_point	=> type_vector_model (to_point (f (12), f (13))),
 									direction	=> to_direction (f (14)),
 									others		=> <>),
 
@@ -868,7 +868,7 @@ is
 							face			=> to_face (f (5)),
 							circle			=> (
 								width			=> to_distance (f (7)),
-								center			=> type_point (to_point (f (8), f (9))),
+								center			=> type_vector_model (to_point (f (8), f (9))),
 								radius			=> to_radius (f (10)),
 								others			=> <>),
 							log_threshold	=> log_threshold + 1);
@@ -898,8 +898,8 @@ is
 							face			=> to_face (f (5)),
 							line			=> (
 									width		=> to_distance (f (7)),
-									start_point	=> type_point (to_point (f (8), f (9))),
-									end_point	=> type_point (to_point (f (10), f (11))),
+									start_point	=> type_vector_model (to_point (f (8), f (9))),
+									end_point	=> type_vector_model (to_point (f (10), f (11))),
 									others		=> <>),
 
 							log_threshold	=> log_threshold + 1);
@@ -918,9 +918,9 @@ is
 							face			=> to_face (f (5)),
 							arc				=> (
 										width	=> to_distance (f (7)),
-										center	=> type_point (to_point (f (8), f (9))),
-										start_point	=> type_point (to_point (f (10), f (11))),
-										end_point	=> type_point (to_point (f (12), f (13))),
+										center	=> type_vector_model (to_point (f (8), f (9))),
+										start_point	=> type_vector_model (to_point (f (10), f (11))),
+										end_point	=> type_vector_model (to_point (f (12), f (13))),
 										direction	=> to_direction (f (14)),
 										others		=> <>),
 
@@ -940,7 +940,7 @@ is
 							face			=> to_face (f (5)),
 							circle			=> (
 									width		=> to_distance (f (7)),
-									center		=> type_point (to_point (f (8), f (9))),
+									center		=> type_vector_model (to_point (f (8), f (9))),
 									radius		=> to_radius (f (10)),
 									others		=> <>),
 							log_threshold	=> log_threshold + 1);
@@ -959,7 +959,7 @@ is
 		use pac_text_board;
 		use et_board_ops.text;
 		text			: type_text_fab;
-		pos_xy			: type_point;
+		pos_xy			: type_vector_model;
 		rotation		: type_rotation;
 		content			: pac_text_content.bounded_string;
 		layer_category	: type_text_layer;
@@ -980,7 +980,7 @@ is
 				text.line_width := to_distance (f (7)); -- 0.15
 				text.size := to_distance (f (8)); -- 1
 				
-				pos_xy := type_point (to_point (f (9), f (10)));
+				pos_xy := type_vector_model (to_point (f (9), f (10)));
 
 				rotation := to_rotation (f (11)); -- 0
 				text.position := type_position (to_position (pos_xy, rotation));
@@ -1180,7 +1180,7 @@ is
 		end set_net_name;
 
 		procedure set_position is begin
-			drill.position := type_point (to_point (f (6), f (7)));
+			drill.position := type_vector_model (to_point (f (6), f (7)));
 
 			-- CS check position: must be inside board area
 		end set_position;
@@ -1601,8 +1601,8 @@ is
 							net_name		=> to_net_name (""),
 							line	=> (
 								width		=> to_distance (f (7)),
-								start_point	=> type_point (to_point (f (8), f (9))),
-								end_point	=> type_point (to_point (f (10), f (11))),
+								start_point	=> type_vector_model (to_point (f (8), f (9))),
+								end_point	=> type_vector_model (to_point (f (10), f (11))),
 								layer		=> to_signal_layer (f (5)),
 								others		=> <>),
 							
@@ -1626,9 +1626,9 @@ is
 							arc			=> (
 								layer		=> to_signal_layer (f (5)),
 								width		=> to_distance (f (7)),
-								center		=> type_point (to_point (f (8), f (9))),
-								start_point	=> type_point (to_point (f (10), f (11))),
-								end_point	=> type_point (to_point (f (12), f (13))),
+								center		=> type_vector_model (to_point (f (8), f (9))),
+								start_point	=> type_vector_model (to_point (f (10), f (11))),
+								end_point	=> type_vector_model (to_point (f (12), f (13))),
 								direction	=> to_direction (f (14)),
 								others		=> <>),
 							net_name		=> to_net_name (""),
@@ -1819,10 +1819,10 @@ is
 								line	=> (
 									layer		=> to_signal_layer (f (6)),
 									width		=> to_distance (f (8)),
-									start_point	=> type_point (set (
+									start_point	=> type_vector_model (set (
 										x => to_distance (dd => f (9)),
 										y => to_distance (dd => f (10)))),
-									end_point	=> type_point (set (
+									end_point	=> type_vector_model (set (
 										x => to_distance (dd => f (11)),
 										y => to_distance (dd => f (12)))),
 									others		=> <>),
@@ -1855,7 +1855,7 @@ is
 										width		=> to_distance (f (8)),
 										device		=> to_device_name (f (9)),
 										terminal	=> to_terminal_name (f (10)),
-										end_point	=> type_point (set (
+										end_point	=> type_vector_model (set (
 												x => to_distance (dd => f (12)),	 -- 35
 												y => to_distance (dd => f (13)))), -- 40
 										
@@ -1980,13 +1980,13 @@ is
 							arc		=> (
 								layer		=> to_signal_layer (f (6)),
 								width		=> to_distance (f (8)),
-								center		=> type_point (set (
+								center		=> type_vector_model (set (
 									x => to_distance (dd => f (9)),
 									y => to_distance (dd => f (10)))),
-								start_point	=> type_point (set (
+								start_point	=> type_vector_model (set (
 									x => to_distance (dd => f (11)),
 									y => to_distance (dd => f (12)))),
-								end_point	=> type_point (set (
+								end_point	=> type_vector_model (set (
 									x => to_distance (dd => f (13)),
 									y => to_distance (dd => f (14)))),
 								direction	=> to_direction (f (15)),
@@ -2040,7 +2040,7 @@ is
 	
 	procedure zoom_center is -- GUI related
 		-- Build the center point:
-		c : type_point := type_point (set (
+		c : type_vector_model := type_vector_model (set (
 				x => to_distance (dd => f (5)),
 				y => to_distance (dd => f (6))));
 	begin
@@ -2078,7 +2078,7 @@ is
 		use et_geometry;
 		
 		coordinates : type_coordinates := to_coordinates (f (5));
-		position : type_point := type_point (set (
+		position : type_vector_model := type_vector_model (set (
 				x => to_distance (dd => f (6)),
 				y => to_distance (dd => f (7))));
 	begin
@@ -2103,7 +2103,7 @@ is
 		model : constant pac_package_model_file_name.bounded_string := to_file_name (f (5));
 		prefix : constant pac_device_prefix.bounded_string := to_prefix (f (6));
 
-		xy : constant type_point := type_point (set (
+		xy : constant type_vector_model := type_vector_model (set (
 				x => to_distance (dd => f (7)),
 				y => to_distance (dd => f (8))));
 
@@ -2301,7 +2301,7 @@ is
 								et_board_ops.silkscreen.delete (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 											x => to_distance (dd => f (6)),
 											y => to_distance (dd => f (7)))),
 									accuracy		=> to_catch_zone (f (8)),
@@ -2324,7 +2324,7 @@ is
 								et_board_ops.assy_doc.delete (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 											x => to_distance (dd => f (6)),
 											y => to_distance (dd => f (7)))),
 									accuracy		=> to_catch_zone (f (8)),
@@ -2349,7 +2349,7 @@ is
 								et_board_ops.stencil.delete_stencil (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 											x => to_distance (dd => f (6)),
 											y => to_distance (dd => f (7)))),
 									accuracy		=> to_catch_zone (f (8)),
@@ -2370,7 +2370,7 @@ is
 								et_board_ops.stop_mask.delete_stop (
 									module_name 	=> module,
 									face			=> to_face (f (5)),
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 											x => to_distance (dd => f (6)),
 											y => to_distance (dd => f (7)))),
 									accuracy		=> to_catch_zone (f (8)),
@@ -2390,7 +2390,7 @@ is
 								-- delete a segment of route restrict
 								et_board_ops.route_restrict.delete_route_restrict (
 									module_name 	=> module,
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 											x => to_distance (dd => f (5)),
 											y => to_distance (dd => f (6)))),
 									accuracy		=> to_catch_zone (f (7)),
@@ -2410,7 +2410,7 @@ is
 								-- delete a segment of via restrict
 								et_board_ops.via_restrict.delete_via_restrict (
 									module_name 	=> module,
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 											x => to_distance (dd => f (5)),
 											y => to_distance (dd => f (6)))),
 									accuracy		=> to_catch_zone (f (7)),
@@ -2600,7 +2600,7 @@ is
 								move_board (
 									module_name 	=> module,
 									coordinates		=> to_coordinates (f (5)),  -- relative/absolute
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 														x => to_distance (dd => f (6)),
 														y => to_distance (dd => f (7)))),
 									log_threshold	=> log_threshold + 1
@@ -2620,7 +2620,7 @@ is
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)), -- IC1
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 														x => to_distance (dd => f (7)),
 														y => to_distance (dd => f (8)))),
 									log_threshold	=> log_threshold + 1
@@ -2640,7 +2640,7 @@ is
 									module_name 	=> module,
 									instance		=> et_general.to_instance_name (f (5)), -- OSC1
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 														x => to_distance (dd => f (7)),
 														y => to_distance (dd => f (8)))),
 									log_threshold	=> log_threshold + 1
@@ -2710,7 +2710,7 @@ is
 									module_name 	=> module,
 									net_name		=> to_net_name (""),
 									layer			=> to_signal_layer (f (5)),
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 											x => to_distance (dd => f (6)),
 											y => to_distance (dd => f (7)))),
 									accuracy		=> to_catch_zone (f (8)),
@@ -2733,7 +2733,7 @@ is
 									module_name 	=> module,
 									net_name		=> to_net_name (f (5)),
 									layer			=> to_signal_layer (f (6)),
-									point			=> type_point (set (
+									point			=> type_vector_model (set (
 											x => to_distance (dd => f (7)),
 											y => to_distance (dd => f (8)))),
 									accuracy		=> to_catch_zone (f (9)),

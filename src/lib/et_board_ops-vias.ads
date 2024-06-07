@@ -79,7 +79,7 @@ package et_board_ops.vias is
 	-- Returns all vias in the vicinity of the given point:
 	function get_vias (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_point;
+		point			: in type_vector_model;
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_vias.list;
@@ -107,7 +107,7 @@ package et_board_ops.vias is
 		module_cursor	: in pac_generic_modules.cursor;
 		via				: in type_proposed_via;
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 

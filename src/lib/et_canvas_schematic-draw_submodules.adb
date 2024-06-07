@@ -55,7 +55,7 @@ is
 	procedure query_submods (cursor : in pac_submodules.cursor) is
 
 		-- The lower left corner of the submodule box in the schematic:
-		submod_position : constant type_point := element (cursor).position.place;
+		submod_position : constant type_vector_model := element (cursor).position.place;
 		
 		procedure draw_box is begin
 			cairo.set_line_width (context.cr, type_view_coordinate (submod_box_line_width));
@@ -72,7 +72,7 @@ is
 		-- The position of the instance name is below the lower left corner of the box.
 		-- Position and size are fixed and can not be changed by the operator:
 		procedure draw_instance_name is
-			position : type_point := submod_position;
+			position : type_vector_model := submod_position;
 			offset : constant type_distance_relative := to_distance_relative (set (
 					x => zero,
 					y => - text_spacing));
@@ -93,7 +93,7 @@ is
 		-- The position of the file name is below the instance name.
 		-- Position and size are fixed and can not be changed by the operator:
 		procedure draw_file_name is
-			position : type_point := submod_position;
+			position : type_vector_model := submod_position;
 			offset : constant type_distance_relative := to_distance_relative (set (
 					x => zero,
 					y => - (2.0 * text_spacing + instance_font_size)));
@@ -114,7 +114,7 @@ is
 		-- The position of module in the board is below the file name.
 		-- Position and size are fixed and can not be changed by the operator:
 		procedure draw_position_in_board is
-			position : type_point := submod_position;
+			position : type_vector_model := submod_position;
 			offset : constant type_distance_relative := to_distance_relative (set (
 					x => zero,
 					y => - (3.0 * text_spacing + instance_font_size + file_font_size)));
@@ -148,7 +148,7 @@ is
 
 			procedure draw_port (pc : in pac_submodule_ports.cursor) is 
 				-- First get the position of the submodule box.
-				pos : type_point := submod_position;
+				pos : type_vector_model := submod_position;
 				-- CS ? pos : type_vector := to_vector (submod_position);
 
 				procedure draw_horizontal is begin
@@ -189,7 +189,7 @@ is
 						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
-						position	=> type_point (move (pos, 0.0, type_distance (port_symbol_width) / 2.0)),
+						position	=> type_vector_model (move (pos, 0.0, type_distance (port_symbol_width) / 2.0)),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER));
@@ -199,7 +199,7 @@ is
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
-						position	=> type_point (move (pos, 0.0, type_distance (port_symbol_width) + port_name_spacing)),
+						position	=> type_vector_model (move (pos, 0.0, type_distance (port_symbol_width) + port_name_spacing)),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (LEFT, CENTER));
@@ -218,7 +218,7 @@ is
 						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
-						position	=> type_point (move (pos, 180.0, type_distance (port_symbol_width) / 2.0)),
+						position	=> type_vector_model (move (pos, 180.0, type_distance (port_symbol_width) / 2.0)),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER));
@@ -228,7 +228,7 @@ is
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
-						position	=> type_point (move (pos, 180.0, type_distance (port_symbol_width) + port_name_spacing)),
+						position	=> type_vector_model (move (pos, 180.0, type_distance (port_symbol_width) + port_name_spacing)),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (RIGHT, CENTER));
@@ -247,7 +247,7 @@ is
 						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
-						position	=> type_point (move (pos, 90.0, type_distance (port_symbol_width) / 2.0)),
+						position	=> type_vector_model (move (pos, 90.0, type_distance (port_symbol_width) / 2.0)),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER));
@@ -257,7 +257,7 @@ is
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
-						position	=> type_point (move (pos, 90.0, type_distance (port_symbol_width) + port_name_spacing)),
+						position	=> type_vector_model (move (pos, 90.0, type_distance (port_symbol_width) + port_name_spacing)),
 						origin		=> false, -- no origin required
 						rotation	=> 90.0,
 						alignment	=> (LEFT, CENTER));
@@ -276,7 +276,7 @@ is
 						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
-						position	=> type_point (move (pos, 270.0, type_distance (port_symbol_width) / 2.0)),
+						position	=> type_vector_model (move (pos, 270.0, type_distance (port_symbol_width) / 2.0)),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER));
@@ -286,7 +286,7 @@ is
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
-						position	=> type_point (move (pos, 270.0, type_distance (port_symbol_width) + port_name_spacing)),
+						position	=> type_vector_model (move (pos, 270.0, type_distance (port_symbol_width) + port_name_spacing)),
 						origin		=> false, -- no origin required
 						rotation	=> 90.0,
 						alignment	=> (RIGHT, CENTER));

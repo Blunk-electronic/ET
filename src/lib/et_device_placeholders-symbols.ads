@@ -64,7 +64,7 @@ package et_device_placeholders.symbols is
 	type type_text_placeholder (
 		meaning : type_placeholder_meaning) 
 	is new type_text_basic with record
-		position : type_point;
+		position : type_vector_model;
 	end record;
 	
 	

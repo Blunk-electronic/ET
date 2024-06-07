@@ -112,7 +112,7 @@ package et_routing is
 	-- edges are outline segments and hole segments:
 	function get_distance_to_edge (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_point;
+		point			: in type_vector_model;
 		log_category	: in type_log_category;
 		lth				: in type_log_level)
 		return type_float_positive;
@@ -124,7 +124,7 @@ package et_routing is
 	-- Returns true if the point is exactly on the edge of a hole.
 	--function on_board (
 		--module_cursor	: in pac_generic_modules.cursor;
-		--point			: in type_point;
+		--point			: in type_vector_model;
 		--log_category	: in type_log_category;
 		--lth				: in type_log_level)
 		--return boolean;
@@ -194,7 +194,7 @@ package et_routing is
 	-- (after an obstacle). Point is the center of the cap of the track.
 	type type_break (exists : boolean) is record
 		case exists is
-			when TRUE => point : type_point;
+			when TRUE => point : type_vector_model;
 			when FALSE => null;
 		end case;
 	end record;
@@ -224,8 +224,8 @@ package et_routing is
 	type type_break_double (count : type_break_count) is record
 		case count is
 			when 0 => null;
-			when 1 => point : type_point;
-			when 2 => point_1, point_2 : type_point;
+			when 1 => point : type_vector_model;
+			when 2 => point_1, point_2 : type_vector_model;
 		end case;
 	end record;
 	
@@ -272,7 +272,7 @@ package et_routing is
 	-- If the point is not on the track, raises constraint error:
 	--function after_start_of_track (
 		--track	: in type_track;
-		--point	: in type_point)
+		--point	: in type_vector_model)
 		--return boolean;
 	
 
@@ -318,7 +318,7 @@ package et_routing is
 		--module_cursor	: in pac_generic_modules.cursor;
 		--design_rules	: in type_design_rules;
 		--bottom_layer	: in type_signal_layer;
-		--start_point		: in type_point;
+		--start_point		: in type_vector_model;
 		--place			: in type_place := BEFORE;
 		--direction		: in type_rotation;
 		--net_cursor		: in et_schematic.pac_nets.cursor := et_schematic.pac_nets.no_element;
@@ -340,7 +340,7 @@ package et_routing is
 		--module_cursor	: in pac_generic_modules.cursor;
 		--design_rules	: in type_design_rules;
 		--bottom_layer	: in type_signal_layer;
-		--start_point		: in type_point;
+		--start_point		: in type_vector_model;
 		--net_cursor		: in et_schematic.pac_nets.cursor;
 		--net_class		: in type_net_class;
 		--fill_zone		: in type_fill_zone;

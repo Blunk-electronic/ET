@@ -137,7 +137,7 @@ package et_canvas_schematic_nets is
 	-- Tests if point sits between start and end point of any of the given segments.
 	-- Returns true in that case.
 	function between_start_and_end_point_of_sloping_segment (
-		point		: in type_point;
+		point		: in type_vector_model;
 		segments	: in pac_proposed_segments.list)
 		return boolean;
 
@@ -176,7 +176,7 @@ package et_canvas_schematic_nets is
 	-- cursor selected_segment to the first segment and requests
 	-- for clarification.
 	procedure delete_net_segment (
-		point : in type_point);
+		point : in type_vector_model);
 
 	
 	-- Advances cursor selected_segment to next segment in list proposed_segments.
@@ -205,7 +205,7 @@ package et_canvas_schematic_nets is
 	-- with MOUSE and finish with KEYBOARD or vice versa.
 	procedure make_path (
 		tool	: in type_tool;
-		point	: in type_point);
+		point	: in type_vector_model);
 
 
 	
@@ -240,7 +240,7 @@ package et_canvas_schematic_nets is
 	-- - if all segments there belong to the same net.
 	-- If a sloping segment exists there, the return is false.
 	function valid_for_net_segment (
-		point			: in type_point;
+		point			: in type_vector_model;
 		log_threshold	: in type_log_level)
 		return boolean;
 
@@ -266,7 +266,7 @@ package et_canvas_schematic_nets is
 
 		-- The point along the segment where the operator
 		-- grabs the segment:
-		point_of_attack			: type_point;
+		point_of_attack			: type_vector_model;
 		
 		finalizing_granted		: type_finalizing_granted := false;
 	end record;
@@ -325,7 +325,7 @@ package et_canvas_schematic_nets is
 	
 	type type_net_rename is record
 		scope		: type_net_scope := SHEET; -- strand, sheet, everywhere
-		-- position	: type_point; -- x/y where net segment was selected
+		-- position	: type_vector_model; -- x/y where net segment was selected
 	end record;
 
 	net_rename : type_net_rename;
@@ -340,12 +340,12 @@ package et_canvas_schematic_nets is
 	-- If more than one segment near point found, then it sets the
 	-- cursor selected_segment to the first segment and requests
 	-- for clarification.
-	procedure find_segments (point : in type_point);
+	procedure find_segments (point : in type_vector_model);
 
 	
 	procedure drag_segment (
 		tool		: in type_tool;
-		position	: in type_point);
+		position	: in type_vector_model);
 
 
 	
@@ -427,27 +427,27 @@ package et_canvas_schematic_nets is
 	
 	procedure delete_selected_label;
 
-	procedure delete_label (point : in type_point);
+	procedure delete_label (point : in type_vector_model);
 	
 
 	procedure clarify_label;
 	
 	procedure finalize_place_label (
-		destination		: in type_point;
+		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
 
 	procedure place_label (
 		tool		: in type_tool;
-		position	: in type_point);
+		position	: in type_vector_model);
 
 
 	
 	procedure find_labels (
-		point		: in type_point;
+		point		: in type_vector_model;
 		category	: in type_label_category);
 
 	procedure finalize_move_label (
-		destination		: in type_point;
+		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
 
 	
@@ -457,7 +457,7 @@ package et_canvas_schematic_nets is
 	-- This is about simple labels:
 	procedure move_label (
 		tool		: in type_tool;
-		position	: in type_point);
+		position	: in type_vector_model);
 
 
 	

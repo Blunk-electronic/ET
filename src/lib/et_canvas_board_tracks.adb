@@ -480,8 +480,8 @@ package body et_canvas_board_tracks is
  
 	function get_nearest (
 		airwire	: in pac_proposed_airwires.cursor;
-		point	: in type_point)
-		return type_point
+		point	: in type_vector_model)
+		return type_vector_model
 	is
 		use pac_proposed_airwires;
 		use pac_geometry_brd;
@@ -548,7 +548,7 @@ package body et_canvas_board_tracks is
 	
 	procedure make_path (
 		tool	: in type_tool;
-		point	: in type_point)
+		point	: in type_vector_model)
 	is
 		PT : type_preliminary_track renames preliminary_track;
 		line : type_line;
@@ -769,7 +769,7 @@ package body et_canvas_board_tracks is
 	
 
 	procedure find_segments (
-	   point : in type_point)
+	   point : in type_vector_model)
 	is 
 		count_total : natural := 0;
 		
@@ -844,7 +844,7 @@ package body et_canvas_board_tracks is
 	
 	procedure move_track (
 		tool	: in type_tool;
-		point	: in type_point)
+		point	: in type_vector_model)
 	is
 
 		-- Assigns the final position after the move to the selected segment.
@@ -965,7 +965,7 @@ package body et_canvas_board_tracks is
 	
 	
 	procedure ripup (
-		point	: in type_point)
+		point	: in type_vector_model)
 	is
 		-- Rips up the selected single segment or the whole net.
 		-- Resets variable preliminary_segment:

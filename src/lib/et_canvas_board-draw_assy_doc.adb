@@ -89,7 +89,7 @@ is
 					if preliminary_object.ready then
 						declare
 							line_tmp : type_doc_line := line;
-							POA : type_point renames preliminary_object.point_of_attack;
+							POA : type_vector_model renames preliminary_object.point_of_attack;
 						begin
 							case preliminary_object.tool is
 								when MOUSE =>
@@ -208,7 +208,7 @@ is
 						-- the place where the tool is pointing at:
 						declare
 							text_tmp	: type_doc_text := text;
-							destination	: type_point;
+							destination	: type_vector_model;
 							offset		: type_distance_relative;
 						begin
 							case preliminary_text.tool is

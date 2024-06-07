@@ -85,7 +85,7 @@ package body et_board_ops.vias is
 
 	function get_vias (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_point;
+		point			: in type_vector_model;
 		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_proposed_vias.list
@@ -317,10 +317,10 @@ package body et_board_ops.vias is
 		module_cursor	: in pac_generic_modules.cursor;
 		via				: in type_proposed_via;
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level)
 	is
-		new_position : type_point := via.via.position;
+		new_position : type_vector_model := via.via.position;
 
 		
 		procedure query_module (

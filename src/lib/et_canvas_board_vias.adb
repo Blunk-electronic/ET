@@ -861,7 +861,7 @@ package body et_canvas_board_vias is
 
 	
 	procedure find_vias (
-		point : in type_point)
+		point : in type_vector_model)
 	is 
 		vias : pac_vias.list;
 	begin
@@ -903,7 +903,7 @@ package body et_canvas_board_vias is
 -- PLACE:
 
 	procedure place_via (
-		point	: in type_point) 
+		point	: in type_vector_model) 
 	is
 		via : type_via (category => preliminary_via.category);
 	begin
@@ -950,7 +950,7 @@ package body et_canvas_board_vias is
 
 	procedure move_via (
 		tool	: in type_tool;
-		point	: in type_point)
+		point	: in type_vector_model)
 	is 
 
 		-- Assigns the final position after the move to the selected via.
@@ -1022,7 +1022,7 @@ package body et_canvas_board_vias is
 
 	procedure delete_via (
 		tool	: in type_tool;
-		point	: in type_point)
+		point	: in type_vector_model)
 	is 
 
 		procedure finalize is 

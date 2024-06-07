@@ -106,7 +106,7 @@ package et_conductor_segment.boards is
 	
 	-- Returns true if the given point sits on the given line.
 	function on_segment (
-		point		: in type_point; -- x/y
+		point		: in type_vector_model; -- x/y
 		layer		: in type_signal_layer;
 		line		: in pac_conductor_lines.cursor)
 		return boolean;
@@ -138,7 +138,7 @@ package et_conductor_segment.boards is
 	
 	-- Returns true if the given point sits on the given arc.
 	function on_segment (
-		point		: in type_point; -- x/y
+		point		: in type_vector_model; -- x/y
 		layer		: in type_signal_layer;
 		arc			: in pac_conductor_arcs.cursor)
 		return boolean;

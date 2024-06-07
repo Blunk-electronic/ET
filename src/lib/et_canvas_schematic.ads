@@ -201,12 +201,12 @@ package et_canvas_schematic is
 	overriding function model_to_drawing (
 		self		: not null access type_view;
 		model_point : in type_model_point)
-		return type_point;
+		return type_vector_model;
 
 	
 	overriding function drawing_to_model (
 		self			: not null access type_view;
-		drawing_point : in type_point)	
+		drawing_point : in type_vector_model)	
 		return type_model_point;
 
 	
@@ -266,7 +266,7 @@ package et_canvas_schematic is
 		self		: not null access type_view;
 		coordinates	: in type_coordinates;  -- relative/absolute
 		cursor		: in out type_cursor;
-		position	: in type_point);
+		position	: in type_vector_model);
 
 	overriding procedure move_cursor (
 		self		: not null access type_view;
@@ -331,12 +331,12 @@ package et_canvas_schematic is
 
 	overriding procedure mouse_moved (
 		self	: not null access type_view;
-		point	: in type_point);
+		point	: in type_vector_model);
 	
 	overriding procedure button_pressed (
 		self	: not null access type_view;
 		button	: in type_mouse_button;
-		point	: in type_point);
+		point	: in type_vector_model);
 
 	overriding procedure reset_properties_selection (
 		self : not null access type_view);

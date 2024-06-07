@@ -82,7 +82,7 @@ package et_symbols is
 	
 	-- This is a real text with content (used for things like "counter" or "decoder"
 	type type_text is new type_text_basic with record
-		position	: type_point;		
+		position	: type_vector_model;		
         content		: et_text.pac_text_content.bounded_string;
 	end record;
 
@@ -220,7 +220,7 @@ package et_symbols is
 
 	
 	type type_port_base is tagged record
-		position	: type_point; -- this is the point of connection with a net
+		position	: type_vector_model; -- this is the point of connection with a net
 		length		: type_port_length := port_length_default; 
 		
 		--rotation	: et_coordinates.type_rotation := 0.0; -- CS use type_rotation_relative ?
@@ -452,7 +452,7 @@ package et_symbols is
 	-- or if the placeholders are to be restored (kind of un-smash),
 	-- the default positions of texts and placeholders are required. For this
 	-- reason we define here the type type_default_text_positions:
-	package pac_text_positions is new doubly_linked_lists (type_point);
+	package pac_text_positions is new doubly_linked_lists (type_vector_model);
 	
 	type type_default_text_positions (appearance : type_appearance) is record
 

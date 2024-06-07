@@ -253,7 +253,7 @@ package et_vias is
 	-- Builds a polygon from the given via position, 
 	-- restring and diameter:
 	function to_polygon (
-		position	: in type_point;
+		position	: in type_vector_model;
 		restring	: in type_restring_width;
 		diameter	: in type_drill_size;
 		tolerance	: in type_distance_positive)

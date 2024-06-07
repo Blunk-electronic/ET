@@ -386,7 +386,7 @@ package body et_geometry_2 is
 
 	
 	function get_distance (
-		point	: in type_point;
+		point	: in type_vector_model;
 		vector	: in type_vector)
 		return type_distance_polar
 	is
@@ -565,7 +565,7 @@ package body et_geometry_2 is
 -- POINT
 
 	function to_vector (
-		point	: in type_point)
+		point	: in type_vector_model)
 		return type_vector 
 	is begin
 		return set (
@@ -579,7 +579,7 @@ package body et_geometry_2 is
 	
 	function to_point (
 		v	: in type_vector)
-		return type_point
+		return type_vector_model
 	is begin
 		--log (text => "to point: vector" & to_string (v));
 		
@@ -606,7 +606,7 @@ package body et_geometry_2 is
 
 
 	function to_offset (
-		p : in type_point)
+		p : in type_vector_model)
 		return type_offset
 	is begin
 		return (type_float (p.x), type_float (p.y));
@@ -624,7 +624,7 @@ package body et_geometry_2 is
 	
 	
 	function to_distance_relative (
-		p : in type_point)
+		p : in type_vector_model)
 		return type_distance_relative
 	is begin
 		return (p.x, p.y);
@@ -632,7 +632,7 @@ package body et_geometry_2 is
 
 
 	function get_distance (
-		point_one, point_two : in type_point) 
+		point_one, point_two : in type_vector_model) 
 		return type_distance_polar 
 	is begin
 		return get_distance (to_vector (point_one), to_vector (point_two));
@@ -641,7 +641,7 @@ package body et_geometry_2 is
 
 	
 	function get_x (
-		point : in type_point) 
+		point : in type_vector_model) 
 		return type_position_axis 
 	is begin
 		return point.x;
@@ -649,7 +649,7 @@ package body et_geometry_2 is
 
 	
 	function get_y (
-		point : in type_point)
+		point : in type_vector_model)
 		return type_position_axis 
 	is begin
 		return point.y;
@@ -659,9 +659,9 @@ package body et_geometry_2 is
 
 	function set (
 		x, y : in type_position_axis)
-		return type_point 
+		return type_vector_model 
 	is
-		point : type_point;
+		point : type_vector_model;
 	begin
 		point.x := x;
 		point.y := y;
@@ -670,7 +670,7 @@ package body et_geometry_2 is
 
 	
 	procedure set (
-		point	: in out type_point;
+		point	: in out type_vector_model;
 		axis 	: in type_axis_2d;
 		value	: in type_position_axis)
 	is begin
@@ -682,8 +682,8 @@ package body et_geometry_2 is
 
 	
 	procedure set (
-		point	: in out type_point;
-		position: in type_point) 
+		point	: in out type_vector_model;
+		position: in type_vector_model) 
 	is begin
 		point.x := position.x;
 		point.y := position.y;
@@ -692,10 +692,10 @@ package body et_geometry_2 is
 
 
 	function invert (
-		point : in type_point)
-		return type_point 
+		point : in type_vector_model)
+		return type_vector_model 
 	is
-		pi : type_point := point;
+		pi : type_vector_model := point;
 	begin
 		pi.x := - pi.x;
 		pi.y := - pi.y;
@@ -704,11 +704,11 @@ package body et_geometry_2 is
 
 	
 	function invert (
-		point	: in type_point;
+		point	: in type_vector_model;
 		axis	: in type_axis_2d)
-		return type_point
+		return type_vector_model
 	is
-		p : type_point := point;
+		p : type_vector_model := point;
 	begin
 		case axis is
 			when X => p.x := - p.x;
@@ -720,7 +720,7 @@ package body et_geometry_2 is
 
 	
 	procedure reset (
-		point : in out type_point) 
+		point : in out type_vector_model) 
 	is begin
 		point.x := zero;
 		point.y := zero;
@@ -729,7 +729,7 @@ package body et_geometry_2 is
 
 	
 	procedure move_by (
-		point	: in out type_point;
+		point	: in out type_vector_model;
 		offset	: in type_distance_relative) 
 	is begin
 		point.x := point.x + offset.x;
@@ -738,8 +738,8 @@ package body et_geometry_2 is
 
 	
 	procedure move_to (
-		point		: in out type_point;
-		destination	: in type_point) 
+		point		: in out type_vector_model;
+		destination	: in type_vector_model) 
 	is begin
 		point.x := destination.x;
 		point.y := destination.y;
@@ -747,15 +747,15 @@ package body et_geometry_2 is
 
 
 	function move (
-		point		: in type_point;
+		point		: in type_vector_model;
 		direction	: in type_rotation;
 		distance	: in type_distance_positive;
 		clip		: in boolean := false)
-		return type_point 
+		return type_vector_model 
 	is 			
 		v_tmp : type_vector;
 		rx, ry : type_distance;			
-		result : type_point;			
+		result : type_vector_model;			
 	begin
 		v_tmp := move_by (
 			v			=> to_vector (point),
@@ -776,7 +776,7 @@ package body et_geometry_2 is
 
 	
 	procedure mirror (
-		point	: in out type_point;
+		point	: in out type_vector_model;
 		axis	: in type_axis_2d) 
 	is begin
 		case axis is
@@ -789,7 +789,7 @@ package body et_geometry_2 is
 
 
 	function get_distance_total (
-		point	: in type_point;
+		point	: in type_vector_model;
 		vector	: in type_vector)
 		return type_float_positive
 	is begin
@@ -799,8 +799,8 @@ package body et_geometry_2 is
 	
 
 	function get_distance (
-		point_1	: in type_point;
-		point_2	: in type_point;
+		point_1	: in type_vector_model;
+		point_2	: in type_vector_model;
 		axis	: in type_axis_2d) 
 		return type_distance 
 	is
@@ -819,8 +819,8 @@ package body et_geometry_2 is
 
 	
 	function get_distance_abs (
-		point_1	: in type_point;
-		point_2	: in type_point;
+		point_1	: in type_vector_model;
+		point_2	: in type_vector_model;
 		axis	: in type_axis_2d) 
 		return type_distance_positive
 	is
@@ -839,8 +839,8 @@ package body et_geometry_2 is
 
 
 
-	function "+" (point_one, point_two : in type_point) return type_point is
-		d : type_point;
+	function "+" (point_one, point_two : in type_vector_model) return type_vector_model is
+		d : type_vector_model;
 	begin
 		d.x := point_one.x + point_two.x;
 		d.y := point_one.y + point_two.y;
@@ -848,8 +848,8 @@ package body et_geometry_2 is
 	end;
 
 	
-	function "-" (point_one, point_two : in type_point) return type_point is
-		d : type_point;
+	function "-" (point_one, point_two : in type_vector_model) return type_vector_model is
+		d : type_vector_model;
 	begin
 		d.x := point_one.x - point_two.x;
 		d.y := point_one.y - point_two.y;
@@ -858,7 +858,7 @@ package body et_geometry_2 is
 
 
 	function get_distance_relative (
-		point_one, point_two : in type_point)
+		point_one, point_two : in type_vector_model)
 		return type_distance_relative
 	is
 		d : type_distance_relative;
@@ -870,7 +870,7 @@ package body et_geometry_2 is
 
 
 	function get_distance_total (
-		point_one, point_two : in type_point) 
+		point_one, point_two : in type_vector_model) 
 		return type_float_positive 
 	is begin
 		return get_distance_total (to_vector (point_one), to_vector (point_two));
@@ -908,9 +908,9 @@ package body et_geometry_2 is
 	
 	
 	function in_catch_zone (
-		point_1		: in type_point; -- the reference point
+		point_1		: in type_vector_model; -- the reference point
 		catch_zone	: in type_catch_zone; -- zone around reference point
-		point_2 	: in type_point) -- the point being tested
+		point_2 	: in type_vector_model) -- the point being tested
 		return boolean 
 	is
 		d : type_float_positive := get_distance_total (point_1, point_2);
@@ -925,7 +925,7 @@ package body et_geometry_2 is
 
 	
 	
-	function to_string (point : in type_point) 
+	function to_string (point : in type_vector_model) 
 		return string 
 	is begin
 		return point_preamble
@@ -935,7 +935,7 @@ package body et_geometry_2 is
 	end to_string;
 
 
-	function to_string_2 (point : in type_point) 
+	function to_string_2 (point : in type_vector_model) 
 		return string 
 	is begin
 		return "x"
@@ -946,7 +946,7 @@ package body et_geometry_2 is
 
 	
 	function round_to_string (
-		point 	: in type_point;
+		point 	: in type_vector_model;
 		grid	: in type_grid) 
 		return string 
 	is begin
@@ -959,11 +959,11 @@ package body et_geometry_2 is
 
 
 	function round (
-		point 	: in type_point;
+		point 	: in type_vector_model;
 		grid	: in type_grid) 
-		return type_point 
+		return type_vector_model 
 	is		
-		p : type_point := (
+		p : type_vector_model := (
 			x => (round (point.x, grid.x)),
 			y => (round (point.y, grid.y)));
 	begin
@@ -973,10 +973,10 @@ package body et_geometry_2 is
 	
 	
 	--function round (
-		--point : in type_point)
-		--return type_point
+		--point : in type_vector_model)
+		--return type_vector_model
 	--is
-		--r : type_point := (
+		--r : type_vector_model := (
 			--x => type_distance (round (point.x)),
 			--y => type_distance (round (point.y)));
 	--begin
@@ -985,7 +985,7 @@ package body et_geometry_2 is
 
 
 	--procedure round (
-		--point : in out type_point)
+		--point : in out type_vector_model)
 	--is begin
 		--point.x := type_distance (round (point.x));
 		--point.y := type_distance (round (point.y));
@@ -996,7 +996,7 @@ package body et_geometry_2 is
 	
 
 	function get_rotation (
-		point : in type_point) 
+		point : in type_vector_model) 
 		return type_rotation 
 	is begin
 		return to_rotation (get_angle (get_distance (null_vector, to_vector (point))));
@@ -1005,7 +1005,7 @@ package body et_geometry_2 is
 
 
 	procedure rotate_by (
-		point		: in out type_point;
+		point		: in out type_vector_model;
 		rotation	: in type_rotation) 
 	is			
 		v_tmp : type_vector := to_vector (point);
@@ -1021,7 +1021,7 @@ package body et_geometry_2 is
 
 
 	procedure rotate_to (
-		point		: in out type_point;
+		point		: in out type_vector_model;
 		rotation	: in type_rotation) -- degrees
 	is
 		distance_to_origin	: type_float; -- unit is mm
@@ -1070,9 +1070,9 @@ package body et_geometry_2 is
 	function to_point (
 		d 		: in type_distance_relative;
 		clip	: in boolean := false)
-		return type_point
+		return type_vector_model
 	is 
-		p : type_point;
+		p : type_vector_model;
 	begin
 		if clip then
 			p.x := clip_distance (d.x);
@@ -1097,9 +1097,9 @@ package body et_geometry_2 is
 
 	function to_point (
 		x,y : in string)
-		return type_point
+		return type_vector_model
 	is 
-		result : type_point;					
+		result : type_vector_model;					
 	begin
 		result.x := to_distance (dd => x);
 		result.y := to_distance (dd => y);
@@ -1111,7 +1111,7 @@ package body et_geometry_2 is
 	
 	procedure union (
 		boundaries	: in out type_boundaries;
-		point		: in type_point) 
+		point		: in type_vector_model) 
 	is 
 		x : constant type_float := type_float (get_x (point));
 		y : constant type_float := type_float (get_y (point));
@@ -1142,8 +1142,8 @@ package body et_geometry_2 is
 	-- given width. The boundaries are extended
 	-- by half the given width.
 	function get_boundaries (
-		point_one	: in type_point;
-		point_two	: in type_point;
+		point_one	: in type_vector_model;
+		point_two	: in type_vector_model;
 		width		: in type_distance_positive) 
 		return type_boundaries
 	is
@@ -1195,7 +1195,7 @@ package body et_geometry_2 is
 
 	
 	
-	function "<" (left, right : in type_point) return boolean is begin
+	function "<" (left, right : in type_vector_model) return boolean is begin
 		if left.x < right.x then
 			return true;
 		elsif left.x > right.x then
@@ -1216,12 +1216,12 @@ package body et_geometry_2 is
 
 	function get_nearest (
 		points		: in pac_points.list;
-		reference	: in type_point := origin)
-		return type_point
+		reference	: in type_vector_model := origin)
+		return type_vector_model
 	is
 		use pac_points;
 		
-		result : type_point;
+		result : type_vector_model;
 
 		distance : type_float_positive := type_float_positive'last;
 		
@@ -1315,10 +1315,10 @@ package body et_geometry_2 is
 	
 	--procedure sort_by_distance (
 		--points 		: in out pac_points.list;
-		--reference	: in type_point)
+		--reference	: in type_vector_model)
 	--is
 		--type type_item is record
-			--point		: type_point;
+			--point		: type_vector_model;
 			--distance	: type_float_positive;
 		--end record;
 
@@ -1342,7 +1342,7 @@ package body et_geometry_2 is
 			--use pac_points;
 			--d : type_distance_polar;
 		--begin
-			--d := get_distance (type_point (reference), type_point (element (p)));
+			--d := get_distance (type_vector_model (reference), type_vector_model (element (p)));
 			
 			--items.append (new_item => (
 				--point		=> element (p),
@@ -1525,7 +1525,7 @@ package body et_geometry_2 is
 
 
 	function make_line (
-		start_point, end_point : in type_point)
+		start_point, end_point : in type_vector_model)
 		return type_line'class
 	is
 		line : type_line;
@@ -1545,9 +1545,9 @@ package body et_geometry_2 is
 	function get_left_end (
 		line		: in type_line;
 		boundaries	: in type_boundaries := boundaries_default)
-		return type_point
+		return type_vector_model
 	is
-		p : type_point; -- to be returned
+		p : type_vector_model; -- to be returned
 		b : type_boundaries := boundaries;								   
 	begin
 		-- If no boundaries provided, compute them.
@@ -1576,9 +1576,9 @@ package body et_geometry_2 is
 	function get_right_end (
 		line		: in type_line;
 		boundaries	: in type_boundaries := boundaries_default)
-		return type_point
+		return type_vector_model
 	is
-		p : type_point; -- to be returned
+		p : type_vector_model; -- to be returned
 		b : type_boundaries := boundaries;								   
 	begin
 		-- If no boundaries provided, compute them.
@@ -1607,9 +1607,9 @@ package body et_geometry_2 is
 	function get_lower_end (
 		line		: in type_line;
 		boundaries	: in type_boundaries := boundaries_default)
-		return type_point
+		return type_vector_model
 	is
-		p : type_point; -- to be returned
+		p : type_vector_model; -- to be returned
 		b : type_boundaries := boundaries;								   
 	begin
 		-- If no boundaries provided, compute them.
@@ -1638,9 +1638,9 @@ package body et_geometry_2 is
 	function get_upper_end (
 		line		: in type_line;
 		boundaries	: in type_boundaries := boundaries_default)
-		return type_point
+		return type_vector_model
 	is
-		p : type_point; -- to be returned
+		p : type_vector_model; -- to be returned
 		b : type_boundaries := boundaries;								   
 	begin
 		-- If no boundaries provided, compute them.
@@ -1741,7 +1741,7 @@ package body et_geometry_2 is
 
 	
 	procedure reverse_line (line : in out type_line) is 
-		scratch : type_point := line.start_point;
+		scratch : type_vector_model := line.start_point;
 	begin
 		line.start_point := line.end_point;
 		line.end_point := scratch;
@@ -1851,7 +1851,7 @@ package body et_geometry_2 is
 
 	function get_distance (
 		line		: in type_line;
-		point		: in type_point; 
+		point		: in type_vector_model; 
 		line_range	: in type_line_range)
 		return type_distance_point_line
 	is begin
@@ -1871,7 +1871,7 @@ package body et_geometry_2 is
 	
 	function on_line (
 		line	: in type_line;
-		point	: in type_point)
+		point	: in type_vector_model)
 		return boolean
 	is begin
 		return on_line (to_vector (point), to_line_fine (line));
@@ -1881,7 +1881,7 @@ package body et_geometry_2 is
 	
 	function get_shortest_distance (
 		line	: in type_line;
-		point	: in type_point)
+		point	: in type_vector_model)
 		return type_float_positive
 	is begin
 		return get_shortest_distance (to_vector (point), to_line_fine (line));
@@ -1900,7 +1900,7 @@ package body et_geometry_2 is
 	function in_catch_zone (
 		line	: in type_line;
 		width	: in type_distance_positive := 0.0;
-		point	: in type_point;
+		point	: in type_vector_model;
 		zone	: in type_catch_zone)
 		return boolean
 	is
@@ -2044,7 +2044,7 @@ package body et_geometry_2 is
 	
 	function get_zone (
 		line	: in type_line;
-		point	: in type_point)
+		point	: in type_vector_model)
 		return type_line_zone 
 	is
 		zone : type_line_zone; -- to be returned
@@ -2130,8 +2130,8 @@ package body et_geometry_2 is
 
 	procedure move_line_to (
 		line			: in out type_line;
-		point_of_attack	: in type_point;
-		destination		: in type_point)
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model)
 	is
 		zone : constant type_line_zone := get_zone (line, point_of_attack);
 		offset : type_distance_relative;
@@ -2275,7 +2275,7 @@ package body et_geometry_2 is
 
 	
 	procedure reverse_arc (arc : in out type_arc) is
-		scratch : type_point := arc.start_point;
+		scratch : type_vector_model := arc.start_point;
 	begin
 		arc.start_point := arc.end_point;
 		arc.end_point := scratch;
@@ -2308,7 +2308,7 @@ package body et_geometry_2 is
 	
 	function get_shortest_distance (
 		arc		: in type_arc;
-		point	: in type_point)
+		point	: in type_vector_model)
 		return type_distance_polar
 	is
 		result : type_distance_polar;
@@ -2817,14 +2817,14 @@ package body et_geometry_2 is
 		-- start point:
 		x := type_float (arc.radius) * cos (type_float (arc.angle_start), units_per_cycle);
 		y := type_float (arc.radius) * sin (type_float (arc.angle_start), units_per_cycle);
-		--result.start_point := type_point (set (type_distance (x), type_distance (y)));
+		--result.start_point := type_vector_model (set (type_distance (x), type_distance (y)));
 		result.start_point := set (to_distance (x), to_distance (y));
 		move_by (result.start_point, offset);
 		
 		-- end point:
 		x := type_float (arc.radius) * cos (type_float (arc.angle_end), units_per_cycle);
 		y := type_float (arc.radius) * sin (type_float (arc.angle_end), units_per_cycle);
-		--result.end_point := type_point (set (type_distance (x), type_distance (y)));
+		--result.end_point := type_vector_model (set (type_distance (x), type_distance (y)));
 		result.end_point := set (to_distance (x), to_distance (y));
 		move_by (result.end_point, offset);
 		
@@ -3100,7 +3100,7 @@ package body et_geometry_2 is
 
 	function on_arc (
 		arc		: in type_arc;
-		point	: in type_point)
+		point	: in type_vector_model)
 		return boolean
 	is begin
 		return on_arc (arc, to_vector (point));
@@ -3198,10 +3198,10 @@ package body et_geometry_2 is
 
 	
 	function arc_end_point (
-		center		: in type_point;
-		start_point	: in type_point;	
+		center		: in type_vector_model;
+		start_point	: in type_vector_model;	
 		angle 		: in type_angle) -- unit is degrees
-		return type_point
+		return type_vector_model
 	is						
 		arc : type_arc;
 
@@ -3266,7 +3266,7 @@ package body et_geometry_2 is
 	
 	procedure move_to (
 		arc			: in out type_arc;
-		position	: in type_point)
+		position	: in type_vector_model)
 	is
 		offset : constant type_distance_relative :=
 			get_distance_relative (arc.center, position);
@@ -3282,7 +3282,7 @@ package body et_geometry_2 is
 
 	function move_to (
 		arc			: in type_arc;
-		position	: in type_point)
+		position	: in type_vector_model)
 		return type_arc'class
 	is
 		a : type_arc := arc;
@@ -3331,8 +3331,8 @@ package body et_geometry_2 is
 		---- The connecting points between the resulting arcs are where an
 		---- imaginary vertical line intersects an imaginary circle at its highest and 
 		---- lowest point:
-		--PU : constant type_point := type_point (set (CX, CY + R));
-		--PL : constant type_point := type_point (set (CX, CY - R));
+		--PU : constant type_vector_model := type_vector_model (set (CX, CY + R));
+		--PL : constant type_vector_model := type_vector_model (set (CX, CY - R));
 		
 		---- the boundaries of the given arc:
 		--by : constant type_boundaries := get_boundaries (arc, zero);
@@ -3557,8 +3557,8 @@ package body et_geometry_2 is
 		-- The connecting points between the resulting arcs are where an
 		-- imaginary vertical line intersects the circle at its highest and 
 		-- lowest point:
-		PU : constant type_point := to_point (set (CX, CY + R));
-		PL : constant type_point := to_point (set (CX, CY - R));
+		PU : constant type_vector_model := to_point (set (CX, CY + R));
+		PL : constant type_vector_model := to_point (set (CX, CY - R));
 
 		-- There will be only 2 arcs.
 		result : type_arcs (1 .. 2);
@@ -3593,7 +3593,7 @@ package body et_geometry_2 is
 	
 	function get_distance_to_circumfence (
 		circle	: in type_circle;
-		point	: in type_point)
+		point	: in type_vector_model)
 		return type_distance_polar
 	is
 		result : type_distance_polar;
@@ -3606,7 +3606,7 @@ package body et_geometry_2 is
 	
 	function get_shortest_distance (
 		circle	: in type_circle;
-		point	: in type_point)
+		point	: in type_vector_model)
 		return type_distance_polar
 	is
 		result : type_distance_polar;
@@ -3710,7 +3710,7 @@ package body et_geometry_2 is
 
 	procedure move_to (
 		circle		: in out type_circle;
-		position	: in type_point)
+		position	: in type_vector_model)
 	is begin
 		move_to (circle.center,	position);
 	end move_to;
@@ -3718,7 +3718,7 @@ package body et_geometry_2 is
 
 	function move_to (
 		circle		: in type_circle;
-		position	: in type_point)
+		position	: in type_vector_model)
 		return type_circle'class
 	is 
 		result : type_circle := circle;
@@ -3776,7 +3776,7 @@ package body et_geometry_2 is
 	
 	function on_circle (
 		circle		: in type_circle;
-		point		: in type_point)
+		point		: in type_vector_model)
 		return boolean 
 	is
 		-- the distance from center to point:
@@ -3795,7 +3795,7 @@ package body et_geometry_2 is
 
 	function get_point_to_circle_status (
 		circle		: in type_circle;
-		point		: in type_point)
+		point		: in type_vector_model)
 		return type_point_status
 	is begin
 		if get_distance_total (point, circle.center) < circle.radius then
@@ -4099,7 +4099,7 @@ package body et_geometry_2 is
 			x := (DI * dy) / b;
 			y := (-DI * dx) / b;
 
-			--intersection_1 := type_point (set (to_distance (x), to_distance (y)));
+			--intersection_1 := type_vector_model (set (to_distance (x), to_distance (y)));
 			intersection_1 := set (x, y, 0.0);
 			-- NOTE: A constraint error is raised here if x or y is not in range 
 			-- of type_position_axis !
@@ -4125,7 +4125,7 @@ package body et_geometry_2 is
 			y := (-DI * dx + abs (dy) * sqrt (d))      / b;
 
 			-- Compose the point of intersection 1:
-			--intersection_1 := type_point (set (to_distance (x), to_distance (y)));
+			--intersection_1 := type_vector_model (set (to_distance (x), to_distance (y)));
 			intersection_1 := set (x, y, 0.0);
 			-- NOTE: A constraint error is raised here if x or y is not in range 
 			-- of type_position_axis !
@@ -4143,7 +4143,7 @@ package body et_geometry_2 is
 			y := (-DI * dx - abs (dy) * sqrt (d))      / b;
 					
 			-- Compose the point of intersection 2:
-			--intersection_2 := type_point (set (to_distance (x), to_distance (y)));
+			--intersection_2 := type_vector_model (set (to_distance (x), to_distance (y)));
 			intersection_2 := set (x, y, 0.0);
 			-- NOTE: A constraint error is raised here if x or y is not in range 
 			-- of type_position_axis !
@@ -4225,7 +4225,7 @@ package body et_geometry_2 is
 
 	
 	function to_position (
-		point		: in type_point;
+		point		: in type_vector_model;
 		rotation	: in type_rotation)
 		return type_position'class
 	is 
@@ -4252,7 +4252,7 @@ package body et_geometry_2 is
 
 	procedure set (
 		position	: in out type_position;
-		place		: in type_point)
+		place		: in type_vector_model)
 	is begin
 		position.place := place;
 	end set;
@@ -4300,7 +4300,7 @@ package body et_geometry_2 is
 
 
 	procedure nothing_found (
-		point		: in type_point; 
+		point		: in type_vector_model; 
 		accuracy	: in type_catch_zone)
 	is begin
 		log (importance => WARNING, 

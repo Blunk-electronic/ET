@@ -729,7 +729,7 @@ package body et_schematic_ops is
 				submodule	: in et_submodules.type_submodule) 
 			is
 				use et_submodules.pac_submodule_ports;
-				port_xy : type_point;
+				port_xy : type_vector_model;
 				cursor : et_submodules.pac_submodule_ports.cursor := find (submodule.ports, port_name);
 			begin
 				if cursor /= et_submodules.pac_submodule_ports.no_element then
@@ -810,7 +810,7 @@ package body et_schematic_ops is
 		is
 			nc_cursor : pac_netchangers.cursor;
 			nc_position : et_coordinates.type_position;
-			port_xy : type_point;
+			port_xy : type_vector_model;
 		begin -- query_netchangers
 			if contains (module.netchangers, index) then
 				nc_cursor := find (module.netchangers, index); -- the netchanger should be there
@@ -1164,7 +1164,7 @@ package body et_schematic_ops is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		meaning			: in type_placeholder_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level)
 	is
@@ -1190,7 +1190,7 @@ package body et_schematic_ops is
 				is
 					-- In case absolute movement is required, calculate the
 					-- new position of the placeholder relative to the unit origin:
-					pos_abs : constant type_point :=
+					pos_abs : constant type_vector_model :=
 						to_point (get_distance_relative (unit.position.place, point));
 					
 				begin -- move_placeholder
@@ -3573,9 +3573,9 @@ package body et_schematic_ops is
 		device		: in pac_devices_sch.cursor; -- R2
 		unit		: in pac_units.cursor;
 		category	: in type_placeholder_meaning)
-		return type_point
+		return type_vector_model
 	is
-		placeholder_position : type_point; -- to be returned
+		placeholder_position : type_vector_model; -- to be returned
 
 		use pac_devices_sch;
 		unit_position : et_coordinates.type_position;
@@ -3702,7 +3702,7 @@ package body et_schematic_ops is
 			module		: in out type_module) is
 
 			procedure probe_port (
-				port : in type_point; -- x/y
+				port : in type_vector_model; -- x/y
 				name : in type_netchanger_port_name) -- master/slave
 				is
 
@@ -4118,7 +4118,7 @@ package body et_schematic_ops is
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) is
 
 		use et_submodules;
@@ -4253,7 +4253,7 @@ package body et_schematic_ops is
 		sheet			: in type_sheet;			-- the sheet to look at
 		log_threshold	: in type_log_level) is
 
-		port_before, port_after : type_point;
+		port_before, port_after : type_vector_model;
 		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
@@ -4428,7 +4428,7 @@ package body et_schematic_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) 
 	is
 		use et_submodules;
@@ -4995,7 +4995,7 @@ package body et_schematic_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		port_name		: in pac_net_name.bounded_string; -- clk_out
-		position		: in type_point; -- x/y along the edge of the box
+		position		: in type_vector_model; -- x/y along the edge of the box
 		
 		direction		: in et_submodules.type_netchanger_port_name; -- master/slave. 
 		-- NOTE: has nothing to do with direction of energy flow. It is relevant when 
@@ -5364,7 +5364,7 @@ package body et_schematic_ops is
 		instance		: in pac_module_instance_name.bounded_string; -- OSC
 		port_name		: in pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) 
 	is
 		use et_submodules;
@@ -5394,8 +5394,8 @@ package body et_schematic_ops is
 					port_name	: in pac_net_name.bounded_string;
 					port		: in out et_submodules.type_submodule_port) 
 				is
-					submod_pos_tmp : type_point := submodule_position.place;
-					point_tmp : type_point := point;
+					submod_pos_tmp : type_vector_model := submodule_position.place;
+					point_tmp : type_vector_model := point;
 				begin
 					case coordinates is
 						when ABSOLUTE =>
@@ -5763,7 +5763,7 @@ package body et_schematic_ops is
 		instance		: in pac_module_instance_name.bounded_string; -- OSC
 		port_name		: in pac_net_name.bounded_string; -- clock_output
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) 
 	is
 		use et_submodules;
@@ -5794,8 +5794,8 @@ package body et_schematic_ops is
 					port_name	: in pac_net_name.bounded_string;
 					port		: in out et_submodules.type_submodule_port)
 				is
-					submod_pos_tmp : type_point := submodule_position.place;
-					point_tmp : type_point := point;
+					submod_pos_tmp : type_vector_model := submodule_position.place;
+					point_tmp : type_vector_model := point;
 				begin
 					-- BACKUP THE PORT POSITION BEFORE THE DRAG OPERATION:
 					port_position_before := to_position (
@@ -6109,7 +6109,7 @@ package body et_schematic_ops is
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) is
 
 		use et_submodules;
@@ -6260,7 +6260,7 @@ package body et_schematic_ops is
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified

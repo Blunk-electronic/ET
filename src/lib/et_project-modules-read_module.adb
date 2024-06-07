@@ -823,7 +823,7 @@ is
 	-- CS frame_count_schematic		: et_coordinates.type_submodule_sheet_number := et_coordinates.type_submodule_sheet_number'first; -- 10 frames
 	frame_template_schematic	: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frs
 	frame_template_board		: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frb
-	frame_board_origin 			: et_pcb_coordinates.pac_geometry_2.type_point := et_pcb.origin_default; -- x 40 y 60
+	frame_board_origin 			: et_pcb_coordinates.pac_geometry_2.type_vector_model := et_pcb.origin_default; -- x 40 y 60
 
 	
 	procedure read_frame_template_schematic is
@@ -1183,7 +1183,7 @@ is
 
 	-- temporarily placeholders of unit name (IC12), value (7400) and purpose (clock buffer)
 	unit_placeholder			: et_schematic_shapes_and_text.type_text_basic;
-	unit_placeholder_position	: et_coordinates.pac_geometry_2.type_point;
+	unit_placeholder_position	: et_coordinates.pac_geometry_2.type_vector_model;
 	unit_placeholder_meaning	: type_placeholder_meaning := placeholder_meaning_default;
 	unit_placeholder_reference	: et_device_placeholders.symbols.type_text_placeholder (meaning => NAME);
 	unit_placeholder_value		: et_device_placeholders.symbols.type_text_placeholder (meaning => VALUE);
@@ -4870,7 +4870,7 @@ is
 							declare
 								use et_coordinates;
 								use pac_geometry_2;
-								position_found_in_module_file : type_point := strand.position.place;
+								position_found_in_module_file : type_vector_model := strand.position.place;
 							begin
 								-- Calculate the lowest x/y position and set sheet number of the strand
 								-- and overwrite previous x/y position. 

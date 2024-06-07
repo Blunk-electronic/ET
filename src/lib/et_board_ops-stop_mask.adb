@@ -182,7 +182,7 @@ package body et_board_ops.stop_mask is
 	procedure delete_stop (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		point			: in type_point; -- x/y
+		point			: in type_vector_model; -- x/y
 		accuracy		: in type_catch_zone;
 		log_threshold	: in type_log_level) 
 	is
@@ -292,7 +292,7 @@ package body et_board_ops.stop_mask is
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
-		point			: in type_point;
+		point			: in type_vector_model;
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_stop_texts.list
@@ -359,11 +359,11 @@ package body et_board_ops.stop_mask is
 		face			: in type_face;
 		text			: in type_stop_text;
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_point;
+		point			: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is
-		old_position : constant type_point := get_place (text);
-		new_position : type_point;
+		old_position : constant type_vector_model := get_place (text);
+		new_position : type_vector_model;
 		offset : type_distance_relative;
 
 

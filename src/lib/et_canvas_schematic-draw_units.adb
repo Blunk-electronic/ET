@@ -50,7 +50,7 @@ is
 		device_purpose	: in pac_device_purpose.bounded_string := to_purpose (""); -- like "brightness control"
 		unit_name		: in et_devices.pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 		unit_count		: in et_devices.type_unit_count;
-		unit_position	: in type_point; -- x/y on the schematic sheet
+		unit_position	: in type_vector_model; -- x/y on the schematic sheet
 		unit_rotation	: in type_rotation := zero_rotation;
 		sch_placeholder_name	: in type_text_placeholder;
 		sch_placeholder_value	: in type_text_placeholder;
@@ -107,14 +107,14 @@ is
 		end draw_circle;
 
 		procedure draw_port (c : in pac_ports.cursor) is
-			start_point			: type_point := element (c).position;
-			end_point			: type_point := element (c).position;
+			start_point			: type_vector_model := element (c).position;
+			end_point			: type_vector_model := element (c).position;
 
 			line : type_line;
 			circle : type_circle;
 			
-			pos_port_name		: type_point;
-			pos_terminal_name	: type_point;
+			pos_port_name		: type_vector_model;
+			pos_terminal_name	: type_vector_model;
 			
 			procedure draw_port_name is
 				use et_text;
@@ -358,7 +358,7 @@ is
 		-- Call this procedure after drawing the symbol body because it
 		-- does not change the color to symbol color.
 		procedure draw_text (c : in pac_texts.cursor) is 
-			p : type_point := element (c).position;
+			p : type_vector_model := element (c).position;
 		begin
 			-- Rotate the position of the text.
 			-- This adds the unit_rotation to the given rotation.
@@ -387,7 +387,7 @@ is
 		-- This procedure draws text placeholders for device name, value and purpose:
 		procedure draw_placeholders is 
 			use et_devices;
-			p : type_point;
+			p : type_vector_model;
 		begin
 			set_color_placeholders (context.cr, brightness);
 			
@@ -477,11 +477,11 @@ is
 			ohz : constant type_distance_positive := et_symbols.origin_half_size;
 			
 			line_horizontal : constant type_line := ( -- from left to right
-				start_point		=> type_point (set (
+				start_point		=> type_vector_model (set (
 									x => get_x (unit_position) - ohz,
 									y => get_y (unit_position))),
 				
-				end_point		=> type_point (set (
+				end_point		=> type_vector_model (set (
 									x => get_x (unit_position) + ohz,
 									y => get_y (unit_position))),
 
@@ -489,11 +489,11 @@ is
 			
 
 			line_vertical : constant type_line := ( -- from bottom to top
-				start_point		=> type_point (set (
+				start_point		=> type_vector_model (set (
 									x => get_x (unit_position),
 									y => get_y (unit_position) - ohz)),
 				
-				end_point		=> type_point (set (
+				end_point		=> type_vector_model (set (
 									x => get_x (unit_position),
 									y => get_y (unit_position) + ohz)),
 
@@ -692,7 +692,7 @@ is
 		device_model : pac_device_model_file.bounded_string :=
 			element (device_cursor).model;	-- ../libraries/devices/transistor/pnp.dev
 
-		unit_position : type_point; -- only x and y relevant
+		unit_position : type_vector_model; -- only x and y relevant
 
 		brightness : type_brightness := NORMAL;
 
@@ -1007,7 +1007,7 @@ is
 
 			-- The place where the unit will be drawn.
 			-- Depends on the tool used for placing the unit:
-			destination : type_point;
+			destination : type_vector_model;
 			
 			use et_symbols;
 			use pac_symbols;

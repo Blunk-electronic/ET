@@ -169,7 +169,7 @@ package et_canvas_board_vias is
 	-- - preliminary_via.ready remains false.
 	-- - clarification is requested
 	procedure find_vias (
-		point : in type_point);
+		point : in type_vector_model);
 
 	
 
@@ -190,7 +190,7 @@ package et_canvas_board_vias is
 	-- provided by preliminary_via.
 	-- Places the via at the given point:
 	procedure place_via (
-		point	: in type_point);
+		point	: in type_vector_model);
 
 
 	
@@ -217,7 +217,7 @@ package et_canvas_board_vias is
 	--   to the selected_via:
 	procedure move_via (
 		tool	: in type_tool;
-		point	: in type_point);				   
+		point	: in type_vector_model);				   
 
 
 	
@@ -240,7 +240,7 @@ package et_canvas_board_vias is
 	--   by the cursor selected_via:
 	procedure delete_via (
 		tool	: in type_tool;
-		point	: in type_point);				   
+		point	: in type_vector_model);				   
 
 	
 	

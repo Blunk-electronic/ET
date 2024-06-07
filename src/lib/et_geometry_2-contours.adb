@@ -131,7 +131,7 @@ package body et_geometry_2.contours is
 
 	function get_segment (
 		contour	: in type_contour;
-		point	: in type_point)
+		point	: in type_vector_model)
 		return pac_segments.cursor
 	is
 		result : pac_segments.cursor;
@@ -167,7 +167,7 @@ package body et_geometry_2.contours is
 
 	function get_neigboring_segments (
 		contour	: in type_contour;
-		vertex	: in type_point)
+		vertex	: in type_vector_model)
 		return type_neigboring_segments
 	is
 		result : type_neigboring_segments;
@@ -228,7 +228,7 @@ package body et_geometry_2.contours is
 
 	function get_shortest_distance (
 		contour	: in type_contour;
-		point	: in type_point)
+		point	: in type_vector_model)
 		return type_float_positive
 	is
 		--result : type_distance_polar := to_polar (type_float'last, 0.0);
@@ -352,7 +352,7 @@ package body et_geometry_2.contours is
 		contour	: in out type_contour'class;
 		offset	: in type_distance)
 	is 
-		procedure move (point : in out type_point) is
+		procedure move (point : in out type_vector_model) is
 			new_y : type_distance;
 		begin
 			new_y := offset - get_y (point);
@@ -436,9 +436,9 @@ package body et_geometry_2.contours is
 		p : count_type := 1;
 
 		start_point_set : boolean := false;
-		contour_start_point : type_point; -- start point of contour
+		contour_start_point : type_vector_model; -- start point of contour
 
-		end_point_previous : type_point;
+		end_point_previous : type_vector_model;
 
 		
 		procedure update_end_point (s : in out type_segment) is begin
@@ -486,11 +486,11 @@ package body et_geometry_2.contours is
 				when LINE => -- line 0 0
 
 					-- assign start point of line
-					--l.start_point := type_point (set (
+					--l.start_point := type_vector_model (set (
 							--x => to_distance (f (p + 1)),
 							--y => to_distance (f (p + 2))));
 
-					l.start_point := type_point (to_point (
+					l.start_point := type_vector_model (to_point (
 							x => f (p + 1),
 							y => f (p + 2)));
 
@@ -521,21 +521,21 @@ package body et_geometry_2.contours is
 				when ARC => -- arc 50 100 100 100 ccw
 
 					-- assign center of arc
-					--a.center := type_point (set (
+					--a.center := type_vector_model (set (
 							--x => to_distance (f (p + 1)),
 							--y => to_distance (f (p + 2))));
 
-					a.center := type_point (to_point (
+					a.center := type_vector_model (to_point (
 							x => f (p + 1),
 							y => f (p + 2)));
 
 					
 					-- assign start point of arc
-					--a.start_point := type_point (set (
+					--a.start_point := type_vector_model (set (
 							--x => to_distance (f (p + 3)),
 							--y => to_distance (f (p + 4))));
 
-					a.start_point := type_point (to_point (
+					a.start_point := type_vector_model (to_point (
 							x => f (p + 3),
 							y => f (p + 4)));
 
@@ -570,11 +570,11 @@ package body et_geometry_2.contours is
 				when CIRCLE => -- circle 40 40 10
 
 					-- assign center of circle
-					--c.center := type_point (set (
+					--c.center := type_vector_model (set (
 							--x => to_distance (f (p + 1)),
 							--y => to_distance (f (p + 2))));
 
-					c.center := type_point (to_point (
+					c.center := type_vector_model (to_point (
 							x => f (p + 1),
 							y => f (p + 2)));
 
@@ -701,11 +701,11 @@ package body et_geometry_2.contours is
 		closed : boolean := true;
 
 		-- The point where the contour outline starts:
-		start_point		: type_point;
+		start_point		: type_vector_model;
 
 		-- The end point of a segment. Once the last segment has been processed,
 		-- this point must match the start point:
-		last_end_point	: type_point;
+		last_end_point	: type_vector_model;
 
 		-- Goes true once a start point has been set:
 		started : boolean := false;
@@ -719,7 +719,7 @@ package body et_geometry_2.contours is
 		-- Clears the closed-flag if the given point does NOT
 		-- match the last_end_point and appends the last_end_point to
 		-- the list of gaps.
-		procedure set_start_point (p : in type_point) is begin
+		procedure set_start_point (p : in type_vector_model) is begin
 			if not started then
 				start_point := p;
 				last_end_point := start_point;
@@ -919,8 +919,8 @@ package body et_geometry_2.contours is
 		boundaries : constant type_boundaries := get_boundaries (contour, zero);
 	begin
 		-- compose the lower left corner point:
-		--result.point := type_point (set (boundaries.smallest_x, boundaries.smallest_y));
-		result.point := type_point (set (to_distance (boundaries.smallest_x),
+		--result.point := type_vector_model (set (boundaries.smallest_x, boundaries.smallest_y));
+		result.point := type_vector_model (set (to_distance (boundaries.smallest_x),
 										 to_distance (boundaries.smallest_y)));
 
 		-- figure out whether the point is real or virtual:
@@ -938,7 +938,7 @@ package body et_geometry_2.contours is
 
 	function get_corner_nearest_to_origin (
 		contour	: in type_contour)
-		return type_point
+		return type_vector_model
 	is
 		use pac_points;
 		corners : pac_points.list;
@@ -972,7 +972,7 @@ package body et_geometry_2.contours is
 	
 	function is_vertex (
 		contour	: in type_contour;
-		point	: in type_point)
+		point	: in type_vector_model)
 		return boolean
 	is
 		proceed : aliased boolean := true;
@@ -1125,7 +1125,7 @@ package body et_geometry_2.contours is
 	
 	function get_point_to_contour_status (
 		contour		: in type_contour;	
-		point		: in type_point)
+		point		: in type_vector_model)
 		return type_point_to_contour_status 
 	is
 		-- This function bases on the algorithm published at
@@ -1163,11 +1163,11 @@ package body et_geometry_2.contours is
 		result_segment : pac_segments.cursor;
 		result_neigboring_segments : type_neigboring_segments;
 
-		--vertex : constant type_point := to_point (point);
+		--vertex : constant type_vector_model := to_point (point);
 		
 		--line_pre : constant type_line := (
 				--start_point	=> point,
-				--end_point	=> type_point (set (get_x (point) + 1.0, get_y (point))));
+				--end_point	=> type_vector_model (set (get_x (point) + 1.0, get_y (point))));
 		
 		--probe_line : constant type_line_vector := to_line_vector (line_pre);
 		probe_line : constant type_line_vector := (
@@ -1233,7 +1233,7 @@ package body et_geometry_2.contours is
 		procedure collect_intersection (
 			intersection: in type_intersection; -- incl. point and angle
 			segment		: in type_intersected_segment)
-			--center		: in type_point := origin;
+			--center		: in type_vector_model := origin;
 			--radius		: in type_distance_positive := zero)
 		is 
 			xi : constant type_float := get_x (intersection.vector);

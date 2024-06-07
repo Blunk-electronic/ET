@@ -130,14 +130,14 @@ package et_canvas_board_devices is
 	-- of them as "selected".
 	-- If more than one device found, then it requests for clarification.
 	procedure find_electrical_devices (
-		point : in type_point);
+		point : in type_vector_model);
 
 	-- Locates all devices in the vicinity of given point.
 	-- Marks the affected devices as "proposed" and marks the the first
 	-- of them as "selected".
 	-- If more than one device found, then it requests for clarification.
 	procedure find_non_electrical_devices (
-		point : in type_point);
+		point : in type_vector_model);
 
 
 	
@@ -164,13 +164,13 @@ package et_canvas_board_devices is
 	--   to the selected device:
 	procedure move_electrical_device (
 		tool	: in type_tool;
-		point	: in type_point);
+		point	: in type_vector_model);
 
 	-- Similar to procedure move_electrical_device but works 
 	-- on non-electrical devices:
 	procedure move_non_electrical_device (
 		tool	: in type_tool;
-		point	: in type_point);
+		point	: in type_vector_model);
 
 
 	
@@ -195,13 +195,13 @@ package et_canvas_board_devices is
 	-- The rotation is always by 90 degree counter-clockwise:
 	procedure rotate_electrical_device (
 		tool	: in type_tool;
-		point	: in type_point);
+		point	: in type_vector_model);
 
 	-- Similar to procedure rotate_electrical_device but works 
 	-- on non-electrical devices:
 	procedure rotate_non_electrical_device (
 		tool	: in type_tool;
-		point	: in type_point);
+		point	: in type_vector_model);
 
 	
 
@@ -225,13 +225,13 @@ package et_canvas_board_devices is
 	--   The next call of this procedure flips the selected device.
 	procedure flip_electrical_device (
 		tool	: in type_tool;
-		point	: in type_point);
+		point	: in type_vector_model);
 	
 	-- Similar to procedure flip_electrical_device but works 
 	-- on non-electrical devices:
 	procedure flip_non_electrical_device (
 		tool	: in type_tool;
-		point	: in type_point);
+		point	: in type_vector_model);
 
 
 
@@ -253,7 +253,7 @@ package et_canvas_board_devices is
 	--   The next call of this procedure flips the selected device.
 	procedure delete_non_electrical_device (
 		tool	: in type_tool;
-		point	: in type_point);
+		point	: in type_vector_model);
 
 	
 	-- NOTE: Electrical devices must be deleted in the schematic !

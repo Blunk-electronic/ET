@@ -67,7 +67,7 @@ package et_schematic_ops.nets is
 	-- The catch_zone is a means of reducing the accuracy. The greater the catch_zone
 	-- the greater can be the distance of point from the segment.
 	function between_start_and_end_point (
-		point 		: in type_point;
+		point 		: in type_vector_model;
 		segment 	: in pac_net_segments.cursor;
 		catch_zone	: in type_catch_zone := type_catch_zone'first)
 		return boolean;
@@ -77,7 +77,7 @@ package et_schematic_ops.nets is
 	-- The catch_zone is a means of reducing the accuracy. The greater the catch_zone
 	-- the greater can be the distance of point from the segment.
 	function on_segment (
-		point 		: in type_point;
+		point 		: in type_vector_model;
 		segment 	: in pac_net_segments.cursor;
 		catch_zone	: in type_catch_zone := type_catch_zone'first)
 		return boolean;
@@ -150,7 +150,7 @@ package et_schematic_ops.nets is
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		point_of_attack	: in et_coordinates.type_position; -- sheet/x/y
 		coordinates		: in type_coordinates; -- relative/absolute
-		destination		: in type_point; -- x/y
+		destination		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 
@@ -230,7 +230,7 @@ package et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		start_point		: in et_coordinates.type_position; -- sheet/x/y
-		end_point		: in type_point; -- x/y
+		end_point		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 
@@ -279,7 +279,7 @@ package et_schematic_ops.nets is
 		segment_position: in et_coordinates.type_position; -- sheet/x/y
 
 		-- The position of the label relative to segment_position:
-		label_position	: in type_point := origin; -- x/y
+		label_position	: in type_vector_model := origin; -- x/y
 
 		-- The rotation is relevant for simple labels only. The label will always be placed
 		-- so that is is readable from the front or from the right.

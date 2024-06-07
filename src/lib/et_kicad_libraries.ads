@@ -138,7 +138,7 @@ package et_kicad_libraries is
 	end record;
 	
 	type type_text_placeholder (meaning : type_placeholder_meaning) is new type_text_basic with record
-		position	: type_point;		
+		position	: type_vector_model;		
 	end record;	
 	
 	-- A text/note in the schematic:
@@ -239,7 +239,7 @@ package et_kicad_libraries is
 	-- is "invented" that connects start and end point.
 	-- Finally the polylines are collected in a simple list.
 	package type_symbol_points is new doubly_linked_lists (
-		element_type	=> type_point,
+		element_type	=> type_vector_model,
 		"="				=> "=");
 
 	type type_symbol_polyline is record
@@ -252,8 +252,8 @@ package et_kicad_libraries is
 	-- rectangles of a symbol:
 	-- It is sufficient to specifiy the diagonal of the rectangle.
 	type type_symbol_rectangle is record
-		corner_A	: type_point;
-		corner_B	: type_point; -- diagonal to corner_A
+		corner_A	: type_vector_model;
+		corner_B	: type_vector_model; -- diagonal to corner_A
 		width		: et_symbols.type_line_width;
 		fill		: type_fill;
 	end record;
@@ -303,7 +303,7 @@ package et_kicad_libraries is
 	-- a component unit in the library
 	type type_unit_library (appearance : et_symbols.type_appearance) is record
 		symbol		: type_symbol := (appearance => appearance, others => <>);
-		coordinates	: type_point;
+		coordinates	: type_vector_model;
 		-- Units that harbor component wide pins have this flag set.
 		-- Usually units with power supply pins exclusively.
 		-- When building portlists this flag is important.

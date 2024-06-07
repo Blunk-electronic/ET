@@ -634,7 +634,7 @@ package et_kicad.pcb is
 -- FILL ZONES
 
 	-- Corner points are collected in a simple list.
-	package type_polygon_points is new doubly_linked_lists (type_point);
+	package type_polygon_points is new doubly_linked_lists (type_vector_model);
 
 	type type_fill_zone_pad_connection is (THERMAL, SOLID, NONE);
 

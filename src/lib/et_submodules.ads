@@ -90,7 +90,7 @@ package et_submodules is
 	-- Issues a warning if the point sits at the lower edge of the box
 	-- because the attached net may overlap with the text (instance, file,
 	-- position in board, ...) below the box.
-		point	: in type_point;
+		point	: in type_vector_model;
 		size	: in type_submodule_size)
 		return boolean;
 	
@@ -177,7 +177,7 @@ package et_submodules is
 	
 	type type_submodule_port is record
 		-- the position somewhere at the edge of the box
-		position	: type_point;
+		position	: type_vector_model;
 
 		-- The direction of inheriting net names when a netlist is exported:
 		-- Slave means: The net inside the submodule enforces its name onto the
@@ -266,13 +266,13 @@ package et_submodules is
 	function opposide_port (port : in type_netchanger_port_name) return type_netchanger_port_name;
 
 	type type_netchanger_port is record
-		position	: type_point;
+		position	: type_vector_model;
 		length		: et_symbols.type_port_length; 
 		rotation	: type_rotation;
 	end record;
 
-	position_master_port_default : constant type_point := (x =>  10.0, y => 0.0);
-	position_slave_port_default  : constant type_point := (x => -10.0, y => 0.0);
+	position_master_port_default : constant type_vector_model := (x =>  10.0, y => 0.0);
+	position_slave_port_default  : constant type_vector_model := (x => -10.0, y => 0.0);
 	
 	type type_netchanger_symbol is record
 		master_port	: type_netchanger_port := (
@@ -300,7 +300,7 @@ package et_submodules is
 		position_sch	: et_coordinates.type_position; -- x,y,sheet,rotation
 		--symbol			: type_netchanger_symbol; -- CS for visualisation only
 		
-		position_brd	: et_pcb_coordinates.pac_geometry_2.type_point; -- x,y
+		position_brd	: et_pcb_coordinates.pac_geometry_2.type_vector_model; -- x,y
 		-- in board there is no rotation because the netchanger is just a point in x/y.
 		layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 	end record;
@@ -311,8 +311,8 @@ package et_submodules is
 		element_type	=> type_netchanger);
 
 	type type_netchanger_ports is record
-		master	: type_point := position_master_port_default;
-		slave	: type_point := position_slave_port_default;
+		master	: type_vector_model := position_master_port_default;
+		slave	: type_vector_model := position_slave_port_default;
 	end record;
 	
 	function netchanger_ports (
@@ -328,7 +328,7 @@ package et_submodules is
 -- 		external	: type_port := (
 -- 						
 -- 						-- the position is relative to the module center:
--- 						position	=> type_point (set_point (x => 0.0, y => 0.0)),
+-- 						position	=> type_vector_model (set_point (x => 0.0, y => 0.0)),
 -- 						length		=> 5.0,
 -- 						rotation	=> 0.0);
 -- 
@@ -341,14 +341,14 @@ package et_submodules is
 -- 		
 -- 		-- CS symbol			: type_netchanger_symbol;
 -- 		
--- 		position_brd	: et_pcb_coordinates.type_point_2d; -- x,y
+-- 		position_brd	: et_pcb_coordinates.type_vector_model_2d; -- x,y
 -- 		signal_layer	: et_pcb.type_signal_layer := et_pcb.type_signal_layer'first;
 -- 	end record;
 
 -- CS
 -- 	type type_module_connector_symbol is record
 -- 		circle	: et_libraries.type_circle := (
--- 						center		=> type_point (set_point (x => 0.0, y => 0.0)),
+-- 						center		=> type_vector_model (set_point (x => 0.0, y => 0.0)),
 -- 						radius		=> 2.0,
 -- 						width		=> line_width_port_default);
 -- 	end record;

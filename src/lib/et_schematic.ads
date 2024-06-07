@@ -106,7 +106,7 @@ package et_schematic is
 	
 	-- A text/note in the schematic:
 	type type_text is new pac_text_schematic.type_text with record
-		position	: type_point;
+		position	: type_vector_model;
 		rotation	: et_text.type_rotation_documentation := et_text.HORIZONTAL;
 		sheet		: type_sheet := type_sheet'first;
 		content		: et_text.pac_text_content.bounded_string;
@@ -280,7 +280,7 @@ package et_schematic is
 	-- - If point is above of a vertical segment then then it is a stub that points up.
 	function stub_direction (
 		segment	: in pac_net_segments.cursor;
-		point	: in type_point)
+		point	: in type_vector_model)
 		return type_stub;
 		
 

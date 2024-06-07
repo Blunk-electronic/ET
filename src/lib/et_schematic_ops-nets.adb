@@ -111,7 +111,7 @@ package body et_schematic_ops.nets is
 
 	
 	function between_start_and_end_point (
-		point 		: in type_point;
+		point 		: in type_vector_model;
 		segment 	: in pac_net_segments.cursor;
 		catch_zone	: in type_catch_zone := type_catch_zone'first)
 		return boolean 
@@ -133,7 +133,7 @@ package body et_schematic_ops.nets is
 
 	
 	function on_segment (
-		point 		: in type_point;
+		point 		: in type_vector_model;
 		segment 	: in pac_net_segments.cursor;
 		catch_zone	: in type_catch_zone := type_catch_zone'first)
 		return boolean 
@@ -981,7 +981,7 @@ package body et_schematic_ops.nets is
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		point_of_attack	: in et_coordinates.type_position; -- sheet/x/y
 		coordinates		: in type_coordinates; -- relative/absolute
-		destination		: in type_point; -- x/y, the new position 
+		destination		: in type_vector_model; -- x/y, the new position 
 		log_threshold	: in type_log_level) 
 	is
 		net_cursor : pac_nets.cursor; -- points to the net
@@ -2237,7 +2237,7 @@ package body et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		start_point		: in et_coordinates.type_position; -- sheet/x/y
-		end_point		: in type_point; -- x/y
+		end_point		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) 
 	is		
 		net_cursor : pac_nets.cursor; -- points to the net
@@ -2472,7 +2472,7 @@ package body et_schematic_ops.nets is
 							procedure query_ports (cursor : in pac_device_ports.cursor) is
 								device_name 	: type_device_name; -- IC23
 								port_name		: pac_port_name.bounded_string; -- CE
-								port_position 	: type_point; -- the xy-position of the port
+								port_position 	: type_vector_model; -- the xy-position of the port
 							begin
 								device_name	:= element (cursor).device_name;
 								port_name	:= element (cursor).port_name;
@@ -2521,7 +2521,7 @@ package body et_schematic_ops.nets is
 							procedure query_ports (cursor : in pac_submodule_ports.cursor) is
 								submod_name 	: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
 								port_name		: pac_net_name.bounded_string; -- RESET
-								port_position 	: type_point; -- the xy-position of the port
+								port_position 	: type_vector_model; -- the xy-position of the port
 							begin
 								submod_name	:= element (cursor).module_name; -- CLOCK_GENERATOR
 								port_name	:= element (cursor).port_name;	-- RESET
@@ -2572,7 +2572,7 @@ package body et_schematic_ops.nets is
 							procedure query_ports (cursor : in pac_netchanger_ports.cursor) is
 								index			: type_netchanger_id; -- 1,2,3,...
 								port			: type_netchanger_port_name; -- SLAVE/MASTER
-								port_position 	: type_point; -- the xy-position of the port
+								port_position 	: type_vector_model; -- the xy-position of the port
 							begin
 								index := element (cursor).index;
 								port := element (cursor).port;
@@ -2805,7 +2805,7 @@ package body et_schematic_ops.nets is
 	procedure place_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment_position: in et_coordinates.type_position; -- sheet/x/y
-		label_position	: in type_point := origin; -- x/y
+		label_position	: in type_vector_model := origin; -- x/y
 		rotation		: in et_coordinates.type_rotation := zero_rotation; -- 0, 90, 180. Relevant for simple labels only.
 		appearance 		: in type_net_label_appearance; -- simple/tag label
 		direction		: in type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...

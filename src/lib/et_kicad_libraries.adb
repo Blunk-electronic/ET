@@ -452,8 +452,8 @@ package body et_kicad_libraries is
 	end validate_prefix;
 
 	
-	function to_point (x_in, y_in : in string) return type_point is
-		point : type_point;
+	function to_point (x_in, y_in : in string) return type_vector_model is
+		point : type_vector_model;
 		x, y : type_position_axis;
 	begin
 		x := mil_to_distance (x_in);
@@ -1415,7 +1415,7 @@ package body et_kicad_libraries is
 				end_point	: count_type := field_count (line) - 2;
 
 				-- temporarily we store coordinates of a point here
-				point		: type_point;
+				point		: type_vector_model;
 
 			begin -- to_polyline
 

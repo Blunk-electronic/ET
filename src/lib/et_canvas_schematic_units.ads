@@ -118,7 +118,7 @@ package et_canvas_schematic_units is
 	-- for clarification.
 	-- In case the last unit of a device has been deleted, then the device is 
 	-- deleted entirely from the module.
-	procedure delete_unit (point : in type_point);
+	procedure delete_unit (point : in type_vector_model);
 
 	-- Deletes the unit being pointed at by cursor selected_unit.
 	-- Call this procedure after a clarification.
@@ -146,7 +146,7 @@ package et_canvas_schematic_units is
 		-- here the original position.
 		-- Procedure draw_nets requires that in order
 		-- to calculate the displacement of attached net segments:
-		original_position	: type_point := origin;
+		original_position	: type_vector_model := origin;
 		
 		device				: type_device_name := (others => <>); -- IC45
 		unit				: pac_unit_name.bounded_string; -- A
@@ -194,13 +194,13 @@ package et_canvas_schematic_units is
 	-- Assigns the final position after the move to the selected unit.
 	-- Resets the global variable "unit".
 	procedure finalize_move (
-		destination		: in type_point;
+		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
 
 
 	procedure move_unit (
 		tool		: in type_tool;
-		position	: in type_point);
+		position	: in type_vector_model);
 
 	
 
@@ -228,12 +228,12 @@ package et_canvas_schematic_units is
 	-- Assigns the final position after the drag to the selected unit.
 	-- Resets the global variable "unit".
 	procedure finalize_drag (
-		destination		: in type_point;
+		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
 
 	procedure drag_unit (
 		tool		: in type_tool;
-		position	: in type_point);
+		position	: in type_vector_model);
 
 	
 
@@ -245,7 +245,7 @@ package et_canvas_schematic_units is
 	-- for clarification.
 	-- If there is only one unite, sets global variable selected_unit accordingly.
 	-- If there is no unit, then selected_unit is set to no_element.
-	procedure find_units_for_move (point : in type_point);
+	procedure find_units_for_move (point : in type_vector_model);
 
 	-- Locates net segments attached to the unit indicated by
 	-- cursor selected_unit. Collects the segments in list
@@ -257,7 +257,7 @@ package et_canvas_schematic_units is
 	-- If more than one unit near point found, then it sets the
 	-- cursor selected_unit to the first unit and requests
 	-- for clarification.
-	procedure rotate_unit (point : in type_point);
+	procedure rotate_unit (point : in type_vector_model);
 
 	-- Rotate the unit being pointed at by cursor selected_unit.
 	-- Call this procedure after a clarification.
@@ -347,7 +347,7 @@ package et_canvas_schematic_units is
 	procedure add_device;
 
 	procedure finalize_add_device (
-		position	: in type_point);
+		position	: in type_vector_model);
 
 
 
@@ -366,7 +366,7 @@ package et_canvas_schematic_units is
 
 	-- Does the final invoking of the unit in the schematic:
 	procedure finalize_invoke (
-		position		: in type_point;
+		position		: in type_vector_model;
 		log_threshold	: in type_log_level);
 	
 	-- Shows the available units of the selected device in a menu.
@@ -374,7 +374,7 @@ package et_canvas_schematic_units is
 	
 	-- Collects units in the vicinity of the given point.
 	-- Requests for clarification if more than one unit found.
-	procedure invoke_unit (point : in type_point);
+	procedure invoke_unit (point : in type_vector_model);
 	
 	
 -- PLACEHOLDERS
@@ -407,7 +407,7 @@ package et_canvas_schematic_units is
 		category			: type_placeholder_meaning := NAME;
 		being_moved			: boolean := false;
 		tool				: type_tool := MOUSE;
-		absolute_position	: type_point; -- before the move
+		absolute_position	: type_vector_model; -- before the move
 
 		device				: type_device_name := (others => <>); -- IC45
 		unit				: pac_unit_name.bounded_string; -- A
@@ -442,13 +442,13 @@ package et_canvas_schematic_units is
 	-- Assigns the final position after the move to the selected placeholder.
 	-- Resets the global variable "placeholder".
 	procedure finalize_move_placeholder (
-		destination		: in type_point;
+		destination		: in type_vector_model;
 		category		: in type_placeholder_meaning;
 		log_threshold	: in type_log_level);
 
 	procedure move_placeholder (
 		tool		: in type_tool;
-		position	: in type_point;
+		position	: in type_vector_model;
 		category	: in type_placeholder_meaning);
 
 	
@@ -457,7 +457,7 @@ package et_canvas_schematic_units is
 	-- cursor selected_placeholder to the first placeholder and requests
 	-- for clarification.
 	procedure find_placeholders (
-		point		: in type_point;
+		point		: in type_vector_model;
 		category	: in type_placeholder_meaning);
 
 	-- Rotates the placeholder indicated by selected_placeholder:
@@ -470,7 +470,7 @@ package et_canvas_schematic_units is
 	-- for clarification.
 	-- If only one placeholder found, then the placeholder will be rotated.
 	procedure rotate_placeholder (
-		point 		: in type_point;
+		point 		: in type_vector_model;
 		category	: in type_placeholder_meaning);
 
 
@@ -535,7 +535,7 @@ package et_canvas_schematic_units is
 	-- an error message will be output in the status bar.
 	--  Virtual units have no value, partcode or purpose because
 	--  they do not exist in reality.
-	procedure set_property (point : in type_point);
+	procedure set_property (point : in type_vector_model);
 
 	-- Sets the property of the selected unit (and the whole
 	-- device) of the unit being pointed at by cursor selected_unit.
@@ -564,7 +564,7 @@ package et_canvas_schematic_units is
 	-- for clarification.
 	-- If there is only one unite, sets global variable selected_unit accordingly.
 	-- If there is no unit, then selected_unit is set to no_element.
-	procedure find_units_for_show (point : in type_point);
+	procedure find_units_for_show (point : in type_vector_model);
 
 	
 end et_canvas_schematic_units;
