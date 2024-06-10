@@ -85,6 +85,9 @@ with et_geometry_1.et_polygons.offsetting;
 
 with et_geometry_2;
 with et_geometry_2.contours;
+
+with et_logical_pixels;			use et_logical_pixels;
+
 with et_text;
 with et_frames;
 with et_meta;
@@ -382,7 +385,7 @@ package pac_canvas is
 	end record;
 
 	
-	function to_string (p : in type_view_point) return string;
+	-- function to_string (p : in type_view_point) return string;
 
 	
 	-- A rectangular regions of the view:

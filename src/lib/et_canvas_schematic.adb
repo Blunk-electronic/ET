@@ -497,10 +497,10 @@ package body et_canvas_schematic is
 			
 		-- Prepare the current transformation matrix (CTM) so that
 		-- all following drawing is relative to the upper left frame corner.
-		translate (
-			context.cr,
-			convert_x (self.frame_bounding_box.x),
-			convert_y (self.frame_bounding_box.y));
+		-- translate (
+		-- 	context.cr,
+		-- 	convert_x (self.frame_bounding_box.x),
+		-- 	convert_y (self.frame_bounding_box.y));
 
 		
 		draw_units (self);
