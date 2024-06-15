@@ -38,6 +38,8 @@
 
 with ada.text_io;				use ada.text_io;
 
+with gdk.event;					use gdk.event;
+
 with gtk.widget;				use gtk.widget;
 with gtk.window;				use gtk.window;
 with gtk.separator;				use gtk.separator;
@@ -50,6 +52,7 @@ with gtk.scrollbar;				use gtk.scrollbar;
 
 with gtk.table;					use gtk.table;
 with gtk.label;					use gtk.label;
+with gtk.button;				use gtk.button;
 with gtk.text_view;				use gtk.text_view;
 with gtk.text_buffer;			use gtk.text_buffer;
 
@@ -62,11 +65,11 @@ with et_window_dimensions;		use et_window_dimensions;
 
 
 generic
-	with package pac_geometry is new et_geometry_2a (<>);
+	with package pac_geometry_2 is new et_geometry_2a (<>);
 
 	
 package et_canvas is
-	use pac_geometry;
+	use pac_geometry_2;
 
 
 -- ZOOM:
@@ -191,6 +194,9 @@ package et_canvas is
 	
 	
 
+
+
+	
 
 
 	-- In connection with zoom-operations we need the corners of the
@@ -904,6 +910,387 @@ package et_canvas is
 		v : in type_vector_model)
 		return type_vector_model;
 
+
+
+-- BUTTONS:
+
+	buttons_table		: gtk_table;
+	
+	button_zoom_fit		: gtk_button;
+	button_zoom_area	: gtk_button;
+	button_move			: gtk_button;
+	button_add			: gtk_button;
+	button_delete		: gtk_button;
+	button_export		: gtk_button;
+	
+	-- This procedure creates the buttons:
+	procedure create_buttons;
+
+---------------------------------------------------------------------
+-- INITIALISATION AND CALLBACKS:
+
+	
+	
+
+
+
+-- MAIN WINDOW:
+
+	procedure cb_window_focus (
+		window : access gtk_window_record'class);
+
+
+
+	-- This procedure instantiates the main window,
+	-- sets the title bar, connects signals with callback
+	-- subprograms and creates boxes inside the window:
+	procedure set_up_main_window;
+
+
+	
+
+	
+-- SCROLLED WINDOW AND SCROLLBARS:
+			
+	-- This procedure creates the scrolled window,
+	-- assigns to it the initial size (widht and height)
+	-- and sets the behaviour of them.
+	-- It also connects the signals emitted by the scrollbars
+	-- with the callback subprograms.
+	procedure set_up_swin_and_scrollbars;
+
+
+
+
+	
+-- CANVAS:
+
+	-- This procedure is called when the canvas changes
+	-- its size. It is not used currently because the canvas
+	-- has a fixed size in this demo program (see below):
+	-- procedure cb_canvas_size_allocate (
+	-- 	canvas		: access gtk_widget_record'class;
+	-- 	allocation	: gtk_allocation);
+
+	
+	-- This procedure creates the canvas, assigns to
+	-- it a fixed size and connects its signals
+	-- with callback subprograms:
+	procedure set_up_canvas;
+
+
+private
+
+-- CALLBACKS:
+
+	-- BUTTONS:
+	
+	-- This callback procedure is called each time the 
+	-- button "zoom fit" is clicked.
+	procedure cb_zoom_to_fit (
+		button : access gtk_button_record'class);
+
+	access_cb_zoom_to_fit : constant cb_gtk_button_void := cb_zoom_to_fit'access;
+
+
+	-- This callback procedure is called each time the 
+	-- button "zoom area" is clicked.
+	procedure cb_zoom_area (
+		button : access gtk_button_record'class);
+
+	access_cb_zoom_area : constant cb_gtk_button_void := cb_zoom_area'access;
+
+
+
+	
+	-- This callback procedure is called each time the 
+	-- button "add" is clicked.
+	procedure cb_add (
+		button : access gtk_button_record'class);
+
+	access_cb_add : constant cb_gtk_button_void := cb_add'access;
+
+	
+	
+	-- This callback procedure is called each time the 
+	-- button "delete is clicked.
+	procedure cb_delete (
+		button : access gtk_button_record'class);
+
+	access_cb_delete : constant cb_gtk_button_void := cb_delete'access;
+
+
+	
+	
+	-- This callback procedure is called each time the 
+	-- button "move" is clicked.
+	procedure cb_move (
+		button : access gtk_button_record'class);
+
+	access_cb_move: constant cb_gtk_button_void := cb_move'access;
+
+	
+	-- This callback procedure is called each time the 
+	-- button "export" is clicked:
+	procedure cb_export (
+		button : access gtk_button_record'class);
+
+	access_cb_export : constant cb_gtk_button_void := cb_export'access;
+
+	
+
+	-- MAIN WINDOW:
+
+	-- This procedure is called when the operator terminates
+	-- the demo program by clicking the X in the upper right corner
+	-- of the main window:
+	procedure cb_terminate (
+		window : access gtk_widget_record'class);
+
+	access_cb_terminate : constant cb_gtk_widget_void := cb_terminate'access;
+
+
+	-- This callback procedure is called each time the 
+	-- size_allocate signal is emitted by the main window:
+	procedure cb_main_window_size_allocate (
+		window		: access gtk_widget_record'class;
+		allocation	: gtk_allocation);
+
+	access_cb_main_window_size_allocate : constant 
+		cb_gtk_widget_gtk_allocation_void := cb_main_window_size_allocate'access;
+
+
+
+		-- This function is called each time the operator
+	-- presses a mouse button.
+	function cb_window_button_pressed (
+		window	: access gtk_widget_record'class;
+		event	: gdk_event_button)
+		return boolean;
+
+	access_cb_window_button_pressed : constant
+		cb_gtk_widget_gdk_event_button_boolean := cb_window_button_pressed'access;
+
+
+
+	-- This function is called each time the operator
+	-- hits a key on the keyboard. It does not matter
+	-- which widget inside the main window has the focus.
+	-- This callback function is at the top of the event-chain.
+	-- It is called at first on a key-press event.
+	-- If it returns true, then it signals to the 
+	-- next widget in the chain downwards to handle the event
+	-- further.
+	-- The return should depend on the severity of the key.
+	-- For example in case of an "emergency-exit" 
+	-- the operator hits the ESC key, which causes the abort of
+	-- all pending operations. In this case the return would be true
+	-- and the event would not be passed on to any widgets down
+	-- the chain.
+	function cb_window_key_pressed (
+		window	: access gtk_widget_record'class;
+		event	: gdk_event_key)
+		return boolean;
+
+	access_cb_window_key_pressed : constant
+		cb_gtk_widget_gdk_event_key_boolean := cb_window_key_pressed'access;
+
+
+	
+
+	function cb_main_window_configure (
+		window		: access gtk_widget_record'class;
+		event		: gdk.event.gdk_event_configure)
+		return boolean;
+
+	access_cb_main_window_configure : constant
+		cb_gtk_widget_gdk_event_configure_boolean := cb_main_window_configure'access;
+	
+	
+	
+
+	function cb_main_window_state_change (
+		window		: access gtk_widget_record'class;
+		event		: gdk.event.gdk_event_window_state)
+		return boolean;
+
+	access_cb_main_window_state_change : constant
+		cb_gtk_widget_gdk_event_window_state_boolean := cb_main_window_state_change'access;
+
+
+
+	procedure cb_main_window_realize (
+		window	: access gtk_widget_record'class);
+
+	access_cb_main_window_realize : constant
+		cb_gtk_widget_void := cb_main_window_realize'access;
+
+
+
+	procedure cb_main_window_activate (
+		window : access gtk_window_record'class);
+
+	access_cb_main_window_activate : constant
+		cb_gtk_window_void := cb_main_window_activate'access;
+
+
+
+-- SCROLLED WINDOW AND SCROLLBARS:
+			
+	-- This callback procedure is called each time the size_allocate signal
+	-- is emitted by the scrolled window.
+	procedure cb_swin_size_allocate (
+		swin		: access gtk_widget_record'class;
+		allocation	: gtk_allocation);
+	
+	access_cb_swin_size_allocate : constant
+		cb_gtk_widget_gtk_allocation_void := cb_swin_size_allocate'access;
+	
+
+
+	-- This procedure is called whenever the horizontal scrollbar is moved, 
+	-- either by the operator or by internal calls.
+	procedure cb_horizontal_moved (
+		scrollbar : access gtk_adjustment_record'class);
+
+	access_cb_horizontal_moved : constant
+		cb_gtk_adjustment_void := cb_horizontal_moved'access;
+	
+
+	
+	-- This procedure is called whenever the vertical scrollbar is moved, 
+	-- either by the operator or by internal calls.
+	procedure cb_vertical_moved (
+		scrollbar : access gtk_adjustment_record'class);
+
+	access_cb_vertical_moved : constant
+		cb_gtk_adjustment_void := cb_vertical_moved'access;
+	
+
+
+	-- This procedure is called when the operator clicks
+	-- on the vertical scrollbar:
+	function cb_scrollbar_v_pressed (
+		bar		: access gtk_widget_record'class;
+		event	: gdk_event_button)
+		return boolean;
+
+	access_cb_scrollbar_v_pressed : constant
+		cb_gtk_widget_gdk_event_button_boolean := cb_scrollbar_v_pressed'access;
+	
+
+	-- This procedure is called when the operator releases
+	-- the mouse button after clicking on the vertical scrollbar:
+	function cb_scrollbar_v_released (
+		bar		: access gtk_widget_record'class;
+		event	: gdk_event_button)
+		return boolean;
+
+	access_cb_scrollbar_v_released : constant
+		cb_gtk_widget_gdk_event_button_boolean := cb_scrollbar_v_released'access;
+
+
+	
+	-- This procedure is called when the operator clicks
+	-- on the horizontal scrollbar:
+	function cb_scrollbar_h_pressed (
+		bar		: access gtk_widget_record'class;
+		event	: gdk_event_button)
+		return boolean;
+	
+	access_cb_scrollbar_h_pressed : constant
+		cb_gtk_widget_gdk_event_button_boolean := cb_scrollbar_h_pressed'access;
+
+
+
+	
+	-- This procedure is called when the operator releases
+	-- the mouse button after clicking on the horizontal scrollbar:
+	function cb_scrollbar_h_released (
+		bar		: access gtk_widget_record'class;
+		event	: gdk_event_button)
+		return boolean;
+
+	access_cb_scrollbar_h_released : constant
+		cb_gtk_widget_gdk_event_button_boolean := cb_scrollbar_h_released'access;
+	
+
+
+
+	-- This function is called each time the canvas 
+	-- is to be refreshed.
+	-- It draws everything: frame, grid, cursor, objects
+	function cb_draw (
+		canvas		: access gtk_widget_record'class;
+		context_in	: in cairo.cairo_context)
+		return boolean;
+
+	access_cb_draw : constant cb_gtk_widget_cairo_context_boolean := cb_draw'access;
+		
+
+
+	-- This callback function is called each time the operator
+	-- clicks on the canvas.
+	-- It sets the focus on the canvas and moves the cursor
+	-- to the place where the operator has clicked the canvas.
+	function cb_canvas_button_pressed (
+		canvas	: access gtk_widget_record'class;
+		event	: gdk_event_button)
+		return boolean;
+
+	access_cb_canvas_button_pressed : constant
+		cb_gtk_widget_gdk_event_button_boolean := cb_canvas_button_pressed'access;
+
+
+
+	-- This callback function is called each time the operator
+	-- releases a mouse button after clicking on the canvas.
+	function cb_canvas_button_released (
+		canvas	: access gtk_widget_record'class;
+		event	: gdk_event_button)
+		return boolean;
+
+	access_cb_canvas_button_released : constant
+		cb_gtk_widget_gdk_event_button_boolean := cb_canvas_button_released'access;
+
+
+
+
+	-- This callback function is called each time the operator
+	-- moves the pointer (or the mouse) inside the canvas:
+	function cb_canvas_mouse_moved (
+		canvas	: access gtk_widget_record'class;
+		event	: gdk_event_motion)
+		return boolean;
+
+	access_cb_canvas_mouse_moved : constant
+		cb_gtk_widget_gdk_event_motion_boolean := cb_canvas_mouse_moved'access;
+
+
+
+
+	-- This function is called each time the mouse wheel is
+	-- rolled inside the canvas by the operator:
+	function cb_mouse_wheel_rolled (
+		canvas	: access gtk_widget_record'class;
+		event	: gdk_event_scroll)
+		return boolean;
+
+	access_cb_mouse_wheel_rolled : constant
+		cb_gtk_widget_gdk_event_scroll_boolean := cb_mouse_wheel_rolled'access;
+
+
+
+
+	-- This callback function is called each time the
+	-- operator hits a key and if the canvas has the focus:
+	function cb_canvas_key_pressed (
+		canvas	: access gtk_widget_record'class;
+		event	: gdk_event_key)
+		return boolean;
+
+	access_cb_canvas_key_pressed : constant
+		cb_gtk_widget_gdk_event_key_boolean := cb_canvas_key_pressed'access;
 	
 end et_canvas;
 

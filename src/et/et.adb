@@ -77,7 +77,7 @@ with et_frame_rw;
 with et_coordinates;
 with et_pcb_coordinates;
 
-with et_gui;
+with et_gui_2;
 
 procedure et is
 
@@ -462,7 +462,7 @@ procedure et is
 
 	procedure launch_schematic_and_board_editor is 
 		use ada.containers;
-		use et_gui;
+		use et_gui_2;
 		use et_project.modules;
 		use et_project.modules.pac_generic_modules;
 		use pac_module_file_name;
