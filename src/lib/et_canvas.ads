@@ -195,6 +195,34 @@ package et_canvas is
 	
 
 
+	-- This procedure parses the whole database of model objects
+	-- and the primitive objects of the drawing frame,
+	-- detects the smallest and greatest x and y values used by the model
+	-- and sets the global variable bounding_box accordingly.
+	-- If the bounding_box has changed, then the flag bounding_box_changed is
+	-- set (See below).
+	--
+	-- It modifies following global veriables:
+	-- - bounding_box
+	-- - bounding_box_changed
+	-- - bounding_box_error
+	--
+	-- The arguments can be used to:
+	-- - Abort on first error. Means NOT to parse the whole database but to
+	--   abort the parsing on the first violation of the maximal allowed 
+	--   dimensions (width and height).
+	-- - Ignore errors. Means to generate a bounding-box that might be
+	--   wider or taller than actually allowed. This is useful for debugging
+	--   and testing the effects of violations of maximal bounding-box 
+	--   dimensions.
+	-- - Test only. Means to simulate the compuation of the bounding-box only.
+	--   The global variable bounding_box will NOT be touched in any case.
+	procedure compute_bounding_box (
+		abort_on_first_error	: in boolean := false; 
+		-- CS currently not implemented
+		
+		ignore_errors			: in boolean := false;
+		test_only				: in boolean := false);
 
 	
 

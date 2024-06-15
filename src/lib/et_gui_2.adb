@@ -149,7 +149,7 @@ package body et_gui_2 is
 	is
 		-- use et_canvas_board_2;
 		use et_canvas_board_2.pac_canvas;
-		
+		-- use pac_canvas.pac_geometry_2;
 	begin
 		null;
 -- 		-- Set the log threshold. Everything that happens in the gui may be logged
@@ -158,10 +158,13 @@ package body et_gui_2 is
 		-- 
 		set_grid_to_scale;
 		compute_canvas_size;
-		-- compute_bounding_box;
+		compute_bounding_box;
+		set_base_offset;
+		
 -- 		log (text => "create window", level => log_threshold + 1);
 -- 		gtk_new (window); -- create the main window (where pointer "window" is pointing at)
 		set_up_main_window;
+
 		
 -- 		-- Show the module name in the title bar:
 -- 		set_title_bar (pac_generic_modules.key (module));
@@ -180,6 +183,7 @@ package body et_gui_2 is
 -- 		build_primary_tool_display;
 -- 		
 -- 		build_coordinates_display;
+		set_up_coordinates_display;
 -- 
 -- 		build_mode_display;
 -- 		
@@ -192,6 +196,7 @@ package body et_gui_2 is
 -- 
 -- 		
 -- 		build_toolbars;
+		set_up_swin_and_scrollbars;
 -- 
 -- 		build_console;
 -- 		set_label_console;
@@ -201,15 +206,22 @@ package body et_gui_2 is
 -- 
 -- 		build_canvas;
 -- 		gtk_new (canvas);
--- 
--- 		add (scrolled, canvas); -- place the canvas in the scrolled window
--- 		
--- 		scale_to_fit (canvas);
--- 		
--- 		-- display the board:
--- 		window.show_all;
+		set_up_canvas;
+
+		set_initial_scrollbar_settings;
+		update_zoom_display;
+		update_grid_display;
+		update_scale_display;
+		canvas.grab_focus;
+
+		-- zoom_to_fit (bounding_box);
+
+		-- Backup the currently visible area.
+		-- This is relevant for canvas mode MODE_3_ZOOM_FIT only:
+		-- backup_visible_area (bounding_box);
+
 		main_window.show_all;
--- 
+
 -- 		canvas.update_mode_display;
 		
 	end init_board;
