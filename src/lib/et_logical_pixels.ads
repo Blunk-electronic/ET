@@ -113,14 +113,6 @@ package et_logical_pixels is
 	procedure clip_min (
 		value	: in out type_logical_pixels;
 		limit	: in type_logical_pixels);
-	
-
-	
--- TRANSLATE-OFFSET:
-	
-	-- The global translate-offset by which all draw operations on the canvas
-	-- are translated when the operator zooms on the pointer or the cursor:
-	T : type_logical_pixels_vector := (0.0, 0.0);
 
 	
 end et_logical_pixels;

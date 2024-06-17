@@ -72,6 +72,14 @@ package et_canvas is
 	use pac_geometry_2;
 
 
+-- TRANSLATE-OFFSET:
+	
+	-- The global translate-offset by which all draw operations on the canvas
+	-- are translated when the operator zooms on the pointer or the cursor:
+	T : type_logical_pixels_vector := (0.0, 0.0);
+
+	
+	
 -- ZOOM:
 
 	-- This is the specification of the zoom factor

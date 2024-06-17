@@ -69,14 +69,14 @@ package body et_gui_2 is
 		set_base_offset;
 
 		pac_canvas.set_up_main_window;
-		et_canvas_board_2.set_up_main_window;
+		et_canvas_schematic_2.set_up_main_window;
 
 
 		set_up_coordinates_display;
 		set_up_swin_and_scrollbars;
 
 		pac_canvas.set_up_canvas;
-		et_canvas_board_2.set_up_canvas;
+		et_canvas_schematic_2.set_up_canvas;
 
 		set_initial_scrollbar_settings;
 		update_zoom_display;
@@ -181,8 +181,8 @@ package body et_gui_2 is
 		use et_canvas_board_2.pac_canvas;
 		use et_pcb_coordinates_2.pac_geometry_2;
 	begin
-		null;
 		put_line ("init_board");
+		
 -- 		-- Set the log threshold. Everything that happens in the gui may be logged
 -- 		-- using the gui wide variable log_threshold:
 -- 		pac_canvas.log_threshold := log_threshold_in;
@@ -277,7 +277,7 @@ package body et_gui_2 is
 -- 
 -- 		-- Set up the schematic window.
 -- 		log (text => "init schematic window ... ", level => log_threshold);
- 		-- init_schematic (project, module, sheet, log_threshold + 1);
+ 		init_schematic (project, module, sheet, log_threshold + 1);
 -- 
 -- 		-- CS test if board available (see et_schematic.type_module)
 -- 		
