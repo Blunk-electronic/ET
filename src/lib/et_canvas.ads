@@ -191,40 +191,7 @@ package et_canvas is
 		P	: in type_logical_pixels_vector;
 		zf	: in type_zoom_factor)
 		return type_vector_model;
-	
-	
-
-
-	-- This procedure parses the whole database of model objects
-	-- and the primitive objects of the drawing frame,
-	-- detects the smallest and greatest x and y values used by the model
-	-- and sets the global variable bounding_box accordingly.
-	-- If the bounding_box has changed, then the flag bounding_box_changed is
-	-- set (See below).
-	--
-	-- It modifies following global veriables:
-	-- - bounding_box
-	-- - bounding_box_changed
-	-- - bounding_box_error
-	--
-	-- The arguments can be used to:
-	-- - Abort on first error. Means NOT to parse the whole database but to
-	--   abort the parsing on the first violation of the maximal allowed 
-	--   dimensions (width and height).
-	-- - Ignore errors. Means to generate a bounding-box that might be
-	--   wider or taller than actually allowed. This is useful for debugging
-	--   and testing the effects of violations of maximal bounding-box 
-	--   dimensions.
-	-- - Test only. Means to simulate the compuation of the bounding-box only.
-	--   The global variable bounding_box will NOT be touched in any case.
-	procedure compute_bounding_box (
-		abort_on_first_error	: in boolean := false; 
-		-- CS currently not implemented
 		
-		ignore_errors			: in boolean := false;
-		test_only				: in boolean := false);
-
-	
 
 
 	-- In connection with zoom-operations we need the corners of the
@@ -383,11 +350,6 @@ package et_canvas is
 	procedure zoom_to_fit (
 		area : in type_area);
 
-
-	-- This procedure sets the global zoom factor S and translate-offset T
-	-- so that all objects of bounding-box fit into the scrolled window.
-	-- The zoom center is the top-left corner of bounding-box.
-	procedure zoom_to_fit_all;
 
 
 	-- If a zoom-to-area operation has started, then
@@ -1012,13 +974,6 @@ private
 -- CALLBACKS:
 
 	-- BUTTONS:
-	
-	-- This callback procedure is called each time the 
-	-- button "zoom fit" is clicked.
-	procedure cb_zoom_to_fit (
-		button : access gtk_button_record'class);
-
-	access_cb_zoom_to_fit : constant cb_gtk_button_void := cb_zoom_to_fit'access;
 
 
 	-- This callback procedure is called each time the 
@@ -1098,30 +1053,6 @@ private
 
 	access_cb_window_button_pressed : constant
 		cb_gtk_widget_gdk_event_button_boolean := cb_window_button_pressed'access;
-
-
-
-	-- This function is called each time the operator
-	-- hits a key on the keyboard. It does not matter
-	-- which widget inside the main window has the focus.
-	-- This callback function is at the top of the event-chain.
-	-- It is called at first on a key-press event.
-	-- If it returns true, then it signals to the 
-	-- next widget in the chain downwards to handle the event
-	-- further.
-	-- The return should depend on the severity of the key.
-	-- For example in case of an "emergency-exit" 
-	-- the operator hits the ESC key, which causes the abort of
-	-- all pending operations. In this case the return would be true
-	-- and the event would not be passed on to any widgets down
-	-- the chain.
-	function cb_window_key_pressed (
-		window	: access gtk_widget_record'class;
-		event	: gdk_event_key)
-		return boolean;
-
-	access_cb_window_key_pressed : constant
-		cb_gtk_widget_gdk_event_key_boolean := cb_window_key_pressed'access;
 
 
 	
@@ -1242,18 +1173,6 @@ private
 	access_cb_scrollbar_h_released : constant
 		cb_gtk_widget_gdk_event_button_boolean := cb_scrollbar_h_released'access;
 	
-
-
-
-	-- This function is called each time the canvas 
-	-- is to be refreshed.
-	-- It draws everything: frame, grid, cursor, objects
-	function cb_draw (
-		canvas		: access gtk_widget_record'class;
-		context_in	: in cairo.cairo_context)
-		return boolean;
-
-	access_cb_draw : constant cb_gtk_widget_cairo_context_boolean := cb_draw'access;
 		
 
 

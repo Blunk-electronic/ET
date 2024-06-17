@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           CANVAS FOR BOARD                               --
+--                           CANVAS SCHEMATIC                               --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -36,7 +36,7 @@
 --
 -- DESCRIPTION:
 -- 
--- This package draws the pcb layout (board) via various child packages.
+-- This package draws the schematic via various child packages.
 -- This package instantiates the generic canvas package (et_canvas_general.pac_canvas)
 -- and extends the type_view by the type_drawing. The latter is the link
 -- to the actual drawing. The type_drawing provides information on sheet size,
@@ -45,36 +45,47 @@
 --  Further-on the generic package for primitve draw operations (et_canvas_draw.pac_draw)
 -- is instantiated here so that lots of draw operations can use pac_draw_package.
 
+with ada.strings;					use ada.strings;
+--with ada.characters;				use ada.characters;
+--with ada.characters.handling;		use ada.characters.handling;
+with ada.strings.fixed; 			use ada.strings.fixed;
+
 with gdk.event;						use gdk.event;
 with gdk.types;						use gdk.types;
 with gdk.types.keysyms;				use gdk.types.keysyms;
 
 with gtk;
 with gtk.widget;					use gtk.widget;
+with gtk.window;
 with gtk.gentry;					use gtk.gentry;
 with gtk.button;					use gtk.button;
+with gtk.box;						use gtk.box;
+with gtk.label;						use gtk.label;
+with gtk.combo_box_text;			use gtk.combo_box_text;
 
 with glib;							use glib;
 with cairo;							use cairo;
 
--- with et_net_names;					use et_net_names;
+with et_logical_pixels;				use et_logical_pixels;
+
+
 -- with et_general;					use et_general;
 -- with et_geometry;					use et_geometry;
 
-with et_logical_pixels;				use et_logical_pixels;
+with et_coordinates_2;				use et_coordinates_2;
+-- use et_coordinates.pac_geometry_sch;
+-- use et_coordinates.pac_geometry_2;
+-- 
+-- with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 
-with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
--- use et_pcb_coordinates.pac_geometry_brd;
--- use et_pcb_coordinates.pac_geometry_2;
-
--- with et_board_shapes_and_text;		use et_board_shapes_and_text;
--- with et_vias;						use et_vias;
--- with et_terminals;					use et_terminals;
--- with et_conductor_segment;
--- with et_packages;
 -- with et_project.modules;			use et_project.modules;
+-- with et_symbols;
 -- with et_schematic;
+-- with et_schematic_ops;
+-- with et_schematic_ops.nets;
+-- with et_schematic_ops.units;
 -- with et_frames;
+-- with et_text;						use et_text;
 
 -- with et_canvas_general;				use et_canvas_general;
 with et_canvas;
@@ -82,51 +93,45 @@ with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 
 
-package et_canvas_board_2 is
+package et_canvas_schematic_2 is
 
 	procedure dummy;
 	
--- 	use pac_text_board;
+-- 	use pac_text_schematic;
 -- 	
--- 	use pac_net_name;
-
-	-- This procedure should be called each time after the current active module 
-	-- changes. It calls procedures that initialize the values used in property
-	-- bars for vias, tracks, ...
-	-- procedure init_property_bars;
-
-
-	
--- 	title : constant string := system_name & " BOARD ";
+-- 	use et_project.modules.pac_generic_modules;
 -- 	
+-- 
+-- 	
+-- 	title : constant string := system_name & " SCHEMATIC ";
+-- 
 -- 	procedure set_title_bar (
 -- 		-- CS project name								
 -- 		module		: in pac_module_name.bounded_string);
-
-
 	
-	-- Instantiate the general canvas package:
+	-- Instantiate the canvas package:
 	-- package pac_canvas is new et_canvas_general.pac_canvas (
-	-- 	canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
-	-- 	pac_geometry_2	=> et_pcb_coordinates.pac_geometry_2,
-	-- 	pac_polygons	=> et_board_shapes_and_text.pac_polygons,
-	-- 	pac_offsetting	=> et_board_shapes_and_text.pac_polygon_offsetting,
-	-- 	pac_contours	=> et_board_shapes_and_text.pac_contours,
-	-- 	pac_text		=> et_board_shapes_and_text.pac_text_board);
+	-- 	canvas_name		=> "schematic", -- CS provide domain name like scripting.type_domain
+	-- 	pac_geometry_2	=> et_coordinates.pac_geometry_2,
+	-- 	pac_offsetting	=> et_coordinates.pac_polygon_offsetting,
+	-- 	pac_polygons	=> et_coordinates.pac_polygons,
+	-- 	pac_contours	=> et_coordinates.pac_contours,
+	-- 	pac_text		=> pac_text_schematic);
+
 
 	package pac_canvas is new et_canvas (
-		-- canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
-		pac_geometry_2	=> et_pcb_coordinates_2.pac_geometry_2
-		-- pac_polygons	=> et_board_shapes_and_text.pac_polygons,
-		-- pac_offsetting	=> et_board_shapes_and_text.pac_polygon_offsetting,
-		-- pac_contours	=> et_board_shapes_and_text.pac_contours,
-		-- pac_text		=> et_board_shapes_and_text.pac_text_board
-		
+		-- canvas_name		=> "schematic", -- CS provide domain name like scripting.type_domain
+		pac_geometry_2	=> et_coordinates_2.pac_geometry_2
+		-- pac_offsetting	=> et_coordinates.pac_polygon_offsetting,
+		-- pac_polygons	=> et_coordinates.pac_polygons,
+		-- pac_contours	=> et_coordinates.pac_contours,
+		-- pac_text		=> pac_text_schematic
 		);
-
+		
 	
-	use pac_canvas;	
-	use et_pcb_coordinates_2.pac_geometry_2;
+	use pac_canvas;
+	use et_coordinates_2.pac_geometry_2;
+
 
 
 	-- This procedure parses the whole database of model objects
@@ -212,42 +217,60 @@ package et_canvas_board_2 is
 
 	-- Connects additional canvas signals with subprograms:
 	procedure set_up_canvas;
-	
-	
-	
-	-- Frequently used things to draw the board layout:
-	-- type type_drawing is null record;
 
 	
-
--- 	-- Initializes the internal data so that the model can send signals:
--- 	procedure init (self : not null access type_model'class);
-
-
-
 	
-	-- Composes a console command like 
-	-- "board motor_driver execute script my_script.scr"
-	-- and sends it to procedure et_scripting.board_cmd
-	-- to be executed.:
-	-- procedure execute_script (script : in pac_script_name.bounded_string);	
- -- 
-	-- -- Executes a command as typed on the console by the operator
-	-- -- like "rename device R1 R2".
-	-- -- Calls et_scripting.board_cmd for the actual execution.
-	-- procedure execute_command (self : access gtk_entry_record'class);
- -- 
-	
-
--- VIEW OR CANVAS
-	
-	-- type type_view is new pac_canvas.type_view with record
-	-- 	drawing	: type_drawing;
-	-- end record;
-
-
-	-- Appends the et_canvas_schematic.label_console_text to the existing text
-	-- of label_console:
+-- 	box_sheet		: gtk_vbox;
+-- 	label_sheet		: gtk_label;
+-- 	cbox_sheet		: gtk_combo_box_text;
+-- 
+-- 	procedure update_sheet_number_display;
+-- 	procedure build_sheet_number_display;
+-- 
+-- 	
+-- 
+-- 	-- The current active sheet:
+-- 	current_active_sheet : et_coordinates.type_sheet := type_sheet'first;
+-- 
+-- 
+-- 	
+-- 	-- Frequently used things to draw the schematic:
+-- 	type type_drawing is null record;
+-- 
+-- 
+-- 	
+-- -- 	-- Initializes the internal data so that the model can send signals:
+-- -- 	procedure init (self : not null access type_model'class);
+-- 
+-- 
+-- 
+-- 	
+-- 	-- Composes a console command like 
+-- 	-- "schematic motor_driver execute script my_script.scr"
+-- 	-- and sends it to procedure et_scripting.schematic_cmd
+-- 	-- to be executed.:
+-- 	procedure execute_script (script : in pac_script_name.bounded_string);	
+-- 
+-- 	-- Executes a command as typed on the console by the operator
+-- 	-- like "rename device R1 R2".
+-- 	-- Calls et_scripting.schematic_cmd for the actual execution.
+-- 	procedure execute_command (self : access gtk_entry_record'class);
+-- 
+-- 
+-- 	
+-- -- VIEW OR CANVAS
+-- 
+-- 	type type_view is new pac_canvas.type_view with record
+-- 		drawing	: type_drawing;
+-- 	end record;
+-- 
+-- 
+-- 	
+-- 	label_console_text : constant string := 
+-- 		(8 * " ") & "switch module: F11 / F12";
+-- 
+-- 	-- Appends the label_console_text to the existing text
+-- 	-- of label_console:
 -- 	procedure set_label_console;
 -- 
 -- 
@@ -255,54 +278,93 @@ package et_canvas_board_2 is
 -- 	procedure redraw_board;
 -- 	procedure redraw_schematic;
 -- 	procedure redraw;
-
-	
-
-
-	
+-- 
+-- 
+-- 	
+-- 	-- Advances no previous generic module. If there is no
+-- 	-- previous module, selects the last module of 
+-- 	-- collection of generic modules.
+-- 	procedure next_module;
+-- 
+-- 	-- Advances no next generic module. If there is no
+-- 	-- next module, selects the first module of 
+-- 	-- collection of generic modules.
+-- 	procedure previous_module;
+-- 
+-- 	
+-- 	
+-- 	-- Returns the name of the currently active module:
+-- 	function active_module return pac_module_name.bounded_string;
+-- 
+-- 	-- Returns the bounding box of all items of the current sheet.
 -- 	overriding function bounding_box (self : not null access type_view)
 -- 		return type_bounding_box;
 -- 
--- 		
+-- 	
 -- 	overriding function model_to_drawing (
 -- 		self		: not null access type_view;
 -- 		model_point : in type_model_point)
 -- 		return type_vector_model;
 -- 
--- 		
+-- 	
 -- 	overriding function drawing_to_model (
 -- 		self			: not null access type_view;
 -- 		drawing_point : in type_vector_model)	
 -- 		return type_model_point;
-
-
-
-	-- These procedures set the grid as entered in the grid box:
-		
--- 	procedure set_grid_x (self : access gtk.gentry.gtk_entry_record'class);
--- 	-- Additionally sets the grid for y. Mostly grid of x and y axis are the same.
--- 	
--- 	procedure set_grid_y (self : access gtk.gentry.gtk_entry_record'class);
--- 
--- 
--- 	-- Multiplier for grid densities:
--- 	grid_density_multiplier_coarse	: constant type_distance_positive := 10.0;
--- 	grid_density_multiplier_normal	: constant type_distance_positive := 1.0;
--- 	grid_density_multiplier_fine	: constant type_distance_positive := 0.25;	
 -- 
 -- 	
--- 	
--- 
--- 	-- Creates a new board view:
+-- 	-- Creates a new schematic view:
 -- 	procedure gtk_new (
 -- 		self	: out type_view_ptr);
+-- 
+-- 
 -- 	
--- 	-- Redraws either the whole board view, or a specific part of it only:
+-- 	-- Redraw either the whole schematic sheet or a specific part of it only.
 -- 	overriding procedure draw_internal (
 -- 		self	: not null access type_view;
 -- 		area_in	: type_bounding_box);
 -- 
 -- 
+-- 	-- Sets the active module to be displayed in the canvas.
+-- 	-- The module must exist inside the current project directory.
+-- 	procedure set_module (
+-- 		module	: in pac_module_name.bounded_string); -- motor_driver
+-- 
+-- 	-- Sets the global variables "current_active_module" and "current_active_sheet".
+-- 	-- Sets the grid values to be displayed in the coordinates display.
+-- 	procedure init_drawing (
+-- 		module	: in et_project.modules.pac_generic_modules.cursor; -- the module to be drawn in schematic and layout
+-- 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be drawn
+-- 
+-- 	
+-- 
+-- 	-- These procedures set the grid as entered in the grid box:
+-- 	
+-- 	procedure set_grid_x (self : access gtk_entry_record'class);
+-- 	-- Additionally sets the grid for y. Mostly grid of x and y axis are the same.
+-- 	
+-- 	procedure set_grid_y (self : access gtk_entry_record'class);
+-- 
+-- 
+-- 	-- Multiplier for grid densities:
+-- 	grid_density_multiplier_coarse	: constant type_distance_positive := 10.0;
+-- 	grid_density_multiplier_normal	: constant type_distance_positive := 1.0;
+-- 	grid_density_multiplier_fine	: constant type_distance_positive := 0.1;
+-- 
+-- 	-- Resets the grid density to default and snaps the cursor
+-- 	-- to the nearest grid point.
+-- 	-- Updates the coordinates display.
+-- 	procedure reset_grid_and_cursor (
+-- 		self : not null access type_view);
+-- 
+-- 	-- Sets the grid density and snaps the cursor
+-- 	-- to the nearest grid point.
+-- 	-- Updates the coordinates display.
+-- 	procedure set_grid (
+-- 		self	: not null access type_view;
+-- 		density	: in type_grid_density); -- COARSE, NORMAL, FINE
+-- 
+-- 	
 -- 	overriding procedure move_cursor (
 -- 		self		: not null access type_view;
 -- 		coordinates	: in type_coordinates;  -- relative/absolute
@@ -314,51 +376,39 @@ package et_canvas_board_2 is
 -- 		direction	: in type_cursor_direction; -- right, left, up, down
 -- 		cursor		: in out type_cursor);
 -- 
--- 
--- 	
 -- 	cursor_line_width : constant type_distance_positive := 0.8;
 -- 	cursor_half_size : constant type_distance_positive := 50.0;
--- 	type type_cursor_line is new et_pcb_coordinates.pac_geometry_2.type_line with null record;
+-- 	type type_cursor_line is new et_coordinates.pac_geometry_2.type_line with null record;
 -- 	-- CS: Cursor stuff must be based on float numbers.
--- 	
 -- 	
 -- 	overriding procedure draw_cursor (
 -- 		self		: not null access type_view;
 -- 		cursor		: in type_cursor);
 -- 
--- 	
 -- 	overriding function get_grid (
 -- 		self : not null access type_view)
 -- 		return type_grid;
 -- 
--- 		
 -- 	overriding function get_frame (
 -- 		self : not null access type_view)
 -- 		return et_frames.type_frame;
 -- 
--- 		
+-- 	
 -- 	overriding function get_frame_height (
 -- 		self : not null access type_view)
 -- 		return type_float_positive;
 -- 
--- 		
+-- 	
 -- 	overriding function frame_width (
 -- 		self : not null access type_view)
 -- 		return type_float_positive;
 -- 	
--- 		
+-- 	
 -- 	overriding function title_block_position (
 -- 		self : not null access type_view)
 -- 		return et_frames.type_position;
 -- 
--- 		
--- 	-- Returns the position of the board origin relative to the lower left
--- 	-- corner of the drawing frame:
--- 	function board_origin (
--- 		self : not null access type_view)
--- 		return type_model_point;
 -- 
--- 	
 -- 	overriding function get_verb (
 -- 		self	: not null access type_view)
 -- 		return string;
@@ -367,6 +417,15 @@ package et_canvas_board_2 is
 -- 		self	: not null access type_view)
 -- 		return string;
 -- 
+-- 	-- Resets global variables required for selections, clarifications, ...
+-- 	-- Verb and noun remain as they are
+-- 	-- so that the mode is unchanged.
+-- 	-- Should be called when exception rises in order to clean up.
+-- 	-- Should also be called when the operator hits ESC.
+-- 	procedure reset_selections;
+-- 
+-- 	-- Clears list of proposed objects such as net segments, units, ...
+-- 	procedure clear_proposed_objects;
 -- 	
 -- 	overriding procedure key_pressed (
 -- 		self		: not null access type_view;
@@ -382,8 +441,19 @@ package et_canvas_board_2 is
 -- 		button	: in type_mouse_button;
 -- 		point	: in type_vector_model);
 -- 
--- 	-- Saves the current module by calling 
--- 	-- et_canvas_schematic.save_module:
+-- 	overriding procedure reset_properties_selection (
+-- 		self : not null access type_view);
+-- 
+-- 
+-- 	status_text_module_saved : constant string := "Module saved.";
+-- 
+-- 	-- This procedure saves the current active module 
+-- 	-- in its file. This procedure is called from
+-- 	-- the overridden procedure save_drawing.
+-- 	procedure save_module;
+-- 
+-- 	-- Saves the current module by calling save_module 
+-- 	-- (see above):
 -- 	overriding procedure save_drawing (
 -- 		self : not null access type_view);
 -- 
@@ -396,9 +466,10 @@ package et_canvas_board_2 is
 -- 
 -- 	overriding procedure redo (
 -- 		self : not null access type_view);
+-- 
 
 	
-end et_canvas_board_2;
+end et_canvas_schematic_2;
 
 -- Soli Deo Gloria
 

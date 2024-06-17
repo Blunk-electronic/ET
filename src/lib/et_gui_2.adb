@@ -37,27 +37,56 @@
 
 -- with et_modes;						use et_modes;
 
--- with et_canvas_schematic;
+with et_canvas_schematic_2;
+with et_coordinates_2;
+
 with et_canvas_board_2;
 with et_pcb_coordinates_2;
 
 package body et_gui_2 is
 
--- 	procedure init_schematic (
--- 		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
--- 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
--- 		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
--- 		log_threshold_in: in type_log_level) 
--- 	is
--- 		use et_canvas_schematic;
--- 		use et_canvas_schematic.pac_canvas;
--- 		
--- 	begin
+	procedure init_schematic (
+		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
+		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
+		sheet			: in et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
+		log_threshold_in: in type_log_level) 
+	is
+		use et_canvas_schematic_2;
+		use et_canvas_schematic_2.pac_canvas;
+		use et_coordinates_2.pac_geometry_2;
+		
+	begin
 -- 		-- Set the log threshold. Everything that happens in the gui may be logged
 -- 		-- using the gui wide variable log_threshold:
 -- 		log_threshold := log_threshold_in;
 -- 
--- 		
+		-- 
+		put_line ("init_schematic");
+
+		set_grid_to_scale;
+		compute_canvas_size;
+		compute_bounding_box;
+		set_base_offset;
+
+		pac_canvas.set_up_main_window;
+		et_canvas_board_2.set_up_main_window;
+
+
+		set_up_coordinates_display;
+		set_up_swin_and_scrollbars;
+
+		pac_canvas.set_up_canvas;
+		et_canvas_board_2.set_up_canvas;
+
+		set_initial_scrollbar_settings;
+		update_zoom_display;
+		update_grid_display;
+		update_scale_display;
+		canvas.grab_focus;
+
+		backup_visible_area (bounding_box);
+
+		
 -- 		-- Set the current project name:
 -- 		log (text => "active project " & enclose_in_quotes (to_string (project)), 
 -- 			 level => log_threshold);
@@ -135,12 +164,12 @@ package body et_gui_2 is
 -- 
 -- 		-- display the schematic:
 -- 		log (text => "show schematic window", level => log_threshold + 1);
--- 		window.show_all;
+		main_window.show_all;
 -- 
 -- 		update_sheet_number_display;
 -- 		canvas.update_mode_display;
 -- 		
--- 	end init_schematic;
+	end init_schematic;
 
 	
 	procedure init_board (
@@ -148,12 +177,12 @@ package body et_gui_2 is
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
 		log_threshold_in: in type_log_level) 
 	is
-		-- use et_canvas_board_2;
+		use et_canvas_board_2;
 		use et_canvas_board_2.pac_canvas;
-		-- use et_canvas_board_2.pac_canvas.pac_geometry_2;
 		use et_pcb_coordinates_2.pac_geometry_2;
 	begin
 		null;
+		put_line ("init_board");
 -- 		-- Set the log threshold. Everything that happens in the gui may be logged
 -- 		-- using the gui wide variable log_threshold:
 -- 		pac_canvas.log_threshold := log_threshold_in;
@@ -165,26 +194,16 @@ package body et_gui_2 is
 		
 -- 		log (text => "create window", level => log_threshold + 1);
 -- 		gtk_new (window); -- create the main window (where pointer "window" is pointing at)
-		set_up_main_window;
+		pac_canvas.set_up_main_window;
+		et_canvas_board_2.set_up_main_window;
 
 		
 -- 		-- Show the module name in the title bar:
 -- 		set_title_bar (pac_generic_modules.key (module));
--- 		
--- 		window.set_default_size (1200, 600);
--- 
--- 		-- If the operator wishes to terminate the program (by clicking X)
--- 		window.on_destroy (terminate_main'access);
--- 
--- 		-- For reaction to keys pressed on the keyboard:
--- 		window.on_key_press_event (on_key_event'access);
--- 		
--- 
--- 		build_background_boxes;
+
 -- 
 -- 		build_primary_tool_display;
--- 		
--- 		build_coordinates_display;
+
 		set_up_coordinates_display;
 -- 
 -- 		build_mode_display;
@@ -208,7 +227,8 @@ package body et_gui_2 is
 -- 
 -- 		build_canvas;
 -- 		gtk_new (canvas);
-		set_up_canvas;
+		pac_canvas.set_up_canvas;
+		et_canvas_board_2.set_up_canvas;
 
 		set_initial_scrollbar_settings;
 		update_zoom_display;
@@ -257,7 +277,7 @@ package body et_gui_2 is
 -- 
 -- 		-- Set up the schematic window.
 -- 		log (text => "init schematic window ... ", level => log_threshold);
--- 		init_schematic (project, module, sheet, log_threshold + 1);
+ 		-- init_schematic (project, module, sheet, log_threshold + 1);
 -- 
 -- 		-- CS test if board available (see et_schematic.type_module)
 -- 		

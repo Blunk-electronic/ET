@@ -227,276 +227,6 @@ package body et_canvas is
 
 -- BOUNDING-BOX:
 	
-	procedure compute_bounding_box (
-		abort_on_first_error	: in boolean := false;
-		ignore_errors			: in boolean := false;
-		test_only				: in boolean := false)		
-	is
-		-- use pac_lines;
-		-- use pac_circles;
-		-- use pac_objects;
-
-		-- debug : boolean := false;
-		debug : boolean := true;
-		
-
-		-- In order to detect whether the bounding-box has
-		-- changed we take a copy of the current bounding-box:
-		bbox_old : type_area := bounding_box;
-
-		-- This is the temporary bounding-box we are going to build
-		-- in the course of this procedure:
-		bbox_new : type_area;
-		
-		-- The first primitie object encountered will be the
-		-- seed for bbox_new. All other objects cause 
-		-- this bbox_new to expand. After the first object,
-		-- this flag is cleared:
-		first_object : boolean := true;
-
-
-		-- This procedure iterates through all primitive objects
-		-- of the drawing frame and adds them to the temporary
-		-- bounding-box bbox_new:
--- 		procedure parse_drawing_frame is
--- 			use demo_frame;
--- 
--- 			procedure query_line (l : in pac_lines.cursor) is
--- 				-- The candidate line being handled:
--- 				line : type_line renames element (l);
--- 
--- 				-- Compute the preliminary bounding-box of the line:
--- 				b : type_area := get_bounding_box (line);
--- 			begin
--- 				-- Move the box by the position of the
--- 				-- drawing frame to get the final bounding-box
--- 				-- of the line candidate:
--- 				move_by (b.position, drawing_frame.position);
--- 
--- 				-- If this is the first primitive object,
--- 				-- then use its bounding-box as seed to start from:
--- 				if first_object then
--- 					bbox_new := b;
--- 					first_object := false;
--- 				else
--- 				-- Otherwise, merge the box b with the box being built:
--- 					merge_areas (bbox_new, b);
--- 				end if;
--- 			end query_line;
--- 
--- 			
--- 		begin
--- 			-- CS: This simple solution iterates through all lines
--- 			-- incl. the title block. But since the title block
--- 			-- is always inside the drawing frame, the elements
--- 			-- of the title block can be omitted.
--- 			drawing_frame.lines.iterate (query_line'access);
--- 			
--- 			-- CS texts
--- 		end parse_drawing_frame;
-
-
-		
--- 		-- This procedure is called each time an object of the database
--- 		-- is processed:
--- 		procedure query_object (oc : in pac_objects.cursor) is
--- 			-- This is the complex candidate object being handled:
--- 			object : type_complex_object renames element (oc);
--- 
--- 			
--- 			-- This procedure computes the bounding-box of a line:
--- 			procedure query_line (lc : in pac_lines.cursor) is
--- 				-- The candidate line being handled:
--- 				line : type_line renames element (lc);
--- 
--- 				-- Compute the preliminary bounding-box of the line:
--- 				b : type_area := get_bounding_box (line);
--- 			begin
--- 				-- Move the box by the position of the
--- 				-- complex object to get the final bounding-box
--- 				-- of the line candidate:
--- 				move_by (b.position, object.position);
--- 
--- 				-- If this is the first primitive object,
--- 				-- then use its bounding-box as seed to start from:
--- 				if first_object then
--- 					bbox_new := b;
--- 					first_object := false;
--- 				else
--- 				-- Otherwise, merge the box b with the box being built:
--- 					merge_areas (bbox_new, b);
--- 				end if;
--- 			end query_line;
--- 
--- 
--- 			-- This procedure computes the bounding-box of a circle:
--- 			procedure query_circle (cc : in pac_circles.cursor) is
--- 				-- The candidate circle being handled:
--- 				circle : type_circle renames element (cc);
--- 
--- 				-- Compute the preliminary bounding-box of the circle:
--- 				b : type_area := get_bounding_box (circle);
--- 			begin				
--- 				-- Move the box by the position of the
--- 				-- complex object to get the final bounding-box
--- 				-- of the circle candidate:
--- 				move_by (b.position, object.position);
--- 
--- 				-- If this is the first primitive object,
--- 				-- then use its bounding-box as seed to start from:
--- 				if first_object then
--- 					bbox_new := b;
--- 					first_object := false;
--- 				else
--- 				-- Otherwise, merge the box b with the box being built:
--- 					merge_areas (bbox_new, b);
--- 				end if;
--- 			end query_circle;
--- 
--- 			
--- 		begin
--- 			-- Iterate the lines, circles and other primitive
--- 			-- components of the current object:
--- 			object.lines.iterate (query_line'access);
--- 			object.circles.iterate (query_circle'access);
--- 			-- CS arcs
--- 		end query_object;
--- 
--- 
--- 		-- This procedure updates the bounding-box and
--- 		-- sets the bounding_box_changed flag
--- 		-- in NON-TEST-MODE (which is default by argument test_only).
--- 		-- In TEST-mode the bounding_box_changed flag is cleared:
--- 		procedure update_global_bounding_box is begin
--- 			if test_only then
--- 				put_line ("TEST ONLY mode. Bounding-box not changed.");
--- 				bounding_box_changed := false;
--- 			else
--- 				-- Update the global bounding-box:
--- 				bounding_box := bbox_new;
--- 
--- 				-- The new bounding-box differs from the old one.
--- 				-- Set the global flag bounding_box_changed:
--- 				bounding_box_changed := true;
--- 			end if;
--- 		end update_global_bounding_box;
--- 		
--- 
--- 
--- 		procedure add_margin is
--- 			use demo_frame;
--- 			
--- 			-- The offset due to the margin:
--- 			margin_offset : type_vector_model;
--- 		begin
--- 			bbox_new.width  := bbox_new.width  + 2.0 * margin;
--- 			bbox_new.height := bbox_new.height + 2.0 * margin;
--- 			
--- 			-- Since we regard the margin as inside the bounding-box,
--- 			-- we must move the bounding-box position towards bottom-left
--- 			-- by the inverted margin_offset:
--- 			margin_offset := (x	=> margin, y => margin);
--- 			move_by (bbox_new.position, invert (margin_offset));
--- 		end add_margin;
--- 
-		
-	begin
-		put_line ("compute_bounding_box");
-
-		-- The drawing frame is regarded as part of the model.
-		-- Iterate through all primitive objects of the 
-		-- drawing frame:
-	-- parse_drawing_frame;
-		
-		-- The database that contains all objects of the model
-		-- must be parsed. This is the call of an iteration through
-		-- all objects of the database:
-	-- objects_database_model.iterate (query_object'access);
-
-		-- The temporary bounding-box bbox_new in its current
-		-- state is the so called "inner bounding-box" (IB).
-
-		-- Now, we expand the temporary bounding-box by the margin.
-		-- The area around the drawing frame frame is regarded
-		-- as part of the model and thus inside the bounding-box:
-	-- add_margin;
-		-- Now, bbox_new has become the "outer bounding-box" (OB).
-		
-		-- Compare the new bounding-box with the old 
-		-- bounding-box to detect a change:
-		if bbox_new /= bbox_old then
-			null;
--- 
--- 			-- Do the size check of the new bounding-box. If it is
--- 			-- too large, then restore the old bounding-box:
--- 			if bbox_new.width  >= bounding_box_width_max or
--- 				bbox_new.height >= bounding_box_height_max then
--- 
--- 				-- output limits and computed box dimensions:
--- 				put_line ("WARNING: Bounding-box size limit exceeded !");
--- 				put_line (" max. width : " 
--- 					& to_string (bounding_box_width_max));
--- 				
--- 				put_line (" max. height: " 
--- 					& to_string (bounding_box_height_max));
--- 				
--- 				put_line (" detected   : " 
--- 					& to_string (bbox_new));
--- 
--- 				-- Set the error flag:
--- 				bounding_box_error := (
--- 					size_exceeded => true,
--- 					width  => bbox_new.width,
--- 					height => bbox_new.height);
--- 
--- 				
--- 				if ignore_errors then
--- 					put_line (" Errors ignored !");
--- 					
--- 					-- Override old global bounding-box with
--- 					-- the faulty box bbox_new:
--- 					update_global_bounding_box;
--- 					
--- 				else -- By default errors are NOT ignored.
--- 					put_line (" Discarded. Global bounding-box NOT changed.");
--- 					
--- 					-- Clear the global flag bounding_box_changed
--- 					-- because we discard the new bounding-box (due to 
--- 					-- a size error) and
--- 					-- leave the current global bounding-box untouched:
--- 					bounding_box_changed := false;
--- 
--- 				end if;
--- 
--- 				
--- 			else -- size ok, no errors
--- 				-- Reset error flag:
--- 				bounding_box_error := (others => <>);
--- 
--- 				update_global_bounding_box;
--- 			end if;
--- 			
--- 			
-		else -- No change. 
-			-- Clear the global flag bounding_box_changed:
-			bounding_box_changed := false;
-
-			-- Reset error flag:
-			bounding_box_error := (others => <>);
-		end if;
-
-		
-		if debug then
-			put_line ("bounding-box: " & to_string (bounding_box));
-
-			if bounding_box_changed then
-				put_line (" has changed");
-			end if;
-		end if;
-	end compute_bounding_box;
-
-
-	
 	
 	function get_bounding_box_corners
 		return type_bounding_box_corners
@@ -741,54 +471,6 @@ package body et_canvas is
 
 
 
-	procedure zoom_to_fit_all is
-		-- debug : boolean := true;
-		debug : boolean := false;
-	begin
-		-- put_line ("zoom_to_fit");
-
-		-- Reset the translate-offset:
-		T := (0.0, 0.0);
-		
-		-- Compute the new bounding-box. Update global
-		-- variable bounding_box:
-		compute_bounding_box;
-
-		-- In order to simulate a violation of the maximal
-		-- size of the bounding-box try this:
-		-- compute_bounding_box (ignore_errors => true);
-		-- compute_bounding_box (test_only => true, ignore_errors => true);
-
-		-- Compute the new base-offset. Update global variable F:
-		set_base_offset;
-
-		-- Since the bounding_box has changed, the scrollbars
-		-- must be reinitialized:
-		set_initial_scrollbar_settings;
-
-		-- Calculate the zoom factor that is required to
-		-- fit all objects into the scrolled window:
-		S := get_ratio (bounding_box);
-
-		
-		
-		if debug then
-			put_line (" S: " & type_zoom_factor'image (S));
-		end if;
-
-		update_zoom_display;
-
-
-		-- Calculate the translate-offset that is required to
-		-- "move" all objects to the center of the visible area:
-		center_to_visible_area (bounding_box);
-
-		backup_visible_area (bounding_box);
-		
-		-- Schedule a redraw of the canvas:
-		refresh (canvas);
-	end zoom_to_fit_all;
-	
 
 
 	procedure draw_zoom_area is
@@ -2757,19 +2439,6 @@ package body et_canvas is
 -- INITIALISATION AND CALLBACKS:
 
 
-	procedure cb_zoom_to_fit (
-		button : access gtk_button_record'class)
-	is
-		-- debug : boolean := true;
-		debug : boolean := false;
-	begin
-		put_line ("cb_zoom_to_fit");
-
-		zoom_to_fit_all;
-	end cb_zoom_to_fit;
-
-	
-
 	procedure cb_zoom_area (
 		button : access gtk_button_record'class)
 	is
@@ -2866,64 +2535,6 @@ package body et_canvas is
 
 
 
-	function cb_window_key_pressed (
-		window	: access gtk_widget_record'class;
-		event	: gdk_event_key)
-		return boolean
-	is
-		event_handled : boolean := false;
-
-		use gdk.types;		
-		use gdk.types.keysyms;
-		
-		key_ctrl	: gdk_modifier_type := event.state and control_mask;
-		key_shift	: gdk_modifier_type := event.state and shift_mask;
-		key			: gdk_key_type := event.keyval;
-
-	begin
-		-- Output the the gdk_key_type (which is
-		-- just a number (see gdk.types und gdk.types.keysyms)):
-		put_line ("cb_window_key_pressed "
-			& " key " & gdk_key_type'image (event.keyval));
-
-		if key_ctrl = control_mask then 
-			case key is
-
-				when others => null;
-			end case;
-
-		else
-			case key is
-				when GDK_ESCAPE =>
-					-- Here the commands to abort any pending 
-					-- operations should be placed:
-					
-					-- Abort the zoom-to-area operation:
-					reset_zoom_area;
-
-					-- Do not pass this event further
-					-- to widgets down the chain.
-					-- Prosssing the event stops here.
-					event_handled := true;
-					
-
-				when GDK_F5 =>
-					zoom_to_fit_all;
-
-					-- Do not pass this event further
-					-- to widgets down the chain.
-					-- Prosssing the event stops here.
-					event_handled := true;
-
-					
-				when others => null;
-			end case;
-		end if;
-		
-		return event_handled;
-	end cb_window_key_pressed;
-
-	
 		
 		
 	procedure cb_main_window_size_allocate (
@@ -2985,14 +2596,11 @@ package body et_canvas is
 
 	procedure set_up_command_buttons is
 	begin
-		put_line ("set_up_command_buttons");
+		put_line ("set_up_command_buttons (general)");
 
 		create_buttons;
 
 		-- Connect button signals with subprograms:
-		
-		--button_zoom_fit.on_clicked (cb_zoom_to_fit'access);
-		button_zoom_fit.on_clicked (access_cb_zoom_to_fit);		
 		
 		-- button_zoom_area.on_clicked (cb_zoom_area'access);
 		button_zoom_area.on_clicked (access_cb_zoom_area);
@@ -3014,7 +2622,7 @@ package body et_canvas is
 	
 	
 	procedure set_up_main_window is begin
-		put_line ("set_up_main_window");
+		put_line ("set_up_main_window (general)");
 
 		create_window; -- incl. boxes and a separator	
 		
@@ -3027,9 +2635,6 @@ package body et_canvas is
 		
 		--main_window.on_button_press_event (cb_window_button_pressed'access);
 		main_window.on_button_press_event (access_cb_window_button_pressed);
-		
-		-- main_window.on_key_press_event (cb_window_key_pressed'access);
-		main_window.on_key_press_event (access_cb_window_key_pressed);
 		
 		--main_window.on_configure_event (cb_main_window_configure'access);
 		main_window.on_configure_event (access_cb_main_window_configure);
@@ -3353,7 +2958,7 @@ package body et_canvas is
 	
 	
 	procedure set_up_canvas is begin
-		put_line ("set_up_canvas");
+		put_line ("set_up_canvas (general)");
 
 		create_canvas;
 		
@@ -3362,11 +2967,6 @@ package body et_canvas is
 		-- Not used:
 		-- canvas.on_size_allocate (cb_canvas_size_allocate'access);
 		-- canvas.set_redraw_on_allocate (false);
-
-		-- canvas.on_draw (cb_draw'access);
-		canvas.on_draw (access_cb_draw);
-		-- NOTE: No context is declared here, because the canvas widget
-		-- passes its own context to the callback procedure cb_draw.
 		
 		--canvas.on_button_press_event (cb_canvas_button_pressed'access);
 		canvas.on_button_press_event (access_cb_canvas_button_pressed);
@@ -3903,47 +3503,6 @@ package body et_canvas is
 		
 		return event_handled;
 	end cb_mouse_wheel_rolled;
-
-
-
-	
-	function cb_draw (
-		canvas		: access gtk_widget_record'class;
-		context_in	: in cairo.cairo_context)
-		return boolean
-	is
-		use cairo;
-		event_handled : boolean := true;
-	
-	begin
-		-- new_line;
-		-- put_line ("cb_draw " & image (clock));
-
-		-- Update the global context:
-		context := context_in;
-
-		
-		-- Update the global visible_area:
-		visible_area := get_visible_area (canvas);
-		-- put_line (" visible " & to_string (visible_area));
-
-		-- Set the background color:
-		-- set_source_rgb (context, 0.0, 0.0, 0.0); -- black
-		set_source_rgb (context, 1.0, 1.0, 1.0); -- white
-		paint (context);
-
-		-- The ends of all kinds of lines are round:
-		set_line_cap (context, cairo_line_cap_round);
-
-		--draw_grid;		
-		--draw_origin;
-		draw_cursor;
-		draw_zoom_area;
-		--draw_drawing_frame;		
-		--draw_objects;		
-		
-		return event_handled;
-	end cb_draw;
 
 	
 end et_canvas;
