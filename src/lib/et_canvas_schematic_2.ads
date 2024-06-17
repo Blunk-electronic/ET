@@ -69,7 +69,7 @@ with cairo;							use cairo;
 with et_logical_pixels;				use et_logical_pixels;
 
 
--- with et_general;					use et_general;
+with et_general;					use et_general;
 -- with et_geometry;					use et_geometry;
 
 with et_coordinates_2;				use et_coordinates_2;
@@ -103,12 +103,7 @@ package et_canvas_schematic_2 is
 -- 	
 -- 
 -- 	
--- 	title : constant string := system_name & " SCHEMATIC ";
--- 
--- 	procedure set_title_bar (
--- 		-- CS project name								
--- 		module		: in pac_module_name.bounded_string);
-	
+
 	-- Instantiate the canvas package:
 	-- package pac_canvas is new et_canvas_general.pac_canvas (
 	-- 	canvas_name		=> "schematic", -- CS provide domain name like scripting.type_domain

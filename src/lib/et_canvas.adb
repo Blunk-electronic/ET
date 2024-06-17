@@ -685,7 +685,6 @@ package body et_canvas is
 		
 
 		main_window := gtk_window_new (WINDOW_TOPLEVEL);
-		main_window.set_title ("Demo Canvas");
 		main_window.set_border_width (10);
 
 		-- CS: Set the minimum size of the main window ?
@@ -719,6 +718,12 @@ package body et_canvas is
 	end create_window;
 
 
+
+	procedure set_title_bar (
+		title : in string)
+	is begin
+		main_window.set_title (title);
+	end;
 
 	
 

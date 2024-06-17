@@ -55,22 +55,28 @@ package body et_gui_2 is
 		use et_canvas_schematic_2.pac_canvas;
 		use et_coordinates_2.pac_geometry_2;
 		
-	begin
--- 		-- Set the log threshold. Everything that happens in the gui may be logged
--- 		-- using the gui wide variable log_threshold:
--- 		log_threshold := log_threshold_in;
--- 
-		-- 
-		put_line ("init_schematic");
+	begin		
+		-- Set the log threshold. Everything that happens in the gui may be logged
+		-- using the gui wide variable log_threshold:
+		log_threshold := log_threshold_in;
+
+		log (text => "init_schematic", level => log_threshold);
+		
+		-- Set the current project name:
+		log (text => "active project " & enclose_in_quotes (to_string (project)), 
+			 level => log_threshold);
+		
+		current_active_project := project;
 
 		set_grid_to_scale;
 		compute_canvas_size;
 		compute_bounding_box;
 		set_base_offset;
 
+		log (text => "create window", level => log_threshold + 1);
 		pac_canvas.set_up_main_window;
 		et_canvas_schematic_2.set_up_main_window;
-
+		set_title_bar ("SCHEMATIC"); -- CS rig and module name
 
 		set_up_coordinates_display;
 		set_up_swin_and_scrollbars;
@@ -86,31 +92,13 @@ package body et_gui_2 is
 
 		backup_visible_area (bounding_box);
 
-		
--- 		-- Set the current project name:
--- 		log (text => "active project " & enclose_in_quotes (to_string (project)), 
--- 			 level => log_threshold);
--- 
--- 		current_active_project := project;
--- 
--- 		-- create the main window (where pointer "window" is pointing at)
--- 		log (text => "create window", level => log_threshold + 1);
+	
+
 -- 		gtk_new (window); 
 -- 
 -- 		-- Show the module name in the title bar:
 -- 		log (text => "set title bar", level => log_threshold + 1);
--- 		set_title_bar (pac_generic_modules.key (module));
--- 
--- 		-- Set the window default size:
--- 		log (text => "set window default size", level => log_threshold + 1);
--- 		window.set_default_size (1200, 600);
--- 
--- 		-- If the operator wishes to terminate the program (by clicking X)
--- 		window.on_destroy (terminate_main'access);
--- 
--- 		-- For reaction to keys pressed on the keyboard:
--- 		window.on_key_press_event (on_key_event'access);
--- 
+
 -- 
 -- 		log (text => "build background boxes", level => log_threshold + 1);
 -- 		build_background_boxes;
@@ -147,17 +135,11 @@ package body et_gui_2 is
 -- 		-- Connect to the on_activate signal of the entry (which is a child of console):
 -- 		gtk_entry (console.get_child).on_activate (execute_command'access); -- on hitting enter
 -- 		
--- 		log (text => "build canvas", level => log_threshold + 1);
--- 		build_canvas;
--- 		gtk_new (canvas);
 -- 		
 -- 		-- set the module to be opened and optionally the sheet to be displayed:
 -- 		log (text => "init drawing", level => log_threshold + 1);
 -- 		init_drawing (module, sheet);
 -- 
--- 		-- place the canvas in the scrolled window:
--- 		log (text => "add canvas to scrolled window", level => log_threshold + 1);
--- 		add (scrolled, canvas);
 -- 
 -- 		log (text => "scale to fit", level => log_threshold + 1);
 -- 		scale_to_fit (canvas);
@@ -181,27 +163,23 @@ package body et_gui_2 is
 		use et_canvas_board_2.pac_canvas;
 		use et_pcb_coordinates_2.pac_geometry_2;
 	begin
-		put_line ("init_board");
+		-- Set the log threshold. Everything that happens in the gui may be logged
+		-- using the gui wide variable log_threshold:
+		log_threshold := log_threshold_in;
+
+		log (text => "init_board", level => log_threshold);
 		
--- 		-- Set the log threshold. Everything that happens in the gui may be logged
--- 		-- using the gui wide variable log_threshold:
--- 		pac_canvas.log_threshold := log_threshold_in;
-		-- 
 		set_grid_to_scale;
 		compute_canvas_size;
 		compute_bounding_box;
 		set_base_offset;
 		
--- 		log (text => "create window", level => log_threshold + 1);
--- 		gtk_new (window); -- create the main window (where pointer "window" is pointing at)
+		log (text => "create window", level => log_threshold + 1);
 		pac_canvas.set_up_main_window;
 		et_canvas_board_2.set_up_main_window;
+		set_title_bar ("BOARD"); -- CS rig and module name
 
-		
--- 		-- Show the module name in the title bar:
--- 		set_title_bar (pac_generic_modules.key (module));
 
--- 
 -- 		build_primary_tool_display;
 
 		set_up_coordinates_display;

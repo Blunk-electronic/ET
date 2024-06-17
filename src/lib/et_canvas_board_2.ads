@@ -58,7 +58,7 @@ with glib;							use glib;
 with cairo;							use cairo;
 
 -- with et_net_names;					use et_net_names;
--- with et_general;					use et_general;
+with et_general;					use et_general;
 -- with et_geometry;					use et_geometry;
 
 with et_logical_pixels;				use et_logical_pixels;
@@ -94,15 +94,7 @@ package et_canvas_board_2 is
 	-- changes. It calls procedures that initialize the values used in property
 	-- bars for vias, tracks, ...
 	-- procedure init_property_bars;
-
-
 	
--- 	title : constant string := system_name & " BOARD ";
--- 	
--- 	procedure set_title_bar (
--- 		-- CS project name								
--- 		module		: in pac_module_name.bounded_string);
-
 
 	
 	-- Instantiate the general canvas package:

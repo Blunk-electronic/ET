@@ -63,14 +63,24 @@ with et_logical_pixels;			use et_logical_pixels;
 with et_geometry_2a;
 with et_window_dimensions;		use et_window_dimensions;
 
+with et_logging;				use et_logging;
+
 
 generic
+	
 	with package pac_geometry_2 is new et_geometry_2a (<>);
 
 	
 package et_canvas is
 	use pac_geometry_2;
 
+
+	-- This variable serves for logging debug messages an other stuff.
+	-- It is assigned with the log level on initializing a main window.
+	log_threshold : type_log_level := type_log_level'first;
+
+
+	
 
 -- TRANSLATE-OFFSET:
 	
@@ -443,6 +453,12 @@ package et_canvas is
 	procedure create_window;
 
 
+	-- This procedure sets the text of the title bar
+	-- of the main window:
+	procedure set_title_bar (
+		title : in string);
+
+	
 
 -- SCROLLED WINDOW:
 
