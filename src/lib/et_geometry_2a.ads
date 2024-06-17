@@ -211,8 +211,12 @@ package et_geometry_2a is
 	-- This is the bounding-box of the model. It is a rectangle
 	-- that encloses all objects of the model and the margins 
 	-- around the model:
-	bounding_box : type_area;
-
+	-- bounding_box : type_area;
+	bounding_box : type_area := (
+		width => 300.0,
+		height	=> 200.0,							
+		others => <>);
+	
 	
 	-- These are the system limits for the width and height
 	-- of the bounding-box of the model:

@@ -39,6 +39,7 @@
 
 -- with et_canvas_schematic;
 with et_canvas_board_2;
+with et_pcb_coordinates_2;
 
 package body et_gui_2 is
 
@@ -149,7 +150,8 @@ package body et_gui_2 is
 	is
 		-- use et_canvas_board_2;
 		use et_canvas_board_2.pac_canvas;
-		-- use pac_canvas.pac_geometry_2;
+		-- use et_canvas_board_2.pac_canvas.pac_geometry_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
 	begin
 		null;
 -- 		-- Set the log threshold. Everything that happens in the gui may be logged
@@ -218,7 +220,7 @@ package body et_gui_2 is
 
 		-- Backup the currently visible area.
 		-- This is relevant for canvas mode MODE_3_ZOOM_FIT only:
-		-- backup_visible_area (bounding_box);
+		backup_visible_area (bounding_box);
 
 		main_window.show_all;
 

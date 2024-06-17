@@ -123,7 +123,7 @@ package et_pcb_coordinates_2 is
 		-- type_rotation 			=> type_rotation
 		);
 	
-	use pac_geometry_2;
+	-- use pac_geometry_2;
 	
 
 	-- catch_zone_default : constant type_catch_zone := 2.0; 
