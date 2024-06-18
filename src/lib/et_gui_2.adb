@@ -35,7 +35,7 @@
 --   history of changes:
 --
 
--- with et_modes;						use et_modes;
+with et_modes;						use et_modes;
 
 with et_canvas_schematic_2;
 with et_coordinates_2;
@@ -73,7 +73,6 @@ package body et_gui_2 is
 		compute_bounding_box;
 		set_base_offset;
 
-		log (text => "create window", level => log_threshold + 1);
 		pac_canvas.set_up_main_window;
 		et_canvas_schematic_2.set_up_main_window;
 		set_title_bar ("SCHEMATIC"); -- CS rig and module name
@@ -90,12 +89,11 @@ package body et_gui_2 is
 		update_scale_display;
 		canvas.grab_focus;
 
+		-- CS zoom_to_fit (bounding_box);
+		
 		backup_visible_area (bounding_box);
 
 	
-
--- 		gtk_new (window); 
--- 
 -- 		-- Show the module name in the title bar:
 -- 		log (text => "set title bar", level => log_threshold + 1);
 
@@ -140,12 +138,10 @@ package body et_gui_2 is
 -- 		log (text => "init drawing", level => log_threshold + 1);
 -- 		init_drawing (module, sheet);
 -- 
--- 
--- 		log (text => "scale to fit", level => log_threshold + 1);
--- 		scale_to_fit (canvas);
--- 
--- 		-- display the schematic:
--- 		log (text => "show schematic window", level => log_threshold + 1);
+
+
+		-- display the schematic:
+		log (text => "show schematic window", level => log_threshold + 1);
 		main_window.show_all;
 -- 
 -- 		update_sheet_number_display;
@@ -174,7 +170,6 @@ package body et_gui_2 is
 		compute_bounding_box;
 		set_base_offset;
 		
-		log (text => "create window", level => log_threshold + 1);
 		pac_canvas.set_up_main_window;
 		et_canvas_board_2.set_up_main_window;
 		set_title_bar ("BOARD"); -- CS rig and module name
@@ -202,9 +197,7 @@ package body et_gui_2 is
 -- 		
 -- 		-- Connect to the on_activate signal of the entry (which is a child of console):
 -- 		gtk_entry (console.get_child).on_activate (execute_command'access); -- on hitting enter
--- 
--- 		build_canvas;
--- 		gtk_new (canvas);
+
 		pac_canvas.set_up_canvas;
 		et_canvas_board_2.set_up_canvas;
 
@@ -214,12 +207,13 @@ package body et_gui_2 is
 		update_scale_display;
 		canvas.grab_focus;
 
-		-- zoom_to_fit (bounding_box);
+		-- CS zoom_to_fit (bounding_box);
 
 		-- Backup the currently visible area.
 		-- This is relevant for canvas mode MODE_3_ZOOM_FIT only:
 		backup_visible_area (bounding_box);
 
+		log (text => "show board window", level => log_threshold + 1);		
 		main_window.show_all;
 
 -- 		canvas.update_mode_display;
@@ -237,33 +231,31 @@ package body et_gui_2 is
 	is
 		-- use et_coordinates;
 	begin
-		null;
-		-- log (text => row_separator_single, level => log_threshold);
-		-- log (text => "starting GUI ...", level => log_threshold);
-		-- log (text => "project " & enclose_in_quotes (to_string (project)), level => log_threshold);
-		-- log (text => "runmode " & to_string (MODE_MODULE), level => log_threshold);
-		-- log (text => "module " & enclose_in_quotes (to_string (pac_generic_modules.key (module))), level => log_threshold);
+		log (text => row_separator_single, level => log_threshold);
+		log (text => "starting GUI ...", level => log_threshold);
+		log (text => "project " & enclose_in_quotes (to_string (project)), level => log_threshold);
+		log (text => "runmode " & to_string (MODE_MODULE), level => log_threshold);
+		log (text => "module " & enclose_in_quotes (to_string (pac_generic_modules.key (module))), level => log_threshold);
 		-- log (text => "sheet" & to_sheet (sheet), level => log_threshold);
 
--- 		if pac_script_name.length (script) > 0 then
--- 			log (text => "script " & enclose_in_quotes (to_string (script)), level => log_threshold);
--- 		end if;
--- 
--- 		-- initialize the main gtk stuff
--- 		log (text => "init gtk main ... ", level => log_threshold);
+		if pac_script_name.length (script) > 0 then
+			log (text => "script " & enclose_in_quotes (to_string (script)), level => log_threshold);
+		end if;
+
+		log (text => "init gtk main (GUI) ... ", level => log_threshold);
+		log_indentation_up;
+		
 		gtk.main.init;
--- 
--- 		-- Set up the schematic window.
--- 		log (text => "init schematic window ... ", level => log_threshold);
+
+		-- Set up the schematic window.
  		init_schematic (project, module, sheet, log_threshold + 1);
--- 
--- 		-- CS test if board available (see et_schematic.type_module)
--- 		
--- 		-- Set up the board window.
--- 		log (text => "init board layout window ... ", level => log_threshold);
+
+		-- CS test if board available (see et_schematic.type_module)
+		
+		-- Set up the board window.
 		init_board (project, module, log_threshold + 1);
--- 
--- 		-- CS
+
+		-- CS
 -- 		et_canvas_schematic.pac_canvas.window.present;
 		--et_canvas_schematic.pac_canvas.console.grab_focus;
 
@@ -275,7 +267,7 @@ package body et_gui_2 is
 		--         Both launch the script in the same way. But in case there is no board
 		--         available, it is more reasonable to launch the script from the schematic.
 		-- if pac_script_name.length (script) > 0 then
-  -- 
+  
 		-- 	--et_gui.schematic_callbacks.execute_script (script);
 		-- 	et_canvas_schematic.execute_script (script);
 		-- 	-- 1. Composes a command that executes the script
@@ -289,7 +281,7 @@ package body et_gui_2 is
 		-- 	-- 5. et_scripting.execute_command parses the command and dispatches
 		-- 	--    to procedure schematic_cmd, board_cmd or project_cmd.
 		-- end if;
-  -- 
+  
 
 		
 		-- CS Init defaults of property bars in schematic.
@@ -302,6 +294,8 @@ package body et_gui_2 is
 		-- Start the main gtk loop. This is a loop that permanently draws the widgets and
 		-- samples them for possible signals sent.
 		gtk.main.main;
+		
+		log_indentation_down;
 		
 	end single_module;	
 	

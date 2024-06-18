@@ -485,7 +485,7 @@ package body et_canvas_schematic_2 is
 
 
 	procedure set_up_main_window is begin
-		put_line ("set_up_main_window (schematic)");
+		log (text => "set_up_main_window (schematic)", level => log_threshold);
 
 		main_window.on_key_press_event (cb_window_key_pressed'access);
 

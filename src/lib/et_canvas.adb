@@ -2627,8 +2627,9 @@ package body et_canvas is
 	
 	
 	procedure set_up_main_window is begin
-		put_line ("set_up_main_window (general)");
-
+		-- put_line ("set_up_main_window (general)");
+		log (text => "set_up_main_window (general)", level => log_threshold);
+		
 		create_window; -- incl. boxes and a separator	
 		
 		-- connect signals:
