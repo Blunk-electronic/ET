@@ -74,8 +74,8 @@ with et_device_rw;
 with et_frames;
 with et_frame_rw;
 
-with et_coordinates;
-with et_pcb_coordinates;
+with et_coordinates_2;
+with et_pcb_coordinates_2;
 
 with et_gui_2;
 
@@ -90,7 +90,7 @@ procedure et is
 	project_name_save_as	: et_project.pac_project_name.bounded_string; -- the "save as" name of the project
 
 	module_file_name		: pac_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
-	module_sheet			: et_coordinates.type_sheet := et_coordinates.type_sheet'first; -- the sheet to be opened
+	module_sheet			: et_coordinates_2.type_sheet := et_coordinates_2.type_sheet'first; -- the sheet to be opened
 	
 	package_name_create		: et_packages.pac_package_model_file_name.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
 	package_name_import		: et_packages.pac_package_model_file_name.bounded_string; -- the package to be imported
@@ -213,7 +213,7 @@ procedure et is
 						
 					elsif full_switch = switch_native_project_sheet then
 						log (text => arg & full_switch & space & parameter);
-						module_sheet := et_coordinates.to_sheet (parameter);
+						module_sheet := et_coordinates_2.to_sheet (parameter);
 						
 					-- package
 					elsif full_switch = switch_native_package_create then
@@ -695,8 +695,8 @@ procedure et is
 
 	procedure log_sys_info is 
 	begin
-		log (text => et_pcb_coordinates.pac_geometry_2.get_info ("layout/board"));
-		log (text => et_coordinates.pac_geometry_2.get_info ("schematic"));
+		log (text => et_pcb_coordinates_2.pac_geometry_2.get_info ("layout/board"));
+		log (text => et_coordinates_2.pac_geometry_2.get_info ("schematic"));
 	end log_sys_info;
 
 

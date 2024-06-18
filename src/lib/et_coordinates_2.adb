@@ -44,6 +44,7 @@ package body et_coordinates_2 is
 -- 	pragma assertion_policy (check);
 
 	procedure dummy is begin null; end;
+
 	
 -- 	function to_angle (angle : in string) return type_rotation is 
 -- 		r : type_rotation;
@@ -74,23 +75,29 @@ package body et_coordinates_2 is
 -- 				raise;
 -- 	end to_angle;
 -- 	
--- 	function to_sheet (sheet : in type_sheet) return string is begin
--- 		return type_sheet'image (sheet);
--- 	end;
--- 
--- 	function to_sheet (sheet : in string) return type_sheet is begin
--- 		return type_sheet'value (sheet);
--- 	end;
--- 
--- 	function to_sheet_relative (sheet : in type_sheet_relative) return string is begin
--- 		return type_sheet_relative'image (sheet);
--- 	end;
--- 	
--- 	function to_sheet_relative (sheet : in string) return type_sheet_relative is begin
--- 		return type_sheet_relative'value (sheet);
--- 	end;
--- 
--- 	
+
+
+-- SHEETS:
+	
+	function to_sheet (sheet : in type_sheet) return string is begin
+		return type_sheet'image (sheet);
+	end;
+
+	function to_sheet (sheet : in string) return type_sheet is begin
+		return type_sheet'value (sheet);
+	end;
+
+	function to_sheet_relative (sheet : in type_sheet_relative) return string is begin
+		return type_sheet_relative'image (sheet);
+	end;
+	
+	function to_sheet_relative (sheet : in string) return type_sheet_relative is begin
+		return type_sheet_relative'value (sheet);
+	end;
+
+
+	
+	
 -- 	function "<" (left, right : in type_position) return boolean is
 -- 		result : boolean := false;
 -- 	begin

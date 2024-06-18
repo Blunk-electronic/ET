@@ -47,7 +47,7 @@ with ada.containers.doubly_linked_lists;
 
 -- with et_geometry;				use et_geometry;
 
--- with et_geometry_1;
+with et_geometry_1;
 -- with et_geometry_1.et_polygons;
 -- with et_geometry_1.et_polygons.offsetting;
 
@@ -81,40 +81,40 @@ package et_coordinates_2 is
 	-- positive rotation -> counter clock wise
 	-- negative rotation -> clock wise
 
-	-- rotation_digits_left  : constant := 3;
-	-- rotation_digits_right : constant := 1;
- -- 
-	-- rotation_smallest : constant := 1.0 / (10 ** rotation_digits_right);
-	-- type type_rotation is delta rotation_smallest
-	-- 	digits rotation_digits_left + rotation_digits_right
-	-- 	range -360.0 .. 360.0;
-	-- 	-- CS range -360.0 + rotation_smallest .. +360.0 - rotation_smallest ?
- -- 
- -- 
-	-- type type_float is digits 12;
+	rotation_digits_left  : constant := 3;
+	rotation_digits_right : constant := 1;
+ 
+	rotation_smallest : constant := 1.0 / (10 ** rotation_digits_right);
+	type type_rotation is delta rotation_smallest
+		digits rotation_digits_left + rotation_digits_right
+		range -360.0 .. 360.0;
+		-- CS range -360.0 + rotation_smallest .. +360.0 - rotation_smallest ?
+ 
+ 
+	type type_float is digits 12;
 	-- CS reduce digits. adapt accuracy
 	-- when instantiating geometry package. See below.
 	
 	-- instantiation of the geometry package:
--- 	package pac_geometry_sch is new et_geometry_1 (
--- 		type_float	=> type_float,
--- 
--- 		-- For assumed greatest numbers of 999.999..
--- 		-- we have 3 digits left and 9 digits right of comma.
--- 		-- This leads to an accuracy of:											  
--- 		accuracy	=> 1.0E-9
--- 		-- CS: For numbers greater 999.9 this accuracy is useless.
--- 		);
--- 	
--- 	use pac_geometry_sch;
+	package pac_geometry_sch is new et_geometry_1 (
+		type_float	=> type_float,
+
+		-- For assumed greatest numbers of 999.999..
+		-- we have 3 digits left and 9 digits right of comma.
+		-- This leads to an accuracy of:											  
+		accuracy	=> 1.0E-9
+		-- CS: For numbers greater 999.9 this accuracy is useless.
+		);
+	
+	use pac_geometry_sch;
 
 
 	package pac_geometry_2 is new et_geometry_2a (
-		-- pac_geometry_1			=> pac_geometry_sch,
-		type_distance_model		=> type_distance
-		-- axis_max				=> 1_000.0,
-		-- axis_min				=>  -100.0,
-		-- type_rotation			=> type_rotation
+		pac_geometry_1			=> pac_geometry_sch,
+		type_distance_model		=> type_distance,
+		axis_max				=> 1_000.0,
+		axis_min				=>  -100.0,
+		type_rotation			=> type_rotation
 		);
 		
 	-- use pac_geometry_2;
@@ -148,24 +148,25 @@ package et_coordinates_2 is
 -- 	-- Example: net name "HEATER_CONTROL/DRIVER/CLK"
 -- 	hierarchy_separator : constant string (1..1) := "/";
 -- 
--- 	-- Sheets
--- 	sheet_count_max : constant positive := 100;
--- 	type type_sheet_relative is new integer range -(sheet_count_max) .. sheet_count_max;
--- 	subtype type_sheet is type_sheet_relative range 1 .. type_sheet_relative'last;
--- 
--- 	sheet_default : constant type_sheet := type_sheet'first;
--- 	
--- 	function to_sheet (sheet : in type_sheet) return string;
--- 	function to_sheet (sheet : in string) return type_sheet;
--- 
--- 	function to_sheet_relative (sheet : in type_sheet_relative) return string;
--- 	function to_sheet_relative (sheet : in string) return type_sheet_relative;
--- 	
--- 	-- The whole schematic may have a total of x pages.
--- 	schematic_page_count_max : constant positive := 100;
--- 	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not used yet
--- 	
--- 
+	
+-- SHEETS:
+	sheet_count_max : constant positive := 100;
+	type type_sheet_relative is new integer range -(sheet_count_max) .. sheet_count_max;
+	subtype type_sheet is type_sheet_relative range 1 .. type_sheet_relative'last;
+
+	sheet_default : constant type_sheet := type_sheet'first;
+	
+	function to_sheet (sheet : in type_sheet) return string;
+	function to_sheet (sheet : in string) return type_sheet;
+
+	function to_sheet_relative (sheet : in type_sheet_relative) return string;
+	function to_sheet_relative (sheet : in string) return type_sheet_relative;
+	
+	-- The whole schematic may have a total of x pages.
+	schematic_page_count_max : constant positive := 100;
+	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not used yet
+	
+
 -- 	type type_position is new pac_geometry_2.type_position with private;
 -- 	type type_position_relative is new pac_geometry_2.type_position with private;
 -- 

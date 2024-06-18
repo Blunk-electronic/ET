@@ -36,8 +36,7 @@
 --
 
 -- with et_geometry;				use et_geometry;
--- with et_geometry_1;
--- with et_geometry_2;
+with et_geometry_1;
 with et_geometry_2a;
 
 
@@ -79,32 +78,32 @@ package et_pcb_coordinates_2 is
 	-- positive rotation -> counter clock wise
 	-- negative rotation -> clock wise
 
-	-- rotation_digits_left  : constant := 3;
-	-- rotation_digits_right : constant := 7;
+	rotation_digits_left  : constant := 3;
+	rotation_digits_right : constant := 7;
 
-	-- rotation_smallest : constant := 1.0 / (10 ** rotation_digits_right);
-	-- type type_rotation is delta rotation_smallest 
-	-- 	digits rotation_digits_left + rotation_digits_right
-	-- 	range -360.0 + rotation_smallest .. 360.0 - rotation_smallest;
+	rotation_smallest : constant := 1.0 / (10 ** rotation_digits_right);
+	type type_rotation is delta rotation_smallest 
+		digits rotation_digits_left + rotation_digits_right
+		range -360.0 + rotation_smallest .. 360.0 - rotation_smallest;
 		
 
 
-	-- type type_float is digits 18;
+	type type_float is digits 18;
 	-- CS reduce digits. adapt accuracy
 	-- when instantiating geometry package. See below.
 		
 	-- instantiation of the geometry package:	
-	-- package pac_geometry_brd is new et_geometry_1 (
-	-- 	type_float	=> type_float,
- -- 
-	-- 	-- For assumed greatest numbers of 9999.999..
-	-- 	-- we have 4 digits left and 14 digits right of comma.
-	-- 	-- This leads to an accuracy of:
-	-- 	accuracy	=> 1.0E-14
-	-- 	-- CS: For numbers greater 9999.9 this accuracy is useless.
-	-- 	);
+	package pac_geometry_brd is new et_geometry_1 (
+		type_float	=> type_float,
+ 
+		-- For assumed greatest numbers of 9999.999..
+		-- we have 4 digits left and 14 digits right of comma.
+		-- This leads to an accuracy of:
+		accuracy	=> 1.0E-14
+		-- CS: For numbers greater 9999.9 this accuracy is useless.
+		);
 
-	-- use pac_geometry_brd;
+	use pac_geometry_brd;
 
 
 	-- package pac_geometry_2 is new et_geometry_2 (
@@ -116,11 +115,11 @@ package et_pcb_coordinates_2 is
 	-- 	);
 
 	package pac_geometry_2 is new et_geometry_2a (
-		-- pac_geometry_1			=> pac_geometry_brd,
-		type_distance_model		=> type_distance
-		-- axis_max				=> +1_000.0,
-		-- axis_min				=> -1_000.0,
-		-- type_rotation 			=> type_rotation
+		pac_geometry_1			=> pac_geometry_brd,
+		type_distance_model		=> type_distance,
+		axis_max				=> +1_000.0,
+		axis_min				=> -1_000.0,
+		type_rotation 			=> type_rotation
 		);
 	
 	-- use pac_geometry_2;

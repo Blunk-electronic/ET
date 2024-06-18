@@ -38,10 +38,73 @@
 
 with ada.text_io;				use ada.text_io;
 
+with ada.strings;				use ada.strings;
+with ada.strings.fixed;			use ada.strings.fixed;
+with ada.strings.unbounded;
+with ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
+
+with et_exceptions;				use et_exceptions;
+
+
 
 package body et_geometry_2a is
 	
+	function get_info (editor: in string)
+		return string 
+	is 
+		use ada.characters.latin_1;
+		distance_digits_total : constant positive := type_distance_model'digits;
+		distance_digits_right : constant positive := type_distance_model'scale;
 
+		--distance_coarse_digits_total : constant positive := type_distance_model_coarse'digits;
+		--distance_coarse_digits_right : constant positive := type_distance_model_coarse'scale;
+
+		rotation_digits_total : constant positive := type_rotation'digits;
+		rotation_digits_right : constant positive := type_rotation'scale;
+	begin
+		--CS put_line ("rounding error:" & pac_geometry_1.to_string (type_float'small));
+		-- CS write accuracy
+		
+		return to_upper (editor & " editor:")
+		& lf & "distance fine [mm]"
+		& lf & "min:        " & type_distance_model'image (type_distance_model'first)
+		& lf & "max:        " & type_distance_model'image (type_distance_model'last)
+		& lf & "axis min:   " & type_distance_model'image (axis_min)
+		& lf & "axis max:   " & type_distance_model'image (axis_max)
+		& lf & "resolution: " & type_distance_model'image (type_distance_model'small)
+		& lf & "digits"
+		& lf & "left:       " & positive'image (distance_digits_total - distance_digits_right)
+		& lf & "right:      " & positive'image (distance_digits_right)
+		& lf & "total:      " & positive'image (type_distance_model'digits)
+		& lf
+		--& lf & "distance coarse [mm]"
+		--& lf & "min:        " & type_distance_model_coarse'image (type_distance_model_coarse'first)
+		--& lf & "max:        " & type_distance_model_coarse'image (type_distance_model_coarse'last)
+		--& lf & "resolution: " & type_distance_model_coarse'image (type_distance_model_coarse'small)
+		--& lf & "digits"
+		--& lf & "left:       " & positive'image (distance_coarse_digits_total - distance_coarse_digits_right)
+		--& lf & "right:      " & positive'image (distance_coarse_digits_right)
+		--& lf & "total:      " & positive'image (type_distance_model_coarse'digits)
+		--& lf
+		& lf & "rotation/angle [degrees (1/360)], mathematical sense, ccw"
+		& lf & "min:        " & type_rotation'image (type_rotation'first)
+		& lf & "max:        " & type_rotation'image (type_rotation'last)
+		& lf & "resolution: " & type_rotation'image (type_rotation'small)
+		& lf & "digits"
+		& lf & "left:       " & positive'image (rotation_digits_total - rotation_digits_right)
+		& lf & "right:      " & positive'image (rotation_digits_right)
+		& lf & "total:      " & positive'image (type_rotation'digits)
+		& lf
+		& lf & "internal float"
+		& lf & "min:        " & type_float'image (type_float'first)
+		& lf & "max:        " & type_float'image (type_float'last)
+		& lf & "digits:     " & positive'image (type_float'digits)
+		& lf;
+	end get_info;
+
+
+	
 	function to_string (
 		distance : in type_distance_model)
 		return string

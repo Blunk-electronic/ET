@@ -39,12 +39,26 @@
 with ada.numerics;
 with ada.numerics.generic_elementary_functions;
 
+with et_geometry_1;
+
 
 generic
+	with package pac_geometry_1 is new et_geometry_1 (<>);
+	
 	type type_distance_model is delta <> digits <>;
+
+	axis_min, axis_max : type_distance_model;
+
+	type type_rotation is delta <> digits <>;
+	
 	
 package et_geometry_2a is
 
+	function get_info (editor: in string)
+		return string;
+
+
+	
 	-- The directions into which the an object can be moved
 	-- by means of the cursor keys (arrow keys):
 	type type_direction is (DIR_RIGHT, DIR_LEFT, DIR_UP, DIR_DOWN);
