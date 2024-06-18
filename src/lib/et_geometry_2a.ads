@@ -39,7 +39,12 @@
 with ada.numerics;
 with ada.numerics.generic_elementary_functions;
 
+with et_geometry;				use et_geometry;
+
 with et_geometry_1;
+
+with et_string_processing;		use et_string_processing;
+with et_object_status;			use et_object_status;
 
 
 generic
@@ -54,6 +59,15 @@ generic
 	
 package et_geometry_2a is
 
+	use pac_geometry_1;
+	use pac_float_numbers_functions;
+
+	zero 		: constant type_distance_model := 0.0;
+	far_left	: constant type_distance_model := axis_min;
+	far_right	: constant type_distance_model := axis_max;
+
+	
+
 	function get_info (editor: in string)
 		return string;
 
@@ -64,16 +78,7 @@ package et_geometry_2a is
 	type type_direction is (DIR_RIGHT, DIR_LEFT, DIR_UP, DIR_DOWN);
 
 
-	
 
--- INTERNAL FLOAT TYPE:
-
-	-- This float type is used for internal computations only:
-	type type_float is new float; -- CS refinement required
-
-	
-	package pac_float_numbers_functions is new 
-		ada.numerics.generic_elementary_functions (type_float);
 
 
 		
@@ -90,6 +95,22 @@ package et_geometry_2a is
 	function to_string (
 		distance : in type_distance_model)
 		return string;
+
+
+	-- The position along an axis:
+	subtype type_position_axis is type_distance_model 
+		range axis_min .. axis_max;
+
+
+	-- Converts a float number to type_distance by rounding
+	-- according to the bankers rule:
+	-- Use it !!!!!
+	function to_distance (f : in type_float)
+		return type_distance_model;
+
+
+	function to_distance (dd : in string) 
+		return type_distance_model;		
 
 	
 
@@ -108,6 +129,15 @@ package et_geometry_2a is
 		return string;
 
 
+
+-- RELATIVE DISTANCE:
+	
+	type type_distance_relative is record -- CS rename to type_distance_model_relative
+		x, y : type_distance_model := zero;
+	end record;
+
+
+	
 	
 	
 -- POINT / POSITION / LOCATION / LOCATION VECTOR / DISTANCE VECTOR:
@@ -138,6 +168,24 @@ package et_geometry_2a is
 
 
 
+	-- Returns the distance of point_two to point_one.	
+	-- Subtracts point_one.x from point_two.x and point_one.y from point_two.y
+	-- returns	total := sqrt ((point_two.x - point_one.x)**2 + (point_two.y - point_one.y)**2)
+	--			angle := arctan ((point_two.y - point_one.y) / (point_two.x - point_one.x)
+	-- NOTE 1: The angle ranges from -180 to 180 degrees.
+	-- NOTE 2: If the total distance between the points is zero then
+	--         the returned angle is zero. So it is wise to test the two points
+	--         for equality befor calling this function.
+	function get_distance (
+		point_one, point_two : in type_vector_model)
+		return type_distance_polar;
+
+
+	function get_distance (
+		point	: in type_vector_model;
+		vector	: in type_vector)
+		return type_distance_polar;
+	
 	
 	-- Returns the absolute distance between the given
 	-- model points. Uses internally a float type:
@@ -153,6 +201,84 @@ package et_geometry_2a is
 		return type_rotation_model;
 
 
+
+	function set (
+		x, y : in type_position_axis) 
+		return type_vector_model;
+	
+
+	procedure set (
+		point	: in out type_vector_model;
+		axis 	: in type_axis_2d;
+		value	: in type_position_axis);
+
+	
+	function get_x (
+		point : in type_vector_model)
+		return type_position_axis;
+
+	
+	function get_y (
+		point : in type_vector_model)
+		return type_position_axis;	
+
+	
+	function to_vector (
+		point	: in type_vector_model)
+		return type_vector;
+
+
+	function to_point (
+		v	: in type_vector)
+		return type_vector_model;
+
+	
+	function to_point (
+		x,y : in string)
+		return type_vector_model;
+
+	
+
+	function to_offset (
+		p : in type_vector_model)
+		return type_offset;
+	
+
+	function get_distance_total ( -- CS rename to get_distance_absolute
+		point	: in type_vector_model;
+		vector	: in type_vector)
+		return type_float_positive;
+
+
+	-- Returns the relative distance of point_two to point_one.	
+	-- Subtracts point_one.x from point_two.y and point_one.y from point_two.y
+	-- returns	d.x := point_two.x - point_one.x
+	--			d.y := point_two.y - point_one.y;
+	function get_distance_relative (
+		point_one, point_two : in type_vector_model) -- CS rename to reference and point
+		return type_distance_relative;
+
+
+	
+	-- Computes the total distance between point_one and point_two.
+	function get_distance_total (
+		point_one, point_two : in type_vector_model)
+		return type_float_positive;
+
+
+
+	-- Moves a point by the given offset.
+	procedure move_by (
+		point	: in out type_vector_model;
+		offset	: in type_distance_relative);
+	
+
+	-- Moves a point to the given destination:
+	procedure move_to (
+		point		: in out type_vector_model;
+		destination	: in type_vector_model);
+
+	
 
 -- ORIGIN:
 	
@@ -261,6 +387,297 @@ package et_geometry_2a is
 	bounding_box_error : type_bounding_box_error;
 
 	
+
+
+-- LINE
+	
+	type type_line_base is abstract tagged record
+		start_point	: type_vector_model;
+		end_point	: type_vector_model;
+		status		: type_object_status;
+	end record;
+
+	
+	type type_line is new type_line_base with null record;
+
+	
+	-- Returns the start and end point of the given line as string.
+	function to_string (line : in type_line) return string;
+
+
+
+	function to_line_fine (
+		line : in type_line)
+		return type_line_fine;
+
+	
+	
+	-- Returns true if the given location vector lies on the given line.
+	function on_line (
+		line	: in type_line;
+		vector	: in type_vector)
+		return boolean; 
+
+	
+	-- Returns true if the given point lies on the given line.
+	function on_line (
+		line	: in type_line;
+		point	: in type_vector_model)
+		return boolean;
+
+
+
+	-- Returns the location vector of the start point of a line:
+	function get_start_vector (
+		line	: in type_line)
+		return type_vector; -- CS should be type_vector_model
+
+	
+	-- Returns the location vector of the end point of a line:
+	function get_end_vector (
+		line	: in type_line)
+		return type_vector; -- CS should be type_vector_model
+
+
+	-- Returns the direction vector of a line:
+	function get_direction_vector (
+		line	: in type_line)
+		return type_vector; -- CS should be type_distance_relative ?
+	
+
+	-- Converts a line (consisting of start and end point)
+	-- to a line vector consisting of start vector and
+	-- direction vector.
+	-- The start vector of the result will be directly derived 
+	--  from the start point of the given line.
+	-- The direction vector of the result will be computed as:
+	--  dx = line.end_point.x - line.start_point.x
+	--  dy = line.end_point.y - line.start_point.y
+	--  dz = zero
+	function to_line_vector (
+		line	: in type_line)
+		return type_line_vector;
+
+	
+
+	-- Returns the shortest distance from the given point to the
+	-- given line:
+	function get_shortest_distance (
+		line	: in type_line;
+		point	: in type_vector_model)
+		return type_float_positive;
+
+	
+	function get_shortest_distance (
+		line	: in type_line;
+		point	: in type_vector)
+		return type_float_positive;
+
+	
+	
+	
+-- ARC
+	
+	type type_arc_base is abstract tagged record  -- CS should be private ?
+		center			: type_vector_model;
+		start_point		: type_vector_model;
+		end_point		: type_vector_model;
+		direction		: type_direction_of_rotation := CW;
+		status			: type_object_status;
+	end record;
+
+	type type_arc is new type_arc_base with null record;
+	-- CS use this type wherever a type_arc is declared unnessecarily.
+
+	
+	-- Returns the start, end point and angle of the given arc as string.
+	function to_string (arc : in type_arc) return string;
+
+
+	-- Returns the distance between the start point and the center of the arc.
+	function get_radius_start (
+		arc : in type_arc) 
+		return type_float_positive;
+	
+	
+	-- Returns the distance between the end point and the center of the arc.
+	function get_radius_end (
+		arc : in type_arc) 
+		return type_float_positive;
+
+
+	-- Moves an arc to the given position. 
+	procedure move_to (
+		arc			: in out type_arc;
+		position	: in type_vector_model);
+
+
+
+	-- Returns the start and end angles of an arc.
+	function to_arc_angles (
+		arc : in type_arc) 
+		return type_arc_angles;
+
+	
+
+	
+	
+	type type_intersection_status_of_line_and_circle is (
+		NONE_EXIST, -- no intersection at all
+		ONE_EXISTS, -- tangent
+		TWO_EXIST); -- two intersections
+
+
+	-- When finding intersections of a line with a circle (or arc)
+	-- we use this type:
+	type type_tangent_status is (TANGENT, SECANT);
+
+	
+	type type_intersection_of_line_and_circle (
+		status : type_intersection_status_of_line_and_circle)
+	is record
+		case status is
+			when NONE_EXIST => null;
+			
+			when ONE_EXISTS	=> 
+				intersection	: type_intersection;
+				tangent_status	: type_tangent_status;
+			
+			when TWO_EXIST	=> 
+				intersection_1	: type_intersection;
+				intersection_2	: type_intersection;
+				
+		end case;
+	end record;
+
+
+
+	-- Computes the intersections of a line with an arc:
+
+	-- - If there is no intersection then it returns NONE_EXIST.
+	-- - If there is only one intersection then the given line is a tangent.
+	--   The return status will then be ONE_EXISTS and the 
+	--   actual intersection (with point and angle).
+	--   The tangent status will be TANGENT.
+	-- - If there are two intersections then the given line is a secant.
+	--   The return status will be TWO_EXIST along with the two intersections
+	--   (with their point and angle).
+	--   NOTE: There is no information about the order of the two intersections
+	--   as the line travels through the arc/circle. Use function order_intersections
+	--   to get the intersections ordered.
+	--
+	-- See details of type type_intersection_of_line_and_circle.
+	--
+	-- IMPORTANT: CONVENTION ON INTERSECTION ANGLE OF A SECANT:
+	-- The angle of intersection is defined as follows:
+	-- The given line enters and leaves the arc/circle at some point and angle.
+	-- As the given line is a line vector, it has a direction. Imagine
+	-- sitting on this line as it enters/leveas the circle. 
+	-- The angle BETWEEN the line and the circle circumfence visible
+	-- on your LEFT is the angle of intersection.
+	-- The angle of intersection is always greater zero and less than 180 degrees.
+	function get_intersection (
+		arc		: in type_arc;
+		line	: in type_line_vector)
+		return type_intersection_of_line_and_circle;
+
+
+	
+
+	-- Returns the shortest distance between a point and an arc.
+	-- If the point is on the center of the arc, then the return is
+	-- absolute zero and angle zero degree:
+	-- CS: wrong, should be absolute distance to start and angle of start point.
+	function get_shortest_distance (
+		arc		: in type_arc;
+		point	: in type_vector_model)
+		return type_distance_polar;
+
+
+	
+	-- CS: INCOMPLETE !!! Returns always zero currently.
+	function get_shortest_distance (
+		arc		: in type_arc;
+		point	: in type_vector)
+		return type_float;
+
+	
+
+	-- Returns true if the given point sits on the given arc.
+	function on_arc (
+		arc			: in type_arc;
+		vector		: in type_vector)
+		return boolean; 
+
+
+	
+
+-- CIRCLE
+	
+	type type_circle_base is abstract tagged record
+		center	: type_vector_model;
+		radius  : type_float_positive := 0.0;
+		status	: type_object_status;
+	end record;
+
+	type type_circle is new type_circle_base with null record;
+	-- CS use this type wherever a type_circle is declared unnessecarily.
+
+
+	-- Returns the center and radius of the given circle as string.
+	function to_string (circle : in type_circle) return string;
+
+
+	
+	-- The angle of a tangent to a circle:
+	subtype type_tangent_angle_circle is type_angle range -90.0 .. 90.0;
+
+	
+	-- Computes the angle of a tangent that touches a circle
+	-- at the given point. The center of the circle is assumed to be the origin.
+	-- - If the tangent increases in y as it travels from left to right 
+	--   then its angle is positive. 
+	-- - If the tangent decreases in y, then its angle is negative.
+	-- - If it does not change in y, then the tangent runs horizontally and has zero angle.
+	-- - If it is vertical, then its angle is 90 degrees.
+	function get_tangent_angle (p : in type_vector) 
+		return type_tangent_angle_circle;
+
+
+	
+
+	-- Computes the intersections of a line with a circle.
+	-- See more on overloaded function get_intersection (line, arc):
+	function get_intersection (
+		circle	: in type_circle;
+		line	: in type_line_vector)
+		return type_intersection_of_line_and_circle;
+
+	
+	-- Returns the distance of point to circumfence of circle.
+	-- Assumes the point is INSIDE the circle or ON the circumfence of the circle.
+	-- The point must not be OUTSIDE the circle !
+	function get_distance_to_circumfence (
+		circle	: in type_circle;
+		point	: in type_vector_model)
+		return type_distance_polar;
+
+
+	-- Returns the shortest distance from the given point to the
+	-- given circle. The point may be inside or outside the circle.
+	-- However, the return is the distance to the circumfence of the circle.
+	function get_shortest_distance (
+		circle	: in type_circle;
+		point	: in type_vector_model)
+		return type_distance_polar;
+
+
+	-- CS: INCOMPLETE !!! Returns always zero currently.
+	function get_shortest_distance (
+		point	: in type_vector;
+		circle	: in type_circle)
+		return type_float;
+
 
 	
 end et_geometry_2a;
