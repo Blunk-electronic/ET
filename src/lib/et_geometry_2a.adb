@@ -742,6 +742,52 @@ package body et_geometry_2a is
 		return get_shortest_distance (point, to_line_fine (line));
 	end get_shortest_distance;
 
+
+
+	function get_bounding_box (
+		line	: in type_line;
+		width	: in type_distance_model_positive)
+		return type_area
+	is
+		-- CS: Optimization required. Compiler options ?
+		
+		result : type_area;
+		w, h : type_distance_model;
+
+		d : constant type_distance_model := width / 2.0;
+	begin
+		-- x-axis:
+		w := line.end_point.x - line.start_point.x;
+		
+		if w > 0.0 then -- line runs from left to right
+			result.position.x := line.start_point.x;
+			result.width := w;
+		else -- line runs from right to left or vertically
+			result.position.x := line.end_point.x;
+			result.width := -w;
+		end if;
+		
+		-- y-axis:
+		h := line.end_point.y - line.start_point.y;
+		
+		if h > 0.0 then -- line runs upwards
+			result.position.y := line.start_point.y;
+			result.height := h;
+		else -- line runs downwards or horizontally
+			result.position.y := line.end_point.y;
+			result.height := -h;
+		end if;
+
+		-- extend the box by the linewidth:
+		result.width  := result.width  + width;
+		result.height := result.height + width;
+
+		-- shift the box by half the linewidth down and left:
+		result.position.x := result.position.x - d;
+		result.position.y := result.position.y - d;
+		return result;
+	end get_bounding_box;
+
 	
 
 -- ARC:
@@ -1414,6 +1460,34 @@ package body et_geometry_2a is
 
 	end on_arc;
 
+
+
+	function get_bounding_box (
+		arc 	: in type_arc;
+		width	: in type_distance_model_positive)
+		return type_area
+	is
+		-- CS: Optimization required. Compiler options ?
+		
+		result : type_area;
+		w : type_distance_model;
+
+		d : constant type_distance_model := width / 2.0;
+	begin
+		-- CS
+		
+		-- w := 2.0 * (circle.r + d);
+  -- 
+		-- result.width := w;
+		-- result.height := w;
+  -- 
+		-- result.position.x := circle.c.x - w / 2.0;
+		-- result.position.y := circle.c.y - w / 2.0;
+		
+		return result;
+	end get_bounding_box;
+
+
 	
 
 -- CIRCLE:
@@ -1754,6 +1828,31 @@ package body et_geometry_2a is
 		
 		return result;
 	end get_shortest_distance;
+
+
+	
+	function get_bounding_box (
+		circle 	: in type_circle;
+		width	: in type_distance_model_positive)
+		return type_area
+	is
+		-- CS: Optimization required. Compiler options ?
+		
+		result : type_area;
+		w : type_distance_model;
+
+		d : constant type_distance_model := width / 2.0;
+	begin
+		w := 2.0 * (type_distance_model_positive (circle.radius) + d);
+
+		result.width := w;
+		result.height := w;
+
+		result.position.x := circle.center.x - w / 2.0;
+		result.position.y := circle.center.y - w / 2.0;
+		
+		return result;
+	end get_bounding_box;
 
 	
 end et_geometry_2a;

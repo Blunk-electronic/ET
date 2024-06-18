@@ -351,7 +351,7 @@ package et_geometry_2a is
 	-- This is the bounding-box of the model. It is a rectangle
 	-- that encloses all objects of the model and the margins 
 	-- around the model:
-	-- bounding_box : type_area;
+	-- CS bounding_box : type_area;
 	bounding_box : type_area := (
 		width => 300.0,
 		height	=> 200.0,							
@@ -474,7 +474,14 @@ package et_geometry_2a is
 		return type_float_positive;
 
 	
-	
+	-- Returns the bounding-box of the given line.
+	-- It respects the linewidth and assumes that the line ends
+	-- have round caps:
+	function get_bounding_box (
+		line	: in type_line;
+		width	: in type_distance_model_positive)
+		return type_area;
+
 	
 -- ARC
 	
@@ -610,7 +617,16 @@ package et_geometry_2a is
 		return boolean; 
 
 
-	
+
+	-- Returns the bounding-box of the given circle.
+	-- It respects the linewidth of the circumfence:
+	function get_bounding_box (
+		arc 	: in type_arc;
+		width	: in type_distance_model_positive)				  
+		return type_area;
+	-- CS INCOMPLETE !
+
+		
 
 -- CIRCLE
 	
@@ -679,6 +695,14 @@ package et_geometry_2a is
 		return type_float;
 
 
+	-- Returns the bounding-box of the given circle.
+	-- It respects the linewidth of the circumfence:
+	function get_bounding_box (
+		circle 	: in type_circle;
+		width	: in type_distance_model_positive)
+		return type_area;
+
+	
 	
 end et_geometry_2a;
 
