@@ -40,7 +40,7 @@ with ada.containers; 					use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
 with cairo;
 
-with et_coordinates;					use et_coordinates;
+with et_coordinates_2;					use et_coordinates_2;
 with et_text;							use et_text;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 
@@ -118,7 +118,7 @@ package et_net_labels is
 	use pac_geometry_sch;
 	
 	-- GUI relevant only: The line width of the box that enshroudes the net name of a tag label:
-	tag_label_box_line_width : constant type_distance_positive := 0.2;
+	tag_label_box_line_width : constant type_distance_model_positive := 0.2;
 
 	
 	-- GUI relevant only: The spacing between anchor point of tag label and net name:

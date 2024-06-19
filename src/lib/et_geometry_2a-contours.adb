@@ -905,7 +905,7 @@ package body et_geometry_2a.contours is
 	
 	procedure rotate_by (
 		contour		: in out type_contour;
-		rotation	: in type_rotation) 
+		rotation	: in type_rotation_model) 
 	is
 
 		procedure rotate_segment (c : in pac_segments.cursor) is
@@ -1621,7 +1621,7 @@ package body et_geometry_2a.contours is
 	
 	procedure rotate_contours (
 		contours	: in out pac_contour_list.list;
-		rotation	: in type_rotation)
+		rotation	: in type_rotation_model)
 	is
 		result : pac_contour_list.list;
 		

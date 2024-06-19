@@ -49,7 +49,6 @@ with ada.tags;
 with ada.exceptions;
 
 with et_geometry;
-with et_coordinates;
 with et_general;				use et_general;
 with et_text;
 with et_frames;					use et_frames;

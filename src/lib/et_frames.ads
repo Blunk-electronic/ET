@@ -44,7 +44,7 @@ with ada.containers.ordered_maps;
 with ada.directories;			use ada.directories;
 
 with et_geometry;				use et_geometry;
-with et_coordinates;			use et_coordinates;
+with et_coordinates_2;			use et_coordinates_2;
 with et_general;				use et_general;
 with et_text;					use et_text;
 
@@ -374,7 +374,7 @@ package et_frames is
 	-- For each sheet of a schematic a description is required. 
 	-- The descriptions are ordered by the sheet numbers:
 	package pac_schematic_descriptions is new ordered_maps (
-		key_type		=> et_coordinates.type_sheet,
+		key_type		=> type_sheet,
 		element_type	=> type_schematic_description);
 
 

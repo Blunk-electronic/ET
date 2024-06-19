@@ -264,7 +264,7 @@ is
 
 	
 	procedure query_drawing_grid is 
-		use et_coordinates.pac_geometry_2;
+		use et_coordinates_2.pac_geometry_2;
 		use et_pcb_coordinates.pac_geometry_2;
 	begin
 		log_indentation_up;
@@ -272,11 +272,11 @@ is
 		section_mark (section_drawing_grid, HEADER);
 
 		section_mark (section_schematic, HEADER);
-		write (keyword => keyword_default, parameters => to_string_2 (element (module_cursor).grid));
+		-- CS write (keyword => keyword_default, parameters => to_string_2 (element (module_cursor).grid));
 		section_mark (section_schematic, FOOTER);
 
 		section_mark (section_board, HEADER);
-		write (keyword => keyword_default, parameters => to_string_2 (element (module_cursor).board.grid));
+		-- write (keyword => keyword_default, parameters => to_string_2 (element (module_cursor).board.grid));
 		section_mark (section_board, FOOTER);
 		
 		section_mark (section_drawing_grid, FOOTER);
@@ -348,7 +348,7 @@ is
 			use et_symbol_rw;
 			use et_schematic;
 			use pac_strands;
-			use et_coordinates.pac_geometry_2;
+			use et_coordinates_2.pac_geometry_2;
 			
 			strand_cursor : pac_strands.cursor := net.strands.first;
 

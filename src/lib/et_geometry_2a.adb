@@ -60,8 +60,8 @@ package body et_geometry_2a is
 		--distance_coarse_digits_total : constant positive := type_distance_model_coarse'digits;
 		--distance_coarse_digits_right : constant positive := type_distance_model_coarse'scale;
 
-		rotation_digits_total : constant positive := type_rotation'digits;
-		rotation_digits_right : constant positive := type_rotation'scale;
+		rotation_digits_total : constant positive := type_rotation_model'digits;
+		rotation_digits_right : constant positive := type_rotation_model'scale;
 	begin
 		--CS put_line ("rounding error:" & pac_geometry_1.to_string (type_float'small));
 		-- CS write accuracy
@@ -88,13 +88,13 @@ package body et_geometry_2a is
 		--& lf & "total:      " & positive'image (type_distance_model_coarse'digits)
 		--& lf
 		& lf & "rotation/angle [degrees (1/360)], mathematical sense, ccw"
-		& lf & "min:        " & type_rotation'image (type_rotation'first)
-		& lf & "max:        " & type_rotation'image (type_rotation'last)
-		& lf & "resolution: " & type_rotation'image (type_rotation'small)
+		& lf & "min:        " & type_rotation_model'image (type_rotation_model'first)
+		& lf & "max:        " & type_rotation_model'image (type_rotation_model'last)
+		& lf & "resolution: " & type_rotation_model'image (type_rotation_model'small)
 		& lf & "digits"
 		& lf & "left:       " & positive'image (rotation_digits_total - rotation_digits_right)
 		& lf & "right:      " & positive'image (rotation_digits_right)
-		& lf & "total:      " & positive'image (type_rotation'digits)
+		& lf & "total:      " & positive'image (type_rotation_model'digits)
 		& lf
 		& lf & "internal float"
 		& lf & "min:        " & type_float'image (type_float'first)
@@ -105,6 +105,23 @@ package body et_geometry_2a is
 
 
 	
+	function mil_to_distance (
+		mil : in string) 
+		return type_distance_model 
+	is begin
+		return type_distance_model (pac_geometry_1.mil_to_distance (mil));
+		-- CS use to_distance instead of type_distance ?
+	end mil_to_distance;
+	
+
+	function distance_to_mil (
+		distance : in type_distance_model) 
+		return string 
+	is begin
+		return pac_geometry_1.distance_to_mil (type_float (distance));
+	end;
+
+
 	
 	function to_string (
 		distance : in type_distance_model)
@@ -181,14 +198,105 @@ package body et_geometry_2a is
 	end to_distance;
 
 
+
 	
+-- ROTATION / ANGLE
+
 	
 	function to_string (
-		rotation : in type_rotation_model)
-		return string
+		rotation : in type_rotation_model) 
+		return string 
 	is begin
-		return type_rotation_model'image (rotation);
-	end to_string;
+		if rotation < zero_rotation then
+			return space & type_rotation_model'image (rotation);
+		else
+			return type_rotation_model'image (rotation);
+		end if;
+		-- CS suppress trailing zeros
+	end;
+
+
+	
+	function to_rotation (
+		rotation : in string)
+		return type_rotation_model 
+	is begin
+		return type_rotation_model'value (rotation);
+	end;
+
+
+
+	
+	function to_rotation (f : in type_float)
+		return type_rotation_model 
+	is
+		use pac_float_numbers_io;
+
+		d1 : type_rotation_model := type_rotation_model (f);
+		d2 : type_float;
+
+		f1 : constant type_float := 5.0 * type_float (type_rotation_model'small);
+
+	begin
+		d2 := 10.0 * abs (f - type_float (d1));
+		
+		if f < 0.0 then
+			if d2 > f1 then
+				d1 := d1 - type_rotation_model'small;
+			end if;
+		else
+			if d2 > f1 then
+				d1 := d1 + type_rotation_model'small;
+			end if;
+		end if;
+
+		return d1;
+		
+		--if f < 0.0 then
+			--declare
+				--r : string (1 .. type_rotation'digits + 2); -- sign + point
+			--begin
+				---- CS: IMPROVEMENT REQUIRED !!!
+				--put (to => r, item => f, aft => type_rotation'scale, exp => 0);
+				--return type_rotation'value (r);
+			--end;
+		--else
+			--declare
+				--r : string (1 .. type_rotation'digits + 1); -- point
+			--begin
+				---- CS: IMPROVEMENT REQUIRED !!!
+				--put (to => r, item => f, aft => type_rotation'scale, exp => 0);
+				--return type_rotation'value (r);
+			--end;
+		--end if;
+	end to_rotation;
+
+
+
+	
+
+	function add (
+		left, right : in type_rotation_model)
+		return type_rotation_model 
+	is
+		subtype type_rotation_wide is type_float range -720.0 .. +720.0;
+		scratch : type_rotation_wide;
+		result : type_rotation_model; -- to be returned
+	begin
+		scratch := type_float (left) + type_float (right);
+		
+		if scratch >= 360.0 then
+			scratch := scratch - 360.0;
+			
+		elsif scratch <= -360.0 then
+			scratch := scratch + 360.0;
+		end if;
+
+		result := to_rotation (scratch);
+		return result;
+	end;
+
+
 
 	
 	
@@ -222,7 +330,7 @@ package body et_geometry_2a is
 
 	procedure rotate_by (
 		point		: in out type_vector_model;
-		rotation	: in type_rotation) 
+		rotation	: in type_rotation_model) 
 	is			
 		v_tmp : type_vector := to_vector (point);
 	begin
@@ -256,6 +364,8 @@ package body et_geometry_2a is
 		return get_distance (v, vector);
 	end get_distance;
 
+
+
 	
 	
 	function get_distance (
@@ -273,6 +383,8 @@ package body et_geometry_2a is
 	end get_distance;
 	
 
+
+	
 	function get_angle (
 		p1, p2 : in type_vector_model)
 		return type_rotation_model
@@ -306,6 +418,16 @@ package body et_geometry_2a is
 	end get_angle;
 
 
+
+	function get_rotation (
+		point : in type_vector_model) 
+		return type_rotation_model 
+	is begin
+		return to_rotation (get_angle (get_distance (null_vector, to_vector (point))));
+	end get_rotation;
+
+	
+	
 
 	function get_x (
 		point : in type_vector_model) 
@@ -409,6 +531,7 @@ package body et_geometry_2a is
 
 
 	
+
 	
 
 	function to_offset (
@@ -416,6 +539,26 @@ package body et_geometry_2a is
 		return type_offset
 	is begin
 		return (type_float (p.x), type_float (p.y));
+	end to_offset;
+
+
+
+	function to_offset (
+		x, y : in type_distance_model)
+		return type_offset
+	is begin
+		return (type_float (x), type_float (y));
+	end to_offset;
+
+
+
+	function to_offset (
+		distance : in type_distance_relative)
+		return type_offset
+	is begin
+		return (
+			x => type_float (distance.x),
+			y => type_float (distance.y));
 	end to_offset;
 
 	
@@ -768,7 +911,7 @@ package body et_geometry_2a is
 
 	procedure rotate_by (
 		line		: in out type_line;
-		rotation	: in type_rotation) 
+		rotation	: in type_rotation_model) 
 	is begin
 		rotate_by (line.start_point, rotation);
 		rotate_by (line.end_point, rotation);
@@ -1038,7 +1181,7 @@ package body et_geometry_2a is
 
 	procedure rotate_by (
 		arc			: in out type_arc;
-		rotation	: in type_rotation) 
+		rotation	: in type_rotation_model) 
 	is begin
 		rotate_by (arc.center, rotation);
 		rotate_by (arc.start_point, rotation);
@@ -1753,7 +1896,7 @@ package body et_geometry_2a is
 
 	procedure rotate_by (
 		circle		: in out type_circle;
-		rotation	: in type_rotation) 
+		rotation	: in type_rotation_model) 
 	is begin
 		rotate_by (circle.center, rotation);
 	end;
@@ -2155,6 +2298,96 @@ package body et_geometry_2a is
 		return result;
 	end order_intersections;
 
+
+
+-- POSITION:
+
+	function to_string (
+		position : in type_position)
+		return string 
+	is begin
+		return point_preamble_with_rotation
+			& to_string (position.place.x)
+			& axis_separator
+			& to_string (position.place.y)
+			& axis_separator
+			& to_string (position.rotation);
+	end to_string;
+
+
+
+	function to_position (
+		point		: in type_vector_model;
+		rotation	: in type_rotation_model)
+		return type_position'class
+	is 
+		result : type_position;
+	begin
+		result.place := point;
+		result.rotation := rotation;
+
+		return result;
+	end to_position;
+
+
+
+	procedure set (
+		position	: in out type_position;
+		axis 		: in type_axis_2d;
+		value		: in type_position_axis)
+	is begin
+		case axis is
+			when X => position.place.x := value;
+			when Y => position.place.y := value;
+		end case;
+	end set;
+
+
+	procedure set (
+		position	: in out type_position;
+		place		: in type_vector_model)
+	is begin
+		position.place := place;
+	end set;
+	
+	
+	procedure set (
+		position	: in out type_position;
+		rotation	: in type_rotation_model) 
+	is begin
+		position.rotation := rotation;
+	end;
+
+
+	
+
+	function get_x (
+		position : in type_position)
+		return type_distance_model
+	is begin
+		return position.place.x;
+	end get_x;
+	
+
+	function get_y (
+		position : in type_position)
+		return type_distance_model
+	is begin
+		return position.place.y;
+	end get_y;
+
+
+	
+
+	
+	function get_rotation (
+		position : in type_position)
+		return type_rotation_model 
+	is begin
+		return position.rotation;
+	end;
+
+	
 	
 end et_geometry_2a;
 

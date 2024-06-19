@@ -303,7 +303,7 @@ package body et_symbols is
 	
 	procedure rotate (
 		phs			: in out type_rotated_placeholders;
-		rotation	: in et_coordinates.type_rotation)
+		rotation	: in et_coordinates_2.type_rotation_model)
 	is begin
 		-- Rotate the POSITIONS	of the placeholders about
 		-- the origin of the symbol:
@@ -331,7 +331,7 @@ package body et_symbols is
 	-- their own origin according to rotation given by destination:
 	function rotate_placeholders (
 		symbol_cursor	: in pac_symbols.cursor;
-		destination		: in et_coordinates.type_position)
+		destination		: in et_coordinates_2.type_position)
 		return type_rotated_placeholders
 	is
 		use pac_symbols;

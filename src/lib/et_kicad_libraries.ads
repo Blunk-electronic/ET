@@ -55,8 +55,8 @@ with et_kicad_general;			use et_kicad_general;
 with et_kicad_coordinates;		use et_kicad_coordinates;
 
 with et_import;
-with et_coordinates;			use et_coordinates;
-use et_coordinates.pac_geometry_2;
+with et_coordinates_2;			use et_coordinates_2;
+use et_coordinates_2.pac_geometry_2;
 
 with et_kicad_packages;			use et_kicad_packages;
 
@@ -105,14 +105,14 @@ package et_kicad_libraries is
 	function to_meaning (meaning : in string) return type_placeholder_meaning;
 
 
-	text_size_min : constant type_distance_positive := 0.01;
-	text_size_max : constant type_distance_positive := 100.0;
-	text_size_default : constant type_distance_positive := 1.3;
+	text_size_min : constant type_distance_model_positive := 0.01;
+	text_size_max : constant type_distance_model_positive := 100.0;
+	text_size_default : constant type_distance_model_positive := 1.3;
 	
-	subtype type_text_line_width is type_distance_positive range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
-	text_line_width_min : constant type_distance_positive := 0.1;
-	text_line_width_max : constant type_distance_positive := 5.0;
-	text_line_width_default : constant type_distance_positive := 0.3; 
+	subtype type_text_line_width is type_distance_model_positive range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
+	text_line_width_min : constant type_distance_model_positive := 0.1;
+	text_line_width_max : constant type_distance_model_positive := 5.0;
+	text_line_width_default : constant type_distance_model_positive := 0.3; 
 
 	-- Instantiation of the text package:
 	package pac_text is new et_text.generic_pac_text (
@@ -134,7 +134,7 @@ package et_kicad_libraries is
 		-- CS: currently the style of text is ignored
 		-- style : ???
 		content		: et_text.pac_text_content.bounded_string;		
-		rotation	: et_coordinates.type_rotation := 0.0;
+		rotation	: et_coordinates_2.type_rotation_model := 0.0;
 	end record;
 	
 	type type_text_placeholder (meaning : type_placeholder_meaning) is new type_text_basic with record
@@ -209,7 +209,7 @@ package et_kicad_libraries is
 
 		-- the clearance between symbol outline and port name 
 		-- CS: define a reasonable range
-		port_name_offset : et_coordinates.type_distance;
+		port_name_offset : et_coordinates_2.type_distance_model;
 		-- CS : obsolete ? pin_position_offset ?
 	end record;
 
@@ -261,9 +261,9 @@ package et_kicad_libraries is
 	
 	-- arcs of a symbol:
 	type type_symbol_arc is new et_symbols.type_symbol_arc with record
-		start_angle		: et_coordinates.pac_geometry_sch.type_angle;
-		end_angle		: et_coordinates.pac_geometry_sch.type_angle;
-		radius			: et_coordinates.pac_geometry_sch.type_float_positive;
+		start_angle		: et_coordinates_2.pac_geometry_sch.type_angle;
+		end_angle		: et_coordinates_2.pac_geometry_sch.type_angle;
+		radius			: et_coordinates_2.pac_geometry_sch.type_float_positive;
  		fill			: type_fill;
 	end record;
 	package type_symbol_arcs is new doubly_linked_lists (type_symbol_arc);
@@ -697,8 +697,9 @@ package et_kicad_libraries is
 	endfplist	: constant string := "$ENDFPLIST";
 
 	-- The distance of the pin name from the pin itself (supply pins only)
-	subtype type_supply_pin_name_position_offset is et_coordinates.type_distance
-		range 0.00 .. et_coordinates.type_distance'last;
+	subtype type_supply_pin_name_position_offset 
+		is et_coordinates_2.type_distance_model
+		range 0.00 .. et_coordinates_2.type_distance_model'last;
 
 	-- KiCad supports up to 64 units within a component
 	unit_count_max : constant positive := 64;

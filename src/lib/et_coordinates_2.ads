@@ -45,11 +45,11 @@ with ada.containers; 			use ada.containers;
 
 with ada.containers.doubly_linked_lists;
 
--- with et_geometry;				use et_geometry;
+with et_geometry;				use et_geometry;
 
 with et_geometry_1;
--- with et_geometry_1.et_polygons;
--- with et_geometry_1.et_polygons.offsetting;
+with et_geometry_1.et_polygons;
+with et_geometry_1.et_polygons.offsetting;
 
 with et_geometry_2a;
 with et_geometry_2a.contours;
@@ -70,7 +70,7 @@ package et_coordinates_2 is
 	
 	distance_smallest : constant := 1.0 / (10 ** distance_digits_right);
 
-	type type_distance is delta distance_smallest 
+	type type_distance_model is delta distance_smallest 
 		digits distance_digits_left + distance_digits_right
 		range - 0.1 * (10 ** distance_digits_left) .. 
 			  + 0.1 * (10 ** distance_digits_left);
@@ -85,7 +85,7 @@ package et_coordinates_2 is
 	rotation_digits_right : constant := 1;
  
 	rotation_smallest : constant := 1.0 / (10 ** rotation_digits_right);
-	type type_rotation is delta rotation_smallest
+	type type_rotation_model is delta rotation_smallest
 		digits rotation_digits_left + rotation_digits_right
 		range -360.0 .. 360.0;
 		-- CS range -360.0 + rotation_smallest .. +360.0 - rotation_smallest ?
@@ -111,20 +111,20 @@ package et_coordinates_2 is
 
 	package pac_geometry_2 is new et_geometry_2a (
 		pac_geometry_1			=> pac_geometry_sch,
-		type_distance_model		=> type_distance,
+		type_distance_model		=> type_distance_model,
 		axis_max				=> 1_000.0,
 		axis_min				=>  -100.0,
-		type_rotation			=> type_rotation
+		type_rotation_model		=> type_rotation_model
 		);
 		
-	-- use pac_geometry_2;
+	use pac_geometry_2;
 
 
 	-- These packages are never used in schematic but are
 	-- required for instantiation of some generic packages:
 	package pac_contours is new pac_geometry_2.contours;
-	-- package pac_polygons is new pac_geometry_1.et_polygons;
-	-- package pac_polygon_offsetting is new pac_polygons.offsetting;
+	package pac_polygons is new pac_geometry_1.et_polygons;
+	package pac_polygon_offsetting is new pac_polygons.offsetting;
 
 	
 	-- catch_zone_default : constant type_catch_zone := 2.0; 
@@ -139,17 +139,21 @@ package et_coordinates_2 is
 -- 	subtype type_rotation is integer range rotation_min .. rotation_max 
 -- 		with dynamic_predicate => type_rotation mod rotation_delta = 0;
 	
---     
--- 	rotation_relative_min : constant type_rotation := -90.0;
--- 	rotation_relative_max : constant type_rotation := 180.0;	
--- 	subtype type_rotation_relative is type_rotation range rotation_relative_min .. rotation_relative_max;
--- 
--- 	-- When handling hierachic structures we use a separator.
--- 	-- Example: net name "HEATER_CONTROL/DRIVER/CLK"
--- 	hierarchy_separator : constant string (1..1) := "/";
--- 
+    
+	rotation_relative_min : constant type_rotation_model := -90.0;
+	rotation_relative_max : constant type_rotation_model := 180.0;	
+	
+	subtype type_rotation_relative is type_rotation_model range 
+		rotation_relative_min .. rotation_relative_max;
+
+	-- When handling hierachic structures we use a separator.
+	-- Example: net name "HEATER_CONTROL/DRIVER/CLK"
+	hierarchy_separator : constant string (1..1) := "/";
+
+
 	
 -- SHEETS:
+	
 	sheet_count_max : constant positive := 100;
 	type type_sheet_relative is new integer range -(sheet_count_max) .. sheet_count_max;
 	subtype type_sheet is type_sheet_relative range 1 .. type_sheet_relative'last;
@@ -167,69 +171,71 @@ package et_coordinates_2 is
 	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not used yet
 	
 
--- 	type type_position is new pac_geometry_2.type_position with private;
--- 	type type_position_relative is new pac_geometry_2.type_position with private;
--- 
--- 	greatest_position : constant type_position;
--- 		
--- 	function "<" (left, right : in type_position) return boolean;
--- 	
--- 	procedure move (
--- 		position	: in out type_position'class;
--- 		offset		: in type_position_relative);
--- 
--- 	
--- 	function to_position (
--- 		point 		: in type_vector_model;
--- 		sheet		: in type_sheet;
--- 		rotation	: in type_rotation := zero_rotation)
--- 		return type_position;
--- 
--- 	
--- 	function to_position_relative (
--- 		point 		: in type_vector_model;
--- 		sheet		: in type_sheet_relative;
--- 		rotation	: in type_rotation := zero_rotation)		
--- 		return type_position_relative;
--- 	
--- 	zero_position : constant type_position;
--- 
--- 
--- 	function to_string (position : in type_position) return string;
--- 
--- 
--- 	-- Returns the sheet number of the given position:
--- 	function get_sheet (
--- 		position	: in type_position) 
--- 		return type_sheet;
--- 
--- 
--- 	-- Sets the sheet number in given position:
--- 	procedure set_sheet (
--- 		position	: in out type_position;
--- 		sheet		: in type_sheet);
--- 
--- 
--- 
--- 	
--- 	private 
--- 
--- 		type type_position is new pac_geometry_2.type_position with record
--- 			sheet : type_sheet := type_sheet'first;
--- 		end record;
--- 
--- 		type type_position_relative is new pac_geometry_2.type_position with record
--- 			sheet : type_sheet_relative := 0;
--- 		end record;
--- 
--- 		zero_position : constant type_position := (
--- 			origin_zero_rotation with sheet => type_sheet'first);
--- 
--- 		-- A position in a schematic which is on the
--- 		-- last possible sheet and the greatest distance in
--- 		-- x and y from the origin:
--- 		greatest_position : constant type_position := (
--- 			far_upper_right_zero_rotation with sheet => type_sheet'last);
+-- POSITION:
+	
+	type type_position is new pac_geometry_2.type_position with private;
+	type type_position_relative is new pac_geometry_2.type_position with private;
+
+	greatest_position : constant type_position;
+		
+	function "<" (left, right : in type_position) return boolean;
+	
+	procedure move (
+		position	: in out type_position'class;
+		offset		: in type_position_relative);
+
+	
+	function to_position (
+		point 		: in type_vector_model;
+		sheet		: in type_sheet;
+		rotation	: in type_rotation_model := zero_rotation)
+		return type_position;
+
+	
+	function to_position_relative (
+		point 		: in type_vector_model;
+		sheet		: in type_sheet_relative;
+		rotation	: in type_rotation_model := zero_rotation)		
+		return type_position_relative;
+	
+	zero_position : constant type_position;
+
+
+	function to_string (position : in type_position) return string;
+
+
+	-- Returns the sheet number of the given position:
+	function get_sheet (
+		position	: in type_position) 
+		return type_sheet;
+
+
+	-- Sets the sheet number in given position:
+	procedure set_sheet (
+		position	: in out type_position;
+		sheet		: in type_sheet);
+
+
+
+	
+	private 
+
+		type type_position is new pac_geometry_2.type_position with record
+			sheet : type_sheet := type_sheet'first;
+		end record;
+
+		type type_position_relative is new pac_geometry_2.type_position with record
+			sheet : type_sheet_relative := 0;
+		end record;
+
+		zero_position : constant type_position := (
+			origin_zero_rotation with sheet => type_sheet'first);
+
+		-- A position in a schematic which is on the
+		-- last possible sheet and the greatest distance in
+		-- x and y from the origin:
+		greatest_position : constant type_position := (
+			far_upper_right_zero_rotation with sheet => type_sheet'last);
 
 		
 end et_coordinates_2;

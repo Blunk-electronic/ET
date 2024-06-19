@@ -44,7 +44,7 @@ with ada.containers.ordered_maps;
 
 with et_string_processing;
 with et_logging;				use et_logging;
-with et_coordinates;
+with et_coordinates_2;
 with et_general;				use et_general;
 with et_text;
 with et_frames;					use et_frames;
@@ -148,21 +148,24 @@ package et_frame_rw is
 		SEC_TITLE_BLOCK,
 		SEC_VIA_RESTRICT
 		);
+
 	
-	procedure create_frame (
 	-- Creates and saves a frame in given file_name.
+	procedure create_frame (
 		file_name		: in pac_template_name.bounded_string;
 		domain			: in et_frames.type_domain;							   
 		log_threshold	: in type_log_level);
+
 	
-	procedure save_frame (
 	-- Saves the given frame in file_name.
+	procedure save_frame (
 		frame			: in type_frame;
 		file_name		: in pac_template_name.bounded_string;							 
 		log_threshold	: in type_log_level);
 
-	function read_frame (
+	
 	-- Reads a frame from given file_name and returns a parameterized type_frame.
+	function read_frame (
 		file_name		: in pac_template_name.bounded_string;
 		domain			: in et_frames.type_domain;
 		log_threshold	: in type_log_level)

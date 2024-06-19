@@ -35,7 +35,7 @@
 --   history of changes:
 --
 
--- with et_geometry;				use et_geometry;
+with et_geometry;				use et_geometry;
 with et_geometry_1;
 with et_geometry_2a;
 
@@ -44,19 +44,19 @@ package et_pcb_coordinates_2 is
 
 	procedure dummy;
 	
--- 	keyword_face	: constant string := "face";	
--- 	
--- 	type type_face is (TOP, BOTTOM);
--- 
--- 	face_default : constant type_face := TOP;
--- 	
--- 	function to_string (face : in type_face) return string;
--- 	
--- 	function to_face (face : in string) return type_face;
--- 
--- 	
--- 	-- Changes top to bottom and vice versa:
--- 	procedure toggle (face : in out type_face);
+ 	keyword_face	: constant string := "face";	
+	
+	type type_face is (TOP, BOTTOM);
+
+	face_default : constant type_face := TOP;
+	
+	function to_string (face : in type_face) return string;
+	
+	function to_face (face : in string) return type_face;
+
+	
+	-- Changes top to bottom and vice versa:
+	procedure toggle (face : in out type_face);
 	
 
 	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!
@@ -82,7 +82,7 @@ package et_pcb_coordinates_2 is
 	rotation_digits_right : constant := 7;
 
 	rotation_smallest : constant := 1.0 / (10 ** rotation_digits_right);
-	type type_rotation is delta rotation_smallest 
+	type type_rotation_model is delta rotation_smallest 
 		digits rotation_digits_left + rotation_digits_right
 		range -360.0 + rotation_smallest .. 360.0 - rotation_smallest;
 		
@@ -119,10 +119,10 @@ package et_pcb_coordinates_2 is
 		type_distance_model		=> type_distance,
 		axis_max				=> +1_000.0,
 		axis_min				=> -1_000.0,
-		type_rotation 			=> type_rotation
+		type_rotation_model		=> type_rotation_model
 		);
 	
-	-- use pac_geometry_2;
+	use pac_geometry_2;
 	
 
 	-- catch_zone_default : constant type_catch_zone := 2.0; 
@@ -131,64 +131,65 @@ package et_pcb_coordinates_2 is
 	
 
 	
--- 	type type_package_position is new pac_geometry_2.type_position with private;
--- 
--- 	
--- 
--- 	package_position_default : constant type_package_position;
--- 
--- 	position_preamble : constant string := 
--- 			" (x"
--- 			& axis_separator
--- 			& "y"
--- 			& axis_separator
--- 			& "rotation"
--- 			& axis_separator
--- 			& "face)";
--- 
--- 	
--- 	overriding function to_string (p : in type_package_position) return string;
--- 
--- 	
--- 	function to_package_position (
--- 		point 		: in type_vector_model;
--- 		rotation	: in type_rotation := zero_rotation;
--- 		face		: in type_face := TOP)
--- 		return type_package_position;
--- 
--- 	placeholder_position_default : constant type_package_position;	
--- 
--- 
--- 	
--- 	procedure set_face (
--- 		face	: in type_face;
--- 		position: in out type_package_position);
--- 
--- 	
--- 	function get_face (
--- 		packge : in type_package_position)
--- 		return type_face;
--- 
--- 	
--- 	-- Composes from a given point and angle the terminal position.
--- 	function to_terminal_position (
--- 		point		: in type_vector_model;
--- 		rotation	: in type_rotation)
--- 		return type_position'class;
--- 
--- 
--- 	
--- 	private
--- 		
--- 		type type_package_position is new pac_geometry_2.type_position with record
--- 			face : type_face := TOP;
--- 		end record;
--- 
--- 		package_position_default : constant type_package_position := (
--- 			pac_geometry_2.origin_zero_rotation with face => TOP);
--- 
--- 		placeholder_position_default : constant type_package_position := (
--- 			pac_geometry_2.origin_zero_rotation with face => TOP);
+	type type_package_position is new pac_geometry_2.type_position with private;
+
+	
+
+	package_position_default : constant type_package_position;
+ 
+	position_preamble : constant string := 
+			" (x"
+			& axis_separator
+			& "y"
+			& axis_separator
+			& "rotation"
+			& axis_separator
+			& "face)";
+
+	
+	overriding function to_string (p : in type_package_position) return string;
+
+	
+	function to_package_position (
+		point 		: in type_vector_model;
+		rotation	: in type_rotation_model := zero_rotation;
+		face		: in type_face := TOP)
+		return type_package_position;
+
+	placeholder_position_default : constant type_package_position;	
+
+
+	
+	procedure set_face (
+		face	: in type_face;
+		position: in out type_package_position);
+
+	
+	function get_face (
+		packge : in type_package_position)
+		return type_face;
+
+	
+	-- Composes from a given point and angle the terminal position.
+	function to_terminal_position (
+		point		: in type_vector_model;
+		rotation	: in type_rotation_model)
+		return type_position'class;
+
+
+	
+	private
+		
+		type type_package_position is new pac_geometry_2.type_position 
+			with record
+			face : type_face := TOP;
+		end record;
+
+		package_position_default : constant type_package_position := (
+			pac_geometry_2.origin_zero_rotation with face => TOP);
+
+		placeholder_position_default : constant type_package_position := (
+			pac_geometry_2.origin_zero_rotation with face => TOP);
 
 		
 end et_pcb_coordinates_2;

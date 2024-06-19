@@ -57,10 +57,10 @@ with et_general;				use et_general;
 with et_net_names;				use et_net_names;
 with et_text;
 with et_geometry;
-with et_coordinates;			use et_coordinates;
+with et_coordinates_2;			use et_coordinates_2;
 with et_pcb;
 with et_pcb_stack;
-with et_pcb_coordinates;
+with et_pcb_coordinates_2;
 with et_symbols;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 
@@ -72,7 +72,7 @@ package et_submodules is
 	
 	nesting_depth_max : constant positive := 10; -- CS increase if nessecary
 
-	subtype type_submodule_edge_length is type_distance_positive
+	subtype type_submodule_edge_length is type_distance_model_positive
 		range 20.0 .. 1000.0; -- unit is mm
 
 	keyword_size	: constant string := "size";
@@ -150,7 +150,7 @@ package et_submodules is
 	port_name_font_size : constant type_text_size := 2.0;
 
 	-- The spacing between port rectangle and port name
-	port_name_spacing : constant type_distance_positive := 0.5;
+	port_name_spacing : constant type_distance_model_positive := 0.5;
 
 
 	-- GUI relevant only: The font of the port direction:
@@ -193,18 +193,20 @@ package et_submodules is
 		-- The net inside the submodule is here the port name:
 		key_type		=> pac_net_name.bounded_string); -- CLOCK_GENERATOR_OUT
 
-	procedure move_ports (
+	
 	-- Moves the given submodule ports by the given offset.
+	procedure move_ports (
 		ports	: in out pac_submodule_ports.map; -- the portlist
-		offset	: in et_coordinates.type_position); -- the offset (only x/y matters)
+		offset	: in et_coordinates_2.type_position); -- the offset (only x/y matters)
 
+	
 	-- THIS IS THE GRAPHICAL REPRESENTATION OF A SUBMODULE ->
 	-- THE RECTANGULAR BOX AT THE SHEET WHERE THE SUBMODULE IS INSTANTIATED.
 	type type_submodule is record
 		file				: pac_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
-		position		    : et_coordinates.type_position; -- the lower left corner
+		position		    : et_coordinates_2.type_position; -- the lower left corner
 		size				: type_submodule_size; -- CS default ?
-		position_in_board	: et_pcb_coordinates.pac_geometry_2.type_position := et_pcb_coordinates.pac_geometry_2.origin_zero_rotation;
+		position_in_board	: et_pcb_coordinates_2.pac_geometry_2.type_position := et_pcb_coordinates_2.pac_geometry_2.origin_zero_rotation;
 		view_mode			: type_submodule_view_mode := ORIGIN;
 		ports				: pac_submodule_ports.map;
 	end record;
@@ -247,7 +249,7 @@ package et_submodules is
 	
 	-- GUI relevant only: The space between lower box edge, instance name, 
 	-- file name, board position, view mode:
-	text_spacing : constant type_distance_positive := 1.0;
+	text_spacing : constant type_distance_model_positive := 1.0;
 
 
 	
@@ -268,7 +270,7 @@ package et_submodules is
 	type type_netchanger_port is record
 		position	: type_vector_model;
 		length		: et_symbols.type_port_length; 
-		rotation	: type_rotation;
+		rotation	: type_rotation_model;
 	end record;
 
 	position_master_port_default : constant type_vector_model := (x =>  10.0, y => 0.0);
@@ -297,10 +299,10 @@ package et_submodules is
 
 	
 	type type_netchanger is record
-		position_sch	: et_coordinates.type_position; -- x,y,sheet,rotation
+		position_sch	: et_coordinates_2.type_position; -- x,y,sheet,rotation
 		--symbol			: type_netchanger_symbol; -- CS for visualisation only
 		
-		position_brd	: et_pcb_coordinates.pac_geometry_2.type_vector_model; -- x,y
+		position_brd	: et_pcb_coordinates_2.pac_geometry_2.type_vector_model; -- x,y
 		-- in board there is no rotation because the netchanger is just a point in x/y.
 		layer			: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 	end record;
@@ -335,13 +337,13 @@ package et_submodules is
 -- 		internal	: type_port := (
 -- 						
 -- 						-- the position is somewhere in the submodule:
--- 						position	=> et_coordinates.type_coordinates, -- x,y,sheet
+-- 						position	=> et_coordinates_2.type_coordinates_2, -- x,y,sheet
 -- 						length		=> 5.0,
 -- 						rotation	=> 0.0);
 -- 		
 -- 		-- CS symbol			: type_netchanger_symbol;
 -- 		
--- 		position_brd	: et_pcb_coordinates.type_vector_model_2d; -- x,y
+-- 		position_brd	: et_pcb_coordinates_2.type_vector_model_2d; -- x,y
 -- 		signal_layer	: et_pcb.type_signal_layer := et_pcb.type_signal_layer'first;
 -- 	end record;
 

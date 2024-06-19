@@ -59,7 +59,7 @@ with et_general;
 with et_string_processing;				use et_string_processing;
 with et_logging;						use et_logging;
 
-with et_pcb_coordinates;				use et_pcb_coordinates;
+with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
 with et_geometry;
 with et_board_shapes_and_text;			use et_board_shapes_and_text;
 with et_text;
@@ -401,7 +401,7 @@ package et_pcb is
 	-- We collect them in an indefinite ordered map.
 	
 	type type_device_non_electric is record
-		position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
+		position			: et_pcb_coordinates_2.type_package_position; -- incl. rotation and face
 		flipped				: type_flipped := flipped_default;
 		text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac

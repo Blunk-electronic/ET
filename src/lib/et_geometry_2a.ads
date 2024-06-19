@@ -58,7 +58,7 @@ generic
 
 	axis_min, axis_max : type_distance_model;
 
-	type type_rotation is delta <> digits <>;
+	type type_rotation_model is delta <> digits <>;
 	
 	
 package et_geometry_2a is
@@ -89,6 +89,20 @@ package et_geometry_2a is
 -- DISTANCE:
 	
 
+	-- Converts a mil number (given as a string) to millimeters.	
+	function mil_to_distance (
+		mil : in string) 
+		return type_distance_model;
+
+
+	
+	function distance_to_mil (
+		distance : in type_distance_model) 
+		return string;
+
+
+
+	
 	-- Use this type for distances, lengths, ...
 	-- Because those things require positive numbers:
 	subtype type_distance_model_positive is type_distance_model
@@ -120,19 +134,37 @@ package et_geometry_2a is
 
 -- ROTATION / ANGLE:
 	
-	-- The model coordinates system uses so called
-	-- ordinary binary fixed point numbers for angles and rotations:
-	rotation_smallest : constant := 0.01;
-	type type_rotation_model is delta rotation_smallest
-		range -360.0 + rotation_smallest .. 360.0 - rotation_smallest;
-	for type_rotation_model'small use rotation_smallest;
-		
+	zero_rotation : constant type_rotation_model := 0.0;
+
+	
 	-- Converts the given rotation/angle to a string:
 	function to_string (
 		rotation : in type_rotation_model)
 		return string;
 
 
+	function to_rotation (
+		rotation : in string) 
+		return type_rotation_model;
+
+
+	-- Converts a float number to type_rotation_model by rounding
+	-- according to the bankers rule:
+	-- Use it !!!!!
+	function to_rotation (
+		f : in type_float)
+		return type_rotation_model;
+
+
+	
+	-- Adds two angles.
+	-- If result greater 360 degree then 360 degree is subtracted from result.
+	-- If result less than 360 degree then 360 degree is added to the result.
+	function add (
+		left, right : in type_rotation_model) 
+		return type_rotation_model;
+
+	
 
 -- RELATIVE DISTANCE:
 	
@@ -185,7 +217,7 @@ package et_geometry_2a is
 	-- Changes point.x and point.y only.
 	procedure rotate_by (
 		point		: in out type_vector_model;
-		rotation	: in type_rotation);
+		rotation	: in type_rotation_model);
 
 
 
@@ -222,6 +254,15 @@ package et_geometry_2a is
 		return type_rotation_model;
 
 
+	-- Returns the rotation of the given point about the origin.
+	-- If for example point is (1/1) then the return is 45 degree.
+	-- if point is (-1/-1) then the return is -135 degree.
+	function get_rotation ( -- CS rename to get_rotation_about_origin
+		point : in type_vector_model)
+		return type_rotation_model;
+
+
+	
 
 	function set (
 		x, y : in type_position_axis) 
@@ -258,11 +299,25 @@ package et_geometry_2a is
 		x,y : in string)
 		return type_vector_model;
 
+
+	
 	
 
 	function to_offset (
 		p : in type_vector_model)
 		return type_offset;
+
+	
+	function to_offset (
+		x, y : in type_distance_model)
+		return type_offset;
+
+
+	function to_offset (
+		distance : in type_distance_relative)
+		return type_offset;
+
+
 	
 
 	function get_distance_total ( -- CS rename to get_distance_absolute
@@ -470,7 +525,7 @@ package et_geometry_2a is
 	-- Rotates a line about the origin by the given rotation.
 	procedure rotate_by (
 		line		: in out type_line;
-		rotation	: in type_rotation);
+		rotation	: in type_rotation_model);
 
 	
 
@@ -623,7 +678,7 @@ package et_geometry_2a is
 	-- Rotates an arc about the origin by the given rotation.
 	procedure rotate_by (
 		arc			: in out type_arc;
-		rotation	: in type_rotation);
+		rotation	: in type_rotation_model);
 
 
 	
@@ -784,7 +839,7 @@ package et_geometry_2a is
 
 	procedure rotate_by (
 		circle		: in out type_circle;
-		rotation	: in type_rotation);
+		rotation	: in type_rotation_model);
 
 	
 	
@@ -875,6 +930,113 @@ package et_geometry_2a is
 		return type_ordered_line_circle_intersections;
 
 	
+
+-- POSITION:
+	
+	point_preamble_with_rotation : constant string := 
+		" (x"
+		& axis_separator
+		& "y"
+		& axis_separator
+		& "rotation)";
+
+
+	-- The position of an object is a composite
+	-- of the place (x/y) and the rotation of the object about
+	-- its own center:
+	type type_position is tagged record
+		place 		: type_vector_model := origin;
+		rotation	: type_rotation_model := zero_rotation;
+	end record;
+
+
+	function to_string (
+		position : in type_position)
+		return string;
+
+
+	origin_zero_rotation : constant type_position;
+
+	-- A position at the greatest distance in
+	-- x and y from the origin:
+	far_upper_right_zero_rotation : constant type_position;
+	
+
+
+	
+
+
+
+	function to_position (
+		point		: in type_vector_model;
+		rotation	: in type_rotation_model)
+		return type_position'class;
+
+
+	procedure set (
+		position	: in out type_position;
+		axis 		: in type_axis_2d;
+		value		: in type_position_axis);
+
+	
+	procedure set (
+		position	: in out type_position;
+		place		: in type_vector_model);
+	
+	
+	-- Sets the rotation of a position. (position.rotation)
+	procedure set ( -- CS rename to set_rotation
+		position	: in out type_position;
+		rotation	: in type_rotation_model);
+
+
+	function get_x (
+		position : in type_position)
+		return type_distance_model;
+	
+
+	function get_y (
+		position : in type_position)
+		return type_distance_model;
+
+	
+
+	
+	-- Returns the rotation of the given position.
+	function get_rotation (
+		position : in type_position) 
+		return type_rotation_model;
+
+
+
+private
+
+
+	far_upper_left : constant type_vector_model :=
+		(x => type_position_axis'first,
+			y => type_position_axis'last);
+	
+	far_upper_right : constant type_vector_model :=
+		(x => type_position_axis'last,
+			y => type_position_axis'last);
+
+	far_lower_left : constant type_vector_model :=
+		(x => type_position_axis'first,
+			y => type_position_axis'first);
+	
+	far_lower_right : constant type_vector_model :=
+		(x => type_position_axis'last,
+			y => type_position_axis'first);
+	
+	
+	origin_zero_rotation : constant type_position := (others => <>);
+ 
+	far_upper_right_zero_rotation : constant type_position :=
+		(far_upper_right, zero_rotation);
+
+
+	-- boundaries_default : constant type_boundaries := (others => <>);
+
 	
 end et_geometry_2a;
 

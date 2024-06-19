@@ -49,6 +49,7 @@ package body et_submodules is
 			to_string (size.y);
 	end;
 
+	
 	function at_edge (
 		point	: in type_vector_model; -- P
 		size	: in type_submodule_size) -- sx, sy
@@ -88,15 +89,18 @@ package body et_submodules is
 
 		return result;
 	end at_edge;
+
 	
 	function to_submodule_path (path : in string) return pac_submodule_path.bounded_string is begin
 		return pac_submodule_path.to_bounded_string (path);
 	end;
 
+	
 	function to_string (path : in pac_submodule_path.bounded_string) return string is begin
 		return pac_submodule_path.to_string (path);
 	end;
 
+	
 	function to_module_name (path : in pac_submodule_path.bounded_string) 
 		return pac_module_name.bounded_string 
 	is
@@ -108,17 +112,19 @@ package body et_submodules is
 		return name;
 	end to_module_name;
 
+	
 	function to_direction_abbrevation (direction : in type_netchanger_port_name) return string is begin
 		case direction is 
 			when MASTER => return port_direction_abbrevation_master;
 			when SLAVE => return port_direction_abbrevation_slave;
 		end case;
 	end to_direction_abbrevation;
+
+	
 	
 	procedure move_ports (
-	-- Moves the given ports by the given offset.
 		ports	: in out pac_submodule_ports.map; -- the portlist
-		offset	: in et_coordinates.type_position) -- the offset (only x/y matters)
+		offset	: in et_coordinates_2.type_position) -- the offset (only x/y matters)
 	is
 
 		procedure move (
@@ -138,6 +144,7 @@ package body et_submodules is
 	begin -- move_ports
 		pac_submodule_ports.iterate (ports, query_port'access);
 	end move_ports;
+
 	
 	function to_string (view : in type_submodule_view_mode) return string is begin
 		return to_lower (type_submodule_view_mode'image (view));

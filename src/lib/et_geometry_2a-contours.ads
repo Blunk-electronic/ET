@@ -283,7 +283,7 @@ package et_geometry_2a.contours is
 	-- Rotates a contour about the origin by the given rotation.
 	procedure rotate_by ( -- CS rename to rotate_contour
 		contour		: in out type_contour;
-		rotation	: in type_rotation);
+		rotation	: in type_rotation_model);
 
 
 
@@ -442,7 +442,7 @@ package et_geometry_2a.contours is
 	-- Rotates a list of contours by the given angle:
 	procedure rotate_contours (
 		contours	: in out pac_contour_list.list;
-		rotation	: in type_rotation);
+		rotation	: in type_rotation_model);
 
 	
 end et_geometry_2a.contours;

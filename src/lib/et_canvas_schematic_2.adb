@@ -106,7 +106,7 @@ package body et_canvas_schematic_2 is
 		-- This procedure iterates through all primitive objects
 		-- of the drawing frame and adds them to the temporary
 		-- bounding-box bbox_new:
--- 		procedure parse_drawing_frame is
+		procedure parse_drawing_frame is
 -- 			use demo_frame;
 -- 
 -- 			procedure query_line (l : in pac_lines.cursor) is
@@ -133,7 +133,8 @@ package body et_canvas_schematic_2 is
 -- 			end query_line;
 -- 
 -- 			
--- 		begin
+		begin
+			null;
 -- 			-- CS: This simple solution iterates through all lines
 -- 			-- incl. the title block. But since the title block
 -- 			-- is always inside the drawing frame, the elements
@@ -141,7 +142,7 @@ package body et_canvas_schematic_2 is
 -- 			drawing_frame.lines.iterate (query_line'access);
 -- 			
 -- 			-- CS texts
--- 		end parse_drawing_frame;
+		end parse_drawing_frame;
 
 
 		
@@ -254,7 +255,7 @@ package body et_canvas_schematic_2 is
 		-- The drawing frame is regarded as part of the model.
 		-- Iterate through all primitive objects of the 
 		-- drawing frame:
-	-- parse_drawing_frame;
+		parse_drawing_frame;
 		
 		-- The database that contains all objects of the model
 		-- must be parsed. This is the call of an iteration through

@@ -121,12 +121,12 @@ package body et_kicad_coordinates is
 	end get_point;
 
 	
-	function get_x (position : in type_position) return type_distance is begin
+	function get_x (position : in type_position) return type_distance_model is begin
 		return position.point.x;
 	end get_x;
 
 	
-	function get_y (position : in type_position) return type_distance is begin
+	function get_y (position : in type_position) return type_distance_model is begin
 		return position.point.y;
 	end get_y;
 
@@ -141,7 +141,7 @@ package body et_kicad_coordinates is
 
 	procedure rotate_point (
 		position	: in out type_position;
-		angle		: in type_rotation)
+		angle		: in type_rotation_model)
 	is begin
 		rotate_by (position.point, angle);
 	end rotate_point;
@@ -166,7 +166,7 @@ package body et_kicad_coordinates is
 	procedure set (
 		position	: in out type_position;
 		axis		: in type_axis_2D;
-		value		: in type_distance)
+		value		: in type_distance_model)
 	is begin
 		case axis is
 			when X => position.point.x := value;

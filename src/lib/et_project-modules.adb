@@ -130,7 +130,7 @@ package body et_project.modules is
 
 	function sheet_description (
 		module	: in pac_generic_modules.cursor;
-		sheet	: in et_coordinates.type_sheet)
+		sheet	: in et_coordinates_2.type_sheet)
 		return et_frames.type_schematic_description 
 	is
 		use et_frames;

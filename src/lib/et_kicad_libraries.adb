@@ -570,8 +570,12 @@ package body et_kicad_libraries is
 				raise;
 		
 	end to_text_meaning;
-								 
-	function to_field_orientation (text : in string) return et_coordinates.type_rotation is
+
+	
+	function to_field_orientation (
+		text : in string) 
+		return et_coordinates_2.type_rotation_model 
+	is
 	-- Converts a kicad field text orientation character (H/V) to type_rotation.
 	begin	
 		case type_field_orientation'value (text) is
@@ -587,6 +591,7 @@ package body et_kicad_libraries is
 				log (ERROR, "invalid text orientation !", console => true);
 				raise;
 	end to_field_orientation;
+
 	
 	function to_alignment_horizontal (text : in string) return et_text.type_text_alignment_horizontal is
 	-- Converts a horizontal kicad text alignment to type_text_alignment_horizontal.
@@ -601,6 +606,7 @@ package body et_kicad_libraries is
 		return a;
 	end to_alignment_horizontal;
 
+	
 	function to_alignment_vertical (text : in string) return et_text.type_text_alignment_vertical is
 	-- Converts a vertical kicad text alignment to type_text_alignment_vertical.
 	-- The given text is something like CNN. We are interested in the first character only.
@@ -705,6 +711,7 @@ package body et_kicad_libraries is
 -- 		return v_out;
 -- 	end to_field_visible;
 
+	
 	function to_appearance (line : in type_fields_of_line; schematic : in boolean) 
 	-- Converts the apperance flag to type_device_appearance.
 	-- The parameter "schematic" specifies whether we are dealing with a schematic
@@ -760,6 +767,7 @@ package body et_kicad_libraries is
 				
 	end to_appearance;
 
+	
 	function to_alternative_representation (line : in type_fields_of_line; schematic : in boolean)
 	-- Converts the kicad alternative (deMorgan) representation to the type_de_morgan_representation.
 	-- In a schematic it is expressed in a line like "U 2 1 5992967A". The 3rd field is the deMorgan flag.
@@ -792,7 +800,11 @@ package body et_kicad_libraries is
 		
 	end to_alternative_representation;
 
-	function to_degrees (angle : in string) return et_coordinates.type_rotation is
+	
+	function to_degrees (
+		angle : in string) 
+		return et_coordinates_2.type_rotation_model 
+	is
 	-- Converts a given angle as string to type_rotation.
 		
 		a_in  : type_angle; -- unit is tenth of degrees -3599 .. 3599
@@ -811,14 +823,16 @@ package body et_kicad_libraries is
 		a_tmp := type_angle_real (a_in); -- -3599.0 .. 3599.0
 
 		-- convert given angle to et_coordinates.type_rotation.
-		return et_coordinates.type_rotation (a_tmp / 10.0); -- -359.9 .. 359.9
+		return et_coordinates_2.type_rotation_model (a_tmp / 10.0); -- -359.9 .. 359.9
 		-- CS multiply by -1 ? If yes, remove - before all calls of this function.
 
 		-- CS: exception handler
 	end to_degrees;
 
+	
 	function to_power_flag (reference : in type_device_name) 
-		return type_power_flag is
+		return type_power_flag 
+	is
 	-- If the given component reference is one that belongs to a "power flag" returns YES.
 		use pac_device_prefix;
 	begin
@@ -832,6 +846,7 @@ package body et_kicad_libraries is
 		end if;
 	end to_power_flag;
 
+	
 	procedure check_generic_name_characters (
 	-- Checks if the given generic component name meets certain conventions.
 		name		: in type_component_generic_name.bounded_string; -- TRANSISTOR_NPN
@@ -1180,9 +1195,10 @@ package body et_kicad_libraries is
 
 	end terminal_port_map_fits;
 
+
 	
-	procedure read_components_libraries (log_threshold : in type_log_level) is
 	-- Reads component libraries.
+	procedure read_components_libraries (log_threshold : in type_log_level) is
 
 		use et_packages;
 		use et_devices;
@@ -1199,6 +1215,7 @@ package body et_kicad_libraries is
 		unit_cursor		: type_units_library.cursor;
 		unit_inserted	: boolean; -- indicates whether a unit has been inserted
 
+		
 		procedure read_library (log_threshold : in type_log_level) is
 			line : type_fields_of_line; -- the line being processed
 
@@ -1223,7 +1240,7 @@ package body et_kicad_libraries is
 
 			tmp_port_name_visible		: type_port_name_visible;
 			tmp_terminal_name_visible	: type_terminal_name_visible;
-			tmp_port_name_offset		: et_coordinates.type_distance; -- CS: rename to port_name_offset
+			tmp_port_name_offset		: et_coordinates_2.type_distance_model; -- CS: rename to port_name_offset
 			tmp_terminal_name			: et_terminals.pac_terminal_name.bounded_string;
 			
 			tmp_units_total		: type_units_total; -- see spec for range -- CS rename to units_total	
@@ -1258,6 +1275,7 @@ package body et_kicad_libraries is
 			-- When building the package variant (there will be only the default variant)
 			-- this map is used by procedure build_package_variant.
 			tmp_terminal_port_map : pac_terminal_port_map.map;
+
 			
 			procedure init_temp_variables is
 			-- Resets "field found flags".
@@ -1276,6 +1294,7 @@ package body et_kicad_libraries is
 				pac_terminal_port_map.clear (tmp_terminal_port_map);
 			end init_temp_variables;
 
+			
 			function to_swap_level (swap_in : in string)
 			-- Converts the kicad interchangeable flag to the et swap level.
 			-- Since Kicad has only one swap level (interchangeable yes or no) 
@@ -1308,6 +1327,7 @@ package body et_kicad_libraries is
 				return s;
 			end to_swap_level;
 
+			
 			function to_pin_visibile (vis_in : in string)
 			-- Converts the kicad "show pin number" flag to the et type_terminal_name_visible.
 			-- Used when reading component libraries.		
@@ -1339,6 +1359,7 @@ package body et_kicad_libraries is
 				
 			end to_pin_visibile;
 
+			
 			function to_port_visibile (vis_in : in string)
 			-- Converts the kicad "show pin name" flag to the et type_port_name_visible.
 			-- Used when reading component libraries.		
@@ -1369,14 +1390,16 @@ package body et_kicad_libraries is
 				return v_out;
 			end to_port_visibile;
 
-			function to_unit_name (id : in type_unit_id) return pac_unit_name.bounded_string is
+			
 			-- returns the given unit id as pac_unit_name
+			function to_unit_name (id : in type_unit_id) return pac_unit_name.bounded_string is
 			begin
 				return pac_unit_name.to_bounded_string (trim (type_unit_id'image (id), left));
 			end to_unit_name;
 
-			function to_fill (fill_style : in string) return type_fill is
+			
 			-- Converts the given kicad fill style to a type_fill.
+			function to_fill (fill_style : in string) return type_fill is
 			begin
 				if fill_style = library_fill_none then
 					return (pattern => none, border => invisible);
@@ -1391,9 +1414,10 @@ package body et_kicad_libraries is
 					raise constraint_error; -- CS write an error message about invalid fill style
 				end if;
 			end to_fill;
+
 			
-			function to_polyline (line : in type_fields_of_line) return type_symbol_polyline is
 			-- Returns from the given fields of a line a type_polyline.
+			function to_polyline (line : in type_fields_of_line) return type_symbol_polyline is
 				polyline	: type_symbol_polyline;
 				total		: positive; -- for cross checking 
 
@@ -1512,7 +1536,7 @@ package body et_kicad_libraries is
 				--  #7 : line width (23)
 				--  #8 : fill style N/F/f no fill/foreground/background
 
-				use et_coordinates.pac_geometry_sch;
+				use et_coordinates_2.pac_geometry_sch;
 			begin -- to_circle
 				set (circle.center, X, mil_to_distance (mil => f (line,2)));
 				set (circle.center, Y, mil_to_distance (mil => f (line,3)));
@@ -1556,7 +1580,7 @@ package body et_kicad_libraries is
 				-- #11..12 : start point (x/y)
 				-- #13..14 : end point (x/y)
 
-				use et_coordinates.pac_geometry_sch;
+				use et_coordinates_2.pac_geometry_sch;
 			begin -- to_arc
 				set (arc.center, X, mil_to_distance (mil => f (line,2)));
 				set (arc.center, Y, mil_to_distance (mil => f (line,3)));
@@ -1670,7 +1694,7 @@ package body et_kicad_libraries is
 					return et_text.pac_text_content.to_bounded_string (t);
 				end to_content;
 
-				use et_coordinates.pac_geometry_sch;
+				use et_coordinates_2.pac_geometry_sch;
 				
 			begin -- to_text
 				text.rotation := snap (- to_degrees (f (line,2)));
@@ -1799,10 +1823,10 @@ package body et_kicad_libraries is
 
 				-- Translates orientation up/down/left/right (U/D/L/R) to rotation:
 				function to_rotation (orientation : in string) 
-					return et_coordinates.type_rotation_relative 
+					return et_coordinates_2.type_rotation_relative 
 				is
 					orient : constant character := orientation (orientation'first);
-					rot : et_coordinates.type_rotation_relative := 0.0;
+					rot : et_coordinates_2.type_rotation_relative := 0.0;
 				begin
 					case orient is
 						when 'D' => rot :=  90.0; -- to be connected with a net from above,
@@ -1817,7 +1841,7 @@ package body et_kicad_libraries is
 				end to_rotation;
 
 				use et_conventions;
-				use et_coordinates.pac_geometry_sch;
+				use et_coordinates_2.pac_geometry_sch;
 				
 			begin -- to_port
 				log_indentation_up;
@@ -1870,7 +1894,7 @@ package body et_kicad_libraries is
 				-- port name offset
 				port.port_name_offset := tmp_port_name_offset;
 
-				--log (text => text => et_coordinates.to_string (point => port.coordinates), level => 1);
+				--log (text => text => et_coordinates_2.to_string (point => port.coordinates), level => 1);
 
 				-- CS: log other port properties
 
@@ -1892,7 +1916,7 @@ package body et_kicad_libraries is
 			-- NOTE: The contextual validation takes place in procedure check_text_fields.
 				use et_text;
 				use et_text.pac_text_content;
-				use et_coordinates.pac_geometry_sch;
+				use et_coordinates_2.pac_geometry_sch;
 				
 				-- instantiate a text field as speficied by given parameter meaning
 				text : type_text_placeholder (meaning);

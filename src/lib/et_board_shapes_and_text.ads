@@ -38,10 +38,10 @@
 
 
 with et_text;
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_geometry;				use et_geometry;
-with et_geometry_2;
-with et_geometry_2.contours;
+with et_geometry_2a;
+with et_geometry_2a.contours;
 with et_geometry_1.et_polygons;
 with et_geometry_1.et_polygons.clipping;
 with et_geometry_1.et_polygons.cropping;
@@ -74,13 +74,13 @@ package et_board_shapes_and_text is
 
 -- FAB RELEVANT
 
-	--fab_tolerance : constant type_distance_positive := 0.001;
-	--fab_tolerance : constant type_distance_positive := 0.01;
-	fill_tolerance : constant type_distance_positive := 0.05;
+	--fab_tolerance : constant type_distance_model_positive := 0.001;
+	--fab_tolerance : constant type_distance_model_positive := 0.01;
+	fill_tolerance : constant type_distance_model_positive := 0.05;
 
 
-	linewidth_fab_min : constant type_distance_positive := 0.005;
-	linewidth_fab_max : constant type_distance_positive := 10.0;
+	linewidth_fab_min : constant type_distance_model_positive := 0.005;
+	linewidth_fab_max : constant type_distance_model_positive := 10.0;
 	
 	package pac_text_board is new et_text.generic_pac_text (
 		pac_geometry_2		=> pac_geometry_2,
@@ -94,13 +94,13 @@ package et_board_shapes_and_text is
 		line_width_default	=> 0.005);
 
 	
-	subtype type_general_line_width is type_distance_positive
+	subtype type_general_line_width is type_distance_model_positive
 		range linewidth_fab_min .. linewidth_fab_max;
 	
 	-- Checks whether given line width is in range 
 	-- of type_general_line_width:
 	procedure validate_general_line_width (
-		width : in et_pcb_coordinates.type_distance);
+		width : in et_pcb_coordinates_2.type_distance);
 
 
 	keyword_width 		: constant string := "width";

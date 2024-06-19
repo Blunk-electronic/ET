@@ -49,10 +49,10 @@ with ada.containers.ordered_sets;
 with et_net_names;					use et_net_names;
 with et_project;
 with et_general;
-with et_coordinates;
+with et_coordinates_2;
 with et_logging;					use et_logging;
 with et_pcb;
-with et_pcb_coordinates;
+with et_pcb_coordinates_2;
 
 
 package et_kicad_to_native is

@@ -44,84 +44,84 @@ package body et_pcb_coordinates_2 is
 
 	procedure dummy is begin null; end;
 		
--- 	function to_string (face : in type_face) return string is begin
--- 		return latin_1.space & to_lower (type_face'image (face));
--- 	end to_string;
--- 
--- 	
--- 	function to_face (face : in string) return type_face is begin
--- 		return type_face'value (face);
--- 	end to_face;
--- 
--- 	
--- 	procedure toggle (face : in out type_face) is begin
--- 		case face is 
--- 			when TOP => face := BOTTOM;
--- 			when BOTTOM => face := TOP;
--- 		end case;
--- 	end toggle;
--- 
--- 
--- 
--- 	
--- 	function to_string (
--- 		p : in type_package_position) 
--- 		return string 
--- 	is begin
--- 		return position_preamble
--- 				& to_string (get_x (p))
--- 				& axis_separator
--- 				& to_string (get_y (p))
--- 				& axis_separator
--- 				& to_string (get_rotation (p))
--- 				& axis_separator
--- 				& to_string (p.face);
--- 
--- 	end to_string;
--- 
--- 	
--- 	function to_package_position (
--- 		point 		: in type_vector_model;
--- 		rotation	: in type_rotation := zero_rotation;
--- 		face		: in type_face := TOP)
--- 		return type_package_position 
--- 	is begin
--- 		return pos : type_package_position do
--- 			set (pos, point);
--- 			set (pos, rotation);
--- 			pos.face := face;
--- 		end return;
--- 	end to_package_position;
--- 
--- 	
--- 	procedure set_face (
--- 		face	: in type_face;
--- 		position: in out type_package_position) 
--- 	is begin
--- 		position.face := face;
--- 	end set_face;
--- 
--- 	
--- 	function get_face (
--- 		packge : in type_package_position)
--- 		return type_face 
--- 	is begin
--- 		return packge.face;
--- 	end get_face;
--- 	
--- 	
--- 	function to_terminal_position (
--- 		point		: in type_vector_model;
--- 		rotation	: in type_rotation)
--- 		return type_position'class 
--- 	is
--- 		pos : type_position;
--- 	begin
--- 		--pos := (point with rotation);
--- 		set (pos, point);
--- 		set (pos, rotation);
--- 		return pos;
--- 	end to_terminal_position;
+	function to_string (face : in type_face) return string is begin
+		return latin_1.space & to_lower (type_face'image (face));
+	end to_string;
+
+	
+	function to_face (face : in string) return type_face is begin
+		return type_face'value (face);
+	end to_face;
+
+	
+	procedure toggle (face : in out type_face) is begin
+		case face is 
+			when TOP => face := BOTTOM;
+			when BOTTOM => face := TOP;
+		end case;
+	end toggle;
+
+
+
+	
+	function to_string (
+		p : in type_package_position) 
+		return string 
+	is begin
+		return position_preamble
+				& to_string (get_x (p))
+				& axis_separator
+				& to_string (get_y (p))
+				& axis_separator
+				& to_string (get_rotation (p))
+				& axis_separator
+				& to_string (p.face);
+
+	end to_string;
+
+	
+	function to_package_position (
+		point 		: in type_vector_model;
+		rotation	: in type_rotation_model := zero_rotation;
+		face		: in type_face := TOP)
+		return type_package_position 
+	is begin
+		return pos : type_package_position do
+			set (pos, point);
+			set (pos, rotation);
+			pos.face := face;
+		end return;
+	end to_package_position;
+
+	
+	procedure set_face (
+		face	: in type_face;
+		position: in out type_package_position) 
+	is begin
+		position.face := face;
+	end set_face;
+
+	
+	function get_face (
+		packge : in type_package_position)
+		return type_face 
+	is begin
+		return packge.face;
+	end get_face;
+	
+	
+	function to_terminal_position (
+		point		: in type_vector_model;
+		rotation	: in type_rotation_model)
+		return type_position'class 
+	is
+		pos : type_position;
+	begin
+		--pos := (point with rotation);
+		set (pos, point);
+		set (pos, rotation);
+		return pos;
+	end to_terminal_position;
 	
 end et_pcb_coordinates_2;
 

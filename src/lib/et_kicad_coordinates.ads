@@ -48,8 +48,8 @@ with ada.containers.doubly_linked_lists;
 with et_string_processing;
 with et_logging;				use et_logging;
 with et_geometry;				use et_geometry;
-with et_coordinates;			use et_coordinates;
-use et_coordinates.pac_geometry_2;
+with et_coordinates_2;			use et_coordinates_2;
+use et_coordinates_2.pac_geometry_2;
 
 
 package et_kicad_coordinates is
@@ -94,8 +94,8 @@ package et_kicad_coordinates is
 	type type_position is private;
 
 	function get_point (position : in type_position) return type_vector_model;
-	function get_x (position : in type_position) return type_distance;
-	function get_y (position : in type_position) return type_distance;
+	function get_x (position : in type_position) return type_distance_model;
+	function get_y (position : in type_position) return type_distance_model;
 
 	procedure set_point (
 		position	: in out type_position;
@@ -104,7 +104,7 @@ package et_kicad_coordinates is
 	
 	procedure rotate_point (
 		position	: in out type_position;
-		angle		: in type_rotation);
+		angle		: in type_rotation_model);
 
 
 	procedure mirror_point (
@@ -120,7 +120,7 @@ package et_kicad_coordinates is
 	procedure set (
 		position	: in out type_position;
 		axis		: in type_axis_2D;
-		value		: in type_distance);
+		value		: in type_distance_model);
 
 	
 	function path (position : in type_position) return type_path_to_submodule.list;

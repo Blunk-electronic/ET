@@ -49,7 +49,7 @@ separate (et_kicad.schematic)
 
 function read (
 	current_schematic	: in type_hierarchic_sheet_file_name_and_timestamp;
-	sheet_number		: in et_coordinates.type_sheet;
+	sheet_number		: in et_coordinates_2.type_sheet;
 	log_threshold		: in type_log_level)
 	return type_hierarchic_sheet_file_names_extended
 is
@@ -445,7 +445,7 @@ is
 													"hierarchic net " & to_string (anon_strand_a.name) 
 													& " has a local label at" 
 													--& to_string (position => ls.coordinates) & " !");
-													& to_string (point => ls.coordinates) & " !");
+													& to_string (ls.coordinates) & " !");
 												raise constraint_error;
 
 											when global => -- strand has been marked as "global" already. no local label allowed !
@@ -454,7 +454,7 @@ is
 													"global net " & to_string (anon_strand_a.name) 
 													& " has a local label at" 
 													--& to_string (position => ls.coordinates) & " !");
-													& to_string (point => ls.coordinates) & " !");
+													& to_string (ls.coordinates) & " !");
 													raise constraint_error;
 										end case;
 
@@ -474,7 +474,7 @@ is
 												log (ERROR, 
 														"Net " & to_string (anon_strand_a.name) & " has contradicting label " 
 														--& "at" & to_string (position => ls.coordinates) & " !");
-														& "at" & to_string (point => ls.coordinates) & " !");
+														& "at" & to_string (ls.coordinates) & " !");
 												raise constraint_error;
 											end if;
 										end if;
@@ -552,7 +552,7 @@ is
 														"local net " & to_string (anon_strand_a.name) 
 														& " has a hierarchic or global label at" 
 														--& to_string (position => lt.coordinates) & " !");
-														& to_string (point => lt.coordinates) & " !");
+														& to_string (lt.coordinates) & " !");
 													raise constraint_error;
 												end if;
 												
@@ -563,7 +563,7 @@ is
 														"hierarchic net " & to_string (anon_strand_a.name) 
 														& " has a global label at" 
 														--& to_string (position => lt.coordinates) & " !");
-														& to_string (point => lt.coordinates) & " !");
+														& to_string (lt.coordinates) & " !");
 													raise constraint_error;
 												end if;
 
@@ -574,7 +574,7 @@ is
 														"global net " & to_string (anon_strand_a.name) 
 														& " has a hierarchic label at" 
 														--& to_string (position => lt.coordinates) & " !");
-														& to_string (point => lt.coordinates) & " !");
+														& to_string (lt.coordinates) & " !");
 													raise constraint_error;
 												end if;
 										end case;
@@ -589,7 +589,7 @@ is
 												log (ERROR, 
 														"Net " & to_string (anon_strand_a.name) & " has contradicting label " 
 														--& "at" & to_string (position => lt.coordinates) & " !");
-														& "at" & to_string (point => lt.coordinates) & " !");
+														& "at" & to_string (lt.coordinates) & " !");
 												raise constraint_error;
 											end if;
 										end if;
@@ -1399,16 +1399,17 @@ is
 
 		end to_direction;
 
-		function to_orientation (or_in : in string) return et_coordinates.type_rotation is
+		
+		function to_orientation (or_in : in string) return et_coordinates_2.type_rotation_model is
 		-- Converts a string to type_rotation
-			result : et_coordinates.type_rotation;
+			result : et_coordinates_2.type_rotation_model;
 			orientation : type_sheet_port_orientation; -- see et_kicad.ads
 		begin
 			orientation := type_sheet_port_orientation'value (or_in);
 
 			case orientation is
-				when R => result := et_coordinates.type_rotation (0.0);
-				when L => result := et_coordinates.type_rotation (180.0);
+				when R => result := et_coordinates_2.type_rotation_model (0.0);
+				when L => result := et_coordinates_2.type_rotation_model (180.0);
 			end case;
 			
 			return result;

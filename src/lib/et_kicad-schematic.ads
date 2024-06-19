@@ -57,11 +57,11 @@ with et_packages;
 with et_pcb;
 with et_kicad_general;			use et_kicad_general;
 with et_import;
-with et_coordinates;			use et_coordinates;
-use et_coordinates.pac_geometry_sch;
-use et_coordinates.pac_geometry_2;
+with et_coordinates_2;			use et_coordinates_2;
+use et_coordinates_2.pac_geometry_sch;
+use et_coordinates_2.pac_geometry_2;
 
-with et_pcb_coordinates;
+with et_pcb_coordinates_2;
 with et_text;
 with et_symbols;
 with et_devices;				use et_devices;
@@ -156,7 +156,7 @@ package et_kicad.schematic is
 	-- A kicad unit:
 	type type_unit_schematic is record
 		appearance	: et_schematic.type_appearance_schematic;
-		rotation	: type_rotation := zero_rotation;
+		rotation	: type_rotation_model := zero_rotation;
 		mirror		: et_schematic.type_mirror := et_schematic.NO;
 		position	: et_kicad_coordinates.type_position;		
 
@@ -212,7 +212,7 @@ package et_kicad.schematic is
 	-- The unit is an element in the given list of units.
 		name 	: in et_devices.pac_unit_name.bounded_string; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
-		return et_coordinates.type_rotation;
+		return et_coordinates_2.type_rotation_model;
 	
 	procedure write_unit_properties (
 	-- Writes the properties of the unit indicated by the given cursor.
@@ -250,7 +250,7 @@ package et_kicad.schematic is
 
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders for reference and value.
-				position			: et_pcb_coordinates.type_package_position; -- incl. angle and face
+				position			: et_pcb_coordinates_2.type_package_position; -- incl. angle and face
 				text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 				
 			-- If a component appears in the schematic only, it does not have any package variants.
@@ -397,7 +397,7 @@ package et_kicad.schematic is
 
 	type type_net_label (label_appearance : type_net_label_appearance) is record
 		coordinates	: type_vector_model;
-		rotation	: et_coordinates.type_rotation;
+		rotation	: et_coordinates_2.type_rotation_model;
         text		: pac_net_name.bounded_string;
         size		: et_schematic_shapes_and_text.pac_text_schematic.type_text_size;
         width		: et_schematic_shapes_and_text.type_text_line_width;
@@ -443,7 +443,7 @@ package et_kicad.schematic is
 	end record;
 
 	function length (segment : in type_net_segment_base) 
-		return et_coordinates.type_distance;
+		return et_coordinates_2.type_distance;
 	-- Returns the length of the given net segment.
 	
 	type type_net_segment is new type_net_segment_base with record
@@ -781,7 +781,7 @@ package et_kicad.schematic is
 		direction	: type_port_direction;
 		text_size	: et_schematic_shapes_and_text.pac_text_schematic.type_text_size;
 		coordinates	: type_vector_model;
-        orientation	: et_coordinates.type_rotation;
+        orientation	: et_coordinates_2.type_rotation_model;
         processed   : boolean; -- used when linking hierarchic nets
 	end record;
 
@@ -801,7 +801,7 @@ package et_kicad.schematic is
         text_size_of_name   : et_schematic_shapes_and_text.pac_text_schematic.type_text_size;
         text_size_of_file   : et_schematic_shapes_and_text.pac_text_schematic.type_text_size;
 		coordinates		    : et_kicad_coordinates.type_position;
-        size_x, size_y      : et_coordinates.type_distance; -- size x/y of the box
+        size_x, size_y      : et_coordinates_2.type_distance; -- size x/y of the box
 		timestamp           : type_timestamp;
 		ports				: type_hierarchic_sheet_ports.map;
 	end record;
