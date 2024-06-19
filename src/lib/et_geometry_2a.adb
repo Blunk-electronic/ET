@@ -220,6 +220,23 @@ package body et_geometry_2a is
 
 
 
+	procedure rotate_by (
+		point		: in out type_vector_model;
+		rotation	: in type_rotation) 
+	is			
+		v_tmp : type_vector := to_vector (point);
+	begin
+		rotate_by (
+			vector		=> v_tmp,
+			rotation	=> type_angle (rotation),
+			debug		=> false);
+
+		point := to_point (v_tmp);
+	end rotate_by;
+	
+
+
+	
 	function get_distance (
 		point_one, point_two : in type_vector_model) 
 		return type_distance_polar 
@@ -456,6 +473,87 @@ package body et_geometry_2a is
 
 
 
+	procedure mirror (
+		point	: in out type_vector_model;
+		axis	: in type_axis_2d) 
+	is begin
+		case axis is
+			when X =>
+				point.y := point.y * (-1.0);
+			when Y =>
+				point.x := point.x * (-1.0);
+		end case;
+	end mirror;
+
+
+	
+
+	function "<" (left, right : in type_vector_model) return boolean is begin
+		if left.x < right.x then
+			return true;
+		elsif left.x > right.x then
+			return false;
+
+		-- left.x = right.x -> compare y:
+		elsif left.y < right.y then
+			return true;
+		else 
+			-- if left.y greater or equal right.y
+			return false;
+		end if;
+		
+		-- CS compare absolute distance to origin instead
+	end;
+
+	
+
+	function get_nearest (
+		points		: in pac_points.list;
+		reference	: in type_vector_model := origin)
+		return type_vector_model
+	is
+		use pac_points;
+		
+		result : type_vector_model;
+
+		distance : type_float_positive := type_float_positive'last;
+		
+		procedure query_point (p : in pac_points.cursor) is
+			d_scratch : constant type_float_positive := 
+				get_absolute (get_distance (reference, element (p)));
+		begin
+			if d_scratch < distance then
+				distance := d_scratch;
+				result := element (p);
+			end if;
+		end query_point;
+		
+	begin
+		points.iterate (query_point'access);
+		return result;
+	end get_nearest;
+
+
+
+
+	function to_vectors (
+		points : in pac_points.list)
+		return pac_vectors.list
+	is
+		result : pac_vectors.list;
+
+		use pac_points;
+		
+		procedure query_point (c : in pac_points.cursor) is begin
+			result.append (to_vector (element (c)));
+		end query_point;
+		
+	begin
+		points.iterate (query_point'access);
+		return result;
+	end to_vectors;
+
+	
 	
 	
 	function to_string (
@@ -579,6 +677,7 @@ package body et_geometry_2a is
 	end areas_overlap;
 
 
+	
 	procedure merge_areas (
 		A : in out type_area;
 		B : in type_area)
@@ -648,6 +747,35 @@ package body et_geometry_2a is
 	end;
 
 
+	procedure move_by (
+		line	: in out type_line;
+		offset	: in type_distance_relative)
+	is begin
+		move_by (point	=> line.start_point,	offset => offset);
+		move_by (point	=> line.end_point,		offset => offset);
+	end move_by;
+
+	
+
+	procedure mirror (
+		line		: in out type_line;
+		axis		: in type_axis_2d)
+	is begin
+		mirror (line.start_point, axis);
+		mirror (line.end_point, axis);
+	end mirror;
+
+
+	procedure rotate_by (
+		line		: in out type_line;
+		rotation	: in type_rotation) 
+	is begin
+		rotate_by (line.start_point, rotation);
+		rotate_by (line.end_point, rotation);
+	end rotate_by;
+
+	
+	
 	function to_line_fine (
 		line : in type_line)
 		return type_line_fine
@@ -788,6 +916,19 @@ package body et_geometry_2a is
 		return result;
 	end get_bounding_box;
 
+
+
+	function get_intersection (
+		line		: in type_line;
+		line_vector	: in type_line_vector)
+		return type_line_vector_intersection
+	is begin
+		return get_intersection (
+			line_vector	=> line_vector,
+			line		=> to_line_fine (line));		
+	end get_intersection;
+
+	
 	
 
 -- ARC:
@@ -801,21 +942,67 @@ package body et_geometry_2a is
 	end to_string;
 
 
-	function get_radius_start (
-		arc : in type_arc) 
-		return type_float_positive 
-	is begin
-		return get_distance_total (arc.center, arc.start_point);
-	end get_radius_start;
+
+	function reverse_arc (arc : in type_arc) return type_arc'class is
+		result : type_arc := arc;
+	begin
+		result.start_point := arc.end_point;
+		result.end_point := arc.start_point;
+
+		case arc.direction is
+			when CW  => result.direction := CCW;
+			when CCW => result.direction := CW;
+		end case;
+		
+		return result;
+	end reverse_arc;
+
+	
+	
+	procedure reverse_arc (arc : in out type_arc) is
+		scratch : type_vector_model := arc.start_point;
+	begin
+		arc.start_point := arc.end_point;
+		arc.end_point := scratch;
+
+		case arc.direction is
+			when CW	 => arc.direction := CCW;
+			when CCW => arc.direction := CW;
+		end case;
+	end reverse_arc;
 
 
 	
-	function get_radius_end (
-		arc : in type_arc)
-		return type_float_positive
+	function normalize_arc (arc: in type_arc) return type_arc'class is
+	begin
+		case arc.direction is
+			when CW  => return reverse_arc (arc);					
+			when CCW => return arc;
+		end case;
+	end normalize_arc;
+
+
+	
+	function zero_length (arc : in type_arc) return boolean is
+	begin
+		if arc.start_point = arc.end_point then
+			return true;
+		else
+			return false;
+		end if;
+	end zero_length;
+
+
+
+	
+	procedure move_by (
+		arc		: in out type_arc;
+		offset	: in type_distance_relative)
 	is begin
-		return get_distance_total (arc.center, arc.end_point);
-	end get_radius_end;
+		move_by (point => arc.center,      offset => offset);
+		move_by (point => arc.start_point, offset => offset);
+		move_by (point => arc.end_point,   offset => offset);
+	end move_by;
 
 
 
@@ -835,6 +1022,52 @@ package body et_geometry_2a is
 	end move_to;
 	
 
+
+
+	procedure mirror (
+		arc			: in out type_arc;
+		axis		: in type_axis_2d)
+	is begin
+		mirror (arc.center, axis);
+		mirror (arc.start_point, axis);
+		mirror (arc.end_point, axis);
+		arc.direction := reverse_direction (arc.direction);
+	end mirror;
+
+	
+
+	procedure rotate_by (
+		arc			: in out type_arc;
+		rotation	: in type_rotation) 
+	is begin
+		rotate_by (arc.center, rotation);
+		rotate_by (arc.start_point, rotation);
+		rotate_by (arc.end_point, rotation);
+	end;
+	
+
+	
+	function get_radius_start (
+		arc : in type_arc) 
+		return type_float_positive 
+	is begin
+		return get_distance_total (arc.center, arc.start_point);
+	end get_radius_start;
+
+
+	
+	function get_radius_end (
+		arc : in type_arc)
+		return type_float_positive
+	is begin
+		return get_distance_total (arc.center, arc.end_point);
+	end get_radius_end;
+
+
+
+
+	
+	
 	function to_arc_angles (
 		arc : in type_arc) 
 		return type_arc_angles 
@@ -1500,6 +1733,33 @@ package body et_geometry_2a is
 
 
 
+	procedure move_by (
+		circle	: in out type_circle;
+		offset	: in type_distance_relative)
+	is begin
+		move_by (point	=> circle.center,	offset => offset);
+	end move_by;
+
+
+
+	procedure mirror (
+		circle		: in out type_circle;
+		axis		: in type_axis_2d) 
+	is begin
+		mirror (circle.center, axis);
+	end mirror;
+
+
+
+	procedure rotate_by (
+		circle		: in out type_circle;
+		rotation	: in type_rotation) 
+	is begin
+		rotate_by (circle.center, rotation);
+	end;
+
+	
+
 	function get_tangent_angle (p : in type_vector) 
 		return type_tangent_angle_circle
 	is
@@ -1853,6 +2113,47 @@ package body et_geometry_2a is
 		
 		return result;
 	end get_bounding_box;
+
+
+
+	function order_intersections (
+		-- The start point of the line that intersects the circle.
+		-- The start point must be outside the circle and will
+		-- be passed through to the result unchanged.
+		start_point		: in type_vector;
+
+		intersections	: in type_intersection_of_line_and_circle)
+		return type_ordered_line_circle_intersections
+	is
+		result : type_ordered_line_circle_intersections := 
+			(start_point => start_point, others => <>); -- pass start point through
+
+		i : constant type_intersection_of_line_and_circle (TWO_EXIST) := intersections;
+
+		d1, d2 : type_float;
+	begin
+		-- the distance from start point to intersection point 1:
+		d1 := get_distance_total (start_point, i.intersection_1.vector);
+
+		-- the distance from start point to intersection point 2:
+		d2 := get_distance_total (start_point, i.intersection_2.vector);
+
+		if d1 < d2 then -- point ip1 is closer to start point that ip2
+			result.entry_point := i.intersection_1;
+			result.exit_point  := i.intersection_2;
+			
+		elsif d1 > d2 then -- point ip2 is closer to start point than ip1
+			result.entry_point := i.intersection_2;
+			result.exit_point  := i.intersection_1;
+
+		else -- point ip1 has same distance to start point as ip2
+			--put_line (to_string (d1)); put_line (to_string (d2));
+			--put_line (to_string (ip1)); put_line (to_string (ip2));
+			raise constraint_error;
+		end if;
+			
+		return result;
+	end order_intersections;
 
 	
 end et_geometry_2a;

@@ -620,48 +620,84 @@ package body et_geometry_2a.contours is
 	
 
 
-	function get_boundaries (
-		contour		: in type_contour;
-		line_width	: in type_distance_model_positive)
-		return type_boundaries 
+-- 	function get_boundaries (
+-- 		contour		: in type_contour;
+-- 		line_width	: in type_distance_model_positive)
+-- 		return type_boundaries 
+-- 	is
+-- 		result : type_boundaries; -- to be returned
+-- 
+-- 		half_width : constant type_float_positive := type_float (line_width) * 0.5;
+-- 		
+-- 
+-- 		procedure query_segment (c : in pac_segments.cursor) is begin
+-- 			case element (c).shape is
+-- 				when LINE =>
+-- 					union (result, get_boundaries (element (c).segment_line, zero));
+-- 
+-- 				when ARC =>
+-- 					union (result, get_boundaries (element (c).segment_arc, zero));
+-- 			end case;						
+-- 		end query_segment;
+-- 
+-- 		
+-- 	begin -- get_boundaries
+-- 		if contour.contour.circular then
+-- 
+-- 			-- Get the boundaries of the single circle:
+-- 			union (result, get_boundaries (contour.contour.circle, zero));
+-- 			
+-- 		else
+-- 			-- Iterate lines and arcs:
+-- 			contour.contour.segments.iterate (query_segment'access);
+-- 		end if;
+-- 
+-- 					
+-- 		-- Extend the boundaries by half the line width;
+-- 		result.smallest_x := result.smallest_x - half_width;
+-- 		result.smallest_y := result.smallest_y - half_width;
+-- 
+-- 		result.greatest_x := result.greatest_x + half_width;
+-- 		result.greatest_y := result.greatest_y + half_width;
+-- 		
+-- 		return result;
+-- 	end get_boundaries;
+	
+
+	function get_bounding_box (
+		contour	: in type_contour;
+		width	: in type_distance_model_positive)
+		return type_area
 	is
-		result : type_boundaries; -- to be returned
+		result : type_area; -- to be returned
 
-		half_width : constant type_float_positive := type_float (line_width) * 0.5;
 		
-
 		procedure query_segment (c : in pac_segments.cursor) is begin
 			case element (c).shape is
 				when LINE =>
-					union (result, get_boundaries (element (c).segment_line, zero));
+					merge_areas (result, get_bounding_box (element (c).segment_line, width));
 
 				when ARC =>
-					union (result, get_boundaries (element (c).segment_arc, zero));
+					merge_areas (result, get_bounding_box (element (c).segment_arc, width));
 			end case;						
 		end query_segment;
 
 		
-	begin -- get_boundaries
+	begin
 		if contour.contour.circular then
 
 			-- Get the boundaries of the single circle:
-			union (result, get_boundaries (contour.contour.circle, zero));
+			merge_areas (result, get_bounding_box (contour.contour.circle, width));
 			
 		else
 			-- Iterate lines and arcs:
 			contour.contour.segments.iterate (query_segment'access);
 		end if;
-
-					
-		-- Extend the boundaries by half the line width;
-		result.smallest_x := result.smallest_x - half_width;
-		result.smallest_y := result.smallest_y - half_width;
-
-		result.greatest_x := result.greatest_x + half_width;
-		result.greatest_y := result.greatest_y + half_width;
 		
 		return result;
-	end get_boundaries;
+	end get_bounding_box;
+
+
 	
 	
 	function to_string (
@@ -692,6 +728,7 @@ package body et_geometry_2a.contours is
 		return to_string (result);
 	end to_string;
 
+	
 	
 	function is_closed (
 		contour	: in type_contour)
@@ -804,6 +841,7 @@ package body et_geometry_2a.contours is
 
 			end case;
 		end move_segment;
+
 		
 	begin -- move_by
 		if contour.contour.circular then
@@ -862,6 +900,8 @@ package body et_geometry_2a.contours is
 		end if;
 	end mirror;
 
+
+
 	
 	procedure rotate_by (
 		contour		: in out type_contour;
@@ -916,12 +956,14 @@ package body et_geometry_2a.contours is
 	is
 		result : type_lower_left_corner;
 
-		boundaries : constant type_boundaries := get_boundaries (contour, zero);
+		area : constant type_area := get_bounding_box (contour, zero);
 	begin
 		-- compose the lower left corner point:
 		--result.point := type_vector_model (set (boundaries.smallest_x, boundaries.smallest_y));
-		result.point := type_vector_model (set (to_distance (boundaries.smallest_x),
-										 to_distance (boundaries.smallest_y)));
+		-- result.point := type_vector_model (set (to_distance (boundaries.smallest_x),
+												-- to_distance (boundaries.smallest_y)));
+
+		result.point := area.position;
 
 		-- figure out whether the point is real or virtual:
 		case get_point_to_contour_status (contour, result.point).location is
@@ -936,6 +978,7 @@ package body et_geometry_2a.contours is
 	end get_lower_left_corner;
 
 
+	
 	function get_corner_nearest_to_origin (
 		contour	: in type_contour)
 		return type_vector_model
@@ -969,6 +1012,8 @@ package body et_geometry_2a.contours is
 		
 	end get_corner_nearest_to_origin;
 	
+
+
 	
 	function is_vertex (
 		contour	: in type_contour;
@@ -1053,10 +1098,12 @@ package body et_geometry_2a.contours is
 	end get_shortest_distance;
 	
 
+	
 	function to_string (status : in type_location) return string is begin
 		return type_location'image (status);
 	end to_string;
 
+	
 
 	function "<" (left, right : in type_probe_line_intersection_contour)
 		return boolean
@@ -1122,6 +1169,7 @@ package body et_geometry_2a.contours is
 		return to_string (result);
 	end to_string;
 
+	
 	
 	function get_point_to_contour_status (
 		contour		: in type_contour;	

@@ -139,6 +139,7 @@ package et_geometry_2a.contours is
 		segment_2 : pac_segments.cursor;
 	end record;
 
+	
 	function get_neigboring_segments (
 		contour	: in type_contour;
 		vertex	: in type_vector_model)
@@ -220,13 +221,18 @@ package et_geometry_2a.contours is
 
 	
 
-	-- Returns the boundaries of the given contour.
-	function get_boundaries (
-		contour		: in type_contour;
-		line_width	: in type_distance_model_positive)
-		return type_boundaries;
+	-- -- Returns the boundaries of the given contour.
+	-- function get_boundaries (
+	-- 	contour		: in type_contour;
+	-- 	line_width	: in type_distance_model_positive)
+	-- 	return type_boundaries;
 	
+	function get_bounding_box (
+		contour	: in type_contour;
+		width	: in type_distance_model_positive)
+		return type_area;
 
+	
 	-- A contour must have a properly closed outline.
 	-- The outline check returns a list of points (where the gaps are):
 	package pac_contour_gaps is new doubly_linked_lists (type_vector_model); 

@@ -36,6 +36,10 @@
 --   history of changes:
 --
 
+with ada.containers; 			use ada.containers;
+with ada.containers.doubly_linked_lists;
+
+
 with ada.numerics;
 with ada.numerics.generic_elementary_functions;
 
@@ -146,6 +150,16 @@ package et_geometry_2a is
 		x, y : type_distance_model := 0.0;
 	end record;
 
+	
+	-- The origin is a small cross at model position (0;0).
+	origin : constant type_vector_model := (0.0, 0.0);
+
+	-- far_upper_left	: constant type_vector_model;
+	-- far_upper_right	: constant type_vector_model;
+	-- far_lower_left	: constant type_vector_model;
+	-- far_lower_right	: constant type_vector_model;
+
+	
 
 	-- This function returns the given vector
 	-- as string:
@@ -165,6 +179,13 @@ package et_geometry_2a is
 	procedure move_by (
 		point	: in out type_vector_model;
 		offset	: in type_vector_model);
+
+
+	-- Rotates the given point BY the given angle about the origin.
+	-- Changes point.x and point.y only.
+	procedure rotate_by (
+		point		: in out type_vector_model;
+		rotation	: in type_rotation);
 
 
 
@@ -273,18 +294,44 @@ package et_geometry_2a is
 		offset	: in type_distance_relative);
 	
 
+	
 	-- Moves a point to the given destination:
 	procedure move_to (
 		point		: in out type_vector_model;
 		destination	: in type_vector_model);
 
+
+
+	-- If axis is Y then it swaps right x with left x.
+	-- If axis is X then it swaps upper y with lower y.
+	procedure mirror (
+		point	: in out type_vector_model;
+		axis	: in type_axis_2d);	
+
 	
 
--- ORIGIN:
-	
-	-- The origin is a small cross at model position (0;0).
-	origin : constant type_vector_model := (0.0, 0.0);
+	-- Compares two points by their distance to the origin:
+	function "<" (left, right : in type_vector_model) return boolean;
 
+	
+	-- Use this package when lists of points must be handled:
+	package pac_points is new doubly_linked_lists (type_vector_model);
+
+
+	-- Returns from a list of point the one that is closest to
+	-- the given reference point:
+	function get_nearest (
+		points		: in pac_points.list;
+		reference	: in type_vector_model := origin)
+		return type_vector_model;
+
+	
+	-- Converts a list of points to vectors:
+	function to_vectors (
+		points : in pac_points.list)
+		return pac_vectors.list;
+
+	
 
 
 
@@ -405,6 +452,27 @@ package et_geometry_2a is
 	function to_string (line : in type_line) return string;
 
 
+	-- Moves a line by the given offset. 
+	-- This moves both start and end point by the given offset:
+	procedure move_by (
+		line	: in out type_line;
+		offset	: in type_distance_relative);
+
+
+
+	-- Mirrors a line along the given axis.
+	procedure mirror (
+		line		: in out type_line;
+		axis		: in type_axis_2d);
+
+
+
+	-- Rotates a line about the origin by the given rotation.
+	procedure rotate_by (
+		line		: in out type_line;
+		rotation	: in type_rotation);
+
+	
 
 	function to_line_fine (
 		line : in type_line)
@@ -482,6 +550,24 @@ package et_geometry_2a is
 		width	: in type_distance_model_positive)
 		return type_area;
 
+
+
+	-- Tests whether the given line_vector intersects the given 
+	-- candidate line.
+	-- If there is an intersection between start and end point
+	-- of the candidate line (start and end point included),
+	-- then returns the location vector of the intersection.
+	-- If the intersection is before start point or
+	-- beyond end point of the given line, return NOT_EXISTENT.
+	-- NOTE: The angle of intersection is measured between the 
+	-- start points of the two lines. It is always positive.
+	function get_intersection (
+		line		: in type_line;
+		line_vector	: in type_line_vector)
+		return type_line_vector_intersection;
+
+
+
 	
 -- ARC
 	
@@ -501,6 +587,47 @@ package et_geometry_2a is
 	function to_string (arc : in type_arc) return string;
 
 
+	-- Swaps start and end point of an arc. Reverses the direction of the arc:
+	function reverse_arc (arc : in type_arc) return type_arc'class;
+	procedure reverse_arc (arc : in out type_arc);
+
+	
+	-- Changes the direction of an arc to CCW (mathematical sense)
+	-- by swapping start and end point. If direction is already CCW
+	-- then nothing happens.
+	function normalize_arc (arc: in type_arc) return type_arc'class;
+
+	-- Returns true if start and end point of arc are equal:
+	function zero_length (arc : in type_arc) return boolean;
+
+	
+	
+	-- Moves an arc by the given offset. 
+	procedure move_by (
+		arc		: in out type_arc;
+		offset	: in type_distance_relative);
+
+
+	-- Moves an arc to the given position. 
+	procedure move_to (
+		arc			: in out type_arc;
+		position	: in type_vector_model);
+	
+
+	-- Mirrors an arc along the given axis.
+	procedure mirror (
+		arc			: in out type_arc;
+		axis		: in type_axis_2d);
+
+
+	-- Rotates an arc about the origin by the given rotation.
+	procedure rotate_by (
+		arc			: in out type_arc;
+		rotation	: in type_rotation);
+
+
+	
+	
 	-- Returns the distance between the start point and the center of the arc.
 	function get_radius_start (
 		arc : in type_arc) 
@@ -513,12 +640,11 @@ package et_geometry_2a is
 		return type_float_positive;
 
 
-	-- Moves an arc to the given position. 
-	procedure move_to (
-		arc			: in out type_arc;
-		position	: in type_vector_model);
 
 
+
+
+	
 
 	-- Returns the start and end angles of an arc.
 	function to_arc_angles (
@@ -644,6 +770,23 @@ package et_geometry_2a is
 	function to_string (circle : in type_circle) return string;
 
 
+	-- Moves a circle by the given offset. 
+	procedure move_by (
+		circle	: in out type_circle;
+		offset	: in type_distance_relative);
+
+
+	-- Mirrors the center of a circle along the given axis.
+	procedure mirror (
+		circle		: in out type_circle;
+		axis		: in type_axis_2d);
+	
+
+	procedure rotate_by (
+		circle		: in out type_circle;
+		rotation	: in type_rotation);
+
+	
 	
 	-- The angle of a tangent to a circle:
 	subtype type_tangent_angle_circle is type_angle range -90.0 .. 90.0;
@@ -701,6 +844,35 @@ package et_geometry_2a is
 		circle 	: in type_circle;
 		width	: in type_distance_model_positive)
 		return type_area;
+
+
+
+	type type_ordered_line_circle_intersections is record
+		-- The start point of the line that intersects the circle.
+		-- The start point must be outside the circle.
+		start_point	: type_vector;
+
+		-- The point where the line enters and exits the circle:
+		entry_point	: type_intersection;
+		exit_point	: type_intersection;
+	end record;
+
+
+
+	-- Sorts the intersections of a line with an arc or a circle in the order
+	-- as they occur as the line crosses the circle or the arc:
+	-- start point of line, entry point, exit point.
+	-- The given intersections must contain two intersections (discrimintant status),
+	-- otherwise a constraint error will be raised.
+	-- If the given intersections have same distance to start point then
+	-- a constraint error will be raised.
+	function order_intersections (
+		-- The start point of the line that intersects the circle.
+		-- The start point must be outside the circle.
+		start_point		: in type_vector;
+
+		intersections	: in type_intersection_of_line_and_circle)
+		return type_ordered_line_circle_intersections;
 
 	
 	
