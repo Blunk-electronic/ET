@@ -87,6 +87,24 @@ package et_geometry_2a is
 
 		
 -- DISTANCE:
+
+	-- Limits a distance to a given maximum.
+	-- Examples: 
+	-- 1. distance = 100.0, maximum = 80.0 -> distance becomes 80.0
+	-- 2. distance =  70.0, maximum = 80.0 -> distance remains 70.0
+	procedure limit_to_maximum (
+		distance	: in out type_distance_model;
+		maximum		: in type_distance_model);
+
+	-- Limits a distance to a given minimum.
+	-- Examples: 
+	-- 1. distance =  80.0, minimum = 70.0 -> distance remains 80.0
+	-- 2. distance =  60.0, minimum = 70.0 -> distance becomes 70.0
+	procedure limit_to_minimum (
+		distance	: in out type_distance_model;
+		minimum		: in type_distance_model);
+
+
 	
 
 	-- Converts a mil number (given as a string) to millimeters.	
@@ -172,6 +190,21 @@ package et_geometry_2a is
 		x, y : type_distance_model := zero;
 	end record;
 
+
+	function to_string (
+		distance : in type_distance_relative)
+		return string;
+
+
+	function to_distance_relative (
+		x,y : in type_distance_model)
+		return type_distance_relative;
+
+	
+	function to_distance_relative (
+		v : in type_vector)
+		return type_distance_relative;
+	
 
 	
 	
@@ -318,6 +351,12 @@ package et_geometry_2a is
 		return type_offset;
 
 
+
+	function to_distance_relative (
+		p : in type_vector_model)
+		return type_distance_relative;
+
+	
 	
 
 	function get_distance_total ( -- CS rename to get_distance_absolute
@@ -636,6 +675,18 @@ package et_geometry_2a is
 
 	type type_arc is new type_arc_base with null record;
 	-- CS use this type wherever a type_arc is declared unnessecarily.
+
+
+	
+	function to_arc_fine (
+		arc : in type_arc)
+		return pac_geometry_1.type_arc_fine;
+
+	
+	function to_arc_coarse (
+		arc : in pac_geometry_1.type_arc_fine)
+		return type_arc'class;
+
 
 	
 	-- Returns the start, end point and angle of the given arc as string.

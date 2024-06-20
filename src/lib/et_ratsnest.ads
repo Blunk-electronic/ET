@@ -43,7 +43,7 @@ with ada.containers; 				use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
-with et_pcb_coordinates;			use et_pcb_coordinates;
+with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
 with et_board_shapes_and_text;		use et_board_shapes_and_text;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
 

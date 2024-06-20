@@ -154,8 +154,8 @@ package body et_nets is
 		
 		result : type_net_segment_orientation;
 		
-		dx : constant et_coordinates.type_distance := get_x (element (segment).start_point) - get_x (element (segment).end_point);
-		dy : constant et_coordinates.type_distance := get_y (element (segment).start_point) - get_y (element (segment).end_point);
+		dx : constant et_coordinates_2.type_distance := get_x (element (segment).start_point) - get_x (element (segment).end_point);
+		dy : constant et_coordinates_2.type_distance := get_y (element (segment).start_point) - get_y (element (segment).end_point);
 	begin
 		if dx = zero then 
 			result := VERTICAL;
@@ -297,7 +297,7 @@ package body et_nets is
 
 	function on_strand (
 		strand_cursor	: in pac_strands.cursor;
-		place			: in et_coordinates.type_position)
+		place			: in et_coordinates_2.type_position)
 		return boolean
 	is
 		-- This flag goes false if the given point is
@@ -335,7 +335,7 @@ package body et_nets is
 
 	function get_strand (
 		net		: in type_net;
-		place	: in et_coordinates.type_position)
+		place	: in et_coordinates_2.type_position)
 		return pac_strands.cursor
 	is
 		use pac_strands;

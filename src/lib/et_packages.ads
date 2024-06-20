@@ -55,7 +55,7 @@ with ada.containers.ordered_sets;
 with et_general;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_geometry;				use et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
@@ -224,7 +224,7 @@ package et_packages is
 	-- by the given angle about the origin:
 	procedure rotate_conductor_objects (
 		conductors	: in out type_conductor_objects;
-		angle		: in type_rotation);
+		angle		: in type_rotation_model);
 
 	-- Moves the given non-electric conductor objects 
 	-- by the given offset:
@@ -238,7 +238,7 @@ package et_packages is
 	--  edge of a conductor circle is converted to a polygon.
 	function to_polygons (
 		conductors	: in type_conductor_objects;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return pac_polygon_list.list;
 		
 
@@ -336,8 +336,8 @@ package et_packages is
 	end record;
 
 
-	origin_half_size : constant type_distance_positive := 1.0;
-	origin_line_width : constant type_distance_positive := 0.01;
+	origin_half_size : constant type_distance_model_positive := 1.0;
+	origin_line_width : constant type_distance_model_positive := 0.01;
 
 	
 	-- A package in the library extends the base package type:

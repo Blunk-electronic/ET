@@ -50,7 +50,7 @@ with ada.containers.hashed_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with et_coordinates;			use et_coordinates;
+with et_coordinates_2;			use et_coordinates_2;
 with et_geometry;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
@@ -502,7 +502,7 @@ package et_devices is
 	-- their own origin according to rotation given by destination:
 	function rotate_placeholders (
 		symbol_cursor	: in pac_units_internal.cursor;
-		destination		: in et_coordinates.type_position)
+		destination		: in et_coordinates_2.type_position)
 		return type_rotated_placeholders;
 
 

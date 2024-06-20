@@ -65,7 +65,7 @@ package body et_conductor_text is
 
 	procedure rotate_text (
 		text	: in out type_conductor_text;
-		angle	: in type_rotation)
+		angle	: in type_rotation_model)
 	is begin
 		rotate_vector_text (text.vectors, angle);
 	end rotate_text;

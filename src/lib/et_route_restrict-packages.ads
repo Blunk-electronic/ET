@@ -67,7 +67,7 @@ package et_route_restrict.packages is
 	-- about the origin:
 	procedure rotate_route_restrict_objects (
 		restrict	: in out type_one_side;
-		angle		: in type_rotation);
+		angle		: in type_rotation_model);
 
 	-- Moves the given route restrict objects by the given offset:
 	procedure move_route_restrict_objects (
@@ -78,7 +78,7 @@ package et_route_restrict.packages is
 	-- Converts the given restrict objects to a list of polygons.
 	function to_polygons (
 		restrict	: in type_one_side;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return pac_polygon_list.list;
 	
 	

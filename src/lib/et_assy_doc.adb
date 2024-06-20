@@ -111,7 +111,7 @@ package body et_assy_doc is
 
 	procedure rotate_lines (
 		lines	: in out pac_doc_lines.list;
-		angle	: in type_rotation)
+		angle	: in type_rotation_model)
 	is
 		result : pac_doc_lines.list;
 
@@ -200,7 +200,7 @@ package body et_assy_doc is
 
 	procedure rotate_arcs (
 		arcs	: in out pac_doc_arcs.list;
-		angle	: in type_rotation)
+		angle	: in type_rotation_model)
 	is
 		result : pac_doc_arcs.list;
 
@@ -286,7 +286,7 @@ package body et_assy_doc is
 
 	procedure rotate_circles (
 		circles	: in out pac_doc_circles.list;
-		angle	: in type_rotation)		
+		angle	: in type_rotation_model)		
 	is
 		result : pac_doc_circles.list;
 
@@ -344,7 +344,7 @@ package body et_assy_doc is
 
 	procedure rotate_contours (
 		contours	: in out pac_doc_contours.list;
-		angle		: in type_rotation)		
+		angle		: in type_rotation_model)		
 	is
 		result : pac_doc_contours.list;
 
@@ -404,7 +404,7 @@ package body et_assy_doc is
 
 	procedure rotate_texts (
 		texts	: in out pac_doc_texts.list;
-		angle	: in type_rotation)
+		angle	: in type_rotation_model)
 	is
 		result : pac_doc_texts.list;
 

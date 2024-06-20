@@ -40,7 +40,7 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.strings;				use ada.strings;
 
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_conductor_segment;
@@ -75,7 +75,7 @@ package et_stop_mask is
 	-- Rotates a list of lines by the given angle:
 	procedure rotate_lines (
 		lines	: in out pac_stop_lines.list;
-		angle	: in type_rotation);					
+		angle	: in type_rotation_model);					
 
 	-- Moves a list of lines by the given offset:
 	procedure move_lines (
@@ -104,7 +104,7 @@ package et_stop_mask is
 	-- Rotates a list of arcs by the given angle:
 	procedure rotate_arcs (
 		arcs	: in out pac_stop_arcs.list;
-		angle	: in type_rotation);					
+		angle	: in type_rotation_model);					
 
 	-- Moves a list of arcs by the given offset:
 	procedure move_arcs (
@@ -131,7 +131,7 @@ package et_stop_mask is
 	-- Rotates a list of circles by the given angle:
 	procedure rotate_circles (
 		circles	: in out pac_stop_circles.list;
-		angle	: in type_rotation);					
+		angle	: in type_rotation_model);					
 
 	-- Moves a list of circles by the given offset:
 	procedure move_circles (
@@ -154,7 +154,7 @@ package et_stop_mask is
 	-- Rotates a list of contours by the given angle:
 	procedure rotate_contours (
 		contours	: in out pac_stop_contours.list;
-		angle		: in type_rotation);					
+		angle		: in type_rotation_model);					
 
 	-- Moves a list of contours by the given offset:
 	procedure move_contours (
@@ -184,7 +184,7 @@ package et_stop_mask is
 	-- Rotates a list of texts by the given angle:
 	procedure rotate_texts (
 		texts	: in out pac_stop_texts.list;
-		angle	: in type_rotation);					
+		angle	: in type_rotation_model);					
 
 	-- Moves a list of texts by the given offset:
 	procedure move_texts (

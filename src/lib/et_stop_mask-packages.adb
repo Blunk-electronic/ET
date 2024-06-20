@@ -54,7 +54,7 @@ package body et_stop_mask.packages is
 
 	procedure rotate_stopmask_objects (
 		stopmask	: in out type_stopmask;
-		angle		: in type_rotation)
+		angle		: in type_rotation_model)
 	is begin
 		rotate_lines (stopmask.lines, angle);
 		rotate_arcs (stopmask.arcs, angle);

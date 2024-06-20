@@ -53,7 +53,7 @@ package et_stop_mask.packages is
 	-- Rotates a list of stopmask objects by the given angle:
 	procedure rotate_stopmask_objects (
 		stopmask	: in out type_stopmask;
-		angle		: in type_rotation);
+		angle		: in type_rotation_model);
 
 	-- Moves a list of stopmask objects by the given offset:
 	procedure move_stopmask_objects (

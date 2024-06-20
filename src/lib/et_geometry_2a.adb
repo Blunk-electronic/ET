@@ -105,6 +105,31 @@ package body et_geometry_2a is
 
 
 	
+-- DISTANCE:
+
+	procedure limit_to_maximum (
+		distance	: in out type_distance_model;
+		maximum		: in type_distance_model)
+	is begin
+		if distance > maximum then
+			distance := maximum;
+		end if;
+	end limit_to_maximum;
+
+	
+	
+	procedure limit_to_minimum (
+		distance	: in out type_distance_model;
+		minimum		: in type_distance_model)
+	is begin
+		if distance < minimum then
+			distance := minimum;
+		end if;
+	end limit_to_minimum;
+
+	
+	
+	
 	function mil_to_distance (
 		mil : in string) 
 		return type_distance_model 
@@ -297,7 +322,41 @@ package body et_geometry_2a is
 	end;
 
 
+	
 
+-- RELATIVE DISTANCE:
+	
+
+	function to_string (
+		distance : in type_distance_relative)
+		return string
+	is begin
+		return "distance relative: x/y" 
+			& to_string (distance.x)
+			& "/"
+			& to_string (distance.y);
+	end to_string;
+
+
+	function to_distance_relative (
+		x,y : in type_distance_model)
+		return type_distance_relative
+	is begin
+		return (x, y);
+	end to_distance_relative;
+
+	
+	function to_distance_relative (
+		v : in type_vector)
+		return type_distance_relative
+	is begin
+		return (type_distance_model (v.x), type_distance_model (v.y));
+	end to_distance_relative;
+
+
+
+	
+-- POINT / POSITION / LOCATION / LOCATION VECTOR / DISTANCE VECTOR:
 	
 	
 	function to_string (
@@ -561,6 +620,16 @@ package body et_geometry_2a is
 			y => type_float (distance.y));
 	end to_offset;
 
+
+
+	function to_distance_relative (
+		p : in type_vector_model)
+		return type_distance_relative
+	is begin
+		return (p.x, p.y);
+	end to_distance_relative;
+
+	
 	
 	
 	function get_distance_total (
@@ -1076,6 +1145,38 @@ package body et_geometry_2a is
 
 -- ARC:
 
+
+
+	function to_arc_fine (
+		arc : in type_arc)
+		return pac_geometry_1.type_arc_fine
+	is begin
+		return (
+			center		=> to_vector (arc.center),
+			start_point	=> to_vector (arc.start_point),
+			end_point	=> to_vector (arc.end_point),
+			direction	=> arc.direction);
+	end to_arc_fine;
+
+
+	function to_arc_coarse (
+		arc : in pac_geometry_1.type_arc_fine)
+		return type_arc'class
+	is 
+		result : type_arc;
+	begin
+		result := (
+			center		=> to_point (arc.center),
+			start_point	=> to_point (arc.start_point),
+			end_point	=> to_point (arc.end_point),
+			direction	=> arc.direction,
+			others 		=> <>);
+
+		return result;
+	end to_arc_coarse;
+
+
+	
 	function to_string (arc : in type_arc) return string is begin
 		return "arc: "
 			& "C:" & to_string (arc.center) 

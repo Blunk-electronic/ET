@@ -63,7 +63,7 @@ package et_silkscreen.packages is
 	-- Rotates a list of silkscreen objects by the given angle:
 	procedure rotate_silkscreen_objects (
 		silkscreen	: in out type_silkscreen_package;
-		angle		: in type_rotation);
+		angle		: in type_rotation_model);
 
 	-- Moves a list of silkscreen objects by the given offset:
 	procedure move_silkscreen_objects (

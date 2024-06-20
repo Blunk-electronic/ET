@@ -108,7 +108,8 @@ package et_canvas_board_2 is
 
 	package pac_canvas is new et_canvas (
 		-- canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
-		pac_geometry_2	=> et_pcb_coordinates_2.pac_geometry_2
+		pac_geometry_2	=> et_pcb_coordinates_2.pac_geometry_2,
+		pac_grid		=> et_pcb_coordinates_2.pac_grid
 		-- pac_polygons	=> et_board_shapes_and_text.pac_polygons,
 		-- pac_offsetting	=> et_board_shapes_and_text.pac_polygon_offsetting,
 		-- pac_contours	=> et_board_shapes_and_text.pac_contours,

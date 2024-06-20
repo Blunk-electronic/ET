@@ -51,7 +51,7 @@ with ada.containers.doubly_linked_lists;
 --with ada.containers.indefinite_ordered_maps;
 --with ada.containers.ordered_sets;
 
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_design_rules;			use et_design_rules;
 with et_fill_zones;				use et_fill_zones;
@@ -71,7 +71,7 @@ package et_thermal_relief is
 	thermal_width_min : constant type_track_width := type_track_width'first;
 	thermal_width_max : constant type_track_width := 3.0; -- CS: adjust if nessecariy
 	
-	subtype type_thermal_width is type_distance_positive
+	subtype type_thermal_width is type_distance_model_positive
 		range thermal_width_min .. thermal_width_max;
 
 	

@@ -52,7 +52,7 @@ with cairo;
 
 with et_string_processing;		use et_string_processing;
 
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_contour_to_polygon;
 with et_geometry;
@@ -220,13 +220,13 @@ package et_vias is
 	-- The final text size is calculated by this formula:
 	-- size = drill radius * text_size_multiplier.
 	-- CS: Adjustment required for layer numbers greater 10.
-	text_size_factor : constant type_distance_positive := 0.3;
+	text_size_factor : constant type_distance_model_positive := 0.3;
 
 	-- Above the net name the layer numbers are displayed.
 	-- Below the net name the drill size is displayed.
 	-- This constant defines the position of layer numbers
 	-- and drill size.
-	text_position_layer_and_drill_factor : constant type_distance_positive := 0.4;
+	text_position_layer_and_drill_factor : constant type_distance_model_positive := 0.4;
 
 	
 	type type_user_specific_drill_size is record
@@ -256,7 +256,7 @@ package et_vias is
 		position	: in type_vector_model;
 		restring	: in type_restring_width;
 		diameter	: in type_drill_size;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return type_polygon;
 	
 		

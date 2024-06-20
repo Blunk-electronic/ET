@@ -36,7 +36,7 @@
 --
 --   to do:
 
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_logging;				use et_logging;
 
 
@@ -45,12 +45,12 @@ package et_drills is
 	
 	
 	-- We fit the diameter in a reasonable range via a subtype:
-	drill_size_min : constant type_distance_positive := 0.05;
-	drill_size_max : constant type_distance_positive := 10.0;
-	subtype type_drill_size is type_distance_positive range drill_size_min .. drill_size_max;
+	drill_size_min : constant type_distance_model_positive := 0.05;
+	drill_size_max : constant type_distance_model_positive := 10.0;
+	subtype type_drill_size is type_distance_model_positive range drill_size_min .. drill_size_max;
 	
 	-- Checks whether given drill size is in range of type_drill_size
-	procedure validate_drill_size (drill : in type_distance);
+	procedure validate_drill_size (drill : in type_distance_model);
 
 	-- DRILLS
 	type type_drill is tagged record

@@ -56,7 +56,7 @@ package body et_assy_doc.packages is
 
 	procedure rotate_assy_doc_objects (
 		assy_doc	: in out type_assy_doc_package;
-		angle		: in type_rotation)
+		angle		: in type_rotation_model)
 	is begin
 		rotate_lines (assy_doc.lines, angle);
 		rotate_arcs (assy_doc.arcs, angle);

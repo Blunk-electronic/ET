@@ -63,7 +63,7 @@ package et_assy_doc.packages is
 	-- Rotates a list of assy_doc objects by the given angle:
 	procedure rotate_assy_doc_objects (
 		assy_doc	: in out type_assy_doc_package;
-		angle		: in type_rotation);
+		angle		: in type_rotation_model);
 
 	-- Moves a list of assy_doc objects by the given offset:
 	procedure move_assy_doc_objects (

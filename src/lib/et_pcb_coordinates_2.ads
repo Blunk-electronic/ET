@@ -38,6 +38,7 @@
 with et_geometry;				use et_geometry;
 with et_geometry_1;
 with et_geometry_2a;
+with et_geometry_2a.grid;
 
 
 package et_pcb_coordinates_2 is
@@ -67,7 +68,7 @@ package et_pcb_coordinates_2 is
 	
 	distance_smallest : constant := 1.0 / (10 ** distance_digits_right);
 	
-	type type_distance is delta distance_smallest 
+	type type_distance_model is delta distance_smallest 
 		digits distance_digits_left + distance_digits_right
 		range - 0.1 * (10 ** distance_digits_left) .. 
 			  + 0.1 * (10 ** distance_digits_left);
@@ -108,7 +109,7 @@ package et_pcb_coordinates_2 is
 
 	-- package pac_geometry_2 is new et_geometry_2 (
 	-- 	pac_geometry_1			=> pac_geometry_brd,
-	-- 	type_distance			=> type_distance,
+	-- 	type_distance_model			=> type_distance_model,
 	-- 	axis_max				=> +1_000.0,
 	-- 	axis_min				=> -1_000.0,
 	-- 	type_rotation 			=> type_rotation
@@ -116,7 +117,7 @@ package et_pcb_coordinates_2 is
 
 	package pac_geometry_2 is new et_geometry_2a (
 		pac_geometry_1			=> pac_geometry_brd,
-		type_distance_model		=> type_distance,
+		type_distance_model		=> type_distance_model,
 		axis_max				=> +1_000.0,
 		axis_min				=> -1_000.0,
 		type_rotation_model		=> type_rotation_model
@@ -129,7 +130,8 @@ package et_pcb_coordinates_2 is
 	-- CS: should be a general setting for board and package editor in the future
 	
 	
-
+	package pac_grid is new pac_geometry_2.grid;
+	
 	
 	type type_package_position is new pac_geometry_2.type_position with private;
 

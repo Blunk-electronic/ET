@@ -40,7 +40,7 @@
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_geometry;				use et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
@@ -71,7 +71,7 @@ package et_keepout is
 	-- Rotates a list of zones by the given angle about the origin:
 	procedure rotate_zones (
 		zones	: in out pac_keepout_zones.list;
-		angle	: in type_rotation);
+		angle	: in type_rotation_model);
 
 	-- Moves a list of zones by the given offset:
 	procedure move_zones (
@@ -100,7 +100,7 @@ package et_keepout is
 	-- about the origin:
 	procedure rotate_keepout_objects (
 		keepout	: in out type_keepout;
-		angle	: in type_rotation);
+		angle	: in type_rotation_model);
 
 	-- Moves the given objects by the given offset:
 	procedure move_keepout_objects (

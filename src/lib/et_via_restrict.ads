@@ -40,7 +40,7 @@ with ada.strings;	 			use ada.strings;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_contour_to_polygon;		use et_contour_to_polygon;
@@ -73,7 +73,7 @@ package et_via_restrict is
 	-- with round caps on the line ends:
 	function to_polygon (
 		line 		: in type_via_restrict_line;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return type_polygon;
 
 	
@@ -89,7 +89,7 @@ package et_via_restrict is
 	-- Rotates a list of lines by the given angle about the origin:
 	procedure rotate_lines (
 		lines	: in out pac_via_restrict_lines.list;
-		angle	: in type_rotation);
+		angle	: in type_rotation_model);
 
 	-- Moves a list of lines by the given offset:
 	procedure move_lines (
@@ -100,7 +100,7 @@ package et_via_restrict is
 	-- Converts a list of lines to a list of polygons:
 	function to_polygons (
 		lines		: in pac_via_restrict_lines.list;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return pac_polygon_list.list;
 
 	
@@ -116,7 +116,7 @@ package et_via_restrict is
 	-- with round caps on the line ends:
 	function to_polygon (
 		arc 		: in type_via_restrict_arc;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_model_positive)							
 		return type_polygon;
 
 	
@@ -132,7 +132,7 @@ package et_via_restrict is
 	-- Rotates a list of arcs by the given angle about the origin:
 	procedure rotate_arcs (
 		arcs	: in out pac_via_restrict_arcs.list;
-		angle	: in type_rotation);
+		angle	: in type_rotation_model);
 
 	-- Moves a list of arcs by the given offset:
 	procedure move_arcs (
@@ -143,7 +143,7 @@ package et_via_restrict is
 	-- Converts a list of arcs to a list of polygons:
 	function to_polygons (
 		arcs		: in pac_via_restrict_arcs.list;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return pac_polygon_list.list;
 
 	
@@ -158,14 +158,14 @@ package et_via_restrict is
 	-- Converts the outer edge of a circle to a polygon:	
 	function to_polygon_outside (
 		circle 		: in type_via_restrict_circle;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_model_positive)							
 		return type_polygon;
 
 	
 	-- Converts the inner edge of a circle to a polygon:	
 	function to_polygon_inside (
 		circle 		: in type_via_restrict_circle;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_model_positive)							
 		return type_polygon;
 
 	
@@ -181,7 +181,7 @@ package et_via_restrict is
 	-- Rotates a list of circles by the given angle about the origin:
 	procedure rotate_circles (
 		circles	: in out pac_via_restrict_circles.list;
-		angle	: in type_rotation);
+		angle	: in type_rotation_model);
 
 	-- Moves a list of circles by the given offset:
 	procedure move_circles (
@@ -192,14 +192,14 @@ package et_via_restrict is
 	-- Converts the outer edges of circles to a list of polygons:
 	function to_polygons_outside (
 		circles		: in pac_via_restrict_circles.list;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return pac_polygon_list.list;
 
 
 	-- Converts the inner edges of circles to a list of polygons:
 	function to_polygons_inside (
 		circles		: in pac_via_restrict_circles.list;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return pac_polygon_list.list;
 
 

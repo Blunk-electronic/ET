@@ -43,7 +43,7 @@ with et_exceptions;				use et_exceptions;
 
 package body et_terminals is
 
-	procedure validate_pad_size (size : in type_distance) is begin
+	procedure validate_pad_size (size : in type_distance_model) is begin
 		if size not in type_pad_size then
 			raise semantic_error_1 with
 				"ERROR: Pad size invalid ! Allowed range is" 
@@ -174,7 +174,7 @@ package body et_terminals is
 		name			: in pac_terminal_name.bounded_string;
 		log_threshold 	: in type_log_level)
 	is
-		use et_pcb_coordinates;
+		use et_pcb_coordinates_2;
 		log_threshold_1 : type_log_level := log_threshold + 1;
 
 -- 		use type_pad_lines;

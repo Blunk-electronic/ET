@@ -40,7 +40,7 @@ with ada.containers; 				use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_geometry;					use et_geometry;
-with et_pcb_coordinates;			use et_pcb_coordinates;
+with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
 with et_board_shapes_and_text;		use et_board_shapes_and_text;
 with et_contour_to_polygon;
 
@@ -82,7 +82,7 @@ package et_pcb_contour is
 	-- Rotates a list of holes about the origin by the given angle:
 	procedure rotate_holes (
 		holes	: in out pac_holes.list;
-		angle	: in type_rotation);
+		angle	: in type_rotation_model);
 
 
 	-- Moves a list of holes by the gvien offset:
@@ -94,7 +94,7 @@ package et_pcb_contour is
 	-- Converts a list of holes to a list of polygons:
 	function to_polygons (
 		holes		: in pac_holes.list;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return pac_polygon_list.list;
 
 
@@ -103,7 +103,7 @@ package et_pcb_contour is
 	-- holes can only become greater:
 	procedure offset_holes (
 		holes		: in out pac_polygon_list.list;
-		offset		: in type_distance_positive;
+		offset		: in type_distance_model_positive;
 		debug		: in boolean := false);
 
 	

@@ -48,7 +48,7 @@ with ada.containers.ordered_sets;
 with ada.containers.ordered_maps;
 
 with et_general;				use et_general;
-with et_coordinates;			use et_coordinates;
+with et_coordinates_2;			use et_coordinates_2;
 with et_symbols;
 with et_devices;				use et_devices;
 with et_string_processing;		use et_string_processing;
@@ -75,7 +75,7 @@ package et_nets is
 
 	
 	-- GUI relevant only: In the schematic editor, the junction is drawn as follows:
-	junction_radius : constant type_distance_positive := 0.5;
+	junction_radius : constant type_distance_model_positive := 0.5;
 	
 	type type_junction_symbol is new type_circle with null record;
 	
@@ -187,7 +187,7 @@ package et_nets is
 	type type_strand is record
 	-- NOTE: ET does not provide a name for a strand.
 	-- As a strand is part of a net, there is no need for individual strand names.
-		position	: et_coordinates.type_position; -- sheet and lowest x/y, rotation doesn't matter -> always zero
+		position	: et_coordinates_2.type_position; -- sheet and lowest x/y, rotation doesn't matter -> always zero
 		segments	: pac_net_segments.list;
 	end record;		
 
@@ -234,7 +234,7 @@ package et_nets is
 	-- Returns true if the given point is on the given strand:
 	function on_strand (
 		strand_cursor	: in pac_strands.cursor;
-		place			: in et_coordinates.type_position)
+		place			: in et_coordinates_2.type_position)
 		return boolean;
 	
 
@@ -249,7 +249,7 @@ package et_nets is
 	-- If no strand found then the return is no_element:
 	function get_strand (
 		net		: in type_net;
-		place	: in et_coordinates.type_position)
+		place	: in et_coordinates_2.type_position)
 		return pac_strands.cursor;
 	
 

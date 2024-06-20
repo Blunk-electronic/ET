@@ -50,7 +50,7 @@ with ada.containers.indefinite_doubly_linked_lists;
 with et_general;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_geometry;				use et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
 with et_drills;					use et_drills;
@@ -72,17 +72,17 @@ package et_terminals is
 	
 	pad_size_min : constant type_track_width := 0.05;
 	pad_size_max : constant type_track_width := 10.0;
-	subtype type_pad_size is type_distance_positive range pad_size_min .. pad_size_max;
+	subtype type_pad_size is type_distance_model_positive range pad_size_min .. pad_size_max;
 
 	-- Checks whether given pad size is in range of type_pad_size
-	procedure validate_pad_size (size : in type_distance);
+	procedure validate_pad_size (size : in type_distance_model);
 
 	
 
-	pad_drill_offset_min : constant type_distance_positive := zero;
-	pad_drill_offset_max : constant type_distance_positive := pad_size_max * 0.5;
+	pad_drill_offset_min : constant type_distance_model_positive := zero;
+	pad_drill_offset_max : constant type_distance_model_positive := pad_size_max * 0.5;
 	
-	subtype type_pad_drill_offset is type_distance_positive 
+	subtype type_pad_drill_offset is type_distance_model_positive 
 		range pad_drill_offset_min .. pad_drill_offset_max;
 	
 
@@ -200,7 +200,7 @@ package et_terminals is
 	--subtype type_stencil_shrink is type_polygon_scale range 0.2 .. 1.0;
 
 	--stencil_shrink_default : constant type_stencil_shrink := 0.7; -- CS adjust to a useful value
-	stencil_shrink_default : constant type_distance_positive := 0.7; -- CS adjust to a useful value
+	stencil_shrink_default : constant type_distance_model_positive := 0.7; -- CS adjust to a useful value
 	-- CS subtype for shrink value ?
 	
 	stencil_modification_default : constant type_stencil_modification := AS_PAD;
@@ -214,7 +214,7 @@ package et_terminals is
 	type type_stencil_shape (shape : type_stencil_modification := stencil_modification_default) is record
 		case shape is
 			when USER_SPECIFIC 	=> contours : type_stencil_contours;
-			when SHRINK_PAD		=> shrink_factor : type_distance_positive := stencil_shrink_default;
+			when SHRINK_PAD		=> shrink_factor : type_distance_model_positive := stencil_shrink_default;
 			when others			=> null;
 		end case;
 	end record;

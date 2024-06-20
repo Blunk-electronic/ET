@@ -55,7 +55,7 @@ package body et_silkscreen.packages is
 
 	procedure rotate_silkscreen_objects (
 		silkscreen	: in out type_silkscreen_package;
-		angle		: in type_rotation)
+		angle		: in type_rotation_model)
 	is begin
 		rotate_lines (silkscreen.lines, angle);
 		rotate_arcs (silkscreen.arcs, angle);

@@ -48,7 +48,7 @@ with ada.strings.maps;			use ada.strings.maps;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_logging;				use et_logging;
 
@@ -76,7 +76,7 @@ package et_device_placeholders.packages is
 	-- Rotates a list of placeholders by the given angle:
 	procedure rotate_placeholders (
 		placeholders	: in out pac_placeholders.list;
-		angle			: in type_rotation);
+		angle			: in type_rotation_model);
 
 	-- Moves a list of placeholders by the given offset:
 	procedure move_placeholders (

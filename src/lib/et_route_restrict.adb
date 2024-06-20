@@ -45,7 +45,7 @@ package body et_route_restrict is
 
 	function to_polygon (
 		line 		: in type_route_restrict_line;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return type_polygon
 	is begin
 		return to_polygon (
@@ -78,7 +78,7 @@ package body et_route_restrict is
 
 	procedure rotate_lines (
 		lines	: in out pac_route_restrict_lines.list;
-		angle	: in type_rotation)
+		angle	: in type_rotation_model)
 	is
 		result : pac_route_restrict_lines.list;
 
@@ -116,7 +116,7 @@ package body et_route_restrict is
 
 	function to_polygons (
 		lines		: in pac_route_restrict_lines.list;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;
@@ -137,7 +137,7 @@ package body et_route_restrict is
 
 	function to_polygon (
 		arc 		: in type_route_restrict_arc;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_model_positive)							
 		return type_polygon
 	is begin
 		return to_polygon (
@@ -171,7 +171,7 @@ package body et_route_restrict is
 
 	procedure rotate_arcs (
 		arcs	: in out pac_route_restrict_arcs.list;
-		angle	: in type_rotation)
+		angle	: in type_rotation_model)
 	is
 		result : pac_route_restrict_arcs.list;
 
@@ -210,7 +210,7 @@ package body et_route_restrict is
 
 	function to_polygons (
 		arcs		: in pac_route_restrict_arcs.list;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;
@@ -231,7 +231,7 @@ package body et_route_restrict is
 
 	function to_polygon_outside (
 		circle 		: in type_route_restrict_circle;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_model_positive)							
 		return type_polygon
 	is 
 		use et_contour_to_polygon;
@@ -251,7 +251,7 @@ package body et_route_restrict is
 
 	function to_polygon_inside (
 		circle 		: in type_route_restrict_circle;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_model_positive)							
 		return type_polygon
 	is 
 		use et_contour_to_polygon;
@@ -291,7 +291,7 @@ package body et_route_restrict is
 
 	procedure rotate_circles (
 		circles	: in out pac_route_restrict_circles.list;
-		angle	: in type_rotation)
+		angle	: in type_rotation_model)
 	is
 		result : pac_route_restrict_circles.list;
 
@@ -330,7 +330,7 @@ package body et_route_restrict is
 
 	function to_polygons_outside (
 		circles		: in pac_route_restrict_circles.list;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;
@@ -347,7 +347,7 @@ package body et_route_restrict is
 
 	function to_polygons_inside (
 		circles		: in pac_route_restrict_circles.list;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;

@@ -458,7 +458,7 @@ package et_pcb is
 	type type_board is tagged record
 		origin			: type_vector_model := origin_default;
 		frame			: et_frames.type_frame_pcb; -- incl. template name
-		grid			: type_grid;  -- the drawing grid of the board
+		grid			: pac_grid.type_grid;  -- the drawing grid of the board
 		stack			: et_pcb_stack.type_stack;	-- the layer stack
 		silk_screen		: type_silkscreen_both_sides; -- CS rename to silksceen
 		assy_doc		: type_assy_doc_both_sides;

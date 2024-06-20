@@ -63,7 +63,7 @@ package body et_device_placeholders.packages is
 
 	procedure rotate_placeholders (
 		placeholders	: in out pac_placeholders.list;
-		angle			: in type_rotation)
+		angle			: in type_rotation_model)
 	is
 		result : pac_placeholders.list;
 

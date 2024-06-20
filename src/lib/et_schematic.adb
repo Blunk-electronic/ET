@@ -50,7 +50,7 @@ package body et_schematic is
 		use pac_nets;
 		strand_cursor : pac_strands.cursor; -- to be returned
 
-		strand_position : et_coordinates.type_position := greatest_position;
+		strand_position : et_coordinates_2.type_position := greatest_position;
 		
 		procedure query_strands (
 			net_name	: in pac_net_name.bounded_string;
@@ -92,7 +92,7 @@ package body et_schematic is
 		use pac_nets;
 		strand_cursor : pac_strands.cursor; -- to be returned
 
-		strand_position : et_coordinates.type_position := greatest_position;
+		strand_position : et_coordinates_2.type_position := greatest_position;
 		
 		procedure query_strands (
 			net_name	: in pac_net_name.bounded_string;
@@ -121,7 +121,7 @@ package body et_schematic is
 
 	
 	function to_label_rotation (direction : in type_stub_direction) 
-		return type_rotation is
+		return type_rotation_model is
 	begin
 		case direction is
 			when RIGHT	=> return zero_rotation;

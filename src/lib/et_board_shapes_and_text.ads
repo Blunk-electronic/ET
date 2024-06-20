@@ -100,7 +100,7 @@ package et_board_shapes_and_text is
 	-- Checks whether given line width is in range 
 	-- of type_general_line_width:
 	procedure validate_general_line_width (
-		width : in et_pcb_coordinates_2.type_distance);
+		width : in et_pcb_coordinates_2.type_distance_model);
 
 
 	keyword_width 		: constant string := "width";

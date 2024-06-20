@@ -761,11 +761,11 @@ package body et_devices is
 	
 	function rotate_placeholders (
 		symbol_cursor	: in pac_units_internal.cursor;
-		destination		: in et_coordinates.type_position)
+		destination		: in et_coordinates_2.type_position)
 		return type_rotated_placeholders
 	is
 		use pac_units_internal;
-		use et_coordinates.pac_geometry_sch;
+		use et_coordinates_2.pac_geometry_sch;
 
 		r : type_rotated_placeholders; -- to be returned
 	begin

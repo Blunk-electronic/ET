@@ -61,7 +61,7 @@ package et_conductor_text.packages is
 	-- Rotates a list of texts by the given angle about the origin:
 	procedure rotate_texts (
 		texts	: in out pac_conductor_texts.list;
-		angle	: in type_rotation);
+		angle	: in type_rotation_model);
 
 
 	-- Moves a list of texts by the given offset:

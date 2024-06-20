@@ -37,7 +37,7 @@
 
 
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 
 
 package et_contour_to_polygon is
@@ -70,7 +70,7 @@ package et_contour_to_polygon is
 	-- the ideal arc:
 	function to_edges (
 		arc			: in type_arc;
-		tolerance	: in type_distance_positive;
+		tolerance	: in type_distance_model_positive;
 		mode		: in type_approximation_mode;
 		debug		: in boolean := false)				  
 		return pac_edges.list;
@@ -82,7 +82,7 @@ package et_contour_to_polygon is
 	-- the ideal circle:
 	function to_edges (
 		circle		: in type_circle;
-		tolerance	: in type_distance_positive;
+		tolerance	: in type_distance_model_positive;
 		mode		: in type_approximation_mode;
 		debug		: in boolean := false)				  
 		return pac_edges.list;
@@ -99,7 +99,7 @@ package et_contour_to_polygon is
 	-- CS: Currently the given contour must be counter-clockwise !
 	function to_polygon (
 		contour		: in type_contour'class;
-		tolerance	: in type_distance_positive;
+		tolerance	: in type_distance_model_positive;
 		mode		: in type_approximation_mode;
 		debug		: in boolean := false)					
 		return type_polygon;
@@ -108,7 +108,7 @@ package et_contour_to_polygon is
 	-- Converts a list of contours to a list of polygons:
 	function to_polygons (
 		contours	: in pac_contour_list.list;
-		tolerance	: in type_distance_positive;
+		tolerance	: in type_distance_model_positive;
 		mode		: in type_approximation_mode;
 		debug		: in boolean := false)					
 		return pac_polygon_list.list;

@@ -60,7 +60,7 @@ package body et_keepout is
 
 	procedure rotate_zones (
 		zones	: in out pac_keepout_zones.list;
-		angle	: in type_rotation)
+		angle	: in type_rotation_model)
 	is
 		result : pac_keepout_zones.list;
 
@@ -109,7 +109,7 @@ package body et_keepout is
 
 	procedure rotate_keepout_objects (
 		keepout	: in out type_keepout;
-		angle	: in type_rotation)
+		angle	: in type_rotation_model)
 	is begin
 		rotate_zones (keepout.zones, angle);
 		-- CS rotate_cutouts (keepout.cutouts, angle);

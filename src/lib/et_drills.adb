@@ -39,7 +39,7 @@
 
 package body et_drills is
 
-	procedure validate_drill_size (drill : in type_distance) is begin
+	procedure validate_drill_size (drill : in type_distance_model) is begin
 		if drill not in type_drill_size then
 			log (ERROR, "drill size invalid ! Allowed range is" 
 				 & to_string (type_drill_size'first) & " .."

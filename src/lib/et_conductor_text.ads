@@ -42,7 +42,7 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
 with et_geometry;				use et_geometry;
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_design_rules;			use et_design_rules;
 with et_text;					use et_text;
@@ -84,7 +84,7 @@ package et_conductor_text is
 	-- Rotates a text by the given angle about the origin:
 	procedure rotate_text (
 		text	: in out type_conductor_text;
-		angle	: in type_rotation);
+		angle	: in type_rotation_model);
 
 
 	-- Moves a text by the given offset:

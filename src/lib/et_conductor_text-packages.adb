@@ -78,7 +78,7 @@ package body et_conductor_text.packages is
 
 	procedure rotate_texts (
 		texts	: in out pac_conductor_texts.list;
-		angle	: in type_rotation)
+		angle	: in type_rotation_model)
 	is
 		result : pac_conductor_texts.list;
 

@@ -63,7 +63,7 @@ package body et_stencil is
 	
 	procedure rotate_lines (
 		lines	: in out pac_stencil_lines.list;
-		angle	: in type_rotation)
+		angle	: in type_rotation_model)
 	is
 		result : pac_stencil_lines.list;
 
@@ -123,7 +123,7 @@ package body et_stencil is
 	
 	procedure rotate_arcs (
 		arcs	: in out pac_stencil_arcs.list;
-		angle	: in type_rotation)
+		angle	: in type_rotation_model)
 	is
 		result : pac_stencil_arcs.list;
 
@@ -183,7 +183,7 @@ package body et_stencil is
 	
 	procedure rotate_circles (
 		circles	: in out pac_stencil_circles.list;
-		angle	: in type_rotation)
+		angle	: in type_rotation_model)
 	is
 		result : pac_stencil_circles.list;
 
@@ -243,7 +243,7 @@ package body et_stencil is
 
 	procedure rotate_contours (
 		contours	: in out pac_stencil_contours.list;
-		angle		: in type_rotation)
+		angle		: in type_rotation_model)
 	is
 		result : pac_stencil_contours.list;
 
@@ -293,7 +293,7 @@ package body et_stencil is
 
 	procedure rotate_stencil_objects (
 		stencil	: in out type_stencil;
-		angle	: in type_rotation)
+		angle	: in type_rotation_model)
 	is begin
 		rotate_lines (stencil.lines, angle);
 		rotate_arcs (stencil.arcs, angle);

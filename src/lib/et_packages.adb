@@ -104,7 +104,7 @@ package body et_packages is
 
 
 
-	procedure validate_pad_size (size : in type_distance) is
+	procedure validate_pad_size (size : in type_distance_model) is
 	begin
 		if size not in type_pad_size then
 			log (ERROR, "pad size invalid ! Allowed range is" 
@@ -115,7 +115,7 @@ package body et_packages is
 		end if;
 	end validate_pad_size;
 	
--- 	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance) is
+-- 	procedure validate_track_clearance (clearance : in et_pcb_coordinates.type_distance_model) is
 -- 	-- Checks whether the given track clearance is in range of type_track_clearance.
 -- 	begin
 -- 		if clearance not in type_track_clearance then
@@ -127,7 +127,7 @@ package body et_packages is
 -- 		end if;
 -- 	end validate_track_clearance;
 -- 
--- 	procedure validate_track_width (track_width : in type_distance_positive) is
+-- 	procedure validate_track_width (track_width : in type_distance_model_positive) is
 -- 	-- Checks whether the given width is in range of type_track_width.
 -- 	begin
 -- 		if track_width not in type_track_width then
@@ -139,7 +139,7 @@ package body et_packages is
 -- 		end if;
 -- 	end validate_track_width;
 
--- 	procedure validate_restring_width (restring_width : in et_pcb_coordinates.type_distance) is
+-- 	procedure validate_restring_width (restring_width : in et_pcb_coordinates.type_distance_model) is
 -- 	-- Checks whether the given restring width is in range of type_restring_width.	
 -- 	begin
 -- 		if restring_width not in type_restring_width then
@@ -165,7 +165,7 @@ package body et_packages is
 
 	procedure rotate_conductor_objects (
 		conductors	: in out type_conductor_objects;
-		angle		: in type_rotation)
+		angle		: in type_rotation_model)
 	is begin
 		rotate_lines (conductors.lines, angle);
 		rotate_arcs (conductors.arcs, angle);
@@ -188,7 +188,7 @@ package body et_packages is
 	
 	function to_polygons (
 		conductors	: in type_conductor_objects;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return pac_polygon_list.list
 	is
 		result, scratch : pac_polygon_list.list;
@@ -549,7 +549,7 @@ package body et_packages is
 		flipped		: in type_flipped;
 		package_pos	: in type_package_position) 
 	is 
-		package_rotation : constant type_rotation := get_rotation (package_pos);
+		package_rotation : constant type_rotation_model := get_rotation (package_pos);
 		package_position_relative : constant type_distance_relative := to_distance_relative (package_pos.place);
 	begin
 		---- Rotate the given terminal position by the position of the package:

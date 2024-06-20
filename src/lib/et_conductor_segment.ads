@@ -41,7 +41,7 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_design_rules;			use et_design_rules;
@@ -70,7 +70,7 @@ package et_conductor_segment is
 	-- with round caps on the line ends:
 	function to_polygon (
 		line 		: in type_conductor_line;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return type_polygon;
 
 
@@ -84,7 +84,7 @@ package et_conductor_segment is
 	--function get_shortest_distance (
 		--point	: in type_point;
 		--segment	: in type_conductor_line_segment)
-		--return type_distance;
+		--return type_distance_model;
 	
 
 	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
@@ -100,7 +100,7 @@ package et_conductor_segment is
 	-- Rotates a list of lines by the given angle about the origin:
 	procedure rotate_lines (
 		lines	: in out pac_conductor_lines.list;
-		angle	: in type_rotation);
+		angle	: in type_rotation_model);
 
 
 	-- Moves a list of lines by the given offset:
@@ -112,7 +112,7 @@ package et_conductor_segment is
 	-- Converts a list of lines to a list of polygons:
 	function to_polygons (
 		lines		: in pac_conductor_lines.list;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return pac_polygon_list.list;
 							 
 	
@@ -137,7 +137,7 @@ package et_conductor_segment is
 	
 	function to_polygon (
 		arc 		: in type_conductor_arc;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_model_positive)							
 		return type_polygon;
 	
 
@@ -147,7 +147,7 @@ package et_conductor_segment is
 	--function get_shortest_distance (
 		--point	: in type_point;
 		--segment	: in type_conductor_arc_segment)
-		--return type_distance;
+		--return type_distance_model;
 
 	
 	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
@@ -163,7 +163,7 @@ package et_conductor_segment is
 	-- Rotates a list of arcs by the given angle about the origin:
 	procedure rotate_arcs (
 		arcs	: in out pac_conductor_arcs.list;
-		angle	: in type_rotation);
+		angle	: in type_rotation_model);
 
 
 	-- Moves a list of arcs by the given offset:
@@ -175,7 +175,7 @@ package et_conductor_segment is
 	-- Converts a list of arcs to a list of polygons:
 	function to_polygons (
 		arcs		: in pac_conductor_arcs.list;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return pac_polygon_list.list;
 
 	
@@ -198,14 +198,14 @@ package et_conductor_segment is
 	-- Converts the outer edge of a conductor circle to a polygon:	
 	function to_polygon_outside (
 		circle 		: in type_conductor_circle;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_model_positive)							
 		return type_polygon;
 
 	
 	-- Converts the inner edge of a conductor circle to a polygon:	
 	function to_polygon_inside (
 		circle 		: in type_conductor_circle;
-		tolerance	: in type_distance_positive)							
+		tolerance	: in type_distance_model_positive)							
 		return type_polygon;
 
 
@@ -223,7 +223,7 @@ package et_conductor_segment is
 	-- Rotates a list of circles by the given angle about the origin:
 	procedure rotate_circles (
 		circles	: in out pac_conductor_circles.list;
-		angle	: in type_rotation);
+		angle	: in type_rotation_model);
 
 
 	-- Moves a list of circles by the given offset:
@@ -235,14 +235,14 @@ package et_conductor_segment is
 	-- Converts the outer edges of circles to a list of polygons:
 	function to_polygons_outside (
 		circles		: in pac_conductor_circles.list;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return pac_polygon_list.list;
 
 
 	-- Converts the inner edges of circles to a list of polygons:
 	function to_polygons_inside (
 		circles		: in pac_conductor_circles.list;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return pac_polygon_list.list;
 
 	

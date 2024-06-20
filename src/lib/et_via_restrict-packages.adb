@@ -53,7 +53,7 @@ package body et_via_restrict.packages is
 
 	procedure rotate_via_restrict_objects (
 		restrict	: in out type_one_side;
-		angle		: in type_rotation)
+		angle		: in type_rotation_model)
 	is begin
 		rotate_lines (restrict.lines, angle);
 		rotate_arcs (restrict.arcs, angle);
@@ -75,7 +75,7 @@ package body et_via_restrict.packages is
 	
 	function to_polygons (
 		restrict	: in type_one_side;
-		tolerance	: in type_distance_positive)
+		tolerance	: in type_distance_model_positive)
 		return pac_polygon_list.list
 	is
 		scratch, result : pac_polygon_list.list;

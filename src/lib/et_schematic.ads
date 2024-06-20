@@ -59,7 +59,7 @@ with cairo;						--use cairo;
 with et_general;				use et_general;
 with et_nets;					use et_nets;
 with et_net_names;				use et_net_names;
-with et_coordinates;			use et_coordinates;
+with et_coordinates_2;			use et_coordinates_2;
 with et_assembly_variants;		use et_assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
@@ -71,7 +71,7 @@ with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_packages;				use et_packages;
 with et_pcb;
-with et_pcb_coordinates;
+with et_pcb_coordinates_2;
 with et_submodules;
 with et_numbering;
 with et_material;
@@ -142,7 +142,7 @@ package et_schematic is
 	-- A unit is a subset of a device.
 	-- Placeholders are available if the device appears in both schematic and layout:
 	type type_unit (appearance : type_appearance_schematic) is record
-		position	: et_coordinates.type_position; -- incl. rotation and sheet number
+		position	: et_coordinates_2.type_position; -- incl. rotation and sheet number
 		mirror		: type_mirror := NO;
 		case appearance is
 			when et_symbols.VIRTUAL => null; -- CS
@@ -172,7 +172,7 @@ package et_schematic is
 	
 	package pac_unit_positions is new ordered_maps (
 		key_type		=> pac_unit_name.bounded_string, -- A, B, IO_BANK_1
-		element_type	=> et_coordinates.type_position); -- sheet, x, y
+		element_type	=> et_coordinates_2.type_position); -- sheet, x, y
 
 	
 	function unit_positions (units : in pac_units.map) return pac_unit_positions.map;
@@ -216,7 +216,7 @@ package et_schematic is
 				-- As a result of a flip operation, position.face changes from top to bottom
 				-- or vice versa.
 				-- Flipping a device to top or bottom means to mirror it along its Y-axis.
-				position			: et_pcb_coordinates.type_package_position; -- incl. rotation and face
+				position			: et_pcb_coordinates_2.type_package_position; -- incl. rotation and face
 				flipped				: type_flipped := flipped_default;
 				text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 
@@ -269,7 +269,7 @@ package et_schematic is
 	
 	-- Maps from stub direction to rotation:
 	function to_label_rotation (direction : in type_stub_direction)
-		return type_rotation;
+		return type_rotation_model;
 
 	
 	-- Detects whether the given segment is a stub and if so
@@ -394,7 +394,7 @@ package et_schematic is
 		-- schematic frame template and descriptions of individual schematic frames:
 		frames			: et_frames.type_frames_schematic;
 		
-		grid			: type_grid; -- the drawing grid of the schematic
+		grid			: pac_grid.type_grid; -- the drawing grid of the schematic
 
 		board_available	: type_board_available := FALSE;
 
