@@ -55,8 +55,9 @@ package body et_symbol_rw is
 	function to_grid (
 		line : in type_fields_of_line; -- "default x 1 y 1"
 		from : in count_type)
-		return type_grid 
+		return pac_grid.type_grid 
 	is
+		use pac_grid;
 		use et_string_processing;
 		
 		grid : type_grid; -- to be returned
@@ -67,11 +68,11 @@ package body et_symbol_rw is
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
-				grid.x := to_distance (f (line, place + 1));
+				grid.spacing.x := to_distance (f (line, place + 1));
 
 			-- We expect after the y the corresponding value for y
 			elsif f (line, place) = keyword_y then
-				grid.y := to_distance (f (line, place + 1));
+				grid.spacing.y := to_distance (f (line, place + 1));
 
 			else
 				invalid_keyword (f (line, place));
@@ -213,7 +214,7 @@ package body et_symbol_rw is
 
 		
 		procedure write_circle (cursor : in pac_symbol_circles.cursor) is 
-			use et_coordinates.pac_geometry_sch;
+			use et_coordinates_2.pac_geometry_sch;
 		begin
 			section_mark (section_circle, HEADER);
 			write (keyword => keyword_center, parameters => position (element (cursor).center));

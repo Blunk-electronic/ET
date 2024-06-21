@@ -720,7 +720,7 @@ package body et_pcb_rw.device_packages is
 						write_polygon_segments (type_contour (element (terminal_cursor).pad_shape_smt));
 						section_mark (section_pad_contours_smt, FOOTER);
 						
-						write (keyword => et_pcb_coordinates.keyword_face, parameters => et_pcb_coordinates.to_string (element (terminal_cursor).face));
+						write (keyword => et_pcb_coordinates_2.keyword_face, parameters => et_pcb_coordinates_2.to_string (element (terminal_cursor).face));
 
 						-- stop mask
 						write_stop_mask_smt;
@@ -861,7 +861,7 @@ package body et_pcb_rw.device_packages is
 		tht_pad_shape			: type_pad_outline_tht;		
 		smt_pad_shape			: type_contour;
 
-		smt_pad_face			: et_pcb_coordinates.type_face := et_pcb_coordinates.face_default;
+		smt_pad_face			: et_pcb_coordinates_2.type_face := et_pcb_coordinates_2.face_default;
 
 		smt_stop_mask_status	: type_stop_mask_status := stop_mask_status_default;
 		smt_stop_mask_shape		: type_stop_mask_shape := stop_mask_shape_default;
@@ -872,7 +872,7 @@ package body et_pcb_rw.device_packages is
 		smt_stencil_shape		: type_stencil_modification := stencil_modification_default;
 		smt_stencil_contours	: type_stencil_contours;
 		--smt_stencil_shrink		: type_stencil_shrink := stencil_shrink_default;
-		smt_stencil_shrink		: type_distance_positive := stencil_shrink_default;
+		smt_stencil_shrink		: type_distance_model_positive := stencil_shrink_default;
 
 		
 		procedure read_text is
@@ -971,9 +971,9 @@ package body et_pcb_rw.device_packages is
 				expect_field_count (line, 2);
 				tht_drill_size := to_distance (f (line,2));
 				
-			elsif kw = et_pcb_coordinates.keyword_face then -- face top/bottom
+			elsif kw = et_pcb_coordinates_2.keyword_face then -- face top/bottom
 				expect_field_count (line, 2);
-				smt_pad_face := et_pcb_coordinates.to_face (f (line,2));
+				smt_pad_face := et_pcb_coordinates_2.to_face (f (line,2));
 
 			elsif kw = keyword_stop_mask_status then -- stop_mask_status open/closed
 				expect_field_count (line, 2);

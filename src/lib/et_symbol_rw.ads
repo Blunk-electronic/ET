@@ -35,12 +35,12 @@
 --   history of changes:
 --
 
-with ada.containers;			use ada.containers;
+with ada.containers;					use ada.containers;
 
-with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
-with et_coordinates;			use et_coordinates;
-with et_symbols;				use et_symbols;
+with et_string_processing;				use et_string_processing;
+with et_logging;						use et_logging;
+with et_coordinates_2;					use et_coordinates_2;
+with et_symbols;						use et_symbols;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 
 
@@ -61,7 +61,7 @@ package et_symbol_rw is
 	function to_grid (
 		line : in type_fields_of_line; -- "default x 1 y 1"
 		from : in count_type)
-		return type_grid;
+		return pac_grid.type_grid;
 
 
 	-- Returns something like "x 12.34 y 45.0".
