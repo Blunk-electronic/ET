@@ -52,13 +52,13 @@ with et_device_rw;
 with et_device_query_schematic;		use et_device_query_schematic;
 with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 
-with et_canvas_schematic;
+with et_canvas_schematic_2;
 
 
 package body et_schematic_ops is
 
 	use pac_generic_modules;
-	use et_canvas_schematic.pac_canvas;
+	use et_canvas_schematic_2.pac_canvas;
 
 	use et_submodules.pac_netchangers;
 	use et_submodules.pac_submodules;
@@ -131,7 +131,7 @@ package body et_schematic_ops is
 	
 	procedure dragging_not_possible (
 		port 		: in string;
-		position	: in et_coordinates_2_2.type_position) is
+		position	: in et_coordinates_2.type_position) is
 	begin
 		log (ERROR, "port " & enclose_in_quotes (port) &
 			 " is directly connected with other ports at" &
@@ -160,7 +160,7 @@ package body et_schematic_ops is
 		
 	begin -- set_grid
 		log (text => "module " & enclose_in_quotes (to_string (module_name))
-			& " setting schematic grid" & to_string (grid),
+			& " setting schematic grid" & to_string (grid.spacing),
 			level => log_threshold);
 
 		-- locate module
@@ -191,7 +191,7 @@ package body et_schematic_ops is
 		
 	begin -- set_grid
 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
-			& " setting schematic grid" & to_string (grid),
+			& " setting schematic grid" & to_string (grid.spacing),
 			level => log_threshold);
 
 		update_element (
@@ -210,7 +210,7 @@ package body et_schematic_ops is
 			log (text => 
 				"unit " &
 				to_string (pac_unit_positions.key (cursor)) & -- unit name
-				et_coordinates_2_2.to_string (position => pac_unit_positions.element (cursor)), -- sheet x y
+				et_coordinates_2.to_string (position => pac_unit_positions.element (cursor)), -- sheet x y
 				level => log_threshold);
 		end;
 		
@@ -227,8 +227,8 @@ package body et_schematic_ops is
 		device_cursor	: in pac_devices_sch.cursor;
 		log_threshold	: in type_log_level) 
 	is
-		use et_pcb_coordinates_2_2;
-		use et_pcb_coordinates_2_2.pac_geometry_2;
+		use et_pcb_coordinates_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
 		use pac_devices_sch;
 		use et_symbols;
 	begin
@@ -576,7 +576,7 @@ package body et_schematic_ops is
 	
 	procedure move_ports (
 		ports	: in out et_symbols.pac_ports.map; -- the portlist
-		offset	: in et_coordinates_2_2.type_position) -- the offset (only x/y matters)
+		offset	: in et_coordinates_2.type_position) -- the offset (only x/y matters)
 	is
 		use et_symbols;
 		use et_symbols.pac_ports;
@@ -1176,13 +1176,15 @@ package body et_schematic_ops is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
 
 			procedure query_units (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) is
+				device		: in out type_device_sch)
+			is
 				use pac_units;
 				unit_cursor : pac_units.cursor;
 

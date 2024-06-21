@@ -43,7 +43,7 @@ with ada.containers.multiway_trees;
 
 with et_general;				use et_general;
 
-with et_coordinates;			use et_coordinates;
+with et_coordinates_2;			use et_coordinates_2;
 with et_string_processing;		use et_string_processing;
 
 with et_devices;				use et_devices;

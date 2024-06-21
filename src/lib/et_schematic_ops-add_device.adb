@@ -41,7 +41,7 @@ procedure add_device (
 	module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 	device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 	variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
-	destination		: in et_coordinates.type_position; -- sheet/x/y,rotation
+	destination		: in et_coordinates_2.type_position; -- sheet/x/y,rotation
 	log_threshold	: in type_log_level) 
 is	
 	use et_symbols;

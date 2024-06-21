@@ -107,6 +107,8 @@ package body et_geometry_2a is
 	
 -- DISTANCE:
 
+
+	
 	procedure limit_to_maximum (
 		distance	: in out type_distance_model;
 		maximum		: in type_distance_model)
@@ -223,7 +225,26 @@ package body et_geometry_2a is
 	end to_distance;
 
 
+	
 
+	function clip_distance (d : in type_distance_model)
+		return type_position_axis
+	is begin
+		if d > axis_max then return axis_max;
+		elsif d < axis_min then return axis_min;
+		else return d;
+		end if;
+	end clip_distance;
+
+	
+	procedure clip_distance (d : in out type_distance_model) is begin
+		if d > axis_max then d := axis_max;
+		elsif d < axis_min then d := axis_min;
+		end if;
+	end clip_distance;
+
+
+	
 	
 -- ROTATION / ANGLE
 
@@ -550,7 +571,17 @@ package body et_geometry_2a is
 		end case;
 	end;
 
+
+
+	procedure set (
+		point	: in out type_vector_model;
+		position: in type_vector_model) 
+	is begin
+		point.x := position.x;
+		point.y := position.y;
+	end;
 	
+
 	
 	function to_vector (
 		point	: in type_vector_model)
@@ -596,6 +627,36 @@ package body et_geometry_2a is
 	end to_point;
 
 
+
+
+	function to_point (
+		d 		: in type_distance_relative;
+		clip	: in boolean := false)
+		return type_vector_model
+	is 
+		p : type_vector_model;
+	begin
+		if clip then
+			p.x := clip_distance (d.x);
+			p.y := clip_distance (d.y);				
+		else
+			p.x := d.x;
+			p.y := d.y;
+		end if;
+		
+		return p;
+
+		exception
+			when constraint_error =>
+				log (text => "distance too great: x/y" 
+					& to_string (d.x)
+					& "/"
+					& to_string (d.y));
+				raise;
+		
+	end to_point;
+	
+	
 
 	function to_point (
 		x,y : in string)

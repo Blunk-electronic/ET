@@ -48,6 +48,7 @@ with et_geometry;				use et_geometry;
 with et_geometry_1;
 
 with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
 with et_object_status;			use et_object_status;
 
 
@@ -88,6 +89,7 @@ package et_geometry_2a is
 		
 -- DISTANCE:
 
+	
 	-- Limits a distance to a given maximum.
 	-- Examples: 
 	-- 1. distance = 100.0, maximum = 80.0 -> distance becomes 80.0
@@ -147,6 +149,15 @@ package et_geometry_2a is
 
 	function to_distance (dd : in string) 
 		return type_distance_model;		
+
+
+
+	function clip_distance (d : in type_distance_model)
+		return type_position_axis;
+
+	
+	procedure clip_distance (d : in out type_distance_model);
+
 
 	
 
@@ -318,6 +329,12 @@ package et_geometry_2a is
 		axis 	: in type_axis_2d;
 		value	: in type_position_axis);
 
+
+	procedure set (
+		point	: in out type_vector_model;
+		position: in type_vector_model);
+
+
 	
 	function get_x (
 		point : in type_vector_model)
@@ -338,6 +355,12 @@ package et_geometry_2a is
 		v	: in type_vector)
 		return type_vector_model;
 
+
+	function to_point (
+		d 		: in type_distance_relative;
+		clip	: in boolean := false)
+		return type_vector_model;
+	
 	
 	function to_point (
 		x,y : in string)
