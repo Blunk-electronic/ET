@@ -54,7 +54,7 @@ with et_text;					use et_text;
 with et_general_rw;				use et_general_rw;
 with et_meta;
 
-with et_pcb_coordinates;
+with et_pcb_coordinates_2;
 with et_geometry;				use et_geometry;
 with et_symbols;
 

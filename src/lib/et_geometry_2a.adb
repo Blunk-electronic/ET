@@ -368,6 +368,17 @@ package body et_geometry_2a is
 	end to_string;
 
 
+
+
+	procedure reset (
+		point : in out type_vector_model) 
+	is begin
+		point.x := zero;
+		point.y := zero;
+	end;
+	
+	
+
 	function invert (
 		point	: in type_vector_model)
 		return type_vector_model
@@ -664,6 +675,28 @@ package body et_geometry_2a is
 	end get_distance_total;
 
 
+
+	function get_distance_abs (
+		point_1	: in type_vector_model;
+		point_2	: in type_vector_model;
+		axis	: in type_axis_2d) 
+		return type_distance_model_positive
+	is
+		d : type_distance_model_positive;
+	begin
+		case axis is
+			when X =>
+				d := abs (point_2.x - point_1.x);
+
+			when Y =>
+				d := abs (point_2.y - point_1.y);
+		end case;
+				
+		return d;
+	end get_distance_abs;
+
+
+	
 
 	procedure move_by (
 		point	: in out type_vector_model;
@@ -966,6 +999,26 @@ package body et_geometry_2a is
 		move_by (point	=> line.start_point,	offset => offset);
 		move_by (point	=> line.end_point,		offset => offset);
 	end move_by;
+
+
+
+	procedure move_start_by (
+		line	: in out type_line;
+		offset	: in type_distance_relative)
+	is begin
+		move_by (line.start_point, offset);
+	end move_start_by;
+
+
+	procedure move_end_by (
+		line	: in out type_line;
+		offset	: in type_distance_relative)
+	is begin
+		move_by (line.end_point, offset);
+	end move_end_by;
+
+
+
 
 	
 
@@ -1309,6 +1362,64 @@ package body et_geometry_2a is
 
 
 
+
+	function arc_end_point (
+		center		: in type_vector_model;
+		start_point	: in type_vector_model;	
+		angle 		: in type_angle) -- unit is degrees
+		return type_vector_model
+	is						
+		arc : type_arc;
+
+		radius : type_float;
+		angle_start, angle_end : type_angle; -- CS type_angle_positive ?
+		end_x, end_y : type_float;
+		
+	begin -- arc_end_point
+		
+		-- build an arc from the information available
+		arc := (
+			center		=> center,
+			start_point	=> start_point,
+			end_point	=> origin, -- not determined yet
+			direction	=> get_direction (angle),
+			others		=> <>);
+		
+		-- move arc so that its center is at 0/0
+		move_to (arc, origin);
+
+		-- calculate the radius of the arc
+		radius := type_float (get_distance_total (arc.center, arc.start_point));
+
+		-- calculate the angle where the arc begins:
+
+		-- NOTE: If x and y are zero then the arctan operation is not possible. 
+		-- In this case we assume the resulting angle is zero.
+		if get_x (arc.start_point) = zero and get_y (arc.start_point) = zero then
+			angle_start := 0.0;
+		else
+			angle_start := arctan (
+					y => type_float (get_y (arc.start_point)),
+					x => type_float (get_x (arc.start_point)),
+					cycle => units_per_cycle);
+		end if;
+		
+		-- the angle where the arc ends:
+		angle_end := angle_start + angle;
+
+		-- The end point of the arc:
+		end_y := sin (angle_end, units_per_cycle) * radius;
+		end_x := cos (angle_end, units_per_cycle) * radius;
+
+		return set (
+			--x	=> type_distance (end_x), -- CS
+			--y	=> type_distance (end_y)); -- CS
+			x	=> to_distance (end_x),
+			y	=> to_distance (end_y));
+						
+	end arc_end_point;
+
+	
 
 	
 	
@@ -2487,6 +2598,174 @@ package body et_geometry_2a is
 	is begin
 		return position.rotation;
 	end;
+
+
+	
+
+-- CATCH ZONE:
+		
+	function catch_zone_to_string (
+		c : in type_catch_zone)
+		return string
+	is begin
+		return pac_geometry_1.to_string (c);
+	end catch_zone_to_string;
+
+
+	function to_catch_zone (
+		c : in string)
+		return type_catch_zone
+	is begin
+		return pac_geometry_1.to_distance (c);
+	end to_catch_zone;
+
+	
+	function in_catch_zone (
+		distance : in type_float_positive;
+		zone	 : in type_catch_zone)
+		return boolean
+	is begin
+		if distance <= zone then
+			return true;
+		else
+			return false;
+		end if;
+	end in_catch_zone;
+	
+	
+	
+	function in_catch_zone (
+		point_1		: in type_vector_model; -- the reference point
+		catch_zone	: in type_catch_zone; -- zone around reference point
+		point_2 	: in type_vector_model) -- the point being tested
+		return boolean 
+	is
+		d : type_float_positive := get_distance_total (point_1, point_2);
+	begin
+		if d <= catch_zone then
+			return true;
+		else
+			return false;
+		end if;
+	end in_catch_zone;
+
+
+
+
+-- ZONES OF A LINE
+	
+	function get_zone (
+		line	: in type_line;
+		point	: in type_vector_model)
+		return type_line_zone 
+	is
+		zone : type_line_zone; -- to be returned
+	
+		line_length : type_distance_model;
+		zone_border : type_distance_model;
+		
+	begin -- get_zone
+		-- CS: The algorithm used here is not the best. Improve using vector algebra ?
+		
+		-- The greater distance from start to end point in X or Y determines 
+		-- whether the line is handled like a horizontal or vertical drawn line.
+		if get_distance_abs (line.start_point, line.end_point, X) > 
+			get_distance_abs (line.start_point, line.end_point, Y) then
+
+			-- distance in X greater -> decision will be made along the X axis.
+			-- The line will be handled like a horizontal drawn line.
+			
+			-- calculate the zone border. This depends on the line length in X direction.
+			line_length := get_distance_abs (line.start_point, line.end_point, X);
+			zone_border := line_length / type_distance_model (line_zone_division_factor);
+			-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
+			
+			if get_x (line.start_point) < get_x (line.end_point) then 
+			-- DRAWN FROM LEFT TO THE RIGHT
+				if get_x (point) < get_x (line.start_point) + zone_border then
+					zone := START_POINT; -- point is in the zone of line.start_point
+				elsif get_x (point) > get_x (line.end_point) - zone_border then
+					zone := END_POINT; -- point is in the zone of line.end_point
+				else
+					zone := CENTER;
+				end if;
+
+			else 
+			-- DRAWN FROM RIGHT TO THE LEFT
+				if get_x (point) > get_x (line.start_point) - zone_border then
+					zone := START_POINT; -- point is in the zone of line.start_point
+				elsif get_x (point) < get_x (line.end_point) + zone_border then
+					zone := END_POINT; -- point is in the zone of line.end_point
+				else
+					zone := CENTER;
+				end if;
+			end if;
+
+			
+		else
+			-- distance in Y greater or equal distance in X -> decision will be made along the Y axis.
+			-- The line will be handled like a vertical drawn line.
+
+			-- calculate the zone border. This depends on the line length in Y direction.
+			line_length := get_distance_abs (line.start_point, line.end_point, Y);
+			zone_border := line_length / type_distance_model (line_zone_division_factor);
+			-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
+			
+			if get_y (line.start_point) < get_y (line.end_point) then 
+			-- DRAWN UPWARDS
+				if get_y (point) < get_y (line.start_point) + zone_border then
+					zone := START_POINT; -- point is in the zone of line.start_point
+				elsif get_y (point) > get_y (line.end_point) - zone_border then
+					zone := END_POINT; -- point is in the zone of line.end_point
+				else
+					zone := CENTER;
+				end if;
+					
+			else 
+			-- DRAWN DOWNWARDS
+				if get_y (point) > get_y (line.start_point) - zone_border then
+					zone := START_POINT; -- point is in the zone of line.start_point
+				elsif get_y (point) < get_y (line.end_point) + zone_border then
+					zone := END_POINT; -- point is in the zone of line.end_point
+				else
+					zone := CENTER;
+				end if;
+			end if;
+			
+			
+		end if;
+		
+		return zone;
+	end get_zone;
+
+
+
+	procedure move_line_to (
+		line			: in out type_line;
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model)
+	is
+		zone : constant type_line_zone := get_zone (line, point_of_attack);
+		offset : type_distance_relative;
+	begin
+		case zone is
+			when START_POINT =>
+				offset := get_distance_relative (line.start_point, destination);
+				move_start_by (line, offset);
+				
+			when END_POINT =>
+				offset := get_distance_relative (line.end_point, destination);
+				move_end_by (line, offset);
+				
+			when CENTER =>
+				offset := get_distance_relative (point_of_attack, destination);
+				move_start_by (line, offset);
+				move_end_by (line, offset);
+
+		end case;
+	end move_line_to;
+
+
 
 	
 	

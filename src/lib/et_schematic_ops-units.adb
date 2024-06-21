@@ -212,7 +212,7 @@ package body et_schematic_ops.units is
 			-- There will be only one unit in this container.
 			position_of_unit_old : pac_unit_positions.map;
 
-			position_of_unit_new : et_coordinates.type_position;
+			position_of_unit_new : et_coordinates_2.type_position;
 
 			ports : et_symbols.pac_ports.map;
 
@@ -227,7 +227,7 @@ package body et_schematic_ops.units is
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit) 
 				is
-					use et_coordinates;
+					use et_coordinates_2;
 				begin
 					case coordinates is
 						when ABSOLUTE =>
@@ -270,7 +270,7 @@ package body et_schematic_ops.units is
 					-- log old unit position
 					log_unit_positions (position_of_unit_old, log_threshold + 1); -- there is only one unit
 -- 					log (text => "position before " & 
--- 						 et_coordinates.to_string (
+-- 						 et_coordinates_2.to_string (
 -- 							type_ports.first_element (positions)), level => log_threshold + 1);
 
 					update_element (
@@ -392,7 +392,7 @@ package body et_schematic_ops.units is
 				procedure query_strands (
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net) is
-					use et_coordinates;
+					use et_coordinates_2;
 					
 					use pac_strands;
 					strand_cursor : pac_strands.cursor;
@@ -564,7 +564,7 @@ package body et_schematic_ops.units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in pac_unit_name.bounded_string;
-		location 		: in et_coordinates.type_position; -- only sheet number matters
+		location 		: in et_coordinates_2.type_position; -- only sheet number matters
 		unit_ports		: in et_symbols.pac_ports.map;
 		log_threshold	: in type_log_level)
 	is
@@ -573,7 +573,7 @@ package body et_schematic_ops.units is
 		port_cursor : et_symbols.pac_ports.cursor := unit_ports.first;
 
 		procedure test_point (port_cursor : in et_symbols.pac_ports.cursor) is
-			point : et_coordinates.type_position; -- the point
+			point : et_coordinates_2.type_position; -- the point
 			ports : type_ports;
 			port : type_device_port;
 			use pac_submodule_ports;
@@ -642,7 +642,7 @@ package body et_schematic_ops.units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in pac_unit_name.bounded_string;
-		location 		: in et_coordinates.type_position; -- only sheet number matters
+		location 		: in et_coordinates_2.type_position; -- only sheet number matters
 		unit_ports		: in et_symbols.pac_ports.map;
 		log_threshold	: in type_log_level)
 		return boolean
@@ -654,7 +654,7 @@ package body et_schematic_ops.units is
 		port_cursor : et_symbols.pac_ports.cursor := unit_ports.first;
 
 		procedure test_point (port_cursor : in et_symbols.pac_ports.cursor) is
-			point : et_coordinates.type_position; -- the point
+			point : et_coordinates_2.type_position; -- the point
 			ports : type_ports;
 			port : type_device_port;
 			use pac_submodule_ports;
@@ -783,8 +783,8 @@ package body et_schematic_ops.units is
 			-- temporarily storage of unit coordinates.
 			-- There will be only one unit in this container.
 			--position_of_unit_old : pac_unit_positions.map;
-			position_of_unit_old : et_coordinates.type_position;	
-			position_of_unit_new : et_coordinates.type_position;
+			position_of_unit_old : et_coordinates_2.type_position;	
+			position_of_unit_new : et_coordinates_2.type_position;
 
 			ports, ports_old, ports_new : et_symbols.pac_ports.map;
 
@@ -818,7 +818,7 @@ package body et_schematic_ops.units is
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit) 
 				is
-					use et_coordinates;
+					use et_coordinates_2;
 
 					-- Load the current sheet number where the unit is.
 					-- NOTE: The sheet number does not change in drag operations.
@@ -969,7 +969,7 @@ package body et_schematic_ops.units is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
-		rotation		: in et_coordinates.type_rotation; -- 90
+		rotation		: in et_coordinates_2.type_rotation_model; -- 90
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -981,8 +981,8 @@ package body et_schematic_ops.units is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
 
-			position_of_unit : et_coordinates.type_position;
-			rotation_before : et_coordinates.type_rotation;
+			position_of_unit : et_coordinates_2.type_position;
+			rotation_before : et_coordinates_2.type_rotation_model;
 
 			ports_lib, ports_scratch : et_symbols.pac_ports.map;
 
@@ -999,7 +999,7 @@ package body et_schematic_ops.units is
 				is
 					preamble : constant string := " placeholder now at";
 					
-					procedure rotate_placeholders_absolute (rot : in type_rotation) is 
+					procedure rotate_placeholders_absolute (rot : in type_rotation_model) is 
 
 						-- Get the default positions of texts and placeholders as
 						-- specified in symbol model. The default positions are
@@ -1008,7 +1008,7 @@ package body et_schematic_ops.units is
 												default_text_positions (device_cursor, name);
 						
 						-- Rotates the position by the given rotation rot:
-						function add_rot (p : in type_vector_model) return type_rotation is begin
+						function add_rot (p : in type_vector_model) return type_rotation_model is begin
 							return get_rotation (p) + rot;
 						end;
 
@@ -1065,7 +1065,7 @@ package body et_schematic_ops.units is
 					end rotate_placeholders_absolute;
 					
 					
-					procedure rotate_placeholders_relative (rot : in type_rotation) is begin
+					procedure rotate_placeholders_relative (rot : in type_rotation_model) is begin
 					-- Rotate position of placeholders around the unit origin. 
 					
 						-- NAME

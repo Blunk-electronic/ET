@@ -70,8 +70,8 @@ with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_packages;
 with et_kicad_general;			use et_kicad_general;
 with et_import;
-with et_pcb_coordinates;		use et_pcb_coordinates;
-use et_pcb_coordinates.pac_geometry_2;
+with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
+use et_pcb_coordinates_2.pac_geometry_2;
 
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
@@ -146,7 +146,7 @@ package et_kicad_packages is
 
 	type type_arc is new pac_geometry_2.type_arc with record
 		width 	: type_text_line_width;
-		angle 	: et_pcb_coordinates.pac_geometry_brd.type_angle;
+		angle 	: et_pcb_coordinates_2.pac_geometry_brd.type_angle;
 		layer	: type_layer_abbrevation;
 	end record;
 
@@ -241,7 +241,7 @@ package et_kicad_packages is
 
 	-- "Slotted drills" or "plated millings" for terminals are limited by drill sizes because
 	-- the PCB manufacturer starts the milling with a drill.
-	subtype type_pad_milling_size is type_distance_positive
+	subtype type_pad_milling_size is type_distance_model_positive
 		range et_drills.drill_size_min .. et_drills.drill_size_max;
 
 	

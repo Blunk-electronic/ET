@@ -120,17 +120,17 @@ is
 	end write_footer;
 
 	
-	function rotation (pos : in et_pcb_coordinates.pac_geometry_2.type_position'class)  -- CS make generic ?
+	function rotation (pos : in et_pcb_coordinates_2.pac_geometry_2.type_position'class)  -- CS make generic ?
 		return string
 	is
-		use et_pcb_coordinates.pac_geometry_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
 	begin
 		return to_string (get_rotation (pos));
 	end rotation;
 
 	
-	function face (point : et_pcb_coordinates.type_package_position) return string is
-		use et_pcb_coordinates;
+	function face (point : et_pcb_coordinates_2.type_package_position) return string is
+		use et_pcb_coordinates_2;
 	begin
 		return to_string (get_face (point));
 	end face;
@@ -234,7 +234,7 @@ is
 	procedure query_net_classes is
 		use et_pcb;
 		use et_pcb.pac_net_classes;
-		use et_pcb_coordinates.pac_geometry_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
 
 		procedure write (class_cursor : in pac_net_classes.cursor) is begin
 			log (text => "net class " & to_string (key (class_cursor)), level => log_threshold + 1);
@@ -265,7 +265,7 @@ is
 	
 	procedure query_drawing_grid is 
 		use et_coordinates_2.pac_geometry_2;
-		use et_pcb_coordinates.pac_geometry_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
 	begin
 		log_indentation_up;
 		
@@ -286,7 +286,7 @@ is
 
 	
 	procedure query_layer_stack is
-		use et_pcb_coordinates.pac_geometry_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
 		use et_pcb_stack;
 		use package_layers;
 
@@ -524,7 +524,7 @@ is
 			use et_terminals;
 			use et_pcb;
 			use et_pcb_stack;
-			use et_pcb_coordinates.pac_geometry_2;
+			use et_pcb_coordinates_2.pac_geometry_2;
 			
 			use et_conductor_segment.boards;
 			use pac_conductor_lines;
@@ -739,11 +739,11 @@ is
 			device_name	: in type_device_name;
 			device		: in type_device_sch) 
 		is
-			use et_coordinates;
+			use et_coordinates_2;
 			use et_schematic.pac_units;
 			unit_cursor : pac_units.cursor := device.units.first;
 
-			use et_coordinates.pac_geometry_2;
+			use et_coordinates_2.pac_geometry_2;
 			
 			procedure write_placeholder (ph : in type_text_placeholder) is begin
 				section_mark (section_placeholder, HEADER);
@@ -793,11 +793,11 @@ is
 			device_name : in type_device_name;
 			device 		: in type_device_sch) 
 		is
-			use et_pcb_coordinates;
+			use et_pcb_coordinates_2;
 			use et_device_placeholders.packages;
 			use pac_placeholders;
 
-			face : et_pcb_coordinates.type_face;
+			face : et_pcb_coordinates_2.type_face;
 			layer : type_placeholder_layer;
 			
 			procedure write_placeholder (placeholder_cursor : in pac_placeholders.cursor) is 
@@ -997,7 +997,7 @@ is
 	
 	-- writes the netchangers in the module file
 	procedure query_netchangers is
-		use et_coordinates;	
+		use et_coordinates_2;	
 		use et_submodules;
 		use pac_netchangers;
 
@@ -1014,7 +1014,7 @@ is
 
 			write (
 				keyword => keyword_position_in_board, 
-				parameters => et_pcb_coordinates.pac_geometry_2.to_string (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
+				parameters => et_pcb_coordinates_2.pac_geometry_2.to_string (element (cursor).position_brd)); -- position_in_board x 1.32 y 6.97
 			
 			write (keyword => et_pcb_stack.keyword_layer, parameters => et_pcb_stack.to_string (element (cursor).layer)); -- layer 2
 			section_mark (section_netchanger, FOOTER);
@@ -1035,7 +1035,7 @@ is
 			use pac_schematic_descriptions;
 
 			procedure query_sheet (s : in pac_schematic_descriptions.cursor) is
-				use et_coordinates;	
+				use et_coordinates_2;	
 			begin
 				section_mark (section_sheet, HEADER);
 				write (
@@ -1088,7 +1088,7 @@ is
 		-- write the board origin like "origin x 40 y 60"
 		write (
 			keyword		=> keyword_origin,
-			parameters	=> et_pcb_coordinates.pac_geometry_2.to_string_2 (element (module_cursor).board.origin));
+			parameters	=> et_pcb_coordinates_2.pac_geometry_2.to_string_2 (element (module_cursor).board.origin));
 		
 		section_mark (section_board, FOOTER);			
 		section_mark (section_drawing_frames, FOOTER);
@@ -1112,7 +1112,7 @@ is
 		end;
 
 		procedure write (submodule_cursor : in pac_submodules.cursor) is 
-			use et_coordinates.pac_geometry_2;
+			use et_coordinates_2.pac_geometry_2;
 		begin
 			section_mark (section_submodule, HEADER);
 			write (keyword => keyword_name, parameters => et_general.to_string (key (submodule_cursor))); -- name stepper_driver_1
@@ -1146,8 +1146,8 @@ is
 		use et_symbol_rw;
 		use et_schematic_shapes_and_text;
 		use pac_text_schematic;
-		use et_coordinates;
-		use et_coordinates.pac_geometry_2;
+		use et_coordinates_2;
+		use et_coordinates_2.pac_geometry_2;
 		use et_schematic;
 		use pac_texts;
 		
@@ -1192,7 +1192,7 @@ is
 		use pac_contours;
 		use et_pcb;
 		use et_pcb_stack;
-		use et_pcb_coordinates.pac_geometry_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
 
 		use pac_texts_fab_with_content;
 		
@@ -1372,11 +1372,11 @@ is
 				device_name : in type_device_name;
 				device 		: in type_device_non_electric) 
 			is
-				use et_pcb_coordinates;
+				use et_pcb_coordinates_2;
 				use et_device_placeholders.packages;
 				use et_device_placeholders.packages.pac_placeholders;
 
-				face : et_pcb_coordinates.type_face;
+				face : et_pcb_coordinates_2.type_face;
 				layer : type_placeholder_layer;
 				
 				procedure write_placeholder (

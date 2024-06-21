@@ -46,7 +46,7 @@ with et_general;				use et_general;
 with et_assembly_variants;		use et_assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_devices;				use et_devices;
 
 package et_pick_and_place is
@@ -62,7 +62,7 @@ package et_pick_and_place is
 	function to_file_name (name : in string) return pac_pnp_file_name.bounded_string;
 
 	type type_device is record
-		position : et_pcb_coordinates.type_package_position; -- x/y, rotation and face
+		position : et_pcb_coordinates_2.type_package_position; -- x/y, rotation and face
 		-- CS value and partcode ?
 	end record;
 

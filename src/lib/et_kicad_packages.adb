@@ -112,7 +112,7 @@ package body et_kicad_packages is
 		shape : type_contour; -- to be returned
 		c : type_circle;
 
-		use et_pcb_coordinates.pac_geometry_brd;
+		use et_pcb_coordinates_2.pac_geometry_brd;
 	begin
 		c.center := position.place;
 		c.radius := type_angle (diameter / 2.0);
@@ -132,14 +132,14 @@ package body et_kicad_packages is
 		offset		: in type_distance_relative)	-- the offset of the pad from the center
 		return type_contour 
 	is
-		use et_pcb_coordinates;
+		use et_pcb_coordinates_2;
 		use pac_geometry_brd;
 
 		shape : type_contour; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
 		--angle : constant type_angle := get_angle (center);
-		angle : constant type_rotation := get_rotation (center);
+		angle : constant type_rotation_model := get_rotation (center);
 
 		-- supportive frequently used values
 		xp : constant type_position_axis := size_x / 2.0;
@@ -213,13 +213,13 @@ package body et_kicad_packages is
 		offset	: in type_distance_relative)	-- the offset of the pad from the center
 		return type_contour 
 	is
-		use et_pcb_coordinates;
+		use et_pcb_coordinates_2;
 		use pac_geometry_brd;
 
 		shape : type_contour; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
-		angle : constant type_rotation := get_rotation (center);
+		angle : constant type_rotation_model := get_rotation (center);
 		
 		-- supportive frequently used values
 		x1p : constant type_position_axis := size_x / 2.0;
@@ -314,14 +314,14 @@ package body et_kicad_packages is
 		offset	: in type_distance_relative)	-- the offset of the pad from the center
 		return pac_segments.list 
 	is
-		use et_pcb_coordinates;
+		use et_pcb_coordinates_2;
 		use pac_geometry_brd;
 
 		use pac_segments;
 		lines : pac_segments.list; -- to be returned
 
 		-- The given center of the pad also provides us with the angle of rotation:
-		angle : constant type_rotation := get_rotation (center);
+		angle : constant type_rotation_model := get_rotation (center);
 		
 		-- supportive frequently used values
 		xp : constant type_position_axis := size_x / 2.0;
@@ -413,8 +413,8 @@ package body et_kicad_packages is
 		use et_drills;
 		use et_terminals;
 		use et_packages;
-		use et_pcb_coordinates;
-		use et_pcb_coordinates.pac_geometry_brd;
+		use et_pcb_coordinates_2;
+		use et_pcb_coordinates_2.pac_geometry_brd;
 
 		-- Extract the actual package name (like S_0201) from the given file name:
 		package_name : pac_package_name.bounded_string :=
@@ -561,7 +561,7 @@ package body et_kicad_packages is
 		terminal_pad_shape_tht 	: type_pad_shape_tht;
 		terminal_pad_shape_smt 	: type_pad_shape_smt;
 
-		terminal_face 				: et_pcb_coordinates.type_face;
+		terminal_face 				: et_pcb_coordinates_2.type_face;
 		terminal_drill_size			: type_drill_size; 
 		terminal_hole_shape			: type_tht_hole_shape; -- for slotted holes
 		terminal_milling_size_x		: type_pad_milling_size;  -- CS use a composite instead ?
@@ -574,8 +574,8 @@ package body et_kicad_packages is
 		pad_size_x : type_pad_size;  -- CS use a composite instead ?
 		pad_size_y : type_pad_size;
 
--- 		terminal_copper_width_outer_layers : et_pcb_coordinates.type_distance;
-		terminal_copper_width_inner_layers : type_distance_positive := 1.0; -- CS load from DRU ?
+-- 		terminal_copper_width_outer_layers : et_pcb_coordinates_2.type_distance_model;
+		terminal_copper_width_inner_layers : type_distance_model_positive := 1.0; -- CS load from DRU ?
 
 		-- Temporarily these flags hold the solder paste status of an SMT terminal.
 		-- They are initialized by procedure init_terminal_layers and validated by
@@ -645,7 +645,7 @@ package body et_kicad_packages is
 		
 		procedure set_stop_and_mask is
 		-- From the SMT terminal face, validates the status of stop mask and solder paste.
-			use et_pcb_coordinates;
+			use et_pcb_coordinates_2;
 			
 			procedure invalid is begin
 				log (ERROR, "contradicting layers in terminal !", console => true);
@@ -864,7 +864,7 @@ package body et_kicad_packages is
 
 			use type_argument;
 			use et_text.pac_text_content;
-			use et_pcb_coordinates;
+			use et_pcb_coordinates_2;
 			use pac_geometry_brd;
 		
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
@@ -910,8 +910,8 @@ package body et_kicad_packages is
 
 			procedure invalid_component_assembly_face is
 			begin
-				log (ERROR, "default assembly face " & et_pcb_coordinates.to_string (BOTTOM) 
-					 & " found. Must be " & et_pcb_coordinates.to_string (TOP) & " !", console => true);
+				log (ERROR, "default assembly face " & et_pcb_coordinates_2.to_string (BOTTOM) 
+					 & " found. Must be " & et_pcb_coordinates_2.to_string (TOP) & " !", console => true);
 				raise constraint_error;
 			end invalid_component_assembly_face;
 
@@ -1638,7 +1638,7 @@ package body et_kicad_packages is
 		-- Performs an operation according to the active section and variables that have been
 		-- set earlier (when processing the arguments. see procedure read_arg).
 		-- Restores the previous section.
-			use et_pcb_coordinates;
+			use et_pcb_coordinates_2;
 
 			procedure invalid_layer is begin
 				log (ERROR, "invalid layer for this object !", console => true);
@@ -2275,7 +2275,7 @@ package body et_kicad_packages is
 		procedure check_placeholders is
 		-- Checks if there is at least one placeholder for reference and for value.
 		-- CS: validate text sizes and width according to specifications in configuration file
-			use et_pcb_coordinates;
+			use et_pcb_coordinates_2;
 			use pac_placeholders;
 			cursor 		: pac_placeholders.cursor;
 			placeholder : type_placeholder;

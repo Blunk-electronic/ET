@@ -223,7 +223,6 @@ package et_geometry_2a is
 	-- far_upper_right	: constant type_vector_model;
 	-- far_lower_left	: constant type_vector_model;
 	-- far_lower_right	: constant type_vector_model;
-
 	
 
 	-- This function returns the given vector
@@ -232,6 +231,11 @@ package et_geometry_2a is
 		v : in type_vector_model)
 		return string;
 
+
+	-- Moves the given point to the origin (0/0).
+	procedure reset (
+		point : in out type_vector_model);
+	
 
 	-- This function inverts a vector by multiplying
 	-- its components by -1:
@@ -381,6 +385,16 @@ package et_geometry_2a is
 		return type_float_positive;
 
 
+
+	-- Returns the absolute distance along the given axis between the given points.
+	-- NOTE: The result in both x and y is always greater or equal zero.
+	function get_distance_abs (
+		point_1	: in type_vector_model;
+		point_2	: in type_vector_model;
+		axis	: in type_axis_2d) 
+		return type_distance_model_positive;
+	
+	
 
 	-- Moves a point by the given offset.
 	procedure move_by (
@@ -553,6 +567,19 @@ package et_geometry_2a is
 		offset	: in type_distance_relative);
 
 
+
+	-- Moves the start point of a line by the given offset. 
+	procedure move_start_by (
+		line	: in out type_line;
+		offset	: in type_distance_relative);
+
+	
+	-- Moves the end point of a line by the given offset. 
+	procedure move_end_by (
+		line	: in out type_line;
+		offset	: in type_distance_relative);
+
+	
 
 	-- Mirrors a line along the given axis.
 	procedure mirror (
@@ -747,7 +774,14 @@ package et_geometry_2a is
 
 
 
+	-- Computes the end point of an arc.
+	function arc_end_point (
+		center		: in type_vector_model;
+		start_point	: in type_vector_model;	
+		angle 		: in type_angle) -- CS: type_angle_positive ?
+		return type_vector_model;
 
+	
 
 
 	
@@ -1059,6 +1093,77 @@ package et_geometry_2a is
 		return type_rotation_model;
 
 
+
+	
+-- CATCH ZONE:
+	
+	subtype type_catch_zone is type_float_positive
+		range 0.0 .. type_float_positive (type_distance_model_positive'last/100.0);
+
+
+	function catch_zone_to_string (
+		c : in type_catch_zone)
+		return string;
+
+	function to_catch_zone (
+		c : in string)
+		return type_catch_zone;
+
+
+	-- Returns true if the given distance is less or equal the 
+	-- given catch_zone:
+	function in_catch_zone (
+		distance : in type_float_positive;
+		zone	 : in type_catch_zone)
+		return boolean;
+							   
+	
+	-- Returns true if point_2 is within the 
+	-- catch zone around point_1:
+	function in_catch_zone (
+		point_1		: in type_vector_model; -- the reference point
+		catch_zone	: in type_catch_zone; -- zone around reference point
+		point_2 	: in type_vector_model) -- the point being tested
+		return boolean;
+
+
+
+
+-- ZONES OF A LINE
+
+	-- A line is divided into three zones. Their width is the ratio
+	-- of line length and the zone_division_factor.
+	-- 
+	--    S---|---center---|---E
+	--
+	-- The position of the bar (|) in this drawing depends on the zone_division_factor.
+	-- The center length is twice the length of start/end point.
+	type type_line_zone is (START_POINT, END_POINT, CENTER);
+	line_zone_division_factor : constant positive := 4;
+
+	
+	-- Calculates the zone of the line where point is nearest.
+	-- Point is not required to sit exactly on the line.
+	function get_zone (
+		line	: in type_line;
+		point	: in type_vector_model)
+		return type_line_zone;
+
+
+	-- Moves the start point, the end point or both ends of a line
+	-- according to the zone where the line is being attacked.
+	-- If start or end point is affected, then the point is
+	-- moved to the given destination.
+	-- If center of the the line is affected, then start and end point
+	-- of the line is moved by the relative distance of point_of_attack
+	-- to the destination:
+	procedure move_line_to (
+		line			: in out type_line;
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model);
+
+	
+	
 
 private
 

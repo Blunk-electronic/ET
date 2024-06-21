@@ -50,8 +50,8 @@ with ada.containers.ordered_sets;
 with et_net_names;				use et_net_names;
 with et_general;				use et_general;
 with et_geometry;				use et_geometry;
-with et_coordinates;			use et_coordinates;
-use et_coordinates.pac_geometry_2;
+with et_coordinates_2;			use et_coordinates_2;
+use et_coordinates_2.pac_geometry_2;
 
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
@@ -127,7 +127,7 @@ package et_schematic_ops is
 	-- Moves the given unit ports by given offset.
 	procedure move_ports ( -- CS move to et_symbols ?
 		ports	: in out et_symbols.pac_ports.map; -- the portlist
-		offset	: in et_coordinates.type_position); -- the offset (only x/y matters)
+		offset	: in et_coordinates_2.type_position); -- the offset (only x/y matters)
 
 	
 	-- Inserts the given device ports in the net segments.
@@ -149,18 +149,19 @@ package et_schematic_ops is
 	-- Rotates the given unit ports by given angle about the origin.
 	procedure rotate_ports ( -- CS move to et_symbols ?
 		ports	: in out et_symbols.pac_ports.map; -- the portlist
-		angle	: in et_coordinates.type_rotation); -- 90
+		angle	: in et_coordinates_2.type_rotation_model); -- 90
 
 	
 	-- Sets the grid of the module.
 	procedure set_grid (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		grid			: in type_grid;
+		grid			: in pac_grid.type_grid;
 		log_threshold	: in type_log_level);		
 
+	
 	procedure set_grid (
 		module_cursor	: in pac_generic_modules.cursor;
-		grid			: in type_grid;
+		grid			: in pac_grid.type_grid;
 		log_threshold	: in type_log_level);
 
 	
@@ -176,7 +177,7 @@ package et_schematic_ops is
 		device_name		: in type_device_name; -- IC34
 		port_name		: in et_symbols.pac_port_name.bounded_string; -- CE
 		log_threshold	: in type_log_level)
-		return et_coordinates.type_position;
+		return et_coordinates_2.type_position;
 
 	
 	-- Returns the sheet/x/y position of the given submodule port.
@@ -185,7 +186,7 @@ package et_schematic_ops is
 		submod_name		: in pac_module_instance_name.bounded_string; -- MOT_DRV_3
 		port_name		: in pac_net_name.bounded_string; -- RESET
 		log_threshold	: in type_log_level)
-		return et_coordinates.type_position;
+		return et_coordinates_2.type_position;
 
 	
 	-- Returns the sheet/x/y position of the given netchanger port.
@@ -194,7 +195,7 @@ package et_schematic_ops is
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		port			: in et_submodules.type_netchanger_port_name; -- SLAVE/MASTER
 		log_threshold	: in type_log_level)
-		return et_coordinates.type_position;
+		return et_coordinates_2.type_position;
 
 	
 	-- Moves the name placeholder of the given unit.
@@ -276,7 +277,7 @@ package et_schematic_ops is
 	-- Returns lists of device, netchanger and submodule ports at the given place.
 	function ports_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in et_coordinates.type_position;
+		place			: in et_coordinates_2.type_position;
 		log_threshold	: in type_log_level)		
 		return type_ports;	
 	
@@ -284,13 +285,13 @@ package et_schematic_ops is
 	-- Returns true if at given place a net segment starts or ends.
 	function net_segment_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in et_coordinates.type_position)
+		place			: in et_coordinates_2.type_position)
 		return boolean;
 	
 
 	procedure dragging_not_possible (
 		port 		: in string;
-		position	: in et_coordinates.type_position);
+		position	: in et_coordinates_2.type_position);
 
 	
 	-- Renames a device.
@@ -483,7 +484,7 @@ package et_schematic_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
-		destination		: in et_coordinates.type_position; -- sheet/x/y/rotation
+		destination		: in et_coordinates_2.type_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level);
 
 	-- CS procedure add_device with explicit device name like R12
@@ -495,7 +496,7 @@ package et_schematic_ops is
 	procedure copy_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		destination		: in et_coordinates.type_position; -- sheet/x/y
+		destination		: in et_coordinates_2.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
 	
@@ -532,14 +533,14 @@ package et_schematic_ops is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
 		unit	: in pac_unit_name.bounded_string)
-		return et_coordinates.type_position;
+		return et_coordinates_2.type_position;
 
 	-- Returns the position (x/y/sheet) of the given unit.
 	-- Raises constraint error if device or unit does not exist.
 	function position (
 		device	: in pac_devices_sch.cursor; -- R2
 		unit	: in et_schematic.pac_units.cursor)
-		return et_coordinates.type_position;
+		return et_coordinates_2.type_position;
 
 	
 	-- Returns the position (x/y) of the given placeholder.
@@ -557,14 +558,14 @@ package et_schematic_ops is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
 		unit	: in pac_unit_name.bounded_string)
-		return et_coordinates.type_sheet;
+		return et_coordinates_2.type_sheet;
 	
 	procedure invoke_unit (
 	-- Invokes a unit of a device into the schematic.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
-		destination		: in et_coordinates.type_position; -- sheet/x/y/rotation
+		destination		: in et_coordinates_2.type_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level);
 
 	-- CS procedure invoke_unit that takes module cursor and model cursor
@@ -572,18 +573,20 @@ package et_schematic_ops is
 	procedure add_netchanger (
 	-- Adds a netchanger to the schematic.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		place			: in et_coordinates.type_position; -- sheet/x/y
+		place			: in et_coordinates_2.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
-	procedure delete_netchanger (
+	
 	-- Deletes a netchanger.
+	procedure delete_netchanger (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		log_threshold	: in type_log_level);
 
-	procedure move_netchanger (
+	
 	-- Moves the given netchanger. Disconnects the netchanger from
 	-- start or end points of net segments.
+	procedure move_netchanger (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
@@ -591,12 +594,13 @@ package et_schematic_ops is
 		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
-	procedure drag_netchanger (
+	
 	-- Drags the given netchanger within the schematic.
 	-- Already existing connections with net segments are kept.
 	-- Net segment positions are modified.
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
+	procedure drag_netchanger (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
@@ -610,7 +614,7 @@ package et_schematic_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
-		rotation		: in et_coordinates.type_rotation; -- 90
+		rotation		: in et_coordinates_2.type_rotation_model; -- 90
 		log_threshold	: in type_log_level);
 
 	
@@ -619,7 +623,7 @@ package et_schematic_ops is
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		file			: in et_submodules.pac_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		position		: in et_coordinates.type_position; -- sheet, lower left corner x/y 
+		position		: in et_coordinates_2.type_position; -- sheet, lower left corner x/y 
 		size			: in et_submodules.type_submodule_size; -- the size of the box in x and y
 		log_threshold	: in type_log_level);
 
@@ -709,7 +713,7 @@ package et_schematic_ops is
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance_origin	: in pac_module_instance_name.bounded_string; -- OSC1
 		instance_new	: in pac_module_instance_name.bounded_string; -- CLOCK_GENERATOR
-		destination		: in et_coordinates.type_position; -- sheet/x/y
+		destination		: in et_coordinates_2.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
 	
@@ -798,7 +802,7 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level);
 
 	
-	function sort_by_coordinates (
+	function sort_by_coordinates_2 (
 		module_cursor 	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 		return et_numbering.pac_devices.map;
@@ -888,7 +892,7 @@ package et_schematic_ops is
 	-- The result of a unit query is of this type:
 	type type_unit_query (exists : boolean := false) is record
 		case exists is
-			when true => position : et_coordinates.type_position; -- x/y, rotation, sheet
+			when true => position : et_coordinates_2.type_position; -- x/y, rotation, sheet
 			when false => null;
 		end case;
 	end record;

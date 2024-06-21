@@ -54,8 +54,8 @@ with et_schematic;					use et_schematic;
 with et_terminals;					use et_terminals;
 with et_pcb;						use et_pcb;
 with et_pcb_stack;					use et_pcb_stack;
-with et_pcb_coordinates;			use et_pcb_coordinates;
-use et_pcb_coordinates.pac_geometry_2;
+with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
+use et_pcb_coordinates_2.pac_geometry_2;
 
 with et_board_shapes_and_text;
 
@@ -138,13 +138,13 @@ package et_board_ops is
 	-- Sets the grid of the module.
 	procedure set_grid (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		grid			: in type_grid;
+		grid			: in pac_grid.type_grid;
 		log_threshold	: in type_log_level);		
 
 	
 	procedure set_grid (
 		module_cursor	: in pac_generic_modules.cursor;
-		grid			: in type_grid;
+		grid			: in pac_grid.type_grid;
 		log_threshold	: in type_log_level);
 
 

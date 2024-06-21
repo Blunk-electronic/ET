@@ -385,10 +385,10 @@ package body et_board_ops is
 					inserted : boolean;
 
 					function apply_position_in_board (position_generic : in type_package_position) return
-						et_pcb_coordinates.type_package_position 
+						et_pcb_coordinates_2.type_package_position 
 					is 
 						-- Get the device position in the generic submodule:.
-						device_position : et_pcb_coordinates.type_package_position := position_generic;
+						device_position : et_pcb_coordinates_2.type_package_position := position_generic;
 					begin
 						-- Then move it according
 						-- to the position of the submodule instance in the parent module:
@@ -806,9 +806,11 @@ package body et_board_ops is
 	
 	procedure set_grid (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		grid			: in type_grid;
+		grid			: in pac_grid.type_grid;
 		log_threshold	: in type_log_level) 
 	is
+		use pac_grid;
+		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure do_it (
@@ -836,9 +838,10 @@ package body et_board_ops is
 
 	procedure set_grid (
 		module_cursor	: in pac_generic_modules.cursor;
-		grid			: in type_grid;
+		grid			: in pac_grid.type_grid;
 		log_threshold	: in type_log_level) 
 	is
+		use pac_grid;
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
