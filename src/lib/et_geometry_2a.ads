@@ -226,11 +226,18 @@ package et_geometry_2a is
 	
 
 	-- This function returns the given vector
-	-- as string:
+	-- as string like "x/y 4.5 / 5.6" :
 	function to_string (
 		v : in type_vector_model)
 		return string;
 
+
+	-- Returns as string like: x 34.5 y 11.2:
+	function to_string_2 (
+		v : in type_vector_model) 
+		return string;
+
+	
 
 	-- Moves the given point to the origin (0/0).
 	procedure reset (
@@ -798,6 +805,16 @@ package et_geometry_2a is
 		return type_float_positive;
 
 
+
+	-- Test whether the given arc is valid. The arc is valid if:
+	-- - start and end point have equal distance to center
+	-- - radius is greater zero
+	function is_valid (
+		arc : in type_arc)
+		return boolean;
+
+
+	
 
 	-- Computes the end point of an arc.
 	function arc_end_point (

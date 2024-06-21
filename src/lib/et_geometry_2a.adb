@@ -368,7 +368,18 @@ package body et_geometry_2a is
 	end to_string;
 
 
+	
+	function to_string_2 (v : in type_vector_model) 
+		return string 
+	is begin
+		return "x"
+			& to_string (v.x)
+			& " y"
+			& to_string (v.y);
+	end to_string_2;
 
+
+	
 
 	procedure reset (
 		point : in out type_vector_model) 
@@ -1389,7 +1400,28 @@ package body et_geometry_2a is
 	end get_radius_end;
 
 
+	
+	function is_valid (
+		arc : in type_arc)
+		return boolean 
+	is 
+		rs : constant type_float_positive := get_radius_start (arc);
+		re : constant type_float_positive := get_radius_end (arc);
+	begin
+		if rs = re then
 
+			if rs > 0.0 then
+				return true;
+			else
+				return false;
+			end if;
+		else
+			return false;
+		end if;
+	end is_valid;
+
+
+	
 
 	function arc_end_point (
 		center		: in type_vector_model;

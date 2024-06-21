@@ -94,7 +94,7 @@ package body et_pcb_rw is
 	
 	procedure write_text_properties_with_face (
 		t		: in type_text_fab'class;
-		face	: in et_pcb_coordinates.type_face) 
+		face	: in et_pcb_coordinates_2.type_face) 
 	is begin
 		write (keyword => keyword_position, parameters => position (t.position) & 
 			space & keyword_face & to_string (face)); -- position x 0.000 y 5.555 rotation 0.00 face top
@@ -414,8 +414,9 @@ package body et_pcb_rw is
 	function to_grid (
 		line : in type_fields_of_line; -- "default x 1 y 1"
 		from : in count_type)
-		return type_grid 
+		return pac_grid.type_grid 
 	is
+		use pac_grid;
 		use et_string_processing;
 		
 		grid : type_grid; -- to be returned
@@ -427,11 +428,11 @@ package body et_pcb_rw is
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
-				grid.x := to_distance (f (line, place + 1));
+				grid.spacing.x := to_distance (f (line, place + 1));
 
 			-- We expect after the y the corresponding value for y
 			elsif f (line, place) = keyword_y then
-				grid.y := to_distance (f (line, place + 1));
+				grid.spacing.y := to_distance (f (line, place + 1));
 
 			else
 				invalid_keyword (f (line, place));
@@ -627,6 +628,7 @@ package body et_pcb_rw is
 		end if;
 	end;
 
+	
 	procedure board_check_arc (
 		log_threshold	: in type_log_level) is
 		use et_string_processing;
@@ -637,6 +639,7 @@ package body et_pcb_rw is
 			invalid_arc;
 		end if;
 	end board_check_arc;
+
 	
 	-- Reads start and end point of the board_arc. If the statement is invalid then an error issued.
 	procedure read_board_arc (line : type_fields_of_line) is
