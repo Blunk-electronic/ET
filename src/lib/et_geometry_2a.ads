@@ -952,6 +952,11 @@ package et_geometry_2a is
 	function to_string (circle : in type_circle) return string;
 
 
+	function to_radius (
+		r : in string)
+		return type_float_positive;
+	
+	
 	-- Moves a circle by the given offset. 
 	procedure move_by (
 		circle	: in out type_circle;

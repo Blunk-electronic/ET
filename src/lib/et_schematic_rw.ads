@@ -35,8 +35,8 @@
 --   history of changes:
 --
 
-with et_coordinates;			use et_coordinates;
-use et_coordinates.pac_geometry_2;
+with et_coordinates_2;			use et_coordinates_2;
+use et_coordinates_2.pac_geometry_2;
 
 package et_schematic_rw is
 
@@ -46,7 +46,7 @@ package et_schematic_rw is
 	keyword_position_in_schematic	: constant string := "position_in_schematic";	
 	keyword_view_mode				: constant string := "view_mode";
 
-	function position (pos : in et_coordinates.type_position) return string;
+	function position (pos : in et_coordinates_2.type_position) return string;
 	-- Returns something like "sheet 3 x 12.34 y 45.0".
 	
 	

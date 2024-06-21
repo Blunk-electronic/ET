@@ -52,8 +52,8 @@ with ada.containers.ordered_maps;
 with et_assembly_variants;		use et_assembly_variants;
 with et_general;				--use et_general;
 
-with et_coordinates;			use et_coordinates;
-use et_coordinates.pac_geometry_2;
+with et_coordinates_2;			use et_coordinates_2;
+use et_coordinates_2.pac_geometry_2;
 
 with et_string_processing;
 with et_time;

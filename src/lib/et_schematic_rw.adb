@@ -40,7 +40,7 @@ with et_geometry;				use et_geometry;
 
 package body et_schematic_rw is
 
-	function position (pos : in et_coordinates.type_position) return string is
+	function position (pos : in et_coordinates_2.type_position) return string is
 	-- Returns something like "sheet 3 x 12.34 y 45.0".
 
 		function text return string is begin return 

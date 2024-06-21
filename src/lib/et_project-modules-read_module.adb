@@ -336,9 +336,9 @@ is
 	function to_position (
 		line : in type_fields_of_line; -- "position sheet 3 x 44.5 y 53.5"
 		from : in count_type)
-		return et_coordinates_2_2.type_position
+		return et_coordinates_2.type_position
 	is		
-		use et_coordinates_2_2;
+		use et_coordinates_2;
 		use pac_geometry_2;
 		
 		point : et_coordinates_2.type_position; -- to be returned
@@ -450,8 +450,8 @@ is
 	-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 
 	-- drawing grid
-	grid_schematic : et_coordinates_2.pac_geometry_2.type_grid; -- CS rename to schematic_grid
-	grid_board : et_pcb_coordinates_2.pac_geometry_2.type_grid; -- CS rename to board_grid
+	grid_schematic : et_coordinates_2.pac_grid.type_grid; -- CS rename to schematic_grid
+	grid_board : et_pcb_coordinates_2.pac_grid.type_grid; -- CS rename to board_grid
 
 	
 	
@@ -655,7 +655,7 @@ is
 	
 	net_labels				: et_net_labels.pac_net_labels.list;
 	net_label 				: et_net_labels.type_net_label_base;
-	net_label_rotation		: et_coordinates_2.type_rotation := 0.0;
+	net_label_rotation		: et_coordinates_2.type_rotation_model := 0.0;
 	net_label_appearance	: et_net_labels.type_net_label_appearance := et_net_labels.type_net_label_appearance'first;
 
 	-- The net label direction is relevant if appearance is TAG:
@@ -900,7 +900,7 @@ is
 	device_value			: pac_device_value.bounded_string; -- 470R
 	device_appearance		: et_schematic.type_appearance_schematic;
 	--device_unit				: et_schematic.type_unit;
-	--device_unit_rotation	: et_coordinates_2.type_rotation := geometry.zero_rotation;
+	--device_unit_rotation	: et_coordinates_2.type_rotation_model := geometry.zero_rotation;
 
 
 	device_unit_mirror		: et_schematic.type_mirror := et_schematic.NO;
@@ -2432,9 +2432,9 @@ is
 					use et_pcb_coordinates_2.pac_geometry_2;
 				begin
 					module.grid := grid_schematic;
-					log (text => "schematic" & to_string (module.grid), level => log_threshold + 2);
+					log (text => "schematic" & to_string (module.grid.spacing), level => log_threshold + 2);
 					module.board.grid := grid_board;
-					log (text => "board" & to_string (module.board.grid), level => log_threshold + 2);
+					log (text => "board" & to_string (module.board.grid.spacing), level => log_threshold + 2);
 				end;
 
 				
@@ -4883,9 +4883,9 @@ is
 									log (WARNING, affected_line (line) & "Sheet" & to_sheet (get_sheet (strand.position))
 										 & " net " 
 										 & to_string (net_name) & ": Lowest x/y position of strand invalid !");
-									log (text => " Found " & to_string (point => position_found_in_module_file));
+									log (text => " Found " & to_string (position_found_in_module_file));
 									log (text => " Will be overridden by calculated position" & 
-											to_string (point => strand.position.place));
+											to_string (strand.position.place));
 								end if;
 							end;
 							

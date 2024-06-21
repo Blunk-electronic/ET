@@ -2147,7 +2147,15 @@ package body et_geometry_2a is
 	end to_string;
 
 
+	function to_radius (
+		r : in string)
+		return type_float_positive
+	is begin
+		return pac_geometry_1.to_distance (r);
+	end to_radius;
 
+
+	
 	procedure move_by (
 		circle	: in out type_circle;
 		offset	: in type_distance_relative)
