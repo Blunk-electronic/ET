@@ -219,10 +219,10 @@ package et_geometry_2a is
 	-- The origin is a small cross at model position (0;0).
 	origin : constant type_vector_model := (0.0, 0.0);
 
-	-- far_upper_left	: constant type_vector_model;
-	-- far_upper_right	: constant type_vector_model;
-	-- far_lower_left	: constant type_vector_model;
-	-- far_lower_right	: constant type_vector_model;
+	far_upper_left	: constant type_vector_model;
+	far_upper_right	: constant type_vector_model;
+	far_lower_left	: constant type_vector_model;
+	far_lower_right	: constant type_vector_model;
 	
 
 	-- This function returns the given vector

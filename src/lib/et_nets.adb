@@ -141,9 +141,9 @@ package body et_nets is
 		use pac_net_segments;
 	begin
 		return ("segment start" & 
-			to_string (point => element (segment).start_point) &
+			to_string (element (segment).start_point) &
 			" / end" &	
-			to_string (point => element (segment).end_point)
+			to_string (element (segment).end_point)
 			);
 	end to_string;
 
@@ -154,8 +154,8 @@ package body et_nets is
 		
 		result : type_net_segment_orientation;
 		
-		dx : constant et_coordinates_2.type_distance := get_x (element (segment).start_point) - get_x (element (segment).end_point);
-		dy : constant et_coordinates_2.type_distance := get_y (element (segment).start_point) - get_y (element (segment).end_point);
+		dx : constant et_coordinates_2.type_distance_model := get_x (element (segment).start_point) - get_x (element (segment).end_point);
+		dy : constant et_coordinates_2.type_distance_model := get_y (element (segment).start_point) - get_y (element (segment).end_point);
 	begin
 		if dx = zero then 
 			result := VERTICAL;
