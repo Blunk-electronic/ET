@@ -2993,7 +2993,150 @@ package body et_canvas is
 
 
 	
+
+-- STATUS:
+
+	procedure set_status (text : in string) is begin
+		-- label_status.set_text (text);
+		-- CS
+		null;
+	end set_status;
+
+	procedure status_clear is begin
+		set_status ("");
+	end status_clear;
+
+	procedure status_enter_verb is begin
+		set_status ("Enter verb !" & status_hint_for_abort);
+	end status_enter_verb;
 	
+	procedure status_enter_noun is begin
+		set_status ("Enter noun ! " & status_hint_for_abort);
+	end status_enter_noun;
+	
+	procedure status_verb_invalid is begin
+		set_status ("Verb invalid ! ");
+	end status_verb_invalid;
+
+	procedure status_noun_invalid is begin
+		set_status ("Noun invalid ! " & status_hint_for_abort);
+	end status_noun_invalid;
+		
+	
+	
+
+-- CLARIFICATION:
+
+	procedure set_request_clarification is begin
+		request_clarificaton := YES;
+
+		-- show instruction in status bar
+		set_status ("clarify object by right click or page-down key !");
+	end set_request_clarification;
+
+	
+	procedure reset_request_clarification is begin
+		request_clarificaton := NO;
+	end reset_request_clarification;
+
+	
+	function clarification_pending return boolean is begin
+		case request_clarificaton is 
+			when YES => return true;
+			when NO  => return false;
+		end case;
+	end clarification_pending;
+
+
+	procedure reset_activate_counter is begin
+		activate_counter := type_activate_counter'first;
+	end reset_activate_counter;
+
+	
+	procedure increment_activate_counter is begin
+		activate_counter := activate_counter + 1;
+	end increment_activate_counter;
+
+
+
+-- COMMAND STATUS:
+
+	procedure reset_single_cmd_status is begin
+		single_cmd_status := (others => <>);
+	end reset_single_cmd_status;
+
+	
+	
+	
+-- TOOL:
+
+	procedure change_primary_tool is begin
+		if primary_tool = MOUSE then
+			primary_tool := KEYBOARD;
+			canvas.grab_focus;
+		else
+			primary_tool := MOUSE;
+		end if;
+
+		-- CS update_primary_tool_display;
+	end change_primary_tool;
+	
+
+
+	
+-- CATCH ZONE:
+
+	function get_catch_zone return type_catch_zone is 
+	begin
+		-- return 20.0 / type_float_positive (global_scale);
+		-- CS rework, use type_logical_pixels_positive ?
+		return 0.0;
+	end get_catch_zone;
+
+	
+
+
+-- PROPERTIES WINDOW:
+
+
+	function window_properties_is_open return boolean is begin
+		return window_properties.open;
+	end window_properties_is_open;
+
+
+	procedure build_window_properties is begin
+		properties_confirmed := false;
+			
+		gtk_new (window_properties.window);
+
+		-- If the operator closes the properties window:
+	-- CS window_properties.window.on_destroy (access_on_window_properties_closed);
+
+		-- If the operator presses a key in the properties window:
+	-- CS window_properties.window.on_key_press_event (access_on_window_properties_key_event);
+		
+		-- Mark window as open. This prevents the window
+		-- from opening multiple times:
+		window_properties.open := true;
+		
+		window_properties.window.set_title ("Properties");
+	end build_window_properties;
+
+	
+	procedure set_status_properties (text : in string) is begin
+		label_properties_status.set_text (text);
+	end set_status_properties;
+
+	
+	procedure set_property_before (text : in string) is begin
+		entry_property_old.set_text (text);
+	end set_property_before;
+	
+
+
+
+
+-- CALLBACKS:	
 	
 	function cb_canvas_button_pressed (
 		canvas	: access gtk_widget_record'class;

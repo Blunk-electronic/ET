@@ -53,6 +53,7 @@ with et_geometry_1.et_polygons.offsetting;
 
 with et_geometry_2a;
 with et_geometry_2a.grid;
+with et_geometry_2a.path;
 with et_geometry_2a.contours;
 
 -- with et_logging;				use et_logging;
@@ -122,6 +123,8 @@ package et_coordinates_2 is
 
 
 	package pac_grid is new pac_geometry_2.grid;
+	package pac_path_and_bend is new pac_geometry_2.path;
+	
 	
 	-- These packages are never used in schematic but are
 	-- required for instantiation of some generic packages:

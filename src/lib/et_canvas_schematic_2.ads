@@ -222,14 +222,14 @@ package et_canvas_schematic_2 is
 -- 
 -- 	procedure update_sheet_number_display;
 -- 	procedure build_sheet_number_display;
--- 
--- 	
--- 
--- 	-- The current active sheet:
--- 	current_active_sheet : et_coordinates.type_sheet := type_sheet'first;
--- 
--- 
--- 	
+
+	
+
+	-- The current active sheet:
+	current_active_sheet : et_coordinates_2.type_sheet := type_sheet'first;
+
+
+	
 -- 	-- Frequently used things to draw the schematic:
 -- 	type type_drawing is null record;
 -- 

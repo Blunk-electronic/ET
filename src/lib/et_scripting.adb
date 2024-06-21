@@ -50,8 +50,8 @@ with et_exceptions;				use et_exceptions;
 with et_project;
 with et_project.modules;
 
-with et_coordinates;
-with et_pcb_coordinates;
+with et_coordinates_2;
+with et_pcb_coordinates_2;
 with et_schematic;
 with et_schematic_ops;
 with et_schematic_ops.nets;
@@ -75,7 +75,6 @@ with et_display;				use et_display;
 with et_display.schematic;
 with et_display.board;
 
-with et_canvas_general;
 
 with glib;
 with gtk.main;
@@ -203,8 +202,7 @@ package body et_scripting is
 		log_threshold	: in type_log_level) 
 	is
 		use ada.directories;
-		use et_canvas_general;
-		use et_canvas_schematic;
+		-- use et_canvas_schematic_2;
 
 		-- Backup previous input:
 		previous_input : ada.text_io.file_type renames current_input;

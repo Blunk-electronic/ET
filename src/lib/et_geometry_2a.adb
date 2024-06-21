@@ -486,6 +486,27 @@ package body et_geometry_2a is
 	
 
 
+
+	function get_distance (
+		point_1	: in type_vector_model;
+		point_2	: in type_vector_model;
+		axis	: in type_axis_2d) 
+		return type_distance_model 
+	is
+		d : type_distance_model;
+	begin
+		case axis is
+			when X =>
+				d := (point_2.x - point_1.x);
+
+			when Y =>
+				d := (point_2.y - point_1.y);
+		end case;
+
+		return d;
+	end get_distance;
+
+	
 	
 	function get_angle (
 		p1, p2 : in type_vector_model)
@@ -871,6 +892,25 @@ package body et_geometry_2a is
 	end to_vectors;
 
 	
+
+	procedure remove_redundant_points (
+		points : in out pac_points.list)
+	is
+		use pac_points;
+		target : pac_points.list;
+
+		procedure query_point (p : in pac_points.cursor) is begin
+			if not target.contains (element (p)) then
+				target.append (element (p));
+			end if;
+		end query_point;
+		
+	begin
+		points.iterate (query_point'access);
+		points := target;
+	end remove_redundant_points;
+
+
 	
 	
 	function to_string (
@@ -2779,7 +2819,54 @@ package body et_geometry_2a is
 	end in_catch_zone;
 
 
+	
 
+	function in_catch_zone (
+		line	: in type_line;
+		width	: in type_distance_model_positive := 0.0;
+		point	: in type_vector_model;
+		zone	: in type_catch_zone)
+		return boolean
+	is
+		width_float : constant type_float_positive := type_float_positive (width);
+		distance_to_point : type_float_positive;
+	begin
+		-- put_line ("point " & to_string (point));
+		-- put_line ("line  " & to_string (line));
+		
+		distance_to_point := get_shortest_distance (line, point);
+
+		-- If no linewidth, then we simply compare the distance_to_point
+		-- with the zone:
+		if width = 0.0 then
+			-- put_line ("distance to point " & to_string (distance_to_point));
+			if distance_to_point <= zone then
+				return true;
+			else
+				return false;
+			end if;
+
+		-- If a linewidth is given then there are two possible cases.
+		-- Case 1: The given point is inside the strip around the line.
+		-- Case 2: The point is outside the strip around the line.
+		else
+			if distance_to_point <= width_float then
+				-- case 1
+				return true;
+			else
+				-- case 2
+				if distance_to_point - width_float <= zone then 
+					return true;
+				else
+					return false;
+				end if;				
+			end if;
+		end if;
+	end in_catch_zone;
+
+
+
+	
 
 -- ZONES OF A LINE
 	

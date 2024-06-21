@@ -39,6 +39,7 @@ with et_geometry;				use et_geometry;
 with et_geometry_1;
 with et_geometry_2a;
 with et_geometry_2a.grid;
+with et_geometry_2a.path;
 
 
 package et_pcb_coordinates_2 is
@@ -131,6 +132,7 @@ package et_pcb_coordinates_2 is
 	
 	
 	package pac_grid is new pac_geometry_2.grid;
+	package pac_path_and_bend is new pac_geometry_2.path;
 	
 	
 	type type_package_position is new pac_geometry_2.type_position with private;

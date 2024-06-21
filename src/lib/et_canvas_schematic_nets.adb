@@ -47,7 +47,7 @@ with gtk.label;
 with gtk.gentry;
 
 with et_geometry;					use et_geometry;
-with et_canvas_schematic;			use et_canvas_schematic;
+with et_canvas_schematic_2;			use et_canvas_schematic_2;
 
 with et_modes.schematic;			use et_modes.schematic;
 with et_pcb;
@@ -61,8 +61,9 @@ with et_commit;
 package body et_canvas_schematic_nets is
 
 	use et_schematic_ops;
-	use et_canvas_schematic.pac_canvas;
+	use et_canvas_schematic_2.pac_canvas;
 
+	
 	procedure delete_selected_segment (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		segment			: in type_selected_segment; -- net/strand/segment
@@ -144,7 +145,7 @@ package body et_canvas_schematic_nets is
 	end selected_net;
 
 	
-	function get_strand_position return et_coordinates.type_position is
+	function get_strand_position return et_coordinates_2.type_position is
 		ss : constant type_selected_segment := element (selected_segment);
 	begin
 		return element (ss.strand).position;
@@ -251,7 +252,7 @@ package body et_canvas_schematic_nets is
 
 	function collect_segments (
 		module			: in pac_generic_modules.cursor;
-		place			: in et_coordinates.type_position; -- sheet/x/y
+		place			: in et_coordinates_2.type_position; -- sheet/x/y
 		catch_zone		: in type_catch_zone := type_catch_zone'first; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_segments.list
@@ -564,8 +565,8 @@ package body et_canvas_schematic_nets is
 		segment			: in type_net_segment;
 		log_threshold	: in type_log_level)
 	is 
-		start_point : constant et_coordinates.type_position := to_position (segment.start_point, sheet);
-		end_point	: constant et_coordinates.type_position := to_position (segment.end_point, sheet);
+		start_point : constant et_coordinates_2.type_position := to_position (segment.start_point, sheet);
+		end_point	: constant et_coordinates_2.type_position := to_position (segment.end_point, sheet);
 
 		use et_schematic;
 		use et_schematic_ops.nets;
@@ -799,10 +800,10 @@ package body et_canvas_schematic_nets is
 			reset_request_clarification;
 			--status_clear;
 			clear_proposed_segments;
-			redraw;
+		-- CS redraw;
 		end clean_up;
 
-		position : et_coordinates.type_position;
+		position : et_coordinates_2.type_position;
 		
 	begin -- property_entered
 		case noun is
@@ -1054,7 +1055,7 @@ package body et_canvas_schematic_nets is
 		procedure finalize_drag is
 			net_name : pac_net_name.bounded_string;
 			
-			point_of_attack : et_coordinates.type_position := 
+			point_of_attack : et_coordinates_2.type_position := 
 				to_position (PS.point_of_attack, current_active_sheet);
 		begin
 			log (text => "finalizing drag ...", level => log_threshold + 1);
@@ -1142,7 +1143,7 @@ package body et_canvas_schematic_nets is
 	-- inside the catch zone around a place.
 	function collect_labels (
 		module			: in pac_generic_modules.cursor;
-		place			: in et_coordinates.type_position; -- sheet/x/y
+		place			: in et_coordinates_2.type_position; -- sheet/x/y
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		category		: in type_label_category := BOTH; -- default is: collect all kinds of labels
 		log_threshold	: in type_log_level)

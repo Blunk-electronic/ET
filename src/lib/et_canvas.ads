@@ -44,6 +44,7 @@ with gtk.widget;				use gtk.widget;
 with gtk.window;				use gtk.window;
 with gtk.separator;				use gtk.separator;
 with gtk.box;					use gtk.box;
+with gtk.gentry;				use gtk.gentry;
 with gtk.drawing_area;			use gtk.drawing_area;
 
 with gtk.scrolled_window;		use gtk.scrolled_window;
@@ -64,6 +65,9 @@ with et_geometry_2a;
 with et_geometry_2a.grid;
 with et_window_dimensions;		use et_window_dimensions;
 
+with et_canvas_messages;		use et_canvas_messages;
+with et_cmd_sts;				use et_cmd_sts;
+with et_canvas_tool;			use et_canvas_tool;
 with et_logging;				use et_logging;
 
 
@@ -810,6 +814,8 @@ package et_canvas is
 	procedure draw_grid;
 
 
+	
+
 -- CURSOR:
 
 	-- The cursor is a crosshair that can be moved by the
@@ -995,6 +1001,117 @@ package et_canvas is
 	procedure set_up_canvas;
 
 
+
+-- STATUS:
+
+	procedure set_status (text : in string);
+	procedure status_clear;
+	procedure status_enter_verb;
+	procedure status_enter_noun;
+	procedure status_verb_invalid;
+	procedure status_noun_invalid;
+
+	
+-- CLARIFICATION:
+	
+	-- Whenever the operator is required to clarify which object is meant,
+	-- we use this type:
+	type type_request_clarification is (NO, YES);
+
+	-- A global status variable that indicates whether clarification is required or not:
+	request_clarificaton : type_request_clarification := NO;
+
+	procedure set_request_clarification;
+	procedure reset_request_clarification;
+
+	-- Returns true if the global flag "request_clarificaton" is YES:
+	function clarification_pending return boolean;
+
+
+	-- In order to count a number of clicks or keys pressed:
+	subtype type_activate_counter is natural range 0 .. 2;
+	activate_counter : type_activate_counter := type_activate_counter'first;
+	
+	procedure reset_activate_counter;
+	procedure increment_activate_counter;
+
+
+
+-- COMMAND STATUS:
+
+	-- The status of the single command entered on the console:
+	single_cmd_status : type_single_cmd_status;
+
+	procedure reset_single_cmd_status;
+
+
+
+-- TOOL:	
+
+	-- The primary tool used for drawing and navigating within the canvas:
+	primary_tool : type_tool := primary_tool_default;
+
+	procedure change_primary_tool;
+
+	
+
+-- CATCH ZONE:
+
+	-- Returns a catch zone according to the current
+	-- global_scale:
+	function get_catch_zone return type_catch_zone;
+
+
+
+
+-- PROPERTIES WINDOW:
+
+	type type_properties_window is record
+		window	: gtk.window.gtk_window;
+
+		-- This flag indicates that the properties
+		-- window is open. The purpose of this flag is
+		-- to prevent the window from opening multiple
+		-- times:
+		open	: boolean := false;
+	end record;
+	
+	window_properties : type_properties_window;
+	
+	-- Returns the status of the "open" flag.
+	-- True if the properties window is open.
+	-- False if the window is not open.
+	function window_properties_is_open return boolean;
+
+	-- This procedure must be called when the operator closes
+	-- the properties window. This is a null procedure, means
+	-- in schematic, layout and other canvas are different things to do
+	-- in order to reset variables related to any properties.
+-- CS procedure reset_properties_selection (
+	-- 	self : not null access type_view) is null;
+	
+	-- Here we display the property in its old state before changing it:
+	label_property_old	: gtk.label.gtk_label;
+	entry_property_old	: gtk_gentry;
+
+	label_property_new	: gtk.label.gtk_label;
+	
+	label_properties_status	: gtk.label.gtk_label;
+	
+	properties_confirmed : boolean := false;
+
+	
+	
+	procedure build_window_properties;
+
+	procedure set_status_properties (text : in string);
+	procedure set_property_before (text : in string);
+
+
+	
+	
+	
+	
 private
 
 -- CALLBACKS:

@@ -75,7 +75,7 @@ with et_material;
 with et_meta;
 with et_modes.schematic;			use et_modes.schematic;
 
-with et_canvas_schematic;			use et_canvas_schematic;
+-- with et_canvas_schematic;			use et_canvas_schematic;
 
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 

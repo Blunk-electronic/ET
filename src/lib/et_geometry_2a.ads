@@ -302,6 +302,15 @@ package et_geometry_2a is
 		return type_distance_model_positive;
 	
 
+	-- Returns the distance along the given axis between the given points.
+	function get_distance (
+		point_1	: in type_vector_model;
+		point_2	: in type_vector_model;
+		axis	: in type_axis_2d) 
+		return type_distance_model;
+
+
+	
 	-- Returns the angle of direection from the given 
 	-- point p1 to the point p2. Uses internally a float type:
 	function get_angle (
@@ -470,6 +479,10 @@ package et_geometry_2a is
 		return pac_vectors.list;
 
 	
+	-- Removes points which are stored multiple times
+	-- from the given list:
+	procedure remove_redundant_points (
+		points : in out pac_points.list);
 
 
 
@@ -1166,6 +1179,9 @@ package et_geometry_2a is
 
 	
 -- CATCH ZONE:
+
+	-- CS rework. make generic child package. use type_logical pixels
+	-- instead of type_float_positive
 	
 	subtype type_catch_zone is type_float_positive
 		range 0.0 .. type_float_positive (type_distance_model_positive'last/100.0);
@@ -1197,6 +1213,20 @@ package et_geometry_2a is
 		return boolean;
 
 
+	-- Returns true if the given line is in the catch zone
+	-- of the given point.
+	-- Optionally the linewidth can be specified so that it
+	-- is taken into account when the distance of the point
+	-- to the line is computed. If a linewidth greater zero
+	-- is given, then we assume, that the line has round caps:
+	function in_catch_zone (
+		line	: in type_line;
+		width	: in type_distance_model_positive := 0.0;
+		point	: in type_vector_model;
+		zone	: in type_catch_zone)
+		return boolean;
+	
+	
 
 
 -- ZONES OF A LINE
@@ -1232,7 +1262,9 @@ package et_geometry_2a is
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model);
 
-	
+
+
+
 	
 
 private

@@ -45,10 +45,13 @@ with ada.containers.indefinite_doubly_linked_lists;
 with et_net_names;					use et_net_names;
 with et_geometry;					use et_geometry;
 with et_general;					use et_general;
-with et_canvas_general;				use et_canvas_general;
-with et_canvas_schematic;
-with et_coordinates;				use et_coordinates;
-use et_coordinates.pac_geometry_2;
+-- with et_canvas_general;				use et_canvas_general;
+with et_canvas_messages;			use et_canvas_messages;
+with et_canvas_tool;				use et_canvas_tool;
+-- with et_canvas_schematic;
+with et_coordinates_2;				use et_coordinates_2;
+use et_coordinates_2.pac_geometry_2;
+use et_coordinates_2.pac_path_and_bend;
 
 with et_text;
 with et_project.modules;			use et_project.modules;
@@ -63,7 +66,7 @@ with et_logging;					use et_logging;
 
 package et_canvas_schematic_nets is
 
-	use et_canvas_schematic.pac_canvas;
+	-- use et_canvas_schematic.pac_canvas;
 	
 	use et_project.modules.pac_generic_modules;
 
@@ -103,7 +106,7 @@ package et_canvas_schematic_nets is
 
 	
 	-- Returns the position of the strand of the selected segment:
-	function get_strand_position return et_coordinates.type_position;
+	function get_strand_position return et_coordinates_2.type_position;
 
 	
 	-- Clears the list of proposed segments.
@@ -152,7 +155,7 @@ package et_canvas_schematic_nets is
 	-- Collects all net segments in the vicinity of the given point:
 	function collect_segments (
 		module			: in pac_generic_modules.cursor;
-		place			: in et_coordinates.type_position; -- sheet/x/y
+		place			: in et_coordinates_2.type_position; -- sheet/x/y
 		catch_zone		: in type_catch_zone := type_catch_zone'first; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_segments.list;

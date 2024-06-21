@@ -50,9 +50,11 @@ with et_logging;				use et_logging;
 
 with et_device_placeholders;	use et_device_placeholders;
 with et_project.modules;		use et_project.modules;
-with et_canvas_schematic;
-with et_canvas_board;
+-- with et_canvas_schematic_2;
+-- with et_canvas_board_2;
 with et_modes;					use et_modes;
+
+with et_cmd_sts;				use et_cmd_sts;
 
 
 package et_scripting is
