@@ -103,7 +103,7 @@ package body et_schematic_ops.nets is
 
 
 	
-	procedure junction_in_sloping_segment (point : in et_coordinates_2_2.type_position) is begin
+	procedure junction_in_sloping_segment (point : in et_coordinates_2.type_position) is begin
 		log (ERROR, "Junction not allowed in a sloping net segment at" & to_string (point),
 			 console => true);
 		raise constraint_error;
@@ -165,7 +165,7 @@ package body et_schematic_ops.nets is
 		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
 		scope			: in type_net_scope; -- strand, sheet, everywhere
-		place			: in et_coordinates_2_2.type_position; -- sheet/x/y
+		place			: in et_coordinates_2.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level) 
 	is
 		net_cursor_old : pac_nets.cursor; -- points to the old net
@@ -421,7 +421,7 @@ package body et_schematic_ops.nets is
 					process		=> rename_everywhere'access);
 
 			when SHEET =>
-				log (text => "scope: all strands on sheet" & et_coordinates_2_2.to_sheet (get_sheet (place)), level => log_threshold);
+				log (text => "scope: all strands on sheet" & et_coordinates_2.to_sheet (get_sheet (place)), level => log_threshold);
 
 				update_element (
 					container	=> generic_modules,
@@ -449,7 +449,7 @@ package body et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in type_net_scope; -- strand, sheet, everywhere
-		place			: in et_coordinates_2_2.type_position; -- sheet/x/y
+		place			: in et_coordinates_2.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level) 
 	is
 		net_cursor : pac_nets.cursor; -- points to the net
@@ -589,7 +589,7 @@ package body et_schematic_ops.nets is
 					process		=> delete_everywhere'access);
 
 			when SHEET =>
-				log (text => "scope: all strands on sheet" & et_coordinates_2_2.to_sheet (get_sheet (place)), level => log_threshold);
+				log (text => "scope: all strands on sheet" & et_coordinates_2.to_sheet (get_sheet (place)), level => log_threshold);
 
 				update_element (
 					container	=> generic_modules,
@@ -615,7 +615,7 @@ package body et_schematic_ops.nets is
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		place			: in et_coordinates_2_2.type_position; -- sheet/x/y
+		place			: in et_coordinates_2.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level) 
 	is
 		net_cursor : pac_nets.cursor; -- points to the net
@@ -2942,7 +2942,7 @@ package body et_schematic_ops.nets is
 			" labeling segment at"  &
 			to_string (position => segment_position) &
 			" with " & to_string (appearance) & " label at" &
-			to_string (point => label_position) &
+			to_string (label_position) &
 			" rotation" & to_string (rotation),
 			level => log_threshold);
 		-- CS rework. log message does not need rotation in case of tag label.

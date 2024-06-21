@@ -822,7 +822,7 @@ package body et_board_ops is
 		
 	begin -- set_grid
 		log (text => "module " & enclose_in_quotes (to_string (module_name))
-			& " setting board grid" & to_string (grid),
+			& " setting board grid" & to_string (grid.spacing),
 			level => log_threshold);
 
 		-- locate module
@@ -852,7 +852,7 @@ package body et_board_ops is
 		
 	begin -- set_grid
 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
-			& " setting board grid" & to_string (grid),
+			& " setting board grid" & to_string (grid.spacing),
 			level => log_threshold);
 
 		update_element (

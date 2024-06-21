@@ -1051,6 +1051,34 @@ package body et_geometry_2a is
 	end to_line_fine;
 
 	
+
+
+	function get_distance (
+		line		: in type_line;
+		vector		: in type_vector;
+		line_range	: in type_line_range)
+		return type_distance_point_line 
+	is begin
+		return get_distance (
+			vector		=> vector,
+			line		=> to_line_fine (line),
+			line_range	=> line_range);
+	end get_distance;
+
+
+	function get_distance (
+		line		: in type_line;
+		point		: in type_vector_model; 
+		line_range	: in type_line_range)
+		return type_distance_point_line
+	is begin
+		return get_distance (to_vector (point), to_line_fine (line), line_range);
+	end get_distance;
+
+
+
+
+
 	
 	function on_line (
 		line	: in type_line;

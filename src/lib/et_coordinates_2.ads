@@ -130,7 +130,7 @@ package et_coordinates_2 is
 	package pac_polygon_offsetting is new pac_polygons.offsetting;
 
 	
-	-- catch_zone_default : constant type_catch_zone := 2.0; 
+	catch_zone_default : constant type_catch_zone := 2.0; 
 	-- CS: should be a general setting for schematic and symbol editor in the future
 	
 
