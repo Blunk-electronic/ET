@@ -108,6 +108,37 @@ package body et_geometry_2a is
 -- DISTANCE:
 
 
+	function get_greatest (
+		left, right : in type_distance_model)
+		return type_distance_model
+	is begin
+		if left > right then
+			return left;
+		elsif left < right then
+			return right;
+		else
+			return right;
+		end if;
+	end get_greatest;
+
+	
+	
+	function get_smallest (
+		left, right : in type_distance_model)
+		return type_distance_model
+	is begin
+		if left < right then
+			return left;
+		elsif left > right then
+			return right;
+		else
+			return right;
+		end if;
+	end get_smallest;
+
+
+
+	
 	
 	procedure limit_to_maximum (
 		distance	: in out type_distance_model;
@@ -147,6 +178,20 @@ package body et_geometry_2a is
 	is begin
 		return pac_geometry_1.distance_to_mil (type_float (distance));
 	end;
+
+
+
+	function get_greatest (
+		distances	: in pac_distances_positive.list)
+		return type_distance_model_positive
+	is
+		ds : pac_distances_positive.list := distances;
+		use pac_distances_positive_sorting;
+	begin
+		sort (ds);
+		return ds.last_element;
+	end get_greatest;
+
 
 
 	
@@ -319,6 +364,13 @@ package body et_geometry_2a is
 
 
 
+	function to_angle (
+		a : in type_rotation_model)
+		return type_float
+	is begin
+		return type_float (a);
+	end to_angle;
+
 	
 
 	function add (
@@ -420,6 +472,22 @@ package body et_geometry_2a is
 
 	
 
+	function invert (
+		point	: in type_vector_model;
+		axis	: in type_axis_2d)
+		return type_vector_model
+	is
+		p : type_vector_model := point;
+	begin
+		case axis is
+			when X => p.x := - p.x;
+			when Y => p.y := - p.y;
+		end case;
+
+		return p;
+	end invert;
+
+	
 	procedure move_by (
 		point	: in out type_vector_model;
 		offset	: in type_vector_model)
@@ -446,6 +514,54 @@ package body et_geometry_2a is
 	
 
 
+	procedure rotate_to (
+		point		: in out type_vector_model;
+		rotation	: in type_rotation_model) -- degrees
+	is
+		distance_to_origin	: type_float; -- unit is mm
+		scratch				: type_float;
+	begin
+		-- compute distance of given point to origin
+		if get_x (point) = zero and get_y (point) = zero then
+			distance_to_origin := 0.0;
+			
+		elsif get_x (point) = zero then
+			distance_to_origin := type_float (abs (get_y (point)));
+			
+		elsif get_y (point) = zero then
+			distance_to_origin := type_float (abs (get_x (point)));
+			
+		else
+			distance_to_origin := sqrt (
+				type_float (abs (get_x (point))) ** 2.0 
+				+
+				type_float (abs (get_y (point))) ** 2.0
+				);
+		end if;
+
+		-- The new angle is the given rotation.
+
+		-- compute new x   -- (cos rotation) * distance_to_origin
+		scratch := cos (type_float (rotation), units_per_cycle);
+		set (
+			axis	=> X,
+			point	=> point,
+			value	=> to_distance (scratch * distance_to_origin)
+			);
+
+		-- compute new y   -- (sin rotation) * distance_to_origin
+		scratch := sin (type_float (rotation), units_per_cycle);
+		set (
+			axis 	=> Y,
+			point	=> point,
+			value	=> to_distance (scratch * distance_to_origin)
+			);
+		
+	end rotate_to;
+
+
+	
+	
 	
 	function get_distance (
 		point_one, point_two : in type_vector_model) 
@@ -811,6 +927,36 @@ package body et_geometry_2a is
 
 
 
+	function move (
+		point		: in type_vector_model;
+		direction	: in type_rotation_model;
+		distance	: in type_distance_model_positive;
+		clip		: in boolean := false)
+		return type_vector_model 
+	is 			
+		v_tmp : type_vector;
+		rx, ry : type_distance_model;
+		result : type_vector_model;			
+	begin
+		v_tmp := move_by (
+			v			=> to_vector (point),
+			direction	=> type_angle (direction),
+			distance	=> type_float_positive (distance));
+		
+		rx := to_distance (v_tmp.x);
+		ry := to_distance (v_tmp.y);
+		
+		if clip then
+			clip_distance (rx);
+			clip_distance (ry);
+		end if;
+
+		result := (rx, ry);
+		return result;
+	end move;
+
+	
+
 	procedure mirror (
 		point	: in out type_vector_model;
 		axis	: in type_axis_2d) 
@@ -1104,6 +1250,33 @@ package body et_geometry_2a is
 	end;
 
 
+	function is_selected (
+		line : in type_line)
+		return boolean
+	is begin
+		if line.status.selected then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+			
+	
+
+	function is_proposed (
+		line : in type_line)
+		return boolean
+	is begin
+		if line.status.proposed then
+			return true;
+		else 
+			return false;
+		end if;
+	end is_proposed;
+
+
+
+	
 	procedure move_by (
 		line	: in out type_line;
 		offset	: in type_distance_relative)
@@ -2211,6 +2384,17 @@ package body et_geometry_2a is
 
 
 
+	function on_arc (
+		arc		: in type_arc;
+		point	: in type_vector_model)
+		return boolean
+	is begin
+		return on_arc (arc, to_vector (point));
+	end on_arc;
+
+
+
+	
 	function get_bounding_box (
 		arc 	: in type_arc;
 		width	: in type_distance_model_positive)
@@ -2281,6 +2465,25 @@ package body et_geometry_2a is
 	is begin
 		rotate_by (circle.center, rotation);
 	end;
+
+
+	function on_circle (
+		circle		: in type_circle;
+		point		: in type_vector_model)
+		return boolean 
+	is
+		-- the distance from center to point:
+		DCP: constant type_float_positive := 
+			get_distance_total (point, circle.center);
+	begin
+		if abs (DCP - circle.radius) <= type_float (type_distance_model'small) then
+
+			-- Point is on circumfence of circle.
+			return true;
+		else
+			return false; 
+		end if;
+	end on_circle;
 
 	
 
@@ -2769,6 +2972,16 @@ package body et_geometry_2a is
 	end;
 
 
+
+
+	procedure rotate_about_itself (
+		position	: in out type_position;
+		offset		: in type_rotation_model)
+	is begin
+		position.rotation := add (position.rotation, offset);
+	end;
+
+
 	
 
 -- CATCH ZONE:
@@ -2866,6 +3079,17 @@ package body et_geometry_2a is
 
 
 
+	procedure nothing_found (
+		point		: in type_vector_model; 
+		accuracy	: in type_catch_zone)
+	is begin
+		log (importance => WARNING, 
+			 text => "nothing found at" & to_string (point) &
+			 " in vicinity of" & catch_zone_to_string (accuracy));
+	end nothing_found;
+
+
+	
 	
 
 -- ZONES OF A LINE

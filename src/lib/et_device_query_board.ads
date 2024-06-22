@@ -63,7 +63,7 @@ with et_device_query_schematic;			use et_device_query_schematic;
 with et_pcb;							use et_pcb;
 with et_pcb_stack;						use et_pcb_stack;
 with et_packages;						use et_packages;
-with et_pcb_coordinates;				use et_pcb_coordinates;
+with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
 with et_board_shapes_and_text;			use et_board_shapes_and_text;
 with et_pcb_contour;					use et_pcb_contour;
 
@@ -186,7 +186,7 @@ package et_device_query_board is
 		device_cursor	: in pac_devices_sch.cursor;
 		terminal_cursor	: in pac_terminals.cursor;
 		layer_category	: in type_signal_layer_category;
-		tolerance		: in type_distance_positive)
+		tolerance		: in type_distance_model_positive)
 		return type_terminal_polygon;
 
 	

@@ -1082,7 +1082,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_text (text : in out type_doc_text) is
-					use et_pcb_coordinates;
+					use et_pcb_coordinates_2;
 					use et_pcb_coordinates_2.pac_geometry_2;
 				begin
 					log (text => doc & "text", level => log_threshold + log_threshold_add);
@@ -1471,7 +1471,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_text (text : in out type_stop_text) is
-					use et_pcb_coordinates;
+					use et_pcb_coordinates_2;
 					use et_pcb_coordinates_2.pac_geometry_2;
 				begin
 					log (text => stop & "text", level => log_threshold + log_threshold_add);
@@ -1652,7 +1652,7 @@ package body et_kicad_to_native is
 
 			
 			procedure move_contour is
-				use et_pcb_coordinates;
+				use et_pcb_coordinates_2;
 				use pac_geometry_brd;
 				use pac_geometry_2;
 				use et_board_shapes_and_text;
@@ -1836,7 +1836,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_text (text : in out et_conductor_text.boards.type_conductor_text) is
-					use et_pcb_coordinates;
+					use et_pcb_coordinates_2;
 					use et_pcb_coordinates_2.pac_geometry_2;
 				begin
 					log (text => board_copper & "text", level => log_threshold + log_threshold_add);
@@ -1853,7 +1853,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_placeholder (text : in out et_pcb.type_text_placeholder_conductors) is
-					use et_pcb_coordinates;
+					use et_pcb_coordinates_2;
 					use et_pcb_coordinates_2.pac_geometry_2;
 				begin
 					log (text => board_copper & "text placeholder", level => log_threshold + log_threshold_add);
@@ -1986,7 +1986,7 @@ package body et_kicad_to_native is
 				port_cursor : et_kicad.schematic.type_ports_with_reference.cursor := ports.first;
 				port : et_kicad.schematic.type_port_with_reference;
 				
-				use et_coordinates;
+				use et_coordinates_2;
 			begin -- query_ports
 				log (text => "net " & to_string (net_name), level => log_threshold + 3);
 				log_indentation_up;
@@ -2115,7 +2115,7 @@ package body et_kicad_to_native is
 	-- Converts kicad schematic coordinates to native schematic coordinates.
 	function to_native_coordinates (
 		point 		: in et_kicad_coordinates.type_position;
-		rotation	: in et_coordinates_2.type_rotation := et_coordinates_2.pac_geometry_2.zero_rotation)
+		rotation	: in et_coordinates_2.type_rotation_model := et_coordinates_2.pac_geometry_2.zero_rotation)
 		return et_coordinates_2.type_position 
 	is
 		point_out : et_coordinates_2.type_position;
@@ -2214,14 +2214,14 @@ package body et_kicad_to_native is
 		procedure copy_rectangle (cursor : in et_kicad_libraries.type_symbol_rectangles.cursor) is
 			use et_kicad;
 			use type_symbol_rectangles;
-			use et_coordinates;
+			use et_coordinates_2;
 			
 			-- This is the given kicad rectangle:
 			rectangle : type_symbol_rectangle := type_symbol_rectangles.element (cursor);
 
 			-- This is the native line that will be appended to native_shapes.lines:
 			line : type_symbol_line := (width => rectangle.width, others => <>);
-			width, height : et_coordinates_2.type_distance;
+			width, height : et_coordinates_2.type_distance_model;
 
 			-- These two points are required to form the final rectangle:
 			corner_C, corner_D : pac_geometry_2.type_vector_model;
@@ -2815,7 +2815,7 @@ package body et_kicad_to_native is
 					while junction_cursor /= et_kicad.schematic.type_junctions.no_element loop
 
 						log (text => "junction" & to_string (
-							point => get_point (element (junction_cursor).coordinates)),
+							get_point (element (junction_cursor).coordinates)),
 							level => log_threshold + 5);
 
 						-- Test if junction sits at start point of segment:
@@ -2851,7 +2851,7 @@ package body et_kicad_to_native is
 					
 					ports_of_segment : et_nets.pac_device_ports.set; -- to be returned
 
-					use et_coordinates;
+					use et_coordinates_2;
 					use pac_geometry_sch;
 					use pac_geometry_2;
 					

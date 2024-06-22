@@ -1855,7 +1855,7 @@ is
 		-- "ERC32 Test Board" is read here. It contains the actual text.
 		
 		note : type_text; -- the text note being built
-		rotation : et_coordinates.type_rotation_relative;
+		rotation : et_coordinates_2.type_rotation_relative;
 
 		procedure warn is begin 
 			log (WARNING, " text note at " 
@@ -2003,7 +2003,7 @@ is
 		alternative_references		: type_alternative_references.list;
 		unit_name					: pac_unit_name.bounded_string; -- A, B, PWR, CT, IO-BANK1 ...
 		unit_position				: et_kicad_coordinates.type_position;
-		orientation					: et_coordinates.type_rotation;
+		orientation					: et_coordinates_2.type_rotation_model;
 		mirror						: type_mirror;
 		timestamp					: type_timestamp; -- 59F202F2
 		alternative_representation	: type_de_morgan_representation;
@@ -2520,7 +2520,7 @@ is
 													log_threshold		=> log_threshold + 2),
 
 							-- This is layout related and will be filled on layout import later (much later):
-							position			=> et_pcb_coordinates.package_position_default, -- the position of the package in the layout
+							position			=> et_pcb_coordinates_2.package_position_default, -- the position of the package in the layout
 							text_placeholders	=> (others => <>),  -- placeholders for reference, value, purpose in the layout
 							
 							-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.

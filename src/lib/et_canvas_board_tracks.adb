@@ -66,7 +66,7 @@ with gtk.container;					use gtk.container;
 with gtk.button;					use gtk.button;
 
 with et_project.modules;				use et_project.modules;
-with et_canvas_board;
+with et_canvas_board_2;
 
 with et_board_ops.conductors;			use et_board_ops.conductors;
 with et_modes.board;
@@ -90,7 +90,7 @@ with et_object_status;
 
 package body et_canvas_board_tracks is
 
-	use et_canvas_board.pac_canvas;
+	use et_canvas_board_2.pac_canvas;
 
 
 	function to_string (
@@ -108,7 +108,7 @@ package body et_canvas_board_tracks is
 
 		-- Remove the text properties bar from the window:
 		if box_properties.displayed then
-			remove (box_right, box_properties.box_main);
+			-- CS remove (box_right, box_properties.box_main);
 			box_properties.displayed := false;
 		end if;
 	end reset_preliminary_track;
@@ -158,7 +158,7 @@ package body et_canvas_board_tracks is
 		-- display the affected conductor layer:
 		enable_conductor (preliminary_track.signal_layer);
 		
-		et_canvas_board.redraw_board;		
+	-- CS et_canvas_board_2.redraw_board;		
 	end signal_layer_changed;
 
 	
@@ -167,14 +167,14 @@ package body et_canvas_board_tracks is
 	
 	
 	procedure apply_line_width (text : in string) is
-		width : type_distance_positive;
+		width : type_distance_model_positive;
 	begin
 		width := to_distance (text);
 
 		-- CS validate. output error in status bar
 		preliminary_track.width := width;
 
-		et_canvas_board.redraw_board;
+	-- CS et_canvas_board_2.redraw_board;
 	end apply_line_width;
 
 	
@@ -296,7 +296,7 @@ package body et_canvas_board_tracks is
 		
 		rotation_length_min : constant gint := 1;
 		rotation_length_max : constant gint := 5;
-		-- CS: adjust if necessary. see et_pcb_coordinates type_rotation.
+		-- CS: adjust if necessary. see et_pcb_coordinates_2 type_rotation.
 		
 		-- The spacing between the boxes:
 		spacing : constant natural := 5;
@@ -434,22 +434,23 @@ package body et_canvas_board_tracks is
 		-- Otherwise build it:
 		if not box_properties.displayed then
 			box_properties.displayed := true;
-		
-			gtk_new_hbox (box_properties.box_main);
-			pack_start (et_canvas_board.pac_canvas.box_right, box_properties.box_main,
-						expand	=> false);
+
+			-- CS
+			-- gtk_new_hbox (box_properties.box_main);
+			-- pack_start (et_canvas_board_2.pac_canvas.box_right, box_properties.box_main,
+			-- 			expand	=> false);
 
 			-- The properties bar is to be displayed in the right box
 			-- below the console:
-			reorder_child (box_right, box_properties.box_main, 1);
+			-- CS reorder_child (box_right, box_properties.box_main, 1);
 
 			-- build the elements of the properties bar:
-			make_combo_for_net_name;
-			make_combo_for_signal_layer;
-			make_combo_for_line_width;
+			-- CS make_combo_for_net_name;
+			-- CS make_combo_for_signal_layer;
+			-- CS make_combo_for_line_width;
 
 			-- Redraw the right box of the window:
-			box_right.show_all;
+			-- CS box_right.show_all;
 		end if;
 		
 	end show_track_properties;
@@ -554,7 +555,7 @@ package body et_canvas_board_tracks is
 		line : type_line;
 
 		procedure set_start_point is
-			use et_pcb_coordinates.pac_geometry_brd;
+			use et_pcb_coordinates_2.pac_geometry_brd;
 		begin
 			case PT.snap_mode is
 				when NO_SNAP =>
@@ -638,7 +639,7 @@ package body et_canvas_board_tracks is
 		--put_line ("make path"); --to_string (PT.snap_mode));
 		
 		-- Set the tool being used for this path so that procedure
-		-- draw_track (in et_canvas_board-draw_conductors)
+		-- draw_track (in et_canvas_board_2-draw_conductors)
 		-- knows where to get the end point from.
 		PT.tool := tool;
 
@@ -674,7 +675,7 @@ package body et_canvas_board_tracks is
 				else
 					-- The path is bended. The bend point has been computed
 					-- interactively while moving the mouse or the cursor.
-					-- See for example procedure draw_path in et_canvas_board-draw_assy_doc.
+					-- See for example procedure draw_path in et_canvas_board_2-draw_assy_doc.
 
 					-- insert first line of the path:
 					line.start_point := PT.path.start_point;

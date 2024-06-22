@@ -62,8 +62,8 @@ with ada.calendar.formatting;		use ada.calendar.formatting;
 -- with et_net_names;					use et_net_names;
 -- with et_net_labels;					use et_net_labels;
 -- 
--- with et_canvas_schematic_nets;			use et_canvas_schematic_nets;
--- with et_canvas_schematic_units;			use et_canvas_schematic_units;
+with et_canvas_schematic_nets;			use et_canvas_schematic_nets;
+with et_canvas_schematic_units;			use et_canvas_schematic_units;
 -- 
 -- with et_device_placeholders;			use et_device_placeholders;
 -- with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
@@ -73,8 +73,17 @@ with ada.calendar.formatting;		use ada.calendar.formatting;
 
 package body et_canvas_schematic_2 is
 
-	procedure dummy is begin null; end;
 
+	procedure set_title_bar (
+		-- CS project name
+		module		: in pac_module_name.bounded_string)
+	is begin
+		main_window.set_title (title & to_string (module));
+	end set_title_bar;
+
+
+	
+	
 	procedure compute_bounding_box (
 		abort_on_first_error	: in boolean := false;
 		ignore_errors			: in boolean := false;
@@ -855,22 +864,22 @@ package body et_canvas_schematic_2 is
 -- 
 -- 		log_indentation_down;
 -- 	end execute_command;
--- 
--- 	
--- 
--- 
--- 
--- 	
--- 	function active_module return pac_module_name.bounded_string is
--- 		use pac_module_name;
--- 		use et_project.modules.pac_generic_modules;
--- 	begin
--- 		return key (current_active_module); -- motor_driver (without extension)
--- 	end active_module;
--- 
--- 
--- 	
--- 	
+
+	
+
+
+
+	
+	function active_module return pac_module_name.bounded_string is
+		use pac_module_name;
+		use et_project.modules.pac_generic_modules;
+	begin
+		return key (current_active_module); -- motor_driver (without extension)
+	end active_module;
+
+
+	
+	
 -- 	function bounding_box (self : not null access type_view)
 -- 		return type_bounding_box is
 -- 	begin
@@ -998,32 +1007,32 @@ package body et_canvas_schematic_2 is
 -- 		restore (context.cr);
 -- 		
 -- 	end draw_internal;
--- 
--- 	
--- 	procedure set_module (
--- 		module	: in pac_module_name.bounded_string)  -- motor_driver
--- 	is
--- 		use et_project.modules;
--- 		use et_project.modules.pac_generic_modules;
--- 		cursor : et_project.modules.pac_generic_modules.cursor := find (generic_modules, module);
--- 	begin
--- 		-- If module already loaded in collection of generic modules, set the current_active_module:
--- 		if cursor /= pac_generic_modules.no_element then 
--- 			current_active_module := cursor;
--- 		else
--- 			-- If module not loaded yet, read it and store it in collection of generic modules:
--- 			read_module (
--- 				file_name		=> append_extension (to_string (module)),
--- 				log_threshold	=> log_threshold + 1);
--- 
--- 		end if;
--- 
--- 		-- CS exception handler could catch semantic_error_1 and show
--- 		-- a list of available modules (which are inside the project directory)
--- 		-- in the status bar.
--- 	end set_module;
--- 
--- 	
+
+	
+	procedure set_module (
+		module	: in pac_module_name.bounded_string)  -- motor_driver
+	is
+		use et_project.modules;
+		use et_project.modules.pac_generic_modules;
+		cursor : et_project.modules.pac_generic_modules.cursor := find (generic_modules, module);
+	begin
+		-- If module already loaded in collection of generic modules, set the current_active_module:
+		if cursor /= pac_generic_modules.no_element then 
+			current_active_module := cursor;
+		else
+			-- If module not loaded yet, read it and store it in collection of generic modules:
+			read_module (
+				file_name		=> append_extension (to_string (module)),
+				log_threshold	=> log_threshold + 1);
+
+		end if;
+
+		-- CS exception handler could catch semantic_error_1 and show
+		-- a list of available modules (which are inside the project directory)
+		-- in the status bar.
+	end set_module;
+
+	
 -- 	procedure init_drawing (
 -- 		module	: in et_project.modules.pac_generic_modules.cursor; -- the module to be drawn
 -- 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be drawn
@@ -1301,14 +1310,14 @@ package body et_canvas_schematic_2 is
 -- 		
 -- 		reset_activate_counter;
 -- 	end reset_selections;
--- 
--- 	
--- 	procedure clear_proposed_objects is begin
--- 		clear_proposed_units;
--- 		clear_proposed_segments;
--- 	end clear_proposed_objects;
--- 
--- 	
+
+	
+	procedure clear_proposed_objects is begin
+		clear_proposed_units;
+		clear_proposed_segments;
+	end clear_proposed_objects;
+
+	
 -- 	procedure key_pressed (
 -- 		self		: not null access type_view;
 -- 		key			: in gdk_key_type;

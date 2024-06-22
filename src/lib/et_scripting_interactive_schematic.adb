@@ -49,7 +49,7 @@ with ada.text_io;					use ada.text_io;
 with ada.containers;				use ada.containers;
 
 with et_geometry;
-with et_coordinates;				use et_coordinates;
+with et_coordinates_2;				use et_coordinates_2;
 with et_project.modules;			use et_project.modules;
 with et_packages;
 with et_schematic;					use et_schematic;
@@ -58,8 +58,8 @@ with et_scripting;					use et_scripting;
 with et_modes.schematic;			use et_modes.schematic;
 with et_schematic_ops;				use et_schematic_ops;
 with et_schematic_ops.units;
-with et_canvas_schematic;			use et_canvas_schematic;
-use et_canvas_schematic.pac_canvas;
+with et_canvas_schematic_2;			use et_canvas_schematic_2;
+use et_canvas_schematic_2.pac_canvas;
 
 with et_canvas_schematic_units;		use et_canvas_schematic_units;
 
@@ -105,7 +105,7 @@ package body et_scripting_interactive_schematic is
 
 		status_clear;
 		
-		redraw;
+		-- CS redraw;
 	end unit_selected_on_delete;
 	
 	procedure menu_propose_units_on_delete (
@@ -159,7 +159,7 @@ package body et_scripting_interactive_schematic is
 
 				status_clear;
 				
-				redraw;
+				-- CS redraw;
 
 			when others =>
 				-- show available units in a menu
@@ -207,9 +207,10 @@ package body et_scripting_interactive_schematic is
 
 		single_cmd_status.finalization_pending := true;
 		
-		redraw;
+		-- CS redraw;
 	end unit_selected_on_invoke;
 
+	
 	procedure menu_propose_units_on_invoke (
 		device			: in type_device_name;
 		units			: in pac_unit_names.list;
@@ -265,7 +266,7 @@ package body et_scripting_interactive_schematic is
 
 				single_cmd_status.finalization_pending := true;
 				
-				redraw;
+				-- CS redraw;
 
 			when others =>
 				-- show available units in a menu
@@ -332,7 +333,7 @@ package body et_scripting_interactive_schematic is
 				device	=> su.device,
 				unit	=> su.unit).place;
 		
-		canvas.move_cursor (ABSOLUTE, cursor_main, pos);
+		-- CS canvas.move_cursor (ABSOLUTE, cursor_main, pos);
 		
 	end select_unit_for_move;
 
@@ -379,9 +380,10 @@ package body et_scripting_interactive_schematic is
 			when others => raise constraint_error; -- CS should never happen
 		end case;
 		
-		redraw;
+		-- CS redraw;
 	end finish_unit_move;
 
+	
 	procedure finish_placeholder_move is begin
 		select_placeholder_for_move;
 
@@ -405,7 +407,7 @@ package body et_scripting_interactive_schematic is
 
 			when others => raise constraint_error; -- CS should never happen
 		end case;
-		redraw;
+		-- CS redraw;
 	end finish_placeholder_move;
 
 	
@@ -574,7 +576,7 @@ package body et_scripting_interactive_schematic is
 				unit		=> sp.unit,
 				category	=> to_category); -- maps from noun to placeholder category
 
-		canvas.move_cursor (ABSOLUTE, cursor_main, pos);
+		-- CS canvas.move_cursor (ABSOLUTE, cursor_main, pos);
 	
 	end select_placeholder_for_move;
 
@@ -593,7 +595,7 @@ package body et_scripting_interactive_schematic is
 			device	=> set_variant_device,
 			variant	=> extract_variant_name (self.get_label));
 
-		redraw;
+		-- CS redraw;
 	end variant_selected;
 
 	--function variant_selection_key_event (

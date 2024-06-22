@@ -176,7 +176,7 @@ package body et_device_query_board is
 		return type_terminal_position_fine
 	is
 		-- This is the position of the package as it is in the layout:
-		package_position : et_pcb_coordinates.type_package_position; -- incl. angle and face
+		package_position : et_pcb_coordinates_2.type_package_position; -- incl. angle and face
 
 		use pac_geometry_brd;
 		terminal_position : type_vector; -- x/y
@@ -373,7 +373,7 @@ package body et_device_query_board is
 		device_cursor	: in pac_devices_sch.cursor;
 		terminal_cursor	: in pac_terminals.cursor;
 		layer_category	: in type_signal_layer_category;
-		tolerance		: in type_distance_positive)
+		tolerance		: in type_distance_model_positive)
 		return type_terminal_polygon
 	is
 		use pac_polygons;
@@ -760,7 +760,7 @@ package body et_device_query_board is
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
-		rotation : type_rotation renames device.position.rotation;
+		rotation : type_rotation_model renames device.position.rotation;
 	begin
 		if layer_category /= INNER then -- route restrict objects exist in outer layers only
 			if device.flipped = NO then
@@ -859,7 +859,7 @@ package body et_device_query_board is
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
-		rotation : type_rotation renames device.position.rotation;
+		rotation : type_rotation_model renames device.position.rotation;
 	begin
 		if layer_category /= INNER then -- via restrict objects exist in outer layers only
 			if device.flipped = NO then
@@ -890,7 +890,7 @@ package body et_device_query_board is
 		result : type_keepout;
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
-		rotation : type_rotation;
+		rotation : type_rotation_model;
 	begin
 		if device.appearance = PCB then
 			packge := get_package_model (device_cursor);
@@ -935,7 +935,7 @@ package body et_device_query_board is
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
-		rotation : type_rotation renames device.position.rotation;
+		rotation : type_rotation_model renames device.position.rotation;
 	begin
 		case face is
 			when TOP =>
@@ -975,7 +975,7 @@ package body et_device_query_board is
 		result : type_stencil;
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
-		rotation : type_rotation;
+		rotation : type_rotation_model;
 	begin
 		if device.appearance = PCB then
 			packge := get_package_model (device_cursor);
@@ -1020,7 +1020,7 @@ package body et_device_query_board is
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
-		rotation : type_rotation renames device.position.rotation;
+		rotation : type_rotation_model renames device.position.rotation;
 	begin
 		case face is
 			when TOP =>
@@ -1060,7 +1060,7 @@ package body et_device_query_board is
 		result : type_stopmask;
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
-		rotation : type_rotation;
+		rotation : type_rotation_model;
 
 		use et_stop_mask.packages;
 	begin
@@ -1107,7 +1107,7 @@ package body et_device_query_board is
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
-		rotation : type_rotation renames device.position.rotation;
+		rotation : type_rotation_model renames device.position.rotation;
 
 		use et_stop_mask.packages;
 	begin
@@ -1200,7 +1200,7 @@ package body et_device_query_board is
 		result : type_silkscreen;
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
-		rotation : type_rotation;
+		rotation : type_rotation_model;
 
 		use et_silkscreen.packages;
 		silkscreen : et_silkscreen.packages.type_silkscreen_package;
@@ -1303,7 +1303,7 @@ package body et_device_query_board is
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
-		rotation : type_rotation renames device.position.rotation;
+		rotation : type_rotation_model renames device.position.rotation;
 
 		use et_silkscreen.packages;
 		silkscreen : et_silkscreen.packages.type_silkscreen_package;
@@ -1402,7 +1402,7 @@ package body et_device_query_board is
 		result : type_assy_doc;
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
-		rotation : type_rotation;
+		rotation : type_rotation_model;
 
 		use et_assy_doc.packages;
 		assy_doc : et_assy_doc.packages.type_assy_doc_package;
@@ -1504,7 +1504,7 @@ package body et_device_query_board is
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
-		rotation : type_rotation renames device.position.rotation;
+		rotation : type_rotation_model renames device.position.rotation;
 
 		use et_assy_doc.packages;
 		assy_doc : et_assy_doc.packages.type_assy_doc_package;
@@ -1603,7 +1603,7 @@ package body et_device_query_board is
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
 
-		rotation : type_rotation;
+		rotation : type_rotation_model;
 	begin
 		if device.appearance = PCB then
 			packge := get_package_model (device_cursor);
@@ -1636,7 +1636,7 @@ package body et_device_query_board is
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
 		
-		rotation : type_rotation;
+		rotation : type_rotation_model;
 	begin
 		if device.appearance = PCB then
 			packge := get_package_model (device_cursor);
@@ -1669,7 +1669,7 @@ package body et_device_query_board is
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 
-		rotation : type_rotation renames device.position.rotation;
+		rotation : type_rotation_model renames device.position.rotation;
 	begin
 		holes := get_hole_contours (packge);
 				
@@ -1696,7 +1696,7 @@ package body et_device_query_board is
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 		
-		rotation : type_rotation renames device.position.rotation;
+		rotation : type_rotation_model renames device.position.rotation;
 	begin
 		holes := get_hole_contours (packge);
 		

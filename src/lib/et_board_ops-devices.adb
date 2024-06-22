@@ -1010,7 +1010,7 @@ package body et_board_ops.devices is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
-		rotation		: in et_pcb_coordinates.type_rotation; -- 90
+		rotation		: in et_pcb_coordinates_2.type_rotation_model; -- 90
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -1370,7 +1370,7 @@ package body et_board_ops.devices is
 		--return type_terminal_position_fine
 	--is
 		---- This is the position of the package as it is in the layout:
-		--package_position : et_pcb_coordinates.type_package_position; -- incl. angle and face
+		--package_position : et_pcb_coordinates_2.type_package_position; -- incl. angle and face
 
 		--use pac_geometry_brd;
 		--terminal_position : type_vector; -- x/y

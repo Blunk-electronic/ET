@@ -71,8 +71,8 @@ with gtk.text_iter;
 --with gtk.menu_shell;
 
 with et_project.modules;				use et_project.modules;
-with et_canvas_board;					--use et_canvas_board;
-use et_canvas_board.pac_canvas;
+with et_canvas_board_2;					--use et_canvas_board_2;
+use et_canvas_board_2.pac_canvas;
 
 with et_board_ops;						use et_board_ops;
 with et_board_ops.assy_doc;
@@ -109,7 +109,7 @@ package body et_canvas_board_texts is
 		preliminary_text.category := to_layer_category (glib.values.get_string (item_text));
 		--put_line ("cat " & to_string (preliminary_text.category));
 
-		et_canvas_board.redraw_board;
+		-- CS et_canvas_board_2.redraw_board;
 		
 		-- CS display layer ?
 	end layer_category_changed;
@@ -132,7 +132,7 @@ package body et_canvas_board_texts is
 		preliminary_text.face := to_face (glib.values.get_string (item_text));
 		--put_line ("face " & to_string (preliminary_text.face));
 
-		et_canvas_board.redraw_board;
+		-- CS et_canvas_board_2.redraw_board;
 		
 		-- CS display layer ?
 	end face_changed;
@@ -155,7 +155,7 @@ package body et_canvas_board_texts is
 		preliminary_text.signal_layer := to_signal_layer (glib.values.get_string (item_text));
 		--put_line ("signal layer " & to_string (preliminary_text.signal_layer));
 
-		et_canvas_board.redraw_board;
+		-- CS et_canvas_board_2.redraw_board;
 		
 		-- CS display layer ?
 	end signal_layer_changed;
@@ -169,7 +169,7 @@ package body et_canvas_board_texts is
 		-- CS validate. output error in status bar
 		preliminary_text.text.size := size;
 
-		et_canvas_board.redraw_board;
+		-- CS et_canvas_board_2.redraw_board;
 	end apply_size;
 
 	
@@ -217,7 +217,7 @@ package body et_canvas_board_texts is
 		-- CS validate. output error in status bar
 		preliminary_text.text.line_width := width;
 
-		et_canvas_board.redraw_board;
+		-- et_canvas_board_2.redraw_board;
 	end apply_line_width;
 
 	
@@ -258,7 +258,7 @@ package body et_canvas_board_texts is
 
 	
 	procedure apply_rotation (text : in string) is
-		rotation : type_rotation;
+		rotation : type_rotation_model;
 	begin
 		rotation := to_rotation (text);
 		--put_line (to_string (rotation));
@@ -266,7 +266,7 @@ package body et_canvas_board_texts is
 
 		set (preliminary_text.text.position, rotation);
 		--put_line (to_string (preliminary_text.text.position));
-		et_canvas_board.redraw_board;
+		-- et_canvas_board_2.redraw_board;
 	end apply_rotation;
 
 	
@@ -339,8 +339,10 @@ package body et_canvas_board_texts is
 
 		-- Remove the text properties bar from the window:
 		if box_properties.displayed then
-			remove (box_right, box_properties.box_main);
-			box_properties.displayed := false;
+			null;
+			-- CS
+			-- remove (box_right, box_properties.box_main);
+			-- box_properties.displayed := false;
 		end if;
 	end reset_preliminary_text;
 
@@ -399,7 +401,7 @@ package body et_canvas_board_texts is
 		
 		rotation_length_min : constant gint := 1;
 		rotation_length_max : constant gint := 5;
-		-- CS: adjust if necessary. see et_pcb_coordinates type_rotation.
+		-- CS: adjust if necessary. see et_pcb_coordinates type_rotation_model.
 		
 		-- The spacing between the boxes:
 		spacing : constant natural := 5;
@@ -644,27 +646,29 @@ package body et_canvas_board_texts is
 		-- Otherwise build it:
 		if not box_properties.displayed then
 			box_properties.displayed := true;
-		
-			gtk_new_hbox (box_properties.box_main);
-			pack_start (et_canvas_board.pac_canvas.box_right, box_properties.box_main,
-						expand	=> false);
+
+			-- CS
+			-- gtk_new_hbox (box_properties.box_main);
+			-- pack_start (et_canvas_board.pac_canvas.box_right, box_properties.box_main,
+						-- expand	=> false);
 
 			-- The properties bar is to be displayed in the right box
 			-- below the console:
-			reorder_child (box_right, box_properties.box_main, 1);
+			-- CS reorder_child (box_right, box_properties.box_main, 1);
 
 			-- build the elements of the properties bar:
-			make_combo_category;
-			make_combo_for_face;
-			make_combo_for_signal_layer;
-			make_combo_for_size;
-			make_combo_for_line_width;
-			make_combo_for_rotation;
-			make_view_for_content;
-			make_apply_button;
+			-- CS
+			-- make_combo_category;
+			-- make_combo_for_face;
+			-- make_combo_for_signal_layer;
+			-- make_combo_for_size;
+			-- make_combo_for_line_width;
+			-- make_combo_for_rotation;
+			-- make_view_for_content;
+			-- make_apply_button;
 
 			-- Redraw the right box of the window:
-			box_right.show_all;
+			-- CS box_right.show_all;
 		end if;
 		
 	end show_text_properties;

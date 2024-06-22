@@ -78,7 +78,8 @@ with et_coordinates_2;				use et_coordinates_2;
 -- 
 -- with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 
--- with et_project.modules;			use et_project.modules;
+with et_project;
+with et_project.modules;			use et_project.modules;
 -- with et_symbols;
 -- with et_schematic;
 -- with et_schematic_ops;
@@ -95,15 +96,22 @@ with et_logging;					use et_logging;
 
 package et_canvas_schematic_2 is
 
-	procedure dummy;
+
 	
 -- 	use pac_text_schematic;
 -- 	
--- 	use et_project.modules.pac_generic_modules;
--- 	
--- 
--- 	
+	use et_project.modules.pac_generic_modules;
 
+
+	title : constant string := system_name & " SCHEMATIC ";
+	
+	
+	procedure set_title_bar (
+		-- CS project name								
+		module		: in pac_module_name.bounded_string);
+	
+
+	
 	-- Instantiate the canvas package:
 	-- package pac_canvas is new et_canvas_general.pac_canvas (
 	-- 	canvas_name		=> "schematic", -- CS provide domain name like scripting.type_domain
@@ -286,12 +294,12 @@ package et_canvas_schematic_2 is
 -- 	-- next module, selects the first module of 
 -- 	-- collection of generic modules.
 -- 	procedure previous_module;
--- 
--- 	
--- 	
--- 	-- Returns the name of the currently active module:
--- 	function active_module return pac_module_name.bounded_string;
--- 
+
+	
+	
+	-- Returns the name of the currently active module:
+	function active_module return pac_module_name.bounded_string;
+
 -- 	-- Returns the bounding box of all items of the current sheet.
 -- 	overriding function bounding_box (self : not null access type_view)
 -- 		return type_bounding_box;
@@ -321,11 +329,11 @@ package et_canvas_schematic_2 is
 -- 		area_in	: type_bounding_box);
 -- 
 -- 
--- 	-- Sets the active module to be displayed in the canvas.
--- 	-- The module must exist inside the current project directory.
--- 	procedure set_module (
--- 		module	: in pac_module_name.bounded_string); -- motor_driver
--- 
+	-- Sets the active module to be displayed in the canvas.
+	-- The module must exist inside the current project directory.
+	procedure set_module (
+		module	: in pac_module_name.bounded_string); -- motor_driver
+
 -- 	-- Sets the global variables "current_active_module" and "current_active_sheet".
 -- 	-- Sets the grid values to be displayed in the coordinates display.
 -- 	procedure init_drawing (
@@ -419,10 +427,10 @@ package et_canvas_schematic_2 is
 -- 	-- Should be called when exception rises in order to clean up.
 -- 	-- Should also be called when the operator hits ESC.
 -- 	procedure reset_selections;
--- 
--- 	-- Clears list of proposed objects such as net segments, units, ...
--- 	procedure clear_proposed_objects;
--- 	
+
+	-- Clears list of proposed objects such as net segments, units, ...
+	procedure clear_proposed_objects;
+	
 -- 	overriding procedure key_pressed (
 -- 		self		: not null access type_view;
 -- 		key			: in gdk_key_type;

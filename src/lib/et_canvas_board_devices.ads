@@ -39,10 +39,12 @@
 
 with et_general;					use et_general;
 with et_geometry;					use et_geometry;
-with et_canvas_general;				use et_canvas_general;
+with et_canvas;
+with et_canvas_tool;				use et_canvas_tool;
+with et_canvas_messages;			use et_canvas_messages;
 
-with et_pcb_coordinates;			use et_pcb_coordinates;
-use et_pcb_coordinates.pac_geometry_2;
+with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
+use et_pcb_coordinates_2.pac_geometry_2;
 
 with et_project.modules;			use et_project.modules;
 with et_schematic;					use et_schematic;
@@ -184,7 +186,7 @@ package et_canvas_board_devices is
 		& status_hint_for_abort;
 
 	
-	default_rotation : constant type_rotation := 90.0;
+	default_rotation : constant type_rotation_model := 90.0;
 	
 	-- Locates electrical devices in the vicinity of the given point.
 	-- Depending on how many devices have been found, the behaviour is:

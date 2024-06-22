@@ -56,7 +56,7 @@ with et_net_names;				use et_net_names;
 with et_terminals;				use et_terminals;
 with et_packages;
 with et_pcb;
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_kicad_general;			use et_kicad_general;
 with et_text;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
@@ -188,15 +188,15 @@ package et_kicad.pcb is
 	type type_plot_hpgl_pen_speed is range 20..20; -- CS so far nothing more known
 
 	-- hpglpendiameter -- given in mil
-	hpgl_pen_diameter_min : constant type_distance_positive := 0.1;
-	hpgl_pen_diameter_max : constant type_distance_positive := 1.0;
-	subtype type_plot_hpgl_pen_diameter is type_distance_positive 
+	hpgl_pen_diameter_min : constant type_distance_model_positive := 0.1;
+	hpgl_pen_diameter_max : constant type_distance_model_positive := 1.0;
+	subtype type_plot_hpgl_pen_diameter is type_distance_model_positive 
 		range hpgl_pen_diameter_min .. hpgl_pen_diameter_max;
 
 	-- hpglpenoverlay
-	plot_hpgl_pen_overlay_min : constant type_distance_positive := 0.05; -- CS refine range if required
-	plot_hpgl_pen_overlay_max : constant type_distance_positive := 0.1;  -- CS refine range if required
-	subtype type_plot_hpgl_pen_overlay is type_distance_positive
+	plot_hpgl_pen_overlay_min : constant type_distance_model_positive := 0.05; -- CS refine range if required
+	plot_hpgl_pen_overlay_max : constant type_distance_model_positive := 0.1;  -- CS refine range if required
+	subtype type_plot_hpgl_pen_overlay is type_distance_model_positive
 		range plot_hpgl_pen_overlay_min .. plot_hpgl_pen_overlay_max;
 
 	-- psnegative
@@ -287,16 +287,16 @@ package et_kicad.pcb is
 	-- Reason: The manufacturer is to cut or mill along these lines and must calculate
 	-- the center of the line. However, as kicad allows line with here, it must 
 	-- fit in a reasonable range, thus a subtype:
-	edge_cut_line_width_min : constant type_distance_positive := 0.1;
-	edge_cut_line_width_max : constant type_distance_positive := 1.0;
-	subtype type_edge_cut_line_width is type_distance_positive 
+	edge_cut_line_width_min : constant type_distance_model_positive := 0.1;
+	edge_cut_line_width_max : constant type_distance_model_positive := 1.0;
+	subtype type_edge_cut_line_width is type_distance_model_positive 
 		range edge_cut_line_width_min .. edge_cut_line_width_max;
 
 	-- The via diameter is the drill size + 2*restring width. 
 	-- We fit the via diameter (incl. microvias) in a reasonable range via a subtype:
-	via_diameter_min : constant type_distance_positive := 0.1;
-	via_diameter_max : constant type_distance_positive := 10.0;
-	subtype type_via_diameter is type_distance_positive
+	via_diameter_min : constant type_distance_model_positive := 0.1;
+	via_diameter_max : constant type_distance_model_positive := 10.0;
+	subtype type_via_diameter is type_distance_model_positive
 		range via_diameter_min .. via_diameter_max;
 
 
@@ -311,9 +311,9 @@ package et_kicad.pcb is
 		 );
 
 	-- CS it is not fully clear what aux_axis_origin is good for:
-	aux_axis_origin_min : constant type_distance_positive := zero;
-	aux_axis_origin_max : constant type_distance_positive := 500.0;
-	subtype type_aux_axis_origin is type_distance_positive 
+	aux_axis_origin_min : constant type_distance_model_positive := zero;
+	aux_axis_origin_max : constant type_distance_model_positive := 500.0;
+	subtype type_aux_axis_origin is type_distance_model_positive 
 		range aux_axis_origin_min .. aux_axis_origin_max;
 
 	-- CS meaning not clear yet
@@ -418,19 +418,19 @@ package et_kicad.pcb is
 
 
 	-- PCB thickness (limited to reasonable range. CS adjust if required)
-	pcb_thickness_min : constant type_distance_positive := 0.1;
-	pcb_thickness_max : constant type_distance_positive := 20.0;	
-	subtype type_pcb_thickness is type_distance_positive 
+	pcb_thickness_min : constant type_distance_model_positive := 0.1;
+	pcb_thickness_max : constant type_distance_model_positive := 20.0;	
+	subtype type_pcb_thickness is type_distance_model_positive 
 		range pcb_thickness_min .. pcb_thickness_max;
 
 	
 	type type_general_board_info is record
 		links		: type_general_links;
 		no_connects	: type_general_no_connects;
-		area_x1		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
-		area_y1		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
-		area_x2		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
-		area_y2		: et_pcb_coordinates.type_distance; -- CS meaning not clear yet. unit mm ?
+		area_x1		: et_pcb_coordinates_2.type_distance_model; -- CS meaning not clear yet. unit mm ?
+		area_y1		: et_pcb_coordinates_2.type_distance_model; -- CS meaning not clear yet. unit mm ?
+		area_x2		: et_pcb_coordinates_2.type_distance_model; -- CS meaning not clear yet. unit mm ?
+		area_y2		: et_pcb_coordinates_2.type_distance_model; -- CS meaning not clear yet. unit mm ?
 		thickness	: type_pcb_thickness;
 		drawings	: type_general_drawings;
 		tracks		: type_general_tracks;
@@ -546,7 +546,7 @@ package et_kicad.pcb is
 		terminals				: pac_terminals.map; -- terminals with net names
 		time_edit				: type_timestamp;
 		value					: pac_device_value.bounded_string;
-		position				: et_pcb_coordinates.type_package_position; -- incl. angle, face
+		position				: et_pcb_coordinates_2.type_package_position; -- incl. angle, face
 	end record;
 
 	-- Lots of packages (in a board) can be collected in a map:
@@ -599,7 +599,7 @@ package et_kicad.pcb is
 	
 	type type_via is new type_drill with record
 		net_id			: type_net_id;
-		diameter_total	: type_distance_positive; -- drill + 2 * restring
+		diameter_total	: type_distance_model_positive; -- drill + 2 * restring
 		layer_start		: type_signal_layer_id;
 		layer_end		: type_signal_layer_id;		
 		status			: type_via_status.bounded_string;  -- holds lock status and differential status
@@ -617,7 +617,7 @@ package et_kicad.pcb is
 		NONE, -- "line" in gui
 		FULL); -- "fully hatched" in gui
 
-	hatch_width_default : constant type_distance_positive := 0.508;
+	hatch_width_default : constant type_distance_model_positive := 0.508;
 	
 	-- CS: hatch_style and hatch_width are related to the display mode in the GUI.
 	-- Currently there is no need to output this stuff:
@@ -644,13 +644,13 @@ package et_kicad.pcb is
 
 	type type_hatching is record
 		-- the width of the border line
-		border_width : type_distance_positive := 1.0;
+		border_width : type_distance_model_positive := 1.0;
 		
 		-- the with of the lines inside the area:
-		line_width : type_distance_positive := hatching_line_width_default;
+		line_width : type_distance_model_positive := hatching_line_width_default;
 
 		-- the space between the lines inside the area:
-		spacing	: type_distance_positive := hatching_spacing_default;
+		spacing	: type_distance_model_positive := hatching_spacing_default;
 	end record;
 
 
@@ -661,7 +661,7 @@ package et_kicad.pcb is
 		layer				: type_signal_layer_id := type_signal_layer_id'first;
 		timestamp			: type_timestamp := timestamp_default;
 		gui_hatch_style		: type_polygon_hatch := EDGE;
-		gui_hatch_width		: type_distance_positive := hatch_width_default;
+		gui_hatch_width		: type_distance_model_positive := hatch_width_default;
 		min_thickness		: type_track_width := type_track_width'first; -- minimum line width
 		filled				: boolean := true; -- CS probably no need
 		fill_mode_segment	: boolean := false; -- true on "segment mode", default -> false on "polygon mode"

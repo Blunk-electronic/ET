@@ -89,6 +89,26 @@ package et_geometry_2a is
 		
 -- DISTANCE:
 
+	-- For collecting and sorting distances:
+	package pac_distances is new doubly_linked_lists (type_distance_model);
+	package pac_distances_sorting is new pac_distances.generic_sorting;
+
+
+	
+	-- Returns the greatest of the given distances. 
+	-- If both are equal then "right" will be returned.
+	function get_greatest (
+		left, right : in type_distance_model)
+		return type_distance_model;
+
+	
+	-- Returns the smallest of the given distances. 
+	-- If both are equal then "right" will be returned.
+	function get_smallest (
+		left, right : in type_distance_model)
+		return type_distance_model;
+
+
 	
 	-- Limits a distance to a given maximum.
 	-- Examples: 
@@ -127,6 +147,18 @@ package et_geometry_2a is
 	-- Because those things require positive numbers:
 	subtype type_distance_model_positive is type_distance_model
 		range 0.0 .. type_distance_model'last;
+
+
+	-- For collecting and sorting distances:
+	package pac_distances_positive is new doubly_linked_lists (type_distance_model_positive);
+	package pac_distances_positive_sorting is new pac_distances_positive.generic_sorting;
+
+
+	-- Returns the greatest distance from a list of positive distances:
+	function get_greatest (
+		distances	: in pac_distances_positive.list)
+		return type_distance_model_positive;
+
 
 	
 	-- This function returns the given distance as string:	
@@ -185,6 +217,11 @@ package et_geometry_2a is
 		return type_rotation_model;
 
 
+	function to_angle (
+		a : in type_rotation_model)
+		return type_float;
+
+	
 	
 	-- Adds two angles.
 	-- If result greater 360 degree then 360 degree is subtracted from result.
@@ -261,7 +298,14 @@ package et_geometry_2a is
 		point	: in type_vector_model)
 		return type_vector_model;
 	
-						 
+
+	-- Inverts the point on the given axis.
+	function invert (
+		point	: in type_vector_model;
+		axis	: in type_axis_2d)
+		return type_vector_model;
+
+	
 	-- Moves a model point by the given offset:
 	procedure move_by (
 		point	: in out type_vector_model;
@@ -275,6 +319,14 @@ package et_geometry_2a is
 		rotation	: in type_rotation_model);
 
 
+	-- Rotates the given point TO the given angle about the origin.
+	-- Changes point.x and point.y only.
+	procedure rotate_to (
+		point		: in out type_vector_model;
+		rotation	: in type_rotation_model);
+	
+
+	
 
 	-- Returns the distance of point_two to point_one.	
 	-- Subtracts point_one.x from point_two.x and point_one.y from point_two.y
@@ -448,7 +500,16 @@ package et_geometry_2a is
 		destination	: in type_vector_model);
 
 
+	-- Moves a point into direction by distance.
+	function move (
+		point		: in type_vector_model;
+		direction	: in type_rotation_model;
+		distance	: in type_distance_model_positive;
+		clip		: in boolean := false)
+		return type_vector_model;
 
+
+	
 	-- If axis is Y then it swaps right x with left x.
 	-- If axis is X then it swaps upper y with lower y.
 	procedure mirror (
@@ -597,12 +658,23 @@ package et_geometry_2a is
 
 	
 	type type_line is new type_line_base with null record;
-
+	
 	
 	-- Returns the start and end point of the given line as string.
 	function to_string (line : in type_line) return string;
 
 
+	function is_selected (
+		line : in type_line)
+		return boolean;
+	
+
+	function is_proposed (
+		line : in type_line)
+		return boolean;
+
+	
+	
 	-- Moves a line by the given offset. 
 	-- This moves both start and end point by the given offset:
 	procedure move_by (
@@ -961,6 +1033,12 @@ package et_geometry_2a is
 		return boolean; 
 
 
+	function on_arc (
+		arc			: in type_arc;
+		point		: in type_vector_model)
+		return boolean; 
+
+	
 
 	-- Returns the bounding-box of the given circle.
 	-- It respects the linewidth of the circumfence:
@@ -1010,6 +1088,13 @@ package et_geometry_2a is
 		rotation	: in type_rotation_model);
 
 	
+	-- Returns true if the given point sits on the given circle circumfence.
+	function on_circle (
+		circle		: in type_circle;
+		point		: in type_vector_model)
+		return boolean;
+
+
 	
 	-- The angle of a tangent to a circle:
 	subtype type_tangent_angle_circle is type_angle range -90.0 .. 90.0;
@@ -1176,7 +1261,14 @@ package et_geometry_2a is
 		return type_rotation_model;
 
 
+	-- Changes the rotation of the given position by the given offset.
+	-- Preserves x/y. Changes position.rotation only.
+	procedure rotate_about_itself (
+		position	: in out type_position;
+		offset		: in type_rotation_model);
 
+
+	
 	
 -- CATCH ZONE:
 
@@ -1227,7 +1319,12 @@ package et_geometry_2a is
 		return boolean;
 	
 	
+	procedure nothing_found (
+		point		: in type_vector_model; 
+		accuracy	: in type_catch_zone);
 
+
+	
 
 -- ZONES OF A LINE
 

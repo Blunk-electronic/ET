@@ -194,7 +194,7 @@ package et_board_ops.devices is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
-		rotation		: in et_pcb_coordinates.type_rotation; -- 90 -- CS default rotation ?
+		rotation		: in et_pcb_coordinates_2.type_rotation_model; -- 90 -- CS default rotation ?
 		log_threshold	: in type_log_level);
 
 	

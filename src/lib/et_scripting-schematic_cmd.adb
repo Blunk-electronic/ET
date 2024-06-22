@@ -59,13 +59,13 @@ is
 	use et_schematic_ops.units;
 	use et_schematic_ops.netlists;
 
-	use et_coordinates;
+	use et_coordinates_2;
 	use pac_geometry_2;
 
 	use pac_text_schematic;
 	use et_devices;
-	use et_canvas_schematic;
-	use et_canvas_schematic.pac_canvas;
+	use et_canvas_schematic_2;
+	use et_canvas_schematic_2.pac_canvas;
 	use et_display.schematic;
 	use et_modes.schematic;
 
@@ -110,7 +110,7 @@ is
 			when MODE_MODULE =>
 
 				log (text => "center on point", level => log_threshold + 1);
-				center_on (canvas, c);
+			-- CS center_on (canvas, c);
 
 			when others =>
 				skipped_in_this_runmode (log_threshold + 1);
@@ -126,7 +126,7 @@ is
 		case runmode is
 			when MODE_MODULE =>
 				log (text => "zoom level", level => log_threshold + 1);
-				set_scale (s);
+			-- CS set_scale (s);
 
 			when others =>
 				skipped_in_this_runmode (log_threshold + 1);
@@ -148,7 +148,7 @@ is
 				log (text => "place cursor" & to_string (coordinates) 
 					& to_string (position), level => log_threshold + 1);
 				
-				canvas.move_cursor (coordinates, cursor_main, position);
+				-- CS canvas.move_cursor (coordinates, cursor_main, position);
 
 			when others =>
 				skipped_in_this_runmode (log_threshold + 1);
@@ -184,7 +184,7 @@ is
 		mode	: in type_show_device := FIRST_UNIT)
 	is
 		use et_devices;
-		use et_canvas_schematic;
+		use et_canvas_schematic_2;
 
 		function locate (unit : in et_devices.pac_unit_name.bounded_string) 
 			return type_unit_query
@@ -223,7 +223,7 @@ is
 						current_active_sheet := get_sheet (location.position);
 
 						-- center on the first unit
-						center_on (canvas, location.position.place);
+					-- CS center_on (canvas, location.position.place);
 
 						-- Make the whole device (with all its units) selected:
 						proposed_units.append (new_item =>
@@ -250,7 +250,7 @@ is
 						current_active_sheet := get_sheet (location.position);
 
 						-- center on the unit
-						center_on (canvas, location.position.place);
+					-- CS center_on (canvas, location.position.place);
 
 						-- Make the whole device (with all its units) selected:
 						proposed_units.append (new_item =>
@@ -277,7 +277,7 @@ is
 						if get_sheet (location.position) = current_active_sheet then
 
 							-- center on the unit
-							center_on (canvas, location.position.place);
+						-- CS	center_on (canvas, location.position.place);
 
 							-- Make the whole device (with all its units) selected:
 							proposed_units.append (new_item =>
@@ -325,7 +325,7 @@ is
 
 		strand_cursor : pac_strands.cursor;
 		
-		pos : et_coordinates.type_position;
+		pos : et_coordinates_2.type_position;
 	begin
 		if net_cursor /= pac_nets.no_element then
 			
@@ -338,7 +338,7 @@ is
 					current_active_sheet := get_sheet (element (strand_cursor).position);
 
 					-- center drawing where the strand starts:
-					center_on (canvas, element (strand_cursor).position.place);
+				-- CS center_on (canvas, element (strand_cursor).position.place);
 					
 					proposed_segments.append (new_item => (
 						net		=> net_cursor,
@@ -360,7 +360,7 @@ is
 					if strand_cursor /= pac_strands.no_element then
 
 						-- center drawing where the strand starts:
-						center_on (canvas, element (strand_cursor).position.place);
+					-- CS center_on (canvas, element (strand_cursor).position.place);
 
 						proposed_segments.append (new_item => (
 							net		=> net_cursor,
@@ -384,8 +384,8 @@ is
 
 	
 	procedure show_sheet is -- GUI related
-		use et_canvas_schematic;
-		sheet : et_coordinates.type_sheet := to_sheet (f (5));
+		use et_canvas_schematic_2;
+		sheet : et_coordinates_2.type_sheet := to_sheet (f (5));
 	begin
 		log (text => "set sheet" & to_sheet (sheet), level => log_threshold + 1); 
 
@@ -394,9 +394,9 @@ is
 		current_active_sheet := sheet;
 
 		-- Update module name in title bar of main window:
-		set_title_bar (active_module);
+	-- CS set_title_bar (active_module);
 
-		update_sheet_number_display;
+	-- CS update_sheet_number_display;
 	end show_sheet;
 
 
@@ -405,7 +405,7 @@ is
 	procedure show_module is -- GUI related
 		use et_general;
 		use et_project;
-		use et_canvas_schematic;
+		use et_canvas_schematic_2;
 		
 		module : pac_module_name.bounded_string := to_module_name (f (5));
 	begin
@@ -416,26 +416,26 @@ is
 		-- Update module name in the schematic window title bar:
 		set_title_bar (module);
 		
-		update_sheet_number_display;
+		-- CS update_sheet_number_display;
 		
 		-- Update the board window title bar:
-		et_canvas_board.set_title_bar (module);
+		et_canvas_board_2.set_title_bar (module);
 
 
 		-- CS Init defaults of property bars in schematic.
 		
 		-- Init defaults of property bars in board:
-		et_canvas_board.init_property_bars;
+		et_canvas_board_2.init_property_bars;
 	end show_module;
 
 	
 	procedure show_module_and_sheet is  -- GUI related
 	-- Sets the active module and sheet.
 		use et_general;
-		use et_canvas_schematic;
+		use et_canvas_schematic_2;
 		
 		module : pac_module_name.bounded_string := to_module_name (f (5));
-		sheet : et_coordinates.type_sheet := to_sheet (f (6));
+		sheet : et_coordinates_2.type_sheet := to_sheet (f (6));
 	begin
 		log (text => "set module " & enclose_in_quotes (to_string (module))
 			& " sheet " & to_sheet (sheet), level => log_threshold + 1);
@@ -445,16 +445,16 @@ is
 		-- Update module name in the schematic window title bar:
 		set_title_bar (module);
 
-		update_sheet_number_display;
+		-- CS update_sheet_number_display;
 		
 		-- Update the board window title bar:
-		et_canvas_board.set_title_bar (module);
+		et_canvas_board_2.set_title_bar (module);
 
 
 		-- CS Init defaults of property bars in schematic.
 		
 		-- Init defaults of property bars in board:
-		et_canvas_board.init_property_bars;
+		et_canvas_board_2.init_property_bars;
 	end show_module_and_sheet;
 
 
@@ -518,12 +518,13 @@ is
 			-- Update module name in the schematic window title bar:
 			set_title_bar (active_module);
 			
-			update_sheet_number_display;
+			-- CS update_sheet_number_display;
 			
 			-- Update the board window title bar:
-			et_canvas_board.set_title_bar (active_module);
+			et_canvas_board_2.set_title_bar (active_module);
 		else
-			terminate_main;
+			null;
+			-- CS terminate_main;
 		end if;
 	end delete_active_module;
 
@@ -550,12 +551,13 @@ is
 			-- Update module name in the schematic window title bar:
 			set_title_bar (active_module);
 			
-			update_sheet_number_display;
+			-- CS update_sheet_number_display;
 			
 			-- Update the board window title bar:
-			et_canvas_board.set_title_bar (active_module);
+			et_canvas_board_2.set_title_bar (active_module);
 		else
-			terminate_main;
+			null;
+			-- CS terminate_main;
 		end if;
 	end delete_explicit_module;
 
@@ -578,10 +580,10 @@ is
 		-- Update module name in the schematic window title bar:
 		set_title_bar (active_module);
 		
-		update_sheet_number_display;
+		-- CS update_sheet_number_display;
 		
 		-- Update the board window title bar:
-		et_canvas_board.set_title_bar (active_module);
+		et_canvas_board_2.set_title_bar (active_module);
 	end create_module;
 
 
@@ -1230,8 +1232,10 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when VERB_EXIT | VERB_QUIT => terminate_main;
-			-- CS does not work via script (gtk error ...)
+			when VERB_EXIT | VERB_QUIT => 
+				null;
+				-- CS terminate_main;
+				-- CS does not work via script (gtk error ...)
 			
 			when VERB_INVOKE =>
 				case noun is
@@ -1907,8 +1911,10 @@ is
 								set_grid (
 									module_name 	=> module,
 									grid			=> (
-											x => to_distance (f (5)),
-											y => to_distance (f (6))),
+											spacing => (
+												x => to_distance (f (5)),
+												y => to_distance (f (6))),
+											others => <>),
 									log_threshold	=> log_threshold + 1);
 
 							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
@@ -2161,7 +2167,7 @@ is
 						case fields is
 							when 4 => 
 								log (text => "zoom to fit", level => log_threshold + 1);
-								scale_to_fit (canvas);
+								-- CS scale_to_fit (canvas);
 
 							when 5 .. count_type'last => too_long;
 
@@ -2199,7 +2205,8 @@ is
 
 		-- Update GUI if we are in graphical mode:
 		if runmode /= MODE_HEADLESS then
-			canvas.update_mode_display;
+			null;
+			-- CS canvas.update_mode_display;
 		end if;
 		
 	end parse;		
@@ -2341,7 +2348,7 @@ is
 												unit_name		=> unit_delete.unit,
 												log_threshold	=> log_threshold + 1);
 											
-											redraw;
+											-- CS redraw;
 
 										else
 											unit_not_on_this_sheet;
@@ -2415,7 +2422,7 @@ is
 											unit_move.being_moved := true;
 
 											single_cmd_status.finalization_pending := true;
-											redraw;
+											-- CS redraw;
 
 										else
 											unit_not_on_this_sheet;
@@ -2516,7 +2523,7 @@ is
 											-- Allow drawing the unit:
 											unit_add.via_invoke := true;
 										
-											redraw;
+											-- CS redraw;
 										else
 											unit_in_use;
 										end if;
@@ -2596,7 +2603,7 @@ is
 										unit_move.being_moved := true;
 
 										single_cmd_status.finalization_pending := true;
-										redraw;
+										-- CS redraw;
 										
 									else
 										unit_not_deployed;
@@ -2925,10 +2932,11 @@ begin -- schematic_cmd
 	end if;
 	
 	exception when event: others =>
-		
-			evaluate_exception (
-				name	=> exception_name (event),
-				message	=> exception_message (event));
+
+			-- CS
+			-- evaluate_exception (
+			-- 	name	=> exception_name (event),
+			-- 	message	=> exception_message (event));
 
 			raise;
 			

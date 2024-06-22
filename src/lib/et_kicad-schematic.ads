@@ -443,7 +443,7 @@ package et_kicad.schematic is
 	end record;
 
 	function length (segment : in type_net_segment_base) 
-		return et_coordinates_2.type_distance;
+		return et_coordinates_2.type_distance_model;
 	-- Returns the length of the given net segment.
 	
 	type type_net_segment is new type_net_segment_base with record
@@ -801,7 +801,7 @@ package et_kicad.schematic is
         text_size_of_name   : et_schematic_shapes_and_text.pac_text_schematic.type_text_size;
         text_size_of_file   : et_schematic_shapes_and_text.pac_text_schematic.type_text_size;
 		coordinates		    : et_kicad_coordinates.type_position;
-        size_x, size_y      : et_coordinates_2.type_distance; -- size x/y of the box
+        size_x, size_y      : et_coordinates_2.type_distance_model; -- size x/y of the box
 		timestamp           : type_timestamp;
 		ports				: type_hierarchic_sheet_ports.map;
 	end record;

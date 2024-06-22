@@ -277,8 +277,8 @@ package body et_board_ops.conductors is
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in pac_terminal_name.bounded_string;
-		direction		: in type_rotation;
-		length			: in type_distance_positive;
+		direction		: in type_rotation_model;
+		length			: in type_distance_model_positive;
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -349,7 +349,7 @@ package body et_board_ops.conductors is
 		width			: in type_track_width;
 		device			: in type_device_name;
 		terminal		: in pac_terminal_name.bounded_string;
-		direction		: in type_rotation;
+		direction		: in type_rotation_model;
 		axis			: in type_axis_2d;
 		notches			: in type_grid_notches;
 		log_threshold	: in type_log_level) 

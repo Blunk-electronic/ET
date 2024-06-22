@@ -66,14 +66,14 @@ with gtk.text_buffer;
 with gtk.text_iter;
 
 with et_schematic_ops.nets;
-with et_canvas_board;
+with et_canvas_board_2;
 
 with et_exceptions;					use et_exceptions;
 
 
 package body et_canvas_board_vias is
 
-	use et_canvas_board.pac_canvas;
+	use et_canvas_board_2.pac_canvas;
 	
 	
 -- CATEGORY
@@ -91,7 +91,7 @@ package body et_canvas_board_vias is
 		preliminary_via.category := to_via_category (glib.values.get_string (item_text));
 		--put_line ("cat " & to_string (text_place.category));
 
-		et_canvas_board.redraw_board;
+		-- CS et_canvas_board_2.redraw_board;
 		
 		-- CS display layer ?
 	end category_changed;
@@ -112,7 +112,7 @@ package body et_canvas_board_vias is
 		preliminary_via.destination_blind := to_signal_layer (glib.values.get_string (item_text));
 		--put_line ("signal layer " & to_string (preliminary_via.destination_blind));
 
-		et_canvas_board.redraw_board;
+		-- CS et_canvas_board_2.redraw_board;
 		
 		-- CS display layer ?
 	end destination_changed;
@@ -133,7 +133,7 @@ package body et_canvas_board_vias is
 		preliminary_via.layers_buried.upper := to_signal_layer (glib.values.get_string (item_text));
 		--put_line ("signal layer " & to_string (preliminary_via.destination_blind));
 
-		et_canvas_board.redraw_board;
+		-- CS et_canvas_board_2.redraw_board;
 		
 		-- CS display layer ?
 	end upper_layer_changed;
@@ -152,7 +152,7 @@ package body et_canvas_board_vias is
 		preliminary_via.layers_buried.lower := to_signal_layer (glib.values.get_string (item_text));
 		--put_line ("signal layer " & to_string (preliminary_via.destination_blind));
 
-		et_canvas_board.redraw_board;
+		-- CS et_canvas_board_2.redraw_board;
 		
 		-- CS display layer ?
 	end lower_layer_changed;
@@ -169,7 +169,7 @@ package body et_canvas_board_vias is
 		-- CS validate. output error in status bar
 		preliminary_via.drill.diameter := size;
 
-		et_canvas_board.redraw_board;
+		-- CS et_canvas_board_2.redraw_board;
 	end apply_drill_size;
 	
 	
@@ -217,7 +217,7 @@ package body et_canvas_board_vias is
 		-- CS validate. output error in status bar
 		preliminary_via.restring_inner := width;
 
-		et_canvas_board.redraw_board;
+		-- CS et_canvas_board_2.redraw_board;
 	end apply_restring_inner;
 	
 	
@@ -265,7 +265,7 @@ package body et_canvas_board_vias is
 		-- CS validate. output error in status bar
 		preliminary_via.restring_outer := width;
 
-		et_canvas_board.redraw_board;
+		-- CS et_canvas_board_2.redraw_board;
 	end apply_restring_outer;
 
 	
@@ -757,30 +757,32 @@ package body et_canvas_board_vias is
 			-- Otherwise build it:
 			if not box_properties.displayed then
 				box_properties.displayed := true;
-			
-				gtk_new_hbox (box_properties.box_main);
-				pack_start (et_canvas_board.pac_canvas.box_right, box_properties.box_main,
-							expand	=> false);
+
+				-- CS 
+				-- gtk_new_hbox (box_properties.box_main);
+				-- pack_start (et_canvas_board.pac_canvas.box_right, box_properties.box_main,
+				-- 			expand	=> false);
 
 				-- The properties bar is to be displayed in the right box
 				-- below the console:
-				reorder_child (box_right, box_properties.box_main, 1);
+				-- CS reorder_child (box_right, box_properties.box_main, 1);
 
 				-- build the elements of the properties bar:
-				make_combo_category;
-				make_combo_net;
-				make_combo_destination;
-				make_combo_buried_upper;
-				make_combo_buried_lower;			
-				make_combo_drill;
-				make_combo_restring_inner;
-				make_combo_restring_outer;
+				-- CS 
+				-- make_combo_category;
+				-- make_combo_net;
+				-- make_combo_destination;
+				-- make_combo_buried_upper;
+				-- make_combo_buried_lower;			
+				-- make_combo_drill;
+				-- make_combo_restring_inner;
+				-- make_combo_restring_outer;
 
 				-- Signal the GUI to draw the via:
 				preliminary_via.ready := true;
 				
 				-- Redraw the right box of the window:
-				box_right.show_all;
+				-- CS box_right.show_all;
 			end if;
 
 		-- else
@@ -799,8 +801,9 @@ package body et_canvas_board_vias is
 
 		-- Remove the via properties bar from the window:
 		if box_properties.displayed then
-			remove (box_right, box_properties.box_main);
-			box_properties.displayed := false;
+			null;
+			-- CS remove (box_right, box_properties.box_main);
+			-- CS box_properties.displayed := false;
 		end if;
 	end reset_preliminary_via;
 

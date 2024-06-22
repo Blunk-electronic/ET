@@ -70,7 +70,7 @@ with ada.calendar.formatting;		use ada.calendar.formatting;
 -- 
 -- with et_canvas_board_lines;			use et_canvas_board_lines;
 -- with et_canvas_board_texts;			use et_canvas_board_texts;
--- with et_canvas_board_vias;			use et_canvas_board_vias;
+with et_canvas_board_vias;			use et_canvas_board_vias;
 -- with et_canvas_board_devices;		use et_canvas_board_devices;
 -- with et_canvas_board_assy_doc;		--use et_canvas_board_assy_doc;
 -- with et_canvas_board_silkscreen;	--use et_canvas_board_silkscreen;
@@ -79,9 +79,17 @@ with ada.calendar.formatting;		use ada.calendar.formatting;
 
 package body et_canvas_board_2 is
 
-	procedure dummy is begin null; end;
-	
 	-- use et_project.modules.pac_generic_modules;
+
+
+	procedure set_title_bar (
+		-- CS project name
+		module		: in pac_module_name.bounded_string)
+	is begin
+		main_window.set_title (title & to_string (module));
+	end set_title_bar;
+
+	
 
 
 	procedure compute_bounding_box (
@@ -560,24 +568,17 @@ package body et_canvas_board_2 is
 	-- It removes all property bars (if being displayed) and
 	-- calls other procedures that initialize the values used in property
 	-- bars for vias, tracks, ...
--- 	procedure init_property_bars is begin
--- 		reset_preliminary_via;
--- 		init_preliminary_via;
--- 
--- 		--  CS init route
--- 		-- CS init text
--- 		-- ...
--- 	end init_property_bars;
--- 
--- 
--- 	
--- 	procedure set_title_bar (
--- 		-- CS project name
--- 		module		: in pac_module_name.bounded_string)
--- 	is begin
--- 		window.set_title (title & to_string (module));
--- 	end set_title_bar;
--- 
+	procedure init_property_bars is begin
+		reset_preliminary_via;
+		init_preliminary_via;
+
+		--  CS init route
+		-- CS init text
+		-- ...
+	end init_property_bars;
+
+
+	
 -- 	
 -- 	procedure set_label_console is
 -- 		text_before : constant string := label_console.get_text;

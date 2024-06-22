@@ -461,8 +461,9 @@ package et_canvas is
 
 	-- This procedure sets the text of the title bar
 	-- of the main window:
-	procedure set_title_bar (
-		title : in string);
+	-- procedure set_title_bar (
+	-- 	title : in string);
+	-- CS see et_canvas_schematic_2 and et_canvas_board_2
 
 	
 

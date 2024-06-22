@@ -6104,8 +6104,8 @@ package body et_kicad.schematic is
 	end simple_name;
 
 
-	procedure write_label_properties (label : in type_net_label) is
 	-- Writes the properties of the given net label in the logfile.
+	procedure write_label_properties (label : in type_net_label) is
 		use et_string_processing;
 		use et_schematic;
 		log_threshold : type_log_level := 2;
@@ -6117,20 +6117,20 @@ package body et_kicad.schematic is
 			log (text => "simple label " & 
 				 to_string (label.text) & " at " & 
 				 --to_string (position => label.coordinates)); -- CS log_threshold ?
-				 to_string (point => label.coordinates)); -- CS log_threshold ?
+				 to_string (label.coordinates)); -- CS log_threshold ?
 				
 			when TAG =>
 				if label.hierarchic then
 					log (text => "hierarchic label " & 
 					to_string (label.text) & " at " &
 					--to_string (position => label.coordinates));  -- CS log_threshold ?
-					to_string (point => label.coordinates));  -- CS log_threshold ?
+					to_string (label.coordinates));  -- CS log_threshold ?
 				end if;
 					
 				if label.global then
 					log (text => "global label " & to_string (label.text) & " at " &
 					--to_string (position => label.coordinates));  -- CS log_threshold ?
-					to_string (point => label.coordinates));  -- CS log_threshold ?
+					to_string (label.coordinates));  -- CS log_threshold ?
 				end if;
 					
 				-- CS: directon, global, hierarchic, style, ...
@@ -6154,11 +6154,11 @@ package body et_kicad.schematic is
 	end write_label_properties;
 	
 
-	function to_string (label : in type_net_label) return string is
 	-- Returns the coordinates of the given label as string.
+	function to_string (label : in type_net_label) return string is
 	begin
 		--return (to_string (position => label.coordinates, scope => scope));
-		return to_string (point => label.coordinates);
+		return to_string (label.coordinates);
 	end to_string;
 
 	function to_string (
@@ -6173,9 +6173,9 @@ package body et_kicad.schematic is
 	
 	-- Returns the length of the given net segment.
 	function length (segment : in type_net_segment_base) 
-		return et_coordinates_2.type_distance 
+		return et_coordinates_2.type_distance_model 
 	is
-		len : type_distance;
+		len : type_distance_model;
 		--use et_string_processing;
 	begin
 		len := to_distance (get_distance_total (

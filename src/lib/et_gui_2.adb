@@ -75,7 +75,7 @@ package body et_gui_2 is
 
 		pac_canvas.set_up_main_window;
 		et_canvas_schematic_2.set_up_main_window;
-		set_title_bar ("SCHEMATIC"); -- CS rig and module name
+		-- set_title_bar ("SCHEMATIC"); -- CS rig and module name
 
 		set_up_coordinates_display;
 		set_up_swin_and_scrollbars;
@@ -172,7 +172,7 @@ package body et_gui_2 is
 		
 		pac_canvas.set_up_main_window;
 		et_canvas_board_2.set_up_main_window;
-		set_title_bar ("BOARD"); -- CS rig and module name
+		-- set_title_bar ("BOARD"); -- CS rig and module name
 
 
 -- 		build_primary_tool_display;

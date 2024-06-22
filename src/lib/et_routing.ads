@@ -56,7 +56,7 @@ with et_schematic_ops;
 with et_pcb;						use et_pcb;
 with et_pcb_contour;
 with et_pcb_stack;					use et_pcb_stack;
-with et_pcb_coordinates;			use et_pcb_coordinates;
+with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
 with et_board_shapes_and_text;		use et_board_shapes_and_text;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
@@ -139,7 +139,7 @@ package et_routing is
 	type type_track is record
 		center		: type_line_vector; -- incl. start point and direction
 		width		: type_track_width; -- of the conductor (usually copper) -- CS rename to conductor_width
-		clearance	: type_distance_positive;
+		clearance	: type_distance_model_positive;
 	end record;
 
 
@@ -280,7 +280,7 @@ package et_routing is
 	
 	type type_route_distance (status : type_valid) is record
 		case status is
-			when VALID		=> distance : type_distance_positive;
+			when VALID		=> distance : type_distance_model_positive;
 			when INVALID	=> null;
 		end case;
 	end record;
@@ -305,7 +305,7 @@ package et_routing is
 	--  - If the start point does not qualify to start a track then
 	--    the return is INVALID.
 	--  - If there is no obstacle then the return is VALID and the
-	--    returned distance is the maxium (type_distance'last).
+	--    returned distance is the maxium (type_distance_model'last).
 	-- If place is AFTER: 
 	--  - Returns the distance from start_point to the nearest point,
 	--    after one or more obstacles, that qualifies to start a track.

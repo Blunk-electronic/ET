@@ -60,6 +60,9 @@ with et_logging;					use et_logging;
 with et_canvas_schematic_nets;
 with et_device_placeholders;		use et_device_placeholders;
 
+with et_canvas_messages;			use et_canvas_messages;
+with et_canvas_tool;				use et_canvas_tool;
+
 
 package et_canvas_schematic_units is
 
@@ -93,7 +96,7 @@ package et_canvas_schematic_units is
 	-- Collects all units in the vicinity of the given point:
 	function collect_units (
 		module			: in pac_generic_modules.cursor;
-		place			: in et_coordinates.type_position; -- sheet/x/y
+		place			: in et_coordinates_2.type_position; -- sheet/x/y
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_units.list;

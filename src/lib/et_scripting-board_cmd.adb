@@ -87,11 +87,11 @@ is
 	use et_vias;
 	use et_pcb;
 
-	use et_pcb_coordinates;
+	use et_pcb_coordinates_2;
 	use pac_geometry_2;
 
 	use et_pcb_stack;
-	use et_canvas_board.pac_canvas;
+	use et_canvas_board_2.pac_canvas;
 	use et_display.board;
 	use et_modes.board;
 	
@@ -960,7 +960,7 @@ is
 		use et_board_ops.text;
 		text			: type_text_fab;
 		pos_xy			: type_vector_model;
-		rotation		: type_rotation;
+		rotation		: type_rotation_model;
 		content			: pac_text_content.bounded_string;
 		layer_category	: type_text_layer;
 		signal_layer	: type_signal_layer;
@@ -2048,7 +2048,7 @@ is
 			when MODE_MODULE =>
 
 				log (text => "center on point", level => log_threshold + 1);
-				center_on (canvas, c);
+				-- CS center_on (canvas, c);
 
 			when others =>
 				skipped_in_this_runmode (log_threshold + 1);
@@ -2064,7 +2064,7 @@ is
 		case runmode is
 			when MODE_MODULE =>
 				log (text => "zoom level", level => log_threshold + 1);
-				set_scale (s);
+				-- CS set_scale (s);
 
 			when others =>
 				skipped_in_this_runmode (log_threshold + 1);
@@ -2088,7 +2088,7 @@ is
 				log (text => "place cursor" & to_string (coordinates) 
 					& to_string (position), level => log_threshold + 1);
 		
-				canvas.move_cursor (coordinates, cursor_main, position);
+				-- CS canvas.move_cursor (coordinates, cursor_main, position);
 
 			when others =>
 				skipped_in_this_runmode (log_threshold + 1);
@@ -2540,8 +2540,10 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-			when VERB_EXIT | VERB_QUIT => terminate_main; 
-			-- CS does not work via script (gtk error ...)
+			when VERB_EXIT | VERB_QUIT => 
+				null;
+				-- CS terminate_main; 
+				-- CS does not work via script (gtk error ...)
 
 			when VERB_FILL =>
 				case noun is
@@ -2784,8 +2786,10 @@ is
 								set_grid (
 									module_name 	=> module,
 									grid			=> (
-											x => to_distance (f (5)),
-											y => to_distance (f (6))),
+											spacing => (
+												x => to_distance (f (5)),
+												y => to_distance (f (6))),
+											others => <>),
 									log_threshold	=> log_threshold + 1);
 
 							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, get_field_count - 1);
@@ -2830,7 +2834,7 @@ is
 						case get_field_count is
 							when 4 => 
 								log (text => "zoom to fit", level => log_threshold + 1);
-								scale_to_fit (canvas);
+								-- CS scale_to_fit (canvas);
 
 							when 5 .. count_type'last => too_long;
 
@@ -2840,7 +2844,8 @@ is
 					when NOUN_LEVEL => -- zoom level 3
 						case get_field_count is
 							when 4 => 
-								set_scale (f (5));
+								null;
+								-- CS set_scale (f (5));
 
 							when 6 .. count_type'last => too_long;
 
@@ -2850,11 +2855,13 @@ is
 					when NOUN_CENTER => -- zoom center 10 10
 						case get_field_count is
 							when 6 =>  -- zoom center 10 10
-								zoom_center;
+								null;
+								-- zoom_center;
 
 							when 7 =>  -- zoom center 10 10 0.5
-								zoom_center;
-								set_scale (f (7));
+								null;
+								-- CS zoom_center;
+								-- CS set_scale (f (7));
 
 							when 8 .. count_type'last => too_long;
 
@@ -2868,7 +2875,8 @@ is
 
 		-- Update GUI if we are in graphical mode:
 		if runmode /= MODE_HEADLESS then
-			canvas.update_mode_display;
+			null;
+			-- CS canvas.update_mode_display;
 		end if;
 			
 	end parse;
@@ -2991,9 +2999,11 @@ begin -- board_cmd
 
 	exception when event: others =>
 
-			evaluate_exception (
-				name	=> exception_name (event),
-				message	=> exception_message (event));
+			null;
+		-- CS
+			-- evaluate_exception (
+			-- 	name	=> exception_name (event),
+			-- 	message	=> exception_message (event));
 
 			raise;
 	

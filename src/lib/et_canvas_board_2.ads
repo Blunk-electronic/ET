@@ -72,7 +72,8 @@ with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
 -- with et_terminals;					use et_terminals;
 -- with et_conductor_segment;
 -- with et_packages;
--- with et_project.modules;			use et_project.modules;
+with et_project;
+with et_project.modules;			use et_project.modules;
 -- with et_schematic;
 -- with et_frames;
 
@@ -84,7 +85,13 @@ with et_logging;					use et_logging;
 
 package et_canvas_board_2 is
 
-	procedure dummy;
+	title : constant string := system_name & " BOARD ";
+	
+	procedure set_title_bar (
+		-- CS project name								
+		module		: in pac_module_name.bounded_string);
+
+	
 	
 -- 	use pac_text_board;
 -- 	
@@ -93,7 +100,7 @@ package et_canvas_board_2 is
 	-- This procedure should be called each time after the current active module 
 	-- changes. It calls procedures that initialize the values used in property
 	-- bars for vias, tracks, ...
-	-- procedure init_property_bars;
+	procedure init_property_bars;
 	
 
 	

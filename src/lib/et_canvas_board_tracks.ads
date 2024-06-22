@@ -44,12 +44,14 @@ with ada.containers.indefinite_doubly_linked_lists;
 with gtk.box;							use gtk.box;
 with gtk.list_store;					use gtk.list_store;			
 
-with et_canvas_general;					use et_canvas_general;
-with et_canvas_board;
+with et_canvas;
+with et_canvas_tool;					use et_canvas_tool;
+with et_canvas_messages;				use et_canvas_messages;
+with et_canvas_board_2;
 
 with et_geometry;						use et_geometry;
-with et_pcb_coordinates;				use et_pcb_coordinates;
-use et_pcb_coordinates.pac_geometry_2;
+with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
+use et_pcb_coordinates_2.pac_geometry_2;
 
 with et_board_shapes_and_text;			use et_board_shapes_and_text;
 
@@ -70,7 +72,8 @@ with et_ratsnest;						use et_ratsnest;
 
 package et_canvas_board_tracks is
 
-	use et_canvas_board.pac_canvas;
+	use et_canvas_board_2.pac_canvas;
+	use pac_path_and_bend;
 	
 
 	-- The text properties bar:
@@ -114,7 +117,7 @@ package et_canvas_board_tracks is
 		signal_layer	: type_signal_layer := signal_layer_default;
 
 		path			: type_path_live;
-		width			: type_distance_positive := 0.15;
+		width			: type_distance_model_positive := 0.15;
 		snap_mode		: type_snap_mode := NEAREST_AIRWIRE;
 	end record;
 

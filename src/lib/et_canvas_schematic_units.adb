@@ -75,7 +75,7 @@ with et_material;
 with et_meta;
 with et_modes.schematic;			use et_modes.schematic;
 
--- with et_canvas_schematic;			use et_canvas_schematic;
+with et_canvas_schematic_2;			use et_canvas_schematic_2;
 
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 
@@ -85,7 +85,7 @@ with et_undo_redo;
 
 package body et_canvas_schematic_units is
 
-	use et_canvas_schematic.pac_canvas;
+	use et_canvas_schematic_2.pac_canvas;
 
 
 	
@@ -97,7 +97,7 @@ package body et_canvas_schematic_units is
 	
 	function collect_units (
 		module			: in pac_generic_modules.cursor;
-		place			: in et_coordinates.type_position; -- sheet/x/y
+		place			: in et_coordinates_2.type_position; -- sheet/x/y
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_units.list
@@ -617,7 +617,7 @@ package body et_canvas_schematic_units is
 
 		-- The initial position of the selected unit before 
 		-- the drag:
-		unit_position : et_coordinates.type_position;
+		unit_position : et_coordinates_2.type_position;
 		
 		procedure get_ports (su : in type_selected_unit) is 
 			use pac_units;
@@ -707,7 +707,7 @@ package body et_canvas_schematic_units is
 		unit			: in out type_selected_unit;
 		log_threshold	: in type_log_level)
 	is
-		rotation : constant et_coordinates.type_rotation := 90.0;
+		rotation : constant et_coordinates_2.type_rotation_model := 90.0;
 
 		use pac_devices_sch;
 		use pac_units;
@@ -719,8 +719,8 @@ package body et_canvas_schematic_units is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
 
-			position_of_unit : et_coordinates.type_position;
-			rotation_before : et_coordinates.type_rotation;
+			position_of_unit : et_coordinates_2.type_position;
+			rotation_before : et_coordinates_2.type_rotation_model;
 
 			ports_lib, ports_scratch : pac_ports.map;
 
@@ -737,7 +737,7 @@ package body et_canvas_schematic_units is
 
 					preamble : constant string := " placeholder now at";
 
-					procedure rotate_placeholders_relative (rot : in type_rotation) is 
+					procedure rotate_placeholders_relative (rot : in type_rotation_model) is 
 						use pac_text_schematic;
 					begin
 						-- Rotate position of placeholders around the unit origin. 
@@ -1395,7 +1395,7 @@ package body et_canvas_schematic_units is
 		push_in : out boolean)
 	is
 		use glib;
-		--use et_coordinates.pac_geometry_sch;
+		--use et_coordinates_2.pac_geometry_sch;
 
 		--cp : type_vector_model := cursor_main.position;
 		--mp : type_vector_model := canvas.drawing_to_model (cursor_main.position);
@@ -1711,7 +1711,7 @@ package body et_canvas_schematic_units is
 	
 	function collect_placeholders (
 		module			: in pac_generic_modules.cursor;
-		place			: in et_coordinates.type_position; -- sheet/x/y
+		place			: in et_coordinates_2.type_position; -- sheet/x/y
 		catch_zone		: in type_catch_zone; -- the circular area around the place
 		category		: in type_placeholder_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level)
@@ -1737,7 +1737,7 @@ package body et_canvas_schematic_units is
 
 				
 				procedure test_placeholder_position is 
-					pos_abs : et_coordinates.type_position;
+					pos_abs : et_coordinates_2.type_position;
 				begin
 					-- The current placeholder_position is relative to the unit position.
 					-- It must be moved by the unit position in order to get the absolute position:
@@ -1885,7 +1885,7 @@ package body et_canvas_schematic_units is
 		category		: in type_placeholder_meaning;
 		log_threshold	: in type_log_level)
 	is
-		rotation : constant et_coordinates.type_rotation := 90.0;
+		rotation : constant et_coordinates_2.type_rotation_model := 90.0;
 
 		use pac_devices_sch;
 		use pac_units;
@@ -1909,7 +1909,7 @@ package body et_canvas_schematic_units is
 					name	: in pac_unit_name.bounded_string; -- A
 					unit	: in out type_unit) 
 				is
-					r : type_rotation;
+					r : type_rotation_model;
 					use pac_text_schematic;
 				begin
 					case category is
@@ -2048,7 +2048,7 @@ package body et_canvas_schematic_units is
 			reset_request_clarification;
 			--status_clear;
 			clear_proposed_units;
-			redraw;
+		-- CS redraw;
 		end clean_up;
 		
 	begin -- property_entered
