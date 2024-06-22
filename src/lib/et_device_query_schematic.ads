@@ -41,7 +41,7 @@ with et_packages;						use et_packages;
 with et_devices;						use et_devices;
 with et_schematic;						use et_schematic;
 with et_assembly_variants;				use et_assembly_variants;
-with et_coordinates;					use et_coordinates;
+with et_coordinates_2;					use et_coordinates_2;
 
 with et_terminals;
 
