@@ -92,6 +92,10 @@ package et_canvas_board_2 is
 		module		: in pac_module_name.bounded_string);
 
 	
+	-- Updates the verb/noun display:
+	procedure update_mode_display;
+
+
 	
 -- 	use pac_text_board;
 -- 	

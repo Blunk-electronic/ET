@@ -45,6 +45,8 @@ with gtk.window;				use gtk.window;
 with gtk.separator;				use gtk.separator;
 with gtk.box;					use gtk.box;
 with gtk.gentry;				use gtk.gentry;
+with gtk.combo_box;				use gtk.combo_box;
+with gtk.combo_box_text;		use gtk.combo_box_text;
 with gtk.drawing_area;			use gtk.drawing_area;
 
 with gtk.scrolled_window;		use gtk.scrolled_window;
@@ -514,8 +516,8 @@ package et_canvas is
 	-- of the height of all other widgets in the main window !
 	-- Otherwise the canvas may freeze and stop emitting signals.
 	swin_size_initial : constant type_window_size := (
-		width	=> 400,
-		height	=> 400);
+		width	=> 800,
+		height	=> 600);
 	
 	-- The current size of the scrolled window. It gets updated
 	-- in procedure set_up_swin_and_scrollbars and 
@@ -718,7 +720,31 @@ package et_canvas is
 	procedure update_scale_display;
 
 
+	
+-- VERB AND NOUN DISPLAY:
 
+	type type_mode is record
+		box_mode			: gtk_vbox;
+		box_mode_verb		: gtk_hbox;
+		box_mode_noun		: gtk_hbox;
+		label_mode			: gtk_label;
+		label_mode_verb		: gtk_label;
+		label_mode_noun		: gtk_label;
+		-- cbox_mode_verb		: gtk_combo_box_text;
+		-- cbox_mode_noun		: gtk_combo_box_text;
+		cbox_mode_verb		: gtk_combo_box;
+		cbox_mode_noun		: gtk_combo_box;
+
+	end record;
+
+	mode_display : type_mode;
+
+	
+	procedure build_mode_display;
+
+	
+	
+-- GRID:
 	
 	-- This is the grid used by the canvas.
 	-- It is primarily a copy of the grid settings of the database.

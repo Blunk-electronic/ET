@@ -57,7 +57,7 @@ with et_modes;
 -- with et_display.schematic;			use et_display.schematic;
 -- with et_colors;						use et_colors;
 -- with et_colors.schematic;			use et_colors.schematic;
--- with et_modes.schematic;			use et_modes.schematic;
+with et_modes.schematic;
 -- 
 -- with et_net_names;					use et_net_names;
 -- with et_net_labels;					use et_net_labels;
@@ -82,6 +82,18 @@ package body et_canvas_schematic_2 is
 	end set_title_bar;
 
 
+	procedure update_mode_display is 
+		use et_modes.schematic;
+		
+		-- Get the current drawing mode
+		v : constant string := to_string (verb);
+		n : constant string := to_string (noun);
+	begin
+		-- show the drawing mode
+		gtk_entry (mode_display.cbox_mode_verb.get_child).set_text (v);
+		gtk_entry (mode_display.cbox_mode_noun.get_child).set_text (n);
+	end update_mode_display;
+	
 	
 	
 	procedure compute_bounding_box (

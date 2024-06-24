@@ -58,7 +58,7 @@ with ada.calendar.formatting;		use ada.calendar.formatting;
 -- with et_display.board;
 -- with et_colors;
 -- with et_colors.board;				use et_colors.board;
--- with et_modes.board;				use et_modes.board;
+with et_modes.board;
 -- with et_board_ops;					use et_board_ops;
 -- with et_pcb;
 -- with et_pcb_stack;
@@ -91,6 +91,19 @@ package body et_canvas_board_2 is
 
 	
 
+	procedure update_mode_display is 
+		use et_modes.board;
+		
+		-- Get the current drawing mode
+		v : constant string := to_string (verb);
+		n : constant string := to_string (noun);
+	begin
+		-- show the drawing mode
+		gtk_entry (mode_display.cbox_mode_verb.get_child).set_text (v);
+		gtk_entry (mode_display.cbox_mode_noun.get_child).set_text (n);
+	end update_mode_display;
+
+	
 
 	procedure compute_bounding_box (
 		abort_on_first_error	: in boolean := false;

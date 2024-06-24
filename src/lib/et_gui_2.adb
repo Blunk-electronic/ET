@@ -85,6 +85,10 @@ package body et_gui_2 is
 		-- set_title_bar ("SCHEMATIC"); -- CS rig and module name
 
 		set_up_coordinates_display;
+
+		-- log (text => "build mode display", level => log_threshold + 1);
+		build_mode_display;
+		
 		set_up_swin_and_scrollbars;
 
 		pac_canvas.set_up_canvas;
@@ -118,8 +122,6 @@ package body et_gui_2 is
 -- 		build_coordinates_display;
 -- 
 -- 		
--- 		log (text => "build mode display", level => log_threshold + 1);
--- 		build_mode_display;
 -- 
 -- 		
 -- 		-- Connect to the on_activate signal (on hitting enter key):
@@ -180,9 +182,9 @@ package body et_gui_2 is
 -- 		build_primary_tool_display;
 
 		set_up_coordinates_display;
--- 
--- 		build_mode_display;
--- 		
+		build_mode_display;
+
+
 -- 		-- Connect to the on_activate signal (on hitting enter key):
 -- 		gtk_entry (cursor_position_x.get_child).on_activate (set_cursor_position_x'access);
 -- 		gtk_entry (cursor_position_y.get_child).on_activate (set_cursor_position_y'access);
@@ -259,7 +261,8 @@ package body et_gui_2 is
 
 		-- Activate the schematic window:
 		et_canvas_schematic_2.pac_canvas.main_window.present;
-		
+
+		-- CS
 		--et_canvas_schematic.pac_canvas.console.grab_focus;
 
 		
@@ -288,6 +291,9 @@ package body et_gui_2 is
 
 		et_canvas_schematic_2.pac_canvas.update_grid_display;
 		et_canvas_board_2.pac_canvas.update_grid_display;
+
+		et_canvas_schematic_2.update_mode_display;
+		et_canvas_board_2.update_mode_display;
 		
 		-- CS Init defaults of property bars in schematic.
 

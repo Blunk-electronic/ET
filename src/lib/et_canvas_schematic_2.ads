@@ -109,7 +109,10 @@ package et_canvas_schematic_2 is
 	procedure set_title_bar (
 		-- CS project name								
 		module		: in pac_module_name.bounded_string);
-	
+
+
+	-- Updates the verb/noun display:
+	procedure update_mode_display;
 
 	
 	-- Instantiate the canvas package:
