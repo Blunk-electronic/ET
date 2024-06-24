@@ -58,26 +58,29 @@ with et_canvas_schematic_2;
 package body et_schematic_ops is
 
 	use pac_generic_modules;
-	use et_canvas_schematic_2.pac_canvas;
 
 	use et_submodules.pac_netchangers;
 	use et_submodules.pac_submodules;
 	use pac_strands;
+
 	
 	procedure device_not_found (name : in type_device_name) is begin
 		raise semantic_error_1 
 			with "ERROR: Device " & to_string (name) & " not found !";
 	end device_not_found;
 
+	
 	procedure device_already_exists (name : in type_device_name) is begin
 		raise semantic_error_1
 			with "ERROR: Device " & to_string (name) & " already exists !";
 	end device_already_exists;
 
+	
 -- 	procedure device_prefix_invalid (name : in type_device_name) is begin
 -- 		log (message_warning & "prefix of device name " & to_string (name) & " invalid !");
 -- 	end;
 
+	
 	procedure relative_rotation_invalid is begin
 		log (ERROR, "Relative rotation must be in range" & 
 			to_string (rotation_relative_min) &
@@ -87,34 +90,40 @@ package body et_schematic_ops is
 			);
 		raise constraint_error;
 	end;
+
 	
 	procedure unit_not_found (name : in pac_unit_name.bounded_string) is begin
 		raise semantic_error_1 with
 			"ERROR: Unit " & to_string (name) & " not found !";
 	end unit_not_found;
 
+	
 	procedure submodule_not_found (name : in pac_module_instance_name.bounded_string) is begin
 		log (ERROR, "submodule instance " & enclose_in_quotes (to_string (name)) &
 			 " not found !", console => true);
 		raise constraint_error;
 	end;
 
+	
 	procedure netchanger_not_found (index : in et_submodules.type_netchanger_id) is begin
 		log (ERROR, "netchanger" & et_submodules.to_string (index) & " not found !", console => true);
 		raise constraint_error;
 	end;
 
+	
 	procedure net_not_found (name : in pac_net_name.bounded_string) is begin
 		raise semantic_error_1 with
 			"ERROR ! Net " & enclose_in_quotes (to_string (name)) & " not found !";
 	end;
 
+	
 	procedure submodule_port_not_found (name : in pac_net_name.bounded_string) is begin
 		log (ERROR, "port " &
 			enclose_in_quotes (to_string (name)) & " not found !", console => true);
 		raise constraint_error;
 	end;
 
+	
 	procedure assembly_variant_not_found (variant : in pac_assembly_variant_name.bounded_string) is 
 	begin
 		log (ERROR, "assembly variant " &
@@ -122,6 +131,7 @@ package body et_schematic_ops is
 		raise constraint_error;
 	end;
 
+	
 	procedure port_not_provided (port_name : in pac_net_name.bounded_string) is begin
 		log (ERROR, "submodule does not provide a port named " &
 			 enclose_in_quotes (to_string (port_name)) & " with the desired direction (master/slave) !", console => true);
@@ -155,7 +165,12 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 		begin
+			-- Set the grid in the database:
 			module.grid := grid;
+
+			-- Set the grid of the canvas:
+			et_canvas_schematic_2.pac_canvas.grid := grid;
+			et_canvas_schematic_2.pac_canvas.set_grid_to_scale;
 		end;
 		
 	begin -- set_grid
@@ -186,7 +201,12 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
 		begin
+			-- Set the grid in the database:
 			module.grid := grid;
+
+			-- Set the grid of the canvas:
+			et_canvas_schematic_2.pac_canvas.grid := grid;
+			et_canvas_schematic_2.pac_canvas.set_grid_to_scale;
 		end;
 		
 	begin -- set_grid

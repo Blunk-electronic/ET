@@ -68,7 +68,14 @@ package body et_gui_2 is
 		
 		current_active_project := project;
 
-		set_grid_to_scale;
+
+		-- set the module to be opened and optionally the sheet to be displayed:
+		log (text => "init drawing", level => log_threshold + 1);
+		init_drawing (module, sheet);
+
+		
+		
+		-- set_grid_to_scale;
 		compute_canvas_size;
 		compute_bounding_box;
 		set_base_offset;
@@ -132,12 +139,7 @@ package body et_gui_2 is
 -- 		
 -- 		-- Connect to the on_activate signal of the entry (which is a child of console):
 -- 		gtk_entry (console.get_child).on_activate (execute_command'access); -- on hitting enter
--- 		
--- 		
--- 		-- set the module to be opened and optionally the sheet to be displayed:
--- 		log (text => "init drawing", level => log_threshold + 1);
--- 		init_drawing (module, sheet);
--- 
+
 
 
 		-- display the schematic:
@@ -266,21 +268,21 @@ package body et_gui_2 is
 		-- NOTE 2: The procedure execute_script is available in gui_board and gui_schematic.
 		--         Both launch the script in the same way. But in case there is no board
 		--         available, it is more reasonable to launch the script from the schematic.
-		-- if pac_script_name.length (script) > 0 then
+		if pac_script_name.length (script) > 0 then
   
-		-- 	--et_gui.schematic_callbacks.execute_script (script);
-		-- 	et_canvas_schematic.execute_script (script);
-		-- 	-- 1. Composes a command that executes the script
-		-- 	--    like "schematic motor_driver execute script my_script.scr"
-		-- 	--    as if it was entered by the operator as an ordinary command.
-		-- 	-- 2. Launches the script via procedure et_scripting.schematic_cmd.
-		-- 	-- 3. Procedure et_scripting.schematic_cmd in turn calls 
-		-- 	--    et_scripting.execute_nested_script.
-		-- 	-- 4. et_scripting.execute_nested_script reads the script line per line
-		-- 	--    and calls for each line et_scripting.execute_command.
-		-- 	-- 5. et_scripting.execute_command parses the command and dispatches
-		-- 	--    to procedure schematic_cmd, board_cmd or project_cmd.
-		-- end if;
+			--et_gui.schematic_callbacks.execute_script (script);
+			et_canvas_schematic_2.execute_script (script);
+			-- 1. Composes a command that executes the script
+			--    like "schematic motor_driver execute script my_script.scr"
+			--    as if it was entered by the operator as an ordinary command.
+			-- 2. Launches the script via procedure et_scripting.schematic_cmd.
+			-- 3. Procedure et_scripting.schematic_cmd in turn calls 
+			--    et_scripting.execute_nested_script.
+			-- 4. et_scripting.execute_nested_script reads the script line per line
+			--    and calls for each line et_scripting.execute_command.
+			-- 5. et_scripting.execute_command parses the command and dispatches
+			--    to procedure schematic_cmd, board_cmd or project_cmd.
+		end if;
   
 
 		

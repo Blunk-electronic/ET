@@ -245,16 +245,16 @@ package et_canvas_schematic_2 is
 -- 	
 -- -- 	-- Initializes the internal data so that the model can send signals:
 -- -- 	procedure init (self : not null access type_model'class);
--- 
--- 
--- 
--- 	
--- 	-- Composes a console command like 
--- 	-- "schematic motor_driver execute script my_script.scr"
--- 	-- and sends it to procedure et_scripting.schematic_cmd
--- 	-- to be executed.:
--- 	procedure execute_script (script : in pac_script_name.bounded_string);	
--- 
+
+
+
+	
+	-- Composes a console command like 
+	-- "schematic motor_driver execute script my_script.scr"
+	-- and sends it to procedure et_scripting.schematic_cmd
+	-- to be executed.:
+	procedure execute_script (script : in pac_script_name.bounded_string);	
+
 -- 	-- Executes a command as typed on the console by the operator
 -- 	-- like "rename device R1 R2".
 -- 	-- Calls et_scripting.schematic_cmd for the actual execution.
@@ -334,14 +334,15 @@ package et_canvas_schematic_2 is
 	procedure set_module (
 		module	: in pac_module_name.bounded_string); -- motor_driver
 
--- 	-- Sets the global variables "current_active_module" and "current_active_sheet".
--- 	-- Sets the grid values to be displayed in the coordinates display.
--- 	procedure init_drawing (
--- 		module	: in et_project.modules.pac_generic_modules.cursor; -- the module to be drawn in schematic and layout
--- 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first); -- the sheet to be drawn
--- 
--- 	
--- 
+	
+	-- Sets the global variables "current_active_module" and "current_active_sheet".
+	-- Sets the grid values to be displayed in the coordinates display.
+	procedure init_drawing (
+		module	: in et_project.modules.pac_generic_modules.cursor; -- the module to be drawn in schematic and layout
+		sheet	: in et_coordinates_2.type_sheet := et_coordinates_2.type_sheet'first); -- the sheet to be drawn
+
+	
+
 -- 	-- These procedures set the grid as entered in the grid box:
 -- 	
 -- 	procedure set_grid_x (self : access gtk_entry_record'class);

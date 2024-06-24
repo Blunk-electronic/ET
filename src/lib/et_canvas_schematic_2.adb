@@ -49,8 +49,8 @@ with ada.calendar.formatting;		use ada.calendar.formatting;
 -- with et_terminals;
 -- with et_devices;					use et_devices;
 -- 
--- with et_scripting;
--- with et_modes;
+with et_scripting;
+with et_modes;
 -- with et_project;
 
 -- with et_canvas_board;
@@ -707,82 +707,82 @@ package body et_canvas_schematic_2 is
 -- 			
 -- 		return p;
 -- 	end drawing_to_model;
--- 
--- 
--- 
--- 	
--- 	procedure execute_script (script : in pac_script_name.bounded_string) is
--- 		use ada.directories;
--- 		use et_scripting;
--- 		use et_modes;
--- 		use et_project;
--- 		
--- 		-- We compose a command that executes a script
--- 		-- like "schematic motor_driver execute script my_script.scr:
--- 		line_as_typed_by_operator : constant string := 
--- 			to_lower (to_string (DOM_SCHEMATIC)) & space &
--- 			to_string (et_canvas_schematic.active_module) & space &
--- 			"execute" & space & "script" & space &
--- 			to_string (script); -- "my_script.scr"
--- 		
--- 		cmd : et_string_processing.type_fields_of_line;
--- 
--- 		-- The command launches a script. Change into the project directory. 
--- 		-- The current directory is the parent directory of the active project. 
--- 		-- Example: The current directory is /home/user/my_projects . The directory
--- 		--  of the current project is /home/user/my_projects/blood_sample_analyzer.
--- 		--  Executing a script requires changing into the project directory blood_sample_analyzer.
--- 
--- 		-- Backup the current directory (like /home/user/my_projects):
--- 		cur_dir_bak : constant string := current_directory;
--- 	begin
--- 		cmd_entry_mode := VIA_SCRIPT;
--- 		
--- 		log (text => "executing command " & enclose_in_quotes (line_as_typed_by_operator), level => log_threshold);
--- 		log_indentation_up;
--- 		
--- 		-- Store the command in the command history:
--- 		console.prepend_text (line_as_typed_by_operator);
--- 
--- 		cmd := read_line (
--- 			line 			=> line_as_typed_by_operator,
--- 			number			=> 1,  -- this is the one and only line
--- 			comment_mark 	=> et_scripting.comment_mark,
--- 			delimiter_wrap	=> true, -- strings are enclosed in quotations
--- 			ifs 			=> space); -- fields are separated by space
--- 
--- 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
--- 
--- 		set_directory (to_string (current_active_project));
--- 		
--- 		-- execute the schematic command
--- 		schematic_cmd (current_active_module, cmd, log_threshold);
--- 
--- 		-- Return to previous directory (like  /home/user/my_projects):
--- 		set_directory (cur_dir_bak);
--- 		
--- 		-- The majority of commands requires refreshing the schematic and board drawing.
--- 		
--- 		-- refresh schematic and board
--- 		redraw;
--- 		--redraw (canvas);
--- 		--et_canvas_board.pac_canvas.redraw (et_canvas_board.pac_canvas.canvas);
--- 		
--- 		-- CS output error message in gui
--- 
--- 		log_indentation_down;
--- 
--- 	exception when event: others =>
--- 		
--- 		-- Return to previous directory (like  /home/user/my_projects):
--- 		set_directory (cur_dir_bak);
--- 
--- 		log_indentation_down;
--- 	end execute_script;
--- 
--- 
--- 
--- 	
+
+
+
+	
+	procedure execute_script (script : in pac_script_name.bounded_string) is
+		use ada.directories;
+		use et_scripting;
+		use et_modes;
+		use et_project;
+		
+		-- We compose a command that executes a script
+		-- like "schematic motor_driver execute script my_script.scr:
+		line_as_typed_by_operator : constant string := 
+			to_lower (to_string (DOM_SCHEMATIC)) & space &
+			to_string (et_canvas_schematic_2.active_module) & space &
+			"execute" & space & "script" & space &
+			to_string (script); -- "my_script.scr"
+		
+		cmd : et_string_processing.type_fields_of_line;
+
+		-- The command launches a script. Change into the project directory. 
+		-- The current directory is the parent directory of the active project. 
+		-- Example: The current directory is /home/user/my_projects . The directory
+		--  of the current project is /home/user/my_projects/blood_sample_analyzer.
+		--  Executing a script requires changing into the project directory blood_sample_analyzer.
+
+		-- Backup the current directory (like /home/user/my_projects):
+		cur_dir_bak : constant string := current_directory;
+	begin
+		cmd_entry_mode := VIA_SCRIPT;
+		
+		log (text => "executing command " & enclose_in_quotes (line_as_typed_by_operator), level => log_threshold);
+		log_indentation_up;
+		
+		-- Store the command in the command history:
+	-- CS console.prepend_text (line_as_typed_by_operator);
+
+		cmd := read_line (
+			line 			=> line_as_typed_by_operator,
+			number			=> 1,  -- this is the one and only line
+			comment_mark 	=> et_scripting.comment_mark,
+			delimiter_wrap	=> true, -- strings are enclosed in quotations
+			ifs 			=> space); -- fields are separated by space
+
+		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
+
+		set_directory (to_string (current_active_project));
+		
+		-- execute the schematic command
+		schematic_cmd (current_active_module, cmd, log_threshold);
+
+		-- Return to previous directory (like  /home/user/my_projects):
+		set_directory (cur_dir_bak);
+		
+		-- The majority of commands requires refreshing the schematic and board drawing.
+		
+		-- refresh schematic and board
+	-- CS redraw;
+		--redraw (canvas);
+		--et_canvas_board.pac_canvas.redraw (et_canvas_board.pac_canvas.canvas);
+		
+		-- CS output error message in gui
+
+		log_indentation_down;
+
+	exception when event: others =>
+		
+		-- Return to previous directory (like  /home/user/my_projects):
+		set_directory (cur_dir_bak);
+
+		log_indentation_down;
+	end execute_script;
+
+
+
+	
 -- 	procedure execute_command (self : access gtk_entry_record'class) is 
 -- 		use ada.directories;	
 -- 		use et_scripting;
@@ -1033,19 +1033,19 @@ package body et_canvas_schematic_2 is
 	end set_module;
 
 	
--- 	procedure init_drawing (
--- 		module	: in et_project.modules.pac_generic_modules.cursor; -- the module to be drawn
--- 		sheet	: in et_coordinates.type_sheet := et_coordinates.type_sheet'first) -- the sheet to be drawn
--- 	is begin
--- 		-- set the active module:
--- 		current_active_module := module;
--- 		
--- 		-- set active sheet:
--- 		current_active_sheet := sheet;
--- 	end init_drawing;
--- 
--- 
--- 	
+	procedure init_drawing (
+		module	: in et_project.modules.pac_generic_modules.cursor; -- the module to be drawn
+		sheet	: in et_coordinates_2.type_sheet := et_coordinates_2.type_sheet'first) -- the sheet to be drawn
+	is begin
+		-- set the active module:
+		current_active_module := module;
+		
+		-- set active sheet:
+		current_active_sheet := sheet;
+	end init_drawing;
+
+
+	
 -- 	procedure set_grid_x (self : access gtk_entry_record'class) is
 -- 		use et_schematic_ops;
 -- 

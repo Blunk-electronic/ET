@@ -49,6 +49,7 @@ with et_conductor_segment.boards;
 with et_exceptions;					use et_exceptions;
 
 -- with et_routing;
+with et_canvas_board_2;
 
 
 package body et_board_ops is
@@ -817,7 +818,12 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is begin
+			-- Set the grid in the database:			
 			module.board.grid := grid;
+
+			-- Set the grid of the canvas:
+			et_canvas_board_2.pac_canvas.grid := grid;
+			et_canvas_board_2.pac_canvas.set_grid_to_scale;
 		end;
 		
 	begin -- set_grid
@@ -836,6 +842,7 @@ package body et_board_ops is
 	end set_grid;
 	
 
+	
 	procedure set_grid (
 		module_cursor	: in pac_generic_modules.cursor;
 		grid			: in pac_grid.type_grid;
@@ -847,7 +854,12 @@ package body et_board_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is begin
+			-- Set the grid in the database:
 			module.board.grid := grid;
+
+			-- Set the grid of the canvas:
+			et_canvas_board_2.pac_canvas.grid := grid;
+			et_canvas_board_2.pac_canvas.set_grid_to_scale;
 		end;
 		
 	begin -- set_grid

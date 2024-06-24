@@ -720,7 +720,12 @@ package et_canvas is
 
 
 	
-	-- This is the grid used by the canvas:
+	-- This is the grid used by the canvas.
+	-- It is primarily a copy of the grid settings of the database.
+	-- If no grid is set by the user, then a default grid is applied
+	-- as specified in package pac_grid.
+	-- However, procedure set_grid_to_scale may modify it
+	-- according to the scale M.
 	grid : type_grid;
 
 
