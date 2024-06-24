@@ -92,7 +92,7 @@ package body et_gui_2 is
 
 		set_initial_scrollbar_settings;
 		update_zoom_display;
-		update_grid_display;
+		-- update_grid_display;
 		update_scale_display;
 		canvas.grab_focus;
 
@@ -205,7 +205,7 @@ package body et_gui_2 is
 
 		set_initial_scrollbar_settings;
 		update_zoom_display;
-		update_grid_display;
+		-- update_grid_display;
 		update_scale_display;
 		canvas.grab_focus;
 
@@ -257,8 +257,9 @@ package body et_gui_2 is
 		-- Set up the board window.
 		init_board (project, module, log_threshold + 1);
 
-		-- CS
--- 		et_canvas_schematic.pac_canvas.window.present;
+		-- Activate the schematic window:
+		et_canvas_schematic_2.pac_canvas.main_window.present;
+		
 		--et_canvas_schematic.pac_canvas.console.grab_focus;
 
 		
@@ -285,6 +286,8 @@ package body et_gui_2 is
 		end if;
   
 
+		et_canvas_schematic_2.pac_canvas.update_grid_display;
+		et_canvas_board_2.pac_canvas.update_grid_display;
 		
 		-- CS Init defaults of property bars in schematic.
 
