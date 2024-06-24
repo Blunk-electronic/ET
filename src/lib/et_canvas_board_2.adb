@@ -539,7 +539,7 @@ package body et_canvas_board_2 is
 		-- The ends of all kinds of lines are round:
 		set_line_cap (context, cairo_line_cap_round);
 
-		--draw_grid;		
+		draw_grid;		
 		--draw_origin;
 		draw_cursor;
 		draw_zoom_area;

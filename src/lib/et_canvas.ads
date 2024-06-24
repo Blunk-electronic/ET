@@ -718,54 +718,9 @@ package et_canvas is
 	procedure update_scale_display;
 
 
-	
-	
-
--- -- GRID:
--- 
--- 	-- The grid helps the operator to align or place objects:
--- 	type type_grid_on_off is (GRID_ON, GRID_OFF);
--- 	type type_grid_style is (STYLE_DOTS, STYLE_LINES);
--- 
--- 	-- The linewidth of the grid lines:
--- 	grid_width_lines : constant type_logical_pixels_positive := 0.5;
--- 
--- 	-- The linewidth of the circles which form the grid dots:
--- 	grid_width_dots : constant type_logical_pixels_positive := 1.0;
--- 	grid_radius_dots : constant type_logical_pixels_positive := 0.5;
--- 
--- 	
--- 	-- The arm length of a grid point if drawn as a cross:
--- 	grid_cross_arm_length : constant type_logical_pixels_positive := 1.0;
-	
-
-	-- The default grid size in in the model domain:
-	grid_spacing_default : constant type_distance_model_positive := 10.0; 
-	-- use it for the example with the rectangle, triangle and circle
-
-	-- grid_spacing_default : constant type_distance_model_positive := 100.0;
-	-- use it for the bridge example
-	
-	-- grid_spacing_default : constant type_distance_model_positive := 1.0; 
-	-- use it for the screw example
-
-	-- -- If the displayed grid is too dense, then it makes no
-	-- -- sense to draw a grid. For this reason we define a minimum
-	-- -- distance between grid rows and columns. If the spacing becomes
-	-- -- greater than this threshold then the grid will be drawn:
-	-- grid_spacing_min : constant type_logical_pixels_positive := 10.0;
 
 	
-	-- type type_grid is record
-	-- 	on		: type_grid_on_off := GRID_ON;
-	-- 	-- on		: type_grid_on_off := GRID_OFF;
-	-- 	spacing : type_vector_model := (others => grid_spacing_default);
-	-- 	style	: type_grid_style := STYLE_DOTS;
-	-- 	--style	: type_grid_style := STYLE_LINES;
-	-- end record;
-
-	
-	-- This is the grid used by this demo program:
+	-- This is the grid used by the canvas:
 	grid : type_grid;
 
 
