@@ -601,30 +601,30 @@ package body et_canvas_schematic_2 is
 -- 	is begin
 -- 		window.set_title (title & to_string (module));
 -- 	end set_title_bar;
--- 
--- 
--- 	
--- 	procedure update_sheet_number_display is begin
--- 		gtk_entry (cbox_sheet.get_child).set_text (to_sheet (current_active_sheet));
--- 	end update_sheet_number_display;
--- 
--- 	
--- 	procedure build_sheet_number_display is
--- 		spacing : gint;
--- 	begin
--- 		spacing := 10;
--- 
--- 		gtk_new_vbox (box_sheet);
--- 		set_spacing (box_sheet, spacing);
--- 		pack_start (box_left, box_sheet, expand => false);
--- 		
--- 		gtk_new (label_sheet, "SHEET (KEYPAD +/-)");
--- 		pack_start (box_sheet, label_sheet, expand => false);
--- 		gtk_new_with_entry (cbox_sheet);
--- 		pack_start (box_sheet, cbox_sheet);
--- 	end build_sheet_number_display;
--- 
--- 	
+
+
+	
+	procedure update_sheet_number_display is begin
+		gtk_entry (cbox_sheet.get_child).set_text (to_sheet (current_active_sheet));
+	end update_sheet_number_display;
+
+	
+	procedure build_sheet_number_display is
+		spacing : gint;
+	begin
+		spacing := 10;
+
+		gtk_new_vbox (box_sheet);
+		set_spacing (box_sheet, spacing);
+		pack_start (box_v1, box_sheet, expand => false);
+		
+		gtk_new (label_sheet, "SHEET (KEYPAD +/-)");
+		pack_start (box_sheet, label_sheet, expand => false);
+		gtk_new_with_entry (cbox_sheet);
+		pack_start (box_sheet, cbox_sheet);
+	end build_sheet_number_display;
+
+	
 -- 	procedure set_label_console is
 -- 		text_before : constant string := label_console.get_text;
 -- 	begin

@@ -219,6 +219,7 @@ package et_canvas_board_2 is
 	
 
 	
+-- CONSOLE:
 	
 	procedure connect_console;
 	

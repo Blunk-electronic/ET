@@ -226,13 +226,15 @@ package et_canvas_schematic_2 is
 	procedure set_up_canvas;
 
 	
+
+-- SHEET:
 	
--- 	box_sheet		: gtk_vbox;
--- 	label_sheet		: gtk_label;
--- 	cbox_sheet		: gtk_combo_box_text;
--- 
--- 	procedure update_sheet_number_display;
--- 	procedure build_sheet_number_display;
+	box_sheet		: gtk_vbox;
+	label_sheet		: gtk_label;
+	cbox_sheet		: gtk_combo_box_text;
+
+	procedure update_sheet_number_display;
+	procedure build_sheet_number_display;
 
 	
 
@@ -241,6 +243,8 @@ package et_canvas_schematic_2 is
 
 	
 
+-- CONSOLE:
+	
 	procedure connect_console;
 
 

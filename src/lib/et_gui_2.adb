@@ -88,6 +88,10 @@ package body et_gui_2 is
 		log (text => "build primary tool display", level => log_threshold + 1);
 		build_primary_tool_display;
 
+
+		log (text => "build sheet number display", level => log_threshold + 1);
+		build_sheet_number_display;
+		update_sheet_number_display;
 		
 		set_up_coordinates_display;
 
@@ -122,8 +126,6 @@ package body et_gui_2 is
 -- 
 -- 		log (text => "build background boxes", level => log_threshold + 1);
 -- 		build_background_boxes;
--- 		log (text => "build sheet number display", level => log_threshold + 1);
--- 		build_sheet_number_display;
 -- 
 -- 		log (text => "build coordinates display", level => log_threshold + 1);
 -- 		build_coordinates_display;
@@ -148,7 +150,7 @@ package body et_gui_2 is
 		log (text => "show schematic window", level => log_threshold + 1);
 		main_window.show_all;
 -- 
--- 		update_sheet_number_display;
+
 -- 		canvas.update_mode_display;
 -- 		
 	end init_schematic;
