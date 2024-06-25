@@ -275,18 +275,21 @@ package et_canvas_schematic_2 is
 -- 	procedure redraw_board;
 -- 	procedure redraw_schematic;
 -- 	procedure redraw;
--- 
--- 
--- 	
--- 	-- Advances no previous generic module. If there is no
--- 	-- previous module, selects the last module of 
--- 	-- collection of generic modules.
--- 	procedure next_module;
--- 
--- 	-- Advances no next generic module. If there is no
--- 	-- next module, selects the first module of 
--- 	-- collection of generic modules.
--- 	procedure previous_module;
+
+
+
+-- MODULE SELECT:
+	
+	-- Advances no previous generic module. If there is no
+	-- previous module, selects the last module of 
+	-- collection of generic modules.
+	procedure next_module;
+
+	
+	-- Advances no next generic module. If there is no
+	-- next module, selects the first module of 
+	-- collection of generic modules.
+	procedure previous_module;
 
 	
 	

@@ -527,6 +527,15 @@ package body et_canvas_board_2 is
 					-- Prosssing the event stops here.
 					event_handled := true;
 
+
+				when GDK_F11 =>
+					et_canvas_schematic_2.previous_module;
+
+					
+				when GDK_F12 =>
+					et_canvas_schematic_2.next_module;
+
+
 					
 				-- Other keys are propagated to the canvas:
 				when others =>

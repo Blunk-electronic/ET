@@ -53,7 +53,7 @@ with et_scripting;
 with et_modes;
 -- with et_project;
 
--- with et_canvas_board;
+with et_canvas_board_2;
 -- with et_display.schematic;			use et_display.schematic;
 -- with et_colors;						use et_colors;
 -- with et_colors.schematic;			use et_colors.schematic;
@@ -533,6 +533,14 @@ package body et_canvas_schematic_2 is
 						update_sheet_number_display;
 					end if;
 
+
+				when GDK_F11 =>
+					previous_module;
+
+					
+				when GDK_F12 =>
+					next_module;
+
 					
 
 				-- Other keys are propagated to the canvas:
@@ -662,67 +670,74 @@ package body et_canvas_schematic_2 is
 -- 		redraw_schematic;
 -- 		redraw_board;
 -- 	end redraw;
--- 
--- 	
--- 	procedure next_module is
--- 		use pac_generic_modules;
--- 	begin
--- 		-- Advance to next module:
--- 		current_active_module := pac_generic_modules.next (current_active_module);
--- 
--- 		-- If there is no next module, select first module:
--- 		if current_active_module = pac_generic_modules.no_element then
--- 			current_active_module := generic_modules.first;
--- 		end if;
--- 
--- 		-- CS: save sheet number, cursor, zoom, displayed objects ...
--- 		
--- 		-- Show the module name in the title bars of 
--- 		-- both schematic and layout editor:
--- 		set_title_bar (active_module);
--- 		et_canvas_board.set_title_bar (active_module);
--- 		
--- 		-- CS Init defaults of property bars in schematic.
--- 		
--- 		-- Init defaults of property bars in board:
--- 		et_canvas_board.init_property_bars;
--- 		
--- 		-- Redraw both schematic and board:
--- 		redraw;
--- 	end next_module;
--- 
--- 	
--- 	procedure previous_module is
--- 		use pac_generic_modules;
--- 	begin
--- 		-- Advance to previous module:
--- 		current_active_module := pac_generic_modules.previous (current_active_module);
--- 
--- 		-- If there is no previous module, select last module:
--- 		if current_active_module = pac_generic_modules.no_element then
--- 			current_active_module := generic_modules.last;
--- 		end if;
--- 
--- 		-- CS: save sheet number, cursor, zoom, displayed objects ...
--- 		
--- 		-- Show the module name in the title bars of 
--- 		-- both schematic and layout editor:
--- 		set_title_bar (active_module);
--- 		et_canvas_board.set_title_bar (active_module);
--- 
--- 		-- CS Init defaults of property bars in schematic.
--- 		
--- 		-- Init defaults of property bars in board:
--- 		et_canvas_board.init_property_bars;
--- 
--- 		
--- 		-- Redraw both schematic and board:
--- 		redraw;
--- 	end previous_module;
--- 
--- 
--- 
--- 	
+
+
+
+	
+-- MODULE SELECT:
+	
+	
+	procedure next_module is
+		use pac_generic_modules;
+		use et_canvas_board_2;
+	begin
+		-- Advance to next module:
+		current_active_module := pac_generic_modules.next (current_active_module);
+
+		-- If there is no next module, select first module:
+		if current_active_module = pac_generic_modules.no_element then
+			current_active_module := generic_modules.first;
+		end if;
+
+		-- CS: save sheet number, cursor, zoom, displayed objects ...
+		
+		-- Show the module name in the title bars of 
+		-- both schematic and layout editor:
+		set_title_bar (active_module);
+		et_canvas_board_2.set_title_bar (active_module);
+		
+		-- CS Init defaults of property bars in schematic.
+		
+		-- Init defaults of property bars in board:
+	-- CS et_canvas_board.init_property_bars;
+		
+		-- Redraw both schematic and board:
+		-- CS redraw;
+	end next_module;
+
+	
+	procedure previous_module is
+		use pac_generic_modules;
+		use et_canvas_board_2;
+	begin
+		-- Advance to previous module:
+		current_active_module := pac_generic_modules.previous (current_active_module);
+
+		-- If there is no previous module, select last module:
+		if current_active_module = pac_generic_modules.no_element then
+			current_active_module := generic_modules.last;
+		end if;
+
+		-- CS: save sheet number, cursor, zoom, displayed objects ...
+		
+		-- Show the module name in the title bars of 
+		-- both schematic and layout editor:
+		set_title_bar (active_module);
+		et_canvas_board_2.set_title_bar (active_module);
+
+		-- CS Init defaults of property bars in schematic.
+		
+		-- Init defaults of property bars in board:
+		-- CS et_canvas_board_2.init_property_bars;
+
+		
+		-- Redraw both schematic and board:
+		-- CS redraw;
+	end previous_module;
+
+
+
+	
 -- 	function model_to_drawing (
 -- 		self		: not null access type_view;
 -- 		model_point : in type_model_point)	
