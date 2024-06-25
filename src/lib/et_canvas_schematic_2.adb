@@ -736,49 +736,7 @@ package body et_canvas_schematic_2 is
 	end previous_module;
 
 
-
 	
--- 	function model_to_drawing (
--- 		self		: not null access type_view;
--- 		model_point : in type_model_point)	
--- 		return type_vector_model 
--- 	is 
--- 		p : type_vector_model; -- to be returned
--- 	begin
--- 		set (point	=> p,
--- 			 axis	=> X, 
--- 			 value	=> clip_distance (type_distance (model_point.x - self.frame_bounding_box.x)));
--- 		
--- 		set (point	=> p,
--- 			 axis	=> Y,
--- 			 value	=> clip_distance (type_distance (
--- 						self.get_frame_height
--- 						- model_point.y
--- 						+ self.frame_bounding_box.y)));
--- 		 
--- 		return p;
--- 
--- 	end model_to_drawing;
--- 		
--- 
--- 	function drawing_to_model (
--- 		self			: not null access type_view;
--- 		drawing_point	: in type_vector_model)	
--- 		return type_model_point 
--- 	is 
--- 		p : type_model_point; -- to be returned
--- 	begin
--- 		p.x := type_float (get_x (drawing_point)) 
--- 			+ self.frame_bounding_box.x;
--- 		
--- 		p.y := self.get_frame_height 
--- 			- type_float (get_y (drawing_point))
--- 			+ self.frame_bounding_box.y;
--- 			
--- 		return p;
--- 	end drawing_to_model;
-
-
 	procedure connect_console is begin
 		-- Connect to the on_activate signal of the 
 		-- entry (which is a child of console):
@@ -957,30 +915,6 @@ package body et_canvas_schematic_2 is
 
 
 	
-	
--- 	function bounding_box (self : not null access type_view)
--- 		return type_bounding_box is
--- 	begin
--- 		return self.paper_bounding_box; -- CS should include all items of the current sheet.
--- 		-- means: also items outside the frame
--- 	end;
--- 
--- 
--- 	
--- 	procedure gtk_new (
--- 		self	: out type_view_ptr) is
--- 	begin
--- 		self := new type_view;
--- 		init (self);
--- 	end;
--- 
--- 
--- 
--- 	procedure draw_grid (
--- 		self    : not null access type_view;
--- 		area    : type_bounding_box) is separate;
--- 
--- 	
 -- 	procedure draw_frame (
 -- 		self    : not null access type_view)
 -- 		is separate;
