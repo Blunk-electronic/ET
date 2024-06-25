@@ -504,7 +504,7 @@ package body et_canvas_board_2 is
 
 				-- If the operator presses F3 then set the focus to the console:
 				when GDK_F3 =>
-					-- CS console.grab_focus;
+					console.grab_focus;
 					set_status ("enter command");
 
 					event_handled := true; -- event handled

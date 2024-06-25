@@ -692,10 +692,14 @@ package body et_canvas is
 		-- main_window.set_size_request (1000, 500);
 
 		-- main_window.set_redraw_on_allocate (false);
+
+		gtk_new_vbox (box_v0);
+		main_window.add (box_v0);
+
 		
-
-		gtk_new_hbox (box_h);
-
+		-- BOXES FOR COORDINATES DISPLAY, VERB-NOUN, TOOL, SWIN, CANVAS:
+		gtk_new_hbox (box_h0);
+		box_v0.pack_start (box_h0, expand => false);
 		
 		-- vertical box for coordinates display:
 		gtk_new_vbox (box_v1);
@@ -703,17 +707,22 @@ package body et_canvas is
 		
 		-- The left vbox shall not change its width when the 
 		-- main window is resized:
-		box_h.pack_start (box_v1, expand => false);
+		box_h0.pack_start (box_v1, expand => false);
 
 		-- Place a separator between the left and right
 		-- vertical box:
 		separator := gtk_separator_new (ORIENTATION_VERTICAL);
-		box_h.pack_start (separator, expand => false);
+		box_h0.pack_start (separator, expand => false);
 
 		-- The right vbox shall expand upon resizing the main window:
-		-- box_h.pack_start (box_v2);
+		-- box_h0.pack_start (box_v2);
 
-		main_window.add (box_h);
+		--------------------------------
+
+		-- BOX FOR CONSOLE:
+		gtk_new_vbox (box_v3);
+		box_v3.set_border_width (10);
+		box_v0.pack_start (box_v3, expand => false);
 		
 	end create_window;
 
@@ -1284,7 +1293,7 @@ package body et_canvas is
 
 		-- Insert the scrolled window in box_h:
 		put_line ("add scrolled window to box_h");
-		box_h.pack_start (swin);
+		box_h0.pack_start (swin);
 		
 	end create_canvas;
 
@@ -2431,8 +2440,8 @@ package body et_canvas is
 	procedure create_buttons is begin
 		put_line ("create_buttons");
 		
-		gtk_new_vbox (box_v0);
-		box_h.pack_start (box_v0, expand => false);
+		gtk_new_vbox (box_v2);
+		box_h0.pack_start (box_v2, expand => false);
 
 
 		gtk_new (buttons_table, rows => 5, columns => 1, 
@@ -2452,7 +2461,7 @@ package body et_canvas is
 
 		
 		-- The table shall not expand downward:
-		box_v0.pack_start (buttons_table, expand => false);
+		box_v2.pack_start (buttons_table, expand => false);
 
 		
 		buttons_table.attach (button_zoom_fit,
@@ -2482,6 +2491,28 @@ package body et_canvas is
 	end create_buttons;	
 
 
+
+-- CONSOLE:
+
+	procedure build_console is 
+		-- spacing : gint;
+	begin
+		-- spacing := 10;
+
+		gtk_new (label_console, 
+			 "CONSOLE (F3 to enter command / F4 to focus on canvas)");
+		label_console.set_alignment (0.0, 0.0);
+		pack_start (box_v3, label_console, expand => false);
+
+		-- the command line
+		gtk_new_with_entry (console);
+		
+		pack_start (box_v3, console, expand => false);
+
+		-- on startup the keyboard must focus on the console:
+		console.grab_focus;
+	end build_console;
+	
 
 -----------------------------------------------------------------------	
 -- INITIALISATION AND CALLBACKS:

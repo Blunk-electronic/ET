@@ -451,11 +451,22 @@ package et_canvas is
 	
 	main_window	: gtk_window;
 	
-	box_h 		: gtk_hbox;
-	box_v0		: gtk_vbox;
-	box_v1		: gtk_vbox;
-	separator	: gtk_separator;
+	-- inside main_window:
+	box_v0		: gtk_vbox;		
 
+	-- inside box_v0:
+	box_h0 		: gtk_hbox;
+
+	-- inside box_h0:
+	box_v1		: gtk_vbox;		-- for coord. display, verb/noun
+	separator	: gtk_separator;
+	box_v2		: gtk_vbox;		-- for command buttons
+
+
+	-- inside box_v0:
+	box_v3 		: gtk_hbox;		-- for console
+
+	
 	-- This procedure creates the main window and
 	-- the boxes box_h, box_v1 and the separator:
 	procedure create_window;
@@ -935,6 +946,19 @@ package et_canvas is
 	-- This procedure creates the buttons:
 	procedure create_buttons;
 
+
+
+	
+-- CONSOLE:
+
+	label_console	: gtk_label;
+	console			: gtk_combo_box_text;
+
+
+	procedure build_console;
+
+
+	
 ---------------------------------------------------------------------
 -- INITIALISATION AND CALLBACKS:
 

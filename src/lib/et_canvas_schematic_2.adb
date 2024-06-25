@@ -496,7 +496,7 @@ package body et_canvas_schematic_2 is
 
 				-- If the operator presses F3 then set the focus to the console:
 				when GDK_F3 =>
-					-- CS console.grab_focus;
+					console.grab_focus;
 					set_status ("enter command");
 
 					event_handled := true; -- event handled
@@ -504,7 +504,7 @@ package body et_canvas_schematic_2 is
 					
 				-- If the operator presses F4 then set the focus to the canvas:
 				when GDK_F4 =>
-					-- CS canvas.grab_focus;
+					-- canvas.grab_focus;
 					-- CS status_clear;
 					
 					event_handled := true; -- event handled
