@@ -485,6 +485,7 @@ package body et_canvas_schematic_2 is
 					-- to widgets down the chain.
 					-- Prosssing the event stops here.
 					event_handled := true;
+
 					
 
 				-- If the operator presses F2 then change the primary tool:
@@ -505,7 +506,7 @@ package body et_canvas_schematic_2 is
 				-- If the operator presses F4 then set the focus to the canvas:
 				when GDK_F4 =>
 					-- canvas.grab_focus;
-					-- CS status_clear;
+					status_clear;
 					
 					event_handled := true; -- event handled
 

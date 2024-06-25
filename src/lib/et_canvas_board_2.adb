@@ -513,7 +513,7 @@ package body et_canvas_board_2 is
 				-- If the operator presses F4 then set the focus to the canvas:
 				when GDK_F4 =>
 					-- CS canvas.grab_focus;
-					-- CS status_clear;
+					status_clear;
 					
 					event_handled := true; -- event handled
 

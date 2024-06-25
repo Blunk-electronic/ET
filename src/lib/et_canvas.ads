@@ -949,15 +949,24 @@ package et_canvas is
 
 
 	
--- CONSOLE:
+-- CONSOLE AND STATUS:
 
 	label_console	: gtk_label;
 	console			: gtk_combo_box_text;
 
 
-	procedure build_console;
+	procedure build_console; -- incl. status bar
 
 
+	label_status	: gtk_label;
+
+	procedure set_status (text : in string);
+	procedure status_clear;
+	procedure status_enter_verb;
+	procedure status_enter_noun;
+	procedure status_verb_invalid;
+	procedure status_noun_invalid;
+	
 	
 ---------------------------------------------------------------------
 -- INITIALISATION AND CALLBACKS:
@@ -1013,14 +1022,7 @@ package et_canvas is
 
 
 
--- STATUS:
 
-	procedure set_status (text : in string);
-	procedure status_clear;
-	procedure status_enter_verb;
-	procedure status_enter_noun;
-	procedure status_verb_invalid;
-	procedure status_noun_invalid;
 
 	
 -- CLARIFICATION:

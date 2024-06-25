@@ -2492,7 +2492,9 @@ package body et_canvas is
 
 
 
--- CONSOLE:
+	
+-- CONSOLE AND STATUS:
+
 
 	procedure build_console is 
 		-- spacing : gint;
@@ -2509,9 +2511,49 @@ package body et_canvas is
 		
 		pack_start (box_v3, console, expand => false);
 
+
+		-- the status bar
+		gtk_new (label_status);
+		label_status.set_alignment (0.0, 0.0);
+		pack_start (box_v3, label_status, expand => false);
+		-- status_enter_verb;
+
+		
 		-- on startup the keyboard must focus on the console:
 		console.grab_focus;
 	end build_console;
+
+
+
+	procedure set_status (text : in string) is begin
+		label_status.set_text (text);
+	end set_status;
+
+	
+	procedure status_clear is begin
+		set_status ("");
+	end status_clear;
+
+	
+	procedure status_enter_verb is begin
+		set_status ("Enter verb !" & status_hint_for_abort);
+	end status_enter_verb;
+
+	
+	procedure status_enter_noun is begin
+		set_status ("Enter noun ! " & status_hint_for_abort);
+	end status_enter_noun;
+
+	
+	procedure status_verb_invalid is begin
+		set_status ("Verb invalid ! ");
+	end status_verb_invalid;
+
+	
+	procedure status_noun_invalid is begin
+		set_status ("Noun invalid ! " & status_hint_for_abort);
+	end status_noun_invalid;
+
 	
 
 -----------------------------------------------------------------------	
@@ -3066,36 +3108,6 @@ package body et_canvas is
 	end set_up_canvas;
 
 
-	
-
--- STATUS:
-
-	procedure set_status (text : in string) is begin
-		-- label_status.set_text (text);
-		-- CS
-		null;
-	end set_status;
-
-	procedure status_clear is begin
-		set_status ("");
-	end status_clear;
-
-	procedure status_enter_verb is begin
-		set_status ("Enter verb !" & status_hint_for_abort);
-	end status_enter_verb;
-	
-	procedure status_enter_noun is begin
-		set_status ("Enter noun ! " & status_hint_for_abort);
-	end status_enter_noun;
-	
-	procedure status_verb_invalid is begin
-		set_status ("Verb invalid ! ");
-	end status_verb_invalid;
-
-	procedure status_noun_invalid is begin
-		set_status ("Noun invalid ! " & status_hint_for_abort);
-	end status_noun_invalid;
-		
 	
 	
 
