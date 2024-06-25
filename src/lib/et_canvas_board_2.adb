@@ -493,6 +493,30 @@ package body et_canvas_board_2 is
 					-- to widgets down the chain.
 					-- Prosssing the event stops here.
 					event_handled := true;
+
+
+				-- If the operator presses F2 then change the primary tool:
+				when GDK_F2 =>
+					change_primary_tool;
+					
+					event_handled := true; -- event handled
+
+
+				-- If the operator presses F3 then set the focus to the console:
+				when GDK_F3 =>
+					-- CS console.grab_focus;
+					set_status ("enter command");
+
+					event_handled := true; -- event handled
+
+					
+				-- If the operator presses F4 then set the focus to the canvas:
+				when GDK_F4 =>
+					-- CS canvas.grab_focus;
+					-- CS status_clear;
+					
+					event_handled := true; -- event handled
+
 					
 
 				when GDK_F5 =>
@@ -504,7 +528,11 @@ package body et_canvas_board_2 is
 					event_handled := true;
 
 					
-				when others => null;
+				-- Other keys are propagated to the canvas:
+				when others =>
+					-- CS result := propagate_key_event (current_window, event);
+					event_handled := false;
+
 			end case;
 		end if;
 		

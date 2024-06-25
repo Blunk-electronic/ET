@@ -1033,10 +1033,18 @@ package et_canvas is
 
 
 
--- TOOL:	
+-- PRIMARY TOOL:	
+
+	box_primary_tool		: gtk_vbox;
+	label_primary_tool		: gtk_label;
+	cbox_primary_tool		: gtk_combo_box_text;
 
 	-- The primary tool used for drawing and navigating within the canvas:
 	primary_tool : type_tool := primary_tool_default;
+
+	procedure build_primary_tool_display;
+	
+	procedure update_primary_tool_display;
 
 	procedure change_primary_tool;
 

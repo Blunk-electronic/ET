@@ -84,6 +84,11 @@ package body et_gui_2 is
 		et_canvas_schematic_2.set_up_main_window;
 		-- set_title_bar ("SCHEMATIC"); -- CS rig and module name
 
+
+		log (text => "build primary tool display", level => log_threshold + 1);
+		build_primary_tool_display;
+
+		
 		set_up_coordinates_display;
 
 		-- log (text => "build mode display", level => log_threshold + 1);
@@ -111,10 +116,6 @@ package body et_gui_2 is
 -- 
 -- 		log (text => "build background boxes", level => log_threshold + 1);
 -- 		build_background_boxes;
--- 
--- 		log (text => "build primary tool display", level => log_threshold + 1);
--- 		build_primary_tool_display;
--- 
 -- 		log (text => "build sheet number display", level => log_threshold + 1);
 -- 		build_sheet_number_display;
 -- 
@@ -179,9 +180,10 @@ package body et_gui_2 is
 		-- set_title_bar ("BOARD"); -- CS rig and module name
 
 
--- 		build_primary_tool_display;
+		build_primary_tool_display;
 
 		set_up_coordinates_display;
+		
 		build_mode_display;
 
 
