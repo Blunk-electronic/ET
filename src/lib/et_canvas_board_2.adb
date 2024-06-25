@@ -49,12 +49,12 @@ with ada.calendar.formatting;		use ada.calendar.formatting;
 -- with gtk.window;					use gtk.window;
 
 
--- with et_scripting;
+with et_scripting;
 -- with et_modes;
 -- with et_project;
 -- 
 -- with et_assembly_variants;			use et_assembly_variants;
--- with et_canvas_schematic;			use et_canvas_schematic;
+with et_canvas_schematic_2;			--use et_canvas_schematic;
 -- with et_display.board;
 -- with et_colors;
 -- with et_colors.board;				use et_colors.board;
@@ -691,164 +691,175 @@ package body et_canvas_board_2 is
 -- 		
 -- 		return p;
 -- 	end;
--- 
--- 
--- 	procedure execute_script (script : in pac_script_name.bounded_string) is
--- 		use ada.directories;
--- 		use et_scripting;
--- 		use et_modes;
--- 		use et_project;
--- 
--- 		-- We assemble a command that executes a script
--- 		-- like "board motor_driver execute script my_script.scr:
--- 		line_as_typed_by_operator : constant string := 
--- 			to_lower (to_string (DOM_BOARD)) & space &
--- 			to_string (et_canvas_schematic.active_module) & space &
--- 			"execute" & space & "script" & space &
--- 			to_string (script); -- "my_script.scr"
--- 		
--- 		cmd : et_string_processing.type_fields_of_line;
--- 
--- 		-- The command launches a script. Change into the project directory. 
--- 		-- The current directory is the parent directory of the active project. 
--- 		-- Example: The current directory is /home/user/my_projects . The directory
--- 		--  of the current project is /home/user/my_projects/blood_sample_analyzer.
--- 		--  Executing a script requires changing into the project directory blood_sample_analyzer.
--- 
--- 		-- Backup the current directory (like /home/user/my_projects):
--- 		cur_dir_bak : constant string := current_directory;
--- 	begin
--- 		cmd_entry_mode := VIA_SCRIPT;
--- 		
--- 		log (text => "executing command " & enclose_in_quotes (line_as_typed_by_operator), level => log_threshold);
--- 		log_indentation_up;
--- 		
--- 		-- Store the command in the command history:
--- 		console.prepend_text (line_as_typed_by_operator);
--- 
--- 		cmd := read_line (
--- 			line 			=> line_as_typed_by_operator,
--- 			number			=> 1,  -- this is the one and only line
--- 			comment_mark 	=> et_scripting.comment_mark,
--- 			delimiter_wrap	=> true, -- strings are enclosed in quotations
--- 			ifs 			=> space); -- fields are separated by space
--- 
--- 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
--- 
--- 		set_directory (to_string (current_active_project));
--- 		
--- 		-- execute the board command
--- 		board_cmd (current_active_module, cmd, log_threshold);
--- 
--- 		-- Return to previous directory (like  /home/user/my_projects):
--- 		set_directory (cur_dir_bak);
--- 		
--- 		-- The majority of commands requires refreshing the schematic and board drawing.
--- 		
--- 		-- refresh board and schematic
--- 		redraw;
--- 		--redraw (canvas);
--- 		--et_canvas_schematic.pac_canvas.redraw (et_canvas_schematic.pac_canvas.canvas);
--- 		
--- 		-- CS output error message in gui
--- 
--- 		log_indentation_down;
--- 
--- 	exception when event: others =>
--- 		
--- 		-- Return to previous directory (like  /home/user/my_projects):
--- 		set_directory (cur_dir_bak);
--- 
--- 		log_indentation_down;
--- 	end execute_script;
--- 
--- 	
--- 	procedure execute_command (self : access gtk_entry_record'class) is 
--- 		use ada.directories;
--- 		use et_string_processing;
--- 		use et_scripting;
--- 		use et_modes;
--- 		use et_project;
--- 		
--- 		-- The operator enters a command like "rename device R1 R2".
--- 		-- The operator is not required to type domain and module name.
--- 		-- Since we are editing a board, the domain and module name itelf
--- 		-- are known. By prepending domain and module name here the full 
--- 		-- command after this declaration will be "board led_driver rename device R1 R2".		
--- 		line_as_typed_by_operator : constant string := 
--- 			to_lower (to_string (DOM_BOARD)) & space &
--- 			to_string (et_canvas_schematic.active_module) & space &
--- 			get_text (self);
--- 		
--- 		cmd : et_string_processing.type_fields_of_line;
--- 
--- 		-- The command might launch a script. To prepare for this case we must change
--- 		-- into the project directory. The current directory is the parent directory
--- 		-- of the active project. 
--- 		-- Example: The curreent directory is /home/user/my_projects . The directory
--- 		--  of the current project is /home/user/my_projects/blood_sample_analyzer.
--- 		--  Executing scripts requires changing into the project directory blood_sample_analyzer.
--- 
--- 		-- Backup the current directory (like /home/user/my_projects):
--- 		cur_dir_bak : constant string := current_directory;
--- 	begin
--- 		cmd_entry_mode := SINGLE_CMD;
--- 		
--- 		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
--- 		log_indentation_up;
--- 
--- 		-- Store the latest command in the command history:
--- 		console.prepend_text (get_text (self));
--- 		
--- 		cmd := read_line (
--- 			line 			=> line_as_typed_by_operator,
--- 			number			=> 1, -- this is the one and only line
--- 			comment_mark 	=> et_scripting.comment_mark,
--- 			delimiter_wrap	=> true, -- strings are enclosed in quotations
--- 			ifs 			=> space); -- fields are separated by space
--- 
--- 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
--- 
--- 		log (text => "changing to directory " &
--- 				enclose_in_quotes (to_string (current_active_project)) & " ...",
--- 			level => log_threshold + 1);
--- 		
--- 		set_directory (to_string (current_active_project));
--- 		
--- 		-- execute the board command
--- 		board_cmd (current_active_module, cmd, log_threshold);
--- 		
--- 		-- Return to previous directory (like  /home/user/my_projects):
--- 		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",
--- 			level => log_threshold + 1);
--- 
--- 		set_directory (cur_dir_bak);
--- 		
--- 		-- The majority of commands requires refreshing the schematic and board drawing.
--- 
--- 		-- refresh board and schematic
--- 		redraw;
--- 		--redraw (canvas);
--- 		--et_canvas_schematic.pac_canvas.redraw (et_canvas_schematic.pac_canvas.canvas);
--- 
--- 		-- CS output error message in gui
--- 
--- 		log_indentation_down;
--- 
--- 	exception when event: others =>
--- 
--- 		-- Return to previous directory (like  /home/user/my_projects):
--- 		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",
--- 			 level => log_threshold + 1);
--- 
--- 		set_directory (cur_dir_bak);
--- 
--- 		log_indentation_down;
--- 	end execute_command;
--- 
--- 	
--- 
--- 	
+
+
+	procedure connect_console is begin
+		-- Connect to the on_activate signal of the 
+		-- entry (which is a child of console):
+		gtk_entry (console.get_child).on_activate 
+			(execute_command'access); -- on hitting enter
+
+	end connect_console;
+
+	
+	
+
+	procedure execute_script (script : in pac_script_name.bounded_string) is
+		use ada.directories;
+		use et_scripting;
+		use et_modes;
+		use et_project;
+
+		-- We assemble a command that executes a script
+		-- like "board motor_driver execute script my_script.scr:
+		line_as_typed_by_operator : constant string := 
+			to_lower (to_string (DOM_BOARD)) & space &
+			to_string (et_canvas_schematic_2.active_module) & space &
+			"execute" & space & "script" & space &
+			to_string (script); -- "my_script.scr"
+		
+		cmd : et_string_processing.type_fields_of_line;
+
+		-- The command launches a script. Change into the project directory. 
+		-- The current directory is the parent directory of the active project. 
+		-- Example: The current directory is /home/user/my_projects . The directory
+		--  of the current project is /home/user/my_projects/blood_sample_analyzer.
+		--  Executing a script requires changing into the project directory blood_sample_analyzer.
+
+		-- Backup the current directory (like /home/user/my_projects):
+		cur_dir_bak : constant string := current_directory;
+	begin
+		cmd_entry_mode := VIA_SCRIPT;
+		
+		log (text => "executing command " & enclose_in_quotes (line_as_typed_by_operator), level => log_threshold);
+		log_indentation_up;
+		
+		-- Store the command in the command history:
+		console.prepend_text (line_as_typed_by_operator);
+
+		cmd := read_line (
+			line 			=> line_as_typed_by_operator,
+			number			=> 1,  -- this is the one and only line
+			comment_mark 	=> et_scripting.comment_mark,
+			delimiter_wrap	=> true, -- strings are enclosed in quotations
+			ifs 			=> space); -- fields are separated by space
+
+		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
+
+		set_directory (to_string (current_active_project));
+		
+		-- execute the board command
+		board_cmd (current_active_module, cmd, log_threshold);
+
+		-- Return to previous directory (like  /home/user/my_projects):
+		set_directory (cur_dir_bak);
+		
+		-- The majority of commands requires refreshing the schematic and board drawing.
+		
+		-- refresh board and schematic
+		-- CS redraw;
+		--redraw (canvas);
+		--et_canvas_schematic.pac_canvas.redraw (et_canvas_schematic.pac_canvas.canvas);
+		
+		-- CS output error message in gui
+
+		log_indentation_down;
+
+	exception when event: others =>
+		
+		-- Return to previous directory (like  /home/user/my_projects):
+		set_directory (cur_dir_bak);
+
+		log_indentation_down;
+	end execute_script;
+
+	
+	procedure execute_command (self : access gtk_entry_record'class) is 
+		use ada.directories;
+		use et_string_processing;
+		use et_scripting;
+		use et_modes;
+		use et_project;
+		
+		-- The operator enters a command like "rename device R1 R2".
+		-- The operator is not required to type domain and module name.
+		-- Since we are editing a board, the domain and module name itelf
+		-- are known. By prepending domain and module name here the full 
+		-- command after this declaration will be "board led_driver rename device R1 R2".		
+		line_as_typed_by_operator : constant string := 
+			to_lower (to_string (DOM_BOARD)) & space &
+			to_string (et_canvas_schematic_2.active_module) & space &
+			get_text (self);
+		
+		cmd : et_string_processing.type_fields_of_line;
+
+		-- The command might launch a script. To prepare for this case we must change
+		-- into the project directory. The current directory is the parent directory
+		-- of the active project. 
+		-- Example: The curreent directory is /home/user/my_projects . The directory
+		--  of the current project is /home/user/my_projects/blood_sample_analyzer.
+		--  Executing scripts requires changing into the project directory blood_sample_analyzer.
+
+		-- Backup the current directory (like /home/user/my_projects):
+		cur_dir_bak : constant string := current_directory;
+	begin
+		cmd_entry_mode := SINGLE_CMD;
+		
+		log (text => "executing command " & enclose_in_quotes (get_text (self)), level => log_threshold);
+		log_indentation_up;
+
+		-- Store the latest command in the command history:
+		console.prepend_text (get_text (self));
+		
+		cmd := read_line (
+			line 			=> line_as_typed_by_operator,
+			number			=> 1, -- this is the one and only line
+			comment_mark 	=> et_scripting.comment_mark,
+			delimiter_wrap	=> true, -- strings are enclosed in quotations
+			ifs 			=> space); -- fields are separated by space
+
+		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
+
+		log (text => "changing to directory " &
+				enclose_in_quotes (to_string (current_active_project)) & " ...",
+			level => log_threshold + 1);
+		
+		set_directory (to_string (current_active_project));
+		
+		-- execute the board command
+		board_cmd (current_active_module, cmd, log_threshold);
+		
+		-- Return to previous directory (like  /home/user/my_projects):
+		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",
+			level => log_threshold + 1);
+
+		set_directory (cur_dir_bak);
+		
+		-- The majority of commands requires refreshing the schematic and board drawing.
+
+		-- refresh board and schematic
+		-- CS redraw;
+		--redraw (canvas);
+		--et_canvas_schematic.pac_canvas.redraw (et_canvas_schematic.pac_canvas.canvas);
+
+		-- CS output error message in gui
+
+		log_indentation_down;
+
+	exception when event: others =>
+
+		-- Return to previous directory (like  /home/user/my_projects):
+		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",
+			 level => log_threshold + 1);
+
+		set_directory (cur_dir_bak);
+
+		log_indentation_down;
+	end execute_command;
+
+	
+
+	
 -- 	function active_module (self : not null access type_view) 
 -- 		return string
 -- 	is begin

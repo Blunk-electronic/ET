@@ -98,10 +98,7 @@ package body et_gui_2 is
 		log (text => "build console", level => log_threshold + 1);
 		build_console;
 -- 		set_label_console;
-		
-		-- Connect to the on_activate signal of the entry (which is a child of console):
-		-- gtk_entry (console.get_child).on_activate (execute_command'access); -- on hitting enter
-
+		connect_console;
 		
 		set_up_swin_and_scrollbars;
 
@@ -192,10 +189,9 @@ package body et_gui_2 is
 		log (text => "build console", level => log_threshold + 1);
 		build_console;
 -- 		set_label_console;
+		connect_console;
 		
-		-- Connect to the on_activate signal of the entry (which is a child of console):
---		gtk_entry (console.get_child).on_activate (execute_command'access); -- on hitting enter
-		
+	
 		
 -- 		-- Connect to the on_activate signal (on hitting enter key):
 -- 		gtk_entry (cursor_position_x.get_child).on_activate (set_cursor_position_x'access);

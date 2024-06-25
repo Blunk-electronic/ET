@@ -239,16 +239,9 @@ package et_canvas_schematic_2 is
 	-- The current active sheet:
 	current_active_sheet : et_coordinates_2.type_sheet := type_sheet'first;
 
-
 	
--- 	-- Frequently used things to draw the schematic:
--- 	type type_drawing is null record;
--- 
--- 
--- 	
--- -- 	-- Initializes the internal data so that the model can send signals:
--- -- 	procedure init (self : not null access type_model'class);
 
+	procedure connect_console;
 
 
 	
@@ -258,21 +251,14 @@ package et_canvas_schematic_2 is
 	-- to be executed.:
 	procedure execute_script (script : in pac_script_name.bounded_string);	
 
--- 	-- Executes a command as typed on the console by the operator
--- 	-- like "rename device R1 R2".
--- 	-- Calls et_scripting.schematic_cmd for the actual execution.
--- 	procedure execute_command (self : access gtk_entry_record'class);
--- 
--- 
--- 	
--- -- VIEW OR CANVAS
--- 
--- 	type type_view is new pac_canvas.type_view with record
--- 		drawing	: type_drawing;
--- 	end record;
--- 
--- 
--- 	
+	
+	-- Executes a command as typed on the console by the operator
+	-- like "rename device R1 R2".
+	-- Calls et_scripting.schematic_cmd for the actual execution.
+	procedure execute_command (self : access gtk_entry_record'class);
+
+
+	
 -- 	label_console_text : constant string := 
 -- 		(8 * " ") & "switch module: F11 / F12";
 -- 
@@ -303,35 +289,7 @@ package et_canvas_schematic_2 is
 	-- Returns the name of the currently active module:
 	function active_module return pac_module_name.bounded_string;
 
--- 	-- Returns the bounding box of all items of the current sheet.
--- 	overriding function bounding_box (self : not null access type_view)
--- 		return type_bounding_box;
--- 
--- 	
--- 	overriding function model_to_drawing (
--- 		self		: not null access type_view;
--- 		model_point : in type_model_point)
--- 		return type_vector_model;
--- 
--- 	
--- 	overriding function drawing_to_model (
--- 		self			: not null access type_view;
--- 		drawing_point : in type_vector_model)	
--- 		return type_model_point;
--- 
--- 	
--- 	-- Creates a new schematic view:
--- 	procedure gtk_new (
--- 		self	: out type_view_ptr);
--- 
--- 
--- 	
--- 	-- Redraw either the whole schematic sheet or a specific part of it only.
--- 	overriding procedure draw_internal (
--- 		self	: not null access type_view;
--- 		area_in	: type_bounding_box);
--- 
--- 
+
 	-- Sets the active module to be displayed in the canvas.
 	-- The module must exist inside the current project directory.
 	procedure set_module (
