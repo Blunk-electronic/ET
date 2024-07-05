@@ -528,7 +528,7 @@ package et_canvas is
 	-- Otherwise the canvas may freeze and stop emitting signals.
 	swin_size_initial : constant type_window_size := (
 		width	=> 800,
-		height	=> 600);
+		height	=> 700);
 	
 	-- The current size of the scrolled window. It gets updated
 	-- in procedure set_up_swin_and_scrollbars and 
