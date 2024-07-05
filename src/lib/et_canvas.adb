@@ -433,7 +433,7 @@ package body et_canvas is
 		backup_visible_area (get_visible_area (canvas));
 		
 		-- schedule a redraw:
-		refresh (canvas);		
+		refresh;		
 	end zoom_on_cursor;
 
 
@@ -1187,14 +1187,9 @@ package body et_canvas is
 	end stroke;
 
 	
-	procedure refresh (
-		canvas	: access gtk_widget_record'class)
-	is
-		drawing_area : constant gtk_drawing_area := 
-			gtk_drawing_area (canvas);
-	begin
+	procedure refresh is begin
 		-- put_line ("refresh " & image (clock)); 
-		drawing_area.queue_draw;
+		canvas.queue_draw;
 	end refresh;
 
 
@@ -2219,7 +2214,7 @@ package body et_canvas is
 
 		end if;
 			
-		refresh (canvas);		
+		refresh;		
 		
 		update_cursor_coordinates;
 		update_distances_display;
@@ -2580,7 +2575,7 @@ package body et_canvas is
 		-- add_object;
 
 		-- Redraw the canvas:
-		refresh (canvas);
+		refresh;
 	end cb_add;
 
 	
@@ -2591,7 +2586,7 @@ package body et_canvas is
 		-- delete_object;
 
 		-- Redraw the canvas:
-		refresh (canvas);
+		refresh;
 	end cb_delete;
 
 	
@@ -2832,7 +2827,7 @@ package body et_canvas is
 			F.y := F.y - dh;
 
 			-- Schedule a refresh to make the size change appear smoothly:
-			refresh (canvas);
+			refresh;
 			
 			-- Approach 2: -- CS never tried
 			-- Modify the y-component of the translate-offset
@@ -2987,7 +2982,7 @@ package body et_canvas is
 	is begin
 		-- put_line ("horizontal moved " & image (clock));
 		-- show_adjustments_h;
-		refresh (canvas);
+		refresh;
 	end cb_horizontal_moved;
 
 	
@@ -2996,7 +2991,7 @@ package body et_canvas is
 	is begin		
 		-- put_line ("vertical moved " & image (clock));
 		-- show_adjustments_v;
-		refresh (canvas);
+		refresh;
 	end cb_vertical_moved;
 
 
@@ -3321,7 +3316,7 @@ package body et_canvas is
 		end if;
 
 		
-		refresh (canvas);
+		refresh;
 		
 		return event_handled;
 	end cb_canvas_button_pressed;
@@ -3438,7 +3433,7 @@ package body et_canvas is
 		end if;
 
 		
-		refresh (canvas);
+		refresh;
 		
 		return event_handled;
 	end cb_canvas_button_released;
@@ -3492,7 +3487,7 @@ package body et_canvas is
 
 			-- The canvas must be refreshed in order to
 			-- show the rectangle as the mouse is being moved:
-			refresh (canvas);
+			refresh;
 		end if;
 		
 		return event_handled;
@@ -3559,7 +3554,7 @@ package body et_canvas is
 					-- is nearest to the center of the visible area:
 					put_line ("move cursor to center");
 					move_cursor (snap_to_grid (get_center (visible_area)));
-					refresh (canvas);
+					refresh;
 
 				-- when GDK_F2 =>
 
@@ -3654,7 +3649,7 @@ package body et_canvas is
 			backup_visible_area (get_visible_area (canvas));
 			
 			-- schedule a redraw:
-			refresh (canvas);
+			refresh;
 		end zoom;
 
 

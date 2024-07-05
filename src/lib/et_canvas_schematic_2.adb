@@ -413,7 +413,7 @@ package body et_canvas_schematic_2 is
 		backup_visible_area (bounding_box);
 		
 		-- Schedule a redraw of the canvas:
-		refresh (canvas);
+		refresh;
 	end zoom_to_fit_all;
 
 

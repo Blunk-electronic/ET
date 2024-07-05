@@ -633,8 +633,7 @@ package et_canvas is
 
 	-- This procedure should be called in order to schedule
 	-- a refresh (or redraw) of the canvas:
-	procedure refresh (
-		canvas	: access gtk_widget_record'class);
+	procedure refresh;
 	
 
 	-- This procedure computes the dimensions of the canvas
