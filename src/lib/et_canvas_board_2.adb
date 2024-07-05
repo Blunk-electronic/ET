@@ -635,22 +635,31 @@ package body et_canvas_board_2 is
 -- 	begin
 -- 		label_console.set_text (text_before & et_canvas_schematic.label_console_text);
 -- 	end set_label_console;
--- 	
--- 
--- 	procedure redraw_board is begin
--- 		redraw (canvas);
--- 	end redraw_board;
--- 
--- 	
--- 	procedure redraw_schematic is begin
--- 		et_canvas_schematic.redraw_schematic;
--- 	end redraw_schematic;
--- 	
--- 
--- 	procedure redraw is begin
--- 		redraw_schematic;
--- 		redraw_board;
--- 	end redraw;
+	
+
+
+	
+
+-- REDRAW / REFRESH:
+	
+	procedure redraw_board is begin
+		refresh;
+	end redraw_board;
+
+	
+	procedure redraw_schematic is begin
+		et_canvas_schematic_2.pac_canvas.refresh;
+	end redraw_schematic;
+	
+
+	procedure redraw is begin
+		redraw_schematic;
+		redraw_board;
+	end redraw;
+
+
+
+
 
 	
 

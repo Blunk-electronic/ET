@@ -242,12 +242,21 @@ package et_canvas_board_2 is
 	-- Appends the et_canvas_schematic.label_console_text to the existing text
 	-- of label_console:
 -- 	procedure set_label_console;
--- 
--- 
--- 	
--- 	procedure redraw_board;
--- 	procedure redraw_schematic;
--- 	procedure redraw;
+
+
+
+	
+-- REDRAW / REFRESH:
+	
+	-- Redraws the board:
+	procedure redraw_board;
+
+	-- Redraws the schematic:
+	procedure redraw_schematic;
+
+	-- Redraws both schematic and board:
+	procedure redraw;
+
 
 	
 
