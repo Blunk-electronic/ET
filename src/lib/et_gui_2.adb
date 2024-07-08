@@ -75,7 +75,7 @@ package body et_gui_2 is
 
 		
 		
-		-- set_grid_to_scale;
+		-- CS set_grid_to_scale;
 		compute_canvas_size;
 		compute_bounding_box;
 		set_base_offset;
@@ -118,6 +118,9 @@ package body et_gui_2 is
 		canvas.grab_focus;
 
 		zoom_to_fit (bounding_box);		
+
+		-- Backup the currently visible area.
+		-- This is relevant for canvas mode MODE_3_ZOOM_FIT only:
 		backup_visible_area (bounding_box);
 
 	
@@ -171,7 +174,7 @@ package body et_gui_2 is
 
 		log (text => "init_board", level => log_threshold);
 		
-		set_grid_to_scale;
+		-- CS set_grid_to_scale;
 		compute_canvas_size;
 		compute_bounding_box;
 		set_base_offset;
@@ -181,10 +184,12 @@ package body et_gui_2 is
 		-- set_title_bar ("BOARD"); -- CS rig and module name
 
 
+		log (text => "build primary tool display", level => log_threshold + 1);
 		build_primary_tool_display;
 
 		set_up_coordinates_display;
-		
+
+		-- log (text => "build mode display", level => log_threshold + 1);
 		build_mode_display;
 
 
@@ -194,8 +199,32 @@ package body et_gui_2 is
 		connect_console;
 		
 	
+		set_up_swin_and_scrollbars;
+
+		pac_canvas.set_up_canvas;
+		et_canvas_board_2.set_up_canvas;
+
+
+		log (text => "show board window", level => log_threshold + 1);		
+		main_window.show_all;
+
 		
--- 		-- Connect to the on_activate signal (on hitting enter key):
+		set_initial_scrollbar_settings;
+		
+		zoom_to_fit (bounding_box);
+
+		-- Backup the currently visible area.
+		-- This is relevant for canvas mode MODE_3_ZOOM_FIT only:
+		backup_visible_area (bounding_box);
+
+
+		update_zoom_display;
+		update_scale_display;
+		-- update_grid_display;
+		-- canvas.update_mode_display;
+
+
+		-- 		-- Connect to the on_activate signal (on hitting enter key):
 -- 		gtk_entry (cursor_position_x.get_child).on_activate (set_cursor_position_x'access);
 -- 		gtk_entry (cursor_position_y.get_child).on_activate (set_cursor_position_y'access);
 -- 
@@ -204,29 +233,7 @@ package body et_gui_2 is
 -- 
 -- 		
 -- 		build_toolbars;
-		set_up_swin_and_scrollbars;
--- 
--- 		build_console;
 
-		pac_canvas.set_up_canvas;
-		et_canvas_board_2.set_up_canvas;
-
-		set_initial_scrollbar_settings;
-		update_zoom_display;
-		-- update_grid_display;
-		update_scale_display;
-		canvas.grab_focus;
-
-		-- CS zoom_to_fit (bounding_box);
-
-		-- Backup the currently visible area.
-		-- This is relevant for canvas mode MODE_3_ZOOM_FIT only:
-		backup_visible_area (bounding_box);
-
-		log (text => "show board window", level => log_threshold + 1);		
-		main_window.show_all;
-
--- 		canvas.update_mode_display;
 		
 	end init_board;
 
