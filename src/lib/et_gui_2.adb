@@ -88,10 +88,8 @@ package body et_gui_2 is
 		log (text => "build primary tool display", level => log_threshold + 1);
 		build_primary_tool_display;
 
-
 		log (text => "build sheet number display", level => log_threshold + 1);
 		build_sheet_number_display;
-		update_sheet_number_display;
 		
 		set_up_coordinates_display;
 
@@ -103,24 +101,35 @@ package body et_gui_2 is
 		build_console;
 -- 		set_label_console;
 		connect_console;
+
+
 		
 		set_up_swin_and_scrollbars;
 
 		pac_canvas.set_up_canvas;
 		et_canvas_schematic_2.set_up_canvas;
 
+
+		log (text => "show schematic window", level => log_threshold + 1);
+		main_window.show_all;
+
+		
 		set_initial_scrollbar_settings;
-		update_zoom_display;
-		-- update_grid_display;
-		update_scale_display;
 		canvas.grab_focus;
 
-		-- CS zoom_to_fit (bounding_box);
-		
+		zoom_to_fit (bounding_box);		
 		backup_visible_area (bounding_box);
 
 	
--- 		-- Show the module name in the title bar:
+		update_sheet_number_display;
+		update_zoom_display;
+		update_scale_display;
+-- 		update_grid_display;
+-- 		canvas.update_mode_display;
+
+
+		
+		-- 		-- Show the module name in the title bar:
 -- 		log (text => "set title bar", level => log_threshold + 1);
 
 -- 
@@ -144,15 +153,6 @@ package body et_gui_2 is
 -- 		log (text => "build toolbars", level => log_threshold + 1);
 -- 		build_toolbars;
 
-
-
-		-- display the schematic:
-		log (text => "show schematic window", level => log_threshold + 1);
-		main_window.show_all;
--- 
-
--- 		canvas.update_mode_display;
--- 		
 	end init_schematic;
 
 	
