@@ -85,6 +85,9 @@ with et_logging;					use et_logging;
 
 package et_canvas_board_2 is
 
+	use et_project.modules.pac_generic_modules;
+
+	
 	title : constant string := system_name & " BOARD ";
 	
 	procedure set_title_bar (

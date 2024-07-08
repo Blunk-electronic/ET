@@ -132,7 +132,8 @@ package body et_canvas_schematic_2 is
 			b : type_area; -- the bounding-box of the frame
 
 			-- Get the size of the frame:
-			size : type_frame_size := element (current_active_module).frames.frame.size;
+			size : constant type_frame_size := 
+				element (current_active_module).frames.frame.size;
 
 		begin
 			b.width := type_distance_model_positive (size.x);
@@ -250,7 +251,7 @@ package body et_canvas_schematic_2 is
 
 			-- Get the margin between outer border of the frame
 			-- and the edge of the paper:
-			margin : type_border_width := 
+			margin : constant type_border_width := 
 				element (current_active_module).frames.frame.border_width;
 			
 			-- The offset due to the margin:
@@ -273,9 +274,7 @@ package body et_canvas_schematic_2 is
 	begin
 		put_line ("compute_bounding_box (schematic)");
 
-		-- The drawing frame is regarded as part of the model.
-		-- Iterate through all primitive objects of the 
-		-- drawing frame:
+		-- The drawing frame is regarded as part of the model:
 		parse_drawing_frame;
 		
 		-- The database that contains all objects of the model

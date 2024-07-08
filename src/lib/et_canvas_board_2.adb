@@ -52,7 +52,8 @@ with ada.calendar.formatting;		use ada.calendar.formatting;
 with et_scripting;
 -- with et_modes;
 -- with et_project;
--- 
+
+with et_frames;
 -- with et_assembly_variants;			use et_assembly_variants;
 with et_canvas_schematic_2;			--use et_canvas_schematic;
 -- with et_display.board;
@@ -78,8 +79,6 @@ with et_canvas_board_vias;			use et_canvas_board_vias;
 -- with et_undo_redo;
 
 package body et_canvas_board_2 is
-
-	-- use et_project.modules.pac_generic_modules;
 
 
 	procedure set_title_bar (
@@ -110,13 +109,8 @@ package body et_canvas_board_2 is
 		ignore_errors			: in boolean := false;
 		test_only				: in boolean := false)		
 	is
-		-- use pac_lines;
-		-- use pac_circles;
-		-- use pac_objects;
-
 		-- debug : boolean := false;
 		debug : boolean := true;
-		
 
 		-- In order to detect whether the bounding-box has
 		-- changed we take a copy of the current bounding-box:
@@ -133,45 +127,41 @@ package body et_canvas_board_2 is
 		first_object : boolean := true;
 
 
-		-- This procedure iterates through all primitive objects
-		-- of the drawing frame and adds them to the temporary
-		-- bounding-box bbox_new:
--- 		procedure parse_drawing_frame is
--- 			use demo_frame;
--- 
--- 			procedure query_line (l : in pac_lines.cursor) is
--- 				-- The candidate line being handled:
--- 				line : type_line renames element (l);
--- 
--- 				-- Compute the preliminary bounding-box of the line:
--- 				b : type_area := get_bounding_box (line);
--- 			begin
--- 				-- Move the box by the position of the
--- 				-- drawing frame to get the final bounding-box
--- 				-- of the line candidate:
--- 				move_by (b.position, drawing_frame.position);
--- 
--- 				-- If this is the first primitive object,
--- 				-- then use its bounding-box as seed to start from:
--- 				if first_object then
--- 					bbox_new := b;
--- 					first_object := false;
--- 				else
--- 				-- Otherwise, merge the box b with the box being built:
--- 					merge_areas (bbox_new, b);
--- 				end if;
--- 			end query_line;
--- 
--- 			
--- 		begin
--- 			-- CS: This simple solution iterates through all lines
--- 			-- incl. the title block. But since the title block
--- 			-- is always inside the drawing frame, the elements
--- 			-- of the title block can be omitted.
--- 			drawing_frame.lines.iterate (query_line'access);
--- 			
--- 			-- CS texts
--- 		end parse_drawing_frame;
+		-- This procedure uses the size of the drawing frame
+		-- and adds it to the temporary bounding-box bbox_new.
+		-- The size expresses the outer border of the frame.
+		-- So, tt is sufficient to look at the size only because
+		-- all other objects of the frame are definitely inside
+		-- the outer border:
+		procedure parse_drawing_frame is
+			use et_frames;
+			
+			b : type_area; -- the bounding-box of the frame
+
+			-- Get the size of the frame:
+			size : constant type_frame_size := 
+				element (current_active_module).board.frame.frame.size;
+
+		begin
+			b.width := type_distance_model_positive (size.x);
+			b.height := type_distance_model_positive (size.y);
+
+			-- CS: orientation (portrait/landscape) ?
+			
+			-- CS: set b.position with frame position
+			-- currently it is default (0;0);
+			
+			-- If this is the first primitive object,
+			-- then use its bounding-box as seed to start from:
+			if first_object then
+				bbox_new := b;
+				first_object := false;
+			else
+			-- Otherwise, merge the box b with the box being built:
+				merge_areas (bbox_new, b);
+			end if;
+				
+		end parse_drawing_frame;
 
 
 		
@@ -241,50 +231,56 @@ package body et_canvas_board_2 is
 -- 		end query_object;
 -- 
 -- 
--- 		-- This procedure updates the bounding-box and
--- 		-- sets the bounding_box_changed flag
--- 		-- in NON-TEST-MODE (which is default by argument test_only).
--- 		-- In TEST-mode the bounding_box_changed flag is cleared:
--- 		procedure update_global_bounding_box is begin
--- 			if test_only then
--- 				put_line ("TEST ONLY mode. Bounding-box not changed.");
--- 				bounding_box_changed := false;
--- 			else
--- 				-- Update the global bounding-box:
--- 				bounding_box := bbox_new;
--- 
--- 				-- The new bounding-box differs from the old one.
--- 				-- Set the global flag bounding_box_changed:
--- 				bounding_box_changed := true;
--- 			end if;
--- 		end update_global_bounding_box;
--- 		
--- 
--- 
--- 		procedure add_margin is
--- 			use demo_frame;
--- 			
--- 			-- The offset due to the margin:
--- 			margin_offset : type_vector_model;
--- 		begin
--- 			bbox_new.width  := bbox_new.width  + 2.0 * margin;
--- 			bbox_new.height := bbox_new.height + 2.0 * margin;
--- 			
--- 			-- Since we regard the margin as inside the bounding-box,
--- 			-- we must move the bounding-box position towards bottom-left
--- 			-- by the inverted margin_offset:
--- 			margin_offset := (x	=> margin, y => margin);
--- 			move_by (bbox_new.position, invert (margin_offset));
--- 		end add_margin;
--- 
+		-- This procedure updates the bounding-box and
+		-- sets the bounding_box_changed flag
+		-- in NON-TEST-MODE (which is default by argument test_only).
+		-- In TEST-mode the bounding_box_changed flag is cleared:
+		procedure update_global_bounding_box is begin
+			if test_only then
+				put_line ("TEST ONLY mode. Bounding-box not changed.");
+				bounding_box_changed := false;
+			else
+				-- Update the global bounding-box:
+				bounding_box := bbox_new;
+
+				-- The new bounding-box differs from the old one.
+				-- Set the global flag bounding_box_changed:
+				bounding_box_changed := true;
+			end if;
+		end update_global_bounding_box;
+		
+
+
+		procedure add_margin is
+			use et_frames;
+
+			-- Get the margin between outer border of the frame
+			-- and the edge of the paper:
+			margin : constant type_border_width := 
+				element (current_active_module).board.frame.frame.border_width;
+			
+			-- The offset due to the margin:
+			margin_offset : type_vector_model;
+		begin
+			bbox_new.width  := bbox_new.width  + 2.0 * type_distance_model_positive (margin);
+			bbox_new.height := bbox_new.height + 2.0 * type_distance_model_positive (margin);
+			
+			-- Since we regard the margin as inside the bounding-box,
+			-- we must move the bounding-box position towards bottom-left
+			-- by the inverted margin_offset:
+			margin_offset := (
+				x => type_distance_model_positive (margin),
+				y => type_distance_model_positive (margin));
+			
+			move_by (bbox_new.position, invert (margin_offset));
+		end add_margin;
+
 		
 	begin
 		put_line ("compute_bounding_box (board)");
 
-		-- The drawing frame is regarded as part of the model.
-		-- Iterate through all primitive objects of the 
-		-- drawing frame:
-	-- parse_drawing_frame;
+		-- The drawing frame is regarded as part of the model:
+		parse_drawing_frame;
 		
 		-- The database that contains all objects of the model
 		-- must be parsed. This is the call of an iteration through
@@ -297,64 +293,63 @@ package body et_canvas_board_2 is
 		-- Now, we expand the temporary bounding-box by the margin.
 		-- The area around the drawing frame frame is regarded
 		-- as part of the model and thus inside the bounding-box:
-	-- add_margin;
+		add_margin;
 		-- Now, bbox_new has become the "outer bounding-box" (OB).
 		
 		-- Compare the new bounding-box with the old 
 		-- bounding-box to detect a change:
 		if bbox_new /= bbox_old then
-			null;
--- 
--- 			-- Do the size check of the new bounding-box. If it is
--- 			-- too large, then restore the old bounding-box:
--- 			if bbox_new.width  >= bounding_box_width_max or
--- 				bbox_new.height >= bounding_box_height_max then
--- 
--- 				-- output limits and computed box dimensions:
--- 				put_line ("WARNING: Bounding-box size limit exceeded !");
--- 				put_line (" max. width : " 
--- 					& to_string (bounding_box_width_max));
--- 				
--- 				put_line (" max. height: " 
--- 					& to_string (bounding_box_height_max));
--- 				
--- 				put_line (" detected   : " 
--- 					& to_string (bbox_new));
--- 
--- 				-- Set the error flag:
--- 				bounding_box_error := (
--- 					size_exceeded => true,
--- 					width  => bbox_new.width,
--- 					height => bbox_new.height);
--- 
--- 				
--- 				if ignore_errors then
--- 					put_line (" Errors ignored !");
--- 					
--- 					-- Override old global bounding-box with
--- 					-- the faulty box bbox_new:
--- 					update_global_bounding_box;
--- 					
--- 				else -- By default errors are NOT ignored.
--- 					put_line (" Discarded. Global bounding-box NOT changed.");
--- 					
--- 					-- Clear the global flag bounding_box_changed
--- 					-- because we discard the new bounding-box (due to 
--- 					-- a size error) and
--- 					-- leave the current global bounding-box untouched:
--- 					bounding_box_changed := false;
--- 
--- 				end if;
--- 
--- 				
--- 			else -- size ok, no errors
--- 				-- Reset error flag:
--- 				bounding_box_error := (others => <>);
--- 
--- 				update_global_bounding_box;
--- 			end if;
--- 			
--- 			
+
+			-- Do the size check of the new bounding-box. If it is
+			-- too large, then restore the old bounding-box:
+			if bbox_new.width  >= bounding_box_width_max or
+				bbox_new.height >= bounding_box_height_max then
+
+				-- output limits and computed box dimensions:
+				put_line ("WARNING: Bounding-box size limit exceeded !");
+				put_line (" max. width : " 
+					& to_string (bounding_box_width_max));
+				
+				put_line (" max. height: " 
+					& to_string (bounding_box_height_max));
+				
+				put_line (" detected   : " 
+					& to_string (bbox_new));
+
+				-- Set the error flag:
+				bounding_box_error := (
+					size_exceeded => true,
+					width  => bbox_new.width,
+					height => bbox_new.height);
+
+				
+				if ignore_errors then
+					put_line (" Errors ignored !");
+					
+					-- Override old global bounding-box with
+					-- the faulty box bbox_new:
+					update_global_bounding_box;
+					
+				else -- By default errors are NOT ignored.
+					put_line (" Discarded. Global bounding-box NOT changed.");
+					
+					-- Clear the global flag bounding_box_changed
+					-- because we discard the new bounding-box (due to 
+					-- a size error) and
+					-- leave the current global bounding-box untouched:
+					bounding_box_changed := false;
+
+				end if;
+
+				
+			else -- size ok, no errors
+				-- Reset error flag:
+				bounding_box_error := (others => <>);
+
+				update_global_bounding_box;
+			end if;
+			
+			
 		else -- No change. 
 			-- Clear the global flag bounding_box_changed:
 			bounding_box_changed := false;
