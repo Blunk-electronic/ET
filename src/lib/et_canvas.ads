@@ -1128,7 +1128,40 @@ package et_canvas is
 	procedure set_property_before (text : in string);
 
 
+
+
+-- VISIBILITY THRESHOLD:
+
 	
+	-- If an object occupies a space that is wider or
+	-- higher than this constant, then it will be drawn on the screen:
+	visibility_threshold : constant type_logical_pixels_positive := 5.0;
+
+	
+	-- Returns true if the given area is large enough
+	-- to display objects therein:
+	function above_visibility_threshold (
+		a : in type_area)
+		return boolean;
+	
+
+	
+-- PRIMITIVE DRAW OPERATIONS:
+
+	-- This is a primitive draw operation that draws a line.
+	-- The argument pos contains the position of the parent
+	-- complex object.
+	-- If the argument do_stroke is false (default) then
+	-- no setting of linewidth and no stroking will be done. In this
+	-- case it is assumed that the caller has already set a linewidth
+	-- and that the caller will later care for a stroke command. This mode
+	-- requires less time for drawing the line than with do_stroke enabled.
+	procedure draw_line (
+		line		: in type_line;
+		pos			: in type_vector_model;
+		width		: in type_distance_model_positive;
+		do_stroke	: in boolean := false);
+
 	
 	
 	
