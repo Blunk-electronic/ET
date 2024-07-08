@@ -748,29 +748,10 @@ package body et_canvas is
 
 		-- Set the minimum size of the scrolled window and
 		-- the global swin_size variable.
-		-- There are two ways to do that:
-		--
-		-- 1. Basing on the global bounding-box which has been calculated
-		--    by parsing the model database. This causes the scrolled window
-		--    to adapt on startup to the model.
-		--    IMPORTANT: The height must be greater than the sum
-		--    of the height of all other widgets in the main window !
-		--    Otherwise the canvas may freeze and stop emitting signals:
-		--
-		-- swin.set_size_request (
-		-- 	gint (bounding_box.width),
-		-- 	gint (bounding_box.height)); -- Mind a minimal height !
-		--  -- See above comment.
-		-- 
-		-- swin_size := (
-		-- 	width	=> positive (bounding_box.width),
-		-- 	height	=> positive (bounding_box.height));
-
 		
-		-- 2. A static startup-configuration based on a certain 
-		--    minimal width and height. This ensures that the scrolled
-		--    window has a predictable and well defined size.
-		--    This is to be prefered over approach 1 (see above):
+		-- A static startup-configuration based on a certain 
+		-- minimal width and height. This ensures that the scrolled
+		-- window has a predictable and well defined size:
 		swin.set_size_request (
 			gint (swin_size_initial.width),
 			gint (swin_size_initial.height));
@@ -779,7 +760,7 @@ package body et_canvas is
 			width	=> swin_size_initial.width,
 			height	=> swin_size_initial.height);
 
-
+		
 		
 		-- CS show window size
 
@@ -1019,11 +1000,14 @@ package body et_canvas is
 		-- based on the height of the given area:
 		sw, sh : type_zoom_factor;
 	begin
-		-- put_line ("get_ratio");
+		put_line ("get_ratio");
 
 		-- Get the current width and height of the scrolled window:
 		swin.get_allocation (a);
 
+		-- put_line (" swin a.width  " & gint'image (a.width));
+		-- put_line (" swin a.height " & gint'image (a.height));
+				  
 		-- Get the ratio of width and height based on the current dimensions
 		-- of the scrolled window:
 		sw := type_zoom_factor 
