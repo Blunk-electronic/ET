@@ -125,16 +125,16 @@ package et_frames is
 
 	
 	type type_position is record
-		x, y : type_distance := border_width_default;
+		x, y : type_distance := 0; -- border_width_default;
 	end record;
 
-	position_default : constant type_position := (1,1);
+	-- position_default : constant type_position := (1,1);
 
 
 	
 	type type_line is record
-		start_point	: type_position := position_default;
-		end_point	: type_position := position_default;
+		start_point	: type_position; -- := position_default;
+		end_point	: type_position; -- := position_default;
 		-- CS line width ?
 	end record;
 
@@ -150,7 +150,7 @@ package et_frames is
 	
 	type type_placeholder is tagged record
 		size			: type_text_size := text_size_default;
-		position		: type_position := position_default;
+		position		: type_position; -- := position_default;
 	end record;
 
 	-- These placeholders are common in both schematic and pcb title blocks:
@@ -194,7 +194,7 @@ package et_frames is
 
 	-- The basic title block:
 	type type_title_block is tagged record
-		position		: type_position := position_default;
+		position		: type_position;
 
 		-- The positions of title block objects are relative
 		-- to the position of the title block:
@@ -315,13 +315,13 @@ package et_frames is
 	function to_string (domain : in type_domain) return string;
 	function to_domain (domain : in string) return type_domain;
 
+	
 	-- The used title block depends on the domain.
 	type type_frame (domain : type_domain) is record
 		paper			: type_paper_size := paper_size_default;
 		orientation		: type_orientation := orientation_default;
 		border_width	: type_border_width := border_width_default;
 		size			: type_frame_size;
-		-- CS position (x;y) of lower left corner
 		sectors			: type_sectors;
 	
 		case domain is
@@ -329,6 +329,7 @@ package et_frames is
 				title_block_schematic : type_title_block_schematic;
 
 			when PCB =>
+				position		: type_position; -- of the lower-left corner
 				title_block_pcb : type_title_block_pcb;
 		end case;
 	end record;
