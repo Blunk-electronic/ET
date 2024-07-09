@@ -57,7 +57,7 @@ with et_frames;
 with et_canvas_board_2;
 -- with et_display.schematic;			use et_display.schematic;
 -- with et_colors;						use et_colors;
--- with et_colors.schematic;			use et_colors.schematic;
+with et_colors.schematic;			use et_colors.schematic;
 with et_modes.schematic;
 -- 
 -- with et_net_names;					use et_net_names;
