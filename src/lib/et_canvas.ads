@@ -621,9 +621,6 @@ package et_canvas is
 	-- It is updated by the function cb_draw_objects:
 	context : cairo.cairo_context;
 
-	
-	-- Strokes the global context (see above):
-	procedure stroke;
 
 	
 	-- This is the size of the canvas in device pixels.
@@ -1148,6 +1145,16 @@ package et_canvas is
 	
 -- PRIMITIVE DRAW OPERATIONS:
 
+	-- Strokes the global context (see above):
+	procedure stroke;
+
+
+	-- Sets the linewidth according to the
+	-- current zoom-factor:
+	procedure set_linewidth (
+		w : in type_distance_model_positive);
+	
+	
 	-- This is a primitive draw operation that draws a line.
 	-- The argument pos contains the position of the parent
 	-- complex object.
@@ -1158,7 +1165,8 @@ package et_canvas is
 	-- requires less time for drawing the line than with do_stroke enabled.
 	procedure draw_line (
 		line		: in type_line;
-		pos			: in type_vector_model;
+		pos			: in type_position;
+		-- CS mirror ?
 		width		: in type_distance_model_positive;
 		do_stroke	: in boolean := false);
 

@@ -70,8 +70,9 @@ package et_frames is
 	template_file_name_length_max : constant positive := 300;
 	template_file_name_dummy : constant string := "dummy_frame";
 
-	line_width_thin : constant glib.gdouble := 0.3;
-	line_width_thick : constant glib.gdouble := 1.0;
+	-- There are only two linewidths, expressed in mm:
+	linewidth_1 : constant := 0.3;
+	linewidth_2 : constant := 1.0; 
 	
 	-- A drawing frame is divided in columns and rows. The columns run from 1 to maximal 26.
 	-- The rows run from A to Z.
@@ -320,6 +321,7 @@ package et_frames is
 		orientation		: type_orientation := orientation_default;
 		border_width	: type_border_width := border_width_default;
 		size			: type_frame_size;
+		-- CS position (x;y) of lower left corner
 		sectors			: type_sectors;
 	
 		case domain is

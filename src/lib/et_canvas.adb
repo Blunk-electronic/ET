@@ -1165,10 +1165,6 @@ package body et_canvas is
 
 
 -- CANVAS:
-	
-	procedure stroke is begin
-		cairo.stroke (context);
-	end stroke;
 
 	
 	procedure refresh is begin
@@ -3254,9 +3250,25 @@ package body et_canvas is
 
 -- PRIMITIVE DRAW OPERATIONS:
 
+	
+	procedure stroke is begin
+		cairo.stroke (context);
+	end stroke;
+
+	
+
+	procedure set_linewidth (
+		w : in type_distance_model_positive)
+	is begin
+		cairo.set_line_width (
+			context, to_gdouble_positive (to_distance (w)));
+	end set_linewidth;
+
+	
+	
 	procedure draw_line (
 		line		: in type_line;
-		pos			: in type_vector_model;
+		pos			: in type_position;
 		width		: in type_distance_model_positive;
 		do_stroke	: in boolean := false)
 	is
@@ -3274,8 +3286,10 @@ package body et_canvas is
 		b : type_area;
 		
 	begin
+		-- CS rotate and mirror
+		
 		-- Move the line to the given position:
-		move_by (l, (pos.x, pos.y));
+		move_by (l, (pos.place.x, pos.place.y));
 		
 		-- Get the bounding-box of line:
 		b := get_bounding_box (l, width);

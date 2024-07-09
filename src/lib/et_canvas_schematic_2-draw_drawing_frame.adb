@@ -36,93 +36,124 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with et_text;
-with et_meta;
+-- with et_text;
+-- with et_meta;
 
-separate (et_canvas_schematic)
+separate (et_canvas_schematic_2)
 
-procedure draw_frame (
-	self	: not null access type_view)
-is
+procedure draw_drawing_frame is
 	use et_frames;
+
+	f : type_frames_schematic := element (current_active_module).frames;
+	l : pac_geometry_2.type_line;
+
+	procedure draw_border is
+		w : constant type_distance_model_positive := 
+			type_distance_model_positive (f.frame.size.x);
+
+		h : constant type_distance_model_positive := 
+			type_distance_model_positive (f.frame.size.y);
+
+		procedure draw_line is begin
+			-- The width of 0.0 has no meaning because 
+			-- the argument do_stroke is false by default
+			-- (see specs of draw_line):
+			draw_line (
+				line		=> l,
+				pos			=> origin_zero_rotation,
+				width		=> 0.0);
+
+		end draw_line;
+		
+	begin
+		set_linewidth (linewidth_2);
+		
+		l.start_point := (0.0, 0.0);
+		l.end_point := (w, 0.0);
+
+		draw_line;
+
+		l.start_point := (w, 0.0);
+		l.end_point := (w, h);
+
+		draw_line;
+
+
+		l.start_point := (w, h);
+		l.end_point := (0.0, h);
+
+		draw_line;
+
+
+		l.start_point := (0.0, h);
+		l.end_point := (0.0, 0.0);
+
+		draw_line;
+
+		stroke;
+		
+	end draw_border;
 	
-	frame_size   : et_frames.type_frame_size renames self.get_frame.size;
-	frame_height : et_frames.type_distance renames self.get_frame.size.y;
-	title_block_position : et_frames.type_position renames self.get_frame.title_block_schematic.position;
-
+-- 	procedure draw_additional_placeholders is
+-- 		
+-- 		-- get placeholders:
+-- 		phs : constant type_placeholders_schematic := 
+-- 			self.get_frame.title_block_schematic.additional_placeholders;
+-- 
+-- 		use et_text;
+-- 
+-- 		
+-- 		procedure draw_sheet_description is
+-- 			use et_project;
+-- 
+-- 			-- Get the description of the current active sheet:
+-- 			des : constant type_schematic_description := 
+-- 					sheet_description (current_active_module, current_active_sheet);
+-- 		begin
+-- 			-- category (development, product, routing)
+-- 			draw_text (
+-- 				content	=> to_content (to_string (des.category)),
+-- 				size	=> phs.category.size,
+-- 				font	=> font_placeholders,
+-- 				pos		=> phs.category.position,
+-- 				tb_pos	=> title_block_position);
+-- 
+-- 			-- description
+-- 			draw_text (
+-- 				content	=> to_content (to_string (des.content)),
+-- 				size	=> phs.description.size,
+-- 				font	=> font_placeholders,
+-- 				pos		=> phs.description.position,
+-- 				tb_pos	=> title_block_position);
+-- 						
+-- 		end draw_sheet_description;
+-- 
+-- 		
+-- 	begin -- draw_additional_placeholders
+-- 		
+-- 		-- sheet number n of m
+-- 		draw_text (
+-- 			content	=> to_content (to_sheet (current_active_sheet)), -- CS complete with "/of total"
+-- 			size	=> phs.sheet_number.size,
+-- 			font	=> font_placeholders,
+-- 			pos		=> phs.sheet_number.position,
+-- 			tb_pos	=> title_block_position);
+-- 
+-- 
+-- 		draw_sheet_description;
+-- 		
+-- 	end draw_additional_placeholders;
+-- 
 	
-	
-	procedure draw_additional_placeholders is
-		
-		-- get placeholders:
-		phs : constant type_placeholders_schematic := 
-			self.get_frame.title_block_schematic.additional_placeholders;
+begin
+	put_line ("draw_drawing_frame");
 
-		use et_text;
+		-- cairo.set_line_width (context.cr, line_width_thin);
 
-		
-		procedure draw_sheet_description is
-			use et_project;
-
-			-- Get the description of the current active sheet:
-			des : constant type_schematic_description := 
-					sheet_description (current_active_module, current_active_sheet);
-		begin
-			-- category (development, product, routing)
-			draw_text (
-				content	=> to_content (to_string (des.category)),
-				size	=> phs.category.size,
-				font	=> font_placeholders,
-				pos		=> phs.category.position,
-				tb_pos	=> title_block_position);
-
-			-- description
-			draw_text (
-				content	=> to_content (to_string (des.content)),
-				size	=> phs.description.size,
-				font	=> font_placeholders,
-				pos		=> phs.description.position,
-				tb_pos	=> title_block_position);
-						
-		end draw_sheet_description;
-
-		
-	begin -- draw_additional_placeholders
-		
-		-- sheet number n of m
-		draw_text (
-			content	=> to_content (to_sheet (current_active_sheet)), -- CS complete with "/of total"
-			size	=> phs.sheet_number.size,
-			font	=> font_placeholders,
-			pos		=> phs.sheet_number.position,
-			tb_pos	=> title_block_position);
-
-
-		draw_sheet_description;
-		
-	end draw_additional_placeholders;
-
-	
-begin -- draw_frame
--- 	put_line ("draw frame ...");
-
-	-- We draw the frame if it is inside the given area or if it itersects the given area:
-	if (area = no_area)
-		or else intersects (area, self.frame_bounding_box) 
-	then
-		-- CS test size 
--- 			if not size_above_threshold (self, context.view) then
--- 				return;
--- 			end if;
-
-		cairo.set_line_width (context.cr, line_width_thin);
-
-		set_color_frame (context.cr);
+		-- set_color_frame (context.cr);
 
 		-- FRAME BORDER
-		draw_border (
-			frame_size		=> frame_size,
-			border_width	=> self.get_frame.border_width);
+		draw_border;
 
 		
 		-- TITLE BLOCK
@@ -130,31 +161,30 @@ begin -- draw_frame
 		--iterate (self.get_frame.title_block_schematic.lines, query_line'access);
 		--cairo.stroke (context.cr);
 
-		draw_title_block_lines (
-			lines		=> self.get_frame.title_block_schematic.lines,
-			tb_pos		=> title_block_position);
+		-- draw_title_block_lines (
+		-- 	lines		=> self.get_frame.title_block_schematic.lines,
+		-- 	tb_pos		=> title_block_position);
 
 		
 		-- draw common placeholders and other texts
-		draw_texts (
-			ph_common	=> self.get_frame.title_block_schematic.placeholders,
-			ph_basic	=> type_placeholders_basic (self.get_frame.title_block_schematic.additional_placeholders),
-			texts		=> self.get_frame.title_block_schematic.texts,
-			meta		=> et_meta.type_basic (element (current_active_module).meta.board),
-			tb_pos		=> title_block_position);
+		-- draw_texts (
+		-- 	ph_common	=> self.get_frame.title_block_schematic.placeholders,
+		-- 	ph_basic	=> type_placeholders_basic (self.get_frame.title_block_schematic.additional_placeholders),
+		-- 	texts		=> self.get_frame.title_block_schematic.texts,
+		-- 	meta		=> et_meta.type_basic (element (current_active_module).meta.board),
+		-- 	tb_pos		=> title_block_position);
+  -- 
 
-
-		draw_additional_placeholders;
+		-- draw_additional_placeholders;
 		
 		-- draw the sector delimiters
-		draw_sector_delimiters (
-			sectors			=> self.get_frame.sectors,
-			frame_size		=> frame_size,
-			border_width	=> self.get_frame.border_width);
+		-- draw_sector_delimiters (
+		-- 	sectors			=> self.get_frame.sectors,
+		-- 	frame_size		=> frame_size,
+		-- 	border_width	=> self.get_frame.border_width);
 
-	end if;
 	
-end draw_frame;
+end draw_drawing_frame;
 
 
 -- Soli Deo Gloria
