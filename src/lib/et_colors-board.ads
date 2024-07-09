@@ -37,10 +37,19 @@
 --   ToDo: 
 
 with et_pcb_stack;				use et_pcb_stack;
-with et_pcb_coordinates;		use et_pcb_coordinates;
+with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
+
+with et_canvas_board_2;
 
 package et_colors.board is
 
+	use et_canvas_board_2.pac_canvas;
+	-- The global context is now visible
+	-- for all procedures that set the color.
+	-- CS remove the useless argument "context".
+
+
+	
 	-- CS: These values may be overwitten by used specific colors and fill
 	-- styles in the future:
 	
