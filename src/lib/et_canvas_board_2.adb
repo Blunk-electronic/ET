@@ -58,7 +58,7 @@ with et_frames;
 with et_canvas_schematic_2;			--use et_canvas_schematic;
 -- with et_display.board;
 -- with et_colors;
--- with et_colors.board;				use et_colors.board;
+with et_colors.board;				use et_colors.board;
 with et_modes.board;
 -- with et_board_ops;					use et_board_ops;
 -- with et_pcb;

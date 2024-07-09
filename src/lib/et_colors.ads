@@ -102,34 +102,6 @@ package et_colors is
 
 
 	
-	type type_fill_style is (
-		SOLID, 
-		STRIPED_0,
-		STRIPED_45,
-		STRIPED_90,
-		STRIPED_135
--- CS DOTTED_SPARSE,
--- CS DOTTED_MEDIUM,
--- CS DOTTED_DENSE,
--- CS HATCHED_0,
--- CS HATCHED_45
-		);
-
-	fill_pattern_gap_brightness_default : constant type_dim_factor := 0.5;
-	
-	-- Creates a fill pattern in the given context:
-	procedure create_fill_pattern (
-		context			: in cairo_context;
-		color			: in type_color;		-- the color of the pattern
-		opacity			: in type_opacity;		-- the opacity of the pattern
-		-- background	: in type_color; ?
-
-		-- the brightness of the gaps betweeen lines and dots:
-		gap_brightness	: in type_dim_factor := fill_pattern_gap_brightness_default;
-		
-		style			: in type_fill_style;	-- the style (solid, striped, dotted)
-		scale			: in type_scale);		-- the scale of the canvas
-
 	
 end et_colors;
 

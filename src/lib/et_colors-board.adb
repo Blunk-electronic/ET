@@ -36,8 +36,116 @@
 --
 --   ToDo: 
 
+
+with glib;
+with cairo.pattern;
+with cairo.matrix;
+
 package body et_colors.board is
 
+
+	procedure create_fill_pattern (
+		context			: in cairo_context;
+		color			: in type_color;
+		opacity			: in type_opacity;
+		gap_brightness	: in type_dim_factor := fill_pattern_gap_brightness_default;
+		style			: in type_fill_style)
+		-- scale			: in type_scale)
+	is
+		use glib;
+		use cairo.pattern;
+		use cairo.matrix;
+
+		zero : constant gdouble := 0.0;
+		
+		-- The pattern appearance must be independed of the zoom-factor of the canvas.
+		-- So we need a compensation mechanism that keeps the pattern size constant. 
+		-- This is the length of the gradient:
+		gl : gdouble;
+
+		-- The modifier to compensate the zoom-factor is different for straight
+		-- and angular patterns. The modifier will be used to compute the 
+		-- length of the gradient:
+		m_0_90		: constant gdouble := 25.0;
+		m_45_135	: constant gdouble := m_0_90 - 5.0;
+
+		-- The pattern to create:
+		p : cairo_pattern;
+
+		-- The brightness of the color that is to fill the gaps between lines or dots:
+		gap_color : type_color;
+
+		procedure add_gap (offset : in gdouble) is begin
+			pattern_add_color_stop_rgba (p, offset, gap_color.red, gap_color.green, gap_color.blue, 0.5);
+		end add_gap;
+
+		procedure add_foreground (offset : in gdouble) is begin
+			pattern_add_color_stop_rgba (p, offset, color.red, color.green, color.blue, 0.5);
+		end add_foreground;
+
+		procedure make_gradient_0 is begin
+			gl := m_0_90 / gdouble (S);
+
+			-- gradient from left to right (in the view, in pixels)
+			p := pattern_create_linear (zero, zero, zero, gl);
+		end make_gradient_0;
+		
+		procedure make_gradient_45 is begin
+			gl := m_45_135 / gdouble (S);
+			
+			-- gradient from top left to bottom right (in the view, in pixels)
+			p := pattern_create_linear (zero, zero, gl, gl);
+		end make_gradient_45;
+
+		procedure make_gradient_90 is begin
+			gl := m_0_90 / gdouble (S);
+
+			-- gradient from top to bottom (in the view, in pixels)
+			p := pattern_create_linear (zero, zero, gl, zero);
+		end make_gradient_90;
+
+		procedure make_gradient_135 is begin
+			gl := m_45_135 / gdouble (S);
+			
+			-- gradient from top left to bottom right (in the view, in pixels)
+			p := pattern_create_linear (gl, zero, zero, gl);
+		end make_gradient_135;
+		
+	begin -- create_fill_pattern
+		case style is
+			when SOLID =>
+				-- No pattern to generate for solid filling:
+				set_source_rgba (context, color.red, color.green, color.blue, color_range (opacity));
+
+			when STRIPED_0		=> make_gradient_0;
+			when STRIPED_45		=> make_gradient_45;
+			when STRIPED_90		=> make_gradient_90;
+			when STRIPED_135	=> make_gradient_135;
+				
+			when others => null;
+		end case;
+
+		case style is
+			when STRIPED_0 | STRIPED_45 | STRIPED_90 | STRIPED_135 =>
+
+				-- Set the brightness of the color that is to fill the gaps between lines or dots:
+				gap_color := dim (color, gap_brightness);
+				
+				add_gap (0.50);
+				add_foreground (0.51);
+				add_foreground (0.55);
+				add_gap (0.56);
+				
+				set_source (context, p);
+				set_extend (get_source (context), CAIRO_EXTEND_REPEAT);
+
+			when others => null;
+		end case;
+		
+	end create_fill_pattern;
+
+
+	
 	procedure set_color_cursor (context : in cairo_context) is begin		
 		set_source_rgb (
 			context, 
@@ -61,7 +169,7 @@ package body et_colors.board is
 
 	
 	procedure set_color_frame (
-		context		: in cairo_context;
+		-- context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default)
 	is begin
 		-- CS query color schema defined by user
@@ -189,7 +297,7 @@ package body et_colors.board is
 	procedure set_color_stop_mask (
 		context 	: in cairo_context;
 		face		: in type_face;
-		scale		: in type_scale;
+		-- scale		: in type_scale;
 		brightness	: in type_brightness;
 		opacity 	: in type_opacity := default_opacity) 
 	is begin
@@ -199,16 +307,16 @@ package body et_colors.board is
 					context		=> context,
 					color		=> dim (stop_mask_top, brightness),
 					opacity		=> opacity,
-					style		=> stop_mask_fill,
-					scale		=> scale);
+					style		=> stop_mask_fill);
+					-- scale		=> scale);
 
 			when BOTTOM =>
 				create_fill_pattern (
 					context		=> context,
 					color		=> dim (stop_mask_bottom, brightness),
 					opacity		=> opacity,
-					style		=> stop_mask_fill,
-					scale		=> scale);
+					style		=> stop_mask_fill);
+					-- scale		=> scale);
 		end case;	
 	end set_color_stop_mask;
 	
@@ -216,7 +324,7 @@ package body et_colors.board is
 	procedure set_color_stencil (
 		context 	: in cairo_context;
 		face		: in type_face;
-		scale		: in type_scale;
+		-- scale		: in type_scale;
 		brightness	: in type_brightness;
 		opacity 	: in type_opacity := default_opacity)
 	is begin
@@ -226,16 +334,16 @@ package body et_colors.board is
 					context		=> context,
 					color		=> dim (stencil_top, brightness),
 					opacity		=> opacity,
-					style		=> stencil_fill,
-					scale		=> scale);
+					style		=> stencil_fill);
+					-- scale		=> scale);
 
 			when BOTTOM =>
 				create_fill_pattern (
 					context		=> context,
 					color		=> dim (stencil_bottom, brightness),
 					opacity		=> opacity,
-					style		=> stencil_fill,
-					scale		=> scale);
+					style		=> stencil_fill);
+					-- scale		=> scale);
 				
 		end case;
 	end set_color_stencil;

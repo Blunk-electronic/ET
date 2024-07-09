@@ -275,7 +275,7 @@ procedure draw_drawing_frame is
 begin
 	put_line ("draw_drawing_frame (board)");
 
-	-- set_color_frame;
+	set_color_frame;
 
 	-- outer border:
 	-- draw_border;
