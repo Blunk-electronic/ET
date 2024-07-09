@@ -554,6 +554,10 @@ package body et_canvas_board_2 is
 		set_up_command_buttons;
 	end set_up_main_window;
 
+
+
+
+	procedure draw_drawing_frame is separate;
 	
 
 	function cb_draw (
@@ -588,7 +592,7 @@ package body et_canvas_board_2 is
 		--draw_origin;
 		draw_cursor;
 		draw_zoom_area;
-		--draw_drawing_frame;		
+		draw_drawing_frame;		
 		--draw_objects;		
 		
 		return event_handled;

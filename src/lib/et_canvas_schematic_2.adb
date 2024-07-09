@@ -567,7 +567,7 @@ package body et_canvas_schematic_2 is
 
 
 
-	
+
 	procedure draw_drawing_frame is separate;
 	
 

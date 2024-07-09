@@ -78,7 +78,6 @@ procedure draw_drawing_frame is
 		end draw_line;
 		
 	begin
-		set_color_frame;
 		set_linewidth (linewidth_2);
 
 		-- Assemble the lower line:
@@ -157,14 +156,12 @@ procedure draw_drawing_frame is
 -- 
 	
 begin
-	put_line ("draw_drawing_frame");
+	put_line ("draw_drawing_frame (schematic)");
 
-		-- cairo.set_line_width (context.cr, line_width_thin);
+	set_color_frame;
 
-		-- set_color_frame (context.cr);
-
-		-- FRAME BORDER
-		draw_border;
+	-- outer border:
+	draw_border;
 
 		
 		-- TITLE BLOCK
