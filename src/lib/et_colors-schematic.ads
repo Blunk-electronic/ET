@@ -40,8 +40,15 @@ with cairo;						use cairo;
 -- with cairo.pattern;				use cairo.pattern;
 -- with gtkada.style;
 
+with et_canvas_schematic_2;
+
 package et_colors.schematic is
 
+	use et_canvas_schematic_2.pac_canvas;
+	-- The global context is now visible
+	-- for all procedures that set the color.
+	-- CS remove the useless argument "context".
+	
 	cursor			: type_color := white;
 	background 		: type_color := black;
 	frame			: type_color := white;
@@ -58,7 +65,7 @@ package et_colors.schematic is
 	procedure set_color_background (context : in cairo_context);
 	
 	procedure set_color_frame (
-		context		: in cairo_context;
+		-- context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default);
 	
 	procedure set_color_nets (

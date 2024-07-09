@@ -55,7 +55,7 @@ package body et_colors.schematic is
 	end set_color_background;
 
 	procedure set_color_frame (
-		context		: in cairo_context;
+		-- context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default)
 	is begin
 		-- CS query color schema defined by user
