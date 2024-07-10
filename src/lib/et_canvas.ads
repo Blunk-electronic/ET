@@ -75,11 +75,11 @@ with et_logging;				use et_logging;
 
 generic
 	
-	with package pac_geometry_2 is new et_geometry_2a (<>);
-	with package pac_grid is new pac_geometry_2.grid;
+	with package pac_geometry is new et_geometry_2a (<>);
+	with package pac_grid is new pac_geometry.grid;
 	
 package et_canvas is
-	use pac_geometry_2;
+	use pac_geometry;
 	use pac_grid;
 	
 

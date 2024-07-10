@@ -36,36 +36,9 @@
 --   history of changes:
 --
 
--- with ada.text_io;				use ada.text_io;
--- 
--- with gdk.event;					use gdk.event;
--- 
--- with gtk.widget;				use gtk.widget;
--- with gtk.window;				use gtk.window;
--- with gtk.separator;				use gtk.separator;
--- with gtk.box;					use gtk.box;
--- with gtk.gentry;				use gtk.gentry;
--- with gtk.combo_box;				use gtk.combo_box;
--- with gtk.combo_box_text;		use gtk.combo_box_text;
--- with gtk.drawing_area;			use gtk.drawing_area;
--- 
--- with gtk.scrolled_window;		use gtk.scrolled_window;
--- with gtk.adjustment;			use gtk.adjustment;
--- with gtk.scrollbar;				use gtk.scrollbar;
--- 
--- with gtk.table;					use gtk.table;
--- with gtk.label;					use gtk.label;
--- with gtk.button;				use gtk.button;
--- with gtk.text_view;				use gtk.text_view;
--- with gtk.text_buffer;			use gtk.text_buffer;
--- 
--- with cairo;
--- 
--- 
--- with et_logical_pixels;			use et_logical_pixels;
 -- with et_logging;				use et_logging;
 
--- with et_frames;					use et_frames;
+with et_frames;					use et_frames;
 
 
 generic
@@ -79,9 +52,9 @@ package et_canvas.drawing_frame_general is
 
 
 	-- This procedure draws the outer border of the frame:
-	-- procedure draw_border (
-	-- 	size	: in type_frame_size);
-	
+	procedure draw_border (
+		size	: in type_frame_size);
+		-- CS pass frame position
 	
 end et_canvas.drawing_frame_general;
 

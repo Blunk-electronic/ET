@@ -123,7 +123,7 @@ package et_canvas_board_2 is
 
 	package pac_canvas is new et_canvas (
 		-- canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
-		pac_geometry_2	=> et_pcb_coordinates_2.pac_geometry_2,
+		pac_geometry	=> et_pcb_coordinates_2.pac_geometry_2,
 		pac_grid		=> et_pcb_coordinates_2.pac_grid
 		-- pac_polygons	=> et_board_shapes_and_text.pac_polygons,
 		-- pac_offsetting	=> et_board_shapes_and_text.pac_polygon_offsetting,
@@ -136,7 +136,7 @@ package et_canvas_board_2 is
 	use pac_canvas;	
 	use et_pcb_coordinates_2.pac_geometry_2;
 
-	package pac_drawing_frame_2 is new pac_canvas.drawing_frame_general;
+	package pac_drawing_frame is new pac_canvas.drawing_frame_general;
 	
 
 	-- This procedure parses the whole database of model objects
