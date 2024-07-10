@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2024 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -145,6 +145,15 @@ package et_colors.board is
 	procedure set_color_background (
 		context : in cairo_context;
 		opacity : in type_opacity := default_opacity);
+
+
+
+	-- Sets the given color, brightness and opacity in the given context:
+	procedure set_color (
+		color		: in type_color;
+		brightness	: in type_brightness;
+		opacity		: in type_opacity := default_opacity);
+
 
 	
 	procedure set_color_frame (

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2024 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -54,15 +54,37 @@ package body et_colors.schematic is
 			background.blue);
 	end set_color_background;
 
+
+
+	procedure set_color (
+		color		: in type_color;
+		brightness	: in type_brightness;
+		opacity		: in type_opacity := default_opacity)
+	is 
+		c : type_color;
+	begin
+		case brightness is
+			when DARK 	=>	c := dim (color, 0.25);
+			when NORMAL	=>	c := dim (color, dim_factor_default);
+			when BRIGHT	=>	c := dim (color, 1.0);
+		end case;
+
+		set_source_rgb (context, c.red, c.green, c.blue);
+	end set_color;
+
+
+	
 	procedure set_color_frame (
-		-- context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default)
 	is begin
 		-- CS query color schema defined by user
 		-- and overwrite value of variable frame
 		
-		set_color (context, frame, brightness);
+		set_color (frame, brightness);
 	end set_color_frame;
+
+
+
 	
 	procedure set_color_nets (
 		context		: in cairo_context;
@@ -71,9 +93,10 @@ package body et_colors.schematic is
 		-- CS query color schema defined by user
 		-- and overwrite value of variable nets
 		
-		set_color (context, nets, brightness);
+		set_color (nets, brightness);
 	end set_color_nets;
 
+	
 	procedure set_color_origin (
 		context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default)
@@ -81,8 +104,9 @@ package body et_colors.schematic is
 		-- CS query color schema defined by user
 		-- and overwrite value of variable origin
 		
-		set_color (context, origin, brightness);
+		set_color (origin, brightness);
 	end set_color_origin;
+
 	
 	procedure set_color_placeholders (
 		context		: in cairo_context;
@@ -91,9 +115,10 @@ package body et_colors.schematic is
 		-- CS query color schema defined by user
 		-- and overwrite value of variable placeholders
 		
-		set_color (context, placeholders, brightness);
+		set_color (placeholders, brightness);
 	end set_color_placeholders;
 
+	
 	procedure set_color_ports (
 		context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default)
@@ -101,9 +126,10 @@ package body et_colors.schematic is
 		-- CS query color schema defined by user
 		-- and overwrite value of variable ports
 		
-		set_color (context, ports, brightness);
+		set_color (ports, brightness);
 	end set_color_ports;
 
+	
 	procedure set_color_submodules (
 		context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default)
@@ -111,7 +137,7 @@ package body et_colors.schematic is
 		-- CS query color schema defined by user
 		-- and overwrite value of variable submodules
 		
-		set_color (context, submodules, brightness);
+		set_color (submodules, brightness);
 	end set_color_submodules;
 	
 	procedure set_color_symbols (
@@ -121,7 +147,7 @@ package body et_colors.schematic is
 		-- CS query color schema defined by user
 		-- and overwrite value of variable symbols
 		
-		set_color (context, symbols, brightness);
+		set_color (symbols, brightness);
 	end set_color_symbols;
 
 	procedure set_color_texts (
@@ -131,7 +157,7 @@ package body et_colors.schematic is
 		-- CS query color schema defined by user
 		-- and overwrite value of variable nets
 		
-		set_color (context, texts, brightness);
+		set_color (texts, brightness);
 	end set_color_texts;
 	
 end et_colors.schematic;

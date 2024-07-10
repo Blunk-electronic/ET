@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2024 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -167,15 +167,33 @@ package body et_colors.board is
 			color_range (opacity));
 	end set_color_background;
 
+
+
+	procedure set_color (
+		color		: in type_color;
+		brightness	: in type_brightness;
+		opacity		: in type_opacity := default_opacity)
+	is 
+		c : type_color;
+	begin
+		case brightness is
+			when DARK 	=>	c := dim (color, 0.25);
+			when NORMAL	=>	c := dim (color, dim_factor_default);
+			when BRIGHT	=>	c := dim (color, 1.0);
+		end case;
+
+		set_source_rgb (context, c.red, c.green, c.blue);
+	end set_color;
+
+
 	
 	procedure set_color_frame (
-		-- context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default)
 	is begin
 		-- CS query color schema defined by user
 		-- and overwrite value of variable frame
 		
-		set_color (context, frame, brightness);
+		set_color (frame, brightness);
 	end set_color_frame;
 
 	
@@ -186,7 +204,7 @@ package body et_colors.board is
 		-- CS query color schema defined by user
 		-- and overwrite value of variable origin
 		
-		set_color (context, origin, brightness);
+		set_color (origin, brightness);
 	end set_color_origin;
 
 
@@ -194,7 +212,7 @@ package body et_colors.board is
 		context 	: in cairo_context;
 		brightness	: in type_brightness := brightness_default)
 	is begin
-		set_color (context, ratsnest, brightness);
+		set_color (ratsnest, brightness);
 	end set_color_ratsnest;
 
 	
@@ -219,7 +237,7 @@ package body et_colors.board is
 		brightness	: in type_brightness := brightness_default;
 		opacity		: in type_opacity := default_opacity)
 	is begin		
-		set_color (context, via, brightness, opacity);
+		set_color (via, brightness, opacity);
 	end set_color_vias;
 
 	
@@ -270,10 +288,10 @@ package body et_colors.board is
 	is begin
 		case face is
 			when TOP =>
-				set_color (context, silkscreen_top, brightness, opacity);
+				set_color (silkscreen_top, brightness, opacity);
 
 			when BOTTOM =>
-				set_color (context, silkscreen_bottom, brightness, opacity);
+				set_color (silkscreen_bottom, brightness, opacity);
 		end case;
 	end set_color_silkscreen;
 
@@ -286,10 +304,10 @@ package body et_colors.board is
 	is begin
 		case face is
 			when TOP =>
-				set_color (context, assy_doc_top, brightness, opacity);
+				set_color (assy_doc_top, brightness, opacity);
 
 			when BOTTOM =>
-				set_color (context, assy_doc_bottom, brightness, opacity);
+				set_color (assy_doc_bottom, brightness, opacity);
 		end case;
 	end set_color_assy_doc;
 
@@ -357,10 +375,10 @@ package body et_colors.board is
 	is begin
 		case face is
 			when TOP =>
-				set_color (context, keepout_top, brightness, opacity);
+				set_color (keepout_top, brightness, opacity);
 
 			when BOTTOM =>
-				set_color (context, keepout_bottom, brightness, opacity);
+				set_color (keepout_bottom, brightness, opacity);
 		end case;
 	end set_color_keepout;
 
@@ -370,7 +388,7 @@ package body et_colors.board is
 		brightness	: in type_brightness;
 		opacity		: in type_opacity := default_opacity)
 	is begin		
-		set_color (context, route_restrict, brightness, opacity);
+		set_color (route_restrict, brightness, opacity);
 	end set_color_route_restrict;
 
 	
@@ -379,7 +397,7 @@ package body et_colors.board is
 		brightness	: in type_brightness;
 		opacity		: in type_opacity := default_opacity)
 	is begin		
-		set_color (context, via_restrict, brightness, opacity);
+		set_color (via_restrict, brightness, opacity);
 	end set_color_via_restrict;
 
 	
@@ -389,7 +407,7 @@ package body et_colors.board is
 		brightness	: in type_brightness;
 		opacity		: in type_opacity := default_opacity)
 	is begin
-		set_color (context, conductors (layer), brightness, opacity);
+		set_color (conductors (layer), brightness, opacity);
 	end set_color_conductor;
 	
 
@@ -398,7 +416,7 @@ package body et_colors.board is
 		brightness	: in type_brightness;
 		opacity		: in type_opacity := default_opacity)
 	is begin
-		set_color (context, terminal_names, brightness, opacity);
+		set_color (terminal_names, brightness, opacity);
 	end set_color_terminal_name;
 	
 		
@@ -407,7 +425,7 @@ package body et_colors.board is
 		brightness	: in type_brightness;
 		opacity		: in type_opacity := default_opacity)
 	is begin
-		set_color (context, tht_pads, brightness, opacity);
+		set_color (tht_pads, brightness, opacity);
 	end set_color_tht_pad;
 
 	

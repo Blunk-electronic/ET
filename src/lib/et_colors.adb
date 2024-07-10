@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                              COLORS                                      --
+--                          COLORS GENERAL                                  --
 --                                                                          --
 --                             B o d y                                      --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2024 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -37,9 +37,6 @@
 --   ToDo: 
 
 with ada.text_io;				use ada.text_io;
-with glib;
-with cairo.pattern;
-with cairo.matrix;
 
 package body et_colors is
 
@@ -72,28 +69,6 @@ package body et_colors is
 			when BRIGHT	=> return dim (color, 1.0);
 		end case;
 	end dim;
-
-	
-	
-	procedure set_color (
-		context		: in cairo_context;
-		color		: in type_color;
-		brightness	: in type_brightness;
-		opacity		: in type_opacity := default_opacity)
-	is 
-		c : type_color;
-	begin
-		case brightness is
-			when DARK 	=>	c := dim (color, 0.25);
-			when NORMAL	=>	c := dim (color, dim_factor_default);
-			when BRIGHT	=>	c := dim (color, 1.0);
-		end case;
-
-		set_source_rgb (context, c.red, c.green, c.blue);
-	end set_color;
-
-	
-
 	
 end et_colors;
 

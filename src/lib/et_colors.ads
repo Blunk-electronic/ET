@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                            LAYER DISPLAY                                 --
+--                            COLORS GENERAL                                --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2024 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -37,7 +37,6 @@
 --   ToDo: 
 
 with cairo;						use cairo;
-with et_geometry;				use et_geometry;
 
 package et_colors is
 
@@ -88,17 +87,6 @@ package et_colors is
 		color		: in type_color;
 		brightness	: in type_brightness)
 		return type_color;
-
-
-	
-	
-	-- Sets the given color, brightness and opacity in the given context:
-	procedure set_color (
-		context		: in cairo_context;
-		color		: in type_color;
-		brightness	: in type_brightness;
-		opacity		: in type_opacity := default_opacity);
-
 
 
 	

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+--         Copyright (C) 2017 - 2024 Mario Blunk, Blunk electronic          --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -37,8 +37,6 @@
 --   ToDo: 
 
 with cairo;						use cairo;
--- with cairo.pattern;				use cairo.pattern;
--- with gtkada.style;
 
 with et_canvas_schematic_2;
 
@@ -63,9 +61,17 @@ package et_colors.schematic is
 	
 	procedure set_color_cursor (context : in cairo_context);	
 	procedure set_color_background (context : in cairo_context);
+
+
+	-- Sets the given color, brightness and opacity in the given context:
+	procedure set_color (
+		color		: in type_color;
+		brightness	: in type_brightness;
+		opacity		: in type_opacity := default_opacity);
+
+
 	
 	procedure set_color_frame (
-		-- context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default);
 	
 	procedure set_color_nets (
