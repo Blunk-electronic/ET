@@ -82,7 +82,7 @@ is
 	-- Get the design rules:
 	design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
 
-	clearance_conductor_to_edge : type_distance_model_positive renames 
+	clearance_conductor_to_edge : type_distance_positive renames 
 		design_rules.clearances.conductor_to_board_edge;
 	
 	
@@ -233,7 +233,7 @@ is
 
 		layer_category : type_signal_layer_category;
 
-		half_linewidth : constant type_distance_model_positive := linewidth * 0.5;
+		half_linewidth : constant type_distance_positive := linewidth * 0.5;
 		
 		half_linewidth_float : constant type_float_positive := 
 			type_float_positive (linewidth * 0.5);

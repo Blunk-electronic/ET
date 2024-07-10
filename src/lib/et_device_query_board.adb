@@ -373,7 +373,7 @@ package body et_device_query_board is
 		device_cursor	: in pac_devices_sch.cursor;
 		terminal_cursor	: in pac_terminals.cursor;
 		layer_category	: in type_signal_layer_category;
-		tolerance		: in type_distance_model_positive)
+		tolerance		: in type_distance_positive)
 		return type_terminal_polygon
 	is
 		use pac_polygons;

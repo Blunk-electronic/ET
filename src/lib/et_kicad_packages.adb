@@ -575,7 +575,7 @@ package body et_kicad_packages is
 		pad_size_y : type_pad_size;
 
 -- 		terminal_copper_width_outer_layers : et_pcb_coordinates_2.type_distance_model;
-		terminal_copper_width_inner_layers : type_distance_model_positive := 1.0; -- CS load from DRU ?
+		terminal_copper_width_inner_layers : type_distance_positive := 1.0; -- CS load from DRU ?
 
 		-- Temporarily these flags hold the solder paste status of an SMT terminal.
 		-- They are initialized by procedure init_terminal_layers and validated by

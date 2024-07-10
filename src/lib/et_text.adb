@@ -238,10 +238,10 @@ package body et_text is
 	package body generic_pac_text is
 
 		-- With this line uncommented the linker does not output any errors:
-		function to_text_size (size : in pac_geometry_2.type_distance_model) return type_text_size is
+		function to_text_size (size : in pac_geometry_2.type_distance) return type_text_size is
 
 		-- With this line uncommented the linker outputs errors like "undefined reference ..."
-		-- function to_text_size (size : in type_distance_model) return type_text_size is
+		-- function to_text_size (size : in type_distance) return type_text_size is
 			
 		-- Converts given distance to type_text_size. Raises error on excessive text size.
 			function to_string (
@@ -273,7 +273,7 @@ package body et_text is
 		end to_text_size;
 		
 		
-		procedure validate_text_size (size : in pac_geometry_2.type_distance_model) is
+		procedure validate_text_size (size : in pac_geometry_2.type_distance) is
 		begin
 			if size not in type_text_size then
 				log (ERROR, "text size invalid ! Allowed range is" 
@@ -284,7 +284,7 @@ package body et_text is
 			end if;
 		end validate_text_size;
 
-		procedure validate_text_line_width (width : in pac_geometry_2.type_distance_model) is
+		procedure validate_text_line_width (width : in pac_geometry_2.type_distance) is
 		begin
 			if width not in type_text_line_width then
 				log (ERROR, "line width invalid ! Allowed range is" 
@@ -497,7 +497,7 @@ package body et_text is
 			rotation	: in type_rotation; 
 			position	: in pac_geometry_2.type_vector_model; -- the anchor point of the text (where the origin is)
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
-			line_width	: in pac_geometry_2.type_distance_model_positive;
+			line_width	: in pac_geometry_2.type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default;
 			make_border	: in boolean := false)
 			return type_vector_text
@@ -528,8 +528,8 @@ package body et_text is
 
 			-- The space between the lower left corners of two adjacent characters:
 			-- It must be adjusted according to the given text size:
-			spacing : constant type_distance_model_positive := 
-				size * (0.25 + type_distance_model_positive (type_character_width'last));
+			spacing : constant type_distance_positive := 
+				size * (0.25 + type_distance_positive (type_character_width'last));
 
 			
 			-- The scaling is done so that text height and width are
@@ -541,14 +541,14 @@ package body et_text is
 
 			
 			-- For alignment we need the total length of the text:
-			text_length : constant type_distance_model_positive := to_distance (half_line_width) +
-				type_distance_model (text'length - 1) * type_distance_model (spacing * scale_factor);
+			text_length : constant type_distance_positive := to_distance (half_line_width) +
+				type_distance (text'length - 1) * type_distance (spacing * scale_factor);
 			-- CS constraint_error raised if text length is zero !
 			
-			text_length_half : constant type_distance_model_positive := text_length * 0.5;
+			text_length_half : constant type_distance_positive := text_length * 0.5;
 
-			text_height : constant type_distance_model_positive := size;
-			text_height_half : constant type_distance_model_positive := size * 0.5;
+			text_height : constant type_distance_positive := size;
+			text_height_half : constant type_distance_positive := size * 0.5;
 
 			
 			procedure scale_and_move_lines (lines : in out pac_character_lines.list) is
@@ -575,7 +575,7 @@ package body et_text is
 					move_by (
 						line	=> l,
 						offset	=> to_offset (
-									x => type_distance_model (place - 1) * spacing,
+									x => type_distance (place - 1) * spacing,
 									y => zero));
 
 					-- Collect the line in scratch:
@@ -608,7 +608,7 @@ package body et_text is
 				move_by (border, offset_due_to_line_width);
 
 				move_by (border, to_offset (
-									x => type_distance_model (place - 1) * spacing,
+									x => type_distance (place - 1) * spacing,
 									y => zero));
 
 
@@ -939,7 +939,7 @@ package body et_text is
 		
 		function get_linewidth (
 			text	: in type_vector_text)
-			return type_distance_model_positive
+			return type_distance_positive
 		is begin 
 			return text.width;
 		end get_linewidth;

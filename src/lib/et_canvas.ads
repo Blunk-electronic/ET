@@ -164,7 +164,7 @@ package et_canvas is
 	-- Converts the given model distance to
 	-- a canvas distance according to the current zoom factor S:
 	function to_distance (
-		d : in type_distance_model_positive)
+		d : in type_distance_positive)
 		return type_logical_pixels_positive;
 
 	
@@ -172,7 +172,7 @@ package et_canvas is
 	-- a model distance according to the current zoom factor S:
 	function to_distance (
 		d : in type_logical_pixels_positive)
-		return type_distance_model_positive;
+		return type_distance_positive;
 
 
 
@@ -657,7 +657,7 @@ package et_canvas is
 	-- by the given distance:
 	procedure shift_canvas (
 		direction	: type_direction;
-		distance	: type_distance_model);
+		distance	: type_distance);
 
 
 
@@ -896,22 +896,22 @@ package et_canvas is
 	-- Converts a distance of the model to a distance 
 	-- in reality:
 	function to_reality (
-		d : in type_distance_model)
-		return type_distance_model;
+		d : in type_distance)
+		return type_distance;
 
 	procedure to_reality (
-		d : in out type_distance_model);
+		d : in out type_distance);
 
 	
 	
 	-- Converts a distance of the reality to
 	-- a distance in the model:
 	function to_model (
-		d : in type_distance_model)
-		return type_distance_model;
+		d : in type_distance)
+		return type_distance;
 
 	procedure to_model (
-		d : in out type_distance_model);
+		d : in out type_distance);
 
 
 
@@ -1152,7 +1152,7 @@ package et_canvas is
 	-- Sets the linewidth according to the
 	-- current zoom-factor:
 	procedure set_linewidth (
-		w : in type_distance_model_positive);
+		w : in type_distance_positive);
 	
 	
 	-- This is a primitive draw operation that draws a line.
@@ -1167,7 +1167,7 @@ package et_canvas is
 		line		: in type_line;
 		pos			: in type_position;
 		-- CS mirror ?
-		width		: in type_distance_model_positive;
+		width		: in type_distance_positive;
 		do_stroke	: in boolean := false);
 
 	

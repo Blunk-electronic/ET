@@ -74,7 +74,7 @@ package et_route_restrict is
 	-- with round caps on the line ends:
 	function to_polygon (
 		line 		: in type_route_restrict_line;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return type_polygon;
 
 	
@@ -100,7 +100,7 @@ package et_route_restrict is
 	-- Converts a list of lines to a list of polygons:
 	function to_polygons (
 		lines		: in pac_route_restrict_lines.list;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
 
 	
@@ -116,7 +116,7 @@ package et_route_restrict is
 	-- with round caps on the line ends:
 	function to_polygon (
 		arc 		: in type_route_restrict_arc;
-		tolerance	: in type_distance_model_positive)							
+		tolerance	: in type_distance_positive)							
 		return type_polygon;
 
 	
@@ -142,7 +142,7 @@ package et_route_restrict is
 	-- Converts a list of arcs to a list of polygons:
 	function to_polygons (
 		arcs		: in pac_route_restrict_arcs.list;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
 
 	
@@ -158,14 +158,14 @@ package et_route_restrict is
 	-- Converts the outer edge of a circle to a polygon:	
 	function to_polygon_outside (
 		circle 		: in type_route_restrict_circle;
-		tolerance	: in type_distance_model_positive)							
+		tolerance	: in type_distance_positive)							
 		return type_polygon;
 
 	
 	-- Converts the inner edge of a circle to a polygon:	
 	function to_polygon_inside (
 		circle 		: in type_route_restrict_circle;
-		tolerance	: in type_distance_model_positive)							
+		tolerance	: in type_distance_positive)							
 		return type_polygon;
 
 	
@@ -191,14 +191,14 @@ package et_route_restrict is
 	-- Converts the outer edges of circles to a list of polygons:
 	function to_polygons_outside (
 		circles		: in pac_route_restrict_circles.list;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
 
 
 	-- Converts the inner edges of circles to a list of polygons:
 	function to_polygons_inside (
 		circles		: in pac_route_restrict_circles.list;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
 	
 	

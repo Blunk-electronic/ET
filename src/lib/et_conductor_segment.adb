@@ -50,7 +50,7 @@ package body et_conductor_segment is
 	
 	function to_polygon (
 		line 		: in type_conductor_line;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return type_polygon
 	is begin
 		return to_polygon (
@@ -74,8 +74,8 @@ package body et_conductor_segment is
 		--type type_segment_area is new type_polygon with null record;
 		--polygon : type_segment_area;
 
-		--length_left_edge  : constant type_distance_model_positive := get_length (segment.left_edge);
-		--length_right_edge : constant type_distance_model_positive := get_length (segment.right_edge);
+		--length_left_edge  : constant type_distance_positive := get_length (segment.left_edge);
+		--length_right_edge : constant type_distance_positive := get_length (segment.right_edge);
 
 		--procedure build_polygon is begin
 			--if length_left_edge = zero and length_right_edge = zero then
@@ -199,7 +199,7 @@ package body et_conductor_segment is
 
 	function to_polygons (
 		lines		: in pac_conductor_lines.list;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;
@@ -235,7 +235,7 @@ package body et_conductor_segment is
 	
 	function to_polygon (
 		arc 		: in type_conductor_arc;
-		tolerance	: in type_distance_model_positive)							
+		tolerance	: in type_distance_positive)							
 		return type_polygon
 	is begin
 		return to_polygon (
@@ -352,7 +352,7 @@ package body et_conductor_segment is
 
 	function to_polygons (
 		arcs		: in pac_conductor_arcs.list;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;
@@ -385,7 +385,7 @@ package body et_conductor_segment is
 
 	function to_polygon_outside (
 		circle 		: in type_conductor_circle;
-		tolerance	: in type_distance_model_positive)							
+		tolerance	: in type_distance_positive)							
 		return type_polygon
 	is 
 		use et_contour_to_polygon;
@@ -405,7 +405,7 @@ package body et_conductor_segment is
 
 	function to_polygon_inside (
 		circle 		: in type_conductor_circle;
-		tolerance	: in type_distance_model_positive)							
+		tolerance	: in type_distance_positive)							
 		return type_polygon
 	is 
 		use et_contour_to_polygon;
@@ -482,7 +482,7 @@ package body et_conductor_segment is
 
 	function to_polygons_outside (
 		circles		: in pac_conductor_circles.list;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;
@@ -499,7 +499,7 @@ package body et_conductor_segment is
 
 	function to_polygons_inside (
 		circles		: in pac_conductor_circles.list;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list
 	is
 		result : pac_polygon_list.list;

@@ -1940,7 +1940,7 @@ package body et_conventions is
 	
 	procedure check_schematic_text_size (
 		category 	: in type_text_schematic;
-		size		: in et_coordinates_2.pac_geometry_2.type_distance_model_positive) 
+		size		: in et_coordinates_2.pac_geometry_2.type_distance_positive) 
 	is
 		use et_string_processing;
 		use et_coordinates_2;

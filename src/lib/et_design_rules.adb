@@ -83,7 +83,7 @@ package body et_design_rules is
 		return type_restring_width
 	is
 		result : type_restring_width;
-		scratch : type_distance_model_positive;
+		scratch : type_distance_positive;
 	begin
 		--scratch := drill_size + drill_size * drill_to_restring_multiplier;
 		scratch := drill_size * drill_to_restring_multiplier;

@@ -45,13 +45,13 @@ package body et_geometry_2a.path is
 	is
 		-- The area required for the path is a rectangle.
 		-- We will need to figure out whether it is wider than tall:
-		dx : constant type_distance_model := get_distance (start_point, end_point, X);
-		dy : constant type_distance_model := get_distance (start_point, end_point, Y);
+		dx : constant type_distance := get_distance (start_point, end_point, X);
+		dy : constant type_distance := get_distance (start_point, end_point, Y);
 
 		sup_start, sup_end : type_vector_model; -- support points near given start and end point
 
 		-- distance of support points from given start or end point:
-		ds : constant type_distance_model_positive := 1.0;
+		ds : constant type_distance_positive := 1.0;
 
 		bended : type_bended := YES;
 		bend_point : type_vector_model;

@@ -238,7 +238,7 @@ package et_packages is
 	--  edge of a conductor circle is converted to a polygon.
 	function to_polygons (
 		conductors	: in type_conductor_objects;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
 		
 
@@ -336,8 +336,8 @@ package et_packages is
 	end record;
 
 
-	origin_half_size : constant type_distance_model_positive := 1.0;
-	origin_line_width : constant type_distance_model_positive := 0.01;
+	origin_half_size : constant type_distance_positive := 1.0;
+	origin_line_width : constant type_distance_positive := 0.01;
 
 	
 	-- A package in the library extends the base package type:

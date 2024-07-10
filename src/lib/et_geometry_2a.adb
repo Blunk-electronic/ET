@@ -54,11 +54,11 @@ package body et_geometry_2a is
 		return string 
 	is 
 		use ada.characters.latin_1;
-		distance_digits_total : constant positive := type_distance_model'digits;
-		distance_digits_right : constant positive := type_distance_model'scale;
+		distance_digits_total : constant positive := type_distance'digits;
+		distance_digits_right : constant positive := type_distance'scale;
 
-		--distance_coarse_digits_total : constant positive := type_distance_model_coarse'digits;
-		--distance_coarse_digits_right : constant positive := type_distance_model_coarse'scale;
+		--distance_coarse_digits_total : constant positive := type_distance_coarse'digits;
+		--distance_coarse_digits_right : constant positive := type_distance_coarse'scale;
 
 		rotation_digits_total : constant positive := type_rotation'digits;
 		rotation_digits_right : constant positive := type_rotation'scale;
@@ -68,24 +68,24 @@ package body et_geometry_2a is
 		
 		return to_upper (editor & " editor:")
 		& lf & "distance fine [mm]"
-		& lf & "min:        " & type_distance_model'image (type_distance_model'first)
-		& lf & "max:        " & type_distance_model'image (type_distance_model'last)
-		& lf & "axis min:   " & type_distance_model'image (axis_min)
-		& lf & "axis max:   " & type_distance_model'image (axis_max)
-		& lf & "resolution: " & type_distance_model'image (type_distance_model'small)
+		& lf & "min:        " & type_distance'image (type_distance'first)
+		& lf & "max:        " & type_distance'image (type_distance'last)
+		& lf & "axis min:   " & type_distance'image (axis_min)
+		& lf & "axis max:   " & type_distance'image (axis_max)
+		& lf & "resolution: " & type_distance'image (type_distance'small)
 		& lf & "digits"
 		& lf & "left:       " & positive'image (distance_digits_total - distance_digits_right)
 		& lf & "right:      " & positive'image (distance_digits_right)
-		& lf & "total:      " & positive'image (type_distance_model'digits)
+		& lf & "total:      " & positive'image (type_distance'digits)
 		& lf
 		--& lf & "distance coarse [mm]"
-		--& lf & "min:        " & type_distance_model_coarse'image (type_distance_model_coarse'first)
-		--& lf & "max:        " & type_distance_model_coarse'image (type_distance_model_coarse'last)
-		--& lf & "resolution: " & type_distance_model_coarse'image (type_distance_model_coarse'small)
+		--& lf & "min:        " & type_distance_coarse'image (type_distance_coarse'first)
+		--& lf & "max:        " & type_distance_coarse'image (type_distance_coarse'last)
+		--& lf & "resolution: " & type_distance_coarse'image (type_distance_coarse'small)
 		--& lf & "digits"
 		--& lf & "left:       " & positive'image (distance_coarse_digits_total - distance_coarse_digits_right)
 		--& lf & "right:      " & positive'image (distance_coarse_digits_right)
-		--& lf & "total:      " & positive'image (type_distance_model_coarse'digits)
+		--& lf & "total:      " & positive'image (type_distance_coarse'digits)
 		--& lf
 		& lf & "rotation/angle [degrees (1/360)], mathematical sense, ccw"
 		& lf & "min:        " & type_rotation'image (type_rotation'first)
@@ -109,8 +109,8 @@ package body et_geometry_2a is
 
 
 	function get_greatest (
-		left, right : in type_distance_model)
-		return type_distance_model
+		left, right : in type_distance)
+		return type_distance
 	is begin
 		if left > right then
 			return left;
@@ -124,8 +124,8 @@ package body et_geometry_2a is
 	
 	
 	function get_smallest (
-		left, right : in type_distance_model)
-		return type_distance_model
+		left, right : in type_distance)
+		return type_distance
 	is begin
 		if left < right then
 			return left;
@@ -141,8 +141,8 @@ package body et_geometry_2a is
 	
 	
 	procedure limit_to_maximum (
-		distance	: in out type_distance_model;
-		maximum		: in type_distance_model)
+		distance	: in out type_distance;
+		maximum		: in type_distance)
 	is begin
 		if distance > maximum then
 			distance := maximum;
@@ -152,8 +152,8 @@ package body et_geometry_2a is
 	
 	
 	procedure limit_to_minimum (
-		distance	: in out type_distance_model;
-		minimum		: in type_distance_model)
+		distance	: in out type_distance;
+		minimum		: in type_distance)
 	is begin
 		if distance < minimum then
 			distance := minimum;
@@ -165,15 +165,15 @@ package body et_geometry_2a is
 	
 	function mil_to_distance (
 		mil : in string) 
-		return type_distance_model 
+		return type_distance 
 	is begin
-		return type_distance_model (pac_geometry_1.mil_to_distance (mil));
+		return type_distance (pac_geometry_1.mil_to_distance (mil));
 		-- CS use to_distance instead of type_distance ?
 	end mil_to_distance;
 	
 
 	function distance_to_mil (
-		distance : in type_distance_model) 
+		distance : in type_distance) 
 		return string 
 	is begin
 		return pac_geometry_1.distance_to_mil (type_float (distance));
@@ -183,7 +183,7 @@ package body et_geometry_2a is
 
 	function get_greatest (
 		distances	: in pac_distances_positive.list)
-		return type_distance_model_positive
+		return type_distance_positive
 	is
 		ds : pac_distances_positive.list := distances;
 		use pac_distances_positive_sorting;
@@ -196,35 +196,35 @@ package body et_geometry_2a is
 
 	
 	function to_string (
-		distance : in type_distance_model)
+		distance : in type_distance)
 		return string
 	is begin
-		return type_distance_model'image (distance);
+		return type_distance'image (distance);
 	end to_string;
 
 
 	function to_distance (f : in type_float)
-		return type_distance_model 
+		return type_distance 
 	is
 		use pac_float_numbers_io;
 		
-		d1 : type_distance_model;
+		d1 : type_distance;
 		d2 : type_float;
 
-		f1 : constant type_float := 5.0 * type_float (type_distance_model'small);
+		f1 : constant type_float := 5.0 * type_float (type_distance'small);
 		-- CS should be a package wide constant ?
 	begin
-		d1 := type_distance_model (f);
+		d1 := type_distance (f);
 		
 		d2 := 10.0 * abs (f - type_float (d1));
 		
 		if f < 0.0 then
 			if d2 > f1 then
-				d1 := d1 - type_distance_model'small;
+				d1 := d1 - type_distance'small;
 			end if;
 		else
 			if d2 > f1 then
-				d1 := d1 + type_distance_model'small;
+				d1 := d1 + type_distance'small;
 			end if;
 		end if;
 
@@ -259,9 +259,9 @@ package body et_geometry_2a is
 
 
 	function to_distance (dd : in string) 
-		return type_distance_model
+		return type_distance
 	is begin
-		return type_distance_model'value (dd);
+		return type_distance'value (dd);
 
 		exception when event: others =>
 			raise syntax_error_2 with 
@@ -272,7 +272,7 @@ package body et_geometry_2a is
 
 	
 
-	function clip_distance (d : in type_distance_model)
+	function clip_distance (d : in type_distance)
 		return type_position_axis
 	is begin
 		if d > axis_max then return axis_max;
@@ -282,7 +282,7 @@ package body et_geometry_2a is
 	end clip_distance;
 
 	
-	procedure clip_distance (d : in out type_distance_model) is begin
+	procedure clip_distance (d : in out type_distance) is begin
 		if d > axis_max then d := axis_max;
 		elsif d < axis_min then d := axis_min;
 		end if;
@@ -412,7 +412,7 @@ package body et_geometry_2a is
 
 
 	function to_distance_relative (
-		x,y : in type_distance_model)
+		x,y : in type_distance)
 		return type_distance_relative
 	is begin
 		return (x, y);
@@ -423,7 +423,7 @@ package body et_geometry_2a is
 		v : in type_vector)
 		return type_distance_relative
 	is begin
-		return (type_distance_model (v.x), type_distance_model (v.y));
+		return (type_distance (v.x), type_distance (v.y));
 	end to_distance_relative;
 
 
@@ -588,7 +588,7 @@ package body et_geometry_2a is
 	
 	function get_distance (
 		p1, p2 : in type_vector_model)
-		return type_distance_model_positive
+		return type_distance_positive
 	is
 		use pac_float_numbers_functions;
 
@@ -597,7 +597,7 @@ package body et_geometry_2a is
 		d : type_float;
 	begin
 		d := sqrt (dx**2.0 + dy**2.0);
-		return type_distance_model_positive (d);
+		return type_distance_positive (d);
 	end get_distance;
 	
 
@@ -607,9 +607,9 @@ package body et_geometry_2a is
 		point_1	: in type_vector_model;
 		point_2	: in type_vector_model;
 		axis	: in type_axis_2d) 
-		return type_distance_model 
+		return type_distance 
 	is
-		d : type_distance_model;
+		d : type_distance;
 	begin
 		case axis is
 			when X =>
@@ -823,7 +823,7 @@ package body et_geometry_2a is
 
 
 	function to_offset (
-		x, y : in type_distance_model)
+		x, y : in type_distance)
 		return type_offset
 	is begin
 		return (type_float (x), type_float (y));
@@ -889,9 +889,9 @@ package body et_geometry_2a is
 		point_1	: in type_vector_model;
 		point_2	: in type_vector_model;
 		axis	: in type_axis_2d) 
-		return type_distance_model_positive
+		return type_distance_positive
 	is
-		d : type_distance_model_positive;
+		d : type_distance_positive;
 	begin
 		case axis is
 			when X =>
@@ -930,12 +930,12 @@ package body et_geometry_2a is
 	function move (
 		point		: in type_vector_model;
 		direction	: in type_rotation;
-		distance	: in type_distance_model_positive;
+		distance	: in type_distance_positive;
 		clip		: in boolean := false)
 		return type_vector_model 
 	is 			
 		v_tmp : type_vector;
-		rx, ry : type_distance_model;
+		rx, ry : type_distance;
 		result : type_vector_model;			
 	begin
 		v_tmp := move_by (
@@ -1139,32 +1139,32 @@ package body et_geometry_2a is
 		
 		-- AREA A:
 		-- This is the lowest x used by area A
-		A_lx : type_distance_model renames A.position.x;
+		A_lx : type_distance renames A.position.x;
 
 		-- This is the greatest x used by area A
-		A_gx : constant type_distance_model := A_lx + A.width;
+		A_gx : constant type_distance := A_lx + A.width;
 
 		
 		-- This is the lowest y used by area A
-		A_ly : type_distance_model renames A.position.y;
+		A_ly : type_distance renames A.position.y;
 
 		-- This is the greatest y used by area A
-		A_gy : constant type_distance_model := A_ly + A.height;
+		A_gy : constant type_distance := A_ly + A.height;
 
 
 		-- AREA B:
 		-- This is the lowest x used by area B
-		B_lx : type_distance_model renames B.position.x;
+		B_lx : type_distance renames B.position.x;
 
 		-- This is the greatest x used by area B
-		B_gx : constant type_distance_model := B_lx + B.width;
+		B_gx : constant type_distance := B_lx + B.width;
 
 		
 		-- This is the lowest y used by area B
-		B_ly : type_distance_model renames B.position.y;
+		B_ly : type_distance renames B.position.y;
 
 		-- This is the greatest y used by area B
-		B_gy : constant type_distance_model := B_ly + B.height;
+		B_gy : constant type_distance := B_ly + B.height;
 
 	begin
 		-- If all of the four criteria are true then the two 
@@ -1189,32 +1189,32 @@ package body et_geometry_2a is
 		
 		-- AREA A:
 		-- This is the lowest x used by area A
-		A_lx : type_distance_model renames A.position.x;
+		A_lx : type_distance renames A.position.x;
 
 		-- This is the greatest x used by area A
-		A_gx : type_distance_model := A_lx + A.width;
+		A_gx : type_distance := A_lx + A.width;
 
 		
 		-- This is the lowest y used by area A
-		A_ly : type_distance_model renames A.position.y;
+		A_ly : type_distance renames A.position.y;
 
 		-- This is the greatest y used by area A
-		A_gy : type_distance_model := A_ly + A.height;
+		A_gy : type_distance := A_ly + A.height;
 
 
 		-- AREA B:
 		-- This is the lowest x used by area B
-		B_lx : type_distance_model renames B.position.x;
+		B_lx : type_distance renames B.position.x;
 
 		-- This is the greatest x used by area B
-		B_gx : type_distance_model := B_lx + B.width;
+		B_gx : type_distance := B_lx + B.width;
 
 		
 		-- This is the lowest y used by area B
-		B_ly : type_distance_model renames B.position.y;
+		B_ly : type_distance renames B.position.y;
 
 		-- This is the greatest y used by area B
-		B_gy : type_distance_model := B_ly + B.height;
+		B_gy : type_distance := B_ly + B.height;
 
 	begin
 		-- x-axis:
@@ -1452,15 +1452,15 @@ package body et_geometry_2a is
 
 	function get_bounding_box (
 		line	: in type_line;
-		width	: in type_distance_model_positive)
+		width	: in type_distance_positive)
 		return type_area
 	is
 		-- CS: Optimization required. Compiler options ?
 		
 		result : type_area;
-		w, h : type_distance_model;
+		w, h : type_distance;
 
-		d : constant type_distance_model := width / 2.0;
+		d : constant type_distance := width / 2.0;
 	begin
 		-- x-axis:
 		w := line.end_point.x - line.start_point.x;
@@ -2397,15 +2397,15 @@ package body et_geometry_2a is
 	
 	function get_bounding_box (
 		arc 	: in type_arc;
-		width	: in type_distance_model_positive)
+		width	: in type_distance_positive)
 		return type_area
 	is
 		-- CS: Optimization required. Compiler options ?
 		
 		result : type_area;
-		w : type_distance_model;
+		w : type_distance;
 
-		d : constant type_distance_model := width / 2.0;
+		d : constant type_distance := width / 2.0;
 	begin
 		-- CS
 		
@@ -2476,7 +2476,7 @@ package body et_geometry_2a is
 		DCP: constant type_float_positive := 
 			get_distance_total (point, circle.center);
 	begin
-		if abs (DCP - circle.radius) <= type_float (type_distance_model'small) then
+		if abs (DCP - circle.radius) <= type_float (type_distance'small) then
 
 			-- Point is on circumfence of circle.
 			return true;
@@ -2820,17 +2820,17 @@ package body et_geometry_2a is
 	
 	function get_bounding_box (
 		circle 	: in type_circle;
-		width	: in type_distance_model_positive)
+		width	: in type_distance_positive)
 		return type_area
 	is
 		-- CS: Optimization required. Compiler options ?
 		
 		result : type_area;
-		w : type_distance_model;
+		w : type_distance;
 
-		d : constant type_distance_model := width / 2.0;
+		d : constant type_distance := width / 2.0;
 	begin
-		w := 2.0 * (type_distance_model_positive (circle.radius) + d);
+		w := 2.0 * (type_distance_positive (circle.radius) + d);
 
 		result.width := w;
 		result.height := w;
@@ -2947,7 +2947,7 @@ package body et_geometry_2a is
 
 	function get_x (
 		position : in type_position)
-		return type_distance_model
+		return type_distance
 	is begin
 		return position.place.x;
 	end get_x;
@@ -2955,7 +2955,7 @@ package body et_geometry_2a is
 
 	function get_y (
 		position : in type_position)
-		return type_distance_model
+		return type_distance
 	is begin
 		return position.place.y;
 	end get_y;
@@ -3036,7 +3036,7 @@ package body et_geometry_2a is
 
 	function in_catch_zone (
 		line	: in type_line;
-		width	: in type_distance_model_positive := 0.0;
+		width	: in type_distance_positive := 0.0;
 		point	: in type_vector_model;
 		zone	: in type_catch_zone)
 		return boolean
@@ -3101,8 +3101,8 @@ package body et_geometry_2a is
 	is
 		zone : type_line_zone; -- to be returned
 	
-		line_length : type_distance_model;
-		zone_border : type_distance_model;
+		line_length : type_distance;
+		zone_border : type_distance;
 		
 	begin -- get_zone
 		-- CS: The algorithm used here is not the best. Improve using vector algebra ?
@@ -3117,7 +3117,7 @@ package body et_geometry_2a is
 			
 			-- calculate the zone border. This depends on the line length in X direction.
 			line_length := get_distance_abs (line.start_point, line.end_point, X);
-			zone_border := line_length / type_distance_model (line_zone_division_factor);
+			zone_border := line_length / type_distance (line_zone_division_factor);
 			-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
 			
 			if get_x (line.start_point) < get_x (line.end_point) then 
@@ -3148,7 +3148,7 @@ package body et_geometry_2a is
 
 			-- calculate the zone border. This depends on the line length in Y direction.
 			line_length := get_distance_abs (line.start_point, line.end_point, Y);
-			zone_border := line_length / type_distance_model (line_zone_division_factor);
+			zone_border := line_length / type_distance (line_zone_division_factor);
 			-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
 			
 			if get_y (line.start_point) < get_y (line.end_point) then 

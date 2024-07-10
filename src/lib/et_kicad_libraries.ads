@@ -105,14 +105,14 @@ package et_kicad_libraries is
 	function to_meaning (meaning : in string) return type_placeholder_meaning;
 
 
-	text_size_min : constant type_distance_model_positive := 0.01;
-	text_size_max : constant type_distance_model_positive := 100.0;
-	text_size_default : constant type_distance_model_positive := 1.3;
+	text_size_min : constant type_distance_positive := 0.01;
+	text_size_max : constant type_distance_positive := 100.0;
+	text_size_default : constant type_distance_positive := 1.3;
 	
-	subtype type_text_line_width is type_distance_model_positive range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
-	text_line_width_min : constant type_distance_model_positive := 0.1;
-	text_line_width_max : constant type_distance_model_positive := 5.0;
-	text_line_width_default : constant type_distance_model_positive := 0.3; 
+	subtype type_text_line_width is type_distance_positive range 0.0 .. 5.0; -- unit is mm -- CS: minimum of 0.0 reasonable ?
+	text_line_width_min : constant type_distance_positive := 0.1;
+	text_line_width_max : constant type_distance_positive := 5.0;
+	text_line_width_default : constant type_distance_positive := 0.3; 
 
 	-- Instantiation of the text package:
 	package pac_text is new et_text.generic_pac_text (

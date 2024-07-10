@@ -109,7 +109,7 @@ package body et_canvas is
 
 
 	function to_distance (
-		d : in type_distance_model_positive)
+		d : in type_distance_positive)
 		return type_logical_pixels_positive
 	is begin
 		return type_logical_pixels (d) * type_logical_pixels (S);
@@ -118,9 +118,9 @@ package body et_canvas is
 
 	function to_distance (
 		d : in type_logical_pixels_positive)
-		return type_distance_model_positive
+		return type_distance_positive
 	is begin
-		return type_distance_model_positive (d / type_logical_pixels (S));
+		return type_distance_positive (d / type_logical_pixels (S));
 	end to_distance;
 
 	
@@ -158,10 +158,10 @@ package body et_canvas is
 		result : type_vector_model;
 		-- debug : boolean := false;
 	begin
-		result.x := type_distance_model 
+		result.x := type_distance 
 			(( (P.x - T.x) - F.x) / type_logical_pixels (zf));
 		
-		result.y := type_distance_model 
+		result.y := type_distance 
 			((-(P.y - T.y) - F.y) / type_logical_pixels (zf));
 
 		return result;
@@ -594,10 +594,10 @@ package body et_canvas is
 		result.height := TL.y - BL.y;
 
 		-- CS: more effective ?
-		-- result.width    := type_distance_model 
-		--		(h_length) * type_distance_model (S);
-		-- result.height   := type_distance_model 
-		--		(v_length) * type_distance_model (S);
+		-- result.width    := type_distance 
+		--		(h_length) * type_distance (S);
+		-- result.height   := type_distance 
+		--		(v_length) * type_distance (S);
 
 		-- put_line ("visible area " & to_string (result));
 		return result;
@@ -613,27 +613,27 @@ package body et_canvas is
 		
 		-- The offset required to "move" all objects into
 		-- the center of the visible area:
-		dx, dy : type_distance_model;
+		dx, dy : type_distance;
 		
 		-- Get the currently visible model area:
 		v : constant type_area := get_visible_area (canvas);
 
-		w1 : constant type_distance_model := v.width;
-		w2 : constant type_distance_model := area.width;
+		w1 : constant type_distance := v.width;
+		w2 : constant type_distance := area.width;
 
-		h1 : constant type_distance_model := v.height;
-		h2 : constant type_distance_model := area.height;
+		h1 : constant type_distance := v.height;
+		h2 : constant type_distance := area.height;
 
-		a, b : type_distance_model;
+		a, b : type_distance;
 
-		x0 : constant type_distance_model := area.position.x;
-		y0 : constant type_distance_model := area.position.y;
+		x0 : constant type_distance := area.position.x;
+		y0 : constant type_distance := area.position.y;
 		
-		x1 : constant type_distance_model := v.position.x;
-		y1 : constant type_distance_model := v.position.y;
+		x1 : constant type_distance := v.position.x;
+		y1 : constant type_distance := v.position.y;
 
 		-- The given area will end up at this target position:
-		x2, y2 : type_distance_model;
+		x2, y2 : type_distance;
 		
 	begin
 		if debug then
@@ -1011,19 +1011,19 @@ package body et_canvas is
 		-- Get the ratio of width and height based on the current dimensions
 		-- of the scrolled window:
 		sw := type_zoom_factor 
-			(type_distance_model (a.width) / area.width);
+			(type_distance (a.width) / area.width);
 		
 		sh := type_zoom_factor 
-			(type_distance_model (a.height) / area.height);
+			(type_distance (a.height) / area.height);
 
 		-- CS: Alternatively the ratio can be based on the initial dimensions
 		-- of the scrolled window. A boolean argument for this function 
 		-- could be used to switch between current dimensions and initial 
 		-- dimensions:
 		-- sw := type_zoom_factor 
-		-- 	(type_distance_model (swin_size_initial.width) / area.width);
+		-- 	(type_distance (swin_size_initial.width) / area.width);
 		-- sh := type_zoom_factor 
-		--	(type_distance_model (swin_size_initial.height) / area.height);
+		--	(type_distance (swin_size_initial.height) / area.height);
 		
 		-- put_line ("sw: " & to_string (sw));
 		-- put_line ("sh: " & to_string (sh));
@@ -1276,7 +1276,7 @@ package body et_canvas is
 
 	procedure shift_canvas (
 		direction	: type_direction;
-		distance	: type_distance_model)
+		distance	: type_distance)
 	is
 		
 		-- Convert the given model distance to 
@@ -1695,8 +1695,8 @@ package body et_canvas is
 		cp : type_logical_pixels_vector;
 		mp : type_vector_model;
 
-		dx, dy : type_distance_model;
-		dabs : type_distance_model;
+		dx, dy : type_distance;
+		dabs : type_distance;
 		angle : type_rotation;
 	begin
 		-- Get the current pointer/mouse position:
@@ -1839,11 +1839,11 @@ package body et_canvas is
 	begin
 		n := integer (point.x / grid.spacing.x);
 		f := type_float (n) * type_float (grid.spacing.x);
-		result.x := type_distance_model (f);
+		result.x := type_distance (f);
 
 		n := integer (point.y / grid.spacing.y);
 		f := type_float (n) * type_float (grid.spacing.y);
-		result.y := type_distance_model (f);
+		result.y := type_distance (f);
 		
 		return result;
 	end snap_to_grid;
@@ -1875,7 +1875,7 @@ package body et_canvas is
 		-- X-AXIS:
 
 		-- The first and the last column:
-		x1, x2 : type_distance_model;
+		x1, x2 : type_distance;
 
 		-- The start and the end of the visible area:
 		ax1 : constant type_float_grid := 
@@ -1892,7 +1892,7 @@ package body et_canvas is
 		-- Y-AXIS:
 
 		-- The first and the last row:
-		y1, y2 : type_distance_model;
+		y1, y2 : type_distance;
 
 		-- The start and the end of the visible area:
 		ay1 : constant type_float_grid := 
@@ -1914,14 +1914,14 @@ package body et_canvas is
 			-- Compute the first column:
 			-- put_line (" ax1 " & type_float_grid'image (ax1));
 			c := type_float_grid'floor (ax1 / gx);
-			x1 := type_distance_model ((gx * c) + gx);
-			-- put_line (" x1  " & type_distance_model'image (x1));
+			x1 := type_distance ((gx * c) + gx);
+			-- put_line (" x1  " & type_distance'image (x1));
 
 			-- Compute the last column:
 			-- put_line (" ax2 " & type_float_grid'image (ax2));
 			c := type_float_grid'floor (ax2 / gx);
-			x2 := type_distance_model (gx * c);
-			-- put_line (" x2  " & type_distance_model'image (x2));
+			x2 := type_distance (gx * c);
+			-- put_line (" x2  " & type_distance'image (x2));
 		end compute_first_and_last_column;
 
 
@@ -1929,14 +1929,14 @@ package body et_canvas is
 			-- Compute the first row:
 			-- put_line (" ay1 " & type_float_grid'image (ay1));
 			c := type_float_grid'floor (ay1 / gy);
-			y1 := type_distance_model ((gy * c) + gy);
-			-- put_line (" y1  " & type_distance_model'image (y1));
+			y1 := type_distance ((gy * c) + gy);
+			-- put_line (" y1  " & type_distance'image (y1));
 
 			-- Compute the last row:
 			-- put_line (" ay2 " & type_float_grid'image (ay2));
 			c := type_float_grid'floor (ay2 / gy);
-			y2 := type_distance_model (gy * c);
-			-- put_line (" y2  " & type_distance_model'image (y2));
+			y2 := type_distance (gy * c);
+			-- put_line (" y2  " & type_distance'image (y2));
 		end compute_first_and_last_row;
 		
 
@@ -2015,11 +2015,11 @@ package body et_canvas is
 			CP1 : type_logical_pixels_vector;
 			CP2 : type_logical_pixels_vector;
 
-			ax1f : type_distance_model := visible_area.position.x;
-			ax2f : type_distance_model := ax1f + visible_area.width;
+			ax1f : type_distance := visible_area.position.x;
+			ax2f : type_distance := ax1f + visible_area.width;
 			
-			ay1f : type_distance_model := visible_area.position.y;
-			ay2f : type_distance_model := ay1f + visible_area.height;
+			ay1f : type_distance := visible_area.position.y;
+			ay2f : type_distance := ay1f + visible_area.height;
 		begin
 			-- Set the linewidth of the lines:
 			set_line_width (context, to_gdouble (grid_width_lines));
@@ -2151,7 +2151,7 @@ package body et_canvas is
 				cursor.position.y := cursor.position.y - grid.spacing.y;
 		end case;
 
-		-- CS Limit cursor position to range of type_distance_model
+		-- CS Limit cursor position to range of type_distance
 		-- Exception handler ?
 
 		-- If the cursor is outside the visible area, then the
@@ -2362,32 +2362,32 @@ package body et_canvas is
 
 
 	function to_reality (
-		d : in type_distance_model)
-		return type_distance_model
+		d : in type_distance)
+		return type_distance
 	is begin
-		return type_distance_model_positive (M) * d;
+		return type_distance_positive (M) * d;
 	end to_reality;
 
 
 	procedure to_reality (
-		d : in out type_distance_model)
+		d : in out type_distance)
 	is begin
-		d := type_distance_model_positive (M) * d;
+		d := type_distance_positive (M) * d;
 	end to_reality;
 
 
 	
 	function to_model (
-		d : in type_distance_model)
-		return type_distance_model
+		d : in type_distance)
+		return type_distance
 	is begin
-		return type_distance_model_positive (1.0 / M) * d;
+		return type_distance_positive (1.0 / M) * d;
 	end to_model;
 
 	procedure to_model (
-		d : in out type_distance_model)
+		d : in out type_distance)
 	is begin
-		d := type_distance_model_positive (1.0 / M) * d;
+		d := type_distance_positive (1.0 / M) * d;
 	end to_model;
 
 	
@@ -3258,7 +3258,7 @@ package body et_canvas is
 	
 
 	procedure set_linewidth (
-		w : in type_distance_model_positive)
+		w : in type_distance_positive)
 	is begin
 		cairo.set_line_width (
 			context, to_gdouble_positive (to_distance (w)));
@@ -3269,7 +3269,7 @@ package body et_canvas is
 	procedure draw_line (
 		line		: in type_line;
 		pos			: in type_position;
-		width		: in type_distance_model_positive;
+		width		: in type_distance_positive;
 		do_stroke	: in boolean := false)
 	is
 		use cairo;

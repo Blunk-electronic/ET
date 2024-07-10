@@ -59,12 +59,12 @@ procedure draw_drawing_frame is
 -- 	-- This procedure draws the outer border of the frame:
 -- 	procedure draw_border is
 -- 		-- Get the width of the frame:
--- 		w : constant type_distance_model_positive := 
--- 			type_distance_model_positive (f.frame.size.x);
+-- 		w : constant type_distance_positive := 
+-- 			type_distance_positive (f.frame.size.x);
 -- 
 -- 		-- Get the height of the frame:
--- 		h : constant type_distance_model_positive := 
--- 			type_distance_model_positive (f.frame.size.y);
+-- 		h : constant type_distance_positive := 
+-- 			type_distance_positive (f.frame.size.y);
 -- 
 -- 
 -- 		-- Draws the temporarily line. Assumes that the 

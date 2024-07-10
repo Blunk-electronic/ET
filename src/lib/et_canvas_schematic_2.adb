@@ -136,8 +136,8 @@ package body et_canvas_schematic_2 is
 				element (current_active_module).frames.frame.size;
 
 		begin
-			b.width := type_distance_model_positive (size.x);
-			b.height := type_distance_model_positive (size.y);
+			b.width := type_distance_positive (size.x);
+			b.height := type_distance_positive (size.y);
 
 			-- CS: orientation (portrait/landscape) ?
 			
@@ -257,15 +257,15 @@ package body et_canvas_schematic_2 is
 			-- The offset due to the margin:
 			margin_offset : type_vector_model;
 		begin
-			bbox_new.width  := bbox_new.width  + 2.0 * type_distance_model_positive (margin);
-			bbox_new.height := bbox_new.height + 2.0 * type_distance_model_positive (margin);
+			bbox_new.width  := bbox_new.width  + 2.0 * type_distance_positive (margin);
+			bbox_new.height := bbox_new.height + 2.0 * type_distance_positive (margin);
 			
 			-- Since we regard the margin as inside the bounding-box,
 			-- we must move the bounding-box position towards bottom-left
 			-- by the inverted margin_offset:
 			margin_offset := (
-				x => type_distance_model_positive (margin),
-				y => type_distance_model_positive (margin));
+				x => type_distance_positive (margin),
+				y => type_distance_positive (margin));
 			
 			move_by (bbox_new.position, invert (margin_offset));
 		end add_margin;

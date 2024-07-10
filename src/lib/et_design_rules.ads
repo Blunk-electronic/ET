@@ -68,24 +68,24 @@ package et_design_rules is
 	file_extension : constant string := "dru";
 
 
-	conductor_width_min : constant type_distance_model_positive := 0.05;
+	conductor_width_min : constant type_distance_positive := 0.05;
 	
-	conductor_clearance_min : constant type_distance_model_positive := conductor_width_min;
+	conductor_clearance_min : constant type_distance_positive := conductor_width_min;
 
 	-- The clearance between two conductor objects:
-	subtype type_track_clearance is type_distance_model_positive  -- CS rename to type_clearance_conductor
-		range conductor_clearance_min .. type_distance_model_positive'last;
+	subtype type_track_clearance is type_distance_positive  -- CS rename to type_clearance_conductor
+		range conductor_clearance_min .. type_distance_positive'last;
 
 	-- Checks whether the given track clearance is in range of type_track_clearance.
 	procedure validate_track_clearance (clearance : in type_distance_model);
 
 	
 
-	subtype type_clearance_conductors_of_same_net is type_distance_model_positive range zero .. type_track_clearance'last;
+	subtype type_clearance_conductors_of_same_net is type_distance_positive range zero .. type_track_clearance'last;
 	
-	subtype type_clearance_conductor_to_edge is type_distance_model_positive range zero .. 0.5;
+	subtype type_clearance_conductor_to_edge is type_distance_positive range zero .. 0.5;
 
-	subtype type_clearance_edge_to_edge is type_distance_model_positive range 0.2 .. 1.0;
+	subtype type_clearance_edge_to_edge is type_distance_positive range 0.2 .. 1.0;
 
 	type type_clearances is record
 		between_conductors			: type_track_clearance := 0.15;
@@ -105,15 +105,15 @@ package et_design_rules is
 	
 -- RESTRING
 	
-	restring_width_max : constant type_distance_model_positive := 5.0;
-	subtype type_restring_width is type_distance_model_positive 
+	restring_width_max : constant type_distance_positive := 5.0;
+	subtype type_restring_width is type_distance_positive 
 		range conductor_width_min .. restring_width_max;
 
 	
 	-- Some PCB manufacturers make the inner restring slightly
 	-- wider than the outer. So we require a type for the
 	-- delta between inner an outer restring:
-	subtype type_restring_delta_inner_outer is type_distance_model_positive
+	subtype type_restring_delta_inner_outer is type_distance_positive
 		range 0.0 .. type_restring_width'last;
 	
 	type type_restring is record
@@ -125,7 +125,7 @@ package et_design_rules is
 	type type_restring_category is (INNER, OUTER);
 
 
-	drill_to_restring_multiplier : constant type_distance_model_positive := 0.5;
+	drill_to_restring_multiplier : constant type_distance_positive := 0.5;
 	
 	-- Calculates the width of the restring as follows:
 	-- If category is OUTER then the formula is:
@@ -146,9 +146,9 @@ package et_design_rules is
 
 	
 	
-	track_width_max : constant type_distance_model_positive := 100.0;
+	track_width_max : constant type_distance_positive := 100.0;
 	
-	subtype type_track_width is type_distance_model_positive 
+	subtype type_track_width is type_distance_positive 
 		range conductor_width_min .. track_width_max;
 
 	-- Checks whether the given track width is in range of type_track_width.
@@ -165,9 +165,9 @@ package et_design_rules is
 
 	
 
-	stop_mask_expansion_min : constant type_distance_model_positive := 0.01;
-	stop_mask_expansion_max : constant type_distance_model_positive := 0.2;
-	subtype type_stop_mask_expansion is type_distance_model_positive
+	stop_mask_expansion_min : constant type_distance_positive := 0.01;
+	stop_mask_expansion_max : constant type_distance_positive := 0.2;
+	subtype type_stop_mask_expansion is type_distance_positive
 		range stop_mask_expansion_min .. stop_mask_expansion_max;
 	-- see <https://docs.oshpark.com/tips+tricks/stop-mask-expansion/>
 

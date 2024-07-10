@@ -54,7 +54,7 @@ package et_silkscreen is
 	use pac_text_board;
 
 
-	subtype type_linewidth is type_distance_model_positive range 0.15 .. 10.0;
+	subtype type_linewidth is type_distance_positive range 0.15 .. 10.0;
 	
 
 -- LINES:

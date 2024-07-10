@@ -94,7 +94,7 @@ package et_pcb_contour is
 	-- Converts a list of holes to a list of polygons:
 	function to_polygons (
 		holes		: in pac_holes.list;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
 
 
@@ -103,7 +103,7 @@ package et_pcb_contour is
 	-- holes can only become greater:
 	procedure offset_holes (
 		holes		: in out pac_polygon_list.list;
-		offset		: in type_distance_model_positive;
+		offset		: in type_distance_positive;
 		debug		: in boolean := false);
 
 	

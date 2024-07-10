@@ -70,7 +70,7 @@ package et_conductor_segment is
 	-- with round caps on the line ends:
 	function to_polygon (
 		line 		: in type_conductor_line;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return type_polygon;
 
 
@@ -112,7 +112,7 @@ package et_conductor_segment is
 	-- Converts a list of lines to a list of polygons:
 	function to_polygons (
 		lines		: in pac_conductor_lines.list;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
 							 
 	
@@ -137,7 +137,7 @@ package et_conductor_segment is
 	
 	function to_polygon (
 		arc 		: in type_conductor_arc;
-		tolerance	: in type_distance_model_positive)							
+		tolerance	: in type_distance_positive)							
 		return type_polygon;
 	
 
@@ -175,7 +175,7 @@ package et_conductor_segment is
 	-- Converts a list of arcs to a list of polygons:
 	function to_polygons (
 		arcs		: in pac_conductor_arcs.list;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
 
 	
@@ -198,14 +198,14 @@ package et_conductor_segment is
 	-- Converts the outer edge of a conductor circle to a polygon:	
 	function to_polygon_outside (
 		circle 		: in type_conductor_circle;
-		tolerance	: in type_distance_model_positive)							
+		tolerance	: in type_distance_positive)							
 		return type_polygon;
 
 	
 	-- Converts the inner edge of a conductor circle to a polygon:	
 	function to_polygon_inside (
 		circle 		: in type_conductor_circle;
-		tolerance	: in type_distance_model_positive)							
+		tolerance	: in type_distance_positive)							
 		return type_polygon;
 
 
@@ -235,14 +235,14 @@ package et_conductor_segment is
 	-- Converts the outer edges of circles to a list of polygons:
 	function to_polygons_outside (
 		circles		: in pac_conductor_circles.list;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
 
 
 	-- Converts the inner edges of circles to a list of polygons:
 	function to_polygons_inside (
 		circles		: in pac_conductor_circles.list;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
 
 	

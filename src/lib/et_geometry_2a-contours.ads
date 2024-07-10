@@ -197,7 +197,7 @@ package et_geometry_2a.contours is
 	-- the formula new_y = offset - old_y:
 	procedure transpose_contour (
 		contour	: in out type_contour'class;
-		offset	: in type_distance_model);
+		offset	: in type_distance);
 
 
 	-- Reads the segments provided in a row of
@@ -224,12 +224,12 @@ package et_geometry_2a.contours is
 	-- -- Returns the boundaries of the given contour.
 	-- function get_boundaries (
 	-- 	contour		: in type_contour;
-	-- 	line_width	: in type_distance_model_positive)
+	-- 	line_width	: in type_distance_positive)
 	-- 	return type_boundaries;
 	
 	function get_bounding_box (
 		contour	: in type_contour;
-		width	: in type_distance_model_positive)
+		width	: in type_distance_positive)
 		return type_area;
 
 	

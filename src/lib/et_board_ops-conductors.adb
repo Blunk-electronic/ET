@@ -278,7 +278,7 @@ package body et_board_ops.conductors is
 		device			: in type_device_name;
 		terminal		: in pac_terminal_name.bounded_string;
 		direction		: in type_rotation_model;
-		length			: in type_distance_model_positive;
+		length			: in type_distance_positive;
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified

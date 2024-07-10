@@ -55,9 +55,9 @@ with et_object_status;			use et_object_status;
 generic
 	with package pac_geometry_1 is new et_geometry_1 (<>);
 	
-	type type_distance_model is delta <> digits <>;
+	type type_distance is delta <> digits <>;
 
-	axis_min, axis_max : type_distance_model;
+	axis_min, axis_max : type_distance;
 
 	type type_rotation is delta <> digits <>;
 	
@@ -67,9 +67,9 @@ package et_geometry_2a is
 	use pac_geometry_1;
 	use pac_float_numbers_functions;
 
-	zero 		: constant type_distance_model := 0.0;
-	far_left	: constant type_distance_model := axis_min;
-	far_right	: constant type_distance_model := axis_max;
+	zero 		: constant type_distance := 0.0;
+	far_left	: constant type_distance := axis_min;
+	far_right	: constant type_distance := axis_max;
 
 	
 
@@ -90,7 +90,7 @@ package et_geometry_2a is
 -- DISTANCE:
 
 	-- For collecting and sorting distances:
-	package pac_distances is new doubly_linked_lists (type_distance_model);
+	package pac_distances is new doubly_linked_lists (type_distance);
 	package pac_distances_sorting is new pac_distances.generic_sorting;
 
 
@@ -98,15 +98,15 @@ package et_geometry_2a is
 	-- Returns the greatest of the given distances. 
 	-- If both are equal then "right" will be returned.
 	function get_greatest (
-		left, right : in type_distance_model)
-		return type_distance_model;
+		left, right : in type_distance)
+		return type_distance;
 
 	
 	-- Returns the smallest of the given distances. 
 	-- If both are equal then "right" will be returned.
 	function get_smallest (
-		left, right : in type_distance_model)
-		return type_distance_model;
+		left, right : in type_distance)
+		return type_distance;
 
 
 	
@@ -115,16 +115,16 @@ package et_geometry_2a is
 	-- 1. distance = 100.0, maximum = 80.0 -> distance becomes 80.0
 	-- 2. distance =  70.0, maximum = 80.0 -> distance remains 70.0
 	procedure limit_to_maximum (
-		distance	: in out type_distance_model;
-		maximum		: in type_distance_model);
+		distance	: in out type_distance;
+		maximum		: in type_distance);
 
 	-- Limits a distance to a given minimum.
 	-- Examples: 
 	-- 1. distance =  80.0, minimum = 70.0 -> distance remains 80.0
 	-- 2. distance =  60.0, minimum = 70.0 -> distance becomes 70.0
 	procedure limit_to_minimum (
-		distance	: in out type_distance_model;
-		minimum		: in type_distance_model);
+		distance	: in out type_distance;
+		minimum		: in type_distance);
 
 
 	
@@ -132,12 +132,12 @@ package et_geometry_2a is
 	-- Converts a mil number (given as a string) to millimeters.	
 	function mil_to_distance (
 		mil : in string) 
-		return type_distance_model;
+		return type_distance;
 
 
 	
 	function distance_to_mil (
-		distance : in type_distance_model) 
+		distance : in type_distance) 
 		return string;
 
 
@@ -145,30 +145,30 @@ package et_geometry_2a is
 	
 	-- Use this type for distances, lengths, ...
 	-- Because those things require positive numbers:
-	subtype type_distance_model_positive is type_distance_model
-		range 0.0 .. type_distance_model'last;
+	subtype type_distance_positive is type_distance
+		range 0.0 .. type_distance'last;
 
 
 	-- For collecting and sorting distances:
-	package pac_distances_positive is new doubly_linked_lists (type_distance_model_positive);
+	package pac_distances_positive is new doubly_linked_lists (type_distance_positive);
 	package pac_distances_positive_sorting is new pac_distances_positive.generic_sorting;
 
 
 	-- Returns the greatest distance from a list of positive distances:
 	function get_greatest (
 		distances	: in pac_distances_positive.list)
-		return type_distance_model_positive;
+		return type_distance_positive;
 
 
 	
 	-- This function returns the given distance as string:	
 	function to_string (
-		distance : in type_distance_model)
+		distance : in type_distance)
 		return string;
 
 
 	-- The position along an axis:
-	subtype type_position_axis is type_distance_model 
+	subtype type_position_axis is type_distance 
 		range axis_min .. axis_max;
 
 
@@ -176,19 +176,19 @@ package et_geometry_2a is
 	-- according to the bankers rule:
 	-- Use it !!!!!
 	function to_distance (f : in type_float)
-		return type_distance_model;
+		return type_distance;
 
 
 	function to_distance (dd : in string) 
-		return type_distance_model;		
+		return type_distance;		
 
 
 
-	function clip_distance (d : in type_distance_model)
+	function clip_distance (d : in type_distance)
 		return type_position_axis;
 
 	
-	procedure clip_distance (d : in out type_distance_model);
+	procedure clip_distance (d : in out type_distance);
 
 
 	
@@ -234,8 +234,8 @@ package et_geometry_2a is
 
 -- RELATIVE DISTANCE:
 	
-	type type_distance_relative is record -- CS rename to type_distance_model_relative
-		x, y : type_distance_model := zero;
+	type type_distance_relative is record -- CS rename to type_distance_relative
+		x, y : type_distance := zero;
 	end record;
 
 
@@ -245,7 +245,7 @@ package et_geometry_2a is
 
 
 	function to_distance_relative (
-		x,y : in type_distance_model)
+		x,y : in type_distance)
 		return type_distance_relative;
 
 	
@@ -260,7 +260,7 @@ package et_geometry_2a is
 -- POINT / POSITION / LOCATION / LOCATION VECTOR / DISTANCE VECTOR:
 	
 	type type_vector_model is record
-		x, y : type_distance_model := 0.0;
+		x, y : type_distance := 0.0;
 	end record;
 
 	
@@ -351,7 +351,7 @@ package et_geometry_2a is
 	-- model points. Uses internally a float type:
 	function get_distance (
 		p1, p2 : in type_vector_model)
-		return type_distance_model_positive;
+		return type_distance_positive;
 	
 
 	-- Returns the distance along the given axis between the given points.
@@ -359,7 +359,7 @@ package et_geometry_2a is
 		point_1	: in type_vector_model;
 		point_2	: in type_vector_model;
 		axis	: in type_axis_2d) 
-		return type_distance_model;
+		return type_distance;
 
 
 	
@@ -437,7 +437,7 @@ package et_geometry_2a is
 
 	
 	function to_offset (
-		x, y : in type_distance_model)
+		x, y : in type_distance)
 		return type_offset;
 
 
@@ -483,7 +483,7 @@ package et_geometry_2a is
 		point_1	: in type_vector_model;
 		point_2	: in type_vector_model;
 		axis	: in type_axis_2d) 
-		return type_distance_model_positive;
+		return type_distance_positive;
 	
 	
 
@@ -504,7 +504,7 @@ package et_geometry_2a is
 	function move (
 		point		: in type_vector_model;
 		direction	: in type_rotation;
-		distance	: in type_distance_model_positive;
+		distance	: in type_distance_positive;
 		clip		: in boolean := false)
 		return type_vector_model;
 
@@ -551,8 +551,8 @@ package et_geometry_2a is
 -- AREA:
 	
 	type type_area is record
-		width		: type_distance_model_positive := 0.0;
-		height		: type_distance_model_positive := 0.0;
+		width		: type_distance_positive := 0.0;
+		height		: type_distance_positive := 0.0;
 		position	: type_vector_model; -- lower left corner
 	end record;
 
@@ -620,10 +620,10 @@ package et_geometry_2a is
 	-- These are the system limits for the width and height
 	-- of the bounding-box of the model:
 	bounding_box_width_max  : constant 
-		type_distance_model_positive := 2_000.0;
+		type_distance_positive := 2_000.0;
 	
 	bounding_box_height_max : constant 
-		type_distance_model_positive := 1_000.0;
+		type_distance_positive := 1_000.0;
 
 
 	
@@ -636,8 +636,8 @@ package et_geometry_2a is
 	-- composite type is required:
 	type type_bounding_box_error is record
 		size_exceeded	: boolean := false;
-		width			: type_distance_model_positive := 0.0;
-		height			: type_distance_model_positive := 0.0;
+		width			: type_distance_positive := 0.0;
+		height			: type_distance_positive := 0.0;
 		-- CS ? position : type_vector_model;
 	end record;
 
@@ -808,7 +808,7 @@ package et_geometry_2a is
 	-- have round caps:
 	function get_bounding_box (
 		line	: in type_line;
-		width	: in type_distance_model_positive)
+		width	: in type_distance_positive)
 		return type_area;
 
 
@@ -1044,7 +1044,7 @@ package et_geometry_2a is
 	-- It respects the linewidth of the circumfence:
 	function get_bounding_box (
 		arc 	: in type_arc;
-		width	: in type_distance_model_positive)				  
+		width	: in type_distance_positive)				  
 		return type_area;
 	-- CS INCOMPLETE !
 
@@ -1150,7 +1150,7 @@ package et_geometry_2a is
 	-- It respects the linewidth of the circumfence:
 	function get_bounding_box (
 		circle 	: in type_circle;
-		width	: in type_distance_model_positive)
+		width	: in type_distance_positive)
 		return type_area;
 
 
@@ -1245,12 +1245,12 @@ package et_geometry_2a is
 
 	function get_x (
 		position : in type_position)
-		return type_distance_model;
+		return type_distance;
 	
 
 	function get_y (
 		position : in type_position)
-		return type_distance_model;
+		return type_distance;
 
 	
 
@@ -1276,7 +1276,7 @@ package et_geometry_2a is
 	-- instead of type_float_positive
 	
 	subtype type_catch_zone is type_float_positive
-		range 0.0 .. type_float_positive (type_distance_model_positive'last/100.0);
+		range 0.0 .. type_float_positive (type_distance_positive'last/100.0);
 
 
 	function catch_zone_to_string (
@@ -1313,7 +1313,7 @@ package et_geometry_2a is
 	-- is given, then we assume, that the line has round caps:
 	function in_catch_zone (
 		line	: in type_line;
-		width	: in type_distance_model_positive := 0.0;
+		width	: in type_distance_positive := 0.0;
 		point	: in type_vector_model;
 		zone	: in type_catch_zone)
 		return boolean;

@@ -67,7 +67,7 @@ package body et_contour_to_polygon is
 
 	function to_edges (
 		arc			: in type_arc;
-		tolerance	: in type_distance_model_positive;
+		tolerance	: in type_distance_positive;
 		mode		: in type_approximation_mode;
 		debug		: in boolean := false)				  
 		return pac_edges.list
@@ -83,7 +83,7 @@ package body et_contour_to_polygon is
 
 	--function to_edges (
 		--circle		: in type_circle;
-		--tolerance	: in type_distance_model_positive;
+		--tolerance	: in type_distance_positive;
 		--mode		: in type_approximation_mode;
 		--debug		: in boolean := false)				  
 		--return pac_edges.list
@@ -119,7 +119,7 @@ package body et_contour_to_polygon is
 
 	function to_edges (
 		circle		: in type_circle;
-		tolerance	: in type_distance_model_positive;
+		tolerance	: in type_distance_positive;
 		mode		: in type_approximation_mode;
 		debug		: in boolean := false)				  
 		return pac_edges.list
@@ -146,7 +146,7 @@ package body et_contour_to_polygon is
 	
 	function to_polygon (
 		contour		: in type_contour'class;
-		tolerance	: in type_distance_model_positive;
+		tolerance	: in type_distance_positive;
 		mode		: in type_approximation_mode;
 		debug		: in boolean := false)					
 		return type_polygon
@@ -234,7 +234,7 @@ package body et_contour_to_polygon is
 
 	function to_polygons (
 		contours	: in pac_contour_list.list;
-		tolerance	: in type_distance_model_positive;
+		tolerance	: in type_distance_positive;
 		mode		: in type_approximation_mode;
 		debug		: in boolean := false)					
 		return pac_polygon_list.list

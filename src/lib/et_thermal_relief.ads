@@ -71,7 +71,7 @@ package et_thermal_relief is
 	thermal_width_min : constant type_track_width := type_track_width'first;
 	thermal_width_max : constant type_track_width := 3.0; -- CS: adjust if nessecariy
 	
-	subtype type_thermal_width is type_distance_model_positive
+	subtype type_thermal_width is type_distance_positive
 		range thermal_width_min .. thermal_width_max;
 
 	

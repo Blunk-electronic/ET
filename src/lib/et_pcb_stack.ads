@@ -104,10 +104,10 @@ package et_pcb_stack is
 
 	use pac_geometry_2;
 	
-	subtype type_dielectric_thickness is type_distance_model_positive range 0.01 .. 5.0; -- CS reasonable ?
+	subtype type_dielectric_thickness is type_distance_positive range 0.01 .. 5.0; -- CS reasonable ?
 	dielectric_thickness_default : constant type_dielectric_thickness := 1.5;
 
-	subtype type_conductor_thickness is type_distance_model_positive range 0.01 .. 0.2;  -- CS reasonable ?
+	subtype type_conductor_thickness is type_distance_positive range 0.01 .. 0.2;  -- CS reasonable ?
 	conductor_thickness_outer_default : constant type_conductor_thickness := 0.035;
 	conductor_thickness_inner_default : constant type_conductor_thickness := 0.018;	
 

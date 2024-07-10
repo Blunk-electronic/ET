@@ -117,7 +117,7 @@ package et_canvas_board_tracks is
 		signal_layer	: type_signal_layer := signal_layer_default;
 
 		path			: type_path_live;
-		width			: type_distance_model_positive := 0.15;
+		width			: type_distance_positive := 0.15;
 		snap_mode		: type_snap_mode := NEAREST_AIRWIRE;
 	end record;
 

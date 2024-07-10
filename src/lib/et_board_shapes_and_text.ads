@@ -74,13 +74,13 @@ package et_board_shapes_and_text is
 
 -- FAB RELEVANT
 
-	--fab_tolerance : constant type_distance_model_positive := 0.001;
-	--fab_tolerance : constant type_distance_model_positive := 0.01;
-	fill_tolerance : constant type_distance_model_positive := 0.05;
+	--fab_tolerance : constant type_distance_positive := 0.001;
+	--fab_tolerance : constant type_distance_positive := 0.01;
+	fill_tolerance : constant type_distance_positive := 0.05;
 
 
-	linewidth_fab_min : constant type_distance_model_positive := 0.005;
-	linewidth_fab_max : constant type_distance_model_positive := 10.0;
+	linewidth_fab_min : constant type_distance_positive := 0.005;
+	linewidth_fab_max : constant type_distance_positive := 10.0;
 	
 	package pac_text_board is new et_text.generic_pac_text (
 		pac_geometry_2		=> pac_geometry_2,
@@ -94,7 +94,7 @@ package et_board_shapes_and_text is
 		line_width_default	=> 0.005);
 
 	
-	subtype type_general_line_width is type_distance_model_positive
+	subtype type_general_line_width is type_distance_positive
 		range linewidth_fab_min .. linewidth_fab_max;
 	
 	-- Checks whether given line width is in range 

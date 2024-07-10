@@ -105,7 +105,7 @@ package body et_pcb_contour is
 	
 	function to_polygons (
 		holes		: in pac_holes.list;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list
 	is
 		use et_contour_to_polygon;
@@ -134,7 +134,7 @@ package body et_pcb_contour is
 
 	procedure offset_holes (
 		holes		: in out pac_polygon_list.list;
-		offset		: in type_distance_model_positive;
+		offset		: in type_distance_positive;
 		debug		: in boolean := false)
 	is
 		use pac_polygon_offsetting;

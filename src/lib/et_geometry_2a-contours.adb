@@ -275,7 +275,7 @@ package body et_geometry_2a.contours is
 			contour.contour.segments.iterate (query_segment'access);				
 		end if;			
 
-		--set_absolute (result, type_distance_model (round (get_absolute (result))));
+		--set_absolute (result, type_distance (round (get_absolute (result))));
 		
 		return result;
 	end get_shortest_distance;
@@ -305,7 +305,7 @@ package body et_geometry_2a.contours is
 		-- CS check discriminant and issue helpful error message ?
 
 		-- CS length check for line:
-		--if get_length (line) > type_distance_model'small then
+		--if get_length (line) > type_distance'small then
 			--return line;
 		--else
 			--raise constraint_error with "Line has zero length !";
@@ -350,10 +350,10 @@ package body et_geometry_2a.contours is
 
 	procedure transpose_contour (
 		contour	: in out type_contour'class;
-		offset	: in type_distance_model)
+		offset	: in type_distance)
 	is 
 		procedure move (point : in out type_vector_model) is
-			new_y : type_distance_model;
+			new_y : type_distance;
 		begin
 			new_y := offset - get_y (point);
 			--point.set (Y, new_y);
@@ -622,7 +622,7 @@ package body et_geometry_2a.contours is
 
 -- 	function get_boundaries (
 -- 		contour		: in type_contour;
--- 		line_width	: in type_distance_model_positive)
+-- 		line_width	: in type_distance_positive)
 -- 		return type_boundaries 
 -- 	is
 -- 		result : type_boundaries; -- to be returned
@@ -666,7 +666,7 @@ package body et_geometry_2a.contours is
 
 	function get_bounding_box (
 		contour	: in type_contour;
-		width	: in type_distance_model_positive)
+		width	: in type_distance_positive)
 		return type_area
 	is
 		result : type_area; -- to be returned
@@ -1092,7 +1092,7 @@ package body et_geometry_2a.contours is
 			contour.contour.segments.iterate (query_segment'access);				
 		end if;			
 
-		--set_absolute (result, type_distance_model (round (get_absolute (result))));
+		--set_absolute (result, type_distance (round (get_absolute (result))));
 		
 		return result;
 	end get_shortest_distance;
@@ -1282,7 +1282,7 @@ package body et_geometry_2a.contours is
 			intersection: in type_intersection; -- incl. point and angle
 			segment		: in type_intersected_segment)
 			--center		: in type_vector_model := origin;
-			--radius		: in type_distance_model_positive := zero)
+			--radius		: in type_distance_positive := zero)
 		is 
 			xi : constant type_float := get_x (intersection.vector);
 		begin
@@ -1473,7 +1473,7 @@ package body et_geometry_2a.contours is
 			--end loop;
 
 			
-			-- If x-positions differ by type_distance_model'small then we
+			-- If x-positions differ by type_distance'small then we
 			-- treat them as redundant.
 			-- Remove redundant x-positions:
 			--c := result.intersections.first;
@@ -1481,7 +1481,7 @@ package body et_geometry_2a.contours is
 
 				--if c /= result.intersections.first then
 					--if abs (element (c).x_position - element (previous (c)).x_position)
-						--<= type_distance_model'small 
+						--<= type_distance'small 
 					--then
 						--delete (result.intersections, c);
 					--end if;

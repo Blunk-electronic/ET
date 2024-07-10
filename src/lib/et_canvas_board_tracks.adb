@@ -167,7 +167,7 @@ package body et_canvas_board_tracks is
 	
 	
 	procedure apply_line_width (text : in string) is
-		width : type_distance_model_positive;
+		width : type_distance_positive;
 	begin
 		width := to_distance (text);
 

@@ -72,7 +72,7 @@ package et_submodules is
 	
 	nesting_depth_max : constant positive := 10; -- CS increase if nessecary
 
-	subtype type_submodule_edge_length is type_distance_model_positive
+	subtype type_submodule_edge_length is type_distance_positive
 		range 20.0 .. 1000.0; -- unit is mm
 
 	keyword_size	: constant string := "size";
@@ -150,7 +150,7 @@ package et_submodules is
 	port_name_font_size : constant type_text_size := 2.0;
 
 	-- The spacing between port rectangle and port name
-	port_name_spacing : constant type_distance_model_positive := 0.5;
+	port_name_spacing : constant type_distance_positive := 0.5;
 
 
 	-- GUI relevant only: The font of the port direction:
@@ -249,7 +249,7 @@ package et_submodules is
 	
 	-- GUI relevant only: The space between lower box edge, instance name, 
 	-- file name, board position, view mode:
-	text_spacing : constant type_distance_model_positive := 1.0;
+	text_spacing : constant type_distance_positive := 1.0;
 
 
 	

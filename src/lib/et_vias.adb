@@ -212,7 +212,7 @@ package body et_vias is
 		position	: in type_vector_model;
 		restring	: in type_restring_width;
 		diameter	: in type_drill_size;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return type_polygon
 	is 
 		use pac_geometry_brd;

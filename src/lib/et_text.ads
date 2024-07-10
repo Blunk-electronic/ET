@@ -179,14 +179,14 @@ package et_text is
 		with package pac_polygons   is new pac_geometry_2.pac_geometry_1.et_polygons;
 		with package pac_offsetting is new pac_polygons.offsetting;
 		
-		size_min		: pac_geometry_2.type_distance_model_positive;
-		size_max		: pac_geometry_2.type_distance_model_positive;
-		size_default	: pac_geometry_2.type_distance_model_positive;		
+		size_min		: pac_geometry_2.type_distance_positive;
+		size_max		: pac_geometry_2.type_distance_positive;
+		size_default	: pac_geometry_2.type_distance_positive;		
 
 		-- These parameters are relevant for vector text:
-		line_width_min		: pac_geometry_2.type_distance_model_positive;
-		line_width_max		: pac_geometry_2.type_distance_model_positive;
-		line_width_default	: pac_geometry_2.type_distance_model_positive;
+		line_width_min		: pac_geometry_2.type_distance_positive;
+		line_width_max		: pac_geometry_2.type_distance_positive;
+		line_width_default	: pac_geometry_2.type_distance_positive;
 		
 	package generic_pac_text is
 		use pac_geometry_2;
@@ -198,24 +198,24 @@ package et_text is
 		-- Otherwise the linker reports lots of "undefined references" ...
 
 		
-		subtype type_text_size is pac_geometry_2.type_distance_model_positive 
+		subtype type_text_size is pac_geometry_2.type_distance_positive 
 			range size_min .. size_max; -- in millimeters
 
 		
-		subtype type_text_line_width is pac_geometry_2.type_distance_model_positive
+		subtype type_text_line_width is pac_geometry_2.type_distance_positive
 			range line_width_min .. line_width_max;
 
 		
 		-- Converts given distance to type_text_size. Raises error on excessive text size.
-		function to_text_size (size : in pac_geometry_2.type_distance_model) return type_text_size;
+		function to_text_size (size : in pac_geometry_2.type_distance) return type_text_size;
 	
 		
-		procedure validate_text_size (size : in pac_geometry_2.type_distance_model);
+		procedure validate_text_size (size : in pac_geometry_2.type_distance);
 		-- Checks whether given text size is in range of type_text_size.
 
 		
 		-- Checks whether given line width is in range of type_text_line_width
-		procedure validate_text_line_width (width : in pac_geometry_2.type_distance_model);
+		procedure validate_text_line_width (width : in pac_geometry_2.type_distance);
 
 		
 		type type_text is abstract tagged record
@@ -280,8 +280,8 @@ package et_text is
 			return string;
 
 		
-		origin_half_size : constant pac_geometry_2.type_distance_model_positive := 0.5; -- CS type_float_positive ?
-		origin_line_width : constant pac_geometry_2.type_distance_model_positive := 0.01; -- CS type_float_positive ?
+		origin_half_size : constant pac_geometry_2.type_distance_positive := 0.5; -- CS type_float_positive ?
+		origin_line_width : constant pac_geometry_2.type_distance_positive := 0.01; -- CS type_float_positive ?
 
 		
 		-- Converts HORIZONTAL/VERTICAL to 0.0/90.0 degrees:
@@ -1768,7 +1768,7 @@ package et_text is
 			rotation	: in pac_geometry_2.type_rotation;
 			position	: in pac_geometry_2.type_vector_model;
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
-			line_width	: in pac_geometry_2.type_distance_model_positive;
+			line_width	: in pac_geometry_2.type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default;
 			make_border	: in boolean := false)
 			return type_vector_text;
@@ -1803,7 +1803,7 @@ package et_text is
 		-- Returns the linewidth of the given vector text:
 		function get_linewidth (
 			text	: in type_vector_text)
-			return type_distance_model_positive;
+			return type_distance_positive;
 		
 								   
 		-- Returns the boundaries of the given vector text:		
@@ -1844,7 +1844,7 @@ package et_text is
 			borders		: pac_polygons.pac_polygon_list.list;
 
 			-- The linewidth of the line segments:
-			width		: pac_geometry_2.type_distance_model_positive := 0.0; -- CS use lower limit ?
+			width		: pac_geometry_2.type_distance_positive := 0.0; -- CS use lower limit ?
 
 			-- The boundaries of the whole vector text:
 			boundaries	: pac_geometry_1.type_boundaries;

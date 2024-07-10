@@ -118,7 +118,7 @@ package et_net_labels is
 	use pac_geometry_sch;
 	
 	-- GUI relevant only: The line width of the box that enshroudes the net name of a tag label:
-	tag_label_box_line_width : constant type_distance_model_positive := 0.2;
+	tag_label_box_line_width : constant type_distance_positive := 0.2;
 
 	
 	-- GUI relevant only: The spacing between anchor point of tag label and net name:

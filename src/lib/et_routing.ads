@@ -139,7 +139,7 @@ package et_routing is
 	type type_track is record
 		center		: type_line_vector; -- incl. start point and direction
 		width		: type_track_width; -- of the conductor (usually copper) -- CS rename to conductor_width
-		clearance	: type_distance_model_positive;
+		clearance	: type_distance_positive;
 	end record;
 
 
@@ -280,7 +280,7 @@ package et_routing is
 	
 	type type_route_distance (status : type_valid) is record
 		case status is
-			when VALID		=> distance : type_distance_model_positive;
+			when VALID		=> distance : type_distance_positive;
 			when INVALID	=> null;
 		end case;
 	end record;

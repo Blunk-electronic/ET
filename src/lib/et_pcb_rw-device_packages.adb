@@ -872,7 +872,7 @@ package body et_pcb_rw.device_packages is
 		smt_stencil_shape		: type_stencil_modification := stencil_modification_default;
 		smt_stencil_contours	: type_stencil_contours;
 		--smt_stencil_shrink		: type_stencil_shrink := stencil_shrink_default;
-		smt_stencil_shrink		: type_distance_model_positive := stencil_shrink_default;
+		smt_stencil_shrink		: type_distance_positive := stencil_shrink_default;
 
 		
 		procedure read_text is

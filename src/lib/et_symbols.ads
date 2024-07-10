@@ -139,7 +139,7 @@ package et_symbols is
 	
 	-- A port is something where a net can be attached to.
 	-- The name of a port represents the function of the port like (A14 or RST_N)
-	subtype type_port_length is type_distance_model_positive range 0.0 .. 20.0; -- unit is millimeters.
+	subtype type_port_length is type_distance_positive range 0.0 .. 20.0; -- unit is millimeters.
 	port_length_default : constant type_port_length := 2.5;
 	
 	-- The port has an electrical direction:
@@ -192,7 +192,7 @@ package et_symbols is
 	
 	-- line width
 	keyword_line_width : constant string := "line_width"; -- NOTE: do not confuse with text line width !
-	subtype type_line_width is type_distance_model_positive range 0.1 .. 10.0;
+	subtype type_line_width is type_distance_positive range 0.1 .. 10.0;
 	line_width_default : constant type_line_width := 0.15;
 	
 	-- A port is basically a line. Its start point is the port position.
@@ -206,17 +206,17 @@ package et_symbols is
 	
 	port_line_width : constant type_line_width := 0.2;				-- relevant for GUI only
 	port_circle_line_width : constant type_line_width := 0.1; 		-- relevant for GUI only
-	port_circle_radius : constant type_distance_model_positive := 0.8;	-- relevant for GUI only
+	port_circle_radius : constant type_distance_positive := 0.8;	-- relevant for GUI only
 
 	-- The distance between port end point and port name:
-	port_name_spacing : constant type_distance_model_positive := 2.0;		-- relevant for GUI only
+	port_name_spacing : constant type_distance_positive := 2.0;		-- relevant for GUI only
 
 	-- The distance between the line of a port and the terminal name:
-	terminal_name_spacing_line : constant type_distance_model_positive := 1.0; -- relevant for GUI only
+	terminal_name_spacing_line : constant type_distance_positive := 1.0; -- relevant for GUI only
 
 	-- The distance between the start point of a port and the
 	-- origin of the terminal name:
-	terminal_name_spacing_start : constant type_distance_model_positive := 1.7; -- relevant for GUI only
+	terminal_name_spacing_start : constant type_distance_positive := 1.7; -- relevant for GUI only
 
 	
 	type type_port_base is tagged record
@@ -424,8 +424,8 @@ package et_symbols is
 	-- like swap level.	
 	-- The unit name is something like "I/O Bank 3", "PWR" or "Switch 1" "Switch 2"
 
-	origin_half_size : constant type_distance_model_positive := 1.0;
-	origin_line_width : constant type_distance_model_positive := 0.05;
+	origin_half_size : constant type_distance_positive := 1.0;
+	origin_line_width : constant type_distance_positive := 0.05;
 	
 	type type_symbol_base is tagged record		
 		texts : pac_texts.list; -- the collection of texts

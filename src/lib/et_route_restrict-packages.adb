@@ -76,7 +76,7 @@ package body et_route_restrict.packages is
 	
 	function to_polygons (
 		restrict	: in type_one_side;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list
 	is
 		scratch, result : pac_polygon_list.list;

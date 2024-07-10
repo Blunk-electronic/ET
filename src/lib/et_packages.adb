@@ -127,7 +127,7 @@ package body et_packages is
 -- 		end if;
 -- 	end validate_track_clearance;
 -- 
--- 	procedure validate_track_width (track_width : in type_distance_model_positive) is
+-- 	procedure validate_track_width (track_width : in type_distance_positive) is
 -- 	-- Checks whether the given width is in range of type_track_width.
 -- 	begin
 -- 		if track_width not in type_track_width then
@@ -188,7 +188,7 @@ package body et_packages is
 	
 	function to_polygons (
 		conductors	: in type_conductor_objects;
-		tolerance	: in type_distance_model_positive)
+		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list
 	is
 		result, scratch : pac_polygon_list.list;

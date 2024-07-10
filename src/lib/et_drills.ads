@@ -45,9 +45,9 @@ package et_drills is
 	
 	
 	-- We fit the diameter in a reasonable range via a subtype:
-	drill_size_min : constant type_distance_model_positive := 0.05;
-	drill_size_max : constant type_distance_model_positive := 10.0;
-	subtype type_drill_size is type_distance_model_positive range drill_size_min .. drill_size_max;
+	drill_size_min : constant type_distance_positive := 0.05;
+	drill_size_max : constant type_distance_positive := 10.0;
+	subtype type_drill_size is type_distance_positive range drill_size_min .. drill_size_max;
 	
 	-- Checks whether given drill size is in range of type_drill_size
 	procedure validate_drill_size (drill : in type_distance_model);
