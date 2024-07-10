@@ -1697,7 +1697,7 @@ package body et_canvas is
 
 		dx, dy : type_distance_model;
 		dabs : type_distance_model;
-		angle : type_rotation_model;
+		angle : type_rotation;
 	begin
 		-- Get the current pointer/mouse position:
 		canvas.get_pointer (px, py);

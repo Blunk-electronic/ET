@@ -248,7 +248,7 @@ package et_text is
 		
 		-- Returns the rotation of a text:
 		function get_rotation (text : in type_text_fab)
-			return type_rotation_model;
+			return type_rotation;
 
 
 		
@@ -261,7 +261,7 @@ package et_text is
 		-- Rotates a text by the given angle about the origin:
 		procedure rotate_text (
 			text	: in out type_text_fab;
-			angle	: in type_rotation_model);
+			angle	: in type_rotation);
 
 		-- Moves a text by the given offset:
 		procedure move_text (
@@ -286,7 +286,7 @@ package et_text is
 		
 		-- Converts HORIZONTAL/VERTICAL to 0.0/90.0 degrees:
 		function to_rotation (rotation : in type_rotation_documentation) 
-			return pac_geometry_2.type_rotation_model;
+			return pac_geometry_2.type_rotation;
 
 		
 		-- Converts HORIZONTAL/VERTICAL to 0.0/90.0 degrees as string:
@@ -296,8 +296,8 @@ package et_text is
 		-- Adds HORIZONTAL/VERTICAL (which is 0/90 degrees) to rotation_add:
 		function "+" (
 			rotation_doc	: in type_rotation_documentation;
-			rotation_add	: in pac_geometry_2.type_rotation_model)
-			return pac_geometry_2.type_rotation_model;
+			rotation_add	: in pac_geometry_2.type_rotation)
+			return pac_geometry_2.type_rotation;
 
 		
 		-- Issues a warning that the given angle is neither 0 or 90 degrees.
@@ -316,7 +316,7 @@ package et_text is
 		-- - If rotation is 135 degree, then the return is VERTICAL.		
 		-- - If rotation is 170 degree, then the return is HORIZONTAL.		
 		-- - If rotation is 270 degree, then the return is VERTICAL.		
-		function snap (rotation : in pac_geometry_2.type_rotation_model) return type_rotation_documentation;
+		function snap (rotation : in pac_geometry_2.type_rotation) return type_rotation_documentation;
 
 		
 		-- Converts a string like "0.0" or "90.0" to HORIZONTAL or VERTICAL.
@@ -1765,7 +1765,7 @@ package et_text is
 		function vectorize_text (
 			content		: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
 			size		: in type_text_size;
-			rotation	: in pac_geometry_2.type_rotation_model;
+			rotation	: in pac_geometry_2.type_rotation;
 			position	: in pac_geometry_2.type_vector_model;
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
 			line_width	: in pac_geometry_2.type_distance_model_positive;
@@ -1826,7 +1826,7 @@ package et_text is
 		-- Rotates a vector text by the given angle about the origin:
 		procedure rotate_vector_text (
 			text	: in out type_vector_text;
-			angle	: in type_rotation_model);
+			angle	: in type_rotation);
 
 
 		-- Move a vector text by the given offset:

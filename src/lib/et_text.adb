@@ -322,7 +322,7 @@ package body et_text is
 
 		
 		function get_rotation (text : in type_text_fab)
-			return type_rotation_model
+			return type_rotation
 		is begin
 			return text.position.rotation;
 		end get_rotation;
@@ -338,7 +338,7 @@ package body et_text is
 		
 		procedure rotate_text (
 			text	: in out type_text_fab;
-			angle	: in type_rotation_model)
+			angle	: in type_rotation)
 		is begin
 			rotate_by (text.position.place, angle);
 			text.position.rotation := add (text.position.rotation, angle);
@@ -374,7 +374,7 @@ package body et_text is
 
 		
 		function to_rotation (rotation : in type_rotation_documentation) 
-			return pac_geometry_2.type_rotation_model is
+			return type_rotation is
 		begin
 			case rotation is
 				when HORIZONTAL => return zero_rotation;
@@ -396,8 +396,8 @@ package body et_text is
 		
 		function "+" (
 			rotation_doc	: in type_rotation_documentation;
-			rotation_add	: in pac_geometry_2.type_rotation_model)
-			return pac_geometry_2.type_rotation_model is
+			rotation_add	: in type_rotation)
+			return type_rotation is
 		begin
 			return to_rotation (rotation_doc) + rotation_add;
 		end;
@@ -409,9 +409,9 @@ package body et_text is
 		end;
 
 		
-		function snap (rotation : in pac_geometry_2.type_rotation_model) return type_rotation_documentation is
-			offset : constant pac_geometry_2.type_rotation_model := 45.0 - pac_geometry_2.type_rotation_model'small;
-			r1 : pac_geometry_2.type_rotation_model;
+		function snap (rotation : in type_rotation) return type_rotation_documentation is
+			offset : constant type_rotation := 45.0 - type_rotation'small;
+			r1 : type_rotation;
 			r2 : float;
 			r3 : integer;
 		begin
@@ -426,7 +426,7 @@ package body et_text is
 	
 		
 		function to_rotation_doc (rotation : in string) return type_rotation_documentation is
-			r : constant pac_geometry_2.type_rotation_model := to_rotation (rotation);
+			r : constant type_rotation := to_rotation (rotation);
 		begin
 			if r = zero_rotation then
 				return HORIZONTAL;
@@ -494,7 +494,7 @@ package body et_text is
 		function vectorize_text (
 			content		: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
 			size		: in type_text_size;
-			rotation	: in pac_geometry_2.type_rotation_model; 
+			rotation	: in type_rotation; 
 			position	: in pac_geometry_2.type_vector_model; -- the anchor point of the text (where the origin is)
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
 			line_width	: in pac_geometry_2.type_distance_model_positive;
@@ -1053,7 +1053,7 @@ package body et_text is
 
 		procedure rotate_vector_text (
 			text	: in out type_vector_text;
-			angle	: in type_rotation_model)
+			angle	: in type_rotation)
 		is
 			angle_float : constant type_angle := type_angle (angle);
 			

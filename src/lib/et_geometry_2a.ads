@@ -59,7 +59,7 @@ generic
 
 	axis_min, axis_max : type_distance_model;
 
-	type type_rotation_model is delta <> digits <>;
+	type type_rotation is delta <> digits <>;
 	
 	
 package et_geometry_2a is
@@ -195,30 +195,30 @@ package et_geometry_2a is
 
 -- ROTATION / ANGLE:
 	
-	zero_rotation : constant type_rotation_model := 0.0;
+	zero_rotation : constant type_rotation := 0.0;
 
 	
 	-- Converts the given rotation/angle to a string:
 	function to_string (
-		rotation : in type_rotation_model)
+		rotation : in type_rotation)
 		return string;
 
 
 	function to_rotation (
 		rotation : in string) 
-		return type_rotation_model;
+		return type_rotation;
 
 
-	-- Converts a float number to type_rotation_model by rounding
+	-- Converts a float number to type_rotation by rounding
 	-- according to the bankers rule:
 	-- Use it !!!!!
 	function to_rotation (
 		f : in type_float)
-		return type_rotation_model;
+		return type_rotation;
 
 
 	function to_angle (
-		a : in type_rotation_model)
+		a : in type_rotation)
 		return type_float;
 
 	
@@ -227,8 +227,8 @@ package et_geometry_2a is
 	-- If result greater 360 degree then 360 degree is subtracted from result.
 	-- If result less than 360 degree then 360 degree is added to the result.
 	function add (
-		left, right : in type_rotation_model) 
-		return type_rotation_model;
+		left, right : in type_rotation) 
+		return type_rotation;
 
 	
 
@@ -316,14 +316,14 @@ package et_geometry_2a is
 	-- Changes point.x and point.y only.
 	procedure rotate_by (
 		point		: in out type_vector_model;
-		rotation	: in type_rotation_model);
+		rotation	: in type_rotation);
 
 
 	-- Rotates the given point TO the given angle about the origin.
 	-- Changes point.x and point.y only.
 	procedure rotate_to (
 		point		: in out type_vector_model;
-		rotation	: in type_rotation_model);
+		rotation	: in type_rotation);
 	
 
 	
@@ -367,7 +367,7 @@ package et_geometry_2a is
 	-- point p1 to the point p2. Uses internally a float type:
 	function get_angle (
 		p1, p2 : in type_vector_model)
-		return type_rotation_model;
+		return type_rotation;
 
 
 	-- Returns the rotation of the given point about the origin.
@@ -375,7 +375,7 @@ package et_geometry_2a is
 	-- if point is (-1/-1) then the return is -135 degree.
 	function get_rotation ( -- CS rename to get_rotation_about_origin
 		point : in type_vector_model)
-		return type_rotation_model;
+		return type_rotation;
 
 
 	
@@ -503,7 +503,7 @@ package et_geometry_2a is
 	-- Moves a point into direction by distance.
 	function move (
 		point		: in type_vector_model;
-		direction	: in type_rotation_model;
+		direction	: in type_rotation;
 		distance	: in type_distance_model_positive;
 		clip		: in boolean := false)
 		return type_vector_model;
@@ -706,7 +706,7 @@ package et_geometry_2a is
 	-- Rotates a line about the origin by the given rotation.
 	procedure rotate_by (
 		line		: in out type_line;
-		rotation	: in type_rotation_model);
+		rotation	: in type_rotation);
 
 	
 
@@ -896,7 +896,7 @@ package et_geometry_2a is
 	-- Rotates an arc about the origin by the given rotation.
 	procedure rotate_by (
 		arc			: in out type_arc;
-		rotation	: in type_rotation_model);
+		rotation	: in type_rotation);
 
 
 	
@@ -1085,7 +1085,7 @@ package et_geometry_2a is
 
 	procedure rotate_by (
 		circle		: in out type_circle;
-		rotation	: in type_rotation_model);
+		rotation	: in type_rotation);
 
 	
 	-- Returns true if the given point sits on the given circle circumfence.
@@ -1199,7 +1199,7 @@ package et_geometry_2a is
 	-- its own center:
 	type type_position is tagged record
 		place 		: type_vector_model := origin;
-		rotation	: type_rotation_model := zero_rotation;
+		rotation	: type_rotation := zero_rotation;
 	end record;
 
 
@@ -1222,7 +1222,7 @@ package et_geometry_2a is
 
 	function to_position (
 		point		: in type_vector_model;
-		rotation	: in type_rotation_model)
+		rotation	: in type_rotation)
 		return type_position'class;
 
 
@@ -1240,7 +1240,7 @@ package et_geometry_2a is
 	-- Sets the rotation of a position. (position.rotation)
 	procedure set ( -- CS rename to set_rotation
 		position	: in out type_position;
-		rotation	: in type_rotation_model);
+		rotation	: in type_rotation);
 
 
 	function get_x (
@@ -1258,14 +1258,14 @@ package et_geometry_2a is
 	-- Returns the rotation of the given position.
 	function get_rotation (
 		position : in type_position) 
-		return type_rotation_model;
+		return type_rotation;
 
 
 	-- Changes the rotation of the given position by the given offset.
 	-- Preserves x/y. Changes position.rotation only.
 	procedure rotate_about_itself (
 		position	: in out type_position;
-		offset		: in type_rotation_model);
+		offset		: in type_rotation);
 
 
 	

@@ -39,6 +39,7 @@ with ada.text_io;				use ada.text_io;
 -- with ada.characters.handling;	use ada.characters.handling;
 -- with et_text;
 -- with et_meta;
+-- with et_canvas_board_2.
 
 separate (et_canvas_board_2)
 
@@ -50,61 +51,61 @@ procedure draw_drawing_frame is
 	f : type_frame_pcb := element (current_active_module).board.frame;
 	-- CS use query_element instead
 
-	-- This is a temporarily line that is used to
-	-- draw all the individual lines of the frame:
-	l : pac_geometry_2.type_line;
-
-
-	-- This procedure draws the outer border of the frame:
-	procedure draw_border is
-		-- Get the width of the frame:
-		w : constant type_distance_model_positive := 
-			type_distance_model_positive (f.frame.size.x);
-
-		-- Get the height of the frame:
-		h : constant type_distance_model_positive := 
-			type_distance_model_positive (f.frame.size.y);
-
-
-		-- Draws the temporarily line. Assumes that the 
-		-- lower-left corner of the frame is at (0;0) as it
-		-- is custom for schematic frames:
-		procedure draw_line is begin
-			-- The width of 0.0 has no meaning because 
-			-- the argument do_stroke is false by default
-			-- (see specs of draw_line):
-			draw_line (
-				line		=> l,
-				pos			=> origin_zero_rotation, -- lower-left corner
-				width		=> 0.0);
-		end draw_line;
-		
-	begin
-		set_linewidth (linewidth_2);
-
-		-- Assemble the lower line:
-		l.start_point := (0.0, 0.0);
-		l.end_point := (w, 0.0);
-		draw_line;
-
-		-- Assemble the right line:
-		l.start_point := (w, 0.0);
-		l.end_point := (w, h);
-		draw_line;
-
-		-- Assemble the upper line:
-		l.start_point := (w, h);
-		l.end_point := (0.0, h);
-		draw_line;
-
-		-- Assemble the left line:
-		l.start_point := (0.0, h);
-		l.end_point := (0.0, 0.0);
-		draw_line;
-
-		stroke;
-	end draw_border;
-
+-- 	-- This is a temporarily line that is used to
+-- 	-- draw all the individual lines of the frame:
+-- 	l : pac_geometry_2.type_line;
+-- 
+-- 
+-- 	-- This procedure draws the outer border of the frame:
+-- 	procedure draw_border is
+-- 		-- Get the width of the frame:
+-- 		w : constant type_distance_model_positive := 
+-- 			type_distance_model_positive (f.frame.size.x);
+-- 
+-- 		-- Get the height of the frame:
+-- 		h : constant type_distance_model_positive := 
+-- 			type_distance_model_positive (f.frame.size.y);
+-- 
+-- 
+-- 		-- Draws the temporarily line. Assumes that the 
+-- 		-- lower-left corner of the frame is at (0;0) as it
+-- 		-- is custom for schematic frames:
+-- 		procedure draw_line is begin
+-- 			-- The width of 0.0 has no meaning because 
+-- 			-- the argument do_stroke is false by default
+-- 			-- (see specs of draw_line):
+-- 			draw_line (
+-- 				line		=> l,
+-- 				pos			=> origin_zero_rotation, -- lower-left corner
+-- 				width		=> 0.0);
+-- 		end draw_line;
+-- 		
+-- 	begin
+-- 		set_linewidth (linewidth_2);
+-- 
+-- 		-- Assemble the lower line:
+-- 		l.start_point := (0.0, 0.0);
+-- 		l.end_point := (w, 0.0);
+-- 		draw_line;
+-- 
+-- 		-- Assemble the right line:
+-- 		l.start_point := (w, 0.0);
+-- 		l.end_point := (w, h);
+-- 		draw_line;
+-- 
+-- 		-- Assemble the upper line:
+-- 		l.start_point := (w, h);
+-- 		l.end_point := (0.0, h);
+-- 		draw_line;
+-- 
+-- 		-- Assemble the left line:
+-- 		l.start_point := (0.0, h);
+-- 		l.end_point := (0.0, 0.0);
+-- 		draw_line;
+-- 
+-- 		stroke;
+-- 	end draw_border;
+-- 
 	
 	
 -- 	procedure draw_cam_markers is
@@ -338,7 +339,7 @@ begin
 	set_color_frame;
 
 	-- outer border:
-	draw_border;
+	-- draw_border (f.frame.size);
 
 		-- title block lines
 		--pac_lines.iterate (self.get_frame.title_block_pcb.lines, query_line'access);

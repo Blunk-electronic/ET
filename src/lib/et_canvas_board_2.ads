@@ -78,7 +78,8 @@ with et_project.modules;			use et_project.modules;
 -- with et_frames;
 
 -- with et_canvas_general;				use et_canvas_general;
-with et_canvas;
+-- with et_canvas;
+with et_canvas.drawing_frame_general;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 
@@ -135,6 +136,8 @@ package et_canvas_board_2 is
 	use pac_canvas;	
 	use et_pcb_coordinates_2.pac_geometry_2;
 
+	package pac_drawing_frame_2 is new pac_canvas.drawing_frame_general;
+	
 
 	-- This procedure parses the whole database of model objects
 	-- and the primitive objects of the drawing frame,

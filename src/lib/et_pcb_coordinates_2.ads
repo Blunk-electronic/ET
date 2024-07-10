@@ -121,7 +121,7 @@ package et_pcb_coordinates_2 is
 		type_distance_model		=> type_distance_model,
 		axis_max				=> +1_000.0,
 		axis_min				=> -1_000.0,
-		type_rotation_model		=> type_rotation_model
+		type_rotation			=> type_rotation_model
 		);
 	
 	use pac_geometry_2;
