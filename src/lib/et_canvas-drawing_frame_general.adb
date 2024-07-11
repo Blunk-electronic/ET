@@ -48,9 +48,8 @@ package body et_canvas.drawing_frame_general is
 
 	
 	
-	-- This procedure draws the outer border of the frame:
-	procedure draw_border (
-		size	: in type_frame_size)
+	procedure draw_frame (
+		frame : in type_frame_general)
 	is
 		-- This is a temporarily line that is used to
 		-- draw all the individual lines of the frame:
@@ -58,51 +57,97 @@ package body et_canvas.drawing_frame_general is
 
 		-- Get the width of the frame:
 		w : constant type_distance_positive := 
-			type_distance_positive (size.x);
+			type_distance_positive (frame.size.x);
 
 		-- Get the height of the frame:
 		h : constant type_distance_positive := 
-			type_distance_positive (size.y);
+			type_distance_positive (frame.size.y);
 
+		-- Get the position of the lower-left corner
+		-- of the frame:
+		p : constant pac_geometry.type_position := (
+			place => (
+				x => type_distance_positive (frame.position.x),
+				y => type_distance_positive (frame.position.y)),
+			rotation => zero_rotation);
 
-		-- Draws the temporarily line. Assumes that the 
-		-- lower-left corner of the frame is at (0;0) as it
-		-- is custom for schematic frames:
+		b : constant type_distance_positive := 
+			type_distance_positive (frame.border_width);
+
+		
+		-- Draws the temporarily line. Takes into account
+		-- the position of the lower-left corner of the frame:
 		procedure draw_line is begin
 			-- The width of 0.0 has no meaning because 
 			-- the argument do_stroke is false by default
 			-- (see specs of draw_line):
 			draw_line (
 				line		=> l,
-				pos			=> origin_zero_rotation, -- lower-left corner
+				pos			=> p,
 				width		=> 0.0);
 		end draw_line;
+
+
+		procedure outer_border is begin
+			set_linewidth (linewidth_2);
+
+			-- Assemble the lower line:
+			l.start_point := (0.0, 0.0);
+			l.end_point := (w, 0.0);
+			draw_line;
+
+			-- Assemble the right line:
+			l.start_point := (w, 0.0);
+			l.end_point := (w, h);
+			draw_line;
+
+			-- Assemble the upper line:
+			l.start_point := (w, h);
+			l.end_point := (0.0, h);
+			draw_line;
+
+			-- Assemble the left line:
+			l.start_point := (0.0, h);
+			l.end_point := (0.0, 0.0);
+			draw_line;
+
+			stroke;
+		end outer_border;
+
+
+		procedure inner_border is begin
+			set_linewidth (linewidth_2);
+
+			-- Assemble the lower line:
+			l.start_point := (b, b);
+			l.end_point := (w - b, b);
+			draw_line;
+
+			-- Assemble the right line:
+			l.start_point := (w - b, b);
+			l.end_point := (w - b, h - b);
+			draw_line;
+
+			-- Assemble the upper line:
+			l.start_point := (w - b, h - b);
+			l.end_point := (b, h - b);
+			draw_line;
+
+			-- Assemble the left line:
+			l.start_point := (b, h - b);
+			l.end_point := (b, b);
+			draw_line;
+
+			stroke;
+		end inner_border;
+
+		
 		
 	begin
-		set_linewidth (linewidth_2);
+		outer_border;
 
-		-- Assemble the lower line:
-		l.start_point := (0.0, 0.0);
-		l.end_point := (w, 0.0);
-		draw_line;
-
-		-- Assemble the right line:
-		l.start_point := (w, 0.0);
-		l.end_point := (w, h);
-		draw_line;
-
-		-- Assemble the upper line:
-		l.start_point := (w, h);
-		l.end_point := (0.0, h);
-		draw_line;
-
-		-- Assemble the left line:
-		l.start_point := (0.0, h);
-		l.end_point := (0.0, 0.0);
-		draw_line;
-
-		stroke;
-	end draw_border;
+		inner_border;
+	end draw_frame;
 
 
 	

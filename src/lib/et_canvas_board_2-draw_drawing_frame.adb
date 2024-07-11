@@ -52,7 +52,7 @@ procedure draw_drawing_frame is
 	f : type_frame_pcb := element (current_active_module).board.frame;
 	-- CS use query_element instead
 
-	
+	frame_general : type_frame_general := type_frame_general (f.frame);
 	
 -- 	procedure draw_cam_markers is
 -- 		cms : constant type_cam_markers := self.get_frame.title_block_pcb.cam_markers;
@@ -284,8 +284,8 @@ begin
 
 	set_color_frame;
 
-	-- outer border:
-	draw_border (f.frame.size); -- CS position 
+	-- Draw general things of a frema:
+	draw_frame (frame_general);
 
 		-- title block lines
 		--pac_lines.iterate (self.get_frame.title_block_pcb.lines, query_line'access);

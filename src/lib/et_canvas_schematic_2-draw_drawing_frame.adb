@@ -51,6 +51,8 @@ procedure draw_drawing_frame is
 	-- CS use query_element instead
 
 
+	frame_general : type_frame_general := type_frame_general (f.frame);
+		
 	
 -- 	procedure draw_additional_placeholders is
 -- 		
@@ -109,7 +111,7 @@ begin
 	set_color_frame;
 
 	-- outer border:
-	draw_border (f.frame.size);
+	draw_frame (frame_general);
 
 		
 		-- TITLE BLOCK

@@ -51,10 +51,11 @@ package et_canvas.drawing_frame_general is
 	procedure dummy_2;
 
 
-	-- This procedure draws the outer border of the frame:
-	procedure draw_border (
-		size	: in type_frame_size);
-		-- CS pass frame position
+	-- This procedure draws the outer and inner border
+	-- and the quadrant bars of the frame:
+	procedure draw_frame (
+		frame : in type_frame_general);
+
 	
 end et_canvas.drawing_frame_general;
 
