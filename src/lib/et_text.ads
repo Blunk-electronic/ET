@@ -53,6 +53,7 @@ with et_geometry_1.et_polygons.union;
 with et_geometry_2a;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
+with et_logical_pixels;			use et_logical_pixels;
 
 
 package et_text is
@@ -201,6 +202,18 @@ package et_text is
 		subtype type_text_size is pac_geometry.type_distance_positive 
 			range size_min .. size_max; -- in millimeters
 
+
+
+		
+		conversion_factor_mm_to_pt : constant := 1.53; -- CS use exact factor
+
+		-- Converts a given text size (in mm) to size in points:
+		function to_points (size : in type_text_size)
+			return type_logical_pixels;
+
+
+
+		
 		
 		subtype type_text_line_width is pac_geometry.type_distance_positive
 			range line_width_min .. line_width_max;
@@ -208,7 +221,10 @@ package et_text is
 		
 		-- Converts given distance to type_text_size. Raises error on excessive text size.
 		function to_text_size (size : in pac_geometry.type_distance) return type_text_size;
-	
+
+		
+
+		
 		
 		procedure validate_text_size (size : in pac_geometry.type_distance);
 		-- Checks whether given text size is in range of type_text_size.

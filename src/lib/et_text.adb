@@ -237,6 +237,16 @@ package body et_text is
 	
 	package body generic_pac_text is
 
+
+		function to_points (size : in type_text_size)
+			return type_logical_pixels
+		is begin
+			return type_logical_pixels (size) * conversion_factor_mm_to_pt;
+		end to_points;
+
+
+
+		
 		-- With this line uncommented the linker does not output any errors:
 		function to_text_size (size : in pac_geometry.type_distance) return type_text_size is
 
@@ -272,6 +282,7 @@ package body et_text is
 			return size;
 		end to_text_size;
 		
+
 		
 		procedure validate_text_size (size : in pac_geometry.type_distance) is
 		begin
