@@ -141,12 +141,184 @@ package body et_canvas.drawing_frame_general is
 			stroke;
 		end inner_border;
 
+
+		procedure sector_delimiters is
+
+			sector_width  : constant type_distance_positive := 
+				(w - 2 * b) / type_distance_positive (frame.sectors.columns);
+			
+			sector_height : constant type_distance_positive := 
+				(h - 2 * b) / type_distance_positive (frame.sectors.rows);
+			
+-- 			use et_text;
+-- 			
+-- 			procedure draw_index (
+-- 				content	: in pac_text_content.bounded_string;
+-- 				pos		: in type_vector_model) 
+-- 			is begin
+-- 				draw_text (
+-- 					content		=> content,
+-- 					size		=> type_distance_positive (font_indexes_size),
+-- 					font		=> font_indexes,
+-- 					position	=> pos,
+-- 					origin		=> false,
+-- 					rotation	=> 0.0,
+-- 					alignment	=> (CENTER, CENTER));
+-- 			end draw_index;
+			
+			x, y  	: type_distance_positive;
+			xo, yo	: pac_geometry.type_distance;
+			
+			
+		begin -- draw_sector_delimiters
+			
+			set_linewidth (linewidth_1);
+
+			
+			-- COLUMN DELIMITERS:
+			-- The lines are drawn upwards, from bottom to top.
+			for i in 1 .. frame.sectors.columns - 1 loop
+
+				-- compute x coordinate
+				x := type_distance_positive (i) * sector_width
+					+ b; -- offset to the right
+
+				-- LOWER BORDER
+				
+				-- draw the line bottom-up:
+				-- lower end:
+				l.start_point := type_vector_model (set (
+					x => x,
+					y => zero));
+
+				-- upper end:
+				l.end_point := type_vector_model (set (
+					x => x,
+					y => b));
+
+				draw_line;
+
+
+				
+				-- UPPER BORDER
+				-- draw the line bottom-up:
+				-- lower end:
+				l.start_point := type_vector_model (set (
+					x => x,
+					y => h - b));
+
+				-- upper end:
+				l.end_point := type_vector_model (set (
+					x => x,
+					y => h));
+				
+				draw_line;
+			end loop;
+
+			
+			-- ROW DELIMITERS:
+			-- The lines are drawn from the left to the right.
+			for i in 1 .. frame.sectors.rows - 1 loop
+
+				-- compute y coordinate
+				y := type_distance_positive (i) * sector_height
+					+ b; -- offset upwards
+
+				-- LEFT BORDER
+				
+				-- draw the line from the left to the right:
+				-- left end:
+				l.start_point := type_vector_model (set (
+					x => zero,
+					y => y));
+
+				-- right end:
+				l.end_point := type_vector_model (set (
+					x => b,
+					y => y));
+
+				draw_line;
+				
+				-- RIGHT BORDER
+				-- draw the line from the left to the right:
+				-- left end:
+				l.start_point := type_vector_model (set (
+					x => w - b,
+					y => y));
+
+				-- right end:
+				l.end_point := type_vector_model (set (
+					x => w,
+					y => y));
+				
+				draw_line;
+			end loop;
+
+			stroke;
+
+			
+			
+			-- COLUMN INDEX:
+			y := b / 2;
+
+			-- x requires offset to the right
+			xo := b - (sector_width / 2);
+			
+			for i in 1 .. frame.sectors.columns loop
+
+				-- compute x coordinate
+				x := type_distance_positive (i) * sector_width + xo;
+				
+				-- draw index in lower border
+				-- draw_index (
+				-- 	content	=> to_content (to_string (i)),
+				-- 	pos		=> type_vector_model (set (x, y)));
+
+				-- draw index in upper border
+				-- draw_index (
+				-- 	content	=> to_content (to_string (i)),
+				-- 	pos		=> type_vector_model (set (
+				-- 				x => x,
+				-- 				y => type_distance_positive (frame_size.y) - y)));
+				
+			end loop;
+
+			
+			-- ROW INDEX:
+			x := b / 2;
+
+			-- y requires offset upwards
+			yo := b - (sector_height / 2);
+			
+			for i in 1 .. frame.sectors.rows loop
+
+				-- compute y coordinate
+				y := type_distance_positive (i) * sector_height + yo;
+				
+				-- draw index in left border
+				-- draw_index (
+				-- 	content	=> to_content (to_string (i)),
+				-- 	pos		=> type_vector_model (set (x, y)));
+
+				-- draw index in right border
+				-- draw_index (
+				-- 	content	=> to_content (to_string (i)),
+				-- 	pos		=> type_vector_model (set (
+				-- 				x => type_distance_positive (frame_size.x) - x,
+				-- 				y => y)));
+				
+			end loop;
+			
+		end sector_delimiters;
+
 		
 		
 	begin
 		outer_border;
 
 		inner_border;
+
+		sector_delimiters;
 	end draw_frame;
 
 
