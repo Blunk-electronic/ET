@@ -72,11 +72,31 @@ with et_cmd_sts;				use et_cmd_sts;
 with et_canvas_tool;			use et_canvas_tool;
 with et_logging;				use et_logging;
 
+with et_geometry_1.et_polygons;
+with et_geometry_1.et_polygons.offsetting;
+with et_geometry_2a.contours;
+with et_text;
+
 
 generic
+	canvas_name : string; -- schematic, board, package, device, symbol, ...
 	
 	with package pac_geometry is new et_geometry_2a (<>);
 	with package pac_grid is new pac_geometry.grid;
+
+	with package pac_polygons is new pac_geometry.pac_geometry_1.et_polygons;
+	with package pac_offsetting is new pac_polygons.offsetting;
+	with package pac_contours is new pac_geometry.contours;
+	
+	with package pac_text is new et_text.generic_pac_text (
+		-- The used text package must have been instantiated with
+		-- these packages:
+		pac_geometry	=> pac_geometry,
+		pac_polygons	=> pac_polygons,
+		pac_offsetting	=> pac_offsetting,
+		others			=> <>);
+
+
 	
 package et_canvas is
 	use pac_geometry;

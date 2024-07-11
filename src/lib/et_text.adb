@@ -238,7 +238,7 @@ package body et_text is
 	package body generic_pac_text is
 
 		-- With this line uncommented the linker does not output any errors:
-		function to_text_size (size : in pac_geometry_2.type_distance) return type_text_size is
+		function to_text_size (size : in pac_geometry.type_distance) return type_text_size is
 
 		-- With this line uncommented the linker outputs errors like "undefined reference ..."
 		-- function to_text_size (size : in type_distance) return type_text_size is
@@ -250,9 +250,9 @@ package body et_text is
 			-- Returns the given text size as string.
 			begin
 				if preamble then
-					return "size " & pac_geometry_2.to_string (size);
+					return "size " & pac_geometry.to_string (size);
 				else
-					return pac_geometry_2.to_string (size);
+					return pac_geometry.to_string (size);
 				end if;
 			end to_string;
 
@@ -273,7 +273,7 @@ package body et_text is
 		end to_text_size;
 		
 		
-		procedure validate_text_size (size : in pac_geometry_2.type_distance) is
+		procedure validate_text_size (size : in pac_geometry.type_distance) is
 		begin
 			if size not in type_text_size then
 				log (ERROR, "text size invalid ! Allowed range is" 
@@ -284,7 +284,7 @@ package body et_text is
 			end if;
 		end validate_text_size;
 
-		procedure validate_text_line_width (width : in pac_geometry_2.type_distance) is
+		procedure validate_text_line_width (width : in pac_geometry.type_distance) is
 		begin
 			if width not in type_text_line_width then
 				log (ERROR, "line width invalid ! Allowed range is" 
@@ -309,7 +309,7 @@ package body et_text is
 
 		
 		function get_position (text : in type_text_fab)
-			return pac_geometry_2.type_position
+			return pac_geometry.type_position
 		is begin
 			return text.position;
 		end get_position;
@@ -495,9 +495,9 @@ package body et_text is
 			content		: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !
 			size		: in type_text_size;
 			rotation	: in type_rotation; 
-			position	: in pac_geometry_2.type_vector_model; -- the anchor point of the text (where the origin is)
+			position	: in pac_geometry.type_vector_model; -- the anchor point of the text (where the origin is)
 			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
-			line_width	: in pac_geometry_2.type_distance_positive;
+			line_width	: in pac_geometry.type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default;
 			make_border	: in boolean := false)
 			return type_vector_text

@@ -76,7 +76,7 @@ with et_coordinates_2;				use et_coordinates_2;
 -- use et_coordinates.pac_geometry_sch;
 -- use et_coordinates.pac_geometry_2;
 -- 
--- with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 
 with et_project;
 with et_project.modules;			use et_project.modules;
@@ -88,8 +88,6 @@ with et_project.modules;			use et_project.modules;
 -- with et_frames;
 -- with et_text;						use et_text;
 
--- with et_canvas_general;				use et_canvas_general;
--- with et_canvas;
 with et_canvas.drawing_frame_general;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
@@ -97,10 +95,7 @@ with et_logging;					use et_logging;
 
 package et_canvas_schematic_2 is
 
-
 	
--- 	use pac_text_schematic;
--- 	
 	use et_project.modules.pac_generic_modules;
 
 
@@ -117,23 +112,14 @@ package et_canvas_schematic_2 is
 
 	
 	-- Instantiate the canvas package:
-	-- package pac_canvas is new et_canvas_general.pac_canvas (
-	-- 	canvas_name		=> "schematic", -- CS provide domain name like scripting.type_domain
-	-- 	pac_geometry_2	=> et_coordinates.pac_geometry_2,
-	-- 	pac_offsetting	=> et_coordinates.pac_polygon_offsetting,
-	-- 	pac_polygons	=> et_coordinates.pac_polygons,
-	-- 	pac_contours	=> et_coordinates.pac_contours,
-	-- 	pac_text		=> pac_text_schematic);
-
-
 	package pac_canvas is new et_canvas (
-		-- canvas_name		=> "schematic", -- CS provide domain name like scripting.type_domain
+		canvas_name		=> "schematic", -- CS provide domain name like scripting.type_domain
 		pac_geometry	=> et_coordinates_2.pac_geometry_2,
-		pac_grid		=> et_coordinates_2.pac_grid								
-		-- pac_offsetting	=> et_coordinates.pac_polygon_offsetting,
-		-- pac_polygons	=> et_coordinates.pac_polygons,
-		-- pac_contours	=> et_coordinates.pac_contours,
-		-- pac_text		=> pac_text_schematic
+		pac_grid		=> et_coordinates_2.pac_grid,								
+		pac_offsetting	=> et_coordinates_2.pac_polygon_offsetting,
+		pac_polygons	=> et_coordinates_2.pac_polygons,
+		pac_contours	=> et_coordinates_2.pac_contours,
+		pac_text		=> pac_text_schematic
 		);
 		
 	

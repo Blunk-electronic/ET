@@ -67,7 +67,7 @@ with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
 -- use et_pcb_coordinates.pac_geometry_brd;
 -- use et_pcb_coordinates.pac_geometry_2;
 
--- with et_board_shapes_and_text;		use et_board_shapes_and_text;
+with et_board_shapes_and_text;		use et_board_shapes_and_text;
 -- with et_vias;						use et_vias;
 -- with et_terminals;					use et_terminals;
 -- with et_conductor_segment;
@@ -77,8 +77,6 @@ with et_project.modules;			use et_project.modules;
 -- with et_schematic;
 -- with et_frames;
 
--- with et_canvas_general;				use et_canvas_general;
--- with et_canvas;
 with et_canvas.drawing_frame_general;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
@@ -100,36 +98,24 @@ package et_canvas_board_2 is
 	procedure update_mode_display;
 
 
-	
--- 	use pac_text_board;
--- 	
 -- 	use pac_net_name;
 
+	
 	-- This procedure should be called each time after the current active module 
 	-- changes. It calls procedures that initialize the values used in property
 	-- bars for vias, tracks, ...
 	procedure init_property_bars;
 	
-
 	
 	-- Instantiate the general canvas package:
-	-- package pac_canvas is new et_canvas_general.pac_canvas (
-	-- 	canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
-	-- 	pac_geometry_2	=> et_pcb_coordinates.pac_geometry_2,
-	-- 	pac_polygons	=> et_board_shapes_and_text.pac_polygons,
-	-- 	pac_offsetting	=> et_board_shapes_and_text.pac_polygon_offsetting,
-	-- 	pac_contours	=> et_board_shapes_and_text.pac_contours,
-	-- 	pac_text		=> et_board_shapes_and_text.pac_text_board);
-
 	package pac_canvas is new et_canvas (
-		-- canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
+		canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
 		pac_geometry	=> et_pcb_coordinates_2.pac_geometry_2,
-		pac_grid		=> et_pcb_coordinates_2.pac_grid
-		-- pac_polygons	=> et_board_shapes_and_text.pac_polygons,
-		-- pac_offsetting	=> et_board_shapes_and_text.pac_polygon_offsetting,
-		-- pac_contours	=> et_board_shapes_and_text.pac_contours,
-		-- pac_text		=> et_board_shapes_and_text.pac_text_board
-		
+		pac_grid		=> et_pcb_coordinates_2.pac_grid,
+		pac_polygons	=> et_board_shapes_and_text.pac_polygons,
+		pac_offsetting	=> et_board_shapes_and_text.pac_polygon_offsetting,
+		pac_contours	=> et_board_shapes_and_text.pac_contours,
+		pac_text		=> et_board_shapes_and_text.pac_text_board		
 		);
 
 	

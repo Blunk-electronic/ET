@@ -116,7 +116,7 @@ package et_kicad_libraries is
 
 	-- Instantiation of the text package:
 	package pac_text is new et_text.generic_pac_text (
-		pac_geometry_2		=> pac_geometry_2,
+		pac_geometry		=> pac_geometry_2,
 		pac_polygons		=> pac_polygons, -- never used, but mandatory for instantiation
 		pac_offsetting		=> pac_polygon_offsetting,
 		size_min			=> text_size_min,

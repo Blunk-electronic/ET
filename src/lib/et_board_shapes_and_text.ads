@@ -83,7 +83,7 @@ package et_board_shapes_and_text is
 	linewidth_fab_max : constant type_distance_positive := 10.0;
 	
 	package pac_text_board is new et_text.generic_pac_text (
-		pac_geometry_2		=> pac_geometry_2,
+		pac_geometry		=> pac_geometry_2,
 		pac_polygons		=> pac_polygons,											 
 		pac_offsetting		=> pac_polygon_offsetting,
 		size_min			=> 0.01,
