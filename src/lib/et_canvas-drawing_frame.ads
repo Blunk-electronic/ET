@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                                CANVAS                                    --
+--                          CANVAS DRAWING FRAME                            --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -43,12 +43,10 @@ with et_frames;					use et_frames;
 
 generic
 	
-package et_canvas.drawing_frame_general is
+package et_canvas.drawing_frame is
 	-- use pac_geometry_2;
 	-- use pac_grid;
 	
-
-	procedure dummy_2;
 
 
 	-- This procedure draws the outer and inner border
@@ -57,5 +55,5 @@ package et_canvas.drawing_frame_general is
 		frame : in type_frame_general);
 
 	
-end et_canvas.drawing_frame_general;
+end et_canvas.drawing_frame;
 

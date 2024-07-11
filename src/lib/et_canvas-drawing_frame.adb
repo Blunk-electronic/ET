@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                                CANVAS                                    --
+--                          CANVAS DRAWING FRAME                            --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -42,11 +42,9 @@
 -- 
 
 
-package body et_canvas.drawing_frame_general is
+package body et_canvas.drawing_frame is
 
-	procedure dummy_2 is begin null; end;
 
-	
 	
 	procedure draw_frame (
 		frame : in type_frame_general)
@@ -323,4 +321,4 @@ package body et_canvas.drawing_frame_general is
 
 
 	
-end et_canvas.drawing_frame_general;
+end et_canvas.drawing_frame;
