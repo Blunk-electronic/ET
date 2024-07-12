@@ -41,6 +41,8 @@
 -- with ada.strings.fixed;
 -- 
 
+-- with et_canvas.text;
+
 
 package body et_canvas.drawing_frame is
 
@@ -148,21 +150,22 @@ package body et_canvas.drawing_frame is
 			sector_height : constant type_distance_positive := 
 				(h - 2 * b) / type_distance_positive (frame.sectors.rows);
 			
--- 			use et_text;
--- 			
--- 			procedure draw_index (
--- 				content	: in pac_text_content.bounded_string;
--- 				pos		: in type_vector_model) 
--- 			is begin
--- 				draw_text (
--- 					content		=> content,
--- 					size		=> type_distance_positive (font_indexes_size),
--- 					font		=> font_indexes,
--- 					position	=> pos,
--- 					origin		=> false,
--- 					rotation	=> 0.0,
--- 					alignment	=> (CENTER, CENTER));
--- 			end draw_index;
+			use et_text;
+
+			
+			procedure draw_index (
+				content	: in pac_text_content.bounded_string;
+				pos		: in type_vector_model) 
+			is begin
+				draw_text (
+					content		=> content,
+					size		=> type_distance_positive (font_indexes_size),
+					font		=> font_indexes,
+					position	=> pos,
+					origin		=> false,
+					rotation	=> 0.0,
+					alignment	=> (CENTER, CENTER));
+			end draw_index;
 			
 			x, y  	: type_distance_positive;
 			xo, yo	: pac_geometry.type_distance;
@@ -268,16 +271,16 @@ package body et_canvas.drawing_frame is
 				x := type_distance_positive (i) * sector_width + xo;
 				
 				-- draw index in lower border
-				-- draw_index (
-				-- 	content	=> to_content (to_string (i)),
-				-- 	pos		=> type_vector_model (set (x, y)));
+				draw_index (
+					content	=> to_content (to_string (i)),
+					pos		=> type_vector_model (set (x, y)));
 
 				-- draw index in upper border
-				-- draw_index (
-				-- 	content	=> to_content (to_string (i)),
-				-- 	pos		=> type_vector_model (set (
-				-- 				x => x,
-				-- 				y => type_distance_positive (frame_size.y) - y)));
+				draw_index (
+					content	=> to_content (to_string (i)),
+					pos		=> type_vector_model (set (
+								x => x,
+								y => h - y)));
 				
 			end loop;
 
@@ -294,16 +297,16 @@ package body et_canvas.drawing_frame is
 				y := type_distance_positive (i) * sector_height + yo;
 				
 				-- draw index in left border
-				-- draw_index (
-				-- 	content	=> to_content (to_string (i)),
-				-- 	pos		=> type_vector_model (set (x, y)));
+				draw_index (
+					content	=> to_content (to_string (i)),
+					pos		=> type_vector_model (set (x, y)));
 
 				-- draw index in right border
-				-- draw_index (
-				-- 	content	=> to_content (to_string (i)),
-				-- 	pos		=> type_vector_model (set (
-				-- 				x => type_distance_positive (frame_size.x) - x,
-				-- 				y => y)));
+				draw_index (
+					content	=> to_content (to_string (i)),
+					pos		=> type_vector_model (set (
+								x => w - x,
+								y => y)));
 				
 			end loop;
 			

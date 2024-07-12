@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          CANVAS DRAWING FRAME                            --
+--                             CANVAS TEXT                                  --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -36,25 +36,24 @@
 --   history of changes:
 --
 
--- with et_logging;				use et_logging;
+-- with ada.strings.bounded;
+-- with ada.strings;
+-- with ada.strings.fixed;
+-- 
 
-with et_frames;					use et_frames;
--- with et_canvas.text;
+with et_text;					use et_text;
+
 
 generic
-	-- with package t is new text;
-	
-package et_canvas.drawing_frame is
-	-- use pac_geometry_2;
-	-- use pac_grid;
-	
-
-
-	-- This procedure draws the outer and inner border
-	-- and the quadrant bars of the frame:
-	procedure draw_frame (
-		frame : in type_frame_general);
 
 	
-end et_canvas.drawing_frame;
+package et_canvas.text is
 
+	use cairo;
+	
+	procedure dummy;
+
+
+
+	
+end et_canvas.text;

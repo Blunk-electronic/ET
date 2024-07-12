@@ -48,6 +48,9 @@ with glib;						use glib;
 with gtk.enums;					use gtk.enums;
 with gtk.main;					use gtk.main;
 
+with gtkada.types;
+
+
 package body et_canvas is
 
 -- ZOOM:
@@ -3339,8 +3342,156 @@ package body et_canvas is
 
 
 
+	
+-- TEXT:
+	
+	function to_points (size : in pac_text.type_text_size)
+		return type_logical_pixels
+	is 
+		conversion_factor_mm_to_pt : constant := 1.53; -- CS use exact factor
+	begin
+		return to_distance (size) * conversion_factor_mm_to_pt;
+	end to_points;
+
+	
+
+	function get_text_start_point (
+		extents		: in cairo.cairo_text_extents;
+		alignment	: in et_text.type_text_alignment;
+		origin		: in type_logical_pixels_vector)
+		return type_logical_pixels_vector
+	is
+		use et_text;
+		sp : type_logical_pixels_vector; -- to be returned
+	begin
+		case alignment.horizontal is
+			when LEFT => 
+				sp.x := origin.x;
+
+			when CENTER =>
+				sp.x := origin.x - to_lp (extents.width/2.0);
+
+			when RIGHT =>
+				sp.x := origin.x - to_lp (extents.width);
+		end case;
+
+		case alignment.vertical is
+			when BOTTOM => 
+				sp.y := origin.y;
+
+			when CENTER =>
+				sp.y := origin.y + to_lp (extents.height/2.0);
+
+			when TOP =>
+				sp.y := origin.y + to_lp (extents.height);
+		end case;
+
+		return sp;
+	end get_text_start_point;
+
+	
+
+	procedure draw_text (
+		content		: in et_text.pac_text_content.bounded_string;
+		size		: in pac_text.type_text_size;
+		font		: in et_text.type_font;
+		position	: in type_vector_model;
+		origin		: in boolean;		
+		rotation	: in type_rotation;
+		alignment	: in et_text.type_text_alignment)
+	is
+		use cairo;
+		use et_text;
+		use pac_text;
+
+		-- The extents of the text on the canvas:
+		text_area : aliased cairo_text_extents;
+		
+		use gtkada.types;
+		text : constant gtkada.types.chars_ptr := new_string (to_string (content));
+
+		
+		-- The bounding-box of the given text (in the model domain):
+		b : type_area;
+
+		-- The start point where we will start drawing the text
+		-- on the canvas:
+		sp : type_logical_pixels_vector;
+  
+		-- Convert the anchor point of the model to an anchor point
+		-- on the canvas:
+		o : type_logical_pixels_vector := real_to_canvas (position, S);
+
+		
+	begin
+		-- Set the font:
+		select_font_face (context, to_string (font.family), font.slant, font.weight);
+
+		-- Set the size:
+		set_font_size (context, to_gdouble (to_points (size)));
+
+		-- Set the text extents:
+		text_extents (cr => context, utf8 => text, extents => text_area'access);
+		
+-- 		put_line ("length " & gdouble'image (abs (text_area.width)));
+-- 		put_line ("height " & gdouble'image (abs (text_area.height)));
+
+		-- Depending on alignment, compute position to start drawing the text.
+		-- NOTE: The start point is the lower right corner of the text.
+		sp := get_text_start_point (
+				extents		=> text_area,
+				alignment	=> alignment,
+				origin		=> o);
+
+		-- Now we build the bounding box of the text. The bounding box
+		-- is the text enclosing rectangle that exists in the model plane.
+		-- In the model plane the y-axis increases downwards.
+		-- The bounding box position is where it has its upper left corner.
+		-- To keep things simple, we assume the largest possible bonding box
+		-- for the text. This way the text will be inside the box regardless
+		-- of alignment and rotation:
+		-- bounding_box.x := type_float (ox - (text_area.width));
+		-- bounding_box.y := type_float (oy - (text_area.width));
+		-- bounding_box.width	:= type_float (2.0 * text_area.width);
+		-- bounding_box.height	:= type_float (2.0 * text_area.width);
+
+		b.position := canvas_to_real (sp, S);
+		b.width  := to_distance (to_lp (text_area.width));
+		b.height := to_distance (to_lp (text_area.height));
+
+		-- Do the area check. If the bounding-box of the text
+		-- is inside the visible area then draw the text. Otherwise
+		-- nothing will be drawn:
+		if areas_overlap (visible_area, b) and then
+
+			-- Do the size check. If the bounding-box is greater
+			-- (either in width or heigth) than the visiblity threshold
+			-- then draw the text. Otherwise nothing will be drawn:
+			above_visibility_threshold (b) then
+
+			-- CS draw origin
+
+			-- CS save (context);
+			
+-- 			-- In cairo all angles increase in clockwise direction.
+-- 			-- Since our angles increase in counterclockwise direction (mathematically)
+-- 			-- the angle must change the sign.		
+-- 			translate (context.cr, ox, oy);
+-- 			rotate (context.cr, gdouble (to_radians (- type_angle (rotation))));
+-- 			translate (context.cr, -ox, -oy);
+			
+			-- draw the text. start at calculated start position
+			move_to (context, to_gdouble (sp.x), to_gdouble (sp.y));
+
+			show_text (context, to_string (content));
+
+			-- CS restore (context);
+		end if;
+
+	end draw_text;
 
 
+	
 	
 	
 

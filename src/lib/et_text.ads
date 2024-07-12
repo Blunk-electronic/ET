@@ -205,15 +205,6 @@ package et_text is
 
 
 		
-		conversion_factor_mm_to_pt : constant := 1.53; -- CS use exact factor
-
-		-- Converts a given text size (in mm) to size in points:
-		function to_points (size : in type_text_size)
-			return type_logical_pixels;
-
-
-
-		
 		
 		subtype type_text_line_width is pac_geometry.type_distance_positive
 			range line_width_min .. line_width_max;

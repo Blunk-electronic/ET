@@ -2,9 +2,9 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          CANVAS DRAWING FRAME                            --
+--                             CANVAS TEXT                                  --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2024                                                       --
 -- Mario Blunk / Blunk electronic                                           --
@@ -36,25 +36,16 @@
 --   history of changes:
 --
 
--- with et_logging;				use et_logging;
-
-with et_frames;					use et_frames;
--- with et_canvas.text;
-
-generic
-	-- with package t is new text;
-	
-package et_canvas.drawing_frame is
-	-- use pac_geometry_2;
-	-- use pac_grid;
-	
+-- with ada.strings.bounded;
+-- with ada.strings;
+-- with ada.strings.fixed;
+-- 
 
 
-	-- This procedure draws the outer and inner border
-	-- and the quadrant bars of the frame:
-	procedure draw_frame (
-		frame : in type_frame_general);
+package body et_canvas.text is
+
+	procedure dummy is begin null; end;
+
 
 	
-end et_canvas.drawing_frame;
-
+end et_canvas.text;

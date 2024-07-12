@@ -1190,8 +1190,31 @@ package et_canvas is
 		width		: in type_distance_positive;
 		do_stroke	: in boolean := false);
 
+
+
+-- TEXT:
+
+
+	-- Converts a given text size (in mm) to size in points
+	-- according to the current zoom-factor:
+	function to_points (size : in pac_text.type_text_size)
+		return type_logical_pixels;
+
 	
 	
+	-- Draws a text in the drawing plane.
+	-- Draws the text in case it is inside the global area or if the
+	-- text intersects the global area.
+	procedure draw_text (
+		content		: in et_text.pac_text_content.bounded_string;
+		size		: in pac_text.type_text_size;
+		font		: in et_text.type_font;
+		position	: in type_vector_model; -- the anchor point in the model
+		origin		: in boolean; -- when true, an origin is drawn at the anchor point
+		rotation	: in type_rotation;
+		alignment	: in et_text.type_text_alignment); -- the height of the drawing frame
+
+
 	
 private
 
