@@ -583,6 +583,11 @@ package et_geometry_2a is
 		return type_vector_model;
 	
 
+	-- Returns the diagonal of the given area:
+	function get_diagonal (
+		area	: in type_area)
+		return type_distance_positive;
+		
 	
 	-- Returns true if the given point lies inside the given
 	-- area or on its border. 

@@ -1100,6 +1100,19 @@ package body et_geometry_2a is
 	end get_center;
 
 
+	function get_diagonal (
+		area : type_area)
+		return type_distance_positive
+	is 
+		d : type_distance_positive;
+		w : type_float_positive := type_float_positive (area.width);
+		h : type_float_positive := type_float_positive (area.height);
+	begin
+		d := type_distance_positive (sqrt (w ** 2.0 + h ** 2.0));		
+		return d;
+	end get_diagonal;
+
+
 	
 	function in_area (
 		point	: type_vector_model;
