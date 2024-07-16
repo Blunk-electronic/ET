@@ -1200,6 +1200,34 @@ package et_canvas is
 	function to_points (size : in pac_text.type_text_size)
 		return type_logical_pixels;
 
+
+
+	
+	
+	type type_align_mode_vertical is (
+		-- In this mode the text is aligned basing on
+		-- the y-bearing and used size exlusively.
+		-- There is no baseline. Uppercase and lowercase letters
+		-- are not aligned with a baseline:
+		MODE_ALIGN_BY_USED_SPACE,
+
+		-- In this mode the text is aligned relative to
+		-- the baseline and based to the real text size
+		-- specified in the model domain:
+		MODE_ALIGN_RELATIVE_TO_BASELINE);
+
+	
+	-- This function computes the canvas point where
+	-- a text of given extents is to be drawn:
+	function get_text_start_point (
+		extents		: in cairo.cairo_text_extents;
+		alignment	: in et_text.type_text_alignment;
+		anchor		: in type_vector_model; -- the anchor point of the text
+		mode_v		: in type_align_mode_vertical;
+		size		: in pac_text.type_text_size) -- the size of the text
+		return type_logical_pixels_vector;
+
+	
 	
 	
 	-- Draws a text in the drawing plane.

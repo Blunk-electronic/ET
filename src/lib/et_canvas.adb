@@ -3358,33 +3358,74 @@ package body et_canvas is
 	function get_text_start_point (
 		extents		: in cairo.cairo_text_extents;
 		alignment	: in et_text.type_text_alignment;
-		origin		: in type_logical_pixels_vector)
+		anchor		: in type_vector_model;
+		mode_v		: in type_align_mode_vertical;
+		size		: in pac_text.type_text_size)
 		return type_logical_pixels_vector
 	is
 		use et_text;
+		origin_canvas : type_logical_pixels_vector;
+		
 		sp : type_logical_pixels_vector; -- to be returned
+		
+		x_bearing : constant type_logical_pixels := to_lp (extents.x_bearing);
+		y_bearing : constant type_logical_pixels := to_lp (extents.y_bearing);
+
+		width  : constant type_logical_pixels := to_lp (extents.width);
+		height : constant type_logical_pixels := to_lp (extents.height);
+		
 	begin
+		-- The given anchor point of the text is in the model domain.
+		-- Convert it to a canvas point (according to current zoom-factor): 
+		origin_canvas := real_to_canvas (anchor, S);
+		
 		case alignment.horizontal is
 			when LEFT => 
-				sp.x := origin.x;
+				sp.x := origin_canvas.x;
 
 			when CENTER =>
-				sp.x := origin.x - to_lp (extents.width/2.0);
+				sp.x := origin_canvas.x - width / 2.0;
 
 			when RIGHT =>
-				sp.x := origin.x - to_lp (extents.width);
+				sp.x := origin_canvas.x - width;
 		end case;
 
+		
 		case alignment.vertical is
-			when BOTTOM => 
-				sp.y := origin.y;
+			when BOTTOM =>
+				case mode_v is
+					when MODE_ALIGN_BY_USED_SPACE =>
+						sp.y := origin_canvas.y - y_bearing - height;
 
+					when MODE_ALIGN_RELATIVE_TO_BASELINE =>
+						sp.y := origin_canvas.y;
+				end case;
+
+				
 			when CENTER =>
-				sp.y := origin.y + to_lp (extents.height/2.0);
+				case mode_v is
+					when MODE_ALIGN_BY_USED_SPACE =>
+						sp.y := origin_canvas.y - y_bearing - height / 2.0;
 
+					when MODE_ALIGN_RELATIVE_TO_BASELINE =>
+						sp.y := origin_canvas.y + to_distance (size) / 2.0;
+				end case;
+
+				
 			when TOP =>
-				sp.y := origin.y + to_lp (extents.height);
+				case mode_v is
+					when MODE_ALIGN_BY_USED_SPACE =>
+						sp.y := origin_canvas.y - y_bearing;
+
+					when MODE_ALIGN_RELATIVE_TO_BASELINE =>
+						sp.y := origin_canvas.y + to_distance (size);
+				end case;
 		end case;
+
+		--put_line ("x_bearing " & to_string (x_bearing));
+		--put_line ("y_bearing " & to_string (y_bearing));
+		
+		sp.x := sp.x - x_bearing;
 
 		return sp;
 	end get_text_start_point;
@@ -3413,14 +3454,13 @@ package body et_canvas is
 		
 		-- The bounding-box of the given text (in the model domain):
 		b : type_area;
+  
 
+		d : type_distance_positive;
+		
 		-- The start point where we will start drawing the text
 		-- on the canvas:
 		sp : type_logical_pixels_vector;
-  
-		-- Convert the anchor point of the model to an anchor point
-		-- on the canvas:
-		o : type_logical_pixels_vector := real_to_canvas (position, S);
 
 		
 	begin
@@ -3437,28 +3477,42 @@ package body et_canvas is
 -- 		put_line ("height " & gdouble'image (abs (text_area.height)));
 
 		-- Depending on alignment, compute position to start drawing the text.
-		-- NOTE: The start point is the lower right corner of the text.
+		-- NOTE: The start point is the upper-right corner of the text.
 		sp := get_text_start_point (
 				extents		=> text_area,
 				alignment	=> alignment,
-				origin		=> o);
-
-		-- Now we build the bounding box of the text. The bounding box
-		-- is the text enclosing rectangle that exists in the model plane.
-		-- In the model plane the y-axis increases downwards.
-		-- The bounding box position is where it has its upper left corner.
-		-- To keep things simple, we assume the largest possible bonding box
-		-- for the text. This way the text will be inside the box regardless
-		-- of alignment and rotation:
-		-- bounding_box.x := type_float (ox - (text_area.width));
-		-- bounding_box.y := type_float (oy - (text_area.width));
-		-- bounding_box.width	:= type_float (2.0 * text_area.width);
-		-- bounding_box.height	:= type_float (2.0 * text_area.width);
-
-		b.position := canvas_to_real (sp, S);
+				anchor		=> position,
+				mode_v		=> MODE_ALIGN_RELATIVE_TO_BASELINE,
+				size		=> size
+				);
+		
+		
+		-- Build a bounding-box of the text using the 
+		-- canvas area (in logical pixels) occupied by the text:
 		b.width  := to_distance (to_lp (text_area.width));
 		b.height := to_distance (to_lp (text_area.height));
 
+		put_line ("b " & to_string (b));
+		
+		-- Since the text can be rotated and aligned in various
+		-- ways, we extend the bounding-box so that it encloses the
+		-- text in any case. Because we need a fast and coarse solution,
+		-- we assume a circular area that covers all kinds of rotation
+		-- and alignment.
+
+		-- Get the diagnoal of the bounding-box. This forms the widest
+		-- possible range around the anchor point:
+		d := get_diagonal (b);
+
+		-- The bounding-box lowest-left corner is then:
+		b.position.x := position.x - d;
+		b.position.y := position.y - d;
+
+		-- Extend the bounding-box so that it encloses the circular
+		-- area around the anchor point:
+		b.width  := 2.0 * d;
+		b.height := 2.0 * d;
+		
 		-- Do the area check. If the bounding-box of the text
 		-- is inside the visible area then draw the text. Otherwise
 		-- nothing will be drawn:
@@ -3482,6 +3536,9 @@ package body et_canvas is
 			
 			-- draw the text. start at calculated start position
 			move_to (context, to_gdouble (sp.x), to_gdouble (sp.y));
+			-- move_to (context, 
+			-- 	to_gdouble (sp.x) - text_area.x_bearing,
+			-- 	to_gdouble (sp.y) - text_area.y_bearing);
 
 			show_text (context, to_string (content));
 
