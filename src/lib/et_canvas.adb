@@ -3289,7 +3289,7 @@ package body et_canvas is
 		b : type_area;
 		
 	begin
-		-- CS rotate and mirror
+		-- CS rotate by pos.rotation and mirror
 		
 		-- Move the line to the given position:
 		move_by (l, (pos.place.x, pos.place.y));
@@ -3446,7 +3446,21 @@ package body et_canvas is
 	end get_text_start_point;
 
 	
-
+	procedure draw_origin (
+		position	: in type_position)
+	is
+		l : type_line;
+	begin
+		l.start_point := (x => - origin_arm_length, y => 0.0);
+		l.end_point   := (x => + origin_arm_length, y => 0.0);
+		draw_line (l, position, origin_linewidth, true);
+		
+		l.start_point := (x => 0.0, y => - origin_arm_length);
+		l.end_point   := (x => 0.0, y => + origin_arm_length);
+		draw_line (l, position, origin_linewidth, true);
+	end draw_origin;
+	
+	
 	procedure draw_text (
 		content		: in et_text.pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
@@ -3479,6 +3493,15 @@ package body et_canvas is
 		sp : type_logical_pixels_vector;
 		
 	begin
+		-- Draw the origin (or the anchor point) of the 
+		-- text if requested by the caller:
+		if origin then
+			-- The origin is never rotated. For this reason
+			-- an angle of 0 degrees is passed here:
+			draw_origin ((position, 0.0));
+		end if;
+		
+		
 		-- Set the font:
 		select_font_face (context, to_string (font.family), font.slant, font.weight);
 
@@ -3542,7 +3565,7 @@ package body et_canvas is
 			-- of the text:
 			-- put_line (to_string (content));
 			
-			-- CS draw origin
+
 
 			-- CS save (context);
 			

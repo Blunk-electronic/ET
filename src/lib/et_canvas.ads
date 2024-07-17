@@ -1176,8 +1176,8 @@ package et_canvas is
 	
 	
 	-- This is a primitive draw operation that draws a line.
-	-- The argument pos contains the position of the parent
-	-- complex object.
+	-- The argument pos contains the position and rotation
+	-- of the parent complex object.
 	-- If the argument do_stroke is false (default) then
 	-- no setting of linewidth and no stroking will be done. In this
 	-- case it is assumed that the caller has already set a linewidth
@@ -1191,6 +1191,23 @@ package et_canvas is
 		do_stroke	: in boolean := false);
 
 
+
+-- ORIGIN OF TEXTS AND COMPLEX OBJECTS:
+
+	-- These origins have a size and linewidth given in the model-domain.
+	-- If the operator zooms-in on such an origin then it
+	-- gets magnified -> it depends on the zoom-factor:
+	origin_arm_length : constant type_distance_positive := 2.0;
+	origin_linewidth : constant type_distance_positive := 0.2;
+
+	-- Draws an origin at the given position.
+	-- Since the given position also includes the
+	-- rotation, the origin can be rotated if required:
+	procedure draw_origin (
+		position	: in type_position);
+
+	
+	
 
 -- TEXT:
 
