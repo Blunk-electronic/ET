@@ -1254,13 +1254,10 @@ package et_canvas is
 		mode_v		: in type_align_mode_vertical;
 		size		: in pac_text.type_text_size) -- the size of the text
 		return type_logical_pixels_vector;
-
 	
 	
 	
-	-- Draws a text in the drawing plane.
-	-- Draws the text in case it is inside the global area or if the
-	-- text intersects the global area.
+	-- Draws a text on the canvas:
 	procedure draw_text (
 		content		: in et_text.pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
@@ -1268,7 +1265,7 @@ package et_canvas is
 		anchor		: in type_vector_model; -- the anchor point in the model
 		origin		: in boolean; -- when true, an origin is drawn at the anchor point
 		rotation	: in type_rotation;
-		alignment	: in et_text.type_text_alignment); -- the height of the drawing frame
+		alignment	: in et_text.type_text_alignment);
 
 
 	
