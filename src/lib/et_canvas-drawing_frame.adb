@@ -161,7 +161,7 @@ package body et_canvas.drawing_frame is
 					content		=> content,
 					size		=> type_distance_positive (font_indexes_size),
 					font		=> font_indexes,
-					position	=> pos,
+					anchor		=> pos,
 					origin		=> false,
 					rotation	=> 0.0,
 					alignment	=> (CENTER, CENTER));
