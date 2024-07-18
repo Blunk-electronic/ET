@@ -38,6 +38,8 @@
 
 with ada.text_io;				use ada.text_io;
 
+with glib;
+
 with gdk.event;					use gdk.event;
 
 with gtk.widget;				use gtk.widget;
@@ -1152,7 +1154,7 @@ package et_canvas is
 	
 	-- If an object occupies a space that is wider or
 	-- higher than this constant, then it will be drawn on the screen:
-	visibility_threshold : constant type_logical_pixels_positive := 5.0;
+	visibility_threshold : constant type_logical_pixels_positive := 10.0;
 
 	
 	-- Returns true if the given area is large enough
@@ -1218,7 +1220,15 @@ package et_canvas is
 		return type_logical_pixels;
 
 
+	-- In cairo all angles increase in clockwise direction
+	-- and must be specified in radians. But our model-domain
+	-- uses angles specified in degrees increasing in counter-clockwise
+	-- direction. This function converts from degrees to cairo-angles:
+	function to_cairo_angle (
+		angle : in type_rotation)
+		return glib.gdouble;
 
+	
 	
 	
 	type type_align_mode_vertical is (
@@ -1235,11 +1245,12 @@ package et_canvas is
 
 	
 	-- This function computes the canvas point where
-	-- a text of given extents is to be drawn:
+	-- a text of given extents and requested alignment
+	-- is to be drawn:
 	function get_text_start_point (
 		extents		: in cairo.cairo_text_extents;
 		alignment	: in et_text.type_text_alignment;
-		anchor		: in type_vector_model; -- the anchor point of the text
+		anchor		: in type_logical_pixels_vector; -- the anchor point of the text
 		mode_v		: in type_align_mode_vertical;
 		size		: in pac_text.type_text_size) -- the size of the text
 		return type_logical_pixels_vector;
@@ -1254,7 +1265,7 @@ package et_canvas is
 		content		: in et_text.pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
 		font		: in et_text.type_font;
-		position	: in type_vector_model; -- the anchor point in the model
+		anchor		: in type_vector_model; -- the anchor point in the model
 		origin		: in boolean; -- when true, an origin is drawn at the anchor point
 		rotation	: in type_rotation;
 		alignment	: in et_text.type_text_alignment); -- the height of the drawing frame
