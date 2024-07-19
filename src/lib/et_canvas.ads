@@ -1209,6 +1209,20 @@ package et_canvas is
 		position	: in type_position);
 
 	
+
+-- ORIGIN OF THE DRAWING:
+
+	-- This is the origin of the drawing. It is fixed to
+	-- position (0;0). It is drawn in the canvas-domain
+	-- in order to have a constant size and linewidth:
+
+	origin_drawing_arm_length : constant type_logical_pixels_positive := 20.0;
+	origin_drawing_linewidth  : constant type_logical_pixels_positive := 1.0;
+
+	-- This procedure draws the drawing origin:
+	procedure draw_drawing_origin;
+
+
 	
 
 -- TEXT:

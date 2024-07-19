@@ -3343,6 +3343,57 @@ package body et_canvas is
 
 
 	
+-- ORIGIN OF TEXTS AND COMPLEX OBJECTS:
+
+	procedure draw_origin (
+		position	: in type_position)
+	is
+		l : type_line;
+	begin
+		l.start_point := (x => - origin_arm_length, y => 0.0);
+		l.end_point   := (x => + origin_arm_length, y => 0.0);
+		draw_line (l, position, origin_linewidth, true);
+		
+		l.start_point := (x => 0.0, y => - origin_arm_length);
+		l.end_point   := (x => 0.0, y => + origin_arm_length);
+		draw_line (l, position, origin_linewidth, true);
+	end draw_origin;
+
+
+	
+
+-- ORIGIN OF THE DRAWING:
+	
+	procedure draw_drawing_origin is
+		use cairo;
+		
+		cp : type_logical_pixels_vector := real_to_canvas (origin, S);
+	begin
+		set_source_rgb (context, 0.5, 0.5, 0.5); -- gray
+		set_line_width (context, to_gdouble (origin_drawing_linewidth));
+
+		-- Draw the horizontal line from left to right:
+		move_to (context, 
+			to_gdouble (cp.x - origin_drawing_arm_length), to_gdouble (cp.y));
+		
+		line_to (context, 
+			to_gdouble (cp.x + origin_drawing_arm_length), to_gdouble (cp.y));
+
+		-- Draw the vertical line from top to bottom:
+		move_to (context, 
+			to_gdouble (cp.x), to_gdouble (cp.y - origin_drawing_arm_length));
+		
+		line_to (context, 
+				to_gdouble (cp.x), to_gdouble (cp.y + origin_drawing_arm_length));
+		
+		stroke;
+		null;
+	end draw_drawing_origin;
+	
+
+
+	
+	
 -- TEXT:
 	
 	function to_points (size : in pac_text.type_text_size)
@@ -3456,20 +3507,6 @@ package body et_canvas is
 	end get_text_start_point;
 
 
-	
-	procedure draw_origin (
-		position	: in type_position)
-	is
-		l : type_line;
-	begin
-		l.start_point := (x => - origin_arm_length, y => 0.0);
-		l.end_point   := (x => + origin_arm_length, y => 0.0);
-		draw_line (l, position, origin_linewidth, true);
-		
-		l.start_point := (x => 0.0, y => - origin_arm_length);
-		l.end_point   := (x => 0.0, y => + origin_arm_length);
-		draw_line (l, position, origin_linewidth, true);
-	end draw_origin;
 	
 
 	

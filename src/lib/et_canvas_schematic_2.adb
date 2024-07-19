@@ -600,10 +600,10 @@ package body et_canvas_schematic_2 is
 		set_line_cap (context, cairo_line_cap_round);
 
 		draw_grid;		
-		--draw_origin;
+		draw_drawing_origin;
+		draw_drawing_frame;	
 		draw_cursor;
 		draw_zoom_area;
-		draw_drawing_frame;	
 		--draw_objects;		
 		
 		return event_handled;
