@@ -56,7 +56,7 @@ with et_scripting;
 with et_frames;
 -- with et_assembly_variants;			use et_assembly_variants;
 with et_canvas_schematic_2;			--use et_canvas_schematic;
--- with et_display.board;
+with et_display.board;
 -- with et_colors;
 with et_colors.board;				use et_colors.board;
 with et_modes.board;
@@ -568,6 +568,8 @@ package body et_canvas_board_2 is
 		return boolean
 	is
 		use cairo;
+		use et_display.board;
+		
 		event_handled : boolean := true;
 
 		use et_text;
@@ -592,7 +594,10 @@ package body et_canvas_board_2 is
 		-- The ends of all kinds of lines are round:
 		set_line_cap (context, cairo_line_cap_round);
 
-		draw_grid;		
+		if grid_enabled then
+			draw_grid;		
+		end if;
+		
 		draw_drawing_origin;
 		draw_drawing_frame;		
 		draw_cursor;
