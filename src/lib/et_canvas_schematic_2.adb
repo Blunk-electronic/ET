@@ -583,7 +583,7 @@ package body et_canvas_schematic_2 is
 	
 	begin
 		-- new_line;
-		-- put_line ("cb_draw " & image (clock));
+		put_line ("cb_draw (schematic) " & image (clock));
 
 		-- Update the global context:
 		context := context_in;
@@ -895,12 +895,10 @@ package body et_canvas_schematic_2 is
 		
 		set_directory (cur_dir_bak);
 		
-		-- The majority of commands requires refreshing the schematic and board drawing.
-		
-		-- refresh schematic and board
-		-- CS redraw;
-		--redraw (canvas);
-		--et_canvas_board.pac_canvas.redraw (et_canvas_board.pac_canvas.canvas);
+		-- The majority of commands requires refreshing both 
+		-- the schematic and board:
+		redraw;
+
 		
 		-- CS output error message in gui
 

@@ -2992,9 +2992,9 @@ begin -- board_cmd
 	-- After every command (regardless if it is complete or not)
 	-- set the focus to the canvas:
 	-- CS: remove ?
-	if runmode /= MODE_HEADLESS then
-		canvas.grab_focus;
-	end if;
+	-- if runmode /= MODE_HEADLESS then
+	-- 	canvas.grab_focus; -- NOTE ! calls "cb_draw"
+	-- end if;
 
 
 	exception when event: others =>

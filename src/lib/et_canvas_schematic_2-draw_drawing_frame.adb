@@ -106,7 +106,7 @@ procedure draw_drawing_frame is
 -- 
 	
 begin
-	put_line ("draw_drawing_frame (schematic)");
+	-- put_line ("draw_drawing_frame (schematic)");
 
 	set_color_frame;
 

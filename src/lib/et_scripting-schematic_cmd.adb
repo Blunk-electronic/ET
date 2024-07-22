@@ -1075,7 +1075,7 @@ is
 							when 6 .. count_type'last => too_long; 
 							when others => command_incomplete;
 						end case;
-						
+
 					when others => invalid_noun (to_string (noun));
 				end case;
 						
@@ -2914,7 +2914,7 @@ begin -- schematic_cmd
 	-- Parse the command:
 	parse;
 	
-	-- In case parse throws an exception, then the follwing statements 
+	-- In case parse throws an exception, then the following statements 
 	-- will be skipped.
 	
 	-- In graphical mode and cmd_entry_mode SINGLE_CMD the flag
@@ -2927,9 +2927,9 @@ begin -- schematic_cmd
 	-- After every command (regardless if it is complete or not)
 	-- set the focus to the canvas:
 	-- CS: remove ?
-	if runmode /= MODE_HEADLESS then
-		canvas.grab_focus;
-	end if;
+	-- if runmode /= MODE_HEADLESS then
+	-- 	canvas.grab_focus; -- NOTE ! calls "cb_draw"
+	-- end if;
 	
 	exception when event: others =>
 
