@@ -59,6 +59,8 @@ with et_display.schematic;			--use et_display.schematic;
 -- with et_colors;						use et_colors;
 with et_colors.schematic;			use et_colors.schematic;
 with et_modes.schematic;
+
+with et_canvas_tool;					use et_canvas_tool;
 -- 
 -- with et_net_names;					use et_net_names;
 -- with et_net_labels;					use et_net_labels;
@@ -569,8 +571,11 @@ package body et_canvas_schematic_2 is
 
 
 	procedure draw_drawing_frame is separate;
+
+	procedure draw_units is separate;
 	
 
+	
 	function cb_draw (
 		canvas		: access gtk_widget_record'class;
 		context_in	: in cairo.cairo_context)
@@ -610,6 +615,23 @@ package body et_canvas_schematic_2 is
 		draw_cursor;
 		draw_zoom_area;
 		--draw_objects;		
+
+		draw_units;
+		
+		if nets_enabled then
+			null;
+			-- draw_nets (self);
+		end if;
+
+
+		if texts_enabled then
+			null;
+			-- draw_texts (self);
+		end if;
+		
+		-- draw_submodules (self);
+		
+
 		
 		return event_handled;
 	end cb_draw;

@@ -87,7 +87,6 @@ package body et_colors.schematic is
 
 	
 	procedure set_color_nets (
-		context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default)
 	is begin
 		-- CS query color schema defined by user
@@ -98,7 +97,6 @@ package body et_colors.schematic is
 
 	
 	procedure set_color_origin (
-		context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default)
 	is begin
 		-- CS query color schema defined by user
@@ -109,7 +107,6 @@ package body et_colors.schematic is
 
 	
 	procedure set_color_placeholders (
-		context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default)
 	is begin										
 		-- CS query color schema defined by user
@@ -120,7 +117,6 @@ package body et_colors.schematic is
 
 	
 	procedure set_color_ports (
-		context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default)
 	is begin
 		-- CS query color schema defined by user
@@ -131,7 +127,6 @@ package body et_colors.schematic is
 
 	
 	procedure set_color_submodules (
-		context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default)
 	is begin
 		-- CS query color schema defined by user
@@ -139,9 +134,9 @@ package body et_colors.schematic is
 		
 		set_color (submodules, brightness);
 	end set_color_submodules;
+
 	
 	procedure set_color_symbols (
-		context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default)
 	is begin
 		-- CS query color schema defined by user
@@ -150,8 +145,8 @@ package body et_colors.schematic is
 		set_color (symbols, brightness);
 	end set_color_symbols;
 
+	
 	procedure set_color_texts (
-		context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default)
 	is begin
 		-- CS query color schema defined by user

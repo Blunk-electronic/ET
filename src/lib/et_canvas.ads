@@ -1187,7 +1187,7 @@ package et_canvas is
 	-- requires less time for drawing the line than with do_stroke enabled.
 	procedure draw_line (
 		line		: in type_line;
-		pos			: in type_position;
+		pos			: in type_position; -- includes x,y, rotation
 		-- CS mirror ?
 		width		: in type_distance_positive;
 		do_stroke	: in boolean := false);
