@@ -92,11 +92,15 @@ procedure draw_units is
 		procedure draw_line (c : in pac_symbol_lines.cursor) is 
 			-- Take a copy of the given line:
 			-- line : type_line := (pac_geometry_2.type_line (element (c)) with null record);
+			l : type_symbol_line renames element (c);
+			p : pac_geometry_2.type_position; -- CS rework
 		begin
-			null;
+			p.place := unit_position;
+			p.rotation := unit_rotation;
+
 			-- rotate_by (line, unit_rotation);
 			-- move_by (line, to_distance_relative (unit_position));
-			-- draw_line (line, (unit_position, unit_rotation), element (c).width, true);
+			draw_line (type_line (l), p, l.width, true);
 			-- draw_line (to_line_fine (line), element (c).width);
 		end draw_line;
 
@@ -494,38 +498,39 @@ procedure draw_units is
 
 		
 		procedure draw_origin is
-			ohz : constant type_distance_positive := et_symbols.origin_half_size;
-			
-			line_horizontal : constant type_line := ( -- from left to right
-				start_point		=> type_vector_model (set (
-									x => get_x (unit_position) - ohz,
-									y => get_y (unit_position))),
-				
-				end_point		=> type_vector_model (set (
-									x => get_x (unit_position) + ohz,
-									y => get_y (unit_position))),
-
-				others			=> <>);
-			
-
-			line_vertical : constant type_line := ( -- from bottom to top
-				start_point		=> type_vector_model (set (
-									x => get_x (unit_position),
-									y => get_y (unit_position) - ohz)),
-				
-				end_point		=> type_vector_model (set (
-									x => get_x (unit_position),
-									y => get_y (unit_position) + ohz)),
-
-				others			=> <>);
+-- 			ohz : constant type_distance_positive := et_symbols.origin_half_size;
+-- 			
+-- 			line_horizontal : constant type_line := ( -- from left to right
+-- 				start_point		=> type_vector_model (set (
+-- 									x => get_x (unit_position) - ohz,
+-- 									y => get_y (unit_position))),
+-- 				
+-- 				end_point		=> type_vector_model (set (
+-- 									x => get_x (unit_position) + ohz,
+-- 									y => get_y (unit_position))),
+-- 
+-- 				others			=> <>);
+-- 			
+-- 
+-- 			line_vertical : constant type_line := ( -- from bottom to top
+-- 				start_point		=> type_vector_model (set (
+-- 									x => get_x (unit_position),
+-- 									y => get_y (unit_position) - ohz)),
+-- 				
+-- 				end_point		=> type_vector_model (set (
+-- 									x => get_x (unit_position),
+-- 									y => get_y (unit_position) + ohz)),
+-- 
+-- 				others			=> <>);
 			
 		begin
 		-- NOTE: This is about the origin of the symbol !
-			set_color_origin (brightness);
-			set_linewidth (et_symbols.origin_line_width);
+			-- set_color_origin (brightness);
+			-- set_linewidth (et_symbols.origin_line_width);
 			
 			-- NOTE: The origin is never rotated.
-
+			draw_origin ((unit_position, 0.0));
+			
 			-- CS draw_line (to_line_fine (line_horizontal), et_symbols.origin_line_width);
 			-- CS draw_line (to_line_fine (line_vertical), et_symbols.origin_line_width);
 		end draw_origin;
@@ -1025,6 +1030,7 @@ procedure draw_units is
 		use et_devices;
 		use pac_devices_lib;
 
+		
 		procedure locate_symbol (unit_cursor : in et_devices.type_unit_cursors) is
 			use pac_units_external;
 			use pac_units_internal;
@@ -1055,6 +1061,7 @@ procedure draw_units is
 				end if;
 			end fetch_placeholders_ext;
 
+			
 			procedure fetch_placeholders_int is begin
 			-- Drawing the symbol of a real device requires placeholders
 			-- for name, value an purpose. We fetch them from the symbol model
