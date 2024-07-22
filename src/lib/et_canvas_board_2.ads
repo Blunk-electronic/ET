@@ -199,7 +199,13 @@ package et_canvas_board_2 is
 
 	-- This function is called each time the canvas 
 	-- is to be refreshed.
-	-- It draws everything: frame, grid, cursor, objects
+	-- It is called by the signal "on_draw" emitted by the canvas.
+	-- The connection is set up in procedure set_up_canvas.
+	--
+	-- NOTE: This function is also called by other signals, such as
+	-- "grab_focus". The corresponding connection is active by default.
+	--
+	-- It draws everything related to the board: frame, grid, cursor, objects
 	function cb_draw (
 		canvas		: access gtk_widget_record'class;
 		context_in	: in cairo.cairo_context)
