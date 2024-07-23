@@ -1199,8 +1199,8 @@ package et_canvas is
 	-- These origins have a size and linewidth given in the model-domain.
 	-- If the operator zooms-in on such an origin then it
 	-- gets magnified -> it depends on the zoom-factor:
-	origin_arm_length : constant type_distance_positive := 2.0;
-	origin_linewidth : constant type_distance_positive := 0.2;
+	origin_arm_length : constant type_distance_positive := 1.0;
+	origin_linewidth : constant type_distance_positive := 0.1;
 
 	-- Draws an origin at the given position.
 	-- Since the given position also includes the
