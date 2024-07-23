@@ -728,7 +728,7 @@ package body et_geometry_2a is
 	begin
 		return set (
 			x => type_float (get_x (point)),
-			y => 0.0, --type_float (get_y (point)),
+			y => type_float (get_y (point)),
 			z => 0.0
 			);
 	end to_vector;
@@ -1695,6 +1695,10 @@ package body et_geometry_2a is
 		rs : constant type_float_positive := get_radius_start (arc);
 		re : constant type_float_positive := get_radius_end (arc);
 	begin
+		-- put_line (to_string (arc));
+		-- put_line ("rs " & to_string (rs));
+		-- put_line ("re " & to_string (re));
+		
 		if rs = re then
 
 			if rs > 0.0 then
