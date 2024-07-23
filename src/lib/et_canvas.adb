@@ -3289,7 +3289,10 @@ package body et_canvas is
 		b : type_area;
 		
 	begin
-		-- CS rotate by pos.rotation and mirror
+		-- CS mirror
+		
+		-- Rotate the line by by pos.rotation
+		rotate_by (l, pos.rotation);
 		
 		-- Move the line to the given position:
 		move_by (l, (pos.place.x, pos.place.y));
