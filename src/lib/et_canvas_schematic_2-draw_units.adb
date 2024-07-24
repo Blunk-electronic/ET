@@ -586,8 +586,8 @@ procedure draw_units is
 	unit_rotation : type_rotation;
 
 	
--- 	-- This function returns true if the given placeholder has been moved from the
--- 	-- default position and rotation or if the alignment has been changed:
+	-- This function returns true if the given placeholder has been moved from the
+	-- default position and rotation or if the alignment has been changed:
 -- 	function moved_by_operator (placeholder : in et_symbols.type_text_placeholder)
 -- 		return boolean is
 -- 		use et_symbols;
@@ -679,7 +679,8 @@ procedure draw_units is
 	function placeholder_is_selected (
 		d : in pac_devices_sch.cursor;
 		u : in et_schematic.pac_units.cursor)
-		return boolean is
+		return boolean
+	is
 		use pac_proposed_placeholders;
 		use et_devices;
 		use pac_unit_name;
@@ -823,11 +824,10 @@ procedure draw_units is
 
 						case unit_move.tool is
 							when MOUSE =>
-								null;
-								-- CS unit_position := snap_to_grid (get_mouse_position);
+								unit_position := snap_to_grid (get_mouse_position);
 								
 							when KEYBOARD =>
-								unit_position := pac_canvas.cursor.position;
+								unit_position := get_cursor_position;
 						end case;
 
 					end if;
@@ -968,10 +968,10 @@ procedure draw_units is
 						case unit_move.tool is
 							when MOUSE =>
 								null;
-								-- CS unit_position := snap_to_grid (get_mouse_position);
+								unit_position := snap_to_grid (get_mouse_position);
 								
 							when KEYBOARD =>
-								unit_position := pac_canvas.cursor.position;
+								unit_position := get_cursor_position;
 						end case;
 					end if;
 
@@ -1016,6 +1016,7 @@ procedure draw_units is
 		-- Iterate the units of the current device:
 		iterate (element (device_cursor).units, query_units'access);
 	end query_devices;
+
 
 	
 	-- Draws the unit being added. If there is no unit being added,
@@ -1080,9 +1081,8 @@ procedure draw_units is
 		begin -- locate_symbol
 			-- Set the destination coordinates according to current tool:
 			case unit_add.tool is
-				when KEYBOARD	=> destination := pac_canvas.cursor.position;
-				when MOUSE		=> null;
-					-- CS destination := snap_to_grid (get_mouse_position);
+				when KEYBOARD	=> destination := get_cursor_position;
+				when MOUSE		=> destination := snap_to_grid (get_mouse_position);
 			end case;
 			
 			case unit_cursor.ext_int is
@@ -1159,6 +1159,7 @@ procedure draw_units is
 		end if;
 
 	end draw_unit_being_added;
+
 	
 begin
 	-- 	put_line ("draw units ...");
