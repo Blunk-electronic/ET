@@ -44,7 +44,6 @@ with gdk.types;
 with gdk.types.keysyms;
 with gtk.accel_group;
 with gdk.event;
-with glib;						use glib;
 with gtk.enums;					use gtk.enums;
 with gtk.main;					use gtk.main;
 
@@ -88,6 +87,15 @@ package body et_canvas is
 	
 -- CONVERSIONS:
 
+	function to_lp (
+		dp : in glib.gint)
+		return type_logical_pixels
+	is begin
+		-- This is just a direct type conversion:
+		return type_logical_pixels (dp);
+	end to_lp;
+
+	
 	function to_real (
 		point : in type_vector_model)
 		return type_vector_model
@@ -742,6 +750,7 @@ package body et_canvas is
 -- SCROLLED WINDOW:
 
 	procedure create_scrolled_window_and_scrollbars is
+		use glib;
 	begin
 		put_line ("create_scrolled_window");
 
@@ -1040,6 +1049,7 @@ package body et_canvas is
 	procedure update_scrollbar_limits (
 		C1, C2 : in type_bounding_box_corners)
 	is
+		use glib;
 		debug : boolean := false;
 		scratch : type_logical_pixels;
 
@@ -1222,7 +1232,7 @@ package body et_canvas is
 
 	
 	procedure show_canvas_size is 
-		-- use glib;
+		use glib;
 		a : gtk_allocation;
 		width, height : gint;
 	begin
@@ -1692,7 +1702,7 @@ package body et_canvas is
 
 	
 	procedure update_distances_display is 
-		-- use glib;
+		use glib;
 	
 		px, py : gint; -- the pointer position
 		cp : type_logical_pixels_vector;
@@ -1780,6 +1790,7 @@ package body et_canvas is
 -- VERB AND NOUN DISPLAY:
 	
 	procedure build_mode_display is
+		use glib;
 		spacing : gint;
 	begin
 		spacing := 10;
@@ -2210,6 +2221,18 @@ package body et_canvas is
 	
 
 
+	function get_cursor_position return
+		type_vector_model
+	is begin
+		return cursor.position;
+	end get_cursor_position;
+
+	
+	-- function get_mouse_position;
+
+
+	
+
 	procedure draw_cursor is
 		use cairo;
 		
@@ -2294,6 +2317,42 @@ package body et_canvas is
 
 
 
+	
+-- MOUSE / POINTER POSITION:
+
+	function get_mouse_position
+		return type_vector_model
+	is
+		use glib;
+		p : type_vector_model;
+		c : type_logical_pixels_vector;
+		px : gint;
+		py : gint;
+	begin
+		-- Get the canvas coordinates of the pointer:
+		canvas.get_pointer (px, py);
+
+		-- Limit the pointer coordinates in case 
+		-- they are negative:
+		if px < 0 then
+			px := 0;
+		end if;
+
+		if py < 0 then
+			py := 0;
+		end if;
+
+		-- Convert the canvas coordinates to
+		-- model coordinates:
+		c.x := to_lp (px);
+		c.y := to_lp (py);
+		
+		p := canvas_to_real (c, S);
+		
+		return p;
+	end get_mouse_position;
+	
+	
 	
 
 -- SCALE:
@@ -2475,6 +2534,7 @@ package body et_canvas is
 
 
 	procedure build_console is 
+		use glib;
 		-- spacing : gint;
 	begin
 		-- spacing := 10;
@@ -2640,6 +2700,7 @@ package body et_canvas is
 		window		: access gtk_widget_record'class;
 		allocation	: gtk_allocation)
 	is 
+		use glib;
 	begin
 		null;		
 		-- put_line ("cb_main_window_size_allocate " & image (clock)); 
@@ -3135,6 +3196,7 @@ package body et_canvas is
 -- PRIMARY TOOL:
 	
 	procedure build_primary_tool_display is
+		use glib;
 		spacing : gint;
 	begin
 		spacing := 10;
@@ -3411,7 +3473,7 @@ package body et_canvas is
 
 	function to_cairo_angle (
 		angle : in type_rotation)
-		return gdouble
+		return glib.gdouble
 	is 
 		use pac_geometry_1;
 		use glib;
@@ -3522,6 +3584,7 @@ package body et_canvas is
 		rotation	: in type_rotation;
 		alignment	: in et_text.type_text_alignment)
 	is
+		use glib;
 		use cairo;
 		use et_text;
 		use pac_text;

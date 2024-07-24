@@ -164,6 +164,18 @@ package et_canvas is
 	
 -- CONVERSIONS:
 
+	-- DEVICE PIXELS (CS3) <-> LOGICAL PIXELS (CS2):
+
+	-- Converts device pixels to logical pixels.
+	-- NOTE: Device pixels are integers. They can also be negative
+	-- in connection with size changes of widgets. So this conversion
+	-- allows both negative and positive numbers.
+	-- The function is basically just a direct type conversion.
+	function to_lp (
+		dp : in glib.gint)
+		return type_logical_pixels;
+	
+	
 	-- REAL (CS1) <-> VIRTUAL MODEL COORDINATES (CS2):
 	
 	-- Converts a virtual model point to a real model point,
@@ -864,6 +876,11 @@ package et_canvas is
 		direction : type_direction);
 
 
+	-- Returns the current position of the cursor:
+	function get_cursor_position
+		return type_vector_model;
+	
+	
 	-- This procedure draws the cursor at its current
 	-- position. To keep things simple, the cursor is
 	-- drawn always, regardless whether it is in the visible
@@ -871,6 +888,15 @@ package et_canvas is
 	procedure draw_cursor;
 
 
+	
+-- MOUSE / POINTER POSITION:
+
+	-- This function returns the current pointer/mouse
+	-- position in model coordinates:
+	function get_mouse_position
+		return type_vector_model;
+
+	
 
 -- SCALE:
 
