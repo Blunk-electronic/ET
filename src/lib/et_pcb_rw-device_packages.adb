@@ -2459,10 +2459,10 @@ package body et_pcb_rw.device_packages is
 					when SEC_ARC =>
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
-								case stack.parent (degree => 2) is
+								case stack.parent (degree => 2) is								
 									when SEC_CONDUCTOR | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
-
+										
 										if not read_board_arc (line) then
 											declare
 												kw : string := f (line, 1);

@@ -634,7 +634,7 @@ package body et_pcb_rw is
 		use et_string_processing;
 	begin
 		log (text => "checking arc ...", level => log_threshold);
-
+		
 		if not is_valid (board_arc) then
 			invalid_arc;
 		end if;
@@ -671,13 +671,15 @@ package body et_pcb_rw is
 		else
 			invalid_keyword (kw);
 		end if;
-	end;
+	end read_board_arc;
 
+	
 	-- Reads start and end point of the board_arc. If the statement is invalid then it returns a false.
 	function read_board_arc (line : type_fields_of_line) return boolean is
 		kw : constant string := f (line, 1);
 	begin
 		if kw = keyword_start then -- start x 22.3 y 23.3
+			
 			expect_field_count (line, 5);
 
 			-- extract the start position starting at field 2 of line
