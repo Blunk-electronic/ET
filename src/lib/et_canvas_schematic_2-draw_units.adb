@@ -256,8 +256,6 @@ procedure draw_units is
 
 			
 		begin -- draw_port
-			set_color_symbols (brightness);
-			set_linewidth (et_symbols.port_line_width);
 			
 			-- Compute following positions according to port rotation and length:
 			-- - end point of port
@@ -321,16 +319,13 @@ procedure draw_units is
 				raise constraint_error; -- CS do something helpful. should never happen
 			end if;
 
-			-- Rotate the start and end point by rotation of unit:
-			rotate_by (start_point, unit_rotation);
-			rotate_by (end_point, unit_rotation);
 
 			line.start_point := start_point;
 			line.end_point := end_point;
-			move_by (line, to_distance_relative (unit_position));
 			
 			-- Draw the line of the port:
-			-- CS draw_line (to_line_fine (line), port_line_width);
+			set_color_symbols (brightness);
+			draw_line (line, (unit_position, unit_rotation), port_line_width, true);
 
 
 			-- Draw the circle around a port if the layer is enabled:
@@ -794,7 +789,7 @@ procedure draw_units is
 		begin
 			-- get the name of the unit
 			unit_name := key (unit_cursor);
-			--put_line (to_string (unit_name));
+			-- put_line (to_string (unit_name));
 
 			-- Get the position of the unit (as it is according to the module database).
 			-- If the unit is selected and being moved, then the x/y position
@@ -1008,7 +1003,8 @@ procedure draw_units is
 		use et_symbols;
 		
 	begin -- query_devices
-
+		--put_line ("device " & to_string (key (device_cursor)));
+		
 		-- Get device name, value, purpose and number of units of the current device.
 		-- Procedure draw_symbol needs them later:
 		if element (device_cursor).appearance = PCB then
