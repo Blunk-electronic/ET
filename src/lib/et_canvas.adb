@@ -3315,7 +3315,7 @@ package body et_canvas is
 			-- the given line, then set the linewidth:
 			if do_stroke then
 				set_line_width (context, 
-								to_gdouble_positive (to_distance (width)));
+					to_gdouble_positive (to_distance (width)));
 			end if;
 
 			c1 := real_to_canvas (l.start_point, S);

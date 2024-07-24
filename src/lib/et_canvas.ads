@@ -1180,11 +1180,17 @@ package et_canvas is
 	-- This is a primitive draw operation that draws a line.
 	-- The argument pos contains the position and rotation
 	-- of the parent complex object.
-	-- If the argument do_stroke is false (default) then
-	-- no setting of linewidth and no stroking will be done. In this
-	-- case it is assumed that the caller has already set a linewidth
-	-- and that the caller will later care for a stroke command. This mode
-	-- requires less time for drawing the line than with do_stroke enabled.
+	-- Regarding the argument do_stroke there are two modes:
+	-- 1. If the argument do_stroke is false (default) then
+	--  no setting of linewidth and no stroking will be done. In this
+	--  case it is assumed that the caller has already set a linewidth
+	--  and that the caller will later care for a stroke command. 
+	--  The given linewidth has no meaning in this case. This mode
+	--  requires less time for drawing the line than with do_stroke enabled
+	--  and should be used when many lines of same linewidth have to be drawn.
+	--  An explicit call of the stroke procedure is required finally.
+	-- 2. If do_stroke is true, then the given linewidth is applied,
+	--  the line drawn and finally a stroke command executed.
 	procedure draw_line (
 		line		: in type_line;
 		pos			: in type_position; -- includes x,y, rotation
