@@ -212,6 +212,15 @@ package et_canvas_board_2 is
 		return boolean;
 
 
+
+	-- This callback function is called each time the
+	-- operator hits a key and if the canvas has the focus:
+	function cb_canvas_key_pressed (
+		canvas	: access gtk_widget_record'class;
+		event	: gdk_event_key)
+		return boolean;
+
+	
 	-- Connects additional canvas signals with subprograms:
 	procedure set_up_canvas;
 	

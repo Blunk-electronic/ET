@@ -216,6 +216,15 @@ package et_canvas_schematic_2 is
 		return boolean;
 
 
+	
+	-- This callback function is called each time the
+	-- operator hits a key and if the canvas has the focus:
+	function cb_canvas_key_pressed (
+		canvas	: access gtk_widget_record'class;
+		event	: gdk_event_key)
+		return boolean;
+
+	
 	-- Connects additional canvas signals with subprograms:
 	procedure set_up_canvas;
 
@@ -325,13 +334,13 @@ package et_canvas_schematic_2 is
 -- 	grid_density_multiplier_coarse	: constant type_distance_positive := 10.0;
 -- 	grid_density_multiplier_normal	: constant type_distance_positive := 1.0;
 -- 	grid_density_multiplier_fine	: constant type_distance_positive := 0.1;
--- 
--- 	-- Resets the grid density to default and snaps the cursor
--- 	-- to the nearest grid point.
--- 	-- Updates the coordinates display.
--- 	procedure reset_grid_and_cursor (
--- 		self : not null access type_view);
--- 
+
+	-- Resets the grid density to default and snaps the cursor
+	-- to the nearest grid point.
+	-- Updates the coordinates display.
+	procedure reset_grid_and_cursor;
+	
+
 -- 	-- Sets the grid density and snaps the cursor
 -- 	-- to the nearest grid point.
 -- 	-- Updates the coordinates display.
@@ -392,13 +401,14 @@ package et_canvas_schematic_2 is
 -- 		self	: not null access type_view)
 -- 		return string;
 -- 
--- 	-- Resets global variables required for selections, clarifications, ...
--- 	-- Verb and noun remain as they are
--- 	-- so that the mode is unchanged.
--- 	-- Should be called when exception rises in order to clean up.
--- 	-- Should also be called when the operator hits ESC.
--- 	procedure reset_selections;
+	-- Resets global variables required for selections, clarifications, ...
+	-- Verb and noun remain as they are
+	-- so that the mode is unchanged.
+	-- Should be called when exception rises in order to clean up.
+	-- Should also be called when the operator hits ESC.
+	procedure reset_selections;
 
+	
 	-- Clears list of proposed objects such as net segments, units, ...
 	procedure clear_proposed_objects;
 	

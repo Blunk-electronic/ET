@@ -36,11 +36,21 @@
 --   history of changes:
 --
 
+with et_modes.schematic;				use et_modes.schematic;
+with et_devices;						use et_devices;
+with et_device_placeholders;			use et_device_placeholders;
+with et_schematic;
+with et_schematic_ops;					use et_schematic_ops;
+with et_schematic_ops.nets;				use et_schematic_ops.nets;
+with et_net_names;						use et_net_names;
+with et_net_labels;						use et_net_labels;
 
-separate (et_canvas_schematic)
+with et_text;							use et_text;
+
+
+separate (et_canvas_schematic_2)
 
 procedure key_pressed (
-	self		: not null access type_view;
 	key			: in gdk_key_type;
 	key_shift	: in gdk_modifier_type)
 is
@@ -70,21 +80,21 @@ is
 				case noun is
 					when NOUN_LABEL =>
 						if not clarification_pending then
-							delete_label (cursor_main.position);
+							delete_label (get_cursor_position);
 						else
 							delete_selected_label;
 						end if;
 					
 					when NOUN_NET => 
 						if not clarification_pending then
-							delete_net_segment (cursor_main.position);
+							delete_net_segment (get_cursor_position);
 						else
 							delete_selected_net_segment;
 						end if;
 
 					when NOUN_UNIT =>
 						if not clarification_pending then
-							delete_unit (cursor_main.position);
+							delete_unit (get_cursor_position);
 						else
 							delete_selected_unit;
 						end if;
@@ -129,7 +139,7 @@ is
 
 				-- When dragging net segments, we enforce the default grid
 				-- and snap the cursor position to the default grid:
-				self.reset_grid_and_cursor;
+				reset_grid_and_cursor;
 				
 			when GDK_LC_u =>
 				noun := NOUN_UNIT;
@@ -137,7 +147,7 @@ is
 
 				-- When dragging units, we enforce the default grid
 				-- and snap the cursor position to the default grid:
-				self.reset_grid_and_cursor;
+				reset_grid_and_cursor;
 
 			-- If space pressed then the operator wishes to operate
 			-- by keyboard:
@@ -147,14 +157,14 @@ is
 					when NOUN_NET =>
 						-- When dragging net segments, we enforce the default grid
 						-- and snap the cursor position to the default grid:
-						self.reset_grid_and_cursor;
-						drag_segment (KEYBOARD, cursor_main.position);						
+						reset_grid_and_cursor;
+						drag_segment (KEYBOARD, get_cursor_position);						
 
 					when NOUN_UNIT =>
 						-- When dragging units, we enforce the default grid
 						-- and snap the cursor position to the default grid:
-						self.reset_grid_and_cursor;
-						drag_unit (KEYBOARD, cursor_main.position);
+						reset_grid_and_cursor;
+						drag_unit (KEYBOARD, get_cursor_position);
 
 					when others => null;
 						
@@ -195,7 +205,7 @@ is
 
 				-- When drawing net segments, we enforce the default grid
 				-- and snap the cursor position to the default grid:
-				self.reset_grid_and_cursor;
+				reset_grid_and_cursor;
 
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:
@@ -204,9 +214,9 @@ is
 					when NOUN_NET =>
 						-- When drawing net segments, we enforce the default grid
 						-- and snap the cursor position to the default grid:
-						self.reset_grid_and_cursor;
+						reset_grid_and_cursor;
 
-						make_path (KEYBOARD, cursor_main.position);	
+						make_path (KEYBOARD, get_cursor_position);	
 						
 					when others => null;
 				end case;
@@ -217,7 +227,8 @@ is
 			when GDK_LC_b =>
 				case noun is
 					when NOUN_NET =>
-						next_bend_style (preliminary_segment.path);
+						null;
+						-- CS next_bend_style (preliminary_segment.path);
 						
 					when others => null;
 						
@@ -255,7 +266,7 @@ is
 
 				-- When moving units, we enforce the default grid
 				-- and snap the cursor position to the default grid:
-				self.reset_grid_and_cursor;
+				reset_grid_and_cursor;
 				
 			when GDK_LC_v =>
 				noun := NOUN_VALUE;					
@@ -275,7 +286,7 @@ is
 -- 								segment.tool := KEYBOARD;
 -- 								
 -- 								if not clarification_pending then
--- 									find_segments (cursor_main.position);
+-- 									find_segments (get_cursor_position);
 -- 								else
 -- 									segment.being_moved := true;
 -- 									reset_request_clarification;
@@ -285,30 +296,30 @@ is
 -- 								-- Finally assign the cursor position to the
 -- 								-- currently selected segment:
 -- 								et_canvas_schematic_nets.finalize_move (
--- 									destination		=> cursor_main.position,
+-- 									destination		=> get_cursor_position,
 -- 									log_threshold	=> log_threshold + 1);
 -- 
 -- 							end if;
 
 					when NOUN_LABEL =>
-						move_label (KEYBOARD, cursor_main.position);
+						move_label (KEYBOARD, get_cursor_position);
 
 						
 					when NOUN_NAME =>
-						move_placeholder (KEYBOARD, cursor_main.position, NAME);
+						move_placeholder (KEYBOARD, get_cursor_position, NAME);
 						
 					when NOUN_PURPOSE =>
-						move_placeholder (KEYBOARD, cursor_main.position, PURPOSE);
+						move_placeholder (KEYBOARD, get_cursor_position, PURPOSE);
 
 					when NOUN_VALUE =>
-						move_placeholder (KEYBOARD, cursor_main.position, VALUE);
+						move_placeholder (KEYBOARD, get_cursor_position, VALUE);
 						
 						
 					when NOUN_UNIT =>
 						-- When moving units, we enforce the default grid
 						-- and snap the cursor position to the default grid:
-						self.reset_grid_and_cursor;
-						move_unit (KEYBOARD, cursor_main.position);
+						reset_grid_and_cursor;
+						move_unit (KEYBOARD, get_cursor_position);
 
 					when others => null;
 						
@@ -365,7 +376,7 @@ is
 				set_status (et_canvas_schematic_nets.status_place_label_simple);
 
 				-- For placing simple net labels, the fine grid is required:
-				self.set_grid (FINE);
+				-- CS self.set_grid (FINE);
 				
 			when GDK_L =>
 				noun := NOUN_LABEL;
@@ -376,7 +387,7 @@ is
 			when GDK_Space =>
 				case noun is
 					when NOUN_LABEL =>
-						place_label (KEYBOARD, cursor_main.position);
+						place_label (KEYBOARD, get_cursor_position);
 						
 					when others => null;							
 				end case;
@@ -439,7 +450,7 @@ is
 					when NOUN_NAME =>
 						if not clarification_pending then
 							rotate_placeholder (
-								point		=> cursor_main.position,
+								point		=> get_cursor_position,
 								category	=> NAME);
 						else
 							rotate_selected_placeholder (NAME);
@@ -448,7 +459,7 @@ is
 					when NOUN_PURPOSE =>
 						if not clarification_pending then
 							rotate_placeholder (
-								point		=> cursor_main.position,
+								point		=> get_cursor_position,
 								category	=> PURPOSE);
 						else
 							rotate_selected_placeholder (PURPOSE);
@@ -456,7 +467,7 @@ is
 
 					when NOUN_UNIT =>
 						if not clarification_pending then
-							rotate_unit (cursor_main.position);
+							rotate_unit (get_cursor_position);
 						else
 							rotate_selected_unit;
 						end if;
@@ -464,7 +475,7 @@ is
 					when NOUN_VALUE =>
 						if not clarification_pending then
 							rotate_placeholder (
-								point		=> cursor_main.position,
+								point		=> get_cursor_position,
 								category	=> VALUE);
 						else
 							rotate_selected_placeholder (VALUE);
@@ -506,7 +517,7 @@ is
 
 				-- When adding units, we enforce the default grid
 				-- and snap the cursor position to the default grid:
-				self.reset_grid_and_cursor;
+				reset_grid_and_cursor;
 				
 				-- open device model selection
 				add_device; 
@@ -518,7 +529,7 @@ is
 					when NOUN_DEVICE =>
 						-- When adding units, we enforce the default grid
 						-- and snap the cursor position to the default grid:
-						self.reset_grid_and_cursor;
+						reset_grid_and_cursor;
 
 						-- If a unit has been selected already, then
 						-- the number of "activate" actions must be counted.
@@ -540,7 +551,7 @@ is
 								when 2 =>
 									-- Finally place the unit at the current 
 									-- cursor position:
-									finalize_add_device (cursor_main.position);
+									finalize_add_device (get_cursor_position);
 
 								when others => null;
 							end case;
@@ -580,13 +591,13 @@ is
 							unit_add.tool := KEYBOARD;
 
 							if not clarification_pending then
-								invoke_unit (cursor_main.position);
+								invoke_unit (get_cursor_position);
 							else
 								show_units;
 							end if;
 
 						else
-							finalize_invoke (cursor_main.position, log_threshold + 1);
+							finalize_invoke (get_cursor_position, log_threshold + 1);
 						end if;
 						
 					when others => null;
@@ -636,7 +647,7 @@ is
 					
 					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE | NOUN_VARIANT =>
 						if not clarification_pending then
-							set_property (cursor_main.position);
+							set_property (get_cursor_position);
 						else
 							set_property_selected_unit;
 						end if;
@@ -677,14 +688,14 @@ is
 				case noun is
 					when NOUN_DEVICE =>
 						if not clarification_pending then
-							find_units_for_show (cursor_main.position);
+							find_units_for_show (get_cursor_position);
 						else
 							show_properties_of_selected_device;
 						end if;
 						
 					when NOUN_NET =>
 						if not clarification_pending then
-							find_segments (cursor_main.position);
+							find_segments (get_cursor_position);
 						else
 							show_properties_of_selected_net;
 						end if;
@@ -743,14 +754,14 @@ is
 				case noun is
 					when NOUN_DEVICE =>
 						if not clarification_pending then
-							set_property (cursor_main.position);
+							set_property (get_cursor_position);
 						else
 							set_property_selected_unit;
 						end if;
 
 					when NOUN_NET =>
 						if not clarification_pending then
-							find_segments (cursor_main.position);
+							find_segments (get_cursor_position);
 						else
 							et_canvas_schematic_nets.window_set_property;
 						end if;
@@ -931,7 +942,7 @@ begin -- key_pressed
 	-- CS use redraw_schematic if only schematic affected
 	-- CS redraw after "enter" pressed
 	
-	update_mode_display (canvas);
+	update_mode_display;
 
 	
 	exception when event: others =>
@@ -940,7 +951,7 @@ begin -- key_pressed
 		reset_selections;
 	
 		redraw;
-		update_mode_display (canvas);
+		update_mode_display;
 	
 end key_pressed;
 

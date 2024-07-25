@@ -637,6 +637,87 @@ package body et_canvas_schematic_2 is
 	end cb_draw;
 
 	
+
+	procedure key_pressed (
+		key			: in gdk_key_type;
+		key_shift	: in gdk_modifier_type)
+	is separate;
+
+	
+
+	function cb_canvas_key_pressed (
+		canvas	: access gtk_widget_record'class;
+		event	: gdk_event_key)
+		return boolean
+	is
+		event_handled : boolean := true;
+
+		use gdk.types;		
+		use gdk.types.keysyms;
+		
+		key_ctrl	: gdk_modifier_type := event.state and control_mask;
+		key_shift	: gdk_modifier_type := event.state and shift_mask;
+		key			: gdk_key_type := event.keyval;
+		
+	begin
+		-- Output the the gdk_key_type (which is
+		-- just a number (see gdk.types und gdk.types.keysyms)):
+		put_line ("cb_canvas_key_pressed (schematic)"
+			& " key " & gdk_key_type'image (event.keyval));
+
+		if key_ctrl = control_mask then 
+			case key is
+				when GDK_KP_ADD | GDK_PLUS =>
+					zoom_on_cursor (ZOOM_IN);
+
+				when GDK_KP_SUBTRACT | GDK_MINUS =>
+					zoom_on_cursor (ZOOM_OUT);
+					
+				when others => null;
+			end case;
+
+		else
+			case key is
+				when GDK_ESCAPE =>
+					-- Here the commands to abort any pending 
+					-- operations related to the canvas should be placed:
+
+					null;
+					
+					
+				when GDK_Right =>
+					move_cursor (DIR_RIGHT);
+
+				when GDK_Left =>
+					move_cursor (DIR_LEFT);
+
+				when GDK_Up =>
+					move_cursor (DIR_UP);
+
+				when GDK_Down =>
+					move_cursor (DIR_DOWN);
+
+				when GDK_HOME | GDK_KP_HOME =>
+					-- Move the cursor to the grid point that
+					-- is nearest to the center of the visible area:
+					put_line ("move cursor to center");
+					move_cursor (snap_to_grid (get_center (visible_area)));
+					refresh;
+
+				-- when GDK_F2 =>
+
+					
+				when others => 
+					key_pressed (key, key_shift);
+					
+			end case;
+		end if;
+		
+		return event_handled;
+	end cb_canvas_key_pressed;
+
+
+
 	procedure set_up_canvas is begin
 		put_line ("set_up_canvas (schematic)");
 
@@ -646,8 +727,8 @@ package body et_canvas_schematic_2 is
 		-- NOTE: No context is declared here, because the canvas widget
 		-- passes its own context to the callback procedure cb_draw.
 
+		canvas.on_key_press_event (cb_canvas_key_pressed'access);
 	end set_up_canvas;
-
 
 	
 -- 	procedure set_title_bar (
@@ -1131,17 +1212,15 @@ package body et_canvas_schematic_2 is
 -- 		set_grid (current_active_module, grid, log_threshold + 1);
 -- 		redraw (canvas);
 -- 	end set_grid_y;
--- 
--- 	
--- 	procedure reset_grid_and_cursor (
--- 		self : not null access type_view)
--- 	is begin
--- 		reset_grid_density;
--- 		cursor_main.position := snap_to_grid (cursor_main.position);
--- 		self.update_coordinates_display;
--- 	end reset_grid_and_cursor;
--- 
--- 	
+
+	
+	procedure reset_grid_and_cursor	is begin
+		-- CS reset_grid_density;
+		-- CS cursor.position := snap_to_grid (get_cursor_position);
+		update_cursor_coordinates;
+	end reset_grid_and_cursor;
+
+	
 -- 	procedure set_grid (
 -- 		self	: not null access type_view;
 -- 		density	: in type_grid_density)
@@ -1339,25 +1418,25 @@ package body et_canvas_schematic_2 is
 -- 
 -- 
 -- 	
--- 	procedure reset_selections is begin
--- 		-- Verb and noun remain as they are
--- 		-- so that the mode is unchanged.
--- 		
--- 		reset_request_clarification;
--- 		
--- 		reset_preliminary_segment; -- after move/drag/draw of a net segment
--- 		reset_segments_being_dragged; -- after dragging a unit
--- 		reset_unit_move; -- after moving/dragging a unit
--- 		reset_unit_add; -- after adding a device
--- 		
--- 		reset_label; -- after placing a label
--- 		
--- 		reset_placeholder; -- after moving a placeholder
--- 
--- 		reset_single_cmd_status;
--- 		
--- 		reset_activate_counter;
--- 	end reset_selections;
+	procedure reset_selections is begin
+		-- Verb and noun remain as they are
+		-- so that the mode is unchanged.
+		
+		reset_request_clarification;
+		
+		reset_preliminary_segment; -- after move/drag/draw of a net segment
+		reset_segments_being_dragged; -- after dragging a unit
+		reset_unit_move; -- after moving/dragging a unit
+		reset_unit_add; -- after adding a device
+		
+		reset_label; -- after placing a label
+		
+		reset_placeholder; -- after moving a placeholder
+
+		reset_single_cmd_status;
+		
+		reset_activate_counter;
+	end reset_selections;
 
 	
 	procedure clear_proposed_objects is begin

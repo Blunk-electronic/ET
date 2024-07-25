@@ -1572,18 +1572,6 @@ private
 	access_cb_mouse_wheel_rolled : constant
 		cb_gtk_widget_gdk_event_scroll_boolean := cb_mouse_wheel_rolled'access;
 
-
-
-
-	-- This callback function is called each time the
-	-- operator hits a key and if the canvas has the focus:
-	function cb_canvas_key_pressed (
-		canvas	: access gtk_widget_record'class;
-		event	: gdk_event_key)
-		return boolean;
-
-	access_cb_canvas_key_pressed : constant
-		cb_gtk_widget_gdk_event_key_boolean := cb_canvas_key_pressed'access;
 	
 end et_canvas;
 

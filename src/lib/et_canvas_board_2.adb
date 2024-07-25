@@ -644,6 +644,78 @@ package body et_canvas_board_2 is
 		return event_handled;
 	end cb_draw;
 
+
+
+	function cb_canvas_key_pressed (
+		canvas	: access gtk_widget_record'class;
+		event	: gdk_event_key)
+		return boolean
+	is
+		event_handled : boolean := true;
+
+		use gdk.types;		
+		use gdk.types.keysyms;
+		
+		key_ctrl	: gdk_modifier_type := event.state and control_mask;
+		key_shift	: gdk_modifier_type := event.state and shift_mask;
+		key			: gdk_key_type := event.keyval;
+		
+	begin
+		-- Output the the gdk_key_type (which is
+		-- just a number (see gdk.types und gdk.types.keysyms)):
+		put_line ("cb_canvas_key_pressed (board)"
+			& " key " & gdk_key_type'image (event.keyval));
+
+		if key_ctrl = control_mask then 
+			case key is
+				when GDK_KP_ADD | GDK_PLUS =>
+					zoom_on_cursor (ZOOM_IN);
+
+				when GDK_KP_SUBTRACT | GDK_MINUS =>
+					zoom_on_cursor (ZOOM_OUT);
+					
+				when others => null;
+			end case;
+
+		else
+			case key is
+				when GDK_ESCAPE =>
+					-- Here the commands to abort any pending 
+					-- operations related to the canvas should be placed:
+
+					null;
+					
+					
+				when GDK_Right =>
+					move_cursor (DIR_RIGHT);
+
+				when GDK_Left =>
+					move_cursor (DIR_LEFT);
+
+				when GDK_Up =>
+					move_cursor (DIR_UP);
+
+				when GDK_Down =>
+					move_cursor (DIR_DOWN);
+
+				when GDK_HOME | GDK_KP_HOME =>
+					-- Move the cursor to the grid point that
+					-- is nearest to the center of the visible area:
+					put_line ("move cursor to center");
+					move_cursor (snap_to_grid (get_center (visible_area)));
+					refresh;
+
+				-- when GDK_F2 =>
+
+					
+				when others => null;
+			end case;
+		end if;
+		
+		return event_handled;
+	end cb_canvas_key_pressed;
+
+
 	
 	procedure set_up_canvas is begin
 		put_line ("set_up_canvas (board)");
@@ -654,6 +726,7 @@ package body et_canvas_board_2 is
 		-- NOTE: No context is declared here, because the canvas widget
 		-- passes its own context to the callback procedure cb_draw.
 
+		canvas.on_key_press_event (cb_canvas_key_pressed'access);
 	end set_up_canvas;
 
 
