@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -248,7 +248,9 @@ package body et_geometry_2a.path is
 
 	
 	
-	procedure next_bend_style (path : in out type_path_live) is
+	procedure next_bend_style (
+		path : in out type_path_live) 
+	is
 		i : constant natural := type_bend_style'pos (path.bend_style);
 		-- i points now to the current bend style
 

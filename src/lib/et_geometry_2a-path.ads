@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -94,6 +94,11 @@ package et_geometry_2a.path is
 	end record;
 
 	
+
+	-- Switches to the next bend style of the given live path:
+	procedure next_bend_style (
+		path : in out type_path_live);
+
 	
 end et_geometry_2a.path;
 

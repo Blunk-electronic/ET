@@ -192,7 +192,9 @@ is
 	end drag;
 
 	
-	procedure draw is begin
+	procedure draw is 
+		use pac_path_and_bend;
+	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when GDK_LC_n =>
@@ -227,8 +229,7 @@ is
 			when GDK_LC_b =>
 				case noun is
 					when NOUN_NET =>
-						null;
-						-- CS next_bend_style (preliminary_segment.path);
+						next_bend_style (preliminary_segment.path);
 						
 					when others => null;
 						
