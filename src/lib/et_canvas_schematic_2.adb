@@ -469,7 +469,7 @@ package body et_canvas_schematic_2 is
 	begin
 		-- Output the the gdk_key_type (which is
 		-- just a number (see gdk.types und gdk.types.keysyms)):
-		put_line ("cb_window_key_pressed "
+		put_line ("cb_window_key_pressed (schematic)"
 			& " key " & gdk_key_type'image (event.keyval));
 
 		if key_ctrl = control_mask then 

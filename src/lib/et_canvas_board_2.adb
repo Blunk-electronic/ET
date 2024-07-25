@@ -458,6 +458,11 @@ package body et_canvas_board_2 is
 	is
 		event_handled : boolean := false;
 
+		-- If event_handled is true then
+		-- this event is not passed further
+		-- to widgets down the chain.
+		-- Prosssing the event stops here.
+		
 		use gdk.types;		
 		use gdk.types.keysyms;
 		
@@ -468,7 +473,7 @@ package body et_canvas_board_2 is
 	begin
 		-- Output the the gdk_key_type (which is
 		-- just a number (see gdk.types und gdk.types.keysyms)):
-		put_line ("cb_window_key_pressed "
+		put_line ("cb_window_key_pressed (board)"
 			& " key " & gdk_key_type'image (event.keyval));
 
 		if key_ctrl = control_mask then 
@@ -479,18 +484,6 @@ package body et_canvas_board_2 is
 
 		else
 			case key is
-				when GDK_ESCAPE =>
-					-- Here the commands to abort any pending 
-					-- operations should be placed:
-					
-					-- Abort the zoom-to-area operation:
-					reset_zoom_area;
-
-					-- Do not pass this event further
-					-- to widgets down the chain.
-					-- Prosssing the event stops here.
-					event_handled := true;
-
 
 				-- If the operator presses F2 then change the primary tool:
 				when GDK_F2 =>
@@ -536,7 +529,6 @@ package body et_canvas_board_2 is
 					
 				-- Other keys are propagated to the canvas:
 				when others =>
-					-- CS result := propagate_key_event (current_window, event);
 					event_handled := false;
 
 			end case;
@@ -646,6 +638,13 @@ package body et_canvas_board_2 is
 
 
 
+	procedure key_pressed (
+		key			: in gdk_key_type;
+		key_shift	: in gdk_modifier_type)
+	is separate;
+
+	
+
 	function cb_canvas_key_pressed (
 		canvas	: access gtk_widget_record'class;
 		event	: gdk_event_key)
@@ -679,11 +678,11 @@ package body et_canvas_board_2 is
 
 		else
 			case key is
-				when GDK_ESCAPE =>
-					-- Here the commands to abort any pending 
-					-- operations related to the canvas should be placed:
-
-					null;
+				-- when GDK_ESCAPE =>
+				-- 	-- Here the commands to abort any pending 
+				-- 	-- operations related to the canvas should be placed:
+    -- 
+				-- 	null;
 					
 					
 				when GDK_Right =>
@@ -708,7 +707,8 @@ package body et_canvas_board_2 is
 				-- when GDK_F2 =>
 
 					
-				when others => null;
+				when others =>
+					key_pressed (key, key_shift);
 			end case;
 		end if;
 		

@@ -35,14 +35,24 @@
 --   history of changes:
 --
 
+with et_canvas_tool;					use et_canvas_tool;
+
+with et_modes.board;					use et_modes.board;
+
 with et_board_ops.conductors;			use et_board_ops.conductors;
 with et_board_ops.ratsnest;
 with et_canvas_board_tracks;
 
-separate (et_canvas_board)
+with et_ratsnest;
+
+-- with et_canvas_board_assy_doc;			use et_canvas_board_assy_doc;
+-- with et_canvas_board_silkscreen;		use et_canvas_board_silkscreen;
+
+
+separate (et_canvas_board_2)
+
 
 procedure key_pressed (
-	self		: not null access type_view;
 	key			: in gdk_key_type;
 	key_shift	: in gdk_modifier_type)
 is
@@ -51,23 +61,23 @@ is
 
 	use et_modes;
 
-	point : type_vector_model renames cursor_main.position;
+	point : type_vector_model renames get_cursor_position;
 	
 
 	procedure delete is begin
 		case key is
 			when GDK_LC_a =>
 				noun := NOUN_ASSY;
-				set_status (et_canvas_board_assy_doc.status_delete_object);
+				-- CS -- CS set_status (et_canvas_board_assy_doc.status_delete_object);
 
 			when GDK_LC_s =>
 				noun := NOUN_SILKSCREEN;
-				set_status (et_canvas_board_silkscreen.status_delete_object);
+				-- CS -- CS set_status (et_canvas_board_silkscreen.status_delete_object);
 
 			
 			when GDK_LC_n =>
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
-				set_status (status_delete_device);
+				-- CS -- CS set_status (status_delete_device);
 
 			-- NOTE: Electrical devices can be deleted in
 			-- schematic only !
@@ -75,55 +85,59 @@ is
 
 			when GDK_LC_v =>
 				noun := NOUN_VIA;
-				set_status (status_delete_via);
+				-- CS -- CS set_status (status_delete_via);
 
 				
 				
 			-- If space pressed then the operator wishes to operate by keyboard:
 			when GDK_Space =>		
-				case noun is
-					when NOUN_ASSY =>
-						et_canvas_board_assy_doc.delete_object (point);
-
-					when NOUN_SILKSCREEN =>
-						et_canvas_board_silkscreen.delete_object (point);
-
-
-					when NOUN_NON_ELECTRICAL_DEVICE =>
-						delete_non_electrical_device (KEYBOARD, point);
-
-					when NOUN_VIA =>
-						delete_via (KEYBOARD, point);
-						
-					when others => null;
-				end case;		
+				null;
+				-- CS
+-- 				case noun is
+-- 					when NOUN_ASSY =>
+-- 						et_canvas_board_assy_doc.delete_object (point);
+-- 
+-- 					when NOUN_SILKSCREEN =>
+-- 						et_canvas_board_silkscreen.delete_object (point);
+-- 
+-- 
+-- 					when NOUN_NON_ELECTRICAL_DEVICE =>
+-- 						delete_non_electrical_device (KEYBOARD, point);
+-- 
+-- 					when NOUN_VIA =>
+-- 						delete_via (KEYBOARD, point);
+-- 						
+-- 					when others => null;
+-- 				end case;		
 
 
 			-- If page down pressed, then the operator is clarifying:
 			when GDK_page_down =>
-				case noun is
-					when NOUN_ASSY =>
-						if clarification_pending then
-							et_canvas_board_assy_doc.select_object;
-						end if;
-
-					when NOUN_SILKSCREEN =>
-						if clarification_pending then
-							et_canvas_board_silkscreen.select_object;
-						end if;
-					
-					when NOUN_NON_ELECTRICAL_DEVICE =>
-						if clarification_pending then
-							select_non_electrical_device;
-						end if;
-
-					when NOUN_VIA =>
-						if clarification_pending then
-							select_via;
-						end if;
-
-					when others => null;							
-				end case;
+				null;
+				-- CS
+-- 				case noun is
+-- 					when NOUN_ASSY =>
+-- 						if clarification_pending then
+-- 							et_canvas_board_assy_doc.select_object;
+-- 						end if;
+-- 
+-- 					when NOUN_SILKSCREEN =>
+-- 						if clarification_pending then
+-- 							et_canvas_board_silkscreen.select_object;
+-- 						end if;
+-- 					
+-- 					when NOUN_NON_ELECTRICAL_DEVICE =>
+-- 						if clarification_pending then
+-- 							select_non_electrical_device;
+-- 						end if;
+-- 
+-- 					when NOUN_VIA =>
+-- 						if clarification_pending then
+-- 							select_via;
+-- 						end if;
+-- 
+-- 					when others => null;							
+-- 				end case;
 
 				
 			when others => status_noun_invalid;
@@ -137,7 +151,7 @@ is
 				noun := NOUN_ZONE;
 				fill_zones (current_active_module, NORMAL, log_threshold + 1);
 
-				set_status ("zones filled");
+				-- CS set_status ("zones filled");
 				
 			when others => status_noun_invalid;
 		end case;
@@ -148,41 +162,45 @@ is
 		case key is
 			when GDK_LC_d =>
 				noun := NOUN_DEVICE;
-				set_status (status_flip_device);
+				-- CS set_status (status_flip_device);
 
 			when GDK_LC_n =>
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
-				set_status (status_flip_device);
+				-- CS set_status (status_flip_device);
 
 				
 			-- If space pressed then the operator wishes to operate by keyboard:
 			when GDK_Space =>		
-				case noun is
-					when NOUN_DEVICE =>				
-						flip_electrical_device (KEYBOARD, point);
-
-					when NOUN_NON_ELECTRICAL_DEVICE =>
-						flip_non_electrical_device (KEYBOARD, point);
-						
-					when others => null;
-				end case;		
+				null;
+				-- CS
+-- 				case noun is
+-- 					when NOUN_DEVICE =>				
+-- 						flip_electrical_device (KEYBOARD, point);
+-- 
+-- 					when NOUN_NON_ELECTRICAL_DEVICE =>
+-- 						flip_non_electrical_device (KEYBOARD, point);
+-- 						
+-- 					when others => null;
+-- 				end case;		
 
 
 			-- If page down pressed, then the operator is clarifying:
 			when GDK_page_down =>
-				case noun is
-					when NOUN_DEVICE =>
-						if clarification_pending then
-							select_electrical_device;
-						end if;
-
-					when NOUN_NON_ELECTRICAL_DEVICE =>
-						if clarification_pending then
-							select_non_electrical_device;
-						end if;
-
-					when others => null;							
-				end case;
+				null;
+				-- CS
+				-- case noun is
+				-- 	when NOUN_DEVICE =>
+				-- 		if clarification_pending then
+				-- 			select_electrical_device;
+				-- 		end if;
+    -- 
+				-- 	when NOUN_NON_ELECTRICAL_DEVICE =>
+				-- 		if clarification_pending then
+				-- 			select_non_electrical_device;
+				-- 		end if;
+    -- 
+				-- 	when others => null;							
+				-- end case;
 				
 			when others => status_noun_invalid;
 		end case;
@@ -193,141 +211,148 @@ is
 		case key is
 			when GDK_LC_a =>
 				noun := NOUN_ASSY;
-				set_status (et_canvas_board_assy_doc.status_move_object);
+				-- CS set_status (et_canvas_board_assy_doc.status_move_object);
 
 			when GDK_LC_s =>
 				noun := NOUN_SILKSCREEN;
-				set_status (et_canvas_board_silkscreen.status_move_object);
+				-- CS set_status (et_canvas_board_silkscreen.status_move_object);
 
 			when GDK_LC_r =>
 				noun := NOUN_TRACK;
-				set_status (et_canvas_board_tracks.status_move_track);
+				-- CS set_status (et_canvas_board_tracks.status_move_track);
 				
 			when GDK_LC_d =>
 				noun := NOUN_DEVICE;
-				set_status (status_move_device);
+				-- CS set_status (status_move_device);
 
 			when GDK_LC_n =>
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
-				set_status (status_move_device);
+				-- CS set_status (status_move_device);
 
 			when GDK_LC_v =>
 				noun := NOUN_VIA;
-				set_status (status_move_via);
+				-- CS set_status (status_move_via);
 		
 			when GDK_LC_t =>
 				noun := NOUN_TEXT;
-				set_status (status_move_text);
+				-- CS set_status (status_move_text);
 
 
 				
 			-- If space pressed then the operator wishes to operate by keyboard:
-			when GDK_Space =>		
-				case noun is
-					when NOUN_ASSY =>
-						et_canvas_board_assy_doc.move_object (KEYBOARD, point);
-
-					when NOUN_SILKSCREEN =>
-						et_canvas_board_silkscreen.move_object (KEYBOARD, point);
-						
-					when NOUN_TRACK =>
-						et_canvas_board_tracks.move_track (KEYBOARD, point);
-
-					when NOUN_DEVICE =>		
-						move_electrical_device (KEYBOARD, point);
-						
-					when NOUN_NON_ELECTRICAL_DEVICE =>
-						move_non_electrical_device (KEYBOARD, point);
-
-					when NOUN_TEXT =>
-						move_text (KEYBOARD, point);
-						
-					when NOUN_VIA =>
-						move_via (KEYBOARD, point);
-
-					when others => null;
-				end case;		
+			when GDK_Space =>	
+				null;
+				-- CS
+-- 				case noun is
+-- 					when NOUN_ASSY =>
+-- 						et_canvas_board_assy_doc.move_object (KEYBOARD, point);
+-- 
+-- 					when NOUN_SILKSCREEN =>
+-- 						et_canvas_board_silkscreen.move_object (KEYBOARD, point);
+-- 						
+-- 					when NOUN_TRACK =>
+-- 						et_canvas_board_tracks.move_track (KEYBOARD, point);
+-- 
+-- 					when NOUN_DEVICE =>		
+-- 						move_electrical_device (KEYBOARD, point);
+-- 						
+-- 					when NOUN_NON_ELECTRICAL_DEVICE =>
+-- 						move_non_electrical_device (KEYBOARD, point);
+-- 
+-- 					when NOUN_TEXT =>
+-- 						move_text (KEYBOARD, point);
+-- 						
+-- 					when NOUN_VIA =>
+-- 						move_via (KEYBOARD, point);
+-- 
+-- 					when others => null;
+-- 				end case;		
 
 
 			-- If page down pressed, then the operator is clarifying:
 			when GDK_page_down =>
-				case noun is
-
-					--when NOUN_NAME => 
-						--if clarification_pending then
-							--clarify_placeholder;
-						--end if;
-
-					--when NOUN_PURPOSE => 
-						--if clarification_pending then
-							--clarify_placeholder;
-						--end if;
-
-					when NOUN_ASSY =>
-						if clarification_pending then
-							et_canvas_board_assy_doc.select_object;
-						end if;
-
-					when NOUN_SILKSCREEN =>
-						if clarification_pending then
-							et_canvas_board_silkscreen.select_object;
-						end if;
-
-					when NOUN_TRACK =>
-						if clarification_pending then
-							et_canvas_board_tracks.select_track;
-						end if;
-						
-					when NOUN_DEVICE =>
-						if clarification_pending then
-							select_electrical_device;
-						end if;
-
-					when NOUN_NON_ELECTRICAL_DEVICE =>
-						if clarification_pending then
-							select_non_electrical_device;
-						end if;
-
-					when NOUN_TEXT =>
-						if clarification_pending then
-							select_text;
-						end if;
-						
-					when NOUN_VIA =>
-						if clarification_pending then
-							select_via;
-						end if;
-
-						
-					--when NOUN_VALUE => 
-						--if clarification_pending then
-							--clarify_placeholder;
-						--end if;
-						
-					when others => null;							
-				end case;
+				-- CS
+				null;
+-- 				case noun is
+-- 
+-- 					--when NOUN_NAME => 
+-- 						--if clarification_pending then
+-- 							--clarify_placeholder;
+-- 						--end if;
+-- 
+-- 					--when NOUN_PURPOSE => 
+-- 						--if clarification_pending then
+-- 							--clarify_placeholder;
+-- 						--end if;
+-- 
+-- 					when NOUN_ASSY =>
+-- 						if clarification_pending then
+-- 							et_canvas_board_assy_doc.select_object;
+-- 						end if;
+-- 
+-- 					when NOUN_SILKSCREEN =>
+-- 						if clarification_pending then
+-- 							et_canvas_board_silkscreen.select_object;
+-- 						end if;
+-- 
+-- 					when NOUN_TRACK =>
+-- 						if clarification_pending then
+-- 							et_canvas_board_tracks.select_track;
+-- 						end if;
+-- 						
+-- 					when NOUN_DEVICE =>
+-- 						if clarification_pending then
+-- 							select_electrical_device;
+-- 						end if;
+-- 
+-- 					when NOUN_NON_ELECTRICAL_DEVICE =>
+-- 						if clarification_pending then
+-- 							select_non_electrical_device;
+-- 						end if;
+-- 
+-- 					when NOUN_TEXT =>
+-- 						if clarification_pending then
+-- 							select_text;
+-- 						end if;
+-- 						
+-- 					when NOUN_VIA =>
+-- 						if clarification_pending then
+-- 							select_via;
+-- 						end if;
+-- 
+-- 						
+-- 					--when NOUN_VALUE => 
+-- 						--if clarification_pending then
+-- 							--clarify_placeholder;
+-- 						--end if;
+-- 						
+-- 					when others => null;							
+-- 				end case;
 				
 			when others => status_noun_invalid;
 		end case;
 	end move;
 
 
-	procedure draw is begin
+	procedure draw is 
+		use pac_path_and_bend;
+	begin
 		case key is
 			when GDK_LC_l =>
 				noun := NOUN_LINE;
 
-				reset_preliminary_line;
+				-- CS reset_preliminary_line;
 				
-				show_line_properties;
-				set_status (status_draw_line);
+				-- CS show_line_properties;
+				-- CS set_status (status_draw_line);
 
 
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when GDK_Space =>
 				case noun is
 					when NOUN_LINE =>
-						make_path (KEYBOARD, point);
+						null;
+						-- CS make_path (KEYBOARD, point);
 						
 					when others => null;
 				end case;
@@ -337,7 +362,8 @@ is
 			when GDK_LC_b =>
 				case noun is
 					when NOUN_LINE =>
-						next_bend_style (preliminary_line.path);
+						null;
+						-- CS next_bend_style (preliminary_line.path);
 						
 					when others => null;
 				end case;
@@ -352,25 +378,27 @@ is
 			-- EVALUATE KEY FOR NOUN:
 			when GDK_LC_t =>
 				noun := NOUN_TEXT;
-				show_text_properties;
-				set_status (status_place_text);
+				-- CS show_text_properties;
+				-- CS set_status (status_place_text);
 
 			when GDK_LC_v =>
 				noun := NOUN_VIA;
-				show_via_properties;
-				set_status (status_place_via);
+				-- CS show_via_properties;
+				-- CS set_status (status_place_via);
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when GDK_Space =>
-				case noun is
-					when NOUN_TEXT =>
-						place_text (point);
-
-					when NOUN_VIA =>
-						place_via (point);
-						
-					when others => null;
-				end case;
+				null;
+				-- CS
+-- 				case noun is
+-- 					when NOUN_TEXT =>
+-- 						place_text (point);
+-- 
+-- 					when NOUN_VIA =>
+-- 						place_via (point);
+-- 						
+-- 					when others => null;
+-- 				end case;
 				
 			when others => status_noun_invalid;
 		end case;
@@ -381,42 +409,46 @@ is
 		case key is
 			when GDK_LC_d =>
 				noun := NOUN_DEVICE;
-				set_status (status_rotate_device);
+				-- CS set_status (status_rotate_device);
 
 			when GDK_LC_n =>
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
-				set_status (status_rotate_device);
+				-- CS set_status (status_rotate_device);
 
 				
 			-- If space pressed then the operator wishes to operate
 			-- by keyboard:
 			when GDK_Space =>		
-				case noun is
-					when NOUN_DEVICE =>
-						rotate_electrical_device (KEYBOARD, point);
-
-					when NOUN_NON_ELECTRICAL_DEVICE =>							
-						rotate_non_electrical_device (KEYBOARD, point);
-						
-					when others => null;
-				end case;		
+				null;
+				-- CS
+-- 				case noun is
+-- 					when NOUN_DEVICE =>
+-- 						rotate_electrical_device (KEYBOARD, point);
+-- 
+-- 					when NOUN_NON_ELECTRICAL_DEVICE =>							
+-- 						rotate_non_electrical_device (KEYBOARD, point);
+-- 						
+-- 					when others => null;
+-- 				end case;		
 
 
 			-- If page down pressed, then the operator is clarifying:
 			when GDK_page_down =>
-				case noun is
-					when NOUN_DEVICE =>
-						if clarification_pending then
-							select_electrical_device;
-						end if;
-
-					when NOUN_NON_ELECTRICAL_DEVICE =>
-						if clarification_pending then
-							select_non_electrical_device;
-						end if;
-						
-					when others => null;							
-				end case;
+				null;
+				-- CS
+-- 				case noun is
+-- 					when NOUN_DEVICE =>
+-- 						if clarification_pending then
+-- 							select_electrical_device;
+-- 						end if;
+-- 
+-- 					when NOUN_NON_ELECTRICAL_DEVICE =>
+-- 						if clarification_pending then
+-- 							select_non_electrical_device;
+-- 						end if;
+-- 						
+-- 					when others => null;							
+-- 				end case;
 				
 			when others => status_noun_invalid;
 		end case;
@@ -430,17 +462,18 @@ is
 			when GDK_LC_n =>
 				noun := NOUN_NET;
 
-				reset_preliminary_track;
+				-- CS reset_preliminary_track;
 				
-				show_track_properties;
-				set_status (status_draw_track);
+				-- CS show_track_properties;
+				-- CS set_status (status_draw_track);
 
 
 			-- If space pressed, then the operator wishes to operate via keyboard.
 			when GDK_Space =>
 				case noun is
 					when NOUN_NET =>
-						et_canvas_board_tracks.make_path (KEYBOARD, point);
+						null;
+						-- CS et_canvas_board_tracks.make_path (KEYBOARD, point);
 						
 					when others => null;
 				end case;
@@ -450,7 +483,8 @@ is
 			when GDK_LC_m =>
 				case noun is
 					when NOUN_NET =>
-						next_snap_mode;
+						null;
+						-- CS next_snap_mode;
 						
 					when others => null;
 				end case;
@@ -460,7 +494,8 @@ is
 			when GDK_LC_b =>
 				case noun is
 					when NOUN_NET =>
-						next_bend_style (preliminary_track.path);
+						null;
+						-- CS next_bend_style (preliminary_track.path);
 						
 					when others => null;
 				end case;
@@ -538,7 +573,7 @@ is
 				noun := NOUN_RATSNEST;
 				update_ratsnest (current_active_module, log_threshold + 1);
 
-				set_status (status_ratsnest_updated);
+				-- CS set_status (status_ratsnest_updated);
 				
 			when others => status_noun_invalid;
 		end case;
@@ -560,24 +595,25 @@ begin -- key_pressed
 			reset_request_clarification;
 			status_enter_verb;
 
-			reset_preliminary_line;
-			reset_preliminary_text; -- after placing a text
-			reset_preliminary_via; -- after placing a via
-			et_canvas_board_tracks.reset_preliminary_track; -- after laying out a track
-			et_canvas_board_tracks.reset_preliminary_segment; -- after moving, ripping-up a conductor segment
-			et_canvas_board_tracks.reset_airwires;
-			et_canvas_board_tracks.reset_ripup_mode;
-			reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
-			reset_preliminary_non_electrical_device;
-
-			et_canvas_board_assy_doc.reset_preliminary_object;
-			et_canvas_board_silkscreen.reset_preliminary_object;
+			-- CS
+			-- reset_preliminary_line;
+			-- reset_preliminary_text; -- after placing a text
+			-- reset_preliminary_via; -- after placing a via
+			-- et_canvas_board_tracks.reset_preliminary_track; -- after laying out a track
+			-- et_canvas_board_tracks.reset_preliminary_segment; -- after moving, ripping-up a conductor segment
+			-- et_canvas_board_tracks.reset_airwires;
+			-- et_canvas_board_tracks.reset_ripup_mode;
+			-- reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
+			-- reset_preliminary_non_electrical_device;
+   -- 
+			-- et_canvas_board_assy_doc.reset_preliminary_object;
+			-- et_canvas_board_silkscreen.reset_preliminary_object;
 			
 		when GDK_F11 =>
-			et_canvas_schematic.previous_module;
+			et_canvas_schematic_2.previous_module;
 
 		when GDK_F12 =>
-			et_canvas_schematic.next_module;
+			et_canvas_schematic_2.next_module;
 			
 		when others =>
 			
@@ -691,16 +727,16 @@ begin -- key_pressed
 	-- CS redraw after "enter" pressed
 
 	
-	update_mode_display (canvas);
+	update_mode_display;
 
 	
 	exception when event: others =>
-		set_status (exception_message (event));
+		-- CS set_status (exception_message (event));
 
 		--reset_selections;
 	
 		redraw;
-		update_mode_display (canvas);
+		update_mode_display;
 	
 end key_pressed;
 
