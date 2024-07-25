@@ -50,7 +50,8 @@ with ada.calendar.formatting;		use ada.calendar.formatting;
 
 
 with et_scripting;
--- with et_modes;
+with et_modes;						use et_modes;
+with et_modes.board;				use et_modes.board;
 -- with et_project;
 
 with et_frames;
@@ -678,11 +679,32 @@ package body et_canvas_board_2 is
 
 		else
 			case key is
-				-- when GDK_ESCAPE =>
-				-- 	-- Here the commands to abort any pending 
-				-- 	-- operations related to the canvas should be placed:
-    -- 
-				-- 	null;
+				when GDK_ESCAPE =>
+					-- Here the commands to abort any pending 
+					-- operations related to the canvas should be placed:
+
+					expect_entry := expect_entry_default;
+					
+					-- Verb and noun remain as they are
+					-- so that the mode is unchanged.
+					
+					reset_request_clarification;
+					status_enter_verb;
+
+					-- CS
+					-- reset_preliminary_line;
+					-- reset_preliminary_text; -- after placing a text
+					-- reset_preliminary_via; -- after placing a via
+					-- et_canvas_board_tracks.reset_preliminary_track; -- after laying out a track
+					-- et_canvas_board_tracks.reset_preliminary_segment; -- after moving, ripping-up a conductor segment
+					-- et_canvas_board_tracks.reset_airwires;
+					-- et_canvas_board_tracks.reset_ripup_mode;
+					-- reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
+					-- reset_preliminary_non_electrical_device;
+
+					-- et_canvas_board_assy_doc.reset_preliminary_object;
+					-- et_canvas_board_silkscreen.reset_preliminary_object;
+
 					
 					
 				when GDK_Right =>
@@ -704,7 +726,13 @@ package body et_canvas_board_2 is
 					move_cursor (snap_to_grid (get_center (visible_area)));
 					refresh;
 
-				-- when GDK_F2 =>
+					
+				when GDK_F11 =>
+					et_canvas_schematic_2.previous_module;
+
+				when GDK_F12 =>
+					et_canvas_schematic_2.next_module;
+
 
 					
 				when others =>

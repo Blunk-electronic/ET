@@ -586,34 +586,6 @@ begin -- key_pressed
 -- 		put_line (gdk_modifier_type'image (key_ctrl));
 
 	case key is
-		when GDK_Escape =>
-			expect_entry := expect_entry_default;
-			
-			-- Verb and noun remain as they are
-			-- so that the mode is unchanged.
-			
-			reset_request_clarification;
-			status_enter_verb;
-
-			-- CS
-			-- reset_preliminary_line;
-			-- reset_preliminary_text; -- after placing a text
-			-- reset_preliminary_via; -- after placing a via
-			-- et_canvas_board_tracks.reset_preliminary_track; -- after laying out a track
-			-- et_canvas_board_tracks.reset_preliminary_segment; -- after moving, ripping-up a conductor segment
-			-- et_canvas_board_tracks.reset_airwires;
-			-- et_canvas_board_tracks.reset_ripup_mode;
-			-- reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
-			-- reset_preliminary_non_electrical_device;
-   -- 
-			-- et_canvas_board_assy_doc.reset_preliminary_object;
-			-- et_canvas_board_silkscreen.reset_preliminary_object;
-			
-		when GDK_F11 =>
-			et_canvas_schematic_2.previous_module;
-
-		when GDK_F12 =>
-			et_canvas_schematic_2.next_module;
 			
 		when others =>
 			
