@@ -1214,9 +1214,10 @@ package body et_canvas_schematic_2 is
 -- 	end set_grid_y;
 
 	
-	procedure reset_grid_and_cursor	is begin
-		-- CS reset_grid_density;
-		-- CS cursor.position := snap_to_grid (get_cursor_position);
+	procedure reset_grid_and_cursor	is 
+	begin
+		et_coordinates_2.pac_grid.reset_grid_density;
+		move_cursor (snap_to_grid (get_cursor_position));
 		update_cursor_coordinates;
 	end reset_grid_and_cursor;
 

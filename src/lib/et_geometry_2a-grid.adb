@@ -4,7 +4,7 @@
 --                                                                          --
 --                                GRID                                      --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2024                                                       --
 -- Mario Blunk / Blunk electronic                                           --
@@ -36,70 +36,27 @@
 --   history of changes:
 --
 
-with et_logical_pixels;			use et_logical_pixels;
 
-generic
-	
-package et_geometry_2a.grid is
+package body et_geometry_2a.grid is
 
-
-	-- The grid helps the operator to align or place objects:
-	type type_grid_on_off is (GRID_ON, GRID_OFF);
-	type type_grid_style is (STYLE_DOTS, STYLE_LINES);
-
-	-- The linewidth of the grid lines:
-	grid_width_lines : constant type_logical_pixels_positive := 0.5;
-
-	-- The linewidth of the circles which form the grid dots:
-	grid_width_dots : constant type_logical_pixels_positive := 1.0;
-	grid_radius_dots : constant type_logical_pixels_positive := 0.5;
+	function to_string (density : in type_grid_density) return string is begin
+		return type_grid_density'image (density);
+	end to_string;
 
 	
-	-- The arm length of a grid point if drawn as a cross:
-	grid_cross_arm_length : constant type_logical_pixels_positive := 1.0;
-
-
-
-	-- The default grid size in in the model domain:
-	grid_spacing_default : constant type_distance_positive := 10.0; 
-
-		
-	-- If the displayed grid is too dense, then it makes no
-	-- sense to draw a grid. For this reason we define a minimum
-	-- distance between grid rows and columns. If the spacing becomes
-	-- greater than this threshold then the grid will be drawn:
-	grid_spacing_min : constant type_logical_pixels_positive := 10.0;
+	procedure next_grid_density is begin
+		if grid_density = type_grid_density'last then
+			grid_density := type_grid_density'first;
+		else
+			grid_density := type_grid_density'succ (grid_density);
+		end if;
+	end next_grid_density;
 
 	
-	type type_grid is record
-		on		: type_grid_on_off := GRID_ON;
-		-- on		: type_grid_on_off := GRID_OFF;
-		spacing : type_vector_model := (others => grid_spacing_default);
-		style	: type_grid_style := STYLE_DOTS;
-		--style	: type_grid_style := STYLE_LINES;
-	end record;
+	procedure reset_grid_density is begin
+		grid_density := grid_density_default;
+	end reset_grid_density;
 
-
-
-
-	-- The grid density is used to switch the grid size (the spacing between the grid points).
-	-- Depending on the grid density, a multiplier will be applied to
-	-- the default grid (as defined in the module database).
-	type type_grid_density is (
-			COARSE,
-			NORMAL,
-			FINE);
-
-	function to_string (density : in type_grid_density) return string;
-	
-	grid_density_default : constant type_grid_density := NORMAL;
-	grid_density : type_grid_density := NORMAL;
-
-	procedure next_grid_density;
-
-	procedure reset_grid_density;
-
-	
 	
 end et_geometry_2a.grid;
 
