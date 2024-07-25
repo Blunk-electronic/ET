@@ -50,7 +50,8 @@ with ada.calendar.formatting;		use ada.calendar.formatting;
 -- with et_devices;					use et_devices;
 -- 
 with et_scripting;
-with et_modes;
+with et_modes;						use et_modes;
+with et_modes.schematic;			use et_modes.schematic;
 -- with et_project;
 
 with et_frames;
@@ -453,6 +454,11 @@ package body et_canvas_schematic_2 is
 	is
 		event_handled : boolean := false;
 
+		-- If event_handled is true then
+		-- this event is not passed further
+		-- to widgets down the chain.
+		-- Prosssing the event stops here.
+		
 		use gdk.types;		
 		use gdk.types.keysyms;
 		
@@ -474,19 +480,6 @@ package body et_canvas_schematic_2 is
 
 		else
 			case key is
-				when GDK_ESCAPE =>
-					-- Here the commands to abort any pending 
-					-- operations should be placed:
-					
-					-- Abort the zoom-to-area operation:
-					reset_zoom_area;
-
-					-- Do not pass this event further
-					-- to widgets down the chain.
-					-- Prosssing the event stops here.
-					event_handled := true;
-
-					
 
 				-- If the operator presses F2 then change the primary tool:
 				when GDK_F2 =>
@@ -540,12 +533,10 @@ package body et_canvas_schematic_2 is
 					
 				when GDK_F12 =>
 					next_module;
-
 					
 
 				-- Other keys are propagated to the canvas:
 				when others =>
-					-- CS result := propagate_key_event (current_window, event);
 					event_handled := false;
 
 			end case;
@@ -682,8 +673,10 @@ package body et_canvas_schematic_2 is
 					-- Here the commands to abort any pending 
 					-- operations related to the canvas should be placed:
 
-					null;
-					
+					expect_entry := expect_entry_default;
+					reset_selections;
+					status_enter_verb;			
+				
 					
 				when GDK_Right =>
 					move_cursor (DIR_RIGHT);
@@ -704,8 +697,25 @@ package body et_canvas_schematic_2 is
 					move_cursor (snap_to_grid (get_center (visible_area)));
 					refresh;
 
-				-- when GDK_F2 =>
+				-- Advance to next sheet:
+				when GDK_KP_Add =>
+					current_active_sheet := current_active_sheet + 1;
+					update_sheet_number_display;
 
+				-- Advance to previous sheet:
+				when GDK_KP_Subtract =>
+					if current_active_sheet > sheet_default then
+						current_active_sheet := current_active_sheet - 1;
+						update_sheet_number_display;
+					end if;
+
+				when GDK_F11 =>
+					previous_module;
+
+				when GDK_F12 =>
+					next_module;
+
+					
 					
 				when others => 
 					key_pressed (key, key_shift);
@@ -1437,6 +1447,8 @@ package body et_canvas_schematic_2 is
 		reset_single_cmd_status;
 		
 		reset_activate_counter;
+
+		reset_zoom_area; -- abort zoom-to-area operation
 	end reset_selections;
 
 	
@@ -1446,27 +1458,6 @@ package body et_canvas_schematic_2 is
 	end clear_proposed_objects;
 
 	
--- 	procedure key_pressed (
--- 		self		: not null access type_view;
--- 		key			: in gdk_key_type;
--- 		key_shift	: in gdk_modifier_type)
--- 	is separate;
--- 
--- 	
--- 	overriding procedure mouse_moved (
--- 		self	: not null access type_view;
--- 		point	: in type_vector_model) 
--- 	is separate;
--- 
--- 	
--- 	overriding procedure button_pressed (
--- 		self	: not null access type_view;
--- 		button	: in type_mouse_button;
--- 		point	: in type_vector_model) 
--- 	is separate;
--- 
--- 	
--- 	
 -- 	procedure reset_properties_selection (
 -- 		self : not null access type_view)
 -- 	is 

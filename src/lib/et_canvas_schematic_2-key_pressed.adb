@@ -798,28 +798,6 @@ begin -- key_pressed
 -- 		put_line (gdk_modifier_type'image (key_ctrl));
 
 	case key is
-		when GDK_Escape =>
-			expect_entry := expect_entry_default;
-			reset_selections;
-			status_enter_verb;			
-
-		-- Advance to next sheet:
-		when GDK_KP_Add =>
-			current_active_sheet := current_active_sheet + 1;
-			update_sheet_number_display;
-
-		-- Advance to previous sheet:
-		when GDK_KP_Subtract =>
-			if current_active_sheet > sheet_default then
-				current_active_sheet := current_active_sheet - 1;
-				update_sheet_number_display;
-			end if;
-
-		when GDK_F11 =>
-			previous_module;
-
-		when GDK_F12 =>
-			next_module;
 			
 		when others =>
 
