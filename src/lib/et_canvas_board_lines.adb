@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -67,7 +67,7 @@ with gtk.container;					use gtk.container;
 with gtk.button;					use gtk.button;
 
 with et_project.modules;				use et_project.modules;
-with et_canvas_board;
+with et_canvas_board_2;
 
 with et_board_ops;						use et_board_ops;
 with et_board_ops.assy_doc;
@@ -89,7 +89,7 @@ with et_commit;
 
 package body et_canvas_board_lines is
 
-	use et_canvas_board.pac_canvas;
+	use et_canvas_board_2.pac_canvas;
 
 
 	procedure reset_preliminary_line is begin
@@ -98,7 +98,7 @@ package body et_canvas_board_lines is
 
 		-- Remove the text properties bar from the window:
 		if box_properties.displayed then
-			remove (box_right, box_properties.box_main);
+			-- CS remove (box_right, box_properties.box_main);
 			box_properties.displayed := false;
 		end if;
 	end reset_preliminary_line;
@@ -133,7 +133,7 @@ package body et_canvas_board_lines is
 				null;
 		end case;
 		
-		et_canvas_board.redraw_board;
+		et_canvas_board_2.redraw_board;
 	end layer_category_changed;
 
 	
@@ -154,7 +154,7 @@ package body et_canvas_board_lines is
 		preliminary_line.face := to_face (glib.values.get_string (item_text));
 		--put_line ("face " & to_string (preliminary_line.face));
 
-		et_canvas_board.redraw_board;
+		et_canvas_board_2.redraw_board;
 		
 		-- CS display layer ?
 	end face_changed;
@@ -180,7 +180,7 @@ package body et_canvas_board_lines is
 		-- display the affected conductor layer:
 		enable_conductor (preliminary_line.signal_layer);
 		
-		et_canvas_board.redraw_board;		
+		et_canvas_board_2.redraw_board;		
 	end signal_layer_changed;
 
 	
@@ -197,7 +197,7 @@ package body et_canvas_board_lines is
 		-- CS validate. output error in status bar
 		preliminary_line.width := width;
 
-		et_canvas_board.redraw_board;
+		et_canvas_board_2.redraw_board;
 	end apply_line_width;
 
 	
@@ -482,12 +482,12 @@ package body et_canvas_board_lines is
 			box_properties.displayed := true;
 		
 			gtk_new_hbox (box_properties.box_main);
-			pack_start (et_canvas_board.pac_canvas.box_right, box_properties.box_main,
-						expand	=> false);
+			-- CS pack_start (et_canvas_board_2.pac_canvas.box_right, box_properties.box_main,
+						-- expand	=> false);
 
 			-- The properties bar is to be displayed in the right box
 			-- below the console:
-			reorder_child (box_right, box_properties.box_main, 1);
+			-- CS reorder_child (box_right, box_properties.box_main, 1);
 
 			-- build the elements of the properties bar:
 			make_combo_category;
@@ -497,7 +497,7 @@ package body et_canvas_board_lines is
 			-- make_apply_button;
 
 			-- Redraw the right box of the window:
-			box_right.show_all;
+			-- CS box_right.show_all;
 		end if;
 		
 	end show_line_properties;
@@ -568,7 +568,7 @@ package body et_canvas_board_lines is
 	begin -- make_path
 		
 		-- Set the tool being used for this path so that procedure
-		-- draw_path (for example in et_canvas_board-draw_nets-draw_assy_doc)
+		-- draw_path (for example in et_canvas_board_2-draw_nets-draw_assy_doc)
 		-- knows where to get the end point from.
 		PL.tool := tool;
 
@@ -606,7 +606,7 @@ package body et_canvas_board_lines is
 				else
 					-- The path is bended. The bend point has been computed
 					-- interactively while moving the mouse or the cursor.
-					-- See for example procedure draw_path in et_canvas_board-draw_assy_doc.
+					-- See for example procedure draw_path in et_canvas_board_2-draw_assy_doc.
 
 					-- insert first line of the path:
 					line.start_point := PL.path.start_point;

@@ -6,7 +6,9 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -39,10 +41,12 @@
 
 with gtk.box;							use gtk.box;
 
-with et_canvas_general;					use et_canvas_general;
-with et_canvas_board;
-with et_pcb_coordinates;				use et_pcb_coordinates;
-use et_pcb_coordinates.pac_geometry_2;
+with et_canvas_tool;					use et_canvas_tool;
+with et_canvas_messages;				use et_canvas_messages;
+with et_canvas_board_2;
+with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
+use et_pcb_coordinates_2.pac_geometry_2;
+use et_pcb_coordinates_2.pac_path_and_bend;
 
 with et_board_shapes_and_text;			use et_board_shapes_and_text;
 
@@ -59,7 +63,7 @@ with et_stop_mask;						use et_stop_mask;
 
 package et_canvas_board_lines is
 
-	use et_canvas_board.pac_canvas;
+	use et_canvas_board_2.pac_canvas;
 	
 
 	-- The text properties bar:

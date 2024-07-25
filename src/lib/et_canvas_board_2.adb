@@ -72,7 +72,7 @@ with et_text;
 -- with et_ratsnest;					--use et_ratsnest;
 -- with et_exceptions;					use et_exceptions;
 -- 
--- with et_canvas_board_lines;			use et_canvas_board_lines;
+with et_canvas_board_lines;			use et_canvas_board_lines;
 -- with et_canvas_board_texts;			use et_canvas_board_texts;
 with et_canvas_board_vias;			use et_canvas_board_vias;
 -- with et_canvas_board_devices;		use et_canvas_board_devices;
@@ -692,7 +692,7 @@ package body et_canvas_board_2 is
 					status_enter_verb;
 
 					-- CS
-					-- reset_preliminary_line;
+					reset_preliminary_line;
 					-- reset_preliminary_text; -- after placing a text
 					-- reset_preliminary_via; -- after placing a via
 					-- et_canvas_board_tracks.reset_preliminary_track; -- after laying out a track
