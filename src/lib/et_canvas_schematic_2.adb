@@ -57,21 +57,17 @@ with et_modes.schematic;
 with et_frames;
 with et_canvas_board_2;
 with et_display.schematic;			--use et_display.schematic;
--- with et_colors;						use et_colors;
-with et_colors.schematic;			--use et_colors.schematic;
+with et_colors.schematic;
 with et_modes.schematic;
 
 with et_canvas_tool;					use et_canvas_tool;
--- 
+
 -- with et_net_names;					use et_net_names;
 -- with et_net_labels;					use et_net_labels;
--- 
+
 with et_canvas_schematic_nets;
 with et_canvas_schematic_units;
--- 
--- with et_device_placeholders;			use et_device_placeholders;
--- with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
--- 
+
 -- with et_undo_redo;
 
 
@@ -605,7 +601,6 @@ package body et_canvas_schematic_2 is
 		draw_drawing_frame;	
 		draw_cursor;
 		draw_zoom_area;
-		--draw_objects;		
 
 		draw_units;
 		
@@ -1054,110 +1049,13 @@ package body et_canvas_schematic_2 is
 
 
 	
--- 	procedure draw_frame (
--- 		self    : not null access type_view)
--- 		is separate;
--- 
--- 	
 -- 	procedure draw_tag_label (
 -- 		self	: not null access type_view;
 -- 		net		: in pac_net_name.bounded_string;
 -- 		label	: in type_net_label) is separate;
 -- 
 -- 	
--- 	procedure draw_nets (
--- 		self    : not null access type_view)
--- 		is separate;
--- 
--- 	
--- 	procedure draw_texts (
--- 		self    : not null access type_view)
--- 		is separate;
--- 
--- 			
--- 	-- Draws all units:
--- 	procedure draw_units (
--- 		self	: not null access type_view) 
--- 		is separate;
--- 
--- 
--- 	
--- 	procedure draw_submodules (
--- 		self	: not null access type_view)
--- 		is separate;
--- 
--- 	
--- 	procedure draw_internal (
--- 		self	: not null access type_view;
--- 		area_in	: type_bounding_box) 
--- 	is
--- 		offset : type_offset;
--- 		
--- 		use et_display.schematic;
--- 	begin
--- 		-- put_line ("draw internal schematic " & image (clock));
--- 		
--- -- 		shift_area (self, area_shifted, cursor_main);
--- -- 		shift_area (self, offset, cursor_main);
--- 
--- 		frame_height := self.get_frame_height;
--- 
--- 		-- The given area must be shifted (left and up) by the position
--- 		-- of the drawing frame. This is required for all objects in the 
--- 		-- drawing frame.
--- 		
--- 		-- Set the global area:
--- 		area := area_in;
--- 
--- 		-- Calculate the new position of the global area:
--- 		offset := to_offset (
--- 			x => - self.frame_bounding_box.x,
--- 			y => - self.frame_bounding_box.y);
--- 
--- 		
--- 		
--- 		set_color_background (context.cr);
--- 		paint (context.cr);
--- 
--- 		if grid_enabled then
--- 			draw_grid (self, area_in);
--- 		end if;
--- 		
--- 		-- move area according to frame position:
--- 		move_by (area, offset);
--- 
--- 		
--- 		save (context.cr);
--- 			
--- 		-- Prepare the current transformation matrix (CTM) so that
--- 		-- all following drawing is relative to the upper left frame corner.
--- 		-- translate (
--- 		-- 	context.cr,
--- 		-- 	convert_x (self.frame_bounding_box.x),
--- 		-- 	convert_y (self.frame_bounding_box.y));
--- 
--- 		
--- 		draw_units (self);
--- 		
--- 		draw_frame (self);
--- 		
--- 		-- Draw nets if layer is enabled:
--- 		if nets_enabled then
--- 			draw_nets (self);
--- 		end if;
--- 
--- 		-- Draw texts if layer is enabled:
--- 		if texts_enabled then
--- 			draw_texts (self);
--- 		end if;
--- 		
--- 		draw_submodules (self);
--- 		
--- 		draw_cursor (self, cursor_main);
--- 		
--- 		restore (context.cr);
--- 		
--- 	end draw_internal;
+
 
 	
 	procedure set_module (
@@ -1252,120 +1150,8 @@ package body et_canvas_schematic_2 is
 -- 		cursor_main.position := snap_to_grid (cursor_main.position);
 -- 		self.update_coordinates_display;
 -- 	end set_grid;
--- 
--- 	
--- 	procedure move_cursor (
--- 		self		: not null access type_view;
--- 		coordinates	: in type_coordinates;
--- 		cursor		: in out type_cursor;
--- 		position	: in type_vector_model) 
--- 	is
--- 		use et_project.modules.pac_generic_modules;
--- 	begin
--- 		case coordinates is
--- 			when ABSOLUTE =>
--- 				--cursor.position := type_vector_model (round (position, element (current_active_module).grid));
--- 				cursor.position := type_vector_model (round (position, self.get_grid));
--- 				
--- 			when RELATIVE =>
--- 				--cursor.position := type_vector_model (round (cursor.position + position, element (current_active_module).grid));
--- 				cursor.position := type_vector_model (round (cursor.position + position, self.get_grid));
--- 		end case;
--- 
--- 		self.shift_area (cursor);		
--- 	end move_cursor;
--- 
--- 	
--- 	procedure move_cursor (
--- 		self		: not null access type_view;
--- 		direction	: in type_cursor_direction;
--- 		cursor		: in out type_cursor)
--- 	is
--- 		-- Get the currently active grid:
--- 		use et_project.modules.pac_generic_modules;
--- 		--grid : constant type_grid := element (current_active_module).grid;
--- 		grid : constant type_grid := self.get_grid;
--- 
--- 		-- Find the grid point nearest available to the current cursor position:
--- 		position_snapped : constant type_vector_model := type_vector_model (round (
--- 							point	=> cursor.position,
--- 							grid	=> grid));
--- 
--- 	begin
--- 		case direction is
--- 			when RIGHT =>
--- 				cursor.position := type_vector_model (move (position_snapped, 0.0, grid.x, clip => true));
--- 
--- 			when LEFT =>
--- 				cursor.position := type_vector_model (move (position_snapped, 180.0, grid.x, clip => true));
--- 
--- 			when UP =>
--- 				cursor.position := type_vector_model (move (position_snapped, 90.0, grid.y, clip => true));
--- 
--- 			when DOWN =>
--- 				cursor.position := type_vector_model (move (position_snapped, -90.0, grid.y, clip => true));
--- 		end case;
--- 		
--- 		self.shift_area (cursor);
--- 	end move_cursor;
--- 
--- 	
--- 	procedure draw_cursor (
--- 		self		: not null access type_view;
--- 		cursor		: in type_cursor)
--- 	is
--- 		lh : type_cursor_line; -- the horizontal line
--- 		lv : type_cursor_line; -- the vertical line
--- 
--- 		size : type_distance_positive;
--- 		width : type_view_coordinate;
--- 	begin
--- 		size := cursor_half_size / type_distance_positive (global_scale);
--- 		
--- 		-- set start and end point of horizontal line
--- 		lh.start_point := type_vector_model (set (
--- 			x	=> get_x (cursor.position) - size,
--- 			y	=> get_y (cursor.position)));
--- 
--- 		lh.end_point := type_vector_model (set (
--- 			x	=> get_x (cursor.position) + size,
--- 			y	=> get_y (cursor.position)));
--- 
--- 		-- set start and end point of vertical line
--- 		lv.start_point := type_vector_model (set (
--- 			x	=> get_x (cursor.position),
--- 			y	=> get_y (cursor.position) + size));
--- 
--- 		lv.end_point := type_vector_model (set (
--- 			x	=> get_x (cursor.position),
--- 			y	=> get_y (cursor.position) - size));
--- 
--- 
--- 		-- The line width is inversely proportional to the scale:
--- 		width := type_view_coordinate (cursor_line_width) / global_scale;
--- 		
--- 		set_line_width (context.cr, width);
--- 		
--- 		set_color_cursor (context.cr);
--- 
--- 		draw_line (
--- 			line		=> to_line_fine (lh),
--- 			width		=> type_distance_positive (width));
--- 
--- 		draw_line (
--- 			line		=> to_line_fine (lv),
--- 			width		=> type_distance_positive (width));
--- 		
--- 		cairo.stroke (context.cr);		
--- 
--- 		exception
--- 			when constraint_error => null;
--- 			--put_line ("Schematic: " & message_border_reached);
--- 			-- CS put in status bar ?
--- 				
--- 	end draw_cursor;
--- 
--- 	
+
+	-- 	
 -- 	function get_grid (
 -- 		self : not null access type_view)
 -- 		return type_grid
