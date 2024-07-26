@@ -236,8 +236,13 @@ package body et_route_restrict is
 	is 
 		use et_contour_to_polygon;
 		result : type_polygon;
-		outer_radius : constant type_float_positive := 
-			circle.radius + 0.5 * type_float_positive (circle.width);
+		
+		-- outer_radius : constant type_float_positive := 
+		-- 	circle.radius + 0.5 * type_float_positive (circle.width);
+
+		outer_radius : constant type_distance_positive := 
+			circle.radius + 0.5 * circle.width;
+
 	begin
 		result.edges := to_edges (
 			circle		=> (circle.center, outer_radius, others => <>),
@@ -256,8 +261,13 @@ package body et_route_restrict is
 	is 
 		use et_contour_to_polygon;
 		result : type_polygon;
-		inner_radius : constant type_float_positive :=
-			circle.radius - 0.5 * type_float_positive (circle.width);
+		
+		-- inner_radius : constant type_float_positive :=
+		-- 	circle.radius - 0.5 * type_float_positive (circle.width);
+
+		inner_radius : constant type_distance_positive :=
+			circle.radius - 0.5 * circle.width;
+
 	begin
 		result.edges := to_edges (
 			circle		=> (circle.center, inner_radius, others => <>),

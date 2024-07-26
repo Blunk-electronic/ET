@@ -1074,7 +1074,7 @@ package et_geometry_2a is
 
 	function to_radius (
 		r : in string)
-		return type_float_positive;
+		return type_distance_positive;
 	
 
 	function to_radius (

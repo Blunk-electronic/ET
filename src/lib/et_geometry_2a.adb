@@ -2453,9 +2453,9 @@ package body et_geometry_2a is
 
 	function to_radius (
 		r : in string)
-		return type_float_positive
+		return type_distance_positive
 	is begin
-		return pac_geometry_1.to_distance (r);
+		return type_distance_positive'value (r);
 	end to_radius;
 
 

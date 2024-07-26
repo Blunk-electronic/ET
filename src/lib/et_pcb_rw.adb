@@ -161,7 +161,7 @@ package body et_pcb_rw is
 	
 	procedure write_circle (circle : in type_circle'class) is begin
 		write (keyword => keyword_center, parameters => to_string (circle.center));
-		write (keyword => keyword_radius, parameters => pac_geometry_brd.to_string (circle.radius));
+		write (keyword => keyword_radius, parameters => to_string (circle.radius));
 	end write_circle;
 
 
@@ -729,7 +729,7 @@ package body et_pcb_rw is
 		elsif kw = keyword_radius then -- radius 22
 			expect_field_count (line, 2);
 			
-			board_circle.radius := pac_geometry_brd.to_float (f (line, 2));
+			board_circle.radius := to_radius (f (line, 2));
 		else
 			invalid_keyword (kw);
 		end if;
@@ -752,7 +752,7 @@ package body et_pcb_rw is
 		elsif kw = keyword_radius then -- radius 22
 			expect_field_count (line, 2);
 			
-			board_circle.radius := pac_geometry_brd.to_float (f (line, 2));
+			board_circle.radius := to_radius (f (line, 2));
 
 			return true;			
 		else

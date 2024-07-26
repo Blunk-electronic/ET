@@ -131,7 +131,7 @@ package body et_contour_to_polygon is
 		arc : type_arc_angles;
 	begin
 		arc.center := to_vector (circle.center);
-		arc.radius := circle.radius;
+		arc.radius := type_float_positive (circle.radius);
 		arc.angle_start := 0.0;
 		arc.angle_end := 360.0;
 		arc.direction := CCW;

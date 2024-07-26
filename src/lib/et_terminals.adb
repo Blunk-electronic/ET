@@ -151,9 +151,7 @@ package body et_terminals is
 		result : type_contour := (contour => (circular => true, circle => <>));
 	begin
 		result.contour.circle.center := to_point (position);
-		result.contour.circle.radius := 
-			0.5 * type_float_positive (terminal.drill_size)
-			+ type_float_positive (terminal.width_inner_layers);
+		result.contour.circle.radius := 0.5 * terminal.drill_size + terminal.width_inner_layers;
 		
 		return result;
 	end get_inner_contour;

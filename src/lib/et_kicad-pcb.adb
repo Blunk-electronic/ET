@@ -3380,7 +3380,7 @@ package body et_kicad.pcb is
 			begin
 				-- Compute the circle radius from its center and point at circle.
 				-- Later the angle is discarded.
-				board_circle.radius := get_distance_total (board_circle.center, board_circle.point);
+				board_circle.radius := to_distance (get_distance_total (board_circle.center, board_circle.point));
 
 				-- The point at the circle and its layer are now discarded
 				-- as the circle is converted back to its anchestor
@@ -3511,12 +3511,12 @@ package body et_kicad.pcb is
 			end insert_board_line;
 
 			
-			procedure insert_board_text is 
-				use et_conductor_text.boards;
-			begin
 			-- Inserts the board_text in the board. 
 			-- According to the kicad layer, the text is appended to the silk_screen, assy_doc, copper ...
 			-- of the board.
+			procedure insert_board_text is 
+				use et_conductor_text.boards;
+			begin
 				case board_text.layer is
 					when layer_top_silk_screen_id =>
 						board.silk_screen.top.texts.append ((type_text_fab (board_text) with 
@@ -3578,6 +3578,8 @@ package body et_kicad.pcb is
 			end insert_board_text;
 
 			
+			-- Append the arc to the container corresponding to the layer. 
+			-- Then log the arc properties.
 			procedure insert_fp_arc is 
 				use et_silkscreen;
 				use et_assy_doc;
@@ -3586,7 +3588,6 @@ package body et_kicad.pcb is
 				use et_keepout;
 				use et_conductor_segment;
 			begin
-			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 
 				-- compute end point of arc from center, start_point and angle
 				package_arc.end_point := type_vector_model (
@@ -3646,6 +3647,8 @@ package body et_kicad.pcb is
 			end insert_fp_arc;
 
 			
+			-- Append the circle to the container corresponding to the layer. 
+			-- Then log the circle properties.
 			procedure insert_fp_circle is 
 				use et_silkscreen;
 				use et_assy_doc;
@@ -3654,11 +3657,10 @@ package body et_kicad.pcb is
 				use et_keepout;
 				use et_conductor_segment;
 			begin
-			-- Append the circle to the container corresponding to the layer. Then log the circle properties.
 
 				-- Compute the circle radius from its center and point at circle:
-				package_circle.radius := 
-					get_distance_total (package_circle.center, package_circle.point);
+				package_circle.radius := to_distance (
+					get_distance_total (package_circle.center, package_circle.point));
 
 				-- The point at the circle and its layer are now discarded
 				-- as the circle is converted back to its anchestor

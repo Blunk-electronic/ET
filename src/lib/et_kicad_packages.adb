@@ -115,7 +115,8 @@ package body et_kicad_packages is
 		use et_pcb_coordinates_2.pac_geometry_brd;
 	begin
 		c.center := position.place;
-		c.radius := type_angle (diameter / 2.0);
+		--c.radius := type_angle (diameter / 2.0);
+		c.radius := diameter / 2.0;
 		move_by (c.center, offset);
 
 		shape.set_circle (c);
@@ -1727,7 +1728,7 @@ package body et_kicad_packages is
 
 				
 				-- Compute the circle radius from its center and point at circle:
-				circle.radius := get_distance_total (circle.center, circle.point);
+				circle.radius := to_distance (get_distance_total (circle.center, circle.point));
 
 				-- The point at the circle and its layer are now discarded
 				-- as the circle is converted back to its anchestor

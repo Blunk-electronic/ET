@@ -903,7 +903,7 @@ package body et_symbol_rw is
 
 									elsif kw = keyword_radius then -- radius 5
 										expect_field_count (line, 2);
-										symbol_circle.radius := pac_geometry_sch.to_float (f (line, 2));
+										symbol_circle.radius := to_radius (f (line, 2));
 
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);
