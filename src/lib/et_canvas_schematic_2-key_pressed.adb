@@ -58,6 +58,8 @@ is
 	use gdk.types.keysyms;
 
 	use et_modes;
+	use et_canvas_schematic_nets;
+	use et_canvas_schematic_units;
 
 	
 	procedure delete is begin

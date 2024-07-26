@@ -50,15 +50,15 @@ with ada.calendar.formatting;		use ada.calendar.formatting;
 -- with et_devices;					use et_devices;
 -- 
 with et_scripting;
-with et_modes;						use et_modes;
-with et_modes.schematic;			use et_modes.schematic;
+with et_modes;						--use et_modes;
+with et_modes.schematic;			
 -- with et_project;
 
 with et_frames;
 with et_canvas_board_2;
 with et_display.schematic;			--use et_display.schematic;
 -- with et_colors;						use et_colors;
-with et_colors.schematic;			use et_colors.schematic;
+with et_colors.schematic;			--use et_colors.schematic;
 with et_modes.schematic;
 
 with et_canvas_tool;					use et_canvas_tool;
@@ -66,8 +66,8 @@ with et_canvas_tool;					use et_canvas_tool;
 -- with et_net_names;					use et_net_names;
 -- with et_net_labels;					use et_net_labels;
 -- 
-with et_canvas_schematic_nets;			use et_canvas_schematic_nets;
-with et_canvas_schematic_units;			use et_canvas_schematic_units;
+with et_canvas_schematic_nets;
+with et_canvas_schematic_units;
 -- 
 -- with et_device_placeholders;			use et_device_placeholders;
 -- with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
@@ -627,6 +627,24 @@ package body et_canvas_schematic_2 is
 		return event_handled;
 	end cb_draw;
 
+
+	-- This procedure resets a lot of stuff and should
+	-- be called when the operator pressed the ESCAPE key.
+	-- Here the commands to abort any pending 
+	-- operations related to the canvas should be placed:
+	procedure reset is
+		use et_modes;
+		use et_modes.schematic;
+		use et_canvas_schematic_nets;
+	begin
+		-- Here the commands to abort any pending 
+		-- operations related to the canvas should be placed:
+
+		expect_entry := expect_entry_default;
+		reset_selections;
+		status_enter_verb;			
+
+	end reset;
 	
 
 	procedure key_pressed (
@@ -670,13 +688,7 @@ package body et_canvas_schematic_2 is
 		else
 			case key is
 				when GDK_ESCAPE =>
-					-- Here the commands to abort any pending 
-					-- operations related to the canvas should be placed:
-
-					expect_entry := expect_entry_default;
-					reset_selections;
-					status_enter_verb;			
-				
+					reset;
 					
 				when GDK_Right =>
 					move_cursor (DIR_RIGHT);
@@ -1429,7 +1441,10 @@ package body et_canvas_schematic_2 is
 -- 
 -- 
 -- 	
-	procedure reset_selections is begin
+	procedure reset_selections is 
+		use et_canvas_schematic_nets;
+		use et_canvas_schematic_units;
+	begin
 		-- Verb and noun remain as they are
 		-- so that the mode is unchanged.
 		
@@ -1452,7 +1467,10 @@ package body et_canvas_schematic_2 is
 	end reset_selections;
 
 	
-	procedure clear_proposed_objects is begin
+	procedure clear_proposed_objects is 
+		use et_canvas_schematic_nets;
+		use et_canvas_schematic_units;
+	begin
 		clear_proposed_units;
 		clear_proposed_segments;
 	end clear_proposed_objects;

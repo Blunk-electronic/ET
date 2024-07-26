@@ -37,7 +37,7 @@
 
 with et_canvas_tool;					use et_canvas_tool;
 
-with et_modes.board;					use et_modes.board;
+
 
 with et_board_ops.conductors;			use et_board_ops.conductors;
 with et_board_ops.ratsnest;
@@ -60,6 +60,7 @@ is
 	use gdk.types.keysyms;
 
 	use et_modes;
+	use et_modes.board;
 
 	point : type_vector_model renames get_cursor_position;
 	

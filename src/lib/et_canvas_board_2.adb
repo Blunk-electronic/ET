@@ -50,8 +50,8 @@ with ada.calendar.formatting;		use ada.calendar.formatting;
 
 
 with et_scripting;
-with et_modes;						use et_modes;
-with et_modes.board;				use et_modes.board;
+with et_modes;
+with et_modes.board;				
 -- with et_project;
 
 with et_frames;
@@ -59,22 +59,22 @@ with et_frames;
 with et_canvas_schematic_2;			--use et_canvas_schematic;
 with et_display.board;
 -- with et_colors;
-with et_colors.board;				use et_colors.board;
-with et_modes.board;
+with et_colors.board;
+-- with et_modes.board;
 -- with et_board_ops;					use et_board_ops;
 -- with et_pcb;
 -- with et_pcb_stack;
 -- with et_design_rules;
 
-with et_frames; -- CS test only
+-- with et_frames; -- CS test only
 with et_text;
 -- with et_meta;
 -- with et_ratsnest;					--use et_ratsnest;
 -- with et_exceptions;					use et_exceptions;
 -- 
-with et_canvas_board_lines;			use et_canvas_board_lines;
+with et_canvas_board_lines;
 -- with et_canvas_board_texts;			use et_canvas_board_texts;
-with et_canvas_board_vias;			use et_canvas_board_vias;
+with et_canvas_board_vias;
 -- with et_canvas_board_devices;		use et_canvas_board_devices;
 -- with et_canvas_board_assy_doc;		--use et_canvas_board_assy_doc;
 -- with et_canvas_board_silkscreen;	--use et_canvas_board_silkscreen;
@@ -639,6 +639,43 @@ package body et_canvas_board_2 is
 
 
 
+	-- This procedure resets a lot of stuff and should
+	-- be called when the operator pressed the ESCAPE key.
+	-- Here the commands to abort any pending 
+	-- operations related to the canvas should be placed:
+	procedure reset is 
+		use et_modes;
+		use et_modes.board;
+
+		use et_canvas_board_lines;
+		use et_canvas_board_vias;
+	begin
+
+		expect_entry := expect_entry_default;
+		
+		-- Verb and noun remain as they are
+		-- so that the mode is unchanged.
+		
+		reset_request_clarification;
+		status_enter_verb;
+
+		-- CS
+		reset_preliminary_line;
+		-- reset_preliminary_text; -- after placing a text
+		-- reset_preliminary_via; -- after placing a via
+		-- et_canvas_board_tracks.reset_preliminary_track; -- after laying out a track
+		-- et_canvas_board_tracks.reset_preliminary_segment; -- after moving, ripping-up a conductor segment
+		-- et_canvas_board_tracks.reset_airwires;
+		-- et_canvas_board_tracks.reset_ripup_mode;
+		-- reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
+		-- reset_preliminary_non_electrical_device;
+
+		-- et_canvas_board_assy_doc.reset_preliminary_object;
+		-- et_canvas_board_silkscreen.reset_preliminary_object;
+
+	end reset;
+	
+
 	procedure key_pressed (
 		key			: in gdk_key_type;
 		key_shift	: in gdk_modifier_type)
@@ -680,32 +717,7 @@ package body et_canvas_board_2 is
 		else
 			case key is
 				when GDK_ESCAPE =>
-					-- Here the commands to abort any pending 
-					-- operations related to the canvas should be placed:
-
-					expect_entry := expect_entry_default;
-					
-					-- Verb and noun remain as they are
-					-- so that the mode is unchanged.
-					
-					reset_request_clarification;
-					status_enter_verb;
-
-					-- CS
-					reset_preliminary_line;
-					-- reset_preliminary_text; -- after placing a text
-					-- reset_preliminary_via; -- after placing a via
-					-- et_canvas_board_tracks.reset_preliminary_track; -- after laying out a track
-					-- et_canvas_board_tracks.reset_preliminary_segment; -- after moving, ripping-up a conductor segment
-					-- et_canvas_board_tracks.reset_airwires;
-					-- et_canvas_board_tracks.reset_ripup_mode;
-					-- reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
-					-- reset_preliminary_non_electrical_device;
-
-					-- et_canvas_board_assy_doc.reset_preliminary_object;
-					-- et_canvas_board_silkscreen.reset_preliminary_object;
-
-					
+					reset;
 					
 				when GDK_Right =>
 					move_cursor (DIR_RIGHT);
@@ -764,7 +776,9 @@ package body et_canvas_board_2 is
 	-- It removes all property bars (if being displayed) and
 	-- calls other procedures that initialize the values used in property
 	-- bars for vias, tracks, ...
-	procedure init_property_bars is begin
+	procedure init_property_bars is 
+		use et_canvas_board_vias;
+	begin
 		reset_preliminary_via;
 		init_preliminary_via;
 

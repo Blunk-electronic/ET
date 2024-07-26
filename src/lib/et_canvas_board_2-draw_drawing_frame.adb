@@ -44,6 +44,7 @@ with ada.text_io;				use ada.text_io;
 separate (et_canvas_board_2)
 
 procedure draw_drawing_frame is
+	use et_colors.board;
 	use et_frames;
 	use pac_drawing_frame;
 	

@@ -58,6 +58,9 @@ with et_display.schematic;				use et_display.schematic;
 separate (et_canvas_schematic_2)
 
 procedure draw_units is
+	
+	use et_colors.schematic;
+	use et_canvas_schematic_units;
 
 	procedure draw_symbol (
 		symbol			: in et_symbols.type_symbol;

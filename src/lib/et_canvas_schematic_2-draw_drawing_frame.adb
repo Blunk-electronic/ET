@@ -42,6 +42,8 @@ with ada.text_io;				use ada.text_io;
 separate (et_canvas_schematic_2)
 
 procedure draw_drawing_frame is
+
+	use et_colors.schematic;
 	use et_frames;
 	use pac_drawing_frame;
 	
