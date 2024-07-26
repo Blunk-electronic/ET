@@ -3407,6 +3407,7 @@ package body et_canvas is
 	procedure draw_circle (
 		circle		: in type_circle;
 		pos			: in type_position;
+		filled		: in et_geometry.type_filled;
 		width		: in type_distance_positive;
 		do_stroke	: in boolean := false)
 	is
@@ -3457,7 +3458,7 @@ package body et_canvas is
 			end if;
 
 			m := real_to_canvas (c.center, S);
-			-- r := to_distance (c.radius);
+			r := to_distance (c.radius);
 
 			-- THIS DRAW OPERATION CONSUMES THE MOST TIME:
 			arc (context, 

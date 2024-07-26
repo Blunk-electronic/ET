@@ -65,6 +65,7 @@ with cairo;
 
 
 with et_logical_pixels;			use et_logical_pixels;
+with et_geometry;
 with et_geometry_2a;
 with et_geometry_2a.grid;
 with et_window_dimensions;		use et_window_dimensions;
@@ -1227,9 +1228,12 @@ package et_canvas is
 
 	-- This is a primitive draw operation that draws a circle.
 	-- For arguments see draw_line:
+	-- CS: NOTE: The filled argument is currently not
+	-- processed. Write an exhausting desription here.
 	procedure draw_circle (
 		circle		: in type_circle;
 		pos			: in type_position;  -- includes x,y, rotation
+		filled		: in et_geometry.type_filled;
 		width		: in type_distance_positive;
 		do_stroke	: in boolean := false);
 

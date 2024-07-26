@@ -2471,9 +2471,7 @@ package body et_geometry_2a is
 		c : in out type_circle;
 		r : in type_distance_positive)
 	is begin
-		null;
-		--c.radius := to_radius (r);
-		--c.radius := r;
+		c.radius := r;
 	end set_radius;
 
 	
@@ -2861,13 +2859,14 @@ package body et_geometry_2a is
 		return type_area
 	is
 		-- CS: Optimization required. Compiler options ?
+		-- CS: output warning if radius is zero ?
 		
 		result : type_area;
 		w : type_distance;
 
 		d : constant type_distance := width / 2.0;
 	begin
-		w := 2.0 * (type_distance_positive (circle.radius) + d);
+		w := 2.0 * (circle.radius + d);
 
 		result.width := w;
 		result.height := w;

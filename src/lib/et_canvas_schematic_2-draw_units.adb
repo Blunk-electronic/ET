@@ -333,17 +333,22 @@ procedure draw_units is
 
 			-- Draw the circle around a port if the layer is enabled:
 			if ports_enabled then
-			
+				-- put_line ("draw port");
+				
 				-- The start point of the port must have a small green circle around it.
 				-- set color and line width
 				set_color_ports (brightness);
-				set_linewidth (port_circle_line_width);
 
 				circle.center := line.start_point;
 				set_radius (circle, port_circle_radius);
 
 				-- the circle is not filled -> argument "filled" is NO
-				-- CS draw_circle (circle, NO, port_circle_line_width);
+				draw_circle (
+					circle		=> circle, 
+					pos			=> (unit_position, unit_rotation), 
+					filled		=> NO,
+					width		=> port_circle_line_width, 
+					do_stroke	=> true);
 
 				-- CS draw port direction, weakness, power level ?
 				-- probably better in draw_terminal_name or draw_port_name ?
