@@ -3350,7 +3350,7 @@ package body et_canvas is
 	begin
 		-- CS mirror
 		
-		-- Rotate the line by by pos.rotation
+		-- Rotate the line by pos.rotation
 		rotate_by (l, pos.rotation);
 		
 		-- Move the line to the given position:
@@ -3403,6 +3403,81 @@ package body et_canvas is
 	end draw_line;
 
 
+
+	procedure draw_circle (
+		circle		: in type_circle;
+		pos			: in type_position;
+		width		: in type_distance_positive;
+		do_stroke	: in boolean := false)
+	is
+		use cairo;
+		
+		-- Make a copy of the given circle:
+		c : type_circle := circle;
+
+		-- When the circle is drawn, we need a canvas point
+		-- for the center:
+		m : type_logical_pixels_vector;
+
+		r : type_logical_pixels_positive;
+		
+		-- The bounding-box of the circle. It is required
+		-- for the area and size check:
+		b : type_area;
+		
+	begin
+		-- Rotate the center of the circle by pos.rotation:
+		rotate_by (c, pos.rotation);
+		
+		-- Move the circle to the given position:
+		move_by (c, (pos.place.x, pos.place.y));
+		
+		-- Get the bounding-box of circle:
+		b := get_bounding_box (c, width);
+		-- put_line ("b " & to_string (b));
+		
+		-- Do the area check. If the bounding-box of the circle
+		-- is inside the visible area then draw the circle. Otherwise
+		-- nothing will be drawn:
+		if areas_overlap (visible_area, b) and then
+
+			-- Do the size check. If the bounding-box is greater
+			-- (either in width or heigth) than the visiblity threshold
+			-- then draw the line. Otherwise nothing will be drawn:
+			above_visibility_threshold (b) then
+
+			-- put_line ("draw circle");
+
+			-- If an individual stroke is requested for
+			-- the given circle, then set the linewidth of the 
+			-- circumfence:
+			if do_stroke then
+				set_line_width (context, 
+					to_gdouble_positive (to_distance (width)));
+			end if;
+
+			m := real_to_canvas (c.center, S);
+			-- r := to_distance (c.radius);
+
+			-- THIS DRAW OPERATION CONSUMES THE MOST TIME:
+			arc (context, 
+				 to_gdouble_positive (m.x), 
+				 to_gdouble_positive (m.y),
+				 to_gdouble_positive (r), 
+				 0.0, 6.3 ); -- start and end angle in radians
+
+
+			-- If an individual stroke is requested for
+			-- the given circle, then do it now:
+			if do_stroke then
+				stroke (context);
+			end if;
+
+			
+			-- CS: use OpenGL ?
+		end if;
+	end draw_circle;
+	
 
 	
 -- ORIGIN OF TEXTS AND COMPLEX OBJECTS:

@@ -1225,6 +1225,15 @@ package et_canvas is
 		do_stroke	: in boolean := false);
 
 
+	-- This is a primitive draw operation that draws a circle.
+	-- For arguments see draw_line:
+	procedure draw_circle (
+		circle		: in type_circle;
+		pos			: in type_position;  -- includes x,y, rotation
+		width		: in type_distance_positive;
+		do_stroke	: in boolean := false);
+
+	
 
 -- ORIGIN OF TEXTS AND COMPLEX OBJECTS:
 

@@ -2469,7 +2469,9 @@ package body et_geometry_2a is
 		c : in out type_circle;
 		r : in type_distance_positive)
 	is begin
-		c.radius := to_radius (r);
+		null;
+		--c.radius := to_radius (r);
+		--c.radius := r;
 	end set_radius;
 
 	
