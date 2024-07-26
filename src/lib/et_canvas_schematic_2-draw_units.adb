@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -340,7 +340,7 @@ procedure draw_units is
 				set_linewidth (port_circle_line_width);
 
 				circle.center := line.start_point;
-				-- circle.radius := type_float_positive (port_circle_radius);
+				set_radius (circle, port_circle_radius);
 
 				-- the circle is not filled -> argument "filled" is NO
 				-- CS draw_circle (circle, NO, port_circle_line_width);

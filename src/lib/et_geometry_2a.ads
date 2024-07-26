@@ -1075,7 +1075,17 @@ package et_geometry_2a is
 		r : in string)
 		return type_float_positive;
 	
+
+	function to_radius (
+		r : in type_distance_positive)
+		return type_float_positive;
+
+
+	procedure set_radius (
+		c : in out type_circle;
+		r : in type_distance_positive);
 	
+		
 	-- Moves a circle by the given offset. 
 	procedure move_by (
 		circle	: in out type_circle;

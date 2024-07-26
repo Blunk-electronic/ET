@@ -2457,6 +2457,22 @@ package body et_geometry_2a is
 	end to_radius;
 
 
+	function to_radius (
+		r : in type_distance_positive)
+		return type_float_positive
+	is begin
+		return type_float_positive (r);
+	end to_radius;
+
+
+	procedure set_radius (
+		c : in out type_circle;
+		r : in type_distance_positive)
+	is begin
+		c.radius := to_radius (r);
+	end set_radius;
+
+	
 	
 	procedure move_by (
 		circle	: in out type_circle;
