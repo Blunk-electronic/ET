@@ -1850,7 +1850,7 @@ package body et_geometry_2a is
 		-- Build a virtual circle from the given arc:
 		vc : constant type_circle := (
 				center => arc.center, 
-				radius => get_radius_start (arc),
+				radius => to_distance (get_radius_start (arc)),
 				others => <>);
 
 		-- Compute the intersections of the line with the virtual circle:
@@ -2083,7 +2083,9 @@ package body et_geometry_2a is
 					when TWO_EXIST =>
 						-- treat the arc like a circle and compute distance point to circle:
 						--result := get_distance_to_circumfence (point, (arc.center, radius));
-						result := get_distance_to_circumfence ((arc.center, radius, others => <>), point);
+						result := get_distance_to_circumfence (
+							circle	=> (arc.center, to_distance (radius), others => <>),
+							point	=> point);
 						
 				end case;				
 			end if;				
@@ -2511,7 +2513,7 @@ package body et_geometry_2a is
 		DCP: constant type_float_positive := 
 			get_distance_total (point, circle.center);
 	begin
-		if abs (DCP - circle.radius) <= type_float (type_distance'small) then
+		if abs (DCP - type_float_positive (circle.radius)) <= type_float (type_distance'small) then
 
 			-- Point is on circumfence of circle.
 			return true;
@@ -2750,7 +2752,7 @@ package body et_geometry_2a is
 		result : type_distance_polar;
 	begin
 		result := get_distance (circle.center, point);
-		set_absolute (result, circle.radius - get_absolute (result));
+		set_absolute (result, type_float_positive (circle.radius) - get_absolute (result));
 		return result;
 	end get_distance_to_circumfence;
 
@@ -2779,7 +2781,7 @@ package body et_geometry_2a is
 		--set_absolute (result, get_absolute (result) - circle.radius);
 
 		--dd := type_distance (round (get_absolute (d_pc) - circle.radius));
-		dd := get_absolute (d_pc) - circle.radius;
+		dd := get_absolute (d_pc) - type_float_positive (circle.radius);
 		
 		if dd > 0.0 then -- point outside of circle
 
@@ -2788,7 +2790,7 @@ package body et_geometry_2a is
 
 			-- Since we are interested in the distance to the circumfence
 			-- the radius must be subtracted from the total distance:
-			set_absolute (result, get_absolute (d_pc) - circle.radius);
+			set_absolute (result, get_absolute (d_pc) - type_float_positive (circle.radius));
 			
 		else -- point inside circle or on circumfence
 
@@ -2797,7 +2799,7 @@ package body et_geometry_2a is
 			
 			-- Since we are interested in the distance to the circumfence
 			-- the total distance must be subtracted from the radius:
-			set_absolute (result, circle.radius - get_absolute (d_pc));
+			set_absolute (result, type_float_positive (circle.radius) - get_absolute (d_pc));
 		end if;
 		
 		return result;

@@ -1059,7 +1059,8 @@ package et_geometry_2a is
 	
 	type type_circle_base is abstract tagged record
 		center	: type_vector_model;
-		radius  : type_float_positive := 0.0;
+		--radius  : type_float_positive := 0.0;
+		radius  : type_distance_positive := 0.0;
 		status	: type_object_status;
 	end record;
 
