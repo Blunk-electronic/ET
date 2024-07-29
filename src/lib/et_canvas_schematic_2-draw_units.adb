@@ -69,8 +69,12 @@ procedure draw_units is
 		device_purpose	: in pac_device_purpose.bounded_string := to_purpose (""); -- like "brightness control"
 		unit_name		: in et_devices.pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 		unit_count		: in et_devices.type_unit_count;
+
+		-- CS: Unit position and rotation should be unified
+		-- to a single argument:
 		unit_position	: in type_vector_model; -- x/y on the schematic sheet
 		unit_rotation	: in type_rotation := zero_rotation;
+		
 		sch_placeholder_name	: in type_text_placeholder;
 		sch_placeholder_value	: in type_text_placeholder;
 		sch_placeholder_purpose : in type_text_placeholder;
@@ -87,48 +91,45 @@ procedure draw_units is
 		use pac_ports;
 		use pac_texts;
 		
-		-- type type_line is new pac_geometry_2.type_line with null record;
-		-- type type_arc is new pac_geometry_2.type_arc with null record;		
-		-- type type_circle is new pac_geometry_2.type_circle with null record;
-
 		
 		procedure draw_line (c : in pac_symbol_lines.cursor) is 
-			-- Take a copy of the given line:
-			-- line : type_line := (pac_geometry_2.type_line (element (c)) with null record);
 			l : type_symbol_line renames element (c);
-			p : pac_geometry_2.type_position; -- CS rework
+			p : pac_geometry_2.type_position; 
+			-- CS rework, use unit position (incl. x,y,rotation)
+			-- instead.
 		begin
 			p.place := unit_position;
 			p.rotation := unit_rotation;
 
-			-- rotate_by (line, unit_rotation);
-			-- move_by (line, to_distance_relative (unit_position));
 			draw_line (type_line (l), p, l.width, true);
-			-- draw_line (to_line_fine (line), element (c).width);
 		end draw_line;
 
 		
-		-- procedure draw_arc (c : in pac_symbol_arcs.cursor) is 
-		-- 	-- Take a copy of the given arc:
-		-- 	arc : type_arc := (pac_geometry_2.type_arc (element (c)) with null record);
-		-- begin
-		-- 	rotate_by (arc, unit_rotation);
-		-- 	move_by (arc, to_distance_relative (unit_position));
-		-- 	set_line_width (context.cr, type_view_coordinate (element (c).width));
-		-- 	draw_arc (to_arc_fine (arc), element (c).width);
-		-- end draw_arc;
+		procedure draw_arc (c : in pac_symbol_arcs.cursor) is 
+			a : type_symbol_arc renames element (c);
+			p : pac_geometry_2.type_position;
+			-- CS rework, use unit position (incl. x,y,rotation)
+			-- instead.
+		begin
+			p.place := unit_position;
+			p.rotation := unit_rotation;
+
+			draw_arc (type_arc (a), p, a.width, true);
+		end draw_arc;
 
 		
-		-- procedure draw_circle (c : in pac_symbol_circles.cursor) is 
-		-- 	circle : type_circle := (pac_geometry_2.type_circle (element (c)) with null record);
-		-- begin
-		-- 	rotate_by (circle, unit_rotation);
-		-- 	move_by (circle, to_distance_relative (unit_position));
-		-- 	set_line_width (context.cr, type_view_coordinate (element (c).width));
-  -- 
-		-- 	-- the circle is not filled -> actual "filled" is NO
-		-- 	draw_circle (circle, NO, element (c).width);
-		-- end draw_circle;
+		procedure draw_circle (c : in pac_symbol_circles.cursor) is 
+			i : type_symbol_circle renames element (c);
+			p : pac_geometry_2.type_position;
+			-- CS rework, use unit position (incl. x,y,rotation)
+			-- instead.
+		begin
+			p.place := unit_position;
+			p.rotation := unit_rotation;
+  
+			-- the circle is not filled -> actual "filled" is NO
+			draw_circle (type_circle (i), p, NO, i.width, true);
+		end draw_circle;
 
 		
 		procedure draw_port (c : in pac_ports.cursor) is
@@ -500,42 +501,13 @@ procedure draw_units is
 		end draw_placeholders;
 
 		
-		procedure draw_origin is
--- 			ohz : constant type_distance_positive := et_symbols.origin_half_size;
--- 			
--- 			line_horizontal : constant type_line := ( -- from left to right
--- 				start_point		=> type_vector_model (set (
--- 									x => get_x (unit_position) - ohz,
--- 									y => get_y (unit_position))),
--- 				
--- 				end_point		=> type_vector_model (set (
--- 									x => get_x (unit_position) + ohz,
--- 									y => get_y (unit_position))),
--- 
--- 				others			=> <>);
--- 			
--- 
--- 			line_vertical : constant type_line := ( -- from bottom to top
--- 				start_point		=> type_vector_model (set (
--- 									x => get_x (unit_position),
--- 									y => get_y (unit_position) - ohz)),
--- 				
--- 				end_point		=> type_vector_model (set (
--- 									x => get_x (unit_position),
--- 									y => get_y (unit_position) + ohz)),
--- 
--- 				others			=> <>);
-			
-		begin
-		-- NOTE: This is about the origin of the symbol !
+		procedure draw_origin is begin
+			-- NOTE: This is about the origin of the symbol !
 			-- set_color_origin (brightness);
-			-- set_linewidth (et_symbols.origin_line_width);
 			
 			-- NOTE: The origin is never rotated.
 			draw_origin ((unit_position, 0.0));
-			
-			-- CS draw_line (to_line_fine (line_horizontal), et_symbols.origin_line_width);
-			-- CS draw_line (to_line_fine (line_vertical), et_symbols.origin_line_width);
+
 		end draw_origin;
 
 		
@@ -545,9 +517,8 @@ procedure draw_units is
 		set_color_symbols (brightness);
 
 		iterate (symbol.shapes.lines, draw_line'access);
-		-- CS
-		-- iterate (symbol.shapes.arcs, draw_arc'access);
-		-- iterate (symbol.shapes.circles, draw_circle'access);
+		iterate (symbol.shapes.arcs, draw_arc'access);
+		iterate (symbol.shapes.circles, draw_circle'access);
 
 		
 		-- SYMBOL PORTS
@@ -563,7 +534,6 @@ procedure draw_units is
 			draw_placeholders;
 		end if;
 
-		-- draw origin (the crosshair) at the center of the symbol
 		draw_origin;
 
 	end draw_symbol;
@@ -629,6 +599,7 @@ procedure draw_units is
 -- 		return result;
 -- 	end moved_by_operator;
 
+	
 	-- Returns true if the given device matches the device indicated by "selected_unit"
 	-- AND if "selected_unit" does not point to particular unit. This way the whole
 	-- device is regarded as selected.
