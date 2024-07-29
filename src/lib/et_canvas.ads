@@ -1237,6 +1237,15 @@ package et_canvas is
 		width		: in type_distance_positive;
 		do_stroke	: in boolean := false);
 
+
+	-- This is a primitive draw operation that draws an arc.
+	-- For arguments see draw_line:
+	procedure draw_arc (
+		arc			: in type_arc;
+		pos			: in type_position;  -- includes x,y, rotation
+		width		: in type_distance_positive;
+		do_stroke	: in boolean := false);
+
 	
 
 -- ORIGIN OF TEXTS AND COMPLEX OBJECTS:

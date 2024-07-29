@@ -3480,6 +3480,19 @@ package body et_canvas is
 	end draw_circle;
 	
 
+
+	procedure draw_arc (
+		arc			: in type_arc;
+		pos			: in type_position;  -- includes x,y, rotation
+		width		: in type_distance_positive;
+		do_stroke	: in boolean := false)
+	is
+	begin
+		null;
+		-- CS
+	end draw_arc;
+
+	
 	
 -- ORIGIN OF TEXTS AND COMPLEX OBJECTS:
 
