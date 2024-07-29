@@ -1221,6 +1221,8 @@ package et_canvas is
 	procedure draw_line (
 		line		: in type_line;
 		pos			: in type_position; -- includes x,y, rotation
+		-- CS default origin_zero_rotation in case there is no parent object ?
+		
 		-- CS mirror ?
 		width		: in type_distance_positive;
 		do_stroke	: in boolean := false);
@@ -1233,6 +1235,8 @@ package et_canvas is
 	procedure draw_circle (
 		circle		: in type_circle;
 		pos			: in type_position;  -- includes x,y, rotation
+		-- CS default origin_zero_rotation in case there is no parent object ?
+		
 		filled		: in et_geometry.type_filled;
 		width		: in type_distance_positive;
 		do_stroke	: in boolean := false);
@@ -1243,6 +1247,8 @@ package et_canvas is
 	procedure draw_arc (
 		arc			: in type_arc;
 		pos			: in type_position;  -- includes x,y, rotation
+		-- CS default origin_zero_rotation in case there is no parent object ?
+		
 		width		: in type_distance_positive;
 		do_stroke	: in boolean := false);
 
