@@ -71,7 +71,7 @@ procedure draw_units is
 		unit_count		: in et_devices.type_unit_count;
 
 		-- CS: Unit position and rotation should be unified
-		-- to a single argument:
+		-- to a single argument ?:
 		unit_position	: in type_vector_model; -- x/y on the schematic sheet
 		unit_rotation	: in type_rotation := zero_rotation;
 		
@@ -841,8 +841,7 @@ procedure draw_units is
 						if placeholder_move.being_moved then
 
 							case placeholder_move.category is
-								when NAME =>
-									
+								when NAME =>									
 									-- Calculate the absolute position of the NAME placeholder 
 									-- as it was according to database BEFORE the move:
 									placeholder_move.absolute_position := sch_placeholder_name.position;
@@ -850,25 +849,23 @@ procedure draw_units is
 
 									-- Depending on the tool used, calculate the new position of the 
 									-- placeholder relative to the unit position:
-									null;
-									-- CS
-									-- case placeholder_move.tool is
-									-- 	when MOUSE =>
-									-- 		move_by (
-									-- 			point	=> sch_placeholder_name.position,
-									-- 			offset	=> get_distance_relative (
-									-- 				placeholder_move.absolute_position, snap_to_grid (get_mouse_position)));
-         -- 
-									-- 	when KEYBOARD =>
-									-- 		move_by (
-									-- 			point	=> sch_placeholder_name.position,
-									-- 			offset	=> get_distance_relative (
-									-- 				placeholder_move.absolute_position, cursor_main.position));
-         -- 
-									-- end case;
+									case placeholder_move.tool is
+										when MOUSE =>
+											move_by (
+												point	=> sch_placeholder_name.position,
+												offset	=> get_distance_relative (
+													placeholder_move.absolute_position, snap_to_grid (get_mouse_position)));
+         
+										when KEYBOARD =>
+											move_by (
+												point	=> sch_placeholder_name.position,
+												offset	=> get_distance_relative (
+													placeholder_move.absolute_position, get_cursor_position));
+         
+									end case;
 
+									
 								when PURPOSE =>
-
 									-- Calculate the absolute position of the PURPOSE placeholder 
 									-- as it was according to database BEFORE the move:
 									placeholder_move.absolute_position := sch_placeholder_purpose.position;
@@ -876,22 +873,22 @@ procedure draw_units is
 
 									-- Depending on the tool used, calculate the new position of the 
 									-- placeholder relative to the unit position:
-									null;
-									-- CS case placeholder_move.tool is
-									-- 	when MOUSE =>
-									-- 		move_by (
-									-- 			point	=> sch_placeholder_purpose.position,
-									-- 			offset	=> get_distance_relative (
-									-- 				placeholder_move.absolute_position, snap_to_grid (get_mouse_position)));
-         -- 
-									-- 	when KEYBOARD =>
-									-- 		move_by (
-									-- 			point	=> sch_placeholder_purpose.position,
-									-- 			offset	=> get_distance_relative (
-									-- 				placeholder_move.absolute_position, cursor_main.position));
-         -- 
-									-- end case;
+									case placeholder_move.tool is
+										when MOUSE =>
+											move_by (
+												point	=> sch_placeholder_purpose.position,
+												offset	=> get_distance_relative (
+													placeholder_move.absolute_position, snap_to_grid (get_mouse_position)));
+         
+										when KEYBOARD =>
+											move_by (
+												point	=> sch_placeholder_purpose.position,
+												offset	=> get_distance_relative (
+													placeholder_move.absolute_position, get_cursor_position));
+         
+									end case;
 
+									
 								when VALUE =>
 
 									-- Calculate the absolute position of the VALUE placeholder 
@@ -901,22 +898,20 @@ procedure draw_units is
 
 									-- Depending on the tool used, calculate the new position of the 
 									-- placeholder relative to the unit position:
-									null;
-									-- CS
-									-- case placeholder_move.tool is
-									-- 	when MOUSE =>
-									-- 		move_by (
-									-- 			point	=> sch_placeholder_value.position,
-									-- 			offset	=> get_distance_relative (
-									-- 				placeholder_move.absolute_position, snap_to_grid (get_mouse_position)));
-         -- 
-									-- 	when KEYBOARD =>
-									-- 		move_by (
-									-- 			point	=> sch_placeholder_value.position,
-									-- 			offset	=> get_distance_relative (
-									-- 				placeholder_move.absolute_position, cursor_main.position));
-         -- 
-									-- end case;
+									case placeholder_move.tool is
+										when MOUSE =>
+											move_by (
+												point	=> sch_placeholder_value.position,
+												offset	=> get_distance_relative (
+													placeholder_move.absolute_position, snap_to_grid (get_mouse_position)));
+         
+										when KEYBOARD =>
+											move_by (
+												point	=> sch_placeholder_value.position,
+												offset	=> get_distance_relative (
+													placeholder_move.absolute_position, get_cursor_position));
+         
+									end case;
 
 							end case;
 									
