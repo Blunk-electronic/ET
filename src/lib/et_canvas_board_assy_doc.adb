@@ -40,7 +40,7 @@
 
 with et_project.modules;				use et_project.modules;
 
-with et_canvas_board;
+with et_canvas_board_2;
 
 with et_board_ops.assy_doc;				use et_board_ops.assy_doc;
 
@@ -53,7 +53,7 @@ with et_object_status;
 
 package body et_canvas_board_assy_doc is
 
-	use et_canvas_board.pac_canvas;
+	use et_canvas_board_2.pac_canvas;
 	
 
 	procedure reset_preliminary_object is begin

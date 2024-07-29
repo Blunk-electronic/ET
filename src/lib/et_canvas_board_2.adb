@@ -72,12 +72,13 @@ with et_text;
 -- with et_exceptions;					use et_exceptions;
 -- 
 with et_canvas_board_lines;
--- with et_canvas_board_texts;			use et_canvas_board_texts;
+with et_canvas_board_texts;
 with et_canvas_board_vias;
--- with et_canvas_board_devices;		use et_canvas_board_devices;
--- with et_canvas_board_assy_doc;		--use et_canvas_board_assy_doc;
--- with et_canvas_board_silkscreen;	--use et_canvas_board_silkscreen;
--- 
+with et_canvas_board_devices;
+with et_canvas_board_assy_doc;
+with et_canvas_board_silkscreen;
+with et_canvas_board_tracks;
+
 -- with et_undo_redo;
 
 package body et_canvas_board_2 is
@@ -647,7 +648,10 @@ package body et_canvas_board_2 is
 		use et_modes.board;
 
 		use et_canvas_board_lines;
+		use et_canvas_board_texts;
+		use et_canvas_board_devices;
 		use et_canvas_board_vias;
+		use et_canvas_board_tracks;
 	begin
 
 		expect_entry := expect_entry_default;
@@ -658,19 +662,20 @@ package body et_canvas_board_2 is
 		reset_request_clarification;
 		status_enter_verb;
 
-		-- CS
 		reset_preliminary_line;
-		-- reset_preliminary_text; -- after placing a text
-		-- reset_preliminary_via; -- after placing a via
-		-- et_canvas_board_tracks.reset_preliminary_track; -- after laying out a track
-		-- et_canvas_board_tracks.reset_preliminary_segment; -- after moving, ripping-up a conductor segment
-		-- et_canvas_board_tracks.reset_airwires;
-		-- et_canvas_board_tracks.reset_ripup_mode;
-		-- reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
-		-- reset_preliminary_non_electrical_device;
+		reset_preliminary_text; -- after placing a text
+		reset_preliminary_via; -- after placing a via
+		
+		reset_preliminary_track; -- after laying out a track
+		reset_preliminary_segment; -- after moving, ripping-up a conductor segment
+		reset_airwires;
+		reset_ripup_mode;
+		
+		reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
+		reset_preliminary_non_electrical_device;
 
-		-- et_canvas_board_assy_doc.reset_preliminary_object;
-		-- et_canvas_board_silkscreen.reset_preliminary_object;
+		et_canvas_board_assy_doc.reset_preliminary_object;
+		et_canvas_board_silkscreen.reset_preliminary_object;
 
 	end reset;
 	

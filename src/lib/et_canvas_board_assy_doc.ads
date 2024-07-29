@@ -43,11 +43,12 @@ with ada.containers.indefinite_doubly_linked_lists;
 
 with gtk.box;							use gtk.box;
 
-with et_canvas_general;					use et_canvas_general;
-
 with et_geometry;						use et_geometry;
-with et_pcb_coordinates;				use et_pcb_coordinates;
-use et_pcb_coordinates.pac_geometry_2;
+with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
+use et_pcb_coordinates_2.pac_geometry_2;
+
+with et_canvas_tool;					use et_canvas_tool;
+with et_canvas_messages;				use et_canvas_messages;
 
 with et_board_shapes_and_text;			use et_board_shapes_and_text;
 

@@ -40,7 +40,7 @@
 
 with et_project.modules;				use et_project.modules;
 
-with et_canvas_board;
+with et_canvas_board_2;
 
 with et_board_ops.silkscreen;			use et_board_ops.silkscreen;
 
@@ -52,7 +52,7 @@ with et_commit;
 
 package body et_canvas_board_silkscreen is
 
-	use et_canvas_board.pac_canvas;
+	use et_canvas_board_2.pac_canvas;
 	
 
 	procedure reset_preliminary_object is begin
