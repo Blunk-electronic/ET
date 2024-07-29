@@ -130,6 +130,107 @@ procedure draw_nets is
 	end draw_junctions;
 
 
+	procedure draw_tag_label (
+		net		: in pac_net_name.bounded_string;
+		label	: in type_net_label)
+	is
+		use pac_net_name;
+		-- use pac_text;
+		-- use et_text;
+		
+		content : pac_text_content.bounded_string := to_content (to_string (net));
+		-- CS append to content the position of the net on the next sheet (strand position)
+		
+		-- The position, width and height of the enshrouding box (lower left corner)
+		-- as if the box was drawn for a label in zero rotation:
+		box_position : type_vector_model;
+
+		box_width : type_distance_positive;
+		box_height : constant type_distance_positive := 
+			  type_distance_positive (label.size) 
+			* type_distance_positive (tag_label_height_to_size_ratio);
+		
+		-- The text rotation must be either 0 or 90 degree (documentational text) and is thus
+		-- to be calculated according to the rotation of the label:
+		text_rotation : type_rotation;
+
+		-- The alignment is assigned as if the text were drawn at zero rotation.
+		-- The vertical alignment is always CENTER. Horizontal alignment changes depending on 
+		-- the rotation of the label:
+		text_alignment : type_text_alignment := (vertical => CENTER, horizontal => <>);
+
+		-- The text position is not the same as the label position, thus it must be 
+		-- calculated according to the label rotation and tag_label_text_offset (see et_schematic specs):
+		text_position : type_vector_model;
+
+	begin
+		set_linewidth (tag_label_box_line_width);
+		
+		-- CS paint box outline depending on label signal direction
+
+		-- Calculate the box width according to text content, size and font:
+		-- box_width := 
+		-- 	type_distance_positive (get_text_extents (content, label.size, net_label_font).width)
+		-- 	+ type_distance_positive (2.0 * tag_label_text_offset);
+
+		
+		if label.rotation_tag = zero_rotation then
+			box_position := type_vector_model (set (get_x (label.position), get_y (label.position) - type_distance_positive (box_height) * 0.5));
+			-- draw_rectangle (box_position, box_width, box_height);
+
+			text_rotation := zero_rotation;
+			text_position := type_vector_model (set (get_x (label.position) + type_distance_positive (tag_label_text_offset), get_y (label.position)));
+			text_alignment.horizontal := LEFT;
+		end if;
+
+		
+		if label.rotation_tag = 90.0 then
+			box_position := type_vector_model (set (get_x (label.position) - type_distance_positive (box_height) * 0.5, get_y (label.position)));
+			-- draw_rectangle (box_position, box_height, box_width);
+
+			text_rotation := 90.0;
+			text_position := type_vector_model (set (get_x (label.position), get_y (label.position) + type_distance_positive (tag_label_text_offset)));
+			text_alignment.horizontal := LEFT;
+		end if;
+
+		
+		if label.rotation_tag = 180.0 then
+			box_position := type_vector_model (set (get_x (label.position) - type_distance_positive (box_width), get_y (label.position) - type_distance_positive (box_height) * 0.5));
+			-- draw_rectangle (box_position, box_width, box_height);
+
+			text_rotation := zero_rotation;
+			text_position := type_vector_model (set (get_x (label.position) - type_distance_positive (tag_label_text_offset), get_y (label.position)));
+			text_alignment.horizontal := RIGHT;
+		end if;
+
+		
+		if label.rotation_tag = -90.0 then
+			box_position := type_vector_model (set (get_x (label.position) - type_distance_positive (box_height) * 0.5, get_y (label.position) - type_distance_positive (box_width)));
+			-- draw_rectangle (box_position, box_height, box_width);
+
+			text_rotation := 90.0;
+			text_position := type_vector_model (set (get_x (label.position), get_y (label.position) - type_distance_positive (tag_label_text_offset)));
+			text_alignment.horizontal := RIGHT;
+		end if;
+		
+			
+		draw_text (
+			content		=> content,
+			size		=> label.size,
+			font		=> net_label_font,
+			anchor		=> text_position,
+			origin		=> false, -- no origin for net names required
+			
+			-- Text rotation about its anchor point. This is documentational text.
+			-- It is readable from the front or the right.
+			rotation	=> text_rotation,
+
+			alignment	=> text_alignment);
+
+	end draw_tag_label;
+
+	
+
 	-- Returns true if the given label is selected.
 	-- Returns false if there are no proposed labels or
 	-- if the given label is not selected.
