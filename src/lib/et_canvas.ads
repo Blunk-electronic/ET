@@ -1320,7 +1320,8 @@ package et_canvas is
 
 	
 	-- This function computes the extents of the 
-	-- given text content, size and font:
+	-- given text content, size and font
+	-- according to the current zoom-factor:
 	function get_text_extents (
 		content		: in et_text.pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
