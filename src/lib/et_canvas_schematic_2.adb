@@ -62,9 +62,6 @@ with et_modes.schematic;
 
 with et_canvas_tool;					use et_canvas_tool;
 
--- with et_net_names;					use et_net_names;
--- with et_net_labels;					use et_net_labels;
-
 with et_canvas_schematic_nets;
 with et_canvas_schematic_units;
 
@@ -560,6 +557,8 @@ package body et_canvas_schematic_2 is
 	procedure draw_drawing_frame is separate;
 
 	procedure draw_units is separate;
+
+	procedure draw_nets is separate;
 	
 
 	
@@ -605,8 +604,7 @@ package body et_canvas_schematic_2 is
 		draw_units;
 		
 		if nets_enabled then
-			null;
-			-- draw_nets (self);
+			draw_nets;
 		end if;
 
 
@@ -1049,13 +1047,6 @@ package body et_canvas_schematic_2 is
 
 
 	
--- 	procedure draw_tag_label (
--- 		self	: not null access type_view;
--- 		net		: in pac_net_name.bounded_string;
--- 		label	: in type_net_label) is separate;
--- 
--- 	
-
 
 	
 	procedure set_module (

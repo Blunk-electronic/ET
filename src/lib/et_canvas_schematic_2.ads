@@ -70,7 +70,6 @@ with et_logical_pixels;				use et_logical_pixels;
 
 
 with et_general;					use et_general;
--- with et_geometry;					use et_geometry;
 
 with et_coordinates_2;				use et_coordinates_2;
 -- use et_coordinates.pac_geometry_sch;
@@ -83,7 +82,6 @@ with et_project.modules;			use et_project.modules;
 -- with et_symbols;
 -- with et_schematic;
 -- with et_schematic_ops;
--- with et_schematic_ops.nets;
 -- with et_schematic_ops.units;
 -- with et_frames;
 -- with et_text;						use et_text;

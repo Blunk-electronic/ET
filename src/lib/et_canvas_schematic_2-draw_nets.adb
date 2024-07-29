@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -42,22 +44,26 @@ with ada.exceptions;
 with ada.containers;						use ada.containers;
 with ada.containers.doubly_linked_lists;
 
+with et_geometry;							use et_geometry;
+with et_text;								use et_text;
 with et_nets;								use et_nets;
 with et_net_labels;							use et_net_labels;
+with et_net_names;							use et_net_names;
+with et_schematic;							use et_schematic;
 
-separate (et_canvas_schematic)
 
-procedure draw_nets (
-	self    : not null access type_view)
-is
-	use pac_net_name;
-	use et_schematic;
-	use et_nets;
+with et_schematic_ops.nets;
+
+
+separate (et_canvas_schematic_2)
+
+procedure draw_nets is
+	use et_canvas_schematic_nets;
 	use pac_nets;
 	use pac_strands;
 	use pac_net_segments;
 	use pac_net_labels;
-
+	
 	use pac_proposed_segments;
 	use pac_proposed_labels;
 
@@ -70,9 +76,11 @@ is
 
 		procedure draw is begin
 			draw_circle (
-				circle		=> j,
+				circle		=> type_circle (j),
+				pos			=> origin_zero_rotation,
 				filled		=> YES,
-				width		=> zero);
+				width		=> zero,
+				do_stroke	=> true);
 		end draw;
 		
 	begin
@@ -99,9 +107,11 @@ is
 
 		procedure draw is begin
 			draw_circle (
-				circle		=> j,
+				circle		=> type_circle (j),
+				pos			=> origin_zero_rotation,
 				filled		=> YES,
-				width		=> zero);
+				width		=> zero,
+				do_stroke	=> true);
 		end draw;
 		
 	begin
@@ -160,24 +170,28 @@ is
 	procedure draw_label (
 		net		: in pac_net_name.bounded_string;
 		label	: in pac_net_labels.cursor)
-	is begin
+	is 
+		use pac_net_name;
+	begin
 		case element (label).appearance is
 			when SIMPLE =>
 				draw_text (
 					content		=> to_content (to_string (net)),
 					size		=> element (label).size,
 					font		=> net_label_font,
-					position	=> element (label).position,
+					anchor		=> element (label).position,
 					origin		=> true, -- CS must be false on export to image
 					
 					-- Text rotation about its anchor point.
 					-- This is documentational text.
 					-- It is readable from the front or the right.
-					rotation	=> to_rotation (element (label).rotation_simple),
+					rotation	=> pac_text.to_rotation (element (label).rotation_simple),
 					alignment	=> net_label_alignment);
 
 			when TAG =>
-				draw_tag_label (self, net, element (label));
+				-- CS
+				null;
+				-- draw_tag_label (self, net, element (label));
 
 		end case;
 	end draw_label;
@@ -187,20 +201,22 @@ is
 	procedure draw_simple_label_being_moved (
 		net		: in pac_net_name.bounded_string;
 		label	: in type_net_label)
-	is begin
+	is 
+		use pac_net_name;
+	begin
 		--case element (label).appearance is
 			--when SIMPLE =>
 				draw_text (
 					content		=> to_content (to_string (net)),
 					size		=> label.size,
 					font		=> net_label_font,
-					position	=> label.position,
+					anchor		=> label.position,
 					origin		=> true, -- CS must be false on export to image
 					
 					-- Text rotation about its anchor point.
 					-- This is documentational text.
 					-- It is readable from the front or the right.
-					rotation	=> to_rotation (label.rotation_simple),
+					rotation	=> pac_text.to_rotation (label.rotation_simple),
 					alignment	=> net_label_alignment);
 
 			--when TAG =>
@@ -230,6 +246,8 @@ is
 	-- Draws the net label being moved. If no net label
 	-- is being moved, nothing happens here:
 	procedure draw_label_being_moved is
+		use et_modes.schematic;
+		use pac_net_name;
 		l : type_net_label (label.appearance);
 	begin
 		case verb is
@@ -237,7 +255,7 @@ is
 				if label.ready then
 
 					case label.tool is
-						when KEYBOARD	=> l.position := cursor_main.position;
+						when KEYBOARD	=> l.position := get_cursor_position;
 						when MOUSE		=> l.position := snap_to_grid (get_mouse_position);
 					end case;
 					
@@ -250,13 +268,13 @@ is
 								content		=> to_content (to_string (selected_net)),
 								size		=> l.size,
 								font		=> net_label_font,
-								position	=> l.position,
+								anchor		=> l.position,
 								origin		=> true, -- CS must be false on export to image
 								
 								-- Text rotation about its anchor point.
 								-- This is documentational text.
 								-- It is readable from the front or the right.
-								rotation	=> to_rotation (label.rotation_simple),
+								rotation	=> pac_text.to_rotation (label.rotation_simple),
 								alignment	=> net_label_alignment);
 							
 
@@ -289,7 +307,8 @@ is
 									label.finalizing_granted := false;
 								end if;
 
-								draw_tag_label (self, selected_net, l);
+								-- CS
+								-- draw_tag_label (self, selected_net, l);
 							end;
 							
 					end case;
@@ -300,6 +319,8 @@ is
 
 	end draw_label_being_moved;
 
+
+	
 	
 	-- Draws the net label as indicated by variable selected_label:
 	procedure draw_selected_label (
@@ -323,7 +344,7 @@ is
 						
 						case label.tool is
 							when KEYBOARD =>
-								sl.position := cursor_main.position;
+								sl.position := get_cursor_position;
 							when MOUSE =>
 								sl.position := snap_to_grid (get_mouse_position);
 						end case;
@@ -348,6 +369,7 @@ is
 		end if;
 	end draw_selected_label;
 
+	
 	
 	-- Returns true if the given segment is selected.
 	-- Returns false if there are no proposed segments or
@@ -391,6 +413,7 @@ is
 	already_drawn_segments : pac_already_drawn_segments.list;
 
 	
+	
 	-- Draws the given net segment as it is according to module database
 	-- if it has not already been drawn.
 	-- Draws also possible junctions that may exist at start or end point
@@ -401,13 +424,16 @@ is
 		if not contains (already_drawn_segments, element (s)) then
 			
 			draw_line (
-				line		=> to_line_fine (element (s)),
-				width		=> net_line_width);
+				line		=> type_line (element (s)),
+				pos			=> origin_zero_rotation,		  
+				width		=> net_line_width,
+				do_stroke	=> true);
 
 			draw_junctions (s);
 			
 		end if;
 	end draw_fixed_segment;
+
 
 	
 	-- Draws a net segment.
@@ -419,14 +445,17 @@ is
 		segment : in type_net_segment) 
 	is begin
 		draw_line (
-			line		=> to_line_fine (segment),
-			width		=> net_line_width);
+			line		=> type_line (segment),
+			pos			=> origin_zero_rotation,		  
+			width		=> net_line_width,
+			do_stroke	=> true);
 
 		draw_junctions (segment);
 
 		draw_labels (net, strand, segment);
 	end draw_preliminary_segment;
 
+	
 	
 	-- Draws secondary nets which are attached to the primary net.
 	procedure draw_secondary_segments (
@@ -456,6 +485,7 @@ is
 				already_drawn_segments.append (element (c));
 			end draw_and_mark;
 
+			
 			procedure drag_at_start is begin
 				if element (original_segment).start_point = secondary_segment.start_point then
 				-- Start point of secondary segment is attached to the start point of the original segment.
@@ -472,6 +502,7 @@ is
 				end if;
 			end drag_at_start;
 
+			
 			procedure drag_at_end is begin
 				if element (original_segment).end_point = secondary_segment.start_point then
 				-- Start point of secondary segment is attached to the end point of the original segment.
@@ -536,6 +567,7 @@ is
 		strand_cursor		: in pac_strands.cursor;
 		original_segment	: in pac_net_segments.cursor) 
 	is
+		use et_modes.schematic;
 		use et_schematic_ops.nets;
 
 		PS : type_preliminary_segment renames preliminary_segment;
@@ -548,6 +580,7 @@ is
 		destination : type_vector_model;
 		primary_segment : type_net_segment;
 
+		
 		-- Moves net labels of the primary segment.
 		-- Draws the primary segment.
 		-- Draws secondary segments.
@@ -601,7 +634,7 @@ is
 					destination := snap_to_grid (get_mouse_position);
 
 				when KEYBOARD =>
-					destination := cursor_main.position;
+					destination := get_cursor_position;
 			end case;
 
 		
@@ -618,6 +651,8 @@ is
 			draw_labels (net_cursor, strand_cursor, element (original_segment));
 		end if;
 	end draw_moving_segments;
+
+
 	
 
 	-- Draws the segments attached to a unit being dragged.
@@ -627,7 +662,8 @@ is
 	is
 		tool_position : type_vector_model;
 		displacement : type_distance_relative;
-		
+
+		use et_canvas_schematic_units;
 		use pac_segments_being_dragged;
 
 		-- Tests if the segment being dragged is the same as the given segment.
@@ -653,8 +689,10 @@ is
 				end case;
 
 				draw_line (
-					line		=> to_line_fine (copy_of_original_segment),
-					width		=> net_line_width);
+					line		=> type_line (copy_of_original_segment),
+					pos			=> origin_zero_rotation,		  
+					width		=> net_line_width,
+					do_stroke	=> true);
 
 				-- mark segment as already drawn
 				already_drawn_segments.append (element (s));
@@ -673,7 +711,7 @@ is
 					tool_position := snap_to_grid (get_mouse_position);
 
 				when KEYBOARD =>
-					tool_position := cursor_main.position;
+					tool_position := get_cursor_position;
 			end case;
 
 			-- This is the displacement of the attached segments:
@@ -687,14 +725,21 @@ is
 		end if;
 	end draw_segment_being_dragged_along_with_unit;
 
+
 	
 	procedure query_nets (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_module) 
 	is
+		use et_colors;
+		use et_colors.schematic;
+
+		use et_modes.schematic;
+
 		-- This cursor points to the current net being drawn:
 		net_cursor : pac_nets.cursor := module.nets.first;
 
+		
 		-- Draws the strands of the given net in "normal" mode.
 		-- "Normal" mode means, the whole net is not to be drawn highlighted.
 		-- This is the case when the verb VERB_SHOW is not active.
@@ -704,17 +749,15 @@ is
 		is
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
+			
 			procedure query_segments (strand : in type_strand) is
 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
 			begin
 				-- draw nets of the active sheet only:
 				if get_sheet (strand.position) = current_active_sheet then
 
-					-- set line width for net segments:
-					set_line_width (context.cr, type_view_coordinate (net_line_width));
-
 					-- First we draw selected segments or those being moved/dragged:
-					set_color_nets (context.cr, BRIGHT);
+					set_color_nets (BRIGHT);
 					
 					while segment_cursor /= pac_net_segments.no_element loop
 
@@ -752,7 +795,7 @@ is
 
 					
 					-- Now we draw the remaining segments:
-					set_color_nets (context.cr, NORMAL);
+					set_color_nets (NORMAL);
 					segment_cursor := strand.segments.first;
 					
 					while segment_cursor /= pac_net_segments.no_element loop
@@ -794,14 +837,14 @@ is
 
 			procedure query_segments (strand : in type_strand) is
 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+				use et_colors;
+				use et_colors.schematic;
 			begin
 				-- draw nets of the active sheet only:
 				if get_sheet (strand.position) = current_active_sheet then
 
-					-- set line width for net segments:
-					set_line_width (context.cr, type_view_coordinate (net_line_width));
-
-					set_color_nets (context.cr, BRIGHT);
+					set_color_nets (BRIGHT);
 					
 					while segment_cursor /= pac_net_segments.no_element loop
 
@@ -815,6 +858,7 @@ is
 
 				end if;
 			end query_segments;
+
 			
 		begin -- query_strands_show
 			while strand_cursor /= pac_strands.no_element loop
@@ -872,7 +916,7 @@ is
 
 		
 	begin -- query_nets
-		set_color_nets (context.cr);
+		set_color_nets;
 
 		-- iterate nets
 		while net_cursor /= pac_nets.no_element loop
@@ -909,7 +953,13 @@ is
 	end query_nets;
 
 
+
+	
 	procedure draw_path is
+		use pac_path_and_bend;
+		use et_colors.schematic;
+		use et_modes.schematic;
+		
 		PS : type_preliminary_segment renames preliminary_segment;
 		
 		line : pac_geometry_2.type_line;
@@ -923,8 +973,10 @@ is
 			procedure draw is begin
 				-- draw the net segment:
 				draw_line (
-					line		=> to_line_fine (line),
-					width		=> net_line_width);
+					line		=> type_line (line),
+					pos			=> origin_zero_rotation,		  
+					width		=> net_line_width,
+					do_stroke	=> true);
 			end draw;
 
 			
@@ -935,8 +987,7 @@ is
 			PS.path.bended := r.bended;
 
 			-- set color and line width for net segments:
-			set_color_nets (context.cr);
-			set_line_width (context.cr, type_view_coordinate (net_line_width));
+			set_color_nets;
 
 			-- If the route does not require a bend point, draw a single line
 			-- from start to end point:
@@ -984,7 +1035,7 @@ is
 				when KEYBOARD =>
 					compute_route (
 						s	=> PS.path.start_point,	-- start of route
-						e	=> cursor_main.position);	-- end of route
+						e	=> get_cursor_position);	-- end of route
 					
 			end case;			
 		end if;
