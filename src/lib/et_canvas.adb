@@ -3572,6 +3572,31 @@ package body et_canvas is
 
 	
 
+	function get_text_extents (
+		content		: in et_text.pac_text_content.bounded_string;
+		size		: in pac_text.type_text_size;
+		font		: in et_text.type_font)
+		return cairo.cairo_text_extents 
+	is
+		use cairo;
+		use et_text;
+		
+		result : aliased cairo_text_extents; -- to be returned
+
+		--use interfaces.c.strings;
+		--text : interfaces.c.strings.chars_ptr := new_string (to_string (content));
+
+		use gtkada.types;
+		text : constant gtkada.types.chars_ptr := new_string (to_string (content));
+	begin
+		select_font_face (context, to_string (font.family), font.slant, font.weight);
+		set_font_size (context, to_gdouble (to_points (size)));
+		text_extents (cr => context, utf8 => text, extents => result'access);
+		return result;
+	end get_text_extents;
+
+
+	
 	function get_text_start_point (
 		extents		: in cairo.cairo_text_extents;
 		alignment	: in et_text.type_text_alignment;

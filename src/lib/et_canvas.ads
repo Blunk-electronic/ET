@@ -1317,6 +1317,18 @@ package et_canvas is
 		-- specified in the model domain:
 		MODE_ALIGN_RELATIVE_TO_BASELINE);
 
+
+	
+	-- This function computes the extents of the 
+	-- given text content, size and font:
+	function get_text_extents (
+		content		: in et_text.pac_text_content.bounded_string;
+		size		: in pac_text.type_text_size;
+		font		: in et_text.type_font)
+		return cairo.cairo_text_extents;
+
+
+	
 	
 	-- This function computes the canvas point where
 	-- a text of given extents and requested alignment
@@ -1328,8 +1340,7 @@ package et_canvas is
 		mode_v		: in type_align_mode_vertical;
 		size		: in pac_text.type_text_size) -- the size of the text
 		return type_logical_pixels_vector;
-	
-	
+		
 	
 	-- Draws a text on the canvas:
 	procedure draw_text (
