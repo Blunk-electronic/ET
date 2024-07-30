@@ -1070,6 +1070,16 @@ package body et_geometry_2a is
 			& to_string (box.height);
 	end to_string;
 
+
+	procedure swap_edges (
+		area : in out type_area)
+	is
+		w : type_distance_positive := area.width;
+	begin
+		area.width  := area.height;
+		area.height := w;
+	end swap_edges;
+	
 	
 	function get_corners (
 		area	: in type_area)

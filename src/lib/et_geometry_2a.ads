@@ -563,6 +563,11 @@ package et_geometry_2a is
 		return string;
 
 
+	-- Swaps width and height of the given area:
+	procedure swap_edges (
+		area : in out type_area);
+	
+
 	-- In order to handle the four corners of an
 	-- area this type is required:
 	type type_area_corners is record
