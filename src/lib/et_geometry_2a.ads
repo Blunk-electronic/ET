@@ -305,6 +305,12 @@ package et_geometry_2a is
 		axis	: in type_axis_2d)
 		return type_vector_model;
 
+
+	-- Adds the given two location vectors:
+	function add (
+		v1, v2 : in type_vector_model)
+		return type_vector_model;
+	
 	
 	-- Moves a model point by the given offset:
 	procedure move_by (
