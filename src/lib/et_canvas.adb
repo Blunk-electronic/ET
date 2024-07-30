@@ -3492,6 +3492,17 @@ package body et_canvas is
 		-- CS
 	end draw_arc;
 
+
+
+	procedure draw_rectangle (
+		rectangle	: in type_area;
+		width		: in type_distance_positive;
+		do_stroke	: in boolean := false)
+	is
+	begin
+		null;
+	end draw_rectangle;
+
 	
 	
 -- ORIGIN OF TEXTS AND COMPLEX OBJECTS:
@@ -3596,6 +3607,19 @@ package body et_canvas is
 	end get_text_extents;
 
 
+	
+	function to_area (
+		extents : in cairo.cairo_text_extents)
+		return type_area
+	is
+		a : type_area;
+	begin
+		a.width  := to_distance (to_lp (extents.width));
+		a.height := to_distance (to_lp (extents.height));		
+		return a;
+	end to_area;
+
+	
 	
 	function get_text_start_point (
 		extents		: in cairo.cairo_text_extents;

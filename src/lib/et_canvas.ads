@@ -1253,7 +1253,17 @@ package et_canvas is
 		do_stroke	: in boolean := false);
 
 	
+	procedure draw_rectangle (
+		rectangle	: in type_area;
+		-- CS pos			: in type_position; -- includes x,y, rotation
+		-- CS default origin_zero_rotation in case there is no parent object ?
+		
+		-- CS mirror ?
+		width		: in type_distance_positive;
+		do_stroke	: in boolean := false);
 
+
+	
 -- ORIGIN OF TEXTS AND COMPLEX OBJECTS:
 
 	-- These origins have a size and linewidth given in the model-domain.
@@ -1328,7 +1338,15 @@ package et_canvas is
 		font		: in et_text.type_font)
 		return cairo.cairo_text_extents;
 
-
+	
+	-- Converts cairo_text_extents to an area (in the model-domain)
+	-- according to the current zoom-factor.
+	-- NOTE: Since cairo_text_extents does not include the position
+	-- of a text, the returned area has position (0;0).
+	-- CS: unifiy this function with above function get_text_extents ?
+	function to_area (
+		extents : in cairo.cairo_text_extents)
+		return type_area;
 	
 	
 	-- This function computes the canvas point where
