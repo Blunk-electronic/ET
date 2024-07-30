@@ -1255,12 +1255,9 @@ package et_canvas is
 	
 	procedure draw_rectangle (
 		rectangle	: in type_area;
-		-- CS pos			: in type_position; -- includes x,y, rotation
-		-- CS default origin_zero_rotation in case there is no parent object ?
-		
+		pos			: in type_position := origin_zero_rotation;
 		-- CS mirror ?
-		width		: in type_distance_positive;
-		do_stroke	: in boolean := false);
+		width		: in type_distance_positive);
 
 
 	

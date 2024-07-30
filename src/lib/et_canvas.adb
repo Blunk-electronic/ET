@@ -3496,11 +3496,42 @@ package body et_canvas is
 
 	procedure draw_rectangle (
 		rectangle	: in type_area;
-		width		: in type_distance_positive;
-		do_stroke	: in boolean := false)
+		pos			: in type_position := origin_zero_rotation;
+		width		: in type_distance_positive)
 	is
+		use et_geometry;
+		use cairo;
+		l : type_line;
 	begin
-		null;
+		-- There are four lines having the same width.
+		-- So we set the linewidth only once and do a 
+		-- single final stroke.
+
+		-- CS: Optimize the computation of the line !
+		
+		set_line_width (context, to_gdouble (to_distance (width)));
+
+		-- lower line from left to right:
+		l.start_point := rectangle.position;
+		l.end_point   := add (rectangle.position, (rectangle.width, 0.0));
+		draw_line (l, pos, width); -- no stroke, width doesn't matter
+
+		-- upper line from left to right:
+		l.start_point := add (rectangle.position, (0.0, rectangle.height));
+		l.end_point   := add (rectangle.position, (rectangle.width, rectangle.height));
+		draw_line (l, pos, width);
+
+		-- right line from bottom to top:
+		l.start_point := add (rectangle.position, (rectangle.width, 0.0));
+		l.end_point   := add (rectangle.position, (rectangle.width, rectangle.height));
+		draw_line (l, pos, width);
+
+		-- left line from bottom to top:
+		l.start_point := rectangle.position;
+		l.end_point   := add (rectangle.position, (0.0, rectangle.height));
+		draw_line (l, pos, width);
+		
+		stroke;
 	end draw_rectangle;
 
 	
