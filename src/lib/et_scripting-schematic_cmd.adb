@@ -2060,6 +2060,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_SHOW => -- GUI related
 				-- There might be objects such as net segments or units selected.
 				-- They must be de-selected first:
@@ -2132,6 +2133,7 @@ is
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
+
 				
 			when VERB_UNMOUNT =>
 				case noun is
@@ -2152,6 +2154,7 @@ is
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
+
 				
 			when VERB_WRITE =>
 				case noun is
@@ -2161,6 +2164,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_ZOOM => -- GUI related
 				case noun is
 					when NOUN_FIT => -- zoom fit
@@ -2203,6 +2207,7 @@ is
 				
 		end case;
 
+		
 		-- Update GUI if we are in graphical mode:
 		if runmode /= MODE_HEADLESS then
 			null;
