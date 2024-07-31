@@ -213,6 +213,19 @@ package et_canvas_board_2 is
 
 
 
+-- UNDO / REDO:
+	
+	procedure undo;
+	
+	procedure redo;
+
+
+	
+
+
+
+	
+
 	-- This callback function is called each time the
 	-- operator hits a key and if the canvas has the focus:
 	function cb_canvas_key_pressed (

@@ -214,6 +214,18 @@ package et_canvas_schematic_2 is
 		return boolean;
 
 
+
+-- UNDO / REDO:
+	
+	procedure undo;
+	
+	procedure redo;
+
+
+	
+
+
+	
 	
 	-- This callback function is called each time the
 	-- operator hits a key and if the canvas has the focus:

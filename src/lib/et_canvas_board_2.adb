@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -79,7 +81,8 @@ with et_canvas_board_assy_doc;
 with et_canvas_board_silkscreen;
 with et_canvas_board_tracks;
 
--- with et_undo_redo;
+with et_undo_redo;
+
 
 package body et_canvas_board_2 is
 
@@ -639,6 +642,40 @@ package body et_canvas_board_2 is
 
 
 
+-- UNDO / REDO:	
+
+	procedure undo is 
+		use et_undo_redo;
+		use pac_undo_message;
+		message : pac_undo_message.bounded_string;
+	begin
+		-- put_line ("board undo");
+		undo (message, log_threshold + 1);
+
+		-- Show the undo-message in the status bar:
+		set_status (to_string (message));
+		
+		redraw;
+	end undo;
+
+	
+	procedure redo is 
+		use et_undo_redo;
+		use pac_redo_message;
+		message : pac_redo_message.bounded_string;
+	begin
+		-- put_line ("board redo");
+		redo (message, log_threshold + 1);
+
+		-- Show the redo-message in the status bar:
+		set_status (to_string (message));
+		
+		redraw;
+	end redo;
+
+
+	
+
 	-- This procedure resets a lot of stuff and should
 	-- be called when the operator pressed the ESCAPE key.
 	-- Here the commands to abort any pending 
@@ -714,6 +751,17 @@ package body et_canvas_board_2 is
 
 				when GDK_KP_SUBTRACT | GDK_MINUS =>
 					zoom_on_cursor (ZOOM_OUT);
+
+					
+				-- Undo the last operation on ctrl-z
+				when GDK_LC_z =>
+					undo;
+
+				-- Redo the last operation on ctrl-y
+				when GDK_LC_y => -- CS shift + ctrl-z
+					redo;
+
+
 					
 				when others => null;
 			end case;
@@ -1479,42 +1527,6 @@ package body et_canvas_board_2 is
 -- 	is begin
 -- 		save_module;
 -- 	end save_drawing;
--- 
--- 
--- 
--- 	
--- 	procedure undo (
--- 		self : not null access type_view) 
--- 	is 
--- 		use et_undo_redo;
--- 		use pac_undo_message;
--- 		message : pac_undo_message.bounded_string;
--- 	begin
--- 		-- put_line ("board undo");
--- 		undo (message, log_threshold + 1);
--- 
--- 		-- Show the undo-message in the status bar:
--- 		set_status (to_string (message));
--- 		
--- 		redraw;
--- 	end undo;
--- 
--- 	
--- 	procedure redo (
--- 		self : not null access type_view) 
--- 	is 
--- 		use et_undo_redo;
--- 		use pac_redo_message;
--- 		message : pac_redo_message.bounded_string;
--- 	begin
--- 		-- put_line ("board redo");
--- 		redo (message, log_threshold + 1);
--- 
--- 		-- Show the redo-message in the status bar:
--- 		set_status (to_string (message));
--- 		
--- 		redraw;
--- 	end redo;
 
 	
 end et_canvas_board_2;
