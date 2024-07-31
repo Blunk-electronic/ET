@@ -560,7 +560,8 @@ package body et_canvas_schematic_2 is
 
 	procedure draw_nets is separate;
 	
-
+	procedure draw_texts is separate;
+	
 	
 	function cb_draw (
 		canvas		: access gtk_widget_record'class;
@@ -609,9 +610,9 @@ package body et_canvas_schematic_2 is
 
 
 		if texts_enabled then
-			null;
-			-- draw_texts (self);
+			draw_texts;
 		end if;
+
 		
 		-- draw_submodules (self);
 		

@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2020 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -35,15 +37,19 @@
 --   history of changes:
 --
 
-with et_schematic;				use et_schematic;
+
+with et_schematic;							use et_schematic;
 use et_schematic.pac_texts;
 
-separate (et_canvas_schematic)
+separate (et_canvas_schematic_2)
 
-procedure draw_texts (
-	self	: not null access type_view)
-is
+procedure draw_texts is
 
+	use et_colors;
+	use et_colors.schematic;
+
+
+	
 	procedure query_text (cursor : in pac_texts.cursor) is begin
 		
 		-- We want to draw only those texts which are on the active sheet:
@@ -53,11 +59,11 @@ is
 				content		=> element (cursor).content,
 				size		=> element (cursor).size,
 				font		=> text_font,
-				position	=> type_vector_model (element (cursor).position),
+				anchor		=> type_vector_model (element (cursor).position),
 				origin		=> true,
 
 				-- This is documentational text. It is readable from the front or the right.
-				rotation	=> to_rotation (element (cursor).rotation),
+				rotation	=> pac_text.to_rotation (element (cursor).rotation),
 				
 				alignment	=> element (cursor).alignment);
 
@@ -67,7 +73,7 @@ is
 begin
 	--put_line ("draw texts ...");
 	
-	set_color_texts (context.cr);
+	set_color_texts;
 
 	iterate (element (current_active_module).texts, query_text'access);
 	
