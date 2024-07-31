@@ -98,6 +98,7 @@ procedure draw_nets is
 
 	end draw_junctions;
 
+
 	
 	-- Draws the junctions of a segment:
 	procedure draw_junctions (
@@ -130,25 +131,20 @@ procedure draw_nets is
 	end draw_junctions;
 
 
+
+	-- This procedure draws a tag label:
 	procedure draw_tag_label (
 		net		: in pac_net_name.bounded_string;
 		label	: in type_net_label)
 	is
 		use pac_net_name;
-		-- use pac_text;
-		-- use et_text;
+
+		box : type_area;
 		
 		content : pac_text_content.bounded_string := to_content (to_string (net));
 		-- CS append to content the position of the net on the next sheet (strand position)
+		-- using the quadrant bars.
 		
-		-- The position, width and height of the enshrouding box (lower left corner)
-		-- as if the box was drawn for a label in zero rotation:
-		box_position : type_vector_model;
-
-		box_width : type_distance_positive;
-		box_height : constant type_distance_positive := 
-			  type_distance_positive (label.size) 
-			* type_distance_positive (tag_label_height_to_size_ratio);
 		
 		-- The text rotation must be either 0 or 90 degree (documentational text) and is thus
 		-- to be calculated according to the rotation of the label:
@@ -160,60 +156,76 @@ procedure draw_nets is
 		text_alignment : type_text_alignment := (vertical => CENTER, horizontal => <>);
 
 		-- The text position is not the same as the label position, thus it must be 
-		-- calculated according to the label rotation and tag_label_text_offset (see et_schematic specs):
+		-- calculated according to the label rotation and tag_label_text_offset:
 		text_position : type_vector_model;
 
 	begin
-		set_linewidth (tag_label_box_line_width);
-		
-		-- CS paint box outline depending on label signal direction
+		-- Form a box that wraps around the net name:
+		box := to_area (get_text_extents (content, label.size, net_label_font));
 
-		-- Calculate the box width according to text content, size and font:
-		-- box_width := 
-		-- 	type_distance_positive (get_text_extents (content, label.size, net_label_font).width)
-		-- 	+ type_distance_positive (2.0 * tag_label_text_offset);
-
+		-- Expand the box so that there is some empty space between
+		-- text and border:
+		box.height := box.height * tag_label_height_to_size_ratio;
+		box.width  := box.width  * tag_label_height_to_size_ratio;
 		
 		if label.rotation_tag = zero_rotation then
-			box_position := type_vector_model (set (get_x (label.position), get_y (label.position) - type_distance_positive (box_height) * 0.5));
-			-- draw_rectangle (box_position, box_width, box_height);
+	
+			box.position := set (
+				get_x (label.position), 
+				get_y (label.position) - box.height * 0.5);
 
 			text_rotation := zero_rotation;
-			text_position := type_vector_model (set (get_x (label.position) + type_distance_positive (tag_label_text_offset), get_y (label.position)));
+			text_position := set (get_x (label.position) + tag_label_text_offset, get_y (label.position));
 			text_alignment.horizontal := LEFT;
 		end if;
 
 		
 		if label.rotation_tag = 90.0 then
-			box_position := type_vector_model (set (get_x (label.position) - type_distance_positive (box_height) * 0.5, get_y (label.position)));
-			-- draw_rectangle (box_position, box_height, box_width);
+
+			box.position := set (
+				get_x (label.position) - box.height * 0.5,
+				get_y (label.position));
+
+			swap_edges (box);
 
 			text_rotation := 90.0;
-			text_position := type_vector_model (set (get_x (label.position), get_y (label.position) + type_distance_positive (tag_label_text_offset)));
+			text_position := set (get_x (label.position), get_y (label.position) + tag_label_text_offset);
 			text_alignment.horizontal := LEFT;
 		end if;
 
 		
 		if label.rotation_tag = 180.0 then
-			box_position := type_vector_model (set (get_x (label.position) - type_distance_positive (box_width), get_y (label.position) - type_distance_positive (box_height) * 0.5));
-			-- draw_rectangle (box_position, box_width, box_height);
+
+			box.position := set (
+				get_x (label.position) - box.width,
+				get_y (label.position) - box.height * 0.5);
 
 			text_rotation := zero_rotation;
-			text_position := type_vector_model (set (get_x (label.position) - type_distance_positive (tag_label_text_offset), get_y (label.position)));
+			text_position := set (get_x (label.position) - tag_label_text_offset, get_y (label.position));
 			text_alignment.horizontal := RIGHT;
 		end if;
 
 		
 		if label.rotation_tag = -90.0 then
-			box_position := type_vector_model (set (get_x (label.position) - type_distance_positive (box_height) * 0.5, get_y (label.position) - type_distance_positive (box_width)));
-			-- draw_rectangle (box_position, box_height, box_width);
+
+			box.position := set (
+				get_x (label.position) - box.height * 0.5,
+				get_y (label.position) - box.width);
+			
+			swap_edges (box);
 
 			text_rotation := 90.0;
-			text_position := type_vector_model (set (get_x (label.position), get_y (label.position) - type_distance_positive (tag_label_text_offset)));
+			text_position := set (get_x (label.position), get_y (label.position) - tag_label_text_offset);
 			text_alignment.horizontal := RIGHT;
 		end if;
-		
-			
+
+
+		-- Draw the box enshrouding the net name:
+		draw_rectangle (
+			rectangle	=> box, 
+			width		=> tag_label_box_line_width);
+
+		-- Draw the actual net name:
 		draw_text (
 			content		=> content,
 			size		=> label.size,
@@ -224,7 +236,6 @@ procedure draw_nets is
 			-- Text rotation about its anchor point. This is documentational text.
 			-- It is readable from the front or the right.
 			rotation	=> text_rotation,
-
 			alignment	=> text_alignment);
 
 	end draw_tag_label;
@@ -290,9 +301,7 @@ procedure draw_nets is
 					alignment	=> net_label_alignment);
 
 			when TAG =>
-				-- CS
-				null;
-				-- draw_tag_label (self, net, element (label));
+				draw_tag_label (net, element (label));
 
 		end case;
 	end draw_label;
@@ -408,8 +417,7 @@ procedure draw_nets is
 									label.finalizing_granted := false;
 								end if;
 
-								-- CS
-								-- draw_tag_label (self, selected_net, l);
+								draw_tag_label (selected_net, l);
 							end;
 							
 					end case;
