@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -38,41 +40,53 @@
 with ada.text_io;				use ada.text_io;
 
 with et_geometry;				use et_geometry;
-with et_schematic;
+with et_text;					use et_text;
+with et_nets;
+with et_net_names;				use et_net_names;
 with et_submodules;				use et_submodules;
 with et_display.schematic;
 
-separate (et_canvas_schematic)
+with et_pcb_coordinates_2;
 
 
-procedure draw_submodules (
-	self	: not null access type_view)
-is
+separate (et_canvas_schematic_2)
+
+
+procedure draw_submodules is
+	
 	use pac_net_name;
 	use pac_submodules;
 
+	use et_colors;
+	use et_colors.schematic;
+	
 	
 	procedure query_submods (cursor : in pac_submodules.cursor) is
-
-		-- The lower left corner of the submodule box in the schematic:
-		submod_position : constant type_vector_model := element (cursor).position.place;
+		submod : type_submodule renames element (cursor);
 		
-		procedure draw_box is begin
-			cairo.set_line_width (context.cr, type_view_coordinate (submod_box_line_width));
-			set_color_submodules (context.cr);
+		
+		procedure draw_box is 
+			box : type_area;
+		begin
+			set_color_submodules;
 
+			-- The lower left corner of the submodule box in the schematic:
+			box.position := submod.position.place;
+			box.width  := submod.size.x;
+			box.height := submod.size.y;
+			
 			draw_rectangle (
-				position	=> submod_position,
-				width		=> type_float_positive (element (cursor).size.x),
-				height		=> type_float_positive (element (cursor).size.y));
+				rectangle	=> box,
+				width		=> submod_box_line_width);
 								
-			cairo.stroke (context.cr);
 		end draw_box;
 
+		
 		-- The position of the instance name is below the lower left corner of the box.
 		-- Position and size are fixed and can not be changed by the operator:
 		procedure draw_instance_name is
-			position : type_vector_model := submod_position;
+			position : type_vector_model := submod.position.place;
+			
 			offset : constant type_distance_relative := to_distance_relative (set (
 					x => zero,
 					y => - text_spacing));
@@ -80,20 +94,22 @@ is
 			move_by (position, offset);
 			
 			draw_text (
-				content		=> et_text.to_content ("instance: " & to_string (key (cursor))),
+				content		=> to_content ("instance: " & to_string (key (cursor))),
 				size		=> instance_font_size,
 				font		=> instance_font,
-				position	=> position,
+				anchor		=> position,
 				origin		=> false,
 				rotation	=> zero_rotation,
 				alignment	=> (LEFT, TOP));
 
 		end draw_instance_name;
+
 		
 		-- The position of the file name is below the instance name.
 		-- Position and size are fixed and can not be changed by the operator:
 		procedure draw_file_name is
-			position : type_vector_model := submod_position;
+			position : type_vector_model := submod.position.place;
+			
 			offset : constant type_distance_relative := to_distance_relative (set (
 					x => zero,
 					y => - (2.0 * text_spacing + instance_font_size)));
@@ -101,25 +117,28 @@ is
 			move_by (position, offset);
 			
 			draw_text (
-				content		=> et_text.to_content ("file: " & to_string (element (cursor).file)),
+				content		=> to_content ("file: " & to_string (element (cursor).file)),
 				size		=> file_font_size,
 				font		=> file_font,
-				position	=> position,
+				anchor		=> position,
 				origin		=> false,
 				rotation	=> zero_rotation,
 				alignment	=> (LEFT, TOP));
 
 		end draw_file_name;
 
+		
 		-- The position of module in the board is below the file name.
 		-- Position and size are fixed and can not be changed by the operator:
 		procedure draw_position_in_board is
-			position : type_vector_model := submod_position;
+			position : type_vector_model := submod.position.place;
+			
 			offset : constant type_distance_relative := to_distance_relative (set (
 					x => zero,
 					y => - (3.0 * text_spacing + instance_font_size + file_font_size)));
 
-			use et_pcb_coordinates.pac_geometry_2;
+			use et_pcb_coordinates_2.pac_geometry_2;
+			
 			pos_x : constant string := to_string (get_x (element (cursor).position_in_board));
 			pos_y : constant string := to_string (get_y (element (cursor).position_in_board));
 			rotation : constant string := to_string (get_rotation (element (cursor).position_in_board));
@@ -135,7 +154,7 @@ is
 				content		=> et_text.to_content (text),
 				size		=> position_board_font_size,
 				font		=> position_board_font,
-				position	=> position,
+				anchor		=> position,
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (LEFT, TOP));
@@ -143,31 +162,43 @@ is
 		end draw_position_in_board;
 
 		
+		
 		procedure draw_ports is 
 			use pac_submodule_ports;
 
+			
 			procedure draw_port (pc : in pac_submodule_ports.cursor) is 
-				-- First get the position of the submodule box.
-				pos : type_vector_model := submod_position;
-				-- CS ? pos : type_vector := to_vector (submod_position);
+				port : type_submodule_port renames element (pc);
+				
+				submod_position : constant type_vector_model := submod.position.place;
 
-				procedure draw_horizontal is begin
-					-- Draw the port horizontal:
-					draw_rectangle (
-						position		=> pos,
-						width			=> port_symbol_width,
-						height			=> port_symbol_height);
+				-- The final position of the port:
+				pos : type_vector_model := submod_position;
+
+				
+				procedure draw_horizontal is 
+					box : type_area;
+				begin
+					box.position := pos;
+					box.width  := port_symbol_width;
+					box.height := port_symbol_height;
 					
+					-- Draw the port horizontal:
+					draw_rectangle (rectangle => box, width => port_symbol_line_width);
 				end draw_horizontal;
 
-				procedure draw_vertical is begin
-					-- Draw the port vertical:					
-					draw_rectangle (
-						position		=> pos,
-						width			=> port_symbol_height,
-						height			=> port_symbol_width);
+				
+				procedure draw_vertical is 
+					box : type_area;
+				begin
+					box.position := pos;
+					box.width  := port_symbol_height;
+					box.height := port_symbol_width;
 
+					-- Draw the port vertical:					
+					draw_rectangle (rectangle => box, width => port_symbol_line_width);
 				end draw_vertical;
+				
 				
 			begin -- draw_port
 				-- Detect the edge where the port sits at. Depending on the edge
@@ -175,21 +206,21 @@ is
 
 				-- Move pos by the position of the port. 
 				-- The port position is relative to the module (box) position:
-				move_by (pos, to_distance_relative (element (pc).position));
+				move_by (pos, to_distance_relative (port.position));
 
 				-- According to the edge where the port sits, pos will now be fine
 				-- adjusted, because the port is a rectangle which position is at 
 				-- its lower left corner.
 				
 				-- Does the port sit on the LEFT edge of the box ?
-				if get_x (element (pc).position) + get_x (submod_position) = get_x (submod_position) then 
+				if get_x (port.position) + get_x (submod_position) = get_x (submod_position) then 
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
 					draw_text (
-						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
+						content		=> to_content (to_direction_abbrevation (port.direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
-						position	=> type_vector_model (move (pos, 0.0, type_distance (port_symbol_width) / 2.0)),
+						anchor		=> move (pos, 0.0, port_symbol_width / 2.0),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER));
@@ -199,26 +230,27 @@ is
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
-						position	=> type_vector_model (move (pos, 0.0, type_distance (port_symbol_width) + port_name_spacing)),
+						anchor		=> move (pos, 0.0, port_symbol_width + port_name_spacing),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (LEFT, CENTER));
 					
 					-- Move pos down so that the port sits excatly at
 					-- the point where a net will be connected:
-					move_by (pos, to_distance_relative (set (x => zero, y => - type_distance (port_symbol_height) / 2.0)));
+					move_by (pos, to_distance_relative (set (x => zero, y => - port_symbol_height / 2.0)));
 
 					draw_horizontal;
+
 					
 				-- Does the port sit on the RIGHT edge of the box ?
-				elsif get_x (element (pc).position) + get_x (submod_position) = get_x (submod_position) + element (cursor).size.x then 
+				elsif get_x (port.position) + get_x (submod_position) = get_x (submod_position) + element (cursor).size.x then 
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
 					draw_text (
-						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
+						content		=> to_content (to_direction_abbrevation (port.direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
-						position	=> type_vector_model (move (pos, 180.0, type_distance (port_symbol_width) / 2.0)),
+						anchor		=> move (pos, 180.0, port_symbol_width / 2.0),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER));
@@ -228,26 +260,27 @@ is
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
-						position	=> type_vector_model (move (pos, 180.0, type_distance (port_symbol_width) + port_name_spacing)),
+						anchor		=> move (pos, 180.0, port_symbol_width + port_name_spacing),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (RIGHT, CENTER));
 					
 					-- Move pos down and left so that the port sits excatly at
 					-- the point where a net will be connected:
-					move_by (pos, to_distance_relative (set (x => - type_distance (port_symbol_width), y => - type_distance (port_symbol_height) / 2.0)));
+					move_by (pos, to_distance_relative (set (x => - port_symbol_width, y => - port_symbol_height / 2.0)));
 
 					draw_horizontal;
 
+					
 				-- Does the port sit on the LOWER edge of the box ?
-				elsif get_y (element (pc).position) + get_y (submod_position) = get_y (submod_position) then
+				elsif get_y (port.position) + get_y (submod_position) = get_y (submod_position) then
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
 					draw_text (
-						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
+						content		=> to_content (to_direction_abbrevation (port.direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
-						position	=> type_vector_model (move (pos, 90.0, type_distance (port_symbol_width) / 2.0)),
+						anchor		=> move (pos, 90.0, port_symbol_width / 2.0),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER));
@@ -257,26 +290,27 @@ is
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
-						position	=> type_vector_model (move (pos, 90.0, type_distance (port_symbol_width) + port_name_spacing)),
+						anchor		=> move (pos, 90.0, port_symbol_width + port_name_spacing),
 						origin		=> false, -- no origin required
 						rotation	=> 90.0,
 						alignment	=> (LEFT, CENTER));
 					
 					-- Move pos left so that the port sits excatly at
 					-- the point where a net will be connected:
-					move_by (pos, to_distance_relative (set (x => - type_distance (port_symbol_height) / 2.0, y => zero)));
+					move_by (pos, to_distance_relative (set (x => - port_symbol_height / 2.0, y => zero)));
 
 					draw_vertical;
 
+					
 				-- Does the port sit on the UPPER edge of the box ?
-				elsif get_y (element (pc).position) + get_y (submod_position) = get_y (submod_position) + element (cursor).size.y then 
+				elsif get_y (port.position) + get_y (submod_position) = get_y (submod_position) + element (cursor).size.y then 
 
 					-- Draw the port direction (the letter M or S) inside the port rectangle:
 					draw_text (
-						content		=> to_content (to_direction_abbrevation (element (pc).direction)),
+						content		=> to_content (to_direction_abbrevation (port.direction)),
 						size		=> port_direction_font_size,
 						font		=> port_direction_font,
-						position	=> type_vector_model (move (pos, 270.0, type_distance (port_symbol_width) / 2.0)),
+						anchor		=> move (pos, 270.0, port_symbol_width / 2.0),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
 						alignment	=> (CENTER, CENTER));
@@ -286,14 +320,14 @@ is
 						content		=> to_content (to_string (key (pc))),
 						size		=> port_name_font_size,
 						font		=> port_name_font,
-						position	=> type_vector_model (move (pos, 270.0, type_distance (port_symbol_width) + port_name_spacing)),
+						anchor		=> move (pos, 270.0, port_symbol_width + port_name_spacing),
 						origin		=> false, -- no origin required
 						rotation	=> 90.0,
 						alignment	=> (RIGHT, CENTER));
 					
 					-- Move pos up and left so that the port sits excatly at
 					-- the point where a net will be connected:
-					move_by (pos, to_distance_relative (set (x => - type_distance (port_symbol_height) / 2.0, y => - type_distance (port_symbol_width))));
+					move_by (pos, to_distance_relative (set (x => - port_symbol_height / 2.0, y => - port_symbol_width)));
 
 					draw_vertical;
 					
@@ -303,16 +337,15 @@ is
 				end if;
 
 			end draw_port;
+
 			
 		begin -- draw_ports
-			cairo.set_line_width (context.cr, type_view_coordinate (port_symbol_line_width));
-
 			iterate (element (cursor).ports, draw_port'access);
-		
-			cairo.stroke (context.cr);
 		end draw_ports;
 
+		
 		use et_display.schematic;
+
 		
 	begin -- query_submods
 		-- We want to draw only those submodules which are on the active sheet:
@@ -325,7 +358,7 @@ is
 			-- layer device_names is enabled:
 			if device_names_enabled then
 
-				set_color_placeholders (context.cr);
+				set_color_placeholders;
 				
 				draw_file_name;
 				draw_instance_name;
@@ -336,7 +369,8 @@ is
 
 		end if;
 	end query_submods;
-		
+
+	
 begin
 -- 	put_line ("draw submodules ...");
 

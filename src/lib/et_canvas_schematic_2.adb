@@ -561,6 +561,9 @@ package body et_canvas_schematic_2 is
 	procedure draw_nets is separate;
 	
 	procedure draw_texts is separate;
+
+	procedure draw_submodules is separate;
+	
 	
 	
 	function cb_draw (
@@ -613,10 +616,10 @@ package body et_canvas_schematic_2 is
 			draw_texts;
 		end if;
 
-		
-		-- draw_submodules (self);
-		
 
+		-- CS if submodules_enables ?
+		draw_submodules;
+	
 		
 		return event_handled;
 	end cb_draw;

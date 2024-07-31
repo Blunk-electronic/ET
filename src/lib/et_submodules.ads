@@ -129,11 +129,11 @@ package et_submodules is
 	use pac_geometry_sch;
 	
 	-- GUI relevant only: The port of a submodule is just a small rectangle:
-	port_symbol_width	: constant type_float_positive := 4.0;
-	port_symbol_height	: constant type_float_positive := 2.0;
+	port_symbol_width	: constant type_distance_positive := 4.0;
+	port_symbol_height	: constant type_distance_positive := 2.0;
 	
 	type type_port_symbol is record
-		width, height : type_float_positive;
+		width, height : type_distance_positive;
 	end record;
 
 	port_symbol : constant type_port_symbol := (port_symbol_width, port_symbol_height);
