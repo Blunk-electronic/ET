@@ -173,6 +173,20 @@ package et_pcb_coordinates_2 is
 		packge : in type_package_position)
 		return type_face;
 
+
+	-- Returns the location vector of the given
+	-- package position:
+	function get_place (
+		position : in type_package_position)
+		return type_vector_model;
+
+	
+	-- Returns the location vector and rotation of
+	-- the given package position:
+	function get_position (
+		position : in type_package_position)
+		return type_position;
+							  
 	
 	-- Composes from a given point and angle the terminal position.
 	function to_terminal_position (

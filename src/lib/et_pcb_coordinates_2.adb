@@ -109,6 +109,23 @@ package body et_pcb_coordinates_2 is
 		return packge.face;
 	end get_face;
 	
+
+	function get_place (
+		position : in type_package_position)
+		return type_vector_model
+	is begin
+		return position.place;
+	end get_place;
+
+
+	function get_position (
+		position : in type_package_position)
+		return type_position
+	is begin
+		return type_position (position);
+	end get_position;
+
+	
 	
 	function to_terminal_position (
 		point		: in type_vector_model;
