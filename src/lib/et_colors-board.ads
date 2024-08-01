@@ -6,20 +6,21 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2024 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -157,17 +158,14 @@ package et_colors.board is
 
 	
 	procedure set_color_frame (
-		-- context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default);
 
 	
 	procedure set_color_origin (
-		context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default);
 
 
 	procedure set_color_ratsnest (
-		context 	: in cairo_context;
 		brightness	: in type_brightness := brightness_default);
 
 	
@@ -175,97 +173,81 @@ package et_colors.board is
 	-- to the follwing subprograms ?
 	
 	procedure set_color_outline (
-		context : in cairo_context;
 		opacity : in type_opacity := default_opacity);
 	
 
 -- VIAS
+
 	procedure set_color_vias (
-		context		: in cairo_context;
 		brightness	: in type_brightness := brightness_default;
 		opacity		: in type_opacity := default_opacity);
 
 	
 	procedure set_color_via_layers (
-		context : in cairo_context;
 		opacity : in type_opacity := default_opacity);
 
 	
 	procedure set_color_via_net_name (
-		context : in cairo_context;
 		opacity : in type_opacity := default_opacity);
 
 	
 	procedure set_color_via_drill_size (
-		context : in cairo_context;
 		opacity : in type_opacity := default_opacity);
 
 	
 	
 	procedure set_color_silkscreen (
-		context 	: in cairo_context;
 		face		: in type_face;
 		brightness	: in type_brightness;
 		opacity 	: in type_opacity := default_opacity);
 
 	
 	procedure set_color_assy_doc (
-		context 	: in cairo_context;
 		face		: in type_face;
 		brightness	: in type_brightness;
 		opacity 	: in type_opacity := default_opacity);
 
 	
 	procedure set_color_stop_mask (
-		context 	: in cairo_context;
 		face		: in type_face;
-		-- scale		: in type_scale;
 		brightness	: in type_brightness;
 		opacity 	: in type_opacity := default_opacity);
 
 	
 	procedure set_color_stencil (
-		context 	: in cairo_context;
 		face		: in type_face;
-		-- scale		: in type_scale;
 		brightness	: in type_brightness;
 		opacity 	: in type_opacity := default_opacity);
 
 	
 	procedure set_color_keepout (
-		context 	: in cairo_context;
 		face		: in type_face;
 		brightness	: in type_brightness;
 		opacity		: in type_opacity := default_opacity);
 
 	
 	procedure set_color_route_restrict (
-		context		: in cairo_context;
 		brightness	: in type_brightness;
 		opacity		: in type_opacity := default_opacity);
 
 	
 	procedure set_color_via_restrict (
-		context		: in cairo_context;
 		brightness	: in type_brightness;
 		opacity		: in type_opacity := default_opacity);
 
 	
 	procedure set_color_conductor (
-		context 	: in cairo_context;
 		layer		: in type_signal_layer;
 		brightness	: in type_brightness;
 		opacity 	: in type_opacity := default_opacity);
 
 	
 	procedure set_color_terminal_name (
-		context		: in cairo_context;
 		brightness	: in type_brightness;
 		opacity		: in type_opacity := default_opacity);
 
 	
 	procedure set_color_tht_pad (
-		context		: in cairo_context;
 		brightness	: in type_brightness;
 		opacity		: in type_opacity := default_opacity);
 

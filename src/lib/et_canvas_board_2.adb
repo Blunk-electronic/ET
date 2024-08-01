@@ -556,6 +556,110 @@ package body et_canvas_board_2 is
 
 
 	procedure draw_drawing_frame is separate;
+
+
+	procedure draw_packages (
+		face	: in type_face) is separate;
+	
+	
+	procedure draw_board is 
+
+		procedure draw_conductor_layers is begin
+			null;
+			-- draw_route_restrict (self);
+			-- draw_via_restrict (self);
+			-- draw_conductors;
+		end draw_conductor_layers;
+		
+
+		procedure draw_packages is begin
+			draw_packages (BOTTOM);
+			draw_packages (TOP);
+		end draw_packages;
+
+		
+		procedure draw_silkscreen is begin
+			null;
+			-- if silkscreen_enabled (BOTTOM) then
+			-- 	draw_silk_screen (BOTTOM);
+			-- end if;
+   -- 
+			-- if silkscreen_enabled (TOP) then
+			-- 	draw_silk_screen (TOP);
+			-- end if;
+		end draw_silkscreen;
+
+		
+		procedure draw_assy_doc is begin
+			null;
+			-- if assy_doc_enabled (BOTTOM) then
+			-- 	draw_assy_doc (BOTTOM);
+			-- end if;
+   -- 
+			-- if assy_doc_enabled (TOP) then
+			-- 	draw_assy_doc (TOP);
+			-- end if;
+		end draw_assy_doc;
+
+		
+		procedure draw_keepout is begin
+			null;
+			-- if keepout_enabled (BOTTOM) then
+			-- 	draw_keepout (self, BOTTOM);
+			-- end if;
+   -- 
+			-- if keepout_enabled (TOP) then
+			-- 	draw_keepout (self, TOP);
+			-- end if;
+		end draw_keepout;
+
+		
+		procedure draw_stop_mask is begin
+			null;
+			-- if stop_mask_enabled (BOTTOM) then
+			-- 	draw_stop (BOTTOM);
+			-- end if;
+   -- 
+			-- if stop_mask_enabled (TOP) then
+			-- 	draw_stop (TOP);
+			-- end if;
+		end draw_stop_mask;
+
+		
+		procedure draw_stencil is begin
+			null;
+			-- if stencil_enabled (BOTTOM) then
+			-- 	draw_stencil (BOTTOM);
+			-- end if;
+   -- 
+			-- if stencil_enabled (TOP) then
+			-- 	draw_stencil (TOP);
+			-- end if;
+		end draw_stencil;
+
+		
+		procedure draw_pcb_outline is begin
+			null;
+			-- if outline_enabled then		
+			-- 	draw_outline (self);
+			-- end if;
+		end draw_pcb_outline;
+		
+
+	begin
+
+		draw_conductor_layers;
+		draw_packages;
+		draw_silkscreen;
+		draw_assy_doc;
+		draw_keepout;
+		draw_stop_mask;
+		draw_stencil;
+		draw_pcb_outline;
+		
+		-- CS draw_submodules			
+	end draw_board;
+	
 	
 
 	function cb_draw (
@@ -599,7 +703,7 @@ package body et_canvas_board_2 is
 		draw_cursor;
 		draw_zoom_area;
 	
-
+		draw_board;
 
 		-- draw_text (
 		-- 	content		=> to_content ("HoH"),
