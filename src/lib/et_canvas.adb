@@ -3432,7 +3432,7 @@ package body et_canvas is
 		-- The bounding-box of the circle. It is required
 		-- for the area and size check:
 		b : type_area;
-		
+
 	begin
 		-- Rotate the center of the circle by pos.rotation:
 		rotate_by (c, pos.rotation);
@@ -3469,11 +3469,20 @@ package body et_canvas is
 			if do_stroke then
 				set_line_width (context, 
 					to_gdouble_positive (to_distance (width)));
+
+				-- If linewidth is zero then a mimimum
+				-- must be ensured:
+				if width = zero then
+					set_line_width (context, to_gdouble (minimal_linewidth));
+				end if;
 			end if;
 
 			m := real_to_canvas (c.center, S);
 			r := to_distance (c.radius);
 
+			-- required to suppress an initial line:
+			new_sub_path (context);
+			
 			-- THIS DRAW OPERATION CONSUMES THE MOST TIME:
 			arc (context, 
 				 to_gdouble_positive (m.x), 
@@ -3482,6 +3491,10 @@ package body et_canvas is
 				 0.0, 6.3 ); -- start and end angle in radians
 
 
+			if filled = YES then
+				cairo.fill (context);
+			end if;
+			
 			-- If an individual stroke is requested for
 			-- the given circle, then do it now:
 			if do_stroke then

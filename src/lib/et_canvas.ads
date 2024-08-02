@@ -1198,6 +1198,9 @@ package et_canvas is
 	procedure stroke;
 
 
+	minimal_linewidth : constant type_logical_pixels_positive := 1.0;
+	
+
 	-- Sets the linewidth according to the
 	-- current zoom-factor:
 	procedure set_linewidth (
