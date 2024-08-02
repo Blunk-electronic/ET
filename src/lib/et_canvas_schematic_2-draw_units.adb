@@ -101,7 +101,7 @@ procedure draw_units is
 			p.place := unit_position;
 			p.rotation := unit_rotation;
 
-			draw_line (type_line (l), p, l.width, true);
+			draw_line (type_line (l), p, l.width, do_stroke => true);
 		end draw_line;
 
 		
@@ -114,7 +114,7 @@ procedure draw_units is
 			p.place := unit_position;
 			p.rotation := unit_rotation;
 
-			draw_arc (type_arc (a), p, a.width, true);
+			draw_arc (type_arc (a), p, a.width, do_stroke => true);
 		end draw_arc;
 
 		
@@ -128,7 +128,7 @@ procedure draw_units is
 			p.rotation := unit_rotation;
   
 			-- the circle is not filled -> actual "filled" is NO
-			draw_circle (type_circle (i), p, NO, i.width, true);
+			draw_circle (type_circle (i), p, NO, i.width, do_stroke => true);
 		end draw_circle;
 
 		
@@ -329,7 +329,8 @@ procedure draw_units is
 			
 			-- Draw the line of the port:
 			set_color_symbols (brightness);
-			draw_line (line, (unit_position, unit_rotation), port_line_width, true);
+			draw_line (line, (unit_position, unit_rotation), port_line_width,
+				do_stroke => true);
 
 
 			-- Draw the circle around a port if the layer is enabled:

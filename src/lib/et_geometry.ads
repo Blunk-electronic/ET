@@ -142,7 +142,16 @@ package et_geometry is
 		WITH_END_POINTS,	-- start and end point included
 		BEYOND_END_POINTS	-- indefinite long line assumed. extends beyond both start and end point into infinity
 		);
+
+
+	type type_mirror_style is (
+		NO_MIRROR,
+		MIRROR_X,  -- mirror along X-axis
+		MIRROR_Y); -- mirror along Y-axis
+
+	mirror_style_default : constant type_mirror_style := NO_MIRROR;
 	
+		
 end et_geometry;
 
 -- Soli Deo Gloria

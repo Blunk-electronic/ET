@@ -3332,6 +3332,7 @@ package body et_canvas is
 		line		: in type_line;
 		pos			: in type_position := origin_zero_rotation;
 		width		: in type_distance_positive;
+		mirror		: in type_mirror_style := mirror_style_default;
 		do_stroke	: in boolean := false)
 	is
 		use cairo;
@@ -3407,8 +3408,9 @@ package body et_canvas is
 	procedure draw_circle (
 		circle		: in type_circle;
 		pos			: in type_position := origin_zero_rotation;
-		filled		: in et_geometry.type_filled;
+		filled		: in type_filled;
 		width		: in type_distance_positive;
+		mirror		: in type_mirror_style := mirror_style_default;
 		do_stroke	: in boolean := false)
 	is
 		use cairo;
@@ -3485,6 +3487,7 @@ package body et_canvas is
 		arc			: in type_arc;
 		pos			: in type_position := origin_zero_rotation;
 		width		: in type_distance_positive;
+		mirror		: in type_mirror_style := mirror_style_default;		
 		do_stroke	: in boolean := false)
 	is
 	begin
@@ -3497,6 +3500,7 @@ package body et_canvas is
 	procedure draw_rectangle (
 		rectangle	: in type_area;
 		pos			: in type_position := origin_zero_rotation;
+		mirror		: in type_mirror_style := mirror_style_default;
 		width		: in type_distance_positive)
 	is
 		use et_geometry;
@@ -3545,11 +3549,14 @@ package body et_canvas is
 	begin
 		l.start_point := (x => - origin_arm_length, y => 0.0);
 		l.end_point   := (x => + origin_arm_length, y => 0.0);
-		draw_line (l, position, origin_linewidth, true);
+
+		draw_line (l, position, origin_linewidth, do_stroke => true);
+
 		
 		l.start_point := (x => 0.0, y => - origin_arm_length);
 		l.end_point   := (x => 0.0, y => + origin_arm_length);
-		draw_line (l, position, origin_linewidth, true);
+
+		draw_line (l, position, origin_linewidth, do_stroke => true);
 	end draw_origin;
 
 

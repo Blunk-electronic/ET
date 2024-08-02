@@ -65,7 +65,7 @@ with cairo;
 
 
 with et_logical_pixels;			use et_logical_pixels;
-with et_geometry;
+with et_geometry;				use et_geometry;
 with et_geometry_2a;
 with et_geometry_2a.grid;
 with et_window_dimensions;		use et_window_dimensions;
@@ -1223,8 +1223,8 @@ package et_canvas is
 	procedure draw_line (
 		line		: in type_line;
 		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
-		-- CS mirror ?
 		width		: in type_distance_positive;
+		mirror		: in type_mirror_style := mirror_style_default;
 		do_stroke	: in boolean := false);
 
 
@@ -1235,8 +1235,9 @@ package et_canvas is
 	procedure draw_circle (
 		circle		: in type_circle;
 		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
-		filled		: in et_geometry.type_filled;
+		filled		: in type_filled;
 		width		: in type_distance_positive;
+		mirror		: in type_mirror_style := mirror_style_default;
 		do_stroke	: in boolean := false);
 
 
@@ -1246,13 +1247,14 @@ package et_canvas is
 		arc			: in type_arc;
 		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		width		: in type_distance_positive;
+		mirror		: in type_mirror_style := mirror_style_default;
 		do_stroke	: in boolean := false);
 
 	
 	procedure draw_rectangle (
 		rectangle	: in type_area;
 		pos			: in type_position := origin_zero_rotation;
-		-- CS mirror ?
+		mirror		: in type_mirror_style := mirror_style_default;
 		width		: in type_distance_positive);
 
 
