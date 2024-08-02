@@ -3330,7 +3330,7 @@ package body et_canvas is
 	
 	procedure draw_line (
 		line		: in type_line;
-		pos			: in type_position;
+		pos			: in type_position := origin_zero_rotation;
 		width		: in type_distance_positive;
 		do_stroke	: in boolean := false)
 	is
@@ -3406,7 +3406,7 @@ package body et_canvas is
 
 	procedure draw_circle (
 		circle		: in type_circle;
-		pos			: in type_position;
+		pos			: in type_position := origin_zero_rotation;
 		filled		: in et_geometry.type_filled;
 		width		: in type_distance_positive;
 		do_stroke	: in boolean := false)
@@ -3483,7 +3483,7 @@ package body et_canvas is
 
 	procedure draw_arc (
 		arc			: in type_arc;
-		pos			: in type_position;  -- includes x,y, rotation
+		pos			: in type_position := origin_zero_rotation;
 		width		: in type_distance_positive;
 		do_stroke	: in boolean := false)
 	is

@@ -1207,6 +1207,8 @@ package et_canvas is
 	-- This is a primitive draw operation that draws a line.
 	-- The argument pos contains the position and rotation
 	-- of the parent complex object.
+	-- In case there is no parent object then the pos argument
+	-- can be omitted which results in a default of (0;0) and 0 degree.
 	-- Regarding the argument do_stroke there are two modes:
 	-- 1. If the argument do_stroke is false (default) then
 	--  no setting of linewidth and no stroking will be done. In this
@@ -1220,9 +1222,7 @@ package et_canvas is
 	--  the line drawn and finally a stroke command executed.
 	procedure draw_line (
 		line		: in type_line;
-		pos			: in type_position; -- includes x,y, rotation
-		-- CS default origin_zero_rotation in case there is no parent object ?
-		
+		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		-- CS mirror ?
 		width		: in type_distance_positive;
 		do_stroke	: in boolean := false);
@@ -1234,9 +1234,7 @@ package et_canvas is
 	-- processed. Write an exhausting desription here.
 	procedure draw_circle (
 		circle		: in type_circle;
-		pos			: in type_position;  -- includes x,y, rotation
-		-- CS default origin_zero_rotation in case there is no parent object ?
-		
+		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		filled		: in et_geometry.type_filled;
 		width		: in type_distance_positive;
 		do_stroke	: in boolean := false);
@@ -1246,9 +1244,7 @@ package et_canvas is
 	-- For arguments see draw_line:
 	procedure draw_arc (
 		arc			: in type_arc;
-		pos			: in type_position;  -- includes x,y, rotation
-		-- CS default origin_zero_rotation in case there is no parent object ?
-		
+		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		width		: in type_distance_positive;
 		do_stroke	: in boolean := false);
 
