@@ -1525,43 +1525,51 @@ is
 					pad_pos : type_position := pad_pos_in;
 
 					circle : type_circle;
+					mirror_style : type_mirror_style := mirror_style_default;
+					
 				begin
 					if inner_conductors_enabled (bottom_layer) then
 						
-						-- Rotate the position of the drill by the rotation of the package:
-						rotate_by (pad_pos.place, get_rotation (package_position));
-
-						if flipped then mirror (pad_pos.place, Y); end if;
-
-						-- Move the drill by the position of the package:
-						move_by (pad_pos.place, to_distance_relative (package_position.place));
-
-
 						-- Build a circle to show the restring of inner layers:
 						circle.center := pad_pos.place;
+						--circle.radius := drill_size * 0.5 + restring;
+						circle.radius := (drill_size + restring) * 0.5;
 
-						-- set line width and radius:
-						-- CS set_line_width (context.cr, type_view_coordinate (restring));
-						--circle.radius := (drill_size + restring) * 0.5;
-
+						if flipped then
+							mirror_style := MIRROR_Y;
+						end if;
+						
 						set_color_tht_pad (brightness);
-						-- CS set_line_width (context.cr, type_view_coordinate (zero));
 
-						circle.radius := drill_size * 0.5 + restring;
+						-- Draw the restring:
+						draw_circle (
+							circle		=> circle, 
+							pos			=> get_position (package_position), 
+							filled		=> NO,
+							width		=> restring,
+							mirror		=> mirror_style,
+							do_stroke	=> true);
+
+
+						-- Draw the hole:
+						-- set_color_background;
 						
-						--draw_circle (in_area, context, circle, NO, self.get_frame_height);
-						-- CS draw_circle (circle, YES, zero);
+						-- The cutout area must clear out the outer area:
+						-- set_operator (context, CAIRO_OPERATOR_CLEAR);
 
-						
-						-- the cutout area must clear out the outer area:
-						set_operator (context, CAIRO_OPERATOR_CLEAR);
+						-- circle.radius := drill_size * 0.5;
+      -- 
+						-- draw_circle (
+						-- 	circle		=> circle, 
+						-- 	pos			=> get_position (package_position), 
+						-- 	filled		=> YES,
+						-- 	width		=> zero,
+						-- 	mirror		=> mirror_style,
+						-- 	do_stroke	=> true);
 
-						circle.radius := drill_size * 0.5;
-
-						-- CS draw_circle (circle, YES, zero);
 
 						-- restore default compositing operator:
-						set_operator (context, CAIRO_OPERATOR_OVER);		
+						-- set_operator (context, CAIRO_OPERATOR_OVER);		
 					end if;
 				end tht_inner_layer_drilled;
 				
