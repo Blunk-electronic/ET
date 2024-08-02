@@ -3348,11 +3348,16 @@ package body et_canvas is
 		-- for the area and size check:
 		b : type_area;
 		
-	begin
-		-- CS mirror
-		
+	begin		
 		-- Rotate the line by pos.rotation
 		rotate_by (l, pos.rotation);
+
+		-- Mirror the line:
+		case mirror is
+			when NO_MIRROR => null;
+			when MIRROR_X  => pac_geometry.mirror (l, X);
+			when MIRROR_Y  => pac_geometry.mirror (l, Y);
+		end case;
 		
 		-- Move the line to the given position:
 		move_by (l, (pos.place.x, pos.place.y));
@@ -3431,6 +3436,13 @@ package body et_canvas is
 	begin
 		-- Rotate the center of the circle by pos.rotation:
 		rotate_by (c, pos.rotation);
+
+		-- Mirror the circle:
+		case mirror is
+			when NO_MIRROR => null;
+			when MIRROR_X  => pac_geometry.mirror (c, X);
+			when MIRROR_Y  => pac_geometry.mirror (c, Y);
+		end case;
 		
 		-- Move the circle to the given position:
 		move_by (c, (pos.place.x, pos.place.y));
@@ -3492,6 +3504,14 @@ package body et_canvas is
 	is
 	begin
 		null;
+
+		-- Mirror the arc:
+		-- case mirror is
+		-- 	when NO_MIRROR => null;
+		-- 	when MIRROR_X  => pac_geometry.mirror (l, X);
+		-- 	when MIRROR_Y  => pac_geometry.mirror (l, Y);
+		-- end case;
+
 		-- CS
 	end draw_arc;
 
