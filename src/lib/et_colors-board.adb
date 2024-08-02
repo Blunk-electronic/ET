@@ -158,7 +158,6 @@ package body et_colors.board is
 
 	
 	procedure set_color_background (
-		context : in cairo_context;
 		opacity : in type_opacity := default_opacity)
 	is begin
 		set_source_rgba (
