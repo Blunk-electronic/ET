@@ -1223,6 +1223,8 @@ package et_canvas is
 	--  An explicit call of the stroke procedure is required finally.
 	-- 2. If do_stroke is true, then the given linewidth is applied,
 	--  the line drawn and finally a stroke command executed.
+	--  If the given linewidth is zero, then a minimum linewidth is
+	--  ensured internally.
 	procedure draw_line (
 		line		: in type_line;
 		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation

@@ -3379,8 +3379,15 @@ package body et_canvas is
 			-- If an individual stroke is requested for
 			-- the given line, then set the linewidth:
 			if do_stroke then
-				set_line_width (context, 
-					to_gdouble_positive (to_distance (width)));
+				if width > zero then
+					set_line_width (context, 
+						to_gdouble_positive (to_distance (width)));
+
+				else
+					-- If linewidth is zero then a mimimum
+					-- must be ensured:
+					set_line_width (context, to_gdouble (minimal_linewidth));
+				end if;
 			end if;
 
 			c1 := real_to_canvas (l.start_point, S);
@@ -3467,12 +3474,13 @@ package body et_canvas is
 			-- the given circle, then set the linewidth of the 
 			-- circumfence:
 			if do_stroke then
-				set_line_width (context, 
-					to_gdouble_positive (to_distance (width)));
+				if width > zero then
+					set_line_width (context, 
+						to_gdouble_positive (to_distance (width)));
 
-				-- If linewidth is zero then a mimimum
-				-- must be ensured:
-				if width = zero then
+				else
+					-- If linewidth is zero then a mimimum
+					-- must be ensured:
 					set_line_width (context, to_gdouble (minimal_linewidth));
 				end if;
 			end if;
@@ -3570,6 +3578,10 @@ package body et_canvas is
 		
 		stroke;
 	end draw_rectangle;
+
+
+
+
 
 	
 	
