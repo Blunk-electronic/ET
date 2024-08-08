@@ -150,6 +150,15 @@ package et_geometry is
 		MIRROR_Y); -- mirror along Y-axis
 
 	mirror_style_default : constant type_mirror_style := NO_MIRROR;
+
+
+
+	
+	
+	-- Whether a line, arc, circle or contour is drawn dashed or not:
+	type type_line_style is (CONTINUOUS, DASHED);
+	-- CS other pattersn like jotted, dash-point, ... ?
+
 	
 		
 end et_geometry;

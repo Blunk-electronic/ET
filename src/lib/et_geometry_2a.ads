@@ -311,6 +311,12 @@ package et_geometry_2a is
 		v1, v2 : in type_vector_model)
 		return type_vector_model;
 	
+
+	procedure add (
+		v1 : in out type_vector_model;
+		v2 : in type_vector_model);
+	
+
 	
 	-- Moves a model point by the given offset:
 	procedure move_by (

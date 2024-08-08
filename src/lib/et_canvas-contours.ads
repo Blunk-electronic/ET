@@ -53,16 +53,19 @@ package et_canvas.contours is
 
 
 	-- This procedure draws a contour.
-	-- If filled is YES, then the given linewidth has no meaning
-	-- because the linewidth will be set internally to a minimum
+	-- If the given linewidth is zero, then
+	-- it will be set internally to a minimum
 	-- that is independed of the zoom-factor.
-	-- If filled is NO, then the given linewidth is applied
-	-- to the contour and subjected to the current zoom-factor:
+	-- It is recommended to set the linewidth to zero when
+	-- the contour is to be filled.
 	procedure draw_contour (
 		contour	: in type_contour'class;
+		pos 	: in type_position := origin_zero_rotation; -- includes x,y, rotation
+		offset	: in type_vector_model := origin;
 		style	: in type_line_style := CONTINUOUS;
 		filled	: in type_filled;
-		width	: in type_distance_positive);
+		width	: in type_distance_positive;
+		mirror	: in type_mirror_style := mirror_style_default);
 		-- CS fill style
 
 
@@ -70,14 +73,21 @@ package et_canvas.contours is
 	-- with a circular cutout area inside:
 	procedure draw_contour_with_circular_cutout (
 		outer_border	: in type_contour'class;
-		inner_border	: in type_circle);
+		inner_border	: in type_circle;
+		pos 			: in type_position := origin_zero_rotation; -- includes x,y, rotation
+		offset			: in type_vector_model := origin;		
+		mirror			: in type_mirror_style := mirror_style_default);
 
-
+	
 	-- This procedure draws a filled contour
 	-- with an arbitrary cutout area inside:
 	procedure draw_contour_with_arbitrary_cutout (
 		outer_border	: in type_contour'class;
-		inner_border	: in type_contour'class);
+		inner_border	: in type_contour'class;
+		pos 			: in type_position := origin_zero_rotation; -- includes x,y, rotation
+		offset			: in type_vector_model := origin;
+		mirror			: in type_mirror_style := mirror_style_default);
+
 	
 		
 end et_canvas.contours;

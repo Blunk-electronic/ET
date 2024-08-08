@@ -54,9 +54,12 @@ package body et_canvas.contours is
 	
 	procedure draw_contour (
 		contour	: in type_contour'class;
+		pos 	: in type_position := origin_zero_rotation; -- includes x,y, rotation
+		offset	: in type_vector_model := origin;
 		style	: in type_line_style := CONTINUOUS;
 		filled	: in type_filled;
-		width	: in type_distance_positive)
+		width	: in type_distance_positive;
+		mirror	: in type_mirror_style := mirror_style_default)
 		-- CS fill style
 	is
 		-- The line style, or the dash pattern, will be calculated 
@@ -64,8 +67,11 @@ package body et_canvas.contours is
 		dash_on, dash_off	: gdouble;
 		dash_pattern		: dash_array (1 .. 2);
 
+		offset_tmp : type_vector_model := offset;
+		pos_end : type_position := pos;
 		
 		use pac_segments;
+
 		
 		procedure query_segment (
 			c : in pac_segments.cursor) 
@@ -75,9 +81,17 @@ package body et_canvas.contours is
 			case segment.shape is
 				
 				when LINE =>
+					put_line ("draw_segment (line)");
+					put_line (" line" & to_string (type_line (segment.segment_line)));
+					
 					draw_line (
 						line	=> type_line (segment.segment_line),
-						width	=> zero);  -- don't care. see specs of draw_line.
+						pos		=> pos_end,		  
+						--width	=> zero);  -- don't care. see specs of draw_line.
+						width 	=> 0.1,
+						mirror	=> mirror,
+						do_stroke => true);
+						-- CS mirror
 
 					
 				when ARC =>
@@ -90,9 +104,41 @@ package body et_canvas.contours is
 
 		
 	begin -- draw_contour
+		put_line ("draw_contour");
+		put_line (" pos" & to_string (pos));
 
-		new_sub_path (context); -- required to suppress an initial line
 
+		-- Rotate by rotation of parent object:
+		rotate_by (offset_tmp, get_rotation (pos));
+		
+		case mirror is
+			when MIRROR_X =>
+				pac_geometry.mirror (offset_tmp, X);
+
+			when MIRROR_Y =>
+				pac_geometry.mirror (offset_tmp, Y);
+
+			when others => null;
+		end case;
+		
+		add (pos_end.place, offset_tmp);
+
+		
+		
+		-- new_sub_path (context); -- required to suppress an initial line
+
+		
+		-- if width > zero then
+		-- 	set_line_width (context, 
+		-- 		to_gdouble_positive (to_distance (width)));
+  -- 
+		-- else
+		-- 	-- If linewidth is zero then a mimimum
+		-- 	-- must be ensured:
+		-- 	set_line_width (context, to_gdouble (minimal_linewidth));
+		-- end if;
+
+		
 		if contour.contour.circular then
 			-- Draw the single circle that forms the contour:
 			
@@ -101,42 +147,45 @@ package body et_canvas.contours is
 
 			draw_circle (
 				circle		=> contour.contour.circle,
+				pos			=> pos,			
 				filled		=> filled,
-				width		=> zero);   -- don't care. see specs of draw_line.
-			
+				mirror		=> mirror,
+				width		=> zero);   
+				-- The linewidth is don't care (see specs of draw_line)
+				-- because the linewidth is has been set initially and
+				-- there is a final stroke in this procedure.
 		else
 			contour.contour.segments.iterate (query_segment'access);
 		end if;
 
+		-- cairo.fill (context);
+		
+		
+		-- if filled = YES then
+		-- 	cairo.fill (context);
+		-- end if;
 
-		if filled = YES then
-			set_linewidth (zero);
-			cairo.fill (context);
-		else
-			set_linewidth (width);
-			
-			case style is
-				when CONTINUOUS => null;
-				
-				when DASHED =>
-					--dash_on := 0.2 + 1.0 / scale;
-					--dash_off := 0.1 + 1.0 / scale;
-					dash_on := 20.0 / gdouble (S);
-					dash_off := 15.0 / gdouble (S);
+		
+-- 		case style is
+-- 			when CONTINUOUS => null;
+-- 			
+-- 			when DASHED =>
+-- 				--dash_on := 0.2 + 1.0 / scale;
+-- 				--dash_off := 0.1 + 1.0 / scale;
+-- 				dash_on := 20.0 / gdouble (S);
+-- 				dash_off := 15.0 / gdouble (S);
+-- 
+-- 				dash_pattern (1) := dash_on;
+-- 				dash_pattern (2) := dash_off;
+-- 				set_dash (context, dash_pattern, 0.0);
+-- 		end case;
 
-					dash_pattern (1) := dash_on;
-					dash_pattern (2) := dash_off;
-					set_dash (context, dash_pattern, 0.0);
-			end case;
-		end if;
-
-		stroke (context);
+		-- stroke (context);
 
 
 		-- Disable line dashes:
-		if filled = NO then
-			set_dash (context, no_dashes, 0.0);
-		end if;
+		-- set_dash (context, no_dashes, 0.0);
+
 		
 	end draw_contour;
 
@@ -145,18 +194,21 @@ package body et_canvas.contours is
 
 	procedure draw_contour_with_circular_cutout (
 		outer_border	: in type_contour'class;
-		inner_border	: in type_circle)
+		inner_border	: in type_circle;
+		pos 			: in type_position := origin_zero_rotation; -- includes x,y, rotation
+		offset			: in type_vector_model := origin;
+		mirror			: in type_mirror_style := mirror_style_default)
 	is begin
 		-- draw outer contour:
-		draw_contour (outer_border, CONTINUOUS, YES, zero);
+		draw_contour (outer_border, pos, offset, CONTINUOUS, YES, zero, mirror);
 		-- CS dash pattern ? currently set to CONTINUOUS
 
 		-- the cutout area must clear out the outer area:
 		set_operator (context, CAIRO_OPERATOR_CLEAR);
 		
 		-- draw inner area to be taken out:
-		draw_circle (inner_border, filled => YES, 
-					 width => zero, do_stroke => true);
+		draw_circle (inner_border, pos, filled => YES, 
+					 width => zero, mirror => mirror, do_stroke => true);
 
 		-- restore default compositing operator:
 		set_operator (context, CAIRO_OPERATOR_OVER);		
@@ -166,17 +218,20 @@ package body et_canvas.contours is
 
 	procedure draw_contour_with_arbitrary_cutout (
 		outer_border	: in type_contour'class;
-		inner_border	: in type_contour'class)
+		inner_border	: in type_contour'class;
+		pos 			: in type_position := origin_zero_rotation; -- includes x,y, rotation
+		offset			: in type_vector_model := origin;
+		mirror			: in type_mirror_style := mirror_style_default)
 	is begin
 		-- draw outer contour:
-		draw_contour (outer_border, CONTINUOUS, YES, zero);
+		draw_contour (outer_border, pos, offset, CONTINUOUS, YES, zero, mirror);
 		-- CS dash pattern ? currently set to CONTINUOUS
 		
 		-- the cutout area must clear out the outer area:
 		set_operator (context, CAIRO_OPERATOR_CLEAR);
 		
 		-- draw inner contour - the area to be taken out:
-		draw_contour (inner_border, CONTINUOUS, YES, zero);
+		draw_contour (inner_border, pos, offset, CONTINUOUS, YES, zero, mirror);
 		-- CS dash pattern ? currently set to CONTINUOUS
 		
 		-- restore default compositing operator:

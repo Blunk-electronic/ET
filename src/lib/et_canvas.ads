@@ -1224,7 +1224,7 @@ package et_canvas is
 	-- 2. If do_stroke is true, then the given linewidth is applied,
 	--  the line drawn and finally a stroke command executed.
 	--  If the given linewidth is zero, then a minimum linewidth is
-	--  ensured internally.
+	--  ensured internally that is independed of the zoom-factor.
 	procedure draw_line (
 		line		: in type_line;
 		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
@@ -1234,9 +1234,9 @@ package et_canvas is
 
 
 	-- This is a primitive draw operation that draws a circle.
-	-- For arguments see draw_line:
-	-- CS: NOTE: The filled argument is currently not
-	-- processed. Write an exhausting desription here.
+	-- For arguments see procedure draw_line.
+	-- It is recommended to set the linewidth to zero when
+	-- the circle is to be filled.
 	procedure draw_circle (
 		circle		: in type_circle;
 		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation

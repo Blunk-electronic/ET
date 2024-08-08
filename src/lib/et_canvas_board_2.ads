@@ -78,6 +78,8 @@ with et_project.modules;			use et_project.modules;
 -- with et_frames;
 
 with et_canvas.drawing_frame;
+with et_canvas.contours;
+
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 
@@ -124,7 +126,9 @@ package et_canvas_board_2 is
 
 	package pac_drawing_frame is new pac_canvas.drawing_frame;
 	
-
+	package pac_draw_contours is new pac_canvas.contours;
+	
+	
 	-- This procedure parses the whole database of model objects
 	-- and the primitive objects of the drawing frame,
 	-- detects the smallest and greatest x and y values used by the model

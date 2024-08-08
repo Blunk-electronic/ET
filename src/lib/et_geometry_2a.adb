@@ -499,6 +499,15 @@ package body et_geometry_2a is
 		return r;
 	end add;
 
+
+	procedure add (
+		v1 : in out type_vector_model;
+		v2 : in type_vector_model)
+	is begin
+		v1.x := v1.x + v2.x;
+		v1.y := v1.y + v2.y;
+	end add;
+
 	
 	procedure move_by (
 		point	: in out type_vector_model;
