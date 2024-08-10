@@ -84,8 +84,8 @@ package body et_canvas.contours is
 			case segment.shape is
 				
 				when LINE =>
-					put_line ("draw_segment (line)");
-					put_line (" line" & to_string (type_line (segment.segment_line)));
+					-- put_line ("draw_segment (line)");
+					-- put_line (" line" & to_string (type_line (segment.segment_line)));
 					
 					draw_line (
 						line	=> type_line (segment.segment_line),
@@ -107,9 +107,9 @@ package body et_canvas.contours is
 
 		
 	begin -- draw_contour
-		put_line ("draw_contour");
-		put_line (" pos" & to_string (pos));
-
+		-- put_line ("draw_contour");
+		-- put_line (" pos" & to_string (pos));
+		-- put_line (" off" & to_string (offset));
 
 		-- Rotate by rotation of parent object:
 		rotate_by (offset_tmp, get_rotation (pos));
@@ -150,7 +150,7 @@ package body et_canvas.contours is
 
 			draw_circle (
 				circle		=> contour.contour.circle,
-				pos			=> pos,			
+				pos			=> pos_end,			
 				filled		=> filled,
 				mirror		=> mirror,
 				width		=> zero);   
