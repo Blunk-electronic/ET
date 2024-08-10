@@ -1217,25 +1217,20 @@ is
 				end draw_name_tht;
 
 				
-				-- This procedure draws the SMT pad, the stop mask, the stencil and 
-				-- the terminal name. The terminal name will be drawn only when
+				-- This procedure draws the SMT pad, the stopmask, the stencil and 
+				-- the terminal name. The terminal name will be drawn only if
 				-- the signal layer is enabled.
 				procedure draw_pad_smt (
 					name			: in string;  -- H5, 5, 3
-					pad_outline_in	: in type_contour; -- the outline of the solder pad (copper)
-					stop_mask_in	: in type_stop_mask_smt; -- the stop mask of the pad
-					stencil_in		: in type_stencil_shape; -- the solder cream mask of the pad
+					pad_contours	: in type_contour; -- the outline of the solder pad (copper)
+					stopmask		: in type_stop_mask_smt; -- the stopmask of the pad
+					stencil			: in type_stencil_shape; -- the solder cream mask of the pad
 
 					-- The position of the center of the pad (relative to the package position)
-					pad_pos_in		: in type_position; -- incl. pad rotation
+					pad_position	: in type_position; -- incl. pad rotation about itself
 					f				: in type_face) 
 				is
 					use et_board_shapes_and_text;
-					
-					polygon_tmp : type_polygon;
-					
-					pad_offset : type_vector_model := pad_pos_in.place; -- pad position
-										
 					
 					ly : constant type_signal_layer := face_to_layer (f);
 
@@ -1249,50 +1244,51 @@ is
 
 							if flipped then
 								draw_contour (
-									contour	=> pad_outline_in,
+									contour	=> pad_contours,
 									pos		=> get_position (package_position),
-									offset	=> pad_offset,
+									offset	=> pad_position,
 									filled	=> YES,
 									mirror	=> MIRROR_Y,
 									width	=> zero);
 
 							else
 								draw_contour (
-									contour	=> pad_outline_in,
+									contour	=> pad_contours,
 									pos		=> get_position (package_position),
-									offset	=> pad_offset,
+									offset	=> pad_position,
 									filled	=> YES,
 									width	=> zero);
 
 							end if;
 												
 							-- draw the terminal name
-							draw_name_smt (name, pad_pos_in);
+							draw_name_smt (name, pad_position);
 						end if;
 					end draw_conductor;
 					
 
 					-- Draws the stopmask of the pad:
 					procedure draw_stopmask is 
-						stop_mask_contours	: type_stop_mask_contours;
+						stopmask_contours	: type_stop_mask_contours;
+						polygon_tmp : type_polygon;
 					begin
 						if stop_mask_enabled (f) then
 							
-							case stop_mask_in.shape is
+							case stopmask.shape is
 								when AS_PAD =>
 									-- Copy pad contours to stopmask without
 									-- any modification:
-									stop_mask_contours := (type_contour (pad_outline_in) with null record);
+									stopmask_contours := (type_contour (pad_contours) with null record);
 
 									
 								when EXPAND_PAD =>
 									-- Copy pad contours to stopmask:
-									stop_mask_contours := (type_contour (pad_outline_in) with null record);
+									stopmask_contours := (type_contour (pad_contours) with null record);
 
 									-- Now the stopmask must be expanded according to the DRU settings.
 
 									-- Make a temporary polygon from the stopmask contours:
-									polygon_tmp := to_polygon (stop_mask_contours, fill_tolerance, EXPAND);
+									polygon_tmp := to_polygon (stopmask_contours, fill_tolerance, EXPAND);
 									-- CS: expand correct ?
 
 									-- Offset the temporary polygon:
@@ -1301,12 +1297,12 @@ is
 										offset		=> type_float (get_stop_mask_expansion)); -- from DRU
 
 									-- Convert the temporary polygon back to a contour:
-									stop_mask_contours := (to_contour (polygon_tmp) with null record);
+									stopmask_contours := (to_contour (polygon_tmp) with null record);
 									
 									
 								when USER_SPECIFIC =>
 									-- Set the stopmask contour as given by the user settings:
-									stop_mask_contours := stop_mask_in.contours;
+									stopmask_contours := stopmask.contours;
 							end case;
 
 							
@@ -1316,9 +1312,9 @@ is
 							if flipped then
 								
 								draw_contour (
-									contour	=> stop_mask_contours,
+									contour	=> stopmask_contours,
 									pos		=> get_position (package_position),
-									offset	=> pad_offset,
+									offset	=> pad_position,
 									filled	=> YES,
 									mirror	=> MIRROR_Y,
 									width	=> zero);
@@ -1326,9 +1322,9 @@ is
 							else
 
 								draw_contour (
-									contour	=> stop_mask_contours,
+									contour	=> stopmask_contours,
 									pos		=> get_position (package_position),
-									offset	=> pad_offset,
+									offset	=> pad_position,
 									filled	=> YES,
 									width	=> zero);
 
@@ -1341,20 +1337,21 @@ is
 					-- Draws the stencil (or solder paste mask) of the pad:					
 					procedure draw_stencil is 
 						stencil_contours : type_stencil_contours;
+						polygon_tmp : type_polygon;
 					begin
 						if stencil_enabled (f) then
 
-							case stencil_in.shape is
+							case stencil.shape is
 								
 								when AS_PAD =>
 									-- Copy pad contours to stencil without
 									-- any modification:
-									stencil_contours := (type_contour (pad_outline_in) with null record);
+									stencil_contours := (type_contour (pad_contours) with null record);
 
 									
 								when SHRINK_PAD =>
 									-- Copy pad contours to stencil:
-									stencil_contours := (type_contour (pad_outline_in) with null record);
+									stencil_contours := (type_contour (pad_contours) with null record);
 
 									-- Now the stencil must be shrinked according to shrink_factor:
 									
@@ -1364,12 +1361,12 @@ is
 									
 									--scale_polygon (
 										--polygon		=> stencil_contours,
-										--scale		=> stencil_in.shrink_factor);
+										--scale		=> stencil.shrink_factor);
 
 									-- Offset the temporary polygon
 									offset_polygon (
 										polygon		=> polygon_tmp,
-										offset		=> type_float (stencil_in.shrink_factor));
+										offset		=> type_float (stencil.shrink_factor));
 
 									-- Convert the temporary polygon back to a contour:
 									stencil_contours := (to_contour (polygon_tmp) with null record);
@@ -1377,7 +1374,7 @@ is
 									
 								when USER_SPECIFIC =>
 									-- Set the stencil contour as given by the user settings:
-									stencil_contours := stencil_in.contours;
+									stencil_contours := stencil.contours;
 									
 							end case;
 
@@ -1391,7 +1388,7 @@ is
 								draw_contour (
 									contour	=> stencil_contours,
 									pos		=> get_position (package_position),
-									offset	=> pad_offset,
+									offset	=> pad_position,
 									filled	=> YES,
 									mirror	=> MIRROR_Y,
 									width	=> zero);
@@ -1401,7 +1398,7 @@ is
 								draw_contour (
 									contour	=> stencil_contours,
 									pos		=> get_position (package_position),
-									offset	=> pad_offset,
+									offset	=> pad_position,
 									filled	=> YES,
 									width	=> zero);
 
@@ -1417,13 +1414,9 @@ is
 					if conductor_enabled (ly) or stop_mask_enabled (f) or stencil_enabled (f) then
 
 						if f = face then
-
-							draw_conductor;
-							
-							draw_stopmask;
-							
-							draw_stencil;
-							
+							draw_conductor;							
+							draw_stopmask;							
+							draw_stencil;							
 						end if;
 					end if;
 				end draw_pad_smt;

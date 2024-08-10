@@ -55,7 +55,7 @@ package body et_canvas.contours is
 	procedure draw_contour (
 		contour	: in type_contour'class;
 		pos 	: in type_position := origin_zero_rotation; -- includes x,y, rotation
-		offset	: in type_vector_model := origin;
+		offset	: in type_position := origin_zero_rotation;
 		style	: in type_line_style := CONTINUOUS;
 		filled	: in type_filled;
 		width	: in type_distance_positive;
@@ -67,7 +67,10 @@ package body et_canvas.contours is
 		dash_on, dash_off	: gdouble;
 		dash_pattern		: dash_array (1 .. 2);
 
-		offset_tmp : type_vector_model := offset;
+		offset_tmp : type_vector_model := offset.place;
+		-- CS currently the rotation of the contour about itself
+		-- is ignored.
+		
 		pos_end : type_position := pos;
 		
 		use pac_segments;
@@ -196,7 +199,7 @@ package body et_canvas.contours is
 		outer_border	: in type_contour'class;
 		inner_border	: in type_circle;
 		pos 			: in type_position := origin_zero_rotation; -- includes x,y, rotation
-		offset			: in type_vector_model := origin;
+		offset			: in type_position := origin_zero_rotation;
 		mirror			: in type_mirror_style := mirror_style_default)
 	is begin
 		-- draw outer contour:
@@ -220,7 +223,7 @@ package body et_canvas.contours is
 		outer_border	: in type_contour'class;
 		inner_border	: in type_contour'class;
 		pos 			: in type_position := origin_zero_rotation; -- includes x,y, rotation
-		offset			: in type_vector_model := origin;
+		offset			: in type_position := origin_zero_rotation;
 		mirror			: in type_mirror_style := mirror_style_default)
 	is begin
 		-- draw outer contour:

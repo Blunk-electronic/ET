@@ -61,7 +61,7 @@ package et_canvas.contours is
 	procedure draw_contour (
 		contour	: in type_contour'class;
 		pos 	: in type_position := origin_zero_rotation; -- includes x,y, rotation
-		offset	: in type_vector_model := origin;
+		offset	: in type_position := origin_zero_rotation;
 		style	: in type_line_style := CONTINUOUS;
 		filled	: in type_filled;
 		width	: in type_distance_positive;
@@ -75,7 +75,7 @@ package et_canvas.contours is
 		outer_border	: in type_contour'class;
 		inner_border	: in type_circle;
 		pos 			: in type_position := origin_zero_rotation; -- includes x,y, rotation
-		offset			: in type_vector_model := origin;		
+		offset			: in type_position := origin_zero_rotation;
 		mirror			: in type_mirror_style := mirror_style_default);
 
 	
@@ -85,7 +85,7 @@ package et_canvas.contours is
 		outer_border	: in type_contour'class;
 		inner_border	: in type_contour'class;
 		pos 			: in type_position := origin_zero_rotation; -- includes x,y, rotation
-		offset			: in type_vector_model := origin;
+		offset			: in type_position := origin_zero_rotation;
 		mirror			: in type_mirror_style := mirror_style_default);
 
 	
