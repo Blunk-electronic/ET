@@ -1391,11 +1391,11 @@ is
 				
 				
 				-- This procedure draws the outer contour of the THT pad and 
-				-- th outer contour of the stop mask
+				-- th outer contour of the stopmask
 				-- in top/bottom signal layer (specified by caller).
 				procedure tht_outer_layer (
 					pad_contours	: in type_contour; -- the outline of the solder pad
-					stopmask		: in et_terminals.type_stop_mask; -- the stop mask in the outer layer
+					stopmask		: in et_terminals.type_stop_mask; -- the stopmask in the outer layer
 					pad_position	: in type_position; -- the center of the pad incl. its rotation
 					f				: in type_face;
 					drilled_milled	: in type_terminal_tht_hole;
@@ -1665,29 +1665,32 @@ is
 
 							when DRILLED => -- circlular hole
 
-								-- draw pad outline of top layer:
+								-- Draw top side:
 								set_destination;
-								
+
+								-- Draw the conductor shape and the stopmask opening:
 								tht_outer_layer (
 									pad_contours	=> t.pad_shape_tht.top,
 									stopmask		=> t.stop_mask_shape_tht.top,
-									pad_position		=> t.position,
+									pad_position	=> t.position,
 									f				=> destination,
 									drilled_milled	=> t.tht_hole,
 									drill_size		=> t.drill_size);
 
 								
-								-- draw pad outline of bottom layer:
--- 								set_destination (INVERSE);
--- 								
--- 								tht_outer_layer (
--- 									pad_outline_in	=> t.pad_shape_tht.bottom,
--- 									stopmask	=> t.stop_mask_shape_tht.bottom,
--- 									pad_position		=> t.position,
--- 									f				=> destination,
--- 									drilled_milled	=> t.tht_hole,
--- 									drill_size		=> t.drill_size);
--- 
+								-- Draw the bottom side:
+								set_destination (INVERSE);
+
+								-- Draw the conductor shape and the stopmask opening:
+								tht_outer_layer (
+									pad_contours	=> t.pad_shape_tht.bottom,
+									stopmask		=> t.stop_mask_shape_tht.bottom,
+									pad_position	=> t.position,
+									f				=> destination,
+									drilled_milled	=> t.tht_hole,
+									drill_size		=> t.drill_size);
+
+								
 -- 								-- draw pad outline of inner layer:
 -- 								tht_inner_layer_drilled (
 -- 									drill_size		=> t.drill_size,
