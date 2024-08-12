@@ -1544,49 +1544,47 @@ is
 				-- in an inner conductor layer
 				-- if any inner conductor layer is enabled. If no inner conductor
 				-- layer is enabled, nothing happens.
+				-- The pad contour is derived from the given hole contours:
 				procedure tht_inner_layer_milled (
-					hole_outline_in	: in type_contour; -- the countours of the milled hole
+					hole_contours	: in type_contour; -- the contours of the milled hole
 					restring_width	: in type_track_width;
-					pad_pos_in		: in type_position) -- the center of the pad incl. its rotation
+					pad_position	: in type_position) -- the center of the pad incl. its rotation
 				is
 					use et_board_shapes_and_text;
 					
 					polygon_tmp : type_polygon;
-					
-					hole_outline : type_contour := hole_outline_in;
-					pad_pos : type_position := pad_pos_in;
-
-					pad_outline_inner_layers : type_contour;
+					pad_contours : type_contour;
 				begin
 					if inner_conductors_enabled (bottom_layer) then
-								
-						move_contours (pad_pos, hole_outline, flip, package_position);
-						
-						-- Compute a polygon that extends the given hole outline by the restring_width:
-						pad_outline_inner_layers := type_contour (hole_outline_in);
 
-						-- make a temporary polygon from the inner outline
-						polygon_tmp := to_polygon (pad_outline_inner_layers, fill_tolerance, EXPAND);
+						-- Make a temporary polygon from the hole contours:
+						polygon_tmp := to_polygon (hole_contours, fill_tolerance, EXPAND);
 						-- CS: expand correct ?
 
-						-- offset the temporary polygon
+						-- Offset the polygon so that it extends the given hole outline 
+						-- by the restring_width:
 						offset_polygon (
 							polygon		=> polygon_tmp, 
 							offset		=> type_float (restring_width));
 
-						-- move the conductor frame to its final position:
-						pad_pos := pad_pos_in;  -- get initial pad position
-
 						-- convert the temporary polygon back to a contour
-						pad_outline_inner_layers := to_contour (polygon_tmp);
+						pad_contours := to_contour (polygon_tmp);
 
-						-- compute final position of the inner outline
-						move_contours (pad_pos, pad_outline_inner_layers, flip, package_position);
-
-						-- draw_tht_pad_with_arbitrary_cutout (
-						-- 	outer_border	=> pad_outline_inner_layers,
-						-- 	inner_border	=> hole_outline);
-
+						if flipped then
+							draw_contour_with_arbitrary_cutout (
+								outer_border	=> pad_contours,
+								inner_border	=> hole_contours,								   
+								pos				=> get_position (package_position),
+								offset			=> pad_position,
+								mirror			=> MIRROR_Y);
+						else
+							draw_contour_with_arbitrary_cutout (
+								outer_border	=> pad_contours,
+								inner_border	=> hole_contours,								   
+								pos				=> get_position (package_position),
+								offset			=> pad_position);
+						end if;
+		
 					end if;
 				end tht_inner_layer_milled;
 
@@ -1727,9 +1725,9 @@ is
 								
 								-- draw pad outline of inner layer:
 								tht_inner_layer_milled (
-									hole_outline_in	=> t.millings,
+									hole_contours	=> t.millings,
 									restring_width	=> t.width_inner_layers,
-									pad_pos_in		=> t.position);
+									pad_position	=> t.position);
 
 								draw_name_tht (to_string (key (c)), t.position);
 						end case;
