@@ -1594,12 +1594,11 @@ is
 				-- if any inner conductor layer is enabled. If no inner conductor
 				-- layer is enabled, nothing happens.
 				procedure tht_inner_layer_drilled (
-					drill_size	: in type_drill_size;
-					restring	: in type_restring_width;
-					pad_pos_in	: in type_position) -- the center of the pad incl. its rotation
+					drill_size		: in type_drill_size;
+					restring		: in type_restring_width;
+					pad_position	: in type_position) -- the center of the pad, rotation has no meaning
 				is
 					use et_geometry;
-					pad_pos : type_position := pad_pos_in;
 
 					circle : type_circle;
 					mirror_style : type_mirror_style := mirror_style_default;
@@ -1607,9 +1606,9 @@ is
 				begin
 					if inner_conductors_enabled (bottom_layer) then
 						
-						-- Build a circle to show the restring of inner layers:
-						circle.center := pad_pos.place;
-						--circle.radius := drill_size * 0.5 + restring;
+						-- Build a circle that represents
+						-- the restring of inner layers:
+						circle.center := pad_position.place;
 						circle.radius := (drill_size + restring) * 0.5;
 
 						if flipped then
@@ -1628,6 +1627,8 @@ is
 							do_stroke	=> true);
 
 
+						-- CS
+						
 						-- Draw the hole:
 						-- set_color_background;
 						
@@ -1635,7 +1636,7 @@ is
 						-- set_operator (context, CAIRO_OPERATOR_CLEAR);
 
 						-- circle.radius := drill_size * 0.5;
-      -- 
+      
 						-- draw_circle (
 						-- 	circle		=> circle, 
 						-- 	pos			=> get_position (package_position), 
@@ -1689,12 +1690,12 @@ is
 									drill_size		=> t.drill_size);
 
 								
--- 								-- draw pad outline of inner layer:
--- 								tht_inner_layer_drilled (
--- 									drill_size		=> t.drill_size,
--- 									restring		=> t.width_inner_layers,
--- 									pad_pos_in		=> t.position);
--- 
+								-- draw pad outline of inner layer:
+								tht_inner_layer_drilled (
+									drill_size		=> t.drill_size,
+									restring		=> t.width_inner_layers,
+									pad_position	=> t.position);
+
 -- 									draw_name_tht (to_string (key (c)), t.position);
 
 									
