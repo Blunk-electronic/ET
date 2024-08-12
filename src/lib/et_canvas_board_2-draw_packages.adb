@@ -1096,13 +1096,13 @@ is
 				-- The given position is the center of the pad
 				-- relative to the origin of the package:
 				procedure draw_name_smt (
-					name	: in string;  -- H5, 5, 3
-					pos		: in type_position)  -- the center of the pad
+					name			: in string;  -- H5, 5, 3
+					pad_position	: in type_position)  -- the center of the pad
 				is
 					use et_text;
 
 					-- Take a copy of the x/y position of the pad:
-					pos_tmp : type_vector_model := pos.place;
+					pos_tmp : type_vector_model := pad_position.place;
 					
 				begin
 					set_color_terminal_name (brightness);
@@ -1137,50 +1137,47 @@ is
 				end draw_name_smt;
 
 				
-				-- The pad name shall be drawn only once. For this reason we
-				-- use this flag. It is set once the name has been drawn the first time.
-				name_drawn : boolean := false;
-
 				
-				-- Draws the name of a THT pad if any conductor layer is enabled and
-				-- if the name has not been drawn already:
+				-- Draws the name of a THT pad if any conductor layer is enabled 
 				procedure draw_name_tht (
-					name		: in string;  -- H5, 5, 3
-					pad_pos_in	: in type_position)  -- the center of the pad
+					name			: in string;  -- H5, 5, 3
+					pad_position	: in type_position)  -- the center of the pad
 				is
-					use et_geometry;
 					use et_text;
-					pad_pos : type_vector_model := pad_pos_in.place;
-					
+
+					-- Take a copy of the x/y position of the pad:
+					pos_tmp : type_vector_model := pad_position.place;
 				begin
 					if conductors_enabled then
+
+						set_color_terminal_name (brightness);
 						
-						if not name_drawn then
-								
-							-- Rotate the position of the pad by the rotation of the package:
-							rotate_by (pad_pos, get_rotation (package_position));
+						-- Rotate the pad POSITION about the origin
+						-- of the package by the rotation of the package:
+						rotate_by (pos_tmp, get_rotation (package_position));
 
-							-- If the package is flipped, then the terminal position
-							-- must be mirrored along the Y axis.
-							if flipped then mirror (pad_pos, Y); end if;
-							
-							-- Move the pad by the position of the package:
-							move_by (pad_pos, to_distance_relative (package_position.place));
-							
-							set_color_terminal_name (brightness);
-							
-							draw_text (
-								content		=> to_content (name),
-								size		=> terminal_name_size,
-								font		=> terminal_name_font,
-								anchor		=> pad_pos,
-								origin		=> false, -- no origin required
-								rotation	=> zero_rotation,
-								alignment	=> (center, center));
-
-							name_drawn := true;
+						-- If the package is flipped, then the terminal position
+						-- must be mirrored along the Y axis.
+						if flipped then 
+							mirror (pos_tmp, Y); 
 						end if;
 						
+						-- Now move the pad POSITION by the position
+						-- of the package:
+						add (pos_tmp, package_position.place);
+						
+						-- Draw the pad name at pos_tmp:							
+						draw_text (
+							content		=> to_content (name),
+							size		=> terminal_name_size,
+							font		=> terminal_name_font,
+							anchor		=> pos_tmp,
+							origin		=> false, -- no origin required
+							rotation	=> zero_rotation,
+							alignment	=> (center, center));
+
+						-- CS The rotation should be so that the
+						-- name can be read from front and from the right.
 					end if;
 				end draw_name_tht;
 
@@ -1696,7 +1693,9 @@ is
 									restring		=> t.width_inner_layers,
 									pad_position	=> t.position);
 
--- 									draw_name_tht (to_string (key (c)), t.position);
+								
+								-- Draw the name of the terminal:
+								draw_name_tht (to_string (key (c)), t.position);
 
 									
 							when MILLED => -- arbitrary shape or so called plated millings
@@ -1707,7 +1706,7 @@ is
 								tht_outer_layer (
 									pad_contours	=> t.pad_shape_tht.top,
 									stopmask		=> t.stop_mask_shape_tht.top,
-									pad_position		=> t.position,
+									pad_position	=> t.position,
 									f				=> destination,
 									drilled_milled	=> t.tht_hole,
 									hole_contours	=> t.millings);
@@ -1719,7 +1718,7 @@ is
 								tht_outer_layer (
 									pad_contours	=> t.pad_shape_tht.bottom,
 									stopmask		=> t.stop_mask_shape_tht.bottom,
-									pad_position		=> t.position,
+									pad_position	=> t.position,
 									f				=> destination,
 									drilled_milled	=> t.tht_hole,
 									hole_contours	=> t.millings);
