@@ -191,223 +191,255 @@ is
 
 		
 	-- SILKSCREEN
--- 		procedure draw_silkscreen is 
--- 			use et_silkscreen;			
--- 			use pac_silk_lines;
--- 			use pac_silk_arcs;
--- 			use pac_silk_circles;
--- 			use pac_silk_contours;
--- 			use pac_silk_texts;
--- 
--- 			face : type_face := TOP;			
--- 			silkscreen_top, silkscreen_bottom : type_silkscreen;
--- 
--- 			
--- 			procedure draw is
--- 
--- 				procedure query_line (c : in pac_silk_lines.cursor) is 
--- 					line : type_silk_line renames element (c);
--- 				begin
--- 					-- set_line_width (context.cr, type_view_coordinate (line.width));
--- 					draw_line (type_line (line), type_position (package_position), line.width);
--- 				end query_line;
--- 
--- 				procedure query_arc (c : in pac_silk_arcs.cursor) is 
--- 					arc : type_silk_arc renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (arc.width));
--- 					draw_arc (to_arc_fine (arc), arc.width);
--- 				end query_arc;
--- 
--- 				procedure query_circle (c : in pac_silk_circles.cursor) is 
--- 					circle : type_silk_circle renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (circle.width));
--- 					draw_circle (
--- 						circle	=> circle,
--- 						filled	=> NO,
--- 						width	=> circle.width);
--- 				end query_circle;
--- 
--- 				procedure query_contour (c : in pac_silk_contours.cursor) is 
--- 					contour : type_silk_contour renames element (c);
--- 					drawn : boolean := false;
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (zero));
--- 					draw_contour (
--- 						contour	=> contour,
--- 						filled	=> YES,
--- 						width	=> zero,
--- 						drawn	=> drawn);
--- 				end query_contour;
--- 
--- 				face : type_face := TOP;
--- 				
--- 				procedure query_text (c : in pac_silk_texts.cursor) is 
--- 					text : type_silk_text renames element (c);
--- 				begin
--- 					draw_text_origin (text.position.place, face);
--- 					
--- 					set_line_width (context.cr, type_view_coordinate (text.line_width));
--- 					draw_vector_text (
--- 						text	=> text.vectors,
--- 						width	=> text.line_width);
--- 				end query_text;
--- 
--- 				
--- 			begin
--- 				set_color_silkscreen (context.cr, face, brightness);
--- 				silkscreen_top.lines.iterate (query_line'access);
--- 				silkscreen_top.arcs.iterate (query_arc'access);
--- 				silkscreen_top.circles.iterate (query_circle'access);
--- 				silkscreen_top.contours.iterate (query_contour'access);
--- 				silkscreen_top.texts.iterate (query_text'access);
--- 
--- 				face := BOTTOM;
--- 				set_color_silkscreen (context.cr, face, brightness);
--- 				silkscreen_bottom.lines.iterate (query_line'access);
--- 				silkscreen_bottom.arcs.iterate (query_arc'access);
--- 				silkscreen_bottom.circles.iterate (query_circle'access);
--- 				silkscreen_bottom.contours.iterate (query_contour'access);
--- 				silkscreen_bottom.texts.iterate (query_text'access);
--- 			end draw;
--- 			
--- 			
--- 		begin -- draw_silkscreen
--- 			if electric then
--- 				if silkscreen_enabled (face) then
--- 					silkscreen_top    := get_silkscreen_objects (device_electric, TOP);
--- 				end if;
--- 
--- 				face := BOTTOM;
--- 				if silkscreen_enabled (face) then
--- 					silkscreen_bottom := get_silkscreen_objects (device_electric, BOTTOM);
--- 				end if;
--- 				
--- 			else -- non-electrical device
--- 				if silkscreen_enabled (face) then
--- 					silkscreen_top    := get_silkscreen_objects (device_non_electric, TOP);
--- 				end if;
--- 
--- 				face := BOTTOM;
--- 				if silkscreen_enabled (face) then
--- 					silkscreen_bottom := get_silkscreen_objects (device_non_electric, BOTTOM);
--- 				end if;
--- 			end if;
--- 
--- 			draw;
--- 		end draw_silkscreen;
+
+		-- This procedure draws the silkscreen objects of
+		-- the package:
+		procedure draw_silkscreen is 
+			use et_silkscreen;			
+			use pac_silk_lines;
+			use pac_silk_arcs;
+			use pac_silk_circles;
+			use pac_silk_contours;
+			use pac_silk_texts;
+
+			face : type_face := TOP;			
+			silkscreen_top, silkscreen_bottom : type_silkscreen;
+
+			
+			procedure draw is
+
+				procedure query_line (c : in pac_silk_lines.cursor) is 
+					line : type_silk_line renames element (c);
+				begin
+					-- The line has already been moved, flipped and rotated
+					-- to the final position. So we do not pass the 
+					-- position and rotation of the package.
+					-- Likewise there is no need to mirror anything here:
+					draw_line (
+						line		=> type_line (line),
+						width		=> line.width,
+						do_stroke	=> true);
+					
+				end query_line;
+
+				
+				procedure query_arc (c : in pac_silk_arcs.cursor) is 
+					arc : type_silk_arc renames element (c);
+				begin
+					-- See comments in procedure query_line.
+					draw_arc (
+						arc			=> type_arc (arc),
+						width		=> arc.width,
+						do_stroke	=> true);
+				end query_arc;
+
+				
+				procedure query_circle (c : in pac_silk_circles.cursor) is 
+					circle : type_silk_circle renames element (c);
+				begin
+					-- See comments in procedure query_line.
+					draw_circle (
+						circle		=> type_circle (circle),
+						filled		=> NO,
+						width		=> circle.width,
+						do_stroke	=> true);
+				end query_circle;
+
+				
+				procedure query_contour (c : in pac_silk_contours.cursor) is 
+					contour : type_silk_contour renames element (c);
+				begin
+					draw_contour (
+						contour	=> contour,
+						filled	=> YES,
+						width	=> zero);
+				end query_contour;
+
+				
+				procedure query_text (c : in pac_silk_texts.cursor) is 
+					text : type_silk_text renames element (c);
+				begin
+					null;
+					-- draw_text_origin (text.position.place, face);
+
+					-- CS
+					-- set_line_width (context.cr, type_view_coordinate (text.line_width));
+					-- draw_vector_text (
+					-- 	text	=> text.vectors,
+					-- 	width	=> text.line_width);
+				end query_text;
+
+				
+				face : type_face := TOP;
+
+			begin
+				set_color_silkscreen (face, brightness);
+				silkscreen_top.lines.iterate (query_line'access);
+				silkscreen_top.arcs.iterate (query_arc'access);
+				silkscreen_top.circles.iterate (query_circle'access);
+				silkscreen_top.contours.iterate (query_contour'access);
+				silkscreen_top.texts.iterate (query_text'access);
+
+				face := BOTTOM;
+				set_color_silkscreen (face, brightness);
+				silkscreen_bottom.lines.iterate (query_line'access);
+				silkscreen_bottom.arcs.iterate (query_arc'access);
+				silkscreen_bottom.circles.iterate (query_circle'access);
+				silkscreen_bottom.contours.iterate (query_contour'access);
+				silkscreen_bottom.texts.iterate (query_text'access);
+			end draw;
+			
+			
+		begin -- draw_silkscreen
+			if electric then
+				if silkscreen_enabled (face) then
+					silkscreen_top    := get_silkscreen_objects (device_electric, TOP);
+				end if;
+
+				face := BOTTOM;
+				if silkscreen_enabled (face) then
+					silkscreen_bottom := get_silkscreen_objects (device_electric, BOTTOM);
+				end if;
+				
+			else -- non-electrical device
+				if silkscreen_enabled (face) then
+					silkscreen_top    := get_silkscreen_objects (device_non_electric, TOP);
+				end if;
+
+				face := BOTTOM;
+				if silkscreen_enabled (face) then
+					silkscreen_bottom := get_silkscreen_objects (device_non_electric, BOTTOM);
+				end if;
+			end if;
+
+			draw;
+		end draw_silkscreen;
 
 
 		
 	-- ASSY DOC
--- 		procedure draw_assembly_documentation is 
--- 			use et_assy_doc;			
--- 			use pac_doc_lines;
--- 			use pac_doc_arcs;
--- 			use pac_doc_circles;
--- 			use pac_doc_contours;
--- 			use pac_doc_texts;
--- 
--- 			face : type_face := TOP;
--- 
--- 			doc_top, doc_bottom : type_assy_doc;
--- 
--- 			
--- 			procedure draw is
--- 
--- 				procedure query_line (c : in pac_doc_lines.cursor) is 
--- 					line : type_doc_line renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (line.width));
--- 					draw_line (to_line_fine (line), line.width);
--- 				end query_line;
--- 
--- 				procedure query_arc (c : in pac_doc_arcs.cursor) is 
--- 					arc : type_doc_arc renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (arc.width));
--- 					draw_arc (to_arc_fine (arc), arc.width);
--- 				end query_arc;
--- 
--- 				procedure query_circle (c : in pac_doc_circles.cursor) is 
--- 					circle : type_doc_circle renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (circle.width));
--- 					draw_circle (
--- 						circle	=> circle,
--- 						filled	=> NO,
--- 						width	=> circle.width);
--- 				end query_circle;
--- 
--- 				procedure query_contour (c : in pac_doc_contours.cursor) is 
--- 					contour : type_doc_contour renames element (c);
--- 					drawn : boolean := false;
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (zero));
--- 					draw_contour (
--- 						contour	=> contour,
--- 						filled	=> YES,
--- 						width	=> zero,
--- 						drawn	=> drawn);
--- 				end query_contour;
--- 
--- 				face : type_face := TOP;
--- 				
--- 				procedure query_text (c : in pac_doc_texts.cursor) is 
--- 					text : type_doc_text renames element (c);
--- 				begin
--- 					draw_text_origin (text.position.place, face);
--- 					
--- 					set_line_width (context.cr, type_view_coordinate (text.line_width));
--- 					draw_vector_text (
--- 						text	=> text.vectors,
--- 						width	=> text.line_width);
--- 				end query_text;
--- 			
--- 				
--- 			begin
--- 				set_color_assy_doc (context.cr, face, brightness);
--- 				doc_top.lines.iterate (query_line'access);
--- 				doc_top.arcs.iterate (query_arc'access);
--- 				doc_top.circles.iterate (query_circle'access);
--- 				doc_top.contours.iterate (query_contour'access);
--- 				doc_top.texts.iterate (query_text'access);
--- 
--- 				face := BOTTOM;
--- 				set_color_assy_doc (context.cr, face, brightness);
--- 				doc_bottom.lines.iterate (query_line'access);
--- 				doc_bottom.arcs.iterate (query_arc'access);
--- 				doc_bottom.circles.iterate (query_circle'access);
--- 				doc_bottom.contours.iterate (query_contour'access);
--- 				doc_bottom.texts.iterate (query_text'access);
--- 			end draw;
--- 
--- 			
--- 		begin -- draw_assembly_documentation
--- 			if electric then
--- 				if assy_doc_enabled (face) then
--- 					doc_top    := get_assy_doc_objects (device_electric, TOP);
--- 				end if;
--- 
--- 				face := BOTTOM;
--- 				if assy_doc_enabled (face) then
--- 					doc_bottom := get_assy_doc_objects (device_electric, BOTTOM);
--- 				end if;
--- 				
--- 			else -- non-electrical device
--- 				if assy_doc_enabled (face) then
--- 					doc_top    := get_assy_doc_objects (device_non_electric, TOP);
--- 				end if;
--- 
--- 				face := BOTTOM;
--- 				if assy_doc_enabled (face) then
--- 					doc_bottom := get_assy_doc_objects (device_non_electric, BOTTOM);
--- 				end if;
--- 			end if;
--- 
--- 			draw;
--- 		end draw_assembly_documentation;
+		procedure draw_assembly_documentation is 
+			use et_assy_doc;			
+			use pac_doc_lines;
+			use pac_doc_arcs;
+			use pac_doc_circles;
+			use pac_doc_contours;
+			use pac_doc_texts;
+
+			face : type_face := TOP;
+
+			doc_top, doc_bottom : type_assy_doc;
+
+			
+			procedure draw is
+
+				procedure query_line (c : in pac_doc_lines.cursor) is 
+					line : type_doc_line renames element (c);
+				begin
+					-- The line has already been moved, flipped and rotated
+					-- to the final position. So we do not pass the 
+					-- position and rotation of the package.
+					-- Likewise there is no need to mirror anything here:
+					draw_line (
+						line		=> type_line (line),
+						width		=> line.width,
+						do_stroke	=> true);
+
+				end query_line;
+
+				
+				procedure query_arc (c : in pac_doc_arcs.cursor) is 
+					arc : type_doc_arc renames element (c);
+				begin
+					-- See comments in procedure query_line.
+					draw_arc (
+						arc			=> type_arc (arc),
+						width		=> arc.width,
+						do_stroke	=> true);
+				end query_arc;
+
+				
+				procedure query_circle (c : in pac_doc_circles.cursor) is 
+					circle : type_doc_circle renames element (c);
+				begin
+					-- See comments in procedure query_line.
+					draw_circle (
+						circle		=> type_circle (circle),
+						filled		=> NO,
+						width		=> circle.width,
+						do_stroke	=> true);
+				end query_circle;
+
+			
+				procedure query_contour (c : in pac_doc_contours.cursor) is 
+					contour : type_doc_contour renames element (c);
+				begin
+					-- See comments in procedure query_line.
+					draw_contour (
+						contour	=> contour,
+						filled	=> YES,
+						width	=> zero);
+				end query_contour;
+
+				
+				procedure query_text (c : in pac_doc_texts.cursor) is 
+					text : type_doc_text renames element (c);
+				begin
+					null;
+					--draw_text_origin (text.position.place, face);
+
+					-- CS
+					-- set_line_width (context.cr, type_view_coordinate (text.line_width));
+					-- draw_vector_text (
+					-- 	text	=> text.vectors,
+					-- 	width	=> text.line_width);
+				end query_text;
+
+				
+				face : type_face := TOP;
+				
+			begin
+				set_color_assy_doc (face, brightness);
+				doc_top.lines.iterate (query_line'access);
+				doc_top.arcs.iterate (query_arc'access);
+				doc_top.circles.iterate (query_circle'access);
+				doc_top.contours.iterate (query_contour'access);
+				doc_top.texts.iterate (query_text'access);
+
+				face := BOTTOM;
+				set_color_assy_doc (face, brightness);
+				doc_bottom.lines.iterate (query_line'access);
+				doc_bottom.arcs.iterate (query_arc'access);
+				doc_bottom.circles.iterate (query_circle'access);
+				doc_bottom.contours.iterate (query_contour'access);
+				doc_bottom.texts.iterate (query_text'access);
+			end draw;
+
+			
+		begin -- draw_assembly_documentation
+			if electric then
+				if assy_doc_enabled (face) then
+					doc_top    := get_assy_doc_objects (device_electric, TOP);
+				end if;
+
+				face := BOTTOM;
+				if assy_doc_enabled (face) then
+					doc_bottom := get_assy_doc_objects (device_electric, BOTTOM);
+				end if;
+				
+			else -- non-electrical device
+				if assy_doc_enabled (face) then
+					doc_top    := get_assy_doc_objects (device_non_electric, TOP);
+				end if;
+
+				face := BOTTOM;
+				if assy_doc_enabled (face) then
+					doc_bottom := get_assy_doc_objects (device_non_electric, BOTTOM);
+				end if;
+			end if;
+
+			draw;
+		end draw_assembly_documentation;
 
 
 		
@@ -1791,9 +1823,9 @@ is
 		
 -- 		draw_stop_mask; -- non-terminal related
 -- 		draw_stencil; -- non-terminal related
--- 
--- 		draw_silkscreen;
--- 		draw_assembly_documentation;
+
+		draw_silkscreen;
+		draw_assembly_documentation;
 -- 		draw_keepout; 
 -- 
 -- 		draw_route_restrict;
