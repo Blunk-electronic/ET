@@ -1080,7 +1080,9 @@ is
 			return get_pcb_design_rules (current_active_module).stop_mask.expansion_min;
 		end get_stop_mask_expansion;
 
-		
+
+		-- This procedure draws the terminals of the package.
+		-- That is: conductor pads, stopmask, stencil, restring, drills, millings:
 		procedure draw_terminals is
 			use et_terminals;
 			use pac_terminals;
@@ -1089,14 +1091,15 @@ is
 			procedure query_terminal (
 				c : in pac_terminals.cursor) 
 			is
-				t : constant type_terminal := element (c);
+				name : constant string := to_string (key (c)); -- H5, 5, 3
+				
+				t : type_terminal renames element (c);
 
 				
 				-- Draws the name of an smt pad.
 				-- The given position is the center of the pad
 				-- relative to the origin of the package:
 				procedure draw_name_smt (
-					name			: in string;  -- H5, 5, 3
 					pad_position	: in type_position)  -- the center of the pad
 				is
 					use et_text;
@@ -1140,7 +1143,6 @@ is
 				
 				-- Draws the name of a THT pad if any conductor layer is enabled 
 				procedure draw_name_tht (
-					name			: in string;  -- H5, 5, 3
 					pad_position	: in type_position)  -- the center of the pad
 				is
 					use et_text;
@@ -1186,7 +1188,6 @@ is
 				-- the terminal name. The terminal name will be drawn only if
 				-- the signal layer is enabled.
 				procedure draw_pad_smt (
-					name			: in string;  -- H5, 5, 3
 					pad_contours	: in type_contour; -- the outline of the solder pad (copper)
 					stopmask		: in type_stop_mask_smt; -- the stopmask of the pad
 					stencil			: in type_stencil_shape; -- the solder cream mask of the pad
@@ -1227,7 +1228,7 @@ is
 							end if;
 												
 							-- draw the terminal name
-							draw_name_smt (name, pad_position);
+							draw_name_smt (pad_position);
 						end if;
 					end draw_conductor;
 					
@@ -1695,7 +1696,7 @@ is
 
 								
 								-- Draw the name of the terminal:
-								draw_name_tht (to_string (key (c)), t.position);
+								draw_name_tht (t.position);
 
 									
 							when MILLED => -- arbitrary shape or so called plated millings
@@ -1729,7 +1730,7 @@ is
 									restring_width	=> t.width_inner_layers,
 									pad_position	=> t.position);
 
-								draw_name_tht (to_string (key (c)), t.position);
+								draw_name_tht (t.position);
 						end case;
 
 						
@@ -1739,7 +1740,7 @@ is
 							when BOTTOM	=> set_destination (INVERSE);
 						end case;
 
-						draw_pad_smt (to_string (key (c)), t.pad_shape_smt, 
+						draw_pad_smt (t.pad_shape_smt, 
 							t.stop_mask_shape_smt, t.stencil_shape, t.position, destination);
 				end case;
 				
