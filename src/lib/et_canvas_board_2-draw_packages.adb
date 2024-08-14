@@ -143,7 +143,8 @@ is
 		
 		-- If the package is flipped, then objects of the former top side
 		-- change to the bottom side and vice versa. 
-		-- By default set_destination sets the destination side to BOTTOM if the package is flipped.
+		-- By default set_destination sets the destination side to BOTTOM 
+		-- if the package is flipped.
 		procedure set_destination (
 			i : in type_destination_inversed := NOT_INVERSE) 
 		is 
@@ -317,7 +318,8 @@ is
 
 
 		
-	-- ASSY DOC
+	-- ASSEMBLY DOCUMENTATION
+		
 		procedure draw_assembly_documentation is 
 			use et_assy_doc;			
 			use pac_doc_lines;
@@ -363,6 +365,8 @@ is
 					circle : type_doc_circle renames element (c);
 				begin
 					-- See comments in procedure query_line.
+					-- put_line ("draw circle");
+					
 					draw_circle (
 						circle		=> type_circle (circle),
 						filled		=> NO,
@@ -428,6 +432,8 @@ is
 				end if;
 				
 			else -- non-electrical device
+				-- put_line ("non electrical device");
+				
 				if assy_doc_enabled (face) then
 					doc_top    := get_assy_doc_objects (device_non_electric, TOP);
 				end if;
@@ -972,21 +978,27 @@ is
 -- 		end draw_via_restrict;
 
 		
+		
 	-- PCB HOLES
+
 		procedure draw_holes is 
 			use et_pcb_contour;
 			use pac_holes;
 			
 			holes : pac_holes.list;
 			
-			procedure query_hole (c : pac_holes.cursor) is
-			begin
+			procedure query_hole (
+				c : pac_holes.cursor) 
+			is begin
+				-- The hole contours have already been moved, 
+				-- flipped and rotated
+				-- to the final position. So we do not pass the 
+				-- position and rotation of the package.
+				-- Likewise there is no need to mirror anything here:
 				draw_contour (
 					contour	=> element (c),
-					pos		=> get_position (package_position),			 
 					filled	=> NO,
-					width	=> pcb_contour_line_width); -- CS zero ?
-					-- CS mirror ?
+					width	=> zero);
 
 			end query_hole;
 				
@@ -1005,7 +1017,9 @@ is
 			end if;
 		end draw_holes;
 
-	------------------------------------------------------------------
+
+
+		
 		
 	-- CONDUCTORS (NON-TERMINAL RELATED, NON-ELECTRICAL !)
 		
@@ -1026,35 +1040,41 @@ is
 				procedure query_line (c : in pac_conductor_lines.cursor) is
 					line : type_conductor_line renames element (c);
 				begin
+					-- The line has already been moved, flipped and rotated
+					-- to the final position. So we do not pass the 
+					-- position and rotation of the package.
+					-- Likewise there is no need to mirror anything here:
 					draw_line (
 						line		=> type_line (line),
-						pos			=> get_position (package_position),
 						width		=> line.width,
 						do_stroke	=> true);
 				end query_line;
 
+				
 				procedure query_arc (c : in pac_conductor_arcs.cursor) is
 					arc : type_conductor_arc renames element (c);
 				begin
+					-- See comments in procedure query_line.
 					draw_arc (
 						arc			=> type_arc (arc),
-						pos			=> get_position (package_position),
 						width		=> arc.width,
 						do_stroke	=> true);
 				end query_arc;
 
+				
 				procedure query_circle (c : in pac_conductor_circles.cursor) is
 					circle : type_conductor_circle renames element (c);
 					use et_geometry;
 				begin
+					-- See comments in procedure query_line.
 					draw_circle (
 						circle		=> type_circle (circle),
-						pos			=> get_position (package_position),
 						filled		=> NO,
 						width		=> circle.width,
 						do_stroke	=> true);
 				end query_circle;
 
+				
 -- 				procedure query_text (c : in pac_conductor_texts.cursor) is
 -- 					text : et_conductor_text.type_conductor_text renames element (c);
 -- 				begin
@@ -1063,7 +1083,8 @@ is
 -- 						text	=> text.vectors,
 -- 						width	=> text.line_width);
 -- 				end query_text;
--- 				
+
+				
 			begin
 				set_color_conductor (layer, brightness);
 				objects.lines.iterate (query_line'access);
@@ -1104,6 +1125,7 @@ is
 
 
 		
+		
 	-- TERMINALS
 
 		function get_stop_mask_expansion return type_stop_mask_expansion is  -- from DRU
@@ -1113,6 +1135,7 @@ is
 		end get_stop_mask_expansion;
 
 
+		
 		-- This procedure draws the terminals of the package.
 		-- That is: conductor pads, stopmask, stencil, restring, drills, millings:
 		procedure draw_terminals is
@@ -1871,7 +1894,8 @@ is
 			end draw_fixed;
 
 
-			-- Draws the device packae at the position given by the pointer or the cursor:
+			-- Draws the device packae at the position given by the 
+			-- pointer or the cursor:
 			procedure draw_being_moved is 
 				-- If the device is being moved, then the x/y position
 				-- will be overwritten by the position of the mouse or the cursor.
@@ -1893,7 +1917,8 @@ is
 					end case;
 				end set_position;
 
-				-- Create a temporary map of devices. This map will contain just a single device:
+				-- Create a temporary map of devices. 
+				-- This map will contain just a single device:
 				m_tmp : pac_devices_sch.map;
 				dev_copy : pac_devices_sch.cursor;
 			begin
@@ -1955,105 +1980,124 @@ is
 	end query_electrical_devices;
 
 
+	
+
 	-- Draws the packages of non-electrical devices:
--- 	procedure query_non_electrical_devices (
--- 		module_name	: in pac_module_name.bounded_string;
--- 		module		: in type_module) 
--- 	is
--- 		use et_pcb;
--- 		use pac_devices_non_electric;
--- 
--- 
--- 		procedure query_device (device_cursor : in pac_devices_non_electric.cursor) is 
--- 			device : type_device_non_electric renames element (device_cursor);
--- 			use et_devices;
--- 			
--- 			brightness : type_brightness := NORMAL;
--- 
--- 			-- Draws the device package at the position as it is in the board:
--- 			procedure draw_fixed is begin
--- 				draw_package (
--- 					electric			=> false,
--- 					device_electric		=> pac_devices_sch.no_element,
--- 					device_non_electric	=> device_cursor,
--- 					flip				=> device.flipped,
--- 					brightness 			=> brightness);
--- 			end draw_fixed;
--- 
--- 			
--- 			-- Draws the device packae at the position given by the pointer or the cursor:
--- 			procedure draw_being_moved is 
--- 				-- If the device is being moved, then the x/y position
--- 				-- will be overwritten by the position of the mouse or the cursor.
--- 
--- 				use et_devices;
--- 				procedure set_position (
--- 					name	: in type_device_name;
--- 					device	: in out type_device_non_electric)
--- 				is begin
--- 					case preliminary_non_electrical_device.tool is
--- 						when MOUSE =>
--- 							device.position.place := snap_to_grid (get_mouse_position);
--- 
--- 						when KEYBOARD =>
--- 							device.position.place := cursor_main.position;
--- 					end case;
--- 				end set_position;
--- 
--- 				-- Create a temporary map of devices. This map will contain just a single device:
--- 				m_tmp : pac_devices_non_electric.map;
--- 				dev_copy : pac_devices_non_electric.cursor;
--- 			begin
--- 				-- Insert a copy of the candidate device in the temporary map:
--- 				m_tmp.insert (key (device_cursor), element (device_cursor));
--- 				dev_copy := m_tmp.last;
--- 
--- 				-- Assign the new position to the copy:
--- 				m_tmp.update_element (dev_copy, set_position'access);
--- 
--- 				-- Draw the copy of the candidate device:
--- 				draw_package (
--- 					electric			=> false,
--- 					device_electric		=> pac_devices_sch.no_element,
--- 					device_non_electric	=> dev_copy,
--- 					flip				=> device.flipped,
--- 					brightness			=> brightness);
--- 
--- 			end draw_being_moved;
--- 
--- 			
--- 		begin
--- 			-- If the device candidate is selected, then we will
--- 			-- draw it highlighted:
--- 			if is_selected (device_cursor) then
--- 				brightness := BRIGHT;
--- 
--- 				-- If a move operation is in progress, then the mouse
--- 				case verb is
--- 					when VERB_MOVE =>
--- 
--- 						-- If a move operation is in progress, then the mouse
--- 						-- or cursor position overwrites the device position:
--- 						if preliminary_non_electrical_device.ready then
--- 							draw_being_moved;
--- 						else
--- 							draw_fixed;						
--- 						end if;
--- 
--- 					-- Other operations leave the device position as it is:
--- 					when others =>
--- 						draw_fixed;
--- 					
--- 				end case;
--- 
--- 			else
--- 				draw_fixed;
--- 			end if;		
--- 		end query_device;
--- 		
--- 	begin
--- 		module.devices_non_electric.iterate (query_device'access);
--- 	end query_non_electrical_devices;
+	procedure query_non_electrical_devices (
+		module_name	: in pac_module_name.bounded_string;
+		module		: in type_module) 
+	is
+		use et_pcb;
+		use pac_devices_non_electric;
+
+
+		procedure query_device (
+			device_cursor : in pac_devices_non_electric.cursor) 
+		is 
+			device : type_device_non_electric renames element (device_cursor);
+
+			-- use et_devices;
+			use et_modes.board;
+			use et_canvas_board_devices;
+			
+			brightness : type_brightness := NORMAL;
+
+			
+			-- Draws the device package at the position as it is in the board:
+			procedure draw_fixed is 
+				-- use et_devices;
+			begin
+				-- put_line (to_string (key (device_cursor)));
+				
+				draw_package (
+					electric			=> false,
+					device_electric		=> pac_devices_sch.no_element,
+					device_non_electric	=> device_cursor,
+					flip				=> device.flipped,
+					brightness 			=> brightness);
+			end draw_fixed;
+
+			
+			-- Draws the device packae at the position given by 
+			-- the pointer or the cursor:
+			procedure draw_being_moved is 
+				-- If the device is being moved, then the x/y position
+				-- will be overwritten by the position of the mouse or the cursor.
+				
+				use et_devices;
+				
+				procedure set_position (
+					name	: in type_device_name;
+					device	: in out type_device_non_electric)
+				is 
+					use et_canvas_tool;
+				begin
+					case preliminary_non_electrical_device.tool is
+						when MOUSE =>
+							device.position.place := snap_to_grid (get_mouse_position);
+
+						when KEYBOARD =>
+							device.position.place := get_cursor_position;
+					end case;
+				end set_position;
+
+				-- Create a temporary map of devices. 
+				-- This map will contain just a single device:
+				m_tmp : pac_devices_non_electric.map;
+				
+				dev_copy : pac_devices_non_electric.cursor;
+			begin
+				-- Insert a copy of the candidate device in the temporary map:
+				m_tmp.insert (key (device_cursor), element (device_cursor));
+				dev_copy := m_tmp.last;
+
+				-- Assign the new position to the copy:
+				m_tmp.update_element (dev_copy, set_position'access);
+
+				-- Draw the copy of the candidate device:
+				draw_package (
+					electric			=> false,
+					device_electric		=> pac_devices_sch.no_element,
+					device_non_electric	=> dev_copy,
+					flip				=> device.flipped,
+					brightness			=> brightness);
+
+			end draw_being_moved;
+
+			
+		begin -- query_device
+
+			-- If the device candidate is selected, then we will
+			-- draw it highlighted:
+			if is_selected (device_cursor) then
+				brightness := BRIGHT;
+
+				-- If a move operation is in progress, then the mouse
+				case verb is
+					when VERB_MOVE =>
+
+						-- If a move operation is in progress, then the mouse
+						-- or cursor position overwrites the device position:
+						if preliminary_non_electrical_device.ready then
+							draw_being_moved;
+						else
+							draw_fixed;						
+						end if;
+
+					-- Other operations leave the device position as it is:
+					when others =>
+						draw_fixed;
+					
+				end case;
+
+			else
+				draw_fixed;
+			end if;		
+		end query_device;
+		
+	begin
+		module.devices_non_electric.iterate (query_device'access);
+	end query_non_electrical_devices;
 
 	
 begin -- draw_packages
@@ -2066,9 +2110,9 @@ begin -- draw_packages
 
 	
 	-- draw non-electric devices (like fiducials, mounting holes, ...)
-	-- pac_generic_modules.query_element (
-	-- 	position	=> current_active_module,
-	-- 	process		=> query_non_electrical_devices'access);
+	pac_generic_modules.query_element (
+		position	=> current_active_module,
+		process		=> query_non_electrical_devices'access);
 			
 end draw_packages;
 
