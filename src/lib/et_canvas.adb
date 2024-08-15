@@ -3333,7 +3333,8 @@ package body et_canvas is
 		pos			: in type_position := origin_zero_rotation;
 		width		: in type_distance_positive;
 		mirror		: in type_mirror_style := mirror_style_default;
-		do_stroke	: in boolean := false)
+		do_stroke	: in boolean := false;
+		polyline	: in boolean := false)
 	is
 		use cairo;
 		
@@ -3394,8 +3395,15 @@ package body et_canvas is
 			c2 := real_to_canvas (l.end_point, S);
 
 			-- THESE DRAW OPERATIONS CONSUME THE MOST TIME:
-			move_to (context, 
-					 to_gdouble_positive (c1.x), to_gdouble_positive (c1.y));
+			if polyline then
+				line_to (context, 
+					to_gdouble_positive (c1.x), to_gdouble_positive (c1.y));
+
+			else
+				move_to (context, 
+					to_gdouble_positive (c1.x), to_gdouble_positive (c1.y));
+			end if;
+
 			
 			line_to (context, 
 					 to_gdouble_positive (c2.x), to_gdouble_positive (c2.y));

@@ -76,7 +76,7 @@ package body et_canvas.contours is
 		use pac_segments;
 
 
-		start_point : type_vector_model;
+		-- start_point : type_vector_model;
 		start_point_set : boolean := false;
 		
 		
@@ -92,22 +92,33 @@ package body et_canvas.contours is
 					-- put_line ("draw_segment (line)");
 					-- put_line (" line" & to_string (type_line (segment.segment_line)));
 
-					if not start_point_set then
-						start_point := segment.segment_line.start_point;
-						start_point_set := true;
-					end if;
+					-- CS: This is a makeshift as long as there is no
+					-- proper procedure to draw a polyline which is
+					-- mandatory to fill an area:
 					
-					draw_line (
-						line	=> type_line (segment.segment_line),
-						pos		=> pos_end,		  
-						width	=> zero,  -- don't care. see specs of draw_line.
-						mirror	=> mirror);
+					if not start_point_set then
+						-- start_point := segment.segment_line.start_point;
+						start_point_set := true;
+					
+						draw_line (
+							line	=> type_line (segment.segment_line),
+							pos		=> pos_end,		  
+							width	=> zero,  -- don't care. see specs of draw_line.
+							mirror	=> mirror);
+					else
+						draw_line (
+							line	=> type_line (segment.segment_line),
+							pos		=> pos_end,		  
+							width	=> zero,  -- don't care. see specs of draw_line.
+							mirror	=> mirror,
+							polyline	=> true);
+					end if;
 
 					
 				when ARC =>
 
 					if not start_point_set then
-						start_point := segment.segment_arc.start_point;
+						-- start_point := segment.segment_arc.start_point;
 						start_point_set := true;
 					end if;
 
@@ -178,38 +189,42 @@ package body et_canvas.contours is
 				-- there is a final stroke in this procedure.
 		else
 			new_sub_path (context); -- required to suppress an initial line
-
 			contour.contour.segments.iterate (query_segment'access);
-
 		end if;
 
-		-- cairo.fill (context);
-		
-		
-		-- if filled = YES then
-		-- 	cairo.fill (context);
-		-- end if;
 
 		
--- 		case style is
--- 			when CONTINUOUS => null;
--- 			
--- 			when DASHED =>
--- 				--dash_on := 0.2 + 1.0 / scale;
--- 				--dash_off := 0.1 + 1.0 / scale;
--- 				dash_on := 20.0 / gdouble (S);
--- 				dash_off := 15.0 / gdouble (S);
--- 
--- 				dash_pattern (1) := dash_on;
--- 				dash_pattern (2) := dash_off;
--- 				set_dash (context, dash_pattern, 0.0);
--- 		end case;
+		-- Fill the contour if requested by the caller:
+		if filled = YES then
+			cairo.fill (context);
+		end if;
 
+
+		-- Set the line style as requested by the caller:
+		case style is
+			when CONTINUOUS => null;
+			
+			when DASHED =>
+				--dash_on := 0.2 + 1.0 / scale;
+				--dash_off := 0.1 + 1.0 / scale;
+				dash_on := 20.0 / gdouble (S);
+				dash_off := 15.0 / gdouble (S);
+
+				dash_pattern (1) := dash_on;
+				dash_pattern (2) := dash_off;
+				set_dash (context, dash_pattern, 0.0);
+		end case;
+
+
+		-- Do the final stroke on everything that
+		-- has been drawn:
 		stroke (context);
 
 
 		-- Disable line dashes:
-		-- set_dash (context, no_dashes, 0.0);
+		if style /= CONTINUOUS then
+			set_dash (context, no_dashes, 0.0);
+		end if;
 
 		
 	end draw_contour;
