@@ -3468,7 +3468,7 @@ package body et_canvas is
 			-- then draw the line. Otherwise nothing will be drawn:
 			above_visibility_threshold (b) then
 
-			-- put_line ("draw circle");
+			-- put_line ("draw_circle" & to_string (circle));
 
 			-- If an individual stroke is requested for
 			-- the given circle, then set the linewidth of the 
@@ -3485,6 +3485,7 @@ package body et_canvas is
 				end if;
 			end if;
 
+			
 			m := real_to_canvas (c.center, S);
 			r := to_distance (c.radius);
 

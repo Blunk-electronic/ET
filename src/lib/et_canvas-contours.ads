@@ -61,7 +61,10 @@ package et_canvas.contours is
 	procedure draw_contour (
 		contour	: in type_contour'class;
 		pos 	: in type_position := origin_zero_rotation; -- includes x,y, rotation
+
 		offset	: in type_position := origin_zero_rotation;
+		-- CS currently the rotation of the contour about itself is ignored.
+		
 		style	: in type_line_style := CONTINUOUS;
 		filled	: in type_filled;
 		width	: in type_distance_positive;

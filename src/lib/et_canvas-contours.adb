@@ -75,29 +75,42 @@ package body et_canvas.contours is
 		
 		use pac_segments;
 
+
+		start_point : type_vector_model;
+		start_point_set : boolean := false;
+		
 		
 		procedure query_segment (
 			c : in pac_segments.cursor) 
 		is 
 			segment : type_segment renames element (c);
 		begin
+			
 			case segment.shape is
 				
 				when LINE =>
 					-- put_line ("draw_segment (line)");
 					-- put_line (" line" & to_string (type_line (segment.segment_line)));
+
+					if not start_point_set then
+						start_point := segment.segment_line.start_point;
+						start_point_set := true;
+					end if;
 					
 					draw_line (
 						line	=> type_line (segment.segment_line),
 						pos		=> pos_end,		  
-						--width	=> zero);  -- don't care. see specs of draw_line.
-						width 	=> 0.1,
-						mirror	=> mirror,
-						do_stroke => true);
-						-- CS mirror
+						width	=> zero,  -- don't care. see specs of draw_line.
+						mirror	=> mirror);
 
 					
 				when ARC =>
+
+					if not start_point_set then
+						start_point := segment.segment_arc.start_point;
+						start_point_set := true;
+					end if;
+
 					draw_arc (
 						arc		=> type_arc (segment.segment_arc),
 						width	=> zero);   -- don't care. see specs of draw_line.
@@ -126,39 +139,48 @@ package body et_canvas.contours is
 		
 		add (pos_end.place, offset_tmp);
 
-		
-		
-		-- new_sub_path (context); -- required to suppress an initial line
 
-		
-		-- if width > zero then
-		-- 	set_line_width (context, 
-		-- 		to_gdouble_positive (to_distance (width)));
-  -- 
-		-- else
-		-- 	-- If linewidth is zero then a mimimum
-		-- 	-- must be ensured:
-		-- 	set_line_width (context, to_gdouble (minimal_linewidth));
-		-- end if;
 
-		
+
+		-- The calls of primitive draw operations in this 
+		-- procedure are without explicit strokes. For this 
+		-- reason the linewidth must be set first:
+		if width > zero then
+			set_line_width (context, 
+				to_gdouble_positive (to_distance (width)));
+  
+		else
+			-- If linewidth is zero then a mimimum
+			-- must be ensured:
+			set_line_width (context, to_gdouble (minimal_linewidth));
+		end if;
+
+
+		-- Draw the contour.
+		-- If it is just a circle then draw a circle.
+		-- If the contour is a collection of segments (arc and lines),
+		-- then iterate through the segments:
 		if contour.contour.circular then
-			-- Draw the single circle that forms the contour:
 			
 			-- CS: The intersection between circle and other segments
 			-- is still visible as a very thin line.
 
+			-- Draw the single circle that forms the contour:
 			draw_circle (
 				circle		=> contour.contour.circle,
 				pos			=> pos_end,			
 				filled		=> filled,
 				mirror		=> mirror,
 				width		=> zero);   
-				-- The linewidth is don't care (see specs of draw_line)
-				-- because the linewidth is has been set initially and
+				-- The linewidth is ignored (see specs of draw_circle)
+				-- because no stroke will be carried out.
+				-- The linewidth has been set already and
 				-- there is a final stroke in this procedure.
 		else
+			new_sub_path (context); -- required to suppress an initial line
+
 			contour.contour.segments.iterate (query_segment'access);
+
 		end if;
 
 		-- cairo.fill (context);
@@ -183,7 +205,7 @@ package body et_canvas.contours is
 -- 				set_dash (context, dash_pattern, 0.0);
 -- 		end case;
 
-		-- stroke (context);
+		stroke (context);
 
 
 		-- Disable line dashes:
