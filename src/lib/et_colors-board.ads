@@ -65,13 +65,13 @@ package et_colors.board is
 
 
 	
-	-- CS: These values may be overwitten by used specific colors and fill
+	-- CS: These values may be overwitten by user specific colors and fill
 	-- styles in the future:
 	
 	cursor				: type_color := white;
 	background 			: type_color := black;
 	frame				: type_color := white;
-	outline				: type_color := white;
+	outline				: type_color := gray;
 	grid 				: type_color := gray;	
 	origin				: type_color := gray;	
 	placeholders		: type_color := white;
