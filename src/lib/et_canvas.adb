@@ -3604,7 +3604,8 @@ package body et_canvas is
 			m := real_to_canvas (c.center, S);
 
 			-- required to suppress an initial line:
-			--new_sub_path (context);
+			-- new_sub_path (context);
+			-- no need. should be removed if really not required.
 
 			if a.direction = CW then
 				
