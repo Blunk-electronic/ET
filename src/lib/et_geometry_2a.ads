@@ -1063,12 +1063,13 @@ package et_geometry_2a is
 	
 
 	-- Returns the bounding-box of the given circle.
-	-- It respects the linewidth of the circumfence:
+	-- It respects the linewidth of the circumfence.
+	-- CS: For simlicity the given arc is theated like a circle.
 	function get_bounding_box (
 		arc 	: in type_arc;
 		width	: in type_distance_positive)				  
 		return type_area;
-	-- CS INCOMPLETE !
+
 
 		
 

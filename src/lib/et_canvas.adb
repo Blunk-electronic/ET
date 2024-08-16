@@ -3473,10 +3473,10 @@ package body et_canvas is
 
 			-- Do the size check. If the bounding-box is greater
 			-- (either in width or heigth) than the visiblity threshold
-			-- then draw the line. Otherwise nothing will be drawn:
+			-- then draw the circle. Otherwise nothing will be drawn:
 			above_visibility_threshold (b) then
 
-			-- put_line ("draw_circle" & to_string (circle));
+			-- put_line ("draw_circle");
 
 			-- If an individual stroke is requested for
 			-- the given circle, then set the linewidth of the 
@@ -3532,17 +3532,111 @@ package body et_canvas is
 		mirror		: in type_mirror_style := mirror_style_default;		
 		do_stroke	: in boolean := false)
 	is
+		use glib;
+		use cairo;
+		use pac_geometry_1;
+		
+		-- Make a copy of the given arc:
+		c : type_arc := arc;
+
+		-- When the arc is drawn, we need a canvas point
+		-- for the center:
+		m : type_logical_pixels_vector;
+
+		r : type_logical_pixels_positive;
+		
+		-- The bounding-box of the arc. It is required
+		-- for the area and size check:
+		b : type_area;
+
+		a : type_arc_angles;
 	begin
-		null;
+		-- Rotate the arc by pos.rotation:
+		rotate_by (c, pos.rotation);
 
-		-- Mirror the arc:
-		-- case mirror is
-		-- 	when NO_MIRROR => null;
-		-- 	when MIRROR_X  => pac_geometry.mirror (l, X);
-		-- 	when MIRROR_Y  => pac_geometry.mirror (l, Y);
-		-- end case;
+		-- Mirror the circle:
+		case mirror is
+			when NO_MIRROR => null;
+			when MIRROR_X  => pac_geometry.mirror (c, X);
+			when MIRROR_Y  => pac_geometry.mirror (c, Y);
+		end case;
+		
+		-- Move the arc to the given position:
+		move_by (c, (pos.place.x, pos.place.y));
+		
+		-- Get the bounding-box of the arc:
+		b := get_bounding_box (c, width);
+		-- put_line ("b " & to_string (b));
+		
+		-- Do the area check. If the bounding-box of the arc
+		-- is inside the visible area then draw the arc. Otherwise
+		-- nothing will be drawn:
+		if areas_overlap (visible_area, b) and then
 
-		-- CS
+			-- Do the size check. If the bounding-box is greater
+			-- (either in width or heigth) than the visiblity threshold
+			-- then draw the arc. Otherwise nothing will be drawn:
+			above_visibility_threshold (b) then
+
+			-- put_line ("draw_arc");
+
+			-- If an individual stroke is requested for
+			-- the given circle, then set the linewidth of the 
+			-- circumfence:
+			if do_stroke then
+				if width > zero then
+					set_line_width (context, 
+						to_gdouble_positive (to_distance (width)));
+
+				else
+					-- If linewidth is zero then a mimimum
+					-- must be ensured:
+					set_line_width (context, to_gdouble (minimal_linewidth));
+				end if;
+			end if;
+
+			
+			a := to_arc_angles (c);
+			-- put_line ("arc angles" & to_string (a));
+			
+			r := to_distance (type_distance_positive (a.radius));
+			
+			m := real_to_canvas (c.center, S);
+
+			-- required to suppress an initial line:
+			--new_sub_path (context);
+
+			if a.direction = CW then
+				
+				-- THIS DRAW OPERATION CONSUMES THE MOST TIME:
+				cairo.arc (context, 
+					to_gdouble_positive (m.x), 
+					to_gdouble_positive (m.y),
+					to_gdouble_positive (r), 
+					- gdouble (to_radians (a.angle_start)),
+					- gdouble (to_radians (a.angle_end)));
+
+			else
+				-- THIS DRAW OPERATION CONSUMES THE MOST TIME:
+				cairo.arc_negative (context, 
+					to_gdouble_positive (m.x), 
+					to_gdouble_positive (m.y),
+					to_gdouble_positive (r), 
+					- gdouble (to_radians (a.angle_start)),
+					- gdouble (to_radians (a.angle_end)));
+				
+			end if;
+			
+			-- If an individual stroke is requested for
+			-- the given circle, then do it now:
+			if do_stroke then
+				stroke (context);
+			end if;
+
+			
+			-- CS: use OpenGL ?
+		end if;
+
 	end draw_arc;
 
 

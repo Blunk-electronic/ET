@@ -2453,19 +2453,13 @@ package body et_geometry_2a is
 		-- CS: Optimization required. Compiler options ?
 		
 		result : type_area;
-		w : type_distance;
 
-		d : constant type_distance := width / 2.0;
+		c : type_circle;
 	begin
-		-- CS
-		
-		-- w := 2.0 * (circle.r + d);
-  -- 
-		-- result.width := w;
-		-- result.height := w;
-  -- 
-		-- result.position.x := circle.c.x - w / 2.0;
-		-- result.position.y := circle.c.y - w / 2.0;
+		c.center := arc.center;
+		c.radius := type_distance_positive (get_radius_start (arc));
+
+		result := get_bounding_box (c, width);
 		
 		return result;
 	end get_bounding_box;

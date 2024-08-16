@@ -75,8 +75,6 @@ package body et_canvas.contours is
 		
 		use pac_segments;
 
-
-		-- start_point : type_vector_model;
 		start_point_set : boolean := false;
 		
 		
@@ -97,7 +95,6 @@ package body et_canvas.contours is
 					-- mandatory to fill an area:
 					
 					if not start_point_set then
-						-- start_point := segment.segment_line.start_point;
 						start_point_set := true;
 					
 						draw_line (
@@ -107,24 +104,21 @@ package body et_canvas.contours is
 							mirror	=> mirror);
 					else
 						draw_line (
-							line	=> type_line (segment.segment_line),
-							pos		=> pos_end,		  
-							width	=> zero,  -- don't care. see specs of draw_line.
-							mirror	=> mirror,
+							line		=> type_line (segment.segment_line),
+							pos			=> pos_end,		  
+							width		=> zero,  -- don't care. see specs of draw_line.
+							mirror		=> mirror,
 							polyline	=> true);
 					end if;
 
 					
 				when ARC =>
 
-					if not start_point_set then
-						-- start_point := segment.segment_arc.start_point;
-						start_point_set := true;
-					end if;
-
 					draw_arc (
 						arc		=> type_arc (segment.segment_arc),
-						width	=> zero);   -- don't care. see specs of draw_line.
+						pos		=> pos_end,		 
+						width	=> zero,
+						mirror	=> mirror);
 
 			end case;
 		end query_segment;
@@ -191,7 +185,6 @@ package body et_canvas.contours is
 			new_sub_path (context); -- required to suppress an initial line
 			contour.contour.segments.iterate (query_segment'access);
 		end if;
-
 
 		
 		-- Fill the contour if requested by the caller:
