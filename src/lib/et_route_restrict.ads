@@ -60,7 +60,8 @@ package et_route_restrict is
 	
 	-- GUI relevant only: The line width of route restrict:
 	route_restrict_line_width : constant type_general_line_width := linewidth_fab_min;
-
+	-- CS remove
+	
 	
 -- LINES:
 

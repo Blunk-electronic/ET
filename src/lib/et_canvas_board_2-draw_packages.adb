@@ -220,7 +220,6 @@ is
 						line		=> type_line (line),
 						width		=> line.width,
 						do_stroke	=> true);
-					
 				end query_line;
 
 				
@@ -449,303 +448,304 @@ is
 
 
 		
+		
 	-- KEEPOUT
--- 		procedure draw_keepout is 
--- 			use et_keepout;
--- 			use pac_keepout_zones;
--- 			keepout : type_keepout_both_sides;
--- 			face : type_face := TOP;
--- 
--- 			
--- 			procedure draw is
--- 				
--- 				procedure query_zone (c : pac_keepout_zones.cursor) is
--- 					drawn : boolean := false;
--- 				begin
--- 					draw_contour (
--- 						contour	=> element (c),
--- 						filled	=> NO,
--- 						width	=> zero,
--- 						drawn	=> drawn);
--- 					
--- 				end query_zone;
--- 				
--- 			begin
--- 				-- top
--- 				set_color_keepout (context.cr, TOP, brightness);
--- 				keepout.top.zones.iterate (query_zone'access);
--- 				-- CS cutouts
--- 
--- 				-- bottom
--- 				set_color_keepout (context.cr, BOTTOM, brightness);
--- 				keepout.bottom.zones.iterate (query_zone'access);
--- 				-- CS cutouts
--- 			end draw;
--- 
--- 			
--- 		begin -- draw_keepout
--- 			set_line_width (context.cr, type_view_coordinate (keepout_line_width));
--- 			
--- 			if electric then
--- 				if keepout_enabled (face) then
--- 					keepout.top    := get_keepout_objects (device_electric, TOP);
--- 				end if;
--- 
--- 				face := BOTTOM;
--- 				if keepout_enabled (face) then
--- 					keepout.bottom := get_keepout_objects (device_electric, BOTTOM);
--- 				end if;
--- 				
--- 			else -- non-electrical device
--- 				if keepout_enabled (face) then
--- 					keepout.top    := get_keepout_objects (device_non_electric, TOP);
--- 				end if;
--- 
--- 				face := BOTTOM;
--- 				if keepout_enabled (face) then
--- 					keepout.bottom := get_keepout_objects (device_non_electric, BOTTOM);
--- 				end if;
--- 			end if;
--- 
--- 			draw;
--- 		end draw_keepout;
+		
+		procedure draw_keepout is 
+			use et_keepout;
+			use pac_keepout_zones;
+			keepout : type_keepout_both_sides;
+			face : type_face := TOP;
+
+			
+			procedure draw is
+				
+				procedure query_zone (
+					c : pac_keepout_zones.cursor) 
+				is begin
+					-- The contours have already been moved, flipped and rotated
+					-- to the final position. So we do not pass the 
+					-- position and rotation of the package.
+					-- Likewise there is no need to mirror anything here:
+					draw_contour (
+						contour	=> element (c),
+						filled	=> NO,
+						width	=> zero);
+					
+				end query_zone;
+				
+			begin
+				-- top
+				set_color_keepout (TOP, brightness);
+				keepout.top.zones.iterate (query_zone'access);
+				-- CS cutouts
+
+				-- bottom
+				set_color_keepout (BOTTOM, brightness);
+				keepout.bottom.zones.iterate (query_zone'access);
+				-- CS cutouts
+			end draw;
+
+			
+		begin -- draw_keepout
+			
+			if electric then
+				if keepout_enabled (face) then
+					keepout.top    := get_keepout_objects (device_electric, TOP);
+				end if;
+
+				face := BOTTOM;
+				if keepout_enabled (face) then
+					keepout.bottom := get_keepout_objects (device_electric, BOTTOM);
+				end if;
+				
+			else -- non-electrical device
+				if keepout_enabled (face) then
+					keepout.top    := get_keepout_objects (device_non_electric, TOP);
+				end if;
+
+				face := BOTTOM;
+				if keepout_enabled (face) then
+					keepout.bottom := get_keepout_objects (device_non_electric, BOTTOM);
+				end if;
+			end if;
+
+			draw;
+		end draw_keepout;
 
 
 		
-	-- STOP MASK
--- 		procedure draw_stop_mask is 
--- 			use et_stop_mask;
--- 			use et_stop_mask.packages;
--- 			
--- 			use pac_stop_lines;
--- 			use pac_stop_arcs;
--- 			use pac_stop_circles;
--- 			use pac_stop_contours;
--- 			use pac_stop_texts;
--- 
--- 			face : type_face := TOP;
--- 			stopmask : type_stopmask_both_sides;
--- 
--- 
--- 			procedure draw is
--- 
--- 				procedure query_line (c : in pac_stop_lines.cursor) is
--- 					drawn : boolean := false;
--- 					line : type_stop_line renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (line.width));
--- 					
--- 					draw_line (
--- 						line	=> to_line_fine (line),
--- 						width	=> line.width);
--- 					
--- 				end query_line;
--- 
--- 				
--- 				procedure query_arc (c : in pac_stop_arcs.cursor) is
--- 					drawn : boolean := false;
--- 					arc : type_stop_arc renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (arc.width));
--- 					
--- 					draw_arc (
--- 						arc		=> to_arc_fine (arc),
--- 						width	=> arc.width);
--- 					
--- 				end query_arc;
--- 
--- 				
--- 				procedure query_circle (c : in pac_stop_circles.cursor) is
--- 					drawn : boolean := false;
--- 					circle : type_stop_circle renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (circle.width));
--- 					
--- 					draw_circle (
--- 						circle	=> circle,
--- 						filled	=> NO,
--- 						width	=> circle.width);
--- 					
--- 				end query_circle;
--- 				
--- 				
--- 				procedure query_contour (c : pac_stop_contours.cursor) is
--- 					drawn : boolean := false;
--- 				begin
--- 					draw_contour (
--- 						contour	=> element (c),
--- 						filled	=> YES,
--- 						width	=> zero,
--- 						drawn	=> drawn);
--- 					
--- 				end query_contour;
--- 				
--- 
--- 				procedure query_text (c : pac_stop_texts.cursor) is
--- 					text : type_stop_text renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (text.line_width));
--- 					draw_vector_text (
--- 						text	=> text.vectors,
--- 						width	=> text.line_width);
--- 				end query_text;
--- 
--- 				
--- 			begin
--- 				-- top
--- 				set_color_stop_mask (context.cr, TOP, global_scale, brightness);
--- 				stopmask.top.lines.iterate (query_line'access);
--- 				stopmask.top.arcs.iterate (query_arc'access);
--- 				stopmask.top.circles.iterate (query_circle'access);
--- 				stopmask.top.contours.iterate (query_contour'access);
--- 				stopmask.top.texts.iterate (query_text'access);
--- 
--- 				-- bottom
--- 				set_color_stop_mask (context.cr, BOTTOM, global_scale, brightness);
--- 				stopmask.bottom.lines.iterate (query_line'access);
--- 				stopmask.bottom.arcs.iterate (query_arc'access);
--- 				stopmask.bottom.circles.iterate (query_circle'access);
--- 				stopmask.bottom.contours.iterate (query_contour'access);
--- 				stopmask.bottom.texts.iterate (query_text'access);
--- 			end draw;
--- 			
--- 			
--- 		begin -- draw_stop_mask
--- 			if electric then
--- 				if stop_mask_enabled (face) then
--- 					stopmask.top := get_stopmask_objects (device_electric, TOP);
--- 				end if;
--- 
--- 				face := BOTTOM;
--- 				if stop_mask_enabled (face) then
--- 					stopmask.bottom := get_stopmask_objects (device_electric, BOTTOM);
--- 				end if;
--- 
--- 				
--- 			else -- non-electrical device
--- 				if stop_mask_enabled (face) then
--- 					stopmask.top := get_stopmask_objects (device_non_electric, TOP);
--- 				end if;
--- 
--- 				face := BOTTOM;
--- 				if stop_mask_enabled (face) then
--- 					stopmask.bottom := get_stopmask_objects (device_non_electric, BOTTOM);
--- 				end if;
--- 			end if;
--- 
--- 			draw;		
--- 		end draw_stop_mask;
+	-- STOPMASK
+		
+		procedure draw_stop_mask is 
+			use et_stop_mask;
+			use et_stop_mask.packages;
+			
+			use pac_stop_lines;
+			use pac_stop_arcs;
+			use pac_stop_circles;
+			use pac_stop_contours;
+			use pac_stop_texts;
+
+			face : type_face := TOP;
+			stopmask : type_stopmask_both_sides;
 
 
+			procedure draw is
+
+				procedure query_line (c : in pac_stop_lines.cursor) is
+					line : type_stop_line renames element (c);
+				begin
+					-- The line has already been moved, flipped and rotated
+					-- to the final position. So we do not pass the 
+					-- position and rotation of the package.
+					-- Likewise there is no need to mirror anything here:
+					draw_line (
+						line		=> type_line (line),
+						width		=> line.width,
+						do_stroke	=> true);
+					
+				end query_line;
+
+				
+				procedure query_arc (c : in pac_stop_arcs.cursor) is
+					arc : type_stop_arc renames element (c);
+				begin
+					-- See comments in procedure query_line.
+					draw_arc (
+						arc			=> type_arc (arc),
+						width		=> arc.width,
+						do_stroke	=> true);
+				end query_arc;
+
+				
+				procedure query_circle (c : in pac_stop_circles.cursor) is
+					circle : type_stop_circle renames element (c);
+				begin
+					-- See comments in procedure query_line.
+					draw_circle (
+						circle		=> type_circle (circle),
+						filled		=> NO,
+						width		=> circle.width,
+						do_stroke	=> true);
+				end query_circle;
+				
+				
+				procedure query_contour (c : pac_stop_contours.cursor) is
+					contour : type_stop_contour renames element (c);
+				begin
+					draw_contour (
+						contour	=> contour,
+						filled	=> YES,
+						width	=> zero);
+				end query_contour;
+				
+
+				procedure query_text (c : pac_stop_texts.cursor) is
+					text : type_stop_text renames element (c);
+				begin
+					null;
+					-- set_line_width (context.cr, type_view_coordinate (text.line_width));
+					-- draw_vector_text (
+					-- 	text	=> text.vectors,
+					-- 	width	=> text.line_width);
+				end query_text;
+
+				
+			begin
+				-- top
+				set_color_stop_mask (TOP, brightness);
+				stopmask.top.lines.iterate (query_line'access);
+				stopmask.top.arcs.iterate (query_arc'access);
+				stopmask.top.circles.iterate (query_circle'access);
+				stopmask.top.contours.iterate (query_contour'access);
+				stopmask.top.texts.iterate (query_text'access);
+
+				-- bottom
+				set_color_stop_mask (BOTTOM, brightness);
+				stopmask.bottom.lines.iterate (query_line'access);
+				stopmask.bottom.arcs.iterate (query_arc'access);
+				stopmask.bottom.circles.iterate (query_circle'access);
+				stopmask.bottom.contours.iterate (query_contour'access);
+				stopmask.bottom.texts.iterate (query_text'access);
+			end draw;
+			
+			
+		begin -- draw_stop_mask
+			if electric then
+				if stop_mask_enabled (face) then
+					stopmask.top := get_stopmask_objects (device_electric, TOP);
+				end if;
+
+				face := BOTTOM;
+				if stop_mask_enabled (face) then
+					stopmask.bottom := get_stopmask_objects (device_electric, BOTTOM);
+				end if;
+
+				
+			else -- non-electrical device
+				if stop_mask_enabled (face) then
+					stopmask.top := get_stopmask_objects (device_non_electric, TOP);
+				end if;
+
+				face := BOTTOM;
+				if stop_mask_enabled (face) then
+					stopmask.bottom := get_stopmask_objects (device_non_electric, BOTTOM);
+				end if;
+			end if;
+
+			draw;		
+		end draw_stop_mask;
+
+
+		
 		
 	-- STENCIL / SOLDER CREAM MASK
--- 		procedure draw_stencil is 
--- 			use et_stencil;
--- 			use pac_stencil_lines;
--- 			use pac_stencil_arcs;
--- 			use pac_stencil_circles;
--- 			use pac_stencil_contours;
--- 			stencil : type_stencil_both_sides;
--- 			face : type_face := TOP;
--- 
--- 
--- 			procedure draw is
--- 
--- 				procedure query_line (c : in pac_stencil_lines.cursor) is
--- 					drawn : boolean := false;
--- 					line : type_stencil_line renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (line.width));
--- 					
--- 					draw_line (
--- 						line	=> to_line_fine (line),
--- 						width	=> line.width);
--- 					
--- 				end query_line;
--- 
--- 				
--- 				procedure query_arc (c : in pac_stencil_arcs.cursor) is
--- 					drawn : boolean := false;
--- 					arc : type_stencil_arc renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (arc.width));
--- 					
--- 					draw_arc (
--- 						arc		=> to_arc_fine (arc),
--- 						width	=> arc.width);
--- 					
--- 				end query_arc;
--- 
--- 				
--- 				procedure query_circle (c : in pac_stencil_circles.cursor) is
--- 					drawn : boolean := false;
--- 					circle : type_stencil_circle renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (circle.width));
--- 					
--- 					draw_circle (
--- 						circle	=> circle,
--- 						filled	=> NO,
--- 						width	=> circle.width);
--- 					
--- 				end query_circle;
--- 				
--- 				
--- 				procedure query_contour (c : pac_stencil_contours.cursor) is
--- 					drawn : boolean := false;
--- 				begin
--- 					draw_contour (
--- 						contour	=> element (c),
--- 						filled	=> YES,
--- 						width	=> zero,
--- 						drawn	=> drawn);
--- 					
--- 				end query_contour;
--- 				
--- 				
--- 			begin
--- 				-- top
--- 				set_color_stencil (context.cr, TOP, global_scale, brightness);
--- 				stencil.top.lines.iterate (query_line'access);
--- 				stencil.top.arcs.iterate (query_arc'access);
--- 				stencil.top.circles.iterate (query_circle'access);
--- 				stencil.top.contours.iterate (query_contour'access);
--- 
--- 				-- bottom
--- 				set_color_stencil (context.cr, BOTTOM, global_scale, brightness);
--- 				stencil.bottom.lines.iterate (query_line'access);
--- 				stencil.bottom.arcs.iterate (query_arc'access);
--- 				stencil.bottom.circles.iterate (query_circle'access);
--- 				stencil.bottom.contours.iterate (query_contour'access);
--- 			end draw;
--- 
--- 			
--- 		begin -- draw_stencil
--- 			if electric then
--- 				if stencil_enabled (face) then
--- 					stencil.top := get_stencil_objects (device_electric, TOP);
--- 				end if;
--- 
--- 				face := BOTTOM;
--- 				if stencil_enabled (face) then
--- 					stencil.bottom := get_stencil_objects (device_electric, BOTTOM);
--- 				end if;
--- 
--- 				
--- 			else -- non-electrical device
--- 				if stencil_enabled (face) then
--- 					stencil.top := get_stencil_objects (device_non_electric, TOP);
--- 				end if;
--- 
--- 				face := BOTTOM;
--- 				if stencil_enabled (face) then
--- 					stencil.bottom := get_stencil_objects (device_non_electric, BOTTOM);
--- 				end if;
--- 			end if;
--- 
--- 			draw;			
--- 		end draw_stencil;
 
+		procedure draw_stencil is 
+			use et_stencil;
+			use pac_stencil_lines;
+			use pac_stencil_arcs;
+			use pac_stencil_circles;
+			use pac_stencil_contours;
+			stencil : type_stencil_both_sides;
+			face : type_face := TOP;
+
+
+			procedure draw is
+
+				procedure query_line (c : in pac_stencil_lines.cursor) is
+					line : type_stencil_line renames element (c);
+				begin
+					-- The line has already been moved, flipped and rotated
+					-- to the final position. So we do not pass the 
+					-- position and rotation of the package.
+					-- Likewise there is no need to mirror anything here:
+					draw_line (
+						line		=> type_line (line),
+						width		=> line.width,
+						do_stroke	=> true);
+				end query_line;
+
+				
+				procedure query_arc (c : in pac_stencil_arcs.cursor) is
+					arc : type_stencil_arc renames element (c);
+				begin
+					-- See comments in procedure query_line.
+					draw_arc (
+						arc			=> type_arc (arc),
+						width		=> arc.width,
+						do_stroke	=> true);
+				end query_arc;
+
+				
+				procedure query_circle (c : in pac_stencil_circles.cursor) is
+					circle : type_stencil_circle renames element (c);
+				begin
+					-- See comments in procedure query_line.
+					draw_circle (
+						circle		=> type_circle (circle),
+						filled		=> NO,
+						width		=> circle.width,
+						do_stroke	=> true);
+				end query_circle;
+				
+				
+				procedure query_contour (c : pac_stencil_contours.cursor) is
+					contour : type_stencil_contour renames element (c);
+				begin
+					draw_contour (
+						contour	=> contour,
+						filled	=> YES,
+						width	=> zero);					
+				end query_contour;
+				
+				
+			begin
+				-- top
+				set_color_stencil (TOP, brightness);
+				stencil.top.lines.iterate (query_line'access);
+				stencil.top.arcs.iterate (query_arc'access);
+				stencil.top.circles.iterate (query_circle'access);
+				stencil.top.contours.iterate (query_contour'access);
+
+				-- bottom
+				set_color_stencil (BOTTOM, brightness);
+				stencil.bottom.lines.iterate (query_line'access);
+				stencil.bottom.arcs.iterate (query_arc'access);
+				stencil.bottom.circles.iterate (query_circle'access);
+				stencil.bottom.contours.iterate (query_contour'access);
+			end draw;
+
+			
+		begin -- draw_stencil
+			if electric then
+				if stencil_enabled (face) then
+					stencil.top := get_stencil_objects (device_electric, TOP);
+				end if;
+
+				face := BOTTOM;
+				if stencil_enabled (face) then
+					stencil.bottom := get_stencil_objects (device_electric, BOTTOM);
+				end if;
+
+				
+			else -- non-electrical device
+				if stencil_enabled (face) then
+					stencil.top := get_stencil_objects (device_non_electric, TOP);
+				end if;
+
+				face := BOTTOM;
+				if stencil_enabled (face) then
+					stencil.bottom := get_stencil_objects (device_non_electric, BOTTOM);
+				end if;
+			end if;
+
+			draw;			
+		end draw_stencil;
+
+
+		
 
 		-- Translates face (TOP/BOTTOM) to conductor layer 1/bottom_layer.
 		function face_to_layer (f : in type_face) return type_signal_layer is begin
@@ -755,227 +755,243 @@ is
 			end case;
 		end face_to_layer;
 
+
+
 		
 	-- ROUTE RESTRICT
--- 		procedure draw_route_restrict is 
--- 			use et_route_restrict;
--- 			use et_route_restrict.packages;
--- 			
--- 			use pac_route_restrict_lines;
--- 			use pac_route_restrict_arcs;
--- 			use pac_route_restrict_circles;
--- 			use pac_route_restrict_zones;
--- 			use pac_route_restrict_cutouts;
--- 		
--- 			objects : type_one_side;
--- 			layer : type_signal_layer;			
--- 
--- 			
--- 			procedure draw is
--- 
--- 				procedure query_line (c : in pac_route_restrict_lines.cursor) is
--- 					line : type_route_restrict_line renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (line.width));
--- 					draw_line (
--- 						line	=> to_line_fine (line),
--- 						width	=> line.width);
--- 				end query_line;
--- 
--- 				procedure query_arc (c : in pac_route_restrict_arcs.cursor) is
--- 					arc : type_route_restrict_arc renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (arc.width));
--- 					draw_arc (
--- 						arc		=> to_arc_fine (arc),
--- 						width	=> arc.width);
--- 				end query_arc;
--- 
--- 				procedure query_circle (c : in pac_route_restrict_circles.cursor) is
--- 					circle : type_route_restrict_circle renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (circle.width));
--- 					draw_circle (
--- 						circle	=> circle,
--- 						width	=> circle.width, 
--- 						filled	=> NO);
--- 				end query_circle;
--- 
--- 				procedure query_zone (c : in pac_route_restrict_zones.cursor) is
--- 					zone : type_route_restrict_zone renames element (c);
--- 					drawn : boolean := false;
--- 				begin
--- 					draw_contour (
--- 						contour	=> zone,
--- 						width	=> route_restrict_line_width, 
--- 						filled	=> YES,
--- 						drawn	=> drawn);
--- 				end query_zone;
--- 
--- 				procedure query_cutout (c : in pac_route_restrict_cutouts.cursor) is
--- 					cutout : type_route_restrict_cutout renames element (c);
--- 					drawn : boolean := false;
--- 				begin					
--- 					draw_contour (
--- 						contour	=> cutout,
--- 						width	=> route_restrict_line_width, 
--- 						filled	=> NO,
--- 						drawn	=> drawn);
--- 				end query_cutout;
--- 				
--- 			begin
--- 				objects.lines.iterate (query_line'access);
--- 				objects.arcs.iterate (query_arc'access);
--- 				objects.circles.iterate (query_circle'access);
--- 
--- 				set_line_width (context.cr, type_view_coordinate (route_restrict_line_width));
--- 				objects.zones.iterate (query_zone'access);
--- 				objects.cutouts.iterate (query_cutout'access);				
--- 			end draw;
--- 			
--- 			
--- 		begin -- draw_route_restrict
--- 			set_color_route_restrict (context.cr, brightness);
--- 			-- The color is in all restrict layers the same.
--- 
--- 			if electric then
--- 				layer := face_to_layer (TOP);
--- 				if route_restrict_layer_enabled (layer) then
--- 					objects := get_route_restrict_objects (device_electric, OUTER_TOP);
--- 					draw;
--- 				end if;
--- 
--- 				layer := face_to_layer (BOTTOM);
--- 				if route_restrict_layer_enabled (layer) then
--- 					objects := get_route_restrict_objects (device_electric, OUTER_BOTTOM);
--- 					draw;
--- 				end if;
--- 
--- 			else
--- 				layer := face_to_layer (TOP);
--- 				if route_restrict_layer_enabled (layer) then
--- 					objects := get_route_restrict_objects (device_non_electric, OUTER_TOP);
--- 					draw;
--- 				end if;
--- 
--- 				layer := face_to_layer (BOTTOM);
--- 				if route_restrict_layer_enabled (layer) then
--- 					objects := get_route_restrict_objects (device_non_electric, OUTER_BOTTOM);
--- 					draw;
--- 				end if;
--- 			end if;					
--- 		end draw_route_restrict;
+		
+		procedure draw_route_restrict is 
+			use et_route_restrict;
+			use et_route_restrict.packages;
+			
+			use pac_route_restrict_lines;
+			use pac_route_restrict_arcs;
+			use pac_route_restrict_circles;
+			use pac_route_restrict_zones;
+			use pac_route_restrict_cutouts;
+		
+			objects : type_one_side;
+			layer : type_signal_layer;			
+
+			
+			procedure draw is
+
+				procedure query_line (c : in pac_route_restrict_lines.cursor) is
+					line : type_route_restrict_line renames element (c);
+				begin
+					-- The line has already been moved, flipped and rotated
+					-- to the final position. So we do not pass the 
+					-- position and rotation of the package.
+					-- Likewise there is no need to mirror anything here:
+					draw_line (
+						line		=> type_line (line),
+						width		=> line.width,
+						do_stroke	=> true);
+				end query_line;
+
+				
+				procedure query_arc (c : in pac_route_restrict_arcs.cursor) is
+					arc : type_route_restrict_arc renames element (c);
+				begin
+					-- See comments in procedure query_line.
+					draw_arc (
+						arc			=> type_arc (arc),
+						width		=> arc.width,
+						do_stroke	=> true);
+				end query_arc;
+
+				
+				procedure query_circle (c : in pac_route_restrict_circles.cursor) is
+					circle : type_route_restrict_circle renames element (c);
+				begin
+					-- See comments in procedure query_line.
+					draw_circle (
+						circle		=> type_circle (circle),
+						filled		=> NO,
+						width		=> circle.width,
+						do_stroke	=> true);
+				end query_circle;
+
+				
+				procedure query_zone (c : in pac_route_restrict_zones.cursor) is
+					zone : type_route_restrict_zone renames element (c);
+				begin
+					draw_contour (
+						contour	=> zone,
+						filled	=> YES,
+						width	=> zero);
+				end query_zone;
+
+				
+				procedure query_cutout (c : in pac_route_restrict_cutouts.cursor) is
+					cutout : type_route_restrict_cutout renames element (c);
+				begin					
+					draw_contour (
+						contour	=> cutout,
+						filled	=> NO,
+						width	=> zero);
+				end query_cutout;
+
+				
+			begin
+				objects.lines.iterate (query_line'access);
+				objects.arcs.iterate (query_arc'access);
+				objects.circles.iterate (query_circle'access);
+
+				objects.zones.iterate (query_zone'access);
+				objects.cutouts.iterate (query_cutout'access);				
+			end draw;
+			
+			
+		begin -- draw_route_restrict
+			set_color_route_restrict (brightness);
+			-- The color is in all restrict layers the same.
+
+			if electric then
+				layer := face_to_layer (TOP);
+				if route_restrict_layer_enabled (layer) then
+					objects := get_route_restrict_objects (device_electric, OUTER_TOP);
+					draw;
+				end if;
+
+				layer := face_to_layer (BOTTOM);
+				if route_restrict_layer_enabled (layer) then
+					objects := get_route_restrict_objects (device_electric, OUTER_BOTTOM);
+					draw;
+				end if;
+
+			else
+				layer := face_to_layer (TOP);
+				if route_restrict_layer_enabled (layer) then
+					objects := get_route_restrict_objects (device_non_electric, OUTER_TOP);
+					draw;
+				end if;
+
+				layer := face_to_layer (BOTTOM);
+				if route_restrict_layer_enabled (layer) then
+					objects := get_route_restrict_objects (device_non_electric, OUTER_BOTTOM);
+					draw;
+				end if;
+			end if;					
+		end draw_route_restrict;
+
 
 		
 	-- VIA RESTRICT
--- 		procedure draw_via_restrict is 
--- 			use et_via_restrict;
--- 			use et_via_restrict.packages;
--- 
--- 			use pac_via_restrict_lines;			
--- 			use pac_via_restrict_arcs;
--- 			use pac_via_restrict_circles;
--- 			use pac_via_restrict_zones;
--- 			use pac_via_restrict_cutouts;
--- 			
--- 			objects : type_one_side;
--- 			layer : type_signal_layer;			
--- 
--- 			
--- 			procedure draw is
--- 
--- 				procedure query_line (c : in pac_via_restrict_lines.cursor) is
--- 					line : type_via_restrict_line renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (line.width));
--- 					draw_line (
--- 						line	=> to_line_fine (line),
--- 						width	=> line.width);
--- 				end query_line;
--- 
--- 				procedure query_arc (c : in pac_via_restrict_arcs.cursor) is
--- 					arc : type_via_restrict_arc renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (arc.width));
--- 					draw_arc (
--- 						arc		=> to_arc_fine (arc),
--- 						width	=> arc.width);
--- 				end query_arc;
--- 
--- 				procedure query_circle (c : in pac_via_restrict_circles.cursor) is
--- 					circle : type_via_restrict_circle renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (circle.width));
--- 					draw_circle (
--- 						circle	=> circle,
--- 						width	=> circle.width, 
--- 						filled	=> NO);
--- 				end query_circle;
--- 
--- 				procedure query_zone (c : in pac_via_restrict_zones.cursor) is
--- 					zone : type_via_restrict_zone renames element (c);
--- 					drawn : boolean := false;
--- 				begin
--- 					draw_contour (
--- 						contour	=> zone,
--- 						width	=> via_restrict_line_width, 
--- 						filled	=> YES,
--- 						drawn	=> drawn);
--- 				end query_zone;
--- 
--- 				procedure query_cutout (c : in pac_via_restrict_cutouts.cursor) is
--- 					cutout : type_via_restrict_cutout renames element (c);
--- 					drawn : boolean := false;
--- 				begin					
--- 					draw_contour (
--- 						contour	=> cutout,
--- 						width	=> via_restrict_line_width, 
--- 						filled	=> NO,
--- 						drawn	=> drawn);
--- 				end query_cutout;
--- 				
--- 			begin
--- 				objects.lines.iterate (query_line'access);
--- 				objects.arcs.iterate (query_arc'access);
--- 				objects.circles.iterate (query_circle'access);
--- 
--- 				set_line_width (context.cr, type_view_coordinate (via_restrict_line_width));
--- 				objects.zones.iterate (query_zone'access);
--- 				objects.cutouts.iterate (query_cutout'access);				
--- 			end draw;
--- 			
--- 			
--- 		begin -- draw_via_restrict
--- 			set_color_via_restrict (context.cr, brightness);
--- 			-- The color is in all restrict layers the same.
--- 			
--- 			if electric then
--- 				layer := face_to_layer (TOP);
--- 				if via_restrict_layer_enabled (layer) then
--- 					objects := get_via_restrict_objects (device_electric, OUTER_TOP);
--- 					draw;
--- 				end if;
--- 
--- 				layer := face_to_layer (BOTTOM);
--- 				if via_restrict_layer_enabled (layer) then
--- 					objects := get_via_restrict_objects (device_electric, OUTER_BOTTOM);
--- 					draw;
--- 				end if;
--- 
--- 			else
--- 				layer := face_to_layer (TOP);
--- 				if via_restrict_layer_enabled (layer) then
--- 					objects := get_via_restrict_objects (device_non_electric, OUTER_TOP);
--- 					draw;
--- 				end if;
--- 
--- 				layer := face_to_layer (BOTTOM);
--- 				if via_restrict_layer_enabled (layer) then
--- 					objects := get_via_restrict_objects (device_non_electric, OUTER_BOTTOM);
--- 					draw;
--- 				end if;
--- 			end if;					
--- 		end draw_via_restrict;
+		procedure draw_via_restrict is 
+			use et_via_restrict;
+			use et_via_restrict.packages;
+
+			use pac_via_restrict_lines;			
+			use pac_via_restrict_arcs;
+			use pac_via_restrict_circles;
+			use pac_via_restrict_zones;
+			use pac_via_restrict_cutouts;
+			
+			objects : type_one_side;
+			layer : type_signal_layer;			
+
+			
+			procedure draw is
+
+				procedure query_line (c : in pac_via_restrict_lines.cursor) is
+					line : type_via_restrict_line renames element (c);
+				begin
+					-- The line has already been moved, flipped and rotated
+					-- to the final position. So we do not pass the 
+					-- position and rotation of the package.
+					-- Likewise there is no need to mirror anything here:
+					draw_line (
+						line		=> type_line (line),
+						width		=> line.width,
+						do_stroke	=> true);
+				end query_line;
+
+				
+				procedure query_arc (c : in pac_via_restrict_arcs.cursor) is
+					arc : type_via_restrict_arc renames element (c);
+				begin
+					-- See comments in procedure query_line.
+					draw_arc (
+						arc			=> type_arc (arc),
+						width		=> arc.width,
+						do_stroke	=> true);
+				end query_arc;
+				
+
+				procedure query_circle (c : in pac_via_restrict_circles.cursor) is
+					circle : type_via_restrict_circle renames element (c);
+				begin
+					-- See comments in procedure query_line.
+					draw_circle (
+						circle		=> type_circle (circle),
+						filled		=> NO,
+						width		=> circle.width,
+						do_stroke	=> true);
+				end query_circle;
+				
+
+				procedure query_zone (c : in pac_via_restrict_zones.cursor) is
+					zone : type_via_restrict_zone renames element (c);
+				begin
+					draw_contour (
+						contour	=> zone,
+						filled	=> YES,
+						width	=> zero);
+				end query_zone;
+				
+
+				procedure query_cutout (c : in pac_via_restrict_cutouts.cursor) is
+					cutout : type_via_restrict_cutout renames element (c);
+				begin					
+					draw_contour (
+						contour	=> cutout,
+						filled	=> NO,
+						width	=> zero);
+				end query_cutout;
+				
+			begin
+				objects.lines.iterate (query_line'access);
+				objects.arcs.iterate (query_arc'access);
+				objects.circles.iterate (query_circle'access);
+
+				objects.zones.iterate (query_zone'access);
+				objects.cutouts.iterate (query_cutout'access);				
+			end draw;
+			
+			
+		begin -- draw_via_restrict
+			set_color_via_restrict (brightness);
+			-- The color is in all restrict layers the same.
+			
+			if electric then
+				layer := face_to_layer (TOP);
+				if via_restrict_layer_enabled (layer) then
+					objects := get_via_restrict_objects (device_electric, OUTER_TOP);
+					draw;
+				end if;
+
+				layer := face_to_layer (BOTTOM);
+				if via_restrict_layer_enabled (layer) then
+					objects := get_via_restrict_objects (device_electric, OUTER_BOTTOM);
+					draw;
+				end if;
+
+			else
+				layer := face_to_layer (TOP);
+				if via_restrict_layer_enabled (layer) then
+					objects := get_via_restrict_objects (device_non_electric, OUTER_TOP);
+					draw;
+				end if;
+
+				layer := face_to_layer (BOTTOM);
+				if via_restrict_layer_enabled (layer) then
+					objects := get_via_restrict_objects (device_non_electric, OUTER_BOTTOM);
+					draw;
+				end if;
+			end if;					
+		end draw_via_restrict;
+
 
 		
 		
