@@ -134,7 +134,6 @@ package et_canvas is
 	-- This is the multiplier that is used when the
 	-- global zoom factor is increased or decreased:
 	SM : constant type_zoom_factor := 1.2;
-
 	
 
 	-- Converts the given zoom factor to a string.
@@ -146,6 +145,11 @@ package et_canvas is
 		return string;
 
 
+	-- This procedure sets the zoom factor:
+	procedure set_zoom_factor (
+		s_in : in type_zoom_factor);
+
+		
 	-- This procedure increases the global zoom factor
 	-- by multiplying it by SM:
 	procedure increase_zoom_factor;

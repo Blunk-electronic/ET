@@ -60,6 +60,14 @@ package body et_canvas is
 	is begin
 		return type_zoom_factor'image (zf);
 	end to_string;
+
+
+	procedure set_zoom_factor (
+		s_in : in type_zoom_factor)
+	is begin
+		S := s_in;
+	end;
+
 	
 	
 	procedure increase_zoom_factor is begin
