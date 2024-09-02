@@ -409,6 +409,13 @@ package et_canvas is
 		direction : in type_zoom_direction);
 
 
+	-- Sets the cursor at the given position and zooms
+	-- according to the given zoom level:
+	procedure zoom_to (
+		target	: in type_vector_model;
+		level	: in type_zoom_factor);
+
+	
 	-- This procedure sets the global zoom factor S and translate-offset T
 	-- so that all objects of the given area fit into the scrolled window.
 	-- The zoom center is the top-left corner of the given area.
@@ -692,9 +699,14 @@ package et_canvas is
 	procedure create_canvas;
 
 
-	-- Shifts the canvas into the given direction
-	-- by the given distance:
-	procedure shift_canvas (
+	-- Shifts the scrolled window into the given direction
+	-- by the given distance.
+	-- If the scrolled window moves to the right, then the
+	-- drawing area on the right becomes visible. At the same
+	-- time drawing area on the left becomes invisible.
+	-- Likewise, this applies if the scrolled window is moved left,
+	-- down or up:
+	procedure shift_swin (
 		direction	: type_direction;
 		distance	: type_distance);
 

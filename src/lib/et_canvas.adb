@@ -407,6 +407,7 @@ package body et_canvas is
 	procedure zoom_on_cursor (
 		direction : in type_zoom_direction)
 	is
+		-- Save the old zoom factor:
 		S1 : constant type_zoom_factor := S;
 
 		-- The corners of the bounding-box on the canvas before 
@@ -455,6 +456,86 @@ package body et_canvas is
 		refresh;		
 	end zoom_on_cursor;
 
+
+
+	procedure zoom_to (
+		target	: in type_vector_model;
+		level	: in type_zoom_factor)
+	is
+		-- Save the old zoom factor:
+		S1 : constant type_zoom_factor := S;
+
+		-- The corners of the bounding-box on the canvas before 
+		-- and after zooming:
+		C1, C2 : type_bounding_box_corners;
+
+
+		P2 : type_vector_model;
+		
+		va : type_area;
+		
+		dx, dy : type_distance;
+		
+	begin
+		put_line ("zoom_to " & to_string (target) & " level " & to_string (level));
+
+		-- Set the new cursor position:
+		cursor.position := target;
+
+		
+		va := get_visible_area (canvas); -- CS already known ?
+
+
+		-- Compute the position of the new visible area (lower left corner).
+		-- The cursor is intended to sit right in the center
+		-- of the new visible area:
+		P2.x := cursor.position.x - va.width  * 0.5;
+		P2.y := cursor.position.y - va.height * 0.5;
+
+		-- Compute the displacement between new and old visible
+		-- area:
+		dx := P2.x - va.position.x;
+		dy := P2.y - va.position.y;
+
+
+		-- Move scrolled window horizontally:
+		if dx > 0.0 then
+			shift_swin (DIR_RIGHT, dx);
+		else
+			shift_swin (DIR_LEFT, abs (dx));
+		end if;
+
+
+		-- Move scrolled window vertically:
+		if dy > 0.0 then
+			shift_swin (DIR_UP, dy);
+		else
+			shift_swin (DIR_DOWN, abs (dy));
+		end if;
+
+		
+
+		-- Zoom on cursor position:
+		
+		C1 := get_bounding_box_corners;
+
+		S := level;
+
+		update_zoom_display;
+		
+		-- See comments in procedure zoom_on_cursor:
+		set_translation_for_zoom (S1, S, cursor.position);
+
+		C2 := get_bounding_box_corners;
+		update_scrollbar_limits (C1, C2);
+
+		
+		backup_visible_area (get_visible_area (canvas));
+		
+		refresh;		
+	end zoom_to;
+
+		
 
 	
 
@@ -1295,7 +1376,7 @@ package body et_canvas is
 
 
 
-	procedure shift_canvas (
+	procedure shift_swin (
 		direction	: type_direction;
 		distance	: type_distance)
 	is
@@ -1368,7 +1449,7 @@ package body et_canvas is
 		end case;
 
 		backup_scrollbar_settings;
-	end shift_canvas;
+	end shift_swin;
 
 
 
@@ -2187,14 +2268,14 @@ package body et_canvas is
 					-- then shift the canvas to the right:
 					if cursor.position.x > 
 						visible_area.position.x + visible_area.width then
-						shift_canvas (direction, grid.spacing.x);
+						shift_swin (direction, grid.spacing.x);
 					end if;
 					
 				when DIR_LEFT =>
 					-- If the cursor is left of the visible area,
 					-- then shift the canvas to the left:
 					if cursor.position.x < visible_area.position.x then
-						shift_canvas (direction, grid.spacing.x);
+						shift_swin (direction, grid.spacing.x);
 					end if;
 					
 				when DIR_UP =>
@@ -2202,14 +2283,14 @@ package body et_canvas is
 					-- then shift the canvas up:
 					if cursor.position.y > 
 						visible_area.position.y + visible_area.height then
-						shift_canvas (direction, grid.spacing.y);
+						shift_swin (direction, grid.spacing.y);
 					end if;
 
 				when DIR_DOWN =>
 					-- If the cursor is below of the visible area,
 					-- then shift the canvas down:
 					if cursor.position.y < visible_area.position.y then
-						shift_canvas (direction, grid.spacing.y);
+						shift_swin (direction, grid.spacing.y);
 					end if;
 
 			end case;
