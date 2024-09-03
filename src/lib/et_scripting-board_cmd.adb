@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -91,6 +91,7 @@ is
 	use pac_geometry_2;
 
 	use et_pcb_stack;
+	use et_canvas_board_2;
 	use et_canvas_board_2.pac_canvas;
 	use et_display.board;
 	use et_modes.board;
@@ -108,6 +109,9 @@ is
 		return field_count (single_cmd_status.cmd);
 	end;
 
+	function fields return count_type renames get_field_count;
+
+	
 	
 	procedure too_long is begin -- CS use it more often
 		command_too_long (single_cmd_status.cmd, get_field_count - 1);
@@ -121,6 +125,99 @@ is
 			raise exception_command_incomplete with "command not complete";
 		end if;
 	end command_incomplete;
+
+
+	
+	-- This procedure parses a zoom related command.
+	-- If the runmode is non-graphical (like headless) then
+	-- nothing will be done here:
+	procedure parse_zoom_command is
+
+		
+		-- Zooms on the current cursor position:
+		procedure set_zoom is 
+			l : type_zoom_factor := to_zoom_factor (f (5));
+		begin
+			log (text => "set zoom factor " & to_string (l),
+				level => log_threshold + 1);					
+
+			zoom_to (get_cursor_position, l);
+		end set_zoom;
+
+
+		-- Zooms on a given point and places the cursor
+		-- at the given point:
+		procedure zoom_to_point is
+			c : type_vector_model := type_vector_model (set (
+				x => to_distance (f (5)),
+				y => to_distance (f (6))));
+
+			l : type_zoom_factor := to_zoom_factor (f (7));
+		begin
+			log (text => "zoom to point " & to_string (c) 
+				& " zoom factor" & to_string (l),
+				level => log_threshold + 1);
+					
+			zoom_to (c, l);
+		end zoom_to_point;
+		
+		
+	begin
+		log (text => "parse zoom command ...", level => log_threshold + 1);
+
+		-- Zoom commands can only be executed in a graphical runmode:
+		case runmode is
+			when MODE_MODULE =>
+
+				case noun is
+					when NOUN_FIT => -- zoom fit
+						case fields is
+							when 4 => 
+								log (text => "zoom to fit", level => log_threshold + 1);
+								zoom_to_fit_all;
+
+							when 5 .. count_type'last => too_long;
+
+							when others => command_incomplete;
+						end case;
+
+						
+					when NOUN_LEVEL => 
+						case fields is
+							when 5 =>  -- zoom level 3
+								-- CS rename command to "zoom factor 3"
+								set_zoom;
+
+							when 6 .. count_type'last => too_long;
+
+							when others => command_incomplete;
+						end case;
+
+						
+					when NOUN_CENTER =>
+						case fields is
+							when 7 =>  -- zoom center 10 10 0.5 
+								-- CS rename command to "zoom cursor 10 10 0.5"
+								-- or similar.
+								zoom_to_point;
+
+							when 8 .. count_type'last => too_long;
+
+							when others => command_incomplete;
+						end case;
+
+						
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+
+				
+			when others =>
+					skipped_in_this_runmode (log_threshold + 1);
+					
+		end case;				
+	end parse_zoom_command;
+
 
 	
 	-- Enables/disables the grid "layer". If status is empty,
@@ -2038,39 +2135,6 @@ is
 	end add_layer;
 
 	
-	procedure zoom_center is -- GUI related
-		-- Build the center point:
-		c : type_vector_model := type_vector_model (set (
-				x => to_distance (dd => f (5)),
-				y => to_distance (dd => f (6))));
-	begin
-		case runmode is
-			when MODE_MODULE =>
-
-				log (text => "center on point", level => log_threshold + 1);
-				-- CS center_on (canvas, c);
-
-			when others =>
-				skipped_in_this_runmode (log_threshold + 1);
-				
-		end case;
-	end zoom_center;
-
-	
-	procedure set_scale (scale : in string) is  -- GUI related -- CS should be percent of scale_to_fit
-		use glib;
-		s : gdouble := gdouble'value (scale);
-	begin
-		case runmode is
-			when MODE_MODULE =>
-				log (text => "zoom level", level => log_threshold + 1);
-				-- CS set_scale (s);
-
-			when others =>
-				skipped_in_this_runmode (log_threshold + 1);
-				
-		end case;
-	end set_scale;
 
 	
 	-- Positions the cursor absolute or relative:
@@ -2829,47 +2893,7 @@ is
 
 				
 			when VERB_ZOOM => -- GUI related
-				case noun is
-					when NOUN_FIT => -- zoom fit
-						case get_field_count is
-							when 4 => 
-								log (text => "zoom to fit", level => log_threshold + 1);
-								-- CS scale_to_fit (canvas);
-
-							when 5 .. count_type'last => too_long;
-
-							when others => command_incomplete;
-						end case;
-
-					when NOUN_LEVEL => -- zoom level 3
-						case get_field_count is
-							when 4 => 
-								null;
-								-- CS set_scale (f (5));
-
-							when 6 .. count_type'last => too_long;
-
-							when others => command_incomplete;
-						end case;
-						
-					when NOUN_CENTER => -- zoom center 10 10
-						case get_field_count is
-							when 6 =>  -- zoom center 10 10
-								null;
-								-- zoom_center;
-
-							when 7 =>  -- zoom center 10 10 0.5
-								null;
-								-- CS zoom_center;
-								-- CS set_scale (f (7));
-
-							when 8 .. count_type'last => too_long;
-
-							when others => command_incomplete;
-						end case;
-						
-					when others => invalid_noun (to_string (noun));
-				end case;
+				parse_zoom_command;
 				
 		end case;
 
