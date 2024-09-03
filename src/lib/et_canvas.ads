@@ -410,7 +410,8 @@ package et_canvas is
 
 
 	-- Sets the cursor at the given position and zooms
-	-- according to the given zoom level:
+	-- according to the given zoom level.
+	-- Refreshes the canvas.
 	procedure zoom_to (
 		target	: in type_vector_model;
 		level	: in type_zoom_factor);

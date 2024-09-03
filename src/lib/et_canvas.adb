@@ -482,6 +482,8 @@ package body et_canvas is
 		-- Set the cursor at the requested place:
 		cursor.position := target;
 
+		update_cursor_coordinates;
+		
 		
 		-- MOVE THE SCROLLED WINDOW
 		---------------------------
