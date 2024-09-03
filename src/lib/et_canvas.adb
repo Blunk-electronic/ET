@@ -469,36 +469,39 @@ package body et_canvas is
 		-- and after zooming:
 		C1, C2 : type_bounding_box_corners;
 
-
+		-- The lower-left corner of the new visible area:
 		P2 : type_vector_model;
-		
-		va : type_area;
-		
+
+		-- The displacement from current visible
+		-- area to new visible area:
 		dx, dy : type_distance;
 		
 	begin
 		put_line ("zoom_to " & to_string (target) & " level " & to_string (level));
 
-		-- Set the new cursor position:
+		-- Set the cursor at the requested place:
 		cursor.position := target;
 
 		
-		va := get_visible_area (canvas); -- CS already known ?
-
-
-		-- Compute the position of the new visible area (lower left corner).
+		-- MOVE THE SCROLLED WINDOW
+		---------------------------
+		
+		-- Compute the position of the new visible 
+		-- area (lower left corner).
 		-- The cursor is intended to sit right in the center
-		-- of the new visible area:
-		P2.x := cursor.position.x - va.width  * 0.5;
-		P2.y := cursor.position.y - va.height * 0.5;
+		-- of the new visible area.
+		-- It is assumed that the width and height of the area
+		-- remains constant.
+		P2.x := cursor.position.x - visible_area.width  * 0.5;
+		P2.y := cursor.position.y - visible_area.height * 0.5;
 
-		-- Compute the displacement between new and old visible
-		-- area:
-		dx := P2.x - va.position.x;
-		dy := P2.y - va.position.y;
+		-- Compute the displacement between new and 
+		-- current visible area:
+		dx := P2.x - visible_area.position.x;
+		dy := P2.y - visible_area.position.y;
 
 
-		-- Move scrolled window horizontally:
+		-- Move the scrolled window horizontally:
 		if dx > 0.0 then
 			shift_swin (DIR_RIGHT, dx);
 		else
@@ -506,16 +509,20 @@ package body et_canvas is
 		end if;
 
 
-		-- Move scrolled window vertically:
+		-- Move the scrolled window vertically:
 		if dy > 0.0 then
 			shift_swin (DIR_UP, dy);
 		else
 			shift_swin (DIR_DOWN, abs (dy));
 		end if;
-
 		
 
-		-- Zoom on cursor position:
+		
+		-- ZOOM ON CURSOR POSITION
+		--------------------------
+		
+		-- For details, see comments in 
+		-- procedure zoom_on_cursor.
 		
 		C1 := get_bounding_box_corners;
 
@@ -523,12 +530,10 @@ package body et_canvas is
 
 		update_zoom_display;
 		
-		-- See comments in procedure zoom_on_cursor:
 		set_translation_for_zoom (S1, S, cursor.position);
 
 		C2 := get_bounding_box_corners;
 		update_scrollbar_limits (C1, C2);
-
 		
 		backup_visible_area (get_visible_area (canvas));
 		
