@@ -100,39 +100,46 @@ is
 	end command_incomplete;
 
 	
-	procedure zoom_center is -- GUI related
-		-- Build the center point:
+
+	procedure zoom_to_point is
 		c : type_vector_model := type_vector_model (set (
-				x => to_distance (f (5)),
-				y => to_distance (f (6))));
+			x => to_distance (f (5)),
+			y => to_distance (f (6))));
+
+		l : type_zoom_factor := type_zoom_factor'value (f (7));
 	begin
 		case runmode is
 			when MODE_MODULE =>
-
-				log (text => "center on point", level => log_threshold + 1);
-			-- CS center_on (canvas, c);
+				log (text => "zoom to point " & to_string (c) 
+					& " zoom factor" & to_string (l),
+					level => log_threshold + 1);
+				
+				zoom_to (c, l);
 
 			when others =>
 				skipped_in_this_runmode (log_threshold + 1);
 				
 		end case;
-	end zoom_center;
-
+	end zoom_to_point;
 	
-	procedure set_scale (scale : in string) is  -- GUI related -- CS should be percent of scale_to_fit
-		use glib;
-		s : gdouble := gdouble'value (scale);
+
+	procedure set_zoom is 
+		l : type_zoom_factor := type_zoom_factor'value (f (5));
 	begin
 		case runmode is
 			when MODE_MODULE =>
-				log (text => "zoom level", level => log_threshold + 1);
-			-- CS set_scale (s);
+				log (text => "set zoom factor " 
+					 & to_string (l),
+					level => log_threshold + 1);
+				
+
+				zoom_to (get_cursor_position, l);
 
 			when others =>
 				skipped_in_this_runmode (log_threshold + 1);
 				
 		end case;
-	end set_scale;
+	end set_zoom;
 
 	
 	-- Positions the cursor absolute or relative:
@@ -2171,36 +2178,38 @@ is
 						case fields is
 							when 4 => 
 								log (text => "zoom to fit", level => log_threshold + 1);
-								-- CS scale_to_fit (canvas);
+								zoom_to_fit_all;
 
 							when 5 .. count_type'last => too_long;
 
 							when others => command_incomplete;
 						end case;
 
-					when NOUN_LEVEL => -- zoom level 3
+						
+					when NOUN_LEVEL => 
 						case fields is
-							when 5 => 
-								set_scale (f (5));
+							when 5 =>  -- zoom level 3
+								-- CS rename command to "zoom factor 3"
+								set_zoom;
 
 							when 6 .. count_type'last => too_long;
 
 							when others => command_incomplete;
 						end case;
-						
-					when NOUN_CENTER => -- zoom center 10 10
-						case fields is
-							when 6 =>  -- zoom center 10 10
-								zoom_center;
 
-							when 7 =>  -- zoom center 10 10 0.5
-								zoom_center;
-								set_scale (f (7));
+						
+					when NOUN_CENTER =>
+						case fields is
+							when 7 =>  -- zoom center 10 10 0.5 
+								-- CS rename command to "zoom cursor 10 10 0.5"
+								-- or similar.
+								zoom_to_point;
 
 							when 8 .. count_type'last => too_long;
 
 							when others => command_incomplete;
 						end case;
+
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
