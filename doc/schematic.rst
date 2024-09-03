@@ -385,6 +385,8 @@ Commands and Verb-Noun key sequences
 
 #. Zoom to fit
 
+	Zooms to all objects on the canvas.
+
 	.. code-block::
 
 		zoom fit
@@ -394,6 +396,8 @@ Commands and Verb-Noun key sequences
 	
 #. Zoom by level
 
+	Sets the zoom factor.
+	
 	.. code-block::
 
 		zoom level 10
@@ -403,9 +407,11 @@ Commands and Verb-Noun key sequences
 	
 #. Zoom at
 
+	Places the cursor at the given position and zooms on the cursor.
+	
 	.. code-block::
 
-		zoom center 140 78 [level]
+		zoom center 140 78 10
 
 	|VNS| |NI|
 	
