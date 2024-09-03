@@ -62,6 +62,18 @@ package body et_canvas is
 	end to_string;
 
 
+
+	function to_zoom_factor (
+		zf : in string)
+		return type_zoom_factor
+	is begin
+		return type_zoom_factor'value (zf);
+
+		-- CS exception handler if zf invald
+	end to_zoom_factor;
+
+	
+
 	procedure set_zoom_factor (
 		s_in : in type_zoom_factor)
 	is begin

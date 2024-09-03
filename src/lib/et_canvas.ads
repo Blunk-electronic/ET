@@ -145,6 +145,13 @@ package et_canvas is
 		return string;
 
 
+	-- Converts a string like "5.6" to a zoom factor:
+	function to_zoom_factor (
+		zf : in string)
+		return type_zoom_factor;
+
+	
+		
 	-- This procedure sets the zoom factor:
 	procedure set_zoom_factor (
 		s_in : in type_zoom_factor);
