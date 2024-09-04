@@ -6,20 +6,21 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                -- 
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -76,18 +77,21 @@ is
 	here : constant string := ".";
 
 	
-	function f (place : in count_type) return string is begin
+	-- This function is a shortcut to get a single field
+	-- from the current command:
+	function f (place : in type_field_count) return string is begin
 		return get_field (single_cmd_status.cmd, place);
 	end;
 
+
+	-- The number of fields of the given command:
+	field_count : type_field_count;
 	
-	function fields return count_type is begin
-		return field_count (single_cmd_status.cmd);
-	end;
 
-
-	procedure too_long is begin -- CS use it more often
-		command_too_long (single_cmd_status.cmd, fields - 1);
+	-- This procedure is a shortcut. Call it in case
+	-- the given command is too long:
+	procedure too_long is begin
+		command_too_long (single_cmd_status.cmd, field_count - 1);
 	end;
 
 	
@@ -144,37 +148,37 @@ is
 
 				case noun is
 					when NOUN_FIT => -- zoom fit
-						case fields is
+						case field_count is
 							when 4 => 
 								log (text => "zoom to fit", level => log_threshold + 1);
 								zoom_to_fit_all;
 
-							when 5 .. count_type'last => too_long;
+							when 5 .. type_field_count'last => too_long;
 
 							when others => command_incomplete;
 						end case;
 
 						
 					when NOUN_LEVEL => 
-						case fields is
+						case field_count is
 							when 5 =>  -- zoom level 3
 								-- CS rename command to "zoom factor 3"
 								set_zoom;
 
-							when 6 .. count_type'last => too_long;
+							when 6 .. type_field_count'last => too_long;
 
 							when others => command_incomplete;
 						end case;
 
 						
 					when NOUN_CENTER =>
-						case fields is
+						case field_count is
 							when 7 =>  -- zoom center 10 10 0.5 
 								-- CS rename command to "zoom cursor 10 10 0.5"
 								-- or similar.
 								zoom_to_point;
 
-							when 8 .. count_type'last => too_long;
+							when 8 .. type_field_count'last => too_long;
 
 							when others => command_incomplete;
 						end case;
@@ -668,7 +672,7 @@ is
 			when VERB_ADD =>
 				case noun is
 					when NOUN_DEVICE =>
-						case fields is
+						case field_count is
 							when 9 =>
 								-- If a virtual device is added, then no variant is required.
 								add_device (
@@ -707,13 +711,14 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 11 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 
+						
 					when NOUN_NETCHANGER =>
-						case fields is
+						case field_count is
 							when 8 =>
 								add_netchanger (
 									module_name 	=> module,
@@ -730,13 +735,14 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 9 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 
+						
 					when NOUN_PORT =>
-						case fields is
+						case field_count is
 							when 9 =>
 								add_port (
 									module_name 	=> module,
@@ -751,13 +757,13 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 10 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 						
 					when NOUN_SUBMODULE =>
-						case fields is
+						case field_count is
 							when 11 =>
 								add_submodule (
 									module_name 	=> module, -- parent module (where the submodule is to be inserted)
@@ -779,7 +785,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 12 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 12 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
@@ -791,14 +797,14 @@ is
 			when VERB_BUILD =>
 				case noun is
 					when NOUN_SUBMODULES_TREE =>
-						case fields is
+						case field_count is
 							when 4 =>
 								build_submodules_tree (
 									module_name 	=> module,
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 5 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 5 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
@@ -810,13 +816,13 @@ is
 			when VERB_CHECK =>
 				case noun is
 					when NOUN_INTEGRITY =>
-						case fields is
+						case field_count is
 							when 4 =>
 								check_integrity (
 									module_name 	=> module,
 									log_threshold	=> log_threshold + 1);
 
-							when 5 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 5 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
@@ -828,7 +834,7 @@ is
 			when VERB_COPY =>
 				case noun is
 					when NOUN_DEVICE =>
-						case fields is
+						case field_count is
 							when 9 =>
 								copy_device (
 									module_name 	=> module,
@@ -846,14 +852,14 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 10 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 
 						
 					when NOUN_SUBMODULE =>
-						case fields is
+						case field_count is
 							when 9 =>
 								copy_submodule (
 									module_name 	=> module, -- parent module (where the submodule is to be copied)
@@ -871,7 +877,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 10 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
@@ -883,7 +889,7 @@ is
 			when VERB_CREATE =>
 				case noun is
 					when NOUN_VARIANT => 
-						case fields is
+						case field_count is
 							when 5 =>
 								create_assembly_variant
 									(
@@ -891,15 +897,15 @@ is
 									variant_name	=> to_variant (f (5)),
 									log_threshold	=> log_threshold + 1);
 								
-							when 6 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 6 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 
 					when NOUN_MODULE =>
-						case fields is
+						case field_count is
 							when 5 => create_module (to_module_name (f (5)));
-							when 6 .. count_type'last => too_long;
+							when 6 .. type_field_count'last => too_long;
 							when others => command_incomplete;
 						end case;
 						
@@ -910,21 +916,21 @@ is
 			when VERB_DELETE =>
 				case noun is
 					when NOUN_DEVICE =>
-						case fields is
+						case field_count is
 							when 5 =>
 								delete_device (
 									module_name 	=> module,
 									device_name		=> to_device_name (f (5)),
 									log_threshold	=> log_threshold + 1);
 
-							when 6 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 6 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
 
 						
 					when NOUN_LABEL =>
-						case fields is
+						case field_count is
 							when 7 =>
 								delete_net_label
 									(
@@ -938,23 +944,23 @@ is
 									
 									log_threshold	=> log_threshold + 1);
 								
-							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 8 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 
 						
 					when NOUN_MODULE =>
-						case fields is
+						case field_count is
 							when 4 => delete_active_module;								
 							when 5 => delete_explicit_module (to_module_name (f (5)));
-							when 6 .. count_type'last => too_long;								
+							when 6 .. type_field_count'last => too_long;								
 							when others => command_incomplete;
 						end case;
 
 						
 					when NOUN_NET =>
-						case fields is
+						case field_count is
 
 							-- If the statement has only 6 fields, the net scope is EVERYWHERE.
 							-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
@@ -1000,14 +1006,14 @@ is
 									log_threshold		=> log_threshold + 1);
 
 								
-							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 9 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 
 						
 					when NOUN_NETCHANGER =>
-						case fields is
+						case field_count is
 							when 5 =>
 								delete_netchanger
 									(
@@ -1015,13 +1021,13 @@ is
 									index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
 									log_threshold		=> log_threshold + 1);
 
-							when 6 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 6 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 
 					when NOUN_PORT =>
-						case fields is
+						case field_count is
 							when 6 =>
 								delete_port
 									(
@@ -1031,14 +1037,14 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 7 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 
 						
 					when NOUN_SEGMENT =>
-						case fields is
+						case field_count is
 							when 8 =>
 								delete_segment
 									(
@@ -1051,14 +1057,14 @@ is
 														sheet => to_sheet (f (6))), -- sheet number
 									log_threshold	=> log_threshold + 1);
 
-							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 9 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
 
 						
 					when NOUN_SUBMODULE =>
-						case fields is
+						case field_count is
 							when 5 =>
 								delete_submodule (
 									module_name 	=> module, -- parent module (where the submodule is to be deleted)
@@ -1066,7 +1072,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 6 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 6 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
@@ -1075,7 +1081,7 @@ is
 						NULL; -- CS
 						
 					when NOUN_UNIT =>
-						case fields is
+						case field_count is
 							when 6 =>
 								delete_unit (
 									module_name 	=> module,
@@ -1083,13 +1089,13 @@ is
 									unit_name		=> to_unit_name (f (6)),
 									log_threshold	=> log_threshold + 1);
 
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 7 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
 						
 					when NOUN_VARIANT => 
-						case fields is
+						case field_count is
 							when 5 =>
 								delete_assembly_variant
 									(
@@ -1097,7 +1103,7 @@ is
 									variant_name	=> to_variant (f (5)),
 									log_threshold	=> log_threshold + 1);
 								
-							when 6 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 6 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
@@ -1108,7 +1114,7 @@ is
 			when VERB_DESCRIBE =>
 				case noun is
 					when NOUN_VARIANT => 
-						case fields is
+						case field_count is
 							when 6 =>
 								describe_assembly_variant
 									(
@@ -1117,7 +1123,7 @@ is
 									description		=> et_assembly_variants.to_unbounded_string (f (6)), -- "the cheap version"
 									log_threshold	=> log_threshold + 1);
 								
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 7 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
@@ -1132,10 +1138,10 @@ is
 						| NOUN_NAMES | NOUN_VALUES | NOUN_PURPOSES
 						| NOUN_TEXTS | NOUN_GRID
 						=>
-						case fields is
+						case field_count is
 							when 4 => display (noun); -- if status is omitted
 							when 5 => display (noun, f (5));
-							when 6 .. count_type'last => too_long; 
+							when 6 .. type_field_count'last => too_long; 
 							when others => command_incomplete;
 						end case;
 
@@ -1145,7 +1151,7 @@ is
 			when VERB_DRAG =>
 				case noun is
 					when NOUN_UNIT =>
-						case fields is
+						case field_count is
 							when 9 =>
 								drag_unit
 									(
@@ -1159,13 +1165,13 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 10 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
 								
 					when NOUN_NETCHANGER =>
-						case fields is
+						case field_count is
 							when 8 =>
 								drag_netchanger (
 									module_name 	=> module,
@@ -1177,13 +1183,13 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 9 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 
 					when NOUN_PORT =>
-						case fields is
+						case field_count is
 							when 9 =>
 								drag_port (
 									module_name 	=> module,
@@ -1196,13 +1202,13 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 10 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 						
 					when NOUN_SEGMENT =>
-						case fields is
+						case field_count is
 							when 11 =>
 								drag_segment
 									(
@@ -1222,13 +1228,13 @@ is
 									
 									log_threshold	=> log_threshold + 1);
 
-							when 12 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 12 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
 						
 					when NOUN_SUBMODULE =>
-						case fields is
+						case field_count is
 							when 8 =>
 								drag_submodule (
 									module_name 	=> module,
@@ -1240,7 +1246,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 9 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
@@ -1252,7 +1258,7 @@ is
 			when VERB_DRAW =>
 				case noun is
 					when NOUN_NET =>
-						case fields is
+						case field_count is
 							when 10 =>
 								insert_net
 									(
@@ -1270,7 +1276,7 @@ is
 									
 									log_threshold	=> log_threshold + 1);
 
-							when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 11 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
@@ -1282,13 +1288,13 @@ is
 			when VERB_EXECUTE =>
 				case noun is
 					when NOUN_SCRIPT =>
-						case fields is
+						case field_count is
 							when 5 => 
 								execute_nested_script (
 									file			=> f (5),
 									log_threshold	=> log_threshold + 1);
 
-							when 6 .. count_type'last => too_long;								
+							when 6 .. type_field_count'last => too_long;								
 							when others => command_incomplete;
 						end case;
 							
@@ -1303,7 +1309,7 @@ is
 			when VERB_INVOKE =>
 				case noun is
 					when NOUN_UNIT =>
-						case fields is
+						case field_count is
 							when 10 =>
 								invoke_unit (
 									module_name		=> module,
@@ -1322,7 +1328,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 11 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
@@ -1335,7 +1341,7 @@ is
 				case noun is
 					when NOUN_NAME =>
 						-- schematic led_driver move name R1 1 absolute 10 15
-						case fields is
+						case field_count is
 							when 9 =>
 								move_unit_placeholder
 									(
@@ -1350,13 +1356,13 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 10 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
 						
 					when NOUN_VALUE =>
-						case fields is
+						case field_count is
 							when 9 =>
 								move_unit_placeholder
 									(
@@ -1371,13 +1377,13 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 10 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
 						
 					when NOUN_PORT =>
-						case fields is
+						case field_count is
 							when 9 =>
 								move_port (
 									module_name 	=> module,
@@ -1390,13 +1396,13 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 10 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 								
 					when NOUN_PURPOSE =>
-						case fields is
+						case field_count is
 							when 9 =>
 								move_unit_placeholder
 									(
@@ -1411,13 +1417,13 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 10 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
 
 					when NOUN_NETCHANGER =>
-						case fields is
+						case field_count is
 							when 9 =>
 								move_netchanger
 									(
@@ -1432,7 +1438,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 10 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
@@ -1441,7 +1447,7 @@ is
 						NULL; -- CS
 
 					when NOUN_SUBMODULE =>
-						case fields is
+						case field_count is
 							when 9 =>
 								move_submodule (
 									module_name 	=> module,
@@ -1454,13 +1460,13 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 10 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 						
 					when NOUN_UNIT =>
-						case fields is
+						case field_count is
 							when 10 =>
 								move_unit
 									(
@@ -1476,7 +1482,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 11 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
@@ -1487,27 +1493,27 @@ is
 			when VERB_MAKE =>
 				case noun is
 					when NOUN_BOM => 
-						case fields is
+						case field_count is
 							when 4 =>
 								make_boms -- a BOM for each variant
 									(
 									module_name 	=> module,
 									log_threshold	=> log_threshold + 1);
 
-							when 5 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 5 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 
 					when NOUN_NETLISTS => 
-						case fields is
+						case field_count is
 							when 4 =>
 								make_netlists 
 									(
 									module_name 	=> module,
 									log_threshold	=> log_threshold + 1);
 
-							when 5 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 5 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
@@ -1529,7 +1535,7 @@ is
 							-- validate partcode
 							partcode := to_partcode (f (8));
 							
-							case fields is
+							case field_count is
 								when 8 =>
 									-- set value and partcode
 									mount_device
@@ -1555,7 +1561,7 @@ is
 										purpose			=> purpose, -- brightness_control
 										log_threshold	=> log_threshold + 1);
 									
-								when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+								when 10 .. type_field_count'last => too_long;
 									
 								when others => command_incomplete;
 							end case;
@@ -1563,7 +1569,7 @@ is
 						end; -- declare
 
 					when NOUN_SUBMODULE =>
-						case fields is
+						case field_count is
 							when 7 =>
 								mount_submodule
 									(
@@ -1573,7 +1579,7 @@ is
 									variant_submod	=> to_variant (f (7)), -- fixed_frequency
 									log_threshold	=> log_threshold + 1);
 
-							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 8 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 
@@ -1586,7 +1592,7 @@ is
 			when VERB_PLACE =>
 				case noun is
 					when NOUN_JUNCTION =>
-						case fields is
+						case field_count is
 							when 7 =>
 								place_junction 
 									(
@@ -1603,14 +1609,14 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 8 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
 
 						
 					when NOUN_LABEL =>
-						case fields is
+						case field_count is
 							when 10 =>
 								-- SIMPLE LABEL
 								place_net_label
@@ -1657,7 +1663,7 @@ is
 
 									log_threshold		=> log_threshold + 1);
 								
-							when 11 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 11 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete; -- incl. field count of 9
 						end case;
@@ -1669,9 +1675,9 @@ is
 			when VERB_POSITION => -- GUI related
 				case noun is 
 					when NOUN_CURSOR =>
-						case fields is
+						case field_count is
 							when 7 => position_cursor; -- position cursor absolute/relative 25 30
-							when 8 .. count_type'last => too_long;
+							when 8 .. type_field_count'last => too_long;
 							when others => command_incomplete;
 						end case;
 
@@ -1682,7 +1688,7 @@ is
 			when VERB_REMOVE =>
 				case noun is
 					when NOUN_DEVICE => 
-						case fields is
+						case field_count is
 							when 6 =>
 								remove_device -- from assembly variant
 									(
@@ -1691,13 +1697,13 @@ is
 									device			=> to_device_name (f (6)), -- R1
 									log_threshold	=> log_threshold + 1);
 
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 7 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 
 					when NOUN_SUBMODULE =>
-						case fields is
+						case field_count is
 							when 6 =>
 								remove_submodule
 									(
@@ -1706,7 +1712,7 @@ is
 									instance		=> et_general.to_instance_name (f (6)), -- OSC1
 									log_threshold	=> log_threshold + 1);
 
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 7 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
@@ -1717,7 +1723,7 @@ is
 			when VERB_RENAME =>
 				case noun is
 					when NOUN_DEVICE =>
-						case fields is
+						case field_count is
 							when 6 =>
 								rename_device
 									(
@@ -1727,13 +1733,13 @@ is
 									log_threshold		=> log_threshold + 1
 									);
 
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 7 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case; 
 								
 					when NOUN_SUBMODULE =>
-						case fields is
+						case field_count is
 							when 6 =>
 								rename_submodule
 									(
@@ -1742,13 +1748,13 @@ is
 									instance_new	=> et_general.to_instance_name (f (6)), -- OSC2
 									log_threshold	=> log_threshold + 1);
 
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 7 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 						
 					when NOUN_NET =>
-						case fields is
+						case field_count is
 
 							-- If the statement has only 6 fields, the net scope is EVERYWHERE.
 							-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
@@ -1797,7 +1803,7 @@ is
 									log_threshold		=> log_threshold + 1);
 
 								
-							when 10 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 10 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
@@ -1809,7 +1815,7 @@ is
 			when VERB_RENUMBER =>
 				case noun is
 					when NOUN_DEVICES =>
-						case fields is
+						case field_count is
 							when 5 =>
 								renumber_devices
 									(
@@ -1818,7 +1824,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 6 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 6 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
@@ -1833,7 +1839,7 @@ is
 						NULL; -- CS
 
 					when NOUN_UNIT =>
-						case fields is
+						case field_count is
 							when 8 =>
 								rotate_unit
 									(
@@ -1845,13 +1851,13 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 9 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 9 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
 								
 					when NOUN_NAME =>
-						case fields is 
+						case field_count is 
 							when 7 =>
 								rotate_unit_placeholder
 									(
@@ -1863,13 +1869,13 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 8 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
 								
 					when NOUN_VALUE =>
-						case fields is
+						case field_count is
 							when 7 =>
 								rotate_unit_placeholder
 									(
@@ -1881,13 +1887,13 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 8 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
 								
 					when NOUN_PURPOSE =>
-						case fields is
+						case field_count is
 							when 7 =>
 								rotate_unit_placeholder
 									(
@@ -1899,13 +1905,13 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 8 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
 								
 					when NOUN_NETCHANGER =>
-						case fields is
+						case field_count is
 							when 7 =>
 								rotate_netchanger (
 									module_name 	=> module,
@@ -1915,7 +1921,7 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 8 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 8 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
@@ -1927,7 +1933,7 @@ is
 			when VERB_SAVE =>
 				case noun is
 					when NOUN_MODULE =>
-						case fields is
+						case field_count is
 							when 4 =>
 								-- Save the module with its own name:
 								save_module (
@@ -1941,7 +1947,7 @@ is
 									save_as_name	=> to_module_name (f (5)), -- led_driver_test
 									log_threshold	=> log_threshold + 1);
 								
-							when 6 .. count_type'last => too_long;
+							when 6 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;			
@@ -1953,7 +1959,7 @@ is
 			when VERB_SET =>
 				case noun is
 					when NOUN_CLASS =>
-						case fields is
+						case field_count is
 							when 6 =>
 								-- schematic led_driver set class GND pwr
 								set_net_class (
@@ -1962,13 +1968,13 @@ is
 									net_class		=> et_pcb.to_net_class_name (f (6)),
 									log_threshold	=> log_threshold + 1);
 								
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 7 .. type_field_count'last => too_long;
 							when others => command_incomplete;
 						end case;
 
 						
 					when NOUN_GRID =>
-						case fields is
+						case field_count is
 							-- schematic led_driver set grid 5 5
 							when 6 =>
 								set_grid (
@@ -1980,14 +1986,14 @@ is
 											others => <>),
 									log_threshold	=> log_threshold + 1);
 
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 7 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 
 						
 					when NOUN_PARTCODE =>
-						case fields is
+						case field_count is
 							when 6 =>
 								declare
 									partcode : pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
@@ -2004,14 +2010,14 @@ is
 										);
 								end;
 
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 7 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
 
 						
 					when NOUN_PURPOSE =>
-						case fields is
+						case field_count is
 							when 6 =>
 								declare
 									use et_schematic;
@@ -2029,14 +2035,14 @@ is
 										);
 								end;
 
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 7 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
 
 						
 					when NOUN_SCOPE =>
-						case fields is
+						case field_count is
 							when 6 =>
 								set_scope (
 									module_cursor 	=> current_active_module,
@@ -2045,14 +2051,14 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 7 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 
 						
 					when NOUN_SUBMODULE_FILE =>
-						case fields is
+						case field_count is
 							when 6 =>
 								set_submodule_file (
 									module_name 	=> module,
@@ -2061,13 +2067,13 @@ is
 									log_threshold	=> log_threshold + 1
 									);
 
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 7 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 						
 					when NOUN_VALUE =>
-						case fields is
+						case field_count is
 							when 6 =>
 								declare
 									value : pac_device_value.bounded_string; -- 470R
@@ -2085,13 +2091,13 @@ is
 										);
 								end;
 
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1); 
+							when 7 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
 
 					when NOUN_VARIANT =>
-						case fields is
+						case field_count is
 							when 6 =>
 								declare
 									variant : pac_package_variant_name.bounded_string; -- N, D
@@ -2111,7 +2117,7 @@ is
 										);
 								end;
 
-							when 7 .. count_type'last => too_long; 
+							when 7 .. type_field_count'last => too_long; 
 								
 							when others => command_incomplete;
 						end case;
@@ -2131,7 +2137,7 @@ is
 				
 				case noun is
 					when NOUN_DEVICE =>
-						case fields is
+						case field_count is
 							when 5 => show_device ( -- show device R1
 									device	=> to_device_name (f (5)), -- R1, IC1
 									mode	=> FIRST_UNIT);
@@ -2152,20 +2158,20 @@ is
 										mode	=> BY_UNIT_NAME);
 								end if;
 								
-							when 7 .. count_type'last => too_long;
+							when 7 .. type_field_count'last => too_long;
 							when others => command_incomplete;
 						end case;
 
 					when NOUN_MODULE =>
-						case fields is
+						case field_count is
 							when 5 => show_module; -- show module LED-driver
 							when 6 => show_module_and_sheet; -- show module LED-driver 2
-							when 7 .. count_type'last => too_long;
+							when 7 .. type_field_count'last => too_long;
 							when others => command_incomplete;
 						end case;
 
 					when NOUN_NET =>
-						case fields is
+						case field_count is
 							when 5 => show_net ( -- show net RESET_N
 									net		=> to_net_name (f (5)), -- RESET_N
 									mode	=> FIRST_NET);
@@ -2183,14 +2189,14 @@ is
 									too_long;
 								end if;
 								
-							when 7 .. count_type'last => too_long;
+							when 7 .. type_field_count'last => too_long;
 							when others => command_incomplete;
 						end case;
 						
 					when NOUN_SHEET =>
-						case fields is
+						case field_count is
 							when 5 => show_sheet;
-							when 6 .. count_type'last => too_long;
+							when 6 .. type_field_count'last => too_long;
 							when others => command_incomplete;
 						end case;
 						
@@ -2201,7 +2207,7 @@ is
 			when VERB_UNMOUNT =>
 				case noun is
 					when NOUN_DEVICE => 
-						case fields is
+						case field_count is
 							when 6 =>
 								unmount_device
 									(
@@ -2210,7 +2216,7 @@ is
 									device			=> to_device_name (f (6)), -- R1
 									log_threshold	=> log_threshold + 1);
 
-							when 7 .. count_type'last => command_too_long (single_cmd_status.cmd, fields - 1);
+							when 7 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
@@ -2253,9 +2259,11 @@ is
 		unit_name		: pac_unit_name.bounded_string;
 		--net_name		: pac_net_name.bounded_string;
 
+		
 		procedure module_name_missing is begin
 			set_status (incomplete & module_missing);
 		end module_name_missing;
+
 		
 		procedure device_name_missing is begin
 			set_status (incomplete & device_missing);
@@ -2263,28 +2271,34 @@ is
 			-- It might become very long if there were hundreds of devices.
 		end device_name_missing;
 
+		
 		procedure unit_name_missing is begin
 			set_status (incomplete & "Unit name missing !");
 		end unit_name_missing;
 
+		
 		procedure sheet_number_missing is begin
 			set_status (incomplete & "Sheet number missing !");
 		end sheet_number_missing;
+
 		
 		procedure device_not_found is begin
 			set_status ("ERROR: Device " & to_string (device_name) & " not found !");
 		end device_not_found;
 
+		
 		procedure unit_not_found is begin
 			set_status ("ERROR: Device " & to_string (device_name) 
 				& " does not provide unit " & to_string (unit_name) & " !");
 		end unit_not_found;
 
+		
 		procedure unit_not_deployed is begin
 			set_status ("ERROR: Unit " & to_string (unit_name) 
 				& " of device " & to_string (device_name) 
 				& " not deployed !");
 		end unit_not_deployed;
+
 		
 		procedure unit_in_use is begin
 			set_status ("ERROR: Unit " & to_string (unit_name) 
@@ -2293,16 +2307,19 @@ is
 			-- CS output coordinates of used unit
 		end unit_in_use;
 
+		
 		procedure unit_not_on_this_sheet is begin
 			set_status ("ERROR: Unit " & to_string (unit_name) & " is not on this sheet !");
 		end unit_not_on_this_sheet;
 
+		
 		procedure net_name_missing is begin
 			set_status (incomplete & net_missing);
 		end net_name_missing;
+
 		
 	begin -- propose_arguments
-		log_command_incomplete (fields, log_threshold);
+		log_command_incomplete (field_count, log_threshold);
 
 		-- There might be objects such as net segments or units selected.
 		-- They must be de-selected:
@@ -2329,7 +2346,7 @@ is
 			when VERB_DELETE =>
 				case noun is
 					when NOUN_UNIT =>
-						case fields is
+						case field_count is
 							when 4 =>
 								device_name_missing;
 								
@@ -2400,7 +2417,7 @@ is
 			when VERB_DRAG =>
 				case noun is
 					when NOUN_UNIT =>
-						case fields is
+						case field_count is
 							when 4 =>
 								device_name_missing;
 								
@@ -2474,7 +2491,7 @@ is
 			when VERB_DRAW =>
 				case noun is
 					when NOUN_NET =>
-						case fields is
+						case field_count is
 							when 4 =>
 								-- no net name given -> anonymous net will be drawn
 								set_status (et_canvas_schematic_nets.status_draw_net);
@@ -2498,7 +2515,7 @@ is
 			when VERB_INVOKE =>
 				case noun is
 					when NOUN_UNIT =>
-						case fields is
+						case field_count is
 							when 4 =>
 								device_name_missing;
 								
@@ -2574,7 +2591,7 @@ is
 			when VERB_MOVE =>
 				case noun is
 					when NOUN_UNIT =>
-						case fields is
+						case field_count is
 							when 4 =>
 								device_name_missing;
 								
@@ -2648,7 +2665,7 @@ is
 
 					-- moving placeholders for unit name, purpose and value:
 					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
-						case fields is
+						case field_count is
 							when 4 => -- like "move name"
 								device_name_missing;
 								
@@ -2714,7 +2731,7 @@ is
 			when VERB_ROTATE =>
 				case noun is
 					when NOUN_UNIT =>
-						case fields is
+						case field_count is
 							when 4 => device_name_missing;
 								
 							when 5 => -- like "rotate unit IC1"
@@ -2771,7 +2788,7 @@ is
 
 					-- rotating placeholders for unit name, purpose and value:
 					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
-						case fields is
+						case field_count is
 							when 4 => -- like "rotate name"
 								device_name_missing;
 								
@@ -2837,7 +2854,7 @@ is
 			when VERB_SET =>
 				case noun is
 					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE =>
-						case fields is
+						case field_count is
 							when 4 => device_name_missing;
 								
 							when 5 => -- like "set value/partcode/purpose IC1"
@@ -2853,7 +2870,7 @@ is
 						end case;
 
 					when NOUN_VARIANT =>
-						case fields is
+						case field_count is
 							when 4 => device_name_missing;
 								
 							when 5 => -- like "set variant IC1"
@@ -2874,7 +2891,7 @@ is
 			when VERB_SHOW =>
 				case noun is
 					when NOUN_DEVICE =>
-						case fields is
+						case field_count is
 							when 4 =>
 								-- request operator to click on a unit:
 								set_status (status_show_device);
@@ -2883,14 +2900,14 @@ is
 						end case;
 
 					when NOUN_MODULE =>
-						case fields is
+						case field_count is
 							when 4 => module_name_missing;
 							-- CS request operator to click on the module.
 							when others => null;
 						end case;
 
 					when NOUN_NET =>
-						case fields is
+						case field_count is
 							when 4 =>
 								-- request operator to click on a net:
 								set_status (status_show_net);
@@ -2899,7 +2916,7 @@ is
 						end case;
 						
 					when NOUN_SHEET =>
-						case fields is
+						case field_count is
 							when 4 => sheet_number_missing;
 							when others => null;
 						end case;
@@ -2925,6 +2942,8 @@ begin -- schematic_cmd
 	single_cmd_status := (cmd => cmd_in, others => <>);
 
 	-- single_cmd_status.cmd will now be processed and interactively completed
+
+	field_count := get_field_count (single_cmd_status.cmd);
 	
 
 	module := to_module_name (f (2)); -- motor_driver (without extension *.mod)

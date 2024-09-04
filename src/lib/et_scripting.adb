@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.                                          --   
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -88,6 +88,8 @@ package body et_scripting is
 		return s (verb_prefix'length + 1 .. s'last);
 	end;
 
+
+	
 	function to_verb (verb : in string) return type_verb_project is begin
 		return type_verb_project'value (verb_prefix & verb);
 	
@@ -95,6 +97,8 @@ package body et_scripting is
 			log (ERROR, "verb " & enclose_in_quotes (verb) & " invalid !", console => true);
 			raise;
 	end;
+
+
 	
 	function to_string (noun : in type_noun_project) return string is 
 		s : string := type_noun_project'image (noun);
@@ -102,6 +106,8 @@ package body et_scripting is
 		return s (verb_prefix'length + 1 .. s'last);
 	end;
 
+
+	
 	function to_noun (noun : in string) return type_noun_project is begin
 		return type_noun_project'value (noun_prefix & noun);
 	
@@ -118,24 +124,32 @@ package body et_scripting is
 		raise constraint_error;
 	end;
 
+
+	
 	procedure expect_fill_style (style : in type_fill_style; field : in count_type) is begin
 		log (ERROR, "fill style " & enclose_in_quotes (to_string (style)) &
 			 " expected in field no. " & count_type'image (field) & " !" , console => true);
 		raise constraint_error;
 	end;
 
+
+	
 	procedure invalid_keyword (field : in count_type) is begin
 		log (ERROR, "invalid keyword in field no." & count_type'image (field) & " !",
 			 console => true);
 		raise constraint_error;
 	end;
 
+
+	
 	procedure expect_value_center_x (field : in count_type) is begin
 		log (ERROR, "Expect value for center x in field no." & count_type'image (field) & " !",
 			 console => true);
 		raise constraint_error;
 	end;
 
+
+	
 	procedure expect_keyword_filled (field : in count_type) is begin
 		log (ERROR, "Expect keyword " & enclose_in_quotes (et_geometry.keyword_filled) &
 			" in field no." & count_type'image (field) & " !",
@@ -143,20 +157,27 @@ package body et_scripting is
 		raise constraint_error;
 	end;
 
+
+	
 	procedure invalid_noun (noun : in string) is begin
 		raise semantic_error_1 with
 			"ERROR: Noun " & enclose_in_quotes (noun) & " invalid for this operation !";
 	end invalid_noun;
 
+
+	
 	procedure log_command_incomplete (
-		field_count		: in count_type;
+		field_count		: in type_field_count;
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => incomplete 
-			& "Only" & count_type'image (field_count) & " arguments provided. "
+			& "Only" & type_field_count'image (field_count) 
+			& " arguments provided. "
 			& "Proposing arguments ...", 
 			level => log_threshold);
 	end log_command_incomplete;
+
+
 	
 	procedure command_incomplete is begin
 		--if runmode /= MODE_HEADLESS and cmd_entry_mode = SINGLE_CMD then
@@ -166,20 +187,29 @@ package body et_scripting is
 		--end if;
 	end command_incomplete;
 
+
+	
 	procedure command_too_long (
 		cmd		: in type_fields_of_line;
-		from	: in count_type) 
+		from	: in type_field_count) 
 	is begin
-		log (WARNING, "command " & enclose_in_quotes (to_string (cmd)) & " too long !",
+		log (WARNING, "command " & enclose_in_quotes (to_string (cmd)) 
+			 & " too long !",
 			 console => true);
-		log (text => " -> Excessive arguments after no." & count_type'image (from) & " ignored !",
+		
+		log (text => " -> Excessive arguments after no." 
+			 & type_field_count'image (from) & " ignored !",
 			 console => true);
 	end;
+
+	
 
 	procedure skipped_in_this_runmode (log_threshold : in type_log_level) is begin
 		log (text => "skipped in current runmode "
 			& to_string (runmode), level => log_threshold);
 	end skipped_in_this_runmode;
+
+
 	
 	procedure validate_module_name (module : in pac_module_name.bounded_string) is 
 		use et_project.modules;
@@ -314,6 +344,8 @@ package body et_scripting is
 		log_threshold	: in type_log_level)
 	is separate;
 
+
+	
 	procedure board_cmd (
 		module_cursor	: in pac_generic_modules.cursor;
 		cmd_in			: in type_fields_of_line; -- "board tree_1 draw silk top line 2.5 0 0 160 0"
@@ -327,13 +359,15 @@ package body et_scripting is
 		cmd				: in type_fields_of_line;
 		log_threshold	: in type_log_level)
 	is
-		function f (place : in count_type) return string is begin
+
+		-- This function is a shortcut to get a single field
+		-- from the given command:
+		function f (place : in type_field_count) return string is begin
 			return get_field (cmd, place);
 		end;
 
-		function fields return count_type is begin
-			return field_count (cmd);
-		end;
+		-- Get the number of fields of the given command:
+		field_count : constant type_field_count := get_field_count (cmd);
 		
 		use et_project;
 		use et_project.modules;
@@ -344,6 +378,7 @@ package body et_scripting is
 		verb_project	: type_verb_project;
 		noun_project	: type_noun_project;
 
+		
 		procedure project_cmd (
 			verb : in type_verb_project;
 			noun : in type_noun_project) 
@@ -352,7 +387,7 @@ package body et_scripting is
 				when VERB_OPEN =>
 					case noun is
 						when NOUN_MODULE =>
-							case fields is
+							case field_count is
 								when 4 =>
 									-- The script command provides the module name only.
 									-- The extension must be added here:
@@ -363,8 +398,8 @@ package body et_scripting is
 										log_threshold	=> log_threshold + 1
 										);
 
-								when 5 .. count_type'last =>
-									command_too_long (cmd, fields - 1);
+								when 5 .. type_field_count'last =>
+									command_too_long (cmd, field_count - 1);
 									
 								when others => 
 									command_incomplete;
@@ -372,10 +407,11 @@ package body et_scripting is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
+					
 				when VERB_CREATE =>
 					case noun is
 						when NOUN_MODULE =>
-							case fields is
+							case field_count is
 								when 4 =>
 
 									create_module (
@@ -383,8 +419,8 @@ package body et_scripting is
 										log_threshold	=> log_threshold + 1
 										);
 
-								when 5 .. count_type'last =>
-									command_too_long (cmd, fields - 1);
+								when 5 .. type_field_count'last =>
+									command_too_long (cmd, field_count - 1);
 									
 								when others => 
 									command_incomplete;
@@ -392,10 +428,11 @@ package body et_scripting is
 						when others => invalid_noun (to_string (noun));
 					end case;
 
+					
 				when VERB_SAVE =>
 					case noun is
 						when NOUN_MODULE =>
-							case fields is
+							case field_count is
 								when 4 =>
 
 									save_module (
@@ -403,19 +440,20 @@ package body et_scripting is
 										log_threshold	=> log_threshold + 1
 										);
 
-								when 5 .. count_type'last =>
-									command_too_long (cmd, fields - 1);
+								when 5 .. type_field_count'last =>
+									command_too_long (cmd, field_count - 1);
 									
 								when others => 
 									command_incomplete;
 							end case;							
 						when others => invalid_noun (to_string (noun));
 					end case;
+
 					
 				when VERB_DELETE =>
 					case noun is
 						when NOUN_MODULE =>
-							case fields is
+							case field_count is
 								when 4 =>
 
 									delete_module (
@@ -423,8 +461,8 @@ package body et_scripting is
 										log_threshold	=> log_threshold + 1
 										);
 
-								when 5 .. count_type'last =>
-									command_too_long (cmd, fields - 1);
+								when 5 .. type_field_count'last =>
+									command_too_long (cmd, field_count - 1);
 									
 								when others => 
 									command_incomplete;
@@ -434,13 +472,14 @@ package body et_scripting is
 					
 			end case;
 		end project_cmd;
+
 		
 	begin -- execute_command
 		log (text => "cmd --> " & enclose_in_quotes (to_string (cmd)), level => log_threshold);
 		log_indentation_up;
 
 		-- The command must have at least two fields:
-		if field_count (cmd) >= 2 then
+		if field_count >= 2 then
 
 			-- field 1 contains the domain of operation
 			domain := to_domain (f (1));
@@ -460,8 +499,10 @@ package body et_scripting is
 						file_name		=> append_extension (to_string (module)), 
 						log_threshold	=> log_threshold + 1); 
 
+					
 					-- The command must have at least three fields.
-					if field_count (cmd) >= 3 then
+					if field_count >= 3 then
+						
 						schematic_cmd (
 							module_cursor	=> locate_module (module),
 							cmd_in			=> cmd,
@@ -484,8 +525,10 @@ package body et_scripting is
 						file_name		=> append_extension (to_string (module)), 
 						log_threshold	=> log_threshold + 1); 
 
+					
 					-- The command must have at least three fields.
-					if field_count (cmd) >= 3 then
+					if field_count >= 3 then
+						
 						board_cmd (
 							module_cursor	=> locate_module (module),
 							cmd_in			=> cmd,
@@ -521,6 +564,7 @@ package body et_scripting is
 	end execute_command;
 
 
+	
 	function execute_script (
 		file_name		: in pac_script_name.bounded_string; -- dummy_module/my_script.scr
 		log_threshold	: in type_log_level)
