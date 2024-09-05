@@ -47,6 +47,9 @@ with et_net_labels;						use et_net_labels;
 with et_nets;							use et_nets;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 
+with et_canvas.cmd;
+
+
 separate (et_scripting)
 	
 procedure schematic_cmd (
@@ -70,6 +73,10 @@ is
 	use et_display.schematic;
 	use et_modes.schematic;
 
+	package pac_canvas_cmd is new et_canvas_schematic_2.pac_canvas.cmd;
+	use pac_canvas_cmd;
+	
+	
 	module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 
 	-- In order to tell the command processor that an operation is meant to 
@@ -84,61 +91,10 @@ is
 	end;
 
 
-	-- The number of fields of the given command:
-	field_count : type_field_count;
-	
-
-	-- This procedure is a shortcut. Call it in case
-	-- the given command is too long:
-	procedure too_long is begin
-		command_too_long (single_cmd_status.cmd, field_count - 1);
-	end;
-
-	
-	procedure command_incomplete is begin
-		if runmode /= MODE_HEADLESS and cmd_entry_mode = SINGLE_CMD then
-			single_cmd_status.complete := false;
-		else
-			raise exception_command_incomplete with "command not complete";
-		end if;
-	end command_incomplete;
-
-
-
 	-- This procedure parses a zoom related command.
 	-- If the runmode is non-graphical (like headless) then
 	-- nothing will be done here:
-	procedure parse_zoom_command is
-
-		
-		-- Zooms on the current cursor position:
-		procedure set_zoom is 
-			l : type_zoom_factor := to_zoom_factor (f (5));
-		begin
-			log (text => "set zoom factor " & to_string (l),
-				level => log_threshold + 1);					
-
-			zoom_to (get_cursor_position, l);
-		end set_zoom;
-
-
-		-- Zooms on a given point and places the cursor
-		-- at the given point:
-		procedure zoom_to_point is
-			c : type_vector_model := type_vector_model (set (
-				x => to_distance (f (5)),
-				y => to_distance (f (6))));
-
-			l : type_zoom_factor := to_zoom_factor (f (7));
-		begin
-			log (text => "zoom to point " & to_string (c) 
-				& " zoom factor" & to_string (l),
-				level => log_threshold + 1);
-					
-			zoom_to (c, l);
-		end zoom_to_point;
-		
-		
+	procedure parse_zoom_command_2 is
 	begin
 		log (text => "parse zoom command ...", level => log_threshold + 1);
 
@@ -148,7 +104,7 @@ is
 
 				case noun is
 					when NOUN_FIT => -- zoom fit
-						case field_count is
+						case cmd_field_count is
 							when 4 => 
 								log (text => "zoom to fit", level => log_threshold + 1);
 								zoom_to_fit_all;
@@ -158,42 +114,16 @@ is
 							when others => command_incomplete;
 						end case;
 
-						
-					when NOUN_LEVEL => 
-						case field_count is
-							when 5 =>  -- zoom level 3
-								-- CS rename command to "zoom factor 3"
-								set_zoom;
-
-							when 6 .. type_field_count'last => too_long;
-
-							when others => command_incomplete;
-						end case;
-
-						
-					when NOUN_CENTER =>
-						case field_count is
-							when 7 =>  -- zoom center 10 10 0.5 
-								-- CS rename command to "zoom cursor 10 10 0.5"
-								-- or similar.
-								zoom_to_point;
-
-							when 8 .. type_field_count'last => too_long;
-
-							when others => command_incomplete;
-						end case;
-
-						
-					when others => invalid_noun (to_string (noun));
+					when others => 
+						pac_canvas_cmd.parse_zoom_command (type_noun'image (noun));
 				end case;
-
 
 				
 			when others =>
 					skipped_in_this_runmode (log_threshold + 1);
 					
 		end case;				
-	end parse_zoom_command;
+	end parse_zoom_command_2;
 
 	
 
@@ -672,7 +602,7 @@ is
 			when VERB_ADD =>
 				case noun is
 					when NOUN_DEVICE =>
-						case field_count is
+						case cmd_field_count is
 							when 9 =>
 								-- If a virtual device is added, then no variant is required.
 								add_device (
@@ -718,7 +648,7 @@ is
 
 						
 					when NOUN_NETCHANGER =>
-						case field_count is
+						case cmd_field_count is
 							when 8 =>
 								add_netchanger (
 									module_name 	=> module,
@@ -742,7 +672,7 @@ is
 
 						
 					when NOUN_PORT =>
-						case field_count is
+						case cmd_field_count is
 							when 9 =>
 								add_port (
 									module_name 	=> module,
@@ -763,7 +693,7 @@ is
 						end case;
 						
 					when NOUN_SUBMODULE =>
-						case field_count is
+						case cmd_field_count is
 							when 11 =>
 								add_submodule (
 									module_name 	=> module, -- parent module (where the submodule is to be inserted)
@@ -797,7 +727,7 @@ is
 			when VERB_BUILD =>
 				case noun is
 					when NOUN_SUBMODULES_TREE =>
-						case field_count is
+						case cmd_field_count is
 							when 4 =>
 								build_submodules_tree (
 									module_name 	=> module,
@@ -816,7 +746,7 @@ is
 			when VERB_CHECK =>
 				case noun is
 					when NOUN_INTEGRITY =>
-						case field_count is
+						case cmd_field_count is
 							when 4 =>
 								check_integrity (
 									module_name 	=> module,
@@ -834,7 +764,7 @@ is
 			when VERB_COPY =>
 				case noun is
 					when NOUN_DEVICE =>
-						case field_count is
+						case cmd_field_count is
 							when 9 =>
 								copy_device (
 									module_name 	=> module,
@@ -859,7 +789,7 @@ is
 
 						
 					when NOUN_SUBMODULE =>
-						case field_count is
+						case cmd_field_count is
 							when 9 =>
 								copy_submodule (
 									module_name 	=> module, -- parent module (where the submodule is to be copied)
@@ -889,7 +819,7 @@ is
 			when VERB_CREATE =>
 				case noun is
 					when NOUN_VARIANT => 
-						case field_count is
+						case cmd_field_count is
 							when 5 =>
 								create_assembly_variant
 									(
@@ -903,7 +833,7 @@ is
 						end case;
 
 					when NOUN_MODULE =>
-						case field_count is
+						case cmd_field_count is
 							when 5 => create_module (to_module_name (f (5)));
 							when 6 .. type_field_count'last => too_long;
 							when others => command_incomplete;
@@ -916,7 +846,7 @@ is
 			when VERB_DELETE =>
 				case noun is
 					when NOUN_DEVICE =>
-						case field_count is
+						case cmd_field_count is
 							when 5 =>
 								delete_device (
 									module_name 	=> module,
@@ -930,7 +860,7 @@ is
 
 						
 					when NOUN_LABEL =>
-						case field_count is
+						case cmd_field_count is
 							when 7 =>
 								delete_net_label
 									(
@@ -951,7 +881,7 @@ is
 
 						
 					when NOUN_MODULE =>
-						case field_count is
+						case cmd_field_count is
 							when 4 => delete_active_module;								
 							when 5 => delete_explicit_module (to_module_name (f (5)));
 							when 6 .. type_field_count'last => too_long;								
@@ -960,7 +890,7 @@ is
 
 						
 					when NOUN_NET =>
-						case field_count is
+						case cmd_field_count is
 
 							-- If the statement has only 6 fields, the net scope is EVERYWHERE.
 							-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
@@ -1013,7 +943,7 @@ is
 
 						
 					when NOUN_NETCHANGER =>
-						case field_count is
+						case cmd_field_count is
 							when 5 =>
 								delete_netchanger
 									(
@@ -1027,7 +957,7 @@ is
 						end case;
 
 					when NOUN_PORT =>
-						case field_count is
+						case cmd_field_count is
 							when 6 =>
 								delete_port
 									(
@@ -1044,7 +974,7 @@ is
 
 						
 					when NOUN_SEGMENT =>
-						case field_count is
+						case cmd_field_count is
 							when 8 =>
 								delete_segment
 									(
@@ -1064,7 +994,7 @@ is
 
 						
 					when NOUN_SUBMODULE =>
-						case field_count is
+						case cmd_field_count is
 							when 5 =>
 								delete_submodule (
 									module_name 	=> module, -- parent module (where the submodule is to be deleted)
@@ -1081,7 +1011,7 @@ is
 						NULL; -- CS
 						
 					when NOUN_UNIT =>
-						case field_count is
+						case cmd_field_count is
 							when 6 =>
 								delete_unit (
 									module_name 	=> module,
@@ -1095,7 +1025,7 @@ is
 						end case;
 						
 					when NOUN_VARIANT => 
-						case field_count is
+						case cmd_field_count is
 							when 5 =>
 								delete_assembly_variant
 									(
@@ -1114,7 +1044,7 @@ is
 			when VERB_DESCRIBE =>
 				case noun is
 					when NOUN_VARIANT => 
-						case field_count is
+						case cmd_field_count is
 							when 6 =>
 								describe_assembly_variant
 									(
@@ -1138,7 +1068,7 @@ is
 						| NOUN_NAMES | NOUN_VALUES | NOUN_PURPOSES
 						| NOUN_TEXTS | NOUN_GRID
 						=>
-						case field_count is
+						case cmd_field_count is
 							when 4 => display (noun); -- if status is omitted
 							when 5 => display (noun, f (5));
 							when 6 .. type_field_count'last => too_long; 
@@ -1151,7 +1081,7 @@ is
 			when VERB_DRAG =>
 				case noun is
 					when NOUN_UNIT =>
-						case field_count is
+						case cmd_field_count is
 							when 9 =>
 								drag_unit
 									(
@@ -1171,7 +1101,7 @@ is
 						end case;
 								
 					when NOUN_NETCHANGER =>
-						case field_count is
+						case cmd_field_count is
 							when 8 =>
 								drag_netchanger (
 									module_name 	=> module,
@@ -1189,7 +1119,7 @@ is
 						end case;
 
 					when NOUN_PORT =>
-						case field_count is
+						case cmd_field_count is
 							when 9 =>
 								drag_port (
 									module_name 	=> module,
@@ -1208,7 +1138,7 @@ is
 						end case;
 						
 					when NOUN_SEGMENT =>
-						case field_count is
+						case cmd_field_count is
 							when 11 =>
 								drag_segment
 									(
@@ -1234,7 +1164,7 @@ is
 						end case;
 						
 					when NOUN_SUBMODULE =>
-						case field_count is
+						case cmd_field_count is
 							when 8 =>
 								drag_submodule (
 									module_name 	=> module,
@@ -1258,7 +1188,7 @@ is
 			when VERB_DRAW =>
 				case noun is
 					when NOUN_NET =>
-						case field_count is
+						case cmd_field_count is
 							when 10 =>
 								insert_net
 									(
@@ -1288,7 +1218,7 @@ is
 			when VERB_EXECUTE =>
 				case noun is
 					when NOUN_SCRIPT =>
-						case field_count is
+						case cmd_field_count is
 							when 5 => 
 								execute_nested_script (
 									file			=> f (5),
@@ -1309,7 +1239,7 @@ is
 			when VERB_INVOKE =>
 				case noun is
 					when NOUN_UNIT =>
-						case field_count is
+						case cmd_field_count is
 							when 10 =>
 								invoke_unit (
 									module_name		=> module,
@@ -1341,7 +1271,7 @@ is
 				case noun is
 					when NOUN_NAME =>
 						-- schematic led_driver move name R1 1 absolute 10 15
-						case field_count is
+						case cmd_field_count is
 							when 9 =>
 								move_unit_placeholder
 									(
@@ -1362,7 +1292,7 @@ is
 						end case;
 						
 					when NOUN_VALUE =>
-						case field_count is
+						case cmd_field_count is
 							when 9 =>
 								move_unit_placeholder
 									(
@@ -1383,7 +1313,7 @@ is
 						end case;
 						
 					when NOUN_PORT =>
-						case field_count is
+						case cmd_field_count is
 							when 9 =>
 								move_port (
 									module_name 	=> module,
@@ -1402,7 +1332,7 @@ is
 						end case;
 								
 					when NOUN_PURPOSE =>
-						case field_count is
+						case cmd_field_count is
 							when 9 =>
 								move_unit_placeholder
 									(
@@ -1423,7 +1353,7 @@ is
 						end case;
 
 					when NOUN_NETCHANGER =>
-						case field_count is
+						case cmd_field_count is
 							when 9 =>
 								move_netchanger
 									(
@@ -1447,7 +1377,7 @@ is
 						NULL; -- CS
 
 					when NOUN_SUBMODULE =>
-						case field_count is
+						case cmd_field_count is
 							when 9 =>
 								move_submodule (
 									module_name 	=> module,
@@ -1466,7 +1396,7 @@ is
 						end case;
 						
 					when NOUN_UNIT =>
-						case field_count is
+						case cmd_field_count is
 							when 10 =>
 								move_unit
 									(
@@ -1493,7 +1423,7 @@ is
 			when VERB_MAKE =>
 				case noun is
 					when NOUN_BOM => 
-						case field_count is
+						case cmd_field_count is
 							when 4 =>
 								make_boms -- a BOM for each variant
 									(
@@ -1506,7 +1436,7 @@ is
 						end case;
 
 					when NOUN_NETLISTS => 
-						case field_count is
+						case cmd_field_count is
 							when 4 =>
 								make_netlists 
 									(
@@ -1535,7 +1465,7 @@ is
 							-- validate partcode
 							partcode := to_partcode (f (8));
 							
-							case field_count is
+							case cmd_field_count is
 								when 8 =>
 									-- set value and partcode
 									mount_device
@@ -1569,7 +1499,7 @@ is
 						end; -- declare
 
 					when NOUN_SUBMODULE =>
-						case field_count is
+						case cmd_field_count is
 							when 7 =>
 								mount_submodule
 									(
@@ -1592,7 +1522,7 @@ is
 			when VERB_PLACE =>
 				case noun is
 					when NOUN_JUNCTION =>
-						case field_count is
+						case cmd_field_count is
 							when 7 =>
 								place_junction 
 									(
@@ -1616,7 +1546,7 @@ is
 
 						
 					when NOUN_LABEL =>
-						case field_count is
+						case cmd_field_count is
 							when 10 =>
 								-- SIMPLE LABEL
 								place_net_label
@@ -1675,7 +1605,7 @@ is
 			when VERB_POSITION => -- GUI related
 				case noun is 
 					when NOUN_CURSOR =>
-						case field_count is
+						case cmd_field_count is
 							when 7 => position_cursor; -- position cursor absolute/relative 25 30
 							when 8 .. type_field_count'last => too_long;
 							when others => command_incomplete;
@@ -1688,7 +1618,7 @@ is
 			when VERB_REMOVE =>
 				case noun is
 					when NOUN_DEVICE => 
-						case field_count is
+						case cmd_field_count is
 							when 6 =>
 								remove_device -- from assembly variant
 									(
@@ -1703,7 +1633,7 @@ is
 						end case;
 
 					when NOUN_SUBMODULE =>
-						case field_count is
+						case cmd_field_count is
 							when 6 =>
 								remove_submodule
 									(
@@ -1723,7 +1653,7 @@ is
 			when VERB_RENAME =>
 				case noun is
 					when NOUN_DEVICE =>
-						case field_count is
+						case cmd_field_count is
 							when 6 =>
 								rename_device
 									(
@@ -1739,7 +1669,7 @@ is
 						end case; 
 								
 					when NOUN_SUBMODULE =>
-						case field_count is
+						case cmd_field_count is
 							when 6 =>
 								rename_submodule
 									(
@@ -1754,7 +1684,7 @@ is
 						end case;
 						
 					when NOUN_NET =>
-						case field_count is
+						case cmd_field_count is
 
 							-- If the statement has only 6 fields, the net scope is EVERYWHERE.
 							-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
@@ -1815,7 +1745,7 @@ is
 			when VERB_RENUMBER =>
 				case noun is
 					when NOUN_DEVICES =>
-						case field_count is
+						case cmd_field_count is
 							when 5 =>
 								renumber_devices
 									(
@@ -1839,7 +1769,7 @@ is
 						NULL; -- CS
 
 					when NOUN_UNIT =>
-						case field_count is
+						case cmd_field_count is
 							when 8 =>
 								rotate_unit
 									(
@@ -1857,7 +1787,7 @@ is
 						end case;
 								
 					when NOUN_NAME =>
-						case field_count is 
+						case cmd_field_count is 
 							when 7 =>
 								rotate_unit_placeholder
 									(
@@ -1875,7 +1805,7 @@ is
 						end case;
 								
 					when NOUN_VALUE =>
-						case field_count is
+						case cmd_field_count is
 							when 7 =>
 								rotate_unit_placeholder
 									(
@@ -1893,7 +1823,7 @@ is
 						end case;
 								
 					when NOUN_PURPOSE =>
-						case field_count is
+						case cmd_field_count is
 							when 7 =>
 								rotate_unit_placeholder
 									(
@@ -1911,7 +1841,7 @@ is
 						end case;
 								
 					when NOUN_NETCHANGER =>
-						case field_count is
+						case cmd_field_count is
 							when 7 =>
 								rotate_netchanger (
 									module_name 	=> module,
@@ -1933,7 +1863,7 @@ is
 			when VERB_SAVE =>
 				case noun is
 					when NOUN_MODULE =>
-						case field_count is
+						case cmd_field_count is
 							when 4 =>
 								-- Save the module with its own name:
 								save_module (
@@ -1959,7 +1889,7 @@ is
 			when VERB_SET =>
 				case noun is
 					when NOUN_CLASS =>
-						case field_count is
+						case cmd_field_count is
 							when 6 =>
 								-- schematic led_driver set class GND pwr
 								set_net_class (
@@ -1974,7 +1904,7 @@ is
 
 						
 					when NOUN_GRID =>
-						case field_count is
+						case cmd_field_count is
 							-- schematic led_driver set grid 5 5
 							when 6 =>
 								set_grid (
@@ -1993,7 +1923,7 @@ is
 
 						
 					when NOUN_PARTCODE =>
-						case field_count is
+						case cmd_field_count is
 							when 6 =>
 								declare
 									partcode : pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
@@ -2017,7 +1947,7 @@ is
 
 						
 					when NOUN_PURPOSE =>
-						case field_count is
+						case cmd_field_count is
 							when 6 =>
 								declare
 									use et_schematic;
@@ -2042,7 +1972,7 @@ is
 
 						
 					when NOUN_SCOPE =>
-						case field_count is
+						case cmd_field_count is
 							when 6 =>
 								set_scope (
 									module_cursor 	=> current_active_module,
@@ -2058,7 +1988,7 @@ is
 
 						
 					when NOUN_SUBMODULE_FILE =>
-						case field_count is
+						case cmd_field_count is
 							when 6 =>
 								set_submodule_file (
 									module_name 	=> module,
@@ -2073,7 +2003,7 @@ is
 						end case;
 						
 					when NOUN_VALUE =>
-						case field_count is
+						case cmd_field_count is
 							when 6 =>
 								declare
 									value : pac_device_value.bounded_string; -- 470R
@@ -2097,7 +2027,7 @@ is
 						end case;
 
 					when NOUN_VARIANT =>
-						case field_count is
+						case cmd_field_count is
 							when 6 =>
 								declare
 									variant : pac_package_variant_name.bounded_string; -- N, D
@@ -2137,7 +2067,7 @@ is
 				
 				case noun is
 					when NOUN_DEVICE =>
-						case field_count is
+						case cmd_field_count is
 							when 5 => show_device ( -- show device R1
 									device	=> to_device_name (f (5)), -- R1, IC1
 									mode	=> FIRST_UNIT);
@@ -2163,7 +2093,7 @@ is
 						end case;
 
 					when NOUN_MODULE =>
-						case field_count is
+						case cmd_field_count is
 							when 5 => show_module; -- show module LED-driver
 							when 6 => show_module_and_sheet; -- show module LED-driver 2
 							when 7 .. type_field_count'last => too_long;
@@ -2171,7 +2101,7 @@ is
 						end case;
 
 					when NOUN_NET =>
-						case field_count is
+						case cmd_field_count is
 							when 5 => show_net ( -- show net RESET_N
 									net		=> to_net_name (f (5)), -- RESET_N
 									mode	=> FIRST_NET);
@@ -2194,7 +2124,7 @@ is
 						end case;
 						
 					when NOUN_SHEET =>
-						case field_count is
+						case cmd_field_count is
 							when 5 => show_sheet;
 							when 6 .. type_field_count'last => too_long;
 							when others => command_incomplete;
@@ -2207,7 +2137,7 @@ is
 			when VERB_UNMOUNT =>
 				case noun is
 					when NOUN_DEVICE => 
-						case field_count is
+						case cmd_field_count is
 							when 6 =>
 								unmount_device
 									(
@@ -2235,7 +2165,7 @@ is
 
 				
 			when VERB_ZOOM => -- GUI related
-				parse_zoom_command;
+				parse_zoom_command_2;
 				
 		end case;
 
@@ -2319,7 +2249,7 @@ is
 
 		
 	begin -- propose_arguments
-		log_command_incomplete (field_count, log_threshold);
+		log_command_incomplete (cmd_field_count, log_threshold);
 
 		-- There might be objects such as net segments or units selected.
 		-- They must be de-selected:
@@ -2346,7 +2276,7 @@ is
 			when VERB_DELETE =>
 				case noun is
 					when NOUN_UNIT =>
-						case field_count is
+						case cmd_field_count is
 							when 4 =>
 								device_name_missing;
 								
@@ -2417,7 +2347,7 @@ is
 			when VERB_DRAG =>
 				case noun is
 					when NOUN_UNIT =>
-						case field_count is
+						case cmd_field_count is
 							when 4 =>
 								device_name_missing;
 								
@@ -2491,7 +2421,7 @@ is
 			when VERB_DRAW =>
 				case noun is
 					when NOUN_NET =>
-						case field_count is
+						case cmd_field_count is
 							when 4 =>
 								-- no net name given -> anonymous net will be drawn
 								set_status (et_canvas_schematic_nets.status_draw_net);
@@ -2515,7 +2445,7 @@ is
 			when VERB_INVOKE =>
 				case noun is
 					when NOUN_UNIT =>
-						case field_count is
+						case cmd_field_count is
 							when 4 =>
 								device_name_missing;
 								
@@ -2591,7 +2521,7 @@ is
 			when VERB_MOVE =>
 				case noun is
 					when NOUN_UNIT =>
-						case field_count is
+						case cmd_field_count is
 							when 4 =>
 								device_name_missing;
 								
@@ -2665,7 +2595,7 @@ is
 
 					-- moving placeholders for unit name, purpose and value:
 					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
-						case field_count is
+						case cmd_field_count is
 							when 4 => -- like "move name"
 								device_name_missing;
 								
@@ -2731,7 +2661,7 @@ is
 			when VERB_ROTATE =>
 				case noun is
 					when NOUN_UNIT =>
-						case field_count is
+						case cmd_field_count is
 							when 4 => device_name_missing;
 								
 							when 5 => -- like "rotate unit IC1"
@@ -2788,7 +2718,7 @@ is
 
 					-- rotating placeholders for unit name, purpose and value:
 					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
-						case field_count is
+						case cmd_field_count is
 							when 4 => -- like "rotate name"
 								device_name_missing;
 								
@@ -2854,7 +2784,7 @@ is
 			when VERB_SET =>
 				case noun is
 					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE =>
-						case field_count is
+						case cmd_field_count is
 							when 4 => device_name_missing;
 								
 							when 5 => -- like "set value/partcode/purpose IC1"
@@ -2870,7 +2800,7 @@ is
 						end case;
 
 					when NOUN_VARIANT =>
-						case field_count is
+						case cmd_field_count is
 							when 4 => device_name_missing;
 								
 							when 5 => -- like "set variant IC1"
@@ -2891,7 +2821,7 @@ is
 			when VERB_SHOW =>
 				case noun is
 					when NOUN_DEVICE =>
-						case field_count is
+						case cmd_field_count is
 							when 4 =>
 								-- request operator to click on a unit:
 								set_status (status_show_device);
@@ -2900,14 +2830,14 @@ is
 						end case;
 
 					when NOUN_MODULE =>
-						case field_count is
+						case cmd_field_count is
 							when 4 => module_name_missing;
 							-- CS request operator to click on the module.
 							when others => null;
 						end case;
 
 					when NOUN_NET =>
-						case field_count is
+						case cmd_field_count is
 							when 4 =>
 								-- request operator to click on a net:
 								set_status (status_show_net);
@@ -2916,7 +2846,7 @@ is
 						end case;
 						
 					when NOUN_SHEET =>
-						case field_count is
+						case cmd_field_count is
 							when 4 => sheet_number_missing;
 							when others => null;
 						end case;
@@ -2943,7 +2873,7 @@ begin -- schematic_cmd
 
 	-- single_cmd_status.cmd will now be processed and interactively completed
 
-	field_count := get_field_count (single_cmd_status.cmd);
+	cmd_field_count := get_field_count (single_cmd_status.cmd);
 	
 
 	module := to_module_name (f (2)); -- motor_driver (without extension *.mod)

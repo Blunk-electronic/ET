@@ -66,6 +66,8 @@ with et_board_ops.board_contour;
 with et_board_ops.ratsnest;
 with et_board_ops.text;
 
+with et_canvas.cmd;
+
 
 -- to do:
 
@@ -95,6 +97,10 @@ is
 	use et_canvas_board_2.pac_canvas;
 	use et_display.board;
 	use et_modes.board;
+
+	package pac_canvas_cmd is new et_canvas_board_2.pac_canvas.cmd;
+	use pac_canvas_cmd;
+
 	
 	module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 
@@ -105,61 +111,11 @@ is
 	end;
 
 	
-	-- The number of fields of the given command:
-	field_count : type_field_count;
-		
-
-	-- This procedure is a shortcut. Call it in case
-	-- the given command is too long:
-	procedure too_long is begin
-		command_too_long (single_cmd_status.cmd, field_count - 1);
-	end;
-
-	
-	procedure command_incomplete is begin
-		if runmode /= MODE_HEADLESS and cmd_entry_mode = SINGLE_CMD then
-			single_cmd_status.complete := false;
-		else
-			raise exception_command_incomplete with "command not complete";
-		end if;
-	end command_incomplete;
-
-
 	
 	-- This procedure parses a zoom related command.
 	-- If the runmode is non-graphical (like headless) then
 	-- nothing will be done here:
-	procedure parse_zoom_command is
-
-		
-		-- Zooms on the current cursor position:
-		procedure set_zoom is 
-			l : type_zoom_factor := to_zoom_factor (f (5));
-		begin
-			log (text => "set zoom factor " & to_string (l),
-				level => log_threshold + 1);					
-
-			zoom_to (get_cursor_position, l);
-		end set_zoom;
-
-
-		-- Zooms on a given point and places the cursor
-		-- at the given point:
-		procedure zoom_to_point is
-			c : type_vector_model := type_vector_model (set (
-				x => to_distance (f (5)),
-				y => to_distance (f (6))));
-
-			l : type_zoom_factor := to_zoom_factor (f (7));
-		begin
-			log (text => "zoom to point " & to_string (c) 
-				& " zoom factor" & to_string (l),
-				level => log_threshold + 1);
-					
-			zoom_to (c, l);
-		end zoom_to_point;
-		
-		
+	procedure parse_zoom_command_2 is
 	begin
 		log (text => "parse zoom command ...", level => log_threshold + 1);
 
@@ -169,7 +125,7 @@ is
 
 				case noun is
 					when NOUN_FIT => -- zoom fit
-						case field_count is
+						case cmd_field_count is
 							when 4 => 
 								log (text => "zoom to fit", level => log_threshold + 1);
 								zoom_to_fit_all;
@@ -179,42 +135,16 @@ is
 							when others => command_incomplete;
 						end case;
 
-						
-					when NOUN_LEVEL => 
-						case field_count is
-							when 5 =>  -- zoom level 3
-								-- CS rename command to "zoom factor 3"
-								set_zoom;
-
-							when 6 .. type_field_count'last => too_long;
-
-							when others => command_incomplete;
-						end case;
-
-						
-					when NOUN_CENTER =>
-						case field_count is
-							when 7 =>  -- zoom center 10 10 0.5 
-								-- CS rename command to "zoom cursor 10 10 0.5"
-								-- or similar.
-								zoom_to_point;
-
-							when 8 .. type_field_count'last => too_long;
-
-							when others => command_incomplete;
-						end case;
-
-						
-					when others => invalid_noun (to_string (noun));
+					when others => 
+						pac_canvas_cmd.parse_zoom_command (type_noun'image (noun));
 				end case;
-
 
 				
 			when others =>
 					skipped_in_this_runmode (log_threshold + 1);
 					
 		end case;				
-	end parse_zoom_command;
+	end parse_zoom_command_2;
 
 
 	
@@ -508,7 +438,7 @@ is
 	procedure delete_outline_segment is 
 		use et_board_ops.board_contour;
 	begin
-		case field_count is
+		case cmd_field_count is
 			when 7 =>
 				-- delete a segment of board outline
 				delete_outline (
@@ -527,7 +457,7 @@ is
 	procedure delete_hole_segment is 
 		use et_board_ops.board_contour;
 	begin
-		case field_count is
+		case cmd_field_count is
 			when 7 =>
 				-- delete a segment of a hole
 				delete_hole (
@@ -550,7 +480,7 @@ is
 	begin
 		case shape is
 			when LINE =>
-				case field_count is
+				case cmd_field_count is
 					when 11 =>
 						draw_line (
 							module_name 	=> module,
@@ -573,7 +503,7 @@ is
 
 				
 			when ARC =>
-				case field_count is
+				case cmd_field_count is
 					when 14 =>
 						draw_arc (
 							module_name 	=> module,
@@ -598,7 +528,7 @@ is
 
 				
 			when CIRCLE =>
-				case field_count is
+				case cmd_field_count is
 					when 10 =>
 						draw_circle (
 							module_name 	=> module,
@@ -628,7 +558,7 @@ is
 	begin
 		case shape is
 			when LINE =>
-				case field_count is
+				case cmd_field_count is
 					when 11 =>
 						draw_line (
 							module_name 	=> module,
@@ -649,7 +579,7 @@ is
 
 				
 			when ARC =>
-				case field_count is
+				case cmd_field_count is
 					when 14 =>
 						draw_arc (
 							module_name 	=> module,
@@ -672,7 +602,7 @@ is
 
 				
 			when CIRCLE =>
-				case field_count is
+				case cmd_field_count is
 					when 10 =>
 						draw_circle (
 							module_name 	=> module,
@@ -704,7 +634,7 @@ is
 	begin
 		case shape is
 			when LINE =>
-				case field_count is
+				case cmd_field_count is
 					when 11 =>
 						-- board led_driver draw route_restrict [1,3,5-9] 0.15 line 10 10 60 10
 						-- CS board led_driver draw route_restrict 3 0.15 line 10 10 60 10
@@ -733,7 +663,7 @@ is
 
 				
 			when ARC =>
-				case field_count is
+				case cmd_field_count is
 					when 14 =>
 						-- board led_driver draw route_restrict [1,3,5-9] 0.15 arc 50 50 0 50 100 0 cw
 						draw_route_restrict_arc (
@@ -756,7 +686,7 @@ is
 
 				
 			when CIRCLE =>
-				case field_count is
+				case cmd_field_count is
 					when 10 =>
 						-- board led_driver draw route_restrict [1,3,5-9] 0.15 circle 20 50 40
 						-- if is_number (f (7)) then -- 20
@@ -812,7 +742,7 @@ is
 	begin
 		case shape is
 			when LINE =>
-				case field_count is
+				case cmd_field_count is
 					when 11 =>
 						-- board led_driver draw via_restrict [1,3,5-9] 0.15 line 10 10 60 10
 						draw_via_restrict_line (
@@ -833,7 +763,7 @@ is
 
 				
 			when ARC =>
-				case field_count is
+				case cmd_field_count is
 					when 14 =>
 						-- board led_driver draw via_restrict [1,3,5-9] 0.15 arc 50 50 0 50 100 0
 						draw_via_restrict_arc (
@@ -856,7 +786,7 @@ is
 
 				
 			when CIRCLE =>
-				case field_count is
+				case cmd_field_count is
 					when 10 =>
 						-- board led_driver draw via_restrict [1,3,5-9] 0.15 circle 20 50 40
 						-- if is_number (f (7)) then -- 20
@@ -913,7 +843,7 @@ is
 	begin
 		case shape is
 			when LINE =>
-				case field_count is
+				case cmd_field_count is
 					when 11 =>
 						draw_stop_line (
 							module_name 	=> module,
@@ -933,7 +863,7 @@ is
 
 				
 			when ARC =>
-				case field_count is
+				case cmd_field_count is
 					when 14 =>
 						draw_stop_arc (
 							module_name 	=> module,
@@ -955,7 +885,7 @@ is
 
 				
 			when CIRCLE =>
-				case field_count is
+				case cmd_field_count is
 					when 10 =>
 
 						draw_stop_circle (
@@ -986,7 +916,7 @@ is
 	begin
 		case shape is
 			when LINE =>
-				case field_count is
+				case cmd_field_count is
 					when 11 =>
 						draw_stencil_line (
 							module_name 	=> module,
@@ -1006,7 +936,7 @@ is
 
 				
 			when ARC =>
-				case field_count is
+				case cmd_field_count is
 					when 14 =>
 						draw_stencil_arc (
 							module_name 	=> module,
@@ -1028,7 +958,7 @@ is
 
 				
 			when CIRCLE =>
-				case field_count is
+				case cmd_field_count is
 					when 10 =>
 						draw_stencil_circle (
 							module_name 	=> module,
@@ -1069,7 +999,7 @@ is
 		-- There is no need of an argument that controls mirroring !
 		-- See call of place_text_in_conductor_layer below.
 		
-		case field_count is
+		case cmd_field_count is
 			when 12 =>
 				layer_category := to_layer_category (f (5));
 				text.line_width := to_distance (f (7)); -- 0.15
@@ -1194,7 +1124,7 @@ is
 		end activate_outer_restring;
 		
 	begin -- set_via_properties
-		case field_count is
+		case cmd_field_count is
 			when 6 => 
 				-- board demo set via drill 0.3/dru
 				if f (5) = kw_drill then
@@ -1368,7 +1298,7 @@ is
 			restring_inner	:= auto_set_restring (INNER, drill.diameter, rules.sizes.restring.delta_size);
 		end if;
 		
-		case field_count is
+		case cmd_field_count is
 			when 7 => 
 				-- board demo place via RESET_N 10 14
 				set_net_name;
@@ -1540,7 +1470,7 @@ is
 
 		
 	begin -- set_fill_zone_properties
-		case field_count is
+		case cmd_field_count is
 			when 6 => 
 				-- board demo set zone fill solid/hatched
 				if f (5) = keyword_fill then
@@ -1688,7 +1618,7 @@ is
 	begin -- route_freetrack
 		case shape is
 			when LINE =>
-				case field_count is
+				case cmd_field_count is
 					when 11 =>
 						-- draw a freetrack
 						draw_track_line (
@@ -1713,7 +1643,7 @@ is
 
 				
 			when ARC =>
-				case field_count is
+				case cmd_field_count is
 					when 14 =>
 						-- draw a freetrack
 						draw_track_arc (
@@ -1738,7 +1668,7 @@ is
 				end case;
 
 			when ZONE =>
-				case field_count is
+				case cmd_field_count is
 					when 5 .. type_field_count'last =>
 						make_polygon;
 
@@ -1906,7 +1836,7 @@ is
 					-- THE TRACK STARTS AT A DEDICATED POINT AT X/Y:
 					
 					-- board motor_driver route net NET_1 2 line 0.25 0 0 160 0
-					case field_count is
+					case cmd_field_count is
 						when 12 =>
 							draw_track_line (
 								module_name 	=> module,
@@ -1941,7 +1871,7 @@ is
 							-- THE TRACK ENDS AT A DEDICATED POINT X/Y
 							
 							-- board motor_driver route net NET_1 1 line 0.25 R1 1 to 35 40
-							case field_count is
+							case cmd_field_count is
 								when 13 =>
 									draw_track_line (
 										module_name => module,
@@ -1969,7 +1899,7 @@ is
 							
 							-- board motor_driver route net NET_1 1 line 0.25 R1 1 to x 5
 							if f (12) = to_string (X) or f (12) = to_string (Y) then
-								case field_count is
+								case cmd_field_count is
 									when 13 =>
 										draw_track_line (
 											module_name => module,
@@ -2005,7 +1935,7 @@ is
 							
 							-- board motor_driver route net NET_1 1 line 0.25 R1 1 direction 45 50
 							
-							case field_count is
+							case cmd_field_count is
 								when 13 =>
 									draw_track_line (
 										module_name => module,
@@ -2033,7 +1963,7 @@ is
 							-- board motor_driver route net NET_1 1 line 0.25 R1 1 direction 45 x 5
 							if f (13) = to_string (X) or f (13) = to_string (Y) then
 								
-								case field_count is
+								case cmd_field_count is
 									when 14 =>
 										draw_track_line (
 											module_name => module,
@@ -2066,7 +1996,7 @@ is
 				end if;
 				
 			when ARC =>
-				case field_count is
+				case cmd_field_count is
 					when 15 =>
 						-- draw a named track
 						draw_track_arc (
@@ -2097,7 +2027,7 @@ is
 				end case;
 
 			when ZONE =>
-				case field_count is
+				case cmd_field_count is
 					-- The polygon command is very long. The following example spreads across
 					-- several lines:
 					--  board led_driver route net RESET_N 1 zone /
@@ -2170,7 +2100,7 @@ is
 				y => to_distance (dd => f (8))));
 
 	begin
-		case field_count is
+		case cmd_field_count is
 			when 8 =>
 				add_device (
 					module_name		=> module,
@@ -2240,7 +2170,7 @@ is
 	procedure fill_polygons is 
 		nets : pac_net_names.list;
 	begin
-		case field_count is
+		case cmd_field_count is
 			when 4 => -- fill all polygons
 				
 				-- command: board demo fill polygon
@@ -2251,7 +2181,7 @@ is
 				-- like: board demo fill polygon GND P3V3 AGND
 
 				-- collect the optional net names in list "nets":
-				for place in 5 .. field_count loop
+				for place in 5 .. cmd_field_count loop
 					nets.append (to_net_name (f (place)));
 				end loop;
 
@@ -2269,7 +2199,7 @@ is
 		use et_board_ops.ratsnest;
 	begin
 		-- board demo update ratsnest
-		case field_count is
+		case cmd_field_count is
 				
 			when 4 => 
 				update_ratsnest (module_cursor, log_threshold + 1);
@@ -2298,7 +2228,7 @@ is
 			when VERB_ADD =>
 				case noun is
 					when NOUN_DEVICE =>
-						case field_count is
+						case cmd_field_count is
 							when 8..10 => add_device;
 							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5
 							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0
@@ -2310,7 +2240,7 @@ is
 						end case;
 
 					when NOUN_LAYER =>
-						case field_count is
+						case cmd_field_count is
 							when 6 =>
 								-- board tree_1 add layer 0.12 0.2
 								add_layer;
@@ -2326,7 +2256,7 @@ is
 			when VERB_DELETE =>
 				case noun is
 					when NOUN_DEVICE =>
-						case field_count is
+						case cmd_field_count is
 							when 5 => delete_device; -- board led_driver delete device FD1
 
 							when 6 .. type_field_count'last => too_long;
@@ -2335,7 +2265,7 @@ is
 						end case;
 
 					when NOUN_LAYER =>
-						case field_count is
+						case cmd_field_count is
 							when 5 =>
 								-- board tree_1 delete layer 2
 								delete_layer (
@@ -2357,7 +2287,7 @@ is
 						
 					when NOUN_SILKSCREEN =>
 						-- board led_driver delete silkscreen top 40 50 1
-						case field_count is
+						case cmd_field_count is
 							when 8 =>
 								-- delete a segment of silk screen
 								et_board_ops.silkscreen.delete (
@@ -2380,7 +2310,7 @@ is
 
 					when NOUN_ASSY =>
 						-- board led_driver delete assy top 40 50 1
-						case field_count is
+						case cmd_field_count is
 							when 8 =>
 								-- delete a segment of assembly documentation
 								et_board_ops.assy_doc.delete (
@@ -2405,7 +2335,7 @@ is
 						
 					when NOUN_STENCIL =>
 						-- board led_driver delete stencil top 40 50 1
-						case field_count is
+						case cmd_field_count is
 							when 8 =>
 								-- delete a segment of stencil
 								et_board_ops.stencil.delete_stencil (
@@ -2426,7 +2356,7 @@ is
 						
 					when NOUN_STOP =>
 						-- board led_driver delete stop top 40 50 1
-						case field_count is
+						case cmd_field_count is
 							when 8 =>
 								-- delete a segment of stop mask
 								et_board_ops.stop_mask.delete_stop (
@@ -2447,7 +2377,7 @@ is
 
 					when NOUN_ROUTE_RESTRICT =>
 						-- board led_driver delete route_restrict 40 50 1
-						case field_count is
+						case cmd_field_count is
 							when 7 =>
 								-- delete a segment of route restrict
 								et_board_ops.route_restrict.delete_route_restrict (
@@ -2467,7 +2397,7 @@ is
 
 					when NOUN_VIA_RESTRICT =>
 						-- board led_driver delete via_restrict 40 50 1
-						case field_count is
+						case cmd_field_count is
 							when 7 =>
 								-- delete a segment of via restrict
 								et_board_ops.via_restrict.delete_via_restrict (
@@ -2492,7 +2422,7 @@ is
 			when VERB_DISPLAY => -- GUI related
 				case noun is
 					when NOUN_GRID => -- like "board led_driver display grid [on/off]"
-						case field_count is
+						case cmd_field_count is
 							when 4 => display_grid; -- if status is omitted
 							when 5 => display_grid (f (5));
 							when 6 .. type_field_count'last => too_long;
@@ -2501,7 +2431,7 @@ is
 						
 					when NOUN_SILKSCREEN -- like "board led_driver display silkscreen top [on/off]"
 						| NOUN_ASSY | NOUN_KEEPOUT | NOUN_STOP | NOUN_STENCIL | NOUN_ORIGINS =>
-						case field_count is
+						case cmd_field_count is
 							when 5 => display_non_conductor_layer (noun, f (5)); -- if status is omitted
 							when 6 => display_non_conductor_layer (noun, f (5), f (6));
 							when 7 .. type_field_count'last => too_long;
@@ -2509,7 +2439,7 @@ is
 						end case;
 
 					when NOUN_CONDUCTORS => -- like "board led_driver display conductors 2 [on/off]"
-						case field_count is
+						case cmd_field_count is
 							when 5 => display_conductor_layer (f (5)); -- if status is omitted
 							when 6 => display_conductor_layer (f (5), f (6));
 							when 7 .. type_field_count'last => too_long;
@@ -2517,7 +2447,7 @@ is
 						end case;
 
 					when NOUN_OUTLINE => -- like "board led_driver display outline [on/off]"
-						case field_count is
+						case cmd_field_count is
 							when 4 => display_outline; -- if status is omitted
 							when 5 => display_outline (f (5));
 							when 6 .. type_field_count'last => too_long;
@@ -2525,7 +2455,7 @@ is
 						end case;
 
 					when NOUN_RATSNEST => -- like "board led_driver display ratsnest [on/off]"
-						case field_count is
+						case cmd_field_count is
 							when 4 => display_ratsnest; -- if status is omitted
 							when 5 => display_ratsnest (f (5));
 							when 6 .. type_field_count'last => too_long;
@@ -2533,7 +2463,7 @@ is
 						end case;
 						
 					when NOUN_RESTRICT => -- like "board led_driver display restrict route/via 2 [on/off]"
-						case field_count is
+						case cmd_field_count is
 							when 6 => display_restrict_layer (f (5), f (6)); -- if status is omitted
 							when 7 => display_restrict_layer (f (5), f (6), f (7));
 							when 8 .. type_field_count'last => too_long;
@@ -2541,7 +2471,7 @@ is
 						end case;
 
 					when NOUN_VIAS => -- like "board led_driver display vias [on/off]"
-						case field_count is
+						case cmd_field_count is
 							--when 5 => display_vias (f (5)); -- if status is omitted
 							--when 6 => display_vias (f (5), f (6));
 							--when 7 .. type_field_count'last => too_long;
@@ -2589,7 +2519,7 @@ is
 			when VERB_EXECUTE =>
 				case noun is
 					when NOUN_SCRIPT =>
-						case field_count is
+						case cmd_field_count is
 							when 5 => 
 								execute_nested_script (
 									file			=> f (5),
@@ -2619,7 +2549,7 @@ is
 			when VERB_FLIP =>
 				case noun is
 					when NOUN_DEVICE =>
-						case field_count is
+						case cmd_field_count is
 							when 6 =>
 								et_board_ops.devices.flip_device (
 									module_name 	=> module,
@@ -2639,7 +2569,7 @@ is
 			when VERB_MAKE =>
 				case noun is
 					when NOUN_PNP =>
-						case field_count is
+						case cmd_field_count is
 							when 4 =>
 								make_pick_and_place 
 									(
@@ -2659,7 +2589,7 @@ is
 			when VERB_MOVE =>
 				case noun is
 					when NOUN_BOARD =>
-						case field_count is
+						case cmd_field_count is
 							when 7 => -- board led_driver move board absolute 20 50
 								move_board (
 									module_name 	=> module,
@@ -2678,7 +2608,7 @@ is
 						end case;
 						
 					when NOUN_DEVICE =>
-						case field_count is
+						case cmd_field_count is
 							when 8 =>
 								et_board_ops.devices.move_device (
 									module_name 	=> module,
@@ -2698,7 +2628,7 @@ is
 						end case;
 
 					when NOUN_SUBMODULE =>
-						case field_count is
+						case cmd_field_count is
 							when 8 =>
 								move_submodule (
 									module_name 	=> module,
@@ -2730,7 +2660,7 @@ is
 			when VERB_POSITION => -- GUI related
 				case noun is 
 					when NOUN_CURSOR =>
-						case field_count is
+						case cmd_field_count is
 							when 7 => position_cursor; -- position cursor absolute/relative 25 30
 							when 8 .. type_field_count'last => too_long;
 							when others => command_incomplete;
@@ -2742,7 +2672,7 @@ is
 			when VERB_RENAME =>
 				case noun is
 					when NOUN_DEVICE =>
-						case field_count is
+						case cmd_field_count is
 							when 6 => rename_device; -- board led_driver renames device FD1 FD3
 
 							when 7 .. type_field_count'last => too_long;
@@ -2767,7 +2697,7 @@ is
 			when VERB_RIPUP =>
 				case noun is
 					when NOUN_FREETRACK =>
-						case field_count is
+						case cmd_field_count is
 							when 8 =>
 								-- ripup a segment of a freetrack
 								ripup_track_segment (
@@ -2790,7 +2720,7 @@ is
 						end case;
 
 					when NOUN_NET =>
-						case field_count is
+						case cmd_field_count is
 							when 9 =>
 								-- ripup a segment of a named track
 								ripup_track_segment (
@@ -2819,7 +2749,7 @@ is
 			when VERB_ROTATE =>
 				case noun is
 					when NOUN_DEVICE =>
-						case field_count is
+						case cmd_field_count is
 							when 7 =>
 								et_board_ops.devices.rotate_device (
 									module_name 	=> module,
@@ -2842,7 +2772,7 @@ is
 			when VERB_SET =>
 				case noun is
 					when NOUN_GRID =>
-						case field_count is
+						case cmd_field_count is
 							-- board led_driver set grid 0.5 0.5
 							when 6 =>
 								set_grid (
@@ -2871,7 +2801,7 @@ is
 	-- 			when VERB_SHOW => -- GUI related
 	-- 				case noun is
 	-- 					when NOUN_DEVICE =>
-	-- 						case field_count is
+	-- 						case cmd_field_count is
 	-- 							when 5 => null; -- CS
 	-- 							when 6 .. type_field_count'last => too_long;
 	-- 							when others => command_incomplete;
@@ -2891,7 +2821,7 @@ is
 
 				
 			when VERB_ZOOM => -- GUI related
-				parse_zoom_command;
+				parse_zoom_command_2;
 				
 		end case;
 
@@ -2931,7 +2861,7 @@ is
 
 		
 	begin -- propose_arguments
-		log_command_incomplete (field_count, log_threshold);
+		log_command_incomplete (cmd_field_count, log_threshold);
 
 		case verb is
 			when VERB_PLACE =>
@@ -2941,7 +2871,7 @@ is
 						single_cmd_status.finalization_pending := true;
 
 					when NOUN_VIA =>
-						case field_count is
+						case cmd_field_count is
 							when 4 => -- place via
 								show_via_properties;
 								single_cmd_status.finalization_pending := true;
@@ -2964,6 +2894,7 @@ is
 		end case;
 		
 	end propose_arguments;
+
 	
 begin -- board_cmd
 	log (text => "given command: " 
@@ -2977,7 +2908,7 @@ begin -- board_cmd
 
 	-- single_cmd_status.cmd will now be processed and interactively completed
 
-	field_count := get_field_count (single_cmd_status.cmd);
+	cmd_field_count := get_field_count (single_cmd_status.cmd);
 
 	
 
