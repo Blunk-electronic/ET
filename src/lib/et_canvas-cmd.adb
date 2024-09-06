@@ -116,14 +116,11 @@ package body et_canvas.cmd is
 
 	
 
-	-- This procedure parses a zoom related command.
-	-- If the runmode is non-graphical (like headless) then
-	-- nothing will be done here:
-	procedure parse_zoom_command (
-		noun_in : in string)
+
+	procedure parse_canvas_command (
+		verb	: in type_canvas_verb;
+		noun	: in type_canvas_noun)
 	is
-		noun : type_canvas_noun;
-		
 		
 		-- Zooms on the current cursor position:
 		procedure set_zoom is 
@@ -152,22 +149,48 @@ package body et_canvas.cmd is
 			zoom_to (c, l);
 		end zoom_to_point;
 		
+
+		-- Sets the cursor at a given place:
+		procedure set_cursor is
+			c : type_vector_model := type_vector_model (set (
+				x => to_distance (f (5)),
+				y => to_distance (f (6))));
+
+		begin
+			log (text => "zoom to point " & to_string (c),
+				level => log_threshold + 1);
+					
+			zoom_to (c, S); -- zoom factor remains unchanged
+		end set_cursor;
+
 		
 	begin
-		log (text => "parse zoom command ...", level => log_threshold + 1);
+		log (text => "parse canvas command ...", level => log_threshold + 1);
 
-		-- convert the given noun to a canvas noun.
-		-- CS exception handler ?
-		noun := type_canvas_noun'value (noun_in);
-		
+
+		-- CS evaluate the given verb. Currently it is always VERB_SET.
+		-- CS case verb is ...
 		
 		-- Zoom commands can only be executed in a graphical runmode:
 		case runmode is
 			when MODE_MODULE =>
 
 				case noun is
-						
-					when NOUN_LEVEL => 
+
+					when NOUN_GRID =>
+						case cmd_field_count is
+							-- schematic led_driver set grid 5 5
+							when 6 =>
+								null; -- CS
+
+							when 7 .. type_field_count'last => too_long;
+								
+							when others => command_incomplete;
+						end case;
+
+
+					
+					when NOUN_ZOOM => 
 						case cmd_field_count is
 							when 5 =>  -- zoom level 3
 								-- CS rename command to "zoom factor 3"
@@ -179,11 +202,12 @@ package body et_canvas.cmd is
 						end case;
 
 						
-					when NOUN_CENTER =>
+					when NOUN_CURSOR =>
 						case cmd_field_count is
-							when 7 =>  -- zoom center 10 10 0.5 
-								-- CS rename command to "zoom cursor 10 10 0.5"
-								-- or similar.
+							when 6 =>  -- zoom cursor 10 10
+								set_cursor;
+
+							when 7 =>  -- zoom cursor 10 10 0.5 
 								zoom_to_point;
 
 							when 8 .. type_field_count'last => too_long;
@@ -201,7 +225,7 @@ package body et_canvas.cmd is
 					skipped_in_this_runmode (log_threshold + 1);
 					
 		end case;				
-	end parse_zoom_command;
+	end parse_canvas_command;
 
 	
 end et_canvas.cmd;

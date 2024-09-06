@@ -74,6 +74,7 @@ package et_modes.board is
 
 	
 	type type_noun is (
+		NOUN_ALL,
 		NOUN_ASSY, -- assembly documentation
 		NOUN_ARC,
 		NOUN_BOARD,
@@ -83,7 +84,6 @@ package et_modes.board is
 		NOUN_DEVICE,
 		NOUN_NON_ELECTRICAL_DEVICE,
 		NOUN_FREETRACK,
-		NOUN_FIT,
 		NOUN_GRID,
 		NOUN_HOLE,
 		NOUN_KEEPOUT,
@@ -114,7 +114,8 @@ package et_modes.board is
 		NOUN_VIAS,
 		NOUN_VIA_DRILL,
 		NOUN_VIA_RESTRICT,
-		NOUN_ZONE
+		NOUN_ZONE,
+		NOUN_ZOOM
 		);
 
 	noun_default : constant type_noun := NOUN_NAME;

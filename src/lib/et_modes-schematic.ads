@@ -79,6 +79,7 @@ package et_modes.schematic is
 
 
 	type type_noun is (
+		NOUN_ALL,
 		NOUN_BOM,
 		NOUN_CENTER,
 		NOUN_CURSOR,
@@ -88,7 +89,6 @@ package et_modes.schematic is
 		--DEVICE_PARTCODE,
 		--DEVICE_PURPOSE,
 		--DEVICE_VALUE,
- 		NOUN_FIT,
 		NOUN_GRID,
 		NOUN_INTEGRITY,
 		NOUN_JUNCTION,
@@ -123,7 +123,8 @@ package et_modes.schematic is
 		-- 		UNIT_VALUE
 		NOUN_VARIANT,
 		NOUN_VALUE,
-		NOUN_VALUES
+		NOUN_VALUES,
+		NOUN_ZOOM
 		);
 
 	noun_default : constant type_noun := NOUN_NAME;

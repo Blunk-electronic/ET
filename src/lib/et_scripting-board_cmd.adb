@@ -115,19 +115,19 @@ is
 	-- This procedure parses a zoom related command.
 	-- If the runmode is non-graphical (like headless) then
 	-- nothing will be done here:
-	procedure parse_zoom_command_2 is
+	procedure zoom_all is
 	begin
-		log (text => "parse zoom command ...", level => log_threshold + 1);
+		-- log (text => "zoom all ...", level => log_threshold + 1);
 
 		-- Zoom commands can only be executed in a graphical runmode:
 		case runmode is
 			when MODE_MODULE =>
 
 				case noun is
-					when NOUN_FIT => -- zoom fit
+					when NOUN_ALL => -- zoom all
 						case cmd_field_count is
 							when 4 => 
-								log (text => "zoom to fit", level => log_threshold + 1);
+								log (text => "zoom all", level => log_threshold + 1);
 								zoom_to_fit_all;
 
 							when 5 .. type_field_count'last => too_long;
@@ -136,7 +136,8 @@ is
 						end case;
 
 					when others => 
-						pac_canvas_cmd.parse_zoom_command (type_noun'image (noun));
+						null;
+
 				end case;
 
 				
@@ -144,7 +145,7 @@ is
 					skipped_in_this_runmode (log_threshold + 1);
 					
 		end case;				
-	end parse_zoom_command_2;
+	end zoom_all;
 
 
 	
@@ -2772,23 +2773,26 @@ is
 			when VERB_SET =>
 				case noun is
 					when NOUN_GRID =>
-						case cmd_field_count is
-							-- board led_driver set grid 0.5 0.5
-							when 6 =>
-								set_grid (
-									module_name 	=> module,
-									grid			=> (
-											spacing => (
-												x => to_distance (f (5)),
-												y => to_distance (f (6))),
-											others => <>),
-									log_threshold	=> log_threshold + 1);
+						parse_canvas_command (VERB_SET, NOUN_GRID);
 
-							when 7 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						-- CS
+						-- set_grid (
+							-- 	module_name 	=> module,
+							-- 	grid			=> (
+							-- 			spacing => (
+							-- 				x => to_distance (f (5)),
+							-- 				y => to_distance (f (6))),
+							-- 			others => <>),
+							-- 	log_threshold	=> log_threshold + 1);
 
+						
+					when NOUN_CURSOR =>
+						parse_canvas_command (VERB_SET, NOUN_CURSOR);
+
+					when NOUN_ZOOM =>
+						parse_canvas_command (VERB_SET, NOUN_ZOOM);
+
+						
 					when NOUN_ZONE =>
 						set_fill_zone_properties; -- conductor layers related
 						
@@ -2821,7 +2825,7 @@ is
 
 				
 			when VERB_ZOOM => -- GUI related
-				parse_zoom_command_2;
+				zoom_all;
 				
 		end case;
 

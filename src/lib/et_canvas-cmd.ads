@@ -51,7 +51,7 @@ generic
 package et_canvas.cmd is
 
 	type type_canvas_verb is (
-		VERB_ZOOM,
+		-- VERB_ZOOM,
 		VERB_SET);
 
 	-- verb : type_canvas_verb := type_canvas_verb'first;
@@ -60,8 +60,9 @@ package et_canvas.cmd is
 	type type_canvas_noun is (
 		NOUN_CURSOR,
 		-- NOUN_FIT,
-		NOUN_LEVEL,
-		NOUN_CENTER,
+		-- NOUN_LEVEL,
+		-- NOUN_CENTER,
+		NOUN_ZOOM,
 		NOUN_GRID);
 
 
@@ -101,11 +102,13 @@ package et_canvas.cmd is
 	
 
 
-	-- This procedure parses a zoom related command.
+	-- This procedure parses a canvas related command.
 	-- If the runmode is non-graphical (like headless) then
 	-- nothing will be done here:
-	procedure parse_zoom_command (
-		noun_in : in string);
+	procedure parse_canvas_command (
+		verb	: in type_canvas_verb;
+		noun	: in type_canvas_noun);
+
 
 
 	
