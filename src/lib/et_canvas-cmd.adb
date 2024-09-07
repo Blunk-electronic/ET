@@ -165,6 +165,8 @@ package body et_canvas.cmd is
 		end set_cursor;
 
 
+		keyword_on		: constant string := "on";
+		keyword_off		: constant string := "off";
 		keyword_spacing : constant string := "spacing";
 		keyword_style   : constant string := "style";
 		keyword_dots	: constant string := "dots";
@@ -187,6 +189,17 @@ package body et_canvas.cmd is
 					when NOUN_GRID =>
 						case cmd_field_count is
 
+							when 5 =>
+								if to_lower (f (5)) = keyword_on then
+								-- schematic led_driver set grid on/off
+
+									grid.on := GRID_ON;
+									
+								elsif to_lower (f (5)) = keyword_off then
+									grid.on := GRID_OFF;
+								end if;
+								
+									
 							when 6 =>
 								if to_lower (f (5)) = keyword_spacing then
 								-- schematic led_driver set grid spacing 5
@@ -235,8 +248,7 @@ package body et_canvas.cmd is
 					
 					when NOUN_ZOOM => 
 						case cmd_field_count is
-							when 5 =>  -- zoom level 3
-								-- CS rename command to "zoom factor 3"
+							when 5 =>  -- set zoom 3
 								set_zoom;
 
 							when 6 .. type_field_count'last => too_long;
