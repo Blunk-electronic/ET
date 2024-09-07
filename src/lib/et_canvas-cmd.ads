@@ -101,6 +101,7 @@ package et_canvas.cmd is
 
 	
 
+	
 
 	-- This procedure parses a canvas related command.
 	-- If the runmode is non-graphical (like headless) then

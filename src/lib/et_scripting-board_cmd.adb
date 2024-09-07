@@ -47,7 +47,7 @@ with et_canvas_board_devices;
 with et_canvas_board_texts;
 with et_canvas_board_vias;
 with et_design_rules;				use et_design_rules;
-with et_fill_zones;					use et_fill_zones;
+with et_fill_zones;
 with et_fill_zones.boards;			use et_fill_zones.boards;
 with et_thermal_relief;				use et_thermal_relief;
 with et_conductor_text;				use et_conductor_text;
@@ -1391,6 +1391,8 @@ is
 		use pac_generic_modules;
 		use et_schematic;
 
+		use et_fill_zones;
+		
 		comma : constant character := ',';
 		
 		procedure expect_keywords is begin
@@ -1587,6 +1589,8 @@ is
 
 		-- Extract from the given command the polygon arguments (everything after "zone"):
 		procedure make_polygon is
+			use et_fill_zones;
+			
 			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 6);
 			
 			ps : type_floating_solid;
@@ -1704,8 +1708,11 @@ is
 
 		-- get the user specific settings of the board
 		settings : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
+
 		
 		procedure make_polygon is
+			use et_fill_zones;
+			
 			-- Extract from the given command the polygon arguments (everything after "zone"):
 			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 7);
 

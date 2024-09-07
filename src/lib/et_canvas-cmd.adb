@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with ada.characters.handling;	use ada.characters.handling;
 with et_modes;					use et_modes;
 
 with et_exceptions;				use et_exceptions;
@@ -163,6 +164,12 @@ package body et_canvas.cmd is
 			zoom_to (c, S); -- zoom factor remains unchanged
 		end set_cursor;
 
+
+		keyword_spacing : constant string := "spacing";
+		keyword_style   : constant string := "style";
+		keyword_dots	: constant string := "dots";
+		keyword_lines	: constant string := "lines";
+
 		
 	begin
 		log (text => "parse canvas command ...", level => log_threshold + 1);
@@ -179,20 +186,51 @@ package body et_canvas.cmd is
 
 					when NOUN_GRID =>
 						case cmd_field_count is
-							-- schematic led_driver set grid 5 5
-							when 6 =>
-								grid.spacing := (
-									x => to_distance (f (5)),
-									y => to_distance (f (6)));
 
-								set_grid_to_scale;
+							when 6 =>
+								if to_lower (f (5)) = keyword_spacing then
+								-- schematic led_driver set grid spacing 5
+									
+									grid.spacing := (
+										x => to_distance (f (6)),
+										y => to_distance (f (6)));
+
+									set_grid_to_scale;
+									update_grid_display;
+									
+									
+								elsif to_lower (f (5)) = keyword_style then
+								-- schematic led_driver set grid style dots/lines
+
+									if to_lower (f (6)) = keyword_dots then
+										grid.style := STYLE_DOTS;
+									elsif to_lower (f (6)) = keyword_lines then
+										grid.style := STYLE_LINES;
+									end if;
+									
+								end if;
+
 								
-							when 7 .. type_field_count'last => too_long;
+							when 7 =>
+								if to_lower (f (5)) = keyword_spacing then
+								-- schematic led_driver set grid spacing 5 5
+									
+									grid.spacing := (
+										x => to_distance (f (6)),
+										y => to_distance (f (7)));
+
+									set_grid_to_scale;
+									update_grid_display;
+								end if;
+
 								
+							when 8 .. type_field_count'last => too_long;
+
+							
 							when others => command_incomplete;
 						end case;
 
-						update_grid_display;
+						
 						
 					
 					when NOUN_ZOOM => 
@@ -205,6 +243,7 @@ package body et_canvas.cmd is
 
 							when others => command_incomplete;
 						end case;
+
 
 						
 					when NOUN_CURSOR =>
