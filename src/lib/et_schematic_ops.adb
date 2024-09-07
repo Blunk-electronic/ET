@@ -157,21 +157,18 @@ package body et_schematic_ops is
 		grid			: in pac_grid.type_grid;
 		log_threshold	: in type_log_level) 
 	is
-		use pac_grid;
 		use pac_generic_modules;
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-		begin
+			module		: in out type_module) 
+		is begin
 			-- Set the grid in the database:
 			module.grid := grid;
-
-			-- Set the grid of the canvas:
-			et_canvas_schematic_2.pac_canvas.grid := grid;
-			et_canvas_schematic_2.pac_canvas.set_grid_to_scale;
 		end;
+
 		
 	begin -- set_grid
 		log (text => "module " & enclose_in_quotes (to_string (module_name))
@@ -194,20 +191,17 @@ package body et_schematic_ops is
 		grid			: in pac_grid.type_grid;
 		log_threshold	: in type_log_level) 
 	is
-		use pac_grid;
 		use pac_generic_modules;
 
+		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-		begin
+			module		: in out type_module) 
+		is begin
 			-- Set the grid in the database:
 			module.grid := grid;
-
-			-- Set the grid of the canvas:
-			et_canvas_schematic_2.pac_canvas.grid := grid;
-			et_canvas_schematic_2.pac_canvas.set_grid_to_scale;
 		end;
+
 		
 	begin -- set_grid
 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))

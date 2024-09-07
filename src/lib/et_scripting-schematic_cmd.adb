@@ -129,6 +129,20 @@ is
 	
 
 
+	procedure set_grid is begin
+		-- Set the grid on the canvas:
+		parse_canvas_command (VERB_SET, NOUN_GRID);
+
+		-- The global variable "grid" has now been set
+		-- as requested by the operator.
+		
+		-- Assign the grid in the database:
+		set_grid (
+			module_name 	=> module,
+			grid			=> grid,
+			log_threshold	=> log_threshold + 1);
+
+	end set_grid;
 	
 
 
@@ -1905,18 +1919,7 @@ is
 						
 						
 					when NOUN_GRID =>
-						parse_canvas_command (VERB_SET, NOUN_GRID);
-
-						-- CS
-						-- set_grid (
-							-- 	module_name 	=> module,
-							-- 	grid			=> (
-							-- 			spacing => (
-							-- 				x => to_distance (f (5)),
-							-- 				y => to_distance (f (6))),
-							-- 			others => <>),
-							-- 	log_threshold	=> log_threshold + 1);
-						
+						set_grid;
 
 					when NOUN_CURSOR =>
 						parse_canvas_command (VERB_SET, NOUN_CURSOR);

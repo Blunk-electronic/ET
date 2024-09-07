@@ -181,14 +181,19 @@ package body et_canvas.cmd is
 						case cmd_field_count is
 							-- schematic led_driver set grid 5 5
 							when 6 =>
-								null; -- CS
+								grid.spacing := (
+									x => to_distance (f (5)),
+									y => to_distance (f (6)));
 
+								set_grid_to_scale;
+								
 							when 7 .. type_field_count'last => too_long;
 								
 							when others => command_incomplete;
 						end case;
 
-
+						update_grid_display;
+						
 					
 					when NOUN_ZOOM => 
 						case cmd_field_count is
