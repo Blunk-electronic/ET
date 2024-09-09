@@ -823,7 +823,7 @@ package et_canvas is
 
 	-- This procedure sets the grid spacing
 	-- according to the scale specified
-	-- by the operator (see package spec. demo_scale):
+	-- by the operator:
 	procedure set_grid_to_scale;
 	
 	
@@ -926,21 +926,13 @@ package et_canvas is
 -- SCALE:
 
 	-- The scale is a floating point type.
-	-- Its ranges are defined here:
+	-- Its range is defined here:
 	type type_scale is digits 3 range 0.01 .. 100.0;
 	-- If you intend to change this declaration, please see the
 	-- comments in function to_string.
 
 	-- This is the global scale:
 	M : type_scale := 1.0; 
-	-- use it for the rectangle, triangle and circle
-
-	-- M : type_scale := 50.0; 
-	-- use it for the bridge example
-
-	-- M : type_scale := 0.1;
-	-- M : type_scale := 0.04;
-	--use it for the screw example
 	
 	-- Examples for usage:
 	-- 1)
