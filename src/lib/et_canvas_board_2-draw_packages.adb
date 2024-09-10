@@ -1538,7 +1538,7 @@ is
 					begin
 						if stop_mask_enabled (f) then
 
-							put_line ("draw_stopmask");
+							-- put_line ("draw_stopmask");
 							
 							case stopmask.shape is
 								when AS_PAD =>
