@@ -188,6 +188,19 @@ package body et_canvas.cmd is
 		end set_scale;
 
 
+		procedure move_cursor is
+			c : type_vector_model := type_vector_model (set (
+				x => to_distance (f (5)),
+				y => to_distance (f (6))));
+
+		begin
+			log (text => "move cursor by " & to_string (c),
+				level => log_threshold + 1);
+					
+			move_cursor_by (c);
+		end move_cursor;
+
+		
 		
 		keyword_on		: constant string := "on";
 		keyword_off		: constant string := "off";
@@ -196,125 +209,153 @@ package body et_canvas.cmd is
 		keyword_dots	: constant string := "dots";
 		keyword_lines	: constant string := "lines";
 
+
+		procedure evaluate_on_verb_set is begin					
+			case noun is
+
+				when NOUN_GRID =>
+					case cmd_field_count is
+
+						when 5 =>
+							if to_lower (f (5)) = keyword_on then
+							-- schematic led_driver set grid on/off
+
+								grid.on := GRID_ON;
+								
+							elsif to_lower (f (5)) = keyword_off then
+								grid.on := GRID_OFF;
+							end if;
+							
+								
+						when 6 =>
+							if to_lower (f (5)) = keyword_spacing then
+							-- schematic led_driver set grid spacing 5
+								
+								grid.spacing := (
+									x => to_distance (f (6)),
+									y => to_distance (f (6)));
+
+								set_grid_to_scale;
+								update_grid_display;
+								
+								
+							elsif to_lower (f (5)) = keyword_style then
+							-- schematic led_driver set grid style dots/lines
+
+								if to_lower (f (6)) = keyword_dots then
+									grid.style := STYLE_DOTS;
+								elsif to_lower (f (6)) = keyword_lines then
+									grid.style := STYLE_LINES;
+								end if;
+								
+							end if;
+
+							
+						when 7 =>
+							if to_lower (f (5)) = keyword_spacing then
+							-- schematic led_driver set grid spacing 5 5
+								
+								grid.spacing := (
+									x => to_distance (f (6)),
+									y => to_distance (f (7)));
+
+								set_grid_to_scale;
+								update_grid_display;
+							end if;
+
+							
+						when 8 .. type_field_count'last => too_long;
+
+						
+						when others => command_incomplete;
+					end case;
+					
+					
+				
+				when NOUN_ZOOM => 
+					case cmd_field_count is
+						when 5 =>  -- set zoom 3
+							set_zoom;
+
+						when 6 .. type_field_count'last => too_long;
+
+						when others => command_incomplete;
+					end case;
+
+
+					
+				when NOUN_CURSOR =>
+					case cmd_field_count is
+						when 6 =>  -- set cursor 10 10
+							set_cursor;
+
+						when 7 =>  -- set cursor 10 10 0.5 
+							zoom_to_point;
+
+						when 8 .. type_field_count'last => too_long;
+
+						when others => command_incomplete;
+					end case;
+
+					
+
+				when NOUN_SCALE => 
+					case cmd_field_count is
+						when 5 =>  -- set scale 3
+							set_scale;
+
+						when 6 .. type_field_count'last => too_long;
+
+						when others => command_incomplete;
+					end case;
+
+					
+				when others => invalid_noun (to_string (noun));
+			end case;
+		end evaluate_on_verb_set;
+
+
+		
+		procedure evaluate_on_verb_move is begin
+			case noun is
+				when NOUN_CURSOR =>
+					case cmd_field_count is
+						when 6 =>  -- move cursor 5 -10
+							move_cursor;
+
+						when 7 .. type_field_count'last => too_long;
+
+						when others => command_incomplete;
+					end case;
+
+				
+				when others => invalid_noun (to_string (noun));
+			end case;
+		end evaluate_on_verb_move;
+		
 		
 	begin
 		log (text => "parse canvas command ...", level => log_threshold + 1);
 
-
-		-- CS evaluate the given verb. Currently it is always VERB_SET.
-		-- CS case verb is ...
-		
-		-- Zoom commands can only be executed in a graphical runmode:
+		-- Canvas commands can only be executed 
+		-- in a graphical runmode:
 		case runmode is
 			when MODE_MODULE =>
-
-				case noun is
-
-					when NOUN_GRID =>
-						case cmd_field_count is
-
-							when 5 =>
-								if to_lower (f (5)) = keyword_on then
-								-- schematic led_driver set grid on/off
-
-									grid.on := GRID_ON;
-									
-								elsif to_lower (f (5)) = keyword_off then
-									grid.on := GRID_OFF;
-								end if;
-								
-									
-							when 6 =>
-								if to_lower (f (5)) = keyword_spacing then
-								-- schematic led_driver set grid spacing 5
-									
-									grid.spacing := (
-										x => to_distance (f (6)),
-										y => to_distance (f (6)));
-
-									set_grid_to_scale;
-									update_grid_display;
-									
-									
-								elsif to_lower (f (5)) = keyword_style then
-								-- schematic led_driver set grid style dots/lines
-
-									if to_lower (f (6)) = keyword_dots then
-										grid.style := STYLE_DOTS;
-									elsif to_lower (f (6)) = keyword_lines then
-										grid.style := STYLE_LINES;
-									end if;
-									
-								end if;
-
-								
-							when 7 =>
-								if to_lower (f (5)) = keyword_spacing then
-								-- schematic led_driver set grid spacing 5 5
-									
-									grid.spacing := (
-										x => to_distance (f (6)),
-										y => to_distance (f (7)));
-
-									set_grid_to_scale;
-									update_grid_display;
-								end if;
-
-								
-							when 8 .. type_field_count'last => too_long;
-
-							
-							when others => command_incomplete;
-						end case;
-
-						
-						
-					
-					when NOUN_ZOOM => 
-						case cmd_field_count is
-							when 5 =>  -- set zoom 3
-								set_zoom;
-
-							when 6 .. type_field_count'last => too_long;
-
-							when others => command_incomplete;
-						end case;
+				
+				-- Evaluate the given verb:
+				case verb is
+					when VERB_SET =>
+						evaluate_on_verb_set;
 
 
-						
-					when NOUN_CURSOR =>
-						case cmd_field_count is
-							when 6 =>  -- zoom cursor 10 10
-								set_cursor;
+					when VERB_MOVE =>
+						evaluate_on_verb_move;
 
-							when 7 =>  -- zoom cursor 10 10 0.5 
-								zoom_to_point;
-
-							when 8 .. type_field_count'last => too_long;
-
-							when others => command_incomplete;
-						end case;
-
-						
-
-					when NOUN_SCALE => 
-						case cmd_field_count is
-							when 5 =>  -- set scale 3
-								set_scale;
-
-							when 6 .. type_field_count'last => too_long;
-
-							when others => command_incomplete;
-						end case;
-
-						
-					when others => invalid_noun (to_string (noun));
 				end case;
 
-
-				
+			
 			when others =>
-					skipped_in_this_runmode (log_threshold + 1);
+				skipped_in_this_runmode (log_threshold + 1);
 					
 		end case;				
 	end parse_canvas_command;

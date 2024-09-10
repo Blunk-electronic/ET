@@ -51,6 +51,7 @@ generic
 package et_canvas.cmd is
 
 	type type_canvas_verb is (
+		VERB_MOVE,
 		VERB_SET);
 
 	-- verb : type_canvas_verb := type_canvas_verb'first;

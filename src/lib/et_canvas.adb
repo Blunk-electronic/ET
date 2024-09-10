@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2024                                                       --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -2236,6 +2236,8 @@ package body et_canvas is
 		
 	end draw_grid;
 
+	
+	
 
 -- CURSOR:
 
@@ -2254,8 +2256,7 @@ package body et_canvas is
 
 	procedure move_cursor (
 		direction : type_direction)
-	is 
-	begin
+	is begin
 		-- Move the cursor by the grid spacing into the given direction:
 		put_line ("move cursor " & type_direction'image (direction));
 		
@@ -2277,7 +2278,7 @@ package body et_canvas is
 		-- Exception handler ?
 
 		-- If the cursor is outside the visible area, then the
-		-- canvas must be shifted with the cursor:
+		-- scrolled window must be shifted with the cursor:
 		if not in_area (cursor.position, visible_area) then
 			put_line ("cursor not in visible area");
 
@@ -2328,6 +2329,20 @@ package body et_canvas is
 	end move_cursor;
 	
 
+
+	procedure move_cursor_by (
+		vector : type_vector_model)
+	is begin
+		add (cursor.position, vector);
+
+		-- CS shift the scrolled window if the 
+		-- cursor reaches the border of the visible area.
+		-- See procedure move_cursor above for possible
+		-- solution.
+
+	end move_cursor_by;
+
+	
 
 	function get_cursor_position return
 		type_vector_model

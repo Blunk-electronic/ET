@@ -2101,32 +2101,8 @@ is
 			log_threshold	=> log_threshold + 1);
 
 	end add_layer;
-
 	
 
-	
-	-- Positions the cursor absolute or relative:
-	procedure position_cursor is -- GUI related
-		use et_geometry;
-		
-		coordinates : type_coordinates := to_coordinates (f (5));
-		position : type_vector_model := type_vector_model (set (
-				x => to_distance (dd => f (6)),
-				y => to_distance (dd => f (7))));
-	begin
-		case runmode is
-			when MODE_MODULE =>
-
-				log (text => "place cursor" & to_string (coordinates) 
-					& to_string (position), level => log_threshold + 1);
-		
-				-- CS canvas.move_cursor (coordinates, cursor_main, position);
-
-			when others =>
-				skipped_in_this_runmode (log_threshold + 1);
-				
-		end case;
-	end position_cursor;
 
 	
 	procedure add_device is -- non-electric device !
@@ -2646,6 +2622,9 @@ is
 							when others =>
 								command_incomplete;
 						end case;
+
+					when NOUN_CURSOR =>
+						parse_canvas_command (VERB_MOVE, NOUN_CURSOR);
 						
 					when NOUN_DEVICE =>
 						case cmd_field_count is
@@ -2697,17 +2676,6 @@ is
 					when others		=> invalid_noun (to_string (noun));
 				end case;
 				
-			when VERB_POSITION => -- GUI related
-				case noun is 
-					when NOUN_CURSOR =>
-						case cmd_field_count is
-							when 7 => position_cursor; -- position cursor absolute/relative 25 30
-							when 8 .. type_field_count'last => too_long;
-							when others => command_incomplete;
-						end case;
-
-					when others => invalid_noun (to_string (noun));
-				end case;
 
 			when VERB_RENAME =>
 				case noun is

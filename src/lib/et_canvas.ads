@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2024                                                       --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -896,11 +896,18 @@ package et_canvas is
 		destination : type_vector_model);
 
 
-	-- This procedure moves the cursor into the given direction:
+	-- This procedure moves the cursor into 
+	-- the given direction by the current grid spacing:
 	procedure move_cursor (
 		direction : type_direction);
 
 
+	-- This procedure moves the cursor by
+	-- the given vector:
+	procedure move_cursor_by (
+		vector : type_vector_model);
+
+	
 	-- Returns the current position of the cursor:
 	function get_cursor_position
 		return type_vector_model;
