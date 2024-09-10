@@ -474,6 +474,32 @@ package body et_canvas_board_2 is
 		key_shift	: gdk_modifier_type := event.state and shift_mask;
 		key			: gdk_key_type := event.keyval;
 
+
+
+		-- This procedure contains all the actions required
+		-- to set the focus on the canvas:
+		procedure focus_canvas is begin
+			backup_scrollbar_settings;
+			canvas.grab_focus;
+			restore_scrollbar_settings;
+			
+			status_clear;
+			
+			event_handled := true;
+		end focus_canvas;
+
+
+		-- This procedure contains all the actions required
+		-- to set the focus on the console:
+		procedure focus_console is begin
+			console.grab_focus;
+			set_status ("enter command");
+
+			event_handled := true;
+		end focus_console;
+
+		
+		
 	begin
 		-- Output the the gdk_key_type (which is
 		-- just a number (see gdk.types und gdk.types.keysyms)):
@@ -498,18 +524,12 @@ package body et_canvas_board_2 is
 
 				-- If the operator presses F3 then set the focus to the console:
 				when GDK_F3 =>
-					console.grab_focus;
-					set_status ("enter command");
-
-					event_handled := true; -- event handled
+					focus_console;
 
 					
 				-- If the operator presses F4 then set the focus to the canvas:
 				when GDK_F4 =>
-					-- CS canvas.grab_focus;
-					status_clear;
-					
-					event_handled := true; -- event handled
+					focus_canvas;
 
 					
 
