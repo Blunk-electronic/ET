@@ -95,49 +95,6 @@ schematic led_driver display grid [on/off]
 
 
 
-
-## ZOOMING
-Zoom to fit:
-```
-schematic led_driver zoom fit
-```
-
-Zoom by:
-```
-schematic led_driver zoom level 3
-```
-
-
-Zoom to point:
-```
-schematic led_driver zoom center 10 10 # x/y
-```
-
-```
-schematic led_driver zoom center 10 10 2 # x/y level
-```
-
-To zoom at the current cursor position keep CTRL pressed and press + or -.
-
-
-
-
-## CURSOR
-The drawing cursor can be positioned inside the canvas on left mouse button click.
-After a click in the canvas the cursor can be moved via the cursor keys (right, left, up, down).
-To position the cursor via command line:
-```
-schematic led_driver position cursor absolute 25 30 # x/y
-```
-```
-schematic led_driver position cursor relative 5 0 # x/y
-```
-
-The cursor position always snaps to the nearest grid point.
-
-
-
-
 ## SHOW
 
 To open a module for editing run this command. 

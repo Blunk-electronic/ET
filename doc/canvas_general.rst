@@ -48,17 +48,36 @@ Cursor
 
 #. Placing
 
+	The cursor can be positioned on left mouse button click.
+	It can also be moved via the arrow keys (right, left, up, down).
+	he cursor position always snaps to the nearest grid point.
+
+
+	In order to place the cursor at a certain position:
+
 	.. code-block::
 
-		zoom cursor 10 10
+		set cursor 10 10
 
 
 #. Placing and Zooming
 
+	In order to place the cursor at a certain position
+	and to zoom on that point with a certain zoom-factor:
+
 	.. code-block::
 
-		zoom cursor 10 10 50
+		set cursor 10 10 50
 
+
+
+#. Moving
+
+	The cursor can be moved by a certain distance in x or y direction.
+
+	.. code-block::
+
+		move cursor 5 -10
 
 		
 	
@@ -66,7 +85,20 @@ Cursor
 Zoom
 ++++
 
+#. Zoom on Pointer
 
+	To zoom at the current mouse pointer, keep CTRL pressed and 
+	turn the mouse wheel.
+
+
+
+#. Zoom on Cursor
+
+	To zoom at the current cursor position, keep CTRL pressed and 
+	press the + or - key.
+	
+
+	
 #. Setting Zoom Factor
 
 	.. code-block::

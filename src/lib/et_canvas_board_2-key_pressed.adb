@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                -- 
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -36,8 +37,6 @@
 --
 
 with et_canvas_tool;					use et_canvas_tool;
-
-
 
 with et_board_ops.conductors;			use et_board_ops.conductors;
 with et_board_ops.ratsnest;
@@ -62,6 +61,9 @@ is
 	use et_modes;
 	use et_modes.board;
 
+	use et_canvas_board_devices;
+	
+	
 	point : type_vector_model renames get_cursor_position;
 	
 
@@ -224,11 +226,11 @@ is
 				
 			when GDK_LC_d =>
 				noun := NOUN_DEVICE;
-				-- CS set_status (status_move_device);
+				set_status (status_move_device);
 
 			when GDK_LC_n =>
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
-				-- CS set_status (status_move_device);
+				set_status (status_move_device);
 
 			when GDK_LC_v =>
 				noun := NOUN_VIA;
@@ -242,9 +244,8 @@ is
 				
 			-- If space pressed then the operator wishes to operate by keyboard:
 			when GDK_Space =>	
-				null;
 				-- CS
--- 				case noun is
+				case noun is
 -- 					when NOUN_ASSY =>
 -- 						et_canvas_board_assy_doc.move_object (KEYBOARD, point);
 -- 
@@ -253,21 +254,21 @@ is
 -- 						
 -- 					when NOUN_TRACK =>
 -- 						et_canvas_board_tracks.move_track (KEYBOARD, point);
--- 
--- 					when NOUN_DEVICE =>		
--- 						move_electrical_device (KEYBOARD, point);
--- 						
--- 					when NOUN_NON_ELECTRICAL_DEVICE =>
--- 						move_non_electrical_device (KEYBOARD, point);
--- 
+
+					when NOUN_DEVICE =>		
+						move_electrical_device (KEYBOARD, point);
+						
+					when NOUN_NON_ELECTRICAL_DEVICE =>
+						move_non_electrical_device (KEYBOARD, point);
+
 -- 					when NOUN_TEXT =>
 -- 						move_text (KEYBOARD, point);
 -- 						
 -- 					when NOUN_VIA =>
 -- 						move_via (KEYBOARD, point);
--- 
--- 					when others => null;
--- 				end case;		
+
+					when others => null;
+				end case;		
 
 
 			-- If page down pressed, then the operator is clarifying:
