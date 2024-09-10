@@ -1860,15 +1860,15 @@ is
  		draw_conductors; -- NON-TERMINAL RELATED, NON-ELECTRICAL
 		draw_terminals; -- pins, pads, plated millings
 		
--- 		draw_stop_mask; -- non-terminal related
--- 		draw_stencil; -- non-terminal related
+		draw_stop_mask; -- non-terminal related
+		draw_stencil; -- non-terminal related
 
 		draw_silkscreen;
 		draw_assembly_documentation;
--- 		draw_keepout; 
--- 
--- 		draw_route_restrict;
--- 		draw_via_restrict;
+		draw_keepout; 
+
+		draw_route_restrict;
+		draw_via_restrict;
 		
 		draw_holes;
 		
