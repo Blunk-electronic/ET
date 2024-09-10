@@ -165,6 +165,20 @@ is
 
 	end set_grid;
 
+
+
+	procedure set_scale is begin
+
+		parse_canvas_command (VERB_SET, NOUN_SCALE);
+
+		-- The global scale variable "M" has now been set
+		-- as requested by the operator.
+		
+		-- CS: scale_objects (see demo program)
+
+		-- CS: Assign the scale in the database.
+	end set_scale;
+	
 	
 	
 	-- Enables/disables the grid "layer". If status is empty,
@@ -2806,6 +2820,10 @@ is
 					when NOUN_ZOOM =>
 						parse_canvas_command (VERB_SET, NOUN_ZOOM);
 
+					when NOUN_SCALE =>
+						set_scale;
+
+						
 						
 					when NOUN_ZONE =>
 						set_fill_zone_properties; -- conductor layers related
@@ -2843,6 +2861,7 @@ is
 				
 		end case;
 
+		
 		-- Update GUI if we are in graphical mode:
 		if runmode /= MODE_HEADLESS then
 			null;

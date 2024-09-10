@@ -46,8 +46,6 @@ with et_exceptions;				use et_exceptions;
 package body et_canvas.cmd is
 
 
-	procedure dummy is begin null; end;
-
 	-- This function is a shortcut to get a single field
 	-- from the current command:
 	function f (place : in type_field_count) 
@@ -165,6 +163,32 @@ package body et_canvas.cmd is
 		end set_cursor;
 
 
+		-- Sets the scale, the grid according to the new scale,
+		-- updates the scale and grid display:
+		procedure set_scale is
+			M_new : type_scale := type_scale'value (f (5));		
+			-- CS do a proper range check. exception handler ?
+		begin
+			M := M_new;
+
+			-- If the operator changes the scale, then
+			-- a default grid spacing must be set first:
+			grid.spacing.x := grid_spacing_default;
+			grid.spacing.y := grid_spacing_default;
+			
+			-- If the operator changes the scale, then the
+			-- visible grid spacing must be changed accordingly.
+			set_grid_to_scale;
+			
+			-- put_line ("grid spacing x/y:" 
+			-- 	& to_string (grid.spacing.x) & "/" & to_string (grid.spacing.y));
+
+			update_grid_display;
+			update_scale_display;
+		end set_scale;
+
+
+		
 		keyword_on		: constant string := "on";
 		keyword_off		: constant string := "off";
 		keyword_spacing : constant string := "spacing";
@@ -267,6 +291,18 @@ package body et_canvas.cmd is
 								zoom_to_point;
 
 							when 8 .. type_field_count'last => too_long;
+
+							when others => command_incomplete;
+						end case;
+
+						
+
+					when NOUN_SCALE => 
+						case cmd_field_count is
+							when 5 =>  -- set scale 3
+								set_scale;
+
+							when 6 .. type_field_count'last => too_long;
 
 							when others => command_incomplete;
 						end case;

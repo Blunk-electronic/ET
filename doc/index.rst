@@ -16,6 +16,7 @@
    preface.rst
    features.rst 
    project.rst
+   canvas_general.rst
    schematic.rst
    board.rst
    

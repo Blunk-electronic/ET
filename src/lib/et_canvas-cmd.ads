@@ -51,7 +51,6 @@ generic
 package et_canvas.cmd is
 
 	type type_canvas_verb is (
-		-- VERB_ZOOM,
 		VERB_SET);
 
 	-- verb : type_canvas_verb := type_canvas_verb'first;
@@ -59,17 +58,14 @@ package et_canvas.cmd is
 
 	type type_canvas_noun is (
 		NOUN_CURSOR,
-		-- NOUN_FIT,
-		-- NOUN_LEVEL,
-		-- NOUN_CENTER,
-		NOUN_ZOOM,
-		NOUN_GRID);
+		NOUN_GRID,
+		NOUN_SCALE,
+		NOUN_ZOOM
+		);
 
 
 	-- noun : type_canvas_noun := type_canvas_noun'first;
 	
-		
-	procedure dummy;
 
 
 	-- The number of fields of the given command:

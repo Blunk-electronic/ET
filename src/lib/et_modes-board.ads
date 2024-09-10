@@ -100,6 +100,7 @@ package et_modes.board is
 		NOUN_RATSNEST,
 		NOUN_RESTRICT,
 		NOUN_ROUTE_RESTRICT,
+		NOUN_SCALE,
 		NOUN_SCRIPT,
 		NOUN_SILKSCREEN,
 		NOUN_STENCIL, -- solder mask or solder paste

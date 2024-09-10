@@ -106,6 +106,7 @@ package et_modes.schematic is
 		NOUN_PORTS,
 		NOUN_PURPOSE,
 		NOUN_PURPOSES,		
+		NOUN_SCALE,
 		NOUN_SCOPE,
 		NOUN_SCRIPT,
 		NOUN_SEGMENT, -- net segment
