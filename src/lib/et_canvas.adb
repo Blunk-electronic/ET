@@ -3251,9 +3251,7 @@ package body et_canvas is
 		-- Not used:
 		-- canvas.on_size_allocate (cb_canvas_size_allocate'access);
 		-- canvas.set_redraw_on_allocate (false);
-		
-		--canvas.on_button_release_event (cb_canvas_button_released'access);
-		canvas.on_button_release_event (access_cb_canvas_button_released);
+	
 		
 		-- canvas.on_motion_notify_event (cb_canvas_mouse_moved'access);
 		canvas.on_motion_notify_event (access_cb_canvas_mouse_moved);
@@ -4171,7 +4169,7 @@ package body et_canvas is
 
 	
 
-	function get_mouse_event (
+	function get_mouse_button_pressed_event (
 		event	: gdk_event_button)
 		return type_mouse_event
 	is
@@ -4244,7 +4242,7 @@ package body et_canvas is
 		
 	begin
 		if debug then
-			put_line ("get_mouse_event");
+			put_line ("get_mouse_button_pressed_event");
 
 			-- Output the button id:
 			put_line (" " & to_string (button));
@@ -4262,29 +4260,23 @@ package body et_canvas is
 		handle_zoom_to_area_operation;
 		
 		return (mp, button);
-	end get_mouse_event;
+	end get_mouse_button_pressed_event;
+
 
 
 	
-	
-
-
-
--- CALLBACKS:	
-	
-
-	function cb_canvas_button_released (
-		canvas	: access gtk_widget_record'class;
+	function get_mouse_button_released_event (
 		event	: gdk_event_button)
-		return boolean
+		return type_mouse_event
 	is
-		event_handled : boolean := true;
-
-		debug : boolean := false;
+		debug : boolean := true;
 		
+		-- Get the affected mouse button:
+		button : constant type_mouse_button := type_mouse_button (event.button);
 
-		-- This is the point in the canvas where the operator
-		-- released the button:
+		
+		-- This is the point on the canvas where the operator
+		-- has released the button:
 		cp : constant type_logical_pixels_vector := 
 			(to_lp (event.x), to_lp (event.y));
 
@@ -4292,103 +4284,113 @@ package body et_canvas is
 		-- real model point:
 		mp : constant type_vector_model := canvas_to_real (cp, S);
 
-		-- The corners of the bounding-box on the canvas before 
-		-- and after zooming:
-		C1, C2 : type_bounding_box_corners;
-		
-	begin
-		put_line ("cb_canvas_button_released");
-
-		
-		-- Output the button id, x and y position:
-		-- put_line ("cb_canvas_button_pressed "
-		-- 	& " button" & guint'image (event.button) & " "
-		-- 	& to_string (cp));
-
-		-- Output the model point in the terminal:
-		-- put_line (to_string (mp));
-
-		-- Move the cursor to the nearest grid point:
-		-- move_cursor (snap_to_grid (mp));
-
 
 		-- If the operator is finishing a zoom-to-area operation,
 		-- then the actual area of interest is computed here
 		-- and passed to procedure zoom_to_fit.
 		-- If start and end point of the area are equal,
 		-- then nothing happens here.
-		if zoom_area.active then
-			C1 := get_bounding_box_corners;
+		procedure handle_zoom_to_area_operation is
 
-			-- Set the second corner of the zoom-area:
-			zoom_area.k2 := mp;
+			-- The corners of the bounding-box on the canvas before 
+			-- and after zooming:
+			C1, C2 : type_bounding_box_corners;
+			
+		begin
+			if zoom_area.active then
+				C1 := get_bounding_box_corners;
 
-			-- Compute the area from the corner points k1 and k2
-			-- if they are different. Otherwise nothing happens here:
-			if zoom_area.k1 /= zoom_area.k2 then
-				
-				if debug then
-					put_line ("zoom area c1: " & to_string (zoom_area.k1));
-					put_line ("zoom area c2: " & to_string (zoom_area.k2));
+				-- Set the second corner of the zoom-area:
+				zoom_area.k2 := mp;
+
+				-- Compute the area from the corner points k1 and k2
+				-- if they are different. Otherwise nothing happens here:
+				if zoom_area.k1 /= zoom_area.k2 then
+					
+					if debug then
+						put_line ("zoom area c1: " & to_string (zoom_area.k1));
+						put_line ("zoom area c2: " & to_string (zoom_area.k2));
+					end if;
+
+
+					-- x-position:
+					if zoom_area.k1.x < zoom_area.k2.x then
+						zoom_area.area.position.x := zoom_area.k1.x;
+					else
+						zoom_area.area.position.x := zoom_area.k2.x;
+					end if;
+
+					-- y-position:
+					if zoom_area.k1.y < zoom_area.k2.y then
+						zoom_area.area.position.y := zoom_area.k1.y;
+					else
+						zoom_area.area.position.y := zoom_area.k2.y;
+					end if;
+
+					-- width and height:
+					zoom_area.area.width  := 
+						abs (zoom_area.k2.x - zoom_area.k1.x);
+					
+					zoom_area.area.height := 
+						abs (zoom_area.k2.y - zoom_area.k1.y);
+
+					if debug then
+						put_line ("zoom " & to_string (zoom_area.area));
+					end if;
+
+
+					
+					-- Reset the translate-offset:
+					T := (0.0, 0.0);			
+					zoom_to_fit (zoom_area.area);
+
+					C2 := get_bounding_box_corners;
+					update_scrollbar_limits (C1, C2);
+					backup_scrollbar_settings;
+
+					-- The operation comes to an end here:
+					zoom_area.active := false;
+
+					-- For the routine that draws a rectangle around the
+					-- selected area: Indicate that the rectangle shall
+					-- no longer be drawn:
+					zoom_area.started := false;
+
+
+					backup_visible_area (zoom_area.area);
 				end if;
-
-
-				-- x-position:
-				if zoom_area.k1.x < zoom_area.k2.x then
-					zoom_area.area.position.x := zoom_area.k1.x;
-				else
-					zoom_area.area.position.x := zoom_area.k2.x;
-				end if;
-
-				-- y-position:
-				if zoom_area.k1.y < zoom_area.k2.y then
-					zoom_area.area.position.y := zoom_area.k1.y;
-				else
-					zoom_area.area.position.y := zoom_area.k2.y;
-				end if;
-
-				-- width and height:
-				zoom_area.area.width  := 
-					abs (zoom_area.k2.x - zoom_area.k1.x);
-				
-				zoom_area.area.height := 
-					abs (zoom_area.k2.y - zoom_area.k1.y);
-
-				if debug then
-					put_line ("zoom " & to_string (zoom_area.area));
-				end if;
-
-
-				
-				-- Reset the translate-offset:
-				T := (0.0, 0.0);			
-				zoom_to_fit (zoom_area.area);
-
-				C2 := get_bounding_box_corners;
-				update_scrollbar_limits (C1, C2);
-				backup_scrollbar_settings;
-
-				-- The operation comes to an end here:
-				zoom_area.active := false;
-
-				-- For the routine that draws a rectangle around the
-				-- selected area: Indicate that the rectangle shall
-				-- no longer be drawn:
-				zoom_area.started := false;
-
-
-				backup_visible_area (zoom_area.area);
 			end if;
+		end handle_zoom_to_area_operation;
+			
+			
+		
+	begin
+		if debug then
+			put_line ("get_mouse_button_released_event");
+
+			-- Output the button id:
+			put_line (" " & to_string (button));
+
+			-- Output the point in logical pixels (CS2):
+			put_line (" pixels " & to_string (cp));
+
+			-- Output the model point (CS1):
+			put_line (" model  " & to_string (mp));			
 		end if;
 
-		
+		handle_zoom_to_area_operation;
+
 		refresh;
 		
-		return event_handled;
-	end cb_canvas_button_released;
+		return (mp, button);
+	end get_mouse_button_released_event;
+
+
 
 
 	
+		
+-- CALLBACKS:	
 	
 	
 	function cb_canvas_mouse_moved (

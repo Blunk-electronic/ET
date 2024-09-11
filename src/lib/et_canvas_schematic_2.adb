@@ -820,12 +820,32 @@ package body et_canvas_schematic_2 is
 	begin
 		put_line ("cb_canvas_button_pressed (schematic)");
 
-		mouse_event := get_mouse_event (event);
+		mouse_event := get_mouse_button_pressed_event (event);
 		
 		return event_handled;
 	end cb_canvas_button_pressed;
 	
 
+
+	function cb_canvas_button_released (
+		canvas	: access gtk_widget_record'class;
+		event	: gdk_event_button)
+		return boolean
+	is
+		event_handled : boolean := true;
+
+		mouse_event : type_mouse_event;
+		
+		debug : boolean := false;
+	begin
+		put_line ("cb_canvas_button_released (schematic)");
+		
+		mouse_event := get_mouse_button_released_event (event);
+
+		return event_handled;
+	end cb_canvas_button_released;
+	
+	
 	
 	procedure set_up_canvas is begin
 		put_line ("set_up_canvas (schematic)");
@@ -839,8 +859,10 @@ package body et_canvas_schematic_2 is
 		canvas.on_key_press_event (cb_canvas_key_pressed'access);
 
 		canvas.on_button_press_event (cb_canvas_button_pressed'access);
+		canvas.on_button_release_event (cb_canvas_button_released'access);
 	end set_up_canvas;
 
+	
 	
 -- 	procedure set_title_bar (
 -- 		-- CS project name

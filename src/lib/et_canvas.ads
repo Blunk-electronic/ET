@@ -1409,10 +1409,20 @@ package et_canvas is
 	end record;
 
 
-	-- This function takes a button event (on the canvas)
-	-- and converts it to the affected button
-	-- and the model point at which the event took place:
-	function get_mouse_event (
+	-- This function processes a "mouse button pressed event"
+	-- (on the canvas) and converts it to the affected button
+	-- and the model point at which the event took place.
+	-- It also handles the start of a "zoom-to-area" operation:
+	function get_mouse_button_pressed_event (
+		event	: gdk_event_button)
+		return type_mouse_event;
+
+	
+	-- This function processes a "mouse button released event"
+	-- (on the canvas) and converts it to the affected button
+	-- and the model point at which the event took place.
+	-- It also handles the end of a "zoom-to-area" operation:
+	function get_mouse_button_released_event (
 		event	: gdk_event_button)
 		return type_mouse_event;
 
@@ -1622,19 +1632,6 @@ private
 	access_cb_scrollbar_h_released : constant
 		cb_gtk_widget_gdk_event_button_boolean := cb_scrollbar_h_released'access;
 	
-
-
-
-
-	-- This callback function is called each time the operator
-	-- releases a mouse button after clicking on the canvas.
-	function cb_canvas_button_released (
-		canvas	: access gtk_widget_record'class;
-		event	: gdk_event_button)
-		return boolean;
-
-	access_cb_canvas_button_released : constant
-		cb_gtk_widget_gdk_event_button_boolean := cb_canvas_button_released'access;
 
 
 

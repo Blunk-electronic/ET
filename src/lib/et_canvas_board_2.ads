@@ -249,6 +249,14 @@ package et_canvas_board_2 is
 		return boolean;
 
 
+	-- This callback function is called each time the operator
+	-- releases a mouse button on the canvas.
+	function cb_canvas_button_released (
+		canvas	: access gtk_widget_record'class;
+		event	: gdk_event_button)
+		return boolean;
+
+
 	
 	-- Connects additional canvas signals with subprograms:
 	procedure set_up_canvas;
