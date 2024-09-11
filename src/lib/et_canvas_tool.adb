@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -48,6 +48,19 @@ package body et_canvas_tool is
 	function to_tool (tool : in string) return type_tool is begin
 		return type_tool'value (tool);
 	end to_tool;
+
+
+
+	function to_string (b : in type_mouse_button) return string is 
+		button : constant string := " button clicked";
+	begin
+		case b is
+			when 1 => return "left" & button;
+			when 2 => return "middle" & button;
+			when 3 => return "right" & button;
+			when others => return "button" & type_mouse_button'image (b);
+		end case;
+	end to_string;
 
 	
 	

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -50,6 +50,17 @@ package et_canvas_tool is
 	function to_string (tool : in type_tool) return string;
 
 	function to_tool (tool : in string) return type_tool;
+
+
+
+	type type_mouse_button is new positive range 1 .. 7; -- CS range correct ?
+	-- 1 - left button
+	-- 2 - middle
+	-- 3 - right button
+	-- CS others ?
+
+	-- Returns something like "right button" or "left button":
+	function to_string (b : in type_mouse_button) return string;
 
 	
 	

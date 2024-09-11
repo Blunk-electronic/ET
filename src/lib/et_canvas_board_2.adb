@@ -932,6 +932,23 @@ package body et_canvas_board_2 is
 	end cb_canvas_key_pressed;
 
 
+
+	function cb_canvas_button_pressed (
+		canvas	: access gtk_widget_record'class;
+		event	: gdk_event_button)
+		return boolean
+	is
+		event_handled : boolean := true;
+
+		mouse_event : type_mouse_event;
+	begin
+		put_line ("cb_canvas_button_pressed (board)");
+
+		mouse_event := get_mouse_event (event);
+		
+		return event_handled;
+	end cb_canvas_button_pressed;
+
 	
 	procedure set_up_canvas is begin
 		put_line ("set_up_canvas (board)");
@@ -943,6 +960,8 @@ package body et_canvas_board_2 is
 		-- passes its own context to the callback procedure cb_draw.
 
 		canvas.on_key_press_event (cb_canvas_key_pressed'access);
+
+		canvas.on_button_press_event (cb_canvas_button_pressed'access);
 	end set_up_canvas;
 
 

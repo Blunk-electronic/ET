@@ -3253,7 +3253,7 @@ package body et_canvas is
 		-- canvas.set_redraw_on_allocate (false);
 		
 		--canvas.on_button_press_event (cb_canvas_button_pressed'access);
-		canvas.on_button_press_event (access_cb_canvas_button_pressed);
+		--canvas.on_button_press_event (access_cb_canvas_button_pressed);
 		
 		--canvas.on_button_release_event (cb_canvas_button_released'access);
 		canvas.on_button_release_event (access_cb_canvas_button_released);
@@ -4173,6 +4173,101 @@ package body et_canvas is
 
 
 	
+
+	function get_mouse_event (
+		event	: gdk_event_button)
+		return type_mouse_event
+	is
+		debug : boolean := true;
+		
+		-- Get the affected mouse button:
+		button : constant type_mouse_button := type_mouse_button (event.button);
+
+		
+		-- This is the point in the canvas where the operator
+		-- has clicked:
+		cp : constant type_logical_pixels_vector := 
+			(to_lp (event.x), to_lp (event.y));
+
+		-- Convert the canvas point to the corresponding
+		-- real model point:
+		mp : constant type_vector_model := canvas_to_real (cp, S);
+
+
+		procedure focus_canvas is
+			-- CS: For some reason the value of the scrollbars
+			-- must be saved and restored if the canvas grabs the focus:
+			-- A solution might be:
+			-- <https://stackoverflow.com/questions/26693042/
+			-- gtkscrolledwindow-disable-scroll-to-focused-child>
+			-- or
+			-- <https://discourse.gnome.org/t/disable-auto-scrolling-in-
+			-- gtkscrolledwindow-when-grab-focus-in-children/13058>
+
+			h, v : type_logical_pixels;
+		begin
+			-- Set the focus on the canvas,
+			-- But first save the scrollbar values:
+			h := to_lp (scrollbar_h_adj.get_value);
+			v := to_lp (scrollbar_v_adj.get_value);
+			-- CS: backup_scrollbar_settings does not work for some reason.
+			-- put_line (to_string (v));
+			
+			canvas.grab_focus;
+
+			scrollbar_h_adj.set_value (to_gdouble (h));
+			scrollbar_v_adj.set_value (to_gdouble (v));
+			-- CS: restore_scrollbar_settings does not work for some reason.
+			-- put_line (to_string (v));
+		end focus_canvas;
+		
+
+		
+		procedure handle_zoom_to_area_operation is begin			
+			-- If no zoom-to-area operation is active, then
+			-- just place the cursor where the operator has clicked the canvas.
+			-- If the operator has started a zoom-to-area operation, then
+			-- set the first corner of the area:
+			if zoom_area.active then
+				zoom_area.k1 := mp;
+				--put_line ("zoom area k1: " & to_string (zoom_area.k1));
+
+				-- For the routine that draws a rectangle around the
+				-- selected area: Indicate that a selection has started 
+				-- and a start point has been defined:
+				zoom_area.started := true;
+				zoom_area.l1 := cp;
+				--put_line ("zoom area l1: " & to_string (zoom_area.l1));
+			else
+			-- Otherwise move the cursor to the nearest grid point:
+				move_cursor (snap_to_grid (mp));
+			end if;
+		end handle_zoom_to_area_operation;
+
+		
+	begin
+		if debug then
+			put_line ("get_mouse_event");
+
+			-- Output the button id:
+			put_line (" " & to_string (button));
+
+			-- Output the point in logical pixels (CS2):
+			put_line (" pixels " & to_string (cp));
+
+			-- Output the model point (CS1):
+			put_line (" model  " & to_string (mp));
+		end if;
+
+
+		focus_canvas;
+
+		handle_zoom_to_area_operation;
+		
+		return (mp, button);
+	end get_mouse_event;
+
+
 	
 	
 
@@ -4259,6 +4354,7 @@ package body et_canvas is
 
 
 
+	
 
 	function cb_canvas_button_released (
 		canvas	: access gtk_widget_record'class;

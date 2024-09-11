@@ -1402,6 +1402,22 @@ package et_canvas is
 
 
 	
+
+	type type_mouse_event is record
+		point		: type_vector_model;
+		button		: type_mouse_button;
+	end record;
+
+
+	-- This function takes a button event (on the canvas)
+	-- and converts it to the affected button
+	-- and the model point at which the event took place:
+	function get_mouse_event (
+		event	: gdk_event_button)
+		return type_mouse_event;
+
+	
+	
 private
 
 -- CALLBACKS:
@@ -1619,9 +1635,9 @@ private
 		return boolean;
 
 	access_cb_canvas_button_pressed : constant
-		cb_gtk_widget_gdk_event_button_boolean := cb_canvas_button_pressed'access;
+	 	cb_gtk_widget_gdk_event_button_boolean := cb_canvas_button_pressed'access;
 
-
+	
 
 	-- This callback function is called each time the operator
 	-- releases a mouse button after clicking on the canvas.
