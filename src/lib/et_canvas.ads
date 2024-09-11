@@ -1622,22 +1622,9 @@ private
 	access_cb_scrollbar_h_released : constant
 		cb_gtk_widget_gdk_event_button_boolean := cb_scrollbar_h_released'access;
 	
-		
 
 
-	-- This callback function is called each time the operator
-	-- clicks on the canvas.
-	-- It sets the focus on the canvas and moves the cursor
-	-- to the place where the operator has clicked the canvas.
-	function cb_canvas_button_pressed (
-		canvas	: access gtk_widget_record'class;
-		event	: gdk_event_button)
-		return boolean;
 
-	access_cb_canvas_button_pressed : constant
-	 	cb_gtk_widget_gdk_event_button_boolean := cb_canvas_button_pressed'access;
-
-	
 
 	-- This callback function is called each time the operator
 	-- releases a mouse button after clicking on the canvas.

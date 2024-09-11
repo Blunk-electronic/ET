@@ -3252,9 +3252,6 @@ package body et_canvas is
 		-- canvas.on_size_allocate (cb_canvas_size_allocate'access);
 		-- canvas.set_redraw_on_allocate (false);
 		
-		--canvas.on_button_press_event (cb_canvas_button_pressed'access);
-		--canvas.on_button_press_event (access_cb_canvas_button_pressed);
-		
 		--canvas.on_button_release_event (cb_canvas_button_released'access);
 		canvas.on_button_release_event (access_cb_canvas_button_released);
 		
@@ -4274,86 +4271,6 @@ package body et_canvas is
 
 
 -- CALLBACKS:	
-	
-	function cb_canvas_button_pressed (
-		canvas	: access gtk_widget_record'class;
-		event	: gdk_event_button)
-		return boolean
-	is
-		event_handled : boolean := true;
-
-		-- This is the point in the canvas where the operator
-		-- has clicked:
-		cp : constant type_logical_pixels_vector := 
-			(to_lp (event.x), to_lp (event.y));
-
-		-- Convert the canvas point to the corresponding
-		-- real model point:
-		mp : constant type_vector_model := canvas_to_real (cp, S);
-
-		-- CS: For some reason the value of the scrollbars
-		-- must be saved and restored if the canvas grabs the focus:
-		h, v : type_logical_pixels;
-		-- A solution might be:
-		-- <https://stackoverflow.com/questions/26693042/
-		-- gtkscrolledwindow-disable-scroll-to-focused-child>
-		-- or
-		-- <https://discourse.gnome.org/t/disable-auto-scrolling-in-
-		-- gtkscrolledwindow-when-grab-focus-in-children/13058>
-	begin
-		put_line ("cb_canvas_button_pressed");
-
-		-- Output the button id, x and y position:
-		-- put_line ("cb_canvas_button_pressed "
-		-- 	& " button" & guint'image (event.button) & " "
-		-- 	& to_string (cp));
-
-		-- Output the model point in the terminal:
-		put_line (to_string (mp));
-
-
-		-- Set the focus on the canvas,
-		-- But first save the scrollbar values:
-		h := to_lp (scrollbar_h_adj.get_value);
-		v := to_lp (scrollbar_v_adj.get_value);
-		-- CS: backup_scrollbar_settings does not work for some reason.
-		-- put_line (to_string (v));
-		
-		canvas.grab_focus;
-
-		scrollbar_h_adj.set_value (to_gdouble (h));
-		scrollbar_v_adj.set_value (to_gdouble (v));
-		-- CS: restore_scrollbar_settings does not work for some reason.
-		-- put_line (to_string (v));
-
-
-		-- If no zoom-to-area operation is active, then
-		-- just place the cursor where the operator has clicked the canvas.
-		-- If the operator has started a zoom-to-area operation, then
-		-- set the first corner of the area:
-		if zoom_area.active then
-			zoom_area.k1 := mp;
-			--put_line ("zoom area k1: " & to_string (zoom_area.k1));
-
-			-- For the routine that draws a rectangle around the
-			-- selected area: Indicate that a selection has started 
-			-- and a start point has been defined:
-			zoom_area.started := true;
-			zoom_area.l1 := cp;
-			--put_line ("zoom area l1: " & to_string (zoom_area.l1));
-		else
-		-- Otherwise move the cursor to the nearest grid point:
-			move_cursor (snap_to_grid (mp));
-		end if;
-
-		
-		refresh;
-		
-		return event_handled;
-	end cb_canvas_button_pressed;
-
-
-
 	
 
 	function cb_canvas_button_released (
