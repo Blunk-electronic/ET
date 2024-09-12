@@ -795,7 +795,9 @@ is
 
 	
 begin -- key_pressed
-	
+	log (text => "key_pressed (schematic) ", -- CS which key ?
+		 level => log_threshold);
+
 -- 		put_line ("schematic: evaluating other key ...");
 -- 		put_line (gdk_modifier_type'image (key_ctrl));
 

@@ -1409,6 +1409,11 @@ package et_canvas is
 	end record;
 
 
+	function to_string (
+		event	: in type_mouse_event)
+		return string;
+
+	
 	-- This function processes a "mouse button pressed event"
 	-- (on the canvas) and converts it to the affected button
 	-- and the model point at which the event took place.

@@ -583,6 +583,10 @@ is
 
 	
 begin -- key_pressed
+
+	log (text => "key_pressed (board) ", -- CS which key ?
+		 level => log_threshold);
+
 	
 	--put_line ("board: evaluating other key ...");
 -- 		put_line (gdk_modifier_type'image (key_ctrl));

@@ -932,6 +932,13 @@ package body et_canvas_board_2 is
 	end cb_canvas_key_pressed;
 
 
+	
+-- MOUSE BUTTON PRESSED
+	
+	procedure button_pressed (
+		event	: in type_mouse_event)
+	is separate;
+	
 
 	function cb_canvas_button_pressed (
 		canvas	: access gtk_widget_record'class;
@@ -945,11 +952,20 @@ package body et_canvas_board_2 is
 		put_line ("cb_canvas_button_pressed (board)");
 
 		mouse_event := get_mouse_button_pressed_event (event);
+
+		button_pressed (mouse_event);
 		
 		return event_handled;
 	end cb_canvas_button_pressed;
 
+	
 
+	
+-- MOUSE BUTTON RELEASED
+	
+	-- CS procedure button_released (
+	-- 	event	: in type_mouse_event)
+	-- is separate;
 
 
 	function cb_canvas_button_released (
@@ -966,6 +982,8 @@ package body et_canvas_board_2 is
 		put_line ("cb_canvas_button_released (board)");
 		
 		mouse_event := get_mouse_button_released_event (event);
+
+		 -- CS button_released (mouse_event);
 		
 		return event_handled;
 	end cb_canvas_button_released;

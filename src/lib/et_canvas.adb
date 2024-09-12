@@ -4167,6 +4167,14 @@ package body et_canvas is
 	end draw_text;
 
 
+
+	function to_string (
+		event	: in type_mouse_event)
+		return string
+	is begin
+		return to_string (event.button) & " " & to_string (event.point);
+	end to_string;
+
 	
 
 	function get_mouse_button_pressed_event (
