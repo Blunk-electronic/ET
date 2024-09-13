@@ -990,6 +990,13 @@ package body et_canvas_board_2 is
 
 
 
+	
+-- MOUSE MOVED
+	
+	procedure mouse_moved (
+		point	: in type_vector_model) 
+	is separate;
+	
 
 	function cb_canvas_mouse_moved (
 		canvas	: access gtk_widget_record'class;
@@ -1004,7 +1011,9 @@ package body et_canvas_board_2 is
 
 		-- Get from the mouse event the model point:
 		mp := get_mouse_moved_event (event);
-				
+
+		mouse_moved (mp);
+		
 		return event_handled;
 	end cb_canvas_mouse_moved;
 	

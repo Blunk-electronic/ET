@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -35,29 +37,34 @@
 --   history of changes:
 --
 
-separate (et_canvas_schematic)
+
+with et_devices;				use et_devices;
+
+
+separate (et_canvas_schematic_2)
 
 procedure mouse_moved (
-	self	: not null access type_view;
 	point	: in type_vector_model) 
 is
+	use et_modes.schematic;
 	use pac_devices_lib;
 begin
 	case verb is
 		when VERB_ADD =>
 			case noun is
 				when NOUN_DEVICE =>
-					if unit_add.device /= pac_devices_lib.no_element then
+					if et_canvas_schematic_units.unit_add.device /= pac_devices_lib.no_element then
 						redraw;
 					end if;
 
 				when others => null;
 			end case;
-		
+
+			
 		when VERB_DRAW =>
 			case noun is
 				when NOUN_NET =>
-					if preliminary_segment.ready then
+					if et_canvas_schematic_nets.preliminary_segment.ready then
 						redraw;
 					end if;
 
@@ -65,35 +72,37 @@ begin
 				when others => null;
 			end case;
 			
+			
 		when VERB_DRAG | VERB_MOVE | VERB_PLACE =>
 			case noun is
 				when NOUN_LABEL =>
-					if label.ready then
+					if et_canvas_schematic_nets.label.ready then
 						redraw_schematic;
 					end if;
 					
 				when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE => 
-					if placeholder_move.being_moved then
+					if et_canvas_schematic_units.placeholder_move.being_moved then
 						redraw_schematic;
 					end if;
 
 				when NOUN_NET =>
-					if preliminary_segment.ready then
+					if et_canvas_schematic_nets.preliminary_segment.ready then
 						redraw_schematic;
 					end if;
 
 				when NOUN_UNIT =>
-					if unit_move.being_moved then
+					if et_canvas_schematic_units.unit_move.being_moved then
 						redraw_schematic;
 					end if;
 
 				when others => null;
 			end case;
 
+			
 		when VERB_INVOKE =>
 			case noun is
 				when NOUN_UNIT =>
-					if unit_add.device /= pac_devices_lib.no_element then
+					if et_canvas_schematic_units.unit_add.device /= pac_devices_lib.no_element then
 						redraw;
 					end if;
 

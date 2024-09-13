@@ -864,6 +864,14 @@ package body et_canvas_schematic_2 is
 		return event_handled;
 	end cb_canvas_button_released;
 	
+
+
+	
+-- MOUSE MOVED
+
+	procedure mouse_moved (
+		point	: in type_vector_model) 
+	is separate;
 	
 
 	function cb_canvas_mouse_moved (
@@ -879,6 +887,8 @@ package body et_canvas_schematic_2 is
 
 		-- Get from the mouse event the model point:
 		mp := get_mouse_moved_event (event);
+
+		mouse_moved (mp);
 		
 		return event_handled;
 	end cb_canvas_mouse_moved;

@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -38,17 +40,19 @@
 with et_canvas_board_tracks;
 
 
-separate (et_canvas_board)
+separate (et_canvas_board_2)
 
 procedure mouse_moved (
-	self	: not null access type_view;
 	point	: in type_vector_model) 
-is begin
+is 
+	use et_modes.board;
+
+begin
 	case verb is
 		when VERB_DRAW =>
 			case noun is
 				when NOUN_LINE =>
-					if preliminary_line.ready then
+					if et_canvas_board_lines.preliminary_line.ready then
 						redraw_board;
 					end if;
 					
@@ -74,22 +78,22 @@ is begin
 					end if;
 					
 				when NOUN_DEVICE =>
-					if preliminary_electrical_device.ready then
+					if et_canvas_board_devices.preliminary_electrical_device.ready then
 						redraw_board;
 					end if;
 
 				when NOUN_NON_ELECTRICAL_DEVICE =>
-					if preliminary_non_electrical_device.ready then
+					if et_canvas_board_devices.preliminary_non_electrical_device.ready then
 						redraw_board;
 					end if;
 
 				when NOUN_TEXT =>
-					if preliminary_text.ready then
+					if et_canvas_board_texts.preliminary_text.ready then
 						redraw_board;
 					end if;
 					
 				when NOUN_VIA =>
-					if preliminary_via.ready then
+					if et_canvas_board_vias.preliminary_via.ready then
 						redraw_board;
 					end if;
 					
@@ -100,12 +104,12 @@ is begin
 		when VERB_PLACE =>
 			case noun is
 				when NOUN_TEXT =>
-					if preliminary_text.ready then
+					if et_canvas_board_texts.preliminary_text.ready then
 						redraw_board;
 					end if;
 
 				when NOUN_VIA =>
-					if preliminary_via.ready then
+					if et_canvas_board_vias.preliminary_via.ready then
 						redraw_board;
 					end if;
 					
