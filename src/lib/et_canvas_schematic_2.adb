@@ -53,14 +53,13 @@ with ada.calendar.formatting;		use ada.calendar.formatting;
 -- 
 with et_scripting;
 with et_modes;						--use et_modes;
-with et_modes.schematic;			
+with et_modes.schematic;		
 -- with et_project;
 
 with et_frames;
 with et_canvas_board_2;
 with et_display.schematic;			--use et_display.schematic;
 with et_colors.schematic;
-with et_modes.schematic;
 
 with et_canvas_tool;					use et_canvas_tool;
 
