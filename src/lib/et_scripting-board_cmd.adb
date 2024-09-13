@@ -2268,6 +2268,7 @@ is
 
 					when others => invalid_noun (to_string (noun));
 				end case;
+
 				
 			when VERB_DELETE =>
 				case noun is
@@ -2435,6 +2436,7 @@ is
 
 				end case;
 
+				
 			when VERB_DISPLAY => -- GUI related
 				case noun is
 					when NOUN_GRID => -- like "board led_driver display grid [on/off]"
@@ -2499,6 +2501,7 @@ is
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
+
 				
 			when VERB_DRAW =>
 				case noun is
@@ -2532,6 +2535,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_EXECUTE =>
 				case noun is
 					when NOUN_SCRIPT =>
@@ -2548,6 +2552,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_EXIT | VERB_QUIT => 
 				null;
 				-- CS terminate_main; 
@@ -2561,6 +2566,7 @@ is
 					when others => 
 						invalid_noun (to_string (noun));
 				end case;
+
 				
 			when VERB_FLIP =>
 				case noun is
@@ -2582,6 +2588,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_MAKE =>
 				case noun is
 					when NOUN_PNP =>
@@ -2601,6 +2608,7 @@ is
 
 					when others => invalid_noun (to_string (noun));
 				end case;
+
 				
 			when VERB_MOVE =>
 				case noun is
@@ -2669,6 +2677,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_PLACE =>
 				case noun is
 					when NOUN_VIA	=> place_via;
@@ -2690,6 +2699,7 @@ is
 
 					when others => invalid_noun (to_string (noun));
 				end case;
+
 				
 			when VERB_ROUTE =>
 				case noun is
@@ -2702,6 +2712,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_RIPUP =>
 				case noun is
 					when NOUN_FREETRACK =>
@@ -2753,6 +2764,7 @@ is
 					when others => invalid_noun (to_string (noun));
 
 				end case;
+
 				
 			when VERB_ROTATE =>
 				case noun is
@@ -2777,6 +2789,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_SET =>
 				case noun is
 					when NOUN_GRID =>
@@ -2826,6 +2839,9 @@ is
 				
 			when VERB_ZOOM => -- GUI related
 				zoom_all;
+
+			when others =>
+				null;
 				
 		end case;
 

@@ -1431,6 +1431,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_MAKE =>
 				case noun is
 					when NOUN_BOM => 
@@ -1461,6 +1462,7 @@ is
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
+
 				
 			when VERB_MOUNT =>
 				case noun is
@@ -1647,6 +1649,7 @@ is
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
+
 				
 			when VERB_RENAME =>
 				case noun is
@@ -2161,6 +2164,10 @@ is
 				
 			when VERB_ZOOM => -- GUI related
 				zoom_all;
+
+
+			when others =>
+				null;
 				
 		end case;
 

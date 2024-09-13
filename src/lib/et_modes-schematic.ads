@@ -40,6 +40,8 @@
 package et_modes.schematic is
 
 	type type_verb is (
+		VERB_NONE, -- means no verb entered
+						  
 		VERB_ADD,
 		VERB_BUILD,
 		VERB_CHECK,
@@ -70,7 +72,7 @@ package et_modes.schematic is
 		VERB_ZOOM		
 		);
 
-	verb_default : constant type_verb := VERB_SHOW;
+	verb_default : constant type_verb := VERB_NONE;
 	
 	verb : type_verb := verb_default;
 	
@@ -79,6 +81,8 @@ package et_modes.schematic is
 
 
 	type type_noun is (
+		NOUN_NONE, -- means no noun entered
+						
 		NOUN_ALL,
 		NOUN_BOM,
 		NOUN_CENTER,
@@ -128,13 +132,16 @@ package et_modes.schematic is
 		NOUN_ZOOM
 		);
 
-	noun_default : constant type_noun := NOUN_NAME;
+	noun_default : constant type_noun := NOUN_NONE;
 	
 	noun : type_noun := noun_default;
 	
 	function to_string (noun : in type_noun) return string;
 	function to_noun (noun : in string) return type_noun;
 
+
+	-- Resets verb and noun to default values:
+	procedure reset_mode;
 	
 
 	expect_entry : type_expect_entry := expect_entry_default;
