@@ -170,6 +170,12 @@ package et_canvas_schematic_2 is
 	procedure cb_zoom_to_fit (
 		button : access gtk_button_record'class);
 
+
+	-- This callback procedure is called each time the 
+	-- button "zoom area" is clicked.
+	procedure cb_zoom_area (
+		button : access gtk_button_record'class);
+
 	
 	-- Connects additional button signals with subprograms:
 	procedure set_up_command_buttons;

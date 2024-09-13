@@ -1444,16 +1444,6 @@ private
 
 	-- BUTTONS:
 
-
-	-- This callback procedure is called each time the 
-	-- button "zoom area" is clicked.
-	procedure cb_zoom_area (
-		button : access gtk_button_record'class);
-
-	access_cb_zoom_area : constant cb_gtk_button_void := cb_zoom_area'access;
-
-
-
 	
 	-- This callback procedure is called each time the 
 	-- button "add" is clicked.

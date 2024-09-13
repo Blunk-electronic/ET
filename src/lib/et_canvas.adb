@@ -2719,19 +2719,6 @@ package body et_canvas is
 
 -----------------------------------------------------------------------	
 -- INITIALISATION AND CALLBACKS:
-
-
-	procedure cb_zoom_area (
-		button : access gtk_button_record'class)
-	is
-		-- debug : boolean := true;
-		debug : boolean := false;
-	begin
-		put_line ("cb_zoom_area");
-
-		zoom_area.active := true;
-	end cb_zoom_area;
-
 	
 
 	procedure cb_add (
@@ -2884,9 +2871,6 @@ package body et_canvas is
 		create_buttons;
 
 		-- Connect button signals with subprograms:
-		
-		-- button_zoom_area.on_clicked (cb_zoom_area'access);
-		button_zoom_area.on_clicked (access_cb_zoom_area);
 		
 		--button_add.on_clicked (cb_add'access);
 		button_add.on_clicked (access_cb_add);

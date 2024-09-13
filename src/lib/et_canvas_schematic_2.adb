@@ -426,6 +426,25 @@ package body et_canvas_schematic_2 is
 	end cb_zoom_to_fit;
 
 
+	
+	procedure cb_zoom_area (
+		button : access gtk_button_record'class)
+	is
+		use et_modes.schematic;
+		
+		-- debug : boolean := true;
+		debug : boolean := false;
+	begin
+		put_line ("cb_zoom_area (schematic)");
+
+		reset_verb_and_noun;
+		update_mode_display;
+		
+		zoom_area.active := true;
+	end cb_zoom_area;
+
+
+	
 
 	procedure set_up_command_buttons is
 	begin
@@ -435,6 +454,8 @@ package body et_canvas_schematic_2 is
 		
 		button_zoom_fit.on_clicked (cb_zoom_to_fit'access);
 		-- button_zoom_fit.on_clicked (access_cb_zoom_to_fit);		
+
+		button_zoom_area.on_clicked (cb_zoom_area'access);
 		
 	end set_up_command_buttons;
 

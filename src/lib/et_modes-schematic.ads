@@ -141,7 +141,7 @@ package et_modes.schematic is
 
 
 	-- Resets verb and noun to default values:
-	procedure reset_mode;
+	procedure reset_verb_and_noun;
 	
 
 	expect_entry : type_expect_entry := expect_entry_default;

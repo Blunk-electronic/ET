@@ -74,7 +74,7 @@ package body et_modes.board is
 	
 
 
-	procedure reset_mode is begin
+	procedure reset_verb_and_noun is begin
 		verb := verb_default;
 		noun := noun_default;
 	end;
