@@ -865,6 +865,25 @@ package body et_canvas_schematic_2 is
 	end cb_canvas_button_released;
 	
 	
+
+	function cb_canvas_mouse_moved (
+		canvas	: access gtk_widget_record'class;
+		event	: gdk_event_motion)
+		return boolean
+	is
+		event_handled : boolean := true;
+
+		mp : type_vector_model;
+	begin
+		put_line ("cb_canvas_mouse_moved (schematic)");
+
+		-- Get from the mouse event the model point:
+		mp := get_mouse_moved_event (event);
+		
+		return event_handled;
+	end cb_canvas_mouse_moved;
+
+
 	
 	procedure set_up_canvas is begin
 		put_line ("set_up_canvas (schematic)");
@@ -875,10 +894,13 @@ package body et_canvas_schematic_2 is
 		-- NOTE: No context is declared here, because the canvas widget
 		-- passes its own context to the callback procedure cb_draw.
 
+		
 		canvas.on_key_press_event (cb_canvas_key_pressed'access);
 
 		canvas.on_button_press_event (cb_canvas_button_pressed'access);
 		canvas.on_button_release_event (cb_canvas_button_released'access);
+
+		canvas.on_motion_notify_event (cb_canvas_mouse_moved'access);
 	end set_up_canvas;
 
 	

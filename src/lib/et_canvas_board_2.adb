@@ -991,6 +991,23 @@ package body et_canvas_board_2 is
 
 
 
+	function cb_canvas_mouse_moved (
+		canvas	: access gtk_widget_record'class;
+		event	: gdk_event_motion)
+		return boolean
+	is
+		event_handled : boolean := true;
+
+		mp : type_vector_model;
+	begin
+		put_line ("cb_canvas_mouse_moved (board)");
+
+		-- Get from the mouse event the model point:
+		mp := get_mouse_moved_event (event);
+				
+		return event_handled;
+	end cb_canvas_mouse_moved;
+	
 
 
 	
@@ -1007,6 +1024,8 @@ package body et_canvas_board_2 is
 
 		canvas.on_button_press_event (cb_canvas_button_pressed'access);
 		canvas.on_button_release_event (cb_canvas_button_released'access);
+
+		canvas.on_motion_notify_event (cb_canvas_mouse_moved'access);
 	end set_up_canvas;
 
 

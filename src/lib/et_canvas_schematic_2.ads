@@ -254,7 +254,17 @@ package et_canvas_schematic_2 is
 		event	: gdk_event_button)
 		return boolean;
 
+
+
 	
+	-- This callback function is called each time the operator
+	-- moves the pointer (or the mouse) inside the canvas:
+	function cb_canvas_mouse_moved (
+		canvas	: access gtk_widget_record'class;
+		event	: gdk_event_motion)
+		return boolean;
+
+
 	
 	-- Connects additional canvas signals with subprograms:
 	procedure set_up_canvas;

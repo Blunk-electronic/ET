@@ -3254,7 +3254,7 @@ package body et_canvas is
 	
 		
 		-- canvas.on_motion_notify_event (cb_canvas_mouse_moved'access);
-		canvas.on_motion_notify_event (access_cb_canvas_mouse_moved);
+		-- canvas.on_motion_notify_event (access_cb_canvas_mouse_moved);
 		
 		--canvas.on_scroll_event (cb_mouse_wheel_rolled'access);
 		canvas.on_scroll_event (access_cb_mouse_wheel_rolled);
@@ -4401,58 +4401,130 @@ package body et_canvas is
 -- CALLBACKS:	
 	
 	
-	function cb_canvas_mouse_moved (
-		canvas	: access gtk_widget_record'class;
-		event	: gdk_event_motion)
-		return boolean
-	is
-		event_handled : boolean := true;
+-- 	function cb_canvas_mouse_moved (
+-- 		canvas	: access gtk_widget_record'class;
+-- 		event	: gdk_event_motion)
+-- 		return boolean
+-- 	is
+-- 		event_handled : boolean := true;
+-- 
+-- 		cp : constant type_logical_pixels_vector := 
+-- 			(to_lp (event.x), to_lp (event.y));
+-- 
+-- 		-- Get the real model coordinates:
+-- 		mp : constant type_vector_model := canvas_to_real (cp, S);
+-- 	begin
+-- 		-- put_line ("cb_canvas_mouse_moved");
+-- 
+-- 		-- output on the terminal:
+-- 		-- Output the x/y position of the pointer
+-- 		-- in logical and model coordinates:
+-- 		-- put_line (
+-- 			-- to_string (cp)
+-- 			-- & " " & to_string (mp)
+-- 
+-- 		-- Update the coordinates display with the pointer position:
+-- 		-- x-axis:
+-- 		--pointer_x_buf.set_text (to_string (mp.x));
+-- 		pointer_x_buf.set_text (to_string (to_reality (mp.x)));
+-- 		pointer_x_value.set_buffer (pointer_x_buf);
+--   
+-- 		-- y-axis:
+-- 		pointer_y_buf.set_text (to_string (to_reality (mp.y)));
+-- 		pointer_y_value.set_buffer (pointer_y_buf);
+-- 		-- CS move to demo_coordinates_display
+-- 
+-- 		update_distances_display;
+-- 
+-- 		-- While a zoom-to-area operation is active,
+-- 		-- set the end point of the selected area.
+-- 		-- The routine that draws the rectangle uses this
+-- 		-- point to compute the rectangle on the fly:
+-- 		if zoom_area.active then
+-- 			zoom_area.l2 := cp;
+-- 			--put_line ("zoom area l2: " & to_string (zoom_area.l2));
+-- 
+-- 			-- The canvas must be refreshed in order to
+-- 			-- show the rectangle as the mouse is being moved:
+-- 			refresh;
+-- 		end if;
+-- 		
+-- 		return event_handled;
+-- 	end cb_canvas_mouse_moved;
 
+
+	function get_mouse_moved_event (
+		event	: gdk_event_motion)
+		return type_vector_model
+	is
+		debug : boolean := true;
+
+		-- Get the canvas point in logical pixels:
 		cp : constant type_logical_pixels_vector := 
 			(to_lp (event.x), to_lp (event.y));
 
+		
 		-- Get the real model coordinates:
 		mp : constant type_vector_model := canvas_to_real (cp, S);
-	begin
-		-- put_line ("cb_canvas_mouse_moved");
 
-		-- output on the terminal:
-		-- Output the x/y position of the pointer
-		-- in logical and model coordinates:
-		-- put_line (
-			-- to_string (cp)
-			-- & " " & to_string (mp)
 
-		-- Update the coordinates display with the pointer position:
-		-- x-axis:
-		--pointer_x_buf.set_text (to_string (mp.x));
-		pointer_x_buf.set_text (to_string (to_reality (mp.x)));
-		pointer_x_value.set_buffer (pointer_x_buf);
-  
-		-- y-axis:
-		pointer_y_buf.set_text (to_string (to_reality (mp.y)));
-		pointer_y_value.set_buffer (pointer_y_buf);
-		-- CS move to demo_coordinates_display
+		-- Updates the coordinates display:
+		procedure update_display is begin
+			-- x-axis:
+			pointer_x_buf.set_text (to_string (to_reality (mp.x)));
+			pointer_x_value.set_buffer (pointer_x_buf);
+	
+			-- y-axis:
+			pointer_y_buf.set_text (to_string (to_reality (mp.y)));
+			pointer_y_value.set_buffer (pointer_y_buf);
 
-		update_distances_display;
-
-		-- While a zoom-to-area operation is active,
-		-- set the end point of the selected area.
-		-- The routine that draws the rectangle uses this
-		-- point to compute the rectangle on the fly:
-		if zoom_area.active then
-			zoom_area.l2 := cp;
-			--put_line ("zoom area l2: " & to_string (zoom_area.l2));
-
-			-- The canvas must be refreshed in order to
-			-- show the rectangle as the mouse is being moved:
-			refresh;
-		end if;
+			update_distances_display;
+		end update_display;
 		
-		return event_handled;
-	end cb_canvas_mouse_moved;
+
+		-- If a zoom-to-area operation is active, then
+		-- this procedure draws the selected area.
+		-- If no zoom-to-area operation is active, then
+		-- nothing happens here:
+		procedure draw_selected_area is begin
+			-- While a zoom-to-area operation is active,
+			-- set the end point of the selected area.
+			-- The routine that draws the rectangle uses this
+			-- point to compute the rectangle on the fly:
+			if zoom_area.active then
+				zoom_area.l2 := cp;
+
+				if debug then
+					put_line (" zoom area l2: " & to_string (zoom_area.l2));
+				end if;
+				
+				-- The canvas must be refreshed in order to
+				-- show the rectangle as the mouse is being moved:
+				refresh;
+			end if;
+		end draw_selected_area;
+			
+		
+	begin
+		if debug then
+			put_line ("get_mouse_moved_event");
+
+			-- Output the point in logical pixels (CS2):
+			put_line (" pixels " & to_string (cp));
+
+			-- Output the model point (CS1):
+			put_line (" model  " & to_string (mp));
+		end if;
 
 
+		update_display;
+
+		draw_selected_area;
+		
+		return mp;
+	end get_mouse_moved_event;
+
+	
 
 	
 	function cb_mouse_wheel_rolled (

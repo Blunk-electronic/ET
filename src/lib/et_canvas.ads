@@ -1431,7 +1431,12 @@ package et_canvas is
 		event	: gdk_event_button)
 		return type_mouse_event;
 
-	
+
+
+	function get_mouse_moved_event (
+		event	: gdk_event_motion)
+		return type_vector_model;
+
 	
 private
 
@@ -1643,13 +1648,13 @@ private
 
 	-- This callback function is called each time the operator
 	-- moves the pointer (or the mouse) inside the canvas:
-	function cb_canvas_mouse_moved (
-		canvas	: access gtk_widget_record'class;
-		event	: gdk_event_motion)
-		return boolean;
-
-	access_cb_canvas_mouse_moved : constant
-		cb_gtk_widget_gdk_event_motion_boolean := cb_canvas_mouse_moved'access;
+	-- function cb_canvas_mouse_moved (
+	-- 	canvas	: access gtk_widget_record'class;
+	-- 	event	: gdk_event_motion)
+	-- 	return boolean;
+ -- 
+	-- access_cb_canvas_mouse_moved : constant
+	-- 	cb_gtk_widget_gdk_event_motion_boolean := cb_canvas_mouse_moved'access;
 
 
 
