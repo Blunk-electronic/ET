@@ -4151,6 +4151,20 @@ package body et_canvas is
 	end draw_text;
 
 
+	
+	procedure draw_vector_text (
+		text	: in pac_text.type_vector_text;
+
+		-- The line width is used for calculating the boundaries
+		-- of the line segments:
+		width	: in pac_geometry.type_distance_positive)
+	is
+	begin
+		null;
+	end draw_vector_text;
+
+
+	
 
 	function to_string (
 		event	: in type_mouse_event)

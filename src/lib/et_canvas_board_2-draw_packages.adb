@@ -259,14 +259,11 @@ is
 				procedure query_text (c : in pac_silk_texts.cursor) is 
 					text : type_silk_text renames element (c);
 				begin
-					null;
-					-- draw_text_origin (text.position.place, face);
+					draw_origin ((text.position.place, zero_rotation));
 
-					-- CS
-					-- set_line_width (context.cr, type_view_coordinate (text.line_width));
-					-- draw_vector_text (
-					-- 	text	=> text.vectors,
-					-- 	width	=> text.line_width);
+					draw_vector_text (
+						text	=> text.vectors,
+						width	=> text.line_width);
 				end query_text;
 
 				
@@ -388,14 +385,11 @@ is
 				procedure query_text (c : in pac_doc_texts.cursor) is 
 					text : type_doc_text renames element (c);
 				begin
-					null;
-					--draw_text_origin (text.position.place, face);
+					draw_origin ((text.position.place, zero_rotation));
 
-					-- CS
-					-- set_line_width (context.cr, type_view_coordinate (text.line_width));
-					-- draw_vector_text (
-					-- 	text	=> text.vectors,
-					-- 	width	=> text.line_width);
+					draw_vector_text (
+						text	=> text.vectors,
+						width	=> text.line_width);
 				end query_text;
 
 				
@@ -584,11 +578,11 @@ is
 				procedure query_text (c : pac_stop_texts.cursor) is
 					text : type_stop_text renames element (c);
 				begin
-					null;
-					-- set_line_width (context.cr, type_view_coordinate (text.line_width));
-					-- draw_vector_text (
-					-- 	text	=> text.vectors,
-					-- 	width	=> text.line_width);
+					draw_origin ((text.position.place, zero_rotation));
+					
+					draw_vector_text (
+						text	=> text.vectors,
+						width	=> text.line_width);
 				end query_text;
 
 				
@@ -1091,14 +1085,15 @@ is
 				end query_circle;
 
 				
--- 				procedure query_text (c : in pac_conductor_texts.cursor) is
--- 					text : et_conductor_text.type_conductor_text renames element (c);
--- 				begin
--- 					set_line_width (context.cr, type_view_coordinate (text.line_width));
--- 					draw_vector_text (
--- 						text	=> text.vectors,
--- 						width	=> text.line_width);
--- 				end query_text;
+				procedure query_text (c : in pac_conductor_texts.cursor) is
+					text : et_conductor_text.type_conductor_text renames element (c);
+				begin
+					draw_origin ((text.position.place, zero_rotation));
+
+					draw_vector_text (
+						text	=> text.vectors,
+						width	=> text.line_width);
+				end query_text;
 
 				
 			begin
@@ -1106,7 +1101,7 @@ is
 				objects.lines.iterate (query_line'access);
 				objects.arcs.iterate (query_arc'access);
 				objects.circles.iterate (query_circle'access);
-				--  CS objects.texts.iterate (query_text'access);
+				objects.texts.iterate (query_text'access);
 			end draw;
 
 			

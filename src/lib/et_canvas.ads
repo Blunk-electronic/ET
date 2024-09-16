@@ -1401,8 +1401,20 @@ package et_canvas is
 		alignment	: in et_text.type_text_alignment);
 
 
+	-- Draw a vectorized text:
+	procedure draw_vector_text (
+		text	: in pac_text.type_vector_text;
+
+		-- The line width is used for calculating the boundaries
+		-- of the line segments:
+		width	: in pac_geometry.type_distance_positive);
+
+
+	
 	
 
+-- MOUSE EVENTS
+	
 	type type_mouse_event is record
 		point		: type_vector_model;
 		button		: type_mouse_button;
