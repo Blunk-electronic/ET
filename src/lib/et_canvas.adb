@@ -4159,6 +4159,9 @@ package body et_canvas is
 		use pac_text;
 		use pac_character_lines;
 
+		-- Drawing a vector-text is just a matter of
+		-- drawing many lines. So we iterate the given
+		-- lines of the text and draw them one by one.
 		
 		procedure query_line (
 			c : in pac_character_lines.cursor)
