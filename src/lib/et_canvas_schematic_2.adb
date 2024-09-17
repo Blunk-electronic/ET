@@ -1303,44 +1303,6 @@ package body et_canvas_schematic_2 is
 	end init_drawing;
 
 
-	
--- 	procedure set_grid_x (self : access gtk_entry_record'class) is
--- 		use et_schematic_ops;
--- 
--- 		-- get the current grid		
--- 		grid : type_grid := element (current_active_module).grid;
--- 	begin
--- 		-- Assign grid to x AND y axis so that the operator is not requested
--- 		-- to manually assign y.
--- 		grid.x := to_distance (get_text (self));
--- 		grid.y := to_distance (get_text (self));
--- 
--- 		-- Show the grid:
--- 		gtk_entry (grid_x.get_child).set_text (trim (to_string (grid.x), left));
--- 		gtk_entry (grid_y.get_child).set_text (trim (to_string (grid.y), left));
--- 		
--- 		-- Finally set the grid in the module database:
--- 		set_grid (current_active_module, grid, log_threshold + 1);
--- 		redraw (canvas);
--- 	end set_grid_x;
--- 
--- 	
--- 	procedure set_grid_y (self : access gtk_entry_record'class) is
--- 		use et_schematic_ops;
--- 
--- 		-- get the current grid	
--- 		grid : type_grid := element (current_active_module).grid;
--- 	begin
--- 		-- Assign grid to y axis:
--- 		grid.y := to_distance (get_text (self));
--- 
--- 		-- Show the grid:
--- 		gtk_entry (grid_y.get_child).set_text (trim (to_string (grid.y), left));
--- 		
--- 		-- Finally set the grid in the module database:
--- 		set_grid (current_active_module, grid, log_threshold + 1);
--- 		redraw (canvas);
--- 	end set_grid_y;
 
 	
 	procedure reset_grid_and_cursor	is 
@@ -1353,66 +1315,7 @@ package body et_canvas_schematic_2 is
 	end reset_grid_and_cursor;
 
 	
--- 	procedure set_grid (
--- 		self	: not null access type_view;
--- 		density	: in type_grid_density)
--- 	is begin
--- 		grid_density := density;
--- 		cursor_main.position := snap_to_grid (cursor_main.position);
--- 		self.update_coordinates_display;
--- 	end set_grid;
 
-	-- 	
--- 	function get_grid (
--- 		self : not null access type_view)
--- 		return type_grid
--- 	is
--- 		-- Get the default grid as defined in the module database:
--- 		g : type_grid := element (current_active_module).grid;
--- 	begin
--- 		-- Scale the grid according to current grid level:
--- 		case grid_density is
--- 			when COARSE => scale_grid (g, grid_density_multiplier_coarse);
--- 			when NORMAL => scale_grid (g, grid_density_multiplier_normal);
--- 			when FINE	=> scale_grid (g, grid_density_multiplier_fine);
--- 		end case;
--- 				
--- 		return g;
--- 	end get_grid;
--- 
--- 	
--- 	function get_frame (
--- 		self : not null access type_view)
--- 		return et_frames.type_frame 
--- 	is
--- 		use et_project.modules.pac_generic_modules;
--- 	begin
--- 		return element (current_active_module).frames.frame;
--- 	end get_frame;
--- 
--- 	
--- 	function get_frame_height (
--- 		self : not null access type_view)
--- 		return type_float_positive 
--- 	is 
--- 		use et_project.modules.pac_generic_modules;
--- 	begin
--- 		return type_float_positive (
--- 			element (current_active_module).frames.frame.size.y);
--- 	end get_frame_height;
--- 
--- 	
--- 	function frame_width (
--- 		self : not null access type_view)
--- 		return type_float_positive 
--- 	is 
--- 		use et_project.modules.pac_generic_modules;
--- 	begin
--- 		return type_float_positive (
--- 			element (current_active_module).frames.frame.size.x);
--- 	end frame_width;
--- 
--- 	
 -- 	function title_block_position (
 -- 		self : not null access type_view)
 -- 		return et_frames.type_position 
