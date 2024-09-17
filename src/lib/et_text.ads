@@ -1813,16 +1813,6 @@ package et_text is
 			text	: in type_vector_text)
 			return type_distance_positive;
 		
-								   
-		-- Returns the boundaries of the given vector text:		
-		function get_boundaries (
-			text	: in type_vector_text)
-			return pac_geometry_1.type_boundaries;
-
-
-		-- Computes the boundaries of the given vector text:
-		procedure update_text_boundaries (
-			text	: in out type_vector_text);
 
 		
 		-- Mirrors a vector text along the given axis:
@@ -1853,9 +1843,6 @@ package et_text is
 
 			-- The linewidth of the line segments:
 			width		: pac_geometry.type_distance_positive := 0.0; -- CS use lower limit ?
-
-			-- The boundaries of the whole vector text:
-			boundaries	: pac_geometry_1.type_boundaries;
 		end record;
 		
 	end generic_pac_text;

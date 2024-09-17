@@ -697,53 +697,6 @@ package body et_text is
 						end case;
 					end align_vertical;
 
-
-					procedure update_text_boundaries is
-						sx : constant type_float := get_x (l.start_point);
-						sy : constant type_float := get_y (l.start_point);
-						ex : constant type_float := get_x (l.end_point);
-						ey : constant type_float := get_y (l.end_point);
-					begin
-						-- update greatest x (right border):
-						if sx > result.boundaries.greatest_x then
-							result.boundaries.greatest_x := sx;
-						end if;
-
-						if ex > result.boundaries.greatest_x then
-							result.boundaries.greatest_x := ex;
-						end if;
-
-						
-						-- update greatest y (upper border):
-						if sy > result.boundaries.greatest_y then
-							result.boundaries.greatest_y := sy;
-						end if;
-
-						if ey > result.boundaries.greatest_y then
-							result.boundaries.greatest_y := ey;
-						end if;
-
-
-						-- update smallest x (left border):
-						if sx < result.boundaries.smallest_x then
-							result.boundaries.smallest_x := sx;
-						end if;
-
-						if ex < result.boundaries.smallest_x then
-							result.boundaries.smallest_x := ex;
-						end if;
-
-						
-						-- update smallest y (lower border):
-						if sy < result.boundaries.smallest_y then
-							result.boundaries.smallest_y := sy;
-						end if;
-
-						if ey < result.boundaries.smallest_y then
-							result.boundaries.smallest_y := ey;
-						end if;
-					end update_text_boundaries;
-
 					
 				begin -- query_line
 					
@@ -784,10 +737,6 @@ package body et_text is
 					move_by (l, to_offset (position));					
 					
 					append (scratch, l);
-
-					-- Update the boundaries of the text by the x/y values
-					-- of the current line:
-					update_text_boundaries;
 				end query_line;
 
 				
@@ -797,13 +746,6 @@ package body et_text is
 				iterate (result.lines, query_line'access);
 				result.lines := scratch;
 
-				-- Since the lines have a width, the boundaries must
-				-- be extended by half the line width:
-				result.boundaries.greatest_x := result.boundaries.greatest_x + half_line_width;
-				result.boundaries.greatest_y := result.boundaries.greatest_y + half_line_width;
-
-				result.boundaries.smallest_x := result.boundaries.smallest_x - half_line_width;
-				result.boundaries.smallest_y := result.boundaries.smallest_y - half_line_width;
 			end finalize;
 
 			
@@ -948,85 +890,6 @@ package body et_text is
 		end get_linewidth;
 		
 		
-		function get_boundaries (
-			text	: in type_vector_text)
-			return pac_geometry_1.type_boundaries
-		is begin
-			return text.boundaries;
-		end get_boundaries;
-
-
-		procedure update_text_boundaries (
-			text	: in out type_vector_text)
-		is
-			half_line_width : constant type_float_positive := type_float (text.width) * 0.5;
-			
-			procedure query_line (c : in pac_character_lines.cursor) is
-				l : type_character_line renames element (c);
-				sx : constant type_float := get_x (l.start_point);
-				sy : constant type_float := get_y (l.start_point);
-				ex : constant type_float := get_x (l.end_point);
-				ey : constant type_float := get_y (l.end_point);
-			begin
-				-- update greatest x (right border):
-				if sx > text.boundaries.greatest_x then
-					text.boundaries.greatest_x := sx;
-				end if;
-
-				if ex > text.boundaries.greatest_x then
-					text.boundaries.greatest_x := ex;
-				end if;
-
-				
-				-- update greatest y (upper border):
-				if sy > text.boundaries.greatest_y then
-					text.boundaries.greatest_y := sy;
-				end if;
-
-				if ey > text.boundaries.greatest_y then
-					text.boundaries.greatest_y := ey;
-				end if;
-
-
-				-- update smallest x (left border):
-				if sx < text.boundaries.smallest_x then
-					text.boundaries.smallest_x := sx;
-				end if;
-
-				if ex < text.boundaries.smallest_x then
-					text.boundaries.smallest_x := ex;
-				end if;
-
-				
-				-- update smallest y (lower border):
-				if sy < text.boundaries.smallest_y then
-					text.boundaries.smallest_y := sy;
-				end if;
-
-				if ey < text.boundaries.smallest_y then
-					text.boundaries.smallest_y := ey;
-				end if;
-
-			end query_line;
-			
-		begin
-			-- clear the old boundaries:
-			text.boundaries := (others => <>);
-
-			-- iterate all line segments:
-			text.lines.iterate (query_line'access);
-
-			-- Since the lines have a width, the boundaries must
-			-- be extended by half the line width:
-			text.boundaries.greatest_x := text.boundaries.greatest_x + half_line_width;
-			text.boundaries.greatest_y := text.boundaries.greatest_y + half_line_width;
-
-			text.boundaries.smallest_x := text.boundaries.smallest_x - half_line_width;
-			text.boundaries.smallest_y := text.boundaries.smallest_y - half_line_width;
-		end update_text_boundaries;
-
-
-		
 		procedure mirror_vector_text (
 			text	: in out type_vector_text;
 			axis	: in type_axis_2d := Y)
@@ -1049,8 +912,6 @@ package body et_text is
 			-- borders
 			mirror_polygons (text.borders, axis);
 
-			-- boundaries
-			update_text_boundaries (text);
 		end mirror_vector_text;
 
 
@@ -1077,9 +938,6 @@ package body et_text is
 
 			-- borders
 			rotate_polygons (text.borders, angle_float);
-
-			-- boundaries
-			update_text_boundaries (text);
 		end rotate_vector_text;
 
 
@@ -1107,8 +965,6 @@ package body et_text is
 			-- borders
 			move_polygons (text.borders, offset_float);
 
-			-- boundaries
-			update_text_boundaries (text);
 		end move_vector_text;
 
 		
