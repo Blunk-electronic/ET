@@ -1401,12 +1401,10 @@ package et_canvas is
 		alignment	: in et_text.type_text_alignment);
 
 
-	-- Draw a vectorized text:
+	-- Draw a vectorized text with the
+	-- given linewidth:
 	procedure draw_vector_text (
 		text	: in pac_text.type_vector_text;
-
-		-- The line width is used for calculating the boundaries
-		-- of the line segments:
 		width	: in pac_geometry.type_distance_positive);
 
 

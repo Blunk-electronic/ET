@@ -4154,13 +4154,37 @@ package body et_canvas is
 	
 	procedure draw_vector_text (
 		text	: in pac_text.type_vector_text;
-
-		-- The line width is used for calculating the boundaries
-		-- of the line segments:
 		width	: in pac_geometry.type_distance_positive)
 	is
+		use pac_text;
+		use pac_character_lines;
+
+		
+		procedure query_line (
+			c : in pac_character_lines.cursor)
+		is
+			-- The line of a character must now be
+			-- converted to a type_line:
+			lf : type_character_line renames element (c);
+			lc : type_line;
+		begin
+			lc.start_point := to_point (lf.start_point);
+			lc.end_point := to_point (lf.end_point);
+
+			set_linewidth (width);
+			
+			draw_line (
+				line	=> lc,
+				width	=> 0.0); -- don't care
+				
+			stroke;
+		end query_line;
+		
+		
 	begin
-		null;
+		-- set_line_join (context.cr, cairo_line_join_miter); -- CS
+		
+		iterate (text, query_line'access);
 	end draw_vector_text;
 
 
