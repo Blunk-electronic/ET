@@ -881,6 +881,26 @@ package body et_canvas_board_2 is
 		key_ctrl	: gdk_modifier_type := event.state and control_mask;
 		key_shift	: gdk_modifier_type := event.state and shift_mask;
 		key			: gdk_key_type := event.keyval;
+
+
+		-- Advances to next grid density up or down:
+		procedure set_grid is
+			use et_pcb_coordinates_2.pac_grid;
+		begin
+			case key is
+				when GDK_Shift_L =>
+					next_grid_density (grid, GRID_UP);
+
+				when GDK_Shift_R =>
+					next_grid_density (grid, GRID_DOWN);
+
+				when others => null;
+			end case;
+			
+			update_grid_display;
+			refresh;
+		end set_grid;
+
 		
 	begin
 		-- Output the the gdk_key_type (which is
@@ -893,9 +913,16 @@ package body et_canvas_board_2 is
 				when GDK_KP_ADD | GDK_PLUS =>
 					zoom_on_cursor (ZOOM_IN);
 
+					
 				when GDK_KP_SUBTRACT | GDK_MINUS =>
 					zoom_on_cursor (ZOOM_OUT);
 
+
+				-- Advance to next grid density on ctrl and shift
+				when GDK_Shift_L | GDK_Shift_R => -- CS: ALT key ?
+					set_grid;
+
+					
 					
 				-- Undo the last operation on ctrl-z
 				when GDK_LC_z =>

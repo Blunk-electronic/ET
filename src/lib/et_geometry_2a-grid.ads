@@ -63,12 +63,15 @@ package et_geometry_2a.grid is
 	-- The default grid size in in the model domain:
 	grid_spacing_default : constant type_distance_positive := 10.0; 
 
+	grid_spacing_max : constant type_distance_positive := 100.0;
+	grid_spacing_min : constant type_distance_positive := 0.01; 
+	
 		
 	-- If the displayed grid is too dense, then it makes no
 	-- sense to draw a grid. For this reason we define a minimum
 	-- distance between grid rows and columns. If the spacing becomes
 	-- greater than this threshold then the grid will be drawn:
-	grid_spacing_min : constant type_logical_pixels_positive := 10.0;
+	grid_spacing_min_lp : constant type_logical_pixels_positive := 10.0;
 
 	
 	type type_grid is record
@@ -82,23 +85,24 @@ package et_geometry_2a.grid is
 
 
 
-	-- The grid density is used to switch the grid size (the spacing between the grid points).
-	-- Depending on the grid density, a multiplier will be applied to
-	-- the default grid (as defined in the module database).
-	type type_grid_density is (
-			COARSE,
-			NORMAL,
-			FINE);
+	-- The grid spacing can be changed via certain keystrokes.
+	-- It can be scaled up or down:
+	type type_grid_direction is (GRID_UP, GRID_DOWN);
 
-	function to_string (density : in type_grid_density) return string;
+	-- When scaling the grid spacing up or down we use
+	-- a simple multiplier:
+	density_multiplier : constant type_distance_positive := 2.0;
+
 	
-	grid_density_default : constant type_grid_density := NORMAL;
-	grid_density : type_grid_density := NORMAL;
+	-- This procedure changes the given grid:
+	procedure next_grid_density (
+		grid 		: in out type_grid;
+		direction	: in type_grid_direction);
 
-	procedure next_grid_density;
 
-	procedure reset_grid_density;
-
+	-- This procedure resets the grid spacing to the default value:
+	procedure reset_grid_density (
+		grid		: in out type_grid);
 	
 	
 end et_geometry_2a.grid;

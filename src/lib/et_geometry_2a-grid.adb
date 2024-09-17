@@ -36,25 +36,47 @@
 --   history of changes:
 --
 
+with ada.text_io;					use ada.text_io;
+
+
 
 package body et_geometry_2a.grid is
 
-	function to_string (density : in type_grid_density) return string is begin
-		return type_grid_density'image (density);
-	end to_string;
 
 	
-	procedure next_grid_density is begin
-		if grid_density = type_grid_density'last then
-			grid_density := type_grid_density'first;
-		else
-			grid_density := type_grid_density'succ (grid_density);
-		end if;
+	procedure next_grid_density (
+		grid 		: in out type_grid;
+		direction	: in type_grid_direction)
+	is begin
+		put_line ("next_grid_density " & type_grid_direction'image (direction));
+
+		case direction is
+			when GRID_UP =>
+				grid.spacing.x := grid.spacing.x * density_multiplier;
+				grid.spacing.y := grid.spacing.y * density_multiplier;
+
+				limit_to_maximum (grid.spacing.x, grid_spacing_max);
+				limit_to_maximum (grid.spacing.y, grid_spacing_max);
+		
+			when GRID_DOWN =>
+				grid.spacing.x := grid.spacing.x / density_multiplier;
+				grid.spacing.y := grid.spacing.y / density_multiplier;
+
+				limit_to_minimum (grid.spacing.x, grid_spacing_min);
+				limit_to_minimum (grid.spacing.y, grid_spacing_min);
+
+		end case;
 	end next_grid_density;
 
 	
-	procedure reset_grid_density is begin
-		grid_density := grid_density_default;
+	
+	procedure reset_grid_density (
+		grid : in out type_grid)
+	is begin
+		put_line ("reset_grid_density");
+		
+		grid.spacing.x := grid_spacing_default;
+		grid.spacing.y := grid_spacing_default;
 	end reset_grid_density;
 
 	

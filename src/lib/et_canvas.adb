@@ -2210,7 +2210,7 @@ package body et_canvas is
 		-- Draw the grid if it is enabled and if the spacing
 		-- is greater than the minimal required spacing:
 		if grid.on = GRID_ON and then
-			get_grid_spacing (grid) >= grid_spacing_min then
+			get_grid_spacing (grid) >= grid_spacing_min_lp then
 
 			
 			-- put_line ("draw_grid");
