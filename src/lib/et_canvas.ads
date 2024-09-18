@@ -1646,19 +1646,6 @@ private
 
 
 
-	-- This callback function is called each time the operator
-	-- moves the pointer (or the mouse) inside the canvas:
-	-- function cb_canvas_mouse_moved (
-	-- 	canvas	: access gtk_widget_record'class;
-	-- 	event	: gdk_event_motion)
-	-- 	return boolean;
- -- 
-	-- access_cb_canvas_mouse_moved : constant
-	-- 	cb_gtk_widget_gdk_event_motion_boolean := cb_canvas_mouse_moved'access;
-
-
-
-
 	-- This function is called each time the mouse wheel is
 	-- rolled inside the canvas by the operator:
 	function cb_mouse_wheel_rolled (
