@@ -156,7 +156,8 @@ package body et_canvas_schematic_2 is
 		end parse_drawing_frame;
 
 
-		
+		procedure parse_database is
+				
 -- 		-- This procedure is called each time an object of the database
 -- 		-- is processed:
 -- 		procedure query_object (oc : in pac_objects.cursor) is
@@ -222,6 +223,12 @@ package body et_canvas_schematic_2 is
 -- 			-- CS arcs
 -- 		end query_object;
 
+		begin
+			null;
+			-- CS
+			-- objects_database_model.iterate (query_object'access);
+		end parse_database;
+			
 
 		-- This procedure updates the bounding-box and
 		-- sets the bounding_box_changed flag
@@ -277,7 +284,8 @@ package body et_canvas_schematic_2 is
 		-- The database that contains all objects of the model
 		-- must be parsed. This is the call of an iteration through
 		-- all objects of the database:
-	-- objects_database_model.iterate (query_object'access);
+		parse_database;
+
 
 		-- The temporary bounding-box bbox_new in its current
 		-- state is the so called "inner bounding-box" (IB).
