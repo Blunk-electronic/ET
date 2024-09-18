@@ -6,20 +6,21 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2024 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -68,7 +69,7 @@ package et_colors is
 
 	dim_factor_default	: constant type_dim_factor := 0.6;
 	dim_factor_dark		: constant type_dim_factor := 0.25;
-	dim_factor_bright	: constant type_dim_factor := 1.0;
+	dim_factor_bright	: constant type_dim_factor := 0.8;
 
 	
 	-- Changes the brightness of a given color to the value
@@ -78,6 +79,7 @@ package et_colors is
 		brightness	: in type_dim_factor)
 		return type_color;
 
+	
 	type type_brightness is (DARK, NORMAL, BRIGHT);
 	brightness_default : constant type_brightness := NORMAL;
 
@@ -87,8 +89,6 @@ package et_colors is
 		color		: in type_color;
 		brightness	: in type_brightness)
 		return type_color;
-
-
 	
 	
 end et_colors;

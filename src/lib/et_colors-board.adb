@@ -178,9 +178,9 @@ package body et_colors.board is
 		c : type_color;
 	begin
 		case brightness is
-			when DARK 	=>	c := dim (color, 0.25);
+			when DARK 	=>	c := dim (color, dim_factor_dark);
 			when NORMAL	=>	c := dim (color, dim_factor_default);
-			when BRIGHT	=>	c := dim (color, 1.0);
+			when BRIGHT	=>	c := dim (color, dim_factor_bright);
 		end case;
 
 		set_source_rgb (context, c.red, c.green, c.blue);
