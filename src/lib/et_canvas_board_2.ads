@@ -68,14 +68,13 @@ with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
 -- use et_pcb_coordinates.pac_geometry_brd;
 -- use et_pcb_coordinates.pac_geometry_2;
 
-with et_board_shapes_and_text;		--use et_board_shapes_and_text;
+with et_board_shapes_and_text;	
 -- with et_vias;						use et_vias;
 -- with et_terminals;					use et_terminals;
 -- with et_conductor_segment;
 -- with et_packages;
 with et_project;
 with et_project.modules;			use et_project.modules;
--- with et_schematic;
 -- with et_frames;
 
 with et_canvas.drawing_frame;

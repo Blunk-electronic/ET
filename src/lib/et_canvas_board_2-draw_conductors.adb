@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -36,6 +37,8 @@
 --
 
 --with ada.text_io;					use ada.text_io;
+
+with et_geometry;
 
 with et_pcb;						use et_pcb;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
@@ -56,7 +59,18 @@ with et_colors;						use et_colors;
 with et_canvas_board_tracks;		use et_canvas_board_tracks;
 with et_board_ops.text;
 
-separate (et_canvas_board)
+with et_modes.board;				use et_modes.board;
+
+with et_schematic;
+with et_net_names;
+
+with et_ratsnest;
+
+with et_canvas_tool;
+
+
+
+separate (et_canvas_board_2)
 
 procedure draw_conductors is
 
@@ -70,7 +84,13 @@ procedure draw_conductors is
 	is 
 		use et_pcb;
 		use et_pcb_stack;
+
 		use et_text;
+		use pac_text;
+
+		use et_canvas_board_texts;
+		use et_board_shapes_and_text;
+		
 		v_text : type_vector_text;
 
 		mirror : type_vector_text_mirrored;
@@ -87,14 +107,14 @@ procedure draw_conductors is
 			and preliminary_text.signal_layer = layer then
 
 				-- Set the point where the text is to be drawn:
-				point := canvas.tool_position;
+				-- CS point := canvas.tool_position;
 
 				-- Draw the origin of the text:
 				origin := type_position (to_position (point, zero_rotation));
-				draw_text_origin (origin);
+				draw_origin (origin);
 
 				-- Set the line width of the vector text:
-				set_line_width (context.cr, type_view_coordinate (preliminary_text.text.line_width));
+				set_linewidth (preliminary_text.text.line_width);
 
 				mirror := signal_layer_to_mirror (layer, deepest_conductor_layer (current_active_module));
 
@@ -119,6 +139,7 @@ procedure draw_conductors is
 
 	
 	use et_schematic;
+	use et_net_names;
 	
 	use pac_nets;
 
@@ -178,30 +199,37 @@ procedure draw_conductors is
 	current_layer : type_signal_layer;
 
 
-	procedure set_default_brightness is begin
-		set_color_conductor (context.cr, current_layer, NORMAL);
+	procedure set_default_brightness is 
+		use et_colors.board;
+	begin
+		set_color_conductor (current_layer, NORMAL);
 	end set_default_brightness;
-		
-	procedure set_highlight_brightness is begin
-		set_color_conductor (context.cr, current_layer, BRIGHT);
+
+	
+	procedure set_highlight_brightness is 
+		use et_colors.board;
+	begin
+		set_color_conductor (current_layer, BRIGHT);
 	end set_highlight_brightness;
 	
 
 	
 -- LINES, ARCS, CIRCLES
 	
-	procedure query_line (c : in pac_conductor_lines.cursor) is 
+	procedure query_line (c : in pac_conductor_lines.cursor) is
+		use et_canvas_tool;
+		
 		line : type_conductor_line renames element (c);
 
 		procedure draw_unchanged is begin
-			draw_line (to_line_fine (line), line.width);
+			draw_line (line => type_line (line), width => line.width);
 		end draw_unchanged;
 
 	begin
 		-- Draw the line if it is in the current layer:
 		if line.layer = current_layer then
 			
-			set_line_width (context.cr, type_view_coordinate (line.width));
+			set_linewidth (line.width);
 
 			-- If the segment is selected, then it must be drawn highlighted:
 			if is_selected (line) then
@@ -221,10 +249,10 @@ procedure draw_conductors is
 										move_line_to (line_tmp, POA, snap_to_grid (get_mouse_position));
 
 									when KEYBOARD =>
-										move_line_to (line_tmp, POA, cursor_main.position);
+										move_line_to (line_tmp, POA, get_cursor_position);
 								end case;
 
-								draw_line (to_line_fine (line_tmp), line.width);
+								draw_line (line => type_line (line_tmp), width => line.width);
 							end;
 						else
 							draw_unchanged;
@@ -232,7 +260,7 @@ procedure draw_conductors is
 
 					when VERB_RIPUP =>
 						if preliminary_segment.ready then
-							draw_line (to_line_fine (line), line.width);
+							draw_line (line => type_line (line), width => line.width);
 						else
 							draw_unchanged;
 						end if;
@@ -251,32 +279,36 @@ procedure draw_conductors is
 	end query_line;
 
 	
-	procedure query_arc (c : in pac_conductor_arcs.cursor) is begin
+	procedure query_arc (c : in pac_conductor_arcs.cursor) is 
+		arc : type_conductor_arc renames element (c);
+	begin
 
 		-- Draw the arc if it is in theh current layer:
-		if element (c).layer = current_layer then
+		if arc.layer = current_layer then
 
-			set_line_width (context.cr, type_view_coordinate (element (c).width));
+			set_linewidth (arc.width);
 
 			draw_arc (
-				arc		=> to_arc_fine (element (c)),
-				width	=> element (c).width);
+				arc		=> type_arc (arc),
+				width	=> arc.width);
 
 		end if;
 	end query_arc;
 
 	
-	procedure query_circle (c : in pac_conductor_circles.cursor) is begin
+	procedure query_circle (c : in pac_conductor_circles.cursor) is 
+		circle : type_conductor_circle renames element (c);
+	begin
 		-- Draw the circle if it is in the current layer:
-		if element (c).layer = current_layer then
+		if circle.layer = current_layer then
 			
 		-- We draw a normal non-filled circle:
-		set_line_width (context.cr, type_view_coordinate (element (c).width));
+		set_linewidth (circle.width);
 
 		draw_circle (
-			circle	=> element (c),
-			filled	=> NO,
-			width	=> element (c).width);
+			circle	=> type_circle (circle),
+			filled	=> et_geometry.NO,
+			width	=> circle.width);
 
 		end if;
 	end query_circle;
@@ -290,28 +322,41 @@ procedure draw_conductors is
 	fill_line_width : type_track_width;
 	
 	use pac_islands;
+
 	
 	procedure query_island (i : in pac_islands.cursor) is
+		use pac_geometry_1;
+		
 		use pac_edges;
 		use pac_lakes;
 		use pac_stripes;
 
 		island : type_island renames element (i);
 
-		procedure draw_edge (e : in pac_edges.cursor) is begin
-			draw_line (
-				line	=> type_line_fine (element (e)),
-				width	=> fill_line_width);
+		procedure draw_edge (e : in pac_edges.cursor) is 
+			edge : type_edge renames element (e);
+		begin
+			null;
+			-- CS
+			-- draw_line (
+			-- 	line	=> type_line_fine (element (e)),
+			-- 	width	=> fill_line_width);
 		end draw_edge;
 
+		
 		procedure query_lake (l : in pac_lakes.cursor) is begin
 			element (l).centerline.edges.iterate (draw_edge'access);
 		end query_lake;
 
-		procedure draw_stripe (s : in pac_stripes.cursor) is begin
-			draw_line (
-				line	=> element (s),
-				width	=> fill_line_width);
+		
+		procedure draw_stripe (s : in pac_stripes.cursor) is 
+			stripe : type_line_fine renames element (s);
+		begin
+			null;
+			-- CS
+			-- draw_line (
+			-- 	line	=> type_line (element (s)),
+			-- 	width	=> fill_line_width);
 		end draw_stripe;
 		
 	begin
@@ -322,15 +367,21 @@ procedure draw_conductors is
 
 
 	procedure query_relief (c : in pac_reliefes.cursor) is
+		use pac_geometry_1;
+
 		use pac_reliefes;
 		use pac_spokes;
 		
 		relief : type_relief renames element (c);
 
-		procedure query_spoke (s : in pac_spokes.cursor) is begin
-			draw_line (
-				line	=> element (s),
-				width	=> relief.width);
+		procedure query_spoke (s : in pac_spokes.cursor) is 
+			spoke : type_line_fine renames element (s);
+		begin
+			null;
+			-- CS
+			-- draw_line (
+			-- 	line	=> element (s),
+			-- 	width	=> relief.width);
 		end query_spoke;
 		
 	begin
@@ -340,22 +391,26 @@ procedure draw_conductors is
 	
 	procedure query_fill_zone (c : in pac_floating_solid.cursor) is 
 		drawn : boolean := false;
+		-- CS use rename ?
 	begin
 		-- Draw the zone if it is in the current layer:
 		if element (c).properties.layer = current_layer then
 
-			draw_contour (
-				contour	=> element (c),
-				style	=> DASHED,
-				filled	=> NO, -- because this is merely the contour of the zone !
-				width	=> zero, -- CS should be the dynamically calculated width of the contours
-				drawn	=> drawn);
+			null;
+			-- CS
+			
+			-- draw_contour (
+			-- 	contour	=> element (c),
+			-- 	style	=> DASHED,
+			-- 	filled	=> NO, -- because this is merely the contour of the zone !
+			-- 	width	=> zero, -- CS should be the dynamically calculated width of the contours
+			-- 	drawn	=> drawn);
 
 			-- Draw the islands if contour has been drawn:
 			if drawn then
 				-- All borders and fill lines will be drawn with the same width:
 				fill_line_width := element (c).linewidth;			
-				set_line_width (context.cr, type_view_coordinate (fill_line_width));
+				set_linewidth (fill_line_width);
 				iterate (element (c).islands, query_island'access);
 			end if;
 		end if;
@@ -364,22 +419,25 @@ procedure draw_conductors is
 	
 	procedure query_fill_zone (c : in pac_floating_hatched.cursor) is 
 		drawn : boolean := false;
+		-- CS use rename ?
 	begin
 		-- Draw the zone if it is in the current layer:
 		if element (c).properties.layer = current_layer then
-			
-			draw_contour (
-				contour	=> element (c),
-				style	=> DASHED,
-				filled	=> NO, -- because this is merely the contour of the zone !
-				width	=> zero, -- CS should be the dynamically calculated width of the contours
-				drawn	=> drawn);
+
+			null;
+			-- CS
+			-- draw_contour (
+			-- 	contour	=> element (c),
+			-- 	style	=> DASHED,
+			-- 	filled	=> NO, -- because this is merely the contour of the zone !
+			-- 	width	=> zero, -- CS should be the dynamically calculated width of the contours
+			-- 	drawn	=> drawn);
 
 			-- Draw the islands if contour has been drawn:
 			if drawn then
 				-- All borders and fill lines will be drawn with the same width:
 				fill_line_width := element (c).linewidth;			
-				set_line_width (context.cr, type_view_coordinate (fill_line_width));
+				set_linewidth (fill_line_width);
 				iterate (element (c).islands, query_island'access);
 			end if;
 
@@ -394,19 +452,21 @@ procedure draw_conductors is
 	begin
 		-- Draw the zone if it is in the current layer:
 		if zone.properties.layer = current_layer then
-	
-			draw_contour (
-				contour	=> zone,
-				style	=> DASHED,
-				filled	=> NO, -- because this is merely the contour of the zone !
-				width	=> zero, -- CS should be the dynamically calculated width of the contours
-				drawn	=> drawn);
+
+			null;
+			-- CS
+			-- draw_contour (
+			-- 	contour	=> zone,
+			-- 	style	=> DASHED,
+			-- 	filled	=> NO, -- because this is merely the contour of the zone !
+			-- 	width	=> zero, -- CS should be the dynamically calculated width of the contours
+			-- 	drawn	=> drawn);
 
 			-- Draw islands if contour has been drawn:
 			if drawn then
 				-- All borders and fill lines will be drawn with the same width:
 				fill_line_width := zone.linewidth;			
-				set_line_width (context.cr, type_view_coordinate (fill_line_width));
+				set_linewidth (fill_line_width);
 				iterate (zone.islands, query_island'access);
 
 				if zone.connection = THERMAL then
@@ -425,18 +485,20 @@ procedure draw_conductors is
 		-- Draw the zone if it is in the current layer:
 		if zone.properties.layer = current_layer then
 
-			draw_contour (
-				contour	=> zone,
-				style	=> DASHED,
-				filled	=> NO, -- because this is merely the contour of the zone !
-				width	=> zero, -- CS should be the dynamically calculated width of the contours
-				drawn	=> drawn);
+			null;
+			-- CS
+			-- draw_contour (
+			-- 	contour	=> zone,
+			-- 	style	=> DASHED,
+			-- 	filled	=> NO, -- because this is merely the contour of the zone !
+			-- 	width	=> zero, -- CS should be the dynamically calculated width of the contours
+			-- 	drawn	=> drawn);
 
 			-- Draw islands if contour has been drawn:
 			if drawn then
 				-- All borders and fill lines will be drawn with the same width:
 				fill_line_width := zone.linewidth;			
-				set_line_width (context.cr, type_view_coordinate (fill_line_width));
+				set_linewidth (fill_line_width);
 				iterate (zone.islands, query_island'access);
 
 				if zone.connection = THERMAL then
@@ -450,19 +512,22 @@ procedure draw_conductors is
 	
 	procedure query_cutout (c : in pac_cutouts.cursor) is 
 		drawn : boolean := false;
+		-- CS use rename ?
 	begin
 		-- Draw the zone if it is in the current layer:
 		if element (c).layer = current_layer then
 
 			--save (context.cr);
 			--set_color_background (context.cr);
-			
-			draw_contour (
-				contour	=> element (c),
-				style	=> DASHED,
-				filled	=> NO,
-				width	=> zero,
-				drawn	=> drawn);
+
+			null;
+			-- CS
+			-- draw_contour (
+			-- 	contour	=> element (c),
+			-- 	style	=> DASHED,
+			-- 	filled	=> NO,
+			-- 	width	=> zero,
+			-- 	drawn	=> drawn);
 
 			--restore (context.cr);
 		end if;
@@ -474,15 +539,18 @@ procedure draw_conductors is
 	
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders_conductors.cursor) is 
 		use et_board_ops.text;
+		use pac_text;
 		v_text : type_vector_text;
+
+		-- CS use rename ?
 	begin
 		-- Draw the placeholder if it is in the current layer:
 		if element (c).layer = current_layer then
 
-			draw_text_origin (element (c).position);
+			draw_origin (element (c).position);
 
 			-- Set the line width of the vector text:
-			set_line_width (context.cr, type_view_coordinate (element (c).line_width));
+			set_linewidth (element (c).line_width);
 
 			-- Vectorize the text:
 			v_text := vectorize_text (
@@ -504,26 +572,32 @@ procedure draw_conductors is
 		end if;
 	end query_placeholder;
 
+
 	
 	procedure query_text (c : in pac_conductor_texts.cursor) is
 		text : type_conductor_text renames element (c);
 
 		-- Draws the given text as it is given:
 		procedure draw_unchanged is begin
-			draw_text_origin (text.position);
+			draw_origin (text.position);
 
 			-- Set the line width of the vector text:
-			set_line_width (context.cr, type_view_coordinate (text.line_width));
+			set_linewidth (text.line_width);
 			draw_vector_text (text.vectors, text.line_width);
 		end draw_unchanged;
 
+		
+		use et_canvas_board_texts;
+		use et_colors.board;
+		use et_canvas_tool;
+		
 	begin
 		-- Draw the text if it is in the current layer:
 		if text.layer = current_layer then
 
 			if is_selected (c) then
 				-- The selected text must be drawn highlighted:
-				set_color_conductor (context.cr, current_layer, BRIGHT);
+				set_color_conductor (current_layer, BRIGHT);
 
 				case verb is
 					when VERB_MOVE =>
@@ -540,7 +614,7 @@ procedure draw_conductors is
 										destination := snap_to_grid (get_mouse_position);
 														
 									when KEYBOARD =>
-										destination := cursor_main.position;
+										destination := get_cursor_position;
 								end case;
 
 								-- Get the relative distance of the destination to the original
@@ -550,10 +624,10 @@ procedure draw_conductors is
 								-- Move the text (incl. vector text):
 								move_text (text_tmp, offset);					
 
-								draw_text_origin (text_tmp.position);
+								draw_origin (text_tmp.position);
 
 								-- Set the line width of the vector text:
-								set_line_width (context.cr, type_view_coordinate (text_tmp.line_width));
+								set_linewidth (text_tmp.line_width);
 
 								-- Draw the text:
 								draw_vector_text (text_tmp.vectors, text_tmp.line_width);
@@ -569,7 +643,7 @@ procedure draw_conductors is
 
 				-- After drawing a selected (highlighted) text, the brightness
 				-- must be set back to normal:
-				set_color_conductor (context.cr, current_layer, NORMAL);
+				set_color_conductor (current_layer, NORMAL);
 
 			else -- not selected
 				draw_unchanged;
@@ -610,17 +684,19 @@ procedure draw_conductors is
 		radius_base : type_distance_positive;
 
 		procedure set_width_and_radius (r : in type_restring_width) is begin
-			set_line_width (context.cr, type_view_coordinate (r));
-			circle.radius := type_float_positive (radius_base + r / 2.0);
+			set_linewidth (r);
+			circle.radius := (radius_base + r / 2.0);
 		end set_width_and_radius;
 
 		
-		procedure draw_restring is begin
-			set_color_vias (context.cr, brightness);
+		procedure draw_restring is 
+			use et_colors.board;
+		begin
+			set_color_vias (brightness);
 			
 			draw_circle (
 				circle		=> circle,
-				filled		=> NO,
+				filled		=> et_geometry.NO,
 				width		=> zero -- CS ?
 				);
 			
@@ -638,19 +714,24 @@ procedure draw_conductors is
 		-- Draws the net name right in the center of the via (no offset).
 		-- The text size is set automatically with the radius of the drill:
 		procedure draw_net_name is 
+			use et_colors.board;
 			use et_text;
+
+			use et_net_names;
+			use pac_net_name;
+			
 			position : type_vector_model := circle.center;
 		begin
 			if not net_name_drawn then
 				
 				-- The net name is displayed in a special color:
-				set_color_via_net_name (context.cr);
+				set_color_via_net_name;
 
 				draw_text (
 					content		=> to_content (to_string (net_name)),
 					size		=> radius_base * text_size_factor,
 					font		=> via_text_font,
-					position	=> position,
+					anchor		=> position,
 					origin		=> false,
 					rotation	=> zero_rotation,
 					alignment	=> (center, center));
@@ -663,6 +744,7 @@ procedure draw_conductors is
 		-- Draws the layer numbers above the net name.
 		-- The text size is set automatically with the radius of the drill:
 		procedure draw_numbers (from, to : in string) is 
+			use et_colors.board;
 			use et_text;
 			position : type_vector_model := circle.center;
 			offset : constant type_distance_relative := to_distance_relative (
@@ -671,13 +753,13 @@ procedure draw_conductors is
 			move_by (position, offset);
 			
 			-- The layer numbers are displayed in a special color:
-			set_color_via_layers (context.cr);
+			set_color_via_layers;
 
 			draw_text (
 				content		=> to_content (from & "-" & to),
 				size		=> radius_base * text_size_factor,
 				font		=> via_text_font,
-				position	=> position,
+				anchor		=> position,
 				origin		=> false,
 				rotation	=> zero_rotation,
 				alignment	=> (center, center));
@@ -688,6 +770,7 @@ procedure draw_conductors is
 		-- Draws the drill size below the net name.
 		-- The text size is set automatically with the radius of the drill:
 		procedure draw_drill_size is 
+			use et_colors.board;
 			use et_text;
 			position : type_vector_model := circle.center;
 			offset : type_distance_relative;
@@ -700,13 +783,13 @@ procedure draw_conductors is
 				move_by (position, offset);
 						
 				-- The drill size is displayed in a special color:
-				set_color_via_drill_size (context.cr); -- CS
+				set_color_via_drill_size; -- CS
 
 				draw_text (
 					content		=> to_content (to_string (via.diameter)),
 					size		=> radius_base * text_size_factor,
 					font		=> via_text_font,
-					position	=> position,
+					anchor		=> position,
 					origin		=> false,
 					rotation	=> zero_rotation,
 					alignment	=> (center, center));
@@ -715,6 +798,7 @@ procedure draw_conductors is
 			end if;
 		end draw_drill_size;
 		
+
 		
 		procedure query_category is 
 			
@@ -856,6 +940,10 @@ procedure draw_conductors is
 			end case;
 		end query_category;
 
+
+		use et_canvas_board_vias;
+		use et_canvas_tool;
+		
 		
 	begin -- query_via
 
@@ -879,7 +967,7 @@ procedure draw_conductors is
 								circle.center := snap_to_grid (get_mouse_position);
 
 							when KEYBOARD =>
-								circle.center := cursor_main.position;
+								circle.center := get_cursor_position;
 						end case;
 
 					end if;
@@ -933,10 +1021,13 @@ procedure draw_conductors is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_module) 
 	is
+		use et_colors.board;
+		
 
 		-- Draw airwires:
 		procedure draw_ratsnest is
 			use et_ratsnest;
+
 			
 			procedure query_net (n : in pac_nets.cursor) is 
 				use pac_airwires;
@@ -944,10 +1035,11 @@ procedure draw_conductors is
 				procedure query_airwire (c : in pac_airwires.cursor) is 
 					restore_brightness : boolean := false;
 					skip : boolean := false;
+
 				begin
 					-- If the candidate airwire is selected, then draw it highlighted:
 					if airwire_is_selected (c, key (n)) then
-						set_color_ratsnest (context.cr, BRIGHT);
+						set_color_ratsnest (BRIGHT);
 						restore_brightness := true;
 
 						-- If a path is being drawn, then the selected
@@ -958,14 +1050,16 @@ procedure draw_conductors is
 					end if;
 
 					if not skip then
-						draw_line (
-							line		=> type_line_fine (element (c)),
-							width		=> type_distance (airwire_line_width));
+						null;
+						-- CS
+						-- draw_line (
+						-- 	line		=> type_line_fine (element (c)),
+						-- 	width		=> type_distance (airwire_line_width));
 					end if;
 					
 					-- restore normal brightness
 					if restore_brightness then
-						set_color_ratsnest (context.cr);
+						set_color_ratsnest;
 					end if;
 
 				end query_airwire;
@@ -977,13 +1071,14 @@ procedure draw_conductors is
 				end if;
 			end query_net;
 
+			
 		begin
 			if ratsnest_enabled then
 				
 				-- All airwires of all nets are drawn with the same
 				-- color and width:
-				set_color_ratsnest (context.cr);
-				set_line_width (context.cr, type_view_coordinate (airwire_line_width));
+				set_color_ratsnest;
+				set_linewidth (airwire_line_width);
 				
 				pac_nets.iterate (module.nets, query_net'access);
 			end if;
@@ -1005,7 +1100,7 @@ procedure draw_conductors is
 				--put_line (to_string (current_layer));
 
 				-- set color according to layer
-				set_color_conductor (context.cr, current_layer, brightness);
+				set_color_conductor (current_layer, brightness);
 
 				
 				-- freetracks, floating stuff:
@@ -1041,17 +1136,20 @@ procedure draw_conductors is
 	-- groups of vias.
 	vias_being_placed : pac_vias.list;
 
+	
 	-- Draws the via that is attached to the primary tool while the
 	-- operator is placing the via.
 	-- Uses list vias_being_placed as storage place for the single via.
 	procedure draw_via_being_placed is 
+		use et_canvas_board_vias;
+		
 		-- The place where the via shall be placed:
 		position : type_vector_model;
 	begin
 		if preliminary_via.ready then
 
 			-- Set the point where the via is to be drawn:
-			position := canvas.tool_position;
+			-- CS position := canvas.tool_position;
 
 			-- Get the name of the targeted net:
 			net_name := preliminary_via.net_name;
@@ -1122,7 +1220,8 @@ procedure draw_conductors is
 		procedure compute_and_draw (
 			start_point, end_point : in type_vector_model) 
 		is
-			use et_colors;
+			use pac_path_and_bend;
+			use et_colors.board;
 			
 			line : type_line;
 
@@ -1131,10 +1230,13 @@ procedure draw_conductors is
 
 			-- Draws the line:
 			procedure draw is begin
-				draw_line (
-					line		=> to_line_fine (line),
-					width		=> PT.width);
+				null;
+				-- CS
+				-- draw_line (
+				-- 	line		=> to_line_fine (line),
+				-- 	width		=> PT.width);
 			end draw;
+
 			
 		begin
 			-- The calculated path may require a bend point.
@@ -1142,10 +1244,10 @@ procedure draw_conductors is
 			PT.path.bended := path.bended;
 
 			-- set linewidth:			
-			set_line_width (context.cr, type_view_coordinate (PT.width));
+			set_linewidth (PT.width);
 
 			-- Set the color according to the current signal layer:
-			set_color_conductor (context.cr, PT.signal_layer, NORMAL);
+			set_color_conductor (PT.signal_layer, NORMAL);
 
 			-- If the path does not require a bend point, draw a single line
 			-- from start to end point:
@@ -1174,6 +1276,9 @@ procedure draw_conductors is
 			end if;
 		end compute_and_draw;
 
+
+		use et_canvas_tool;
+		
 		
 	begin -- draw_track
 		
@@ -1187,7 +1292,7 @@ procedure draw_conductors is
 				when KEYBOARD =>
 					compute_and_draw (
 						start_point	=> PT.path.start_point,	-- start of path
-						end_point	=> cursor_main.position);	-- end of path
+						end_point	=> get_cursor_position);	-- end of path
 
 			end case;
 		end if;
@@ -1215,7 +1320,7 @@ begin -- draw_conductors
 
 	-- Draw a freetrack being drawn. If no freetrack is being drawn,
 	-- nothing happens:
-	draw_path (LAYER_CAT_CONDUCTOR);
+	-- CS draw_path (LAYER_CAT_CONDUCTOR);
 
 
 	-- This is about a track that is connected to a net:

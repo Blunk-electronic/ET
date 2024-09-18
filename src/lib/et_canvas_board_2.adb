@@ -611,6 +611,9 @@ package body et_canvas_board_2 is
 
 	procedure draw_packages (
 		face	: in type_face) is separate;
+
+	
+	procedure draw_conductors is separate;
 	
 	
 	procedure draw_board is 
@@ -619,7 +622,7 @@ package body et_canvas_board_2 is
 			null;
 			-- draw_route_restrict (self);
 			-- draw_via_restrict (self);
-			-- draw_conductors;
+			draw_conductors;
 		end draw_conductor_layers;
 		
 
@@ -698,7 +701,6 @@ package body et_canvas_board_2 is
 		
 
 	begin
-
 		draw_conductor_layers;
 		draw_packages;
 		draw_silkscreen;
