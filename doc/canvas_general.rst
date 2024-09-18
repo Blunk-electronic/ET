@@ -11,6 +11,15 @@ General Navigating on the Canvas
 Grid
 ++++
 
+#. Quick Increasing of the grid spacing
+
+Keep the left CTRL-key pressed and press SHIFT briefly.
+
+#. Quick Decreasing of the grid spacing
+
+Keep the right CTRL-key pressed and press SHIFT briefly.
+
+
 The commandline allows setting the properties of the grid.
 
 #. Enabling and Disabling
