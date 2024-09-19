@@ -1379,6 +1379,18 @@ package body et_geometry_2a is
 			end_point	=> to_vector (line.end_point));
 	end to_line_fine;
 
+
+
+	function to_line_coarse (
+		line : in type_line_fine)
+		return type_line'class
+	is
+		l : type_line;
+	begin
+		l.start_point := to_point (line.start_point);
+		l.end_point   := to_point (line.end_point);
+		return l;
+	end to_line_coarse;
 	
 
 

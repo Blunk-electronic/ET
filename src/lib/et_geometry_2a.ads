@@ -731,13 +731,19 @@ package et_geometry_2a is
 		rotation	: in type_rotation);
 
 	
-
+	-- Converts a "coarse line" as defined in this package
+	-- to a "fine line" as defined in package pac_geometry_1:
 	function to_line_fine (
 		line : in type_line)
 		return type_line_fine;
 
-	
 
+	-- Converts a "fine line" as defined in package pac_geometry_1
+	-- to a "coarse line" as defined in this package.
+	function to_line_coarse (
+		line : in type_line_fine)
+		return type_line'class;
+	
 
 	-- Computes the shortest distance (perpendicular) of a 
 	-- location vector to a line. 
