@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -35,31 +36,35 @@
 --   history of changes:
 --
 
---with ada.text_io;				use ada.text_io;
+with ada.text_io;				use ada.text_io;
+with et_geometry;
+with et_schematic;
 
 with et_pcb_contour;			use et_pcb_contour;
+with et_colors.board;			use et_colors.board;
 
-separate (et_canvas_board)
 
-procedure draw_outline (
-	self    : not null access type_view)
-is	
+separate (et_canvas_board_2)
+
+procedure draw_outline is
+	
 	use pac_geometry_2;
 	use pac_contours;
 	use pac_segments;
+
 	
 	procedure query_segment (c : in pac_segments.cursor) is 
 	begin
 		case element (c).shape is
 			when LINE =>
 				draw_line (
-					line		=> to_line_fine (element (c).segment_line),
-					width		=> pcb_contour_line_width);
+					line	=> element (c).segment_line,
+					width	=> 0.0); -- don't care
 
 			when ARC =>
 				draw_arc (
-					arc			=> to_arc_fine (element (c).segment_arc),
-					width		=> pcb_contour_line_width);
+					arc		=> element (c).segment_arc,
+					width	=> 0.0); -- don't care
 		end case;
 	end query_segment;
 
@@ -68,33 +73,37 @@ is
 	procedure query_outline_segments (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in et_schematic.type_module)
-	is begin
+	is 
+		use et_geometry;
+	begin
 		if module.board.contours.outline.contour.circular then
 
 			draw_circle (
-				circle		=> module.board.contours.outline.contour.circle,
-				filled		=> NO, -- circles in outline are never filled
-				width		=> pcb_contour_line_width);			
+				circle	=> module.board.contours.outline.contour.circle,
+				filled	=> NO, -- circles in outline are never filled
+				width	=> 0.0); -- don't care
 		else
 			iterate (module.board.contours.outline.contour.segments, query_segment'access);
 		end if;
 	end query_outline_segments;
 
 	
+	
 	procedure query_holes (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in et_schematic.type_module) 
 	is
-		--use et_packages;
 		use pac_holes;
 		
-		procedure query_hole (c : in pac_holes.cursor) is begin
+		procedure query_hole (c : in pac_holes.cursor) is 
+			use et_geometry;
+		begin
 			if element (c).contour.circular then
 
 				draw_circle (
-					circle		=> element (c).contour.circle,
-					filled		=> NO, -- holes are never filled
-					width		=> pcb_contour_line_width);
+					circle	=> element (c).contour.circle,
+					filled	=> NO, -- holes are never filled
+					width	=> 0.0); -- don't care
 				
 			else
 				iterate (element (c).contour.segments, query_segment'access);
@@ -107,15 +116,15 @@ is
 
 	
 begin -- draw_outline
--- 	put_line ("draw board outline ...");
+	-- put_line ("draw board outline ...");
 
 	-- All outline segments, holes and texts will be 
 	-- drawn with the same color:
-	set_color_outline (context.cr);
+	set_color_outline;
 
 	-- All outline segments and holes be 
 	-- drawn with the same line width:
-	set_line_width (context.cr, type_view_coordinate (pcb_contour_line_width));
+	set_linewidth (pcb_contour_line_width);
 
 	-- The line width of texts is a property of a particular text and is
 	-- NOT set here.
@@ -129,6 +138,7 @@ begin -- draw_outline
 		position	=> current_active_module,
 		process		=> query_holes'access);
 
+	stroke;
 	
 end draw_outline;
 

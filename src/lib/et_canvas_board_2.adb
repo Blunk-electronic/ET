@@ -614,9 +614,13 @@ package body et_canvas_board_2 is
 
 	
 	procedure draw_conductors is separate;
+	procedure draw_outline is separate;
+
 	
 	
 	procedure draw_board is 
+		use et_display.board;
+		
 
 		procedure draw_conductor_layers is begin
 			null;
@@ -693,10 +697,9 @@ package body et_canvas_board_2 is
 
 		
 		procedure draw_pcb_outline is begin
-			null;
-			-- if outline_enabled then		
-			-- 	draw_outline (self);
-			-- end if;
+			if outline_enabled then		
+				draw_outline;
+			end if;
 		end draw_pcb_outline;
 		
 
