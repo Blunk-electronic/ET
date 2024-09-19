@@ -222,7 +222,7 @@ procedure draw_conductors is
 		line : type_conductor_line renames element (c);
 
 		procedure draw_unchanged is begin
-			draw_line (line => type_line (line), width => line.width);
+			draw_line (line => line, width => line.width);
 		end draw_unchanged;
 
 	begin
@@ -252,7 +252,7 @@ procedure draw_conductors is
 										move_line_to (line_tmp, POA, get_cursor_position);
 								end case;
 
-								draw_line (line => type_line (line_tmp), width => line.width);
+								draw_line (line => line_tmp, width => line.width);
 							end;
 						else
 							draw_unchanged;
@@ -260,7 +260,7 @@ procedure draw_conductors is
 
 					when VERB_RIPUP =>
 						if preliminary_segment.ready then
-							draw_line (line => type_line (line), width => line.width);
+							draw_line (line => line, width => line.width);
 						else
 							draw_unchanged;
 						end if;
@@ -336,11 +336,9 @@ procedure draw_conductors is
 		procedure draw_edge (e : in pac_edges.cursor) is 
 			edge : type_edge renames element (e);
 		begin
-			null;
-			-- CS
-			-- draw_line (
-			-- 	line	=> type_line_fine (element (e)),
-			-- 	width	=> fill_line_width);
+			draw_line (
+				line	=> to_line_coarse (type_line_fine (edge)),
+				width	=> fill_line_width);
 		end draw_edge;
 
 		
@@ -352,11 +350,9 @@ procedure draw_conductors is
 		procedure draw_stripe (s : in pac_stripes.cursor) is 
 			stripe : type_line_fine renames element (s);
 		begin
-			null;
-			-- CS
-			-- draw_line (
-			-- 	line	=> type_line (element (s)),
-			-- 	width	=> fill_line_width);
+			draw_line (
+				line	=> to_line_coarse (element (s)),
+				width	=> fill_line_width);
 		end draw_stripe;
 		
 	begin
@@ -377,11 +373,9 @@ procedure draw_conductors is
 		procedure query_spoke (s : in pac_spokes.cursor) is 
 			spoke : type_line_fine renames element (s);
 		begin
-			null;
-			-- CS
-			-- draw_line (
-			-- 	line	=> element (s),
-			-- 	width	=> relief.width);
+			draw_line (
+				line	=> to_line_coarse (spoke),
+				width	=> relief.width);
 		end query_spoke;
 		
 	begin
@@ -1033,6 +1027,7 @@ procedure draw_conductors is
 				use pac_airwires;
 				
 				procedure query_airwire (c : in pac_airwires.cursor) is 
+					airwire : type_airwire renames element (c);
 					restore_brightness : boolean := false;
 					skip : boolean := false;
 
@@ -1050,11 +1045,9 @@ procedure draw_conductors is
 					end if;
 
 					if not skip then
-						null;
-						-- CS
-						-- draw_line (
-						-- 	line		=> type_line_fine (element (c)),
-						-- 	width		=> type_distance (airwire_line_width));
+						draw_line (
+							line		=> to_line_coarse (pac_geometry_1.type_line_fine (airwire)),
+							width		=> type_distance (airwire_line_width));
 					end if;
 					
 					-- restore normal brightness
@@ -1230,11 +1223,9 @@ procedure draw_conductors is
 
 			-- Draws the line:
 			procedure draw is begin
-				null;
-				-- CS
-				-- draw_line (
-				-- 	line		=> to_line_fine (line),
-				-- 	width		=> PT.width);
+				draw_line (
+					line		=> line,
+					width		=> PT.width);
 			end draw;
 
 			
