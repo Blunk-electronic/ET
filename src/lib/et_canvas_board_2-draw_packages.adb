@@ -217,7 +217,7 @@ is
 					-- position and rotation of the package.
 					-- Likewise there is no need to mirror anything here:
 					draw_line (
-						line		=> type_line (line),
+						line		=> line,
 						width		=> line.width,
 						do_stroke	=> true);
 				end query_line;
@@ -339,7 +339,7 @@ is
 					-- position and rotation of the package.
 					-- Likewise there is no need to mirror anything here:
 					draw_line (
-						line		=> type_line (line),
+						line		=> line,
 						width		=> line.width,
 						do_stroke	=> true);
 
@@ -535,7 +535,7 @@ is
 					-- position and rotation of the package.
 					-- Likewise there is no need to mirror anything here:
 					draw_line (
-						line		=> type_line (line),
+						line		=> line,
 						width		=> line.width,
 						do_stroke	=> true);
 					
@@ -656,7 +656,7 @@ is
 					-- position and rotation of the package.
 					-- Likewise there is no need to mirror anything here:
 					draw_line (
-						line		=> type_line (line),
+						line		=> line,
 						width		=> line.width,
 						do_stroke	=> true);
 				end query_line;
@@ -778,7 +778,7 @@ is
 					-- position and rotation of the package.
 					-- Likewise there is no need to mirror anything here:
 					draw_line (
-						line		=> type_line (line),
+						line		=> line,
 						width		=> line.width,
 						do_stroke	=> true);
 				end query_line;
@@ -896,7 +896,7 @@ is
 					-- position and rotation of the package.
 					-- Likewise there is no need to mirror anything here:
 					draw_line (
-						line		=> type_line (line),
+						line		=> line,
 						width		=> line.width,
 						do_stroke	=> true);
 				end query_line;
@@ -1055,7 +1055,7 @@ is
 					-- position and rotation of the package.
 					-- Likewise there is no need to mirror anything here:
 					draw_line (
-						line		=> type_line (line),
+						line		=> line,
 						width		=> line.width,
 						do_stroke	=> true);
 				end query_line;
