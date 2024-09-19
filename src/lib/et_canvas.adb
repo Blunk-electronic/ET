@@ -3431,7 +3431,7 @@ package body et_canvas is
 	
 	
 	procedure draw_line (
-		line		: in type_line;
+		line		: in type_line'class;
 		pos			: in type_position := origin_zero_rotation;
 		width		: in type_distance_positive;
 		mirror		: in type_mirror_style := mirror_style_default;
@@ -3441,7 +3441,7 @@ package body et_canvas is
 		use cairo;
 		
 		-- Make a copy of the given line:
-		l : type_line := line;
+		l : type_line'class := line;
 
 		-- When the line is drawn, we need canvas points
 		-- for start and end:

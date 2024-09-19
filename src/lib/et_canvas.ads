@@ -1253,7 +1253,7 @@ package et_canvas is
 	-- in no procedure to draw a polyline. If polyline is true, then
 	-- the start point of the given line is drawn via a move_to cairo-operation.
 	procedure draw_line (
-		line		: in type_line;
+		line		: in type_line'class;
 		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		width		: in type_distance_positive;
 		mirror		: in type_mirror_style := mirror_style_default;
