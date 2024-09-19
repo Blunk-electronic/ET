@@ -1278,7 +1278,7 @@ package et_canvas is
 	-- This is a primitive draw operation that draws an arc.
 	-- For arguments see draw_line:
 	procedure draw_arc (
-		arc			: in type_arc;
+		arc			: in type_arc'class;
 		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		width		: in type_distance_positive;
 		mirror		: in type_mirror_style := mirror_style_default;

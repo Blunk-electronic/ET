@@ -3628,7 +3628,7 @@ package body et_canvas is
 
 
 	procedure draw_arc (
-		arc			: in type_arc;
+		arc			: in type_arc'class;
 		pos			: in type_position := origin_zero_rotation;
 		width		: in type_distance_positive;
 		mirror		: in type_mirror_style := mirror_style_default;		
@@ -3639,7 +3639,7 @@ package body et_canvas is
 		use pac_geometry_1;
 		
 		-- Make a copy of the given arc:
-		c : type_arc := arc;
+		c : type_arc'class := arc;
 
 		-- When the arc is drawn, we need a canvas point
 		-- for the center:
