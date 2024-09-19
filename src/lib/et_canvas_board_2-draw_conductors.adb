@@ -194,6 +194,7 @@ procedure draw_conductors is
 			return false;
 		end if;
 	end is_inner_layer;		
+
 	
 	-- The layer being drawn:
 	current_layer : type_signal_layer;
@@ -222,15 +223,13 @@ procedure draw_conductors is
 		line : type_conductor_line renames element (c);
 
 		procedure draw_unchanged is begin
-			draw_line (line => line, width => line.width);
+			draw_line (line => line, width => line.width, do_stroke => true);
 		end draw_unchanged;
 
 	begin
 		-- Draw the line if it is in the current layer:
 		if line.layer = current_layer then
 			
-			set_linewidth (line.width);
-
 			-- If the segment is selected, then it must be drawn highlighted:
 			if is_selected (line) then
 				set_highlight_brightness;
@@ -252,15 +251,16 @@ procedure draw_conductors is
 										move_line_to (line_tmp, POA, get_cursor_position);
 								end case;
 
-								draw_line (line => line_tmp, width => line.width);
+								draw_line (line => line_tmp, width => line.width, do_stroke => true);
 							end;
 						else
 							draw_unchanged;
 						end if;
 
+						
 					when VERB_RIPUP =>
 						if preliminary_segment.ready then
-							draw_line (line => line, width => line.width);
+							draw_line (line => line, width => line.width, do_stroke => true);
 						else
 							draw_unchanged;
 						end if;
@@ -279,18 +279,17 @@ procedure draw_conductors is
 	end query_line;
 
 	
+	
 	procedure query_arc (c : in pac_conductor_arcs.cursor) is 
 		arc : type_conductor_arc renames element (c);
 	begin
-
 		-- Draw the arc if it is in theh current layer:
 		if arc.layer = current_layer then
 
-			set_linewidth (arc.width);
-
 			draw_arc (
-				arc		=> type_arc (arc),
-				width	=> arc.width);
+				arc			=> type_arc (arc),
+				width		=> arc.width,
+				do_stroke	=> true);
 
 		end if;
 	end query_arc;
@@ -302,13 +301,12 @@ procedure draw_conductors is
 		-- Draw the circle if it is in the current layer:
 		if circle.layer = current_layer then
 			
-		-- We draw a normal non-filled circle:
-		set_linewidth (circle.width);
-
-		draw_circle (
-			circle	=> type_circle (circle),
-			filled	=> et_geometry.NO,
-			width	=> circle.width);
+			-- We draw a normal non-filled circle:
+			draw_circle (
+				circle		=> type_circle (circle),
+				filled		=> et_geometry.NO,
+				width		=> circle.width,
+				do_stroke	=> true);
 
 		end if;
 	end query_circle;
@@ -338,7 +336,7 @@ procedure draw_conductors is
 		begin
 			draw_line (
 				line	=> to_line_coarse (type_line_fine (edge)),
-				width	=> fill_line_width);
+				width	=> fill_line_width); -- CS no meaning. set to zero
 		end draw_edge;
 
 		
@@ -352,7 +350,7 @@ procedure draw_conductors is
 		begin
 			draw_line (
 				line	=> to_line_coarse (element (s)),
-				width	=> fill_line_width);
+				width	=> fill_line_width);  -- CS no meaning. set to zero
 		end draw_stripe;
 		
 	begin
@@ -362,6 +360,7 @@ procedure draw_conductors is
 	end query_island;
 
 
+	
 	procedure query_relief (c : in pac_reliefes.cursor) is
 		use pac_geometry_1;
 
@@ -375,13 +374,14 @@ procedure draw_conductors is
 		begin
 			draw_line (
 				line	=> to_line_coarse (spoke),
-				width	=> relief.width);
+				width	=> relief.width);  -- CS no meaning. set to zero
 		end query_spoke;
 		
 	begin
 		iterate (relief.spokes, query_spoke'access);
 	end query_relief;
 
+	
 	
 	procedure query_fill_zone (c : in pac_floating_solid.cursor) is 
 		drawn : boolean := false;
@@ -406,6 +406,7 @@ procedure draw_conductors is
 				fill_line_width := element (c).linewidth;			
 				set_linewidth (fill_line_width);
 				iterate (element (c).islands, query_island'access);
+				-- CS optimize: do stroke at the end
 			end if;
 		end if;
 	end query_fill_zone;
@@ -433,10 +434,12 @@ procedure draw_conductors is
 				fill_line_width := element (c).linewidth;			
 				set_linewidth (fill_line_width);
 				iterate (element (c).islands, query_island'access);
+				-- CS optimize: do stroke at the end
 			end if;
 
 		end if;
 	end query_fill_zone;
+
 
 	
 	procedure query_fill_zone (c : in pac_route_solid.cursor) is 
@@ -462,10 +465,12 @@ procedure draw_conductors is
 				fill_line_width := zone.linewidth;			
 				set_linewidth (fill_line_width);
 				iterate (zone.islands, query_island'access);
-
+				
 				if zone.connection = THERMAL then
 					iterate (zone.reliefes, query_relief'access);
 				end if;
+				
+				-- CS optimize: do stroke at the end
 			end if;
 		end if;
 	end query_fill_zone;
@@ -498,6 +503,8 @@ procedure draw_conductors is
 				if zone.connection = THERMAL then
 					iterate (zone.reliefes, query_relief'access);
 				end if;
+
+				-- CS optimize: do stroke at the end
 			end if;
 		end if;
 	end query_fill_zone;
@@ -524,6 +531,8 @@ procedure draw_conductors is
 			-- 	drawn	=> drawn);
 
 			--restore (context.cr);
+
+			-- CS optimize: do stroke at the end
 		end if;
 	end query_cutout;
 
@@ -646,6 +655,7 @@ procedure draw_conductors is
 		end if;
 	end query_text;
 
+	
 	
 	procedure query_net_track (n : in pac_nets.cursor) is begin
 		is_signal := true;
@@ -1046,8 +1056,8 @@ procedure draw_conductors is
 
 					if not skip then
 						draw_line (
-							line		=> to_line_coarse (pac_geometry_1.type_line_fine (airwire)),
-							width		=> type_distance (airwire_line_width));
+							line	=> to_line_coarse (pac_geometry_1.type_line_fine (airwire)),
+							width	=> 0.0); -- don't care
 					end if;
 					
 					-- restore normal brightness
@@ -1074,6 +1084,8 @@ procedure draw_conductors is
 				set_linewidth (airwire_line_width);
 				
 				pac_nets.iterate (module.nets, query_net'access);
+
+				stroke;
 			end if;
 		end draw_ratsnest;
 
@@ -1224,8 +1236,8 @@ procedure draw_conductors is
 			-- Draws the line:
 			procedure draw is begin
 				draw_line (
-					line		=> line,
-					width		=> PT.width);
+					line	=> line,
+					width	=> 0.0); -- don't care
 			end draw;
 
 			
@@ -1240,6 +1252,7 @@ procedure draw_conductors is
 			-- Set the color according to the current signal layer:
 			set_color_conductor (PT.signal_layer, NORMAL);
 
+			
 			-- If the path does not require a bend point, draw a single line
 			-- from start to end point:
 			if path.bended = NO then
@@ -1265,11 +1278,12 @@ procedure draw_conductors is
 				
 				draw;				
 			end if;
+
+			stroke;
 		end compute_and_draw;
 
 
 		use et_canvas_tool;
-		
 		
 	begin -- draw_track
 		
