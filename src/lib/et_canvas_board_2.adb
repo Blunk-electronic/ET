@@ -64,7 +64,6 @@ with et_display.board;
 with et_colors.board;
 -- with et_modes.board;
 -- with et_board_ops;					use et_board_ops;
--- with et_pcb;
 -- with et_pcb_stack;
 -- with et_design_rules;
 
@@ -616,6 +615,8 @@ package body et_canvas_board_2 is
 	procedure draw_conductors is separate;
 	procedure draw_outline is separate;
 
+	procedure draw_silkscreen (
+		face	: in type_face) is separate;
 	
 	
 	procedure draw_board is 
@@ -637,14 +638,13 @@ package body et_canvas_board_2 is
 
 		
 		procedure draw_silkscreen is begin
-			null;
-			-- if silkscreen_enabled (BOTTOM) then
-			-- 	draw_silk_screen (BOTTOM);
-			-- end if;
-   -- 
-			-- if silkscreen_enabled (TOP) then
-			-- 	draw_silk_screen (TOP);
-			-- end if;
+			if silkscreen_enabled (BOTTOM) then
+				draw_silkscreen (BOTTOM);
+			end if;
+   
+			if silkscreen_enabled (TOP) then
+				draw_silkscreen (TOP);
+			end if;
 		end draw_silkscreen;
 
 		
