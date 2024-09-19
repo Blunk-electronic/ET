@@ -59,6 +59,9 @@ package et_ratsnest is
 	
 
 	type type_airwire is new type_line_fine;
+	-- CS subtype type_airwire is type_line_fine ?
+	-- or just luse type_line_fine as it is ?
+	
 	
 	package pac_airwires is new doubly_linked_lists (type_airwire);
 	use pac_airwires;

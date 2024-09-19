@@ -73,6 +73,8 @@ package et_geometry_1.et_polygons is
 
 	
 	type type_edge is new type_line_fine;
+	-- CS subtype type_edge is type_line_fine ?
+	-- or just luse type_line_fine as it is ?
 
 	edge_length_min : constant type_float_positive := 0.1;
 	
