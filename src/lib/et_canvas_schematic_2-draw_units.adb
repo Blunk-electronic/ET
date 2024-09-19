@@ -101,7 +101,7 @@ procedure draw_units is
 			p.place := unit_position;
 			p.rotation := unit_rotation;
 
-			draw_line (type_line (l), p, l.width, do_stroke => true);
+			draw_line (l, p, l.width, do_stroke => true);
 		end draw_line;
 
 		

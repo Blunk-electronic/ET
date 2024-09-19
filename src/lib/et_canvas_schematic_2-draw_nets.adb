@@ -533,7 +533,7 @@ procedure draw_nets is
 		if not contains (already_drawn_segments, element (s)) then
 			
 			draw_line (
-				line		=> type_line (element (s)),
+				line		=> element (s),
 				pos			=> origin_zero_rotation,		  
 				width		=> net_line_width,
 				do_stroke	=> true);
@@ -554,7 +554,7 @@ procedure draw_nets is
 		segment : in type_net_segment) 
 	is begin
 		draw_line (
-			line		=> type_line (segment),
+			line		=> segment,
 			pos			=> origin_zero_rotation,		  
 			width		=> net_line_width,
 			do_stroke	=> true);
@@ -798,7 +798,7 @@ procedure draw_nets is
 				end case;
 
 				draw_line (
-					line		=> type_line (copy_of_original_segment),
+					line		=> copy_of_original_segment,
 					pos			=> origin_zero_rotation,		  
 					width		=> net_line_width,
 					do_stroke	=> true);
@@ -1082,7 +1082,7 @@ procedure draw_nets is
 			procedure draw is begin
 				-- draw the net segment:
 				draw_line (
-					line		=> type_line (line),
+					line		=> line,
 					pos			=> origin_zero_rotation,		  
 					width		=> net_line_width,
 					do_stroke	=> true);
