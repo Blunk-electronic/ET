@@ -128,7 +128,7 @@ procedure draw_units is
 			p.rotation := unit_rotation;
   
 			-- the circle is not filled -> actual "filled" is NO
-			draw_circle (type_circle (i), p, NO, i.width, do_stroke => true);
+			draw_circle (i, p, NO, i.width, do_stroke => true);
 		end draw_circle;
 
 		

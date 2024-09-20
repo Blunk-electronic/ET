@@ -38,6 +38,7 @@
 
 with ada.text_io;				use ada.text_io;
 
+with et_geometry;
 with et_silkscreen;				use et_silkscreen;
 with et_silkscreen.boards;		use et_silkscreen.boards;
 with et_colors;					use et_colors;
@@ -136,16 +137,14 @@ is
 	end query_arc;
 
 	
-	procedure query_circle (c : in pac_silk_circles.cursor) is begin
-		null;
-		-- CS
-
-		-- draw_circle (
-		-- 	circle		=> element (c),
-		-- 	filled		=> NO,
-		-- 	width		=> element (c).width,
-		-- 	do_stroke	=> true);
-				
+	procedure query_circle (c : in pac_silk_circles.cursor) is 
+		circle : type_silk_circle renames element (c);
+	begin
+		draw_circle (
+			circle		=> circle,
+			filled		=> et_geometry.NO,
+			width		=> circle.width,
+			do_stroke	=> true);				
 	end query_circle;
 
 	

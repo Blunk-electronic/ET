@@ -239,7 +239,7 @@ is
 				begin
 					-- See comments in procedure query_line.
 					draw_circle (
-						circle		=> type_circle (circle),
+						circle		=> circle,
 						filled		=> NO,
 						width		=> circle.width,
 						do_stroke	=> true);
@@ -364,7 +364,7 @@ is
 					-- put_line ("draw circle");
 					
 					draw_circle (
-						circle		=> type_circle (circle),
+						circle		=> circle,
 						filled		=> NO,
 						width		=> circle.width,
 						do_stroke	=> true);
@@ -558,7 +558,7 @@ is
 				begin
 					-- See comments in procedure query_line.
 					draw_circle (
-						circle		=> type_circle (circle),
+						circle		=> circle,
 						filled		=> NO,
 						width		=> circle.width,
 						do_stroke	=> true);
@@ -678,7 +678,7 @@ is
 				begin
 					-- See comments in procedure query_line.
 					draw_circle (
-						circle		=> type_circle (circle),
+						circle		=> circle,
 						filled		=> NO,
 						width		=> circle.width,
 						do_stroke	=> true);
@@ -800,7 +800,7 @@ is
 				begin
 					-- See comments in procedure query_line.
 					draw_circle (
-						circle		=> type_circle (circle),
+						circle		=> circle,
 						filled		=> NO,
 						width		=> circle.width,
 						do_stroke	=> true);
@@ -918,7 +918,7 @@ is
 				begin
 					-- See comments in procedure query_line.
 					draw_circle (
-						circle		=> type_circle (circle),
+						circle		=> circle,
 						filled		=> NO,
 						width		=> circle.width,
 						do_stroke	=> true);
@@ -1078,7 +1078,7 @@ is
 				begin
 					-- See comments in procedure query_line.
 					draw_circle (
-						circle		=> type_circle (circle),
+						circle		=> circle,
 						filled		=> NO,
 						width		=> circle.width,
 						do_stroke	=> true);
