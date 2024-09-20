@@ -3435,6 +3435,7 @@ package body et_canvas is
 		pos			: in type_position := origin_zero_rotation;
 		width		: in type_distance_positive;
 		mirror		: in type_mirror_style := mirror_style_default;
+		style		: in type_line_style := CONTINUOUS;
 		do_stroke	: in boolean := false;
 		polyline	: in boolean := false)
 	is
@@ -3533,6 +3534,7 @@ package body et_canvas is
 		filled		: in type_filled;
 		width		: in type_distance_positive;
 		mirror		: in type_mirror_style := mirror_style_default;
+		style		: in type_line_style := CONTINUOUS;
 		do_stroke	: in boolean := false)
 	is
 		use cairo;
@@ -3632,6 +3634,7 @@ package body et_canvas is
 		pos			: in type_position := origin_zero_rotation;
 		width		: in type_distance_positive;
 		mirror		: in type_mirror_style := mirror_style_default;		
+		style		: in type_line_style := CONTINUOUS;
 		do_stroke	: in boolean := false)
 	is
 		use glib;

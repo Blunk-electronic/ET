@@ -101,13 +101,15 @@ package body et_canvas.contours is
 							line	=> segment.segment_line,
 							pos		=> pos_end,		  
 							width	=> zero,  -- don't care. see specs of draw_line.
-							mirror	=> mirror);
+							mirror	=> mirror,
+							style	=> style);
 					else
 						draw_line (
 							line		=> segment.segment_line,
 							pos			=> pos_end,		  
 							width		=> zero,  -- don't care. see specs of draw_line.
 							mirror		=> mirror,
+							style		=> style,
 							polyline	=> true);
 					end if;
 
@@ -118,7 +120,8 @@ package body et_canvas.contours is
 						arc		=> segment.segment_arc,
 						pos		=> pos_end,		 
 						width	=> zero,
-						mirror	=> mirror);
+						mirror	=> mirror,
+						style	=> style);
 
 			end case;
 		end query_segment;
@@ -176,11 +179,13 @@ package body et_canvas.contours is
 				pos			=> pos_end,			
 				filled		=> filled,
 				mirror		=> mirror,
-				width		=> zero);   
+				width		=> zero,   
 				-- The linewidth is ignored (see specs of draw_circle)
 				-- because no stroke will be carried out.
 				-- The linewidth has been set already and
 				-- there is a final stroke in this procedure.
+				style		=> style);
+			
 		else
 			new_sub_path (context); -- required to suppress an initial line
 			contour.contour.segments.iterate (query_segment'access);
@@ -194,6 +199,8 @@ package body et_canvas.contours is
 
 
 		-- Set the line style as requested by the caller:
+		-- NOTE: This is a makeshift. The handling of the style
+		-- should be done by draw_line, draw_arc and draw_circle instead.
 		case style is
 			when CONTINUOUS => null;
 			

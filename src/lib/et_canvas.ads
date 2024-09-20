@@ -1252,11 +1252,14 @@ package et_canvas is
 	-- NOTE: The polyline argument is a makeshift as long as there
 	-- in no procedure to draw a polyline. If polyline is true, then
 	-- the start point of the given line is drawn via a move_to cairo-operation.
+	--
+	-- NOTE: CS: The line style is currently ignored.
 	procedure draw_line (
 		line		: in type_line'class;
 		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		width		: in type_distance_positive;
 		mirror		: in type_mirror_style := mirror_style_default;
+		style		: in type_line_style := CONTINUOUS;
 		do_stroke	: in boolean := false;
 		polyline	: in boolean := false
 		);
@@ -1266,22 +1269,26 @@ package et_canvas is
 	-- For arguments see procedure draw_line.
 	-- It is recommended to set the linewidth to zero when
 	-- the circle is to be filled.
+	-- NOTE: CS: The line style is currently ignored.
 	procedure draw_circle (
 		circle		: in type_circle'class;
 		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		filled		: in type_filled;
 		width		: in type_distance_positive;
 		mirror		: in type_mirror_style := mirror_style_default;
+		style		: in type_line_style := CONTINUOUS;
 		do_stroke	: in boolean := false);
 
 
 	-- This is a primitive draw operation that draws an arc.
 	-- For arguments see draw_line:
+	-- NOTE: CS: The line style is currently ignored.
 	procedure draw_arc (
 		arc			: in type_arc'class;
 		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		width		: in type_distance_positive;
 		mirror		: in type_mirror_style := mirror_style_default;
+		style		: in type_line_style := CONTINUOUS;
 		do_stroke	: in boolean := false);
 
 	
@@ -1289,6 +1296,7 @@ package et_canvas is
 		rectangle	: in type_area;
 		pos			: in type_position := origin_zero_rotation;
 		mirror		: in type_mirror_style := mirror_style_default;
+		-- CS ? style		: in type_line_style := CONTINUOUS;
 		width		: in type_distance_positive);
 
 
