@@ -58,6 +58,8 @@ package et_canvas.contours is
 	-- that is independed of the zoom-factor.
 	-- It is recommended to set the linewidth to zero when
 	-- the contour is to be filled.
+	-- This procedure performs a stroke after drawing
+	-- the contour.
 	procedure draw_contour (
 		contour	: in type_contour'class;
 		pos 	: in type_position := origin_zero_rotation; -- includes x,y, rotation
