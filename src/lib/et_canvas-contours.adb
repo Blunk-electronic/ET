@@ -98,13 +98,13 @@ package body et_canvas.contours is
 						start_point_set := true;
 					
 						draw_line (
-							line	=> type_line (segment.segment_line),
+							line	=> segment.segment_line,
 							pos		=> pos_end,		  
 							width	=> zero,  -- don't care. see specs of draw_line.
 							mirror	=> mirror);
 					else
 						draw_line (
-							line		=> type_line (segment.segment_line),
+							line		=> segment.segment_line,
 							pos			=> pos_end,		  
 							width		=> zero,  -- don't care. see specs of draw_line.
 							mirror		=> mirror,
@@ -115,7 +115,7 @@ package body et_canvas.contours is
 				when ARC =>
 
 					draw_arc (
-						arc		=> type_arc (segment.segment_arc),
+						arc		=> segment.segment_arc,
 						pos		=> pos_end,		 
 						width	=> zero,
 						mirror	=> mirror);
@@ -198,11 +198,9 @@ package body et_canvas.contours is
 			when CONTINUOUS => null;
 			
 			when DASHED =>
-				--dash_on := 0.2 + 1.0 / scale;
-				--dash_off := 0.1 + 1.0 / scale;
-				dash_on := 20.0 / gdouble (S);
-				dash_off := 15.0 / gdouble (S);
-
+				dash_on  := 1.5 * to_gdouble (to_distance (width));
+				dash_off := 1.5 * to_gdouble (to_distance (width));
+				
 				dash_pattern (1) := dash_on;
 				dash_pattern (2) := dash_off;
 				set_dash (context, dash_pattern, 0.0);
