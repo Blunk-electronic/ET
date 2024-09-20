@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,18 +36,27 @@
 --   history of changes:
 --
 
+with ada.text_io;				use ada.text_io;
+
+with et_geometry;
 with et_assy_doc;				use et_assy_doc;
 with et_assy_doc.boards;		use et_assy_doc.boards;
 with ada.text_io;				use ada.text_io;
 with et_colors;					use et_colors;
+with et_modes.board;
 with et_board_ops.text;			use et_board_ops.text;
+with et_canvas_tool;
+with et_schematic;
+with et_pcb;
 
-separate (et_canvas_board)
+
+separate (et_canvas_board_2)
 
 
-procedure draw_assy_doc (
+procedure draw_assy (
 	face : in type_face)
 is
+	use et_colors.board;
 	use et_board_shapes_and_text;
 	use pac_geometry_2;	
 
@@ -56,30 +65,32 @@ is
 	use pac_doc_arcs;
 	use pac_doc_circles;
 	use pac_doc_contours;
-	use et_pcb.pac_text_placeholders;
 	use pac_doc_texts;
+	use et_pcb.pac_text_placeholders;
 
 
 
 	procedure set_default_brightness is begin
-		set_color_assy_doc (context.cr, face, NORMAL);
+		set_color_assy_doc (face, NORMAL);
 	end set_default_brightness;
 		
 	procedure set_highlight_brightness is begin
-		set_color_assy_doc (context.cr, face, BRIGHT);
+		set_color_assy_doc (face, BRIGHT);
 	end set_highlight_brightness;
 
+	
 	
 	procedure query_line (c : in pac_doc_lines.cursor) is 
 		line : type_doc_line renames element (c);
 
 		procedure draw_unchanged is begin
-			draw_line (to_line_fine (line), line.width);
+			draw_line (line => line, width => line.width);
 		end draw_unchanged;
-			
-	begin
-		set_line_width (context.cr, type_view_coordinate (line.width));
 
+		use et_modes.board;
+		use et_canvas_tool;
+		
+	begin
 		--if is_selected (c, face) then
 		if is_selected (c) then
 			set_highlight_brightness;
@@ -96,10 +107,10 @@ is
 									move_line_to (line_tmp, POA, snap_to_grid (get_mouse_position));
 
 								when KEYBOARD =>
-									move_line_to (line_tmp, POA, cursor_main.position);
+									move_line_to (line_tmp, POA, get_cursor_position);
 							end case;
 
-							draw_line (to_line_fine (line_tmp), line.width);
+							draw_line (line => line_tmp, width => line.width);
 						end;
 					else
 						draw_unchanged;
@@ -118,54 +129,54 @@ is
 	end query_line;
 
 	
-	procedure query_arc (c : in pac_doc_arcs.cursor) is begin
-		set_line_width (context.cr, type_view_coordinate (element (c).width));
-
+	
+	procedure query_arc (c : in pac_doc_arcs.cursor) is
+		arc : type_doc_arc renames element (c);
+	begin
 		-- CS is_selected
-		
 		draw_arc (
-			arc		=> to_arc_fine (element (c)),
-			width	=> element (c).width);
-
+			arc			=> arc,
+			width		=> arc.width,
+			do_stroke	=> true);
 	end query_arc;
 
 	
 	procedure query_circle (c : in pac_doc_circles.cursor) is 
 		circle : type_doc_circle renames element (c);
+		use et_geometry;
 	begin
-		set_line_width (context.cr, type_view_coordinate (circle.width));
-
 		-- CS is_selected
 		
 		draw_circle (
 			circle		=> circle,
-			filled		=> NO,
-			width		=> circle.width);
-
+			filled		=> et_geometry.NO,
+			width		=> circle.width,
+			do_stroke	=> true);				
 	end query_circle;
 
 	
-	procedure query_polygon (c : in pac_doc_contours.cursor) is 
+	procedure query_polygon (c : in pac_doc_contours.cursor) is -- CS rename to query_contour
 		contour : type_doc_contour renames element (c);
-		drawn : boolean := false;
+		use et_geometry;
+		use pac_draw_contours;
 	begin
 		draw_contour (
-			contour	=> contour,
+			contour	=> element (c),
 			filled	=> YES,
-			width	=> zero,
-			drawn	=> drawn);
-
+			width	=> zero);
 	end query_polygon;
 
 
 	
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
+		-- CS use rename
+		use pac_text;
 		v_text : type_vector_text;
 	begin
-		draw_text_origin (element (c).position);
+		draw_origin (element (c).position);
 
 		-- Set the line width of the vector text:
-		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
+		set_linewidth (element (c).line_width);
 
 		-- Vectorize the text:
 		v_text := vectorize_text (
@@ -190,13 +201,18 @@ is
 
 		-- Draws the given text as it is given:
 		procedure draw_unchanged is begin
-			draw_text_origin (text.position);
+			draw_origin (text.position);
 
-			-- Set the line width of the vector text:
-			set_line_width (context.cr, type_view_coordinate (text.line_width));
 			draw_vector_text (text.vectors, text.line_width);
 		end draw_unchanged;
-	
+
+
+		use et_canvas_board_texts;
+		use et_modes.board;
+		use et_canvas_tool;
+
+		use pac_text;
+		
 	begin
 		if is_selected (c, face) then
 			set_highlight_brightness;
@@ -216,7 +232,7 @@ is
 									destination := snap_to_grid (get_mouse_position);
 													  
 								when KEYBOARD =>
-									destination := cursor_main.position;
+									destination := get_cursor_position;
 							end case;
 
 							-- Get the relative distance of the destination to the original
@@ -227,10 +243,7 @@ is
 							move_text (text_tmp, offset);
 							move_vector_text (text_tmp.vectors, offset);
 
-							draw_text_origin (text_tmp.position);
-
-							-- Set the line width of the vector text:
-							set_line_width (context.cr, type_view_coordinate (text_tmp.line_width));
+							draw_origin (text_tmp.position);
 
 							-- Draw the text:
 							draw_vector_text (text_tmp.vectors, text_tmp.line_width);
@@ -259,7 +272,7 @@ is
 		module		: in et_schematic.type_module) 
 	is begin
 		-- All assy_doc segments will be drawn with the same color:
-		set_color_assy_doc (context.cr, face, NORMAL);
+		set_color_assy_doc (face, NORMAL);
 
 		case face is
 			when TOP =>
@@ -283,7 +296,7 @@ is
 
 	
 	
-begin -- draw_assy_doc
+begin -- draw_assy
 	
 -- 	put_line ("draw board assembly documentation ...");
 	
@@ -291,12 +304,14 @@ begin -- draw_assy_doc
 		position	=> current_active_module,
 		process		=> query_items'access);
 
-	draw_text_being_placed (face, LAYER_CAT_ASSY);
+	-- CS
+	-- draw_text_being_placed (face, LAYER_CAT_ASSY);
 
+	-- CS
 	-- Draw the lines of a path that is being drawn:
-	draw_path (LAYER_CAT_ASSY);
+	-- draw_path (LAYER_CAT_ASSY);
 	
-end draw_assy_doc;
+end draw_assy;
 
 
 -- Soli Deo Gloria

@@ -617,6 +617,11 @@ package body et_canvas_board_2 is
 
 	procedure draw_silkscreen (
 		face	: in type_face) is separate;
+
+	procedure draw_assy (
+		face	: in type_face) is separate;
+
+
 	
 	
 	procedure draw_board is 
@@ -649,14 +654,13 @@ package body et_canvas_board_2 is
 
 		
 		procedure draw_assy_doc is begin
-			null;
-			-- if assy_doc_enabled (BOTTOM) then
-			-- 	draw_assy_doc (BOTTOM);
-			-- end if;
-   -- 
-			-- if assy_doc_enabled (TOP) then
-			-- 	draw_assy_doc (TOP);
-			-- end if;
+			if assy_doc_enabled (BOTTOM) then
+				draw_assy (BOTTOM);
+			end if;
+   
+			if assy_doc_enabled (TOP) then
+				draw_assy (TOP);
+			end if;
 		end draw_assy_doc;
 
 		

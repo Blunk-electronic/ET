@@ -162,6 +162,7 @@ is
 	
 	
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
+		-- CS use rename
 		use pac_text;
 		v_text : type_vector_text;
 	begin
