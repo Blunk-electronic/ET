@@ -143,7 +143,6 @@ procedure draw_conductors is
 	
 	use pac_nets;
 
-	use pac_geometry_2;
 	use pac_polygons;
 	
 	use pac_conductor_lines;

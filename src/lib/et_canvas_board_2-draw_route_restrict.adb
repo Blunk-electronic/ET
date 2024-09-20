@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -35,76 +36,80 @@
 --   history of changes:
 --
 
---with ada.text_io;				use ada.text_io;
+with ada.text_io;				use ada.text_io;
+
+with et_geometry;
+
 with et_display.board;			use et_display.board;
 with et_colors;					use et_colors;
-with et_conductor_text.boards;	use et_conductor_text.boards;
 with et_route_restrict.boards;	use et_route_restrict.boards;
+with et_schematic;
+with et_pcb_stack;
 
 
-separate (et_canvas_board)
+separate (et_canvas_board_2)
 
 
-procedure draw_route_restrict (
-	self    : not null access type_view) 
-is
+procedure draw_route_restrict is
+	
 	use pac_route_restrict_lines;
 	use pac_route_restrict_arcs;
 	use pac_route_restrict_circles;
 	use pac_route_restrict_contours;
 	use pac_route_restrict_cutouts;
-	use pac_conductor_texts;
 
 
 	-- CS must be overwritten according to select status:
 	brightness : type_brightness := NORMAL;
 	
 	
-	procedure query_line (c : in pac_route_restrict_lines.cursor) is begin
-
+	procedure query_line (c : in pac_route_restrict_lines.cursor) is 
+		line : type_route_restrict_line renames element (c);
+	begin
 		-- Draw the line if restrict layer is enabled:
-		if route_restrict_layer_enabled (element (c).layers) then
-			set_line_width (context.cr, type_view_coordinate (element (c).width));
-			
-			draw_line (
-				line		=> to_line_fine (element (c)),
-				width		=> element (c).width);
+		if route_restrict_layer_enabled (line.layers) then
 
+			draw_line (line => line, width => line.width, do_stroke => true);
 		end if;
 	end query_line;
 
 	
-	procedure query_arc (c : in pac_route_restrict_arcs.cursor) is begin
-
+	procedure query_arc (c : in pac_route_restrict_arcs.cursor) is 
+		arc : type_route_restrict_arc renames element (c);
+	begin
 		-- Draw the arc if restrict layer is enabled:
-		if route_restrict_layer_enabled (element (c).layers) then
-			set_line_width (context.cr, type_view_coordinate (element (c).width));
+		if route_restrict_layer_enabled (arc.layers) then
 			
 			draw_arc (
-				arc			=> to_arc_fine (element (c)),
-				width		=> element (c).width);
+				arc			=> arc,
+				width		=> arc.width,
+				do_stroke	=> true);
 
 		end if;
 	end query_arc;
 
 	
-	procedure query_circle (c : in pac_route_restrict_circles.cursor) is begin
-
+	procedure query_circle (c : in pac_route_restrict_circles.cursor) is 
+		circle : type_route_restrict_circle renames element (c);
+		use et_geometry;
+	begin
 		-- Draw the circle if restrict layer is enabled:
-		if route_restrict_layer_enabled (element (c).layers) then
-			set_line_width (context.cr, type_view_coordinate (element (c).width));
+		if route_restrict_layer_enabled (circle.layers) then
 			
 			draw_circle (
-				circle		=> element (c),
+				circle		=> circle,
 				filled		=> NO,
-				width		=> element (c).width);
+				width		=> circle.width,
+				do_stroke	=> true);
 
 		end if;
 	end query_circle;
 
 	
-	procedure query_polygon (c : in pac_route_restrict_contours.cursor) is 
-		drawn : boolean := false;
+	procedure query_polygon (c : in pac_route_restrict_contours.cursor) is -- CS rename to query_contour
+		-- CS use rename ?
+		use pac_draw_contours;
+		use et_geometry;
 	begin
 
 		-- Draw the polygon if restrict layer is enabled:
@@ -113,27 +118,27 @@ is
 			draw_contour (
 				contour	=> element (c),
 				filled	=> YES,
-				width	=> zero,
-				drawn	=> drawn);
+				width	=> zero);
 
 		end if;
 	end query_polygon;
 
 	
 	procedure query_cutout (c : in pac_route_restrict_cutouts.cursor) is 
-		drawn : boolean := false;
+		-- CS use rename
+		use pac_draw_contours;
+		use et_geometry;
+		use et_colors.board;
 	begin
-
 		-- Draw the zone if restrict layer is enabled:
 		if route_restrict_layer_enabled (element (c).layers) then
 
-			set_color_background (context.cr);
+			set_color_background;
 			
 			draw_contour (
 				contour	=> element (c),
 				filled	=> YES,
-				width	=> zero,
-				drawn	=> drawn);
+				width	=> zero);
 
 		end if;
 	end query_cutout;
@@ -143,8 +148,10 @@ is
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in et_schematic.type_module) 
-	is begin
-		set_color_route_restrict (context.cr, brightness);
+	is 
+		use et_colors.board;
+	begin
+		set_color_route_restrict (brightness);
 		
 		iterate (module.board.route_restrict.lines, query_line'access);
 		iterate (module.board.route_restrict.arcs, query_arc'access);
