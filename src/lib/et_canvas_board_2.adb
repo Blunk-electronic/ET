@@ -621,6 +621,9 @@ package body et_canvas_board_2 is
 	procedure draw_assy (
 		face	: in type_face) is separate;
 
+	procedure draw_keepout (
+		face	: in type_face) is separate;
+
 
 	
 	
@@ -665,14 +668,13 @@ package body et_canvas_board_2 is
 
 		
 		procedure draw_keepout is begin
-			null;
-			-- if keepout_enabled (BOTTOM) then
-			-- 	draw_keepout (self, BOTTOM);
-			-- end if;
-   -- 
-			-- if keepout_enabled (TOP) then
-			-- 	draw_keepout (self, TOP);
-			-- end if;
+			if keepout_enabled (BOTTOM) then
+				draw_keepout (BOTTOM);
+			end if;
+   
+			if keepout_enabled (TOP) then
+				draw_keepout (TOP);
+			end if;
 		end draw_keepout;
 
 		

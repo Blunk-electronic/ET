@@ -57,7 +57,7 @@ procedure draw_silkscreen (
 is
 	use et_colors.board;
 	use et_board_shapes_and_text;
-	use pac_geometry_2;	
+	-- use pac_geometry_2;	
 
 	use et_canvas_board_silkscreen;
 	use pac_silk_lines;

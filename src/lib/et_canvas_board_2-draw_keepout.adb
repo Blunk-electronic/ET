@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -35,16 +36,26 @@
 --   history of changes:
 --
 
---with ada.text_io;				use ada.text_io;
+with ada.text_io;				use ada.text_io;
+
+with et_geometry;
 with et_keepout;				use et_keepout;
 with et_colors;					use et_colors;
+with et_modes.board;
+with et_board_ops.text;			use et_board_ops.text;
+with et_canvas_tool;
+with et_schematic;
+with et_pcb;
 
-separate (et_canvas_board)
+
+
+separate (et_canvas_board_2)
 
 procedure draw_keepout (
-	self    : not null access type_view;
 	face	: in type_face) 
 is
+	use et_colors.board;
+	use et_board_shapes_and_text;
 	use pac_geometry_2;	
 
 	use pac_keepout_zones;
@@ -55,29 +66,29 @@ is
 	brightness : type_brightness := NORMAL;
 
 	
-	procedure query_polygon (c : in pac_keepout_zones.cursor) is 
-		drawn : boolean := false;
+	procedure query_polygon (c : in pac_keepout_zones.cursor) is -- CS rename to query_contour
+		-- CS use rename
+		use et_geometry;
+		use pac_draw_contours;
 	begin
 		draw_contour (
 			contour	=> element (c),
-			filled	=> NO,
-			width	=> zero,
-			drawn	=> drawn);
-
+			filled	=> NO, -- CS YES ?
+			width	=> zero);
 	end query_polygon;
 
 	
 	procedure query_cutout (c : in pac_keepout_cutouts.cursor) is 
-		drawn : boolean := false;
+		-- CS use rename
+		use et_geometry;
+		use pac_draw_contours;
 	begin
-		set_color_background (context.cr);
+		set_color_background;
 		
 		draw_contour (
 			contour	=> element (c),
 			filled	=> YES,
-			width	=> zero,
-			drawn	=> drawn);
-
+			width	=> zero);
 	end query_cutout;
 
 	
@@ -88,9 +99,9 @@ is
 		module		: in et_schematic.type_module) 
 	is begin
 		-- All keepout segments will be drawn with the same color:
-		set_color_keepout (context.cr, face, brightness);
+		set_color_keepout (face, brightness);
 
-		cairo.set_line_width (context.cr, type_view_coordinate (keepout_line_width));
+		set_linewidth (keepout_line_width);
 		
 		case face is
 			when TOP =>
@@ -105,7 +116,7 @@ is
 	
 	
 begin -- draw_keepout
--- 	put_line ("draw board keepout ...");
+-- 	put_line ("draw keepout ...");
 	
 	pac_generic_modules.query_element (
 		position	=> current_active_module,
