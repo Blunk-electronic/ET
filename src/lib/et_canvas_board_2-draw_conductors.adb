@@ -287,7 +287,7 @@ procedure draw_conductors is
 		if arc.layer = current_layer then
 
 			draw_arc (
-				arc			=> type_arc (arc),
+				arc			=> arc,
 				width		=> arc.width,
 				do_stroke	=> true);
 

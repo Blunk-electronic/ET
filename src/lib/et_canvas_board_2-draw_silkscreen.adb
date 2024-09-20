@@ -126,14 +126,13 @@ is
 
 
 	
-	procedure query_arc (c : in pac_silk_arcs.cursor) is begin
-		null;
-		-- CS
-		-- draw_arc (
-		-- 	arc			=> element (c),
-		-- 	width		=> element (c).width,
-		-- 	do_stroke	=> true);
-
+	procedure query_arc (c : in pac_silk_arcs.cursor) is 
+		arc : type_silk_arc renames element (c);
+	begin
+		draw_arc (
+			arc			=> arc,
+			width		=> arc.width,
+			do_stroke	=> true);
 	end query_arc;
 
 	

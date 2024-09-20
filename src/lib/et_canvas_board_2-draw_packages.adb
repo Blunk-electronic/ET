@@ -228,7 +228,7 @@ is
 				begin
 					-- See comments in procedure query_line.
 					draw_arc (
-						arc			=> type_arc (arc),
+						arc			=> arc,
 						width		=> arc.width,
 						do_stroke	=> true);
 				end query_arc;
@@ -351,7 +351,7 @@ is
 				begin
 					-- See comments in procedure query_line.
 					draw_arc (
-						arc			=> type_arc (arc),
+						arc			=> arc,
 						width		=> arc.width,
 						do_stroke	=> true);
 				end query_arc;
@@ -547,7 +547,7 @@ is
 				begin
 					-- See comments in procedure query_line.
 					draw_arc (
-						arc			=> type_arc (arc),
+						arc			=> arc,
 						width		=> arc.width,
 						do_stroke	=> true);
 				end query_arc;
@@ -667,7 +667,7 @@ is
 				begin
 					-- See comments in procedure query_line.
 					draw_arc (
-						arc			=> type_arc (arc),
+						arc			=> arc,
 						width		=> arc.width,
 						do_stroke	=> true);
 				end query_arc;
@@ -789,7 +789,7 @@ is
 				begin
 					-- See comments in procedure query_line.
 					draw_arc (
-						arc			=> type_arc (arc),
+						arc			=> arc,
 						width		=> arc.width,
 						do_stroke	=> true);
 				end query_arc;
@@ -907,7 +907,7 @@ is
 				begin
 					-- See comments in procedure query_line.
 					draw_arc (
-						arc			=> type_arc (arc),
+						arc			=> arc,
 						width		=> arc.width,
 						do_stroke	=> true);
 				end query_arc;
@@ -1066,7 +1066,7 @@ is
 				begin
 					-- See comments in procedure query_line.
 					draw_arc (
-						arc			=> type_arc (arc),
+						arc			=> arc,
 						width		=> arc.width,
 						do_stroke	=> true);
 				end query_arc;

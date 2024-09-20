@@ -114,7 +114,7 @@ procedure draw_units is
 			p.place := unit_position;
 			p.rotation := unit_rotation;
 
-			draw_arc (type_arc (a), p, a.width, do_stroke => true);
+			draw_arc (a, p, a.width, do_stroke => true);
 		end draw_arc;
 
 		
