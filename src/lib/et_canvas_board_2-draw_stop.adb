@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -36,16 +37,25 @@
 --
 
 with ada.text_io;				use ada.text_io;
+
+with et_geometry;
 with et_stop_mask;				use et_stop_mask;
 with et_colors;					use et_colors;
 with et_board_ops.text;			use et_board_ops.text;
+with et_canvas_tool;
+with et_schematic;
+with et_pcb;
 
-separate (et_canvas_board)
+
+separate (et_canvas_board_2)
+
 
 procedure draw_stop (
 	face : in type_face)
 is
-	use pac_geometry_2;	
+	use et_colors.board;
+	use et_board_shapes_and_text;
+
 	
 	use pac_stop_lines;
 	use pac_stop_arcs;
@@ -56,38 +66,39 @@ is
 
 
 	procedure set_default_brightness is begin
-		set_color_stop_mask (context.cr, face, global_scale, NORMAL);
+		set_color_stop_mask (face, NORMAL);
 	end set_default_brightness;
 		
 	procedure set_highlight_brightness is begin
-		set_color_stop_mask (context.cr, face, global_scale, BRIGHT);
+		set_color_stop_mask (face, BRIGHT);
 	end set_highlight_brightness;
 
 	
 	
-	procedure query_line (c : in pac_stop_lines.cursor) is begin
-		set_line_width (context.cr, type_view_coordinate (element (c).width));
-		
+	procedure query_line (c : in pac_stop_lines.cursor) is 
+		-- CS use renames
+	begin
 		draw_line (
-			line		=> to_line_fine (element (c)),
+			line		=> element (c),
 			width		=> element (c).width);
 
 	end query_line;
 
 	
-	procedure query_arc (c : in pac_stop_arcs.cursor) is begin
-		set_line_width (context.cr, type_view_coordinate (element (c).width));
-		
+	procedure query_arc (c : in pac_stop_arcs.cursor) is 
+		-- CS use renames
+	begin		
 		draw_arc (
-			arc			=> to_arc_fine (element (c)),
+			arc			=> element (c),
 			width		=> element (c).width);
 
 	end query_arc;
 
 	
-	procedure query_circle (c : in pac_stop_circles.cursor) is begin
-		set_line_width (context.cr, type_view_coordinate (element (c).width));
-
+	procedure query_circle (c : in pac_stop_circles.cursor) is 
+		use et_geometry;
+		-- CS use renames
+	begin
 		draw_circle (
 			circle		=> element (c),
 			filled		=> NO,
@@ -96,24 +107,29 @@ is
 	end query_circle;
 
 	
-	procedure query_polygon (c : in pac_stop_contours.cursor) is
-		drawn : boolean := false;
+	
+	procedure query_polygon (c : in pac_stop_contours.cursor) is -- CS rename to query_contour
+		-- CS use renames
+		use et_geometry;
+		use pac_draw_contours;
 	begin
 		draw_contour (
 			contour	=> element (c),
 			filled	=> YES,
-			width	=> zero,
-			drawn	=> drawn);
+			width	=> zero);
 	end query_polygon;
+
 	
 	
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
+		-- CS use renames
+		use pac_text;
 		v_text : type_vector_text;
 	begin
-		draw_text_origin (element (c).position);
+		draw_origin (element (c).position);
 
 		-- Set the line width of the vector text:
-		set_line_width (context.cr, type_view_coordinate (element (c).line_width));
+		set_linewidth (element (c).line_width);
 
 		-- Vectorize the text:
 		v_text := vectorize_text (
@@ -131,19 +147,28 @@ is
 
 	end query_placeholder;
 
+
+	
 	
 	procedure query_text (c : in pac_stop_texts.cursor) is 
 		text : type_stop_text renames element (c);
 
+		
 		-- Draws the given text as it is given:
 		procedure draw_unchanged is begin
-			draw_text_origin (text.position);
+			draw_origin (text.position);
 
-			-- Set the line width of the vector text:
-			set_line_width (context.cr, type_view_coordinate (text.line_width));
 			draw_vector_text (text.vectors, text.line_width);
 		end draw_unchanged;
 	
+
+		use et_canvas_board_texts;
+		use et_modes.board;
+		use et_canvas_tool;
+
+		use pac_text;
+
+		
 	begin
 		if is_selected (c, face) then
 			set_highlight_brightness;
@@ -163,7 +188,7 @@ is
 									destination := snap_to_grid (get_mouse_position);
 													  
 								when KEYBOARD =>
-									destination := cursor_main.position;
+									destination := get_cursor_position;
 							end case;
 
 							-- Get the relative distance of the destination to the original
@@ -174,10 +199,7 @@ is
 							move_text (text_tmp, offset);
 							move_vector_text (text_tmp.vectors, offset);
 
-							draw_text_origin (text_tmp.position);
-
-							-- Set the line width of the vector text:
-							set_line_width (context.cr, type_view_coordinate (text_tmp.line_width));
+							draw_origin (text_tmp.position);
 
 							-- Draw the text:
 							draw_vector_text (text_tmp.vectors, text_tmp.line_width);
@@ -207,7 +229,7 @@ is
 		module		: in et_schematic.type_module) 
 	is begin
 		-- All stop mask segments will be drawn with the same color:
-		set_color_stop_mask (context.cr, face, global_scale, NORMAL);
+		set_color_stop_mask (face, NORMAL);
 
 		case face is
 			when TOP =>
@@ -239,10 +261,10 @@ begin -- draw_stop
 		position	=> current_active_module,
 		process		=> query_items'access);
 
-	draw_text_being_placed (face, LAYER_CAT_STOP);
+	-- CS draw_text_being_placed (face, LAYER_CAT_STOP);
 
 	-- Draw the lines of a path that is being drawn:
-	draw_path (LAYER_CAT_STOP);
+	-- CS draw_path (LAYER_CAT_STOP);
 	
 end draw_stop;
 
