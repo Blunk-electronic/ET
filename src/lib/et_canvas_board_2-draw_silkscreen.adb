@@ -149,16 +149,14 @@ is
 
 	
 	procedure query_contour (c : in pac_silk_contours.cursor) is 
-		drawn : boolean := false;
+		-- CS use rename
+		use et_geometry;
+		use pac_draw_contours;
 	begin
-				null;
-		-- CS
-
-		-- draw_contour (
-		-- 	contour	=> element (c),
-		-- 	filled	=> YES,
-		-- 	width	=> zero,
-		-- 	drawn	=> drawn);
+		draw_contour (
+			contour	=> element (c),
+			filled	=> YES,
+			width	=> zero);
 	end query_contour;
 
 	

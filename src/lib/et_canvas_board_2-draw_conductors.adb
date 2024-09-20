@@ -331,12 +331,15 @@ procedure draw_conductors is
 
 		island : type_island renames element (i);
 
+		
 		procedure draw_edge (e : in pac_edges.cursor) is 
 			edge : type_edge renames element (e);
+			use et_geometry;
 		begin
 			draw_line (
 				line	=> to_line_coarse (type_line_fine (edge)),
-				width	=> fill_line_width); -- CS no meaning. set to zero
+				width	=> 0.0, -- don't care
+				style	=> DASHED);
 		end draw_edge;
 
 		
@@ -350,7 +353,7 @@ procedure draw_conductors is
 		begin
 			draw_line (
 				line	=> to_line_coarse (element (s)),
-				width	=> fill_line_width);  -- CS no meaning. set to zero
+				width	=> 0.0); -- don't care
 		end draw_stripe;
 		
 	begin
@@ -361,6 +364,61 @@ procedure draw_conductors is
 
 
 	
+	
+	procedure query_fill_zone (c : in pac_floating_solid.cursor) is 
+		-- CS use rename ?
+		use pac_draw_contours;
+		use et_geometry;
+	begin
+		-- Draw the zone if it is in the current layer:
+		if element (c).properties.layer = current_layer then
+
+			-- NOTE: Because this is merely the contour of the zone
+			-- it will not be filled:
+			
+			draw_contour (
+				contour	=> element (c),
+				style	=> DASHED,
+				filled	=> NO, 
+				width	=> element (c).linewidth); -- CS should be the dynamically calculated width of the contours
+   
+			-- All edges and fill lines have the same linewidth:
+			set_linewidth (element (c).linewidth);
+			iterate (element (c).islands, query_island'access);
+			stroke;
+
+		end if;
+	end query_fill_zone;
+
+
+	
+	procedure query_fill_zone (c : in pac_floating_hatched.cursor) is 
+		-- CS use rename ?
+		use pac_draw_contours;
+		use et_geometry;
+	begin
+		-- Draw the zone if it is in the current layer:
+		if element (c).properties.layer = current_layer then
+
+			-- NOTE: Because this is merely the contour of the zone
+			-- it will not be filled:
+			
+			draw_contour (
+				contour	=> element (c),
+				style	=> DASHED,
+				filled	=> NO, 
+				width	=> element (c).linewidth); -- CS should be the dynamically calculated width of the contours
+   
+			-- All edges and fill lines have the same linewidth:
+			set_linewidth (element (c).linewidth);
+			iterate (element (c).islands, query_island'access);
+			stroke;
+
+		end if;
+	end query_fill_zone;
+
+
+
 	procedure query_relief (c : in pac_reliefes.cursor) is
 		use pac_geometry_1;
 
@@ -374,7 +432,7 @@ procedure draw_conductors is
 		begin
 			draw_line (
 				line	=> to_line_coarse (spoke),
-				width	=> relief.width);  -- CS no meaning. set to zero
+				width	=> 0.0);  -- don't care
 		end query_spoke;
 		
 	begin
@@ -383,156 +441,93 @@ procedure draw_conductors is
 
 	
 	
-	procedure query_fill_zone (c : in pac_floating_solid.cursor) is 
-		drawn : boolean := false;
-		-- CS use rename ?
-	begin
-		-- Draw the zone if it is in the current layer:
-		if element (c).properties.layer = current_layer then
-
-			null;
-			-- CS
-			
-			-- draw_contour (
-			-- 	contour	=> element (c),
-			-- 	style	=> DASHED,
-			-- 	filled	=> NO, -- because this is merely the contour of the zone !
-			-- 	width	=> zero, -- CS should be the dynamically calculated width of the contours
-			-- 	drawn	=> drawn);
-
-			-- Draw the islands if contour has been drawn:
-			if drawn then
-				-- All borders and fill lines will be drawn with the same width:
-				fill_line_width := element (c).linewidth;			
-				set_linewidth (fill_line_width);
-				iterate (element (c).islands, query_island'access);
-				-- CS optimize: do stroke at the end
-			end if;
-		end if;
-	end query_fill_zone;
-
-	
-	procedure query_fill_zone (c : in pac_floating_hatched.cursor) is 
-		drawn : boolean := false;
-		-- CS use rename ?
-	begin
-		-- Draw the zone if it is in the current layer:
-		if element (c).properties.layer = current_layer then
-
-			null;
-			-- CS
-			-- draw_contour (
-			-- 	contour	=> element (c),
-			-- 	style	=> DASHED,
-			-- 	filled	=> NO, -- because this is merely the contour of the zone !
-			-- 	width	=> zero, -- CS should be the dynamically calculated width of the contours
-			-- 	drawn	=> drawn);
-
-			-- Draw the islands if contour has been drawn:
-			if drawn then
-				-- All borders and fill lines will be drawn with the same width:
-				fill_line_width := element (c).linewidth;			
-				set_linewidth (fill_line_width);
-				iterate (element (c).islands, query_island'access);
-				-- CS optimize: do stroke at the end
-			end if;
-
-		end if;
-	end query_fill_zone;
-
-
-	
 	procedure query_fill_zone (c : in pac_route_solid.cursor) is 
 		zone : type_route_solid renames element (c);
+
+		use et_geometry;
 		use pac_reliefes;
-		drawn : boolean := false;
+		use pac_draw_contours;
 	begin
 		-- Draw the zone if it is in the current layer:
 		if zone.properties.layer = current_layer then
 
-			null;
-			-- CS
-			-- draw_contour (
-			-- 	contour	=> zone,
-			-- 	style	=> DASHED,
-			-- 	filled	=> NO, -- because this is merely the contour of the zone !
-			-- 	width	=> zero, -- CS should be the dynamically calculated width of the contours
-			-- 	drawn	=> drawn);
+			-- NOTE: Because this is merely the contour of the zone
+			-- it will not be filled:
+			
+			draw_contour (
+				contour	=> element (c),
+				style	=> DASHED,
+				filled	=> NO, 
+				width	=> element (c).linewidth); -- CS should be the dynamically calculated width of the contours
+   
+			-- All edges and fill lines have the same linewidth:
+			set_linewidth (element (c).linewidth);
+			iterate (element (c).islands, query_island'access);
 
-			-- Draw islands if contour has been drawn:
-			if drawn then
-				-- All borders and fill lines will be drawn with the same width:
-				fill_line_width := zone.linewidth;			
-				set_linewidth (fill_line_width);
-				iterate (zone.islands, query_island'access);
-				
-				if zone.connection = THERMAL then
-					iterate (zone.reliefes, query_relief'access);
-				end if;
-				
-				-- CS optimize: do stroke at the end
+			if zone.connection = THERMAL then
+				iterate (zone.reliefes, query_relief'access);
 			end if;
+
+			stroke;
 		end if;
 	end query_fill_zone;
+
 
 	
 	procedure query_fill_zone (c : in pac_route_hatched.cursor) is
 		zone : type_route_hatched renames element (c);
+
+		use et_geometry;
 		use pac_reliefes;
-		drawn : boolean := false;
+		use pac_draw_contours;
 	begin		
 		-- Draw the zone if it is in the current layer:
 		if zone.properties.layer = current_layer then
 
-			null;
-			-- CS
-			-- draw_contour (
-			-- 	contour	=> zone,
-			-- 	style	=> DASHED,
-			-- 	filled	=> NO, -- because this is merely the contour of the zone !
-			-- 	width	=> zero, -- CS should be the dynamically calculated width of the contours
-			-- 	drawn	=> drawn);
+			-- NOTE: Because this is merely the contour of the zone
+			-- it will not be filled:
+			
+			draw_contour (
+				contour	=> element (c),
+				style	=> DASHED,
+				filled	=> NO, 
+				width	=> element (c).linewidth); -- CS should be the dynamically calculated width of the contours
+   
+			-- All edges and fill lines have the same linewidth:
+			set_linewidth (element (c).linewidth);
+			iterate (element (c).islands, query_island'access);
 
-			-- Draw islands if contour has been drawn:
-			if drawn then
-				-- All borders and fill lines will be drawn with the same width:
-				fill_line_width := zone.linewidth;			
-				set_linewidth (fill_line_width);
-				iterate (zone.islands, query_island'access);
-
-				if zone.connection = THERMAL then
-					iterate (zone.reliefes, query_relief'access);
-				end if;
-
-				-- CS optimize: do stroke at the end
+			if zone.connection = THERMAL then
+				iterate (zone.reliefes, query_relief'access);
 			end if;
+
+			stroke;
 		end if;
 	end query_fill_zone;
 
 
 	
 	procedure query_cutout (c : in pac_cutouts.cursor) is 
-		drawn : boolean := false;
 		-- CS use rename ?
+		use et_geometry;
+		use pac_draw_contours;
 	begin
 		-- Draw the zone if it is in the current layer:
 		if element (c).layer = current_layer then
 
+			-- CS
 			--save (context.cr);
 			--set_color_background (context.cr);
 
-			null;
-			-- CS
-			-- draw_contour (
-			-- 	contour	=> element (c),
-			-- 	style	=> DASHED,
-			-- 	filled	=> NO,
-			-- 	width	=> zero,
-			-- 	drawn	=> drawn);
-
-			--restore (context.cr);
-
-			-- CS optimize: do stroke at the end
+			-- NOTE: Because this is merely the contour of the zone
+			-- it will not be filled:
+			
+			draw_contour (
+				contour	=> element (c),
+				style	=> DASHED,
+				filled	=> NO, 
+				width	=> zero);
+   
 		end if;
 	end query_cutout;
 
