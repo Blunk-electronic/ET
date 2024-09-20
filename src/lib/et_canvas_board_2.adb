@@ -614,6 +614,7 @@ package body et_canvas_board_2 is
 	
 	procedure draw_conductors is separate;
 	procedure draw_route_restrict is separate;
+	procedure draw_via_restrict is separate;
 	
 	procedure draw_outline is separate;
 
@@ -639,7 +640,7 @@ package body et_canvas_board_2 is
 
 		procedure draw_conductor_layers is begin
 			draw_route_restrict;
-			-- draw_via_restrict (self);
+			draw_via_restrict;
 			draw_conductors;
 		end draw_conductor_layers;
 		
