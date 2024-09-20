@@ -663,8 +663,13 @@ is
 	
 	procedure draw_route_restrict is
 		use et_board_ops.route_restrict;
-		shape : type_shape := to_shape (f (7));
+		shape : type_shape;
 	begin
+		-- put_line ("draw_route_restrict");
+		shape := to_shape (f (7));
+		-- CS apply assigment to shape to all similar procedures !
+		
+		
 		case shape is
 			when LINE =>
 				case cmd_field_count is
