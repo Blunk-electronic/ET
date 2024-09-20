@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -36,17 +37,25 @@
 --
 
 with ada.text_io;				use ada.text_io;
+
+with et_geometry;
 with et_stencil;				use et_stencil;
 with et_colors;					use et_colors;
+with et_modes.board;
+with et_canvas_tool;
+with et_schematic;
+with et_pcb;
 
 
-separate (et_canvas_board)
+
+separate (et_canvas_board_2)
 
 
 procedure draw_stencil (
 	face : in type_face) 
 is
-	use pac_geometry_2;	
+	use et_colors.board;
+	use et_board_shapes_and_text;
 
 	use pac_stencil_lines;
 	use pac_stencil_arcs;
@@ -58,45 +67,44 @@ is
 	brightness : type_brightness := NORMAL;
 
 	
-	procedure query_line (c : in pac_stencil_lines.cursor) is begin
-		set_line_width (context.cr, type_view_coordinate (element (c).width));
-		
+	procedure query_line (c : in pac_stencil_lines.cursor) is 
+		-- CS use renames
+	begin
 		draw_line (
-			line		=> to_line_fine (element (c)),
-			width		=> element (c).width);
-
+			line	=> element (c),
+			width	=> element (c).width);
 	end query_line;
 
 	
-	procedure query_arc (c : in pac_stencil_arcs.cursor) is begin
-		set_line_width (context.cr, type_view_coordinate (element (c).width));
-		
+	procedure query_arc (c : in pac_stencil_arcs.cursor) is 
+		-- CS use renames
+	begin
 		draw_arc (
-			arc			=> to_arc_fine (element (c)),
-			width		=> element (c).width);
-
+			arc		=> element (c),
+			width	=> element (c).width);
 	end query_arc;
 
 	
-	procedure query_circle (c : in pac_stencil_circles.cursor) is begin
-		set_line_width (context.cr, type_view_coordinate (element (c).width));
-
+	procedure query_circle (c : in pac_stencil_circles.cursor) is 
+		-- CS use renames
+		use et_geometry;
+	begin
 		draw_circle (
 			circle		=> element (c),
 			filled		=> NO,
-			width		=> element (c).width);
-				
+			width		=> element (c).width);				
 	end query_circle;
 
 	
-	procedure query_polygon (c : in pac_stencil_contours.cursor) is 
-		drawn : boolean := false;
+	procedure query_polygon (c : in pac_stencil_contours.cursor) is -- CS rename to query_contour
+		-- CS use renames
+		use et_geometry;
+		use pac_draw_contours;
 	begin
 		draw_contour (
 			contour	=> element (c),
 			filled	=> YES,
-			width	=> zero,
-			drawn	=> drawn);
+			width	=> zero);
 	end query_polygon;
 
 	
@@ -105,7 +113,7 @@ is
 		module		: in et_schematic.type_module) 
 	is begin
 		-- All stencil segments will be drawn with the same color:
-		set_color_stencil (context.cr, face, global_scale, brightness);
+		set_color_stencil (face, brightness);
 
 		case face is
 			when TOP =>
@@ -130,7 +138,8 @@ begin -- draw_stencil
 		position	=> current_active_module,
 		process		=> query_items'access);
 
-	draw_text_being_placed (face, LAYER_CAT_STENCIL);
+	
+	-- CS draw_text_being_placed (face, LAYER_CAT_STENCIL);
 	
 end draw_stencil;
 

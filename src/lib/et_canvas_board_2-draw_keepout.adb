@@ -42,7 +42,6 @@ with et_geometry;
 with et_keepout;				use et_keepout;
 with et_colors;					use et_colors;
 with et_modes.board;
-with et_board_ops.text;			use et_board_ops.text;
 with et_canvas_tool;
 with et_schematic;
 with et_pcb;
@@ -56,7 +55,6 @@ procedure draw_keepout (
 is
 	use et_colors.board;
 	use et_board_shapes_and_text;
-	use pac_geometry_2;	
 
 	use pac_keepout_zones;
 	use pac_keepout_cutouts;

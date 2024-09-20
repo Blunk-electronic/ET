@@ -55,7 +55,6 @@ procedure draw_stop (
 is
 	use et_colors.board;
 	use et_board_shapes_and_text;
-
 	
 	use pac_stop_lines;
 	use pac_stop_arcs;
@@ -79,8 +78,8 @@ is
 		-- CS use renames
 	begin
 		draw_line (
-			line		=> element (c),
-			width		=> element (c).width);
+			line	=> element (c),
+			width	=> element (c).width);
 
 	end query_line;
 
@@ -89,8 +88,8 @@ is
 		-- CS use renames
 	begin		
 		draw_arc (
-			arc			=> element (c),
-			width		=> element (c).width);
+			arc		=> element (c),
+			width	=> element (c).width);
 
 	end query_arc;
 
@@ -100,9 +99,9 @@ is
 		-- CS use renames
 	begin
 		draw_circle (
-			circle		=> element (c),
-			filled		=> NO,
-			width		=> element (c).width);
+			circle	=> element (c),
+			filled	=> NO,
+			width	=> element (c).width);
 
 	end query_circle;
 

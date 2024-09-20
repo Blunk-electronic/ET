@@ -624,7 +624,11 @@ package body et_canvas_board_2 is
 	procedure draw_keepout (
 		face	: in type_face) is separate;
 
+	procedure draw_stop (
+		face	: in type_face) is separate;
 
+	procedure draw_stencil (
+		face	: in type_face) is separate;
 	
 	
 	procedure draw_board is 
@@ -679,26 +683,24 @@ package body et_canvas_board_2 is
 
 		
 		procedure draw_stop_mask is begin
-			null;
-			-- if stop_mask_enabled (BOTTOM) then
-			-- 	draw_stop (BOTTOM);
-			-- end if;
-   -- 
-			-- if stop_mask_enabled (TOP) then
-			-- 	draw_stop (TOP);
-			-- end if;
+			if stop_mask_enabled (BOTTOM) then
+				draw_stop (BOTTOM);
+			end if;
+   
+			if stop_mask_enabled (TOP) then
+				draw_stop (TOP);
+			end if;
 		end draw_stop_mask;
 
 		
 		procedure draw_stencil is begin
-			null;
-			-- if stencil_enabled (BOTTOM) then
-			-- 	draw_stencil (BOTTOM);
-			-- end if;
-   -- 
-			-- if stencil_enabled (TOP) then
-			-- 	draw_stencil (TOP);
-			-- end if;
+			if stencil_enabled (BOTTOM) then
+				draw_stencil (BOTTOM);
+			end if;
+   
+			if stencil_enabled (TOP) then
+				draw_stencil (TOP);
+			end if;
 		end draw_stencil;
 
 		
