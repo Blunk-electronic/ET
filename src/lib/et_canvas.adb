@@ -3528,7 +3528,7 @@ package body et_canvas is
 
 
 	procedure draw_circle (
-		circle		: in type_circle;
+		circle		: in type_circle'class;
 		pos			: in type_position := origin_zero_rotation;
 		filled		: in type_filled;
 		width		: in type_distance_positive;
@@ -3538,7 +3538,7 @@ package body et_canvas is
 		use cairo;
 		
 		-- Make a copy of the given circle:
-		c : type_circle := circle;
+		c : type_circle'class := circle;
 
 		-- When the circle is drawn, we need a canvas point
 		-- for the center:

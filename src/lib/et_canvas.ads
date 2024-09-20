@@ -1267,7 +1267,7 @@ package et_canvas is
 	-- It is recommended to set the linewidth to zero when
 	-- the circle is to be filled.
 	procedure draw_circle (
-		circle		: in type_circle;
+		circle		: in type_circle'class;
 		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		filled		: in type_filled;
 		width		: in type_distance_positive;
