@@ -466,10 +466,10 @@ is
 			when GDK_LC_n =>
 				noun := NOUN_NET;
 
-				-- CS reset_preliminary_track;
+				reset_preliminary_track;
 				
-				-- CS show_track_properties;
-				-- CS set_status (status_draw_track);
+				show_track_properties;
+				set_status (status_draw_track);
 
 
 			-- If space pressed, then the operator wishes to operate via keyboard.
@@ -522,6 +522,7 @@ is
 	end route;
 
 
+	
 	procedure ripup is 
 		use et_canvas_board_tracks;
 	begin

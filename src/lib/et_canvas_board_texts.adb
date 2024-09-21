@@ -678,7 +678,7 @@ package body et_canvas_board_texts is
 		-- If the box is already shown, do nothing.
 		-- Otherwise build it:
 		if not box_properties.displayed then
-			put_line ("build properties box");
+			--put_line ("build text properties box");
 			
 			box_properties.displayed := true;
 
@@ -688,7 +688,7 @@ package body et_canvas_board_texts is
 
 			-- The properties bar is to be displayed in the right box
 			-- below the console:
-			-- CS reorder_child (box_right, box_properties.box_main, 1);
+			-- CS reorder_child (box_v0, box_properties.box_main, 1);
 
 			-- Build the elements of the properties bar:
 			make_combo_category;

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -108,7 +108,8 @@ package body et_canvas_board_tracks is
 
 		-- Remove the text properties bar from the window:
 		if box_properties.displayed then
-			-- CS remove (box_right, box_properties.box_main);
+			-- put_line ("remove track properties box");
+			remove (box_v0, box_properties.box_main);
 			box_properties.displayed := false;
 		end if;
 	end reset_preliminary_track;
@@ -158,7 +159,7 @@ package body et_canvas_board_tracks is
 		-- display the affected conductor layer:
 		enable_conductor (preliminary_track.signal_layer);
 		
-	-- CS et_canvas_board_2.redraw_board;		
+		et_canvas_board_2.redraw_board;		
 	end signal_layer_changed;
 
 	
@@ -174,7 +175,7 @@ package body et_canvas_board_tracks is
 		-- CS validate. output error in status bar
 		preliminary_track.width := width;
 
-	-- CS et_canvas_board_2.redraw_board;
+		et_canvas_board_2.redraw_board;
 	end apply_line_width;
 
 	
@@ -407,6 +408,7 @@ package body et_canvas_board_tracks is
 		end make_combo_for_signal_layer;
 
 
+		
 		procedure make_combo_for_line_width is begin
 			gtk_new_vbox (box_line_width, homogeneous => false);
 			pack_start (box_properties.box_main, box_line_width, padding => guint (spacing));
@@ -427,30 +429,32 @@ package body et_canvas_board_tracks is
 			gtk_entry (cbox_line_width.get_child).on_activate (line_width_entered'access);
 		end make_combo_for_line_width;
 
+
 		
 	begin -- show_track_properties
 		
 		-- If the box is already shown, do nothing.
 		-- Otherwise build it:
 		if not box_properties.displayed then
+			--put_line ("build track properties box");
+			
 			box_properties.displayed := true;
 
-			-- CS
-			-- gtk_new_hbox (box_properties.box_main);
-			-- pack_start (et_canvas_board_2.pac_canvas.box_right, box_properties.box_main,
-			-- 			expand	=> false);
+			gtk_new_hbox (box_properties.box_main);
+			pack_start (box_v0, box_properties.box_main,
+						expand	=> false);
 
 			-- The properties bar is to be displayed in the right box
 			-- below the console:
-			-- CS reorder_child (box_right, box_properties.box_main, 1);
+			-- CS reorder_child (box_v0, box_properties.box_main, 1);
 
-			-- build the elements of the properties bar:
-			-- CS make_combo_for_net_name;
-			-- CS make_combo_for_signal_layer;
-			-- CS make_combo_for_line_width;
+			-- Build the elements of the properties bar:
+			make_combo_for_net_name;
+			make_combo_for_signal_layer;
+			make_combo_for_line_width;
 
 			-- Redraw the right box of the window:
-			-- CS box_right.show_all;
+			box_v0.show_all;
 		end if;
 		
 	end show_track_properties;
@@ -478,7 +482,8 @@ package body et_canvas_board_tracks is
 		-- CS show in toolbar or status bar
 	end next_snap_mode;
 	
- 
+
+	
 	function get_nearest (
 		airwire	: in pac_proposed_airwires.cursor;
 		point	: in type_vector_model)
@@ -491,6 +496,7 @@ package body et_canvas_board_tracks is
 		return to_point (get_nearest (wire, to_vector (point)));
 	end get_nearest;
 
+	
 
 	procedure reset_airwires is begin
 		selected_airwire := pac_proposed_airwires.no_element;
@@ -498,6 +504,7 @@ package body et_canvas_board_tracks is
 	end reset_airwires;
 	
 
+	
 	function airwire_is_selected (
 		airwire_cursor	: in pac_airwires.cursor;
 		net_name		: in pac_net_name.bounded_string)
@@ -523,6 +530,7 @@ package body et_canvas_board_tracks is
 			end if;
 		end if;
 	end airwire_is_selected;
+
 
 	
 	procedure select_airwire is 
