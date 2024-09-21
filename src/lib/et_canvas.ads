@@ -703,7 +703,8 @@ package et_canvas is
 
 	-- This procedure creates the canvas, sets its size,
 	-- and adds it into the scrolled window.
-	-- It also adds events to be sensitive to:
+	-- It adds events the canvas is to respond to.
+	-- It also inserts the scrolled window (swin) into box_h0:
 	procedure create_canvas;
 
 

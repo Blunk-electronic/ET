@@ -1388,7 +1388,7 @@ package body et_canvas is
 		swin.add (canvas); 
 
 		-- Insert the scrolled window in box_h:
-		put_line ("add scrolled window to box_h");
+		put_line ("add scrolled window to box_h0");
 		box_h0.pack_start (swin);
 		
 	end create_canvas;
