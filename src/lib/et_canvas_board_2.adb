@@ -860,6 +860,7 @@ package body et_canvas_board_2 is
 		use et_canvas_board_vias;
 		use et_canvas_board_tracks;
 	begin
+		put_line ("reset");
 
 		expect_entry := expect_entry_default;
 		

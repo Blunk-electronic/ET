@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -109,11 +110,12 @@ package body et_canvas_board_texts is
 		preliminary_text.category := to_layer_category (glib.values.get_string (item_text));
 		--put_line ("cat " & to_string (preliminary_text.category));
 
-		-- CS et_canvas_board_2.redraw_board;
+		et_canvas_board_2.redraw_board;
 		
 		-- CS display layer ?
 	end layer_category_changed;
 
+	
 	
 	procedure face_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
@@ -132,10 +134,11 @@ package body et_canvas_board_texts is
 		preliminary_text.face := to_face (glib.values.get_string (item_text));
 		--put_line ("face " & to_string (preliminary_text.face));
 
-		-- CS et_canvas_board_2.redraw_board;
+		et_canvas_board_2.redraw_board;
 		
 		-- CS display layer ?
 	end face_changed;
+
 
 	
 	procedure signal_layer_changed (combo : access gtk_combo_box_record'class) is
@@ -155,10 +158,11 @@ package body et_canvas_board_texts is
 		preliminary_text.signal_layer := to_signal_layer (glib.values.get_string (item_text));
 		--put_line ("signal layer " & to_string (preliminary_text.signal_layer));
 
-		-- CS et_canvas_board_2.redraw_board;
+		et_canvas_board_2.redraw_board;
 		
 		-- CS display layer ?
 	end signal_layer_changed;
+
 
 	
 	procedure apply_size (text : in string) is
@@ -169,8 +173,9 @@ package body et_canvas_board_texts is
 		-- CS validate. output error in status bar
 		preliminary_text.text.size := size;
 
-		-- CS et_canvas_board_2.redraw_board;
+		et_canvas_board_2.redraw_board;
 	end apply_size;
+
 
 	
 	function size_key_pressed (
@@ -200,6 +205,7 @@ package body et_canvas_board_texts is
 		return event_handled;
 	end size_key_pressed;
 
+
 	
 	procedure size_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
@@ -207,6 +213,7 @@ package body et_canvas_board_texts is
 		--put_line ("size " & text);
 		apply_size (text);
 	end size_entered;
+
 
 	
 	procedure apply_line_width (text : in string) is
@@ -217,8 +224,9 @@ package body et_canvas_board_texts is
 		-- CS validate. output error in status bar
 		preliminary_text.text.line_width := width;
 
-		-- et_canvas_board_2.redraw_board;
+		et_canvas_board_2.redraw_board;
 	end apply_line_width;
+
 
 	
 	function line_width_key_pressed (
@@ -248,6 +256,7 @@ package body et_canvas_board_texts is
 		return event_handled;
 	end line_width_key_pressed;
 
+
 	
 	procedure line_width_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
@@ -255,6 +264,7 @@ package body et_canvas_board_texts is
 		--put_line ("line width " & text);
 		apply_line_width (text);
 	end line_width_entered;
+
 
 	
 	procedure apply_rotation (text : in string) is
@@ -266,8 +276,9 @@ package body et_canvas_board_texts is
 
 		set (preliminary_text.text.position, rotation);
 		--put_line (to_string (preliminary_text.text.position));
-		-- et_canvas_board_2.redraw_board;
+		et_canvas_board_2.redraw_board;
 	end apply_rotation;
+
 
 	
 	function rotation_key_pressed (
@@ -298,6 +309,7 @@ package body et_canvas_board_texts is
 	end rotation_key_pressed;
 
 	
+	
 	procedure rotation_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
 	begin
@@ -305,6 +317,7 @@ package body et_canvas_board_texts is
 		apply_rotation (text);
 	end rotation_entered;
 
+	
 	
 	procedure button_apply_clicked (button : access gtk_button_record'class) is
 		use gtk.text_view;
@@ -339,13 +352,13 @@ package body et_canvas_board_texts is
 
 		-- Remove the text properties bar from the window:
 		if box_properties.displayed then
-			null;
-			-- CS
-			-- remove (box_right, box_properties.box_main);
-			-- box_properties.displayed := false;
+			-- put_line ("remove text properties box");
+			remove (box_v0, box_properties.box_main);
+			box_properties.displayed := false;
 		end if;
 	end reset_preliminary_text;
 
+	
 	
 	procedure remove_text_properties is 
 		use et_modes.board;
@@ -406,6 +419,8 @@ package body et_canvas_board_texts is
 		-- The spacing between the boxes:
 		spacing : constant natural := 5;
 
+		
+		
 		procedure make_combo_category is
 			storage_model : gtk_list_store;
 
@@ -454,6 +469,8 @@ package body et_canvas_board_texts is
 			add_attribute (cbox_category, render, "markup", column_0);
 		end make_combo_category;
 
+
+		
 		procedure make_combo_for_face is
 			storage_model : gtk_list_store;
 
@@ -503,6 +520,8 @@ package body et_canvas_board_texts is
 
 		end make_combo_for_face;
 
+		
+		
 		procedure make_combo_for_signal_layer is
 			storage_model : gtk_list_store;
 
@@ -559,6 +578,8 @@ package body et_canvas_board_texts is
 
 		end make_combo_for_signal_layer;
 
+
+		
 		procedure make_combo_for_size is begin
 			gtk_new_vbox (box_size, homogeneous => false);
 			pack_start (box_properties.box_main, box_size, padding => guint (spacing));
@@ -579,6 +600,8 @@ package body et_canvas_board_texts is
 			gtk_entry (cbox_size.get_child).on_activate (size_entered'access);
 		end make_combo_for_size;
 
+		
+		
 		procedure make_combo_for_line_width is begin
 			gtk_new_vbox (box_line_width, homogeneous => false);
 			pack_start (box_properties.box_main, box_line_width, padding => guint (spacing));
@@ -599,6 +622,8 @@ package body et_canvas_board_texts is
 			gtk_entry (cbox_line_width.get_child).on_activate (line_width_entered'access);
 		end make_combo_for_line_width;
 
+
+		
 		procedure make_combo_for_rotation is begin
 			gtk_new_vbox (box_rotation, homogeneous => false);
 			pack_start (box_properties.box_main, box_rotation, padding => guint (spacing));
@@ -618,6 +643,8 @@ package body et_canvas_board_texts is
 			gtk_entry (cbox_rotation.get_child).on_key_press_event (rotation_key_pressed'access);
 			gtk_entry (cbox_rotation.get_child).on_activate (rotation_entered'access);
 		end make_combo_for_rotation;
+
+
 		
 		procedure make_view_for_content is begin
 			gtk_new_vbox (box_content, homogeneous => false);
@@ -631,6 +658,8 @@ package body et_canvas_board_texts is
 			pack_start (box_content, preliminary_text.entry_content, padding => guint (spacing));
 		end make_view_for_content;
 
+
+		
 		procedure make_apply_button is begin
 			gtk_new_vbox (box_button, homogeneous => false);
 			pack_start (box_properties.box_main, box_button, padding => guint (spacing));
@@ -639,36 +668,40 @@ package body et_canvas_board_texts is
 			pack_start (box_button, button_apply, padding => guint (spacing));
 			button_apply.on_clicked (button_apply_clicked'access);
 		end make_apply_button;
+
+
 		
 	begin -- show_text_properties
+		put_line ("show_text_properties");
+
 		
 		-- If the box is already shown, do nothing.
 		-- Otherwise build it:
 		if not box_properties.displayed then
+			put_line ("build properties box");
+			
 			box_properties.displayed := true;
 
-			-- CS
-			-- gtk_new_hbox (box_properties.box_main);
-			-- pack_start (et_canvas_board.pac_canvas.box_right, box_properties.box_main,
-						-- expand	=> false);
+			gtk_new_hbox (box_properties.box_main);
+			pack_start (box_v0, box_properties.box_main,
+						expand	=> false);
 
 			-- The properties bar is to be displayed in the right box
 			-- below the console:
 			-- CS reorder_child (box_right, box_properties.box_main, 1);
 
-			-- build the elements of the properties bar:
-			-- CS
-			-- make_combo_category;
-			-- make_combo_for_face;
-			-- make_combo_for_signal_layer;
-			-- make_combo_for_size;
-			-- make_combo_for_line_width;
-			-- make_combo_for_rotation;
-			-- make_view_for_content;
-			-- make_apply_button;
+			-- Build the elements of the properties bar:
+			make_combo_category;
+			make_combo_for_face;
+			make_combo_for_signal_layer;
+			make_combo_for_size;
+			make_combo_for_line_width;
+			make_combo_for_rotation;
+			make_view_for_content;
+			make_apply_button;
 
 			-- Redraw the right box of the window:
-			-- CS box_right.show_all;
+			box_v0.show_all;
 		end if;
 		
 	end show_text_properties;
@@ -713,6 +746,7 @@ package body et_canvas_board_texts is
 			end if;
 		end if;
 	end is_selected;
+
 	
 
 	function is_selected (
@@ -749,6 +783,7 @@ package body et_canvas_board_texts is
 	end is_selected;
 
 
+	
 	function is_selected (
 		text_cursor	: in pac_stop_texts.cursor;
 		face		: in type_face)
@@ -783,6 +818,7 @@ package body et_canvas_board_texts is
 	end is_selected;
 
 
+	
 	function is_selected (
 		text_cursor	: in pac_conductor_texts.cursor)
 		return boolean
@@ -848,6 +884,7 @@ package body et_canvas_board_texts is
 		end case;
 	end get_position;
 
+
 	
 				
 	procedure select_text is 
@@ -865,6 +902,7 @@ package body et_canvas_board_texts is
 
 	end select_text;
 	
+
 	
 	
 	procedure find_texts (
@@ -960,6 +998,7 @@ package body et_canvas_board_texts is
 
 
 	
+	
 -- PLACE:
 	
 	procedure place_text (
@@ -996,6 +1035,7 @@ package body et_canvas_board_texts is
 
 
 
+	
 	
 -- MOVE:
 

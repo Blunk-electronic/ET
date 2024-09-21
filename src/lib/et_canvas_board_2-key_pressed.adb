@@ -375,13 +375,15 @@ is
 	end draw;
 		
 		
-	procedure place is begin
+	procedure place is 
+		use et_canvas_board_texts;
+	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when GDK_LC_t =>
 				noun := NOUN_TEXT;
-				-- CS show_text_properties;
-				-- CS set_status (status_place_text);
+				show_text_properties;
+				set_status (status_place_text);
 
 			when GDK_LC_v =>
 				noun := NOUN_VIA;
