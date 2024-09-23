@@ -843,6 +843,14 @@ package body et_canvas is
 		gtk_new_vbox (box_v3);
 		box_v3.set_border_width (10);
 		box_v0.pack_start (box_v3, expand => false);
+
+
+		-- BOX FOR PROPERTIES:
+		gtk_new_hbox (box_v4);
+		box_v4.set_size_request (200, 80);
+		pack_start (box_v0, box_v4, expand	=> false);
+		-- NOTE: This box is always there. Depending on the
+		-- particular situation it is filled with widgets.
 		
 	end create_window;
 

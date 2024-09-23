@@ -520,6 +520,9 @@ package et_canvas is
 	-- inside box_v0:
 	box_v3 		: gtk_hbox;		-- for console
 
+
+	box_v4 		: gtk_hbox;
+	
 	
 	-- This procedure creates the main window and
 	-- the boxes box_h, box_v1 and the separator:
