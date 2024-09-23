@@ -201,6 +201,78 @@ Commands and Verb-Noun key sequences
 	|VNS| f z
 
 
+
+++++++++++++++++++++++
+Route Restrict Objects
+++++++++++++++++++++++
+
+Commands and Verb-Noun key sequences
+------------------------------------
+
+#. Drawing lines
+
+	This command draws a line in layer 1 with a
+	linewidth of 0.2mm starting at (50;30) and
+	ending at (70;30):
+
+	.. code-block::
+
+		draw route_restrict [1] 0.2 line 50 30 70 30
+		
+		
+	As restrictions can be applied to many layers
+	at the same time, this command draws the line
+	in layers 1, 3 and 5 to 9:
+
+	.. code-block::
+
+		draw route_restrict [1,3,5-9] 0.2 line 50 30 70 30
+		
+
+
+#. Drawing arcs
+
+	This command draws an arc in layer 1 with a
+	linewidth of 0.2mm having its center at (60;40),
+	starting at (50;40), ending at (70;40) in 
+	counter-clockwise direction:
+
+	.. code-block::
+
+		board demo draw route_restrict [1] 0.2 arc 60 40  50 40  70 40 ccw
+
+
+		
+#. Drawing lines
+
+	This command draws a circle in layer 1 with a
+	linewidth of 0.2mm having its center at (60;40)
+	with a radius of 5mm:
+
+	.. code-block::
+
+		board demo draw route_restrict [1] 0.2 circle 60 40  5
+
+	
+	
+++++++++++++++++++++
+Via Restrict Objects
+++++++++++++++++++++
+
+Commands and Verb-Noun key sequences
+------------------------------------
+
+Objects in via restrict layers are to be drawn the same
+way as route restrict objects (see above). The only difference
+is to use the noun via_restrict instead as shown in this example:
+
+
+	.. code-block::
+
+		draw via_restrict [1] 0.2 line 50 30 70 30
+		
+		
+
 	
 
 +++++
@@ -218,7 +290,15 @@ Commands and Verb-Noun key sequences
 
 	|VNS| p t
 
+	
+	This command places a text in conductor layer 3.
+	The linewidth is 0.15mm, the text size 1mm.
+	The position is at (20;5) with a rotation of 0 degrees.
 
+	.. code-block::
+		
+		place text conductor 3 0.15 1 20 5 0 "Dummy Text"
+	
 	
 +++++
 Lines
