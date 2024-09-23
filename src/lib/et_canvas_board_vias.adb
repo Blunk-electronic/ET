@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -41,25 +42,21 @@ with ada.text_io;					use ada.text_io;
 with ada.strings;					use ada.strings;
 with ada.strings.fixed; 			use ada.strings.fixed;
 
-with glib;							use glib;
 with glib.values;
 
 with gdk.types;						use gdk.types;
 with gdk.event;						use gdk.event;
 with gdk.types.keysyms;				use gdk.types.keysyms;
 
-
-with gtk.window;					use gtk.window;
+-- with gtk.window;					use gtk.window;
 with gtk.widget;					use gtk.widget;
 
-with gtk.combo_box;					use gtk.combo_box;
+
 with gtk.cell_renderer_text;		
 with gtk.cell_layout;        		
 with gtk.list_store;				use gtk.list_store;
 with gtk.tree_model;				use gtk.tree_model;
 
-with gtk.combo_box_text;			use gtk.combo_box_text;
-with gtk.label;
 with gtk.gentry;					use gtk.gentry;
 with gtk.container;					use gtk.container;
 with gtk.text_buffer;
@@ -97,6 +94,7 @@ package body et_canvas_board_vias is
 	end category_changed;
 
 
+	
 -- DESTINATION LAYER (FOR BLIND VIAS ONLY)
 
 	procedure destination_changed (combo : access gtk_combo_box_record'class) is
@@ -118,6 +116,8 @@ package body et_canvas_board_vias is
 	end destination_changed;
 
 
+
+	
 -- BURIED VIA
 
 	procedure upper_layer_changed (combo : access gtk_combo_box_record'class) is
@@ -139,6 +139,8 @@ package body et_canvas_board_vias is
 	end upper_layer_changed;
 	
 
+
+	
 	procedure lower_layer_changed (combo : access gtk_combo_box_record'class) is
 		-- Get the model and active iter from the combo box:
 		model : constant gtk_tree_model := combo.get_model;
@@ -158,6 +160,7 @@ package body et_canvas_board_vias is
 	end lower_layer_changed;
 
 	
+
 	
 -- DRILL SIZE
 
@@ -172,6 +175,8 @@ package body et_canvas_board_vias is
 		-- CS et_canvas_board_2.redraw_board;
 	end apply_drill_size;
 	
+
+
 	
 	function drill_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
@@ -197,6 +202,7 @@ package body et_canvas_board_vias is
 		return event_handled;
 	end drill_key_pressed;
 
+
 	
 	procedure drill_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
@@ -206,6 +212,7 @@ package body et_canvas_board_vias is
 	end drill_entered;
 
 
+	
 	
 -- RESTRING INNER
 
@@ -220,6 +227,8 @@ package body et_canvas_board_vias is
 		-- CS et_canvas_board_2.redraw_board;
 	end apply_restring_inner;
 	
+
+
 	
 	function restring_inner_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
@@ -244,6 +253,8 @@ package body et_canvas_board_vias is
 		
 		return event_handled;
 	end restring_inner_key_pressed;
+
+
 	
 	
 	procedure restring_inner_entered (combo_entry : access gtk_entry_record'class) is 
@@ -254,6 +265,7 @@ package body et_canvas_board_vias is
 	end restring_inner_entered;
 
 
+	
 	
 -- RESTRING OUTER
 
@@ -268,6 +280,7 @@ package body et_canvas_board_vias is
 		-- CS et_canvas_board_2.redraw_board;
 	end apply_restring_outer;
 
+	
 	
 	function restring_outer_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
@@ -292,6 +305,7 @@ package body et_canvas_board_vias is
 		
 		return event_handled;
 	end restring_outer_key_pressed;
+
 	
 	
 	procedure restring_outer_entered (combo_entry : access gtk_entry_record'class) is 
@@ -361,46 +375,10 @@ package body et_canvas_board_vias is
 	
 
 	procedure show_via_properties is
-		use gtk.window;
-		use gtk.box;
-		use gtk.label;
 		use gtk.gentry;
 		use gtk.cell_renderer_text;
 		use gtk.cell_layout;
 
-		box_net_name,
-		box_category, box_destination_blind, 
-		box_buried_upper, box_buried_lower, box_drill,
-		box_restring_inner, box_restring_outer : gtk_vbox;
-
-		label_net_name,
-		label_category, label_destination_blind, 
-		
-		label_buried_upper, label_buried_lower, label_drill,
-		label_restring_inner, label_restring_outer : gtk_label;
-
-		cbox_net_name,
-		cbox_category, cbox_destination_blind,
-		cbox_buried_upper, cbox_buried_lower : gtk_combo_box;
-		-- Operator can choose between fixed menu entries.
-		
-		cbox_drill, cbox_restring_inner, cbox_restring_outer : gtk_combo_box_text;
-		-- Operator may enter an additional value in the menu.
-
-		-- These constants define the minimum and maximum of
-		-- characters that can be entered in the fields for 
-		-- drill size and restring width:
-		
-		drill_size_length_min : constant gint := 1;
-		drill_size_length_max : constant gint := 4; 
-		-- CS: adjust if necessary. see parameters of type_drill_size.
-		
-		restring_size_length_min : constant gint := 1;
-		restring_size_length_max : constant gint := 5;
-		--CS: adjust if necessary. see parameters of type_restring_width.
-		
-		-- The spacing between the boxes:
-		spacing : constant natural := 5;
 		
 
 		-- NET NAME
@@ -413,7 +391,7 @@ package body et_canvas_board_vias is
 			render	: gtk_cell_renderer_text;			
 		begin			
 			gtk_new_vbox (box_net_name, homogeneous => false);
-			pack_start (box_properties.box_main, box_net_name, padding => guint (spacing));
+			pack_start (box_v4, box_net_name, padding => guint (spacing));
 
 			gtk_new (label_net_name, "NET");
 			pack_start (box_net_name, label_net_name, padding => guint (spacing));
@@ -465,7 +443,7 @@ package body et_canvas_board_vias is
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_category, homogeneous => false);
-			pack_start (box_properties.box_main, box_category, padding => guint (spacing));
+			pack_start (box_v4, box_category, padding => guint (spacing));
 
 			gtk_new (label_category, "VIA CAT");
 			pack_start (box_category, label_category, padding => guint (spacing));
@@ -515,7 +493,7 @@ package body et_canvas_board_vias is
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_destination_blind, homogeneous => false);
-			pack_start (box_properties.box_main, box_destination_blind, padding => guint (spacing));
+			pack_start (box_v4, box_destination_blind, padding => guint (spacing));
 			
 			gtk_new (label_destination_blind, "BL DST");
 			pack_start (box_destination_blind, label_destination_blind, padding => guint (spacing));
@@ -575,7 +553,7 @@ package body et_canvas_board_vias is
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_buried_upper, homogeneous => false);
-			pack_start (box_properties.box_main, box_buried_upper, padding => guint (spacing));
+			pack_start (box_v4, box_buried_upper, padding => guint (spacing));
 			
 			gtk_new (label_buried_upper, "BUR UPPER");
 			pack_start (box_buried_upper, label_buried_upper, padding => guint (spacing));
@@ -634,7 +612,7 @@ package body et_canvas_board_vias is
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_buried_lower, homogeneous => false);
-			pack_start (box_properties.box_main, box_buried_lower, padding => guint (spacing));
+			pack_start (box_v4, box_buried_lower, padding => guint (spacing));
 			
 			gtk_new (label_buried_lower, "BUR LOWER");
 			pack_start (box_buried_lower, label_buried_lower, padding => guint (spacing));
@@ -684,7 +662,7 @@ package body et_canvas_board_vias is
 		
 		procedure make_combo_drill is begin
 			gtk_new_vbox (box_drill, homogeneous => false);
-			pack_start (box_properties.box_main, box_drill, padding => guint (spacing));
+			pack_start (box_v4, box_drill, padding => guint (spacing));
 			
 			gtk_new (label_drill, "DRL SIZE");
 			pack_start (box_drill, label_drill, padding => guint (spacing));
@@ -705,7 +683,7 @@ package body et_canvas_board_vias is
 		
 		procedure make_combo_restring_inner is begin
 			gtk_new_vbox (box_restring_inner, homogeneous => false);
-			pack_start (box_properties.box_main, box_restring_inner, padding => guint (spacing));
+			pack_start (box_v4, box_restring_inner, padding => guint (spacing));
 			
 			gtk_new (label_restring_inner, "RESTR IN");
 			pack_start (box_restring_inner, label_restring_inner, padding => guint (spacing));
@@ -726,7 +704,7 @@ package body et_canvas_board_vias is
 		
 		procedure make_combo_restring_outer is begin
 			gtk_new_vbox (box_restring_outer, homogeneous => false);
-			pack_start (box_properties.box_main, box_restring_outer, padding => guint (spacing));
+			pack_start (box_v4, box_restring_outer, padding => guint (spacing));
 			
 			gtk_new (label_restring_outer, "RESTR OUT");
 			pack_start (box_restring_outer, label_restring_outer, padding => guint (spacing));
@@ -753,36 +731,28 @@ package body et_canvas_board_vias is
 		-- initialized which forbids placing vias.
 		-- if is_initialized (preliminary_via.net) then
 			
-			-- If the box is already shown, do nothing.
-			-- Otherwise build it:
+		-- If the properties are already displayed, do nothing.
+		-- Otherwise show them:
 			if not box_properties.displayed then
+				--put_line ("build via properties");
+				
 				box_properties.displayed := true;
 
-				-- CS 
-				-- gtk_new_hbox (box_properties.box_main);
-				-- pack_start (et_canvas_board.pac_canvas.box_right, box_properties.box_main,
-				-- 			expand	=> false);
-
-				-- The properties bar is to be displayed in the right box
-				-- below the console:
-				-- CS reorder_child (box_right, box_properties.box_main, 1);
-
-				-- build the elements of the properties bar:
-				-- CS 
-				-- make_combo_category;
-				-- make_combo_net;
-				-- make_combo_destination;
-				-- make_combo_buried_upper;
-				-- make_combo_buried_lower;			
-				-- make_combo_drill;
-				-- make_combo_restring_inner;
-				-- make_combo_restring_outer;
+				-- Build the elements of the properties bar:
+				make_combo_category;
+				make_combo_net;
+				make_combo_destination;
+				make_combo_buried_upper;
+				make_combo_buried_lower;			
+				make_combo_drill;
+				make_combo_restring_inner;
+				make_combo_restring_outer;
 
 				-- Signal the GUI to draw the via:
 				preliminary_via.ready := true;
 				
 				-- Redraw the right box of the window:
-				-- CS box_right.show_all;
+				box_v0.show_all;  -- CS box_v4 ?
 			end if;
 
 		-- else
@@ -799,13 +769,30 @@ package body et_canvas_board_vias is
 		preliminary_via.tool := MOUSE;
 		clear_proposed_vias;
 
-		-- Remove the via properties bar from the window:
+		-- Clear the content of the properties bar:
 		if box_properties.displayed then
-			null;
-			-- CS remove (box_right, box_properties.box_main);
-			-- CS box_properties.displayed := false;
+			-- put_line ("clear via properties box");
+			
+			-- Clear out the properties box:
+			remove (box_v4, box_net_name);
+			remove (box_v4, box_category);
+			remove (box_v4, box_destination_blind);
+			remove (box_v4, box_buried_upper);
+			remove (box_v4, box_buried_lower);
+			remove (box_v4, box_drill);
+			remove (box_v4, box_restring_inner);
+			remove (box_v4, box_restring_outer);
+
+			-- CS use an iterator to remove widgets like
+			-- container.foreach ((element) => container.remove (element));
+			--
+			-- See <https://stackoverflow.com/questions/36215425/vala-how-do-you-delete-all-the-children-of-a-gtk-container>
+			-- See package gtk.container
+			
+			box_properties.displayed := false;
 		end if;
 	end reset_preliminary_via;
+
 
 	
 

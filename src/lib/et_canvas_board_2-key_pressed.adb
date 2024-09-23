@@ -377,6 +377,7 @@ is
 		
 	procedure place is 
 		use et_canvas_board_texts;
+		use et_canvas_board_vias;
 	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
@@ -387,8 +388,8 @@ is
 
 			when GDK_LC_v =>
 				noun := NOUN_VIA;
-				-- CS show_via_properties;
-				-- CS set_status (status_place_via);
+				show_via_properties;
+				set_status (status_place_via);
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when GDK_Space =>

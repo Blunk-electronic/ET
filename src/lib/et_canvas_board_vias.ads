@@ -6,7 +6,9 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                -- 
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -37,27 +38,32 @@
 -- DESCRIPTION:
 -- 
 
-with gtk.box;						use gtk.box;
 
-with et_general;					use et_general;
-with et_net_names;					use et_net_names;
+with glib;								use glib;
+with gtk.box;							use gtk.box;
+with gtk.combo_box;						use gtk.combo_box;
+with gtk.combo_box_text;				use gtk.combo_box_text;
+with gtk.label;							use gtk.label;
+
+
+with et_net_names;						use et_net_names;
 with et_canvas;
 with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;
 with et_canvas_schematic_2;
 
-with et_geometry;					use et_geometry;
-with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
+with et_geometry;						use et_geometry;
+with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
 use et_pcb_coordinates_2.pac_geometry_2;
 
-with et_drills;						use et_drills;
-with et_vias;						use et_vias;
-with et_pcb_stack;					use et_pcb_stack;
-with et_design_rules;				use et_design_rules;
-with et_project.modules;			use et_project.modules;
+with et_drills;							use et_drills;
+with et_vias;							use et_vias;
+with et_pcb_stack;						use et_pcb_stack;
+with et_design_rules;					use et_design_rules;
+with et_project.modules;				use et_project.modules;
 with et_pcb;
-with et_board_ops.vias;				use et_board_ops.vias;
-with et_logging;					use et_logging;
+with et_board_ops.vias;					use et_board_ops.vias;
+with et_logging;						use et_logging;
 
 with et_canvas_board_tracks;
 
@@ -68,7 +74,6 @@ package et_canvas_board_vias is
 
 	-- The via properties bar:
 	type type_box_properties is record
-		box_main	: gtk_hbox;
 		
 		-- This flag indicates that the
 		-- box is being displayed. 
@@ -81,6 +86,51 @@ package et_canvas_board_vias is
 	box_properties : type_box_properties;
 
 
+
+
+	box_net_name,
+	box_category, box_destination_blind, 
+	box_buried_upper, box_buried_lower, box_drill,
+	box_restring_inner, box_restring_outer : gtk_vbox;
+
+	label_net_name,
+	label_category, label_destination_blind, 
+	
+	label_buried_upper, label_buried_lower, label_drill,
+	label_restring_inner, label_restring_outer : gtk_label;
+
+	cbox_net_name,
+	cbox_category, cbox_destination_blind,
+	cbox_buried_upper, cbox_buried_lower : gtk_combo_box;
+	-- Operator can choose between fixed menu entries.
+	
+	cbox_drill, cbox_restring_inner, cbox_restring_outer : gtk_combo_box_text;
+	-- Operator may enter an additional value in the menu.
+
+	-- These constants define the minimum and maximum of
+	-- characters that can be entered in the fields for 
+	-- drill size and restring width:
+	
+	drill_size_length_min : constant gint := 1;
+	drill_size_length_max : constant gint := 4; 
+	-- CS: adjust if necessary. see parameters of type_drill_size.
+	
+	restring_size_length_min : constant gint := 1;
+	restring_size_length_max : constant gint := 5;
+	--CS: adjust if necessary. see parameters of type_restring_width.
+	
+	-- The spacing between the boxes:
+	spacing : constant natural := 5;
+
+
+
+
+
+
+
+
+
+	
 
 	
 	-- Before placing, moving, deleting or other operations we
