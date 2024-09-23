@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -41,7 +41,12 @@
 with ada.containers;   			       	use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
 
+with glib;								use glib;
+
 with gtk.box;							use gtk.box;
+with gtk.label;							use gtk.label;
+with gtk.combo_box;						use gtk.combo_box;
+with gtk.combo_box_text;				use gtk.combo_box_text;
 with gtk.list_store;					use gtk.list_store;			
 
 with et_canvas;
@@ -78,7 +83,6 @@ package et_canvas_board_tracks is
 
 	-- The text properties bar:
 	type type_box_properties is record
-		box_main	: gtk_hbox;
 		
 		-- This flag indicates that the
 		-- box is being displayed. 
@@ -91,7 +95,42 @@ package et_canvas_board_tracks is
 	box_properties : type_box_properties;
 
 
+	
 
+	box_net_name, box_signal_layer, box_line_width : gtk_vbox;
+	
+	label_net_name, label_signal_layer, label_line_width : gtk_label;
+	
+	cbox_net_name : gtk_combo_box;
+	cbox_signal_layer : gtk_combo_box;
+	-- Operator can choose between fixed menu entries.
+	
+	cbox_line_width : gtk_combo_box_text;
+	-- Operator may enter an additional value in the menu.
+	
+	-- These constants define the minimum and maximum of
+	-- characters that can be entered in the fields for 
+	-- text size and line width:
+	text_size_length_min : constant gint := 1;
+	text_size_length_max : constant gint := 6; 
+	-- CS: adjust if necessary. see parameters 
+	-- of et_board_shapes_and_text.pac_text_fab.
+	
+	line_width_length_min : constant gint := 1;
+	line_width_length_max : constant gint := 5;
+	-- CS: adjust if necessary. see parameters
+	-- of et_board_shapes_and_text.pac_text_fab.
+	
+	rotation_length_min : constant gint := 1;
+	rotation_length_max : constant gint := 5;
+	-- CS: adjust if necessary. see et_pcb_coordinates_2 type_rotation.
+	
+	-- The spacing between the boxes:
+	spacing : constant natural := 5;
+
+
+	
+	
 	
 	type type_snap_mode is (
 		NEAREST_AIRWIRE, -- track starts/ends at the nearest airwire

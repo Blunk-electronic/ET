@@ -44,27 +44,21 @@ with ada.strings.fixed; 			use ada.strings.fixed;
 --with ada.characters;				use ada.characters;
 --with ada.characters.handling;		use ada.characters.handling;
 
-with glib;
 with glib.values;
 
-with gdk.types;						use gdk.types;
-with gdk.event;						use gdk.event;
-with gdk.types.keysyms;				use gdk.types.keysyms;
+with gdk.types;							use gdk.types;
+with gdk.event;							use gdk.event;
+with gdk.types.keysyms;					use gdk.types.keysyms;
 
-with gtk.window;					use gtk.window;
-with gtk.widget;					use gtk.widget;
+with gtk.widget;						use gtk.widget;
 
-with gtk.combo_box;					use gtk.combo_box;
 with gtk.cell_renderer_text;		
 with gtk.cell_layout;        		
 with gtk.list_store;				
 with gtk.tree_model;
 
-with gtk.combo_box_text;			use gtk.combo_box_text;
-with gtk.label;
-with gtk.gentry;					use gtk.gentry;
-with gtk.container;					use gtk.container;
-with gtk.button;					use gtk.button;
+with gtk.gentry;						use gtk.gentry;
+with gtk.container;						use gtk.container;
 
 with et_project.modules;				use et_project.modules;
 with et_canvas_board_2;
@@ -89,16 +83,27 @@ with et_commit;
 
 package body et_canvas_board_lines is
 
-	use et_canvas_board_2.pac_canvas;
-
 
 	procedure reset_preliminary_line is begin
 		preliminary_line.ready := false;
 		preliminary_line.tool := MOUSE;
 
-		-- Remove the text properties bar from the window:
+		-- Clear the content of the properties bar:
 		if box_properties.displayed then
-			-- CS remove (box_right, box_properties.box_main);
+			-- put_line ("clear track properties box");
+			
+			-- Clear out the properties box:
+			remove (box_v4, box_layer_category);
+			remove (box_v4, box_face);
+			remove (box_v4, box_signal_layer);
+			remove (box_v4, box_line_width);
+
+			-- CS use an iterator to remove widgets like
+			-- container.foreach ((element) => container.remove (element));
+			--
+			-- See <https://stackoverflow.com/questions/36215425/vala-how-do-you-delete-all-the-children-of-a-gtk-container>
+			-- See package gtk.container
+			
 			box_properties.displayed := false;
 		end if;
 	end reset_preliminary_line;
@@ -158,6 +163,7 @@ package body et_canvas_board_lines is
 		
 		-- CS display layer ?
 	end face_changed;
+
 
 	
 	procedure signal_layer_changed (combo : access gtk_combo_box_record'class) is
@@ -229,6 +235,7 @@ package body et_canvas_board_lines is
 		return event_handled;
 	end line_width_key_pressed;
 
+
 	
 	procedure line_width_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
@@ -241,51 +248,15 @@ package body et_canvas_board_lines is
 
 
 	procedure show_line_properties is
-		use glib;
 
-		use gtk.window;
-		use gtk.box;
-		use gtk.label;
+		use et_canvas_board_2.pac_canvas;
+		
 		use gtk.gentry;
 		use gtk.cell_renderer_text;
 		use gtk.cell_layout;
 		use gtk.list_store;
 		use gtk.tree_model;
 
-		box_layer_category, box_face, 
-		box_signal_layer, --box_button,
-		box_line_width : gtk_vbox;
-		
-		label_layer_category, label_face, 
-		label_signal_layer, label_line_width : gtk_label;
-		
-		cbox_category, cbox_face, cbox_signal_layer : gtk_combo_box;
-		-- Operator can choose between fixed menu entries.
-		
-		cbox_line_width : gtk_combo_box_text;
-		-- Operator may enter an additional value in the menu.
-		
-		-- button_apply : gtk_button;
-
-		-- These constants define the minimum and maximum of
-		-- characters that can be entered in the fields for 
-		-- text size and line width:
-		text_size_length_min : constant gint := 1;
-		text_size_length_max : constant gint := 6; 
-		-- CS: adjust if necessary. see parameters 
-		-- of et_board_shapes_and_text.pac_text_fab.
-		
-		line_width_length_min : constant gint := 1;
-		line_width_length_max : constant gint := 5;
-		-- CS: adjust if necessary. see parameters
-		-- of et_board_shapes_and_text.pac_text_fab.
-		
-		rotation_length_min : constant gint := 1;
-		rotation_length_max : constant gint := 5;
-		-- CS: adjust if necessary. see et_pcb_coordinates type_rotation.
-		
-		-- The spacing between the boxes:
-		spacing : constant natural := 5;
 
 		
 		procedure make_combo_category is
@@ -301,7 +272,7 @@ package body et_canvas_board_lines is
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_layer_category, homogeneous => false);
-			pack_start (box_properties.box_main, box_layer_category, padding => guint (spacing));
+			pack_start (box_v4, box_layer_category, padding => guint (spacing));
 
 			gtk_new (label_layer_category, "LAYER CAT");
 			pack_start (box_layer_category, label_layer_category, padding => guint (spacing));
@@ -350,7 +321,7 @@ package body et_canvas_board_lines is
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_face, homogeneous => false);
-			pack_start (box_properties.box_main, box_face, padding => guint (spacing));
+			pack_start (box_v4, box_face, padding => guint (spacing));
 			
 			gtk_new (label_face, "FACE");
 			pack_start (box_face, label_face, padding => guint (spacing));
@@ -400,7 +371,7 @@ package body et_canvas_board_lines is
 			render : gtk_cell_renderer_text;
 		begin
 			gtk_new_vbox (box_signal_layer, homogeneous => false);
-			pack_start (box_properties.box_main, box_signal_layer, padding => guint (spacing));
+			pack_start (box_v4, box_signal_layer, padding => guint (spacing));
 			
 			gtk_new (label_signal_layer, "SIGNAL LAYER");
 			pack_start (box_signal_layer, label_signal_layer, padding => guint (spacing));
@@ -446,7 +417,7 @@ package body et_canvas_board_lines is
 
 		procedure make_combo_for_line_width is begin
 			gtk_new_vbox (box_line_width, homogeneous => false);
-			pack_start (box_properties.box_main, box_line_width, padding => guint (spacing));
+			pack_start (box_v4, box_line_width, padding => guint (spacing));
 
 			gtk_new (label_line_width, "LINE WIDTH");
 			pack_start (box_line_width, label_line_width, padding => guint (spacing));
@@ -467,7 +438,7 @@ package body et_canvas_board_lines is
 
 		-- procedure make_apply_button is begin
 		-- 	gtk_new_vbox (box_button, homogeneous => false);
-		-- 	pack_start (box_properties.box_main, box_button, padding => guint (spacing));
+		-- 	pack_start (box_v4, box_button, padding => guint (spacing));
   -- 
 		-- 	gtk_new (button_apply, "Apply");
 		-- 	pack_start (box_button, button_apply, padding => guint (spacing));
@@ -476,20 +447,14 @@ package body et_canvas_board_lines is
 		
 	begin -- show_line_properties
 		
-		-- If the box is already shown, do nothing.
-		-- Otherwise build it:
+		-- If the properties are already displayed, do nothing.
+		-- Otherwise show them:
 		if not box_properties.displayed then
+			--put_line ("build line properties");
+			
 			box_properties.displayed := true;
 		
-			gtk_new_hbox (box_properties.box_main);
-			-- CS pack_start (et_canvas_board_2.pac_canvas.box_right, box_properties.box_main,
-						-- expand	=> false);
-
-			-- The properties bar is to be displayed in the right box
-			-- below the console:
-			-- CS reorder_child (box_right, box_properties.box_main, 1);
-
-			-- build the elements of the properties bar:
+			-- Build the elements of the properties bar:
 			make_combo_category;
 			make_combo_for_face;
 			make_combo_for_signal_layer;
@@ -497,7 +462,7 @@ package body et_canvas_board_lines is
 			-- make_apply_button;
 
 			-- Redraw the right box of the window:
-			-- CS box_right.show_all;
+			box_v0.show_all; -- CS box_v4 ?
 		end if;
 		
 	end show_line_properties;

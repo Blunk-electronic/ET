@@ -41,6 +41,7 @@ with et_canvas_tool;					use et_canvas_tool;
 with et_board_ops.conductors;			use et_board_ops.conductors;
 with et_board_ops.ratsnest;
 with et_canvas_board_tracks;
+with et_canvas_board_lines;
 
 with et_ratsnest;
 
@@ -338,15 +339,14 @@ is
 
 	procedure draw is 
 		use pac_path_and_bend;
+		use et_canvas_board_lines;
 	begin
 		case key is
 			when GDK_LC_l =>
 				noun := NOUN_LINE;
-
-				-- CS reset_preliminary_line;
-				
-				-- CS show_line_properties;
-				-- CS set_status (status_draw_line);
+				reset_preliminary_line;				
+				show_line_properties;
+				set_status (status_draw_line);
 
 
 			-- If space pressed, then the operator wishes to operate via keyboard:	
