@@ -808,7 +808,7 @@ package body et_canvas is
 
 		-- CS: Set the minimum size of the main window ?
 		-- CS show main window size
-		-- main_window.set_size_request (1000, 500);
+		--main_window.set_size_request (1400, 1000);
 
 		-- main_window.set_redraw_on_allocate (false);
 
@@ -818,13 +818,14 @@ package body et_canvas is
 		
 		-- BOXES FOR COORDINATES DISPLAY, VERB-NOUN, TOOL, SWIN, CANVAS:
 		gtk_new_hbox (box_h0);
-		box_v0.pack_start (box_h0, expand => false);
+		--box_v0.pack_start (box_h0, expand => false);
+		box_v0.pack_start (box_h0, expand => true);
 		
 		-- vertical box for coordinates display:
 		gtk_new_vbox (box_v1);
 		box_v1.set_border_width (10);
 		
-		-- The left vbox shall not change its width when the 
+		-- The left vbox shall NOT change its width when the 
 		-- main window is resized:
 		box_h0.pack_start (box_v1, expand => false);
 
