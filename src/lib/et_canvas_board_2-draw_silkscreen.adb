@@ -88,6 +88,8 @@ is
 		use et_modes.board;
 		use et_canvas_tool;
 	begin
+		-- put_line ("query_line");
+		
 		if is_selected (c, face) then
 			set_highlight_brightness;
 
@@ -294,7 +296,7 @@ is
 	
 begin -- draw_silkscreen
 
-	-- 	put_line ("draw board silkscreen ...");
+	-- put_line ("draw silkscreen ...");
 	
 	pac_generic_modules.query_element (
 		position	=> current_active_module,
