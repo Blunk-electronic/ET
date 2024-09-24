@@ -166,6 +166,8 @@ is
 		-- CS use rename
 		use pac_text;
 		v_text : type_vector_text;
+
+		use pac_draw_text;
 	begin
 		draw_origin (element (c).position);
 
@@ -193,6 +195,8 @@ is
 	
 	procedure query_text (c : in pac_silk_texts.cursor) is 
 		text : type_silk_text renames element (c);
+
+		use pac_draw_text;
 
 		
 		-- Draws the given text as it is given:

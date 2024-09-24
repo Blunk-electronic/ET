@@ -100,6 +100,8 @@ procedure draw_conductors is
 
 		-- The place where the text origin will be drawn:
 		origin : type_position;
+
+		use pac_draw_text;
 	begin
 		if verb = VERB_PLACE and noun = NOUN_TEXT and preliminary_text.ready then
 			
@@ -540,6 +542,8 @@ procedure draw_conductors is
 		v_text : type_vector_text;
 
 		-- CS use rename ?
+		
+		use pac_draw_text;
 	begin
 		-- Draw the placeholder if it is in the current layer:
 		if element (c).layer = current_layer then
@@ -575,7 +579,9 @@ procedure draw_conductors is
 		text : type_conductor_text renames element (c);
 
 		-- Draws the given text as it is given:
-		procedure draw_unchanged is begin
+		procedure draw_unchanged is
+			use pac_draw_text;
+		begin
 			draw_origin (text.position);
 
 			-- Set the line width of the vector text:
@@ -587,7 +593,8 @@ procedure draw_conductors is
 		use et_canvas_board_texts;
 		use et_colors.board;
 		use et_canvas_tool;
-		
+
+		use pac_draw_text;
 	begin
 		-- Draw the text if it is in the current layer:
 		if text.layer = current_layer then

@@ -52,8 +52,14 @@ package et_canvas.text is
 	use cairo;
 	
 	procedure dummy;
+	
 
+	-- Draw a vectorized text with the
+	-- given linewidth:
+	procedure draw_vector_text (
+		text	: in pac_text.type_vector_text;
+		width	: in pac_geometry.type_distance_positive);
 
-
+	
 	
 end et_canvas.text;

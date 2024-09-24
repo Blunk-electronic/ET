@@ -258,6 +258,7 @@ is
 				
 				procedure query_text (c : in pac_silk_texts.cursor) is 
 					text : type_silk_text renames element (c);
+					use pac_draw_text;
 				begin
 					draw_origin ((text.position.place, zero_rotation));
 
@@ -384,6 +385,7 @@ is
 				
 				procedure query_text (c : in pac_doc_texts.cursor) is 
 					text : type_doc_text renames element (c);
+					use pac_draw_text;
 				begin
 					draw_origin ((text.position.place, zero_rotation));
 
@@ -577,6 +579,7 @@ is
 
 				procedure query_text (c : pac_stop_texts.cursor) is
 					text : type_stop_text renames element (c);
+					use pac_draw_text;
 				begin
 					draw_origin ((text.position.place, zero_rotation));
 					
@@ -1087,6 +1090,7 @@ is
 				
 				procedure query_text (c : in pac_conductor_texts.cursor) is
 					text : et_conductor_text.type_conductor_text renames element (c);
+					use pac_draw_text;
 				begin
 					draw_origin ((text.position.place, zero_rotation));
 
