@@ -125,7 +125,7 @@ package et_canvas is
 
 	-- This is the specification of the zoom factor
 	-- (German: Vergroesserungsfaktor)
-	type type_zoom_factor is digits 3 range 0.10 .. 100.0;
+	type type_zoom_factor is digits 3 range 0.10 .. 500.0;
 	
 
 	-- This is the global zoom factor:
