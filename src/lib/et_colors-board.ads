@@ -68,26 +68,26 @@ package et_colors.board is
 	-- CS: These values may be overwitten by user specific colors and fill
 	-- styles in the future:
 	
-	cursor				: type_color := white;
+	cursor				: type_color := white; -- CS currently ignored
 	background 			: type_color := black;
 	frame				: type_color := white;
 	outline				: type_color := gray;
 	grid 				: type_color := gray;	
 	origin				: type_color := gray;	
-	placeholders		: type_color := white;
+	placeholders		: type_color := gray;
 
 	ratsnest			: type_color := yellow;
 	
-	via					: type_color := green;
-	via_layers			: type_color := white; -- the layers the via is connecting
-	via_net_name		: type_color := yellow; -- the net where the via is part of
-	via_drill_size		: type_color := white; -- the drill size of the via
+	via					: type_color := green; -- CS rename to via_restring
+	via_layers			: type_color := gray; -- the layers the via is connecting
+	via_net_name		: type_color := gray; -- the net where the via is part of
+	via_drill_size		: type_color := gray; -- the drill size of the via
 	
-	terminal_names		: type_color := white;
+	terminal_names		: type_color := gray;
 	tht_pads			: type_color := green;
 	
-	silkscreen_top		: type_color := white;
-	silkscreen_bottom	: type_color := white;	
+	silkscreen_top		: type_color := gray;
+	silkscreen_bottom	: type_color := gray;	
 
 	assy_doc_top		: type_color := yellow;
 	assy_doc_bottom		: type_color := yellow;	
@@ -178,7 +178,7 @@ package et_colors.board is
 
 -- VIAS
 
-	procedure set_color_vias (
+	procedure set_color_vias ( -- CS rename to set_color_via_restring
 		brightness	: in type_brightness := brightness_default;
 		opacity		: in type_opacity := default_opacity);
 

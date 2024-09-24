@@ -676,17 +676,28 @@ procedure draw_conductors is
 		via : type_via renames element (via_cursor);
 
 		brightness : type_brightness := NORMAL;
-		
-		circle : type_circle;
 
+		
+		-- When the restring is to be drawn then
+		-- we just use a circle with a certain linewidth:
+		circle : type_circle;
+		linewidth : type_distance_positive;
+		
 		radius_base : type_distance_positive;
 
-		procedure set_width_and_radius (r : in type_restring_width) is begin
-			set_linewidth (r);
+
+		-- This procedure sets the linewidth
+		-- and radius of the circle to be drawn:
+		procedure set_width_and_radius (
+			r : in type_restring_width) 
+		is begin
+			linewidth := r;
 			circle.radius := (radius_base + r / 2.0);
 		end set_width_and_radius;
 
-		
+
+		-- This procedure draws the restring using
+		-- the circle as described above:
 		procedure draw_restring is 
 			use et_colors.board;
 		begin
@@ -695,9 +706,8 @@ procedure draw_conductors is
 			draw_circle (
 				circle		=> circle,
 				filled		=> et_geometry.NO,
-				width		=> zero -- CS ?
-				);
-			
+				width		=> linewidth,
+				do_stroke	=> true);			
 		end draw_restring;
 
 		
@@ -727,7 +737,7 @@ procedure draw_conductors is
 
 				draw_text (
 					content		=> to_content (to_string (net_name)),
-					size		=> radius_base * text_size_factor,
+					size		=> via.diameter * text_size_factor,
 					font		=> via_text_font,
 					anchor		=> position,
 					origin		=> false,
@@ -755,7 +765,7 @@ procedure draw_conductors is
 
 			draw_text (
 				content		=> to_content (from & "-" & to),
-				size		=> radius_base * text_size_factor,
+				size		=> via.diameter * text_size_factor,
 				font		=> via_text_font,
 				anchor		=> position,
 				origin		=> false,
@@ -785,7 +795,7 @@ procedure draw_conductors is
 
 				draw_text (
 					content		=> to_content (to_string (via.diameter)),
-					size		=> radius_base * text_size_factor,
+					size		=> via.diameter * text_size_factor,
 					font		=> via_text_font,
 					anchor		=> position,
 					origin		=> false,
@@ -797,7 +807,8 @@ procedure draw_conductors is
 		end draw_drill_size;
 		
 
-		
+		-- Depening on the category of the via, the order in
+		-- which things are to be drawn differs:
 		procedure query_category is 
 			
 			procedure draw_numbers_blind_top is begin
@@ -824,116 +835,136 @@ procedure draw_conductors is
 			end draw_numbers_blind_bottom;		
 
 			
-		begin -- query_category	
-			case via.category is
-				when THROUGH =>
-					if is_inner_layer (current_layer) then
-						-- current_layer is an inner layer
-						set_width_and_radius (via.restring_inner);
+			procedure through_hole_via is begin
+				if is_inner_layer (current_layer) then
+					-- current_layer is an inner layer
+					set_width_and_radius (via.restring_inner);
 
-						inner_restring_drawn := true;
-					else
-						-- current_layer is an outer layer
-						set_width_and_radius (via.restring_outer);
+					inner_restring_drawn := true;
+				else
+					-- current_layer is an outer layer
+					set_width_and_radius (via.restring_outer);
 
-						outer_restring_drawn := true;
+					outer_restring_drawn := true;
+				end if;
+
+				draw_restring;
+
+				-- For a double layer board it is sufficent to draw 
+				-- the restring of the top or bottom layer. Double layer boards
+				-- do not have inner restrings for vias.
+				if is_double_layer_board then
+					if outer_restring_drawn then
+						cancel := true; -- causes the layer iterator to cancel
 					end if;
-
-					draw_restring;
-
-					-- For a double layer board it is sufficent to draw 
-					-- the restring of the top or bottom layer. Double layer boards
-					-- do not have inner restrings for vias.
-					if is_double_layer_board then
-						if outer_restring_drawn then
-							cancel := true; -- causes the layer iterator to cancel
-						end if;
-					else 
-					-- For a multilayer board we need to draw only one outer restring
-					-- (top or bottom, which one does not matter) and one inner restring.
-					-- Once that is done, there is no need to draw the via again.	
-						if outer_restring_drawn and inner_restring_drawn then
-							cancel := true; -- causes the layer iterator to cancel
-						end if;
-					end if;
-
-					draw_net_name;
-					draw_drill_size;
-					
-					-- NOTE: For a through via, no layer numbers are displayed.
-					
-				when BURIED =>
-					if via.layers.upper = current_layer 
-					or via.layers.lower = current_layer then
-						set_width_and_radius (via.restring_inner);
-					
-						draw_restring;
-
-						-- Since the inner restring width is the same for all
-						-- inner signal layers, it is sufficent to draw only one
-						-- restring.
-						cancel := true;  -- causes the layer iterator to cancel
-					
-						-- Draw the layer numbers only once (cancel flag already set)
-						draw_numbers (
-							from	=> to_string (via.layers.upper),
-							to		=> to_string (via.layers.lower));
-					
-						draw_net_name;
-						draw_drill_size;
-					end if;
-					
-				when BLIND_DRILLED_FROM_TOP =>
-					if current_layer = top_layer then
-						set_width_and_radius (via.restring_top);
-						outer_restring_drawn := true;
-						draw_restring;
-						draw_numbers_blind_top;
-						draw_net_name;
-						draw_drill_size;
-					end if;
-
-					if current_layer = via.lower then
-						set_width_and_radius (via.restring_inner);
-						inner_restring_drawn := true;
-						draw_restring;
-						draw_numbers_blind_top;
-						draw_net_name;
-						draw_drill_size;
-					end if;
-
-					-- At least the top restring AND one inner restring 
-					-- must have been drawn. After that no more restring
-					-- shall be drawn.
+				else 
+				-- For a multilayer board we need to draw only one outer restring
+				-- (top or bottom, which one does not matter) and one inner restring.
+				-- Once that is done, there is no need to draw the via again.	
 					if outer_restring_drawn and inner_restring_drawn then
 						cancel := true; -- causes the layer iterator to cancel
 					end if;
+				end if;
+
+				draw_net_name;
+				draw_drill_size;
+				
+				-- NOTE: For a through via, no layer numbers are displayed.
+			end through_hole_via;
+
+
+			procedure buried_via is begin
+				if via.layers.upper = current_layer 
+				or via.layers.lower = current_layer then
+					set_width_and_radius (via.restring_inner);
+				
+					draw_restring;
+
+					-- Since the inner restring width is the same for all
+					-- inner signal layers, it is sufficent to draw only one
+					-- restring.
+					cancel := true;  -- causes the layer iterator to cancel
+				
+					-- Draw the layer numbers only once (cancel flag already set)
+					draw_numbers (
+						from	=> to_string (via.layers.upper),
+						to		=> to_string (via.layers.lower));
+				
+					draw_net_name;
+					draw_drill_size;
+				end if;
+			end buried_via;
+			
+
+			procedure blind_via_from_top is begin
+				if current_layer = top_layer then
+					set_width_and_radius (via.restring_top);
+					outer_restring_drawn := true;
+					draw_restring;
+					draw_numbers_blind_top;
+					draw_net_name;
+					draw_drill_size;
+				end if;
+
+				if current_layer = via.lower then
+					set_width_and_radius (via.restring_inner);
+					inner_restring_drawn := true;
+					draw_restring;
+					draw_numbers_blind_top;
+					draw_net_name;
+					draw_drill_size;
+				end if;
+
+				-- At least the top restring AND one inner restring 
+				-- must have been drawn. After that no more restring
+				-- shall be drawn.
+				if outer_restring_drawn and inner_restring_drawn then
+					cancel := true; -- causes the layer iterator to cancel
+				end if;
+			end blind_via_from_top;
+
+
+			procedure blind_via_from_bottom is begin
+				if current_layer = bottom_layer then
+					set_width_and_radius (via.restring_bottom);
+					outer_restring_drawn := true;
+					draw_restring;
+					draw_numbers_blind_bottom;
+					draw_net_name;
+					draw_drill_size;
+				end if;
+
+				if current_layer = via.upper then
+					set_width_and_radius (via.restring_inner);
+					inner_restring_drawn := true;
+					draw_restring;
+					draw_numbers_blind_bottom;
+					draw_net_name;
+					draw_drill_size;
+				end if;
+
+				-- At least the bottom restring AND one inner restring 
+				-- must have been drawn. After that no more restring
+				-- shall be drawn.
+				if outer_restring_drawn and inner_restring_drawn then
+					cancel := true;
+				end if;
+			end blind_via_from_bottom;
+			
+			
+		begin
+			case via.category is
+				when THROUGH =>
+					through_hole_via;
+					
+				when BURIED =>
+					buried_via;
+					
+				when BLIND_DRILLED_FROM_TOP =>
+					blind_via_from_top;
 
 				when BLIND_DRILLED_FROM_BOTTOM =>
-					if current_layer = bottom_layer then
-						set_width_and_radius (via.restring_bottom);
-						outer_restring_drawn := true;
-						draw_restring;
-						draw_numbers_blind_bottom;
-						draw_net_name;
-						draw_drill_size;
-					end if;
-
-					if current_layer = via.upper then
-						set_width_and_radius (via.restring_inner);
-						inner_restring_drawn := true;
-						draw_restring;
-						draw_numbers_blind_bottom;
-						draw_net_name;
-						draw_drill_size;
-					end if;
-
-					-- At least the bottom restring AND one inner restring 
-					-- must have been drawn. After that no more restring
-					-- shall be drawn.
-					if outer_restring_drawn and inner_restring_drawn then
-						cancel := true;
-					end if;
+					blind_via_from_bottom;
 					
 			end case;
 		end query_category;
@@ -944,7 +975,8 @@ procedure draw_conductors is
 		
 		
 	begin -- query_via
-
+		--put_line ("via.diameter" & to_string (via.diameter));
+		
 		radius_base := via.diameter / 2.0;
 		circle.center := via.position;
 
@@ -974,6 +1006,7 @@ procedure draw_conductors is
 			end case;
 		end if;
 
+
 		
 		if vias_enabled then
 
@@ -1001,6 +1034,7 @@ procedure draw_conductors is
 		end if;
 	end query_via;
 
+	
 	
 	-- Draws the vias of the current net:
 	procedure query_net_via (n : in pac_nets.cursor) is begin
