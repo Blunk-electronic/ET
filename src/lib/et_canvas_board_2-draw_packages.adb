@@ -1176,7 +1176,8 @@ is
 
 					-- Take a copy of the x/y position of the pad:
 					pos_tmp : type_vector_model := pad_position.place;
-					
+
+					use pac_draw_text;
 				begin
 					set_color_terminal_name (brightness);
 
@@ -1219,6 +1220,8 @@ is
 
 					-- Take a copy of the x/y position of the pad:
 					pos_tmp : type_vector_model := pad_position.place;
+
+					use pac_draw_text;
 				begin
 					if conductors_enabled then
 

@@ -90,6 +90,8 @@ procedure draw_submodules is
 			offset : constant type_distance_relative := to_distance_relative (set (
 					x => zero,
 					y => - text_spacing));
+
+			use pac_draw_text;
 		begin
 			move_by (position, offset);
 			
@@ -113,6 +115,8 @@ procedure draw_submodules is
 			offset : constant type_distance_relative := to_distance_relative (set (
 					x => zero,
 					y => - (2.0 * text_spacing + instance_font_size)));
+
+			use pac_draw_text;
 		begin
 			move_by (position, offset);
 			
@@ -147,6 +151,8 @@ procedure draw_submodules is
 					pos_x & axis_separator &
 					pos_y & axis_separator &
 					rotation;
+
+			use pac_draw_text;
 		begin
 			move_by (position, offset);
 			
@@ -199,6 +205,8 @@ procedure draw_submodules is
 					draw_rectangle (rectangle => box, width => port_symbol_line_width);
 				end draw_vertical;
 				
+
+				use pac_draw_text;
 				
 			begin -- draw_port
 				-- Detect the edge where the port sits at. Depending on the edge

@@ -159,6 +159,7 @@ procedure draw_nets is
 		-- calculated according to the label rotation and tag_label_text_offset:
 		text_position : type_vector_model;
 
+		use pac_draw_text;
 	begin
 		-- Form a box that wraps around the net name:
 		box := to_area (get_text_extents (content, label.size, net_label_font));
@@ -250,8 +251,8 @@ procedure draw_nets is
 		strand	: in pac_strands.cursor;
 		segment	: in type_net_segment;
 		label	: in pac_net_labels.cursor)
-		return boolean is
-
+		return boolean 
+	is
 		use pac_net_name;
 		sl : type_selected_label;
 	begin
@@ -284,6 +285,7 @@ procedure draw_nets is
 		label	: in pac_net_labels.cursor)
 	is 
 		use pac_net_name;
+		use pac_draw_text;
 	begin
 		case element (label).appearance is
 			when SIMPLE =>
@@ -313,6 +315,7 @@ procedure draw_nets is
 		label	: in type_net_label)
 	is 
 		use pac_net_name;
+		use pac_draw_text;
 	begin
 		--case element (label).appearance is
 			--when SIMPLE =>
@@ -359,6 +362,8 @@ procedure draw_nets is
 		use et_modes.schematic;
 		use pac_net_name;
 		l : type_net_label (label.appearance);
+
+		use pac_draw_text;
 	begin
 		case verb is
 			when VERB_PLACE =>

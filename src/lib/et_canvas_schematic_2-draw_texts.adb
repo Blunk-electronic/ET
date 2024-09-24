@@ -50,8 +50,9 @@ procedure draw_texts is
 
 
 	
-	procedure query_text (cursor : in pac_texts.cursor) is begin
-		
+	procedure query_text (cursor : in pac_texts.cursor) is 
+		use pac_draw_text;
+	begin		
 		-- We want to draw only those texts which are on the active sheet:
 		if element (cursor).sheet = current_active_sheet then
 

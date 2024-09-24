@@ -150,6 +150,8 @@ procedure draw_units is
 				-- which is a sum of port rotation and unit rotation.
 				alignment : type_text_alignment := (horizontal => center, vertical => center);
 				rotation_total : constant type_rotation := add (element (c).rotation, unit_rotation);
+
+				use pac_draw_text;
 			begin
 				if rotation_total = 0.0 or rotation_total = 360.0 or rotation_total = -360.0 then
 					alignment.horizontal := RIGHT;
@@ -203,6 +205,8 @@ procedure draw_units is
 				use et_terminals;
 				use et_devices;
 				properties : type_port_properties_access;
+
+				use pac_draw_text;
 			begin
 				-- Rotate the position of the terminal name by the unit rotation:
 				rotate_by (pos_terminal_name, unit_rotation);
@@ -387,6 +391,8 @@ procedure draw_units is
 		-- does not change the color to symbol color.
 		procedure draw_text (c : in pac_texts.cursor) is 
 			p : type_vector_model := element (c).position;
+
+			use pac_draw_text;
 		begin
 			-- Rotate the position of the text.
 			-- This adds the unit_rotation to the given rotation.
@@ -417,6 +423,8 @@ procedure draw_units is
 			use et_devices;
 			use et_text;
 			p : type_vector_model;
+
+			use pac_draw_text;
 		begin
 			set_color_placeholders (brightness);
 			

@@ -39,7 +39,7 @@
 -- with et_logging;				use et_logging;
 
 with et_frames;					use et_frames;
--- with et_canvas.text;
+with et_canvas.text;
 
 generic
 	-- with package t is new text;
@@ -47,7 +47,8 @@ generic
 package et_canvas.drawing_frame is
 	-- use pac_geometry_2;
 	-- use pac_grid;
-	
+
+	package pac_draw_text is new et_canvas.text;
 
 
 	-- This procedure draws the outer and inner border

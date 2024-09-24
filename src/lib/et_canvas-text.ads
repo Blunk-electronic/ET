@@ -52,8 +52,21 @@ package et_canvas.text is
 	use cairo;
 	
 	procedure dummy;
-	
 
+
+	
+	-- Draws a text on the canvas:
+	procedure draw_text (
+		content		: in et_text.pac_text_content.bounded_string;
+		size		: in pac_text.type_text_size;
+		font		: in et_text.type_font;
+		anchor		: in type_vector_model; -- the anchor point in the model
+		origin		: in boolean; -- when true, an origin is drawn at the anchor point
+		rotation	: in type_rotation;
+		alignment	: in et_text.type_text_alignment);
+
+
+	
 	-- Draw a vectorized text with the
 	-- given linewidth:
 	procedure draw_vector_text (

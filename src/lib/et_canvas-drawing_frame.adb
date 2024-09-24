@@ -156,7 +156,9 @@ package body et_canvas.drawing_frame is
 			procedure draw_index (
 				content	: in pac_text_content.bounded_string;
 				pos		: in type_vector_model) 
-			is begin
+			is 
+				use pac_draw_text;
+			begin
 				draw_text (
 					content		=> content,
 					size		=> type_distance_positive (font_indexes_size),
