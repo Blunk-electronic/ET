@@ -3856,160 +3856,6 @@ package body et_canvas is
 
 
 	
-	
--- TEXT:
-	
-	function to_points (size : in pac_text.type_text_size)
-		return type_logical_pixels
-	is 
-		conversion_factor_mm_to_pt : constant := 1.53; -- CS use exact factor
-	begin
-		return to_distance (size) * conversion_factor_mm_to_pt;
-	end to_points;
-
-	
-
-	function to_cairo_angle (
-		angle : in type_rotation)
-		return glib.gdouble
-	is 
-		use pac_geometry_1;
-		use glib;
-	begin
-		-- In cairo all angles increase in clockwise direction.
-		-- Since our angles increase in counterclockwise direction (mathematically)
-		-- the angle must change the sign.		
-		return gdouble (to_radians (- type_angle (angle)));
-	end to_cairo_angle;
-
-	
-
-	function get_text_extents (
-		content		: in et_text.pac_text_content.bounded_string;
-		size		: in pac_text.type_text_size;
-		font		: in et_text.type_font)
-		return cairo.cairo_text_extents 
-	is
-		use cairo;
-		use et_text;
-		
-		result : aliased cairo_text_extents; -- to be returned
-
-		--use interfaces.c.strings;
-		--text : interfaces.c.strings.chars_ptr := new_string (to_string (content));
-
-		use gtkada.types;
-		text : constant gtkada.types.chars_ptr := new_string (to_string (content));
-	begin
-		select_font_face (context, to_string (font.family), font.slant, font.weight);
-		set_font_size (context, to_gdouble (to_points (size)));
-		text_extents (cr => context, utf8 => text, extents => result'access);
-		return result;
-	end get_text_extents;
-
-
-	
-	function to_area (
-		extents : in cairo.cairo_text_extents)
-		return type_area
-	is
-		a : type_area;
-	begin
-		a.width  := to_distance (to_lp (extents.width));
-		a.height := to_distance (to_lp (extents.height));		
-		return a;
-	end to_area;
-
-	
-	
-	function get_text_start_point (
-		extents		: in cairo.cairo_text_extents;
-		alignment	: in et_text.type_text_alignment;
-		anchor		: in type_logical_pixels_vector;
-		mode_v		: in type_align_mode_vertical;
-		size		: in pac_text.type_text_size)
-		return type_logical_pixels_vector
-	is
-		use et_text;
-		
-		sp : type_logical_pixels_vector; -- to be returned
-
-		-- The x_bearing is the horizontal distance between the origin
-		-- of the text and the leftmost part of the text.
-		-- It causes a small gap between origin and text.
-		-- It is positive if the text is entirely right of the origin:
-		x_bearing : constant type_logical_pixels := to_lp (extents.x_bearing);
-
-		-- The y_bearing is the vertical distance between the origin
-		-- of the text and the topmost part of the text. It is usually
-		-- negative because the topmost part is above the baseline
-		-- (canvas y-coordinates decrease upward):
-		y_bearing : constant type_logical_pixels := to_lp (extents.y_bearing);
-
-		-- The area occupied by the text has a width and a height:
-		width  : constant type_logical_pixels := to_lp (extents.width);
-		height : constant type_logical_pixels := to_lp (extents.height);
-		
-	begin
-		--put_line ("x_bearing " & to_string (x_bearing));
-		--put_line ("y_bearing " & to_string (y_bearing));
-
-		
-		-- HORIZONTAL ALIGNMENT:
-		case alignment.horizontal is
-			when LEFT => 
-				sp.x := anchor.x;
-
-			when CENTER =>
-				sp.x := anchor.x - width / 2.0;
-
-			when RIGHT =>
-				sp.x := anchor.x - width;
-		end case;
-
-
-		-- VERTICAL ALIGNMENT:
-		case alignment.vertical is
-			when BOTTOM =>
-				case mode_v is
-					when MODE_ALIGN_BY_USED_SPACE =>
-						sp.y := anchor.y - y_bearing - height;
-
-					when MODE_ALIGN_RELATIVE_TO_BASELINE =>
-						sp.y := anchor.y;
-				end case;
-
-				
-			when CENTER =>
-				case mode_v is
-					when MODE_ALIGN_BY_USED_SPACE =>
-						sp.y := anchor.y - y_bearing - height / 2.0;
-
-					when MODE_ALIGN_RELATIVE_TO_BASELINE =>
-						sp.y := anchor.y + to_distance (size) / 2.0;
-				end case;
-
-				
-			when TOP =>
-				case mode_v is
-					when MODE_ALIGN_BY_USED_SPACE =>
-						sp.y := anchor.y - y_bearing;
-
-					when MODE_ALIGN_RELATIVE_TO_BASELINE =>
-						sp.y := anchor.y + to_distance (size);
-				end case;
-		end case;
-
-
-		-- Shift the start point to the left by the x_bearing:
-		sp.x := sp.x - x_bearing;
-
-		return sp;
-	end get_text_start_point;
-
-
-
-	
 
 	function to_string (
 		event	: in type_mouse_event)
@@ -4509,3 +4355,11 @@ package body et_canvas is
 
 	
 end et_canvas;
+
+-- Soli Deo Gloria
+
+-- For God so loved the world that he gave 
+-- his one and only Son, that whoever believes in him 
+-- shall not perish but have eternal life.
+-- The Bible, John 3.16
+

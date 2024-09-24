@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2024                                                       --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,11 +42,8 @@ with et_frames;					use et_frames;
 with et_canvas.text;
 
 generic
-	-- with package t is new text;
 	
 package et_canvas.drawing_frame is
-	-- use pac_geometry_2;
-	-- use pac_grid;
 
 	package pac_draw_text is new et_canvas.text;
 
@@ -58,4 +55,12 @@ package et_canvas.drawing_frame is
 
 	
 end et_canvas.drawing_frame;
+
+-- Soli Deo Gloria
+
+-- For God so loved the world that he gave 
+-- his one and only Son, that whoever believes in him 
+-- shall not perish but have eternal life.
+-- The Bible, John 3.16
+
 
