@@ -78,7 +78,7 @@ package et_colors.board is
 
 	ratsnest			: type_color := yellow;
 	
-	via					: type_color := green; -- CS rename to via_restring
+	via_restring		: type_color := green;
 	via_layers			: type_color := gray; -- the layers the via is connecting
 	via_net_name		: type_color := gray; -- the net where the via is part of
 	via_drill_size		: type_color := gray; -- the drill size of the via
@@ -178,7 +178,7 @@ package et_colors.board is
 
 -- VIAS
 
-	procedure set_color_vias ( -- CS rename to set_color_via_restring
+	procedure set_color_via_restring (
 		brightness	: in type_brightness := brightness_default;
 		opacity		: in type_opacity := default_opacity);
 

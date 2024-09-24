@@ -701,7 +701,7 @@ procedure draw_conductors is
 		procedure draw_restring is 
 			use et_colors.board;
 		begin
-			set_color_vias (brightness);
+			set_color_via_restring (brightness);
 			
 			draw_circle (
 				circle		=> circle,

@@ -230,12 +230,12 @@ package body et_colors.board is
 	
 -- VIAS
 
-	procedure set_color_vias (
+	procedure set_color_via_restring (
 		brightness	: in type_brightness := brightness_default;
 		opacity		: in type_opacity := default_opacity)
 	is begin		
-		set_color (via, brightness, opacity);
-	end set_color_vias;
+		set_color (via_restring, brightness, opacity);
+	end set_color_via_restring;
 
 	
 	procedure set_color_via_layers (
