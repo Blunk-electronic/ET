@@ -737,7 +737,7 @@ procedure draw_conductors is
 
 				draw_text (
 					content		=> to_content (to_string (net_name)),
-					size		=> via.diameter * text_size_factor,
+					size		=> via.diameter * ratio_diameter_to_text_size,
 					font		=> via_text_font,
 					anchor		=> position,
 					origin		=> false,
@@ -765,7 +765,7 @@ procedure draw_conductors is
 
 			draw_text (
 				content		=> to_content (from & "-" & to),
-				size		=> via.diameter * text_size_factor,
+				size		=> via.diameter * ratio_diameter_to_text_size,
 				font		=> via_text_font,
 				anchor		=> position,
 				origin		=> false,
@@ -795,7 +795,7 @@ procedure draw_conductors is
 
 				draw_text (
 					content		=> to_content (to_string (via.diameter)),
-					size		=> via.diameter * text_size_factor,
+					size		=> via.diameter * ratio_diameter_to_text_size,
 					font		=> via_text_font,
 					anchor		=> position,
 					origin		=> false,

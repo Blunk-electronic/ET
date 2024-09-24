@@ -221,10 +221,10 @@ package et_vias is
 	-- and net names
 	-- that are displayed in the center of the via.
 	-- The final text size is calculated by this formula:
-	-- size = drill diameter * text_size_factor.
+	-- size = drill diameter * ratio_diameter_to_text_size.
 	-- CS: Adjustment required for layer numbers greater 10.
-	text_size_factor : constant type_distance_positive := 0.3;
-	-- CS rename to diameter_to_text_size_ratio
+	ratio_diameter_to_text_size : constant type_distance_positive := 0.2;
+
 
 	-- Above the net name the layer numbers are displayed.
 	-- Below the net name the drill size is displayed.
