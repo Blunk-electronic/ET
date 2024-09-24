@@ -173,7 +173,7 @@ package et_colors.board is
 	-- to the follwing subprograms ?
 	
 	procedure set_color_outline (
-		opacity : in type_opacity := default_opacity);
+		brightness	: in type_brightness := brightness_default);
 	
 
 -- VIAS

@@ -217,14 +217,9 @@ package body et_colors.board is
 	
 	
 	procedure set_color_outline (
-		opacity : in type_opacity := default_opacity)
+		brightness	: in type_brightness := brightness_default)
 	is begin		
-		set_source_rgba (
-			context, 
-			outline.red,
-			outline.green,
-			outline.blue,
-			color_range (opacity));
+		set_color (outline, brightness);
 	end set_color_outline;
 
 	
