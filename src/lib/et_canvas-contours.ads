@@ -36,18 +36,11 @@
 --   history of changes:
 --
 
--- with ada.strings.bounded;
--- with ada.strings;
--- with ada.strings.fixed;
--- 
-
 
 generic
 
 	
 package et_canvas.contours is
-
-	use cairo;
 
 	use pac_contours;
 

@@ -45,7 +45,6 @@ generic
 	
 package et_canvas.text is
 
-	use cairo;
 
 	-- Converts a given text size (in mm) to size in points
 	-- according to the current zoom-factor:

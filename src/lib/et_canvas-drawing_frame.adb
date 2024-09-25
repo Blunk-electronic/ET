@@ -36,13 +36,6 @@
 --   history of changes:
 --
 
--- with ada.strings.bounded;
--- with ada.strings;
--- with ada.strings.fixed;
--- 
-
--- with et_canvas.text;
-
 
 package body et_canvas.drawing_frame is
 
