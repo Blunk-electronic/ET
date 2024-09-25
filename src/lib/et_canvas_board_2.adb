@@ -60,6 +60,7 @@ with et_modes.schematic;
 with et_frames;
 -- with et_assembly_variants;			use et_assembly_variants;
 with et_canvas_schematic_2;			--use et_canvas_schematic;
+with et_canvas_tool;
 with et_display.board;
 -- with et_colors;
 with et_colors.board;
@@ -657,6 +658,101 @@ package body et_canvas_board_2 is
 
 
 
+
+	procedure draw_path (
+		cat : in et_board_shapes_and_text.type_text_layer) 
+	is
+		use et_board_shapes_and_text;
+		use et_canvas_board_lines;
+		use et_colors.board;
+		use pac_path_and_bend;
+		use et_modes.board;
+		use et_canvas_tool;
+		
+		PL : type_preliminary_line renames preliminary_line;	
+
+
+		-- Computes the path from given start to given end point.
+		-- Takes the bend style given in preliminary_line into account.
+		-- Draws the path.
+		procedure compute_and_draw (
+			start_point, end_point : in type_vector_model) 
+		is
+			use et_colors;
+			
+			line : type_line;
+
+			-- Do the actual path calculation.
+			path : constant type_path := to_path (start_point, end_point, PL.path.bend_style);
+
+			-- Draws the line:
+			procedure draw is begin
+				draw_line (line => line, width => PL.width, do_stroke => true);
+			end draw;
+
+			
+		begin
+			-- The calculated path may require a bend point.
+			-- Set/clear the "bended" flag of the line being drawn.
+			PL.path.bended := path.bended;
+
+			-- set linewidth:			
+			set_linewidth (PL.width);
+
+			-- If we are drawing a path in a conductor layer then
+			-- the color must be set according to the signal layer:
+			if PL.category = LAYER_CAT_CONDUCTOR then
+				set_color_conductor (PL.signal_layer, NORMAL);
+			end if;
+
+			
+			-- If the path does not require a bend point, draw a single line
+			-- from start to end point:
+			if path.bended = NO then
+				
+				line.start_point := path.start_point;
+				line.end_point := path.end_point;
+
+				draw;
+
+			-- If the path DOES require a bend point, then draw first a line
+			-- from start point to bend point. Then draw a second line from
+			-- bend point end point:
+			else
+				PL.path.bend_point := path.bend_point;
+
+				line.start_point := path.start_point;
+				line.end_point := path.bend_point;
+				
+				draw;
+
+				line.start_point := path.bend_point;
+				line.end_point := path.end_point;
+				
+				draw;
+				
+			end if;
+		end compute_and_draw;
+
+		
+	begin -- draw_path
+		
+		if verb = VERB_DRAW and noun = NOUN_LINE and PL.ready
+		and PL.category = cat then
+			case PL.tool is
+				when MOUSE => 
+					compute_and_draw (
+						start_point	=> PL.path.start_point,	-- start of path
+						end_point	=> snap_to_grid (get_mouse_position));	-- end of route
+					
+				when KEYBOARD =>
+					compute_and_draw (
+						start_point	=> PL.path.start_point,	 -- start of path
+						end_point	=> get_cursor_position); -- end of path
+
+			end case;
+		end if;
+	end draw_path;
 	
 
 
@@ -1413,102 +1509,8 @@ package body et_canvas_board_2 is
 
 
 
--- 	-- Draws a path being drawn in a given layer category.
--- 	-- Uses the parameters in variable preliminary_line.
--- 	-- Computes the bend point (if required) and sets it accordingly
--- 	-- in preliminary_line.
--- 	-- Use it also for drawing freetracks in conductor layers.
--- 	-- NOTE: This is NOT for tracks of nets ! See procedure draw_conductors.
--- 	procedure draw_path (
--- 		cat : in type_text_layer) 
--- 	is
--- 		PL : type_preliminary_line renames preliminary_line;	
--- 
--- 
--- 		-- Computes the path from given start to given end point.
--- 		-- Takes the bend style given in preliminary_line into account.
--- 		-- Draws the path.
--- 		procedure compute_and_draw (
--- 			start_point, end_point : in type_vector_model) 
--- 		is
--- 			use et_colors;
--- 			
--- 			line : type_line;
--- 
--- 			-- Do the actual path calculation.
--- 			path : constant type_path := to_path (start_point, end_point, PL.path.bend_style);
--- 
--- 			-- Draws the line:
--- 			procedure draw is begin
--- 				draw_line (
--- 					line		=> to_line_fine (line),
--- 					width		=> PL.width);
--- 			end draw;
--- 			
--- 		begin
--- 			-- The calculated path may require a bend point.
--- 			-- Set/clear the "bended" flag of the line being drawn.
--- 			PL.path.bended := path.bended;
--- 
--- 			-- set linewidth:			
--- 			set_line_width (context.cr, type_view_coordinate (PL.width));
--- 
--- 			-- If we are drawing a path in a conductor layer then
--- 			-- the color must be set according to the signal layer:
--- 			if PL.category = LAYER_CAT_CONDUCTOR then
--- 				set_color_conductor (context.cr, PL.signal_layer, NORMAL);
--- 			end if;
--- 
--- 			-- If the path does not require a bend point, draw a single line
--- 			-- from start to end point:
--- 			if path.bended = NO then
--- 				
--- 				line.start_point := path.start_point;
--- 				line.end_point := path.end_point;
--- 
--- 				draw;
--- 
--- 			-- If the path DOES require a bend point, then draw first a line
--- 			-- from start point to bend point. Then draw a second line from
--- 			-- bend point end point:
--- 			else
--- 				PL.path.bend_point := path.bend_point;
--- 
--- 				line.start_point := path.start_point;
--- 				line.end_point := path.bend_point;
--- 				
--- 				draw;
--- 
--- 				line.start_point := path.bend_point;
--- 				line.end_point := path.end_point;
--- 				
--- 				draw;
--- 				
--- 			end if;
--- 		end compute_and_draw;
--- 
--- 		
--- 	begin -- draw_path
--- 		
--- 		if verb = VERB_DRAW and noun = NOUN_LINE and PL.ready
--- 		and PL.category = cat then
--- 			case PL.tool is
--- 				when MOUSE => 
--- 					compute_and_draw (
--- 						start_point	=> PL.path.start_point,	-- start of path
--- 						end_point	=> snap_to_grid (get_mouse_position));	-- end of route
--- 					
--- 				when KEYBOARD =>
--- 					compute_and_draw (
--- 						start_point	=> PL.path.start_point,	-- start of path
--- 						end_point	=> cursor_main.position);	-- end of path
--- 
--- 			end case;
--- 		end if;
--- 	end draw_path;
--- 
--- 	
--- 	
+	
+	
 -- 	procedure draw_outline (
 -- 		self    : not null access type_view)
 -- 		is separate;

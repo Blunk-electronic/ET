@@ -221,6 +221,18 @@ package et_canvas_board_2 is
 		category	: in et_board_shapes_and_text.type_layer_category_non_conductor);
 
 
+
+	-- Draws a path being drawn in a given layer category.
+	-- Uses the parameters in variable preliminary_line.
+	-- Computes the bend point (if required) and sets it accordingly
+	-- in preliminary_line.
+	-- Use it also for drawing freetracks in conductor layers.
+	-- NOTE: This is NOT for tracks of nets ! See procedure draw_conductors.
+	procedure draw_path (
+		cat : in et_board_shapes_and_text.type_text_layer);
+	
+
+	
 	
 	-- This function is called each time the canvas 
 	-- is to be refreshed.
