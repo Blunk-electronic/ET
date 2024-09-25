@@ -459,6 +459,7 @@ is
 
 
 	procedure route is 
+		use pac_path_and_bend;
 		use et_canvas_board_tracks;
 	begin
 		case key is
@@ -475,8 +476,7 @@ is
 			when GDK_Space =>
 				case noun is
 					when NOUN_NET =>
-						null;
-						-- CS et_canvas_board_tracks.make_path (KEYBOARD, point);
+						et_canvas_board_tracks.make_path (KEYBOARD, point);
 						
 					when others => null;
 				end case;
@@ -497,8 +497,7 @@ is
 			when GDK_LC_b =>
 				case noun is
 					when NOUN_NET =>
-						null;
-						-- CS next_bend_style (preliminary_track.path);
+						next_bend_style (preliminary_track.path);
 						
 					when others => null;
 				end case;
