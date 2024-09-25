@@ -1404,6 +1404,36 @@ package body et_canvas is
 
 
 
+	procedure focus_canvas is
+		-- CS: For some reason the value of the scrollbars
+		-- must be saved and restored if the canvas grabs the focus:
+		-- A solution might be:
+		-- <https://stackoverflow.com/questions/26693042/
+		-- gtkscrolledwindow-disable-scroll-to-focused-child>
+		-- or
+		-- <https://discourse.gnome.org/t/disable-auto-scrolling-in-
+		-- gtkscrolledwindow-when-grab-focus-in-children/13058>
+
+		h, v : type_logical_pixels;
+	begin
+		-- Set the focus on the canvas,
+		-- But first save the scrollbar values:
+		h := to_lp (scrollbar_h_adj.get_value);
+		v := to_lp (scrollbar_v_adj.get_value);
+		-- CS: backup_scrollbar_settings does not work for some reason.
+		-- put_line (to_string (v));
+		
+		canvas.grab_focus;
+
+		scrollbar_h_adj.set_value (to_gdouble (h));
+		scrollbar_v_adj.set_value (to_gdouble (v));
+		-- CS: restore_scrollbar_settings does not work for some reason.
+		-- put_line (to_string (v));
+	end focus_canvas;
+
+
+	
+
 	procedure shift_swin (
 		direction	: type_direction;
 		distance	: type_distance)
@@ -3332,7 +3362,8 @@ package body et_canvas is
 	procedure change_primary_tool is begin
 		if primary_tool = MOUSE then
 			primary_tool := KEYBOARD;
-			canvas.grab_focus;
+
+			focus_canvas;
 		else
 			primary_tool := MOUSE;
 		end if;
@@ -3899,34 +3930,6 @@ package body et_canvas is
 		-- real model point:
 		mp : constant type_vector_model := canvas_to_real (cp, S);
 
-
-		procedure focus_canvas is
-			-- CS: For some reason the value of the scrollbars
-			-- must be saved and restored if the canvas grabs the focus:
-			-- A solution might be:
-			-- <https://stackoverflow.com/questions/26693042/
-			-- gtkscrolledwindow-disable-scroll-to-focused-child>
-			-- or
-			-- <https://discourse.gnome.org/t/disable-auto-scrolling-in-
-			-- gtkscrolledwindow-when-grab-focus-in-children/13058>
-
-			h, v : type_logical_pixels;
-		begin
-			-- Set the focus on the canvas,
-			-- But first save the scrollbar values:
-			h := to_lp (scrollbar_h_adj.get_value);
-			v := to_lp (scrollbar_v_adj.get_value);
-			-- CS: backup_scrollbar_settings does not work for some reason.
-			-- put_line (to_string (v));
-			
-			canvas.grab_focus;
-
-			scrollbar_h_adj.set_value (to_gdouble (h));
-			scrollbar_v_adj.set_value (to_gdouble (v));
-			-- CS: restore_scrollbar_settings does not work for some reason.
-			-- put_line (to_string (v));
-		end focus_canvas;
-		
 
 		
 		procedure handle_zoom_to_area_operation is begin			

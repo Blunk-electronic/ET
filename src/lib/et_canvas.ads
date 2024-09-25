@@ -723,6 +723,11 @@ package et_canvas is
 		distance	: type_distance);
 
 
+	-- Sets the focus to the canvas.
+	-- It does more than just canvas.grab_focus.
+	-- See implementation for details:
+	procedure focus_canvas;
+	
 
 	
 -- COORDINATES-DISPLAY:
@@ -1144,6 +1149,10 @@ package et_canvas is
 	
 	procedure update_primary_tool_display;
 
+	-- Toggles between tool keyboard and mouse.
+	-- If keyboard is activated, then the focus
+	-- is set on the canvas. This way the operator
+	-- can immediately move the cursor via the keyboard:
 	procedure change_primary_tool;
 
 
