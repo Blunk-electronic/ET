@@ -333,7 +333,6 @@ package body et_canvas_board_texts is
 		if not is_empty (preliminary_text.text.content) then
 			--put_line ("content: " & enclose_in_quotes (to_string (preliminary_text.text.content)));
 			preliminary_text.ready := true;
-			canvas.grab_focus;
 		end if;
 		
 	end button_apply_clicked;
