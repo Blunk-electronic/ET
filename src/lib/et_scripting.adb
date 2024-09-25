@@ -75,7 +75,6 @@ with et_display;				use et_display;
 with et_display.schematic;
 with et_display.board;
 
-
 with glib;
 with gtk.main;
 
@@ -568,7 +567,8 @@ package body et_scripting is
 	function execute_script (
 		file_name		: in pac_script_name.bounded_string; -- dummy_module/my_script.scr
 		log_threshold	: in type_log_level)
-		return type_exit_code is
+		return type_exit_code 
+	is
 		
 		exit_code : type_exit_code := SUCCESSFUL; -- to be returned
 
@@ -635,6 +635,7 @@ package body et_scripting is
 				end if;
 			end loop;
 
+			
 		else -- script file not found
 			log (ERROR, "script file " & 
 				 enclose_in_quotes (simple_name (to_string (file_name))) &
