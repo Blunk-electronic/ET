@@ -353,8 +353,7 @@ is
 			when GDK_Space =>
 				case noun is
 					when NOUN_LINE =>
-						null;
-						-- CS make_path (KEYBOARD, point);
+						make_path (KEYBOARD, point);
 						
 					when others => null;
 				end case;
@@ -364,8 +363,7 @@ is
 			when GDK_LC_b =>
 				case noun is
 					when NOUN_LINE =>
-						null;
-						-- CS next_bend_style (preliminary_line.path);
+						next_bend_style (preliminary_line.path);
 						
 					when others => null;
 				end case;

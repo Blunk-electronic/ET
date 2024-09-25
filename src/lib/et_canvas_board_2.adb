@@ -736,6 +736,8 @@ package body et_canvas_board_2 is
 
 		
 	begin -- draw_path
+		-- put_line ("draw_path");
+		
 		
 		if verb = VERB_DRAW and noun = NOUN_LINE and PL.ready
 		and PL.category = cat then

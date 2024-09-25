@@ -531,6 +531,7 @@ package body et_canvas_board_lines is
 
 		
 	begin -- make_path
+		-- put_line ("make_path");
 		
 		-- Set the tool being used for this path so that procedure
 		-- draw_path (for example in et_canvas_board_2-draw_nets-draw_assy_doc)

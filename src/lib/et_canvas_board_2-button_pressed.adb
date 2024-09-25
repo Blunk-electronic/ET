@@ -98,7 +98,8 @@ is
 			when VERB_DRAW =>
 				case noun is
 					when NOUN_LINE =>
-						et_canvas_board_tracks.make_path (MOUSE, snap_point);
+						-- put_line ("draw line");
+						et_canvas_board_lines.make_path (MOUSE, snap_point);
 
 					when others => null;						
 				end case;

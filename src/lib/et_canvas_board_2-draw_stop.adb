@@ -265,7 +265,7 @@ begin -- draw_stop
 	draw_text_being_placed (face, LAYER_CAT_STOP);
 
 	-- Draw the lines of a path that is being drawn:
-	-- CS draw_path (LAYER_CAT_STOP);
+	draw_path (LAYER_CAT_STOP);
 	
 end draw_stop;
 

@@ -306,9 +306,8 @@ begin -- draw_assy
 
 	draw_text_being_placed (face, LAYER_CAT_ASSY);
 
-	-- CS
 	-- Draw the lines of a path that is being drawn:
-	-- draw_path (LAYER_CAT_ASSY);
+	draw_path (LAYER_CAT_ASSY);
 	
 end draw_assy;
 

@@ -306,7 +306,7 @@ begin -- draw_silkscreen
 	draw_text_being_placed (face, LAYER_CAT_SILKSCREEN);
 
 	-- Draw the lines of a path that is being drawn:
-	-- CS draw_path (LAYER_CAT_SILKSCREEN);
+	draw_path (LAYER_CAT_SILKSCREEN);
 	
 end draw_silkscreen;
 
