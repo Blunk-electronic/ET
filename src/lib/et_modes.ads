@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -86,7 +86,9 @@ package et_modes is
 	verb_prefix		: constant string := ("VERB_");
 	noun_prefix		: constant string := ("NOUN_");
 
-	
+
+	-- This type is used to set what kind of
+	-- entry the operator is expected to do:
 	type type_expect_entry is (
 		EXP_VERB,
 		EXP_NOUN);
