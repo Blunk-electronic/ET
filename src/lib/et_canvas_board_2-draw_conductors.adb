@@ -115,11 +115,7 @@ procedure draw_conductors is
 				origin := type_position (to_position (point, zero_rotation));
 				draw_origin (origin);
 
-				-- Set the line width of the vector text:
-				set_linewidth (preliminary_text.text.line_width);
-
 				mirror := signal_layer_to_mirror (layer, deepest_conductor_layer (current_active_module));
-
 				
 				-- Vectorize the text on the fly:
 				v_text := vectorize_text (
@@ -550,9 +546,6 @@ procedure draw_conductors is
 
 			draw_origin (element (c).position);
 
-			-- Set the line width of the vector text:
-			set_linewidth (element (c).line_width);
-
 			-- Vectorize the text:
 			v_text := vectorize_text (
 				content		=> to_placeholder_content (current_active_module, element (c).meaning),
@@ -583,9 +576,6 @@ procedure draw_conductors is
 			use pac_draw_text;
 		begin
 			draw_origin (text.position);
-
-			-- Set the line width of the vector text:
-			set_linewidth (text.line_width);
 			draw_vector_text (text.vectors, text.line_width);
 		end draw_unchanged;
 
@@ -629,9 +619,6 @@ procedure draw_conductors is
 								move_text (text_tmp, offset);					
 
 								draw_origin (text_tmp.position);
-
-								-- Set the line width of the vector text:
-								set_linewidth (text_tmp.line_width);
 
 								-- Draw the text:
 								draw_vector_text (text_tmp.vectors, text_tmp.line_width);

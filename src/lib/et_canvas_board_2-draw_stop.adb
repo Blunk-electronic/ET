@@ -129,9 +129,6 @@ is
 	begin
 		draw_origin (element (c).position);
 
-		-- Set the line width of the vector text:
-		set_linewidth (element (c).line_width);
-
 		-- Vectorize the text:
 		v_text := vectorize_text (
 			content		=> to_placeholder_content (current_active_module, element (c).meaning),
