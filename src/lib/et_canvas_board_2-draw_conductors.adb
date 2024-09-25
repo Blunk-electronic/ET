@@ -129,7 +129,7 @@ procedure draw_conductors is
 					);
 
 				-- Draw the text:
-				draw_vector_text (v_text, preliminary_text.text.line_width);
+				draw_vector_text (v_text);
 			end if;
 		end if;
 	end draw_text_being_placed_in_conductors;
@@ -561,7 +561,7 @@ procedure draw_conductors is
 				);
 
 			-- Draw the text:
-			draw_vector_text (v_text, element (c).line_width);
+			draw_vector_text (v_text);
 
 		end if;
 	end query_placeholder;
@@ -576,7 +576,7 @@ procedure draw_conductors is
 			use pac_draw_text;
 		begin
 			draw_origin (text.position);
-			draw_vector_text (text.vectors, text.line_width);
+			draw_vector_text (text.vectors);
 		end draw_unchanged;
 
 		
@@ -621,7 +621,7 @@ procedure draw_conductors is
 								draw_origin (text_tmp.position);
 
 								-- Draw the text:
-								draw_vector_text (text_tmp.vectors, text_tmp.line_width);
+								draw_vector_text (text_tmp.vectors);
 							end;
 						else
 							draw_unchanged;

@@ -188,7 +188,7 @@ is
 			);
 
 		-- Draw the text:
-		draw_vector_text (v_text, element (c).line_width);
+		draw_vector_text (v_text);
 
 	end query_placeholder;
 
@@ -203,7 +203,7 @@ is
 		-- Draws the given text as it is given:
 		procedure draw_unchanged is begin
 			draw_origin (text.position);
-			draw_vector_text (text.vectors, text.line_width);
+			draw_vector_text (text.vectors);
 		end draw_unchanged;
 
 
@@ -246,7 +246,7 @@ is
 							draw_origin (text_tmp.position);
 
 							-- Draw the text:
-							draw_vector_text (text_tmp.vectors, text_tmp.line_width);
+							draw_vector_text (text_tmp.vectors);
 						end;
 					else
 						draw_unchanged;

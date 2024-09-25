@@ -356,8 +356,7 @@ package body et_canvas.text is
 	
 	
 	procedure draw_vector_text (
-		text	: in pac_text.type_vector_text;
-		width	: in pac_geometry.type_distance_positive)
+		text	: in pac_text.type_vector_text) 
 	is
 		use pac_text;
 		use pac_character_lines;
@@ -377,20 +376,23 @@ package body et_canvas.text is
 			lc.start_point := to_point (lf.start_point);
 			lc.end_point := to_point (lf.end_point);
 
-			set_linewidth (width);
-			
 			draw_line (
 				line	=> lc,
 				width	=> 0.0); -- don't care
-				
-			stroke;
+
 		end query_line;
 		
-		
+
 	begin
 		-- set_line_join (context.cr, cairo_line_join_miter); -- CS
+
+		-- The linewidth applies to all character lines:
+		set_linewidth (get_linewidth (text));
 		
 		iterate (text, query_line'access);
+
+		-- Do a final stroke:
+		stroke;
 	end draw_vector_text;
 
 	

@@ -129,8 +129,7 @@ package et_canvas.text is
 	-- Draw a vectorized text with the
 	-- given linewidth:
 	procedure draw_vector_text (
-		text	: in pac_text.type_vector_text;
-		width	: in pac_geometry.type_distance_positive);
+		text	: in pac_text.type_vector_text);
 
 	
 	

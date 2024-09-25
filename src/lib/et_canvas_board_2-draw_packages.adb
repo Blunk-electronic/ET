@@ -261,10 +261,7 @@ is
 					use pac_draw_text;
 				begin
 					draw_origin ((text.position.place, zero_rotation));
-
-					draw_vector_text (
-						text	=> text.vectors,
-						width	=> text.line_width);
+					draw_vector_text (text.vectors);
 				end query_text;
 
 				
@@ -388,10 +385,7 @@ is
 					use pac_draw_text;
 				begin
 					draw_origin ((text.position.place, zero_rotation));
-
-					draw_vector_text (
-						text	=> text.vectors,
-						width	=> text.line_width);
+					draw_vector_text (text.vectors);
 				end query_text;
 
 				
@@ -581,11 +575,8 @@ is
 					text : type_stop_text renames element (c);
 					use pac_draw_text;
 				begin
-					draw_origin ((text.position.place, zero_rotation));
-					
-					draw_vector_text (
-						text	=> text.vectors,
-						width	=> text.line_width);
+					draw_origin ((text.position.place, zero_rotation));					
+					draw_vector_text (text.vectors);
 				end query_text;
 
 				
@@ -1093,10 +1084,7 @@ is
 					use pac_draw_text;
 				begin
 					draw_origin ((text.position.place, zero_rotation));
-
-					draw_vector_text (
-						text	=> text.vectors,
-						width	=> text.line_width);
+					draw_vector_text (text.vectors);
 				end query_text;
 
 				

@@ -648,7 +648,7 @@ package body et_canvas_board_2 is
 					);
 
 				-- Draw the text:
-				pac_draw_text.draw_vector_text (v_text, preliminary_text.text.line_width);
+				pac_draw_text.draw_vector_text (v_text);
 
 			end if;
 		end if;
