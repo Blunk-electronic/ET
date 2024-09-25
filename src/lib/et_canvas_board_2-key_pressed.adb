@@ -393,17 +393,16 @@ is
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when GDK_Space =>
-				null;
 				-- CS
--- 				case noun is
--- 					when NOUN_TEXT =>
--- 						place_text (point);
--- 
+				case noun is
+					when NOUN_TEXT =>
+						place_text (point);
+
 -- 					when NOUN_VIA =>
 -- 						place_via (point);
--- 						
--- 					when others => null;
--- 				end case;
+						
+					when others => null;
+				end case;
 				
 			when others => status_noun_invalid;
 		end case;
