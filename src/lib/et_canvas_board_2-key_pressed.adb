@@ -386,20 +386,21 @@ is
 				show_text_properties;
 				set_status (status_place_text);
 
+				
 			when GDK_LC_v =>
 				noun := NOUN_VIA;
 				show_via_properties;
 				set_status (status_place_via);
+
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when GDK_Space =>
-				-- CS
 				case noun is
 					when NOUN_TEXT =>
 						place_text (point);
 
--- 					when NOUN_VIA =>
--- 						place_via (point);
+					when NOUN_VIA =>
+						place_via (point);
 						
 					when others => null;
 				end case;

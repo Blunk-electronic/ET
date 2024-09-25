@@ -1182,7 +1182,7 @@ procedure draw_conductors is
 		if preliminary_via.ready then
 
 			-- Set the point where the via is to be drawn:
-			-- CS position := canvas.tool_position;
+			position := get_primary_tool_position;
 
 			-- Get the name of the targeted net:
 			net_name := preliminary_via.net_name;
