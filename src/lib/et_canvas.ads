@@ -1146,6 +1146,13 @@ package et_canvas is
 
 	procedure change_primary_tool;
 
+
+	-- Returns the position of the current primary
+	-- tool (that is mouse or cursor). The position
+	-- is snapped to the current grid:
+	function get_primary_tool_position
+		return type_vector_model;
+
 	
 
 -- CATCH ZONE:

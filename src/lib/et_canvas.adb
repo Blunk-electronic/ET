@@ -3342,6 +3342,20 @@ package body et_canvas is
 	
 
 
+	function get_primary_tool_position
+		return type_vector_model 
+	is
+		point : type_vector_model;
+	begin
+		case primary_tool is
+			when KEYBOARD	=> point := get_cursor_position;
+			when MOUSE		=> point := snap_to_grid (get_mouse_position);
+		end case;
+
+		return point;
+	end get_primary_tool_position;
+
+	
 	
 -- CATCH ZONE:
 
