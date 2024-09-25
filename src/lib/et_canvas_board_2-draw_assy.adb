@@ -83,7 +83,7 @@ is
 		line : type_doc_line renames element (c);
 
 		procedure draw_unchanged is begin
-			draw_line (line => line, width => line.width);
+			draw_line (line => line, width => line.width, do_stroke => true);
 		end draw_unchanged;
 
 		use et_modes.board;
@@ -109,7 +109,7 @@ is
 									move_line_to (line_tmp, POA, get_cursor_position);
 							end case;
 
-							draw_line (line => line_tmp, width => line.width);
+							draw_line (line => line_tmp, width => line.width, do_stroke => true);
 						end;
 					else
 						draw_unchanged;

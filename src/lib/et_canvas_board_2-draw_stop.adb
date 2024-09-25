@@ -79,7 +79,8 @@ is
 	begin
 		draw_line (
 			line	=> element (c),
-			width	=> element (c).width);
+			width	=> element (c).width,
+			do_stroke => true);
 
 	end query_line;
 
@@ -89,8 +90,8 @@ is
 	begin		
 		draw_arc (
 			arc		=> element (c),
-			width	=> element (c).width);
-
+			width	=> element (c).width,
+			do_stroke => true);
 	end query_arc;
 
 	
@@ -101,7 +102,8 @@ is
 		draw_circle (
 			circle	=> element (c),
 			filled	=> NO,
-			width	=> element (c).width);
+			width	=> element (c).width,
+			do_stroke => true);
 
 	end query_circle;
 
