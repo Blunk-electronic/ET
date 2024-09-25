@@ -264,7 +264,7 @@ begin -- draw_stop
 		position	=> current_active_module,
 		process		=> query_items'access);
 
-	-- CS draw_text_being_placed (face, LAYER_CAT_STOP);
+	draw_text_being_placed (face, LAYER_CAT_STOP);
 
 	-- Draw the lines of a path that is being drawn:
 	-- CS draw_path (LAYER_CAT_STOP);

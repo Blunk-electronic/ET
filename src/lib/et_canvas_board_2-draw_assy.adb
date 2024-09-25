@@ -308,8 +308,7 @@ begin -- draw_assy
 		position	=> current_active_module,
 		process		=> query_items'access);
 
-	-- CS
-	-- draw_text_being_placed (face, LAYER_CAT_ASSY);
+	draw_text_being_placed (face, LAYER_CAT_ASSY);
 
 	-- CS
 	-- Draw the lines of a path that is being drawn:

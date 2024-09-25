@@ -109,7 +109,7 @@ procedure draw_conductors is
 			and preliminary_text.signal_layer = layer then
 
 				-- Set the point where the text is to be drawn:
-				-- CS point := canvas.tool_position;
+				point := get_primary_tool_position;
 
 				-- Draw the origin of the text:
 				origin := type_position (to_position (point, zero_rotation));

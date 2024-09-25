@@ -139,7 +139,7 @@ begin -- draw_stencil
 		process		=> query_items'access);
 
 	
-	-- CS draw_text_being_placed (face, LAYER_CAT_STENCIL);
+	draw_text_being_placed (face, LAYER_CAT_STENCIL);
 	
 end draw_stencil;
 

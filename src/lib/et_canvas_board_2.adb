@@ -605,6 +605,62 @@ package body et_canvas_board_2 is
 
 
 
+
+	procedure draw_text_being_placed (
+		face		: in type_face;
+		category	: in et_board_shapes_and_text.type_layer_category_non_conductor)
+	is 
+		use et_canvas_board_texts;
+		use et_modes.board;
+		use et_board_shapes_and_text;
+		use pac_text;
+
+		v_text : type_vector_text;
+		
+		-- The place where the text shall be placed:
+		point : type_vector_model;
+
+		-- The place where the text origin will be drawn:
+		origin : type_position;
+	begin
+		-- put_line ("draw_text_being_placed");
+		
+		if verb = VERB_PLACE and noun = NOUN_TEXT and preliminary_text.ready then
+
+			if preliminary_text.category = category and preliminary_text.face = face then
+
+				-- Set the point where the text is to be drawn:
+				point := get_primary_tool_position;
+
+				-- Draw the origin of the text:
+				origin := type_position (to_position (point, zero_rotation));
+				draw_origin (origin);
+
+				-- Vectorize the text on the fly:
+				v_text := vectorize_text (
+					content		=> preliminary_text.text.content,
+					size		=> preliminary_text.text.size,
+					rotation	=> get_rotation (preliminary_text.text.position),
+					position	=> point,
+					mirror		=> face_to_mirror (face),
+					line_width	=> preliminary_text.text.line_width,
+					alignment	=> preliminary_text.text.alignment -- right, bottom
+					);
+
+				-- Draw the text:
+				pac_draw_text.draw_vector_text (v_text, preliminary_text.text.line_width);
+
+			end if;
+		end if;
+	end draw_text_being_placed;
+
+
+
+	
+
+
+	
+
 	procedure draw_drawing_frame is separate;
 
 
@@ -1336,58 +1392,10 @@ package body et_canvas_board_2 is
 -- 	end active_module;
 
 	
--- 	-- This procedure draws the text that is being placed in a
--- 	-- paired layer. This is about non-conductor layers.
--- 	-- The properties are taken from variable et_canvas_board_texts.preliminary_text.
--- 	-- The verb must be VERB_PLACE and the noun must be NOUN_TEXT. Otherwise
--- 	-- nothing happens here:
--- 	procedure draw_text_being_placed (
--- 		face		: in type_face;
--- 		category	: in type_layer_category_non_conductor)
--- 	is 
--- 		v_text : type_vector_text;
--- 		
--- 		-- The place where the text shall be placed:
--- 		point : type_vector_model;
--- 
--- 		-- The place where the text origin will be drawn:
--- 		origin : type_position;
--- 	begin
--- 		if verb = VERB_PLACE and noun = NOUN_TEXT and preliminary_text.ready then
--- 
--- 			if preliminary_text.category = category and preliminary_text.face = face then
--- 
--- 				-- Set the point where the text is to be drawn:
--- 				point := canvas.tool_position;
--- 
--- 				-- Draw the origin of the text:
--- 				origin := type_position (to_position (point, zero_rotation));
--- 				draw_text_origin (origin);
--- 
--- 				-- Set the line width of the vector text:
--- 				set_line_width (context.cr, type_view_coordinate (preliminary_text.text.line_width));
--- 
--- 				-- Vectorize the text on the fly:
--- 				v_text := vectorize_text (
--- 					content		=> preliminary_text.text.content,
--- 					size		=> preliminary_text.text.size,
--- 					rotation	=> get_rotation (preliminary_text.text.position),
--- 					position	=> point,
--- 					mirror		=> face_to_mirror (face),
--- 					line_width	=> preliminary_text.text.line_width,
--- 					alignment	=> preliminary_text.text.alignment -- right, bottom
--- 					);
--- 
--- 				-- Draw the text:
--- 				draw_vector_text (v_text, preliminary_text.text.line_width);
--- 
--- 			end if;
--- 		end if;
--- 	end draw_text_being_placed;
--- 
--- 
--- 
--- 
+
+
+
+
 -- 	-- Draws a path being drawn in a given layer category.
 -- 	-- Uses the parameters in variable preliminary_line.
 -- 	-- Computes the bend point (if required) and sets it accordingly

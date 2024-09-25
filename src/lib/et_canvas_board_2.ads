@@ -210,6 +210,18 @@ package et_canvas_board_2 is
 	procedure set_up_main_window;
 	
 
+	-- This procedure draws the text that is being placed in a
+	-- paired layer. THIS IS ABOUT NON-CONDUCTOR LAYERS.
+	-- The properties are taken from variable et_canvas_board_texts.preliminary_text.
+	-- The color must be set in advance by the caller.
+	-- The verb must be VERB_PLACE and the noun must be NOUN_TEXT. Otherwise
+	-- nothing happens here:
+	procedure draw_text_being_placed (
+		face		: in type_face;
+		category	: in et_board_shapes_and_text.type_layer_category_non_conductor);
+
+
+	
 	-- This function is called each time the canvas 
 	-- is to be refreshed.
 	-- It is called by the signal "on_draw" emitted by the canvas.
