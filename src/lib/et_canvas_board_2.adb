@@ -54,6 +54,7 @@ with ada.calendar.formatting;		use ada.calendar.formatting;
 with et_scripting;
 with et_modes;
 with et_modes.board;				
+with et_modes.schematic;
 -- with et_project;
 
 with et_frames;
@@ -918,7 +919,7 @@ package body et_canvas_board_2 is
 	begin
 		put_line ("reset");
 
-		expect_entry := expect_entry_default;
+		expect_entry := expect_entry_default; -- expect a verb
 		
 		-- Verb and noun remain as they are
 		-- so that the mode is unchanged.
@@ -1232,7 +1233,9 @@ package body et_canvas_board_2 is
 	
 	
 
-	procedure execute_script (script : in pac_script_name.bounded_string) is
+	procedure execute_script (
+		script : in pac_script_name.bounded_string) 
+	is
 		use ada.directories;
 		use et_scripting;
 		use et_modes;
@@ -1256,10 +1259,14 @@ package body et_canvas_board_2 is
 
 		-- Backup the current directory (like /home/user/my_projects):
 		cur_dir_bak : constant string := current_directory;
+		
 	begin
 		cmd_entry_mode := VIA_SCRIPT;
 		
-		log (text => "executing command " & enclose_in_quotes (line_as_typed_by_operator), level => log_threshold);
+		log (text => "executing script (in board domain) " 
+			 & enclose_in_quotes (line_as_typed_by_operator), 
+			 level => log_threshold);
+		
 		log_indentation_up;
 		
 		-- Store the command in the command history:
@@ -1291,16 +1298,26 @@ package body et_canvas_board_2 is
 		
 		-- CS output error message in gui
 
+		-- Once the script has been executed, reset
+		-- verb and noun in all domains:
+		log (text => "reset verb and noun in all domains", level => log_threshold);
+		et_modes.board.reset_verb_and_noun;
+		et_modes.schematic.reset_verb_and_noun;
+		-- CS other domains ?
+
 		log_indentation_down;
+		
 
 	exception when event: others =>
 		
 		-- Return to previous directory (like  /home/user/my_projects):
 		set_directory (cur_dir_bak);
-
+	
 		log_indentation_down;
 	end execute_script;
 
+
+	
 	
 	procedure execute_command (self : access gtk_entry_record'class) is 
 		use ada.directories;

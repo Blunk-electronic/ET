@@ -306,8 +306,10 @@ package et_canvas_schematic_2 is
 	-- Composes a console command like 
 	-- "schematic motor_driver execute script my_script.scr"
 	-- and sends it to procedure et_scripting.schematic_cmd
-	-- to be executed.:
-	procedure execute_script (script : in pac_script_name.bounded_string);	
+	-- to be executed.
+	-- Resets verb and noun in all domains:
+	procedure execute_script (
+		script : in pac_script_name.bounded_string);	
 
 	
 	-- Executes a command as typed on the console by the operator
