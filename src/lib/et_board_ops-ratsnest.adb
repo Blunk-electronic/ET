@@ -187,7 +187,7 @@ package body et_board_ops.ratsnest is
 	function get_airwires (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model;
-		catch_zone		: in type_catch_zone; -- the circular area around the place
+		catch_zone		: in type_accuracy; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_airwires.list
 	is
@@ -224,7 +224,7 @@ package body et_board_ops.ratsnest is
 		
 	begin
 		log (text => "looking up airwires at" & to_string (point)
-			 & " catch zone" & catch_zone_to_string (catch_zone),
+			 & " catch zone" & accuracy_to_string (catch_zone),
 			 level => log_threshold);
 
 		-- log_indentation_up;

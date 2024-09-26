@@ -97,7 +97,7 @@ package et_canvas_schematic_units is
 	function collect_units (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates_2.type_position; -- sheet/x/y
-		catch_zone		: in type_catch_zone; -- the circular area around the place
+		catch_zone		: in type_accuracy; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_units.list;
 

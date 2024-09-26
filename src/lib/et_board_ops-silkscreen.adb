@@ -92,7 +92,7 @@ package body et_board_ops.silkscreen is
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		point			: in type_vector_model;
-		catch_zone		: in type_catch_zone; -- the circular area around the place
+		catch_zone		: in type_accuracy; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_silk_lines.list
 	is
@@ -106,7 +106,7 @@ package body et_board_ops.silkscreen is
 			procedure query_line (c : in pac_silk_lines.cursor) is
 				line : type_silk_line renames element (c);
 			begin
-				if in_catch_zone (
+				if within_accuracy (
 					line	=> line,
 					width	=> line.width,
 					point	=> point,
@@ -128,7 +128,7 @@ package body et_board_ops.silkscreen is
 			
 	begin
 		log (text => "looking up lines at" & to_string (point) 
-			 & " catch zone" & catch_zone_to_string (catch_zone),
+			 & " catch zone" & accuracy_to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -301,7 +301,7 @@ package body et_board_ops.silkscreen is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_vector_model; -- x/y
-		accuracy		: in type_catch_zone;
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -391,7 +391,7 @@ package body et_board_ops.silkscreen is
 		log (text => "module " & to_string (module_name) &
 			" deleting silk screen segment face" & to_string (face) &
 			" at" & to_string (point) &
-			" accuracy" & catch_zone_to_string (accuracy),
+			" accuracy" & accuracy_to_string (accuracy),
 			level => log_threshold);
 
 		-- locate module
@@ -467,7 +467,7 @@ package body et_board_ops.silkscreen is
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		point			: in type_vector_model;
-		catch_zone		: in type_catch_zone; -- the circular area around the place
+		catch_zone		: in type_accuracy; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_silk_texts.list
 	is
@@ -482,10 +482,10 @@ package body et_board_ops.silkscreen is
 			procedure query_text (c : in pac_silk_texts.cursor) is
 				text : type_silk_text renames element (c);
 			begin
-				if in_catch_zone (
-					point_1		=> point,
-					catch_zone	=> catch_zone,
-					point_2		=> text.position.place)
+				if within_accuracy (
+					point_1	=> point,
+					zone	=> catch_zone,
+					point_2	=> text.position.place)
 				then
 					log (text => to_string (text.position.place) 
 						& " content " & enclose_in_quotes (to_string (text.content)),
@@ -511,7 +511,7 @@ package body et_board_ops.silkscreen is
 			& enclose_in_quotes (to_string (key (module_cursor)))
 			& " face" & to_string (face) 
 			& " looking up silkscreen texts at" & to_string (point) 
-			& " catch zone" & catch_zone_to_string (catch_zone),
+			& " catch zone" & accuracy_to_string (catch_zone),
 			level => log_threshold);
 		
 		log_indentation_up;

@@ -477,7 +477,7 @@ is
 				delete_outline (
 					module_name 	=> module,
 					point			=> type_vector_model (to_point (f (5), f (6))),
-					accuracy		=> to_catch_zone (f (7)),					
+					accuracy		=> to_accuracy (f (7)),					
 					log_threshold	=> log_threshold + 1);
 
 			when 8 .. type_field_count'last => too_long;
@@ -496,7 +496,7 @@ is
 				delete_hole (
 					module_name 	=> module,
 					point			=> type_vector_model (to_point (f (5), f (6))),
-					accuracy		=> to_catch_zone (f (7)),
+					accuracy		=> to_accuracy (f (7)),
 					
 					log_threshold	=> log_threshold + 1);
 
@@ -2318,7 +2318,7 @@ is
 									point			=> type_vector_model (set (
 											x => to_distance (dd => f (6)),
 											y => to_distance (dd => f (7)))),
-									accuracy		=> to_catch_zone (f (8)),
+									accuracy		=> to_accuracy (f (8)),
 									
 									log_threshold	=> log_threshold + 1
 									);
@@ -2341,7 +2341,7 @@ is
 									point			=> type_vector_model (set (
 											x => to_distance (dd => f (6)),
 											y => to_distance (dd => f (7)))),
-									accuracy		=> to_catch_zone (f (8)),
+									accuracy		=> to_accuracy (f (8)),
 									
 									log_threshold	=> log_threshold + 1
 									);
@@ -2366,7 +2366,7 @@ is
 									point			=> type_vector_model (set (
 											x => to_distance (dd => f (6)),
 											y => to_distance (dd => f (7)))),
-									accuracy		=> to_catch_zone (f (8)),
+									accuracy		=> to_accuracy (f (8)),
 									
 									log_threshold	=> log_threshold + 1
 									);
@@ -2387,7 +2387,7 @@ is
 									point			=> type_vector_model (set (
 											x => to_distance (dd => f (6)),
 											y => to_distance (dd => f (7)))),
-									accuracy		=> to_catch_zone (f (8)),
+									accuracy		=> to_accuracy (f (8)),
 									
 									log_threshold	=> log_threshold + 1
 									);
@@ -2407,7 +2407,7 @@ is
 									point			=> type_vector_model (set (
 											x => to_distance (dd => f (5)),
 											y => to_distance (dd => f (6)))),
-									accuracy		=> to_catch_zone (f (7)),
+									accuracy		=> to_accuracy (f (7)),
 									
 									log_threshold	=> log_threshold + 1
 									);
@@ -2427,7 +2427,7 @@ is
 									point			=> type_vector_model (set (
 											x => to_distance (dd => f (5)),
 											y => to_distance (dd => f (6)))),
-									accuracy		=> to_catch_zone (f (7)),
+									accuracy		=> to_accuracy (f (7)),
 									
 									log_threshold	=> log_threshold + 1
 									);
@@ -2731,7 +2731,7 @@ is
 									point			=> type_vector_model (set (
 											x => to_distance (dd => f (6)),
 											y => to_distance (dd => f (7)))),
-									accuracy		=> to_catch_zone (f (8)),
+									accuracy		=> to_accuracy (f (8)),
 									
 									log_threshold	=> log_threshold + 1
 									);
@@ -2754,7 +2754,7 @@ is
 									point			=> type_vector_model (set (
 											x => to_distance (dd => f (7)),
 											y => to_distance (dd => f (8)))),
-									accuracy		=> to_catch_zone (f (9)),
+									accuracy		=> to_accuracy (f (9)),
 									
 									log_threshold	=> log_threshold + 1
 									);

@@ -100,7 +100,7 @@ package body et_board_ops.board_contour is
 	procedure delete_outline (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_vector_model; -- x/y
-		accuracy		: in type_catch_zone;
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -179,7 +179,7 @@ package body et_board_ops.board_contour is
 	begin -- delete_outline
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) 
 			& " deleting outline segment at" & to_string (point) 
-			& " accuracy" & catch_zone_to_string (accuracy),
+			& " accuracy" & accuracy_to_string (accuracy),
 			level => log_threshold);
 
 		module_cursor := locate_module (module_name);
@@ -265,7 +265,7 @@ package body et_board_ops.board_contour is
 	procedure delete_hole (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_vector_model; -- x/y
-		accuracy		: in type_catch_zone;
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -273,7 +273,7 @@ package body et_board_ops.board_contour is
 	begin -- delete_hole
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) 
 			& " deleting hole segment at" & to_string (point) 
-			& " accuracy" & catch_zone_to_string (accuracy),
+			& " accuracy" & accuracy_to_string (accuracy),
 			level => log_threshold);
 
 		module_cursor := locate_module (module_name);

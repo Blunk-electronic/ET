@@ -76,7 +76,7 @@ package et_board_ops.board_contour is
 	procedure delete_outline (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_vector_model; -- x/y
-		accuracy		: in type_catch_zone;
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level);
 
 	
@@ -107,7 +107,7 @@ package et_board_ops.board_contour is
 	procedure delete_hole (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_vector_model; -- x/y
-		accuracy		: in type_catch_zone;
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level);
 
 

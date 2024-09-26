@@ -3390,7 +3390,7 @@ package body et_canvas is
 	
 -- CATCH ZONE:
 
-	function get_catch_zone return type_catch_zone is 
+	function get_catch_zone return type_accuracy is 
 	begin
 		-- return 20.0 / type_float_positive (global_scale);
 		-- CS rework, use type_logical_pixels_positive ?

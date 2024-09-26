@@ -1168,7 +1168,8 @@ package et_canvas is
 
 	-- Returns a catch zone according to the current
 	-- global_scale:
-	function get_catch_zone return type_catch_zone;
+	
+	function get_catch_zone return type_accuracy;
 
 
 

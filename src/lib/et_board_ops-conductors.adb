@@ -90,12 +90,12 @@ package body et_board_ops.conductors is
 	procedure no_net_segment_found (
 		layer		: in et_pcb_stack.type_signal_layer;
 		point		: in type_vector_model; 
-		accuracy	: in type_catch_zone) 
+		accuracy	: in type_accuracy) 
 	is begin
 		log (importance => WARNING, 
 			 text => "no net segment found in layer" & to_string (layer) &
 			 " at" & to_string (point) &
-			 " in vicinity of" & catch_zone_to_string (accuracy));
+			 " in vicinity of" & accuracy_to_string (accuracy));
 	end no_net_segment_found;
 
 	
@@ -539,7 +539,7 @@ package body et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in type_vector_model;
-		catch_zone		: in type_catch_zone; -- the circular area around the place
+		catch_zone		: in type_accuracy; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_get_lines_result.list
 	is
@@ -557,7 +557,7 @@ package body et_board_ops.conductors is
 				line : type_conductor_line renames element (c);
 			begin
 				if line.layer = layer then
-					if in_catch_zone (
+					if within_accuracy (
 						line	=> line,
 						width	=> line.width,
 						point	=> point,
@@ -584,7 +584,7 @@ package body et_board_ops.conductors is
 	begin
 		log (text => "looking up segments at" & to_string (point)
 			 & " in signal layer " & to_string (layer)
-			 & " catch zone" & catch_zone_to_string (catch_zone),
+			 & " catch zone" & accuracy_to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -696,7 +696,7 @@ package body et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		layer			: in et_pcb_stack.type_signal_layer;
-		catch_zone		: in type_catch_zone; -- the circular area around the place
+		catch_zone		: in type_accuracy; -- the circular area around the place
 		count			: in out natural; -- the number of affected devices
 		log_threshold	: in type_log_level)
 	is
@@ -719,7 +719,7 @@ package body et_board_ops.conductors is
 					use et_object_status;
 				begin
 					if line.layer = layer then
-						if in_catch_zone (
+						if within_accuracy (
 							line	=> line,
 							width	=> line.width,
 							point	=> point,
@@ -760,7 +760,7 @@ package body et_board_ops.conductors is
 	begin
 		log (text => "proposing lines at" & to_string (point)
 			 & " in signal layer " & to_string (layer)
-			 & " catch zone" & catch_zone_to_string (catch_zone),
+			 & " catch zone" & accuracy_to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -1229,7 +1229,7 @@ package body et_board_ops.conductors is
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in type_vector_model; -- x/y
-		accuracy		: in type_catch_zone;
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -1355,7 +1355,7 @@ package body et_board_ops.conductors is
 			" ripping up segment" &
 			" in layer " & to_string (layer) &
 			" at" & to_string (point) &
-			" accuracy" & catch_zone_to_string (accuracy),
+			" accuracy" & accuracy_to_string (accuracy),
 			level => log_threshold);
 
 		-- locate module
@@ -1754,7 +1754,7 @@ package body et_board_ops.conductors is
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model;
-		catch_zone		: in type_catch_zone; -- the circular area around the place
+		catch_zone		: in type_accuracy; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_conductor_texts.list
 	is
@@ -1769,10 +1769,10 @@ package body et_board_ops.conductors is
 			procedure query_text (c : in pac_conductor_texts.cursor) is
 				text : type_conductor_text renames element (c);
 			begin
-				if in_catch_zone (
-					point_1		=> point,
-					catch_zone	=> catch_zone,
-					point_2		=> get_place (text))
+				if within_accuracy (
+					point_1	=> point,
+					zone	=> catch_zone,
+					point_2	=> get_place (text))
 				then
 					log (text => to_string (get_place (text)) 
 						& " content " & enclose_in_quotes (to_string (text.content)),
@@ -1791,7 +1791,7 @@ package body et_board_ops.conductors is
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
 			& " looking up conductor texts at" & to_string (point) 
-			& " catch zone" & catch_zone_to_string (catch_zone),
+			& " catch zone" & accuracy_to_string (catch_zone),
 			level => log_threshold);
 		
 		log_indentation_up;

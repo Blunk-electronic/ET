@@ -69,7 +69,7 @@ package et_schematic_ops.nets is
 	function between_start_and_end_point (
 		point 		: in type_vector_model;
 		segment 	: in pac_net_segments.cursor;
-		catch_zone	: in type_catch_zone := type_catch_zone'first)
+		catch_zone	: in type_accuracy := type_accuracy'first)
 		return boolean;
 
 	
@@ -79,7 +79,7 @@ package et_schematic_ops.nets is
 	function on_segment (
 		point 		: in type_vector_model;
 		segment 	: in pac_net_segments.cursor;
-		catch_zone	: in type_catch_zone := type_catch_zone'first)
+		catch_zone	: in type_accuracy := type_accuracy'first)
 		return boolean;
 
 	

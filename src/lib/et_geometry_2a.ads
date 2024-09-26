@@ -1310,58 +1310,59 @@ package et_geometry_2a is
 
 	
 	
--- CATCH ZONE:
+-- ACCURACY:
 
-	-- CS rework. make generic child package. use type_logical pixels
-	-- instead of type_float_positive
+	-- When searching objects within a given zone or vicinity
+	-- we use a type_accuracy:
 	
-	subtype type_catch_zone is type_float_positive
+	subtype type_accuracy is type_float_positive
 		range 0.0 .. type_float_positive (type_distance_positive'last/100.0);
 
 
-	function catch_zone_to_string (
-		c : in type_catch_zone)
+	function accuracy_to_string (
+		c : in type_accuracy)
 		return string;
 
-	function to_catch_zone (
+	
+	function to_accuracy (
 		c : in string)
-		return type_catch_zone;
+		return type_accuracy;
 
 
-	-- Returns true if the given distance is less or equal the 
-	-- given catch_zone:
-	function in_catch_zone (
+	-- Returns true if the given distance is 
+	-- less or equal the given accuracy:
+	function within_accuracy (
 		distance : in type_float_positive;
-		zone	 : in type_catch_zone)
+		zone	 : in type_accuracy)
 		return boolean;
 							   
 	
 	-- Returns true if point_2 is within the 
-	-- catch zone around point_1:
-	function in_catch_zone (
-		point_1		: in type_vector_model; -- the reference point
-		catch_zone	: in type_catch_zone; -- zone around reference point
-		point_2 	: in type_vector_model) -- the point being tested
+	-- accuracy zone around point_1:
+	function within_accuracy (
+		point_1	: in type_vector_model; -- the reference point
+		zone	: in type_accuracy; -- zone around reference point
+		point_2 : in type_vector_model) -- the point being tested
 		return boolean;
 
 
-	-- Returns true if the given line is in the catch zone
+	-- Returns true if the given line is in the accuracy zone
 	-- of the given point.
 	-- Optionally the linewidth can be specified so that it
 	-- is taken into account when the distance of the point
 	-- to the line is computed. If a linewidth greater zero
 	-- is given, then we assume, that the line has round caps:
-	function in_catch_zone (
+	function within_accuracy (
 		line	: in type_line;
 		width	: in type_distance_positive := 0.0;
 		point	: in type_vector_model;
-		zone	: in type_catch_zone)
+		zone	: in type_accuracy)
 		return boolean;
 	
 	
 	procedure nothing_found (
 		point		: in type_vector_model; 
-		accuracy	: in type_catch_zone);
+		accuracy	: in type_accuracy);
 
 
 	

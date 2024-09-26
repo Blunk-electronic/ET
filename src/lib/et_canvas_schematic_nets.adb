@@ -253,7 +253,7 @@ package body et_canvas_schematic_nets is
 	function collect_segments (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates_2.type_position; -- sheet/x/y
-		catch_zone		: in type_catch_zone := type_catch_zone'first; -- the circular area around the place
+		catch_zone		: in type_accuracy := type_accuracy'first; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_segments.list
 	is
@@ -287,7 +287,7 @@ package body et_canvas_schematic_nets is
 
 						-- If the segment is in the catch zone, append
 						-- the current net, stand and segment cursor to the result:
-						if in_catch_zone (
+						if within_accuracy (
 							line	=> element (segment_cursor),
 							width	=> net_line_width,
 							point	=> place.place,
@@ -332,7 +332,7 @@ package body et_canvas_schematic_nets is
 		
 	begin -- collect_segments
 		log (text => "looking up net segments at" & to_string (place) 
-			 & " catch zone" & catch_zone_to_string (catch_zone), 
+			 & " catch zone" & accuracy_to_string (catch_zone), 
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -1144,7 +1144,7 @@ package body et_canvas_schematic_nets is
 	function collect_labels (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates_2.type_position; -- sheet/x/y
-		catch_zone		: in type_catch_zone; -- the circular area around the place
+		catch_zone		: in type_accuracy; -- the circular area around the place
 		category		: in type_label_category := BOTH; -- default is: collect all kinds of labels
 		log_threshold	: in type_log_level)
 		return pac_proposed_labels.list
@@ -1260,7 +1260,7 @@ package body et_canvas_schematic_nets is
 
 	begin -- collect_labels
 		log (text => "looking up net labels at" & to_string (place) 
-			 & " catch zone" & catch_zone_to_string (catch_zone),
+			 & " catch zone" & accuracy_to_string (catch_zone),
 			 level => log_threshold);
 		-- CS output category of label
 		

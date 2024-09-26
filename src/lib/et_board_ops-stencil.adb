@@ -183,7 +183,7 @@ package body et_board_ops.stencil is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_vector_model; -- x/y
-		accuracy		: in type_catch_zone;
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -274,7 +274,7 @@ package body et_board_ops.stencil is
 		log (text => "module " & to_string (module_name) &
 			" deleting stencil segment face" & to_string (face) &
 			" at" & to_string (point) &
-			" accuracy" & catch_zone_to_string (accuracy),
+			" accuracy" & accuracy_to_string (accuracy),
 			level => log_threshold);
 
 		-- locate module

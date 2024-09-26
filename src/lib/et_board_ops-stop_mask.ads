@@ -80,7 +80,7 @@ package et_board_ops.stop_mask is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_vector_model; -- x/y
-		accuracy		: in type_catch_zone;
+		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level);
 
 
@@ -89,7 +89,7 @@ package et_board_ops.stop_mask is
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		point			: in type_vector_model;
-		catch_zone		: in type_catch_zone; -- the circular area around the place
+		catch_zone		: in type_accuracy; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_stop_texts.list;
 

@@ -3057,27 +3057,27 @@ package body et_geometry_2a is
 
 	
 
--- CATCH ZONE:
+-- ACCURACY:
 		
-	function catch_zone_to_string (
-		c : in type_catch_zone)
+	function accuracy_to_string (
+		c : in type_accuracy)
 		return string
 	is begin
 		return pac_geometry_1.to_string (c);
-	end catch_zone_to_string;
+	end accuracy_to_string;
 
 
-	function to_catch_zone (
+	function to_accuracy (
 		c : in string)
-		return type_catch_zone
+		return type_accuracy
 	is begin
 		return pac_geometry_1.to_distance (c);
-	end to_catch_zone;
+	end to_accuracy;
 
 	
-	function in_catch_zone (
+	function within_accuracy (
 		distance : in type_float_positive;
-		zone	 : in type_catch_zone)
+		zone	 : in type_accuracy)
 		return boolean
 	is begin
 		if distance <= zone then
@@ -3085,33 +3085,33 @@ package body et_geometry_2a is
 		else
 			return false;
 		end if;
-	end in_catch_zone;
+	end within_accuracy;
 	
 	
 	
-	function in_catch_zone (
-		point_1		: in type_vector_model; -- the reference point
-		catch_zone	: in type_catch_zone; -- zone around reference point
-		point_2 	: in type_vector_model) -- the point being tested
+	function within_accuracy (
+		point_1	: in type_vector_model; -- the reference point
+		zone	: in type_accuracy; -- zone around reference point
+		point_2 : in type_vector_model) -- the point being tested
 		return boolean 
 	is
 		d : type_float_positive := get_distance_total (point_1, point_2);
 	begin
-		if d <= catch_zone then
+		if d <= zone then
 			return true;
 		else
 			return false;
 		end if;
-	end in_catch_zone;
+	end within_accuracy;
 
 
 	
 
-	function in_catch_zone (
+	function within_accuracy (
 		line	: in type_line;
 		width	: in type_distance_positive := 0.0;
 		point	: in type_vector_model;
-		zone	: in type_catch_zone)
+		zone	: in type_accuracy)
 		return boolean
 	is
 		width_float : constant type_float_positive := type_float_positive (width);
@@ -3148,17 +3148,17 @@ package body et_geometry_2a is
 				end if;				
 			end if;
 		end if;
-	end in_catch_zone;
+	end within_accuracy;
 
 
 
 	procedure nothing_found (
 		point		: in type_vector_model; 
-		accuracy	: in type_catch_zone)
+		accuracy	: in type_accuracy)
 	is begin
 		log (importance => WARNING, 
 			 text => "nothing found at" & to_string (point) &
-			 " in vicinity of" & catch_zone_to_string (accuracy));
+			 " in vicinity of" & accuracy_to_string (accuracy));
 	end nothing_found;
 
 

@@ -113,7 +113,7 @@ package body et_schematic_ops.nets is
 	function between_start_and_end_point (
 		point 		: in type_vector_model;
 		segment 	: in pac_net_segments.cursor;
-		catch_zone	: in type_catch_zone := type_catch_zone'first)
+		catch_zone	: in type_accuracy := type_accuracy'first)
 		return boolean 
 	is
 		dist : type_distance_point_line;
@@ -124,7 +124,7 @@ package body et_schematic_ops.nets is
 			line_range	=> BETWEEN_END_POINTS);
 
 		if (not out_of_range (dist)) 
-		and in_catch_zone (get_distance (dist), catch_zone) then
+		and within_accuracy (get_distance (dist), catch_zone) then
 			return true;
 		else
 			return false;
@@ -135,7 +135,7 @@ package body et_schematic_ops.nets is
 	function on_segment (
 		point 		: in type_vector_model;
 		segment 	: in pac_net_segments.cursor;
-		catch_zone	: in type_catch_zone := type_catch_zone'first)
+		catch_zone	: in type_accuracy := type_accuracy'first)
 		return boolean 
 	is
 		dist : type_distance_point_line;
@@ -152,7 +152,7 @@ package body et_schematic_ops.nets is
 -- 			);
 		
 		if (not out_of_range (dist)) 
-		and in_catch_zone (get_distance (dist), catch_zone) then
+		and within_accuracy (get_distance (dist), catch_zone) then
 			return true;
 		else
 			return false;

@@ -86,7 +86,7 @@ package body et_board_ops.vias is
 	function get_vias (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model;
-		catch_zone		: in type_catch_zone;
+		catch_zone		: in type_accuracy;
 		log_threshold	: in type_log_level)
 		return pac_proposed_vias.list
 	is
@@ -108,10 +108,10 @@ package body et_board_ops.vias is
 				via_cursor : pac_vias.cursor := net.route.vias.first;
 				
 				procedure query_via (via : in type_via) is begin
-					if in_catch_zone (
-						point_1		=> point, 
-						catch_zone	=> catch_zone,
-						point_2		=> via.position)
+					if within_accuracy (
+						point_1	=> point, 
+						zone	=> catch_zone,
+						point_2	=> via.position)
 					then
 						log (text => to_string (via.position) 
 							& " cat " & to_string (via.category)
@@ -140,7 +140,7 @@ package body et_board_ops.vias is
 
 	begin
 		log (text => "looking up vias at" & to_string (point) 
-			 & " catch zone" & catch_zone_to_string (catch_zone),
+			 & " catch zone" & accuracy_to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
