@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -95,7 +95,7 @@ package body et_board_ops.assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		point			: in type_vector_model;
-		catch_zone		: in type_accuracy; -- the circular area around the place
+		zone			: in type_accuracy; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_doc_lines.list
 	is
@@ -121,7 +121,7 @@ package body et_board_ops.assy_doc is
 					line	=> line,
 					width	=> line.width,
 					point	=> point,
-					zone	=> catch_zone)
+					zone	=> zone)
 				then
 					result.append (line);
 				end if;
@@ -139,7 +139,7 @@ package body et_board_ops.assy_doc is
 			
 	begin
 		log (text => "looking up lines at" & to_string (point) 
-			 & " catch zone" & accuracy_to_string (catch_zone),
+			 & " zone" & accuracy_to_string (zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -263,7 +263,7 @@ package body et_board_ops.assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		face			: in type_face;
-		catch_zone		: in type_accuracy; -- the circular area around the place
+		zone			: in type_accuracy; -- the circular area around the place
 		count			: in out natural; -- the number of affected lines
 		log_threshold	: in type_log_level)
 	is
@@ -283,7 +283,7 @@ package body et_board_ops.assy_doc is
 					line	=> line,
 					width	=> line.width,
 					point	=> point,
-					zone	=> catch_zone)
+					zone	=> zone)
 				then
 					line.status.proposed := true;
 					count := count + 1;
@@ -328,7 +328,7 @@ package body et_board_ops.assy_doc is
 	begin
 		log (text => "proposing lines at" & to_string (point)
 			 & " face " & to_string (face)
-			 & " catch zone" & accuracy_to_string (catch_zone),
+			 & "zone" & accuracy_to_string (zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -927,7 +927,7 @@ package body et_board_ops.assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		point			: in type_vector_model;
-		catch_zone		: in type_accuracy; -- the circular area around the place
+		zone			: in type_accuracy; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_doc_texts.list
 	is
@@ -943,9 +943,9 @@ package body et_board_ops.assy_doc is
 				text : type_doc_text renames element (c);
 			begin
 				if within_accuracy (
-					point_1		=> point,
-					zone	=> catch_zone,
-					point_2		=> text.position.place)
+					point_1	=> point,
+					zone	=> zone,
+					point_2	=> text.position.place)
 				then
 					log (text => to_string (text.position.place) 
 						& " content " & enclose_in_quotes (to_string (text.content)),
@@ -971,7 +971,7 @@ package body et_board_ops.assy_doc is
 			& enclose_in_quotes (to_string (key (module_cursor)))
 			& " face" & to_string (face) 
 			& " looking up assembly documentation texts at" & to_string (point) 
-			& " catch zone" & accuracy_to_string (catch_zone),
+			& " zone" & accuracy_to_string (zone),
 			level => log_threshold);
 
 		log_indentation_up;
