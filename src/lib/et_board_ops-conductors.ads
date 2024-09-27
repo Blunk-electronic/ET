@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -173,7 +173,7 @@ package et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in type_vector_model;
-		catch_zone		: in type_accuracy; -- the circular area around the place
+		zone			: in type_accuracy; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_get_lines_result.list;
 
@@ -194,7 +194,7 @@ package et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		layer			: in et_pcb_stack.type_signal_layer;
-		catch_zone		: in type_accuracy; -- the circular area around the place
+		zone			: in type_accuracy; -- the circular area around the place
 		count			: in out natural; -- the number of affected lines
 		log_threshold	: in type_log_level);
 
@@ -329,7 +329,7 @@ package et_board_ops.conductors is
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model;
-		catch_zone		: in type_accuracy; -- the circular area around the place
+		zone			: in type_accuracy; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_conductor_texts.list;
 

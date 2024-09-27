@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -539,7 +539,7 @@ package body et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in type_vector_model;
-		catch_zone		: in type_accuracy; -- the circular area around the place
+		zone			: in type_accuracy; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_get_lines_result.list
 	is
@@ -561,7 +561,7 @@ package body et_board_ops.conductors is
 						line	=> line,
 						width	=> line.width,
 						point	=> point,
-						zone	=> catch_zone)
+						zone	=> zone)
 					then
 						result.append ((net_name, line));
 					end if;
@@ -584,7 +584,7 @@ package body et_board_ops.conductors is
 	begin
 		log (text => "looking up segments at" & to_string (point)
 			 & " in signal layer " & to_string (layer)
-			 & " catch zone" & accuracy_to_string (catch_zone),
+			 & " zone" & accuracy_to_string (zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -696,7 +696,7 @@ package body et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		layer			: in et_pcb_stack.type_signal_layer;
-		catch_zone		: in type_accuracy; -- the circular area around the place
+		zone			: in type_accuracy; -- the circular area around the place
 		count			: in out natural; -- the number of affected devices
 		log_threshold	: in type_log_level)
 	is
@@ -723,7 +723,7 @@ package body et_board_ops.conductors is
 							line	=> line,
 							width	=> line.width,
 							point	=> point,
-							zone	=> catch_zone)
+							zone	=> zone)
 						then
 							line.status.proposed := true;
 							count := count + 1;
@@ -760,7 +760,7 @@ package body et_board_ops.conductors is
 	begin
 		log (text => "proposing lines at" & to_string (point)
 			 & " in signal layer " & to_string (layer)
-			 & " catch zone" & accuracy_to_string (catch_zone),
+			 & " zone" & accuracy_to_string (zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -1754,7 +1754,7 @@ package body et_board_ops.conductors is
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model;
-		catch_zone		: in type_accuracy; -- the circular area around the place
+		zone			: in type_accuracy; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_conductor_texts.list
 	is
@@ -1771,7 +1771,7 @@ package body et_board_ops.conductors is
 			begin
 				if within_accuracy (
 					point_1	=> point,
-					zone	=> catch_zone,
+					zone	=> zone,
 					point_2	=> get_place (text))
 				then
 					log (text => to_string (get_place (text)) 
@@ -1791,7 +1791,7 @@ package body et_board_ops.conductors is
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
 			& " looking up conductor texts at" & to_string (point) 
-			& " catch zone" & accuracy_to_string (catch_zone),
+			& " zone" & accuracy_to_string (zone),
 			level => log_threshold);
 		
 		log_indentation_up;
