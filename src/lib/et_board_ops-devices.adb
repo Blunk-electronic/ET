@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -65,7 +65,7 @@ package body et_board_ops.devices is
 	function get_devices (
 		module			: in pac_generic_modules.cursor;
 		place			: in type_vector_model;
-		catch_zone		: in type_accuracy;
+		zone			: in type_accuracy;
 		log_threshold	: in type_log_level)
 		return pac_devices_sch.map
 	is
@@ -90,7 +90,7 @@ package body et_board_ops.devices is
 						
 					if within_accuracy (
 						point_1	=> place, 
-						zone	=> catch_zone, 
+						zone	=> zone, 
 						point_2	=> element (device_cursor).position.place) 
 					then
 						log_indentation_up;
@@ -112,7 +112,7 @@ package body et_board_ops.devices is
 		
 	begin -- get_devices		
 		log (text => "looking up devices at" & to_string (place) 
-			 & " catch zone" & accuracy_to_string (catch_zone), level => log_threshold);
+			 & " zone" & accuracy_to_string (zone), level => log_threshold);
 
 		log_indentation_up;
 		
@@ -198,7 +198,7 @@ package body et_board_ops.devices is
 	procedure propose_devices (
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_vector_model; -- x/y
-		catch_zone		: in type_accuracy; -- the circular area around the place
+		zone			: in type_accuracy; -- the circular area around the place
 		count			: in out natural; -- the number of affected devices
 		log_threshold	: in type_log_level)
 	is
@@ -230,7 +230,7 @@ package body et_board_ops.devices is
 						
 					if within_accuracy (
 						point_1	=> place, 
-						zone	=> catch_zone, 
+						zone	=> zone, 
 						point_2	=> element (device_cursor).position.place) 
 					then
 						-- log_indentation_up;
@@ -251,7 +251,7 @@ package body et_board_ops.devices is
 	begin
 		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
 			"proposing devices at" & to_string (place) 
-			& " catch zone" & accuracy_to_string (catch_zone), 
+			& " zone" & accuracy_to_string (zone), 
 			level => log_threshold);
 
 		log_indentation_up;
@@ -436,7 +436,7 @@ package body et_board_ops.devices is
 	function get_devices (
 		module			: in pac_generic_modules.cursor;
 		place			: in type_vector_model;
-		catch_zone		: in type_accuracy;
+		zone			: in type_accuracy;
 		log_threshold	: in type_log_level)
 		return pac_devices_non_electric.map
 	is
@@ -457,12 +457,12 @@ package body et_board_ops.devices is
 					 
 				if within_accuracy (
 					point_1	=> place, 
-					zone	=> catch_zone, 
+					zone	=> zone, 
 					point_2	=> element (device_cursor).position.place) 
 				then
 					log_indentation_up;
 
-					log (text => "in catch zone", level => log_threshold + 1);
+					log (text => "in zone", level => log_threshold + 1);
 					result.insert (key (device_cursor), element (device_cursor));
 							
 					log_indentation_down;
@@ -477,7 +477,7 @@ package body et_board_ops.devices is
 		
 	begin -- get_devices		
 		log (text => "looking up devices at" & to_string (place) 
-			 & " catch zone" & accuracy_to_string (catch_zone), level => log_threshold);
+			 & " zone" & accuracy_to_string (zone), level => log_threshold);
 
 		log_indentation_up;
 		
@@ -561,7 +561,7 @@ package body et_board_ops.devices is
 	procedure propose_non_electrical_devices (
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_vector_model; -- x/y
-		catch_zone		: in type_accuracy; -- the circular area around the place
+		zone			: in type_accuracy; -- the circular area around the place
 		count			: in out natural; -- the number of affected devices
 		log_threshold	: in type_log_level)
 	is
@@ -591,7 +591,7 @@ package body et_board_ops.devices is
 					
 				if within_accuracy (
 					point_1	=> place, 
-					zone	=> catch_zone, 
+					zone	=> zone, 
 					point_2	=> element (device_cursor).position.place) 
 				then
 					-- log_indentation_up;
@@ -609,7 +609,7 @@ package body et_board_ops.devices is
 	begin
 		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
 			"proposing non-electrical devices at" & to_string (place) 
-			& " catch zone" & accuracy_to_string (catch_zone), 
+			& " zone" & accuracy_to_string (zone), 
 			level => log_threshold);
 
 		log_indentation_up;

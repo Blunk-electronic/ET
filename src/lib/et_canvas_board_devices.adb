@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -168,7 +168,7 @@ package body et_canvas_board_devices is
 		propose_devices (
 			module_cursor	=> current_active_module,
 			place			=> point,
-			catch_zone		=> get_catch_zone,
+			zone			=> get_catch_zone,
 			count			=> count,
 			log_threshold	=> log_threshold + 1);
 		
@@ -225,7 +225,7 @@ package body et_canvas_board_devices is
 		propose_non_electrical_devices (
 			module_cursor	=> current_active_module,
 			place			=> point,
-			catch_zone		=> get_catch_zone,
+			zone			=> get_catch_zone,
 			count			=> count,
 			log_threshold	=> log_threshold + 1);
 		
