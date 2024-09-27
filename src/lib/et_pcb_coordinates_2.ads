@@ -45,7 +45,6 @@ with et_geometry_2a.path;
 
 package et_pcb_coordinates_2 is
 
-	procedure dummy;
 	
  	keyword_face	: constant string := "face";	
 	
@@ -94,8 +93,9 @@ package et_pcb_coordinates_2 is
 	type type_float is digits 18;
 	-- CS reduce digits. adapt accuracy
 	-- when instantiating geometry package. See below.
-		
-	-- instantiation of the geometry package:	
+
+	
+	-- instantiation of the geometry 1 package:	
 	package pac_geometry_brd is new et_geometry_1 (
 		type_float	=> type_float,
  
@@ -109,14 +109,8 @@ package et_pcb_coordinates_2 is
 	use pac_geometry_brd;
 
 
-	-- package pac_geometry_2 is new et_geometry_2 (
-	-- 	pac_geometry_1			=> pac_geometry_brd,
-	-- 	type_distance_model			=> type_distance_model,
-	-- 	axis_max				=> +1_000.0,
-	-- 	axis_min				=> -1_000.0,
-	-- 	type_rotation 			=> type_rotation
-	-- 	);
 
+	-- instantiation of the geometry_2 package:
 	package pac_geometry_2 is new et_geometry_2a (
 		pac_geometry_1			=> pac_geometry_brd,
 		type_distance			=> type_distance_model,
@@ -128,6 +122,8 @@ package et_pcb_coordinates_2 is
 	use pac_geometry_2;
 	
 
+	-- In headless mode this accuracy should be used
+	-- when locating objects inside a particual zone:
 	accuracy_default : constant type_accuracy := 2.0; 
 	-- CS: should be a general setting for board and package editor in the future
 	

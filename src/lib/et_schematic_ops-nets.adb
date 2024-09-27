@@ -989,7 +989,7 @@ package body et_schematic_ops.nets is
 
 
 		procedure no_segment is begin
-			log (WARNING, "No segment found at" & to_string (position => point_of_attack) &
+			log (WARNING, "No segment found at " & to_string (position => point_of_attack) &
 			 ". Check net name and position !");
 		end;
 		

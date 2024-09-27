@@ -63,7 +63,6 @@ with et_geometry_2a.contours;
 package et_coordinates_2 is
 -- 	pragma assertion_policy (check);
 
-	procedure dummy;
 
 	
 	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!
@@ -97,8 +96,9 @@ package et_coordinates_2 is
 	type type_float is digits 12;
 	-- CS reduce digits. adapt accuracy
 	-- when instantiating geometry package. See below.
+
 	
-	-- instantiation of the geometry package:
+	-- instantiation of the geometry 1 package:
 	package pac_geometry_sch is new et_geometry_1 (
 		type_float	=> type_float,
 
@@ -112,6 +112,7 @@ package et_coordinates_2 is
 	use pac_geometry_sch;
 
 
+	-- instantiation of the geometry 2 package:
 	package pac_geometry_2 is new et_geometry_2a (
 		pac_geometry_1			=> pac_geometry_sch,
 		type_distance			=> type_distance_model,
@@ -133,7 +134,9 @@ package et_coordinates_2 is
 	package pac_polygons is new pac_geometry_1.et_polygons;
 	package pac_polygon_offsetting is new pac_polygons.offsetting;
 
-	
+
+	-- In headless mode this accuracy should be used
+	-- when locating objects inside a particual zone:
 	accuracy_default : constant type_accuracy := 2.0; 
 	-- CS: should be a general setting for schematic and symbol editor in the future
 	
@@ -176,6 +179,7 @@ package et_coordinates_2 is
 	-- The whole schematic may have a total of x pages.
 	schematic_page_count_max : constant positive := 100;
 	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not used yet
+
 	
 
 -- POSITION:
