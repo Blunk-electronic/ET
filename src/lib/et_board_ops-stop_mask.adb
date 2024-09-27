@@ -6,20 +6,21 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -293,7 +294,7 @@ package body et_board_ops.stop_mask is
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		point			: in type_vector_model;
-		catch_zone		: in type_accuracy; -- the circular area around the place
+		zone			: in type_accuracy; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_stop_texts.list
 	is
@@ -310,7 +311,7 @@ package body et_board_ops.stop_mask is
 			begin
 				if within_accuracy (
 					point_1	=> point,
-					zone	=> catch_zone,
+					zone	=> zone,
 					point_2	=> text.position.place)
 				then
 					log (text => to_string (text.position.place) 
@@ -337,7 +338,7 @@ package body et_board_ops.stop_mask is
 			& enclose_in_quotes (to_string (key (module_cursor)))
 			& " face" & to_string (face) 
 			& " looking up stop mask texts at" & to_string (point) 
-			& " catch zone" & accuracy_to_string (catch_zone),
+			& " zone" & accuracy_to_string (zone),
 			level => log_threshold);
 		
 		log_indentation_up;
