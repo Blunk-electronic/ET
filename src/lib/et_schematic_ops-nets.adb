@@ -6,20 +6,21 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 -2024                                                 --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -111,9 +112,9 @@ package body et_schematic_ops.nets is
 
 	
 	function between_start_and_end_point (
-		point 		: in type_vector_model;
-		segment 	: in pac_net_segments.cursor;
-		catch_zone	: in type_accuracy := type_accuracy'first)
+		point 	: in type_vector_model;
+		segment : in pac_net_segments.cursor;
+		zone	: in type_accuracy := type_accuracy'first)
 		return boolean 
 	is
 		dist : type_distance_point_line;
@@ -124,7 +125,7 @@ package body et_schematic_ops.nets is
 			line_range	=> BETWEEN_END_POINTS);
 
 		if (not out_of_range (dist)) 
-		and within_accuracy (get_distance (dist), catch_zone) then
+		and within_accuracy (get_distance (dist), zone) then
 			return true;
 		else
 			return false;
@@ -133,9 +134,9 @@ package body et_schematic_ops.nets is
 
 	
 	function on_segment (
-		point 		: in type_vector_model;
-		segment 	: in pac_net_segments.cursor;
-		catch_zone	: in type_accuracy := type_accuracy'first)
+		point 	: in type_vector_model;
+		segment : in pac_net_segments.cursor;
+		zone	: in type_accuracy := type_accuracy'first)
 		return boolean 
 	is
 		dist : type_distance_point_line;
@@ -152,7 +153,7 @@ package body et_schematic_ops.nets is
 -- 			);
 		
 		if (not out_of_range (dist)) 
-		and within_accuracy (get_distance (dist), catch_zone) then
+		and within_accuracy (get_distance (dist), zone) then
 			return true;
 		else
 			return false;
@@ -1211,9 +1212,9 @@ package body et_schematic_ops.nets is
 						-- If segment crosses the given x/y position (in point_of_attack) then
 						-- the segment has been found:
 						if on_segment (
-							point		=> point_of_attack.place,
-							segment		=> segment_cursor,
-							catch_zone	=> catch_zone_default)
+							point	=> point_of_attack.place,
+							segment	=> segment_cursor,
+							zone	=> catch_zone_default)
 						then
 							--log (text => "point of attack sits on segment", level => log_threshold + 1);
 							

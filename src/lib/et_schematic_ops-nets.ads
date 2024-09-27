@@ -6,20 +6,21 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 -2024                                                 --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -64,22 +65,22 @@ package et_schematic_ops.nets is
 		);
 
 	-- Returns true if given point sits between start and end point of given segment.
-	-- The catch_zone is a means of reducing the accuracy. The greater the catch_zone
+	-- The zone is a means of reducing the accuracy. The greater the zone
 	-- the greater can be the distance of point from the segment.
 	function between_start_and_end_point (
-		point 		: in type_vector_model;
-		segment 	: in pac_net_segments.cursor;
-		catch_zone	: in type_accuracy := type_accuracy'first)
+		point 	: in type_vector_model;
+		segment : in pac_net_segments.cursor;
+		zone	: in type_accuracy := type_accuracy'first)
 		return boolean;
 
 	
 	-- Returns true if given point sits on the given segment.
-	-- The catch_zone is a means of reducing the accuracy. The greater the catch_zone
+	-- The zone is a means of reducing the accuracy. The greater the zone
 	-- the greater can be the distance of point from the segment.
 	function on_segment (
-		point 		: in type_vector_model;
-		segment 	: in pac_net_segments.cursor;
-		catch_zone	: in type_accuracy := type_accuracy'first)
+		point 	: in type_vector_model;
+		segment : in pac_net_segments.cursor;
+		zone	: in type_accuracy := type_accuracy'first)
 		return boolean;
 
 	
