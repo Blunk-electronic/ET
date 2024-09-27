@@ -542,7 +542,7 @@ package body et_canvas_board_tracks is
 						proposed_airwires := get_airwires (
 							module_cursor	=> current_active_module, 
 							point			=> point,
-							catch_zone		=> get_catch_zone,
+							zone			=> get_catch_zone,
 							log_threshold	=> log_threshold + 1);
 
 						case proposed_airwires.length is
