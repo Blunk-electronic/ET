@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -145,9 +145,16 @@ package body et_canvas_board_assy_doc is
 
 		-- Propose lines in the vicinity of the given point:
 		-- CS should depend on enabled top/bottom side
-		propose_lines (current_active_module, point, TOP, get_catch_zone, count, log_threshold + 1);
+		propose_lines (current_active_module, point, TOP, 
+			get_catch_zone (et_canvas_board_2.catch_zone), 
+			count, log_threshold + 1);
+		
 		count_total := count;
-		propose_lines (current_active_module, point, BOTTOM, get_catch_zone, count, log_threshold + 1);
+		
+		propose_lines (current_active_module, point, BOTTOM, 
+			get_catch_zone (et_canvas_board_2.catch_zone), 
+			count, log_threshold + 1);
+		
 		count_total := count_total + count;
 		
 		-- CS arcs, circles

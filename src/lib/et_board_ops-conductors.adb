@@ -758,9 +758,9 @@ package body et_board_ops.conductors is
 		
 		
 	begin
-		log (text => "proposing lines at" & to_string (point)
+		log (text => "proposing lines at " & to_string (point)
 			 & " in signal layer " & to_string (layer)
-			 & " zone" & accuracy_to_string (zone),
+			 & " zone " & accuracy_to_string (zone),
 			 level => log_threshold);
 
 		log_indentation_up;

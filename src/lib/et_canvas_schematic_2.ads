@@ -130,6 +130,9 @@ package et_canvas_schematic_2 is
 	package pac_drawing_frame is new pac_canvas.drawing_frame;
 
 	package pac_draw_text is new pac_canvas.text;
+
+
+	catch_zone : type_logical_pixels_positive := 20.0;
 	
 
 	-- This procedure parses the whole database of model objects

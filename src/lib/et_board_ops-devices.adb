@@ -250,8 +250,8 @@ package body et_board_ops.devices is
 		
 	begin
 		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
-			"proposing devices at" & to_string (place) 
-			& " zone" & accuracy_to_string (zone), 
+			"proposing devices at " & to_string (place) 
+			& " zone " & accuracy_to_string (zone), 
 			level => log_threshold);
 
 		log_indentation_up;
@@ -608,8 +608,8 @@ package body et_board_ops.devices is
 		
 	begin
 		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
-			"proposing non-electrical devices at" & to_string (place) 
-			& " zone" & accuracy_to_string (zone), 
+			"proposing non-electrical devices at " & to_string (place) 
+			& " zone " & accuracy_to_string (zone), 
 			level => log_threshold);
 
 		log_indentation_up;

@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                -- 
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -98,7 +99,7 @@ package body et_canvas_schematic_units is
 	function collect_units (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates_2.type_position; -- sheet/x/y
-		catch_zone		: in type_accuracy; -- the circular area around the place
+		zone			: in type_accuracy; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_units.list
 	is
@@ -128,12 +129,12 @@ package body et_canvas_schematic_units is
 
 						if within_accuracy (
 							point_1	=> place.place, 
-							zone	=> catch_zone, 
+							zone	=> zone, 
 							point_2	=> element (unit_cursor).position.place) 
 						then
 							log_indentation_up;
 
-							log (text => "in catch zone", level => log_threshold + 1);
+							log (text => "in zone", level => log_threshold + 1);
 							result.append ((device_cursor, unit_cursor));
 							
 							log_indentation_down;
@@ -164,8 +165,8 @@ package body et_canvas_schematic_units is
 
 		
 	begin -- collect_units
-		log (text => "looking up units at" & to_string (place) 
-			 & " catch zone" & accuracy_to_string (catch_zone), level => log_threshold);
+		log (text => "looking up units at " & to_string (place) 
+			 & " zone" & accuracy_to_string (zone), level => log_threshold);
 
 		log_indentation_up;
 		
@@ -348,9 +349,10 @@ package body et_canvas_schematic_units is
 		proposed_units := collect_units (
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
-			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
 
+		
 		-- evaluate the number of units found here:
 		case length (proposed_units) is
 			when 0 =>
@@ -566,9 +568,10 @@ package body et_canvas_schematic_units is
 		proposed_units := collect_units (
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
-			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
 
+		
 		-- evaluate the number of units found here:
 		case length (proposed_units) is
 			when 0 =>
@@ -931,9 +934,10 @@ package body et_canvas_schematic_units is
 		proposed_units := collect_units (
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
-			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
 
+		
 		-- evaluate the number of units found here:
 		case length (proposed_units) is
 			when 0 =>
@@ -1567,7 +1571,7 @@ package body et_canvas_schematic_units is
 		proposed_units := collect_units (
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
-			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
 
 		-- evaluate the number of units found here:
@@ -1712,13 +1716,14 @@ package body et_canvas_schematic_units is
 	function collect_placeholders (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates_2.type_position; -- sheet/x/y
-		catch_zone		: in type_accuracy; -- the circular area around the place
+		zone			: in type_accuracy; -- the circular area around the place
 		category		: in type_placeholder_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level)
 		return pac_proposed_placeholders.list
 	is
 		result : pac_proposed_placeholders.list;
 
+		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) 
@@ -1749,7 +1754,7 @@ package body et_canvas_schematic_units is
 					--log (text => to_string (pos_abs), level => log_threshold + 1);
 
 					-- Test whether the placeholder is inside the catch zone around the given place:
-					if within_accuracy (place.place, catch_zone, pos_abs.place) then
+					if within_accuracy (place.place, zone, pos_abs.place) then
 						log_indentation_up;
 
 						log (text => "in catch zone", level => log_threshold + 1);
@@ -1821,7 +1826,7 @@ package body et_canvas_schematic_units is
 		log (text => "looking up placeholders of category " 
 			& enclose_in_quotes (to_string (category))
 			& " at " & to_string (place) 
-			& " catch zone" & accuracy_to_string (catch_zone),
+			& " catch zone " & accuracy_to_string (zone),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1850,10 +1855,11 @@ package body et_canvas_schematic_units is
 		proposed_placeholders := collect_placeholders (
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
-			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			zone			=> get_catch_zone (catch_zone),
 			category		=> category,
 			log_threshold	=> log_threshold + 1);
 
+		
 		-- evaluate the number of placeholders found here:
 		case length (proposed_placeholders) is
 			when 0 =>
@@ -1995,10 +2001,11 @@ package body et_canvas_schematic_units is
 		proposed_placeholders := collect_placeholders (
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
-			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			zone			=> get_catch_zone (catch_zone),
 			category		=> category,
 			log_threshold	=> log_threshold + 1);
 
+		
 		-- evaluate the number of placeholders found here:
 		case length (proposed_placeholders) is
 			when 0 =>
@@ -2213,9 +2220,10 @@ package body et_canvas_schematic_units is
 			proposed_units := collect_units (
 				module			=> current_active_module,
 				place			=> to_position (point, current_active_sheet),
-				catch_zone		=> catch_zone_default, -- CS should depend on current scale
+				zone			=> get_catch_zone (catch_zone),
 				log_threshold	=> log_threshold + 1);
 
+			
 			-- evaluate the number of units found here:
 			case length (proposed_units) is
 				when 0 =>
@@ -2305,9 +2313,10 @@ package body et_canvas_schematic_units is
 		proposed_units := collect_units (
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
-			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
 
+		
 		-- evaluate the number of units found here:
 		case length (proposed_units) is
 			when 0 =>

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -253,7 +253,7 @@ package body et_canvas_schematic_nets is
 	function collect_segments (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates_2.type_position; -- sheet/x/y
-		catch_zone		: in type_accuracy := type_accuracy'first; -- the circular area around the place
+		zone			: in type_accuracy := type_accuracy'first; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_segments.list
 	is
@@ -265,6 +265,7 @@ package body et_canvas_schematic_nets is
 		is
 			net_cursor : pac_nets.cursor := module.nets.first;
 
+			
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
@@ -291,7 +292,7 @@ package body et_canvas_schematic_nets is
 							line	=> element (segment_cursor),
 							width	=> net_line_width,
 							point	=> place.place,
-							zone	=> catch_zone)
+							zone	=> zone)
 						then
 							log_indentation_up;
 							log (text => "sits on segment", level => log_threshold + 1);
@@ -331,8 +332,8 @@ package body et_canvas_schematic_nets is
 
 		
 	begin -- collect_segments
-		log (text => "looking up net segments at" & to_string (place) 
-			 & " catch zone" & accuracy_to_string (catch_zone), 
+		log (text => "looking up net segments at " & to_string (place) 
+			 & " zone " & accuracy_to_string (zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -345,6 +346,7 @@ package body et_canvas_schematic_nets is
 		
 		return result;		
 	end collect_segments;
+
 
 	
 	procedure delete_net_segment (
@@ -363,9 +365,10 @@ package body et_canvas_schematic_nets is
 		proposed_segments := collect_segments (
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
-			catch_zone		=> get_catch_zone,
+			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
 
+		
 		-- evaluate the number of segments found here:
 		case length (proposed_segments) is
 			when 0 =>
@@ -396,6 +399,7 @@ package body et_canvas_schematic_nets is
 		log_indentation_down;
 	end delete_net_segment;
 
+
 	
 	procedure clarify_net_segment is
 		use et_schematic;
@@ -422,6 +426,7 @@ package body et_canvas_schematic_nets is
 			& to_string (s) & ". " & status_next_object_clarification);
 	end clarify_net_segment;
 
+
 	
 	procedure delete_selected_net_segment is
 		use et_schematic_ops.nets;
@@ -446,6 +451,7 @@ package body et_canvas_schematic_nets is
 	end delete_selected_net_segment;
 
 
+	
 	procedure make_path (
 		tool	: in type_tool;
 		point	: in type_vector_model)
@@ -919,9 +925,10 @@ package body et_canvas_schematic_nets is
 		proposed_segments := collect_segments (
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
-			catch_zone		=> get_catch_zone,
+			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
 
+		
 		-- Since this procedure is called by several schematic operations,
 		-- we must test the current verb and noun:
 
@@ -1144,19 +1151,21 @@ package body et_canvas_schematic_nets is
 	function collect_labels (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates_2.type_position; -- sheet/x/y
-		catch_zone		: in type_accuracy; -- the circular area around the place
+		zone			: in type_accuracy; -- the circular area around the place
 		category		: in type_label_category := BOTH; -- default is: collect all kinds of labels
 		log_threshold	: in type_log_level)
 		return pac_proposed_labels.list
 	is
 		result : pac_proposed_labels.list;
 
+		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) 
 		is
 			net_cursor : pac_nets.cursor := module.nets.first;
 
+			
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
@@ -1179,17 +1188,18 @@ package body et_canvas_schematic_nets is
 						begin
 							-- If the label position is within the catch zone, append
 							-- the current net, stand, segment and label cursor to the result:
-							if d <= catch_zone then
+							if d <= zone then
 
 								result.append ((net_cursor, strand_cursor, segment_cursor, label_cursor));
 								
 								log (text => space 
 									& to_string (element (label_cursor).appearance) 
-									& " label found at" 
+									& " label found at " 
 									& to_string (element (label_cursor).position),
 									level => log_threshold + 2);
 							end if;
 						end test_distance;
+
 						
 					begin -- query_labels
 						while label_cursor /= pac_net_labels.no_element loop
@@ -1218,7 +1228,7 @@ package body et_canvas_schematic_nets is
 					end query_labels;
 					
 				begin -- query_segments
-					log (text => "probing strand at" & to_string (strand.position),
+					log (text => "probing strand at " & to_string (strand.position),
 						 level => log_threshold + 1);
 					
 					log_indentation_up;
@@ -1259,8 +1269,8 @@ package body et_canvas_schematic_nets is
 		end query_nets;
 
 	begin -- collect_labels
-		log (text => "looking up net labels at" & to_string (place) 
-			 & " catch zone" & accuracy_to_string (catch_zone),
+		log (text => "looking up net labels at " & to_string (place) 
+			 & " zone" & accuracy_to_string (zone),
 			 level => log_threshold);
 		-- CS output category of label
 		
@@ -1276,6 +1286,7 @@ package body et_canvas_schematic_nets is
 		
 	end collect_labels;
 
+	
 
 	procedure delete_selected_label (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1397,6 +1408,8 @@ package body et_canvas_schematic_nets is
 		
 		log_indentation_down;
 	end delete_selected_label;
+
+
 	
 	procedure delete_label (point : in type_vector_model) is begin
 		log (text => "deleting net label ...", level => log_threshold);
@@ -1406,9 +1419,10 @@ package body et_canvas_schematic_nets is
 		proposed_labels := collect_labels (
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
-			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
 
+		
 		-- evaluate the number of lables found here:
 		case length (proposed_labels) is
 			when 0 =>
@@ -1430,6 +1444,7 @@ package body et_canvas_schematic_nets is
 		log_indentation_down;
 	end delete_label;
 
+	
 
 	procedure clarify_label is
 		use et_schematic;
@@ -1474,15 +1489,18 @@ package body et_canvas_schematic_nets is
 		segment			: in type_selected_segment;
 		destination		: in type_vector_model; -- x/y
 		appearance 		: in type_net_label_appearance; -- simple/tag
-		log_threshold	: in type_log_level) is
+		log_threshold	: in type_log_level) 
+	is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) is
+				net			: in out type_net) 
+			is
 
 				procedure query_segments (strand : in out type_strand) is
 
@@ -1642,10 +1660,11 @@ package body et_canvas_schematic_nets is
 		proposed_labels := collect_labels (
 			module			=> current_active_module,
 			place			=> to_position (point, current_active_sheet),
-			catch_zone		=> catch_zone_default, -- CS should depend on current scale
+			zone			=> get_catch_zone (catch_zone),
 			category		=> category,
 			log_threshold	=> log_threshold + 1);
 
+		
 		-- evaluate the number of lables found here:
 		case length (proposed_labels) is
 			when 0 =>
@@ -1669,6 +1688,7 @@ package body et_canvas_schematic_nets is
 		log_indentation_down;
 	end find_labels;
 
+	
 	
 	procedure move_selected_label (
 		module_cursor	: in pac_generic_modules.cursor;

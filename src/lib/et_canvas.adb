@@ -3386,15 +3386,28 @@ package body et_canvas is
 		return point;
 	end get_primary_tool_position;
 
+
 	
 	
 -- CATCH ZONE:
 
-	function get_catch_zone return type_accuracy is 
+	function get_catch_zone (
+		pixels	: in type_logical_pixels_positive)
+		return type_accuracy 
+	is 
+		-- This is the zone in model coordinates (CS1):
+		zone : type_distance_positive;
 	begin
-		-- return 20.0 / type_float_positive (global_scale);
-		-- CS rework, use type_logical_pixels_positive ?
-		return 0.0;
+		-- Convert the given zone pixels to
+		-- a distance in the model according to
+		-- the current zoom factor S:
+		zone := to_distance (pixels);
+
+		-- put_line ("zone " & to_string (zone));
+
+		-- Since type_accuracy is a float type,
+		-- convert model zone to a float number:
+		return type_accuracy (zone);
 	end get_catch_zone;
 
 	

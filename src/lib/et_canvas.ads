@@ -1167,9 +1167,13 @@ package et_canvas is
 -- CATCH ZONE:
 
 	-- Returns a catch zone according to the current
-	-- global_scale:
-	
-	function get_catch_zone return type_accuracy;
+	-- zoom factor (S) and the given zone.
+	-- The zone is a circular area with a radius
+	-- expressed in logical pixels:
+	function get_catch_zone (
+		pixels	: in type_logical_pixels_positive)
+		return type_accuracy;
+
 
 
 

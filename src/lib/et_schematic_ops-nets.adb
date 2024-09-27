@@ -1214,7 +1214,7 @@ package body et_schematic_ops.nets is
 						if on_segment (
 							point	=> point_of_attack.place,
 							segment	=> segment_cursor,
-							zone	=> catch_zone_default)
+							zone	=> accuracy_default)
 						then
 							--log (text => "point of attack sits on segment", level => log_threshold + 1);
 							

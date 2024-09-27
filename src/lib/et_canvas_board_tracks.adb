@@ -542,7 +542,7 @@ package body et_canvas_board_tracks is
 						proposed_airwires := get_airwires (
 							module_cursor	=> current_active_module, 
 							point			=> point,
-							zone			=> get_catch_zone,
+							zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
 							log_threshold	=> log_threshold + 1);
 
 						case proposed_airwires.length is
@@ -753,7 +753,10 @@ package body et_canvas_board_tracks is
 		procedure collect (layer : in type_signal_layer) is 
 			count : natural := 0;
 		begin
-			propose_lines (current_active_module, point, layer, get_catch_zone, count, log_threshold + 1);
+			propose_lines (current_active_module, point, layer, 
+				get_catch_zone (et_canvas_board_2.catch_zone),
+				count, log_threshold + 1);
+			
 			-- CS arcs, circles
 			count_total := count_total + count;
 		end collect;

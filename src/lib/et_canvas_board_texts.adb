@@ -904,13 +904,22 @@ package body et_canvas_board_texts is
 
 		
 		procedure collect is begin
-			doc := get_texts (current_active_module, face, point, get_catch_zone, log_threshold + 1);
+			doc := get_texts (current_active_module, face, point, 
+					get_catch_zone (et_canvas_board_2.catch_zone),
+					log_threshold + 1);
+			
 			doc.iterate (query_doc_text'access);
 
-			silk := get_texts (current_active_module, face, point, get_catch_zone, log_threshold + 1);
+			silk := get_texts (current_active_module, face, point, 
+					get_catch_zone (et_canvas_board_2.catch_zone),
+					log_threshold + 1);
+			
 			silk.iterate (query_silk_text'access);
 			
-			stop := get_texts (current_active_module, face, point, get_catch_zone, log_threshold + 1);
+			stop := get_texts (current_active_module, face, point, 
+					get_catch_zone (et_canvas_board_2.catch_zone),
+					log_threshold + 1);
+			
 			stop.iterate (query_stop_text'access);
 		end collect;
 
@@ -932,7 +941,10 @@ package body et_canvas_board_texts is
 		face := BOTTOM;
 		collect;
 		
-		conductors := get_texts (current_active_module, point, get_catch_zone, log_threshold + 1);
+		conductors := get_texts (current_active_module, point, 
+			get_catch_zone (et_canvas_board_2.catch_zone),
+			log_threshold + 1);
+		
 		conductors.iterate (query_conductor_text'access);
 		
 		-- evaluate the number of vias found here:

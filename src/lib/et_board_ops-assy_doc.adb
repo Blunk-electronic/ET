@@ -326,9 +326,9 @@ package body et_board_ops.assy_doc is
 		
 		
 	begin
-		log (text => "proposing lines at" & to_string (point)
+		log (text => "proposing lines at " & to_string (point)
 			 & " face " & to_string (face)
-			 & "zone" & accuracy_to_string (zone),
+			 & " zone " & accuracy_to_string (zone),
 			 level => log_threshold);
 
 		log_indentation_up;

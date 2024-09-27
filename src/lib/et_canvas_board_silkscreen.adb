@@ -229,7 +229,10 @@ package body et_canvas_board_silkscreen is
 		procedure collect is 
 			use et_board_ops.silkscreen;
 		begin
-			lines := get_lines (current_active_module, face, point, get_catch_zone, log_threshold + 1);
+			lines := get_lines (current_active_module, face, point, 
+				get_catch_zone (et_canvas_board_2.catch_zone), 
+				log_threshold + 1);
+			
 			lines.iterate (query_line'access);
 
 			-- CS arcs, circles

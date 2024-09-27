@@ -130,6 +130,10 @@ package et_canvas_board_2 is
 	package pac_draw_contours is new pac_canvas.contours;
 
 	package pac_draw_text is new pac_canvas.text;
+
+
+	catch_zone : type_logical_pixels_positive := 20.0;
+	
 	
 	
 	-- This procedure parses the whole database of model objects

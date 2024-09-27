@@ -168,7 +168,7 @@ package body et_canvas_board_devices is
 		propose_devices (
 			module_cursor	=> current_active_module,
 			place			=> point,
-			zone			=> get_catch_zone,
+			zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
 			count			=> count,
 			log_threshold	=> log_threshold + 1);
 		
@@ -225,7 +225,7 @@ package body et_canvas_board_devices is
 		propose_non_electrical_devices (
 			module_cursor	=> current_active_module,
 			place			=> point,
-			zone			=> get_catch_zone,
+			zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
 			count			=> count,
 			log_threshold	=> log_threshold + 1);
 		
