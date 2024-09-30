@@ -6,20 +6,22 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 --                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -43,6 +45,8 @@ with et_coordinates_2;
 with et_canvas_board_2;
 with et_pcb_coordinates_2;
 
+
+
 package body et_gui_2 is
 
 	procedure init_schematic (
@@ -54,24 +58,38 @@ package body et_gui_2 is
 		use et_canvas_schematic_2;
 		use et_canvas_schematic_2.pac_canvas;
 		use et_coordinates_2.pac_geometry_2;
-		
+		use pac_generic_modules;
+		use et_coordinates_2;
 	begin		
 		-- Set the log threshold. Everything that happens in the gui may be logged
 		-- using the gui wide variable log_threshold:
 		log_threshold := log_threshold_in;
 
 		log (text => "init_schematic", level => log_threshold);
+
+
 		
-		-- Set the current project name:
-		log (text => "active project " & enclose_in_quotes (to_string (project)), 
+		-- Set the current active project, module and sheet:
+		log (text => "set active project " & enclose_in_quotes (to_string (project)), 
 			 level => log_threshold);
-		
+
 		current_active_project := project;
 
 
-		-- set the module to be opened and optionally the sheet to be displayed:
-		log (text => "init drawing", level => log_threshold + 1);
-		init_drawing (module, sheet);
+		
+		-- Set the current active module:
+		log (text => "set active module " & enclose_in_quotes (to_string (key (module))),
+			 level => log_threshold);
+
+		current_active_module := module;
+
+
+		
+		-- Set the current active sheet:
+		log (text => "set active sheet " & type_sheet'image (sheet),
+			 level => log_threshold);
+
+		current_active_sheet := sheet;
 
 		
 		
@@ -80,7 +98,11 @@ package body et_gui_2 is
 		compute_bounding_box;
 		set_base_offset;
 
+		
+		-- Set up general things of the main window:
 		pac_canvas.set_up_main_window;
+
+		-- Set up special things of the main window:
 		et_canvas_schematic_2.set_up_main_window;
 
 		-- Set the title bar of the main window:
@@ -88,38 +110,46 @@ package body et_gui_2 is
 			module	=> current_active_module);
   
 
+		-- Set up the primary tool display:
 		log (text => "build primary tool display", level => log_threshold + 1);
 		build_primary_tool_display;
 
+		-- Set up the sheet number display:
 		log (text => "build sheet number display", level => log_threshold + 1);
 		build_sheet_number_display;
 		
+		-- Set up the coordinates display:
+		log (text => "build coordinates display", level => log_threshold + 1);
 		set_up_coordinates_display;
 
-		-- log (text => "build mode display", level => log_threshold + 1);
+		log (text => "build mode display", level => log_threshold + 1);
 		build_mode_display;
 
-
+		-- Set up the console:
 		log (text => "build console", level => log_threshold + 1);
 		build_console;
--- 		set_label_console;
 		connect_console;
 
 
-		
+		-- Set up the scrolled window and the scrollbars:
 		set_up_swin_and_scrollbars;
 
+		-- Set up general things of the canvas:
 		pac_canvas.set_up_canvas;
+
+		-- Set up special things of the canvas:
 		et_canvas_schematic_2.set_up_canvas;
 
-
+		
+		-- Activate the main window:
 		log (text => "show schematic window", level => log_threshold + 1);
 		main_window.show_all;
 
-		
+		-- Initialize the scrollbars:
 		set_initial_scrollbar_settings;
 		canvas.grab_focus;
 
+		-- Set zoom so that all objects fit into the scrolled window:
 		zoom_to_fit (bounding_box);		
 
 		-- Backup the currently visible area.
@@ -130,37 +160,13 @@ package body et_gui_2 is
 		update_sheet_number_display;
 		update_zoom_display;
 		update_scale_display;
--- 		update_grid_display;
--- 		canvas.update_mode_display;
 
-
-		
-		-- 		-- Show the module name in the title bar:
--- 		log (text => "set title bar", level => log_threshold + 1);
-
--- 
--- 		log (text => "build background boxes", level => log_threshold + 1);
--- 		build_background_boxes;
--- 
--- 		log (text => "build coordinates display", level => log_threshold + 1);
--- 		build_coordinates_display;
--- 
--- 		
--- 
--- 		
--- 		-- Connect to the on_activate signal (on hitting enter key):
--- 		gtk_entry (cursor_position_x.get_child).on_activate (set_cursor_position_x'access);
--- 		gtk_entry (cursor_position_y.get_child).on_activate (set_cursor_position_y'access);
--- 
--- 		gtk_entry (grid_x.get_child).on_activate (set_grid_x'access);
--- 		gtk_entry (grid_y.get_child).on_activate (set_grid_y'access);
--- 
--- 
--- 		log (text => "build toolbars", level => log_threshold + 1);
--- 		build_toolbars;
+		-- CS ?	update_grid_display;
+		-- CS ? canvas.update_mode_display;
 
 	end init_schematic;
 
+	
 	
 	procedure init_board (
 		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
@@ -176,48 +182,60 @@ package body et_gui_2 is
 		log_threshold := log_threshold_in;
 
 		log (text => "init_board", level => log_threshold);
+
+		
 		
 		-- CS set_grid_to_scale;
 		compute_canvas_size;
 		compute_bounding_box;
 		set_base_offset;
+
 		
+		-- Set up general things of the main window:
 		pac_canvas.set_up_main_window;
+
+		-- Set up special things of the main window:
 		et_canvas_board_2.set_up_main_window;
 
 		-- Set the title bar of the main window:
 		set_title_bar (
 			module	=> current_active_module);
 
-
-
+		
+		-- Set up the primary tool display:
 		log (text => "build primary tool display", level => log_threshold + 1);
 		build_primary_tool_display;
 
+		-- Set up the coordinates display:
+		log (text => "build coordinates display", level => log_threshold + 1);
 		set_up_coordinates_display;
 
-		-- log (text => "build mode display", level => log_threshold + 1);
+		log (text => "build mode display", level => log_threshold + 1);
 		build_mode_display;
 
-
+		-- Set up the console:
 		log (text => "build console", level => log_threshold + 1);
 		build_console;
--- 		set_label_console;
 		connect_console;
 		
-	
+		-- Set up the scrolled window and the scrollbars:
 		set_up_swin_and_scrollbars;
 
+		-- Set up general things of the canvas:
 		pac_canvas.set_up_canvas;
+
+		-- Set up special things of the canvas:
 		et_canvas_board_2.set_up_canvas;
 
-
+		
+		-- Activate the main window:
 		log (text => "show board window", level => log_threshold + 1);		
 		main_window.show_all;
 
-		
+		-- Initialize the scrollbars:
 		set_initial_scrollbar_settings;
-		
+
+		-- Set zoom so that all objects fit into the scrolled window:
 		zoom_to_fit (bounding_box);
 
 		-- Backup the currently visible area.
@@ -227,21 +245,10 @@ package body et_gui_2 is
 
 		update_zoom_display;
 		update_scale_display;
-		-- update_grid_display;
-		-- canvas.update_mode_display;
-
-
-		-- 		-- Connect to the on_activate signal (on hitting enter key):
--- 		gtk_entry (cursor_position_x.get_child).on_activate (set_cursor_position_x'access);
--- 		gtk_entry (cursor_position_y.get_child).on_activate (set_cursor_position_y'access);
--- 
--- 		gtk_entry (grid_x.get_child).on_activate (set_grid_x'access);
--- 		gtk_entry (grid_y.get_child).on_activate (set_grid_y'access);
--- 
--- 		
--- 		build_toolbars;
-
 		
+		-- CS ? update_grid_display;
+		-- CS ? canvas.update_mode_display;
+
 	end init_board;
 
 

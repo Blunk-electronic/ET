@@ -376,13 +376,6 @@ package et_canvas_schematic_2 is
 		module	: in pac_module_name.bounded_string); -- motor_driver
 
 	
-	-- Sets the global variables "current_active_module" and "current_active_sheet".
-	-- Sets the grid values to be displayed in the coordinates display.
-	procedure init_drawing (
-		module	: in et_project.modules.pac_generic_modules.cursor; -- the module to be drawn in schematic and layout
-		sheet	: in et_coordinates_2.type_sheet := et_coordinates_2.type_sheet'first); -- the sheet to be drawn
-
-	
 
 -- 	-- These procedures set the grid as entered in the grid box:
 -- 	

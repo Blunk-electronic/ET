@@ -1316,16 +1316,6 @@ package body et_canvas_schematic_2 is
 	end set_module;
 
 	
-	procedure init_drawing (
-		module	: in et_project.modules.pac_generic_modules.cursor; -- the module to be drawn
-		sheet	: in et_coordinates_2.type_sheet := et_coordinates_2.type_sheet'first) -- the sheet to be drawn
-	is begin
-		-- set the active module:
-		current_active_module := module;
-		
-		-- set active sheet:
-		current_active_sheet := sheet;
-	end init_drawing;
 
 
 
