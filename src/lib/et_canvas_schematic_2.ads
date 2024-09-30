@@ -328,10 +328,6 @@ package et_canvas_schematic_2 is
 	
 -- 	label_console_text : constant string := 
 -- 		(8 * " ") & "switch module: F11 / F12";
--- 
--- 	-- Appends the label_console_text to the existing text
--- 	-- of label_console:
--- 	procedure set_label_console;
 
 
 
@@ -377,18 +373,6 @@ package et_canvas_schematic_2 is
 
 	
 
--- 	-- These procedures set the grid as entered in the grid box:
--- 	
--- 	procedure set_grid_x (self : access gtk_entry_record'class);
--- 	-- Additionally sets the grid for y. Mostly grid of x and y axis are the same.
--- 	
--- 	procedure set_grid_y (self : access gtk_entry_record'class);
--- 
--- 
--- 	-- Multiplier for grid densities:
--- 	grid_density_multiplier_coarse	: constant type_distance_positive := 10.0;
--- 	grid_density_multiplier_normal	: constant type_distance_positive := 1.0;
--- 	grid_density_multiplier_fine	: constant type_distance_positive := 0.1;
 
 	-- Resets the grid density to default and snaps the cursor
 	-- to the nearest grid point.
@@ -396,30 +380,7 @@ package et_canvas_schematic_2 is
 	procedure reset_grid_and_cursor;
 	
 
--- 	-- Sets the grid density and snaps the cursor
--- 	-- to the nearest grid point.
--- 	-- Updates the coordinates display.
--- 	procedure set_grid (
--- 		self	: not null access type_view;
--- 		density	: in type_grid_density); -- COARSE, NORMAL, FINE
 
--- 	overriding function get_grid (
--- 		self : not null access type_view)
--- 		return type_grid;
-
--- 	overriding function title_block_position (
--- 		self : not null access type_view)
--- 		return et_frames.type_position;
--- 
--- 
--- 	overriding function get_verb (
--- 		self	: not null access type_view)
--- 		return string;
--- 
--- 	overriding function get_noun (
--- 		self	: not null access type_view)
--- 		return string;
--- 
 	-- Resets global variables required for selections, clarifications, ...
 	-- Verb and noun remain as they are
 	-- so that the mode is unchanged.

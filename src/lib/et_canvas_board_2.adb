@@ -1290,14 +1290,6 @@ package body et_canvas_board_2 is
 
 
 	
--- 	
--- 	procedure set_label_console is
--- 		text_before : constant string := label_console.get_text;
--- 	begin
--- 		label_console.set_text (text_before & et_canvas_schematic.label_console_text);
--- 	end set_label_console;
-	
-
 
 	
 

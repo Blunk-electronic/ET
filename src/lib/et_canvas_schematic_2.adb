@@ -976,14 +976,6 @@ package body et_canvas_schematic_2 is
 	end set_up_canvas;
 
 	
-	
--- 	procedure set_title_bar (
--- 		-- CS project name
--- 		module		: in pac_module_name.bounded_string)
--- 	is begin
--- 		window.set_title (title & to_string (module));
--- 	end set_title_bar;
-
 
 	
 	procedure update_sheet_number_display is begin
@@ -1007,12 +999,6 @@ package body et_canvas_schematic_2 is
 	end build_sheet_number_display;
 
 	
--- 	procedure set_label_console is
--- 		text_before : constant string := label_console.get_text;
--- 	begin
--- 		label_console.set_text (text_before & label_console_text);
--- 	end set_label_console;
-
 	
 
 	
