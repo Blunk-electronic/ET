@@ -410,21 +410,24 @@ is
 	procedure show_module is -- GUI related
 		use et_general;
 		use et_project;
-		use et_canvas_schematic_2;
+		-- use et_canvas_schematic_2;
 		
 		module : pac_module_name.bounded_string := to_module_name (f (5));
 	begin
-		log (text => "set module " & enclose_in_quotes (to_string (module)), level => log_threshold + 1);
+		log (text => "set module " 
+			 & enclose_in_quotes (to_string (module)),
+			 level => log_threshold + 1);
+		
 		set_module (module);
 		current_active_sheet := 1;
 
 		-- Update module name in the schematic window title bar:
-		set_title_bar (module);
+		et_canvas_schematic_2.set_title_bar (current_active_module);
 		
 		-- CS update_sheet_number_display;
 		
 		-- Update the board window title bar:
-		et_canvas_board_2.set_title_bar (module);
+		et_canvas_board_2.set_title_bar (current_active_module);
 
 
 		-- CS Init defaults of property bars in schematic.
@@ -434,26 +437,28 @@ is
 	end show_module;
 
 	
-	procedure show_module_and_sheet is  -- GUI related
 	-- Sets the active module and sheet.
+	procedure show_module_and_sheet is  -- GUI related
 		use et_general;
-		use et_canvas_schematic_2;
-		
+				
 		module : pac_module_name.bounded_string := to_module_name (f (5));
 		sheet : et_coordinates_2.type_sheet := to_sheet (f (6));
 	begin
-		log (text => "set module " & enclose_in_quotes (to_string (module))
-			& " sheet " & to_sheet (sheet), level => log_threshold + 1);
+		log (text => "set module " 
+			& enclose_in_quotes (to_string (module))
+			& " sheet " & to_sheet (sheet), 
+			level => log_threshold + 1);
+		
 		set_module (module);
 		current_active_sheet := sheet;
 
 		-- Update module name in the schematic window title bar:
-		set_title_bar (module);
+		et_canvas_schematic_2.set_title_bar (current_active_module);
 
 		-- CS update_sheet_number_display;
 		
 		-- Update the board window title bar:
-		et_canvas_board_2.set_title_bar (module);
+		et_canvas_board_2.set_title_bar (current_active_module);
 
 
 		-- CS Init defaults of property bars in schematic.
@@ -521,12 +526,12 @@ is
 			--log (text => "set module " & enclose_in_quotes (to_string (active_module)), level => log_threshold + 1);
 
 			-- Update module name in the schematic window title bar:
-			set_title_bar (active_module);
+			-- CS set_title_bar (active_module);
 			
 			-- CS update_sheet_number_display;
 			
 			-- Update the board window title bar:
-			et_canvas_board_2.set_title_bar (active_module);
+			-- CS et_canvas_board_2.set_title_bar (active_module);
 		else
 			null;
 			-- CS terminate_main;
@@ -554,12 +559,12 @@ is
 			current_active_sheet := 1;
 
 			-- Update module name in the schematic window title bar:
-			set_title_bar (active_module);
+			-- CS set_title_bar (active_module);
 			
 			-- CS update_sheet_number_display;
 			
 			-- Update the board window title bar:
-			et_canvas_board_2.set_title_bar (active_module);
+			-- CS et_canvas_board_2.set_title_bar (active_module);
 		else
 			null;
 			-- CS terminate_main;
@@ -583,12 +588,12 @@ is
 		current_active_sheet := 1;
 
 		-- Update module name in the schematic window title bar:
-		set_title_bar (active_module);
+		-- CS set_title_bar (active_module);
 		
 		-- CS update_sheet_number_display;
 		
 		-- Update the board window title bar:
-		et_canvas_board_2.set_title_bar (active_module);
+		-- CS et_canvas_board_2.set_title_bar (active_module);
 	end create_module;
 
 

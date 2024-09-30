@@ -95,17 +95,21 @@ with et_logging;					use et_logging;
 
 
 package et_canvas_schematic_2 is
-
 	
 	use et_project.modules.pac_generic_modules;
 
-
-	title : constant string := system_name & " SCHEMATIC ";
 	
-	
+	-- In the title bar of the main window follwing information
+	-- should be displayed:
+	-- - system name like ET
+	-- - project name
+	-- - domain (schematic, board, library (sym, pac, dev))
+	-- - module name
+	-- This procedure sets the title bar according to
+	-- the given project and module name:
 	procedure set_title_bar (
 		-- CS project name								
-		module		: in pac_module_name.bounded_string);
+		module		: in pac_generic_modules.cursor);
 
 
 	-- Updates the verb/noun display:
@@ -362,10 +366,12 @@ package et_canvas_schematic_2 is
 	
 	-- Returns the name of the currently active module:
 	function active_module return pac_module_name.bounded_string;
-
+	-- CS remove ?
+	
 
 	-- Sets the active module to be displayed in the canvas.
 	-- The module must exist inside the current project directory.
+	-- Sets the variable current_active_module accordingly:
 	procedure set_module (
 		module	: in pac_module_name.bounded_string); -- motor_driver
 

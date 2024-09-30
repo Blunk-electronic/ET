@@ -90,11 +90,17 @@ package et_canvas_board_2 is
 	use et_project.modules.pac_generic_modules;
 
 	
-	title : constant string := system_name & " BOARD ";
-	
+	-- In the title bar of the main window follwing information
+	-- should be displayed:
+	-- - system name like ET
+	-- - project name
+	-- - domain (schematic, board, library (sym, pac, dev))
+	-- - module name
+	-- This procedure sets the title bar according to
+	-- the given project and module name:
 	procedure set_title_bar (
 		-- CS project name								
-		module		: in pac_module_name.bounded_string);
+		module		: in pac_generic_modules.cursor);
 
 	
 	-- Updates the verb/noun display:

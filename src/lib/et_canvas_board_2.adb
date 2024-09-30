@@ -90,9 +90,13 @@ package body et_canvas_board_2 is
 
 	procedure set_title_bar (
 		-- CS project name
-		module		: in pac_module_name.bounded_string)
+		module		: in pac_generic_modules.cursor)
 	is begin
-		main_window.set_title (title & to_string (module));
+		main_window.set_title (
+			system_name 
+			& " - BOARD - " 
+			-- CS project name					  
+			& to_string (key (module)));
 	end set_title_bar;
 
 	

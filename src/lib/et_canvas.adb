@@ -856,12 +856,6 @@ package body et_canvas is
 
 
 
-	-- procedure set_title_bar (
-	-- 	title : in string)
-	-- is begin
-	-- 	main_window.set_title (title);
-	-- end;
-
 	
 
 -- SCROLLED WINDOW:

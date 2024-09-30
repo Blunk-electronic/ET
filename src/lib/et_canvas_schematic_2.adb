@@ -75,9 +75,13 @@ package body et_canvas_schematic_2 is
 
 	procedure set_title_bar (
 		-- CS project name
-		module		: in pac_module_name.bounded_string)
-	is begin
-		main_window.set_title (title & to_string (module));
+		module		: in pac_generic_modules.cursor)
+	is begin		
+		main_window.set_title (
+			system_name 
+			& " - SCHEMATIC - " 
+			-- CS project name					  
+			& to_string (key (module)));
 	end set_title_bar;
 
 
@@ -1040,7 +1044,6 @@ package body et_canvas_schematic_2 is
 	
 	procedure next_module is
 		use pac_generic_modules;
-		use et_canvas_board_2;
 	begin
 		-- Advance to next module:
 		current_active_module := pac_generic_modules.next (current_active_module);
@@ -1054,8 +1057,8 @@ package body et_canvas_schematic_2 is
 		
 		-- Show the module name in the title bars of 
 		-- both schematic and layout editor:
-		set_title_bar (active_module);
-		et_canvas_board_2.set_title_bar (active_module);
+		et_canvas_schematic_2.set_title_bar (current_active_module);
+		et_canvas_board_2.set_title_bar (current_active_module);
 		
 		-- CS Init defaults of property bars in schematic.
 		
@@ -1069,7 +1072,6 @@ package body et_canvas_schematic_2 is
 	
 	procedure previous_module is
 		use pac_generic_modules;
-		use et_canvas_board_2;
 	begin
 		-- Advance to previous module:
 		current_active_module := pac_generic_modules.previous (current_active_module);
@@ -1083,8 +1085,8 @@ package body et_canvas_schematic_2 is
 		
 		-- Show the module name in the title bars of 
 		-- both schematic and layout editor:
-		set_title_bar (active_module);
-		et_canvas_board_2.set_title_bar (active_module);
+		et_canvas_schematic_2.set_title_bar (current_active_module);
+		et_canvas_board_2.set_title_bar (current_active_module);
 
 		-- CS Init defaults of property bars in schematic.
 		

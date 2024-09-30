@@ -82,8 +82,11 @@ package body et_gui_2 is
 
 		pac_canvas.set_up_main_window;
 		et_canvas_schematic_2.set_up_main_window;
-		-- set_title_bar ("SCHEMATIC"); -- CS rig and module name
 
+		-- Set the title bar of the main window:
+		set_title_bar (
+			module	=> current_active_module);
+  
 
 		log (text => "build primary tool display", level => log_threshold + 1);
 		build_primary_tool_display;
@@ -181,7 +184,11 @@ package body et_gui_2 is
 		
 		pac_canvas.set_up_main_window;
 		et_canvas_board_2.set_up_main_window;
-		-- set_title_bar ("BOARD"); -- CS rig and module name
+
+		-- Set the title bar of the main window:
+		set_title_bar (
+			module	=> current_active_module);
+
 
 
 		log (text => "build primary tool display", level => log_threshold + 1);
