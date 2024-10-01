@@ -48,6 +48,21 @@ package et_canvas.drawing_frame is
 	package pac_draw_text is new et_canvas.text;
 
 
+	-- Converts a type_distance (used with frames) to
+	-- a distance in the model domain:
+	function to_distance (
+		d : in et_frames.type_distance)
+		return pac_geometry.type_distance;
+
+	
+	-- Converts a type_position (used with frames) to
+	-- a model vector:
+	function to_vector (
+		p : in et_frames.type_position)
+		return type_vector_model;
+
+	
+
 	-- This procedure draws the outer and inner border
 	-- and the quadrant bars of the frame:
 	procedure draw_frame (

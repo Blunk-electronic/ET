@@ -39,7 +39,28 @@
 
 package body et_canvas.drawing_frame is
 
+	function to_distance (
+		d : in et_frames.type_distance)
+		return pac_geometry.type_distance
+	is begin
+		return pac_geometry.type_distance (d);
+	end to_distance;
 
+
+	
+	function to_vector (
+		p : in et_frames.type_position)
+		return type_vector_model
+	is
+		r : type_vector_model;
+	begin
+		r.x := to_distance (p.x);
+		r.y := to_distance (p.y);
+		
+		return r;
+	end to_vector;
+
+	
 	
 	procedure draw_frame (
 		frame : in type_frame_general)

@@ -75,7 +75,7 @@ package body et_board_ops is
 		is begin
 			case coordinates is
 				when ABSOLUTE =>
-					--module.board.frame.frame.position := point;
+					-- module.board.frame.frame.position := point;
 					null;
 
 				when RELATIVE =>
