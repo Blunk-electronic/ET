@@ -47,6 +47,8 @@ with ada.exceptions;				use ada.exceptions;
 with ada.calendar;					use ada.calendar;
 with ada.calendar.formatting;		use ada.calendar.formatting;
 
+with ada.containers;
+
 -- with et_pcb_coordinates;
 -- with et_terminals;
 -- with et_devices;					use et_devices;
@@ -575,18 +577,20 @@ package body et_canvas_schematic_2 is
 					end if;
 
 
+				-- Switch between modules:	
 				when GDK_F11 =>
 					previous_module;
-
+					event_handled := true;
 					
 				when GDK_F12 =>
 					next_module;
+					event_handled := true;
 					
 
 				-- Other keys are propagated to the canvas:
 				when others =>
 					event_handled := false;
-
+					
 			end case;
 		end if;
 		
@@ -809,8 +813,6 @@ package body et_canvas_schematic_2 is
 				-- Redo the last operation on ctrl-y
 				when GDK_LC_y => -- CS shift + ctrl-z
 					redo;
-
-
 					
 				when others => null;
 			end case;
@@ -851,13 +853,6 @@ package body et_canvas_schematic_2 is
 						update_sheet_number_display;
 					end if;
 
-				when GDK_F11 =>
-					previous_module;
-
-				when GDK_F12 =>
-					next_module;
-
-					
 					
 				when others => 
 					key_pressed (key, key_shift);
@@ -1029,16 +1024,27 @@ package body et_canvas_schematic_2 is
 	
 	
 	procedure next_module is
+		use ada.containers;
 		use pac_generic_modules;
+		-- module_ct : count_type;
 	begin
+		--put_line ("next_module");
+
+		-- module_ct := pac_generic_modules.length (generic_modules);
+		-- put_line ("module count" & count_type'image (module_ct));
+		
+		
 		-- Advance to next module:
 		current_active_module := pac_generic_modules.next (current_active_module);
 
 		-- If there is no next module, select first module:
 		if current_active_module = pac_generic_modules.no_element then
+			-- put_line ("no next");
 			current_active_module := generic_modules.first;
 		end if;
 
+		--put_line (to_string (key (current_active_module)));
+		
 		-- CS: save sheet number, cursor, zoom, displayed objects ...
 		
 		-- Show the module name in the title bars of 
@@ -1050,15 +1056,16 @@ package body et_canvas_schematic_2 is
 		
 		-- Init defaults of property bars in board:
 	-- CS et_canvas_board.init_property_bars;
-		
-		-- Redraw both schematic and board:
-		-- CS redraw;
+
+		redraw; -- schematic and board
 	end next_module;
 
 	
 	procedure previous_module is
 		use pac_generic_modules;
 	begin
+		-- put_line ("previous_module");
+		
 		-- Advance to previous module:
 		current_active_module := pac_generic_modules.previous (current_active_module);
 
@@ -1079,9 +1086,7 @@ package body et_canvas_schematic_2 is
 		-- Init defaults of property bars in board:
 		-- CS et_canvas_board_2.init_property_bars;
 
-		
-		-- Redraw both schematic and board:
-		-- CS redraw;
+		redraw; -- schematic and board
 	end previous_module;
 
 
@@ -1317,31 +1322,6 @@ package body et_canvas_schematic_2 is
 
 	
 
--- 	function title_block_position (
--- 		self : not null access type_view)
--- 		return et_frames.type_position 
--- 	is begin
--- 		return self.get_frame.title_block_schematic.position;
--- 	end title_block_position;
--- 	
--- 	
--- 	function get_verb (
--- 		self	: not null access type_view)
--- 		return string 
--- 	is begin
--- 		return to_string (verb);
--- 	end get_verb;
--- 
--- 	
--- 	function get_noun (
--- 		self	: not null access type_view)
--- 		return string is
--- 	begin
--- 		return to_string (noun);
--- 	end get_noun;
--- 
--- 
--- 	
 	procedure reset_selections is 
 		use et_canvas_schematic_nets;
 		use et_canvas_schematic_units;

@@ -578,12 +578,14 @@ package body et_canvas_board_2 is
 					event_handled := true;
 
 
+				-- Switch between modules:
 				when GDK_F11 =>
 					et_canvas_schematic_2.previous_module;
-
+					event_handled := true;
 					
 				when GDK_F12 =>
 					et_canvas_schematic_2.next_module;
+					event_handled := true;
 
 
 					
@@ -1148,14 +1150,6 @@ package body et_canvas_board_2 is
 					refresh;
 
 					
-				when GDK_F11 =>
-					et_canvas_schematic_2.previous_module;
-
-				when GDK_F12 =>
-					et_canvas_schematic_2.next_module;
-
-
-					
 				when others =>
 					key_pressed (key, key_shift);
 			end case;
@@ -1493,237 +1487,7 @@ package body et_canvas_board_2 is
 		log_indentation_down;
 	end execute_command;
 
-	
 
-	
--- 	function active_module (self : not null access type_view) 
--- 		return string
--- 	is begin
--- 		return to_string (key (current_active_module)); -- motor_driver (without extension)
--- 	end active_module;
-
-	
-
-
-
-
-	
-	
--- 	procedure draw_outline (
--- 		self    : not null access type_view)
--- 		is separate;
--- 
--- 	
--- 	procedure draw_silk_screen (face : in type_face) is separate;
--- 	
--- 	procedure draw_assy_doc (face : in type_face) is separate;
--- 
--- 	procedure draw_stop (face : in type_face) is separate;
--- 	
--- 	procedure draw_stencil (face : in type_face) is separate;
--- 
--- 	
--- 	procedure draw_keepout (
--- 		self    : not null access type_view;
--- 		face	: in type_face) is separate;
--- 
--- 	
--- 	procedure draw_route_restrict (
--- 		self    : not null access type_view)
--- 		is separate;
--- 
--- 	
--- 	procedure draw_via_restrict (
--- 		self    : not null access type_view)
--- 		is separate;
--- 
--- 	
--- 	-- Draws objects in conductor layers (incl. vias):
--- 	procedure draw_conductors is separate;
--- 
--- 	
--- 	procedure draw_packages (
--- 		self    : not null access type_view;
--- 		face	: in type_face) is separate;
--- 
--- 	
--- 	procedure draw_internal (
--- 		self    : not null access type_view;
--- 		area_in	: type_bounding_box) 
--- 	is		
--- 		use et_display.board;
--- 
--- 		
--- 		procedure draw_packages is begin
--- 			draw_packages (self, BOTTOM);
--- 			draw_packages (self, TOP);
--- 		end draw_packages;
--- 
--- 		
--- 		procedure draw_silkscreen is begin
--- 			if silkscreen_enabled (BOTTOM) then
--- 				draw_silk_screen (BOTTOM);
--- 			end if;
--- 
--- 			if silkscreen_enabled (TOP) then
--- 				draw_silk_screen (TOP);
--- 			end if;
--- 		end draw_silkscreen;
--- 
--- 		
--- 		procedure draw_assy_doc is begin
--- 			if assy_doc_enabled (BOTTOM) then
--- 				draw_assy_doc (BOTTOM);
--- 			end if;
--- 
--- 			if assy_doc_enabled (TOP) then
--- 				draw_assy_doc (TOP);
--- 			end if;
--- 		end draw_assy_doc;
--- 
--- 		
--- 		procedure draw_keepout is begin
--- 			if keepout_enabled (BOTTOM) then
--- 				draw_keepout (self, BOTTOM);
--- 			end if;
--- 
--- 			if keepout_enabled (TOP) then
--- 				draw_keepout (self, TOP);
--- 			end if;
--- 		end draw_keepout;
--- 
--- 		
--- 		procedure draw_stop_mask is begin
--- 			if stop_mask_enabled (BOTTOM) then
--- 				draw_stop (BOTTOM);
--- 			end if;
--- 
--- 			if stop_mask_enabled (TOP) then
--- 				draw_stop (TOP);
--- 			end if;
--- 		end draw_stop_mask;
--- 
--- 		
--- 		procedure draw_stencil is begin
--- 			if stencil_enabled (BOTTOM) then
--- 				draw_stencil (BOTTOM);
--- 			end if;
--- 
--- 			if stencil_enabled (TOP) then
--- 				draw_stencil (TOP);
--- 			end if;
--- 		end draw_stencil;
--- 
--- 		
--- 		procedure draw_pcb_outline is begin
--- 			if outline_enabled then		
--- 				draw_outline (self);
--- 			end if;
--- 		end draw_pcb_outline;
--- 
--- 		
--- 		procedure draw_conductor_layers is begin
--- 			draw_route_restrict (self);
--- 			draw_via_restrict (self);
--- 			draw_conductors;
--- 		end draw_conductor_layers;
--- 
--- 		
--- 		procedure draw_board is begin
--- 			draw_conductor_layers;
--- 			draw_packages;
--- 			draw_silkscreen;
--- 			draw_assy_doc;
--- 			draw_keepout;
--- 			draw_stop_mask;
--- 			draw_stencil;
--- 			draw_pcb_outline;
--- 			
--- 			-- CS draw_submodules			
--- 		end draw_board;
--- 		
--- 		offset : type_offset;
--- 
--- 		
--- 	begin -- draw_internal
--- 		-- draw packages, tracks, vias, silkscreen, pcb outline, ...
--- 		draw_board;
--- 
--- 		
--- 		-- Grid and cursor is drawn last so that they
--- 		-- are visible regardless of areas drawn with the 
--- 		-- cairo CLEAR operator:
--- 		
--- 		draw_cursor (self, cursor_main);
--- 		restore (context.cr);
--- 
--- 		-- Restore context to draw the grid:
--- 		restore (context.cr);
--- 
--- 		if grid_enabled then
--- 			draw_grid (self, area_in);
--- 		end if;
--- 		
--- 	end draw_internal;
-
-	
--- 	
--- 	function get_frame (
--- 		self : not null access type_view)
--- 		return et_frames.type_frame 
--- 	is begin
--- 		return element (current_active_module).board.frame.frame;
--- 	end get_frame;
--- 
--- 	
--- 	function get_frame_height (
--- 		self : not null access type_view)
--- 		return type_float_positive 
--- 	is begin
--- 		return type_float_positive (
--- 			element (current_active_module).board.frame.frame.size.y);
--- 	end get_frame_height;
--- 
--- 	
--- 	function frame_width (
--- 		self : not null access type_view)
--- 		return type_float_positive 
--- 	is begin
--- 		return type_float_positive (
--- 			element (current_active_module).board.frame.frame.size.x);
--- 	end frame_width;
--- 
--- 	
--- 	function title_block_position (
--- 		self : not null access type_view)
--- 		return et_frames.type_position 
--- 	is begin
--- 		return self.get_frame.title_block_pcb.position;
--- 	end title_block_position;
--- 
--- 	
--- 	function board_origin (
--- 		self : not null access type_view)
--- 		return type_model_point 
--- 	is begin
--- 		return to_model_point (element (current_active_module).board.origin);
--- 	end board_origin;
--- 
--- 	
--- 	function get_verb (
--- 		self	: not null access type_view)
--- 		return string is
--- 	begin
--- 		return to_string (verb);
--- 	end get_verb;
--- 
--- 	
--- 	function get_noun (
--- 		self	: not null access type_view)
--- 		return string is
--- 	begin
--- 		return to_string (noun);
--- 	end get_noun;
 -- 
 -- 
 -- 	
