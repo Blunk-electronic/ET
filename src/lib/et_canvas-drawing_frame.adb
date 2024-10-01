@@ -39,6 +39,35 @@
 
 package body et_canvas.drawing_frame is
 
+
+	function to_string (
+		d : in et_frames.type_distance)
+		return string
+	is begin
+		return et_frames.type_distance'image (d);
+	end to_string;
+
+
+	function to_string (
+		p : in et_frames.type_position)
+		return string
+	is begin
+		return to_string (p.x) & "/" & to_string (p.y);
+	end to_string;
+
+
+
+	
+	function to_distance (
+		d : in string)
+		return et_frames.type_distance
+	is begin
+		return et_frames.type_distance'value (d);
+	end to_distance;
+
+	
+
+	
 	function to_distance (
 		d : in et_frames.type_distance)
 		return pac_geometry.type_distance

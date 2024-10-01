@@ -65,33 +65,41 @@ package body et_board_ops is
 	procedure move_drawing_frame (
 		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in type_vector_model; -- x/y
+		point			: in et_frames.type_position; -- x/y
 		log_threshold	: in type_log_level) 
 	is
+		use et_canvas_board_2;
+		use pac_drawing_frame;
 
+		
 		procedure set_origin (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
-		is begin
+		is 
+			p1 : et_frames.type_position;
+		begin
 			case coordinates is
 				when ABSOLUTE =>
-					-- module.board.frame.frame.position := point;
-					null;
+					et_frames.set_position (module.board.frame.frame, point);
 
 				when RELATIVE =>
-					null;
+					p1 := et_frames.get_position (module.board.frame.frame);
+					-- CS
 					-- move_by (module.board.frame.position, to_distance_relative (point));
 			end case;
 		end set_origin;
+
 		
 	begin
 		case coordinates is
 			when ABSOLUTE =>
+				null;
 				log (text => "module " & to_string (key (module_cursor)) &
 					 " moving drawing frame origin to " & to_string (point),
 					 level => log_threshold);
 
 			when RELATIVE =>
+				null;
 				log (text => "module " & to_string (key (module_cursor)) &
 					 " moving drawing frame origin by " & to_string (point), 
 					 level => log_threshold);

@@ -330,6 +330,17 @@ package et_frames is
 	end record;
 
 
+	-- Sets the position of a frame:
+	procedure set_position (
+		frame 		: in out type_frame_general;
+		position	: in type_position);
+	
+
+	-- Gets the position of a frame:
+	function get_position (
+		frame 		: in type_frame_general)
+		return type_position;
+
 	
 
 -- PARAMETERIZED FRAME:

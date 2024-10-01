@@ -154,6 +154,25 @@ package body et_frames is
 	function to_domain (domain : in string) return type_domain is begin
 		return type_domain'value (domain);
 	end;
+
+
+	procedure set_position (
+		frame 		: in out type_frame_general;
+		position	: in type_position)
+	is begin
+		frame.position := position;
+	end set_position;
+
+
+	function get_position (
+		frame 		: in type_frame_general)
+		return type_position
+	is begin
+		return frame.position;
+	end get_position;
+
+
+
 	
 	procedure apply_defaults (frame : in out type_frame) is
 

@@ -68,6 +68,7 @@ with et_board_ops.text;
 
 with et_canvas.cmd;
 
+with et_frames;
 
 -- to do:
 
@@ -2261,18 +2262,26 @@ is
 
 
 	
-	procedure move_drawing_frame is begin
+	procedure move_drawing_frame is 
+		use pac_drawing_frame;
+
+		p : et_frames.type_position;
+		c : type_coordinates;
+	begin
 		case cmd_field_count is
-			when 7 => -- board led_driver move frame absolute 20 50
+			when 7 => -- board led_driver move frame absolute -20 -50
+				c := to_coordinates (f (5));   -- relative/absolute
+				
+				p.x := pac_drawing_frame.to_distance (f (6));
+				p.y := pac_drawing_frame.to_distance (f (7));
+
 				move_drawing_frame (
 					module_cursor 	=> module_cursor,
-					coordinates		=> to_coordinates (f (5)),  -- relative/absolute
-					point			=> type_vector_model (set (
-										x => to_distance (dd => f (6)),
-										y => to_distance (dd => f (7)))),
+					coordinates		=> c,
+					point			=> p,
 					log_threshold	=> log_threshold + 1
 					);
-				null;
+
 				
 			when 8 .. type_field_count'last =>
 				too_long;

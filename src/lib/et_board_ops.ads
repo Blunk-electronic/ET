@@ -68,6 +68,7 @@ with et_design_rules;				use et_design_rules;
 with et_exceptions;					use et_exceptions;
 with et_object_status;				use et_object_status;
 
+with et_frames;
 
 
 package et_board_ops is
@@ -83,7 +84,7 @@ package et_board_ops is
 	procedure move_drawing_frame (
 		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in type_vector_model; -- x/y
+		point			: in et_frames.type_position; -- x/y
 		log_threshold	: in type_log_level);
 
 	
