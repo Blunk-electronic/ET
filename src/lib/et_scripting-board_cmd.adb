@@ -2272,8 +2272,8 @@ is
 			when 7 => -- board led_driver move frame absolute -20 -50
 				c := to_coordinates (f (5));   -- relative/absolute
 				
-				p.x := pac_drawing_frame.to_distance (f (6));
-				p.y := pac_drawing_frame.to_distance (f (7));
+				p.x := et_frames.to_distance (f (6));
+				p.y := et_frames.to_distance (f (7));
 
 				move_drawing_frame (
 					module_cursor 	=> module_cursor,

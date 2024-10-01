@@ -90,6 +90,8 @@ package body et_board_ops is
 		end set_origin;
 
 		
+		use et_frames;
+		
 	begin
 		case coordinates is
 			when ABSOLUTE =>

@@ -46,21 +46,6 @@ generic
 package et_canvas.drawing_frame is
 
 	package pac_draw_text is new et_canvas.text;
-
-
-	function to_string (
-		d : in et_frames.type_distance)
-		return string;
-
-
-	function to_string (
-		p : in et_frames.type_position)
-		return string;
-
-	
-	function to_distance (
-		d : in string)
-		return et_frames.type_distance;
 	
 	
 	-- Converts a type_distance (used with frames) to

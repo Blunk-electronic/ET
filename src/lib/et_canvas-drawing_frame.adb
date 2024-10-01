@@ -40,33 +40,6 @@
 package body et_canvas.drawing_frame is
 
 
-	function to_string (
-		d : in et_frames.type_distance)
-		return string
-	is begin
-		return et_frames.type_distance'image (d);
-	end to_string;
-
-
-	function to_string (
-		p : in et_frames.type_position)
-		return string
-	is begin
-		return to_string (p.x) & "/" & to_string (p.y);
-	end to_string;
-
-
-
-	
-	function to_distance (
-		d : in string)
-		return et_frames.type_distance
-	is begin
-		return et_frames.type_distance'value (d);
-	end to_distance;
-
-	
-
 	
 	function to_distance (
 		d : in et_frames.type_distance)
@@ -108,12 +81,17 @@ package body et_canvas.drawing_frame is
 
 		-- Get the position of the lower-left corner
 		-- of the frame:
+		-- p : constant pac_geometry.type_position := (
+		-- 	place => (
+		-- 		x => type_distance_positive (frame.position.x),
+		-- 		y => type_distance_positive (frame.position.y)),
+		-- 	rotation => zero_rotation);
+
 		p : constant pac_geometry.type_position := (
-			place => (
-				x => type_distance_positive (frame.position.x),
-				y => type_distance_positive (frame.position.y)),
+			place => to_vector (frame.position),
 			rotation => zero_rotation);
 
+		
 		b : constant type_distance_positive := 
 			type_distance_positive (frame.border_width);
 

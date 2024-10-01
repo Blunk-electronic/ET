@@ -97,7 +97,10 @@ package et_frames is
 	end record;
 
 	-- The unit for all kinds of distances in a drawing frame is millimeters.
-	type type_distance is new natural range 0 .. 10000;
+	type type_distance is new integer range -10_000 .. 10_000;
+
+	-- CS subtype type_distance_positive is type_distance range 0 .. type_distance'last;
+	
 
 	function to_string (distance : in type_distance) return string;
 	function to_distance (distance : in string) return type_distance;
@@ -118,7 +121,8 @@ package et_frames is
 	paper_size_A4_y : constant type_distance := 210;
 
 	
-	-- Returns for the given paper size, orientation and axis the corresponding size in mm.
+	-- Returns for the given paper size, 
+	-- orientation and axis the corresponding size in mm:
 	function paper_dimension (
 		paper_size	: in type_paper_size;
 		orientation	: in type_orientation := LANDSCAPE;
@@ -131,6 +135,11 @@ package et_frames is
 	end record;
 
 	-- position_default : constant type_position := (1,1);
+
+
+	function to_string (
+		p : in type_position)
+		return string;
 
 
 	

@@ -91,12 +91,11 @@ package body et_frames is
 	
 
 	function paper_dimension (
-	-- Returns for the given paper size, orientation and axis the corresponding size in mm.
 		paper_size	: in type_paper_size;
 		orientation	: in type_orientation := LANDSCAPE;
 		axis		: in type_axis_2d)
-		return type_distance is
-
+		return type_distance 
+	is
 		dimension : type_distance;
 	
 	begin
@@ -137,6 +136,15 @@ package body et_frames is
 	end paper_dimension;
 
 
+	
+	function to_string (
+		p : in type_position)
+		return string
+	is begin
+		return to_string (p.x) & "/" & to_string (p.y);
+	end to_string;
+
+	
 
 
 	function to_string (name : in pac_template_name.bounded_string) return string is begin
