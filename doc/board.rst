@@ -2,7 +2,7 @@
 
 .. include:: placeholders.rst
 
-**************+++**
+*******************
 Board Layout Editor
 *******************
 
@@ -11,8 +11,6 @@ Board Layout Editor
 Devices
 +++++++
 
-Commands and Verb-Noun key sequences
-------------------------------------
 
 There are electrical devices (having a counterpart in the schematic) and
 non-electrical devices (without a representation in the schematic).
@@ -88,12 +86,13 @@ non-electrical devices (without a representation in the schematic).
 
 	Note: Electrical devices can only be deleted in the schematic !
 	
+	
+	
+	
 +++++++++++++++++++++
 Ratsnest and Airwires
 +++++++++++++++++++++
 
-Commands and Verb-Noun key sequences
-------------------------------------
 
 #. Update ratsnest
 
@@ -105,12 +104,10 @@ Commands and Verb-Noun key sequences
 
 
 	
+	
 +++++++++++++++++++++++++++++++++++++
 Routing, laying out Tracks and Traces
 +++++++++++++++++++++++++++++++++++++
-
-Commands and Verb-Noun key sequences
-------------------------------------
 
 #. Drawing tracks of a net
 
@@ -132,12 +129,14 @@ Commands and Verb-Noun key sequences
 
 Select the ripup mode by pressing key m (single segment or all segments of the net).
 
+
+
+
+
 ++++
 Vias
 ++++
 
-Commands and Verb-Noun key sequences
-------------------------------------
 
 #. Place via
 
@@ -171,8 +170,6 @@ Commands and Verb-Noun key sequences
 Fill Zones in Conductor Layers
 ++++++++++++++++++++++++++++++
 
-Commands and Verb-Noun key sequences
-------------------------------------
 
 #. Define outline
 
@@ -206,8 +203,6 @@ Commands and Verb-Noun key sequences
 Route Restrict Objects
 ++++++++++++++++++++++
 
-Commands and Verb-Noun key sequences
-------------------------------------
 
 #. Drawing lines
 
@@ -259,8 +254,6 @@ Commands and Verb-Noun key sequences
 Via Restrict Objects
 ++++++++++++++++++++
 
-Commands and Verb-Noun key sequences
-------------------------------------
 
 Objects in via restrict layers are to be drawn the same
 way as route restrict objects (see above). The only difference
@@ -279,8 +272,6 @@ is to use the noun via_restrict instead as shown in this example:
 Texts
 +++++
 
-Commands and Verb-Noun key sequences
-------------------------------------
 
 #. Place text
 
@@ -300,16 +291,13 @@ Commands and Verb-Noun key sequences
 		place text conductor 3 0.15 1 20 5 0 "Dummy Text"
 	
 	
-+++++
-Lines
-+++++
+	
+	
+++++++++++++++++++++++
+Assembly Documentation
+++++++++++++++++++++++
 
-Commands and Verb-Noun key sequences
-------------------------------------
-
-#. Assembly Documentation
-
-##. Draw
+#. Draw
 
 	.. code-block::
 
@@ -318,20 +306,23 @@ Commands and Verb-Noun key sequences
 	|VNS| d l
 
 
-##. Move
+#. Move
 
 	|VNS| m a
 
 
-##. Delete
+#. Delete
 
 	|VNS| del a
 
 	
+	
 
-#. Silkscreen
+++++++++++
+Silkscreen
+++++++++++
 
-##. Draw
+#. Draw
 
 	.. code-block::
 
@@ -340,28 +331,51 @@ Commands and Verb-Noun key sequences
 	|VNS| d l
 
 
-##. Move
+#. Move
 
 	|VNS| m s
 	
 
-##. Delete
+#. Delete
 
 	|VNS| del s
 
+	
+
+	
++++++++++++++
+Drawing Frame
++++++++++++++
+
+
+Position of the Drawing Frame
+-----------------------------
+
+#. Absolute Coordinates
+
+	.. code-block::
+
+		move frame absolute -150 -105
+
+
+#. Relative Coordinates
+
+	.. code-block::
+
+		move frame relative -10 -10
+
+		
+	
 	
 +++++++
 Modules
 +++++++
 
-Commands and Verb-Noun key sequences
-------------------------------------
-
 #. Show (or open) a module
 
-.. 	.. code-block::
-.. 
-.. 		show module LED-driver [sheet]
+	.. code-block::
+
+		show module LED-driver [sheet]
 
 	|VNS| |NI|
 
@@ -373,18 +387,18 @@ Commands and Verb-Noun key sequences
 
 	- save with its own name
 	
-.. 	.. code-block::
-.. 
-.. 		save module
+	.. code-block::
+
+		save module
 
 	|VNS| |NI| Use the common shortcut CTRL-S instead.
 
 	- save with a different name
 	
-.. 	.. code-block::
-.. 
-.. 		save module LED-driver_test
-.. 
-.. 	|VNS| |NI|
+	.. code-block::
+
+		save module LED-driver_test
+
+	|VNS| |NI|
 
 	

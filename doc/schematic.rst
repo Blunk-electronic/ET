@@ -12,8 +12,6 @@ Schematic Editor
 Devices and Units
 +++++++++++++++++
 
-Commands and Verb-Noun key sequences
-------------------------------------
 
 #. Add device
 
@@ -206,13 +204,11 @@ Placeholders for Name, Value, Partcode and Purpose
 	|VNS| o p
 	
 
-		
+
+	
 +++++++++++++++++++
 Nets and Net Labels
 +++++++++++++++++++
-
-Commands and Verb-Noun key sequences
-------------------------------------
 
 #. Draw net
 
@@ -315,12 +311,12 @@ Commands and Verb-Noun key sequences
 	|VNS| del l
 
 
+	
+	
 ++++++++++++++++++
 Displaying Objects
 ++++++++++++++++++
 
-Commands and Verb-Noun key sequences
-------------------------------------
 
 #. Display grid
 
@@ -376,12 +372,11 @@ Commands and Verb-Noun key sequences
 	|VNS| |NI|
 
 
+	
+	
 ++++++++++++++++++++++++
 Zooming, Cursor and Grid
 ++++++++++++++++++++++++
-
-Commands and Verb-Noun key sequences
-------------------------------------
 
 #. Zoom to fit
 
@@ -448,9 +443,6 @@ Commands and Verb-Noun key sequences
 Sheets
 ++++++
 
-Commands and Verb-Noun key sequences
-------------------------------------
-
 #. Show a sheet
 
 	.. code-block::
@@ -459,12 +451,13 @@ Commands and Verb-Noun key sequences
 
 	|VNS| |NI|
 
+	
+	
+	
 +++++++
 Modules
 +++++++
 
-Commands and Verb-Noun key sequences
-------------------------------------
 
 #. Show (or open) a module
 
