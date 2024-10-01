@@ -73,27 +73,21 @@ package body et_canvas.drawing_frame is
 
 		-- Get the width of the frame:
 		w : constant type_distance_positive := 
-			type_distance_positive (frame.size.x);
+			to_distance (frame.size.x);
 
 		-- Get the height of the frame:
 		h : constant type_distance_positive := 
-			type_distance_positive (frame.size.y);
+			to_distance (frame.size.y);
 
 		-- Get the position of the lower-left corner
 		-- of the frame:
-		-- p : constant pac_geometry.type_position := (
-		-- 	place => (
-		-- 		x => type_distance_positive (frame.position.x),
-		-- 		y => type_distance_positive (frame.position.y)),
-		-- 	rotation => zero_rotation);
-
 		p : constant pac_geometry.type_position := (
 			place => to_vector (frame.position),
 			rotation => zero_rotation);
 
-		
+		-- Get the width of the border of the frame:
 		b : constant type_distance_positive := 
-			type_distance_positive (frame.border_width);
+			to_distance (frame.border_width);
 
 		
 		-- Draws the temporarily line. Takes into account
@@ -163,6 +157,7 @@ package body et_canvas.drawing_frame is
 		end inner_border;
 
 
+		
 		procedure sector_delimiters is
 
 			sector_width  : constant type_distance_positive := 
@@ -184,15 +179,21 @@ package body et_canvas.drawing_frame is
 					content		=> content,
 					size		=> type_distance_positive (font_indexes_size),
 					font		=> font_indexes,
-					anchor		=> pos,
+
+					-- The anchor point is offset by the position
+					-- of the frame:
+					anchor		=> add (pos, p.place),
+					
 					origin		=> false,
 					rotation	=> 0.0,
 					alignment	=> (CENTER, CENTER));
 			end draw_index;
+
 			
 			x, y  	: type_distance_positive;
 			xo, yo	: pac_geometry.type_distance;
 			
+
 			
 		begin -- draw_sector_delimiters
 			
