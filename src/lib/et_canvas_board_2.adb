@@ -153,14 +153,20 @@ package body et_canvas_board_2 is
 			size : constant type_frame_size := 
 				element (current_active_module).board.frame.frame.size;
 
+			-- Get the position of the frame:
+			p : constant et_frames.type_position :=
+				get_position (element (current_active_module).board.frame.frame);
+			
+			use pac_drawing_frame;
 		begin
-			b.width := type_distance_positive (size.x);
-			b.height := type_distance_positive (size.y);
-
+			-- Set width and height of the bounding-box:
+			b.width  := to_distance (size.x);
+			b.height := to_distance (size.y);
+			
 			-- CS: orientation (portrait/landscape) ?
 			
-			-- CS: set b.position with frame position
-			-- currently it is default (0;0);
+			-- Set the position of the bounding-box:
+			b.position := to_vector (p);
 			
 			-- If this is the first primitive object,
 			-- then use its bounding-box as seed to start from:
