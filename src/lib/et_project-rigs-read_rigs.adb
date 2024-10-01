@@ -6,20 +6,22 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 --                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -40,6 +42,7 @@ with et_project.modules;
 
 separate (et_project.rigs)
 
+
 procedure read_rigs (
 	log_threshold 	: in type_log_level) 
 is
@@ -50,16 +53,19 @@ is
 	module_file_search : search_type; -- the state of the search
 	module_file_filter : filter_type := (ordinary_file => true, others => false);
 
+	
 	procedure read_module_file_pre (module_file_handle : in directory_entry_type) is 
 		file_name : string := simple_name (module_file_handle); -- motor_driver.mod
 	begin
 		read_module (file_name, log_threshold + 1);
 	end;
 	
+	
 	-- The search of rig configuration files requires this stuff:
 	conf_file_search : search_type; -- the state of the search
 	conf_file_filter : filter_type := (ordinary_file => true, others => false);
 
+	
 	procedure read_conf_file (conf_file_handle : in directory_entry_type) is
 		-- backup the previous input source
 		previous_input : ada.text_io.file_type renames current_input;
@@ -84,6 +90,7 @@ is
 		instance_name : pac_module_instance_name.bounded_string; -- DRV_1
 		assembly_variant : pac_assembly_variant_name.bounded_string; -- low_cost
 
+		
 		procedure clear_module_instance is begin
 			generic_name := to_module_name ("");
 			instance_name := to_instance_name ("");
@@ -92,6 +99,7 @@ is
 		purpose_A, purpose_B : pac_device_purpose.bounded_string; -- power_in, power_out
 		instance_A, instance_B : pac_module_instance_name.bounded_string; -- DRV_1, PWR
 
+		
 		procedure clear_connector is begin
 			purpose_A := pac_device_purpose.to_bounded_string ("");
 			purpose_A := purpose_B;
@@ -99,15 +107,18 @@ is
 			instance_B := instance_A;
 		end clear_connector;
 
+		
 		procedure process_line is
 
 			procedure execute_section is
 			-- Once a section concludes, the temporarily variables are read, evaluated
 			-- and finally assembled to actual objects:
 
+				
 				procedure create_instance (
 					rig_name	: in pac_file_name.bounded_string;
-					rig			: in out type_rig) is
+					rig			: in out type_rig) 
+				is
 					instance_created : boolean;
 					instance_cursor : type_module_instances.cursor;
 				begin
@@ -131,6 +142,7 @@ is
 					clear_module_instance; -- clean up for next module instance
 				end create_instance;
 
+				
 				procedure create_connection (
 					rig_name	: in pac_file_name.bounded_string;
 					rig			: in out type_rig) is
@@ -195,6 +207,7 @@ is
 						
 					end if;
 				end create_connection;
+
 				
 			begin -- execute_section
 				case stack.current is
@@ -216,7 +229,9 @@ is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_MODULE_CONNECTIONS => null;
+
 					
 					when SEC_CONNECTOR =>
 						case stack.parent is
@@ -230,11 +245,13 @@ is
 								
 							when others => invalid_section;
 						end case;
+
 						
 					when others => invalid_section;
 				end case;
 						
 			end execute_section;
+
 			
 			function set (
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
@@ -281,6 +298,7 @@ is
 					return false;
 				end if;
 			end set;
+
 			
 		begin -- process_line
 			if set (section_module_instances, SEC_MODULE_INSTANCES) then null;
@@ -302,6 +320,7 @@ is
 							when SEC_INIT => null; -- nothing to do
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_MODULE_CONNECTIONS =>
 						case stack.parent is
@@ -309,6 +328,7 @@ is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_MODULE =>
 						case stack.parent is
 							when SEC_MODULE_INSTANCES =>							
@@ -328,11 +348,13 @@ is
 													" does not exist !", console => true);
 											--raise constraint_error;
 										end if;
+
 										
 									elsif kw = keyword_instance_name then
 										expect_field_count (line, 2);
 										instance_name := to_instance_name (f (line,2));
 
+										
 									elsif kw = keyword_assembly_variant then
 										expect_field_count (line, 2);
 										assembly_variant := to_variant (f (line,2));
@@ -350,10 +372,12 @@ is
 										invalid_keyword (kw);
 									end if;
 								end;
+
 								
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_CONNECTOR =>							
 						case stack.parent is
 							when SEC_MODULE_CONNECTIONS =>
@@ -399,6 +423,7 @@ is
 				raise;
 			
 		end process_line;
+
 		
 	begin -- read_conf_file
 		-- write name of configuration file
@@ -423,6 +448,7 @@ is
 			key			=> to_bounded_string (base_name (file_name)), -- demo, low_cost, fully_equipped
 			inserted	=> rig_inserted, -- should always be true
 			position	=> rig_cursor);
+
 		
 		-- read the file line by line
 		while not end_of_file loop
@@ -454,6 +480,11 @@ is
 			raise;
 		
 	end read_conf_file;
+
+
+	-- The number of modules that have been read:
+	module_ct : count_type;
+	
 	
 begin -- read_rigs
 	log (text => "reading rigs ...", level => log_threshold);
@@ -477,6 +508,12 @@ begin -- read_rigs
 		log (WARNING, "No modules found !"); -- CS: write implications !
 	end if;
 	end_search (module_file_search);
+
+	
+	-- Get the module count and log:
+	module_ct := pac_generic_modules.length (generic_modules);
+	log (text => "module count: " & count_type'image (module_ct), level => log_threshold + 1);
+	-- CS list imported modules
 	
 	log_indentation_down;
 	

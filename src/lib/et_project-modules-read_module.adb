@@ -6,20 +6,22 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 --                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -89,6 +91,7 @@ is
 
 	
 	active_assembly_variant : pac_assembly_variant_name.bounded_string; -- "low_cost"
+
 	
 	-- Assigns to the module the active assembly variant.
 	procedure set_active_assembly_variant is
@@ -115,6 +118,8 @@ is
 		update_element (generic_modules, module_cursor, set_variant'access);
 	end set_active_assembly_variant;
 
+
+	
 	-- Assigns the collected meta data to the module:
 	procedure set_meta is
 		use et_schematic;
@@ -140,6 +145,8 @@ is
 			process		=> do_it'access);
 	end set_meta;
 
+
+	
 	-- Reads basic meta data. If given line does not contain
 	-- basic meta stuff, returns a false.
 	function read_meta_basic return boolean is
@@ -198,7 +205,9 @@ is
 		
 		return result;
 	end read_meta_basic;
-		
+
+
+	
 	procedure read_meta_schematic is 
 		use et_meta;
 		kw : constant string := f (line, 1);
@@ -214,6 +223,8 @@ is
 		end if;
 	end;
 
+
+	
 	procedure read_meta_board is 
 		use et_meta;			
 		kw : constant string := f (line, 1);
@@ -229,6 +240,8 @@ is
 		end if;
 	end;		
 
+
+	
 	procedure read_preferred_lib_schematic is
 		kw : constant string := f (line, 1);
 		use et_meta;
@@ -252,6 +265,8 @@ is
 		end if;
 	end read_preferred_lib_schematic;
 
+
+	
 	procedure read_preferred_lib_board is
 		kw : constant string := f (line, 1);
 		use et_meta;
@@ -275,7 +290,9 @@ is
 	end read_preferred_lib_board;
 
 
-	-- RULES
+	
+
+-- RULES
 	rules			: et_schematic.type_rules := (others => <>);
 -- 	rules_layout	: et_design_rules.pac_file_name.bounded_string;
 	-- CS ERC rules ?
@@ -292,6 +309,8 @@ is
 		end if;
 	end read_rules;
 
+
+	
 	-- Assigns the temporarily rules to the module:
 	procedure set_rules is
 		use et_schematic;
@@ -332,6 +351,8 @@ is
 		log_indentation_down;
 	end set_rules;
 
+
+	
 	
 	function to_position (
 		line : in type_fields_of_line; -- "position sheet 3 x 44.5 y 53.5"
@@ -370,6 +391,8 @@ is
 		return point;
 	end to_position;
 
+
+	
 	
 	function to_size (
 		line : in type_fields_of_line; -- "size x 30 y 40"
@@ -402,6 +425,8 @@ is
 		
 		return size;
 	end to_size;
+
+
 
 	
 	function to_position (
@@ -6556,6 +6581,7 @@ is
 
 	
 	use ada.directories;
+
 	
 begin -- read_module
 	log (text => "opening module file " & enclose_in_quotes (file_name) & " ...", level => log_threshold);
@@ -6582,6 +6608,7 @@ begin -- read_module
 			position	=> module_cursor,
 			inserted	=> module_inserted);
 
+		
 		-- If the module is new to the collection of generic modules,
 		-- then open the module file file and read it. 
 		-- Otherwise notify operator that module has already been loaded.			 
@@ -6598,6 +6625,7 @@ begin -- read_module
 			-- Init section stack.
 			stack.init;
 			stack.push (SEC_INIT);
+
 			
 			-- read the file line by line
 			while not end_of_file loop
@@ -6634,6 +6662,8 @@ begin -- read_module
 			log (text => "module " & enclose_in_quotes (file_name) &
 					" already loaded -> no need to load anew.", level => log_threshold + 1);
 		end if;
+
+
 		
 	else -- module file not found
 		raise semantic_error_1 with
