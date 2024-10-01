@@ -229,6 +229,7 @@ is
 	end display_outline;
 
 
+	
 	-- Enables/disables the ratsnest layer. If status is empty,
 	-- the layer will be enabled.
 	procedure display_ratsnest ( -- GUI related
@@ -311,6 +312,7 @@ is
 	end display_non_conductor_layer;
 
 	
+	
 	-- Enables/disables a certain conductor layer. 
 	-- If status is empty, the layer will be enabled.
 	procedure display_conductor_layer ( -- GUI related
@@ -339,6 +341,7 @@ is
 		-- CS exception handler if status is invalid
 	end display_conductor_layer;
 
+	
 	
 	-- Enables/disables a the via layer. 
 	-- If status is empty, the layer will be enabled.
@@ -370,6 +373,7 @@ is
 		-- CS exception handler if status is invalid
 	end display_vias;
 	
+
 	
 	-- Enables/disables a certain restrict layer. 
 	-- If status is empty, the layer will be enabled.
@@ -417,6 +421,7 @@ is
 		-- CS exception handler if status is invalid
 	end display_restrict_layer;
 
+
 	
 	procedure draw_board_outline is
 		use et_board_ops.board_contour;
@@ -433,6 +438,7 @@ is
 		-- and assign it to the module:
 		set_outline (module, (c with null record), log_threshold + 1);
 	end draw_board_outline;
+
 
 	
 	procedure draw_hole is
@@ -451,6 +457,7 @@ is
 	end draw_hole;
 
 
+	
 	procedure draw_keepout_zone is
 		-- Extract from the given command the zone arguments (everything after "keepout"):
 		-- example command: board demo draw keepout line 0 0 line 10 0 line 10 10 line 0 10
@@ -486,6 +493,8 @@ is
 		end case;
 	end delete_outline_segment;
 
+
+	
 	
 	procedure delete_hole_segment is 
 		use et_board_ops.board_contour;
@@ -505,6 +514,8 @@ is
 			when others => command_incomplete;
 		end case;
 	end delete_hole_segment;
+
+
 
 	
 	procedure draw_silkscreen is
@@ -584,6 +595,8 @@ is
 		end case;
 	end draw_silkscreen;
 
+
+
 	
 	procedure draw_assy_doc is
 		use et_board_ops.assy_doc;
@@ -660,6 +673,8 @@ is
 	end draw_assy_doc;
 
 	
+
+
 	
 	procedure draw_route_restrict is
 		use et_board_ops.route_restrict;
@@ -773,6 +788,9 @@ is
 		end case;
 	end draw_route_restrict;
 
+
+
+
 	
 	procedure draw_via_restrict is
 		use et_board_ops.via_restrict;
@@ -874,6 +892,8 @@ is
 		end case;
 	end draw_via_restrict;
 
+
+
 	
 	procedure draw_stop_mask is
 		use et_board_ops.stop_mask;
@@ -947,6 +967,7 @@ is
 		end case;
 	end draw_stop_mask;
 
+
 	
 	procedure draw_stencil is
 		use et_board_ops.stencil;
@@ -1017,6 +1038,8 @@ is
 		end case;
 	end draw_stencil;
 
+
+	
 	
 	procedure place_text is
 		use pac_text_board;
@@ -1090,6 +1113,7 @@ is
 			when others => command_incomplete;
 		end case;
 	end place_text;
+
 
 	
 	-- Parses a command like "board demo set via restring inner/outer 0.2"
@@ -1221,6 +1245,7 @@ is
 		end case;
 
 	end set_via_properties;
+
 
 	
 	-- This procedure builds the final via and calls et_board_ops.place_via
@@ -1721,6 +1746,7 @@ is
 	end route_freetrack;
 
 	
+	
 	procedure route_net is 
 		use et_terminals;
 		shape : constant type_track_shape := type_track_shape'value (f (7));
@@ -1873,6 +1899,7 @@ is
 			end case;
 		end make_polygon;
 
+		
 	begin -- route_net
 		case shape is
 			when LINE =>
@@ -2233,6 +2260,29 @@ is
 	end update_ratsnest;
 
 
+	
+	procedure move_drawing_frame is begin
+		case cmd_field_count is
+			when 7 => -- board led_driver move frame absolute 20 50
+				move_drawing_frame (
+					module_cursor 	=> module_cursor,
+					coordinates		=> to_coordinates (f (5)),  -- relative/absolute
+					point			=> type_vector_model (set (
+										x => to_distance (dd => f (6)),
+										y => to_distance (dd => f (7)))),
+					log_threshold	=> log_threshold + 1
+					);
+				null;
+				
+			when 8 .. type_field_count'last =>
+				too_long;
+				
+			when others =>
+				command_incomplete;
+		end case;
+	end move_drawing_frame;
+
+	
 	
 	-- Parses the single_cmd_status.cmd:
 	procedure parse is begin
@@ -2617,25 +2667,10 @@ is
 				
 			when VERB_MOVE =>
 				case noun is
-					when NOUN_BOARD =>
-						case cmd_field_count is
-							when 7 => -- board led_driver move board absolute 20 50
-								move_board (
-									module_name 	=> module,
-									coordinates		=> to_coordinates (f (5)),  -- relative/absolute
-									point			=> type_vector_model (set (
-														x => to_distance (dd => f (6)),
-														y => to_distance (dd => f (7)))),
-									log_threshold	=> log_threshold + 1
-									);
+					when NOUN_FRAME =>
+						move_drawing_frame;
 
-							when 8 .. type_field_count'last =>
-								too_long;
-								
-							when others =>
-								command_incomplete;
-						end case;
-
+						
 					when NOUN_CURSOR =>
 						parse_canvas_command (VERB_MOVE, NOUN_CURSOR);
 						

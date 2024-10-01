@@ -62,47 +62,49 @@ package body et_board_ops is
 
 
 	
-	procedure move_board (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+	procedure move_drawing_frame (
+		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure set_origin (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
-		begin
+			module		: in out type_module) 
+		is begin
 			case coordinates is
 				when ABSOLUTE =>
-					module.board.origin := point;
+					--module.board.frame.frame.position := point;
+					null;
 
 				when RELATIVE =>
-					move_by (module.board.origin, to_distance_relative (point));
+					null;
+					-- move_by (module.board.frame.position, to_distance_relative (point));
 			end case;
 		end set_origin;
 		
-	begin -- move_board
+	begin
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & to_string (module_name) &
-					" moving board origin to" & to_string (point), level => log_threshold);
+				log (text => "module " & to_string (key (module_cursor)) &
+					 " moving drawing frame origin to " & to_string (point),
+					 level => log_threshold);
 
 			when RELATIVE =>
-				log (text => "module " & to_string (module_name) &
-					" moving board origin by" & to_string (point), level => log_threshold);
+				log (text => "module " & to_string (key (module_cursor)) &
+					 " moving drawing frame origin by " & to_string (point), 
+					 level => log_threshold);
 		end case;
 
-		-- locate module
-		module_cursor := locate_module (module_name);
 		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> set_origin'access);
 
-	end move_board;
+	end move_drawing_frame;
+
 
 	
 	procedure add_layer (

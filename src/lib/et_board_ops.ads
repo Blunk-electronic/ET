@@ -78,10 +78,10 @@ package et_board_ops is
 	use pac_generic_modules;
 
 	
-	-- Moves the origin of the board to the given point (relative to the lower left 
-	-- corner of the drawing frame):
-	procedure move_board (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+	-- Moves the origin of the drawing frame to 
+	-- the given point:
+	procedure move_drawing_frame (
+		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);

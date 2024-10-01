@@ -81,7 +81,7 @@ package et_modes.board is
 		NOUN_ALL,
 		NOUN_ASSY, -- assembly documentation
 		NOUN_ARC,
-		NOUN_BOARD,
+		NOUN_FRAME,
 		NOUN_CENTER,
 		NOUN_CONDUCTORS,
 		NOUN_CURSOR,
