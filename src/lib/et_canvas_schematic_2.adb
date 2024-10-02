@@ -131,12 +131,12 @@ package body et_canvas_schematic_2 is
 		-- all other objects of the frame are definitely inside
 		-- the outer border:
 		procedure parse_drawing_frame is
-			use et_frames;
+			-- use et_frames;
 			
 			b : type_area; -- the bounding-box of the frame
 
 			-- Get the size of the frame:
-			size : constant type_frame_size := 
+			size : constant et_frames.type_frame_size := 
 				element (current_active_module).frames.frame.size;
 
 		begin
@@ -258,11 +258,9 @@ package body et_canvas_schematic_2 is
 
 
 		procedure add_margin is
-			use et_frames;
-
 			-- Get the margin between outer border of the frame
 			-- and the edge of the paper:
-			margin : constant type_border_width := 
+			margin : constant et_frames.type_border_width := 
 				element (current_active_module).frames.frame.border_width;
 			
 			-- The offset due to the margin:

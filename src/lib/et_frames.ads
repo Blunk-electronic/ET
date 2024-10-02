@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -48,12 +48,13 @@ with et_coordinates_2;			use et_coordinates_2;
 with et_general;				use et_general;
 with et_text;					use et_text;
 
-with glib;
 with cairo;
 
 package et_frames is
 
+
 -- PAPER SIZES
+	
     type type_paper_size is (A3, A4); -- CS: others ?
     paper_size_default : constant type_paper_size := A4;
 
@@ -73,6 +74,12 @@ package et_frames is
 	-- There are only two linewidths, expressed in mm:
 	linewidth_1 : constant := 0.3;
 	linewidth_2 : constant := 1.0; 
+
+
+
+	
+
+-- COLUMNS AND ROWS:
 	
 	-- A drawing frame is divided in columns and rows. The columns run from 1 to maximal 26.
 	-- The rows run from A to Z.
@@ -96,29 +103,61 @@ package et_frames is
 		columns	: type_columns := columns_default;
 	end record;
 
-	-- The unit for all kinds of distances in a drawing frame is millimeters.
+
+	
+
+-- DISTANCE AND DIMENSION:
+	
+	-- The unit for all kinds of distances in 
+	-- a drawing frame is millimeters.
+	-- We use whole numbers as this accurary is sufficient
+	-- for everything related to a drawing frame:
 	type type_distance is new integer range -10_000 .. 10_000;
 
-	-- CS subtype type_distance_positive is type_distance range 0 .. type_distance'last;
+	subtype type_distance_positive is 
+		type_distance range 0 .. type_distance'last;
 	
 
-	function to_string (distance : in type_distance) return string;
-	function to_distance (distance : in string) return type_distance;
+
 	
+	-- Converts a distance to a string:
+	function to_string (
+		distance : in type_distance) 
+		return string;
+
+	
+	-- Converts a string to a distance:
+	function to_distance (
+		distance : in string)
+		return type_distance;
+
+	
+
+	
+	-- The dimensions of a frame:
 	type type_frame_size is record
-		x	: type_distance := 280;
-		y	: type_distance := 200;
+		x	: type_distance_positive := 280;
+		y	: type_distance_positive := 200;
 	end record;
 
+
+	
 	-- The space between inner and outer border:
-	subtype type_border_width is type_distance range 4 .. 10;
+	subtype type_border_width is type_distance_positive range 4 .. 10;
 	border_width_default : constant type_border_width := 5;
 
-	paper_size_A3_x : constant type_distance := 420;
-	paper_size_A3_y : constant type_distance := 297;
+
 	
-	paper_size_A4_x : constant type_distance := 297;
-	paper_size_A4_y : constant type_distance := 210;
+
+	
+
+-- PAPER SIZES:
+	
+	paper_size_A3_x : constant type_distance_positive := 420;
+	paper_size_A3_y : constant type_distance_positive := 297;
+	
+	paper_size_A4_x : constant type_distance_positive := 297;
+	paper_size_A4_y : constant type_distance_positive := 210;
 
 	
 	-- Returns for the given paper size, 
@@ -127,21 +166,32 @@ package et_frames is
 		paper_size	: in type_paper_size;
 		orientation	: in type_orientation := LANDSCAPE;
 		axis		: in type_axis_2d)
-		return type_distance;
+		return type_distance_positive;
+
+
 
 	
+
+-- POSITION:
+	
+	-- A position in the drawing frame domain:
 	type type_position is record
 		x, y : type_distance := 0;
 	end record;
 
 	-- position_default : constant type_position := (1,1);
 
-
+	
+	-- Converts a position to a string:
 	function to_string (
 		p : in type_position)
 		return string;
 
 
+
+	
+	
+-- LINES:
 	
 	type type_line is record
 		start_point	: type_position;
@@ -153,8 +203,12 @@ package et_frames is
 
 
 
+
 	
-	subtype type_text_size is type_distance range 1 .. 50;
+-- TEXT:
+	
+	subtype type_text_size is type_distance_positive range 1 .. 50;
+	
 	text_size_default : constant type_text_size := 3;
 
 
@@ -205,6 +259,9 @@ package et_frames is
 	package pac_texts is new doubly_linked_lists (type_text);
 
 
+
+	
+
 	-- The basic title block:
 	type type_title_block is tagged record
 		position		: type_position;
@@ -216,6 +273,9 @@ package et_frames is
 		texts			: pac_texts.list;
 	end record;
 
+
+
+	
 	
 	-- GUI relevant only: The font of placeholders:
 	font_placeholders : constant type_font := (
@@ -239,6 +299,8 @@ package et_frames is
 	font_indexes_size : constant type_distance := 3;
 	
 
+
+	
 
 -- FILE NAMES
 
@@ -268,9 +330,11 @@ package et_frames is
 
 
 	
+	
 -- TEXT PLACEHOLDERS AND TITLE BLOCKS
 	
-	-- schematic:
+	-- SCHEMATIC:
+	
 	-- The set of basic placeholders is extended by other things which are
 	-- required in the schematic:
 	type type_placeholders_schematic is new type_placeholders_basic with record
@@ -283,7 +347,9 @@ package et_frames is
 		additional_placeholders : type_placeholders_schematic;
 	end record;
 
-	-- pcb:
+
+	
+	-- PCB:
 	
 	-- CAM markers are required for CAM output and visualization.
 	-- They are texts in the title block that indicate what it is about.
@@ -349,6 +415,7 @@ package et_frames is
 	function get_position (
 		frame 		: in type_frame_general)
 		return type_position;
+
 
 	
 

@@ -79,25 +79,35 @@ package body et_frames is
 
 
 	
+	
 
-	function to_string (distance : in type_distance) return string is begin
+	function to_string (
+		distance : in type_distance) 
+		return string 
+	is begin
 		return trim (type_distance'image (distance), left);
 	end;
 
-	function to_distance (distance : in string) return type_distance is begin
+
+
+	function to_distance (
+		distance : in string)
+		return type_distance
+	is begin
 		return type_distance'value (distance);
 	end;
 
 	
 
+
+	
 	function paper_dimension (
 		paper_size	: in type_paper_size;
 		orientation	: in type_orientation := LANDSCAPE;
 		axis		: in type_axis_2d)
-		return type_distance 
+		return type_distance_positive 
 	is
-		dimension : type_distance;
-	
+		dimension : type_distance_positive;	
 	begin
 		case orientation is
 			when LANDSCAPE =>

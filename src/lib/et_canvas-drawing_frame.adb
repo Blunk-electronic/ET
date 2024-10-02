@@ -72,11 +72,11 @@ package body et_canvas.drawing_frame is
 		l : pac_geometry.type_line;
 
 		-- Get the width of the frame:
-		w : constant type_distance_positive := 
+		w : constant pac_geometry.type_distance_positive := 
 			to_distance (frame.size.x);
 
 		-- Get the height of the frame:
-		h : constant type_distance_positive := 
+		h : constant pac_geometry.type_distance_positive := 
 			to_distance (frame.size.y);
 
 		-- Get the position of the lower-left corner
@@ -86,7 +86,7 @@ package body et_canvas.drawing_frame is
 			rotation => zero_rotation);
 
 		-- Get the width of the border of the frame:
-		b : constant type_distance_positive := 
+		b : constant pac_geometry.type_distance_positive := 
 			to_distance (frame.border_width);
 
 		
@@ -160,11 +160,11 @@ package body et_canvas.drawing_frame is
 		
 		procedure sector_delimiters is
 
-			sector_width  : constant type_distance_positive := 
-				(w - 2 * b) / type_distance_positive (frame.sectors.columns);
+			sector_width  : constant pac_geometry.type_distance_positive := 
+				(w - 2 * b) / pac_geometry.type_distance_positive (frame.sectors.columns);
 			
-			sector_height : constant type_distance_positive := 
-				(h - 2 * b) / type_distance_positive (frame.sectors.rows);
+			sector_height : constant pac_geometry.type_distance_positive := 
+				(h - 2 * b) / pac_geometry.type_distance_positive (frame.sectors.rows);
 			
 			use et_text;
 
@@ -177,7 +177,7 @@ package body et_canvas.drawing_frame is
 			begin
 				draw_text (
 					content		=> content,
-					size		=> type_distance_positive (font_indexes_size),
+					size		=> pac_geometry.type_distance_positive (font_indexes_size),
 					font		=> font_indexes,
 
 					-- The anchor point is offset by the position
@@ -190,7 +190,7 @@ package body et_canvas.drawing_frame is
 			end draw_index;
 
 			
-			x, y  	: type_distance_positive;
+			x, y  	: pac_geometry.type_distance_positive;
 			xo, yo	: pac_geometry.type_distance;
 			
 
@@ -205,7 +205,7 @@ package body et_canvas.drawing_frame is
 			for i in 1 .. frame.sectors.columns - 1 loop
 
 				-- compute x coordinate
-				x := type_distance_positive (i) * sector_width
+				x := pac_geometry.type_distance_positive (i) * sector_width
 					+ b; -- offset to the right
 
 				-- LOWER BORDER
@@ -246,7 +246,7 @@ package body et_canvas.drawing_frame is
 			for i in 1 .. frame.sectors.rows - 1 loop
 
 				-- compute y coordinate
-				y := type_distance_positive (i) * sector_height
+				y := pac_geometry.type_distance_positive (i) * sector_height
 					+ b; -- offset upwards
 
 				-- LEFT BORDER
@@ -292,7 +292,7 @@ package body et_canvas.drawing_frame is
 			for i in 1 .. frame.sectors.columns loop
 
 				-- compute x coordinate
-				x := type_distance_positive (i) * sector_width + xo;
+				x := pac_geometry.type_distance_positive (i) * sector_width + xo;
 				
 				-- draw index in lower border
 				draw_index (
@@ -318,7 +318,7 @@ package body et_canvas.drawing_frame is
 			for i in 1 .. frame.sectors.rows loop
 
 				-- compute y coordinate
-				y := type_distance_positive (i) * sector_height + yo;
+				y := pac_geometry.type_distance_positive (i) * sector_height + yo;
 				
 				-- draw index in left border
 				draw_index (

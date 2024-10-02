@@ -279,11 +279,11 @@ package body et_canvas_board_2 is
 
 
 		procedure add_margin is
-			use et_frames;
+			-- use et_frames;
 
 			-- Get the margin between outer border of the frame
 			-- and the edge of the paper:
-			margin : constant type_border_width := 
+			margin : constant et_frames.type_border_width := 
 				element (current_active_module).board.frame.frame.border_width;
 			
 			-- The offset due to the margin:
