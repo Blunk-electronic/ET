@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -239,24 +239,35 @@ package body et_kicad_to_native is
 			set (point_actual, Y, new_y);
 		end move;
 
+
 		
+		-- Sets the layout_sheet_height depending on the paper size
+		-- of the layout sheet.
 		procedure prepare_layout_y_movements is
-		-- Sets the layout_sheet_height depending on the paper size of the layout sheet.
-			-- The paper size of a board/layout drawing:
 			use et_pcb_coordinates_2;
 			use pac_geometry_2;
 			use et_frames;
+			
+			-- The paper size of a board/layout drawing:
 			board_paper_size : type_paper_size;
+			
 		begin -- prepare_layout_y_movements
 			-- Fetch the paper size of the current layout design:
 			board_paper_size := element (module_cursor).board.paper_size;
 			
-			log (text => "layout paper size " & to_string (board_paper_size), level => log_threshold + 2);
+			log (text => "layout paper size " 
+				 & to_string (board_paper_size), 
+				 level => log_threshold + 2);
 			
-			-- get the paper height of the sheet
-			--layout_sheet_height := et_pcb.frames.paper_dimension (axis => Y, paper_size => board_paper_size);
-			layout_sheet_height := type_distance_positive (et_frames.paper_dimension (axis => Y, paper_size => board_paper_size));
+			-- Get the paper height of the sheet:
+
+			--layout_sheet_height := et_pcb.frames.paper_dimension (
+			--  axis => Y, paper_size => board_paper_size);
+
+			layout_sheet_height := pac_geometry_2.type_distance_positive (
+				et_frames.paper_dimension (axis => Y, paper_size => board_paper_size));
 		end prepare_layout_y_movements;
+
 
 		
 		--procedure move (point : in out et_pcb_coordinates.pac_geometry_brd.type_vector_model'class) is
@@ -272,15 +283,18 @@ package body et_kicad_to_native is
 			set (point, Y, new_y);
 		end move;
 
+
 		
+		
+		-- Changes the path and y position of text notes (in schematic):
 		procedure flatten_notes (
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
-			module		: in out et_kicad.pcb.type_module) is
-		-- Changes the path and y position of text notes (in schematic).
-
+			module		: in out et_kicad.pcb.type_module) 
+		is
 			use et_kicad.schematic.type_texts;
 			note_cursor : et_kicad.schematic.type_texts.cursor := module.notes.first;
 
+			
 			procedure change_path (note : in out et_kicad.schematic.type_text) is
 				use et_coordinates_2;				
 				use et_kicad_coordinates;
@@ -299,7 +313,8 @@ package body et_kicad_to_native is
 
 				log_indentation_down;
 			end change_path;
-				
+
+			
 		begin -- flatten_notes
 			log (text => "text notes ...", level => log_threshold + 2);
 			log_indentation_up;
