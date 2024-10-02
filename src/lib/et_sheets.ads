@@ -74,10 +74,6 @@ package et_sheets is
 	function to_sheet_relative (sheet : in type_sheet_relative) return string;
 	function to_sheet_relative (sheet : in string) return type_sheet_relative;
 	
-	-- -- The whole schematic may have a total of x pages.
-	-- schematic_page_count_max : constant positive := 100;
-	-- type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not used yet
-	
 
 end et_sheets;
 
