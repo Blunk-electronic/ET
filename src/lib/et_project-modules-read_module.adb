@@ -842,7 +842,7 @@ is
 	sheet_description_category	: et_frames.type_schematic_sheet_category := 
 		et_frames.schematic_sheet_category_default; -- product/develpment/routing
 	
-	sheet_description_number	: et_coordinates_2.type_sheet := et_coordinates_2.type_sheet'first; -- 1, 2. 3, ...
+	sheet_description_number	: type_sheet := type_sheet'first; -- 1, 2. 3, ...
 	sheet_description_text		: et_text.pac_text_content.bounded_string;		-- "voltage regulator"
 
 	-- CS frame_count_schematic		: et_coordinates_2.type_submodule_sheet_number := et_coordinates_2.type_submodule_sheet_number'first; -- 10 frames

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -49,7 +49,7 @@ separate (et_kicad.schematic)
 
 function read (
 	current_schematic	: in type_hierarchic_sheet_file_name_and_timestamp;
-	sheet_number		: in et_coordinates_2.type_sheet;
+	sheet_number		: in type_sheet;
 	log_threshold		: in type_log_level)
 	return type_hierarchic_sheet_file_names_extended
 is
@@ -69,6 +69,7 @@ is
 	-- This is the total number of sheets as it is given in the sheet header. 
 	-- A line like "Sheet 1 7" gives the sheet number (1), which is meaningless,
 	-- and the total number of sheet of the design (7).
+	use et_sheets;
 	sheet_count_total : type_sheet;
 
 	wild_simple_labels	: type_simple_labels.list;

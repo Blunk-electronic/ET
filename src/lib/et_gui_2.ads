@@ -43,8 +43,7 @@ with et_logging;				use et_logging;
 with et_general;				use et_general;
 with et_project;				use et_project;
 with et_project.modules;		use et_project.modules;
--- with et_geometry;				use et_geometry;
-with et_coordinates_2;
+with et_sheets;
 
 with gdk;						use gdk;
 with gdk.event;					use gdk.event;
@@ -72,7 +71,7 @@ package et_gui_2 is
 	procedure single_module (
 		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor;				-- cursor of generic module
-		sheet			: in et_coordinates_2.type_sheet := et_coordinates_2.type_sheet'first; -- the sheet to be opened
+		sheet			: in et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
 		script			: in pac_script_name.bounded_string; -- rename_nets.scr
 		log_threshold	: in type_log_level
 		);

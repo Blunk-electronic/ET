@@ -64,7 +64,7 @@ with et_kicad.pcb;
 with et_kicad.schematic;
 with et_kicad_coordinates;
 with et_import;
-
+with et_sheets;
 with et_assembly_variants;			use et_assembly_variants;
 with et_netlists;
 with et_text;
@@ -126,18 +126,22 @@ package body et_kicad_to_native is
 			end if;
 		end board_available;
 
+
 		
-		function paper_size_of_schematic_sheet (sheet_number : in et_coordinates_2.type_sheet)
 		-- Returns for a given sheet number the respective paper size.
+		function paper_size_of_schematic_sheet (
+			sheet_number : in et_sheets.type_sheet)
 			return et_frames.type_paper_size 
 		is
+			use et_sheets;
 			use et_frames;
 
 			-- This is to be returned. In case no paper size was found, use the default value of type_paper_size.
 			size : type_paper_size := paper_size_default;
 
 			sheet_found : boolean := false; -- goes true once the given sheet has been found
-		
+
+			
 			procedure query_sheet_number (frame : in et_kicad.schematic.type_frame) is
 				use et_coordinates_2;
 			begin
@@ -150,6 +154,7 @@ package body et_kicad_to_native is
 			-- We search for the paper size in the list "frames":
 			use et_kicad.schematic.type_frames;
 			frame_cursor : et_kicad.schematic.type_frames.cursor := schematic_frames.first;
+
 			
 		begin -- paper_size_of_schematic_sheet
 
@@ -166,7 +171,7 @@ package body et_kicad_to_native is
 			end loop;
 
 			if not sheet_found then
-				log (ERROR, "sheet with number" & et_coordinates_2.to_sheet (sheet_number) & " not found !");
+				log (ERROR, "sheet with number" & to_sheet (sheet_number) & " not found !");
 				raise constraint_error;
 			end if;
 			
@@ -174,12 +179,17 @@ package body et_kicad_to_native is
 		end paper_size_of_schematic_sheet;
 
 		
-		procedure move (point : in out et_kicad_coordinates.type_position) is
+		
 		-- Transposes a schematic point from the kicad frame to the ET native frame.
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
+		procedure move (
+			point : in out et_kicad_coordinates.type_position) 
+		is
+			use et_sheets;
 			use et_coordinates_2;
 			use pac_geometry_2;
+			
 			sheet_number 		: type_sheet;
 			sheet_paper_size	: et_frames.type_paper_size;
 			sheet_height		: type_distance_positive;
@@ -203,17 +213,20 @@ package body et_kicad_to_native is
 			et_kicad_coordinates.set (point, Y, new_y);
 		end move;
 
+
 		
-		procedure move (
-			point_actual	: in out et_coordinates_2.pac_geometry_2.type_vector_model;	-- the point it is about
-			point_help		: in et_kicad_coordinates.type_position) -- supportive point that provides the sheet number
-		is
 		-- Transposes the schematic point_actual from the kicad frame to the ET native frame.
 		-- point_help has supporting purpose: it provides the sheet number where point_actual sits.
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
+		procedure move (
+			point_actual	: in out et_coordinates_2.pac_geometry_2.type_vector_model;	-- the point it is about
+			point_help		: in et_kicad_coordinates.type_position) -- supportive point that provides the sheet number
+		is
+			use et_sheets;
 			use et_coordinates_2;
 			use pac_geometry_2;
+			
 			sheet_number 		: type_sheet;
 			sheet_paper_size	: et_frames.type_paper_size;
 			sheet_height		: type_distance_positive;
@@ -240,6 +253,7 @@ package body et_kicad_to_native is
 		end move;
 
 
+		
 		
 		-- Sets the layout_sheet_height depending on the paper size
 		-- of the layout sheet.
@@ -2854,9 +2868,10 @@ package body et_kicad_to_native is
 					return junctions;
 				end read_net_junctions;
 
+
 				
-				function read_ports (segment : in et_kicad.schematic.type_net_segment)
 				-- Returns the component ports connected with the given net segment.
+				function read_ports (segment : in et_kicad.schematic.type_net_segment)
 					return et_nets.pac_device_ports.set 
 				is
 					use et_kicad.schematic;
@@ -2866,6 +2881,7 @@ package body et_kicad_to_native is
 					
 					ports_of_segment : et_nets.pac_device_ports.set; -- to be returned
 
+					use et_sheets;
 					use et_coordinates_2;
 					use pac_geometry_sch;
 					use pac_geometry_2;

@@ -2,24 +2,26 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                                KICAD                                     --
+--                           KICAD SCHEMATIC                                --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 --                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -44,8 +46,10 @@ with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 with ada.environment_variables;
 
+with et_sheets;					use et_sheets;
 with et_conventions;
 with et_kicad.pcb;				use et_kicad.pcb;
+
 
 package body et_kicad.schematic is
 
@@ -1887,6 +1891,7 @@ package body et_kicad.schematic is
 		-- CS: exception handler
 	end to_relative_rotation;
 
+
 	
 	function to_direction (text_in : in string) 
 		return type_net_label_direction 
@@ -1920,9 +1925,10 @@ package body et_kicad.schematic is
 	-- they will be returned in hierarchic_sheet_file_names. Otherwise the returned list is empty.
 	function read (
 		current_schematic	: in type_hierarchic_sheet_file_name_and_timestamp;
-		sheet_number		: in et_coordinates_2.type_sheet;
+		sheet_number		: in type_sheet;
 		log_threshold		: in type_log_level)
 		return type_hierarchic_sheet_file_names_extended is separate;
+
 
 	
 	-- Imports the design libraries and the actual design as specified by parameter "project".
@@ -1930,8 +1936,8 @@ package body et_kicad.schematic is
 	-- Leaves the global module_cursor pointing where the module was inserted.
 	procedure import_design (
 		project			: in et_project.pac_project_name.bounded_string;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level)
+	is
 		-- backup current working directory
 		current_working_directory : constant string := current_directory;
 		
@@ -1943,10 +1949,11 @@ package body et_kicad.schematic is
 
 		-- The sheet number is incremented each time a sheet has been read.
 		-- NOTE: The sheet number written in the schematic file header (a line like "Sheet 1 7") has no meaning.
-		sheet_number : et_coordinates_2.type_sheet := 1;
+		sheet_number : type_sheet := 1;
 
 		package stack_of_sheet_lists is new et_general.stack_lifo (max => 10, item => type_hierarchic_sheet_file_names_extended);
         use stack_of_sheet_lists;
+
 		
 		function read_project_file (log_threshold : in type_log_level)
 			return type_schematic_file_name.bounded_string is
@@ -2044,6 +2051,7 @@ package body et_kicad.schematic is
 				end locate_library_directories;
 
 				
+				
 				procedure locate_libraries (log_threshold : in type_log_level) is
 				-- Tests if the libraries (listed in search_list_component_libraries) exist in the
 				-- directories listed in search_list_project_lib_dirs.
@@ -2120,6 +2128,7 @@ package body et_kicad.schematic is
 				end locate_libraries;
 
 				project_file_handle : ada.text_io.file_type;
+
 				
 			begin -- read_proj_v4
 				log (
@@ -2238,6 +2247,7 @@ package body et_kicad.schematic is
 
 				log (text => "V4 project file reading done", level => log_threshold + 1);
 			end read_proj_v4;
+
 			
 			procedure read_lib_tables (log_threshold : in type_log_level) is
 			-- Reads local and global sym-lib-tables and stores them in module component sym_lib_tables.
@@ -2299,6 +2309,7 @@ package body et_kicad.schematic is
 					log_indentation_down;
 				end locate_component_libraries;
 
+				
 				procedure locate_package_libraries is
 				-- Tests if the libraries (listed in fp_lib_table) exist.
 				-- If a library was found, a same-named empty library is created in the container et_kicad_pcb.package_libraries.
@@ -3238,7 +3249,7 @@ package body et_kicad.schematic is
 							-- Read schematic file as indicated by hierarchic_sheet_file_names.id. 
 							-- Read_schematic receives the name of the schematic file to be read.
 							-- The sheet number increases each time.
-							sheet_number := et_coordinates_2."+" (sheet_number, 1);
+							sheet_number := et_sheets."+" (sheet_number, 1);
 							hierarchic_sheet_file_names := read (current_schematic, sheet_number, log_threshold);
 
 							-- If the schematic file contains hierarchic sheets, set hierarchic_sheet_file_names.id to the first 

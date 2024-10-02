@@ -43,6 +43,7 @@ with et_canvas_schematic_nets;
 with et_scripting_interactive_schematic;
 with et_symbols;
 with et_schematic_ops.netlists;
+with et_sheets;
 with et_net_labels;						use et_net_labels;
 with et_nets;							use et_nets;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
@@ -277,6 +278,7 @@ is
 					-- The unit name is empty because we will center just 
 					-- on the first unit on the current sheet:
 					location : type_unit_query := locate (to_unit_name (""));
+					use et_sheets;
 				begin
 					if location.exists then
 						if get_sheet (location.position) = current_active_sheet then
@@ -388,9 +390,11 @@ is
 	end show_net;
 
 	
+	
 	procedure show_sheet is -- GUI related
+		use et_sheets;
 		use et_canvas_schematic_2;
-		sheet : et_coordinates_2.type_sheet := to_sheet (f (5));
+		sheet : type_sheet := to_sheet (f (5));
 	begin
 		log (text => "set sheet" & to_sheet (sheet), level => log_threshold + 1); 
 
@@ -440,9 +444,10 @@ is
 	-- Sets the active module and sheet.
 	procedure show_module_and_sheet is  -- GUI related
 		use et_general;
+		use et_sheets;
 				
 		module : pac_module_name.bounded_string := to_module_name (f (5));
-		sheet : et_coordinates_2.type_sheet := to_sheet (f (6));
+		sheet : type_sheet := to_sheet (f (6));
 	begin
 		log (text => "set module " 
 			& enclose_in_quotes (to_string (module))
@@ -601,6 +606,7 @@ is
 	-- Parses the single_cmd_status.cmd:
 	procedure parse is 
 		use et_project.modules;
+		use et_sheets;
 	begin
 		log (text => "parsing command: " 
 			& enclose_in_quotes (to_string (single_cmd_status.cmd)),
@@ -2187,6 +2193,7 @@ is
 
 	
 	procedure propose_arguments is
+		use et_sheets;
 		use et_scripting_interactive_schematic;
 		use et_canvas_schematic_units;
 		use et_canvas_schematic_nets;

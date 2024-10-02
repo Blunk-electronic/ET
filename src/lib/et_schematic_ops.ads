@@ -51,6 +51,7 @@ with ada.containers.ordered_sets;
 with et_net_names;				use et_net_names;
 with et_general;				use et_general;
 with et_geometry;				use et_geometry;
+with et_sheets;					use et_sheets;
 with et_coordinates_2;			use et_coordinates_2;
 use et_coordinates_2.pac_geometry_2;
 
@@ -562,7 +563,8 @@ package et_schematic_ops is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
 		unit	: in pac_unit_name.bounded_string)
-		return et_coordinates_2.type_sheet;
+		return type_sheet;
+
 	
 	procedure invoke_unit (
 	-- Invokes a unit of a device into the schematic.

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 -2024                                                 --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -422,7 +422,7 @@ package body et_schematic_ops.nets is
 					process		=> rename_everywhere'access);
 
 			when SHEET =>
-				log (text => "scope: all strands on sheet" & et_coordinates_2.to_sheet (get_sheet (place)), level => log_threshold);
+				log (text => "scope: all strands on sheet" & to_sheet (get_sheet (place)), level => log_threshold);
 
 				update_element (
 					container	=> generic_modules,
@@ -590,7 +590,7 @@ package body et_schematic_ops.nets is
 					process		=> delete_everywhere'access);
 
 			when SHEET =>
-				log (text => "scope: all strands on sheet" & et_coordinates_2.to_sheet (get_sheet (place)), level => log_threshold);
+				log (text => "scope: all strands on sheet" & to_sheet (get_sheet (place)), level => log_threshold);
 
 				update_element (
 					container	=> generic_modules,

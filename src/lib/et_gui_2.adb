@@ -52,13 +52,14 @@ package body et_gui_2 is
 	procedure init_schematic (
 		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor; -- cursor of generic module to be edited
-		sheet			: in et_coordinates_2.type_sheet := et_coordinates_2.type_sheet'first; -- the sheet to be opened
+		sheet			: in et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
 		log_threshold_in: in type_log_level) 
 	is
 		use et_canvas_schematic_2;
 		use et_canvas_schematic_2.pac_canvas;
 		use et_coordinates_2.pac_geometry_2;
 		use pac_generic_modules;
+		use et_sheets;
 		use et_coordinates_2;
 	begin		
 		-- Set the log threshold. Everything that happens in the gui may be logged
@@ -256,10 +257,11 @@ package body et_gui_2 is
 	procedure single_module (
 		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
 		module			: in pac_generic_modules.cursor;				-- cursor of generic module
-		sheet			: in et_coordinates_2.type_sheet := et_coordinates_2.type_sheet'first; -- the sheet to be opened
+		sheet			: in et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
 		script			: in pac_script_name.bounded_string; -- rename_nets.scr
 		log_threshold	: in type_log_level) 
 	is
+		use et_sheets;
 		use et_coordinates_2;
 	begin
 		log (text => row_separator_single, level => log_threshold);

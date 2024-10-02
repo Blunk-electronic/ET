@@ -61,6 +61,7 @@ with gtk.menu;
 with gtk.menu_item;
 with gtk.menu_shell;
 
+with et_sheets;						use et_sheets;
 with et_general;					use et_general;
 with et_assembly_variants;			use et_assembly_variants;
 with et_geometry;					use et_geometry;

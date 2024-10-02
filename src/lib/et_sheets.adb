@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         SCHEMATIC READ AND WRITE                         --
+--                               SHEETS                                     --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -21,10 +21,9 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -37,28 +36,27 @@
 --   history of changes:
 --
 
-with ada.strings; 					use ada.strings;
-with et_geometry;					use et_geometry;
-with et_sheets;						use et_sheets;
 
-package body et_schematic_rw is
 
-	function position (pos : in et_coordinates_2.type_position) return string is
-	-- Returns something like "sheet 3 x 12.34 y 45.0".
-
-		function text return string is begin return 
-			space & keyword_x & to_string (get_x (pos.place)) 
-			& space & keyword_y & to_string (get_y (pos.place));
-		end text;
-		
-	begin
-		return keyword_sheet
-			& to_sheet (get_sheet (pos)) 
-			& text;
-	end position;
-
+package body et_sheets is
 	
-end et_schematic_rw;
+	function to_sheet (sheet : in type_sheet) return string is begin
+		return type_sheet'image (sheet);
+	end;
+
+	function to_sheet (sheet : in string) return type_sheet is begin
+		return type_sheet'value (sheet);
+	end;
+
+	function to_sheet_relative (sheet : in type_sheet_relative) return string is begin
+		return type_sheet_relative'image (sheet);
+	end;
+	
+	function to_sheet_relative (sheet : in string) return type_sheet_relative is begin
+		return type_sheet_relative'value (sheet);
+	end;
+	
+end et_sheets;
 
 -- Soli Deo Gloria
 

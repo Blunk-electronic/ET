@@ -77,29 +77,15 @@ package body et_coordinates_2 is
 -- 	
 
 
--- SHEETS:
-	
-	function to_sheet (sheet : in type_sheet) return string is begin
-		return type_sheet'image (sheet);
-	end;
-
-	function to_sheet (sheet : in string) return type_sheet is begin
-		return type_sheet'value (sheet);
-	end;
-
-	function to_sheet_relative (sheet : in type_sheet_relative) return string is begin
-		return type_sheet_relative'image (sheet);
-	end;
-	
-	function to_sheet_relative (sheet : in string) return type_sheet_relative is begin
-		return type_sheet_relative'value (sheet);
-	end;
-
 
 	
 	
-	function "<" (left, right : in type_position) return boolean is
+	function "<" (left, right : in type_position) 
+		return boolean 
+	is
 		result : boolean := false;
+
+		use et_sheets;
 	begin
 		if left.sheet < right.sheet then
 			result := true;
@@ -144,6 +130,7 @@ package body et_coordinates_2 is
 		offset		: in type_position_relative) 
 	is
 		use et_geometry;
+		use et_sheets;
 	begin
 		position.set (X, get_x (position) + get_x (offset));
 		position.set (Y, get_y (position) + get_y (offset));
@@ -152,10 +139,11 @@ package body et_coordinates_2 is
 		position.sheet := type_sheet (type_sheet_relative (position.sheet) + offset.sheet);
 	end;
 
+
 	
 	function to_position (
 		point 		: in type_vector_model;
-		sheet		: in type_sheet;
+		sheet		: in et_sheets.type_sheet;
 		rotation	: in type_rotation_model := zero_rotation)
 		return type_position 
 	is
@@ -170,7 +158,7 @@ package body et_coordinates_2 is
 	
 	function to_position_relative (
 		point 		: in type_vector_model;
-		sheet		: in type_sheet_relative;
+		sheet		: in et_sheets.type_sheet_relative;
 		rotation	: in type_rotation_model := zero_rotation)
 		return type_position_relative 
 	is
@@ -182,9 +170,11 @@ package body et_coordinates_2 is
 		return p;
 	end;
 
+
 	
 	function to_string (position : in type_position) return string is
-
+		use et_sheets;
+		
 		coordinates_preamble_sheet : constant string := " pos "
 			& "(sheet"
 			& axis_separator
@@ -201,18 +191,21 @@ package body et_coordinates_2 is
 			& to_string (get_y (position));
 	end to_string;
 
+
 	
 	function get_sheet (
 		position	: in type_position) 
-		return type_sheet 
+		return et_sheets.type_sheet 
 	is begin
 		return position.sheet;
 	end get_sheet;
 
+
+	
 	
 	procedure set_sheet (
 		position	: in out type_position;
-		sheet		: in type_sheet) 
+		sheet		: in et_sheets.type_sheet) 
 	is begin
 		position.sheet := sheet;
 	end set_sheet;

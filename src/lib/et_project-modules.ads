@@ -41,6 +41,7 @@ with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.vectors;
 
+with et_sheets;					use et_sheets;
 with et_coordinates_2;
 with et_schematic;
 with et_nets;
@@ -124,7 +125,7 @@ package et_project.modules is
 	-- Returns the description of a sheet of a generic module:
 	function sheet_description (
 		module	: in pac_generic_modules.cursor;
-		sheet	: in et_coordinates_2.type_sheet)
+		sheet	: in type_sheet)
 		return et_frames.type_schematic_description;
 
 	

@@ -44,9 +44,9 @@ with ada.containers.ordered_maps;
 with ada.directories;			use ada.directories;
 
 with et_geometry;				use et_geometry;
-with et_coordinates_2;			use et_coordinates_2;
 with et_general;				use et_general;
 with et_text;					use et_text;
+with et_sheets;					use et_sheets;
 
 with cairo;
 

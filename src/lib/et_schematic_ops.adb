@@ -6,20 +6,21 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                -- 
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -3637,7 +3638,7 @@ package body et_schematic_ops is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
 		unit	: in pac_unit_name.bounded_string)
-		return et_coordinates_2.type_sheet
+		return type_sheet
 	is begin		
 		return get_sheet (position (module, device, unit));
 	end sheet;
@@ -3651,6 +3652,8 @@ package body et_schematic_ops is
 		destination		: in et_coordinates_2.type_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level) is separate;
 
+
+	
 	function next_netchanger_index (
 	-- Returns the next available netchanger index in the module.
 		module_cursor	: in pac_generic_modules.cursor)
@@ -3699,6 +3702,8 @@ package body et_schematic_ops is
 		return next_idx;
 	end next_netchanger_index;
 
+
+	
 	procedure insert_ports (
 	-- Inserts the given netchanger ports in the net segments.
 	-- If a port lands on either the start or end point of a segment, it will
@@ -3924,12 +3929,15 @@ package body et_schematic_ops is
 		log_indentation_down;		
 	end add_netchanger;
 
+
+	
+	-- Deletes ports of the given netchanger in nets:
 	procedure delete_ports (
-	-- Deletes ports of the given netchanger in nets.
 		module			: in pac_generic_modules.cursor;			-- the module
 		index			: in et_submodules.type_netchanger_id;	-- the netchanger id
-		sheet			: in et_coordinates_2.type_sheet;		-- the sheet where the netchanger is
-		log_threshold	: in type_log_level) is
+		sheet			: in type_sheet;		-- the sheet where the netchanger is
+		log_threshold	: in type_log_level) 
+	is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;

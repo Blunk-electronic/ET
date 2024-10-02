@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -45,10 +45,9 @@ with ada.containers.indefinite_doubly_linked_lists;
 with et_net_names;					use et_net_names;
 with et_geometry;					use et_geometry;
 with et_general;					use et_general;
--- with et_canvas_general;				use et_canvas_general;
 with et_canvas_messages;			use et_canvas_messages;
 with et_canvas_tool;				use et_canvas_tool;
--- with et_canvas_schematic;
+with et_sheets;						use et_sheets;
 with et_coordinates_2;				use et_coordinates_2;
 use et_coordinates_2.pac_geometry_2;
 use et_coordinates_2.pac_path_and_bend;

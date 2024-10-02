@@ -72,6 +72,7 @@ with et_logical_pixels;				use et_logical_pixels;
 
 with et_general;					use et_general;
 
+with et_sheets;						use et_sheets;
 with et_coordinates_2;				use et_coordinates_2;
 -- use et_coordinates.pac_geometry_sch;
 -- use et_coordinates.pac_geometry_2;
@@ -300,7 +301,7 @@ package et_canvas_schematic_2 is
 	
 
 	-- The current active sheet:
-	current_active_sheet : et_coordinates_2.type_sheet := type_sheet'first;
+	current_active_sheet : type_sheet := type_sheet'first;
 
 	
 

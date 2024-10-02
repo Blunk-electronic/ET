@@ -57,7 +57,7 @@ with et_geometry_2a.grid;
 with et_geometry_2a.path;
 with et_geometry_2a.contours;
 
--- with et_logging;				use et_logging;
+with et_sheets;
 
 
 package et_coordinates_2 is
@@ -164,17 +164,6 @@ package et_coordinates_2 is
 	
 -- SHEETS:
 	
-	sheet_count_max : constant positive := 100;
-	type type_sheet_relative is new integer range -(sheet_count_max) .. sheet_count_max;
-	subtype type_sheet is type_sheet_relative range 1 .. type_sheet_relative'last;
-
-	sheet_default : constant type_sheet := type_sheet'first;
-	
-	function to_sheet (sheet : in type_sheet) return string;
-	function to_sheet (sheet : in string) return type_sheet;
-
-	function to_sheet_relative (sheet : in type_sheet_relative) return string;
-	function to_sheet_relative (sheet : in string) return type_sheet_relative;
 	
 	-- The whole schematic may have a total of x pages.
 	schematic_page_count_max : constant positive := 100;
@@ -188,8 +177,11 @@ package et_coordinates_2 is
 	type type_position_relative is new pac_geometry_2.type_position with private;
 
 	greatest_position : constant type_position;
-		
-	function "<" (left, right : in type_position) return boolean;
+
+	
+	function "<" (left, right : in type_position) 
+		return boolean;
+
 	
 	procedure move (
 		position	: in out type_position'class;
@@ -198,14 +190,14 @@ package et_coordinates_2 is
 	
 	function to_position (
 		point 		: in type_vector_model;
-		sheet		: in type_sheet;
+		sheet		: in et_sheets.type_sheet;
 		rotation	: in type_rotation_model := zero_rotation)
 		return type_position;
 
 	
 	function to_position_relative (
 		point 		: in type_vector_model;
-		sheet		: in type_sheet_relative;
+		sheet		: in et_sheets.type_sheet_relative;
 		rotation	: in type_rotation_model := zero_rotation)		
 		return type_position_relative;
 	
@@ -218,13 +210,13 @@ package et_coordinates_2 is
 	-- Returns the sheet number of the given position:
 	function get_sheet (
 		position	: in type_position) 
-		return type_sheet;
+		return et_sheets.type_sheet;
 
 
 	-- Sets the sheet number in given position:
 	procedure set_sheet (
 		position	: in out type_position;
-		sheet		: in type_sheet);
+		sheet		: in et_sheets.type_sheet);
 
 
 
@@ -232,21 +224,23 @@ package et_coordinates_2 is
 	private 
 
 		type type_position is new pac_geometry_2.type_position with record
-			sheet : type_sheet := type_sheet'first;
+			sheet : et_sheets.type_sheet := et_sheets.type_sheet'first;
 		end record;
 
 		type type_position_relative is new pac_geometry_2.type_position with record
-			sheet : type_sheet_relative := 0;
+			sheet : et_sheets.type_sheet_relative := 0;
 		end record;
 
+		
 		zero_position : constant type_position := (
-			origin_zero_rotation with sheet => type_sheet'first);
+			origin_zero_rotation with sheet => et_sheets.type_sheet'first);
 
+		
 		-- A position in a schematic which is on the
 		-- last possible sheet and the greatest distance in
 		-- x and y from the origin:
 		greatest_position : constant type_position := (
-			far_upper_right_zero_rotation with sheet => type_sheet'last);
+			far_upper_right_zero_rotation with sheet => et_sheets.type_sheet'last);
 
 		
 end et_coordinates_2;

@@ -41,6 +41,7 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.characters;			use ada.characters;
 with ada.characters.handling;	use ada.characters.handling;
 
+
 package body et_frames is
 
 	function to_paper_size (paper_size : in string) return type_paper_size is begin

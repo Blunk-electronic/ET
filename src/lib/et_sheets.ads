@@ -2,9 +2,9 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         SCHEMATIC READ AND WRITE                         --
+--                               SHEETS                                     --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -21,10 +21,9 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -36,29 +35,51 @@
 --
 --   history of changes:
 --
+with ada.text_io;				use ada.text_io;
+with ada.characters;			use ada.characters;
+with ada.characters.handling;	use ada.characters.handling;
 
-with ada.strings; 					use ada.strings;
-with et_geometry;					use et_geometry;
-with et_sheets;						use et_sheets;
+with ada.strings;				use ada.strings;
+with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.containers; 			use ada.containers;
 
-package body et_schematic_rw is
+with ada.containers.doubly_linked_lists;
 
-	function position (pos : in et_coordinates_2.type_position) return string is
-	-- Returns something like "sheet 3 x 12.34 y 45.0".
+with et_geometry;				use et_geometry;
 
-		function text return string is begin return 
-			space & keyword_x & to_string (get_x (pos.place)) 
-			& space & keyword_y & to_string (get_y (pos.place));
-		end text;
-		
-	begin
-		return keyword_sheet
-			& to_sheet (get_sheet (pos)) 
-			& text;
-	end position;
+with et_geometry_1;
+with et_geometry_1.et_polygons;
+with et_geometry_1.et_polygons.offsetting;
 
+with et_geometry_2a;
+with et_geometry_2a.grid;
+with et_geometry_2a.path;
+with et_geometry_2a.contours;
+
+-- with et_logging;				use et_logging;
+
+
+package et_sheets is
 	
-end et_schematic_rw;
+	sheet_count_max : constant positive := 100;
+	type type_sheet_relative is new integer range -(sheet_count_max) .. sheet_count_max;
+	subtype type_sheet is type_sheet_relative range 1 .. type_sheet_relative'last;
+
+	sheet_default : constant type_sheet := type_sheet'first;
+	
+	function to_sheet (sheet : in type_sheet) return string;
+	function to_sheet (sheet : in string) return type_sheet;
+
+	function to_sheet_relative (sheet : in type_sheet_relative) return string;
+	function to_sheet_relative (sheet : in string) return type_sheet_relative;
+	
+	-- -- The whole schematic may have a total of x pages.
+	-- schematic_page_count_max : constant positive := 100;
+	-- type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not used yet
+	
+
+end et_sheets;
 
 -- Soli Deo Gloria
 
