@@ -92,6 +92,14 @@ package body et_project.modules is
 	function to_project_path (path : in string) return type_et_project_path.bounded_string is begin
 		return type_et_project_path.to_bounded_string (path);
 	end to_project_path;
+
+
+	function get_active_module return string is
+		use pac_module_name;
+	begin
+		return pac_module_name.to_string (key (current_active_module)); -- motor_driver (without extension)
+	end get_active_module;
+
 	
 	function exists (module : in pac_module_name.bounded_string) return boolean is begin
 		return pac_generic_modules.contains (generic_modules, module);

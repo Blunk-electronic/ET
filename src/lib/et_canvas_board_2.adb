@@ -1339,7 +1339,7 @@ package body et_canvas_board_2 is
 		-- like "board motor_driver execute script my_script.scr:
 		line_as_typed_by_operator : constant string := 
 			to_lower (to_string (DOM_BOARD)) & space &
-			to_string (et_canvas_schematic_2.active_module) & space &
+			get_active_module & space &
 			"execute" & space & "script" & space &
 			to_string (script); -- "my_script.scr"
 		
@@ -1427,7 +1427,7 @@ package body et_canvas_board_2 is
 		-- command after this declaration will be "board led_driver rename device R1 R2".		
 		line_as_typed_by_operator : constant string := 
 			to_lower (to_string (DOM_BOARD)) & space &
-			to_string (et_canvas_schematic_2.active_module) & space &
+			get_active_module & space &
 			get_text (self);
 		
 		cmd : et_string_processing.type_fields_of_line;

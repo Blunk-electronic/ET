@@ -104,6 +104,11 @@ package et_project.modules is
 	current_active_module : et_project.modules.pac_generic_modules.cursor; -- the currently active module
 
 
+	-- Returns the name of the currently active module:
+	function get_active_module return string;
+
+
+	
 	
 	-- Returns true if the module with the given name exists in container modules.
 	function exists (module : in pac_module_name.bounded_string) return boolean;
@@ -300,6 +305,7 @@ package et_project.modules is
 
 	function to_string (section : in type_section) return string;
 	-- Converts a section like SEC_NET to a string "net".
+
 	
 	procedure read_module (
 	-- Reads a module file and stores its content as generic module in container modules.
@@ -308,6 +314,7 @@ package et_project.modules is
 		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
 		log_threshold	: in type_log_level);
 
+	
 	-- Creates an empty generic module in container modules.
 	-- Does not create the actual module file if the module
 	-- name is "untitled". If the module name is something other
@@ -316,6 +323,7 @@ package et_project.modules is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level);
 
+	
 	procedure save_module (
 	-- Saves a generic module (from container generic_modules) in a file inside 
 	-- the current project directory.
@@ -325,10 +333,11 @@ package et_project.modules is
 	-- If the module does not exist, a warning will be issued.
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level);
+
 	
-	procedure delete_module (
 	-- Deletes a generic module (from container generic_modules) and
 	-- the module file (*.mod) itself.
+	procedure delete_module (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level);
 	
@@ -342,6 +351,8 @@ package et_project.modules is
 		direction		: in et_submodules.type_netchanger_port_name) -- master/slave		
 		return boolean;
 
+
+	
 	function exists (
 	-- Returns true if the given module provides the given submodule instance.
 	-- The module being searched in must be in the rig already.						

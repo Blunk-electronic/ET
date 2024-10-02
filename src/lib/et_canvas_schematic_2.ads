@@ -361,10 +361,6 @@ package et_canvas_schematic_2 is
 
 	
 	
-	-- Returns the name of the currently active module:
-	function active_module return pac_module_name.bounded_string;
-	-- CS remove ?
-	
 
 	-- Sets the active module to be displayed in the canvas.
 	-- The module must exist inside the current project directory.

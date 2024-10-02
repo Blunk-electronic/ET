@@ -1111,7 +1111,7 @@ package body et_canvas_schematic_2 is
 		-- like "schematic motor_driver execute script my_script.scr:
 		line_as_typed_by_operator : constant string := 
 			to_lower (to_string (DOM_SCHEMATIC)) & space &
-			to_string (et_canvas_schematic_2.active_module) & space &
+			get_active_module & space &
 			"execute" & space & "script" & space &
 			to_string (script); -- "my_script.scr"
 		
@@ -1198,7 +1198,7 @@ package body et_canvas_schematic_2 is
 		-- command after this declaration will be "schematic led_driver rename device R1 R2".
 		line_as_typed_by_operator : constant string := 
 			to_lower (to_string (DOM_SCHEMATIC)) & space &
-			to_string (active_module) & space &
+			get_active_module & space &
 			get_text (self);
 		
 		cmd : et_string_processing.type_fields_of_line;
@@ -1265,17 +1265,7 @@ package body et_canvas_schematic_2 is
 		log_indentation_down;
 	end execute_command;
 
-	
 
-
-
-	
-	function active_module return pac_module_name.bounded_string is
-		use pac_module_name;
-		use et_project.modules.pac_generic_modules;
-	begin
-		return key (current_active_module); -- motor_driver (without extension)
-	end active_module;
 
 
 	

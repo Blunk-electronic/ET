@@ -510,14 +510,15 @@ is
 	end display;
 
 
+	
 	procedure delete_active_module is 
 		use et_project.modules;
 		use pac_generic_modules;
 	begin
 		-- Delete the current active module:
-		delete_module (
-			module_name		=> active_module,
-			log_threshold	=> log_threshold + 1);
+		-- delete_module (
+		-- 	module_name		=> active_modulee,
+		-- 	log_threshold	=> log_threshold + 1);
 
 		-- As long as there are other modules, open the 
 		-- first of the generic modules.
@@ -542,6 +543,7 @@ is
 			-- CS terminate_main;
 		end if;
 	end delete_active_module;
+
 
 	
 	procedure delete_explicit_module (
@@ -1060,6 +1062,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_DESCRIBE =>
 				case noun is
 					when NOUN_VARIANT => 
@@ -1080,6 +1083,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_DISPLAY => -- GUI related
 				case noun is
 					when NOUN_PORTS		-- like "schematic led_driver display ports [on/off]"
@@ -1096,7 +1100,8 @@ is
 
 					when others => invalid_noun (to_string (noun));
 				end case;
-						
+
+				
 			when VERB_DRAG =>
 				case noun is
 					when NOUN_UNIT =>
@@ -1250,6 +1255,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
+				
 			when VERB_EXIT | VERB_QUIT => 
 				null;
 				-- CS terminate_main;
