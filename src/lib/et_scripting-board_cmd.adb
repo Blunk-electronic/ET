@@ -2622,6 +2622,7 @@ is
 				-- CS terminate_main; 
 				-- CS does not work via script (gtk error ...)
 
+				
 			when VERB_FILL =>
 				case noun is
 					when NOUN_ZONE =>
@@ -2903,6 +2904,8 @@ is
 			
 	end parse;
 
+
+	
 	
 	procedure propose_arguments is
 		use et_canvas_board_devices;

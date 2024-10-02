@@ -511,73 +511,99 @@ is
 
 
 	
-	procedure delete_active_module is 
+
+
+	procedure delete_module is
+
 		use et_project.modules;
 		use pac_generic_modules;
-	begin
+
+		
 		-- Delete the current active module:
-		-- delete_module (
-		-- 	module_name		=> active_modulee,
-		-- 	log_threshold	=> log_threshold + 1);
+		procedure delete_active is begin
+			delete_module (
+				module_name		=> key (module_cursor),
+				log_threshold	=> log_threshold + 1);
 
-		-- As long as there are other modules, open the 
-		-- first of the generic modules.
-		-- If no modules available any more, close the schematic
-		-- and board editor:
-		if length (generic_modules) > 0 then
-			
-			current_active_module := generic_modules.first;
-			current_active_sheet := 1;
+			-- As long as there are other modules, open the 
+			-- first of the generic modules.
+			-- If no modules available any more, close the schematic
+			-- and board editor:
 
-			--log (text => "set module " & enclose_in_quotes (to_string (active_module)), level => log_threshold + 1);
+			-- CS Set the previous module active instead ?
+			if length (generic_modules) > 0 then
+				
+				current_active_module := generic_modules.first;
+				current_active_sheet := 1;
 
-			-- Update module name in the schematic window title bar:
-			-- CS set_title_bar (active_module);
+				log (text => "set module " 
+					 & enclose_in_quotes (get_active_module), 
+					level => log_threshold + 1);
+
+				-- Update module name in the schematic window title bar:
+				set_title_bar (current_active_module);
+				
+				update_sheet_number_display;
+				
+				-- Update the board window title bar:
+				et_canvas_board_2.set_title_bar (current_active_module);
+			else
+				-- CS
+				null;
+				-- terminate_main;
+			end if;
+		end delete_active;
+
+
+		
+		procedure delete_explicit (
+			module_name : in pac_module_name.bounded_string) 
+		is begin
+			delete_module (
+				module_name		=> module_name, -- led_driver_test
+				log_threshold	=> log_threshold + 1);
+
+			-- As long as there are other modules, open the 
+			-- first of the generic modules.
+			-- If no modules available any more, close the schematic
+			-- and board editor:
 			
-			-- CS update_sheet_number_display;
+			-- CS Set the previous module active instead ?
+			if length (generic_modules) > 0 then
 			
-			-- Update the board window title bar:
-			-- CS et_canvas_board_2.set_title_bar (active_module);
-		else
-			null;
-			-- CS terminate_main;
-		end if;
-	end delete_active_module;
+				current_active_module := generic_modules.first;
+				current_active_sheet := 1;
+
+				log (text => "set module " 
+					 & enclose_in_quotes (get_active_module), 
+					level => log_threshold + 1);
+
+				-- Update module name in the schematic window title bar:
+				set_title_bar (current_active_module);
+				
+				update_sheet_number_display;
+				
+				-- Update the board window title bar:
+				et_canvas_board_2.set_title_bar (current_active_module);
+			else
+				-- CS
+				null;
+				-- terminate_main;
+			end if;
+		end delete_explicit;
+
+		
+	begin
+		case cmd_field_count is
+			when 4 => delete_active;								
+			when 5 => delete_explicit (to_module_name (f (5)));
+			when 6 .. type_field_count'last => too_long;								
+			when others => command_incomplete;
+		end case;
+	end delete_module;
 
 
 	
-	procedure delete_explicit_module (
-		module_name : in pac_module_name.bounded_string) 
-	is
-		use et_project.modules;
-		use pac_generic_modules;
-	begin
-		delete_module (
-			module_name		=> module_name, -- led_driver_test
-			log_threshold	=> log_threshold + 1);
-
-		-- As long as there are other modules, open the 
-		-- first of the generic modules.
-		-- If no modules available any more, close the schematic
-		-- and board editor:
-		if length (generic_modules) > 0 then
-		
-			current_active_module := generic_modules.first;
-			current_active_sheet := 1;
-
-			-- Update module name in the schematic window title bar:
-			-- CS set_title_bar (active_module);
-			
-			-- CS update_sheet_number_display;
-			
-			-- Update the board window title bar:
-			-- CS et_canvas_board_2.set_title_bar (active_module);
-		else
-			null;
-			-- CS terminate_main;
-		end if;
-	end delete_explicit_module;
-
 	
 	procedure create_module (
 		module_name : in pac_module_name.bounded_string) 
@@ -618,6 +644,7 @@ is
 		if runmode /= MODE_HEADLESS then
 			status_clear;
 		end if;
+
 		
 		case verb is
 			when VERB_ADD =>
@@ -902,12 +929,7 @@ is
 
 						
 					when NOUN_MODULE =>
-						case cmd_field_count is
-							when 4 => delete_active_module;								
-							when 5 => delete_explicit_module (to_module_name (f (5)));
-							when 6 .. type_field_count'last => too_long;								
-							when others => command_incomplete;
-						end case;
+						delete_module;
 
 						
 					when NOUN_NET =>
@@ -977,6 +999,7 @@ is
 							when others => command_incomplete;
 						end case;
 
+						
 					when NOUN_PORT =>
 						case cmd_field_count is
 							when 6 =>
@@ -1027,9 +1050,11 @@ is
 								
 							when others => command_incomplete;
 						end case;
+
 						
 					when NOUN_TEXT =>
 						NULL; -- CS
+
 						
 					when NOUN_UNIT =>
 						case cmd_field_count is
@@ -1044,6 +1069,7 @@ is
 								
 							when others => command_incomplete;
 						end case;
+
 						
 					when NOUN_VARIANT => 
 						case cmd_field_count is
@@ -1058,6 +1084,7 @@ is
 								
 							when others => command_incomplete;
 						end case;
+
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
@@ -1260,7 +1287,8 @@ is
 				null;
 				-- CS terminate_main;
 				-- CS does not work via script (gtk error ...)
-			
+
+				
 			when VERB_INVOKE =>
 				case noun is
 					when NOUN_UNIT =>
