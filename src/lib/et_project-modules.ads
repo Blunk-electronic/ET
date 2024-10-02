@@ -149,6 +149,8 @@ package et_project.modules is
 		net			: in et_nets.pac_nets.cursor;
 		direction	: in et_submodules.type_netchanger_port_name) -- master/slave 		
 		return boolean;
+
+
 	
 	-- Saves the given generic module. 
 	-- Saves the module with its own name if save_as_name is empty.
@@ -324,13 +326,13 @@ package et_project.modules is
 		log_threshold	: in type_log_level);
 
 	
-	procedure save_module (
 	-- Saves a generic module (from container generic_modules) in a file inside 
 	-- the current project directory.
 	-- The module must be inside the current project. If it is outside
 	-- the project, a warning will be issued and it will NOT be saved.
 	-- If the module is outside the project directory then it will not be touched.
 	-- If the module does not exist, a warning will be issued.
+	procedure save_module (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level);
 

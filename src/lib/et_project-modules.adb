@@ -423,6 +423,8 @@ package body et_project.modules is
 		
 	end create_module;
 
+
+	
 	procedure save_module (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level) 
