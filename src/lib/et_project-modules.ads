@@ -113,15 +113,20 @@ package et_project.modules is
 	-- Returns true if the module with the given name exists in container modules.
 	function exists (module : in pac_module_name.bounded_string) return boolean;
 
+
+	
 	-- Locates the given module in the global container "modules".
 	function locate_module (name : in pac_module_name.bounded_string) -- motor_driver (without extension *.mod)
 		return pac_generic_modules.cursor;
 
 	
+	
 	-- Returns the list of preferred schematic libraries:
 	function get_preferred_libraries_schematic (module : in pac_generic_modules.cursor)
 		return et_meta.pac_preferred_libraries_schematic.list;
 
+	
+	
 	-- Returns the list of preferred board libraries (non-electrical packages):
 	function get_preferred_libraries_board (module : in pac_generic_modules.cursor)
 		return et_meta.pac_preferred_libraries_board.list;
@@ -135,6 +140,8 @@ package et_project.modules is
 
 	
 	procedure port_not_at_edge (name : in pac_net_name.bounded_string);
+
+
 	
 	-- Returns true if given port of netchanger is connected with any net.
 	function port_connected (
@@ -142,6 +149,8 @@ package et_project.modules is
 		port	: in et_netlists.type_port_netchanger)
 		return boolean;
 
+
+	
 	-- Returns true if the given net provides a netchanger that may serve as port
 	-- to a parent module.
 	function netchanger_as_port_available (
@@ -152,7 +161,7 @@ package et_project.modules is
 
 
 	
-	-- Saves the given generic module. 
+	-- Saves the given generic module in the current working directory.
 	-- Saves the module with its own name if save_as_name is empty.
 	-- If save_as_name contains something, then the module is saved
 	-- with that name. 
@@ -362,6 +371,8 @@ package et_project.modules is
 		instance	: in et_general.pac_module_instance_name.bounded_string) -- OSC1
 		return boolean;
 
+
+	
 	function exists (
 	-- Returns true if the given submodule instance provides the
 	-- given assembly variant. The submodule instance is searched for
@@ -372,6 +383,8 @@ package et_project.modules is
 		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost				
 		return boolean;
 
+
+	
 	function exists (
 	-- Returns true if the given module provides the given assembly variant.
 	-- If the variant is an empty string then it is about the default variant
@@ -380,6 +393,8 @@ package et_project.modules is
 		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost
 		return boolean;	
 
+
+	
 	function exists (
 	-- Returns true if the given module and variant provides the given device.
 	-- Assumptions: 
@@ -391,6 +406,8 @@ package et_project.modules is
 		device	: in type_device_name)
 		return boolean;
 
+
+	
 	function alternative_device (
 	-- Returns a cursor to the alternative device in the given module
 	-- and given assembly variant.
@@ -405,6 +422,8 @@ package et_project.modules is
 		device	: in type_device_name)
 		return pac_device_variants.cursor;
 
+
+	
 	function alternative_submodule (
 	-- Returns a cursor to the alternative submodule variant in the given module
 	-- and given assembly variant.
@@ -421,26 +440,31 @@ package et_project.modules is
 		submod	: in et_general.pac_module_instance_name.bounded_string) -- OSC1
 		return pac_submodule_variants.cursor;
 
+	
 	-- Returns the index of the deepest conductor layer of the given module:
 	function deepest_conductor_layer (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return et_pcb_stack.type_signal_layer;
 
+	
 	-- Returns true if a design rules file for the layout has been
 	-- assigned to the given module.
 	function layout_rules_assigned (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return boolean;
 
+	
 	-- Returns the PCB design rules of the given module:
 	function get_pcb_design_rules (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return et_design_rules.type_design_rules; -- JLP_ML4_standard.dru
-		
+
+	
 	function get_user_settings (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return et_pcb.type_user_settings;
 
+	
 	-- Returns the settings of the required net class
 	-- of the given module.
 	-- If the given class name is "default" then the settings
@@ -452,6 +476,7 @@ package et_project.modules is
 		class	: in et_pcb.pac_net_class_name.bounded_string) -- hi-voltage, si-critical
 		return et_pcb.type_net_class;
 
+	
 	-- Returns the class settings of a net in a module.
 	-- If given net is no_element (freetrack) then the settings of the
 	-- "default" class will be returned:
