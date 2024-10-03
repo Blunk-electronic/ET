@@ -4,22 +4,21 @@
 --                                                                          --
 --                             SAVE MODULE                                  --
 --                                                                          --
---                               B o d y                                    --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
---                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -54,7 +53,11 @@ is
 	
 	module_file_handle : ada.text_io.file_type;
 
-	-- Creates the module/submodule file and writes a nice header in it.
+
+	-- Composes the target file name like bood-sample-tester.mod,
+	-- creates the file (in the current working directory) and 
+	-- directs all outputs to it.
+	-- Writes s a nice header in the target file:
 	procedure write_header is 
 		use ada.directories;
 		use gnat.directory_operations;
@@ -62,8 +65,6 @@ is
 		use type_et_project_path;
 		use et_general;
 	begin
-		-- Compose the target full file name and create the module file:
-		
 		if pac_module_name.length (save_as_name) = 0 then
 			-- The module is to be saved with its own name:
 
@@ -71,6 +72,7 @@ is
 				 & enclose_in_quotes (to_string (key (module_cursor))) & " ...",
 				 level => log_threshold + 1);
 				 
+			-- Compose the target full file name and create the module file:
 			create (
 				file => module_file_handle,
 				mode => out_file, 
@@ -103,11 +105,12 @@ is
 		new_line;
 	end write_header;		
 
-	procedure write_footer is
-	-- writes a nice footer in the module file and closes it.
-	begin
-		new_line;
-		
+
+	-- Writes a nice footer in the target file and closes it.
+	-- Directs subsequent outputs to the previous output (That
+	-- is the output which was set before save_module has been called.):
+	procedure write_footer is begin
+		new_line;		
 		log (text => "closing module file ...", level => log_threshold + 1);
 		
 		put_line (comment_mark & " " & row_separator_double);
@@ -119,6 +122,7 @@ is
 		close (module_file_handle);
 	end write_footer;
 
+
 	
 	function rotation (pos : in et_pcb_coordinates_2.pac_geometry_2.type_position'class)  -- CS make generic ?
 		return string
@@ -129,6 +133,7 @@ is
 	end rotation;
 
 	
+	
 	function face (point : et_pcb_coordinates_2.type_package_position) return string is
 		use et_pcb_coordinates_2;
 	begin
@@ -136,10 +141,12 @@ is
 	end face;
 
 	
+	
 	procedure query_meta is
 		use et_meta;
 		meta : et_meta.type_meta := element (module_cursor).meta;
 
+		
 		procedure write_basic (basic : in type_basic'class) is begin
 			write (keyword => keyword_company, parameters => to_string (basic.company), wrap => true);
 			write (keyword => keyword_customer, parameters => to_string (basic.customer), wrap => true);
@@ -157,6 +164,7 @@ is
 			write (keyword => keyword_approved_date, parameters => to_string_YMD (basic.approved_date));
 		end write_basic;
 
+		
 		procedure write_schematic (sch : in type_schematic) is 
 			use pac_preferred_libraries_schematic;
 			
@@ -170,6 +178,7 @@ is
 			section_mark (section_preferred_libraries, FOOTER);
 		end write_schematic;
 
+		
 		procedure write_board (brd : in type_board) is
 			use pac_preferred_libraries_board;
 			
@@ -209,6 +218,8 @@ is
 		log_indentation_down;
 	end query_meta;
 
+
+	
 	procedure query_rules is
 		use et_design_rules;
 		use et_schematic;
@@ -251,7 +262,8 @@ is
 
 			section_mark (section_net_class, FOOTER);
 		end write;
-	
+
+		
 	begin -- query_net_classes
 		log_indentation_up;
 		
@@ -261,6 +273,7 @@ is
 
 		log_indentation_down;
 	end query_net_classes;
+
 
 	
 	procedure query_drawing_grid is 
@@ -285,6 +298,7 @@ is
 	end query_drawing_grid;
 
 	
+	
 	procedure query_layer_stack is
 		use et_pcb_coordinates_2.pac_geometry_2;
 		use et_pcb_stack;
@@ -305,6 +319,7 @@ is
 
 		bottom_layer : type_signal_layer;
 		bottom_layer_thickness : type_conductor_thickness;
+
 		
 	begin -- query_layer_stack
 		log_indentation_up;
@@ -332,6 +347,7 @@ is
 		
 	end query_layer_stack;
 
+
 	
 	procedure query_nets is
 		use et_schematic_shapes_and_text;
@@ -341,6 +357,8 @@ is
 		use et_net_labels;
 		use et_pcb;
 
+
+		
 		procedure query_strands (
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net) 
@@ -511,6 +529,7 @@ is
 			
 			section_mark (section_strands, FOOTER);
 		end query_strands;
+
 
 		
 		-- This is about routed tracks/traces and zones in the board:
@@ -716,6 +735,7 @@ is
 			new_line;
 		end write;
 
+
 		
 	begin -- query_nets
 		log_indentation_up;
@@ -727,6 +747,7 @@ is
 		log_indentation_down;
 	end query_nets;
 
+
 	
 	procedure query_devices is		
 		use et_symbol_rw;
@@ -735,6 +756,7 @@ is
 		use et_device_placeholders.symbols;
 		use pac_devices_sch;
 
+		
 		procedure query_units (
 			device_name	: in type_device_name;
 			device		: in type_device_sch) 
@@ -754,6 +776,7 @@ is
 			end write_placeholder;
 
 			use et_devices;
+
 			
 		begin -- query_units
 			section_mark (section_units, HEADER);
@@ -787,6 +810,7 @@ is
 			end loop;
 			section_mark (section_units, FOOTER);
 		end query_units;
+
 
 		
 		procedure query_placeholders (
@@ -829,6 +853,8 @@ is
 			section_mark (section_placeholders, FOOTER);				
 		end query_placeholders;
 
+
+		
 		procedure write (d : in pac_devices_sch.cursor) is 
 			use et_material;
 		begin
@@ -876,6 +902,7 @@ is
 			section_mark (section_device, FOOTER);
 			new_line;
 		end write;
+
 		
 	begin -- query_devices
 		section_mark (section_devices, HEADER);
@@ -883,18 +910,23 @@ is
 		section_mark (section_devices, FOOTER);
 	end query_devices;
 
+
+
 	
 	procedure query_assembly_variants is
 	-- writes the assembly variants in the module file
 		use et_assembly_variants;
 		use pac_assembly_variants;
 
+		
 		procedure query_devices (
 			variant_name	: in pac_assembly_variant_name.bounded_string;
-			variant			: in type_assembly_variant) is
+			variant			: in type_assembly_variant) 
+		is
 			use pac_device_variants;
 			device_cursor : pac_device_variants.cursor := variant.devices.first;
 
+			
 			function purpose return string is 
 				use et_devices;
 				use pac_device_purpose;
@@ -910,6 +942,7 @@ is
 			end;
 
 			use et_devices;
+
 			
 		begin -- query_devices
 			while device_cursor /= pac_device_variants.no_element loop
@@ -937,9 +970,12 @@ is
 			end loop;
 		end query_devices;
 
+
+		
 		procedure query_submodules (
 			variant_name	: in pac_assembly_variant_name.bounded_string;
-			variant			: in type_assembly_variant) is
+			variant			: in type_assembly_variant) 
+		is
 			use et_assembly_variants;
 			use pac_submodule_variants;
 			submodule_cursor : pac_submodule_variants.cursor := variant.submodules.first;
@@ -955,6 +991,8 @@ is
 			end loop;
 		end query_submodules;
 
+
+		
 		procedure write (variant_cursor : in pac_assembly_variants.cursor) is begin
 			section_mark (section_assembly_variant, HEADER);
 			write (keyword => keyword_name, parameters => to_variant (key (variant_cursor)));
@@ -973,6 +1011,7 @@ is
 			section_mark (section_assembly_variant, FOOTER);
 			new_line;
 		end write;
+
 		
 	begin -- query_assembly_variants
 		section_mark (section_assembly_variants, HEADER);
@@ -1001,6 +1040,7 @@ is
 		use et_submodules;
 		use pac_netchangers;
 
+		
 		procedure query_netchanger (cursor : pac_netchangers.cursor) is
 			use pac_geometry_2;
 		begin
@@ -1019,12 +1059,15 @@ is
 			write (keyword => et_pcb_stack.keyword_layer, parameters => et_pcb_stack.to_string (element (cursor).layer)); -- layer 2
 			section_mark (section_netchanger, FOOTER);
 		end query_netchanger;
+
 		
 	begin
 		section_mark (section_netchangers, HEADER);
 		iterate (element (module_cursor).netchangers, query_netchanger'access);
 		section_mark (section_netchangers, FOOTER);
 	end query_netchangers;
+
+
 
 	
 	procedure query_frames is 
@@ -1034,6 +1077,7 @@ is
 		procedure write_sheet_descriptions is
 			use pac_schematic_descriptions;
 
+			
 			procedure query_sheet (s : in pac_schematic_descriptions.cursor) is
 				use et_coordinates_2;	
 			begin
@@ -1061,6 +1105,7 @@ is
 			section_mark (section_sheet_descriptions, FOOTER);
 		end write_sheet_descriptions;
 		
+
 		
 	begin -- query_frames
 		-- schematic frames:
@@ -1094,6 +1139,7 @@ is
 		section_mark (section_drawing_frames, FOOTER);
 	end query_frames;
 
+
 	
 	procedure query_submodules is		
 		use et_symbol_rw;
@@ -1101,6 +1147,7 @@ is
 		use et_submodules;
 		use pac_submodules;
 
+		
 		procedure query_ports (port_cursor : in et_submodules.pac_submodule_ports.cursor) is
 			use et_submodules.pac_submodule_ports;
 		begin
@@ -1111,6 +1158,7 @@ is
 			section_mark (section_port, FOOTER);
 		end;
 
+		
 		procedure write (submodule_cursor : in pac_submodules.cursor) is 
 			use et_coordinates_2.pac_geometry_2;
 		begin
@@ -1134,12 +1182,15 @@ is
 			
 			section_mark (section_submodule, FOOTER);				
 		end write;
+
 		
 	begin -- query_submodules
 		section_mark (section_submodules, HEADER);
 		iterate (element (module_cursor).submods, write'access);
 		section_mark (section_submodules, FOOTER);
 	end query_submodules;
+
+
 
 	
 	procedure query_texts is	
@@ -1176,13 +1227,15 @@ is
 			
 			section_mark (section_text, FOOTER);
 		end write;
-	
+
+		
 	begin
 		section_mark (section_texts, HEADER);
 		iterate (element (module_cursor).texts, write'access);
 		section_mark (section_texts, FOOTER);
 	end query_texts;
 
+	
 	
 	procedure query_board is
 		--use et_packages;
@@ -1243,6 +1296,7 @@ is
 
 		use et_fill_zones.boards;
 		use et_conductor_segment.boards;
+
 		
 		-- general stuff
 		use pac_text_placeholders_conductors;
@@ -1265,6 +1319,7 @@ is
 			line_end;
 		end;
 
+		
 		use pac_conductor_arcs;
 		procedure write_arc (cursor : in pac_conductor_arcs.cursor) is begin
 			arc_begin;
@@ -1274,6 +1329,7 @@ is
 			arc_end;
 		end;
 
+		
 		use pac_conductor_circles;
 		procedure write_circle (cursor : in pac_conductor_circles.cursor) is begin
 			write_circle_conductor (element (cursor));
@@ -1388,6 +1444,7 @@ is
 					write_text_properties_with_face (element (placeholder_cursor), face);
 					section_mark (section_placeholder, FOOTER);
 				end write_placeholder;
+
 				
 			begin -- query_placeholders
 				section_mark (section_placeholders, HEADER);
@@ -1408,7 +1465,8 @@ is
 				
 				section_mark (section_placeholders, FOOTER);				
 			end query_placeholders;
-				
+
+			
 		begin -- query_devices_non_electric
 			section_mark (section_device, HEADER);
 
@@ -1422,6 +1480,7 @@ is
 			section_mark (section_device, FOOTER);
 		end query_devices_non_electric;
 
+		
 		
 		procedure query_user_settings is
 			us : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
@@ -1561,6 +1620,7 @@ is
 		end write_silkscreen;
 
 
+		
 		procedure write_assy_doc is
 			use et_assy_doc.boards;
 			use pac_doc_texts;
@@ -1598,6 +1658,7 @@ is
 		end write_assy_doc;
 		
 
+		
 		procedure write_stencil is
 			use et_stencil;
 		begin			
@@ -1621,6 +1682,7 @@ is
 		end write_stencil;
 
 
+		
 		procedure write_stop_mask is
 			use et_stop_mask;
 			use pac_stop_texts;
@@ -1741,6 +1803,7 @@ is
 		section_mark (section_board, FOOTER);
 	end query_board;
 
+	
 begin -- save_module
 
 	-- CS check if module is inside project directory ?
