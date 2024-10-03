@@ -490,7 +490,7 @@ Modules
 				
 #. Save a module
 
-	- save with its own name
+	Save with its own name:
 	
 	.. code-block::
 
@@ -498,7 +498,8 @@ Modules
 
 	|VNS| |NI| Use the common shortcut CTRL-S instead.
 
-	- save with a different name
+	
+	Save as:
 	
 	.. code-block::
 
@@ -514,7 +515,7 @@ Modules
 
 		delete module [LED-driver]
 
-	|VNS| |NI| (and pretty dangerous ...)
+	|VNS| |NI| (and dangerous ...)
 
 
 		
