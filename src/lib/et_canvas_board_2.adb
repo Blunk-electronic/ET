@@ -1126,7 +1126,11 @@ package body et_canvas_board_2 is
 				when GDK_LC_y => -- CS shift + ctrl-z
 					redo;
 
+				-- Save the module on ctrl-s or ctrl-S:
+				when GDK_LC_s | GDK_s =>
+					et_canvas_schematic_2.save_module;
 
+					
 					
 				when others => null;
 			end case;

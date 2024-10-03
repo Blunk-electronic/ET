@@ -518,8 +518,7 @@ package body et_canvas_schematic_2 is
 			event_handled := true;
 		end focus_console;
 		
-
-		
+			
 	begin
 		-- Output the the gdk_key_type (which is
 		-- just a number (see gdk.types und gdk.types.keysyms)):
@@ -528,7 +527,7 @@ package body et_canvas_schematic_2 is
 
 		if key_ctrl = control_mask then 
 			case key is
-
+					
 				when others => null;
 			end case;
 
@@ -719,6 +718,38 @@ package body et_canvas_schematic_2 is
 
 
 
+	procedure save_module is
+		use ada.directories;
+		use et_project;
+
+		-- Backup the current directory (like /home/user/et/blood_sample_analyzer):
+		cur_dir_bak : constant string := current_directory;
+	begin
+		-- NOTE: We are not in the project directory yet but
+		-- in its parent directory.
+		
+		-- Change into the directory of the current project:
+		set_directory (to_string (current_active_project));
+		
+		-- Save the module with its own name:
+		save_module (
+			module_cursor	=> current_active_module,
+			log_threshold	=> log_threshold + 1);
+
+		-- Return to previous directory:
+		set_directory (cur_dir_bak);
+		
+		-- Show a brief message in the schematic status bar:
+		set_status (status_text_module_saved);
+
+		-- Show a brief message in the board status bar:
+		et_canvas_board_2.pac_canvas.set_status (status_text_module_saved);
+	end save_module;
+
+
+	
+
+
 	
 	
 	-- This procedure resets a lot of stuff and should
@@ -740,6 +771,7 @@ package body et_canvas_schematic_2 is
 	end reset;
 	
 
+	
 	procedure key_pressed (
 		key			: in gdk_key_type;
 		key_shift	: in gdk_modifier_type)
@@ -811,10 +843,17 @@ package body et_canvas_schematic_2 is
 				-- Redo the last operation on ctrl-y
 				when GDK_LC_y => -- CS shift + ctrl-z
 					redo;
+
+
+				-- Save the module on ctrl-s or ctrl-S:
+				when GDK_LC_s | GDK_s =>
+					save_module;
+					
 					
 				when others => null;
 			end case;
 
+			
 		else
 			case key is
 				when GDK_ESCAPE =>
@@ -1357,40 +1396,7 @@ package body et_canvas_schematic_2 is
 -- 	end reset_properties_selection;
 -- 
 -- 	
--- 	procedure save_module is
--- 		use ada.directories;
--- 		use et_project;
--- 
--- 		-- Backup the current directory (like /home/user/et/blood_sample_analyzer):
--- 		cur_dir_bak : constant string := current_directory;
--- 	begin
--- 		-- NOTE: We are not in the project directory yet but
--- 		-- in its parent directory.
--- 		
--- 		-- Change into the directory of the current project:
--- 		set_directory (to_string (current_active_project));
--- 		
--- 		-- Save the module with its own name:
--- 		save_module (
--- 			module_cursor	=> current_active_module,
--- 			log_threshold	=> log_threshold + 1);
--- 
--- 		-- Return to previous directory:
--- 		set_directory (cur_dir_bak);
--- 		
--- 		-- Show a brief message in the schematic status bar:
--- 		set_status (status_text_module_saved);
--- 
--- 		-- Show a brief message in the board status bar:
--- 		et_canvas_board.pac_canvas.set_status (status_text_module_saved);
--- 	end save_module;
--- 
--- 	
--- 	procedure save_drawing (
--- 		self : not null access type_view)
--- 	is begin
--- 		save_module;
--- 	end save_drawing;
+
 
 	
 end et_canvas_schematic_2;

@@ -243,6 +243,16 @@ package et_canvas_schematic_2 is
 
 	
 
+-- SAVE MODULE:
+
+	status_text_module_saved : constant string := "Module saved.";
+
+	-- This procedure saves the current_active_module 
+	-- in its file:
+	procedure save_module;
+
+
+	
 
 	
 	
@@ -322,7 +332,8 @@ package et_canvas_schematic_2 is
 	
 	-- Executes a command as typed on the console by the operator
 	-- like "rename device R1 R2".
-	-- Calls et_scripting.schematic_cmd for the actual execution.
+	-- Changes into the directory as indicated by current_active_module.
+	-- Calls et_scripting.schematic_cmd for the actual execution.	
 	procedure execute_command (self : access gtk_entry_record'class);
 
 
@@ -392,30 +403,6 @@ package et_canvas_schematic_2 is
 
 -- 	overriding procedure reset_properties_selection (
 -- 		self : not null access type_view);
--- 
--- 
--- 	status_text_module_saved : constant string := "Module saved.";
--- 
--- 	-- This procedure saves the current active module 
--- 	-- in its file. This procedure is called from
--- 	-- the overridden procedure save_drawing.
--- 	procedure save_module;
--- 
--- 	-- Saves the current module by calling save_module 
--- 	-- (see above):
--- 	overriding procedure save_drawing (
--- 		self : not null access type_view);
--- 
--- 
--- 	
--- -- UNDO / REDO:
--- 	
--- 	overriding procedure undo (
--- 		self : not null access type_view);
--- 
--- 	overriding procedure redo (
--- 		self : not null access type_view);
--- 
 
 	
 end et_canvas_schematic_2;
