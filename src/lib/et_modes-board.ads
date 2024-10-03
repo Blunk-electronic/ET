@@ -59,6 +59,7 @@ package et_modes.board is
 		VERB_RENAME,
 		VERB_ROTATE,
 		VERB_ROUTE,
+		VERB_SAVE,
 		VERB_SET,
 		VERB_UPDATE,
 		--VERB_SHOW CS
@@ -95,6 +96,7 @@ package et_modes.board is
 		NOUN_LEVEL,
 		NOUN_LINE,
 		NOUN_NAME,
+		NOUN_MODULE,
 		NOUN_NET,
 		NOUN_ORIGINS, -- the center of a package
 		NOUN_OUTLINE,

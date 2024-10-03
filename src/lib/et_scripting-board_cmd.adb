@@ -2291,7 +2291,36 @@ is
 		end case;
 	end move_drawing_frame;
 
+
+
+	-- Actions to save a module:
+	procedure save_module is 
+	begin
+		-- Since we are already in the project directory,
+		-- we can call the save_module procedures right away.
+		
+		case cmd_field_count is
+			when 4 =>
+				-- Save the module with its own name:
+				save_module (
+					module_cursor	=> current_active_module,
+					log_threshold	=> log_threshold + 1);
+
+			when 5 =>
+				-- Save the module with a different name:
+				save_module (
+					module_cursor	=> current_active_module,
+					save_as_name	=> to_module_name (f (5)), -- led_driver_test
+					log_threshold	=> log_threshold + 1);
+				
+			when 6 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;			
+
+	end save_module;
 	
+
 	
 	-- Parses the single_cmd_status.cmd:
 	procedure parse is begin
@@ -2836,6 +2865,15 @@ is
 								command_incomplete;
 						end case;
 
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+
+			when VERB_SAVE =>
+				case noun is
+					when NOUN_MODULE =>
+						save_module;
+						
 					when others => invalid_noun (to_string (noun));
 				end case;
 

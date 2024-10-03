@@ -1498,15 +1498,6 @@ package body et_canvas_board_2 is
 	end execute_command;
 
 
--- 
--- 
--- 	
--- 	procedure save_drawing (
--- 		self : not null access type_view)
--- 	is begin
--- 		save_module;
--- 	end save_drawing;
-
 	
 end et_canvas_board_2;
 

@@ -603,9 +603,13 @@ is
 	end delete_module;
 
 
-
-	procedure save_module is
+	
+	-- Actions to save a module:
+	procedure save_module is 
 	begin
+		-- Since we are already in the project directory,
+		-- we can call the save_module procedures right away.
+		
 		case cmd_field_count is
 			when 4 =>
 				-- Save the module with its own name:
