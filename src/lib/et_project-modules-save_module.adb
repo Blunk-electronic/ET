@@ -37,6 +37,8 @@
 with et_pcb_rw;						use et_pcb_rw;
 with et_pcb_rw.restrict;
 with et_time;						use et_time;
+with et_board_ops;
+
 
 separate (et_project.modules)
 
@@ -277,19 +279,47 @@ is
 
 	
 	procedure query_drawing_grid is 
-		use et_coordinates_2.pac_geometry_2;
-		use et_pcb_coordinates_2.pac_geometry_2;
+
+		procedure schematic is
+			use et_coordinates_2;
+			use pac_geometry_2;
+			use pac_grid;
+			g : type_grid;
+		begin
+			g := get_grid (module_cursor, log_threshold + 1);
+
+			write (keyword => keyword_on_off, parameters => "df");
+			write (keyword => keyword_spacing, parameters => "df");
+			write (keyword => keyword_style, parameters => "df");
+		end schematic;
+
+
+		procedure board is
+			use et_pcb_coordinates_2;
+			use pac_geometry_2;
+			use pac_grid;
+			use et_board_ops;
+			g : type_grid;
+		begin
+			g := get_grid (module_cursor, log_threshold + 1);
+
+			write (keyword => keyword_on_off, parameters => "df");
+			write (keyword => keyword_spacing, parameters => "df");
+			write (keyword => keyword_style, parameters => "df");
+		end board;
+
+		
 	begin
 		log_indentation_up;
 		
 		section_mark (section_drawing_grid, HEADER);
 
 		section_mark (section_schematic, HEADER);
-		-- CS write (keyword => keyword_default, parameters => to_string_2 (element (module_cursor).grid));
+		schematic;
 		section_mark (section_schematic, FOOTER);
 
 		section_mark (section_board, HEADER);
-		-- write (keyword => keyword_default, parameters => to_string_2 (element (module_cursor).board.grid));
+		board;
 		section_mark (section_board, FOOTER);
 		
 		section_mark (section_drawing_grid, FOOTER);

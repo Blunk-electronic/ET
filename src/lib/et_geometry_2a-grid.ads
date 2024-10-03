@@ -104,6 +104,10 @@ package et_geometry_2a.grid is
 	procedure reset_grid_density (
 		grid		: in out type_grid);
 	
+
+	keyword_on_off	: constant string := "on_off";
+	keyword_spacing	: constant string := "spacing";
+	keyword_style	: constant string := "style";
 	
 end et_geometry_2a.grid;
 

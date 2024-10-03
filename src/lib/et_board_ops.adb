@@ -882,6 +882,40 @@ package body et_board_ops is
 
 	
 
+	function get_grid (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return pac_grid.type_grid
+	is
+		use pac_grid;
+		use pac_generic_modules;
+
+		result : type_grid;
+
+		
+		procedure do_it (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is begin
+			-- Get the grid from the database:
+			result := module.board.grid;
+		end;
+
+		
+	begin
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
+			& " getting board grid",
+			level => log_threshold);
+
+		query_element (
+			position	=> module_cursor,
+			process		=> do_it'access);
+
+		return result;
+	end get_grid;
+
+
+	
 
 	
 	

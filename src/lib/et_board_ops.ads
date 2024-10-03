@@ -153,7 +153,14 @@ package et_board_ops is
 		log_threshold	: in type_log_level);
 
 
+	-- Returns the grid settings of the module:
+	function get_grid (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return pac_grid.type_grid;
 
+
+	
 	
 	-- Tests the given set of signal layers whether each of them is available
 	-- according to the current layer stack of the given module.
