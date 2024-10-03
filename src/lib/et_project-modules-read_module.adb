@@ -37,13 +37,19 @@
 --   history of changes:
 --
 
-with et_frame_rw;
-with et_pcb_rw.device_packages;	use et_pcb_rw.device_packages;
+with et_symbol_rw;				--use et_symbol_rw;
+with et_schematic_rw;				use et_schematic_rw;
+with et_device_rw;					use et_device_rw;
 
-with et_pcb_rw;					use et_pcb_rw;
-with et_pcb_rw.restrict;		use et_pcb_rw.restrict;
+with et_frame_rw;
+with et_pcb_rw;						use et_pcb_rw;
+with et_pcb_rw.device_packages;		use et_pcb_rw.device_packages;
+with et_pcb_rw.restrict;			use et_pcb_rw.restrict;
 
 with et_time;
+
+with et_schematic_ops;
+-- with et_board_ops;
 
 
 separate (et_project.modules)
@@ -52,6 +58,9 @@ procedure read_module (
 	file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
 	log_threshold	: in type_log_level) 
 is
+	use et_schematic_ops; -- CS place it where really needed
+	
+	
 	previous_input : ada.text_io.file_type renames current_input;
 	
 	-- Environment variables like $templates could be in file name.

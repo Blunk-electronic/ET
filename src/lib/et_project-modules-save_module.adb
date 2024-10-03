@@ -34,13 +34,21 @@
 --   history of changes:
 --
 
-with et_pcb_rw;						use et_pcb_rw;
+
+with et_symbol_rw;
+with et_schematic_rw;
+with et_device_rw;
+
+with et_pcb_rw;
 with et_pcb_rw.restrict;
 with et_time;						use et_time;
+
+with et_schematic_ops;
 with et_board_ops;
 
 
 separate (et_project.modules)
+
 
 procedure save_module (
 	module_cursor	: in pac_generic_modules.cursor;
@@ -194,6 +202,8 @@ is
 			section_mark (section_preferred_libraries, FOOTER);
 		end write_board;
 
+		use et_pcb_rw;		
+
 		
 	begin -- query_meta
 		log_indentation_up;
@@ -248,6 +258,7 @@ is
 		use et_pcb;
 		use et_pcb.pac_net_classes;
 		use et_pcb_coordinates_2.pac_geometry_2;
+		use et_pcb_rw;
 
 		procedure write (class_cursor : in pac_net_classes.cursor) is begin
 			log (text => "net class " & to_string (key (class_cursor)), level => log_threshold + 1);
@@ -284,6 +295,7 @@ is
 			use et_coordinates_2;
 			use pac_geometry_2;
 			use pac_grid;
+			use et_schematic_ops;
 			g : type_grid;
 		begin
 			g := get_grid (module_cursor, log_threshold + 1);
@@ -309,6 +321,8 @@ is
 		end board;
 
 		
+		use et_pcb_rw;
+		
 	begin
 		log_indentation_up;
 		
@@ -330,10 +344,12 @@ is
 	
 	
 	procedure query_layer_stack is
+		use et_pcb_rw;
 		use et_pcb_coordinates_2.pac_geometry_2;
 		use et_pcb_stack;
 		use package_layers;
 
+		
 		procedure query_layers (cursor : in package_layers.cursor) is
 			layer : type_layer := element (cursor);
 		begin
@@ -378,6 +394,7 @@ is
 	end query_layer_stack;
 
 
+	
 	
 	procedure query_nets is
 		use et_schematic_shapes_and_text;
@@ -571,6 +588,7 @@ is
 			use pac_contours;
 
 			use et_terminals;
+			use et_pcb_rw;
 			use et_pcb;
 			use et_pcb_stack;
 			use et_pcb_coordinates_2.pac_geometry_2;
@@ -593,6 +611,7 @@ is
 			polygon_hatched_cursor	: pac_route_hatched.cursor := net.route.fill_zones.hatched.first;
 			--cutout_zone_cursor		: pac_cutouts.cursor := net.route.cutouts.first;
 
+			
 			procedure write_vias is
 				use et_vias;
 				use pac_vias;
@@ -791,6 +810,8 @@ is
 			device_name	: in type_device_name;
 			device		: in type_device_sch) 
 		is
+			use et_schematic_rw;
+			use et_device_rw;
 			use et_coordinates_2;
 			use et_schematic.pac_units;
 			unit_cursor : pac_units.cursor := device.units.first;
@@ -855,6 +876,7 @@ is
 			layer : type_placeholder_layer;
 			
 			procedure write_placeholder (placeholder_cursor : in pac_placeholders.cursor) is 
+				use et_pcb_rw;
 			begin
 				section_mark (section_placeholder, HEADER);
 				write (keyword => et_pcb_stack.keyword_layer, parameters => to_string (layer));
@@ -887,6 +909,7 @@ is
 		
 		procedure write (d : in pac_devices_sch.cursor) is 
 			use et_material;
+			use et_pcb_rw;
 		begin
 			section_mark (section_device, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (d)));
@@ -1023,7 +1046,9 @@ is
 
 
 		
-		procedure write (variant_cursor : in pac_assembly_variants.cursor) is begin
+		procedure write (variant_cursor : in pac_assembly_variants.cursor) is 
+			use et_pcb_rw;
+		begin
 			section_mark (section_assembly_variant, HEADER);
 			write (keyword => keyword_name, parameters => to_variant (key (variant_cursor)));
 			write (keyword => keyword_description, wrap => true, parameters => to_string (element (variant_cursor).description));
@@ -1073,6 +1098,7 @@ is
 		
 		procedure query_netchanger (cursor : pac_netchangers.cursor) is
 			use pac_geometry_2;
+			use et_schematic_rw;
 		begin
 			section_mark (section_netchanger, HEADER);
 			write (keyword => keyword_name,	parameters => to_string (key (cursor))); -- 1, 2, 201, ...
@@ -1136,6 +1162,8 @@ is
 		end write_sheet_descriptions;
 		
 
+		use et_pcb_rw;
+		
 		
 	begin -- query_frames
 		-- schematic frames:
@@ -1191,6 +1219,8 @@ is
 		
 		procedure write (submodule_cursor : in pac_submodules.cursor) is 
 			use et_coordinates_2.pac_geometry_2;
+			use et_schematic_rw;
+			use et_pcb_rw;
 		begin
 			section_mark (section_submodule, HEADER);
 			write (keyword => keyword_name, parameters => et_general.to_string (key (submodule_cursor))); -- name stepper_driver_1
@@ -1232,7 +1262,10 @@ is
 		use et_schematic;
 		use pac_texts;
 		
-		procedure write (text_cursor : in pac_texts.cursor) is begin
+		
+		procedure write (text_cursor : in pac_texts.cursor) is 
+			use et_schematic_rw;
+		begin
 			section_mark (section_text, HEADER);
 			write
 				(
@@ -1327,6 +1360,8 @@ is
 		use et_fill_zones.boards;
 		use et_conductor_segment.boards;
 
+		use et_pcb_rw;
+		
 		
 		-- general stuff
 		use pac_text_placeholders_conductors;
