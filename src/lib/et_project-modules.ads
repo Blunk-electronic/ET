@@ -35,14 +35,15 @@
 --
 --   history of changes:
 --
---   ToDo: 
+--  ToDo: 
+--  - Move stuff related to schematic to et_schematic_ops.
+--  - Move stuff related to board to et_board_ops.
 
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
-with ada.containers.vectors;
+
 
 with et_sheets;					use et_sheets;
-with et_coordinates_2;
 with et_schematic;
 with et_nets;
 with et_net_labels;
@@ -51,9 +52,6 @@ with et_netlists;
 with et_assembly_variants;		use et_assembly_variants;
 with et_vias;
 with et_board_shapes_and_text;
-with et_terminals;
-with et_drills;
-with et_packages;
 with et_pcb;
 with et_pcb_stack;
 with et_devices;				use et_devices;

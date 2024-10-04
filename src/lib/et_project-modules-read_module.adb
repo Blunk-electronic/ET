@@ -37,7 +37,12 @@
 --   history of changes:
 --
 
-with et_symbol_rw;				--use et_symbol_rw;
+with et_coordinates_2;
+with et_pcb_coordinates_2;
+
+with et_geometry;					use et_geometry;
+with et_symbols;
+with et_symbol_rw;
 with et_schematic_rw;				use et_schematic_rw;
 with et_device_rw;					use et_device_rw;
 
@@ -45,6 +50,11 @@ with et_frame_rw;
 with et_pcb_rw;						use et_pcb_rw;
 with et_pcb_rw.device_packages;		use et_pcb_rw.device_packages;
 with et_pcb_rw.restrict;			use et_pcb_rw.restrict;
+with et_packages;
+with et_drills;
+with et_terminals;
+
+with et_conventions;
 
 with et_time;
 

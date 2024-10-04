@@ -47,24 +47,11 @@ with ada.exceptions;
 with ada.directories;
 with gnat.directory_operations;
 
-with ada.containers;            use ada.containers;
-with ada.containers.ordered_maps;
-with ada.containers.ordered_sets;
-
 with et_export;
 with et_text;					use et_text;
 with et_general_rw;				use et_general_rw;
 with et_meta;
 
-with et_pcb_coordinates_2;
-with et_geometry;				use et_geometry;
-with et_symbols;
-
-with et_drills;
-
-with et_material;
-
-with et_conventions;
 with et_project.rigs;
 with et_exceptions;				use et_exceptions;
 

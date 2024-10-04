@@ -34,13 +34,21 @@
 --   history of changes:
 --
 
+with et_coordinates_2;
+with et_pcb_coordinates_2;
 
+with et_geometry;					use et_geometry;
+with et_symbols;
 with et_symbol_rw;
 with et_schematic_rw;
 with et_device_rw;
 
 with et_pcb_rw;
 with et_pcb_rw.restrict;
+with et_packages;
+with et_terminals;
+with et_material;
+
 with et_time;						use et_time;
 
 with et_schematic_ops;
