@@ -50,7 +50,7 @@ package body et_board_ops.frame is
 
 	
 	procedure move_drawing_frame (
-		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in et_frames.type_position; -- x/y
 		log_threshold	: in type_log_level) 
@@ -103,6 +103,40 @@ package body et_board_ops.frame is
 	end move_drawing_frame;
 
 
+
+
+
+	function get_frame_position (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)								
+		return et_frames.type_position
+	is
+		result : et_frames.type_position;
+
+		
+		procedure get_origin (
+			module_name	: in pac_module_name.bounded_string;
+			module 		: in type_module) 
+		is begin
+			result := et_frames.get_position (module.board.frame.frame);
+		end get_origin;
+
+		
+	begin
+		log (text => "module " & to_string (key (module_cursor)) &
+			" query_frame drawing frame position",
+		level => log_threshold);
+
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> get_origin'access);
+
+		
+		return result;
+	end get_frame_position;
+
+		
 
 end et_board_ops.frame;
 	

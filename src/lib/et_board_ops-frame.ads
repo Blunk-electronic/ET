@@ -50,13 +50,20 @@ package et_board_ops.frame is
 	-- Moves the origin of the drawing frame to 
 	-- the given point:
 	procedure move_drawing_frame (
-		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in et_frames.type_position; -- x/y
 		log_threshold	: in type_log_level);
 
+
+	-- Returns the position of the lower-left corner
+	-- of the drawing frame:
+	function get_frame_position (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)								
+		return et_frames.type_position;
 	
-										
+
 end et_board_ops.frame;
 
 -- Soli Deo Gloria
