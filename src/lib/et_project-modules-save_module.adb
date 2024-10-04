@@ -53,6 +53,7 @@ with et_time;						use et_time;
 
 with et_schematic_ops;
 with et_board_ops;
+with et_board_ops.grid;
 
 
 separate (et_project.modules)
@@ -318,7 +319,7 @@ is
 			use et_pcb_coordinates_2;
 			use pac_geometry_2;
 			use pac_grid;
-			use et_board_ops;
+			use et_board_ops.grid;
 			g : type_grid;
 		begin
 			g := get_grid (module_cursor, log_threshold + 1);

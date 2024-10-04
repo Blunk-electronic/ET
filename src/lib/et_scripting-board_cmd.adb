@@ -65,6 +65,7 @@ with et_board_ops.via_restrict;
 with et_board_ops.board_contour;
 with et_board_ops.ratsnest;
 with et_board_ops.text;
+with et_board_ops.grid;
 
 with et_canvas.cmd;
 
@@ -151,7 +152,9 @@ is
 
 
 
-	procedure set_grid is begin
+	procedure set_grid is 
+		use et_board_ops.grid;
+	begin
 		-- Set the grid on the canvas:
 		parse_canvas_command (VERB_SET, NOUN_GRID);
 
@@ -161,7 +164,7 @@ is
 		-- Assign the grid in the database:
 		set_grid (
 			module_name 	=> module,
-			grid			=> grid,
+			grid			=> pac_canvas.grid,
 			log_threshold	=> log_threshold + 1);
 
 	end set_grid;
