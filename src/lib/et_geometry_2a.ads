@@ -160,6 +160,13 @@ package et_geometry_2a is
 		return type_distance_positive;
 
 
+
+	type type_output_format is (
+		FORMAT_1,
+		FORMAT_2,
+		FORMAT_3,
+		FORMAT_4);
+		
 	
 	-- This function returns the given distance as string:	
 	function to_string (
@@ -274,9 +281,13 @@ package et_geometry_2a is
 	
 
 	-- This function returns the given vector
-	-- as string like "x/y 4.5 / 5.6" :
+	-- as string formatted as follows:
+	-- FORMAT_1 : "x/y 4.5 / 5.6" 
+	-- FORMAT_2 : x 4.5 y 5.6
+	-- FORMAT_3 : 4.5 5.6
 	function to_string (
-		v : in type_vector_model)
+		v 		: in type_vector_model;
+		format	: in type_output_format := FORMAT_1)
 		return string;
 
 

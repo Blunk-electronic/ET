@@ -433,11 +433,23 @@ package body et_geometry_2a is
 	
 	
 	function to_string (
-		v : in type_vector_model)
+		v 		: in type_vector_model;
+		format	: in type_output_format := FORMAT_1)
 		return string
 	is begin
-		return "x/y: "
-			& to_string (v.x) & "/" & to_string (v.y);
+		case format is
+			when FORMAT_1 =>
+				return "x/y: " & to_string (v.x) & "/" & to_string (v.y);
+
+			when FORMAT_2 =>
+				return "x" & to_string (v.x) & " y" & to_string (v.y);
+
+			when FORMAT_3 =>
+				return to_string (v.x) & " " & to_string (v.y);
+				
+			when others => -- do the same as with FORMAT_1
+				return "x/y: " & to_string (v.x) & "/" & to_string (v.y);
+		end case;
 	end to_string;
 
 

@@ -42,11 +42,41 @@ generic
 	
 package et_geometry_2a.grid is
 
+	-- The grid helps the operator to align or place objects.
 
-	-- The grid helps the operator to align or place objects:
+
+-- ON / OFF;
+	
 	type type_grid_on_off is (GRID_ON, GRID_OFF);
+
+	
+	function to_string (
+		on_off : in type_grid_on_off)
+		return string;
+
+	function to_on_off (
+		on_off : in string)
+		return type_grid_on_off;
+
+	
+
+-- STYLE (lines or dots):
+	
 	type type_grid_style is (STYLE_DOTS, STYLE_LINES);
 
+	function to_string (
+		style : in type_grid_style)
+		return string;
+
+	function to_style (
+		style : in string)
+		return type_grid_style;
+
+
+
+
+
+	
 	-- The linewidth of the grid lines:
 	grid_width_lines : constant type_logical_pixels_positive := 0.5;
 

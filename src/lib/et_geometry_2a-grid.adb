@@ -43,6 +43,40 @@ with ada.text_io;					use ada.text_io;
 package body et_geometry_2a.grid is
 
 
+	function to_string (
+		on_off : in type_grid_on_off)
+		return string
+	is begin
+		return type_grid_on_off'image (on_off);
+	end;
+	
+
+	function to_on_off (
+		on_off : in string)
+		return type_grid_on_off
+	is begin
+		return type_grid_on_off'value (on_off);
+	end to_on_off;
+	
+	
+
+	function to_string (
+		style : in type_grid_style)
+		return string
+	is begin
+		return type_grid_style'image (style);
+	end;
+
+
+	function to_style (
+		style : in string)
+		return type_grid_style
+	is begin
+		return type_grid_style'value (style);
+	end;
+
+
+
 	
 	procedure next_grid_density (
 		grid 		: in out type_grid;
