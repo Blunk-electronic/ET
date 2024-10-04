@@ -49,7 +49,6 @@ with et_symbols;
 with et_conductor_segment.boards;
 with et_exceptions;					use et_exceptions;
 
--- with et_routing;
 with et_canvas_board_2;
 
 
@@ -59,61 +58,6 @@ package body et_board_ops is
 	use pac_devices_sch;
 	use pac_devices_non_electric;
 	use pac_nets;
-
-
-	
-	procedure move_drawing_frame (
-		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
-		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in et_frames.type_position; -- x/y
-		log_threshold	: in type_log_level) 
-	is
-		use et_canvas_board_2;
-		use pac_drawing_frame;
-
-		
-		procedure set_origin (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
-		is 
-			p1 : et_frames.type_position;
-		begin
-			case coordinates is
-				when ABSOLUTE =>
-					et_frames.set_position (module.board.frame.frame, point);
-
-				when RELATIVE =>
-					p1 := et_frames.get_position (module.board.frame.frame);
-					-- CS
-					-- move_by (module.board.frame.position, to_distance_relative (point));
-			end case;
-		end set_origin;
-
-		
-		use et_frames;
-		
-	begin
-		case coordinates is
-			when ABSOLUTE =>
-				null;
-				log (text => "module " & to_string (key (module_cursor)) &
-					 " moving drawing frame origin to " & to_string (point),
-					 level => log_threshold);
-
-			when RELATIVE =>
-				null;
-				log (text => "module " & to_string (key (module_cursor)) &
-					 " moving drawing frame origin by " & to_string (point), 
-					 level => log_threshold);
-		end case;
-
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> set_origin'access);
-
-	end move_drawing_frame;
 
 
 	

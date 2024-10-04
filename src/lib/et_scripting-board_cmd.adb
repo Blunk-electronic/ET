@@ -41,6 +41,7 @@
 with et_board_shapes_and_text;
 with et_board_ops.conductors;
 with et_board_ops.vias;
+with et_board_ops.frame;
 with et_drills;
 with et_modes.board;
 with et_canvas_board_devices;
@@ -2266,6 +2267,7 @@ is
 
 	
 	procedure move_drawing_frame is 
+		use et_board_ops.frame;
 		use pac_drawing_frame;
 
 		p : et_frames.type_position;
