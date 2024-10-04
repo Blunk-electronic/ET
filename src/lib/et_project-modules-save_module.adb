@@ -1140,74 +1140,94 @@ is
 	procedure query_frames is 
 		use et_frames;
 		use et_frames.pac_template_name;
+
+
+		-- This procedure writes the stuff related to the
+		-- drawing frames of the schematic:
+		procedure schematic is
+
 		
-		procedure write_sheet_descriptions is
-			use pac_schematic_descriptions;
+			procedure write_sheet_descriptions is
+				use pac_schematic_descriptions;
 
-			
-			procedure query_sheet (s : in pac_schematic_descriptions.cursor) is
-				use et_coordinates_2;	
-			begin
-				section_mark (section_sheet, HEADER);
-				write (
-					keyword		=> keyword_sheet_number,
-					parameters	=> to_sheet (key (s)));
-
-				write (
-					keyword		=> keyword_sheet_category,
-					parameters	=> to_string (element (s).category));
-
-				write (
-					keyword		=> keyword_sheet_description,
-					wrap		=> true,
-					parameters	=> to_string (element (s).content));
 				
-				section_mark (section_sheet, FOOTER);
-			end query_sheet;
+				procedure query_sheet (s : in pac_schematic_descriptions.cursor) is
+					use et_coordinates_2;	
+				begin
+					section_mark (section_sheet, HEADER);
+					write (
+						keyword		=> keyword_sheet_number,
+						parameters	=> to_sheet (key (s)));
+
+					write (
+						keyword		=> keyword_sheet_category,
+						parameters	=> to_string (element (s).category));
+
+					write (
+						keyword		=> keyword_sheet_description,
+						wrap		=> true,
+						parameters	=> to_string (element (s).content));
+					
+					section_mark (section_sheet, FOOTER);
+				end query_sheet;
+
+				
+			begin -- write_sheet_descriptions
+				section_mark (section_sheet_descriptions, HEADER);
+				iterate (element (module_cursor).frames.descriptions, query_sheet'access);
+				section_mark (section_sheet_descriptions, FOOTER);
+			end write_sheet_descriptions;
 
 			
-		begin -- write_sheet_descriptions
-			section_mark (section_sheet_descriptions, HEADER);
-			iterate (element (module_cursor).frames.descriptions, query_sheet'access);
-			section_mark (section_sheet_descriptions, FOOTER);
-		end write_sheet_descriptions;
+		begin
+			section_mark (section_schematic, HEADER);
+			
+			-- Write the schematic frame template like "template ../frames/dummy.frs":
+			write (
+				keyword 	=> keyword_template, 
+				parameters	=> et_frames.to_string (element (module_cursor).frames.template));
+			
+			write_sheet_descriptions;
+
+			section_mark (section_schematic, FOOTER);
+		end schematic;
 		
 
-		use et_pcb_rw;
+
+		-- This procedure writes the stuff related to the
+		-- drawing frame of the board:
+		procedure board is
+			use et_pcb_rw;
+			use et_pcb_coordinates_2;
+			use pac_geometry_2;
+		begin
+			section_mark (section_board, HEADER);
+			
+			-- Write the frame template like "template ../frames/dummy.frb":
+			write (
+				keyword		=> keyword_template, 
+				parameters	=> et_frames.to_string (element (module_cursor).board.frame.template));
+				
+			-- write the board origin like "origin x 40 y 60"
+			write (
+				keyword		=> keyword_origin,
+				parameters	=> to_string (element (module_cursor).board.origin, FORMAT_2));
+
+			section_mark (section_board, FOOTER);
+		end board;
+
 		
 		
-	begin -- query_frames
-		-- schematic frames:
+	begin
 		section_mark (section_drawing_frames, HEADER);
-		section_mark (section_schematic, HEADER);
-		
-		-- Write the schematic frame template like "template ../frames/dummy.frs":
-		write (
-			keyword 	=> keyword_template, 
-			parameters	=> et_frames.to_string (element (module_cursor).frames.template));
-		
-		write_sheet_descriptions;
-		
-		section_mark (section_schematic, FOOTER);			
 
-		
-		-- board frame:
-		section_mark (section_board, HEADER);
+		schematic;
+		board;
 
-		-- Write the frame template like "template ../frames/dummy.frb":
-		write (
-			keyword		=> keyword_template, 
-			parameters	=> et_frames.to_string (element (module_cursor).board.frame.template));
-			
-		-- write the board origin like "origin x 40 y 60"
-		write (
-			keyword		=> keyword_origin,
-			parameters	=> et_pcb_coordinates_2.pac_geometry_2.to_string_2 (element (module_cursor).board.origin));
-		
-		section_mark (section_board, FOOTER);			
 		section_mark (section_drawing_frames, FOOTER);
 	end query_frames;
 
+	
 
 	
 	procedure query_submodules is		

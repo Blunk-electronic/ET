@@ -289,14 +289,8 @@ package et_geometry_2a is
 		v 		: in type_vector_model;
 		format	: in type_output_format := FORMAT_1)
 		return string;
+	-- CS apply this scheme to other to_string functions !
 
-
-	-- Returns as string like: x 34.5 y 11.2:
-	function to_string_2 (
-		v : in type_vector_model) 
-		return string;
-
-	
 
 	-- Moves the given point to the origin (0/0).
 	procedure reset (

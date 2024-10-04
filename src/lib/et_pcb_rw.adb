@@ -146,8 +146,8 @@ package body et_pcb_rw is
 
 	
 	procedure write_line (line : in type_line'class) is begin
-		write (keyword => keyword_start, parameters => to_string_2 (line.start_point));
-		write (keyword => keyword_end  , parameters => to_string_2 (line.end_point));
+		write (keyword => keyword_start, parameters => to_string (line.start_point, FORMAT_2));
+		write (keyword => keyword_end  , parameters => to_string (line.end_point, FORMAT_2));
 	end write_line;
 
 	

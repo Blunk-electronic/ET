@@ -454,17 +454,6 @@ package body et_geometry_2a is
 
 
 	
-	function to_string_2 (v : in type_vector_model) 
-		return string 
-	is begin
-		return "x"
-			& to_string (v.x)
-			& " y"
-			& to_string (v.y);
-	end to_string_2;
-
-
-	
 
 	procedure reset (
 		point : in out type_vector_model) 
