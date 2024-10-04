@@ -43,6 +43,7 @@ with et_canvas_schematic_nets;
 with et_scripting_interactive_schematic;
 with et_symbols;
 with et_schematic_ops.netlists;
+with et_schematic_ops.grid;
 with et_sheets;
 with et_net_labels;						use et_net_labels;
 with et_nets;							use et_nets;
@@ -130,7 +131,9 @@ is
 	
 
 
-	procedure set_grid is begin
+	procedure set_grid is 
+		use et_schematic_ops.grid;
+	begin
 		-- Set the grid on the canvas:
 		parse_canvas_command (VERB_SET, NOUN_GRID);
 
@@ -140,7 +143,7 @@ is
 		-- Assign the grid in the database:
 		set_grid (
 			module_name 	=> module,
-			grid			=> grid,
+			grid			=> pac_canvas.grid,
 			log_threshold	=> log_threshold + 1);
 
 	end set_grid;

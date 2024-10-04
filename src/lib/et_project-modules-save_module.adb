@@ -52,6 +52,8 @@ with et_material;
 with et_time;						use et_time;
 
 with et_schematic_ops;
+with et_schematic_ops.grid;
+
 with et_board_ops;
 with et_board_ops.grid;
 
@@ -304,7 +306,7 @@ is
 			use et_coordinates_2;
 			use pac_geometry_2;
 			use pac_grid;
-			use et_schematic_ops;
+			use et_schematic_ops.grid;
 			g : type_grid;
 		begin
 			g := get_grid (module_cursor, log_threshold + 1);

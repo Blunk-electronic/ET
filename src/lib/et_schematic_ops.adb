@@ -58,7 +58,6 @@ with et_canvas_schematic_2;
 
 package body et_schematic_ops is
 
-	use pac_generic_modules;
 
 	use et_submodules.pac_netchangers;
 	use et_submodules.pac_submodules;
@@ -151,104 +150,6 @@ package body et_schematic_ops is
 			 console => true);
 		raise constraint_error;
 	end;
-
-	
-	procedure set_grid (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		grid			: in pac_grid.type_grid;
-		log_threshold	: in type_log_level) 
-	is
-		use pac_generic_modules;
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-
-		
-		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
-		is begin
-			-- Set the grid in the database:
-			module.grid := grid;
-		end;
-
-		
-	begin -- set_grid
-		log (text => "module " & enclose_in_quotes (to_string (module_name))
-			& " setting schematic grid" & to_string (grid.spacing),
-			level => log_threshold);
-
-		-- locate module
-		module_cursor := locate_module (module_name);
-
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> do_it'access);
-
-	end set_grid;
-
-	
-	procedure set_grid (
-		module_cursor	: in pac_generic_modules.cursor;
-		grid			: in pac_grid.type_grid;
-		log_threshold	: in type_log_level) 
-	is
-		use pac_generic_modules;
-
-		
-		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
-		is begin
-			-- Set the grid in the database:
-			module.grid := grid;
-		end;
-
-		
-	begin -- set_grid
-		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
-			& " setting schematic grid" & to_string (grid.spacing),
-			level => log_threshold);
-
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> do_it'access);
-
-	end set_grid;
-
-
-
-	function get_grid (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)
-		return pac_grid.type_grid
-	is
-		use pac_grid;
-		use pac_generic_modules;
-
-		result : type_grid;
-
-		
-		procedure do_it (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
-		is begin
-			-- Get the grid from the database:
-			result := module.grid;
-		end;
-
-		
-	begin
-		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
-			& " getting schematic grid",
-			level => log_threshold);
-
-		query_element (
-			position	=> module_cursor,
-			process		=> do_it'access);
-
-		return result;
-	end get_grid;
 
 
 

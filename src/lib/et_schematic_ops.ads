@@ -153,28 +153,6 @@ package et_schematic_ops is
 		ports	: in out et_symbols.pac_ports.map; -- the portlist
 		angle	: in et_coordinates_2.type_rotation_model); -- 90
 
-	
-	-- Sets the grid of the module.
-	-- Sets the grid in the database and on the canvas:
-	procedure set_grid (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		grid			: in pac_grid.type_grid;
-		log_threshold	: in type_log_level);		
-
-
-	-- Sets the grid of the module.
-	-- Sets the grid in the database and on the canvas:
-	procedure set_grid (
-		module_cursor	: in pac_generic_modules.cursor;
-		grid			: in pac_grid.type_grid;
-		log_threshold	: in type_log_level);
-
-
-	-- Returns the grid settings of the module:
-	function get_grid (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)
-		return pac_grid.type_grid;
 
 	
 	
