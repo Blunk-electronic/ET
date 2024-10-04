@@ -82,13 +82,11 @@ package body et_board_ops.frame is
 	begin
 		case coordinates is
 			when ABSOLUTE =>
-				null;
 				log (text => "module " & to_string (key (module_cursor)) &
 					 " moving drawing frame origin to " & to_string (point),
 					 level => log_threshold);
 
 			when RELATIVE =>
-				null;
 				log (text => "module " & to_string (key (module_cursor)) &
 					 " moving drawing frame origin by " & to_string (point), 
 					 level => log_threshold);

@@ -56,6 +56,7 @@ with et_schematic_ops.grid;
 
 with et_board_ops;
 with et_board_ops.grid;
+with et_board_ops.frame;
 
 
 separate (et_project.modules)
@@ -1200,6 +1201,10 @@ is
 			use et_pcb_rw;
 			use et_pcb_coordinates_2;
 			use pac_geometry_2;
+			
+			frame_pos : et_frames.type_position;
+
+			use et_board_ops.frame;
 		begin
 			section_mark (section_board, HEADER);
 			
@@ -1207,11 +1212,14 @@ is
 			write (
 				keyword		=> keyword_template, 
 				parameters	=> et_frames.to_string (element (module_cursor).board.frame.template));
-				
-			-- write the board origin like "origin x 40 y 60"
+
+			
+			-- Write the frame position like "position x 40 y 60"
+			frame_pos := get_frame_position (module_cursor, log_threshold + 1); 
+			
 			write (
-				keyword		=> keyword_origin,
-				parameters	=> to_string (element (module_cursor).board.origin, FORMAT_2));
+				keyword		=> keyword_position,
+				parameters	=> to_string (frame_pos, FORMAT_2));
 
 			section_mark (section_board, FOOTER);
 		end board;

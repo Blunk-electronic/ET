@@ -173,6 +173,8 @@ package et_frames is
 	
 
 -- POSITION:
+
+
 	
 	-- A position in the drawing frame domain:
 	type type_position is record
@@ -182,11 +184,21 @@ package et_frames is
 	-- position_default : constant type_position := (1,1);
 
 	
-	-- Converts a position to a string:
-	function to_string (
-		p : in type_position)
-		return string;
+	type type_output_format is (
+		FORMAT_1,
+		FORMAT_2,
+		FORMAT_3);
 
+	
+	-- Converts a position to a string
+	-- and formatted as follows:
+	-- FORMAT_1 : "x/y 4.5 / 5.6" 
+	-- FORMAT_2 : x 4.5 y 5.6
+	-- FORMAT_3 : 4.5 5.6	
+	function to_string (
+		p 		: in type_position;
+		format	: in type_output_format := FORMAT_1)
+		return string;
 
 
 	

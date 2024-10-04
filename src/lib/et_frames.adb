@@ -86,7 +86,7 @@ package body et_frames is
 		distance : in type_distance) 
 		return string 
 	is begin
-		return trim (type_distance'image (distance), left);
+		return type_distance'image (distance);
 	end;
 
 
@@ -149,10 +149,20 @@ package body et_frames is
 
 	
 	function to_string (
-		p : in type_position)
+		p 		: in type_position;
+		format	: in type_output_format := FORMAT_1)
 		return string
 	is begin
-		return to_string (p.x) & "/" & to_string (p.y);
+		case format is
+			when FORMAT_1 =>
+				return ("x/y " & to_string (p.x) & "/ " & to_string (p.y));
+
+			when FORMAT_2 =>
+				return ("x " & to_string (p.x) & " y " & to_string (p.y));
+
+			when FORMAT_3 =>
+				return (to_string (p.x) & " " & to_string (p.y));
+		end case;
 	end to_string;
 
 	

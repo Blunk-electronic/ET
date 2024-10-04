@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -58,15 +58,7 @@ with et_general_rw;				use et_general_rw;
 
 package body et_frame_rw is
 
-	function to_string (position : in type_position) return string is
-	-- returns something like "x 120 y 12"
-		use et_geometry;
-	begin
-		return 
-			keyword_x & space & to_string (position.x) & space &
-			keyword_y & space & to_string (position.y);
-	end;
-
+	
 	function to_position (line : in type_fields_of_line)
 	-- Converts the fields like "x 220 y 239" of a line to a type_position.
 	-- Starts processing from field 2. Ignores field 1 and fields after field 5.
@@ -89,42 +81,50 @@ package body et_frame_rw is
 		-- CS exception handler in case x or y value is invalid
 		return position;
 	end; 
+
+
 	
 	procedure write (
 		frame			: in type_frame;
 		file_name		: in pac_template_name.bounded_string;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		use et_geometry;  -- for keywords only		
 		
 		file_handle : ada.text_io.file_type;
 
+		
 		procedure write_lines (lines : in pac_lines.list) is
 			use pac_lines;
 
-			procedure write (cursor : in pac_lines.cursor) is begin
+			
+			procedure write (cursor : in pac_lines.cursor) is 
+				l : type_line renames element (cursor);
+			begin
 				section_mark (section_line, HEADER);
 
 				-- start point
 				write (
 					keyword		=> keyword_start, 
-					parameters	=> to_string (element (cursor).start_point)); -- start x 180 x 10
+					parameters	=> to_string (l.start_point, FORMAT_2)); -- start x 180 x 10
 
 				-- end point
 				write (
 					keyword		=> keyword_end, 
-					parameters	=> to_string (element (cursor).end_point)); -- end x 180 x 10
+					parameters	=> to_string (l.end_point, FORMAT_2)); -- end x 180 x 10
 
 				-- CS in the future, if a line has a width, write it here
 				section_mark (section_line, FOOTER);
 			end;
-				
+
+			
 		begin -- write lines
 			section_mark (section_lines, HEADER);
 			iterate (lines, write'access);
 			section_mark (section_lines, FOOTER);
 		end;
 
+		
 		procedure write_placeholder (ph : in type_placeholder) is begin
 			-- position
 			write (keyword => keyword_position, parameters	=> to_string (ph.position)); -- position x 220 y 40
@@ -133,6 +133,7 @@ package body et_frame_rw is
 			write (keyword => et_text.keyword_size, parameters => to_string (ph.size)); -- size 20
 		end;
 
+		
 		procedure write_text (text : in type_text) is begin
 			section_mark (section_text, HEADER);
 			
@@ -149,6 +150,7 @@ package body et_frame_rw is
 			section_mark (section_text, FOOTER);
 		end;
 
+		
 		procedure write_cam_marker (cm : in type_cam_marker) is begin
 			-- position
 			write (keyword => keyword_position, parameters	=> to_string (cm.position)); -- position x 220 y 40
@@ -160,6 +162,7 @@ package body et_frame_rw is
 			write (keyword => et_text.keyword_content, wrap => true,
 				   parameters => et_text.to_string (cm.content));
 		end;
+
 		
 		procedure write_texts (texts : in pac_texts.list) is
 			use pac_texts;
@@ -172,6 +175,7 @@ package body et_frame_rw is
 			iterate (texts, write'access);
 		end write_texts;
 
+		
 		procedure write_placeholders_common (ph : in type_placeholders_common) is begin
 			section_mark (section_project_name, HEADER);
 			write_placeholder (ph.project_name);
@@ -186,6 +190,7 @@ package body et_frame_rw is
 			section_mark (section_active_assembly_variant, FOOTER);			
 		end write_placeholders_common;
 
+		
 		procedure write_placeholders_basic (ph : in type_placeholders_basic) is begin
 			section_mark (section_company, HEADER);
 			write_placeholder (ph.company);
@@ -231,6 +236,7 @@ package body et_frame_rw is
 			write_placeholder (ph.approved_date);
 			section_mark (section_approved_date, FOOTER);			
 		end;
+
 		
 		procedure write_placeholders_schematic (ph : in type_placeholders_schematic) is begin
 			write_placeholders_basic (type_placeholders_basic (ph));
@@ -248,6 +254,7 @@ package body et_frame_rw is
 			section_mark (section_sheet_category, FOOTER);			
 		end;
 
+		
 		procedure write_placeholders_pcb (ph : in type_placeholders_pcb) is begin
 			write_placeholders_basic (type_placeholders_basic (ph));
 
@@ -258,8 +265,8 @@ package body et_frame_rw is
 			section_mark (section_signal_layer, HEADER);
 			write_placeholder (ph.signal_layer);
 			section_mark (section_signal_layer, FOOTER);
-			
 		end;
+
 		
 		procedure write_cam_markers (cms : in type_cam_markers) is begin
 			section_mark (section_cam_markers, HEADER);
@@ -302,6 +309,7 @@ package body et_frame_rw is
 
 			section_mark (section_cam_markers, FOOTER);			
 		end;
+
 		
 		procedure write_title_block (block : in type_title_block'class) is 
 			use ada.tags;
@@ -345,6 +353,7 @@ package body et_frame_rw is
 			end if;
 			
 		end write_title_block;
+
 		
 	begin -- write
 		create (
