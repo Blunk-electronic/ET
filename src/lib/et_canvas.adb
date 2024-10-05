@@ -2020,10 +2020,6 @@ package body et_canvas is
 
 	procedure draw_grid is
 		use cairo;
-		-- use demo_conversions;
-		-- use demo_grid;
-		-- use demo_visible_area;
-		-- use demo_canvas;
 		
 		type type_float_grid is new float; -- CS refinement required
 
