@@ -45,6 +45,8 @@ with et_coordinates_2;
 with et_canvas_board_2;
 with et_pcb_coordinates_2;
 
+with et_schematic_ops.grid;
+with et_board_ops.grid;
 
 
 package body et_gui_2 is
@@ -162,7 +164,10 @@ package body et_gui_2 is
 		update_zoom_display;
 		update_scale_display;
 
-		-- CS ?	update_grid_display;
+		-- Set the grid as specified in the database:
+		pac_canvas.grid := et_schematic_ops.grid.get_grid (module, log_threshold + 1);
+		update_grid_display;
+		
 		-- CS ? canvas.update_mode_display;
 
 	end init_schematic;
@@ -246,8 +251,11 @@ package body et_gui_2 is
 
 		update_zoom_display;
 		update_scale_display;
-		
-		-- CS ? update_grid_display;
+
+		-- Set the grid as specified in the database:
+		pac_canvas.grid := et_board_ops.grid.get_grid (module, log_threshold + 1);
+		update_grid_display;
+
 		-- CS ? canvas.update_mode_display;
 
 	end init_board;
