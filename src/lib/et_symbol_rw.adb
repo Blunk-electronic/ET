@@ -6,20 +6,21 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -52,27 +53,27 @@ with et_time;						use et_time;
 
 package body et_symbol_rw is
 
-	function to_grid (
-		line : in type_fields_of_line; -- "default x 1 y 1"
-		from : in count_type)
-		return pac_grid.type_grid 
-	is
-		use pac_grid;
-		use et_string_processing;
-		
-		grid : type_grid; -- to be returned
-		place : count_type := from; -- the field being read from given line
 
+	
+	function to_grid_spacing (
+		line : in type_fields_of_line;
+		from : in count_type)
+		return type_vector_model 
+	is
+		spacing : type_vector_model; -- to be returned
+
+		use et_string_processing;
+		place : count_type := from; -- the field being read from given line
 	begin
 		while place <= field_count (line) loop
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
-				grid.spacing.x := to_distance (f (line, place + 1));
+				spacing.x := to_distance (f (line, place + 1));
 
 			-- We expect after the y the corresponding value for y
 			elsif f (line, place) = keyword_y then
-				grid.spacing.y := to_distance (f (line, place + 1));
+				spacing.y := to_distance (f (line, place + 1));
 
 			else
 				invalid_keyword (f (line, place));
@@ -81,8 +82,9 @@ package body et_symbol_rw is
 			place := place + 2;
 		end loop;
 		
-		return grid;
-	end to_grid;
+		return spacing;
+	end to_grid_spacing;
+
 
 	
 	function position (pos : in type_vector_model) return string is

@@ -501,25 +501,47 @@ is
 	
 	procedure read_drawing_grid_schematic is 
 		use et_symbol_rw;
+		use et_coordinates_2.pac_grid;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_default then -- default x 1.00 y 1.00
+		if kw = keyword_spacing then -- spacing x 1.00 y 1.00
 			expect_field_count (line, 5);
-			grid_schematic := to_grid (line, 2);
+			grid_schematic.spacing := to_grid_spacing (line, 2);
+
+		elsif kw = keyword_on_off then -- on_off on
+			expect_field_count (line, 2);
+			grid_schematic.on := to_on_off (f (line, 2));
+
+		elsif kw = keyword_style then -- style lines
+			expect_field_count (line, 2);
+			grid_schematic.style := to_style (f (line, 2));
+			
 		else
 			invalid_keyword (kw);
 		end if;
 	end;
 
 	
+	
 	procedure read_drawing_grid_board is
+		use et_pcb_rw;
+		use et_pcb_coordinates_2.pac_grid;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_default then -- default x 1.00 y 1.00
+		if kw = keyword_spacing then -- spacing x 1.00 y 1.00
 			expect_field_count (line, 5);
-			grid_board := to_grid (line, 2);
+			grid_board.spacing := to_grid_spacing (line, 2);
+
+		elsif kw = keyword_on_off then -- on_off on
+			expect_field_count (line, 2);
+			grid_board.on := to_on_off (f (line, 2));
+
+		elsif kw = keyword_style then -- style lines
+			expect_field_count (line, 2);
+			grid_board.style := to_style (f (line, 2));
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -530,6 +552,7 @@ is
 	net_class 		: et_pcb.type_net_class;
 	net_class_name	: et_pcb.pac_net_class_name.bounded_string;
 
+	
 	procedure reset_net_class is 
 		use et_pcb;
 	begin
@@ -2475,6 +2498,8 @@ is
 
 			end add_board_layer;
 
+
+			
 			
 			procedure set_drawing_grid is
 
@@ -2482,15 +2507,43 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out et_schematic.type_module) 
 				is
-					use et_coordinates_2.pac_geometry_2;
-					use et_pcb_coordinates_2.pac_geometry_2;
-				begin
-					module.grid := grid_schematic;
-					log (text => "schematic" & to_string (module.grid.spacing), level => log_threshold + 2);
-					module.board.grid := grid_board;
-					log (text => "board" & to_string (module.board.grid.spacing), level => log_threshold + 2);
-				end;
 
+					procedure schematic is
+						use et_coordinates_2;
+						use pac_geometry_2;
+						use pac_grid;
+					begin
+						module.grid := grid_schematic;
+						
+						log (text => "schematic " 
+							& to_string (module.grid.spacing) 
+							& " " & to_string (module.grid.on)
+							& " " & to_string (module.grid.style),
+							level => log_threshold + 2);
+
+					end schematic;
+
+
+					procedure board is
+						use et_pcb_coordinates_2;
+						use pac_geometry_2;
+						use pac_grid;
+					begin
+						module.board.grid := grid_board;
+
+						log (text => "board " 
+							& to_string (module.board.grid.spacing)
+							& " " & to_string (module.board.grid.on)
+							& " " & to_string (module.board.grid.style),
+							level => log_threshold + 2);
+					end board;
+					
+				begin
+					schematic;
+					board;
+				end set;
+
+				
 				
 			begin -- set_drawing_grid
 				log (text => "drawing grid", level => log_threshold + 1);
@@ -2503,6 +2556,8 @@ is
 
 				log_indentation_down;
 			end set_drawing_grid;
+
+
 			
 			
 			procedure insert_net (
