@@ -818,6 +818,12 @@ package et_canvas is
 	
 	-- This is the grid used by the canvas.
 	-- It is primarily a copy of the grid settings of the database.
+	-- Whenever a module is to be drawn on the canvas,
+	-- this variable must be set according to the settings
+	-- of the module (in database). This must be done for example when:
+	-- - the GUI is started the first time with a module to be displayed.
+	-- - the active module is changed 
+	--
 	-- If no grid is set by the user, then a default grid is applied
 	-- as specified in package pac_grid.
 	-- However, procedure set_grid_to_scale may modify it

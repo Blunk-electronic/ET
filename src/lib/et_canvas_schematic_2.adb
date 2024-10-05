@@ -71,6 +71,9 @@ with et_canvas_schematic_units;
 
 with et_undo_redo;
 
+with et_schematic_ops.grid;
+with et_board_ops.grid;
+
 
 package body et_canvas_schematic_2 is
 
@@ -1063,13 +1066,59 @@ package body et_canvas_schematic_2 is
 	procedure next_module is
 		use ada.containers;
 		use pac_generic_modules;
+
 		-- module_ct : count_type;
+
+		
+		procedure schematic is 
+			use et_schematic_ops.grid;
+		begin
+
+			-- Show the module name in the title bar of 
+			-- the schematic editor:
+			set_title_bar (current_active_module);
+
+			grid := get_grid (current_active_module, log_threshold + 1);
+			update_grid_display;
+
+			-- CS Init defaults of property bars in schematic.
+
+			-- CS
+			-- zoom-fit ?
+			-- move cursor home ?
+			-- set sheet ?
+			-- displayed objects, layers, ... ?
+		end schematic;
+
+
+		procedure board is 
+			use et_board_ops.grid;
+		begin
+			-- Show the module name in the title bar of 
+			-- the board editor:
+			et_canvas_board_2.set_title_bar (current_active_module);
+
+			et_canvas_board_2.pac_canvas.grid := 
+				get_grid (current_active_module, log_threshold + 1);
+			
+			et_canvas_board_2.pac_canvas.update_grid_display;
+
+			-- Init defaults of property bars in board:
+			-- CS et_canvas_board.init_property_bars;
+
+			-- CS
+			-- zoom-fit ?
+			-- move cursor home ?
+			-- displayed objects, layers, ... ?
+		end board;
+
+		
 	begin
 		--put_line ("next_module");
 
 		-- module_ct := pac_generic_modules.length (generic_modules);
 		-- put_line ("module count" & count_type'image (module_ct));
-		
+
 		
 		-- Advance to next module:
 		current_active_module := pac_generic_modules.next (current_active_module);
@@ -1082,18 +1131,10 @@ package body et_canvas_schematic_2 is
 
 		--put_line (to_string (key (current_active_module)));
 		
-		-- CS: save sheet number, cursor, zoom, displayed objects ...
+		-- Switch module in schematic and board editor:
+		schematic;
+		board;
 		
-		-- Show the module name in the title bars of 
-		-- both schematic and layout editor:
-		et_canvas_schematic_2.set_title_bar (current_active_module);
-		et_canvas_board_2.set_title_bar (current_active_module);
-		
-		-- CS Init defaults of property bars in schematic.
-		
-		-- Init defaults of property bars in board:
-	-- CS et_canvas_board.init_property_bars;
-
 		redraw; -- schematic and board
 	end next_module;
 
