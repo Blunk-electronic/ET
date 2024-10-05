@@ -42,6 +42,7 @@ with et_symbols;
 with et_symbol_rw;
 with et_schematic_rw;
 with et_device_rw;
+with et_frame_rw;
 
 with et_pcb_rw;
 with et_pcb_rw.restrict;
@@ -811,7 +812,6 @@ is
 
 	
 	procedure query_devices is		
-		use et_symbol_rw;
 		use et_schematic;
 		use et_symbols;
 		use et_device_placeholders.symbols;
@@ -822,15 +822,17 @@ is
 			device_name	: in type_device_name;
 			device		: in type_device_sch) 
 		is
-			use et_schematic_rw;
-			use et_device_rw;
 			use et_coordinates_2;
 			use et_schematic.pac_units;
 			unit_cursor : pac_units.cursor := device.units.first;
 
 			use et_coordinates_2.pac_geometry_2;
 			
-			procedure write_placeholder (ph : in type_text_placeholder) is begin
+			procedure write_placeholder (
+				ph : in type_text_placeholder) 
+			is 
+				use et_symbol_rw;
+			begin
 				section_mark (section_placeholder, HEADER);
 				write (keyword => keyword_meaning, parameters => to_string (ph.meaning));
 				write (keyword => keyword_position, parameters => position (ph.position));
@@ -839,6 +841,7 @@ is
 			end write_placeholder;
 
 			use et_devices;
+			use et_device_rw;
 
 			
 		begin -- query_units
@@ -849,7 +852,7 @@ is
 				
 				write (
 					keyword => keyword_position, 
-					parameters => position (element (unit_cursor).position)); -- position sheet 1 x 147.32 y 96.97
+					parameters => et_schematic_rw.position (element (unit_cursor).position)); -- position sheet 1 x 147.32 y 96.97
 				
 				write (
 					keyword => keyword_rotation, 
@@ -1139,7 +1142,8 @@ is
 
 	
 	procedure query_frames is 
-		use et_frames;
+		use et_frame_rw;
+		use et_frames;		
 		use et_frames.pac_template_name;
 
 
@@ -1210,7 +1214,7 @@ is
 			
 			-- Write the frame template like "template ../frames/dummy.frb":
 			write (
-				keyword		=> keyword_template, 
+				keyword		=> et_frame_rw.keyword_template, 
 				parameters	=> et_frames.to_string (element (module_cursor).board.frame.template));
 
 			
@@ -1218,7 +1222,7 @@ is
 			frame_pos := get_frame_position (module_cursor, log_threshold + 1); 
 			
 			write (
-				keyword		=> keyword_position,
+				keyword		=> et_frame_rw.keyword_position,
 				parameters	=> to_string (frame_pos, FORMAT_2));
 
 			section_mark (section_board, FOOTER);
@@ -1265,7 +1269,7 @@ is
 			write (keyword => keyword_name, parameters => et_general.to_string (key (submodule_cursor))); -- name stepper_driver_1
 			write (keyword => keyword_file, parameters => pac_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
 
-			write (keyword => keyword_position, parameters => position (element (submodule_cursor).position));
+			write (keyword => et_schematic_rw.keyword_position, parameters => position (element (submodule_cursor).position));
 			write (keyword => et_submodules.keyword_size, parameters => 
 				space & keyword_x & to_string (element (submodule_cursor).size.x) &
 				space & keyword_y & to_string (element (submodule_cursor).size.y)); -- size x 50 y 70
@@ -1293,7 +1297,6 @@ is
 
 	
 	procedure query_texts is	
-		use et_symbol_rw;
 		use et_schematic_shapes_and_text;
 		use pac_text_schematic;
 		use et_coordinates_2;
@@ -1303,12 +1306,13 @@ is
 		
 		
 		procedure write (text_cursor : in pac_texts.cursor) is 
+			use et_symbol_rw;
 			use et_schematic_rw;
 		begin
 			section_mark (section_text, HEADER);
 			write
 				(
-				keyword		=> keyword_position,
+				keyword		=> et_schematic_rw.keyword_position,
 				parameters	=> keyword_sheet & to_sheet (element (text_cursor).sheet) 
 								& space & position (element (text_cursor).position)
 				); -- position sheet 1 x 30 y 180

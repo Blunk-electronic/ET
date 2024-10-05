@@ -644,7 +644,7 @@ is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
+		if kw = et_schematic_rw.keyword_position then -- position sheet 1 x 1.000 y 5.555
 			expect_field_count (line, 7);
 
 			-- extract strand position starting at field 2
@@ -714,7 +714,7 @@ is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_position then -- position x 148.59 y 104.59
+		if kw = et_schematic_rw.keyword_position then -- position x 148.59 y 104.59
 			expect_field_count (line, 5);
 
 			-- extract label position starting at field 2 of line
@@ -867,11 +867,13 @@ is
 	-- CS frame_count_schematic		: et_coordinates_2.type_submodule_sheet_number := et_coordinates_2.type_submodule_sheet_number'first; -- 10 frames
 	frame_template_schematic	: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frs
 	frame_template_board		: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frb
-	frame_board_origin 			: et_pcb_coordinates_2.pac_geometry_2.type_vector_model := et_pcb.origin_default; -- x 40 y 60
+	frame_board_position		: et_frames.type_position; -- x 0 y 0
+
 
 	
-	procedure read_frame_template_schematic is
 	-- Reads the name of the schematic frame template.
+	procedure read_frame_template_schematic is
+		use et_frame_rw;
 		use et_frames;
 		kw : constant string := f (line, 1);
 	begin
@@ -885,9 +887,13 @@ is
 	end;
 
 	
+
+	
+	-- Reads the name of the board frame template.
+	-- Reads the position of the frame:
 	procedure read_frame_template_board is
-	-- Reads the name of the board frame template.		
 		use et_frames;
+		use et_frame_rw;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -895,14 +901,15 @@ is
 			expect_field_count (line, 2);
 			frame_template_board := to_template_name (f (line, 2));
 
-		elsif kw = keyword_origin then -- origin x 40 y 60
+		elsif kw = et_frame_rw.keyword_position then -- position x 40 y 60
 			expect_field_count (line, 5);
-			frame_board_origin := et_pcb_rw.to_position (line, 2);
+			frame_board_position := et_frame_rw.to_position (line, 2);
 		else
 			invalid_keyword (kw);
 		end if;
 	end;
 
+	
 	
 	-- Reads the description of a schematic sheet:
 	procedure read_sheet_description is
@@ -963,7 +970,7 @@ is
 			expect_field_count (line, 2);
 			device_unit_name := to_unit_name (f (line, 2));
 			
-		elsif kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
+		elsif kw = et_schematic_rw.keyword_position then -- position sheet 1 x 1.000 y 5.555
 			expect_field_count (line, 7);
 
 			-- extract position of unit starting at field 2
@@ -1195,7 +1202,7 @@ is
 			expect_field_count (line, 2);
 			device_text_placeholder_layer := to_layer (f (line, 2));
 			
-		elsif kw = keyword_position then -- position x 0.000 y 5.555 rotation 0.00 face top
+		elsif kw = et_pcb_rw.keyword_position then -- position x 0.000 y 5.555 rotation 0.00 face top
 			expect_field_count (line, 9);
 
 			-- extract position of placeholder starting at field 2
@@ -1245,7 +1252,7 @@ is
 			expect_field_count (line, 2);
 			unit_placeholder_meaning := to_meaning (f (line, 2));
 			
-		elsif kw = keyword_position then -- position x 0.000 y 5.555
+		elsif kw = et_schematic_rw.keyword_position then -- position x 0.000 y 5.555
 			expect_field_count (line, 5);
 
 			-- extract position of placeholder starting at field 2
@@ -1290,7 +1297,7 @@ is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+		if kw = et_pcb_rw.keyword_position then -- position x 91.44 y 118.56 rotation 45.0
 			expect_field_count (line, 7);
 
 			-- extract position of note starting at field 2
@@ -1686,7 +1693,7 @@ is
 			expect_field_count (line, 2);
 			submodule_name := to_instance_name (f (line, 2));
 
-		elsif kw = keyword_position then -- position sheet 3 x 130 y 210
+		elsif kw = et_schematic_rw.keyword_position then -- position sheet 3 x 130 y 210
 			expect_field_count (line, 7);
 
 			-- extract position of submodule starting at field 2
@@ -1723,7 +1730,7 @@ is
 			expect_field_count (line, 2);
 			submodule_port_name := to_net_name (f (line, 2));
 
-		elsif kw = keyword_position then -- position x 0 y 10
+		elsif kw = et_schematic_rw.keyword_position then -- position x 0 y 10
 			expect_field_count (line, 5);
 
 			-- extract port position starting at field 2
@@ -1777,12 +1784,13 @@ is
 	
 	device_position	: et_pcb_coordinates_2.type_package_position; -- in the layout ! incl. angle and face
 	device_flipped	: et_packages.type_flipped := et_packages.flipped_default;
+
 	
 	procedure read_package is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_position then -- position x 163.500 y 92.500 rotation 0.00 face top
+		if kw = et_pcb_rw.keyword_position then -- position x 163.500 y 92.500 rotation 0.00 face top
 			expect_field_count (line, 9);
 
 			-- extract package position starting at field 2
@@ -1812,7 +1820,7 @@ is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+		if kw = et_pcb_rw.keyword_position then -- position x 91.44 y 118.56 rotation 45.0
 			expect_field_count (line, 7);
 
 			-- extract position of note starting at field 2
@@ -1854,7 +1862,7 @@ is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_position then -- position sheet 2 x 91.44 y 118.56
+		if kw = et_schematic_rw.keyword_position then -- position sheet 2 x 91.44 y 118.56
 			expect_field_count (line, 7);
 
 			declare
@@ -1903,7 +1911,7 @@ is
 				| SEC_KEEPOUT | SEC_STENCIL =>
 
 				-- CS: In the following: set a corresponding parameter-found-flag
-				if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+				if kw = et_pcb_rw.keyword_position then -- position x 91.44 y 118.56 rotation 45.0
 					expect_field_count (line, 7);
 
 					-- extract position starting at field 2
@@ -1944,7 +1952,7 @@ is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+		if kw = et_pcb_rw.keyword_position then -- position x 91.44 y 118.56 rotation 45.0
 			expect_field_count (line, 7);
 
 			-- extract position starting at field 2
@@ -1986,7 +1994,7 @@ is
 		kw : constant  string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+		if kw = et_pcb_rw.keyword_position then -- position x 91.44 y 118.56 rotation 45.0
 			expect_field_count (line, 7);
 
 			-- extract position starting at field 2
@@ -2131,7 +2139,7 @@ is
 			expect_field_count (line, 2);
 			device_name := to_device_name (f (line, 2));
 
-		elsif kw = keyword_position then -- position x 163.500 y 92.500 rotation 0.00 face top
+		elsif kw = et_pcb_rw.keyword_position then -- position x 163.500 y 92.500 rotation 0.00 face top
 			expect_field_count (line, 9);
 
 			-- extract device position (in the layout) starting at field 2
@@ -2152,6 +2160,7 @@ is
 
 	end read_device_non_electric;
 
+	
 	-- This variable provides the basic things for a simple drill
 	-- and a via (the type_via is derived from type_drill):
 	drill : et_drills.type_drill;
@@ -2175,7 +2184,7 @@ is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = keyword_position then -- position x 22.3 y 23.3
+		if kw = et_pcb_rw.keyword_position then -- position x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the position starting at field 2 of line
@@ -2272,6 +2281,7 @@ is
 		-- via_restring_outer := 
 	end build_via;
 
+	
 	-- temporarily storage place for user settings
 	user_settings_board : et_pcb.type_user_settings;
 
@@ -2632,8 +2642,8 @@ is
 					domain			=> PCB,
 					log_threshold	=> log_threshold + 2);
 
-				-- set the board origin
-				module.board.origin := frame_board_origin;
+				-- Set the frame position:
+				module.board.frame.frame.position := frame_board_position;
 			end set_frame_board;
 
 			

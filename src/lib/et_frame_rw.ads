@@ -52,6 +52,10 @@ with et_frames;					use et_frames;
 
 package et_frame_rw is
 
+-- KEYWORDS:
+
+	keyword_position		: constant string := "position";	
+	keyword_template		: constant string := "template";
 	keyword_domain			: constant string := "domain";				
 	keyword_paper_size		: constant string := "paper_size";
 	keyword_orientation		: constant string := "orientation";
@@ -64,7 +68,8 @@ package et_frame_rw is
 
 
 	
-	-- general sections:
+-- GENERAL SECTIONS:
+	
 	section_title_block		: constant string := "[TITLE_BLOCK";
 	section_lines			: constant string := "[LINES";
 
@@ -170,6 +175,14 @@ package et_frame_rw is
 		domain			: in et_frames.type_domain;
 		log_threshold	: in type_log_level)
 		return type_frame;
+
+
+
+	function to_position (
+		line : in et_string_processing.type_fields_of_line; -- position x -100 y -150
+		from : in count_type)
+		return type_position;
+
 	
 end et_frame_rw;
 

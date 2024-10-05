@@ -44,7 +44,7 @@ with et_string_processing;		use et_string_processing;
 
 package et_geometry is
 	
-	keyword_position	: constant string := "position";
+	-- keyword_position	: constant string := "position";
 	keyword_x 			: constant string := "x";
 	keyword_y 			: constant string := "y";		
 	keyword_rotation 	: constant string := "rotation";

@@ -1360,6 +1360,47 @@ package body et_frame_rw is
 			raise;
 		
 	end read_frame;
+
+
+
+
+
+
+	function to_position (
+		line : in et_string_processing.type_fields_of_line; -- position x -100 y -150
+		from : in count_type)
+		return type_position
+	is
+		use et_string_processing;
+
+		result : type_position;
+
+		place : count_type := from; -- the field being read from given line
+
+		-- CS: flags to detect missing x or y
+	begin
+		while place <= field_count (line) loop
+
+			-- We expect after the x the corresponding value for x
+			if f (line, place) = "x" then
+				result.x := to_distance (f (line, place + 1));
+
+			-- We expect after the y the corresponding value for y
+			elsif f (line, place) = "y" then
+				result.y := to_distance (f (line, place + 1));
+
+			else
+				invalid_keyword (f (line, place));
+			end if;
+				
+			place := place + 2;
+		end loop;
+
+		return result;
+	end to_position;
+
+
+
 	
 end et_frame_rw;
 

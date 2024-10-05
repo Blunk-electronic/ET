@@ -88,7 +88,8 @@ package et_pcb_rw is
 	section_hole				: constant string	:= "[HOLE";
 	--section_pcb_contours_plated	: constant string	:= "[PCB_CONTOURS_PLATED"; 
 	section_pac_3d_contours		: constant string	:= "[PACKAGE_3D_CONTOURS";
-	
+
+	keyword_position			: constant string := "position";
 	keyword_description				: constant string := "description";	
 	--keyword_width 					: constant string := "width";	
 	keyword_clearance				: constant string := "clearance";

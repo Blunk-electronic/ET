@@ -456,7 +456,6 @@ package et_pcb is
 	
 	-- This is non-electical board stuff:
 	type type_board is tagged record
-		origin			: type_vector_model := origin_default;
 		frame			: et_frames.type_frame_pcb; -- incl. template name
 		grid			: pac_grid.type_grid;  -- the drawing grid of the board
 		stack			: et_pcb_stack.type_stack;	-- the layer stack

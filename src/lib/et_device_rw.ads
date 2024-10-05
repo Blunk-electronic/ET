@@ -46,6 +46,8 @@ with et_device_placeholders;		use et_device_placeholders;
 
 package et_device_rw is
 
+	keyword_position			: constant string := "position";
+	
 	keyword_symbol_file			: constant string := "symbol_model";
 	keyword_prefix				: constant string := "prefix";		
 	
