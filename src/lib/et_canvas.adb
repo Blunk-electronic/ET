@@ -2250,10 +2250,10 @@ package body et_canvas is
 			set_source_rgb (context, 0.5, 0.5, 0.5); -- gray
 
 			case grid.style is
-				when STYLE_DOTS =>
+				when DOTS =>
 					draw_dots;
 
-				when STYLE_LINES =>
+				when LINES =>
 					draw_lines;
 			end case;
 

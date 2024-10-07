@@ -243,9 +243,9 @@ package body et_canvas.cmd is
 							-- schematic led_driver set grid style dots/lines
 
 								if to_lower (f (6)) = keyword_dots then
-									grid.style := STYLE_DOTS;
+									grid.style := DOTS;
 								elsif to_lower (f (6)) = keyword_lines then
-									grid.style := STYLE_LINES;
+									grid.style := LINES;
 								end if;
 								
 							end if;

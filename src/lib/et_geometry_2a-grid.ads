@@ -62,7 +62,7 @@ package et_geometry_2a.grid is
 
 -- STYLE (lines or dots):
 	
-	type type_grid_style is (STYLE_DOTS, STYLE_LINES);
+	type type_grid_style is (DOTS, LINES);
 
 	function to_string (
 		style : in type_grid_style)
@@ -107,8 +107,7 @@ package et_geometry_2a.grid is
 	type type_grid is record
 		on_off	: type_grid_on_off := ON;
 		spacing : type_vector_model := (others => grid_spacing_default);
-		style	: type_grid_style := STYLE_DOTS;
-		--style	: type_grid_style := STYLE_LINES;
+		style	: type_grid_style := DOTS;
 	end record;
 
 
