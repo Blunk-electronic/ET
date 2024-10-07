@@ -1076,6 +1076,8 @@ package body et_canvas_schematic_2 is
 			grid := get_grid (current_active_module, log_threshold + 1);
 			update_grid_display;
 
+			update_sheet_number_display;
+			
 			-- CS Init defaults of property bars in schematic.
 
 			-- CS
@@ -1101,7 +1103,7 @@ package body et_canvas_schematic_2 is
 			et_canvas_board_2.pac_canvas.update_grid_display;
 
 			-- Init defaults of property bars in board:
-			-- CS et_canvas_board.init_property_bars;
+			et_canvas_board_2.init_property_bars;
 
 			-- CS
 			-- zoom-fit ?

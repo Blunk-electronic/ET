@@ -44,6 +44,7 @@ with et_scripting_interactive_schematic;
 with et_symbols;
 with et_schematic_ops.netlists;
 with et_schematic_ops.grid;
+with et_board_ops.grid;
 with et_sheets;
 with et_net_labels;						use et_net_labels;
 with et_nets;							use et_nets;
@@ -412,68 +413,112 @@ is
 	end show_sheet;
 
 
-	
-	-- Sets the active module and first sheet.
-	procedure show_module is -- GUI related
-		use et_general;
-		use et_project;
-		-- use et_canvas_schematic_2;
+
+	procedure show_module_2 is  -- GUI related
+
+		module : pac_module_name.bounded_string;
+
+		use et_sheets;
+		sheet : type_sheet := 1;
+
 		
-		module : pac_module_name.bounded_string := to_module_name (f (5));
+
+		procedure schematic is 
+			use et_schematic_ops.grid;
+		begin
+
+			-- Show the module name in the title bar of 
+			-- the schematic editor:
+			set_title_bar (current_active_module);
+
+			update_sheet_number_display;
+			
+			pac_canvas.grid := get_grid (current_active_module, log_threshold + 1);
+			update_grid_display;
+
+			
+			-- CS Init defaults of property bars in schematic.
+
+			-- CS
+			-- zoom-fit ?
+			-- move cursor home ?
+			-- set sheet ?
+			-- displayed objects, layers, ... ?
+			-- These things could be stored in the database in the future
+			-- so that they can be applied as soon as a module is selected.
+		end schematic;
+
+
+		procedure board is 
+			use et_board_ops.grid;
+		begin
+			-- Show the module name in the title bar of 
+			-- the board editor:
+			et_canvas_board_2.set_title_bar (current_active_module);
+
+			et_canvas_board_2.pac_canvas.grid := 
+				get_grid (current_active_module, log_threshold + 1);
+			
+			et_canvas_board_2.pac_canvas.update_grid_display;
+
+			-- Init defaults of property bars in board:
+			et_canvas_board_2.init_property_bars;
+
+			-- CS
+			-- zoom-fit ?
+			-- move cursor home ?
+			-- displayed objects, layers, ... ?
+		end board;
+
+		
+		-- Sets the active module and first sheet.
+		procedure show_module is begin
+			module := to_module_name (f (5));
+			set_module (module);
+			current_active_sheet := sheet;
+			
+			schematic;
+			board;
+		end show_module;
+
+
+
+		-- Sets the active module and sheet.
+		procedure show_module_and_sheet is begin
+			module := to_module_name (f (5));
+			set_module (module);
+
+			log (text => "sheet " & to_sheet (sheet), 
+				level => log_threshold + 1);
+			
+			sheet := to_sheet (f (6));
+			current_active_sheet := sheet;
+
+			schematic;
+			board;
+		end show_module_and_sheet;
+
+		
+		
 	begin
-		log (text => "set module " 
+		log (text => "show module " 
 			 & enclose_in_quotes (to_string (module)),
 			 level => log_threshold + 1);
-		
-		set_module (module);
-		current_active_sheet := 1;
 
-		-- Update module name in the schematic window title bar:
-		et_canvas_schematic_2.set_title_bar (current_active_module);
 		
-		-- CS update_sheet_number_display;
+		case cmd_field_count is
+			when 5 => show_module; -- show module LED-driver
+			when 6 => show_module_and_sheet; -- show module LED-driver 2
+			when 7 .. type_field_count'last => too_long;
+			when others => command_incomplete;
+		end case;
 		
-		-- Update the board window title bar:
-		et_canvas_board_2.set_title_bar (current_active_module);
-
-
-		-- CS Init defaults of property bars in schematic.
-		
-		-- Init defaults of property bars in board:
-		et_canvas_board_2.init_property_bars;
-	end show_module;
+	end show_module_2;
 
 	
-	-- Sets the active module and sheet.
-	procedure show_module_and_sheet is  -- GUI related
-		use et_general;
-		use et_sheets;
-				
-		module : pac_module_name.bounded_string := to_module_name (f (5));
-		sheet : type_sheet := to_sheet (f (6));
-	begin
-		log (text => "set module " 
-			& enclose_in_quotes (to_string (module))
-			& " sheet " & to_sheet (sheet), 
-			level => log_threshold + 1);
-		
-		set_module (module);
-		current_active_sheet := sheet;
+	
 
-		-- Update module name in the schematic window title bar:
-		et_canvas_schematic_2.set_title_bar (current_active_module);
-
-		-- CS update_sheet_number_display;
-		
-		-- Update the board window title bar:
-		et_canvas_board_2.set_title_bar (current_active_module);
-
-
-		-- CS Init defaults of property bars in schematic.
-		
-		-- Init defaults of property bars in board:
-		et_canvas_board_2.init_property_bars;
-	end show_module_and_sheet;
+	
 
 
 	
@@ -2149,13 +2194,9 @@ is
 						end case;
 
 					when NOUN_MODULE =>
-						case cmd_field_count is
-							when 5 => show_module; -- show module LED-driver
-							when 6 => show_module_and_sheet; -- show module LED-driver 2
-							when 7 .. type_field_count'last => too_long;
-							when others => command_incomplete;
-						end case;
+						show_module_2;
 
+						
 					when NOUN_NET =>
 						case cmd_field_count is
 							when 5 => show_net ( -- show net RESET_N
