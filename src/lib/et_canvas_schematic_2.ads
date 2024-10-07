@@ -380,6 +380,7 @@ package et_canvas_schematic_2 is
 
 	-- Sets the active module to be displayed in the canvas.
 	-- The module must exist inside the current project directory.
+	-- Loads the module into the collection of generic modules.
 	-- Sets the variable current_active_module accordingly:
 	procedure set_module (
 		module	: in pac_module_name.bounded_string); -- motor_driver
