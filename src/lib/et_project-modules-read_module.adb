@@ -511,7 +511,7 @@ is
 
 		elsif kw = keyword_on_off then -- on_off on
 			expect_field_count (line, 2);
-			grid_schematic.on := to_on_off (f (line, 2));
+			grid_schematic.on_off := to_on_off (f (line, 2));
 
 		elsif kw = keyword_style then -- style lines
 			expect_field_count (line, 2);
@@ -536,7 +536,7 @@ is
 
 		elsif kw = keyword_on_off then -- on_off on
 			expect_field_count (line, 2);
-			grid_board.on := to_on_off (f (line, 2));
+			grid_board.on_off := to_on_off (f (line, 2));
 
 		elsif kw = keyword_style then -- style lines
 			expect_field_count (line, 2);
@@ -2517,7 +2517,7 @@ is
 						
 						log (text => "schematic " 
 							& to_string (module.grid.spacing) 
-							& " " & to_string (module.grid.on)
+							& " " & to_string (module.grid.on_off)
 							& " " & to_string (module.grid.style),
 							level => log_threshold + 2);
 
@@ -2533,7 +2533,7 @@ is
 
 						log (text => "board " 
 							& to_string (module.board.grid.spacing)
-							& " " & to_string (module.board.grid.on)
+							& " " & to_string (module.board.grid.on_off)
 							& " " & to_string (module.board.grid.style),
 							level => log_threshold + 2);
 					end board;

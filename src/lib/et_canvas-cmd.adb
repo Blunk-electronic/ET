@@ -220,10 +220,10 @@ package body et_canvas.cmd is
 							if to_lower (f (5)) = keyword_on then
 							-- schematic led_driver set grid on/off
 
-								grid.on := GRID_ON;
+								grid.on_off := ON;
 								
 							elsif to_lower (f (5)) = keyword_off then
-								grid.on := GRID_OFF;
+								grid.on_off := OFF;
 							end if;
 							
 								

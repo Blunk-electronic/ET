@@ -47,7 +47,7 @@ package et_geometry_2a.grid is
 
 -- ON / OFF;
 	
-	type type_grid_on_off is (GRID_ON, GRID_OFF);
+	type type_grid_on_off is (ON, OFF);
 
 	
 	function to_string (
@@ -105,8 +105,7 @@ package et_geometry_2a.grid is
 
 	
 	type type_grid is record
-		on		: type_grid_on_off := GRID_ON;
-		-- on		: type_grid_on_off := GRID_OFF;
+		on_off	: type_grid_on_off := ON;
 		spacing : type_vector_model := (others => grid_spacing_default);
 		style	: type_grid_style := STYLE_DOTS;
 		--style	: type_grid_style := STYLE_LINES;

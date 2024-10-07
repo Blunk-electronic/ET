@@ -37,7 +37,7 @@
 --
 
 with ada.text_io;					use ada.text_io;
-
+with ada.characters.handling;
 
 
 package body et_geometry_2a.grid is
@@ -46,8 +46,10 @@ package body et_geometry_2a.grid is
 	function to_string (
 		on_off : in type_grid_on_off)
 		return string
-	is begin
-		return type_grid_on_off'image (on_off);
+	is 
+		use ada.characters.handling;
+	begin
+		return to_lower (type_grid_on_off'image (on_off));
 	end;
 	
 
@@ -63,8 +65,10 @@ package body et_geometry_2a.grid is
 	function to_string (
 		style : in type_grid_style)
 		return string
-	is begin
-		return type_grid_style'image (style);
+	is 
+		use ada.characters.handling;
+	begin
+		return to_lower (type_grid_style'image (style));
 	end;
 
 

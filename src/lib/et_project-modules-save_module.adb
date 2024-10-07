@@ -313,7 +313,7 @@ is
 		begin
 			g := get_grid (module_cursor, log_threshold + 1);
 
-			write (keyword => keyword_on_off, parameters => to_string (g.on));
+			write (keyword => keyword_on_off, parameters => to_string (g.on_off));
 			write (keyword => keyword_spacing, parameters => to_string (g.spacing, FORMAT_2));
 			write (keyword => keyword_style, parameters => to_string (g.style));
 		end schematic;
@@ -328,7 +328,7 @@ is
 		begin
 			g := get_grid (module_cursor, log_threshold + 1);
 
-			write (keyword => keyword_on_off, parameters => to_string (g.on));
+			write (keyword => keyword_on_off, parameters => to_string (g.on_off));
 			write (keyword => keyword_spacing, parameters => to_string (g.spacing, FORMAT_2));
 			write (keyword => keyword_style, parameters => to_string (g.style));
 		end board;
