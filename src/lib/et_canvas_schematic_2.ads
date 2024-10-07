@@ -358,17 +358,22 @@ package et_canvas_schematic_2 is
 	
 
 -- MODULE SELECT:
-	
-	-- Advances no previous generic module. If there is no
-	-- previous module, selects the last module of 
-	-- collection of generic modules.
-	procedure next_module;
 
+	type type_module_select is (NEXT, PREVIOUS);
 	
-	-- Advances no next generic module. If there is no
-	-- next module, selects the first module of 
-	-- collection of generic modules.
-	procedure previous_module;
+
+	-- Switches between modules in the order as specified
+	-- by argument sel. 
+	-- - If sel is NEXT:
+	--   Advances no previous generic module. If there is no
+	--   previous module, selects the last module of 
+	--   collection of generic modules.
+	-- - If sel is PREVIOUS:
+	--   Advances no next generic module. If there is no
+	--   next module, selects the first module of 
+	--   collection of generic modules:
+	procedure switch_module (
+		sel : in type_module_select);
 
 	
 	

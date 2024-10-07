@@ -579,11 +579,11 @@ package body et_canvas_schematic_2 is
 
 				-- Switch between modules:	
 				when GDK_F11 =>
-					previous_module;
+					switch_module (PREVIOUS);
 					event_handled := true;
 					
 				when GDK_F12 =>
-					next_module;
+					switch_module (NEXT);
 					event_handled := true;
 					
 
@@ -1063,12 +1063,9 @@ package body et_canvas_schematic_2 is
 -- MODULE SELECT:
 	
 	
-	procedure next_module is
-		use ada.containers;
-		use pac_generic_modules;
-
-		-- module_ct : count_type;
-
+	procedure switch_module (
+		sel : in type_module_select)
+	is
 		
 		procedure schematic is 
 			use et_schematic_ops.grid;
@@ -1088,6 +1085,8 @@ package body et_canvas_schematic_2 is
 			-- move cursor home ?
 			-- set sheet ?
 			-- displayed objects, layers, ... ?
+			-- These things could be stored in the database in the future
+			-- so that they can be applied as soon as a module is selected.
 		end schematic;
 
 
@@ -1113,22 +1112,37 @@ package body et_canvas_schematic_2 is
 		end board;
 
 		
+		-- use ada.containers;
+		-- module_ct : count_type;
+		
 	begin
-		--put_line ("next_module");
+		--put_line ("switch_module");
 
 		-- module_ct := pac_generic_modules.length (generic_modules);
 		-- put_line ("module count" & count_type'image (module_ct));
 
-		
-		-- Advance to next module:
-		current_active_module := pac_generic_modules.next (current_active_module);
+		case sel is
+			when NEXT =>
+				-- Advance to next module:
+				current_active_module := pac_generic_modules.next (current_active_module);
 
-		-- If there is no next module, select first module:
-		if current_active_module = pac_generic_modules.no_element then
-			-- put_line ("no next");
-			current_active_module := generic_modules.first;
-		end if;
+				-- If there is no next module, select first module:
+				if current_active_module = pac_generic_modules.no_element then
+					-- put_line ("no next");
+					current_active_module := generic_modules.first;
+				end if;
 
+			when PREVIOUS =>
+				-- Advance to previous module:
+				current_active_module := pac_generic_modules.previous (current_active_module);
+
+				-- If there is no previous module, select last module:
+				if current_active_module = pac_generic_modules.no_element then
+					current_active_module := generic_modules.last;
+				end if;
+		end case;
+
+				
 		--put_line (to_string (key (current_active_module)));
 		
 		-- Switch module in schematic and board editor:
@@ -1136,36 +1150,8 @@ package body et_canvas_schematic_2 is
 		board;
 		
 		redraw; -- schematic and board
-	end next_module;
+	end switch_module;
 
-	
-	procedure previous_module is
-		use pac_generic_modules;
-	begin
-		-- put_line ("previous_module");
-		
-		-- Advance to previous module:
-		current_active_module := pac_generic_modules.previous (current_active_module);
-
-		-- If there is no previous module, select last module:
-		if current_active_module = pac_generic_modules.no_element then
-			current_active_module := generic_modules.last;
-		end if;
-
-		-- CS: save sheet number, cursor, zoom, displayed objects ...
-		
-		-- Show the module name in the title bars of 
-		-- both schematic and layout editor:
-		et_canvas_schematic_2.set_title_bar (current_active_module);
-		et_canvas_board_2.set_title_bar (current_active_module);
-
-		-- CS Init defaults of property bars in schematic.
-		
-		-- Init defaults of property bars in board:
-		-- CS et_canvas_board_2.init_property_bars;
-
-		redraw; -- schematic and board
-	end previous_module;
 
 
 	

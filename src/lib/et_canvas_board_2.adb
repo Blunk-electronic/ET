@@ -586,11 +586,11 @@ package body et_canvas_board_2 is
 
 				-- Switch between modules:
 				when GDK_F11 =>
-					et_canvas_schematic_2.previous_module;
+					et_canvas_schematic_2.switch_module (et_canvas_schematic_2.PREVIOUS);
 					event_handled := true;
 					
 				when GDK_F12 =>
-					et_canvas_schematic_2.next_module;
+					et_canvas_schematic_2.switch_module (et_canvas_schematic_2.NEXT);
 					event_handled := true;
 
 
