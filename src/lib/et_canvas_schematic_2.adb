@@ -1060,58 +1060,57 @@ package body et_canvas_schematic_2 is
 	
 -- MODULE SELECT:
 	
+	procedure update_schematic_editor is 
+		use et_schematic_ops.grid;
+	begin
+
+		-- Show the module name in the title bar of 
+		-- the schematic editor:
+		set_title_bar (current_active_module);
+
+		grid := get_grid (current_active_module, log_threshold + 1);
+		update_grid_display;
+
+		update_sheet_number_display;
+		
+		-- CS Init defaults of property bars in schematic.
+
+		-- CS
+		-- zoom-fit ?
+		-- move cursor home ?
+		-- set sheet ?
+		-- displayed objects, layers, ... ?
+		-- These things could be stored in the database in the future
+		-- so that they can be applied as soon as a module is selected.
+	end update_schematic_editor;
+
+
+	procedure update_board_editor is 
+		use et_board_ops.grid;
+	begin
+		-- Show the module name in the title bar of 
+		-- the board editor:
+		et_canvas_board_2.set_title_bar (current_active_module);
+
+		et_canvas_board_2.pac_canvas.grid := 
+			get_grid (current_active_module, log_threshold + 1);
+		
+		et_canvas_board_2.pac_canvas.update_grid_display;
+
+		-- Init defaults of property bars in board:
+		et_canvas_board_2.init_property_bars;
+
+		-- CS
+		-- zoom-fit ?
+		-- move cursor home ?
+		-- displayed objects, layers, ... ?
+	end update_board_editor;
+
+
 	
 	procedure switch_module (
 		sel : in type_module_select)
-	is
-		
-		procedure schematic is 
-			use et_schematic_ops.grid;
-		begin
-
-			-- Show the module name in the title bar of 
-			-- the schematic editor:
-			set_title_bar (current_active_module);
-
-			grid := get_grid (current_active_module, log_threshold + 1);
-			update_grid_display;
-
-			update_sheet_number_display;
-			
-			-- CS Init defaults of property bars in schematic.
-
-			-- CS
-			-- zoom-fit ?
-			-- move cursor home ?
-			-- set sheet ?
-			-- displayed objects, layers, ... ?
-			-- These things could be stored in the database in the future
-			-- so that they can be applied as soon as a module is selected.
-		end schematic;
-
-
-		procedure board is 
-			use et_board_ops.grid;
-		begin
-			-- Show the module name in the title bar of 
-			-- the board editor:
-			et_canvas_board_2.set_title_bar (current_active_module);
-
-			et_canvas_board_2.pac_canvas.grid := 
-				get_grid (current_active_module, log_threshold + 1);
-			
-			et_canvas_board_2.pac_canvas.update_grid_display;
-
-			-- Init defaults of property bars in board:
-			et_canvas_board_2.init_property_bars;
-
-			-- CS
-			-- zoom-fit ?
-			-- move cursor home ?
-			-- displayed objects, layers, ... ?
-		end board;
-
-		
+	is			
 		-- use ada.containers;
 		-- module_ct : count_type;
 		
@@ -1146,8 +1145,8 @@ package body et_canvas_schematic_2 is
 		--put_line (to_string (key (current_active_module)));
 		
 		-- Switch module in schematic and board editor:
-		schematic;
-		board;
+		update_schematic_editor;
+		update_board_editor;
 		
 		redraw; -- schematic and board
 	end switch_module;

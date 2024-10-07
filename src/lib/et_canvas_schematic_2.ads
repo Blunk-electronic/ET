@@ -360,6 +360,16 @@ package et_canvas_schematic_2 is
 -- MODULE SELECT:
 
 	type type_module_select is (NEXT, PREVIOUS);
+
+	
+	-- Updates title bars, grid display, sheet number display
+	-- of the schematic editor window:	
+	procedure update_schematic_editor;
+
+	-- Updates title bars, grid display
+	-- of the board editor window:	
+	procedure update_board_editor;
+
 	
 
 	-- Switches between modules in the order as specified
