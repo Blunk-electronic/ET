@@ -202,14 +202,7 @@ package body et_canvas.cmd is
 
 		
 		
-		keyword_on		: constant string := "on";
-		keyword_off		: constant string := "off";
-		keyword_spacing : constant string := "spacing";
-		keyword_style   : constant string := "style";
-		keyword_dots	: constant string := "dots";
-		keyword_lines	: constant string := "lines";
-
-
+	
 		procedure evaluate_on_verb_set is begin					
 			case noun is
 
