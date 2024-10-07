@@ -363,14 +363,11 @@ package et_canvas_schematic_2 is
 
 	
 	-- Updates title bars, grid display, sheet number display
-	-- of the schematic editor window:	
+	-- of the schematic editor window according to the 
+	-- current active module and sheet:	
 	procedure update_schematic_editor;
 
-	-- Updates title bars, grid display
-	-- of the board editor window:	
-	procedure update_board_editor;
 
-	
 
 	-- Switches between modules in the order as specified
 	-- by argument sel. 

@@ -1059,6 +1059,7 @@ package body et_canvas_schematic_2 is
 
 	
 -- MODULE SELECT:
+
 	
 	procedure update_schematic_editor is 
 		use et_schematic_ops.grid;
@@ -1084,27 +1085,6 @@ package body et_canvas_schematic_2 is
 		-- so that they can be applied as soon as a module is selected.
 	end update_schematic_editor;
 
-
-	procedure update_board_editor is 
-		use et_board_ops.grid;
-	begin
-		-- Show the module name in the title bar of 
-		-- the board editor:
-		et_canvas_board_2.set_title_bar (current_active_module);
-
-		et_canvas_board_2.pac_canvas.grid := 
-			get_grid (current_active_module, log_threshold + 1);
-		
-		et_canvas_board_2.pac_canvas.update_grid_display;
-
-		-- Init defaults of property bars in board:
-		et_canvas_board_2.init_property_bars;
-
-		-- CS
-		-- zoom-fit ?
-		-- move cursor home ?
-		-- displayed objects, layers, ... ?
-	end update_board_editor;
 
 
 	
@@ -1146,7 +1126,7 @@ package body et_canvas_schematic_2 is
 		
 		-- Switch module in schematic and board editor:
 		update_schematic_editor;
-		update_board_editor;
+		et_canvas_board_2.update_board_editor;
 		
 		redraw; -- schematic and board
 	end switch_module;

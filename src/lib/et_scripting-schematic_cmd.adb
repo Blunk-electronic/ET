@@ -413,6 +413,7 @@ is
 	end show_sheet;
 
 
+	
 
 	procedure show_module_2 is  -- GUI related
 
@@ -420,7 +421,6 @@ is
 
 		use et_sheets;
 		sheet : type_sheet := 1;
-
 
 		
 		-- Sets the active module and first sheet.
@@ -430,7 +430,7 @@ is
 			current_active_sheet := sheet;
 			
 			update_schematic_editor;
-			update_board_editor;
+			et_canvas_board_2.update_board_editor;
 		end show_module;
 
 
@@ -447,9 +447,8 @@ is
 			current_active_sheet := sheet;
 
 			update_schematic_editor;
-			update_board_editor;
+			et_canvas_board_2.update_board_editor;
 		end show_module_and_sheet;
-
 		
 		
 	begin

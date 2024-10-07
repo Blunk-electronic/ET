@@ -65,7 +65,7 @@ with et_display.board;
 -- with et_colors;
 with et_colors.board;
 -- with et_modes.board;
--- with et_board_ops;					use et_board_ops;
+with et_board_ops.grid;
 -- with et_pcb_stack;
 -- with et_design_rules;
 
@@ -1279,6 +1279,30 @@ package body et_canvas_board_2 is
 
 
 
+-- MODULE SELECT:
+
+	procedure update_board_editor is 
+		use et_board_ops.grid;
+	begin
+		-- Show the module name in the title bar of 
+		-- the board editor:
+		set_title_bar (current_active_module);
+
+		pac_canvas.grid := 
+			get_grid (current_active_module, log_threshold + 1);
+		
+		pac_canvas.update_grid_display;
+
+		-- Init defaults of property bars in board:
+		init_property_bars;
+
+		-- CS
+		-- zoom-fit ?
+		-- move cursor home ?
+		-- displayed objects, layers, ... ?
+	end update_board_editor;
+
+	
 
 	
 

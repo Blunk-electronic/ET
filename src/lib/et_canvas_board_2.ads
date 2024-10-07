@@ -352,6 +352,16 @@ package et_canvas_board_2 is
 
 
 
+-- MODULE SELECT:
+	
+	-- Updates title bars, grid display
+	-- of the board editor window according to the
+	-- current active module:
+	procedure update_board_editor;
+
+	
+
+
 -- 	-- Saves the current module by calling 
 -- 	-- et_canvas_schematic.save_module:
 -- 	overriding procedure save_drawing (
