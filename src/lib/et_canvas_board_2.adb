@@ -927,9 +927,7 @@ package body et_canvas_board_2 is
 		-- The ends of all kinds of lines are round:
 		set_line_cap (context, cairo_line_cap_round);
 
-		if grid_enabled then
-			draw_grid;		
-		end if;
+		draw_grid;		
 		
 		draw_drawing_origin;
 		draw_drawing_frame;		
@@ -937,42 +935,6 @@ package body et_canvas_board_2 is
 		draw_zoom_area;
 	
 		draw_board;
-
-		-- draw_text (
-		-- 	content		=> to_content ("HoH"),
-		-- 	size		=> 5.0,
-		-- 	font		=> font_indexes,
-		-- 	anchor		=> (90.0, 90.0),
-		-- 	origin		=> true,
-		-- 	rotation	=> 45.0,
-		-- 	alignment	=> (RIGHT, top));
-
-		
-		-- draw_text (
-		-- 	content		=> to_content ("yy"),
-		-- 	size		=> 5.0,
-		-- 	font		=> font_indexes,
-		-- 	position	=> (10.0, 0.0),
-		-- 	origin		=> false,
-		-- 	rotation	=> 0.0,
-		-- 	--alignment	=> (CENTER, CENTER));
-		-- 	-- alignment	=> (LEFT, BOTTOM));
-		-- 	-- alignment	=> (LEFT, CENTER));
-		-- 	alignment	=> (LEFT, TOP));
-
-
-		-- draw_text (
-		-- 	content		=> to_content ("a"),
-		-- 	size		=> 5.0,
-		-- 	font		=> font_indexes,
-		-- 	position	=> (20.0, 0.0),
-		-- 	origin		=> false,
-		-- 	rotation	=> 0.0,
-		-- 	--alignment	=> (CENTER, CENTER));
-		-- 	-- alignment	=> (LEFT, BOTTOM));
-		-- 	-- alignment	=> (LEFT, CENTER));
-		-- 	alignment	=> (LEFT, TOP));
-
 		
 		return event_handled;
 	end cb_draw;
