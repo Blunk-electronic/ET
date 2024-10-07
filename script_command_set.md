@@ -79,10 +79,7 @@ board led_driver quit
 
 
 ## DRAWING GRID
-The drawing grid is to be set for each module. It's default is 1mm in both x and y direction:
-<!--```
-CS schematic led_driver set grid 2 # x/y 2/2
-```-->
+The drawing grid is to be set for each module. 
 ```
 schematic led_driver set grid 2 2 # x/y 2/2
 ```
@@ -90,7 +87,7 @@ schematic led_driver set grid 2 2 # x/y 2/2
 board led_driver set grid 0.5 0.5 # x/y 0.5/0.5
 ```
 ```
-schematic led_driver display grid [on/off]
+schematic led_driver set grid [on/off]
 ```
 
 

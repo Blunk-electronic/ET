@@ -497,7 +497,6 @@ is
 				level => log_threshold + 1);
 		
 		case layer is
-			when NOUN_GRID		=> layers.grid := ls;
 			when NOUN_NAMES		=> layers.device_names := ls;
 			when NOUN_NETS		=> layers.nets := ls;
 			when NOUN_PORTS		=> layers.ports := ls;
@@ -1147,7 +1146,7 @@ is
 					when NOUN_PORTS		-- like "schematic led_driver display ports [on/off]"
 						| NOUN_NETS		-- like "schematic led_driver display nets [on/off]"
 						| NOUN_NAMES | NOUN_VALUES | NOUN_PURPOSES
-						| NOUN_TEXTS | NOUN_GRID
+						| NOUN_TEXTS
 						=>
 						case cmd_field_count is
 							when 4 => display (noun); -- if status is omitted

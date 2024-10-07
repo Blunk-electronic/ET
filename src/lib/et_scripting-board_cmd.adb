@@ -186,28 +186,6 @@ is
 	
 	
 	
-	-- Enables/disables the grid "layer". If status is empty,
-	-- the layer will be enabled.
-	procedure display_grid ( -- GUI related
-		status	: in string := "") is 
-
-		ls : type_layer_status;
-	begin
-		-- Convert the given status to type_layer_status.
-		-- If no status given, assume status ON:
-		if status = "" then
-			ls := ON;
-		else
-			ls := to_layer_status (status);
-		end if;
-
-		log (text => "display grid layer" & space & to_string (ls),
-				level => log_threshold + 1);
-
-		layers.grid := ls;
-		
-		-- CS exception handler if status is invalid
-	end display_grid;
 
 	
 	-- Enables/disables the outline layer. If status is empty,
@@ -2537,14 +2515,6 @@ is
 				
 			when VERB_DISPLAY => -- GUI related
 				case noun is
-					when NOUN_GRID => -- like "board led_driver display grid [on/off]"
-						case cmd_field_count is
-							when 4 => display_grid; -- if status is omitted
-							when 5 => display_grid (f (5));
-							when 6 .. type_field_count'last => too_long;
-							when others => command_incomplete;
-						end case;
-						
 					when NOUN_SILKSCREEN -- like "board led_driver display silkscreen top [on/off]"
 						| NOUN_ASSY | NOUN_KEEPOUT | NOUN_STOP | NOUN_STENCIL | NOUN_ORIGINS =>
 						case cmd_field_count is

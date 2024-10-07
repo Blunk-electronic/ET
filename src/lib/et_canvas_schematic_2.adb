@@ -655,9 +655,7 @@ package body et_canvas_schematic_2 is
 		-- The ends of all kinds of lines are round:
 		set_line_cap (context, cairo_line_cap_round);
 
-		if grid_enabled then
-			draw_grid;		
-		end if;
+		draw_grid;		
 		
 		draw_drawing_origin;
 		draw_drawing_frame;	
