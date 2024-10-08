@@ -415,6 +415,8 @@ is
 	begin
 		log (text => "set sheet" & to_sheet (sheet), level => log_threshold + 1); 
 
+		update_mode_display;
+		
 		case cmd_field_count is
 			when 5 => show;
 			when 6 .. type_field_count'last => too_long;
@@ -472,6 +474,7 @@ is
 			 & enclose_in_quotes (to_string (module)),
 			 level => log_threshold + 1);
 
+		update_mode_display;
 		
 		case cmd_field_count is
 			when 5 => module_and_first_sheet; -- show module LED-driver
@@ -2238,7 +2241,7 @@ is
 		-- Update GUI if we are in graphical mode:
 		if runmode /= MODE_HEADLESS then
 			null;
-			-- CS canvas.update_mode_display;
+			
 		end if;
 		
 	end parse;		

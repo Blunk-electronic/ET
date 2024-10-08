@@ -2363,6 +2363,7 @@ is
 			 & enclose_in_quotes (to_string (module)),
 			 level => log_threshold + 1);
 
+		update_mode_display;
 		
 		case cmd_field_count is
 			when 5 => module_and_first_sheet; -- show module LED-driver
