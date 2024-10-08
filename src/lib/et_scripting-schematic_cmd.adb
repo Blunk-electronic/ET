@@ -176,15 +176,361 @@ is
 		-- CS: Assign the scale in the database.
 	end set_scale;
 
+
+
+	procedure create_assembly_variant is
+		use et_assembly_variants;
+	begin
+		case cmd_field_count is
+			when 5 =>
+				create_assembly_variant
+					(
+					module_name		=> module,
+					variant_name	=> to_variant (f (5)),
+					log_threshold	=> log_threshold + 1);
+				
+			when 6 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end create_assembly_variant;
 	
 
 
+	procedure delete_assembly_variant is
+		use et_assembly_variants;
+	begin
+		case cmd_field_count is
+			when 5 =>
+				delete_assembly_variant
+					(
+					module_name		=> module,
+					variant_name	=> to_variant (f (5)),
+					log_threshold	=> log_threshold + 1);
+				
+			when 6 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
 
+	end delete_assembly_variant;
+
+
+
+	procedure describe_assembly_variant is
+		use et_assembly_variants;
+	begin
+		case cmd_field_count is
+			when 6 =>
+				describe_assembly_variant
+					(
+					module_name		=> module,
+					variant_name	=> to_variant (f (5)), -- low_cost
+					description		=> et_assembly_variants.to_unbounded_string (f (6)), -- "the cheap version"
+					log_threshold	=> log_threshold + 1);
+				
+			when 7 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end describe_assembly_variant;
+
+
+	
+
+	procedure add_device is
+		use et_sheets;
+	begin
+		case cmd_field_count is
+			when 9 =>
+				-- If a virtual device is added, then no variant is required.
+				add_device (
+					module_name 	=> module,
+					device_model	=> to_file_name (f (5)),
+					destination		=> to_position 
+						(
+						sheet => to_sheet (f (6)),
+						point => type_vector_model (set 
+									(
+									x => to_distance (f (7)),
+									y => to_distance (f (8))
+									)),
+						rotation => to_rotation (f (9))
+						),
+					variant			=> to_variant_name (""),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 10 =>
+				-- A real device requires specification of a package variant.
+				add_device (
+					module_name 	=> module,
+					device_model	=> to_file_name (f (5)),
+					destination		=> to_position 
+						(
+						sheet => to_sheet (f (6)),
+						point => type_vector_model (set 
+									(
+									x => to_distance (f (7)),
+									y => to_distance (f (8))
+									)),
+						rotation		=> to_rotation (f (9))
+						),
+					variant			=> to_variant_name (f (10)),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 11 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+
+
+	end add_device;
+
+
+	
+	
+	procedure add_netchanger is
+		use et_sheets;
+	begin
+		case cmd_field_count is
+			when 8 =>
+				add_netchanger (
+					module_name 	=> module,
+					place			=> to_position 
+						(
+						sheet => to_sheet (f (5)),
+						point => type_vector_model (set 
+									(
+									x => to_distance (f (6)),
+									y => to_distance (f (7))
+									)),
+						rotation		=> to_rotation (f (8))
+						),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 9 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end add_netchanger;
+	
+
+	
+	procedure delete_netchanger is
+	begin
+		case cmd_field_count is
+			when 5 =>
+				delete_netchanger
+					(
+					module_name		=> module,
+					index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+					log_threshold		=> log_threshold + 1);
+
+			when 6 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end delete_netchanger;
+	
+	
+	
+	procedure add_port_to_submodule is
+	begin
+		case cmd_field_count is
+			when 9 =>
+				add_port (
+					module_name 	=> module,
+					instance		=> et_general.to_instance_name (f (5)),
+					port_name		=> to_net_name (f (6)),
+					position		=> type_vector_model (set 
+								(
+								x => to_distance (f (7)),
+								y => to_distance (f (8))
+								)),
+					direction		=> et_submodules.to_port_name (f (9)),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 10 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+
+	end add_port_to_submodule;
+
+	
+
+	procedure delete_port_of_submodule is
+	begin
+		case cmd_field_count is
+			when 6 =>
+				delete_port
+					(
+					module_name 	=> module,
+					instance		=> et_general.to_instance_name (f (5)),
+					port_name		=> to_net_name (f (6)),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 7 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end delete_port_of_submodule;
+	
+
+	
+	procedure add_submodule is
+		use et_sheets;
+	begin
+		case cmd_field_count is
+			when 11 =>
+				add_submodule (
+					module_name 	=> module, -- parent module (where the submodule is to be inserted)
+					file			=> et_submodules.to_submodule_path (f (5)),
+					instance		=> et_general.to_instance_name (f (6)), -- submodule instance name
+					position		=> to_position 
+						(
+						sheet => to_sheet (f (7)),
+						point => type_vector_model (set 
+									(
+									x => to_distance (f (8)),
+									y => to_distance (f (9))
+									))
+						),
+					size => (
+						x => to_distance (f (10)),
+						y => to_distance (f (11))
+						),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 12 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end add_submodule;
+
+	
+
+	procedure copy_submodule is
+		use et_sheets;
+	begin
+		case cmd_field_count is
+			when 9 =>
+				copy_submodule (
+					module_name 	=> module, -- parent module (where the submodule is to be copied)
+					instance_origin	=> et_general.to_instance_name (f (5)), -- submodule instance name
+					instance_new	=> et_general.to_instance_name (f (6)), -- submodule instance name
+					destination		=> to_position 
+						(
+						sheet => to_sheet (f (7)),
+						point => type_vector_model (set
+									(
+									x => to_distance (f (8)),
+									y => to_distance (f (9))
+									))
+						),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 10 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end copy_submodule;
+	
+
+
+	procedure delete_submodule is
+	begin
+		case cmd_field_count is
+			when 5 =>
+				delete_submodule (
+					module_name 	=> module, -- parent module (where the submodule is to be deleted)
+					instance		=> et_general.to_instance_name (f (5)), -- submodule instance name
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 6 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end delete_submodule;
+
+	
+
+	procedure build_submodules_tree is
+	begin
+		case cmd_field_count is
+			when 4 =>
+				build_submodules_tree (
+					module_name 	=> module,
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 5 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end build_submodules_tree;
+	
+
+
+	procedure check_integrity is
+	begin
+		case cmd_field_count is
+			when 4 =>
+				check_integrity (
+					module_name 	=> module,
+					log_threshold	=> log_threshold + 1);
+
+			when 5 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end check_integrity;
+
+
+
+	procedure copy_device is
+		use et_sheets;
+	begin
+		case cmd_field_count is
+			when 9 =>
+				copy_device (
+					module_name 	=> module,
+					device_name		=> to_device_name (f (5)),
+					destination		=> to_position 
+						(
+						sheet => to_sheet (f (6)),
+						point => type_vector_model (set
+									(
+									x => to_distance (f (7)),
+									y => to_distance (f (8))
+									)),
+						rotation		=> to_rotation (f (9))
+						),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 10 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end copy_device;
+
+	
+	
 	-- For showing and finding devices and units:
 	type type_show_device is (
 		FIRST_UNIT,
 		BY_UNIT_NAME,
 		FIRST_UNIT_ON_CURRENT_SHEET);
+
 	
 	-- Selects the device so that a certain unit or all its units become
 	-- highlighted in the canvas.
@@ -222,16 +568,19 @@ is
 		use et_canvas_schematic_units;
 		use pac_proposed_units;
 
+		
 		procedure device_not_found is begin
 			raise semantic_error_1 with
 				"ERROR: Device " & to_string (device) & " does not exist !";
 		end device_not_found;
 
+		
 		procedure unit_not_found is begin
 			raise semantic_error_1 with
 				"ERROR: Device " & to_string (device)
 				& " unit " & to_string (unit) & " does not exist !";
 		end unit_not_found;
+
 		
 	begin -- show_device
 		case mode is
@@ -326,11 +675,48 @@ is
 		end case;
 	end show_device;
 
+
+
+	procedure delete_device is
+	begin
+		case cmd_field_count is
+			when 5 =>
+				delete_device (
+					module_name 	=> module,
+					device_name		=> to_device_name (f (5)),
+					log_threshold	=> log_threshold + 1);
+
+			when 6 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end delete_device;
+
+	
+
+	procedure delete_unit is
+	begin
+		case cmd_field_count is
+			when 6 =>
+				delete_unit (
+					module_name 	=> module,
+					device_name		=> to_device_name (f (5)),
+					unit_name		=> to_unit_name (f (6)),
+					log_threshold	=> log_threshold + 1);
+
+			when 7 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end delete_unit;
+	
+	
 	
 	-- For showing and finding nets:
 	type type_show_net is (
 		FIRST_NET,
 		NET_ON_CURRENT_SHEET);
+
 
 	
 	procedure show_net (
@@ -406,6 +792,114 @@ is
 		end if;
 	end show_net;
 
+
+
+	procedure delete_net_label is
+		use et_sheets;
+	begin
+		case cmd_field_count is
+			when 7 =>
+				delete_net_label
+					(
+					module_cursor	=> current_active_module,
+
+					position		=> to_position (
+										point => type_vector_model (set (
+											x => to_distance (f (6)),
+											y => to_distance (f (7)))),
+										sheet => to_sheet (f (5))), -- sheet number
+					
+					log_threshold	=> log_threshold + 1);
+				
+			when 8 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end delete_net_label;
+
+
+
+	procedure delete_net is
+		use et_sheets;
+	begin
+		case cmd_field_count is
+
+			-- If the statement has only 6 fields, the net scope is EVERYWHERE.
+			-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
+			-- by the called procedure:
+			when 5 =>
+				delete_net
+					(
+					module_cursor		=> current_active_module,
+					net_name			=> to_net_name (f (5)), -- RESET
+					scope				=> EVERYWHERE,
+					place				=> to_position (
+											point => origin,
+											sheet => 1),
+					log_threshold		=> log_threshold + 1);
+
+			-- If the statement has 7 fields, the net scope is SHEET.
+			-- Sheet is set by the 7th argument. x and y assume default (0/0)
+			-- and are further-on ignored by the called procedure:
+			when 6 =>
+				delete_net
+					(
+					module_cursor		=> current_active_module,
+					net_name			=> to_net_name (f (5)), -- RESET
+					scope				=> SHEET,
+					place				=> to_position (
+											point => origin,
+											sheet => to_sheet (f (6))), -- sheet number
+					log_threshold		=> log_threshold + 1);
+
+			-- If the statement has 9 fields, the net scope is STRAND.
+			-- Place is set according to arguments 7..9.
+			when 8 =>
+				delete_net
+					(
+					module_cursor		=> current_active_module,
+					net_name			=> to_net_name (f (5)), -- RESET
+					scope				=> STRAND,
+					place				=> to_position (
+											point => type_vector_model (set (
+												x => to_distance (f (7)),
+												y => to_distance (f (8)))),
+											sheet => to_sheet (f (6))), -- sheet number
+					log_threshold		=> log_threshold + 1);
+
+				
+			when 9 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+
+	end delete_net;
+
+
+
+	procedure delete_net_segment is
+		use et_sheets;
+	begin
+		case cmd_field_count is
+			when 8 =>
+				delete_segment
+					(
+					module_cursor	=> current_active_module,
+					net_name		=> to_net_name (f (5)), -- RESET
+					place			=> to_position (
+										point => type_vector_model (set (
+											x => to_distance (f (7)),
+											y => to_distance (f (8)))),
+										sheet => to_sheet (f (6))), -- sheet number
+					log_threshold	=> log_threshold + 1);
+
+			when 9 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end delete_net_segment;
+
+	
 	
 	
 	-- This procedure extracts from the command the
@@ -437,6 +931,44 @@ is
 		end case;
 		
 	end show_sheet;
+
+
+
+	procedure create_module is
+		use et_project.modules;
+
+		
+		procedure do_it (
+			module_name : in pac_module_name.bounded_string) 
+		is
+			use pac_generic_modules;
+		begin
+			create_module (
+				module_name		=> module_name, -- led_driver_test
+				log_threshold	=> log_threshold + 1);
+
+			-- Show the module in schematic and board editor:
+			
+			current_active_module := locate_module (module_name);
+			current_active_sheet := 1;
+
+			-- Update module name in the schematic window title bar:
+			-- CS set_title_bar (active_module);
+			
+			-- CS update_sheet_number_display;
+			
+			-- Update the board window title bar:
+			-- CS et_canvas_board_2.set_title_bar (active_module);
+		end do_it;
+
+		
+	begin
+		case cmd_field_count is
+			when 5 => do_it (to_module_name (f (5)));
+			when 6 .. type_field_count'last => too_long;
+			when others => command_incomplete;
+		end case;
+	end create_module;
 
 
 	
@@ -663,29 +1195,6 @@ is
 
 	
 	
-	procedure create_module (
-		module_name : in pac_module_name.bounded_string) 
-	is
-		use et_project.modules;
-		use pac_generic_modules;
-	begin
-		create_module (
-			module_name		=> module_name, -- led_driver_test
-			log_threshold	=> log_threshold + 1);
-
-		-- Show the module in schematic and board editor:
-		
-		current_active_module := locate_module (module_name);
-		current_active_sheet := 1;
-
-		-- Update module name in the schematic window title bar:
-		-- CS set_title_bar (active_module);
-		
-		-- CS update_sheet_number_display;
-		
-		-- Update the board window title bar:
-		-- CS et_canvas_board_2.set_title_bar (active_module);
-	end create_module;
 
 
 	
@@ -710,123 +1219,16 @@ is
 			when VERB_ADD =>
 				case noun is
 					when NOUN_DEVICE =>
-						case cmd_field_count is
-							when 9 =>
-								-- If a virtual device is added, then no variant is required.
-								add_device (
-									module_name 	=> module,
-									device_model	=> to_file_name (f (5)),
-									destination		=> to_position 
-										(
-										sheet => to_sheet (f (6)),
-										point => type_vector_model (set 
-													(
-													x => to_distance (f (7)),
-													y => to_distance (f (8))
-													)),
-										rotation => to_rotation (f (9))
-										),
-									variant			=> to_variant_name (""),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 =>
-								-- A real device requires specification of a package variant.
-								add_device (
-									module_name 	=> module,
-									device_model	=> to_file_name (f (5)),
-									destination		=> to_position 
-										(
-										sheet => to_sheet (f (6)),
-										point => type_vector_model (set 
-													(
-													x => to_distance (f (7)),
-													y => to_distance (f (8))
-													)),
-										rotation		=> to_rotation (f (9))
-										),
-									variant			=> to_variant_name (f (10)),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 11 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
-
+						add_device;
 						
 					when NOUN_NETCHANGER =>
-						case cmd_field_count is
-							when 8 =>
-								add_netchanger (
-									module_name 	=> module,
-									place			=> to_position 
-										(
-										sheet => to_sheet (f (5)),
-										point => type_vector_model (set 
-													(
-													x => to_distance (f (6)),
-													y => to_distance (f (7))
-													)),
-										rotation		=> to_rotation (f (8))
-										),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
-
+						add_netchanger;
 						
 					when NOUN_PORT =>
-						case cmd_field_count is
-							when 9 =>
-								add_port (
-									module_name 	=> module,
-									instance		=> et_general.to_instance_name (f (5)),
-									port_name		=> to_net_name (f (6)),
-									position		=> type_vector_model (set 
-												(
-												x => to_distance (f (7)),
-												y => to_distance (f (8))
-												)),
-									direction		=> et_submodules.to_port_name (f (9)),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						add_port_to_submodule;
 						
 					when NOUN_SUBMODULE =>
-						case cmd_field_count is
-							when 11 =>
-								add_submodule (
-									module_name 	=> module, -- parent module (where the submodule is to be inserted)
-									file			=> et_submodules.to_submodule_path (f (5)),
-									instance		=> et_general.to_instance_name (f (6)), -- submodule instance name
-									position		=> to_position 
-										(
-										sheet => to_sheet (f (7)),
-										point => type_vector_model (set 
-													(
-													x => to_distance (f (8)),
-													y => to_distance (f (9))
-													))
-										),
-									size => (
-										x => to_distance (f (10)),
-										y => to_distance (f (11))
-										),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 12 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						add_submodule;
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
@@ -835,17 +1237,7 @@ is
 			when VERB_BUILD =>
 				case noun is
 					when NOUN_SUBMODULES_TREE =>
-						case cmd_field_count is
-							when 4 =>
-								build_submodules_tree (
-									module_name 	=> module,
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 5 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
+						build_submodules_tree;
 
 					when others => invalid_noun (to_string (noun));
 				end case;
@@ -854,16 +1246,7 @@ is
 			when VERB_CHECK =>
 				case noun is
 					when NOUN_INTEGRITY =>
-						case cmd_field_count is
-							when 4 =>
-								check_integrity (
-									module_name 	=> module,
-									log_threshold	=> log_threshold + 1);
-
-							when 5 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
+						check_integrity;
 							
 					when others => invalid_noun (to_string (noun));
 				end case;
@@ -872,53 +1255,10 @@ is
 			when VERB_COPY =>
 				case noun is
 					when NOUN_DEVICE =>
-						case cmd_field_count is
-							when 9 =>
-								copy_device (
-									module_name 	=> module,
-									device_name		=> to_device_name (f (5)),
-									destination		=> to_position 
-										(
-										sheet => to_sheet (f (6)),
-										point => type_vector_model (set
-													(
-													x => to_distance (f (7)),
-													y => to_distance (f (8))
-													)),
-										rotation		=> to_rotation (f (9))
-										),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
-
+						copy_device;
 						
 					when NOUN_SUBMODULE =>
-						case cmd_field_count is
-							when 9 =>
-								copy_submodule (
-									module_name 	=> module, -- parent module (where the submodule is to be copied)
-									instance_origin	=> et_general.to_instance_name (f (5)), -- submodule instance name
-									instance_new	=> et_general.to_instance_name (f (6)), -- submodule instance name
-									destination		=> to_position 
-										(
-										sheet => to_sheet (f (7)),
-										point => type_vector_model (set
-													(
-													x => to_distance (f (8)),
-													y => to_distance (f (9))
-													))
-										),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						copy_submodule;
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
@@ -927,25 +1267,10 @@ is
 			when VERB_CREATE =>
 				case noun is
 					when NOUN_VARIANT => 
-						case cmd_field_count is
-							when 5 =>
-								create_assembly_variant
-									(
-									module_name		=> module,
-									variant_name	=> to_variant (f (5)),
-									log_threshold	=> log_threshold + 1);
-								
-							when 6 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						create_assembly_variant;
 
 					when NOUN_MODULE =>
-						case cmd_field_count is
-							when 5 => create_module (to_module_name (f (5)));
-							when 6 .. type_field_count'last => too_long;
-							when others => command_incomplete;
-						end case;
+						create_module;
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
@@ -954,218 +1279,46 @@ is
 			when VERB_DELETE =>
 				case noun is
 					when NOUN_DEVICE =>
-						case cmd_field_count is
-							when 5 =>
-								delete_device (
-									module_name 	=> module,
-									device_name		=> to_device_name (f (5)),
-									log_threshold	=> log_threshold + 1);
-
-							when 6 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
-
+						delete_device;
 						
 					when NOUN_LABEL =>
-						case cmd_field_count is
-							when 7 =>
-								delete_net_label
-									(
-									module_cursor	=> current_active_module,
-
-									position		=> to_position (
-														point => type_vector_model (set (
-															x => to_distance (f (6)),
-															y => to_distance (f (7)))),
-														sheet => to_sheet (f (5))), -- sheet number
-									
-									log_threshold	=> log_threshold + 1);
-								
-							when 8 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
-
+						delete_net_label;
 						
 					when NOUN_MODULE =>
 						delete_module;
-
 						
 					when NOUN_NET =>
-						case cmd_field_count is
-
-							-- If the statement has only 6 fields, the net scope is EVERYWHERE.
-							-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
-							-- by the called procedure:
-							when 5 =>
-								delete_net
-									(
-									module_cursor		=> current_active_module,
-									net_name			=> to_net_name (f (5)), -- RESET
-									scope				=> EVERYWHERE,
-									place				=> to_position (
-															point => origin,
-															sheet => 1),
-									log_threshold		=> log_threshold + 1);
-
-							-- If the statement has 7 fields, the net scope is SHEET.
-							-- Sheet is set by the 7th argument. x and y assume default (0/0)
-							-- and are further-on ignored by the called procedure:
-							when 6 =>
-								delete_net
-									(
-									module_cursor		=> current_active_module,
-									net_name			=> to_net_name (f (5)), -- RESET
-									scope				=> SHEET,
-									place				=> to_position (
-															point => origin,
-															sheet => to_sheet (f (6))), -- sheet number
-									log_threshold		=> log_threshold + 1);
-
-							-- If the statement has 9 fields, the net scope is STRAND.
-							-- Place is set according to arguments 7..9.
-							when 8 =>
-								delete_net
-									(
-									module_cursor		=> current_active_module,
-									net_name			=> to_net_name (f (5)), -- RESET
-									scope				=> STRAND,
-									place				=> to_position (
-															point => type_vector_model (set (
-																x => to_distance (f (7)),
-																y => to_distance (f (8)))),
-															sheet => to_sheet (f (6))), -- sheet number
-									log_threshold		=> log_threshold + 1);
-
-								
-							when 9 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
-
+						delete_net;
 						
 					when NOUN_NETCHANGER =>
-						case cmd_field_count is
-							when 5 =>
-								delete_netchanger
-									(
-									module_name		=> module,
-									index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
-									log_threshold		=> log_threshold + 1);
-
-							when 6 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
-
+						delete_netchanger;
 						
 					when NOUN_PORT =>
-						case cmd_field_count is
-							when 6 =>
-								delete_port
-									(
-									module_name 	=> module,
-									instance		=> et_general.to_instance_name (f (5)),
-									port_name		=> to_net_name (f (6)),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 7 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
-
+						delete_port_of_submodule;
 						
 					when NOUN_SEGMENT =>
-						case cmd_field_count is
-							when 8 =>
-								delete_segment
-									(
-									module_cursor	=> current_active_module,
-									net_name		=> to_net_name (f (5)), -- RESET
-									place			=> to_position (
-														point => type_vector_model (set (
-															x => to_distance (f (7)),
-															y => to_distance (f (8)))),
-														sheet => to_sheet (f (6))), -- sheet number
-									log_threshold	=> log_threshold + 1);
-
-							when 9 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
-
+						delete_net_segment;
 						
 					when NOUN_SUBMODULE =>
-						case cmd_field_count is
-							when 5 =>
-								delete_submodule (
-									module_name 	=> module, -- parent module (where the submodule is to be deleted)
-									instance		=> et_general.to_instance_name (f (5)), -- submodule instance name
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 6 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
-
+						delete_submodule;
 						
 					when NOUN_TEXT =>
 						NULL; -- CS
-
 						
 					when NOUN_UNIT =>
-						case cmd_field_count is
-							when 6 =>
-								delete_unit (
-									module_name 	=> module,
-									device_name		=> to_device_name (f (5)),
-									unit_name		=> to_unit_name (f (6)),
-									log_threshold	=> log_threshold + 1);
-
-							when 7 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
-
+						delete_unit;
 						
 					when NOUN_VARIANT => 
-						case cmd_field_count is
-							when 5 =>
-								delete_assembly_variant
-									(
-									module_name		=> module,
-									variant_name	=> to_variant (f (5)),
-									log_threshold	=> log_threshold + 1);
-								
-							when 6 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
-
+						delete_assembly_variant;
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
-
+				
 				
 			when VERB_DESCRIBE =>
 				case noun is
 					when NOUN_VARIANT => 
-						case cmd_field_count is
-							when 6 =>
-								describe_assembly_variant
-									(
-									module_name		=> module,
-									variant_name	=> to_variant (f (5)), -- low_cost
-									description		=> et_assembly_variants.to_unbounded_string (f (6)), -- "the cheap version"
-									log_threshold	=> log_threshold + 1);
-								
-							when 7 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						describe_assembly_variant;
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
