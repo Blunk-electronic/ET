@@ -769,6 +769,7 @@ package body et_canvas_schematic_2 is
 		reset_selections;
 		status_enter_verb;			
 
+		redraw_schematic;
 	end reset;
 	
 
@@ -1376,6 +1377,7 @@ package body et_canvas_schematic_2 is
 
 		reset_zoom_area; -- abort zoom-to-area operation
 	end reset_selections;
+
 
 	
 	procedure clear_proposed_objects is 

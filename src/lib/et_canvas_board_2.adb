@@ -1014,6 +1014,7 @@ package body et_canvas_board_2 is
 		et_canvas_board_assy_doc.reset_preliminary_object;
 		et_canvas_board_silkscreen.reset_preliminary_object;
 
+		redraw_board;
 	end reset;
 	
 
