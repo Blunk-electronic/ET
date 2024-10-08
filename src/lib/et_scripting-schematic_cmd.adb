@@ -395,26 +395,42 @@ is
 
 	
 	
+	-- This procedure extracts from the command the
+	-- sheet number and sets it active.
+	-- It updates the sheet number display accordingly:
 	procedure show_sheet is -- GUI related
 		use et_sheets;
-		use et_canvas_schematic_2;
-		sheet : type_sheet := to_sheet (f (5));
+		sheet : type_sheet;
+
+		procedure show is
+		begin
+			sheet := to_sheet (f (5));
+
+			-- CS test whether sheet exists
+			
+			current_active_sheet := sheet;
+			update_sheet_number_display;
+		end show;
+			
 	begin
 		log (text => "set sheet" & to_sheet (sheet), level => log_threshold + 1); 
 
-		-- CS test if sheet exists
+		case cmd_field_count is
+			when 5 => show;
+			when 6 .. type_field_count'last => too_long;
+			when others => command_incomplete;
+		end case;
 		
-		current_active_sheet := sheet;
-
-		-- Update module name in title bar of main window:
-	-- CS set_title_bar (active_module);
-
-	-- CS update_sheet_number_display;
 	end show_sheet;
 
 
 	
-
+	-- This procedure extracts from the command the
+	-- name of the generic module and optionally the
+	-- sheet number.
+	-- It sets the given module and sheet as active
+	-- and updates the editor window according
+	-- to the activated module:
 	procedure show_module is  -- GUI related
 
 		module : pac_module_name.bounded_string;
@@ -452,7 +468,7 @@ is
 		
 		
 	begin
-		log (text => "show module " 
+		log (text => "show module (via schematic editor) " 
 			 & enclose_in_quotes (to_string (module)),
 			 level => log_threshold + 1);
 
@@ -2172,11 +2188,8 @@ is
 						end case;
 						
 					when NOUN_SHEET =>
-						case cmd_field_count is
-							when 5 => show_sheet;
-							when 6 .. type_field_count'last => too_long;
-							when others => command_incomplete;
-						end case;
+						show_sheet;
+					
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
