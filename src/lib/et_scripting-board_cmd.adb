@@ -1229,6 +1229,7 @@ is
 
 	end set_via_properties;
 
+	
 
 	
 	-- This procedure builds the final via and calls et_board_ops.place_via
@@ -1602,10 +1603,13 @@ is
 		end case;
 	end set_fill_zone_properties;
 
+
+	
 	
 	type type_track_shape is (LINE, ARC, ZONE);
 	-- CS circular tracks are currently not supported
 
+	
 	
 	procedure route_freetrack is
 		shape : constant type_track_shape := type_track_shape'value (f (6));
@@ -2172,6 +2176,7 @@ is
 		end case;
 	end add_device;
 
+
 	
 	procedure delete_device is -- non-electric device !
 		-- board led_driver delete device FD1
@@ -2184,6 +2189,7 @@ is
 
 	end delete_device;
 
+	
 	
 	procedure rename_device is -- non-electric device !
 		-- board led_driver rename device FD1 FD3
@@ -2304,6 +2310,40 @@ is
 	end save_module;
 	
 
+
+	procedure show_module is  -- GUI related
+
+		module : pac_module_name.bounded_string;
+
+		
+		-- Sets the active module.
+		procedure show is 
+			use et_canvas_schematic_2;
+		begin
+			module := to_module_name (f (5));
+			set_module (module);
+			current_active_sheet := 1;
+			
+			et_canvas_schematic_2.update_schematic_editor;
+			et_canvas_board_2.update_board_editor;
+		end show;
+		
+		
+	begin
+		log (text => "show module " 
+			 & enclose_in_quotes (to_string (module)),
+			 level => log_threshold + 1);
+
+		
+		case cmd_field_count is
+			when 5 => show; -- show module LED-driver
+			when 6 .. type_field_count'last => too_long;
+			when others => command_incomplete;
+		end case;
+		
+	end show_module;
+
+	
 	
 	-- Parses the single_cmd_status.cmd:
 	procedure parse is begin
@@ -2877,18 +2917,23 @@ is
 
 					when others => invalid_noun (to_string (noun));
 				end case;
+
 				
-	-- 			when VERB_SHOW => -- GUI related
-	-- 				case noun is
+			when VERB_SHOW => -- GUI related
+				case noun is
+					when NOUN_MODULE =>
+						show_module;
+
+						
 	-- 					when NOUN_DEVICE =>
 	-- 						case cmd_field_count is
 	-- 							when 5 => null; -- CS
 	-- 							when 6 .. type_field_count'last => too_long;
 	-- 							when others => command_incomplete;
 	-- 						end case;
-	-- 						
-	-- 					when others => invalid_noun (to_string (noun));
-	-- 				end case;
+							
+				when others => invalid_noun (to_string (noun));
+			end case;
 
 
 			when VERB_UPDATE =>

@@ -415,7 +415,7 @@ is
 
 	
 
-	procedure show_module_2 is  -- GUI related
+	procedure show_module is  -- GUI related
 
 		module : pac_module_name.bounded_string;
 
@@ -424,19 +424,19 @@ is
 
 		
 		-- Sets the active module and first sheet.
-		procedure show_module is begin
+		procedure module_and_first_sheet is begin
 			module := to_module_name (f (5));
 			set_module (module);
 			current_active_sheet := sheet;
 			
 			update_schematic_editor;
 			et_canvas_board_2.update_board_editor;
-		end show_module;
+		end module_and_first_sheet;
 
 
 
 		-- Sets the active module and sheet.
-		procedure show_module_and_sheet is begin
+		procedure module_and_random_sheet is begin
 			module := to_module_name (f (5));
 			set_module (module);
 
@@ -448,7 +448,7 @@ is
 
 			update_schematic_editor;
 			et_canvas_board_2.update_board_editor;
-		end show_module_and_sheet;
+		end module_and_random_sheet;
 		
 		
 	begin
@@ -458,13 +458,13 @@ is
 
 		
 		case cmd_field_count is
-			when 5 => show_module; -- show module LED-driver
-			when 6 => show_module_and_sheet; -- show module LED-driver 2
+			when 5 => module_and_first_sheet; -- show module LED-driver
+			when 6 => module_and_random_sheet; -- show module LED-driver 2
 			when 7 .. type_field_count'last => too_long;
 			when others => command_incomplete;
 		end case;
 		
-	end show_module_2;
+	end show_module;
 
 	
 	
@@ -2145,7 +2145,7 @@ is
 						end case;
 
 					when NOUN_MODULE =>
-						show_module_2;
+						show_module;
 
 						
 					when NOUN_NET =>

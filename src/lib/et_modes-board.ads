@@ -61,8 +61,8 @@ package et_modes.board is
 		VERB_ROUTE,
 		VERB_SAVE,
 		VERB_SET,
+		VERB_SHOW,
 		VERB_UPDATE,
-		--VERB_SHOW CS
 		VERB_ZOOM
 		--WRITE
 		);
