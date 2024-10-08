@@ -48,35 +48,17 @@ with gnat.directory_operations;
 with et_exceptions;				use et_exceptions;
 
 with et_project;
-with et_project.modules;
 
-with et_coordinates_2;
-with et_pcb_coordinates_2;
-with et_schematic;
-with et_schematic_ops;
-with et_schematic_ops.nets;
-with et_schematic_ops.units;
-with et_terminals;
-with et_packages;
-with et_vias;
-with et_pcb;
-with et_pcb_stack;
-with et_board_ops;
-
-with et_submodules;
-with et_assembly_variants;
-with et_pick_and_place;
-with et_material;
-with et_netlists;
 with et_geometry;				use et_geometry; -- due to frequently used keywords
-with et_symbols;
-with et_devices;				use et_devices;
+
 with et_display;				use et_display;
 with et_display.schematic;
 with et_display.board;
 
-with glib;
-with gtk.main;
+with et_canvas_schematic_2;
+with et_canvas_board_2;
+
+
 
 package body et_scripting is
 

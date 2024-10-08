@@ -45,12 +45,25 @@ with et_symbols;
 with et_schematic_ops.netlists;
 with et_schematic_ops.grid;
 with et_board_ops.grid;
+with et_pcb;
+
+with et_coordinates_2;
+with et_schematic;
 with et_sheets;
 with et_net_labels;						use et_net_labels;
 with et_nets;							use et_nets;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+with et_schematic_ops.nets;
+with et_schematic_ops.units;
+with et_submodules;
+with et_assembly_variants;
+-- with et_pick_and_place;
+with et_netlists;
+with et_devices;
+with et_device_placeholders;
 
 with et_canvas.cmd;
+
 
 
 separate (et_scripting)
@@ -680,6 +693,8 @@ is
 	procedure parse is 
 		use et_project.modules;
 		use et_sheets;
+		use et_device_placeholders;
+		use et_assembly_variants;
 	begin
 		log (text => "parsing command: " 
 			& enclose_in_quotes (to_string (single_cmd_status.cmd)),

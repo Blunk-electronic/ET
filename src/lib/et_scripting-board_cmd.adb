@@ -38,6 +38,8 @@
 --   ToDo:
 --   - command to define a global cutout area
 
+with et_schematic;
+with et_pcb_coordinates_2;
 with et_board_shapes_and_text;
 with et_board_ops.conductors;
 with et_board_ops.vias;
@@ -57,6 +59,7 @@ with et_route_restrict.boards;		use et_route_restrict.boards;
 with et_via_restrict.boards;		use et_via_restrict.boards;
 with et_ratsnest;					use et_ratsnest;
 with et_pcb_contour;
+with et_board_ops;
 with et_board_ops.devices;
 with et_board_ops.silkscreen;
 with et_board_ops.assy_doc;
@@ -72,6 +75,13 @@ with et_board_ops.grid;
 with et_canvas.cmd;
 
 with et_frames;
+
+with et_terminals;
+with et_packages;
+with et_devices;
+with et_vias;
+with et_pcb;
+with et_pcb_stack;
 
 -- to do:
 
@@ -1887,6 +1897,9 @@ is
 			end case;
 		end make_polygon;
 
+
+		use et_devices;
+
 		
 	begin -- route_net
 		case shape is
@@ -2126,6 +2139,7 @@ is
 
 	
 	procedure add_device is -- non-electric device !
+		use et_devices;
 		use et_board_ops.devices;
 		
 		model : constant pac_package_model_file_name.bounded_string := to_file_name (f (5));
@@ -2181,6 +2195,7 @@ is
 	
 	procedure delete_device is -- non-electric device !
 		-- board led_driver delete device FD1
+		use et_devices;
 		use et_board_ops.devices;
 	begin
 		delete_device (
@@ -2194,6 +2209,7 @@ is
 	
 	procedure rename_device is -- non-electric device !
 		-- board led_driver rename device FD1 FD3
+		use et_devices;
 		use et_board_ops.devices;
 	begin
 		rename_device (
@@ -2377,7 +2393,9 @@ is
 	
 	
 	-- Parses the single_cmd_status.cmd:
-	procedure parse is begin
+	procedure parse is 
+		use et_devices;
+	begin
 		log (text => "parsing command: " 
 			& enclose_in_quotes (to_string (single_cmd_status.cmd)),
 			level => log_threshold);
@@ -2988,7 +3006,6 @@ is
 		-- Update GUI if we are in graphical mode:
 		if runmode /= MODE_HEADLESS then
 			null;
-			-- CS canvas.update_mode_display;
 		end if;
 			
 	end parse;
@@ -2997,6 +3014,8 @@ is
 	
 	
 	procedure propose_arguments is
+		use et_devices;
+		
 		use et_canvas_board_devices;
 		use et_canvas_board_texts;
 		use et_canvas_board_vias;

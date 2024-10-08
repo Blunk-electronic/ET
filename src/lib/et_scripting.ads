@@ -43,15 +43,11 @@ with ada.exceptions;			use ada.exceptions;
 
 with et_net_names;				use et_net_names;
 with et_general;				use et_general;
-with et_assembly_variants;		use et_assembly_variants;
 with et_text;					use et_text;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
-with et_device_placeholders;	use et_device_placeholders;
 with et_project.modules;		use et_project.modules;
-with et_canvas_schematic_2;
-with et_canvas_board_2;
 with et_modes;					use et_modes;
 
 with et_cmd_sts;				use et_cmd_sts;
