@@ -336,6 +336,28 @@ is
 	end delete_netchanger;
 	
 	
+
+	procedure drag_netchanger is
+	begin
+		case cmd_field_count is
+			when 8 =>
+				drag_netchanger (
+					module_name 	=> module,
+					index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+					coordinates		=> to_coordinates (f (6)), -- relative/absolute
+					point			=> type_vector_model (set (
+										x => to_distance (f (7)),
+										y => to_distance (f (8)))),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 9 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end drag_netchanger;
+
+
 	
 	procedure add_port_to_submodule is
 	begin
@@ -361,8 +383,31 @@ is
 
 	end add_port_to_submodule;
 
+
+	
+	procedure drag_port_of_submodule is
+	begin
+		case cmd_field_count is
+			when 9 =>
+				drag_port (
+					module_name 	=> module,
+					instance		=> et_general.to_instance_name (f (5)),
+					port_name		=> to_net_name (f (6)),
+					coordinates		=> to_coordinates (f (7)),  -- relative/absolute
+					point			=> type_vector_model (set (
+								x => to_distance (f (8)),
+								y => to_distance (f (9)))),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 10 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end drag_port_of_submodule;
 	
 
+	
 	procedure delete_port_of_submodule is
 	begin
 		case cmd_field_count is
@@ -415,7 +460,29 @@ is
 	end add_submodule;
 
 	
+	
+	procedure drag_submodule is
+	begin
+		case cmd_field_count is
+			when 8 =>
+				drag_submodule (
+					module_name 	=> module,
+					instance		=> et_general.to_instance_name (f (5)),
+					coordinates		=> to_coordinates (f (6)),  -- relative/absolute
+					point			=> type_vector_model (set (
+								x => to_distance (f (7)),
+								y => to_distance (f (8)))),
+					log_threshold	=> log_threshold + 1
+					);
 
+			when 9 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end drag_submodule;
+	
+
+	
 	procedure copy_submodule is
 		use et_sheets;
 	begin
@@ -710,6 +777,30 @@ is
 		end case;
 	end delete_unit;
 	
+
+
+	procedure drag_unit is
+	begin
+		case cmd_field_count is
+			when 9 =>
+				drag_unit
+					(
+					module_name 	=> module,
+					device_name		=> to_device_name (f (5)),
+					unit_name		=> to_unit_name (f (6)),
+					coordinates		=> to_coordinates (f (7)), -- relative/absolute
+					point			=> type_vector_model (set (
+										x => to_distance (f (8)),
+										y => to_distance (f (9)))),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 10 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end drag_unit;
+	
 	
 	
 	-- For showing and finding nets:
@@ -900,6 +991,36 @@ is
 	end delete_net_segment;
 
 	
+
+	procedure drag_net_segment is
+		use et_sheets;
+	begin
+		case cmd_field_count is
+			when 11 =>
+				drag_segment
+					(
+					module_cursor	=> current_active_module,
+					net_name		=> to_net_name (f (5)), -- RESET
+					point_of_attack	=> to_position (
+										point => type_vector_model (set (
+											x => to_distance (f (7)),
+											y => to_distance (f (8)))),
+										sheet => to_sheet (f (6))), -- sheet number
+					
+					coordinates		=> to_coordinates (f (9)), -- relative/absolute
+					
+					destination		=> type_vector_model (set (
+										x => to_distance (f (10)),
+										y => to_distance (f (11)))),
+					
+					log_threshold	=> log_threshold + 1);
+
+			when 12 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end drag_net_segment;
+	
 	
 	
 	-- This procedure extracts from the command the
@@ -1033,47 +1154,57 @@ is
 	
 	
 
-	
 
 
-	
 	-- Enables a certain layer. If status is empty, the layer will be enabled.
-	procedure display ( -- GUI related
-		layer	: in type_noun;
-		status	: in string := "") is
+	procedure display is -- GUI related
 
-		ls : type_layer_status;
-	begin
-		-- Convert the given status to type_layer_status.
-		-- If no status given, assume status ON:
-		if status = "" then
-			ls := ON;
-		else
-			ls := to_layer_status (status);
-		end if;
 		
-		log (text => "display " & to_lower (to_string (layer)) 
-				& space & to_string (ls),
-				level => log_threshold + 1);
-		
-		case layer is
-			when NOUN_NAMES		=> layers.device_names := ls;
-			when NOUN_NETS		=> layers.nets := ls;
-			when NOUN_PORTS		=> layers.ports := ls;
-			when NOUN_PURPOSES	=> layers.device_purposes := ls;
-			when NOUN_TEXTS		=> layers.texts := ls;
-			when NOUN_VALUES	=> layers.device_values := ls;
+		procedure do_it ( 
+			layer	: in type_noun;
+			status	: in string := "") is
+
+			ls : type_layer_status;
+		begin
+			-- Convert the given status to type_layer_status.
+			-- If no status given, assume status ON:
+			if status = "" then
+				ls := ON;
+			else
+				ls := to_layer_status (status);
+			end if;
 			
-			when others => 
-				log (importance => ERROR, text => "invalid layer !", console => true);
+			log (text => "display " & to_lower (to_string (layer)) 
+					& space & to_string (ls),
+					level => log_threshold + 1);
+			
+			case layer is
+				when NOUN_NAMES		=> layers.device_names := ls;
+				when NOUN_NETS		=> layers.nets := ls;
+				when NOUN_PORTS		=> layers.ports := ls;
+				when NOUN_PURPOSES	=> layers.device_purposes := ls;
+				when NOUN_TEXTS		=> layers.texts := ls;
+				when NOUN_VALUES	=> layers.device_values := ls;
+				
+				when others => 
+					log (importance => ERROR, text => "invalid layer !", console => true);
+			end case;
+
+			-- CS exception handler if status is invalid
+		end do_it;
+
+		
+	begin
+		case cmd_field_count is
+			when 4 => do_it (noun); -- if status is omitted
+			when 5 => do_it (noun, f (5));
+			when 6 .. type_field_count'last => too_long; 
+			when others => command_incomplete;
 		end case;
-
-		-- CS exception handler if status is invalid
 	end display;
-
-
 	
 
+	
 
 	procedure delete_module is
 
@@ -1330,13 +1461,7 @@ is
 						| NOUN_NETS		-- like "schematic led_driver display nets [on/off]"
 						| NOUN_NAMES | NOUN_VALUES | NOUN_PURPOSES
 						| NOUN_TEXTS
-						=>
-						case cmd_field_count is
-							when 4 => display (noun); -- if status is omitted
-							when 5 => display (noun, f (5));
-							when 6 .. type_field_count'last => too_long; 
-							when others => command_incomplete;
-						end case;
+						=> display;
 
 					when others => invalid_noun (to_string (noun));
 				end case;
@@ -1345,105 +1470,19 @@ is
 			when VERB_DRAG =>
 				case noun is
 					when NOUN_UNIT =>
-						case cmd_field_count is
-							when 9 =>
-								drag_unit
-									(
-									module_name 	=> module,
-									device_name		=> to_device_name (f (5)),
-									unit_name		=> to_unit_name (f (6)),
-									coordinates		=> to_coordinates (f (7)), -- relative/absolute
-									point			=> type_vector_model (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
+						drag_unit;
 								
 					when NOUN_NETCHANGER =>
-						case cmd_field_count is
-							when 8 =>
-								drag_netchanger (
-									module_name 	=> module,
-									index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
-									coordinates		=> to_coordinates (f (6)), -- relative/absolute
-									point			=> type_vector_model (set (
-														x => to_distance (f (7)),
-														y => to_distance (f (8)))),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						drag_netchanger;
 
 					when NOUN_PORT =>
-						case cmd_field_count is
-							when 9 =>
-								drag_port (
-									module_name 	=> module,
-									instance		=> et_general.to_instance_name (f (5)),
-									port_name		=> to_net_name (f (6)),
-									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-									point			=> type_vector_model (set (
-												x => to_distance (f (8)),
-												y => to_distance (f (9)))),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						drag_port_of_submodule;
 						
 					when NOUN_SEGMENT =>
-						case cmd_field_count is
-							when 11 =>
-								drag_segment
-									(
-									module_cursor	=> current_active_module,
-									net_name		=> to_net_name (f (5)), -- RESET
-									point_of_attack	=> to_position (
-														point => type_vector_model (set (
-															x => to_distance (f (7)),
-															y => to_distance (f (8)))),
-														sheet => to_sheet (f (6))), -- sheet number
-									
-									coordinates		=> to_coordinates (f (9)), -- relative/absolute
-									
-									destination		=> type_vector_model (set (
-														x => to_distance (f (10)),
-														y => to_distance (f (11)))),
-									
-									log_threshold	=> log_threshold + 1);
-
-							when 12 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
+						drag_net_segment;
 						
 					when NOUN_SUBMODULE =>
-						case cmd_field_count is
-							when 8 =>
-								drag_submodule (
-									module_name 	=> module,
-									instance		=> et_general.to_instance_name (f (5)),
-									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-									point			=> type_vector_model (set (
-												x => to_distance (f (7)),
-												y => to_distance (f (8)))),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						drag_submodule;
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
