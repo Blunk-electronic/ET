@@ -63,43 +63,51 @@ is
 		use et_canvas_schematic_nets;
 		use et_canvas_schematic_units;
 		use et_device_placeholders;
+
+
+		procedure add_device is
+		begin
+			-- When adding units, we enforce the default grid
+			-- and snap the cursor position to the default grid:
+			reset_grid_and_cursor;
+			
+			-- If a unit has been selected already, then
+			-- the number of "activate" actions must be counted.
+			-- The "activate" action in this case is a left click.
+			-- After the first "activate" the tool
+			-- for placing the unit is set. After the second "activate"
+			-- the unit is placed at the current mouse position.
+			-- If no unit has been selected yet, then the device
+			-- model selection dialog opens.
+			if unit_add.device /= pac_devices_lib.no_element then
+
+				increment_activate_counter;
+				
+				case activate_counter is
+					when 1 =>
+						unit_add.tool := MOUSE;
+
+					when 2 =>
+						-- Finally place the unit at the current 
+						-- mouse position:
+						finalize_add_device (snap_point);
+
+					when others => null;
+				end case;
+
+			else -- no unit selected yet
+				add_device; -- open device model selection
+			end if;
+		end add_device;
+
+		
+		
 	begin
 		case verb is
 			when VERB_ADD =>
 				case noun is
 					when NOUN_DEVICE =>
-
-						-- When adding units, we enforce the default grid
-						-- and snap the cursor position to the default grid:
-						reset_grid_and_cursor;
-						
-						-- If a unit has been selected already, then
-						-- the number of "activate" actions must be counted.
-						-- The "activate" action in this case is a left click.
-						-- After the first "activate" the tool
-						-- for placing the unit is set. After the second "activate"
-						-- the unit is placed at the current mouse position.
-						-- If no unit has been selected yet, then the device
-						-- model selection dialog opens.
-						if unit_add.device /= pac_devices_lib.no_element then
-
-							increment_activate_counter;
-							
-							case activate_counter is
-								when 1 =>
-									unit_add.tool := MOUSE;
-
-								when 2 =>
-									-- Finally place the unit at the current 
-									-- mouse position:
-									finalize_add_device (snap_point);
-
-								when others => null;
-							end case;
-
-						else -- no unit selected yet
-							add_device; -- open device model selection
-						end if;
+						add_device;
 							
 					when others => null;
 							

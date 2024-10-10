@@ -662,6 +662,8 @@ procedure draw_units is
 			
 	end unit_is_selected;
 
+
+	
 	
 	-- Returns true if the given placeholder is selected.
 	function placeholder_is_selected (
@@ -768,6 +770,7 @@ procedure draw_units is
 						);
 			end case;
 		end locate_symbol;
+
 
 		
 		procedure query_units (unit_cursor : in et_schematic.pac_units.cursor) is
@@ -984,6 +987,8 @@ procedure draw_units is
 		end query_units;
 
 		use et_symbols;
+
+
 		
 	begin -- query_devices
 		--put_line ("device " & to_string (key (device_cursor)));
@@ -1001,6 +1006,8 @@ procedure draw_units is
 	end query_devices;
 
 
+
+	
 	
 	-- Draws the unit being added. If there is no unit being added,
 	-- then nothing happens here. The unit is drawn in a preview.
@@ -1121,6 +1128,7 @@ procedure draw_units is
 						preview			=> true);
 			end case;
 		end locate_symbol;
+
 		
 	begin
 		-- Once a model has been assigned we know that the unit is to be drawn.
