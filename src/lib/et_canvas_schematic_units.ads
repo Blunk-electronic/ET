@@ -286,17 +286,25 @@ package et_canvas_schematic_units is
 		-- multiple times:
 		open	: boolean := false;
 	end record;
+
+
 	
 	device_selection : type_device_selection;
+
+	
 
 	-- Returns the status of the "open" flag.
 	-- True if the device selection is open.
 	-- False if the selection is not open.
 	function device_selection_is_open return boolean;
+
+
 	
 	-- Closes the device selection window.
 	-- Resets the status flag "open".
 	procedure close_device_selection;
+
+
 	
 	-- In order to place a package variant and the associated model
 	-- on a menu, use this function.
@@ -304,12 +312,15 @@ package et_canvas_schematic_units is
 	function to_package_variant_item (variant : in pac_variants.cursor)
 		return string;
 
+
+	
 	-- In order to extract the actual variant name from a the 
 	-- menu of package variants, use this function.
 	-- Field separator is space.
 	function extract_variant_name (menu_item : in string) 
 		return pac_package_variant_name.bounded_string;
 
+	
 	
 	-- to be output in the status bar:
 	status_add : constant string := 
@@ -319,9 +330,11 @@ package et_canvas_schematic_units is
 		& "to add unit." 
 		& status_hint_for_abort;
 
+
+	
 	-- When a unit is being added this type is required:
 	type type_unit_being_added is record
-		tool		: type_tool := MOUSE;
+		tool		: type_tool := MOUSE; -- remove
 
 		-- The cursor to the device model:
 		device		: pac_devices_lib.cursor;
@@ -341,16 +354,24 @@ package et_canvas_schematic_units is
 		via_invoke	: boolean := false;
 	end record;
 
+
+	
 	unit_add : type_unit_being_added;
 
+
+	
 	procedure reset_unit_add;
 
+
+	
 	-- Builds the device selection window which lets the operator
 	-- select the directory and the actual device model.
 	-- The window is already up, then nothing happens here:
-	procedure add_device;
+	procedure show_model_selection;
 
-	procedure finalize_add_device (
+
+	
+	procedure drop_unit (
 		position	: in type_vector_model);
 
 

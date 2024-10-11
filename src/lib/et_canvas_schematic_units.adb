@@ -1001,6 +1001,7 @@ package body et_canvas_schematic_units is
 
 	
 	procedure close_device_selection is begin
+		put_line ("close_device_selection");
 		device_selection.window.destroy;
 		device_selection.open := false;
 	end close_device_selection;	
@@ -1020,6 +1021,7 @@ package body et_canvas_schematic_units is
 		return to_variant_name (var_name);
 	end extract_variant_name;
 
+	
 	
 	-- In order to place a package variant and the associated model
 	-- on a menu, use this function:
@@ -1043,6 +1045,7 @@ package body et_canvas_schematic_units is
 		unit_add := (others => <>);
 	end reset_unit_add;
 
+
 	
 	procedure variant_selected (self : access gtk.menu_item.gtk_menu_item_record'class) is
 	begin
@@ -1057,10 +1060,14 @@ package body et_canvas_schematic_units is
 		close_device_selection;
 	end variant_selected;
 
+
+	
 	--procedure device_directory_selected (self : access gtk.file_chooser_button.gtk_file_chooser_button_record'class) is
 	--begin
 		--put_line (self.get_current_folder);
 	--end device_directory_selected;
+
+	
 	
 	procedure device_model_selected (self : access gtk.file_chooser_button.gtk_file_chooser_button_record'class) is
 
@@ -1078,10 +1085,13 @@ package body et_canvas_schematic_units is
 		
 		use pac_variants;
 		variants : pac_variants.map;
+
+
 		
 		procedure show_variants_menu is
 			m : gtk_menu;
 			i : gtk_menu_item;
+
 			
 			procedure query_variant (c : in pac_variants.cursor) is begin
 				-- Build the menu item:
@@ -1099,6 +1109,7 @@ package body et_canvas_schematic_units is
 			m.popup;
 
 		end show_variants_menu;
+		
 
 	begin -- device_model_selected
 		put_line (self.get_filename);
@@ -1155,6 +1166,8 @@ package body et_canvas_schematic_units is
 		-- CS exception handler in case read_device fails ?
 	end device_model_selected;
 
+
+	
 	
 	function device_model_selection_key_event (
 		self	: access gtk_widget_record'class;
@@ -1182,6 +1195,8 @@ package body et_canvas_schematic_units is
 		return result;
 	end device_model_selection_key_event;
 
+
+	
 	
 	procedure device_model_selection_close (
 		self	: access gtk_widget_record'class) 
@@ -1189,8 +1204,10 @@ package body et_canvas_schematic_units is
 		device_selection.open := false;
 	end device_model_selection_close;
 
+
 	
-	procedure add_device is
+	
+	procedure show_model_selection is
 		use gtk.window;
 		use gtk.box;
 		use gtk.label;
@@ -1209,9 +1226,7 @@ package body et_canvas_schematic_units is
 		button_directory, button_model : gtk_file_chooser_button;
 		filter : gtk_file_filter;
 		
-	begin -- add_device
-		--put_line ("device selection");
-
+	begin
 		-- BUILD THE DEVICE SELECTION WINDOW:
 
 		-- If it is already up, move it to the foreground.
@@ -1281,12 +1296,12 @@ package body et_canvas_schematic_units is
 			
 			device_selection.window.show_all;
 		end if;
-	end add_device;
+	end show_model_selection;
 
 
 
 	
-	procedure finalize_add_device (
+	procedure drop_unit (
 		position	: in type_vector_model)
 	is 
 		use et_devices;
@@ -1297,6 +1312,8 @@ package body et_canvas_schematic_units is
 	begin
 		-- Commit the current state of the design:
 		commit (PRE, verb, noun, log_threshold);
+
+		put_line ("drop_unit");
 		
 		add_device (
 			module_name		=> key (current_active_module),
@@ -1309,11 +1326,10 @@ package body et_canvas_schematic_units is
 		commit (POST, verb, noun, log_threshold);
 		
 		reset_unit_add;
-		reset_activate_counter;
 
 		set_status (status_add);
 		--status_enter_verb;
-	end finalize_add_device;
+	end drop_unit;
 
 	
 	procedure finalize_invoke (
@@ -1351,10 +1367,11 @@ package body et_canvas_schematic_units is
 		reset_request_clarification;
 		set_status (status_invoke);
 
-		log_indentation_down;
-		
+		log_indentation_down;		
 	end finalize_invoke;
-		
+
+	
+	
 
 	-- Extracts from the selected menu item the unit name.
 	procedure unit_selected (self : access gtk.menu_item.gtk_menu_item_record'class) is
@@ -1383,6 +1400,7 @@ package body et_canvas_schematic_units is
 	end unit_selected;
 	
 
+	
 	procedure unit_selection_cancelled (self : access gtk.menu_shell.gtk_menu_shell_record'class) is
 	begin
 		set_status ("Unit selection cancelled");
@@ -1390,6 +1408,7 @@ package body et_canvas_schematic_units is
 
 		--put_line ("deselected");
 	end unit_selection_cancelled;
+
 
 	
 	-- CS
@@ -1427,6 +1446,7 @@ package body et_canvas_schematic_units is
 		push_in := true;
 	end set_position;
 
+
 	
 	procedure show_units is
 		use pac_devices_sch;
@@ -1437,9 +1457,9 @@ package body et_canvas_schematic_units is
 		device_cursor_lib : pac_devices_lib.cursor;
 		
 		unit_names : pac_unit_names.list;
+
 		
 		procedure show_menu is
-
 			--use glib;
 			use gtk.menu;
 			use gtk.menu_item;
@@ -1453,11 +1473,12 @@ package body et_canvas_schematic_units is
 			units_available : type_units_available := 0;
 			
 			use pac_unit_names;
+
 			
 			procedure query_name (c : in pac_unit_names.cursor) is 
-
 				in_use : boolean := false;
 
+				
 				-- Sets the in_use flag if given unit is already in use:
 				procedure query_in_use (
 					device_name	: in type_device_name;
@@ -1470,6 +1491,7 @@ package body et_canvas_schematic_units is
 					end if;
 				end query_in_use;
 
+				
 			begin -- query_name
 				-- Test whether the unit is already in use.
 				query_element (
@@ -1496,6 +1518,7 @@ package body et_canvas_schematic_units is
 				end if;
 
 			end query_name;
+
 			
 		begin -- show_menu
 
@@ -1531,6 +1554,7 @@ package body et_canvas_schematic_units is
 				--set_status (status_invoke);
 			end if;
 		end show_menu;
+
 		
 	begin -- show_units
 		--put_line ("selected " & to_string (key (su.device)));

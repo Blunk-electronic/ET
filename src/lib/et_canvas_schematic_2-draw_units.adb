@@ -1069,11 +1069,10 @@ procedure draw_units is
 
 			
 		begin -- locate_symbol
-			-- Set the destination coordinates according to current tool:
-			case unit_add.tool is
-				when KEYBOARD	=> destination := get_cursor_position;
-				when MOUSE		=> destination := snap_to_grid (get_mouse_position);
-			end case;
+			-- Set the destination coordinates according to 
+			-- current primary tool:
+			destination := get_primary_tool_position;
+			
 			
 			case unit_cursor.ext_int is
 				when EXT =>
@@ -1143,10 +1142,11 @@ procedure draw_units is
 		
 		if unit_add.device /= pac_devices_lib.no_element then
 
-			if activate_counter = 1 -- case #2
-			or unit_add.via_invoke then -- case #1
+			null;
+			-- if activate_counter = 1 -- case #2
+			-- or unit_add.via_invoke then -- case #1
 				locate_symbol (locate_unit (unit_add.device, unit_add.name));
-			end if;
+			-- end if;
 		end if;
 
 	end draw_unit_being_added;

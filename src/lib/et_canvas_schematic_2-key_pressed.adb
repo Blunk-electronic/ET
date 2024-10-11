@@ -523,7 +523,8 @@ is
 				reset_grid_and_cursor;
 				
 				-- open device model selection
-				add_device; 
+				show_model_selection; 
+
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when GDK_Space =>
@@ -534,33 +535,22 @@ is
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
 
-						-- If a unit has been selected already, then
-						-- the number of "activate" actions must be counted.
-						-- The "activate" action in this case is pressing the
-						-- "space" key. After the first "activate" the tool
-						-- for placing the unit is set. After the second "activate"
-						-- the unit is placed at the current cursor position.
 						-- If no unit has been selected yet, then the device
 						-- model selection dialog opens.
 						if unit_add.device /= pac_devices_lib.no_element then -- unit selected
 
-							-- Set the tool being used for placing the unit:
-							increment_activate_counter;
-							
-							case activate_counter is
-								when 1 =>
-									unit_add.tool := KEYBOARD;
+							-- If a unit has already been selected, then
+							-- it will be dropped at the current cursor position:
+							drop_unit (get_cursor_position);
 
-								when 2 =>
-									-- Finally place the unit at the current 
-									-- cursor position:
-									finalize_add_device (get_cursor_position);
-
-								when others => null;
-							end case;
-
+							-- Open the model selection to
+							-- select the next unit:
+							show_model_selection;
+									
 						else -- no unit selected yet
-							add_device; -- open device model selection
+							-- Open the model selection to 
+							-- select a unit:
+							show_model_selection;
 						end if;
 						
 					when others => null;
@@ -572,6 +562,7 @@ is
 		end case;
 	end add;
 
+
 	
 	procedure invoke is 
 		use pac_devices_lib;
@@ -581,6 +572,7 @@ is
 			when GDK_LC_u =>
 				noun := NOUN_UNIT;					
 				set_status (et_canvas_schematic_units.status_invoke);
+				
 
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when GDK_Space =>
@@ -606,6 +598,7 @@ is
 					when others => null;
 						
 				end case;
+				
 
 			-- If page down pressed, then the operator is clarifying:
 			when GDK_page_down =>

@@ -71,34 +71,45 @@ is
 			-- and snap the cursor position to the default grid:
 			reset_grid_and_cursor;
 			
-			-- If a unit has been selected already, then
-			-- the number of "activate" actions must be counted.
-			-- The "activate" action in this case is a left click.
-			-- After the first "activate" the tool
-			-- for placing the unit is set. After the second "activate"
-			-- the unit is placed at the current mouse position.
 			-- If no unit has been selected yet, then the device
 			-- model selection dialog opens.
 			if unit_add.device /= pac_devices_lib.no_element then
 
-				increment_activate_counter;
-				
-				case activate_counter is
-					when 1 =>
-						unit_add.tool := MOUSE;
+				-- If a unit has already been selected, then
+				-- it will be dropped at the current mouse position:
+				drop_unit (snap_point);
 
-					when 2 =>
-						-- Finally place the unit at the current 
-						-- mouse position:
-						finalize_add_device (snap_point);
-
-					when others => null;
-				end case;
+				-- Open the device model selection for 
+				-- the next unit:
+				show_model_selection;
 
 			else -- no unit selected yet
-				add_device; -- open device model selection
+				-- Open the device model selection window
+				-- to allow selection of the unit:
+				show_model_selection;
 			end if;
 		end add_device;
+
+
+		
+		procedure invoke_device is
+		begin
+			-- If no device has been selected already, then
+			-- set the tool used for invoking.
+			if unit_add.device = pac_devices_lib.no_element then
+
+				unit_add.tool := MOUSE;
+
+				if not clarification_pending then
+					invoke_unit (snap_point);
+				else
+					show_units;
+				end if;
+
+			else
+				finalize_invoke (snap_point, log_threshold + 1);
+			end if;
+		end invoke_device;
 
 		
 		
@@ -109,8 +120,7 @@ is
 					when NOUN_DEVICE =>
 						add_device;
 							
-					when others => null;
-							
+					when others => null;							
 				end case;
 
 				
@@ -175,26 +185,10 @@ is
 				
 			when VERB_INVOKE =>
 				case noun is
-
 					when NOUN_UNIT =>
-						-- If no device has been selected already, then
-						-- set the tool used for invoking.
-						if unit_add.device = pac_devices_lib.no_element then
-
-							unit_add.tool := MOUSE;
-
-							if not clarification_pending then
-								invoke_unit (snap_point);
-							else
-								show_units;
-							end if;
-
-						else
-							finalize_invoke (snap_point, log_threshold + 1);
-						end if;
+						invoke_device;
 						
 					when others => null;
-						
 				end case;
 
 				
