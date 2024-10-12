@@ -583,8 +583,6 @@ is
 						-- set the tool used for invoking.
 						if unit_add.device = pac_devices_lib.no_element then
 
-							unit_add.tool := KEYBOARD;
-
 							if not clarification_pending then
 								invoke_unit (get_cursor_position);
 							else

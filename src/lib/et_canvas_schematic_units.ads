@@ -334,8 +334,6 @@ package et_canvas_schematic_units is
 	
 	-- When a unit is being added this type is required:
 	type type_unit_being_added is record
-		tool		: type_tool := MOUSE; -- remove
-
 		-- The cursor to the device model:
 		device		: pac_devices_lib.cursor;
 		

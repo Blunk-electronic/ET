@@ -98,8 +98,6 @@ is
 			-- set the tool used for invoking.
 			if unit_add.device = pac_devices_lib.no_element then
 
-				unit_add.tool := MOUSE;
-
 				if not clarification_pending then
 					invoke_unit (snap_point);
 				else
