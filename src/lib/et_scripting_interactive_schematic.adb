@@ -91,6 +91,7 @@ package body et_scripting_interactive_schematic is
 	end extract_unit_name;
 
 
+	
 -- DELETE
 
 	procedure unit_selected_on_delete (self : access gtk_menu_item_record'class) is
@@ -108,6 +109,8 @@ package body et_scripting_interactive_schematic is
 		
 		-- CS redraw;
 	end unit_selected_on_delete;
+
+	
 	
 	procedure menu_propose_units_on_delete (
 		device			: in type_device_name;
@@ -190,11 +193,14 @@ package body et_scripting_interactive_schematic is
 		
 	end menu_propose_units_on_delete;
 	
+
 	
 	
 -- FETCH UNIT:
 
-	procedure unit_selected_on_invoke (self : access gtk_menu_item_record'class) is
+	procedure unit_selected_on_fetch (
+		self : access gtk_menu_item_record'class) 
+	is
 		name : constant string := extract_unit_name (self.get_label);
 	begin
 		set_status ("selected unit " & name);
@@ -206,10 +212,11 @@ package body et_scripting_interactive_schematic is
 		single_cmd_status.finalization_pending := true;
 		
 		-- CS redraw;
-	end unit_selected_on_invoke;
+	end unit_selected_on_fetch;
+
 
 	
-	procedure menu_propose_units_on_invoke (
+	procedure menu_propose_units_on_fetch (
 		device			: in type_device_name;
 		units			: in pac_unit_names.list;
 		log_threshold	: in type_log_level)
@@ -223,6 +230,7 @@ package body et_scripting_interactive_schematic is
 		m : gtk_menu; -- the menu
 		i : gtk_menu_item; -- an item on the menu
 
+		
 		procedure query_name (c : in pac_unit_names.cursor) is begin
 			-- Build the menu item. NOTE: The actual unit name must be
 			-- the 2nd string of the entry.
@@ -230,15 +238,16 @@ package body et_scripting_interactive_schematic is
 				"unit " & to_string (element (c)));
 
 			-- Connect the item with the "activate" signal:
-			i.on_activate (unit_selected_on_invoke'access);
+			i.on_activate (unit_selected_on_fetch'access);
 
 			m.append (i);
 			i.show;
 		end query_name;
+
 		
-	begin -- menu_propose_units_on_invoke
+	begin -- menu_propose_units_on_fetch
 		log (text => "proposing units of " & to_string (device) 
-			 & " for invoking ... ",
+			 & " for fetching ... ",
 			 level => log_threshold);
 		
 		case length (units) is
@@ -290,7 +299,7 @@ package body et_scripting_interactive_schematic is
 			
 		end case;
 		
-	end menu_propose_units_on_invoke;
+	end menu_propose_units_on_fetch;
 
 
 	

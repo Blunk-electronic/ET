@@ -53,26 +53,30 @@ package et_scripting_interactive_schematic is
 	procedure unit_selection_cancelled (
 		self : access gtk_menu_shell_record'class);
 
+	
 	-- If the operator selects a unit from the menu, 
 	-- then this procedure is called:
-	procedure unit_selected_on_invoke (
+	procedure unit_selected_on_fetch (
 		self : access gtk_menu_item_record'class);
 
+	
 	procedure menu_propose_units_on_delete (
 		device			: in type_device_name;
 		units			: in pac_unit_names.list;
 		log_threshold	: in type_log_level);
+
 	
 	-- Proposes units on a menu if list "units" has
 	-- more than one item. 
 	-- If "units" contains only one item, then
 	-- this single unit will be granted to be drawn.
 	-- If "units" is empty, nothing happens.
-	procedure menu_propose_units_on_invoke (
+	procedure menu_propose_units_on_fetch (
 		device			: in type_device_name; -- R2
 		units			: in pac_unit_names.list;
 		log_threshold	: in type_log_level);
 
+	
 	-- Makes the unit_move a selected unit.
 	-- Append the cursors of the device and unit to the list
 	-- proposed_units. Afterwards there will be only one single 

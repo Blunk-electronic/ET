@@ -801,6 +801,36 @@ is
 		end case;
 	end drag_unit;
 	
+
+
+	procedure fetch_unit is
+		use et_sheets;
+	begin
+		case cmd_field_count is
+			when 10 =>
+				fetch_unit (
+					module_name		=> module,
+					device_name		=> to_device_name (f (5)),
+					unit_name		=> to_unit_name (f (6)),
+					destination		=> to_position 
+						(
+						sheet => to_sheet (f (7)),
+						point => type_vector_model (set
+									(
+									x => to_distance (f (8)),
+									y => to_distance (f (9))
+									)),
+						rotation		=> to_rotation (f (10))
+						),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 11 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end fetch_unit;
+	
 	
 	
 	-- For showing and finding nets:
@@ -1544,29 +1574,7 @@ is
 			when VERB_FETCH =>
 				case noun is
 					when NOUN_UNIT =>
-						case cmd_field_count is
-							when 10 =>
-								fetch_unit (
-									module_name		=> module,
-									device_name		=> to_device_name (f (5)),
-									unit_name		=> to_unit_name (f (6)),
-									destination		=> to_position 
-										(
-										sheet => to_sheet (f (7)),
-										point => type_vector_model (set
-													(
-													x => to_distance (f (8)),
-													y => to_distance (f (9))
-													)),
-										rotation		=> to_rotation (f (10))
-										),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 11 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						fetch_unit;
 
 					when others => invalid_noun (to_string (noun));
 				end case;
@@ -2453,6 +2461,8 @@ is
 		
 	end parse;		
 
+
+
 	
 	procedure propose_arguments is
 		use et_sheets;
@@ -2523,6 +2533,83 @@ is
 			set_status (incomplete & net_missing);
 		end net_name_missing;
 
+
+
+		procedure fetch_unit is
+		begin
+			case cmd_field_count is
+				when 4 =>
+					device_name_missing;
+					
+				when 5 => -- like "fetch unit IC1"
+					unit_name_missing;
+
+					device_name := to_device_name (f (5));
+
+					if exists (current_active_module, device_name) then
+
+						unit_add.device		:= device_model_cursor (current_active_module, device_name);
+						
+						--unit_add.variant	:= device_variant_name (current_active_module, device_name);
+						-- CS: really required ? requires test whether the device is real
+						
+						unit_add.total		:= units_total (unit_add.device);
+						unit_add.device_pre	:= device_name;
+					
+						menu_propose_units_on_fetch (
+							device			=> device_name,
+							units			=> available_units (
+												current_active_module,
+												device_name,
+												log_threshold + 1),
+							log_threshold	=> log_threshold + 1);
+
+					else
+						device_not_found;
+					end if;
+
+					
+				when 6 => -- like "fetch unit IC1 B"
+					device_name := to_device_name (f (5));
+
+					if exists (current_active_module, device_name) then
+
+						unit_add.device		:= device_model_cursor (current_active_module, device_name);
+
+						--unit_add.variant	:= device_variant_name (current_active_module, device_name);
+						-- CS: really required ? requires test whether the device is real
+
+						unit_add.total		:= units_total (unit_add.device);
+						unit_add.device_pre	:= device_name;
+						
+						unit_name := to_unit_name (f (6));
+
+						-- test existence AND availability of unit:
+						if provides_unit (unit_add.device, unit_name) then
+
+							if unit_available (current_active_module, device_name, unit_name) then
+
+								unit_add.name := unit_name;
+								
+								-- Allow drawing the unit:
+								unit_add.via_fetch := true;
+							
+								-- CS redraw;
+							else
+								unit_in_use;
+							end if;
+						else
+							unit_not_found;
+						end if; 
+					else
+						device_not_found;
+					end if;
+										
+				when others => null;								
+			end case;
+		end fetch_unit;
+		
+		
 		
 	begin -- propose_arguments
 		log_command_incomplete (cmd_field_count, log_threshold);
@@ -2542,12 +2629,14 @@ is
 
 					when others => null; -- CS
 				end case;
+				
 
 			when VERB_CREATE =>
 				case noun is
 					when NOUN_MODULE => module_name_missing;
 					when others => null; -- CS
 				end case;
+				
 				
 			when VERB_DELETE =>
 				case noun is
@@ -2619,6 +2708,7 @@ is
 
 					when others => null; -- CS
 				end case;
+
 				
 			when VERB_DRAG =>
 				case noun is
@@ -2694,6 +2784,7 @@ is
 					when others => null; -- CS
 				end case;
 
+				
 			when VERB_DRAW =>
 				case noun is
 					when NOUN_NET =>
@@ -2717,79 +2808,12 @@ is
 						
 					when others => null;
 				end case;
+
 				
 			when VERB_FETCH =>
 				case noun is
 					when NOUN_UNIT =>
-						case cmd_field_count is
-							when 4 =>
-								device_name_missing;
-								
-							when 5 => -- like "invoke unit IC1"
-								unit_name_missing;
-
-								device_name := to_device_name (f (5));
-
-								if exists (current_active_module, device_name) then
-
-									unit_add.device		:= device_model_cursor (current_active_module, device_name);
-									
-									--unit_add.variant	:= device_variant_name (current_active_module, device_name);
-									-- CS: really required ? requires test whether the device is real
-									
-									unit_add.total		:= units_total (unit_add.device);
-									unit_add.device_pre	:= device_name;
-								
-									menu_propose_units_on_invoke (
-										device			=> device_name,
-										units			=> available_units (
-															current_active_module,
-															device_name,
-															log_threshold + 1),
-										log_threshold	=> log_threshold + 1);
-
-								else
-									device_not_found;
-								end if;
-								
-							when 6 => -- like "invoke unit IC1 B"
-								device_name := to_device_name (f (5));
-
-								if exists (current_active_module, device_name) then
-
-									unit_add.device		:= device_model_cursor (current_active_module, device_name);
-
-									--unit_add.variant	:= device_variant_name (current_active_module, device_name);
-									-- CS: really required ? requires test whether the device is real
-
-									unit_add.total		:= units_total (unit_add.device);
-									unit_add.device_pre	:= device_name;
-									
-									unit_name := to_unit_name (f (6));
-
-									-- test existence AND availability of unit:
-									if provides_unit (unit_add.device, unit_name) then
-
-										if unit_available (current_active_module, device_name, unit_name) then
-
-											unit_add.name := unit_name;
-											
-											-- Allow drawing the unit:
-											unit_add.via_fetch := true;
-										
-											-- CS redraw;
-										else
-											unit_in_use;
-										end if;
-									else
-										unit_not_found;
-									end if; 
-								else
-									device_not_found;
-								end if;
-													
-							when others => null;								
-						end case;
+						fetch_unit;
 
 					when others => null; -- CS
 				end case;
