@@ -1541,12 +1541,12 @@ is
 				-- CS does not work via script (gtk error ...)
 
 				
-			when VERB_INVOKE =>
+			when VERB_FETCH =>
 				case noun is
 					when NOUN_UNIT =>
 						case cmd_field_count is
 							when 10 =>
-								invoke_unit (
+								fetch_unit (
 									module_name		=> module,
 									device_name		=> to_device_name (f (5)),
 									unit_name		=> to_unit_name (f (6)),
@@ -2718,7 +2718,7 @@ is
 					when others => null;
 				end case;
 				
-			when VERB_INVOKE =>
+			when VERB_FETCH =>
 				case noun is
 					when NOUN_UNIT =>
 						case cmd_field_count is
@@ -2775,7 +2775,7 @@ is
 											unit_add.name := unit_name;
 											
 											-- Allow drawing the unit:
-											unit_add.via_invoke := true;
+											unit_add.via_fetch := true;
 										
 											-- CS redraw;
 										else

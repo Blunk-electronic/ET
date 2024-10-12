@@ -564,14 +564,14 @@ is
 
 
 	
-	procedure invoke is 
+	procedure fetch is 
 		use pac_devices_lib;
 	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when GDK_LC_u =>
 				noun := NOUN_UNIT;					
-				set_status (et_canvas_schematic_units.status_invoke);
+				set_status (et_canvas_schematic_units.status_fetch);
 				
 
 			-- If space pressed, then the operator wishes to operate via keyboard:	
@@ -580,17 +580,17 @@ is
 
 					when NOUN_UNIT =>
 						-- If no device has been selected already, then
-						-- set the tool used for invoking.
+						-- set the tool used for fetching.
 						if unit_add.device = pac_devices_lib.no_element then
 
 							if not clarification_pending then
-								invoke_unit (get_cursor_position);
+								fetch_unit (get_cursor_position);
 							else
 								show_units;
 							end if;
 
 						else
-							finalize_invoke (get_cursor_position, log_threshold + 1);
+							finalize_fetch (get_cursor_position, log_threshold + 1);
 						end if;
 						
 					when others => null;
@@ -613,7 +613,7 @@ is
 				
 			when others => null;
 		end case;
-	end invoke;
+	end fetch;
 
 	
 	procedure set is begin
@@ -809,7 +809,7 @@ begin -- key_pressed
 						when VERB_DELETE	=> delete;
 						when VERB_DRAG		=> drag;
 						when VERB_DRAW		=> draw;
-						when VERB_INVOKE	=> invoke;
+						when VERB_FETCH		=> fetch;
 						when VERB_MOVE		=> move;
 						when VERB_PLACE		=> place;							
 						when others			=> null;
@@ -855,8 +855,8 @@ begin -- key_pressed
 								verb := VERB_SHOW;
 								status_enter_noun;
 								
-							when GDK_LC_i =>
-								verb := VERB_INVOKE;
+							when GDK_LC_f =>
+								verb := VERB_FETCH;
 								status_enter_noun;
 								
 							when GDK_LC_m =>
@@ -897,7 +897,7 @@ begin -- key_pressed
 							when VERB_DELETE	=> delete;
 							when VERB_DRAG		=> drag;
 							when VERB_DRAW		=> draw;
-							when VERB_INVOKE	=> invoke;
+							when VERB_FETCH		=> fetch;
 							when VERB_MOVE		=> move;
 							when VERB_PLACE		=> place;
 							when VERB_RENAME	=> rename;

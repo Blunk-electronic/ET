@@ -83,13 +83,13 @@ Devices and Units
 	|VNS| d u
 
 
-#. Invoke unit
+#. Fetche unit
 
 	.. code-block::
 
-		invoke unit IC1 [B]
+		fetch unit IC1 [B]
 
-	|VNS| i u
+	|VNS| f u
 
 	
 #. Move unit

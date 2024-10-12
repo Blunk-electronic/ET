@@ -114,7 +114,7 @@ package body et_undo_redo is
 					
 				when NOUN_UNIT =>
 					case verb is
-						when VERB_INVOKE | VERB_MOVE | VERB_DELETE | VERB_DRAG =>
+						when VERB_FETCH | VERB_MOVE | VERB_DELETE | VERB_DRAG =>
 							commit_devices;
 							commit_nets;
 

@@ -54,7 +54,7 @@ package et_modes.schematic is
 		VERB_DRAW,
 		VERB_EXECUTE,
 		VERB_EXIT,
-		VERB_INVOKE,
+		VERB_FETCH,
 		VERB_MAKE,
 		VERB_MOVE,
 		VERB_MOUNT,

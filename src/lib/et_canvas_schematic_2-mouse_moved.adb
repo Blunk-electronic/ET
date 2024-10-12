@@ -99,7 +99,7 @@ begin
 			end case;
 
 			
-		when VERB_INVOKE =>
+		when VERB_FETCH =>
 			case noun is
 				when NOUN_UNIT =>
 					if et_canvas_schematic_units.unit_add.device /= pac_devices_lib.no_element then

@@ -348,8 +348,8 @@ package et_canvas_schematic_units is
 		-- This is relevant for the preview only:
 		device_pre	: et_devices.type_device_name := (others => <>);
 
-		-- When drawing a unit being added via invoke:
-		via_invoke	: boolean := false;
+		-- When drawing a unit being added via fetch:
+		via_fetch	: boolean := false;
 	end record;
 
 
@@ -376,28 +376,34 @@ package et_canvas_schematic_units is
 
 	
 
--- INVOKE UNIT
+-- FETCH UNIT:
 	
 	-- to be output in the status bar:
-	status_invoke : constant string := 
+	status_fetch : constant string := 
 		status_click_left 
 		& "or "
 		& status_press_space
-		& "to invoke unit." 
+		& "to fetch unit from device." 
 		& status_hint_for_abort;
 	
 
-	-- Does the final invoking of the unit in the schematic:
-	procedure finalize_invoke (
+	-- Does the final fetching of the unit in the schematic:
+	procedure finalize_fetch (
 		position		: in type_vector_model;
 		log_threshold	: in type_log_level);
+
 	
 	-- Shows the available units of the selected device in a menu.
 	procedure show_units;
+
 	
 	-- Collects units in the vicinity of the given point.
 	-- Requests for clarification if more than one unit found.
-	procedure invoke_unit (point : in type_vector_model);
+	procedure fetch_unit (point : in type_vector_model);
+
+
+
+
 	
 	
 -- PLACEHOLDERS

@@ -92,22 +92,22 @@ is
 
 
 		
-		procedure invoke_device is
+		procedure fetch_unit is
 		begin
 			-- If no device has been selected already, then
-			-- set the tool used for invoking.
+			-- fetch a unit:
 			if unit_add.device = pac_devices_lib.no_element then
 
 				if not clarification_pending then
-					invoke_unit (snap_point);
+					fetch_unit (snap_point);
 				else
 					show_units;
 				end if;
 
 			else
-				finalize_invoke (snap_point, log_threshold + 1);
+				finalize_fetch (snap_point, log_threshold + 1);
 			end if;
-		end invoke_device;
+		end fetch_unit;
 
 		
 		
@@ -181,10 +181,10 @@ is
 				end case;
 
 				
-			when VERB_INVOKE =>
+			when VERB_FETCH =>
 				case noun is
 					when NOUN_UNIT =>
-						invoke_device;
+						fetch_unit;
 						
 					when others => null;
 				end case;
@@ -368,6 +368,7 @@ is
 
 					when others => null;							
 				end case;
+
 				
 			when VERB_DRAW =>
 				case noun is
@@ -377,17 +378,17 @@ is
 					when others => null;							
 				end case;
 
-			when VERB_INVOKE =>
+				
+			when VERB_FETCH =>
 				case noun is
-
 					when NOUN_UNIT => 
 						if clarification_pending then
 							clarify_unit;
 						end if;
 						
-					when others => null;
-						
+					when others => null;						
 				end case;
+
 				
 			when VERB_MOVE =>
 				case noun is

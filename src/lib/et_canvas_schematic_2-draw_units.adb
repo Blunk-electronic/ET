@@ -1135,7 +1135,7 @@ procedure draw_units is
 		-- There are two cases when a unit is being added:
 
 		-- 1. When adding a new completley new device.
-		-- 2. When invoking a unit of an existing device. 
+		-- 2. When fetching a unit from an existing device. 
 
 		case verb is
 			when VERB_ADD =>
@@ -1143,8 +1143,8 @@ procedure draw_units is
 					locate_symbol (locate_unit (unit_add.device, unit_add.name));
 				end if;
 
-			when VERB_INVOKE =>
-				if unit_add.via_invoke then
+			when VERB_FETCH =>
+				if unit_add.via_fetch then
 					locate_symbol (locate_unit (unit_add.device, unit_add.name));
 				end if;
 

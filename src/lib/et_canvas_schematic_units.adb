@@ -255,16 +255,17 @@ package body et_canvas_schematic_units is
 			end query_units;
 			
 			
-			units_invoked : boolean := true; -- goes false if no unit used anymore
+			units_fetched : boolean := true; -- goes false if no unit used anymore
 
-			procedure query_number_of_invoked_units (
+			
+			procedure query_number_of_fetched_units (
 				device_name	: in type_device_name;
 				device		: in type_device_sch) 
 			is begin
 				if length (device.units) = 0 then
-					units_invoked := false;
+					units_fetched := false;
 				end if;
-			end query_number_of_invoked_units;
+			end query_number_of_fetched_units;
 			
 
 		begin -- query_devices
@@ -285,15 +286,15 @@ package body et_canvas_schematic_units is
 				sheets			=> position_of_unit, -- there is only one unit -> only one sheet to look at
 				log_threshold	=> log_threshold + 1);
 
-			-- In case no more units are invoked then the device must be
+			-- In case no more units are fetched then the device must be
 			-- deleted entirely from module.devices.
-			-- First we query the number of still invoked units. If none invoked,
-			-- the flag units_invoked goes false.
+			-- First we query the number of still fetch units. If none fetched,
+			-- the flag units_fetched goes false.
 			query_element (
 				position	=> unit.device,
-				process		=> query_number_of_invoked_units'access);
+				process		=> query_number_of_fetched_units'access);
 
-			if not units_invoked then
+			if not units_fetched then
 				delete (module.devices, unit.device);
 			end if;
 
@@ -1139,7 +1140,7 @@ package body et_canvas_schematic_units is
 		-- Assign the name of the first unit.
 		-- NOTE: When adding a device, the first unit within the device
 		-- will be placed first. Further units are to be placed via
-		-- invoke operations:
+		-- fetch operations:
 		unit_add.name := first_unit (device_cursor_lib);
 
 		-- For a nice preview we also need the total of units provided
@@ -1339,7 +1340,7 @@ package body et_canvas_schematic_units is
 	end drop_unit;
 
 	
-	procedure finalize_invoke (
+	procedure finalize_fetch (
 		position		: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is 
@@ -1347,7 +1348,7 @@ package body et_canvas_schematic_units is
 		use et_commit;
 		use et_undo_redo;
 	begin
-		log (text => "finalizing invoke ...", level => log_threshold);
+		log (text => "finalizing fetch ...", level => log_threshold);
 		log_indentation_up;
 		
 		if length (unit_add.name) > 0 then
@@ -1355,7 +1356,7 @@ package body et_canvas_schematic_units is
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold);
 			
-			invoke_unit (
+			fetch_unit (
 				module_name		=> key (current_active_module),
 				device_name		=> unit_add.device_pre,
 				unit_name		=> unit_add.name,
@@ -1372,10 +1373,10 @@ package body et_canvas_schematic_units is
 
 		reset_unit_add;
 		reset_request_clarification;
-		set_status (status_invoke);
+		set_status (status_fetch);
 
 		log_indentation_down;		
-	end finalize_invoke;
+	end finalize_fetch;
 
 	
 	
@@ -1394,7 +1395,7 @@ package body et_canvas_schematic_units is
 		unit_add.name := to_unit_name (unit_name);
 
 		-- Signal procedure draw_units to draw this unit as a preview:
-		unit_add.via_invoke := true;
+		unit_add.via_fetch := true;
 
 		-- The list of proposed units and the cursor "selected_unit" are
 		-- no longer required. This operation also prevents the formerly
@@ -1572,7 +1573,7 @@ package body et_canvas_schematic_units is
 					& " available !");
 
 				reset_unit_add;
-				--set_status (status_invoke);
+				--set_status (status_fetch);
 			end if;
 		end show_menu;
 
@@ -1614,10 +1615,10 @@ package body et_canvas_schematic_units is
 
 
 	
-	procedure invoke_unit (point : in type_vector_model) is 
+	procedure fetch_unit (point : in type_vector_model) is 
 		use et_schematic_ops.units;
 	begin
-		log (text => "invoking unit ...", level => log_threshold);
+		log (text => "fetching unit ...", level => log_threshold);
 		log_indentation_up;
 		
 		-- Collect all units in the vicinity of the given point:
@@ -1645,7 +1646,7 @@ package body et_canvas_schematic_units is
 		end case;
 		
 		log_indentation_down;
-	end invoke_unit;
+	end fetch_unit;
 
 
 	

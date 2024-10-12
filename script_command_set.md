@@ -272,9 +272,9 @@ The last argument (D) is the package variant.
 schematic led_driver add device $HOME/git/BEL/ET_component_library/devices/active/logic/7400.dev 1 250 150 90 D # sheet 1 x y rotation variant
 ```
 
-This command invokes from IC1 the unit P and places it at sheet 4 at x/y 60/90 with zero rotation:
+This command fetches from IC1 the unit P and places it at sheet 4 at x/y 60/90 with zero rotation:
 ```
-schematic led_driver invoke unit IC1 P 4 60 90 0 # device unit sheet x y rotation
+schematic led_driver fetch unit IC1 P 4 60 90 0 # device unit sheet x y rotation
 ```
 
 #### COPYING

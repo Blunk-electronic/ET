@@ -2,24 +2,25 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---              SCHEMATIC OPERATIONS / INVOKING UNITS                       --
+--              SCHEMATIC OPERATIONS / FETCHING UNITS                       --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                -- 
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -37,13 +38,13 @@
 
 separate (et_schematic_ops)
 
-procedure invoke_unit (
--- Invokes a unit of a device into the schematic.
+procedure fetch_unit (
 	module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 	device_name		: in type_device_name; -- IC1
 	unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
 	destination		: in et_coordinates_2.type_position; -- sheet/x/y/rotation
-	log_threshold	: in type_log_level) is
+	log_threshold	: in type_log_level) 
+is
 
 	use et_coordinates_2;
 	
@@ -283,7 +284,8 @@ begin -- invoke_unit
 		process		=> query_devices'access);
 	
 	log_indentation_down;		
-end invoke_unit;
+	
+end fetch_unit;
 
 
 -- Soli Deo Gloria

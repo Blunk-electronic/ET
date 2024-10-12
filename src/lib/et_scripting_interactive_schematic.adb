@@ -192,7 +192,7 @@ package body et_scripting_interactive_schematic is
 	
 	
 	
--- INVOKE
+-- FETCH UNIT:
 
 	procedure unit_selected_on_invoke (self : access gtk_menu_item_record'class) is
 		name : constant string := extract_unit_name (self.get_label);
@@ -201,7 +201,7 @@ package body et_scripting_interactive_schematic is
 		unit_add.name := to_unit_name (name);
 
 		-- Allow drawing the unit:
-		unit_add.via_invoke := true;
+		unit_add.via_fetch := true;
 
 		single_cmd_status.finalization_pending := true;
 		
@@ -257,7 +257,7 @@ package body et_scripting_interactive_schematic is
 				unit_add.name := unit_name;
 
 				-- Allow drawing the unit:
-				unit_add.via_invoke := true;
+				unit_add.via_fetch := true;
 
 				single_cmd_status.finalization_pending := true;
 				
