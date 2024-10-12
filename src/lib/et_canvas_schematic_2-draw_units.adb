@@ -62,6 +62,7 @@ procedure draw_units is
 	use et_colors.schematic;
 	use et_canvas_schematic_units;
 
+	
 	procedure draw_symbol (
 		symbol			: in et_symbols.type_symbol;
 		device_name		: in et_devices.type_device_name := (others => <>);
@@ -1128,27 +1129,27 @@ procedure draw_units is
 			end case;
 		end locate_symbol;
 
-		
+
+		use et_modes.schematic;
 	begin
-		-- Once a model has been assigned we know that the unit is to be drawn.
-		-- There are two cases when the assigment takes place:
+		-- There are two cases when a unit is being added:
 
-		-- 1. When adding a new device.
-		-- The assignment was via procedure et_canvas_schematic_units.add_device.
-		-- The unit will be drawn after the first left click or pressing of space key.
+		-- 1. When adding a new completley new device.
+		-- 2. When invoking a unit of an existing device. 
 
-		-- 2. When invoking a unit. 
-		-- The assignment was via procedure et_canvas_schematic_units.unit_selected.
-		
-		if unit_add.device /= pac_devices_lib.no_element then
+		case verb is
+			when VERB_ADD =>
+				if unit_add.device /= pac_devices_lib.no_element then
+					locate_symbol (locate_unit (unit_add.device, unit_add.name));
+				end if;
 
-			null;
-			-- if activate_counter = 1 -- case #2
-			-- or unit_add.via_invoke then -- case #1
-				locate_symbol (locate_unit (unit_add.device, unit_add.name));
-			-- end if;
-		end if;
+			when VERB_INVOKE =>
+				if unit_add.via_invoke then
+					locate_symbol (locate_unit (unit_add.device, unit_add.name));
+				end if;
 
+			when others => null;
+		end case;
 	end draw_unit_being_added;
 
 	

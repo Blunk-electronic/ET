@@ -106,6 +106,7 @@ package body et_canvas_schematic_units is
 	is
 		result : pac_proposed_units.list;
 
+		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) 
@@ -113,6 +114,7 @@ package body et_canvas_schematic_units is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor := module.devices.first;
 
+			
 			procedure query_units (
 				device_name	: in type_device_name;
 				device		: in type_device_sch)
@@ -146,6 +148,8 @@ package body et_canvas_schematic_units is
 				end loop;
 				
 			end query_units;
+
+
 			
 		begin -- query_devices
 			while device_cursor /= pac_devices_sch.no_element loop
@@ -182,6 +186,7 @@ package body et_canvas_schematic_units is
 	end collect_units;
 
 
+	
 	procedure clarify_unit is
 		use et_schematic;
 		use et_schematic_ops.units;
@@ -1451,7 +1456,8 @@ package body et_canvas_schematic_units is
 	procedure show_units is
 		use pac_devices_sch;
 		
-		su : constant type_selected_unit := element (selected_unit);
+		--su : constant type_selected_unit := element (selected_unit);
+		su : type_selected_unit;
 		
 		device_model : pac_device_model_file.bounded_string;
 		device_cursor_lib : pac_devices_lib.cursor;
@@ -1500,6 +1506,7 @@ package body et_canvas_schematic_units is
 
 				-- If the unit is available then put its name on the menu:
 				if not in_use then -- unit is available
+					-- put_line ("unit " & to_string (element (c)) & " available");
 					
 					units_available := units_available + 1;
 					
@@ -1528,13 +1535,23 @@ package body et_canvas_schematic_units is
 			-- In case the operator closes the menu (via ESC for example)
 			-- then reset unit_add.
 			m.on_cancel (unit_selection_cancelled'access);
-			
+
+			-- Query the available units and add them
+			-- to the menu:
 			unit_names.iterate (query_name'access);
 
 			-- If no units are available (because all are in use)
 			-- then we do not show a menu.
 			if units_available > 0 then
+				-- put_line ("show units menu");
+
+				-- Show the menu:
 				m.show;
+
+				-- CS place the menu either a cursor or pointer
+				-- position.
+
+				-- Open the menu:
 				m.popup (
 					-- CS func => set_position'access,
 							
@@ -1545,6 +1562,8 @@ package body et_canvas_schematic_units is
 					-- get_current_event_time causes the menu to remain
 					-- until a 2nd click.
 					activate_time => gtk.main.get_current_event_time);
+				
+				-- put_line ("units menu open");
 			else
 				set_status ("No more units of device " 
 					& to_string (unit_add.device_pre)
@@ -1557,33 +1576,40 @@ package body et_canvas_schematic_units is
 
 		
 	begin -- show_units
-		--put_line ("selected " & to_string (key (su.device)));
+		-- put_line ("show_units");
+		su := element (selected_unit);		
+		-- put_line ("selected " & to_string (key (su.device)));
 
 		device_model := element (su.device).model;
-
-		--put_line ("model " & to_string (device_model));
+		-- put_line ("model " & to_string (device_model));
 		
 		device_cursor_lib := locate_device (device_model);
 
 		-- assign the cursor to the device model:
+		-- put_line ("assign model");
 		unit_add.device := device_cursor_lib;
 
 		-- For a nice preview we also need the total of units provided
 		-- the the device:
+		-- put_line ("assign total");
 		unit_add.total := units_total (unit_add.device);
 			
 		-- assign the prospective device name:
+		-- put_line ("assign prospective device");
 		unit_add.device_pre := key (su.device);
 
 		-- collect the names of all units of the selected device:
+		-- put_line ("get all units");
 		unit_names := all_units (device_cursor_lib);
 
 		-- Show the units of the device in a menu. After the operator
 		-- has selected a unit, procedure unit_selected finally
 		-- assigns the unit name to unit_add.
+		-- put_line ("show units");
 		show_menu;
 		
 	end show_units;
+
 
 	
 	procedure invoke_unit (point : in type_vector_model) is 
@@ -1599,6 +1625,7 @@ package body et_canvas_schematic_units is
 			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
 
+		
 		-- evaluate the number of units found here:
 		case length (proposed_units) is
 			when 0 =>
@@ -1606,7 +1633,6 @@ package body et_canvas_schematic_units is
 				
 			when 1 =>
 				selected_unit := proposed_units.first;
-			
 				show_units;
 
 			when others =>
@@ -1618,6 +1644,7 @@ package body et_canvas_schematic_units is
 		
 		log_indentation_down;
 	end invoke_unit;
+
 
 	
 	

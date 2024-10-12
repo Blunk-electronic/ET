@@ -3582,8 +3582,8 @@ package body et_schematic_ops is
 	end sheet;
 		
 	
-	procedure invoke_unit (
 	-- Invokes a unit of a device into the schematic.
+	procedure invoke_unit (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
