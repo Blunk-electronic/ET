@@ -1234,6 +1234,8 @@ package body et_canvas_schematic_units is
 	begin
 		-- BUILD THE DEVICE SELECTION WINDOW:
 
+		-- CS: Add the variant menu to this window.
+		
 		-- If it is already up, move it to the foreground.
 		-- Otherwise build it:
 		if device_selection_is_open then
