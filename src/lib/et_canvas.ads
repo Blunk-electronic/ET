@@ -1119,12 +1119,15 @@ package et_canvas is
 	function clarification_pending return boolean;
 
 
-	-- In order to count a number of clicks or keys pressed:
-	subtype type_activate_counter is natural range 0 .. 2;
-	activate_counter : type_activate_counter := type_activate_counter'first;
+	-- CS For the moment, there is no need anymore for this stuff.
+	-- However, it will be left in comments for the future:
 	
-	procedure reset_activate_counter;
-	procedure increment_activate_counter;
+	-- In order to count a number of clicks or keys pressed:
+-- 	subtype type_activate_counter is natural range 0 .. 2;
+-- 	activate_counter : type_activate_counter := type_activate_counter'first;
+-- 	
+-- 	procedure reset_activate_counter;
+-- 	procedure increment_activate_counter;
 
 
 

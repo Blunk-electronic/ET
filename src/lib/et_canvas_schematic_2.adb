@@ -1373,7 +1373,7 @@ package body et_canvas_schematic_2 is
 
 		reset_single_cmd_status;
 		
-		reset_activate_counter;
+		-- reset_activate_counter;
 
 		reset_zoom_area; -- abort zoom-to-area operation
 	end reset_selections;

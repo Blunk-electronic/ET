@@ -3301,18 +3301,18 @@ package body et_canvas is
 	end clarification_pending;
 
 
-	procedure reset_activate_counter is begin
-		activate_counter := type_activate_counter'first;
-		put_line ("reset_activate_counter" & 
-			type_activate_counter'image (activate_counter));
-	end reset_activate_counter;
-
-	
-	procedure increment_activate_counter is begin
-		activate_counter := activate_counter + 1;
-		put_line ("activate_counter" & 
-			type_activate_counter'image (activate_counter));
-	end increment_activate_counter;
+-- 	procedure reset_activate_counter is begin
+-- 		activate_counter := type_activate_counter'first;
+-- 		put_line ("reset_activate_counter" & 
+-- 			type_activate_counter'image (activate_counter));
+-- 	end reset_activate_counter;
+-- 
+-- 	
+-- 	procedure increment_activate_counter is begin
+-- 		activate_counter := activate_counter + 1;
+-- 		put_line ("activate_counter" & 
+-- 			type_activate_counter'image (activate_counter));
+-- 	end increment_activate_counter;
 
 
 
