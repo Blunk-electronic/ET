@@ -130,12 +130,6 @@ package et_project.modules is
 		return et_meta.pac_preferred_libraries_board.list;
 
 	
-	-- Returns the description of a sheet of a generic module:
-	function sheet_description (
-		module	: in pac_generic_modules.cursor;
-		sheet	: in type_sheet)
-		return et_frames.type_schematic_description;
-
 	
 	procedure port_not_at_edge (name : in pac_net_name.bounded_string);
 

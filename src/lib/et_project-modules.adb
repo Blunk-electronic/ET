@@ -120,42 +120,6 @@ package body et_project.modules is
 
 
 	
-
-	function sheet_description (
-		module	: in pac_generic_modules.cursor;
-		sheet	: in type_sheet)
-		return et_frames.type_schematic_description 
-	is
-		use et_frames;
-
-		use pac_schematic_descriptions;
-		cursor : pac_schematic_descriptions.cursor;
-
-		use et_schematic;
-
-		
-		procedure query_descriptions (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
-		is begin
-			cursor := find (module.frames.descriptions, sheet);
-		end query_descriptions;
-
-		
-	begin -- sheet_description
-		query_element (
-			position	=> module,
-			process		=> query_descriptions'access);
-		
-		if cursor /= pac_schematic_descriptions.no_element then
-			return element (cursor);
-		else
-		-- If the sheet has no description, then return the defaults.
-			return (others => <>);
-		end if;
-	end sheet_description;
-
-
 	
 	procedure port_not_at_edge (name : in pac_net_name.bounded_string) is 
 		use et_string_processing;
