@@ -438,12 +438,6 @@ package et_schematic_ops is
 		port_name		: in et_symbols.pac_port_name.bounded_string := et_symbols.to_port_name ("")) -- CE		
 		return boolean;						
 
-	function exists_submodule_port (
-	-- Returns true if given submodule with the given port exists in module indicated by module_cursor.
-		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		submod_instance : in pac_module_instance_name.bounded_string; -- MOT_DRV_3
-		port_name		: in pac_net_name.bounded_string) -- RESET
-		return boolean;
 
 	function exists_netchanger (
 	-- Returns true if given netchanger exists in module indicated by module_cursor.
@@ -692,23 +686,6 @@ package et_schematic_ops is
 		return type_port_properties_access;
 	
 	
-	procedure check_integrity (
-	-- Performs an in depth check on the schematic of the given module.
-	-- Tests:
-	-- 1. for device/submodule/netchanger ports that do not have a same named device/submodule/netchanger.
-	-- 2. for device/submodule/netchanger ports that occur more than once.
-	-- 3. CS: for net junctions sitting on top of each other
-	-- 4. CS: for device/submodule/netchanger port that do not have a visual connection to the net
-	-- 5. CS: for overlapping net segments
-	-- 6. CS: unconnected ports of R, C, L (category depended)
-	-- 6.1 CS: unconnected inputs
-	-- 7. CS: devices with empty values
-	-- 8. CS: interactive devices with empty purpose
-	-- 9. CS: check partcode (conventions.validate_partcode)								  
-	-- 10. units sitting on to of each other (same origin position)
-	-- 11. CS: warning (or error ?) if any ports sit on top of each other. This would make the movable_tests obsolete.
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		log_threshold	: in type_log_level);
 
 	
 	-- The result of a unit query is of this type:

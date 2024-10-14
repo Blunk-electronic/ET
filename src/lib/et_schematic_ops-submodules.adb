@@ -310,6 +310,71 @@ package body et_schematic_ops.submodules is
 
 
 
+
+	function exists_submodule_port (
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		submod_instance	: in pac_module_instance_name.bounded_string; -- MOT_DRV_3
+		port_name		: in pac_net_name.bounded_string) -- RESET
+		return boolean 
+	is
+
+		use pac_module_instance_name;
+		use et_submodules;
+		
+		result : boolean := false; -- to be returned, goes true once the target has been found
+
+		procedure query_submodules (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is
+			submod_cursor : pac_submodules.cursor;
+
+			procedure query_ports (
+			-- Searches the portlist of the submodule for a port having the port_name.
+			-- Exits prematurely on match.
+				submod_name	: in pac_module_instance_name.bounded_string;
+				submodule	: in et_submodules.type_submodule) is
+				use pac_net_name;
+				use et_submodules.pac_submodule_ports;
+				port_cursor : et_submodules.pac_submodule_ports.cursor := submodule.ports.first;
+			begin
+				while port_cursor /= et_submodules.pac_submodule_ports.no_element loop
+					if key (port_cursor) = port_name then
+						result := true;
+						exit;
+					end if;
+
+					next (port_cursor);
+				end loop;
+			end query_ports;
+
+
+			use pac_submodules;
+			
+			
+		begin
+			if contains (module.submods, submod_instance) then -- submodule found
+				submod_cursor := find (module.submods, submod_instance);
+				
+				query_element (
+					position	=> submod_cursor,
+					process		=> query_ports'access);
+								  
+			end if;
+		end query_submodules;
+
+		
+	begin
+		query_element (
+			position	=> module_cursor,
+			process		=> query_submodules'access);
+
+		return result;
+	end exists_submodule_port;
+	
+
+	
+
 	
 	function get_submodule_port_position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -3805,7 +3870,300 @@ package body et_schematic_ops.submodules is
 		
 	end set_submodule_file;
 
+
+
 	
+
+
+	procedure check_integrity (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		log_threshold	: in type_log_level) 
+	is
+		module_cursor : pac_generic_modules.cursor; -- points to the module being checked
+
+		errors : natural := 0;
+		warnings : natural := 0;
+
+		procedure error is begin errors := errors + 1; end;
+		procedure warning is begin warnings := warnings + 1; end;
+
+		procedure query_nets (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) is
+			use pac_nets;
+
+			-- Here we collect all ports of devices (like IC4 CE, R2 1, ...) across all the nets.
+			-- Since device_port_collector is an ordered set, an exception will be raised if
+			-- a port is to be inserted more than once. Something like IC4 port CE must
+			-- occur only ONCE throughout the module.
+			use pac_device_ports;
+			device_port_collector : pac_device_ports.set;
+
+			procedure collect_device_port (
+				port	: in type_device_port;
+				net		: in pac_net_name.bounded_string) is 
+				use et_symbols;
+			begin
+			-- Collect device ports. exception will be raised of port occurs more than once.
+				insert (device_port_collector, port);
+
+				exception when event: others =>
+					log (ERROR, "net " & to_string (net) &
+						" device " & to_string (port.device_name) &
+						" port " & to_string (port.port_name) &
+						" already used !",
+						console => true);
+					-- CS: show the net, sheet, xy where the port is in use already
+
+					log (text => ada.exceptions.exception_message (event), console => true);
+			end collect_device_port;
+
+			-- Here we collect all ports of submodules (like MOT_DRV reset) across all the nets.
+			-- Since submodule_port_collector is an ordered set, an exception will be raised if
+			-- a port is to be inserted more than once. Something like "MOT_DRV reset" must
+			-- occur only ONCE throughout the module.
+			use pac_submodule_ports;
+			submodule_port_collector : pac_submodule_ports.set;
+
+			procedure collect_submodule_port (
+				port	: in type_submodule_port;
+				net		: in pac_net_name.bounded_string)
+			is begin
+			-- Collect submodule ports. exception will be raised of port occurs more than once.
+				insert (submodule_port_collector, port);
+
+				exception when event: others =>
+					log (ERROR, "net " & to_string (net) &
+						" submodule " & to_string (port.module_name) &
+						" port " & to_string (port.port_name) &
+						" already used !",
+						console => true);
+					-- CS: show the net, sheet, xy where the port is in use already
+
+					log (text => ada.exceptions.exception_message (event), console => true);
+			end collect_submodule_port;
+
+			-- Here we collect all ports of netchangers (like netchanger port master/slave) across all the nets.
+			-- Since netchanger_ports_collector is an ordered set, an exception will be raised if
+			-- a port is to be inserted more than once. Something like "netchanger port master" must
+			-- occur only ONCE throughout the module.
+			use et_netlists.pac_netchanger_ports;
+			netchanger_ports_collector : et_netlists.pac_netchanger_ports.set;
+
+			procedure collect_netchanger_port (
+				port	: in et_netlists.type_port_netchanger;
+				net		: in pac_net_name.bounded_string)
+			is begin
+			-- Collect netchanger ports. exception will be raised of port occurs more than once.
+				insert (netchanger_ports_collector, port);
+
+				exception when event: others =>
+					log (ERROR, "net " & to_string (net) &
+						" netchanger" & et_submodules.to_string (port.index) &
+						" port" & et_submodules.to_string (port.port) &
+						" already used !",
+						console => true);
+					-- CS: show the net, sheet, xy where the port is in use already
+
+					log (text => ada.exceptions.exception_message (event), console => true);
+			end collect_netchanger_port;
+			
+			procedure query_net (net_cursor : in pac_nets.cursor) is
+				use pac_net_name;
+
+				procedure query_strands (
+					net_name	: in pac_net_name.bounded_string;
+					net			: in type_net) 
+				is
+
+					use pac_strands;
+					
+					procedure query_strand (strand_cursor : in pac_strands.cursor) is
+
+						procedure query_segments (strand : in type_strand) is
+							use pac_net_segments;
+
+							procedure query_segment (segment_cursor : in pac_net_segments.cursor) is
+
+								procedure query_ports_devices (segment : in type_net_segment) is
+									procedure query_port (port_cursor : in pac_device_ports.cursor) is 
+										use et_symbols;
+									begin
+										log (text => "device " & to_string (element (port_cursor).device_name) &
+											 " port " & to_string (element (port_cursor).port_name), level => log_threshold + 4);
+
+										if not exists_device_port (
+											module_cursor	=> module_cursor,
+											device_name		=> element (port_cursor).device_name,
+											port_name		=> element (port_cursor).port_name) then
+
+											error;
+											
+											log (ERROR, "device " & to_string (element (port_cursor).device_name) &
+												 " port " & to_string (element (port_cursor).port_name) &
+												 " does not exist !");
+										end if;
+
+										collect_device_port (port => element (port_cursor), net => net_name);
+									end query_port;
+										
+								begin -- query_ports_devices
+									log_indentation_up;
+									iterate (segment.ports.devices, query_port'access);
+									log_indentation_down;
+								end query_ports_devices;
+
+								procedure query_ports_submodules (segment : in type_net_segment) is
+									procedure query_port (port_cursor : in pac_submodule_ports.cursor) is begin
+										log (text => "submodule " & to_string (element (port_cursor).module_name) &
+											 " port " & pac_net_name.to_string (element (port_cursor).port_name), level => log_threshold + 4);
+
+										if not exists_submodule_port (
+											module_cursor	=> module_cursor,
+											submod_instance	=> element (port_cursor).module_name, -- MOT_DRV_3
+											port_name		=> element (port_cursor).port_name) then -- RESET
+
+											error;
+											
+											log (ERROR, "submodule " & to_string (element (port_cursor).module_name) &
+												 " port " & pac_net_name.to_string (element (port_cursor).port_name) &
+												 " does not exist !");
+										end if;
+
+										collect_submodule_port (port => element (port_cursor), net => net_name);
+									end query_port;
+									
+								begin -- query_ports_submodules
+									log_indentation_up;
+									iterate (segment.ports.submodules, query_port'access);
+									log_indentation_down;
+								end query_ports_submodules;
+
+								procedure query_ports_netchangers (segment : in type_net_segment) is
+									use et_netlists;
+									
+									procedure query_port (port_cursor : in pac_netchanger_ports.cursor) is begin
+										log (text => "netchanger " & et_submodules.to_string (element (port_cursor).index) &
+											 " port " & et_submodules.to_string (element (port_cursor).port), level => log_threshold + 4);
+
+										if not exists_netchanger (
+											module_cursor	=> module_cursor,
+											index			=> element (port_cursor).index) then -- 1, 2, 3, ...
+
+											error;
+											
+											log (ERROR, "netchanger" & et_submodules.to_string (element (port_cursor).index) &
+												 " does not exist !");
+										end if;
+
+										collect_netchanger_port (port => element (port_cursor), net => net_name);
+									end query_port;
+
+								begin -- query_ports_netchangers
+									log_indentation_up;
+									iterate (segment.ports.netchangers, query_port'access);
+									log_indentation_down;
+								end query_ports_netchangers;
+								
+							begin -- query_segment
+								log (text => to_string (segment_cursor), level => log_threshold + 3);
+
+								-- Check ports of devices. Issues error if device and port
+								-- not found in module.devices.
+								query_element (
+									position	=> segment_cursor,
+									process		=> query_ports_devices'access);
+
+								-- Check ports of submodules. Issue error if submodule and port
+								-- not found in module.submodules
+								query_element (
+									position	=> segment_cursor,
+									process		=> query_ports_submodules'access);
+
+								-- Check netchangers. Issue error if netchanger not
+								-- found in module.netchangers.
+								query_element (
+									position	=> segment_cursor,
+									process		=> query_ports_netchangers'access);
+								
+							end query_segment;
+							
+						begin -- query_segments
+							iterate (strand.segments, query_segment'access);
+						end query_segments;
+
+						
+					begin
+						log (text => "strand " & to_string (position => element (strand_cursor).position), level => log_threshold + 2);
+						log_indentation_up;
+						
+						query_element (
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+
+						log_indentation_down;
+					end query_strand;
+
+					
+				begin -- query_strands
+					log_indentation_up;
+					iterate (net.strands, query_strand'access);
+					log_indentation_down;
+				end query_strands;
+
+				
+			begin
+				log (text => "net " & pac_net_name.to_string (key (net_cursor)), level => log_threshold + 1);
+
+				query_element (
+					position	=> net_cursor,
+					process		=> query_strands'access);
+				
+			end query_net;
+			
+		begin -- query_nets
+			iterate (module.nets, query_net'access);
+		end query_nets;
+
+		
+	begin -- check_integrity
+		log (text => "module " & to_string (module_name) & " integrity check ...", level => log_threshold);
+		log_indentation_up;
+		
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		-- check nets
+		query_element (
+			position	=> module_cursor,
+			process		=> query_nets'access);
+
+		-- check unit positions (units sitting on top of each other)
+		if not unit_positions_valid (module_cursor, log_threshold + 1) then
+			error;
+		end if;
+
+		-- CS  netlist checks
+		--make_netlists (
+			--module_cursor	=> module_cursor,
+			--write_files		=> false,
+			--log_threshold	=> log_threshold + 1);
+
+		
+		if errors > 0 then
+			log (WARNING, "integrity check found errors !");
+			log (text => "errors   :" & natural'image (errors));
+		end if;
+
+		if warnings > 0 then
+			log (WARNING, "integrity check issued warnings !");
+			log (text => "warnings :" & natural'image (warnings));
+		end if;
+
+		log_indentation_down;
+	end check_integrity;
+
+
 	
 	
 end et_schematic_ops.submodules;

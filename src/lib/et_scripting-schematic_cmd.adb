@@ -699,6 +699,7 @@ is
 
 
 	procedure check_integrity is
+		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
 			when 4 =>
