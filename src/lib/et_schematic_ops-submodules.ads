@@ -65,6 +65,17 @@ package et_schematic_ops.submodules is
 		direction		: in et_submodules.type_netchanger_port_name) -- master/slave		
 		return boolean;
 
+
+
+	-- Returns the sheet/x/y position of the given submodule port.
+	function get_submodule_port_position (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		submod_name		: in pac_module_instance_name.bounded_string; -- MOT_DRV_3
+		port_name		: in pac_net_name.bounded_string; -- RESET
+		log_threshold	: in type_log_level)
+		return et_coordinates_2.type_position;
+
+	
 	
 
 	-- Adds a port to a submodule instance (the box in the parent sheet).

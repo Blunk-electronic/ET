@@ -40,6 +40,8 @@ with ada.strings;						use ada.strings;
 with ada.strings.unbounded;				use ada.strings.unbounded;
 with ada.exceptions;
 
+with et_schematic_ops.submodules;
+
 with et_board_ops;						use et_board_ops;
 with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
 with et_exceptions;						use et_exceptions;
@@ -796,6 +798,9 @@ package body et_schematic_ops.nets is
 			device : pac_device_ports.cursor := segment.ports.devices.first;
 			submodule : pac_submodule_ports.cursor := segment.ports.submodules.first;
 			netchanger : pac_netchanger_ports.cursor := segment.ports.netchangers.first;
+
+			use et_schematic_ops.submodules;
+			
 		begin -- search_ports
 			while device /= pac_device_ports.no_element loop
 
@@ -820,7 +825,7 @@ package body et_schematic_ops.nets is
 
 				while submodule /= pac_submodule_ports.no_element loop
 
-					if position ( -- CS use a similar function that takes only cursors ?
+					if get_submodule_port_position ( -- CS use a similar function that takes only cursors ?
 						module_name		=> key (module_cursor),
 						submod_name		=> element (submodule).module_name,
 						port_name		=> element (submodule).port_name,
@@ -2520,6 +2525,7 @@ package body et_schematic_ops.nets is
 							use pac_submodule_ports;
 
 							procedure query_ports (cursor : in pac_submodule_ports.cursor) is
+								use et_schematic_ops.submodules;
 								submod_name 	: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
 								port_name		: pac_net_name.bounded_string; -- RESET
 								port_position 	: type_vector_model; -- the xy-position of the port
@@ -2528,7 +2534,7 @@ package body et_schematic_ops.nets is
 								port_name	:= element (cursor).port_name;	-- RESET
 
 								-- locate the port by module, submodule and port name:
-								port_position := position (module_name, submod_name, port_name, log_threshold + 1).place;
+								port_position := get_submodule_port_position (module_name, submod_name, port_name, log_threshold + 1).place;
 								log_indentation_up;
 								
 								log (text => "submodule " & to_string (submod_name) & " port " & to_string (port_name) &

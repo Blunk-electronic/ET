@@ -171,15 +171,6 @@ package et_schematic_ops is
 		return et_coordinates_2.type_position;
 
 	
-	-- Returns the sheet/x/y position of the given submodule port.
-	function position (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		submod_name		: in pac_module_instance_name.bounded_string; -- MOT_DRV_3
-		port_name		: in pac_net_name.bounded_string; -- RESET
-		log_threshold	: in type_log_level)
-		return et_coordinates_2.type_position;
-
-	
 	-- Returns the sheet/x/y position of the given netchanger port.
 	function position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
