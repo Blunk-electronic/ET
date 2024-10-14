@@ -86,7 +86,6 @@ package et_schematic_ops.units is
 		return boolean;
 
 	
-	procedure drag_unit (
 	-- Drags the given unit within the schematic.
 	-- Already existing connections with net segments are kept.
 	-- Net segment positions are modified.
@@ -96,6 +95,7 @@ package et_schematic_ops.units is
 	--     inserted between them ?
 	-- This operation applies to a single sheet. Dragging from one sheet
 	-- to another is not possible.
+	procedure drag_unit (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
@@ -103,7 +103,7 @@ package et_schematic_ops.units is
 		point			: in type_vector_model; -- x/y -- CS rename to destination
 		log_threshold	: in type_log_level);
 
-	
+
 	-- Rotates the given unit. 
 	-- Disconnects the unit from attached net segments before the rotation.
 	-- Connects the unit with net segments after the rotation.

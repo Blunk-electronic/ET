@@ -1296,13 +1296,6 @@ package body et_schematic_ops is
 	
 
 	
--- 	procedure rotate_unit (
--- 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
--- 		device_name		: in type_device_name; -- IC45
--- 		unit_name		: in pac_unit_name.bounded_string; -- A
--- 		coordinates		: in type_coordinates_2; -- relative/absolute
--- 		rotation		: in et_coordinates_2.type_rotation_model; -- 90
--- 		log_threshold	: in type_log_level) is separate;	
 
 	
 	procedure rotate_unit_placeholder (
