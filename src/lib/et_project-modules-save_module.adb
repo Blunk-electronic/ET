@@ -43,7 +43,8 @@ with et_symbol_rw;
 with et_schematic_rw;
 with et_device_rw;
 with et_frame_rw;
-
+with et_frames;
+with et_sheets;
 with et_pcb_rw;
 with et_pcb_rw.restrict;
 with et_packages;
@@ -1158,6 +1159,7 @@ is
 				
 				procedure query_sheet (s : in pac_schematic_descriptions.cursor) is
 					use et_coordinates_2;	
+					use et_sheets;
 				begin
 					section_mark (section_sheet, HEADER);
 					write (
@@ -1308,6 +1310,7 @@ is
 		procedure write (text_cursor : in pac_texts.cursor) is 
 			use et_symbol_rw;
 			use et_schematic_rw;
+			use et_sheets;
 		begin
 			section_mark (section_text, HEADER);
 			write

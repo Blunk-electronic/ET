@@ -45,8 +45,9 @@ with et_symbols;
 with et_symbol_rw;
 with et_schematic_rw;				use et_schematic_rw;
 with et_device_rw;					use et_device_rw;
-
+with et_frames;
 with et_frame_rw;
+with et_sheets;
 with et_pcb_rw;						use et_pcb_rw;
 with et_pcb_rw.device_packages;		use et_pcb_rw.device_packages;
 with et_pcb_rw.restrict;			use et_pcb_rw.restrict;
@@ -380,6 +381,7 @@ is
 	is		
 		use et_coordinates_2;
 		use pac_geometry_2;
+		use et_sheets;
 		
 		point : et_coordinates_2.type_position; -- to be returned
 		place : count_type := from; -- the field being read from given line
@@ -884,7 +886,7 @@ is
 	sheet_description_category	: et_frames.type_schematic_sheet_category := 
 		et_frames.schematic_sheet_category_default; -- product/develpment/routing
 	
-	sheet_description_number	: type_sheet := type_sheet'first; -- 1, 2. 3, ...
+	sheet_description_number	: et_sheets.type_sheet := et_sheets.type_sheet'first; -- 1, 2. 3, ...
 	sheet_description_text		: et_text.pac_text_content.bounded_string;		-- "voltage regulator"
 
 	-- CS frame_count_schematic		: et_coordinates_2.type_submodule_sheet_number := et_coordinates_2.type_submodule_sheet_number'first; -- 10 frames
@@ -938,6 +940,7 @@ is
 	procedure read_sheet_description is
 		use et_coordinates_2;	
 		use et_frames;
+		use et_sheets;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2661,6 +2664,7 @@ is
 			procedure add_sheet_description is 
 				use et_coordinates_2;	
 				use et_frames;
+				use et_sheets;
 				use pac_schematic_descriptions;
 				inserted : boolean;
 				position : pac_schematic_descriptions.cursor;
@@ -4979,6 +4983,7 @@ is
 							declare
 								use et_coordinates_2;
 								use pac_geometry_2;
+								use et_sheets;
 								position_found_in_module_file : type_vector_model := strand.position.place;
 							begin
 								-- Calculate the lowest x/y position and set sheet number of the strand

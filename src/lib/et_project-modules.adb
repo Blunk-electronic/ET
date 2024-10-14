@@ -324,9 +324,6 @@ package body et_project.modules is
 
 	
 	procedure read_module (
-	-- Reads a module file and stores its content as generic module in container modules.
-	-- The file name may contain environment variables.
-	-- The file must exist, must be visible from the current working directory.
 		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
 		log_threshold	: in type_log_level) 
 		is separate;

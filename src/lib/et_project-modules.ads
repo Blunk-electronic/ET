@@ -43,7 +43,6 @@ with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
 
-with et_sheets;					use et_sheets;
 with et_schematic;
 with et_nets;
 with et_net_labels;
@@ -62,7 +61,6 @@ with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;
 with et_device_placeholders.symbols;
 
-with et_frames;
 with et_design_rules;			use et_design_rules;
 with et_meta;
 with et_conductor_segment.boards;
@@ -310,10 +308,10 @@ package et_project.modules is
 	-- Converts a section like SEC_NET to a string "net".
 
 	
-	procedure read_module (
 	-- Reads a module file and stores its content as generic module in container modules.
 	-- The file name may contain environment variables.
-	-- The file must exist.
+	-- The file must exist, must be visible from the current working directory.
+	procedure read_module (
 		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
 		log_threshold	: in type_log_level);
 
