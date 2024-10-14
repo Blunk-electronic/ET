@@ -41,6 +41,7 @@ with et_meta;
 with et_netlists;
 with et_device_query_schematic;		use et_device_query_schematic;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
+with et_schematic_ops.submodules;
 with et_schematic_ops;				use et_schematic_ops;
 
 with et_submodules;
@@ -215,6 +216,8 @@ package body et_board_ops is
 		return position;
 	end get_position;
 
+
+
 	
 	-- Moves a submodule instance within the parent module layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
@@ -235,6 +238,9 @@ package body et_board_ops is
 			use et_submodules.pac_submodules;
 			submod_cursor : et_submodules.pac_submodules.cursor;
 
+			use et_schematic_ops.submodules;
+
+			
 			procedure move (
 				instance	: in et_general.pac_module_instance_name.bounded_string;
 				submodule	: in out et_submodules.type_submodule) 
@@ -255,6 +261,7 @@ package body et_board_ops is
 				
 			end move;
 
+			
 		begin -- query_submodules
 			if contains (module.submods, instance) then
 
@@ -298,6 +305,8 @@ package body et_board_ops is
 		-- for operations on submodules.
 	end move_submodule;
 
+
+
 	
 	procedure make_pick_and_place (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
@@ -316,6 +325,7 @@ package body et_board_ops is
 			use et_pick_and_place;
 			pnp : et_pick_and_place.pac_devices.map;
 
+			
 			procedure collect (
 			-- Collects devices of the given module and its variant in container pnp.
 			-- Adds to the device index the given offset.
@@ -736,7 +746,7 @@ package body et_board_ops is
 
 		-- Build the submodule tree of the module according to the current design structure.
 		-- All further operations rely on this tree:
-		et_schematic_ops.build_submodules_tree (
+		et_schematic_ops.submodules.build_submodules_tree (
 			module_name 	=> module_name,
 			log_threshold	=> log_threshold + 1);
 

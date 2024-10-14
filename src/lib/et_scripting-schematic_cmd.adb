@@ -661,6 +661,52 @@ is
 
 
 
+	procedure mount_submodule is
+		use et_schematic_ops.submodules;
+		use et_assembly_variants;
+	begin
+		case cmd_field_count is
+			when 7 =>
+				mount_submodule
+					(
+					module_name		=> module,
+					variant_parent	=> to_variant (f (5)), -- low_cost
+					instance		=> et_general.to_instance_name (f (6)), -- OSC1
+					variant_submod	=> to_variant (f (7)), -- fixed_frequency
+					log_threshold	=> log_threshold + 1);
+
+			when 8 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+
+		end case;
+	end mount_submodule;
+	
+	
+
+
+	procedure remove_submodule is
+		use et_schematic_ops.submodules;
+		use et_assembly_variants;
+	begin
+		case cmd_field_count is
+			when 6 =>
+				remove_submodule
+					(
+					module_name		=> module,
+					variant_parent	=> to_variant (f (5)),
+					instance		=> et_general.to_instance_name (f (6)), -- OSC1
+					log_threshold	=> log_threshold + 1);
+
+			when 7 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end remove_submodule;
+
+	
+
+	
 	procedure set_submodule_file is
 		use et_schematic_ops.submodules;
 	begin
@@ -682,6 +728,7 @@ is
 	
 	
 	procedure build_submodules_tree is
+		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
 			when 4 =>
@@ -714,6 +761,24 @@ is
 	end check_integrity;
 
 
+
+	procedure make_boms is
+		use et_schematic_ops.submodules;
+	begin
+		case cmd_field_count is
+			when 4 =>
+				make_boms -- a BOM for each variant
+					(
+					module_name 	=> module,
+					log_threshold	=> log_threshold + 1);
+
+			when 5 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end make_boms;
+		
+	
 
 	procedure copy_device is
 		use et_sheets;
@@ -1849,17 +1914,8 @@ is
 			when VERB_MAKE =>
 				case noun is
 					when NOUN_BOM => 
-						case cmd_field_count is
-							when 4 =>
-								make_boms -- a BOM for each variant
-									(
-									module_name 	=> module,
-									log_threshold	=> log_threshold + 1);
+						make_boms;
 
-							when 5 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
 
 					when NOUN_NETLISTS => 
 						case cmd_field_count is
@@ -1925,23 +1981,10 @@ is
 
 						end; -- declare
 
-					when NOUN_SUBMODULE =>
-						case cmd_field_count is
-							when 7 =>
-								mount_submodule
-									(
-									module_name		=> module,
-									variant_parent	=> to_variant (f (5)), -- low_cost
-									instance		=> et_general.to_instance_name (f (6)), -- OSC1
-									variant_submod	=> to_variant (f (7)), -- fixed_frequency
-									log_threshold	=> log_threshold + 1);
-
-							when 8 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-
-						end case;
 						
+					when NOUN_SUBMODULE =>
+						mount_submodule;
+											
 					when others => invalid_noun (to_string (noun));
 				end case;
 
@@ -2046,20 +2089,9 @@ is
 							when others => command_incomplete;
 						end case;
 
+						
 					when NOUN_SUBMODULE =>
-						case cmd_field_count is
-							when 6 =>
-								remove_submodule
-									(
-									module_name		=> module,
-									variant_parent	=> to_variant (f (5)),
-									instance		=> et_general.to_instance_name (f (6)), -- OSC1
-									log_threshold	=> log_threshold + 1);
-
-							when 7 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						remove_submodule;
 						
 					when others => invalid_noun (to_string (noun));
 				end case;

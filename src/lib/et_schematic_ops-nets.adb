@@ -800,6 +800,7 @@ package body et_schematic_ops.nets is
 			netchanger : pac_netchanger_ports.cursor := segment.ports.netchangers.first;
 
 			use et_schematic_ops.submodules;
+
 			
 		begin -- search_ports
 			while device /= pac_device_ports.no_element loop
@@ -848,7 +849,7 @@ package body et_schematic_ops.nets is
 
 				while netchanger /= pac_netchanger_ports.no_element loop
 
-					if position ( -- CS use a similar function that takes only cursors ?
+					if get_netchanger_port_position ( -- CS use a similar function that takes only cursors ?
 						module_name		=> key (module_cursor),
 						index			=> element (netchanger).index,
 						port			=> element (netchanger).port,
@@ -868,6 +869,7 @@ package body et_schematic_ops.nets is
 
 			-- if no port found, result is still true
 		end search_ports;
+
 		
 	begin -- movable
 		log_indentation_up;
@@ -2475,6 +2477,7 @@ package body et_schematic_ops.nets is
 							use pac_device_ports;
 							use et_symbols;
 
+							
 							procedure query_ports (cursor : in pac_device_ports.cursor) is
 								device_name 	: type_device_name; -- IC23
 								port_name		: pac_port_name.bounded_string; -- CE
@@ -2510,6 +2513,7 @@ package body et_schematic_ops.nets is
 								log_indentation_down;
 							end query_ports;
 							
+							
 						begin -- update_device_ports
 							log (text => "updating device ports ...", level => log_threshold + 1);
 							log_indentation_up;
@@ -2524,6 +2528,7 @@ package body et_schematic_ops.nets is
 						procedure update_submodule_ports is 
 							use pac_submodule_ports;
 
+							
 							procedure query_ports (cursor : in pac_submodule_ports.cursor) is
 								use et_schematic_ops.submodules;
 								submod_name 	: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
@@ -2559,6 +2564,7 @@ package body et_schematic_ops.nets is
 								
 								log_indentation_down;
 							end query_ports;
+
 							
 						begin -- update_submodule_ports
 							log (text => "updating submodule ports ...", level => log_threshold + 1);
@@ -2576,6 +2582,7 @@ package body et_schematic_ops.nets is
 							use et_netlists.pac_netchanger_ports;
 							use et_submodules;
 
+							
 							procedure query_ports (cursor : in pac_netchanger_ports.cursor) is
 								index			: type_netchanger_id; -- 1,2,3,...
 								port			: type_netchanger_port_name; -- SLAVE/MASTER
@@ -2585,7 +2592,9 @@ package body et_schematic_ops.nets is
 								port := element (cursor).port;
 
 								-- locate the port by module, netchanger index and port:
-								port_position := position (module_name, index, port, log_threshold + 1).place;
+								port_position := et_schematic_ops.submodules.get_netchanger_port_position (
+									module_name, index, port, log_threshold + 1).place;
+								
 								log_indentation_up;
 								
 								log (text => "netchanger " & to_string (index) & " port " & to_string (port) &

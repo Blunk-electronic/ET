@@ -37,6 +37,7 @@
 
 with ada.exceptions;				use ada.exceptions;
 with et_device_query_schematic;		use et_device_query_schematic;
+with et_schematic_ops.Submodules;
 
 
 package body et_schematic_ops.netlists is
@@ -644,7 +645,7 @@ package body et_schematic_ops.netlists is
 		-- Build the submodule tree of the module according to the current design structure in
 		-- type_module.submod_tree.
 		-- All further operations rely on this tree:
-		build_submodules_tree (
+		et_schematic_ops.submodules.build_submodules_tree (
 			module_name 	=> key (module_cursor),
 			log_threshold	=> log_threshold + 1);
 

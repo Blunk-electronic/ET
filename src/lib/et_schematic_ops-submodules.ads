@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                    SCHEMATIC OPERATIONS ON SUBMODULES                    --
+--          SCHEMATIC OPERATIONS ON NETCHANGERS AND SUBMODULES              --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -40,6 +40,15 @@
 
 package et_schematic_ops.submodules is
 
+	procedure netchanger_not_found (
+		index : in et_submodules.type_netchanger_id);
+
+	
+	procedure submodule_not_found (
+		name : in pac_module_instance_name.bounded_string);	
+
+
+	
 	
 	-- Returns true if given port of netchanger is connected with any net.
 	function port_connected (
@@ -141,6 +150,24 @@ package et_schematic_ops.submodules is
 		log_threshold	: in type_log_level);
 
 
+	
+	-- Returns true if given netchanger exists in module indicated by module_cursor.
+	function exists_netchanger (
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		index			: in et_submodules.type_netchanger_id) -- 1, 2, 3, ...
+		return boolean;
+
+
+	
+	-- Returns the sheet/x/y position of the given netchanger port.
+	function get_netchanger_port_position (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
+		port			: in et_submodules.type_netchanger_port_name; -- SLAVE/MASTER
+		log_threshold	: in type_log_level)
+		return et_coordinates_2.type_position;
+
+	
 
 	-- Adds a netchanger to the schematic.
 	procedure add_netchanger (
@@ -254,6 +281,28 @@ package et_schematic_ops.submodules is
 		instance_new	: in pac_module_instance_name.bounded_string; -- CLOCK_GENERATOR
 		log_threshold	: in type_log_level);
 
+
+
+	-- Sets the assembly variant of a submodule instance. An already existing submodule
+	-- will be overwritten without warning.
+	procedure mount_submodule (
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost								  
+		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		variant_submod	: in pac_assembly_variant_name.bounded_string; -- fixed_frequency
+		log_threshold	: in type_log_level);
+
+	
+	-- Removes the assembly variant of a submodule. This results in all devices
+	-- of the submodule being mounted.
+	procedure remove_submodule (
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost								   
+		instance		: in pac_module_instance_name.bounded_string; -- OSC1
+		log_threshold	: in type_log_level);
+
+
+
 	
 	-- Sets the file name of a submodule instance.
 	procedure set_submodule_file (
@@ -279,6 +328,36 @@ package et_schematic_ops.submodules is
 	-- 11. CS: warning (or error ?) if any ports sit on top of each other. This would make the movable_tests obsolete.
 	procedure check_integrity (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		log_threshold	: in type_log_level);
+
+
+
+	-- Dumps submodule names, instances and device name offsets:
+	procedure dump_tree (
+		module_name		: in pac_module_name.bounded_string;
+		log_threshold	: in type_log_level);
+
+	
+	-- Re(builds) the submodule tree of the given parent module.
+	procedure build_submodules_tree (
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		log_threshold	: in type_log_level);
+
+
+
+	-- Generates the BOM files of all assembly variants from the given top module.
+	-- The files are named after the module name and the variant name:
+	procedure make_boms (
+		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
+		log_threshold	: in type_log_level);
+
+
+
+	-- Calculates the device index ranges of the given top module and all its submodules.
+	-- Assigns the device names offset of the instantiated submodules.
+	-- Assumes that all devices of the modules are mounted -> assembly variants ignored.
+	procedure autoset_device_name_offsets (
+		module_name		: in pac_module_name.bounded_string; -- the top module like motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level);
 
 	

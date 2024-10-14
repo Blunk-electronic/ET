@@ -94,8 +94,6 @@ package et_schematic_ops is
 	procedure device_not_found (name : in type_device_name);
 	procedure device_already_exists (name : in type_device_name);
 	procedure relative_rotation_invalid;
-	procedure netchanger_not_found (index : in et_submodules.type_netchanger_id);
-	procedure submodule_not_found (name : in pac_module_instance_name.bounded_string);	
 	procedure net_not_found (name : in pac_net_name.bounded_string);
 	procedure assembly_variant_not_found (variant : in pac_assembly_variant_name.bounded_string);
 
@@ -153,7 +151,6 @@ package et_schematic_ops is
 		ports	: in out et_symbols.pac_ports.map; -- the portlist
 		angle	: in et_coordinates_2.type_rotation_model); -- 90
 
-
 	
 	
 	procedure delete_device (
@@ -170,14 +167,6 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level)
 		return et_coordinates_2.type_position;
 
-	
-	-- Returns the sheet/x/y position of the given netchanger port.
-	function position (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
-		port			: in et_submodules.type_netchanger_port_name; -- SLAVE/MASTER
-		log_threshold	: in type_log_level)
-		return et_coordinates_2.type_position;
 
 	
 	-- Moves the name placeholder of the given unit.
@@ -403,6 +392,7 @@ package et_schematic_ops is
 		device	: in pac_devices_sch.cursor;
 		variant	: in pac_package_variant_name.bounded_string);
 
+	
 	-- Sets the package variant of a device.
 	-- Raises semantic error if the device does not exist.
 	-- Raises semantic error if the device is virtual.
@@ -413,6 +403,8 @@ package et_schematic_ops is
 		device			: in et_devices.type_device_name; -- R2
 		variant			: in pac_package_variant_name.bounded_string; -- N, D
 		log_threshold	: in type_log_level);
+
+
 	
 	-- Locates the given device in the given module and returns
 	-- the cursor to the device model.
@@ -421,6 +413,9 @@ package et_schematic_ops is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
 		return pac_devices_lib.cursor;
+
+
+
 	
 	function exists_device_port (
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.
@@ -428,6 +423,8 @@ package et_schematic_ops is
 		device_name		: in type_device_name; -- IC45
 		port_name		: in et_symbols.pac_port_name.bounded_string) -- CE
 		return boolean;
+
+
 	
 	function exists_device_unit_port (
 	-- Returns true if given device exists in module indicated by module_cursor.
@@ -437,14 +434,10 @@ package et_schematic_ops is
 		unit_name		: in pac_unit_name.bounded_string := to_unit_name (""); -- A
 		port_name		: in et_symbols.pac_port_name.bounded_string := et_symbols.to_port_name ("")) -- CE		
 		return boolean;						
+	
 
 
-	function exists_netchanger (
-	-- Returns true if given netchanger exists in module indicated by module_cursor.
-		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		index			: in et_submodules.type_netchanger_id) -- 1, 2, 3, ...
-		return boolean;
-
+	
 	function next_device_name (
 	-- Returns for the given device prefix the next available device name in the module.
 	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 the return will be C2.
@@ -453,6 +446,7 @@ package et_schematic_ops is
 		category		: in type_device_category := ELECTRICAL)
 		return type_device_name; -- C2
 
+	
 	
 	-- Adds a device to the schematic. The unit is determined by the unit add levels.
 	-- If the given variant is empty (zero length) the the device is assumed to be virtual.							 
@@ -475,6 +469,8 @@ package et_schematic_ops is
 		destination		: in et_coordinates_2.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
+
+
 	
 	-- Returns the names of available units of the given device in the 
 	-- given generic module. "Available" means the unit exists and is
@@ -485,6 +481,9 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level)
 		return et_devices.pac_unit_names.list;
 
+
+
+	
 	-- Returns true if the given unit is available.
 	-- Raises constraint error if device does not exist or
 	-- unit is not defined in device model of given device:
@@ -494,6 +493,9 @@ package et_schematic_ops is
 		unit_name		: in pac_unit_name.bounded_string)
 		return boolean;
 
+
+
+	
 	-- Returns the names of units of the given device in the 
 	-- given generic module on the given sheet.
 	function units_on_sheet (
@@ -503,6 +505,9 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level)
 		return et_devices.pac_unit_names.list;
 
+
+
+	
 	-- Returns the position (x/y/sheet) of the given unit.
 	-- Raises constraint error if device or unit does not exist.
 	function position (
@@ -511,6 +516,8 @@ package et_schematic_ops is
 		unit	: in pac_unit_name.bounded_string)
 		return et_coordinates_2.type_position;
 
+
+	
 	-- Returns the position (x/y/sheet) of the given unit.
 	-- Raises constraint error if device or unit does not exist.
 	function position (
@@ -518,6 +525,7 @@ package et_schematic_ops is
 		unit	: in et_schematic.pac_units.cursor)
 		return et_coordinates_2.type_position;
 
+	
 	
 	-- Returns the position (x/y) of the given placeholder.
 	-- Raises constraint error if device or unit does not exist.
@@ -599,30 +607,13 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level);
 
 	
-	-- Sets the assembly variant of a submodule instance. An already existing submodule
-	-- will be overwritten without warning.
-	procedure mount_submodule (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost								  
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		variant_submod	: in pac_assembly_variant_name.bounded_string; -- fixed_frequency
-		log_threshold	: in type_log_level);
-
-	
-	-- Removes the assembly variant of a submodule. This results in all devices
-	-- of the submodule being mounted.
-	procedure remove_submodule (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		variant_parent	: in pac_assembly_variant_name.bounded_string; -- low_cost								   
-		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		log_threshold	: in type_log_level);
-
 	
 	function sort_by_coordinates_2 (
 		module_cursor 	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 		return et_numbering.pac_devices.map;
 
+	
 	
 	-- Returns true if no unit sits on top of another.
 	function unit_positions_valid (
@@ -637,25 +628,6 @@ package et_schematic_ops is
 		step_width		: in type_name_index;
 		log_threshold	: in type_log_level);
 
-	
-	-- Calculates the device index ranges of the given top module and all its submodules.
-	-- Assigns the device names offset of the instantiated submodules.
-	-- Assumes that all devices of the modules are mounted -> assembly variants ignored.
-	procedure autoset_device_name_offsets (
-		module_name		: in pac_module_name.bounded_string; -- the top module like motor_driver (without extension *.mod)
-		log_threshold	: in type_log_level);
-
-	
-	-- Dumps submodule names, instances and device name offsets:
-	procedure dump_tree (
-		module_name		: in pac_module_name.bounded_string;
-		log_threshold	: in type_log_level);
-
-	
-	-- Re(builds) the submodule tree of the given parent module.
-	procedure build_submodules_tree (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		log_threshold	: in type_log_level);
 
 	
 	-- Adds the offset to the device index of the given device_name.
@@ -665,11 +637,6 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level);
 
 	
-	-- Generates the BOM files of all assembly variants from the given top module.
-	-- The files are named after the module name and the variant name:
-	procedure make_boms (
-		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		log_threshold	: in type_log_level);
 
 	
 	-- Returns properties of the given device port in module indicated by module_cursor.
