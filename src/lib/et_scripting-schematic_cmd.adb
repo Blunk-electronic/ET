@@ -44,6 +44,7 @@ with et_scripting_interactive_schematic;
 with et_symbols;
 with et_schematic_ops.netlists;
 with et_schematic_ops.grid;
+with et_schematic_ops.submodules;
 with et_board_ops.grid;
 with et_pcb;
 
@@ -293,6 +294,7 @@ is
 	
 	procedure add_netchanger is
 		use et_sheets;
+		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
 			when 8 =>
@@ -318,8 +320,36 @@ is
 	end add_netchanger;
 	
 
+
+	procedure move_netchanger is
+		use et_sheets;
+		use et_schematic_ops.submodules;
+	begin
+		case cmd_field_count is
+			when 9 =>
+				move_netchanger
+					(
+					module_name 	=> module,
+					index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3, ...
+					coordinates		=> to_coordinates (f (6)),  -- relative/absolute
+					sheet			=> to_sheet_relative (f (7)),
+					point			=> type_vector_model (set (
+										x => to_distance (f (8)),
+										y => to_distance (f (9)))),
+						
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 10 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end move_netchanger;
+		
+	
 	
 	procedure delete_netchanger is
+		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
 			when 5 =>
@@ -338,6 +368,7 @@ is
 	
 
 	procedure drag_netchanger is
+		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
 			when 8 =>
@@ -359,7 +390,30 @@ is
 
 
 	
+	procedure rotate_netchanger is
+		use et_sheets;
+		use et_schematic_ops.submodules;
+	begin
+		case cmd_field_count is
+			when 7 =>
+				rotate_netchanger (
+					module_name 	=> module,
+					index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
+					coordinates		=> to_coordinates (f (6)), -- relative/absolute
+					rotation		=> to_rotation (f (7)), -- 90
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 8 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end rotate_netchanger;
+	
+	
+	
 	procedure add_port_to_submodule is
+		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
 			when 9 =>
@@ -386,6 +440,7 @@ is
 
 	
 	procedure drag_port_of_submodule is
+		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
 			when 9 =>
@@ -409,6 +464,7 @@ is
 
 	
 	procedure delete_port_of_submodule is
+		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
 			when 6 =>
@@ -427,9 +483,34 @@ is
 	end delete_port_of_submodule;
 	
 
+
+	procedure move_port_of_submodule is 
+		use et_schematic_ops.submodules;
+	begin
+		case cmd_field_count is
+			when 9 =>
+				move_port (
+					module_name 	=> module,
+					instance		=> et_general.to_instance_name (f (5)),
+					port_name		=> to_net_name (f (6)),
+					coordinates		=> to_coordinates (f (7)),  -- relative/absolute
+					point			=> type_vector_model (set (
+								x => to_distance (f (8)),
+								y => to_distance (f (9)))),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 10 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end move_port_of_submodule;
+	
+	
 	
 	procedure add_submodule is
 		use et_sheets;
+		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
 			when 11 =>
@@ -459,9 +540,36 @@ is
 		end case;
 	end add_submodule;
 
+
+
+	procedure move_submodule is
+		use et_sheets;
+		use et_schematic_ops.submodules;
+	begin
+		case cmd_field_count is
+			when 9 =>
+				move_submodule (
+					module_name 	=> module,
+					instance		=> et_general.to_instance_name (f (5)),
+					coordinates		=> to_coordinates (f (6)),  -- relative/absolute
+					sheet			=> to_sheet_relative (f (7)),
+					point			=> type_vector_model (set (
+								x => to_distance (f (8)),
+								y => to_distance (f (9)))),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 10 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end move_submodule;
+		
+
 	
 	
 	procedure drag_submodule is
+		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
 			when 8 =>
@@ -485,6 +593,7 @@ is
 	
 	procedure copy_submodule is
 		use et_sheets;
+		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
 			when 9 =>
@@ -513,6 +622,7 @@ is
 
 
 	procedure delete_submodule is
+		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
 			when 5 =>
@@ -530,6 +640,47 @@ is
 
 	
 
+	procedure rename_submodule is
+		use et_sheets;
+		use et_schematic_ops.submodules;
+	begin
+		case cmd_field_count is
+			when 6 =>
+				rename_submodule
+					(
+					module_name		=> module,
+					instance_old	=> et_general.to_instance_name (f (5)), -- OSC1
+					instance_new	=> et_general.to_instance_name (f (6)), -- OSC2
+					log_threshold	=> log_threshold + 1);
+
+			when 7 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end rename_submodule;
+
+
+
+	procedure set_submodule_file is
+		use et_schematic_ops.submodules;
+	begin
+		case cmd_field_count is
+			when 6 =>
+				set_submodule_file (
+					module_name 	=> module,
+					instance		=> et_general.to_instance_name (f (5)),
+					file			=> et_submodules.to_submodule_path (f (6)),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 7 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end set_submodule_file;
+
+	
+	
 	procedure build_submodules_tree is
 	begin
 		case cmd_field_count is
@@ -1584,7 +1735,8 @@ is
 				case noun is
 					when NOUN_CURSOR =>
 						parse_canvas_command (VERB_MOVE, NOUN_CURSOR);
-					
+
+						
 					when NOUN_NAME =>
 						-- schematic led_driver move name R1 1 absolute 10 15
 						case cmd_field_count is
@@ -1606,6 +1758,7 @@ is
 								
 							when others => command_incomplete;
 						end case;
+
 						
 					when NOUN_VALUE =>
 						case cmd_field_count is
@@ -1629,23 +1782,8 @@ is
 						end case;
 						
 					when NOUN_PORT =>
-						case cmd_field_count is
-							when 9 =>
-								move_port (
-									module_name 	=> module,
-									instance		=> et_general.to_instance_name (f (5)),
-									port_name		=> to_net_name (f (6)),
-									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-									point			=> type_vector_model (set (
-												x => to_distance (f (8)),
-												y => to_distance (f (9)))),
-									log_threshold	=> log_threshold + 1
-									);
+						move_port_of_submodule;
 
-							when 10 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
 								
 					when NOUN_PURPOSE =>
 						case cmd_field_count is
@@ -1668,48 +1806,18 @@ is
 							when others => command_incomplete;
 						end case;
 
+						
 					when NOUN_NETCHANGER =>
-						case cmd_field_count is
-							when 9 =>
-								move_netchanger
-									(
-									module_name 	=> module,
-									index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3, ...
-									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-									sheet			=> to_sheet_relative (f (7)),
-									point			=> type_vector_model (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-										
-									log_threshold	=> log_threshold + 1
-									);
+						move_netchanger;
 
-							when 10 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
 								
 					when NOUN_TEXT =>
 						NULL; -- CS
 
+						
 					when NOUN_SUBMODULE =>
-						case cmd_field_count is
-							when 9 =>
-								move_submodule (
-									module_name 	=> module,
-									instance		=> et_general.to_instance_name (f (5)),
-									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-									sheet			=> to_sheet_relative (f (7)),
-									point			=> type_vector_model (set (
-												x => to_distance (f (8)),
-												y => to_distance (f (9)))),
-									log_threshold	=> log_threshold + 1
-									);
+						move_submodule;
 
-							when 10 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
 						
 					when NOUN_UNIT =>
 						case cmd_field_count is
@@ -1973,21 +2081,11 @@ is
 								
 							when others => command_incomplete;
 						end case; 
-								
-					when NOUN_SUBMODULE =>
-						case cmd_field_count is
-							when 6 =>
-								rename_submodule
-									(
-									module_name		=> module,
-									instance_old	=> et_general.to_instance_name (f (5)), -- OSC1
-									instance_new	=> et_general.to_instance_name (f (6)), -- OSC2
-									log_threshold	=> log_threshold + 1);
 
-							when 7 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						
+					when NOUN_SUBMODULE =>
+						rename_submodule;
+
 						
 					when NOUN_NET =>
 						case cmd_field_count is
@@ -2145,22 +2243,11 @@ is
 								
 							when others => command_incomplete;
 						end case;
-								
-					when NOUN_NETCHANGER =>
-						case cmd_field_count is
-							when 7 =>
-								rotate_netchanger (
-									module_name 	=> module,
-									index			=> et_submodules.to_netchanger_id (f (5)), -- 1,2,3,...
-									coordinates		=> to_coordinates (f (6)), -- relative/absolute
-									rotation		=> to_rotation (f (7)), -- 90
-									log_threshold	=> log_threshold + 1
-									);
 
-							when 8 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						
+					when NOUN_NETCHANGER =>
+						rotate_netchanger;
+
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
@@ -2272,19 +2359,7 @@ is
 
 						
 					when NOUN_SUBMODULE_FILE =>
-						case cmd_field_count is
-							when 6 =>
-								set_submodule_file (
-									module_name 	=> module,
-									instance		=> et_general.to_instance_name (f (5)),
-									file			=> et_submodules.to_submodule_path (f (6)),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 7 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						set_submodule_file;
 						
 
 					when NOUN_VALUE =>
