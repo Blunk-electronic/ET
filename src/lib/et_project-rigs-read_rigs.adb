@@ -361,7 +361,7 @@ is
 
 										-- test whether module provides the assembly variant
 										module_cursor := locate_module (generic_name);
-										if not exists (module_cursor, assembly_variant) then
+										if not assembly_variant_exists (module_cursor, assembly_variant) then
 											log (ERROR, "module " & enclose_in_quotes (to_string (generic_name)) &
 													" does not provide assembly variant " &
 													enclose_in_quotes (to_variant (assembly_variant)) & " !",

@@ -327,19 +327,19 @@ package et_project.modules is
 	-- Returns true if the given module provides the given assembly variant.
 	-- If the variant is an empty string then it is about the default variant
 	-- which is always provided. The return is true in that case.
-	function exists (
+	function assembly_variant_exists (
 		module		: in pac_generic_modules.cursor;
 		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost
 		return boolean;	
 
 
 	
-	function exists (
 	-- Returns true if the given module and variant provides the given device.
 	-- Assumptions: 
 	-- - The module being searched in must be in the rig already.
 	-- - The assembly variant must exist in the module.
 	-- - The device must exist in the module.
+	function device_exists (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
 		device	: in type_device_name)

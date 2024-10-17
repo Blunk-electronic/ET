@@ -284,14 +284,11 @@ package body et_project.modules is
 
 
 	
-	function exists (
-	-- Returns true if the given module provides the given assembly variant.
-	-- If the variant is an empty string then it is about the default variant
-	-- which is always provided. The return is true in that case.
+	function assembly_variant_exists (
 		module		: in pac_generic_modules.cursor;
 		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost
-		return boolean is
-
+		return boolean 
+	is
 		use pac_assembly_variants;
 
 		result : boolean := false; -- to be returned
@@ -303,7 +300,7 @@ package body et_project.modules is
 			result := contains (module.variants, variant);
 		end;
 		
-	begin -- exists
+	begin
 		if pac_assembly_variant_name.length (variant) = 0 then
 			result := true;
 		else
@@ -315,30 +312,33 @@ package body et_project.modules is
 		end if;
 					
 		return result;
-	end exists;
+	end assembly_variant_exists;
 
-	function exists (
-	-- Returns true if the given module and variant provides the given device.
-	-- Assumptions: 
-	-- - The module being searched in must be in the rig already.
-	-- - The assembly variant must exist in the module.
-	-- - The device must exist in the module.
+
+
+	
+
+	function device_exists (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
 		device	: in type_device_name)
-		return boolean is
-
+		return boolean 
+	is
 		result : boolean := false; -- to be returned
 
+		
 		procedure query_variants (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in et_schematic.type_module) is
+			module		: in et_schematic.type_module) 
+		is
 			use pac_assembly_variants;
 			variant_cursor : pac_assembly_variants.cursor;
 
+			
 			procedure query_devices (
 				variant_name	: in pac_assembly_variant_name.bounded_string;
-				variant			: in type_assembly_variant) is
+				variant			: in type_assembly_variant) 
+			is
 				use et_assembly_variants;
 				use pac_device_variants;
 				device_cursor : pac_device_variants.cursor;
@@ -357,7 +357,8 @@ package body et_project.modules is
 				end if;
 					
 			end query_devices;
-				
+
+			
 		begin -- query_variants
 			variant_cursor := find (module.variants, variant);
 
@@ -365,8 +366,9 @@ package body et_project.modules is
 				position	=> variant_cursor,
 				process		=> query_devices'access);
 		end;
+
 		
-	begin -- exists
+	begin
 -- 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
 -- 			" variant " & enclose_in_quotes (to_variant (variant)) &
 -- 			" querying device " & to_string (device),
@@ -377,9 +379,11 @@ package body et_project.modules is
 			process		=> query_variants'access);
 		
 		return result;
-	end exists;
+	end device_exists;
 
 
+
+	
 
 	function get_alternative_device (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
