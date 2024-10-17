@@ -265,9 +265,7 @@ package body et_schematic_ops.submodules is
 	
 
 
-	function exists (
-	-- Returns true if the given module provides the given port.
-	-- The module being searched in must be in the rig already.
+	function submodule_port_exists (
 		module			: in et_submodules.pac_submodules.cursor;
 		port			: in pac_net_name.bounded_string; -- clock_output
 		direction		: in et_submodules.type_netchanger_port_name) -- master/slave
@@ -321,7 +319,7 @@ package body et_schematic_ops.submodules is
 		end query_nets;
 
 		
-	begin -- exists
+	begin
 		submodule_file := pac_submodules.element (module).file;
 
 		module_name := to_module_name (remove_extension (to_string (submodule_file)));
@@ -339,12 +337,12 @@ package body et_schematic_ops.submodules is
 				log (text => ada.exceptions.exception_information (event), console => true);
 				raise;
 		
-	end exists;
+	end submodule_port_exists;
 
 
 
 
-	function exists_submodule_port (
+	function submodule_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		submod_instance	: in pac_module_instance_name.bounded_string; -- MOT_DRV_3
 		port_name		: in pac_net_name.bounded_string) -- RESET
@@ -403,7 +401,7 @@ package body et_schematic_ops.submodules is
 			process		=> query_submodules'access);
 
 		return result;
-	end exists_submodule_port;
+	end submodule_port_exists;
 	
 
 	
@@ -703,7 +701,7 @@ package body et_schematic_ops.submodules is
 				port : et_submodules.type_submodule_port;
 			begin
 				-- Test whether the submodule provides the given port.
-				if exists (
+				if submodule_port_exists (
 					module		=> submod_cursor,
 					port 		=> port_name, -- clock_output
 					direction	=> direction -- master/slave
@@ -4118,7 +4116,7 @@ package body et_schematic_ops.submodules is
 				while port_cursor /= et_submodules.pac_submodule_ports.no_element loop
 					log (text => to_string (key (port_cursor)), level => log_threshold + 2);
 
-					if not exists (
+					if not submodule_port_exists (
 						module		=> test_mod_cursor,
 						port 		=> key (port_cursor), -- clock_output
 						direction	=> element (port_cursor).direction -- master/slave
@@ -4349,7 +4347,7 @@ package body et_schematic_ops.submodules is
 										log (text => "submodule " & to_string (element (port_cursor).module_name) &
 											 " port " & pac_net_name.to_string (element (port_cursor).port_name), level => log_threshold + 4);
 
-										if not exists_submodule_port (
+										if not submodule_port_exists (
 											module_cursor	=> module_cursor,
 											submod_instance	=> element (port_cursor).module_name, -- MOT_DRV_3
 											port_name		=> element (port_cursor).port_name) then -- RESET

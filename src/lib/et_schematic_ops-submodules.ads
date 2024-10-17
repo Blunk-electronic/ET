@@ -70,7 +70,7 @@ package et_schematic_ops.submodules is
 
 	-- Returns true if the given module provides the given port.
 	-- The module being searched in must be in the rig already.						
-	function exists (
+	function submodule_port_exists (
 		module			: in et_submodules.pac_submodules.cursor;
 		port			: in pac_net_name.bounded_string;
 		direction		: in et_submodules.type_netchanger_port_name) -- master/slave		
@@ -79,7 +79,7 @@ package et_schematic_ops.submodules is
 
 
 	-- Returns true if given submodule with the given port exists in module indicated by module_cursor.
-	function exists_submodule_port (
+	function submodule_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		submod_instance : in pac_module_instance_name.bounded_string; -- MOT_DRV_3
 		port_name		: in pac_net_name.bounded_string) -- RESET
