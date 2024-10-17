@@ -379,19 +379,14 @@ package body et_project.modules is
 		return result;
 	end exists;
 
-	function alternative_device (
-	-- Returns a cursor to the alternative device in the given module
-	-- and given assembly variant.
-	-- Assumptions: 
-	-- - The module being searched in must be in the rig already.
-	-- - The assembly variant must exist in the module.
-	-- - The device must exist in the module.
-	-- - The device must have an entry in the given assembly variant,
-	--   otherwise the return is no_element.
+
+
+	function get_alternative_device (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
 		device	: in type_device_name)
-		return pac_device_variants.cursor is
+		return pac_device_variants.cursor 
+	is
 
 		cursor : pac_device_variants.cursor; -- to be returned;
 		
@@ -418,14 +413,15 @@ package body et_project.modules is
 				process		=> query_devices'access);
 		end;
 		
-	begin -- alternative_device
-
+	begin
 		pac_generic_modules.query_element (
 			position	=> module,
 			process		=> query_variants'access);
 		
 		return cursor;
-	end alternative_device;
+	end get_alternative_device;
+
+	
 
 	
 	function deepest_conductor_layer (

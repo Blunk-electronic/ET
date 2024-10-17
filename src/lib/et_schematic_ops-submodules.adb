@@ -4930,7 +4930,7 @@ package body et_schematic_ops.submodules is
 								device_name := pac_devices_sch.key (cursor_schematic);
 								
 								-- Get a cursor to the alternative device as specified in the assembly variant:
-								alt_dev_cursor := alternative_device (module_cursor, variant, device_name); 
+								alt_dev_cursor := get_alternative_device (module_cursor, variant, device_name); 
 								
 								if alt_dev_cursor = et_assembly_variants.pac_device_variants.no_element then
 								-- Device has no entry in the assembly variant. -> It is to be stored in bill_of_material as it is:

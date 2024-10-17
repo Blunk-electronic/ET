@@ -347,7 +347,6 @@ package et_project.modules is
 
 
 	
-	function alternative_device (
 	-- Returns a cursor to the alternative device in the given module
 	-- and given assembly variant.
 	-- Assumptions: 
@@ -356,6 +355,7 @@ package et_project.modules is
 	-- - The device must exist in the module.
 	-- - The device must have an entry in the given assembly variant,
 	--   otherwise the return is no_element.
+	function get_alternative_device (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
 		device	: in type_device_name)
