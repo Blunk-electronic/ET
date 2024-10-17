@@ -4159,7 +4159,7 @@ package body et_schematic_ops.submodules is
 
 
 
-	function alternative_submodule (
+	function get_alternative_submodule (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
 		submod	: in et_general.pac_module_instance_name.bounded_string) -- OSC1
@@ -4196,7 +4196,7 @@ package body et_schematic_ops.submodules is
 		end;
 
 		
-	begin -- alternative_submodule
+	begin -- get_alternative_submodule
 		if is_default (variant) then
 			cursor := pac_submodule_variants.no_element;
 		else
@@ -4206,7 +4206,7 @@ package body et_schematic_ops.submodules is
 		end if;
 		
 		return cursor;
-	end alternative_submodule;
+	end get_alternative_submodule;
 
 
 
@@ -5104,7 +5104,7 @@ package body et_schematic_ops.submodules is
 					if not is_default (variant) then
 						-- Query in parent module: Is there any assembly variant specified for this submodule ?
 
-						alt_submod := alternative_submodule (
+						alt_submod := get_alternative_submodule (
 									module	=> locate_module (parent_name),
 									variant	=> variant,
 									submod	=> module_instance);

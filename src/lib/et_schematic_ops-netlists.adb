@@ -459,7 +459,7 @@ package body et_schematic_ops.netlists is
 					if not is_default (variant) then
 						-- Query in parent module: Is there any assembly variant specified for this submodule ?
 
-						alt_submod := alternative_submodule (
+						alt_submod := get_alternative_submodule (
 									module	=> locate_module (parent_name),
 									variant	=> variant,
 									submod	=> module_instance);

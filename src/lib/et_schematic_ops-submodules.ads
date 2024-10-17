@@ -335,7 +335,7 @@ package et_schematic_ops.submodules is
 	--   otherwise the return is no_element.
 	-- If the given variant is an emtpy string (means default variant) the return
 	-- is no_element.
-	function alternative_submodule (
+	function get_alternative_submodule (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost
 		submod	: in et_general.pac_module_instance_name.bounded_string) -- OSC1
