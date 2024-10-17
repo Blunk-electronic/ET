@@ -287,18 +287,15 @@ package body et_project.modules is
 
 	
 
-	function exists (
-	-- Returns true if the given submodule instance provides the
-	-- given assembly variant. The submodule instance is searched for
-	-- in the parent module indicated by cursor "module".
-	-- The module being searched in must be in the rig already.												
+	function assembly_variant_exists (
 		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
 		instance	: in et_general.pac_module_instance_name.bounded_string; -- OSC1
 		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost				
-		return boolean is
-
+		return boolean 
+	is
 		variant_found : boolean := false; -- to be returned
 
+		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module) is
@@ -309,6 +306,7 @@ package body et_project.modules is
 			submod_name	: pac_module_name.bounded_string;
 			submod_cursor : pac_generic_modules.cursor;
 
+			
 			procedure query_variants (
 			-- Locates the given assembly variant in the submodule.
 			-- Sets flag variant_found.
@@ -320,6 +318,7 @@ package body et_project.modules is
 					variant_found := true;
 				end if;
 			end query_variants;
+			
 				
 		begin -- query_submodules
 			-- locate the submodule instance by the given instance name
@@ -343,14 +342,17 @@ package body et_project.modules is
 
 		end query_submodules;
 		
-	begin -- exists
+		
+	begin
 		-- search in the parent module for the given submodule instance
 		pac_generic_modules.query_element (
 			position	=> module,
 			process		=> query_submodules'access);
 
 		return variant_found;
-	end exists;
+	end assembly_variant_exists;
+
+	
 
 	function exists (
 	-- Returns true if the given module provides the given assembly variant.

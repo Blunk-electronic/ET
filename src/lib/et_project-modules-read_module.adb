@@ -6588,9 +6588,11 @@ is
 
 	end read_submodule_files;
 
-	procedure test_assembly_variants_of_submodules is
+
+	
 	-- Tests whether the submodules provides the assembly variants as 
 	-- specified in module file section ASSEMBLY_VARIANTS.
+	procedure test_assembly_variants_of_submodules is
 
 		procedure query_variants (
 			module_name	: in pac_module_name.bounded_string;
@@ -6602,6 +6604,7 @@ is
 			variant_cursor : pac_assembly_variants.cursor := module.variants.first;
 			variant_name : pac_assembly_variant_name.bounded_string; -- low_cost
 
+			
 			procedure query_submodules (
 				variant_name	: in pac_assembly_variant_name.bounded_string;
 				variant			: in type_assembly_variant)
@@ -6610,7 +6613,7 @@ is
 				submod_cursor	: pac_submodule_variants.cursor := variant.submodules.first;
 				submod_name		: pac_module_instance_name.bounded_string; -- CLK_GENERATOR
 				submod_variant	: pac_assembly_variant_name.bounded_string; -- fixed_frequency
-			begin -- query_submodules
+			begin
 				if submod_cursor = pac_submodule_variants.no_element then
 					log (text => "no submodule variants specified", level => log_threshold + 1);
 				else
@@ -6625,7 +6628,7 @@ is
 								enclose_in_quotes (to_variant (submod_variant)),
 								level => log_threshold + 2);
 
-						if not exists (module_cursor, submod_name, submod_variant) then
+						if not assembly_variant_exists (module_cursor, submod_name, submod_variant) then
 							log (ERROR, "submodule " &
 								enclose_in_quotes (to_string (submod_name)) &
 								" does not provide assembly variant " &
@@ -6642,6 +6645,7 @@ is
 					end loop;
 				end if;
 			end query_submodules;
+			
 			
 		begin -- query_variants
 			if variant_cursor = et_assembly_variants.pac_assembly_variants.no_element then
@@ -6666,6 +6670,7 @@ is
 				end loop;
 			end if;
 		end;
+
 		
 	begin -- test_assembly_variants_of_submodules
 		log (text => "verifying assembly variants of submodules ...", level => log_threshold);

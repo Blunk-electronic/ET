@@ -3945,7 +3945,7 @@ package body et_schematic_ops.submodules is
 		-- Test whether the given parent module contains the given submodule instance (OSC1)
 		if submodule_instance_exists (module_cursor, instance) then
 
-			if exists (module_cursor, instance, variant_submod) then
+			if assembly_variant_exists (module_cursor, instance, variant_submod) then
 			
 				update_element (
 					container	=> generic_modules,
