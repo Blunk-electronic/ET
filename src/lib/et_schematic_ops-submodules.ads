@@ -38,6 +38,9 @@
 --   ToDo: 
 
 
+with et_submodules;
+
+
 package et_schematic_ops.submodules is
 
 	procedure netchanger_not_found (

@@ -195,7 +195,7 @@ package body et_scripting is
 	procedure validate_module_name (module : in pac_module_name.bounded_string) is 
 		use et_project.modules;
 	begin
-		if not exists (module) then
+		if not generic_module_exists (module) then
 			log (ERROR, "module " & to_string (module) &
 				" not found !", console => true);
 			raise constraint_error;

@@ -83,11 +83,17 @@ package body et_project.modules is
 		return pac_module_name.to_string (key (current_active_module)); -- motor_driver (without extension)
 	end get_active_module;
 
+
 	
-	function exists (module : in pac_module_name.bounded_string) return boolean is begin
+	function generic_module_exists (
+		module : in pac_module_name.bounded_string) 
+		return boolean
+	is begin
 		return pac_generic_modules.contains (generic_modules, module);
 	end;
 
+
+	
 	function locate_module (name : in pac_module_name.bounded_string) -- motor_driver (without extension *.mod)
 		return pac_generic_modules.cursor 
 	is
@@ -321,7 +327,7 @@ package body et_project.modules is
 	function device_exists (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
-		device	: in type_device_name)
+		device	: in et_devices.type_device_name)
 		return boolean 
 	is
 		result : boolean := false; -- to be returned
@@ -388,7 +394,7 @@ package body et_project.modules is
 	function get_alternative_device (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
-		device	: in type_device_name)
+		device	: in et_devices.type_device_name)
 		return pac_device_variants.cursor 
 	is
 

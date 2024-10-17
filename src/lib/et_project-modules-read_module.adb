@@ -41,6 +41,7 @@ with et_coordinates_2;
 with et_pcb_coordinates_2;
 
 with et_geometry;					use et_geometry;
+with et_net_labels;
 with et_symbols;
 with et_symbol_rw;
 with et_schematic_rw;				use et_schematic_rw;
@@ -53,6 +54,7 @@ with et_pcb_rw.device_packages;		use et_pcb_rw.device_packages;
 with et_pcb_rw.restrict;			use et_pcb_rw.restrict;
 with et_packages;
 with et_drills;
+with et_vias;
 with et_terminals;
 
 with et_conventions;
@@ -62,6 +64,32 @@ with et_time;
 with et_schematic_ops;
 with et_schematic_ops.submodules;
 -- with et_board_ops;
+
+with et_schematic_shapes_and_text;
+with et_board_shapes_and_text;
+
+with et_device_placeholders;
+with et_device_placeholders.packages;
+with et_device_placeholders.symbols;
+
+with et_submodules;
+
+with et_netlists;
+
+with et_conductor_segment.boards;
+with et_fill_zones;
+with et_fill_zones.boards;
+with et_thermal_relief;
+with et_conductor_text.boards;
+with et_route_restrict.boards;
+with et_via_restrict.boards;
+with et_stop_mask;
+with et_stencil;
+with et_silkscreen;
+with et_assy_doc.boards;
+with et_keepout;
+with et_pcb_contour;
+
 
 
 separate (et_project.modules)
@@ -377,12 +405,13 @@ is
 	
 	function to_position (
 		line : in type_fields_of_line; -- "position sheet 3 x 44.5 y 53.5"
-		from : in count_type)
+		from : in ada.containers.count_type) -- CS use a dedicated type instead
 		return et_coordinates_2.type_position
 	is		
 		use et_coordinates_2;
 		use pac_geometry_2;
 		use et_sheets;
+		use ada.containers;
 		
 		point : et_coordinates_2.type_position; -- to be returned
 		place : count_type := from; -- the field being read from given line
@@ -418,10 +447,11 @@ is
 	
 	function to_size (
 		line : in type_fields_of_line; -- "size x 30 y 40"
-		from : in count_type)
+		from : in ada.containers.count_type)
 		return et_submodules.type_submodule_size 
 	is
 		use et_coordinates_2.pac_geometry_2;
+		use ada.containers;
 		
 		size : et_submodules.type_submodule_size; -- to be returned
 		place : count_type := from; -- the field being read from given line
@@ -451,12 +481,13 @@ is
 
 
 	
-	function to_position (
 	-- Returns a type_package_position in the layout.
+	function to_position (
 		line : in type_fields_of_line; -- "position x 23 y 0.2 rotation 90.0 face top"
-		from : in count_type)
+		from : in ada.containers.count_type)
 		return et_pcb_coordinates_2.type_package_position
 	is
+		use ada.containers;
 		use et_pcb_coordinates_2;
 		use et_pcb_coordinates_2.pac_geometry_2;
 		
@@ -630,6 +661,7 @@ is
 	
 	procedure read_net is
 		kw : constant string := f (line, 1);
+		use ada.containers;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_name then
@@ -794,6 +826,7 @@ is
 	-- the port is appended to the corresponding port collection 
 	-- immediately when the line is read. See main code of process_line.
 	procedure read_ports is
+		use et_devices;
 		use et_symbols;
 		use et_nets;
 		kw : constant string := f (line, 1);
@@ -971,18 +1004,18 @@ is
 	-- The temporarily device will exist where "device" points at:
 	device					: access et_schematic.type_device_sch;
 	
-	device_name				: type_device_name; -- C12
-	device_model			: pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
+	device_name				: et_devices.type_device_name; -- C12
+	device_model			: et_devices.pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
 	
 	
-	device_value			: pac_device_value.bounded_string; -- 470R
+	device_value			: et_devices.pac_device_value.bounded_string; -- 470R
 	device_appearance		: et_schematic.type_appearance_schematic;
 	--device_unit				: et_schematic.type_unit;
 	--device_unit_rotation	: et_coordinates_2.type_rotation_model := geometry.zero_rotation;
 
 
 	device_unit_mirror		: et_schematic.type_mirror := et_schematic.NO;
-	device_unit_name		: pac_unit_name.bounded_string; -- GPIO_BANK_1
+	device_unit_name		: et_devices.pac_unit_name.bounded_string; -- GPIO_BANK_1
 	device_unit_position	: et_coordinates_2.type_position; -- x,y,sheet,rotation
 
 	
@@ -1043,6 +1076,7 @@ is
 		inserted		: boolean;
 
 		use et_schematic_ops.submodules;
+		use ada.containers;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_name then -- name low_cost
@@ -1204,8 +1238,8 @@ is
 	device_units	: et_schematic.pac_units.map; -- PWR, A, B, ...
 	
 	device_partcode	: pac_device_partcode.bounded_string;
-	device_purpose	: pac_device_purpose.bounded_string;
-	device_variant	: pac_package_variant_name.bounded_string; -- D, N
+	device_purpose	: et_devices.pac_device_purpose.bounded_string;
+	device_variant	: et_devices.pac_package_variant_name.bounded_string; -- D, N
 
 	
 	-- These two variables assist when a particular placeholder is appended to the
@@ -1220,6 +1254,7 @@ is
 
 	
 	procedure read_device_text_placeholder is
+		use et_device_placeholders;
 		use et_device_placeholders.packages;
 		use et_pcb_stack;
 		use et_pcb_coordinates_2.pac_geometry_2;
@@ -1267,13 +1302,14 @@ is
 	-- temporarily placeholders of unit name (IC12), value (7400) and purpose (clock buffer)
 	unit_placeholder			: et_schematic_shapes_and_text.type_text_basic;
 	unit_placeholder_position	: et_coordinates_2.pac_geometry_2.type_vector_model;
-	unit_placeholder_meaning	: type_placeholder_meaning := placeholder_meaning_default;
-	unit_placeholder_reference	: et_device_placeholders.symbols.type_text_placeholder (meaning => NAME);
-	unit_placeholder_value		: et_device_placeholders.symbols.type_text_placeholder (meaning => VALUE);
-	unit_placeholder_purpose	: et_device_placeholders.symbols.type_text_placeholder (meaning => PURPOSE);
+	unit_placeholder_meaning	: et_device_placeholders.type_placeholder_meaning := et_device_placeholders.placeholder_meaning_default;
+	unit_placeholder_reference	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.NAME);
+	unit_placeholder_value		: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.VALUE);
+	unit_placeholder_purpose	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
 
 	
 	procedure read_unit_placeholder is
+		use et_device_placeholders;
 		use et_schematic_shapes_and_text;
 		use et_symbol_rw;
 		use et_coordinates_2.pac_geometry_2;
@@ -2167,6 +2203,7 @@ is
 
 	
 	procedure read_device_non_electric is
+		use et_devices;
 		use et_packages;
 		kw : constant string := f (line, 1);
 	begin
@@ -2824,10 +2861,11 @@ is
 			end insert_unit;
 
 			
-			procedure build_unit_placeholder is
 			-- Builds a placeholder from unit_placeholder_meaning, unit_placeholder_position and unit_placeholder.
 			-- Depending on the meaning of the placeholder it becomes a placeholder 
-				-- for the reference (like R4), the value (like 100R) or the purpose (like "brightness control").
+			-- for the reference (like R4), the value (like 100R) or the purpose (like "brightness control").
+			procedure build_unit_placeholder is
+				use et_device_placeholders;
 				use et_coordinates_2;	
 				use et_symbols;
 			begin
@@ -6544,6 +6582,7 @@ is
 		
 	end process_line;
 
+	
 	procedure read_submodule_files is
 	-- Pointer module_cursor points to the last module that has been read.
 	-- Take a copy of the submodules stored in module.submods. 
@@ -6553,6 +6592,7 @@ is
 
 		use et_submodules;
 		use pac_submodules;
+		use ada.containers;
 
 		-- Here the copy of submodules lives:
 		submods : et_submodules.pac_submodules.map;
@@ -6686,7 +6726,7 @@ is
 
 	
 	use ada.directories;
-
+	use ada.containers;
 	
 begin -- read_module
 	log (text => "opening module file " & enclose_in_quotes (file_name) & " ...", level => log_threshold);

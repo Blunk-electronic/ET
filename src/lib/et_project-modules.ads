@@ -36,46 +36,21 @@
 --   history of changes:
 --
 --  ToDo: 
---  - Move stuff related to schematic to et_schematic_ops.
 --  - Move stuff related to board to et_board_ops.
 
-with ada.containers;            use ada.containers;
+with ada.containers;
 with ada.containers.ordered_maps;
-
 
 with et_schematic;
 with et_nets;
-with et_net_labels;
-with et_submodules;
-with et_netlists;
 with et_assembly_variants;		use et_assembly_variants;
-with et_vias;
-with et_board_shapes_and_text;
 with et_pcb;
 with et_pcb_stack;
-with et_devices;				use et_devices;
-
-with et_schematic_shapes_and_text;
-
-with et_device_placeholders;			use et_device_placeholders;
-with et_device_placeholders.packages;
-with et_device_placeholders.symbols;
+with et_devices;
 
 with et_design_rules;			use et_design_rules;
 with et_meta;
-with et_conductor_segment.boards;
-with et_fill_zones;
-with et_fill_zones.boards;
-with et_thermal_relief;
-with et_conductor_text.boards;
-with et_route_restrict.boards;
-with et_via_restrict.boards;
-with et_stop_mask;
-with et_stencil;
-with et_silkscreen;
-with et_assy_doc.boards;
-with et_keepout;
-with et_pcb_contour;
+
 
 package et_project.modules is
 
@@ -86,7 +61,7 @@ package et_project.modules is
 	-- Module names are things like "motor_driver" or "temperature_controller".
 	-- Submodule names are things like "templates/clock_generator" or
 	-- "$TEMPLATES/clock_generator" or "/home/user/templates/clock_generator":
-	package pac_generic_modules is new ordered_maps (
+	package pac_generic_modules is new ada.containers.ordered_maps (
 		key_type		=> pac_module_name.bounded_string, -- motor_driver (without extension *.mod)
 		"<"				=> pac_module_name."<",
 		element_type	=> et_schematic.type_module,
@@ -107,7 +82,9 @@ package et_project.modules is
 	
 	
 	-- Returns true if the module with the given name exists in container modules.
-	function exists (module : in pac_module_name.bounded_string) return boolean;
+	function generic_module_exists (
+		module : in pac_module_name.bounded_string) 
+		return boolean;
 
 
 	
@@ -342,7 +319,7 @@ package et_project.modules is
 	function device_exists (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
-		device	: in type_device_name)
+		device	: in et_devices.type_device_name)
 		return boolean;
 
 
@@ -358,7 +335,7 @@ package et_project.modules is
 	function get_alternative_device (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
-		device	: in type_device_name)
+		device	: in et_devices.type_device_name)
 		return pac_device_variants.cursor;
 
 

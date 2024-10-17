@@ -38,6 +38,7 @@ with et_coordinates_2;
 with et_pcb_coordinates_2;
 
 with et_geometry;					use et_geometry;
+with et_net_labels;
 with et_symbols;
 with et_symbol_rw;
 with et_schematic_rw;
@@ -59,6 +60,33 @@ with et_schematic_ops.grid;
 with et_board_ops;
 with et_board_ops.grid;
 with et_board_ops.frame;
+
+with et_schematic_shapes_and_text;
+with et_board_shapes_and_text;
+
+with et_device_placeholders;
+with et_device_placeholders.packages;
+with et_device_placeholders.symbols;
+
+with et_submodules;
+
+with et_netlists;
+
+with et_vias;
+with et_conductor_segment.boards;
+with et_fill_zones;
+with et_fill_zones.boards;
+with et_thermal_relief;
+with et_conductor_text.boards;
+with et_route_restrict.boards;
+with et_via_restrict.boards;
+with et_stop_mask;
+with et_stencil;
+with et_silkscreen;
+with et_assy_doc.boards;
+with et_keepout;
+with et_pcb_contour;
+
 
 
 separate (et_project.modules)
@@ -498,7 +526,8 @@ is
 				procedure query_device_ports (segment : in type_net_segment) is
 					use et_symbols;
 					port_cursor : pac_device_ports.cursor := segment.ports.devices.first;
-				begin -- query_device_ports
+					use et_devices;
+				begin
 					while port_cursor /= pac_device_ports.no_element loop
 						write (keyword => keyword_device, parameters => 
 							space & to_string (element (port_cursor).device_name)
@@ -812,7 +841,8 @@ is
 
 
 	
-	procedure query_devices is		
+	procedure query_devices is
+		use et_devices;
 		use et_schematic;
 		use et_symbols;
 		use et_device_placeholders.symbols;
@@ -828,11 +858,13 @@ is
 			unit_cursor : pac_units.cursor := device.units.first;
 
 			use et_coordinates_2.pac_geometry_2;
+
 			
 			procedure write_placeholder (
 				ph : in type_text_placeholder) 
 			is 
 				use et_symbol_rw;
+				use et_device_placeholders;
 			begin
 				section_mark (section_placeholder, HEADER);
 				write (keyword => keyword_meaning, parameters => to_string (ph.meaning));
@@ -890,9 +922,11 @@ is
 
 			face : et_pcb_coordinates_2.type_face;
 			layer : type_placeholder_layer;
+
 			
 			procedure write_placeholder (placeholder_cursor : in pac_placeholders.cursor) is 
 				use et_pcb_rw;
+				use et_device_placeholders;
 			begin
 				section_mark (section_placeholder, HEADER);
 				write (keyword => et_pcb_stack.keyword_layer, parameters => to_string (layer));
@@ -900,6 +934,7 @@ is
 				write_text_properties_with_face (element (placeholder_cursor), face);
 				section_mark (section_placeholder, FOOTER);
 			end write_placeholder;
+			
 			
 		begin -- query_placeholders
 			section_mark (section_placeholders, HEADER);
@@ -982,8 +1017,8 @@ is
 
 
 	
-	procedure query_assembly_variants is
 	-- writes the assembly variants in the module file
+	procedure query_assembly_variants is
 		use et_assembly_variants;
 		use pac_assembly_variants;
 
@@ -1532,6 +1567,7 @@ is
 		procedure query_devices_non_electric (
 			c : in et_pcb.pac_devices_non_electric.cursor) 
 		is
+			use et_devices;
 			use et_pcb;
 			use et_packages;
 
@@ -1540,6 +1576,7 @@ is
 				device 		: in type_device_non_electric) 
 			is
 				use et_pcb_coordinates_2;
+				use et_device_placeholders;
 				use et_device_placeholders.packages;
 				use et_device_placeholders.packages.pac_placeholders;
 
@@ -1547,7 +1584,7 @@ is
 				layer : type_placeholder_layer;
 				
 				procedure write_placeholder (
-					placeholder_cursor : in et_device_placeholders.packages.pac_placeholders.cursor) 
+					placeholder_cursor : in et_device_placeholders.packages.pac_placeholders.cursor) 					
 				is begin
 					section_mark (section_placeholder, HEADER);
 					write (keyword => et_pcb_stack.keyword_layer, parameters => to_string (layer));

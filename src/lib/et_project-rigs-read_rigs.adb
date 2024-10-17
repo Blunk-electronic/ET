@@ -343,7 +343,7 @@ is
 										generic_name := pac_module_name.to_bounded_string (f (line,2));
 										
 										-- test whether a module with this generic name exists
-										if not exists (generic_name) then
+										if not generic_module_exists (generic_name) then
 											log (WARNING, "Module " & enclose_in_quotes (to_string (generic_name)) &
 													" does not exist !", console => true);
 											--raise constraint_error;
