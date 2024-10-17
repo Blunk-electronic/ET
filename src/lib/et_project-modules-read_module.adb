@@ -1041,6 +1041,8 @@ is
 		submod_var		: pac_assembly_variant_name.bounded_string; -- low_cost
 		submod_cursor	: pac_submodule_variants.cursor;
 		inserted		: boolean;
+
+		use et_schematic_ops.submodules;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_name then -- name low_cost
@@ -1071,6 +1073,7 @@ is
 				raise constraint_error;
 			end if;
 
+			
 			if f (line, 3) = keyword_not_mounted then
 				-- line like "device R1 not_mounted"
 
@@ -1123,6 +1126,7 @@ is
 				raise constraint_error;
 			end if;											
 
+			
 			-- Insert the device in the current assembly variant:
 			et_assembly_variants.pac_device_variants.insert (
 				container	=> assembly_variant_devices,
@@ -1139,6 +1143,7 @@ is
 				raise constraint_error;
 			end if;
 
+			
 		-- a line like "submodule OSC1 variant low_cost
 		-- tells which assembly variant of a submodule is used:
 		elsif kw = keyword_submodule then

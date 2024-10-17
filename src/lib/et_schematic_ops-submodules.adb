@@ -4053,6 +4053,40 @@ package body et_schematic_ops.submodules is
 	end remove_submodule;
 
 
+
+
+
+	function submodule_instance_exists (
+		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
+		instance	: in et_general.pac_module_instance_name.bounded_string) -- OSC1
+		return boolean
+	is
+
+		instance_found : boolean := false; -- to be returned
+
+		procedure query_submodules (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in et_schematic.type_module) 
+		is
+			use et_submodules.pac_submodules;
+		begin
+			if contains (module.submods, instance) then
+				instance_found := true;
+			end if;
+		end query_submodules;
+
+		
+	begin
+		-- search in the parent module for the given submodule instance
+		pac_generic_modules.query_element (
+			position	=> module,
+			process		=> query_submodules'access);
+
+		return instance_found;
+	end submodule_instance_exists;
+
+
+	
 	
 	
 	procedure set_submodule_file (

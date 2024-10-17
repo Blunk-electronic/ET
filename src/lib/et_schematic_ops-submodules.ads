@@ -305,6 +305,12 @@ package et_schematic_ops.submodules is
 
 
 
+	-- Returns true if the given module provides the given submodule instance.
+	-- The module being searched in must be in the rig already.						
+	function submodule_instance_exists (
+		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
+		instance	: in et_general.pac_module_instance_name.bounded_string) -- OSC1
+		return boolean;
 
 
 	
