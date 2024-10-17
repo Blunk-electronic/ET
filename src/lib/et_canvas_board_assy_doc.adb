@@ -59,7 +59,7 @@ package body et_canvas_board_assy_doc is
 	procedure reset_preliminary_object is begin
 		preliminary_object.ready := false;
 		preliminary_object.tool := MOUSE;
-		reset_proposed_lines (current_active_module, log_threshold + 1);
+		reset_proposed_lines (active_module, log_threshold + 1);
 	end reset_preliminary_object;
 
 
@@ -95,19 +95,19 @@ package body et_canvas_board_assy_doc is
 		-- On every call of this procedure we advance from one
 		-- proposed segment to the next in a circular manner.
 
-		selected_line := get_first_line (current_active_module, SELECTED, log_threshold + 1);
+		selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
 
 		modify_status (
-			module_cursor	=> current_active_module, 
+			module_cursor	=> active_module, 
 			operation		=> (CLEAR, SELECTED),
 			line_cursor		=> selected_line.cursor, 
 			log_threshold	=> log_threshold + 1);
 		
-		next_proposed_line (current_active_module, selected_line, log_threshold + 1);
+		next_proposed_line (active_module, selected_line, log_threshold + 1);
 		
-		-- select_line (current_active_module, selected_line.line, log_threshold + 1);
+		-- select_line (active_module, selected_line.line, log_threshold + 1);
 		modify_status (
-			module_cursor	=> current_active_module, 
+			module_cursor	=> active_module, 
 			operation		=> (SET, SELECTED),
 			line_cursor		=> selected_line.cursor, 
 			log_threshold	=> log_threshold + 1);
@@ -128,9 +128,9 @@ package body et_canvas_board_assy_doc is
 			proposed_line : type_line_segment;
 			use et_object_status;
 		begin
-			proposed_line := get_first_line (current_active_module, PROPOSED, log_threshold + 1);
+			proposed_line := get_first_line (active_module, PROPOSED, log_threshold + 1);
 
-			modify_status (current_active_module, proposed_line.cursor, (SET, SELECTED), log_threshold + 1);
+			modify_status (active_module, proposed_line.cursor, (SET, SELECTED), log_threshold + 1);
 
 			-- If only one line found, then show it in the status bar:
 			if count = 1 then
@@ -145,13 +145,13 @@ package body et_canvas_board_assy_doc is
 
 		-- Propose lines in the vicinity of the given point:
 		-- CS should depend on enabled top/bottom side
-		propose_lines (current_active_module, point, TOP, 
+		propose_lines (active_module, point, TOP, 
 			get_catch_zone (et_canvas_board_2.catch_zone), 
 			count, log_threshold + 1);
 		
 		count_total := count;
 		
-		propose_lines (current_active_module, point, BOTTOM, 
+		propose_lines (active_module, point, BOTTOM, 
 			get_catch_zone (et_canvas_board_2.catch_zone), 
 			count, log_threshold + 1);
 		
@@ -205,7 +205,7 @@ package body et_canvas_board_assy_doc is
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
-			selected_line := get_first_line (current_active_module, SELECTED, log_threshold + 1);
+			selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
 
 			if selected_line.cursor /= pac_doc_lines.no_element then
 
@@ -215,7 +215,7 @@ package body et_canvas_board_assy_doc is
 				-- case object.shape is
 				-- 	when LINE =>
 						move_line (
-							module_cursor	=> current_active_module,
+							module_cursor	=> active_module,
 							face			=> selected_line.face,
 							line			=> element (selected_line.cursor),
 							point_of_attack	=> preliminary_object.point_of_attack,
@@ -301,7 +301,7 @@ package body et_canvas_board_assy_doc is
 			log (text => "finalizing delete ...", level => log_threshold);
 			log_indentation_up;
 
-			selected_line := get_first_line (current_active_module, SELECTED, log_threshold + 1);
+			selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
 
 			if selected_line.cursor /= pac_doc_lines.no_element then
 
@@ -311,7 +311,7 @@ package body et_canvas_board_assy_doc is
 					-- case object.shape is
 						-- when LINE =>
 							delete (
-								module_cursor	=> current_active_module,
+								module_cursor	=> active_module,
 								face			=> selected_line.face,
 								line			=> element (selected_line.cursor),
 								log_threshold	=> log_threshold);

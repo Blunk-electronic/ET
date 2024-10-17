@@ -104,7 +104,7 @@ is
 
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer : constant type_signal_layer := 
-		et_board_ops.get_deepest_conductor_layer (current_active_module);
+		et_board_ops.get_deepest_conductor_layer (active_module);
 
 	
 	procedure draw_package (
@@ -1136,7 +1136,7 @@ is
 		function get_stop_mask_expansion return type_stop_mask_expansion is  -- from DRU
 			use et_canvas_schematic_2;
 		begin
-			return get_pcb_design_rules (current_active_module).stop_mask.expansion_min;
+			return get_pcb_design_rules (active_module).stop_mask.expansion_min;
 		end get_stop_mask_expansion;
 
 
@@ -2113,13 +2113,13 @@ begin -- draw_packages
 
 	-- draw electric devices
 	pac_generic_modules.query_element (
-		position	=> current_active_module,
+		position	=> active_module,
 		process		=> query_electrical_devices'access);
 
 	
 	-- draw non-electric devices (like fiducials, mounting holes, ...)
 	pac_generic_modules.query_element (
-		position	=> current_active_module,
+		position	=> active_module,
 		process		=> query_non_electrical_devices'access);
 			
 end draw_packages;

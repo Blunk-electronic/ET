@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -49,7 +50,7 @@ procedure draw_drawing_frame is
 	
 
 	-- Get the frames of the schematic:
-	f : type_frames_schematic := element (current_active_module).frames;
+	f : type_frames_schematic := element (active_module).frames;
 	-- CS use query_element instead
 
 
@@ -70,7 +71,7 @@ procedure draw_drawing_frame is
 -- 
 -- 			-- Get the description of the current active sheet:
 -- 			des : constant type_schematic_description := 
--- 					sheet_description (current_active_module, current_active_sheet);
+-- 					sheet_description (active_module, current_active_sheet);
 -- 		begin
 -- 			-- category (development, product, routing)
 -- 			draw_text (
@@ -131,7 +132,7 @@ begin
 		-- 	ph_common	=> self.get_frame.title_block_schematic.placeholders,
 		-- 	ph_basic	=> type_placeholders_basic (self.get_frame.title_block_schematic.additional_placeholders),
 		-- 	texts		=> self.get_frame.title_block_schematic.texts,
-		-- 	meta		=> et_meta.type_basic (element (current_active_module).meta.board),
+		-- 	meta		=> et_meta.type_basic (element (active_module).meta.board),
 		-- 	tb_pos		=> title_block_position);
   -- 
 

@@ -155,7 +155,7 @@ is
 		case key is
 			when GDK_LC_z =>
 				noun := NOUN_ZONE;
-				fill_zones (current_active_module, NORMAL, log_threshold + 1);
+				fill_zones (active_module, NORMAL, log_threshold + 1);
 
 				-- CS set_status ("zones filled");
 				
@@ -569,7 +569,7 @@ is
 		case key is
 			when GDK_LC_r =>
 				noun := NOUN_RATSNEST;
-				update_ratsnest (current_active_module, log_threshold + 1);
+				update_ratsnest (active_module, log_threshold + 1);
 
 				-- CS set_status (status_ratsnest_updated);
 				

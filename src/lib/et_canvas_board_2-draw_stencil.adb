@@ -138,7 +138,7 @@ begin -- draw_stencil
 -- 	put_line ("draw stencil / solder paste mask ...");
 	
 	pac_generic_modules.query_element (
-		position	=> current_active_module,
+		position	=> active_module,
 		process		=> query_items'access);
 
 	

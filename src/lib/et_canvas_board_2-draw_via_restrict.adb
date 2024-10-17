@@ -173,7 +173,7 @@ procedure draw_via_restrict is
 
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer	: constant type_signal_layer := 
-		et_board_ops.get_deepest_conductor_layer (current_active_module);
+		et_board_ops.get_deepest_conductor_layer (active_module);
 	
 
 	
@@ -181,7 +181,7 @@ begin -- draw_via_restrict
 -- 	put_line ("draw via restrict ...");
 	
 	pac_generic_modules.query_element (
-		position	=> current_active_module,
+		position	=> active_module,
 		process		=> query_items'access);
 	
 end draw_via_restrict;

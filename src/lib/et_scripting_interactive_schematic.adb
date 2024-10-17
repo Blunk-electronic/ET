@@ -100,7 +100,7 @@ package body et_scripting_interactive_schematic is
 		unit_delete.unit := to_unit_name (name);
 
 		et_schematic_ops.units.delete_unit (
-			module_cursor	=> current_active_module,
+			module_cursor	=> active_module,
 			device_name		=> unit_delete.device,
 			unit_name		=> unit_delete.unit,
 			log_threshold	=> log_threshold + 1);
@@ -156,7 +156,7 @@ package body et_scripting_interactive_schematic is
 				unit_delete.unit := unit_name;
 
 				et_schematic_ops.units.delete_unit (
-					module_cursor	=> current_active_module,
+					module_cursor	=> active_module,
 					device_name		=> unit_delete.device,
 					unit_name		=> unit_delete.unit,
 					log_threshold	=> log_threshold + 1);
@@ -317,8 +317,8 @@ package body et_scripting_interactive_schematic is
 		-- Append the cursors of the device and unit to the list of proposed units.
 		-- There will be only one single item in that list.
 		proposed_units.append (new_item => (
-			device	=> locate_device (current_active_module, unit_move.device),
-			unit	=> locate_unit (current_active_module, unit_move.device, unit_move.unit)));
+			device	=> locate_device (active_module, unit_move.device),
+			unit	=> locate_unit (active_module, unit_move.device, unit_move.unit)));
 
 		-- Set the selected unit. This signals the GUI which unit is to be
 		-- drawn at the cursor or mouse position:
@@ -561,8 +561,8 @@ package body et_scripting_interactive_schematic is
 		-- Append the cursors of the device and unit to the list of proposed placeholders.
 		-- There will be only one single item in that list.
 		proposed_placeholders.append (new_item => (
-			device	=> locate_device (current_active_module, placeholder_move.device),
-			unit	=> locate_unit (current_active_module, placeholder_move.device, placeholder_move.unit)));
+			device	=> locate_device (active_module, placeholder_move.device),
+			unit	=> locate_unit (active_module, placeholder_move.device, placeholder_move.unit)));
 
 		-- Set the selected placeholder. This signals the GUI which placeholder is to be
 		-- drawn at the cursor or mouse position:
@@ -595,7 +595,7 @@ package body et_scripting_interactive_schematic is
 		-- global variable set_variant_device. It has been set by 
 		-- the other procedure set_variant (see below):
 		set_variant (
-			module	=> current_active_module,
+			module	=> active_module,
 			device	=> set_variant_device,
 			variant	=> extract_variant_name (self.get_label));
 
@@ -657,11 +657,11 @@ package body et_scripting_interactive_schematic is
 		end show_variants_menu;
 		
 	begin -- set_variant
-		device_cursor_sch := locate_device (current_active_module, device);
+		device_cursor_sch := locate_device (active_module, device);
 
 		-- Setting a package variant is possible for real devices only:
 		if is_real (device_cursor_sch) then		
-			variants := get_available_variants (current_active_module, device);
+			variants := get_available_variants (active_module, device);
 
 			if length (variants) > 1 then
 
@@ -689,7 +689,7 @@ package body et_scripting_interactive_schematic is
 		
 			-- Mark the whoe device as selected:
 			
-			su.device := locate_device (current_active_module, device);
+			su.device := locate_device (active_module, device);
 			-- su.unit does not matter here because we care about the device name only.
 			-- It is left as it is: no_element.
 			-- The drawing operation for units regards the whole device as

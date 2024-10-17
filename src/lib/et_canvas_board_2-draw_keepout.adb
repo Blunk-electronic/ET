@@ -117,7 +117,7 @@ begin -- draw_keepout
 -- 	put_line ("draw keepout ...");
 	
 	pac_generic_modules.query_element (
-		position	=> current_active_module,
+		position	=> active_module,
 		process		=> query_items'access);
 	
 end draw_keepout;

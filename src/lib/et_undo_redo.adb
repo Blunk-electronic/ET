@@ -135,7 +135,7 @@ package body et_undo_redo is
 		
 		update_element (
 			container	=> generic_modules,
-			position	=> current_active_module,
+			position	=> active_module,
 			process		=> query_module'access);
 
 		log_indentation_down;
@@ -296,7 +296,7 @@ package body et_undo_redo is
 
 		update_element (
 			container	=> generic_modules,
-			position	=> current_active_module,
+			position	=> active_module,
 			process		=> query_module'access);
 
 		log_indentation_down;
@@ -539,7 +539,7 @@ package body et_undo_redo is
 		
 		update_element (
 			container	=> generic_modules,
-			position	=> current_active_module,
+			position	=> active_module,
 			process		=> query_module'access);
 
 		log_indentation_down;
@@ -799,7 +799,7 @@ package body et_undo_redo is
 		
 		update_element (
 			container	=> generic_modules,
-			position	=> current_active_module,
+			position	=> active_module,
 			process		=> query_module'access);
 
 		log_indentation_down;		

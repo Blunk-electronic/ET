@@ -363,7 +363,7 @@ package body et_canvas_schematic_nets is
 		
 		-- Collect all segments in the vicinity of the given point:
 		proposed_segments := collect_segments (
-			module			=> current_active_module,
+			module			=> active_module,
 			place			=> to_position (point, current_active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
@@ -381,7 +381,7 @@ package body et_canvas_schematic_nets is
 				commit (PRE, verb, noun, log_threshold + 1);
 		
 				delete_selected_segment (
-					module_cursor	=> current_active_module,
+					module_cursor	=> active_module,
 					segment			=> element (segment_cursor),
 					log_threshold	=> log_threshold + 1);
 
@@ -440,7 +440,7 @@ package body et_canvas_schematic_nets is
 		commit (PRE, verb, noun, log_threshold + 1);
 
 		delete_selected_segment (
-			module_cursor	=> current_active_module,
+			module_cursor	=> active_module,
 			segment			=> element (selected_segment),
 			log_threshold	=> log_threshold + 1);
 
@@ -498,7 +498,7 @@ package body et_canvas_schematic_nets is
 
 						-- Insert a single net segment:
 						insert_net_segment (
-							module			=> current_active_module,
+							module			=> active_module,
 							sheet			=> current_active_sheet,
 							net_name_given	=> PS.net_name, -- RESET_N, or empty
 							segment			=> (
@@ -519,7 +519,7 @@ package body et_canvas_schematic_nets is
 
 						-- Insert first segment of the path:
 						insert_net_segment (
-							module			=> current_active_module,
+							module			=> active_module,
 							sheet			=> current_active_sheet,
 							net_name_given	=> PS.net_name, -- RESET_N, or empty
 							segment			=> (
@@ -538,7 +538,7 @@ package body et_canvas_schematic_nets is
 
 							-- Insert second segment of the path:
 							insert_net_segment (
-								module			=> current_active_module,
+								module			=> active_module,
 								sheet			=> current_active_sheet,
 								net_name_given	=> PS.net_name, -- RESET_N, or empty
 								segment			=> (
@@ -745,7 +745,7 @@ package body et_canvas_schematic_nets is
 		choose : constant string := "Choose another place for the junction !";
 	begin
 		segments := collect_segments (
-			module			=> current_active_module,
+			module			=> active_module,
 			place			=> to_position (point, current_active_sheet),
 			log_threshold	=> log_threshold); 
 
@@ -830,7 +830,7 @@ package body et_canvas_schematic_nets is
 				end case;
 
 				rename_net (
-					module_cursor	=> current_active_module,
+					module_cursor	=> active_module,
 					net_name_before	=> selected_net, -- RESET_N
 					net_name_after	=> to_net_name (self.get_text), -- RST_N
 					scope			=> net_rename.scope,
@@ -923,7 +923,7 @@ package body et_canvas_schematic_nets is
 		
 		-- Collect all segments in the vicinity of the given point:
 		proposed_segments := collect_segments (
-			module			=> current_active_module,
+			module			=> active_module,
 			place			=> to_position (point, current_active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
@@ -1077,7 +1077,7 @@ package body et_canvas_schematic_nets is
 					net_name := key (element (selected_segment).net);
 
 					drag_segment (
-						module_cursor	=> current_active_module,
+						module_cursor	=> active_module,
 						net_name		=> net_name,
 						point_of_attack	=> point_of_attack,
 						coordinates		=> et_geometry.ABSOLUTE,
@@ -1402,7 +1402,7 @@ package body et_canvas_schematic_nets is
 		log_indentation_up;
 
 		delete_selected_label (
-			module_cursor	=> current_active_module,
+			module_cursor	=> active_module,
 			label			=> element (selected_label),
 			log_threshold	=> log_threshold + 1);
 		
@@ -1417,7 +1417,7 @@ package body et_canvas_schematic_nets is
 		
 		-- Collect all net labels in the vicinity of the given point:
 		proposed_labels := collect_labels (
-			module			=> current_active_module,
+			module			=> active_module,
 			place			=> to_position (point, current_active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
@@ -1430,7 +1430,7 @@ package body et_canvas_schematic_nets is
 				
 			when 1 =>
 				delete_selected_label (
-					module_cursor	=> current_active_module,
+					module_cursor	=> active_module,
 					label			=> element (proposed_labels.first),
 					log_threshold	=> log_threshold + 1);
 					
@@ -1598,7 +1598,7 @@ package body et_canvas_schematic_nets is
 			if selected_segment /= pac_proposed_segments.no_element then
 
 				place_label (
-					module_cursor		=> current_active_module,
+					module_cursor		=> active_module,
 					segment				=> element (selected_segment),
 					destination			=> destination,
 					appearance			=> label.appearance,
@@ -1658,7 +1658,7 @@ package body et_canvas_schematic_nets is
 
 		-- Collect all net labels in the vicinity of the given point:
 		proposed_labels := collect_labels (
-			module			=> current_active_module,
+			module			=> active_module,
 			place			=> to_position (point, current_active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			category		=> category,
@@ -1776,7 +1776,7 @@ package body et_canvas_schematic_nets is
 		if selected_label /= pac_proposed_labels.no_element then
 			sl := element (selected_label);
 
-			move_selected_label (current_active_module, sl, destination, log_threshold + 1);
+			move_selected_label (active_module, sl, destination, log_threshold + 1);
 								
 		else
 			log (text => "nothing to do", level => log_threshold);

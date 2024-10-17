@@ -84,7 +84,7 @@ package body et_gui_2 is
 		log (text => "set active module " & enclose_in_quotes (to_string (key (module))),
 			 level => log_threshold);
 
-		current_active_module := module;
+		active_module := module;
 
 
 		
@@ -110,7 +110,7 @@ package body et_gui_2 is
 
 		-- Set the title bar of the main window:
 		set_title_bar (
-			module	=> current_active_module);
+			module	=> active_module);
   
 
 		-- Set up the primary tool display:
@@ -205,7 +205,7 @@ package body et_gui_2 is
 
 		-- Set the title bar of the main window:
 		set_title_bar (
-			module	=> current_active_module);
+			module	=> active_module);
 
 		
 		-- Set up the primary tool display:

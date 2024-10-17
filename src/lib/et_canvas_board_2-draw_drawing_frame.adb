@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -50,7 +51,7 @@ procedure draw_drawing_frame is
 	
 
 	-- Get the frame of the board:
-	f : type_frame_pcb := element (current_active_module).board.frame;
+	f : type_frame_pcb := element (active_module).board.frame;
 	-- CS use query_element instead
 
 	frame_general : type_frame_general := type_frame_general (f.frame);
@@ -306,7 +307,7 @@ begin
 -- 			ph_common	=> self.get_frame.title_block_pcb.placeholders,
 -- 			ph_basic	=> type_placeholders_basic (self.get_frame.title_block_pcb.additional_placeholders),
 -- 			texts		=> self.get_frame.title_block_pcb.texts,
--- 			meta		=> et_meta.type_basic (element (current_active_module).meta.board),
+-- 			meta		=> et_meta.type_basic (element (active_module).meta.board),
 -- 			tb_pos		=> title_block_position);
 -- 
 -- 		draw_cam_markers;

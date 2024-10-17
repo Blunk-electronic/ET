@@ -151,11 +151,11 @@ package body et_canvas_board_2 is
 
 			-- Get the size of the frame:
 			size : constant type_frame_size := 
-				element (current_active_module).board.frame.frame.size;
+				element (active_module).board.frame.frame.size;
 
 			-- Get the position of the frame:
 			p : constant et_frames.type_position :=
-				get_position (element (current_active_module).board.frame.frame);
+				get_position (element (active_module).board.frame.frame);
 			
 			use pac_drawing_frame;
 		begin
@@ -284,7 +284,7 @@ package body et_canvas_board_2 is
 			-- Get the margin between outer border of the frame
 			-- and the edge of the paper:
 			margin : constant et_frames.type_border_width := 
-				element (current_active_module).board.frame.frame.border_width;
+				element (active_module).board.frame.frame.border_width;
 			
 			-- The offset due to the margin:
 			margin_offset : type_vector_model;
@@ -1287,10 +1287,10 @@ package body et_canvas_board_2 is
 	begin
 		-- Show the module name in the title bar of 
 		-- the board editor:
-		set_title_bar (current_active_module);
+		set_title_bar (active_module);
 
 		pac_canvas.grid := 
-			get_grid (current_active_module, log_threshold + 1);
+			get_grid (active_module, log_threshold + 1);
 		
 		pac_canvas.update_grid_display;
 
@@ -1369,7 +1369,7 @@ package body et_canvas_board_2 is
 		set_directory (to_string (current_active_project));
 		
 		-- execute the board command
-		board_cmd (current_active_module, cmd, log_threshold);
+		board_cmd (active_module, cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
 		set_directory (cur_dir_bak);
@@ -1457,7 +1457,7 @@ package body et_canvas_board_2 is
 		set_directory (to_string (current_active_project));
 		
 		-- execute the board command
-		board_cmd (current_active_module, cmd, log_threshold);
+		board_cmd (active_module, cmd, log_threshold);
 		
 		-- Return to previous directory (like  /home/user/my_projects):
 		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",

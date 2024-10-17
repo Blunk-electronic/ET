@@ -129,12 +129,12 @@ begin -- draw_outline
 	-- NOT set here.
 	
 	pac_generic_modules.query_element (
-		position	=> current_active_module,
+		position	=> active_module,
 		process		=> query_outline_segments'access);
 
 	
 	pac_generic_modules.query_element (
-		position	=> current_active_module,
+		position	=> active_module,
 		process		=> query_holes'access);
 
 	stroke;

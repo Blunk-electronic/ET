@@ -382,7 +382,7 @@ procedure draw_submodules is
 begin
 -- 	put_line ("draw submodules ...");
 
-	iterate (element (current_active_module).submods, query_submods'access);
+	iterate (element (active_module).submods, query_submods'access);
 	
 end draw_submodules;
 

@@ -242,7 +242,7 @@ procedure draw_units is
 				-- Get the properties of the port. Properties is a record that provides
 				-- the terminal name. Other things of properties are not relevant here:
 				properties := et_schematic_ops.get_port_properties (
-					module_cursor	=> current_active_module,
+					module_cursor	=> active_module,
 					device_name		=> device_name,
 					unit_name		=> unit_name,
 					port_name		=> key (c));
@@ -361,7 +361,7 @@ procedure draw_units is
 				-- probably better in draw_terminal_name or draw_port_name ?
 
 	-- 				use properties := schematic_ops.port_properties (
-	-- 					module_cursor	=> current_active_module,
+	-- 					module_cursor	=> active_module,
 	-- 					device_name		=> device_name,
 	-- 					unit_name		=> unit_name,
 	-- 					port_name		=> key (c));
@@ -1156,7 +1156,7 @@ procedure draw_units is
 begin
 	-- 	put_line ("draw units ...");
 	
-	iterate (element (current_active_module).devices, query_devices'access);
+	iterate (element (active_module).devices, query_devices'access);
 
 	-- Draw the unit being added. If no unit is being added, nothing 
 	-- happens here:

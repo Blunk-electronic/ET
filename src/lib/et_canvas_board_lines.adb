@@ -386,7 +386,7 @@ package body et_canvas_board_lines is
 				type_signal_layer'first .. 
 
 				-- The deepest available layer depends on the stack configuration:
-				get_deepest_conductor_layer (current_active_module) 
+				get_deepest_conductor_layer (active_module) 
 			loop
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0,
@@ -489,7 +489,7 @@ package body et_canvas_board_lines is
 				when LAYER_CAT_ASSY =>
 					
 					et_board_ops.assy_doc.draw_line (
-						module_name	=> pac_generic_modules.key (current_active_module),
+						module_name	=> pac_generic_modules.key (active_module),
 						face		=> PL.face,
 						line		=> (line with PL.width),
 						log_threshold	=> log_threshold);
@@ -498,7 +498,7 @@ package body et_canvas_board_lines is
 				when LAYER_CAT_SILKSCREEN =>
 					
 					et_board_ops.silkscreen.draw_line (
-						module_name	=> pac_generic_modules.key (current_active_module),
+						module_name	=> pac_generic_modules.key (active_module),
 						face		=> PL.face,
 						line		=> (line with PL.width),
 						log_threshold	=> log_threshold);
@@ -507,7 +507,7 @@ package body et_canvas_board_lines is
 				when LAYER_CAT_STOP =>
 					
 					et_board_ops.stop_mask.draw_stop_line (
-						module_name	=> pac_generic_modules.key (current_active_module),
+						module_name	=> pac_generic_modules.key (active_module),
 						face		=> PL.face,
 						line		=> (line with PL.width),
 						log_threshold	=> log_threshold);
@@ -518,7 +518,7 @@ package body et_canvas_board_lines is
 					-- Because we do not pass a net name, this is going
 					-- to be a freetrack:
 					et_board_ops.conductors.draw_track_line (
-						module_name	=> pac_generic_modules.key (current_active_module),
+						module_name	=> pac_generic_modules.key (active_module),
 						line		=> (line with PL.width, PL.signal_layer),
 						log_threshold	=> log_threshold);
 

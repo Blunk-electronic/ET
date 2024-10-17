@@ -241,7 +241,7 @@ package body et_canvas_board_tracks is
 		use pac_net_names;
 
 		-- Fetch the net names of all nets of the current module:
-		nets : pac_net_names.list := get_nets (current_active_module, log_threshold + 1);
+		nets : pac_net_names.list := get_nets (active_module, log_threshold + 1);
 		
 		index : type_net_index := 0;
 
@@ -301,12 +301,12 @@ package body et_canvas_board_tracks is
 			-- module is assumed and the net index set accordingly.
 			-- NOTE: The net index is numbered from 0 .. N.
 			if preliminary_track.net_name = no_name then
-				preliminary_track.net_name := get_first_net (current_active_module);
+				preliminary_track.net_name := get_first_net (active_module);
 			end if;
 
 			-- Set the acive net (in the box) via its index:
 			cbox_net_name.set_active (gint (
-				get_net_index (current_active_module, preliminary_track.net_name, log_threshold + 1)));
+				get_net_index (active_module, preliminary_track.net_name, log_threshold + 1)));
 
 									  
 			pack_start (box_net_name, cbox_net_name, padding => guint (spacing));
@@ -352,7 +352,7 @@ package body et_canvas_board_tracks is
 				type_signal_layer'first .. 
 
 				-- The deepest available layer depends on the stack configuration:
-				get_deepest_conductor_layer (current_active_module) 
+				get_deepest_conductor_layer (active_module) 
 			loop
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0,
@@ -542,7 +542,7 @@ package body et_canvas_board_tracks is
 					if not clarification_pending then
 
 						proposed_airwires := get_airwires (
-							module_cursor	=> current_active_module, 
+							module_cursor	=> active_module, 
 							point			=> point,
 							zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
 							log_threshold	=> log_threshold + 1);
@@ -598,7 +598,7 @@ package body et_canvas_board_tracks is
 			commit (PRE, verb, noun, log_threshold + 1);
 
 			add_named_track (
-				module_cursor	=> current_active_module, 
+				module_cursor	=> active_module, 
 				net_name		=> PT.net_name,
 				line			=> (line with PT.width, PT.signal_layer),
 				log_threshold	=> log_threshold + 1);
@@ -679,7 +679,7 @@ package body et_canvas_board_tracks is
 	procedure reset_preliminary_segment is begin
 		preliminary_segment.ready := false;
 		preliminary_segment.tool := MOUSE;
-		reset_proposed_lines (current_active_module, log_threshold + 1);
+		reset_proposed_lines (active_module, log_threshold + 1);
 	end reset_preliminary_segment;
 
 
@@ -719,20 +719,20 @@ package body et_canvas_board_tracks is
 		-- On every call of this procedure we advance from one
 		-- proposed segment to the next in a circular manner.
 
-		selected_line := get_first_line (current_active_module, SELECTED, log_threshold + 1);
+		selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
 		
-		-- deselect_line (current_active_module, selected_line.line, log_threshold + 1);
+		-- deselect_line (active_module, selected_line.line, log_threshold + 1);
 		modify_status (
-			module_cursor	=> current_active_module, 
+			module_cursor	=> active_module, 
 			operation		=> (CLEAR, SELECTED),
 			line_cursor		=> selected_line.line_cursor, 
 			log_threshold	=> log_threshold + 1);
 		
-		next_proposed_line (current_active_module, selected_line, log_threshold + 1);
+		next_proposed_line (active_module, selected_line, log_threshold + 1);
 		
-		-- select_line (current_active_module, selected_line.line, log_threshold + 1);
+		-- select_line (active_module, selected_line.line, log_threshold + 1);
 		modify_status (
-			module_cursor	=> current_active_module, 
+			module_cursor	=> active_module, 
 			operation		=> (SET, SELECTED),
 			line_cursor		=> selected_line.line_cursor, 
 			log_threshold	=> log_threshold + 1);
@@ -755,7 +755,7 @@ package body et_canvas_board_tracks is
 		procedure collect (layer : in type_signal_layer) is 
 			count : natural := 0;
 		begin
-			propose_lines (current_active_module, point, layer, 
+			propose_lines (active_module, point, layer, 
 				get_catch_zone (et_canvas_board_2.catch_zone),
 				count, log_threshold + 1);
 			
@@ -768,10 +768,10 @@ package body et_canvas_board_tracks is
 			proposed_line : type_line_segment;
 			use et_object_status;
 		begin
-			proposed_line := get_first_line (current_active_module, PROPOSED, log_threshold + 1);
+			proposed_line := get_first_line (active_module, PROPOSED, log_threshold + 1);
 
 			modify_status (
-				module_cursor	=> current_active_module, 
+				module_cursor	=> active_module, 
 				line_cursor		=> proposed_line.line_cursor, 
 				operation		=> (SET, SELECTED),
 				log_threshold	=> log_threshold + 1);
@@ -792,7 +792,7 @@ package body et_canvas_board_tracks is
 
 		-- Collect all segments in the vicinity of the given point:
 		-- CS should depend on enabled signal layer
-		for ly in 1 .. get_deepest_conductor_layer (current_active_module) loop
+		for ly in 1 .. get_deepest_conductor_layer (active_module) loop
 			collect (ly);
 		end loop;
 		
@@ -841,7 +841,7 @@ package body et_canvas_board_tracks is
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
-			selected_line := get_first_line (current_active_module, SELECTED, log_threshold + 1);
+			selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
 			
 			if selected_line.line_cursor /= pac_conductor_lines.no_element then
 
@@ -851,7 +851,7 @@ package body et_canvas_board_tracks is
 					-- case segment.shape is
 					-- 	when LINE =>
 							move_line (
-								module_cursor	=> current_active_module,
+								module_cursor	=> active_module,
 								line			=> element (selected_line.line_cursor),
 								point_of_attack	=> preliminary_segment.point_of_attack,
 								destination		=> point,
@@ -965,7 +965,7 @@ package body et_canvas_board_tracks is
 			log (text => "finalizing ripup ...", level => log_threshold);
 			log_indentation_up;
 
-			selected_line := get_first_line (current_active_module, SELECTED, log_threshold + 1);
+			selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
 			
 			if selected_line.line_cursor /= pac_conductor_lines.no_element then
 
@@ -977,14 +977,14 @@ package body et_canvas_board_tracks is
 							case ripup_mode is
 								when SINGLE_SEGMENT =>
 									ripup_line_segment (
-										module_cursor	=> current_active_module,
+										module_cursor	=> active_module,
 										net_name		=> key (selected_line.net_cursor),
 										line			=> element (selected_line.line_cursor),
 										log_threshold	=> log_threshold);
 
 								when WHOLE_NET =>
 									ripup_all_segments (
-										module_cursor	=> current_active_module,
+										module_cursor	=> active_module,
 										net_name		=> key (selected_line.net_cursor),
 										log_threshold	=> log_threshold);
 							end case;

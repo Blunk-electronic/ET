@@ -80,7 +80,7 @@ package body et_project.modules is
 	function get_active_module return string is
 		use pac_module_name;
 	begin
-		return pac_module_name.to_string (key (current_active_module)); -- motor_driver (without extension)
+		return pac_module_name.to_string (key (active_module)); -- motor_driver (without extension)
 	end get_active_module;
 
 

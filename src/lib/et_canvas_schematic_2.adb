@@ -140,7 +140,7 @@ package body et_canvas_schematic_2 is
 
 			-- Get the size of the frame:
 			size : constant et_frames.type_frame_size := 
-				element (current_active_module).frames.frame.size;
+				element (active_module).frames.frame.size;
 
 		begin
 			b.width := type_distance_positive (size.x);
@@ -264,7 +264,7 @@ package body et_canvas_schematic_2 is
 			-- Get the margin between outer border of the frame
 			-- and the edge of the paper:
 			margin : constant et_frames.type_border_width := 
-				element (current_active_module).frames.frame.border_width;
+				element (active_module).frames.frame.border_width;
 			
 			-- The offset due to the margin:
 			margin_offset : type_vector_model;
@@ -734,7 +734,7 @@ package body et_canvas_schematic_2 is
 		
 		-- Save the module with its own name:
 		save_module (
-			module_cursor	=> current_active_module,
+			module_cursor	=> active_module,
 			log_threshold	=> log_threshold + 1);
 
 		-- Return to previous directory:
@@ -1068,9 +1068,9 @@ package body et_canvas_schematic_2 is
 
 		-- Show the module name in the title bar of 
 		-- the schematic editor:
-		set_title_bar (current_active_module);
+		set_title_bar (active_module);
 
-		grid := get_grid (current_active_module, log_threshold + 1);
+		grid := get_grid (active_module, log_threshold + 1);
 		update_grid_display;
 
 		update_sheet_number_display;
@@ -1104,26 +1104,26 @@ package body et_canvas_schematic_2 is
 		case sel is
 			when NEXT =>
 				-- Advance to next module:
-				current_active_module := pac_generic_modules.next (current_active_module);
+				active_module := pac_generic_modules.next (active_module);
 
 				-- If there is no next module, select first module:
-				if current_active_module = pac_generic_modules.no_element then
+				if active_module = pac_generic_modules.no_element then
 					-- put_line ("no next");
-					current_active_module := generic_modules.first;
+					active_module := generic_modules.first;
 				end if;
 
 			when PREVIOUS =>
 				-- Advance to previous module:
-				current_active_module := pac_generic_modules.previous (current_active_module);
+				active_module := pac_generic_modules.previous (active_module);
 
 				-- If there is no previous module, select last module:
-				if current_active_module = pac_generic_modules.no_element then
-					current_active_module := generic_modules.last;
+				if active_module = pac_generic_modules.no_element then
+					active_module := generic_modules.last;
 				end if;
 		end case;
 
 				
-		--put_line (to_string (key (current_active_module)));
+		--put_line (to_string (key (active_module)));
 		
 		-- Switch module in schematic and board editor:
 		update_schematic_editor;
@@ -1142,9 +1142,9 @@ package body et_canvas_schematic_2 is
 		use et_project.modules.pac_generic_modules;
 		cursor : et_project.modules.pac_generic_modules.cursor := find (generic_modules, module);
 	begin
-		-- If module already loaded in collection of generic modules, set the current_active_module:
+		-- If module already loaded in collection of generic modules, set the active_module:
 		if cursor /= pac_generic_modules.no_element then 
-			current_active_module := cursor;
+			active_module := cursor;
 		else
 			-- If module not loaded yet, read it and store it in collection of generic modules:
 			read_module (
@@ -1222,7 +1222,7 @@ package body et_canvas_schematic_2 is
 		set_directory (to_string (current_active_project));
 		
 		-- execute the schematic command
-		schematic_cmd (current_active_module, cmd, log_threshold);
+		schematic_cmd (active_module, cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
 		set_directory (cur_dir_bak);
@@ -1309,7 +1309,7 @@ package body et_canvas_schematic_2 is
 		set_directory (to_string (current_active_project));
 		
 		-- execute the schematic command
-		schematic_cmd (current_active_module, cmd, log_threshold);
+		schematic_cmd (active_module, cmd, log_threshold);
 
 		-- Return to previous directory (like  /home/user/my_projects):
 		log (text => "returning to directory " & enclose_in_quotes (cur_dir_bak) & " ...",

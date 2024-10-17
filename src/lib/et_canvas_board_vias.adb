@@ -338,10 +338,10 @@ package body et_canvas_board_vias is
 	procedure init_preliminary_via is
 		use et_pcb;
 
-		rules : constant type_design_rules := get_pcb_design_rules (current_active_module);
+		rules : constant type_design_rules := get_pcb_design_rules (active_module);
 
 		-- get the user specific settings of the board
-		settings : constant type_user_settings := get_user_settings (current_active_module);
+		settings : constant type_user_settings := get_user_settings (active_module);
 		
 	begin
 		-- Set the drill size and restring according to user specific values:
@@ -410,12 +410,12 @@ package body et_canvas_board_vias is
 			-- module is assumed and the net index set accordingly.
 			-- NOTE: The net index is numbered from 0 .. N.
 			if preliminary_via.net_name = no_name then
-				preliminary_via.net_name := get_first_net (current_active_module);
+				preliminary_via.net_name := get_first_net (active_module);
 			end if;
 			
 			-- Set the acive net (in the box) via its index:
 			cbox_net_name.set_active (gint (
-				get_net_index (current_active_module, preliminary_via.net_name, log_threshold + 1)));
+				get_net_index (active_module, preliminary_via.net_name, log_threshold + 1)));
 			
 
 			pack_start (box_net_name, cbox_net_name, padding => guint (spacing));
@@ -513,7 +513,7 @@ package body et_canvas_board_vias is
 				-- The deepest available layer depends on the stack configuration.
 				-- The bottom layer must not be the destination because this 
 				-- is about BLIND vias:	
-				get_deepest_conductor_layer (current_active_module) - 1
+				get_deepest_conductor_layer (active_module) - 1
 			loop
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0,
@@ -576,7 +576,7 @@ package body et_canvas_board_vias is
 				-- The deepest available layer depends on the stack configuration.
 				-- The bottom layer must not be the destination because this 
 				-- is about BURIED vias:	
-				get_deepest_conductor_layer (current_active_module) - 1
+				get_deepest_conductor_layer (active_module) - 1
 			loop
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0,
@@ -638,7 +638,7 @@ package body et_canvas_board_vias is
 				-- The deepest available layer depends on the stack configuration.
 				-- The bottom layer must not be the destination because this 
 				-- is about BURIED vias:	
-				get_deepest_conductor_layer (current_active_module) - 1
+				get_deepest_conductor_layer (active_module) - 1
 			loop
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0,
@@ -869,7 +869,7 @@ package body et_canvas_board_vias is
 
 		-- Collect all vias in the vicinity of the given point:
 		proposed_vias := get_vias (
-			module_cursor	=> current_active_module, 
+			module_cursor	=> active_module, 
 			point			=> point, 
 			zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
 			log_threshold	=> log_threshold + 1);
@@ -937,7 +937,7 @@ package body et_canvas_board_vias is
 			end case;
 
 			place_via (
-				module_cursor	=> current_active_module,
+				module_cursor	=> active_module,
 				net_name		=> preliminary_via.net_name,
 				via				=> via,
 				log_threshold	=> log_threshold + 1);
@@ -967,7 +967,7 @@ package body et_canvas_board_vias is
 			if selected_via /= pac_proposed_vias.no_element then
 
 				move_via (
-					module_cursor	=> current_active_module,
+					module_cursor	=> active_module,
 					via				=> element (selected_via),
 					coordinates		=> ABSOLUTE,
 					point			=> point,
@@ -1037,7 +1037,7 @@ package body et_canvas_board_vias is
 			if selected_via /= pac_proposed_vias.no_element then
 
 				delete_via (
-					module_cursor	=> current_active_module,
+					module_cursor	=> active_module,
 					via				=> element (selected_via),
 					log_threshold	=> log_threshold + 1);
 				

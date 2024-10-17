@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -229,7 +229,7 @@ package body et_canvas_board_silkscreen is
 		procedure collect is 
 			use et_board_ops.silkscreen;
 		begin
-			lines := get_lines (current_active_module, face, point, 
+			lines := get_lines (active_module, face, point, 
 				get_catch_zone (et_canvas_board_2.catch_zone), 
 				log_threshold + 1);
 			
@@ -306,7 +306,7 @@ package body et_canvas_board_silkscreen is
 					case object.shape is
 						when LINE =>
 							move_line (
-								module_cursor	=> current_active_module,
+								module_cursor	=> active_module,
 								face			=> object.line_face,
 								line			=> object.line,
 								point_of_attack	=> preliminary_object.point_of_attack,
@@ -401,7 +401,7 @@ package body et_canvas_board_silkscreen is
 					case object.shape is
 						when LINE =>
 							delete (
-								module_cursor	=> current_active_module,
+								module_cursor	=> active_module,
 								face			=> object.line_face,
 								line			=> object.line,
 								log_threshold	=> log_threshold);

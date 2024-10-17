@@ -354,7 +354,7 @@ package body et_canvas_schematic_units is
 		
 		-- Collect all units in the vicinity of the given point:
 		proposed_units := collect_units (
-			module			=> current_active_module,
+			module			=> active_module,
 			place			=> to_position (point, current_active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
@@ -369,7 +369,7 @@ package body et_canvas_schematic_units is
 				unit_cursor := proposed_units.first;
 			
 				finalize_delete (
-					module_cursor	=> current_active_module,
+					module_cursor	=> active_module,
 					unit			=> element (unit_cursor),
 					log_threshold	=> log_threshold + 1);
 
@@ -392,7 +392,7 @@ package body et_canvas_schematic_units is
 		log_indentation_up;
 
 		finalize_delete (
-			module_cursor	=> current_active_module,
+			module_cursor	=> active_module,
 			unit			=> element (selected_unit),
 			log_threshold	=> log_threshold + 1);
 		
@@ -432,7 +432,7 @@ package body et_canvas_schematic_units is
 			commit (PRE, verb, noun, log_threshold);
 			
 			move_unit (
-				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
+				module_name		=> et_project.modules.pac_generic_modules.key (active_module),
 				device_name		=> key (su.device),
 				unit_name		=> key (su.unit),
 				coordinates		=> ABSOLUTE,
@@ -514,7 +514,7 @@ package body et_canvas_schematic_units is
 			commit (PRE, verb, noun, log_threshold);
 			
 			drag_unit (
-				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
+				module_name		=> et_project.modules.pac_generic_modules.key (active_module),
 				device_name		=> key (su.device),
 				unit_name		=> key (su.unit),
 				coordinates		=> ABSOLUTE,
@@ -573,7 +573,7 @@ package body et_canvas_schematic_units is
 		
 		-- Collect all units in the vicinity of the given point:
 		proposed_units := collect_units (
-			module			=> current_active_module,
+			module			=> active_module,
 			place			=> to_position (point, current_active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
@@ -691,7 +691,7 @@ package body et_canvas_schematic_units is
 			
 		begin
 			--log (text => "iterate nets", console => true);
-			iterate (element (current_active_module).nets, query_net'access);
+			iterate (element (active_module).nets, query_net'access);
 		end query_port;
 		
 	begin -- find_attached_segments
@@ -939,7 +939,7 @@ package body et_canvas_schematic_units is
 		
 		-- Collect all units in the vicinity of the given point:
 		proposed_units := collect_units (
-			module			=> current_active_module,
+			module			=> active_module,
 			place			=> to_position (point, current_active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
@@ -954,7 +954,7 @@ package body et_canvas_schematic_units is
 				unit_cursor := proposed_units.first;
 			
 				finalize_rotate_unit (
-					module_cursor	=> current_active_module,
+					module_cursor	=> active_module,
 					unit			=> element (unit_cursor),
 					log_threshold	=> log_threshold + 1);
 
@@ -977,7 +977,7 @@ package body et_canvas_schematic_units is
 		log_indentation_up;
 
 		finalize_rotate_unit (
-			module_cursor	=> current_active_module,
+			module_cursor	=> active_module,
 			unit			=> element (selected_unit),
 			log_threshold	=> log_threshold + 1);
 		
@@ -993,7 +993,7 @@ package body et_canvas_schematic_units is
 		all_lib_dirs : pac_preferred_libraries_schematic.list;
 		top_lib_dir : pac_preferred_library_schematic.bounded_string;
 	begin
-		all_lib_dirs := get_preferred_libraries_schematic (current_active_module);
+		all_lib_dirs := get_preferred_libraries_schematic (active_module);
 		top_lib_dir := element (all_lib_dirs.first);
 		
 		--return expand ("$HOME/git/BEL/ET_component_library/devices");
@@ -1148,7 +1148,7 @@ package body et_canvas_schematic_units is
 		unit_add.total := units_total (unit_add.device);
 		
 		-- assign the prospective device name:
-		unit_add.device_pre := next_device_name (current_active_module, element (device_cursor_lib).prefix);
+		unit_add.device_pre := next_device_name (active_module, element (device_cursor_lib).prefix);
 		
 		-- get the available package variants:
 		variants := available_variants (device_cursor_lib);
@@ -1324,7 +1324,7 @@ package body et_canvas_schematic_units is
 		put_line ("drop_unit");
 		
 		add_device (
-			module_name		=> key (current_active_module),
+			module_name		=> key (active_module),
 			device_model	=> pac_devices_lib.key (unit_add.device),
 			variant			=> unit_add.variant,
 			destination		=> to_position (position, current_active_sheet),
@@ -1357,7 +1357,7 @@ package body et_canvas_schematic_units is
 			commit (PRE, verb, noun, log_threshold);
 			
 			fetch_unit (
-				module_name		=> key (current_active_module),
+				module_name		=> key (active_module),
 				device_name		=> unit_add.device_pre,
 				unit_name		=> unit_add.name,
 				destination		=> to_position (position, current_active_sheet),
@@ -1623,7 +1623,7 @@ package body et_canvas_schematic_units is
 		
 		-- Collect all units in the vicinity of the given point:
 		proposed_units := collect_units (
-			module			=> current_active_module,
+			module			=> active_module,
 			place			=> to_position (point, current_active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
@@ -1711,7 +1711,7 @@ package body et_canvas_schematic_units is
 			su := element (selected_placeholder);
 
 			move_unit_placeholder (
-				module_name		=> et_project.modules.pac_generic_modules.key (current_active_module),
+				module_name		=> et_project.modules.pac_generic_modules.key (active_module),
 				device_name		=> key (su.device),
 				unit_name		=> key (su.unit),
 				coordinates		=> ABSOLUTE,
@@ -1908,7 +1908,7 @@ package body et_canvas_schematic_units is
 		
 		-- Collect all placeholders in the vicinity of the given point:
 		proposed_placeholders := collect_placeholders (
-			module			=> current_active_module,
+			module			=> active_module,
 			place			=> to_position (point, current_active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			category		=> category,
@@ -2037,7 +2037,7 @@ package body et_canvas_schematic_units is
 		log (text => "rotating placeholder after clarification ...", level => log_threshold);
 		log_indentation_up;
 
-		rotate_placeholder (current_active_module, element (selected_placeholder), category, log_threshold + 1);
+		rotate_placeholder (active_module, element (selected_placeholder), category, log_threshold + 1);
 		
 		log_indentation_down;
 	end rotate_selected_placeholder;
@@ -2054,7 +2054,7 @@ package body et_canvas_schematic_units is
 		
 		-- Collect all placeholders in the vicinity of the given point:
 		proposed_placeholders := collect_placeholders (
-			module			=> current_active_module,
+			module			=> active_module,
 			place			=> to_position (point, current_active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			category		=> category,
@@ -2070,7 +2070,7 @@ package body et_canvas_schematic_units is
 			when 1 =>
 				selected_placeholder := proposed_placeholders.first;
 
-				rotate_placeholder (current_active_module, element (selected_placeholder), category, log_threshold + 1);
+				rotate_placeholder (active_module, element (selected_placeholder), category, log_threshold + 1);
 				
 				set_status (status_rotate_placeholder);
 
@@ -2117,7 +2117,7 @@ package body et_canvas_schematic_units is
 		case noun is
 			when NOUN_DEVICE =>
 				rename_device (
-					module_name 		=> key (current_active_module),
+					module_name 		=> key (active_module),
 					device_name_before	=> key (su.device), -- IC2
 					device_name_after	=> to_device_name (self.get_text), -- IC3
 					log_threshold		=> log_threshold + 1);
@@ -2129,7 +2129,7 @@ package body et_canvas_schematic_units is
 				partcode := to_partcode (self.get_text);
 
 				set_partcode (
-					module_name		=> key (current_active_module),
+					module_name		=> key (active_module),
 					device_name		=> key (su.device),
 					partcode		=> partcode,
 					log_threshold	=> log_threshold + 1);
@@ -2140,7 +2140,7 @@ package body et_canvas_schematic_units is
 				purpose := to_purpose (self.get_text);
 				
 				set_purpose (
-					module_name		=> key (current_active_module),
+					module_name		=> key (active_module),
 					device_name		=> key (su.device),
 					purpose			=> purpose,
 					log_threshold	=> log_threshold + 1);
@@ -2151,7 +2151,7 @@ package body et_canvas_schematic_units is
 				value := to_value_with_check (self.get_text);
 
 				set_value (
-					module_name		=> key (current_active_module),
+					module_name		=> key (active_module),
 					device_name		=> key (su.device),
 					value			=> value,
 					log_threshold	=> log_threshold + 1);
@@ -2164,7 +2164,7 @@ package body et_canvas_schematic_units is
 				check_variant_name_characters (variant);
 
 				set_variant (
-					module			=> current_active_module,
+					module			=> active_module,
 					device			=> su.device,
 					variant			=> variant);
 				
@@ -2273,7 +2273,7 @@ package body et_canvas_schematic_units is
 			
 			-- Collect all units in the vicinity of the given point:
 			proposed_units := collect_units (
-				module			=> current_active_module,
+				module			=> active_module,
 				place			=> to_position (point, current_active_sheet),
 				zone			=> get_catch_zone (catch_zone),
 				log_threshold	=> log_threshold + 1);
@@ -2366,7 +2366,7 @@ package body et_canvas_schematic_units is
 		
 		-- Collect all units in the vicinity of the given point:
 		proposed_units := collect_units (
-			module			=> current_active_module,
+			module			=> active_module,
 			place			=> to_position (point, current_active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);

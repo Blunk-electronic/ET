@@ -843,7 +843,7 @@ is
 			return type_unit_query
 		is begin
 			return unit_position (
-				module_cursor	=> current_active_module,
+				module_cursor	=> active_module,
 				device_name		=> device,
 				unit_name		=> unit);
 			
@@ -884,7 +884,7 @@ is
 						-- Make the whole device (with all its units) selected:
 						proposed_units.append (new_item =>
 							(
-							device	=> locate_device (current_active_module, device),
+							device	=> locate_device (active_module, device),
 							unit	=> et_schematic.pac_units.no_element
 							));
 
@@ -911,8 +911,8 @@ is
 						-- Make the whole device (with all its units) selected:
 						proposed_units.append (new_item =>
 							(
-							device	=> locate_device (current_active_module, device),
-							unit	=> locate_unit (current_active_module, device, unit)
+							device	=> locate_device (active_module, device),
+							unit	=> locate_unit (active_module, device, unit)
 							));
 
 						selected_unit := proposed_units.first;
@@ -939,7 +939,7 @@ is
 							-- Make the whole device (with all its units) selected:
 							proposed_units.append (new_item =>
 								(
-								device	=> locate_device (current_active_module, device),
+								device	=> locate_device (active_module, device),
 								unit	=> et_schematic.pac_units.no_element
 								));
 
@@ -1069,7 +1069,7 @@ is
 		use et_canvas_schematic_nets;
 		use pac_proposed_segments;
 		
-		net_cursor : pac_nets.cursor := locate_net (current_active_module, net);
+		net_cursor : pac_nets.cursor := locate_net (active_module, net);
 
 		strand_cursor : pac_strands.cursor;
 		
@@ -1139,7 +1139,7 @@ is
 			when 7 =>
 				delete_net_label
 					(
-					module_cursor	=> current_active_module,
+					module_cursor	=> active_module,
 
 					position		=> to_position (
 										point => type_vector_model (set (
@@ -1168,7 +1168,7 @@ is
 			when 5 =>
 				delete_net
 					(
-					module_cursor		=> current_active_module,
+					module_cursor		=> active_module,
 					net_name			=> to_net_name (f (5)), -- RESET
 					scope				=> EVERYWHERE,
 					place				=> to_position (
@@ -1182,7 +1182,7 @@ is
 			when 6 =>
 				delete_net
 					(
-					module_cursor		=> current_active_module,
+					module_cursor		=> active_module,
 					net_name			=> to_net_name (f (5)), -- RESET
 					scope				=> SHEET,
 					place				=> to_position (
@@ -1195,7 +1195,7 @@ is
 			when 8 =>
 				delete_net
 					(
-					module_cursor		=> current_active_module,
+					module_cursor		=> active_module,
 					net_name			=> to_net_name (f (5)), -- RESET
 					scope				=> STRAND,
 					place				=> to_position (
@@ -1222,7 +1222,7 @@ is
 			when 8 =>
 				delete_segment
 					(
-					module_cursor	=> current_active_module,
+					module_cursor	=> active_module,
 					net_name		=> to_net_name (f (5)), -- RESET
 					place			=> to_position (
 										point => type_vector_model (set (
@@ -1246,7 +1246,7 @@ is
 			when 11 =>
 				drag_segment
 					(
-					module_cursor	=> current_active_module,
+					module_cursor	=> active_module,
 					net_name		=> to_net_name (f (5)), -- RESET
 					point_of_attack	=> to_position (
 										point => type_vector_model (set (
@@ -1317,7 +1317,7 @@ is
 
 			-- Show the module in schematic and board editor:
 			
-			current_active_module := locate_module (module_name);
+			active_module := locate_module (module_name);
 			current_active_sheet := 1;
 
 			-- Update module name in the schematic window title bar:
@@ -1473,7 +1473,7 @@ is
 			-- CS Set the previous module active instead ?
 			if length (generic_modules) > 0 then
 				
-				current_active_module := generic_modules.first;
+				active_module := generic_modules.first;
 				current_active_sheet := 1;
 
 				log (text => "set module " 
@@ -1481,12 +1481,12 @@ is
 					level => log_threshold + 1);
 
 				-- Update module name in the schematic window title bar:
-				set_title_bar (current_active_module);
+				set_title_bar (active_module);
 				
 				update_sheet_number_display;
 				
 				-- Update the board window title bar:
-				et_canvas_board_2.set_title_bar (current_active_module);
+				et_canvas_board_2.set_title_bar (active_module);
 			else
 				-- CS
 				null;
@@ -1511,7 +1511,7 @@ is
 			-- CS Set the previous module active instead ?
 			if length (generic_modules) > 0 then
 			
-				current_active_module := generic_modules.first;
+				active_module := generic_modules.first;
 				current_active_sheet := 1;
 
 				log (text => "set module " 
@@ -1519,12 +1519,12 @@ is
 					level => log_threshold + 1);
 
 				-- Update module name in the schematic window title bar:
-				set_title_bar (current_active_module);
+				set_title_bar (active_module);
 				
 				update_sheet_number_display;
 				
 				-- Update the board window title bar:
-				et_canvas_board_2.set_title_bar (current_active_module);
+				et_canvas_board_2.set_title_bar (active_module);
 			else
 				-- CS
 				null;
@@ -1554,13 +1554,13 @@ is
 			when 4 =>
 				-- Save the module with its own name:
 				save_module (
-					module_cursor	=> current_active_module,
+					module_cursor	=> active_module,
 					log_threshold	=> log_threshold + 1);
 
 			when 5 =>
 				-- Save the module with a different name:
 				save_module (
-					module_cursor	=> current_active_module,
+					module_cursor	=> active_module,
 					save_as_name	=> to_module_name (f (5)), -- led_driver_test
 					log_threshold	=> log_threshold + 1);
 				
@@ -1742,7 +1742,7 @@ is
 							when 10 =>
 								insert_net
 									(
-									module_cursor	=> current_active_module,
+									module_cursor	=> active_module,
 									net_name		=> to_net_name (f (5)), -- RESET
 									start_point		=> to_position (
 															point => type_vector_model (set (
@@ -1996,7 +1996,7 @@ is
 							when 7 =>
 								place_junction 
 									(
-									module_cursor 	=> current_active_module,
+									module_cursor 	=> active_module,
 									place			=> to_position 
 														(
 														sheet => to_sheet (f (5)),
@@ -2021,7 +2021,7 @@ is
 								-- SIMPLE LABEL
 								place_net_label
 									(
-									module_cursor		=> current_active_module,
+									module_cursor		=> active_module,
 
 									segment_position	=> to_position (
 															point => type_vector_model (set (
@@ -2048,7 +2048,7 @@ is
 								-- TAG LABEL
 								place_net_label
 									(
-									module_cursor		=> current_active_module,
+									module_cursor		=> active_module,
 
 									segment_position	=> to_position (
 															point => type_vector_model (set (
@@ -2129,7 +2129,7 @@ is
 							when 6 =>
 								rename_net
 									(
-									module_cursor		=> current_active_module,
+									module_cursor		=> active_module,
 									net_name_before		=> to_net_name (f (5)), -- RESET
 									net_name_after		=> to_net_name (f (6)), -- RESET_N
 									scope				=> EVERYWHERE,
@@ -2144,7 +2144,7 @@ is
 							when 7 =>
 								rename_net
 									(
-									module_cursor		=> current_active_module,
+									module_cursor		=> active_module,
 									net_name_before		=> to_net_name (f (5)), -- RESET
 									net_name_after		=> to_net_name (f (6)), -- RESET_N
 									scope				=> SHEET,
@@ -2158,7 +2158,7 @@ is
 							when 9 =>
 								rename_net
 									(
-									module_cursor		=> current_active_module,
+									module_cursor		=> active_module,
 									net_name_before		=> to_net_name (f (5)), -- RESET
 									net_name_after		=> to_net_name (f (6)), -- RESET_N
 									scope				=> STRAND,
@@ -2302,7 +2302,7 @@ is
 							when 6 =>
 								-- schematic led_driver set class GND pwr
 								set_net_class (
-									module_cursor	=> current_active_module,
+									module_cursor	=> active_module,
 									net_name		=> to_net_name (f (5)),
 									net_class		=> et_pcb.to_net_class_name (f (6)),
 									log_threshold	=> log_threshold + 1);
@@ -2379,7 +2379,7 @@ is
 						case cmd_field_count is
 							when 6 =>
 								set_scope (
-									module_cursor 	=> current_active_module,
+									module_cursor 	=> active_module,
 									net_name		=> to_net_name (f (5)),
 									scope			=> et_netlists.to_net_scope (f (6)),
 									log_threshold	=> log_threshold + 1
@@ -2654,11 +2654,11 @@ is
 
 					device_name := to_device_name (f (5));
 
-					if exists (current_active_module, device_name) then
+					if exists (active_module, device_name) then
 
-						unit_add.device		:= device_model_cursor (current_active_module, device_name);
+						unit_add.device		:= device_model_cursor (active_module, device_name);
 						
-						--unit_add.variant	:= device_variant_name (current_active_module, device_name);
+						--unit_add.variant	:= device_variant_name (active_module, device_name);
 						-- CS: really required ? requires test whether the device is real
 						
 						unit_add.total		:= units_total (unit_add.device);
@@ -2667,7 +2667,7 @@ is
 						menu_propose_units_on_fetch (
 							device			=> device_name,
 							units			=> available_units (
-												current_active_module,
+												active_module,
 												device_name,
 												log_threshold + 1),
 							log_threshold	=> log_threshold + 1);
@@ -2680,11 +2680,11 @@ is
 				when 6 => -- like "fetch unit IC1 B"
 					device_name := to_device_name (f (5));
 
-					if exists (current_active_module, device_name) then
+					if exists (active_module, device_name) then
 
-						unit_add.device		:= device_model_cursor (current_active_module, device_name);
+						unit_add.device		:= device_model_cursor (active_module, device_name);
 
-						--unit_add.variant	:= device_variant_name (current_active_module, device_name);
+						--unit_add.variant	:= device_variant_name (active_module, device_name);
 						-- CS: really required ? requires test whether the device is real
 
 						unit_add.total		:= units_total (unit_add.device);
@@ -2695,7 +2695,7 @@ is
 						-- test existence AND availability of unit:
 						if provides_unit (unit_add.device, unit_name) then
 
-							if unit_available (current_active_module, device_name, unit_name) then
+							if unit_available (active_module, device_name, unit_name) then
 
 								unit_add.name := unit_name;
 								
@@ -2758,7 +2758,7 @@ is
 
 								device_name := to_device_name (f (5));
 
-								if exists (current_active_module, device_name) then
+								if exists (active_module, device_name) then
 
 									unit_delete.device := device_name;
 
@@ -2766,7 +2766,7 @@ is
 									menu_propose_units_on_delete (
 										device			=> unit_delete.device,
 										units			=> units_on_sheet (
-															current_active_module,
+															active_module,
 															device_name,
 															current_active_sheet,
 															log_threshold + 1),
@@ -2779,7 +2779,7 @@ is
 							when 6 => -- like "delete unit IC1 B"
 								device_name := to_device_name (f (5));
 								
-								if exists (current_active_module, device_name) then
+								if exists (active_module, device_name) then
 									
 									unit_delete.device := device_name;
 
@@ -2787,14 +2787,14 @@ is
 
 									-- Test whether the unit is deployed on the current active sheet.
 									-- Deleting is possible if it is deployed and if it is on the current sheet.
-									if deployed (current_active_module, unit_delete.device, unit_name) then
+									if deployed (active_module, unit_delete.device, unit_name) then
 
 										unit_delete.unit := unit_name;
 										
-										if sheet (current_active_module, unit_delete.device, unit_delete.unit) = current_active_sheet then
+										if sheet (active_module, unit_delete.device, unit_delete.unit) = current_active_sheet then
 
 											delete_unit (
-												module_cursor	=> current_active_module,
+												module_cursor	=> active_module,
 												device_name		=> unit_delete.device,
 												unit_name		=> unit_delete.unit,
 												log_threshold	=> log_threshold + 1);
@@ -2830,13 +2830,13 @@ is
 
 								device_name := to_device_name (f (5));
 
-								if exists (current_active_module, device_name) then
+								if exists (active_module, device_name) then
 									unit_move.device := device_name;
 
 									-- Propose units that are on the current active sheet:
 									menu_propose_units_on_move (
 										units			=> units_on_sheet (
-															current_active_module,
+															active_module,
 															device_name,
 															current_active_sheet,
 															log_threshold + 1),
@@ -2849,7 +2849,7 @@ is
 							when 6 => -- like "drag unit IC1 B"
 								device_name := to_device_name (f (5));
 								
-								if exists (current_active_module, device_name) then
+								if exists (active_module, device_name) then
 									
 									unit_move.device := device_name;
 
@@ -2858,11 +2858,11 @@ is
 									-- Test whether the unit is deployed on the current active sheet.
 									-- Dragging is possible if it is deployed and if it is on the current sheet.
 									-- It will then be attached to the cursor or mouse pointer.
-									if deployed (current_active_module, unit_move.device, unit_name) then
+									if deployed (active_module, unit_move.device, unit_name) then
 
 										unit_move.unit := unit_name;
 										
-										if sheet (current_active_module, unit_move.device, unit_move.unit) = current_active_sheet then
+										if sheet (active_module, unit_move.device, unit_move.unit) = current_active_sheet then
 											select_unit_for_move;
 											
 											-- use the current primary tool for moving the unit:
@@ -2938,13 +2938,13 @@ is
 
 								device_name := to_device_name (f (5));
 
-								if exists (current_active_module, device_name) then
+								if exists (active_module, device_name) then
 									unit_move.device := device_name;
 
 									-- Propose units that are on the current active sheet:
 									menu_propose_units_on_move (
 										units			=> units_on_sheet (
-															current_active_module,
+															active_module,
 															device_name,
 															current_active_sheet,
 															log_threshold + 1),
@@ -2957,7 +2957,7 @@ is
 							when 6 => -- like "move unit IC1 B"
 								device_name := to_device_name (f (5));
 								
-								if exists (current_active_module, device_name) then
+								if exists (active_module, device_name) then
 									
 									unit_move.device := device_name;
 
@@ -2966,7 +2966,7 @@ is
 									-- Test whether the unit is deployed.
 									-- If it is deployed somewhere (whatever sheet) then it will be 
 									-- attached to the cursor or mouse pointer.
-									if deployed (current_active_module, unit_move.device, unit_name) then
+									if deployed (active_module, unit_move.device, unit_name) then
 
 										unit_move.unit := unit_name;
 										
@@ -2974,7 +2974,7 @@ is
 										-- GUI that the sheet changes. This way the unit is drawn
 										-- on the current visible sheet independed of its original sheet number.
 										-- See et_canvas_schematic.draw_units.
-										if sheet (current_active_module, unit_move.device, unit_move.unit) /= current_active_sheet then
+										if sheet (active_module, unit_move.device, unit_move.unit) /= current_active_sheet then
 											unit_move.sheet_changes := true;
 
 											--set_status ("Moving unit from another sheet");
@@ -3012,14 +3012,14 @@ is
 
 								device_name := to_device_name (f (5));
 
-								if exists (current_active_module, device_name) then
+								if exists (active_module, device_name) then
 
 									placeholder_move.device := device_name;
 
 									-- Propose units that are on the current active sheet:
 									menu_propose_units_on_move (
 										units			=> units_on_sheet (
-															current_active_module,
+															active_module,
 															device_name,
 															current_active_sheet,
 															log_threshold + 1),
@@ -3032,7 +3032,7 @@ is
 							when 6 => -- like "move name IC1 B"
 								device_name := to_device_name (f (5));
 								
-								if exists (current_active_module, device_name) then
+								if exists (active_module, device_name) then
 
 									placeholder_move.device := device_name;
 									
@@ -3042,11 +3042,11 @@ is
 									-- Moving the placeholder is possible if the unit it is deployed 
 									-- and if it is on the current sheet.
 									-- The placeholder will then be attached to the cursor or mouse pointer.
-									if deployed (current_active_module, placeholder_move.device, unit_name) then
+									if deployed (active_module, placeholder_move.device, unit_name) then
 
 										placeholder_move.unit := unit_name;
 										
-										if sheet (current_active_module, placeholder_move.device, placeholder_move.unit) = current_active_sheet then
+										if sheet (active_module, placeholder_move.device, placeholder_move.unit) = current_active_sheet then
 											finish_placeholder_move;
 										else
 											unit_not_on_this_sheet;
@@ -3077,13 +3077,13 @@ is
 
 								device_name := to_device_name (f (5));
 
-								if exists (current_active_module, device_name) then
+								if exists (active_module, device_name) then
 									unit_move.device := device_name;
 
 									-- Propose units that are on the current active sheet:
 									menu_propose_units_on_move (
 										units			=> units_on_sheet (
-															current_active_module,
+															active_module,
 															device_name,
 															current_active_sheet,
 															log_threshold + 1),
@@ -3096,7 +3096,7 @@ is
 							when 6 => -- like "rotate unit IC1 B"
 								device_name := to_device_name (f (5));
 								
-								if exists (current_active_module, device_name) then
+								if exists (active_module, device_name) then
 									
 									unit_move.device := device_name;
 
@@ -3105,11 +3105,11 @@ is
 									-- Test whether the unit is deployed on the current active sheet.
 									-- Rotating is possible if it is deployed and if it is on the current sheet.
 									-- It will then be attached to the cursor or mouse pointer.
-									if deployed (current_active_module, unit_move.device, unit_name) then
+									if deployed (active_module, unit_move.device, unit_name) then
 
 										unit_move.unit := unit_name;
 										
-										if sheet (current_active_module, unit_move.device, unit_move.unit) = current_active_sheet then
+										if sheet (active_module, unit_move.device, unit_move.unit) = current_active_sheet then
 											finish_unit_move;
 										else
 											unit_not_on_this_sheet;
@@ -3135,14 +3135,14 @@ is
 
 								device_name := to_device_name (f (5));
 
-								if exists (current_active_module, device_name) then
+								if exists (active_module, device_name) then
 
 									placeholder_move.device := device_name;
 
 									-- Propose units that are on the current active sheet:
 									menu_propose_units_on_move (
 										units			=> units_on_sheet (
-															current_active_module,
+															active_module,
 															device_name,
 															current_active_sheet,
 															log_threshold + 1),
@@ -3155,7 +3155,7 @@ is
 							when 6 => -- like "rotate name IC1 B"
 								device_name := to_device_name (f (5));
 								
-								if exists (current_active_module, device_name) then
+								if exists (active_module, device_name) then
 
 									placeholder_move.device := device_name;
 									
@@ -3165,11 +3165,11 @@ is
 									-- Rotating the placeholder is possible if the unit it is deployed 
 									-- and if it is on the current sheet.
 									-- The placeholder will then be attached to the cursor or mouse pointer.
-									if deployed (current_active_module, placeholder_move.device, unit_name) then
+									if deployed (active_module, placeholder_move.device, unit_name) then
 
 										placeholder_move.unit := unit_name;
 										
-										if sheet (current_active_module, placeholder_move.device, placeholder_move.unit) = current_active_sheet then
+										if sheet (active_module, placeholder_move.device, placeholder_move.unit) = current_active_sheet then
 											finish_placeholder_move;
 										else
 											unit_not_on_this_sheet;
@@ -3198,7 +3198,7 @@ is
 							when 5 => -- like "set value/partcode/purpose IC1"
 								device_name := to_device_name (f (5));
 
-								if exists (current_active_module, device_name) then
+								if exists (active_module, device_name) then
 									set_property (device_name);
 								else
 									device_not_found;
@@ -3214,7 +3214,7 @@ is
 							when 5 => -- like "set variant IC1"
 								device_name := to_device_name (f (5));
 
-								if exists (current_active_module, device_name) then
+								if exists (active_module, device_name) then
 									set_variant (device_name);
 								else
 									device_not_found;

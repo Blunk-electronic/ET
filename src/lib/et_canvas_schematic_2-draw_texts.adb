@@ -76,7 +76,7 @@ begin
 	
 	set_color_texts;
 
-	iterate (element (current_active_module).texts, query_text'access);
+	iterate (element (active_module).texts, query_text'access);
 	
 end draw_texts;
 

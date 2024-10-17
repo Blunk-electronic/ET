@@ -520,7 +520,7 @@ package body et_canvas_board_texts is
 				type_signal_layer'first .. 
 
 				-- The deepest available layer depends on the stack configuration:
-				get_deepest_conductor_layer (current_active_module) 
+				get_deepest_conductor_layer (active_module) 
 			loop
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0,
@@ -904,19 +904,19 @@ package body et_canvas_board_texts is
 
 		
 		procedure collect is begin
-			doc := get_texts (current_active_module, face, point, 
+			doc := get_texts (active_module, face, point, 
 					get_catch_zone (et_canvas_board_2.catch_zone),
 					log_threshold + 1);
 			
 			doc.iterate (query_doc_text'access);
 
-			silk := get_texts (current_active_module, face, point, 
+			silk := get_texts (active_module, face, point, 
 					get_catch_zone (et_canvas_board_2.catch_zone),
 					log_threshold + 1);
 			
 			silk.iterate (query_silk_text'access);
 			
-			stop := get_texts (current_active_module, face, point, 
+			stop := get_texts (active_module, face, point, 
 					get_catch_zone (et_canvas_board_2.catch_zone),
 					log_threshold + 1);
 			
@@ -941,7 +941,7 @@ package body et_canvas_board_texts is
 		face := BOTTOM;
 		collect;
 		
-		conductors := get_texts (current_active_module, point, 
+		conductors := get_texts (active_module, point, 
 			get_catch_zone (et_canvas_board_2.catch_zone),
 			log_threshold + 1);
 		
@@ -987,7 +987,7 @@ package body et_canvas_board_texts is
 				when LAYER_CAT_SILKSCREEN .. LAYER_CAT_STOP =>
 
 					place_text_in_non_conductor_layer (
-						module_cursor 	=> current_active_module,
+						module_cursor 	=> active_module,
 						layer_category	=> preliminary_text.category,
 						face			=> preliminary_text.face,
 						text			=> preliminary_text.text,
@@ -997,7 +997,7 @@ package body et_canvas_board_texts is
 				when LAYER_CAT_CONDUCTOR =>
 				
 					place_text_in_conductor_layer (
-						module_cursor 	=> current_active_module,
+						module_cursor 	=> active_module,
 						signal_layer	=> preliminary_text.signal_layer,
 						text			=> preliminary_text.text,
 						log_threshold	=> log_threshold + 1);
@@ -1043,7 +1043,7 @@ package body et_canvas_board_texts is
 						when LAYER_CAT_ASSY =>
 	
 							move_text (
-								module_cursor	=> current_active_module,
+								module_cursor	=> active_module,
 								face			=> text.doc_face,
 								text			=> text.doc_text,
 								coordinates		=> ABSOLUTE,
@@ -1053,7 +1053,7 @@ package body et_canvas_board_texts is
 						when LAYER_CAT_SILKSCREEN =>
 	
 							move_text (
-								module_cursor	=> current_active_module,
+								module_cursor	=> active_module,
 								face			=> text.silk_face,
 								text			=> text.silk_text,
 								coordinates		=> ABSOLUTE,
@@ -1064,7 +1064,7 @@ package body et_canvas_board_texts is
 						when LAYER_CAT_STOP =>
 	
 							move_text (
-								module_cursor	=> current_active_module,
+								module_cursor	=> active_module,
 								face			=> text.stop_face,
 								text			=> text.stop_text,
 								coordinates		=> ABSOLUTE,
@@ -1075,7 +1075,7 @@ package body et_canvas_board_texts is
 						when LAYER_CAT_CONDUCTOR =>
 	
 							move_text (
-								module_cursor	=> current_active_module,
+								module_cursor	=> active_module,
 								text			=> text.conductor_text,
 								coordinates		=> ABSOLUTE,
 								point			=> point,

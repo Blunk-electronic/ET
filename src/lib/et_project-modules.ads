@@ -72,7 +72,7 @@ package et_project.modules is
 
 	-- The current active module is stored here. Whenever objects of the schematic
 	-- or board are to be drawn, this variable must be read.
-	current_active_module : et_project.modules.pac_generic_modules.cursor; -- the currently active module
+	active_module : et_project.modules.pac_generic_modules.cursor; -- the currently active module
 
 
 	-- Returns the name of the currently active module:

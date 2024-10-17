@@ -403,7 +403,7 @@ procedure draw_nets is
 							declare
 								use et_schematic_ops.nets;
 								s : constant type_stub := query_stub (
-										module_cursor	=> current_active_module,
+										module_cursor	=> active_module,
 										net_name		=> selected_net,
 										position		=> to_position (type_vector_model (l.position), current_active_sheet),
 										log_threshold	=> log_threshold + 1);
@@ -729,7 +729,7 @@ procedure draw_nets is
 		-- If the segment is not movable then it will be drawn as given by
 		-- the module database.
 		if movable (
-			module_cursor	=> current_active_module,
+			module_cursor	=> active_module,
 			segment			=> element (original_segment),
 			zone			=> zone,
 			point_of_attack	=> to_position (PS.point_of_attack, current_active_sheet),
@@ -1163,7 +1163,7 @@ begin
 	
 	-- draw the nets
 	pac_generic_modules.query_element (
-		position	=> current_active_module,
+		position	=> active_module,
 		process		=> query_nets'access);
 
 

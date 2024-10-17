@@ -178,7 +178,7 @@ is
 
 		-- Vectorize the text:
 		v_text := vectorize_text (
-			content		=> to_placeholder_content (current_active_module, element (c).meaning),
+			content		=> to_placeholder_content (active_module, element (c).meaning),
 			size		=> element (c).size,
 			rotation	=> get_rotation (element (c).position),
 			position	=> element (c).position.place,
@@ -301,7 +301,7 @@ begin -- draw_assy
 -- 	put_line ("draw board assembly documentation ...");
 	
 	pac_generic_modules.query_element (
-		position	=> current_active_module,
+		position	=> active_module,
 		process		=> query_items'access);
 
 	draw_text_being_placed (face, LAYER_CAT_ASSY);
