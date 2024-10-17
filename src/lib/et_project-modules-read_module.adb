@@ -6613,6 +6613,7 @@ is
 				submod_cursor	: pac_submodule_variants.cursor := variant.submodules.first;
 				submod_name		: pac_module_instance_name.bounded_string; -- CLK_GENERATOR
 				submod_variant	: pac_assembly_variant_name.bounded_string; -- fixed_frequency
+				use et_schematic_ops.submodules;
 			begin
 				if submod_cursor = pac_submodule_variants.no_element then
 					log (text => "no submodule variants specified", level => log_threshold + 1);

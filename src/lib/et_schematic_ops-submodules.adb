@@ -4086,6 +4086,78 @@ package body et_schematic_ops.submodules is
 	end submodule_instance_exists;
 
 
+
+
+
+	function assembly_variant_exists (
+		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
+		instance	: in et_general.pac_module_instance_name.bounded_string; -- OSC1
+		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost				
+		return boolean 
+	is
+		variant_found : boolean := false; -- to be returned
+
+		
+		procedure query_submodules (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in et_schematic.type_module) 
+		is
+			use et_submodules;
+			use et_submodules.pac_submodules;
+			submod_instance_cursor : et_submodules.pac_submodules.cursor;
+			submod_path : pac_submodule_path.bounded_string;
+			submod_name	: pac_module_name.bounded_string;
+			submod_cursor : pac_generic_modules.cursor;
+
+			
+			-- Locates the given assembly variant in the submodule.
+			-- Sets flag variant_found.
+			procedure query_variants (
+				submodule_name	: in pac_module_name.bounded_string;
+				submodule		: in et_schematic.type_module)
+			is
+				use et_assembly_variants;
+			begin
+				if pac_assembly_variants.contains (submodule.variants, variant) then
+					variant_found := true;
+				end if;
+			end query_variants;
+			
+				
+		begin -- query_submodules
+			-- locate the submodule instance by the given instance name
+			submod_instance_cursor := find (module.submods, instance);
+
+			-- get the file name of the submodule like $ET_TEMPLATES/motor_driver.mod
+			submod_path :=  element (submod_instance_cursor).file;
+
+			-- convert the submodule path to a submodule name
+			submod_name := to_module_name (remove_extension (to_string (submod_path)));
+
+			--log (text => "submod name " & to_string (submod_name));
+
+			-- get a cursor to the submodule file
+			submod_cursor := locate_module (submod_name);
+
+			-- locate the given variant in the submodule
+			pac_generic_modules.query_element (
+				position	=> submod_cursor,
+				process		=> query_variants'access);
+
+		end query_submodules;
+		
+		
+	begin
+		-- search in the parent module for the given submodule instance
+		pac_generic_modules.query_element (
+			position	=> module,
+			process		=> query_submodules'access);
+
+		return variant_found;
+	end assembly_variant_exists;
+
+
+
 	
 	
 	

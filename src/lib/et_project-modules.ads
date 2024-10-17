@@ -322,24 +322,12 @@ package et_project.modules is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level);
 	
-	
-	
-	-- Returns true if the given submodule instance provides the
-	-- given assembly variant. The submodule instance is searched for
-	-- in the parent module indicated by cursor "module".
-	-- The module being searched in must be in the rig already.						
-	function assembly_variant_exists (
-		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
-		instance	: in et_general.pac_module_instance_name.bounded_string; -- OSC1
-		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost				
-		return boolean;
-
 
 	
-	function exists (
 	-- Returns true if the given module provides the given assembly variant.
 	-- If the variant is an empty string then it is about the default variant
 	-- which is always provided. The return is true in that case.
+	function exists (
 		module		: in pac_generic_modules.cursor;
 		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost
 		return boolean;	
