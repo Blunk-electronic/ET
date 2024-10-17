@@ -48,7 +48,9 @@ package et_schematic_ops.submodules is
 		name : in pac_module_instance_name.bounded_string);	
 
 
-	
+	procedure port_not_at_edge (
+		name : in pac_net_name.bounded_string);
+
 	
 	-- Returns true if given port of netchanger is connected with any net.
 	function port_connected (
@@ -66,9 +68,9 @@ package et_schematic_ops.submodules is
 		return boolean;
 
 
-	function exists (
 	-- Returns true if the given module provides the given port.
 	-- The module being searched in must be in the rig already.						
+	function exists (
 		module			: in et_submodules.pac_submodules.cursor;
 		port			: in pac_net_name.bounded_string;
 		direction		: in et_submodules.type_netchanger_port_name) -- master/slave		

@@ -60,6 +60,7 @@ with et_conventions;
 with et_time;
 
 with et_schematic_ops;
+with et_schematic_ops.submodules;
 -- with et_board_ops;
 
 
@@ -1771,10 +1772,14 @@ is
 		end if;
 	end read_submodule_port;
 
+
+
 	
 	procedure insert_submodule_port is
 		cursor : et_submodules.pac_submodule_ports.cursor;
 		inserted : boolean;
+
+		use et_schematic_ops.submodules;
 	begin
 		-- Test whether the port sits at the edge of the submodule box:
 		if et_submodules.at_edge (submodule_port.position, submodule.size) then

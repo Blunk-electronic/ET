@@ -67,6 +67,17 @@ package body et_schematic_ops.submodules is
 	end;
 
 	
+
+	procedure port_not_at_edge (
+		name : in pac_net_name.bounded_string) 
+	is 
+		use et_string_processing;
+	begin
+		log (ERROR, "port " & enclose_in_quotes (to_string (name)) &
+			" must be at the edge of the submodule !", console => true);
+		raise constraint_error;
+	end;
+
 	
 
 	function port_connected (

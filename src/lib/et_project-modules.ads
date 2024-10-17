@@ -127,27 +127,7 @@ package et_project.modules is
 	function get_preferred_libraries_board (module : in pac_generic_modules.cursor)
 		return et_meta.pac_preferred_libraries_board.list;
 
-	
-	
-	procedure port_not_at_edge (name : in pac_net_name.bounded_string);
 
-
-	
-	-- -- Returns true if given port of netchanger is connected with any net.
-	-- function port_connected (
-	-- 	module	: in pac_generic_modules.cursor;	
-	-- 	port	: in et_netlists.type_port_netchanger)
-	-- 	return boolean;
-
-
-	
-	-- -- Returns true if the given net provides a netchanger that may serve as port
-	-- -- to a parent module.
-	-- function netchanger_as_port_available (
-	-- 	module		: in pac_generic_modules.cursor;
-	-- 	net			: in et_nets.pac_nets.cursor;
-	-- 	direction	: in et_submodules.type_netchanger_port_name) -- master/slave 		
-	-- 	return boolean;
 
 
 	
@@ -343,15 +323,6 @@ package et_project.modules is
 		log_threshold	: in type_log_level);
 	
 	
-
-	-- function exists (
-	-- -- Returns true if the given module provides the given port.
-	-- -- The module being searched in must be in the rig already.						
-	-- 	module			: in et_submodules.pac_submodules.cursor;
-	-- 	port			: in pac_net_name.bounded_string;
-	-- 	direction		: in et_submodules.type_netchanger_port_name) -- master/slave		
-	-- 	return boolean;
-
 
 	
 	function exists (
