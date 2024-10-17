@@ -305,6 +305,8 @@ package et_schematic_ops.submodules is
 
 
 
+
+
 	
 	-- Sets the file name of a submodule instance.
 	procedure set_submodule_file (

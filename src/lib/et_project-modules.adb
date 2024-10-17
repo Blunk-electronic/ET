@@ -284,18 +284,20 @@ package body et_project.modules is
 
 
 	
-	function exists (
+	function submodule_instance_exists (
 	-- Returns true if the given module provides the given submodule instance.
 	-- The module being searched in must be in the rig already.						
 		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
 		instance	: in et_general.pac_module_instance_name.bounded_string) -- OSC1
-		return boolean is
+		return boolean
+	is
 
 		instance_found : boolean := false; -- to be returned
 
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in et_schematic.type_module) is
+			module		: in et_schematic.type_module) 
+		is
 			use et_submodules.pac_submodules;
 		begin
 			if contains (module.submods, instance) then
@@ -303,14 +305,17 @@ package body et_project.modules is
 			end if;
 		end query_submodules;
 
-	begin -- exists
+		
+	begin
 		-- search in the parent module for the given submodule instance
 		pac_generic_modules.query_element (
 			position	=> module,
 			process		=> query_submodules'access);
 
 		return instance_found;
-	end exists;
+	end submodule_instance_exists;
+
+	
 
 	function exists (
 	-- Returns true if the given submodule instance provides the

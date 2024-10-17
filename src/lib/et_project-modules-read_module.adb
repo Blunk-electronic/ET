@@ -1149,7 +1149,7 @@ is
 			submod_name := et_general.to_instance_name (f (line, 2)); -- OSC1
 
 			-- test whether submodule instance exists
-			if not exists (module_cursor, submod_name) then
+			if not submodule_instance_exists (module_cursor, submod_name) then
 				log (ERROR, "submodule instance " &
 						enclose_in_quotes (et_general.to_string (submod_name)) &
 						" does not exist !", console => true);

@@ -3851,7 +3851,7 @@ package body et_schematic_ops.submodules is
 		module_cursor := locate_module (module_name);
 
 		-- The new name must not be in use already:
-		if exists (module_cursor, instance_new) then
+		if submodule_instance_exists (module_cursor, instance_new) then
 			log (ERROR, "submodule instance " & enclose_in_quotes (to_string (instance_new)) &
 				 " already exists !", console => true);
 			raise constraint_error;
@@ -3943,7 +3943,7 @@ package body et_schematic_ops.submodules is
 		module_cursor := locate_module (module_name);
 
 		-- Test whether the given parent module contains the given submodule instance (OSC1)
-		if exists (module_cursor, instance) then
+		if submodule_instance_exists (module_cursor, instance) then
 
 			if exists (module_cursor, instance, variant_submod) then
 			
@@ -4039,7 +4039,7 @@ package body et_schematic_ops.submodules is
 		module_cursor := locate_module (module_name);
 
 		-- Test whether the given parent module contains the given submodule instance (OSC1)
-		if exists (module_cursor, instance) then
+		if submodule_instance_exists (module_cursor, instance) then
 
 			update_element (
 				container	=> generic_modules,
@@ -4216,9 +4216,11 @@ package body et_schematic_ops.submodules is
 		procedure error is begin errors := errors + 1; end;
 		procedure warning is begin warnings := warnings + 1; end;
 
+		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_module) 
+		is
 			use pac_nets;
 
 			-- Here we collect all ports of devices (like IC4 CE, R2 1, ...) across all the nets.
@@ -4247,6 +4249,7 @@ package body et_schematic_ops.submodules is
 					log (text => ada.exceptions.exception_message (event), console => true);
 			end collect_device_port;
 
+			
 			-- Here we collect all ports of submodules (like MOT_DRV reset) across all the nets.
 			-- Since submodule_port_collector is an ordered set, an exception will be raised if
 			-- a port is to be inserted more than once. Something like "MOT_DRV reset" must
@@ -4254,6 +4257,7 @@ package body et_schematic_ops.submodules is
 			use pac_submodule_ports;
 			submodule_port_collector : pac_submodule_ports.set;
 
+			
 			procedure collect_submodule_port (
 				port	: in type_submodule_port;
 				net		: in pac_net_name.bounded_string)
@@ -4271,6 +4275,7 @@ package body et_schematic_ops.submodules is
 
 					log (text => ada.exceptions.exception_message (event), console => true);
 			end collect_submodule_port;
+			
 
 			-- Here we collect all ports of netchangers (like netchanger port master/slave) across all the nets.
 			-- Since netchanger_ports_collector is an ordered set, an exception will be raised if
@@ -4279,6 +4284,7 @@ package body et_schematic_ops.submodules is
 			use et_netlists.pac_netchanger_ports;
 			netchanger_ports_collector : et_netlists.pac_netchanger_ports.set;
 
+			
 			procedure collect_netchanger_port (
 				port	: in et_netlists.type_port_netchanger;
 				net		: in pac_net_name.bounded_string)
@@ -4296,7 +4302,8 @@ package body et_schematic_ops.submodules is
 
 					log (text => ada.exceptions.exception_message (event), console => true);
 			end collect_netchanger_port;
-			
+
+
 			procedure query_net (net_cursor : in pac_nets.cursor) is
 				use pac_net_name;
 
