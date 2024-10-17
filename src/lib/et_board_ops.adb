@@ -788,6 +788,15 @@ package body et_board_ops is
 
 
 
+	function deepest_conductor_layer (
+		module	: in pac_generic_modules.cursor) -- the module like motor_driver
+		return et_pcb_stack.type_signal_layer 
+	is begin
+		return et_pcb_stack.deepest_layer (pac_generic_modules.element (module).board.stack);
+	end deepest_conductor_layer;
+
+
+	
 
 end et_board_ops;
 	

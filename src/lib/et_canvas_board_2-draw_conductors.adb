@@ -102,6 +102,7 @@ procedure draw_conductors is
 		origin : type_position;
 
 		use pac_draw_text;
+		use et_board_ops;
 	begin
 		if verb = VERB_PLACE and noun = NOUN_TEXT and preliminary_text.ready then
 			
@@ -172,7 +173,7 @@ procedure draw_conductors is
 
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer	: constant type_signal_layer := 
-		deepest_conductor_layer (current_active_module);
+		et_board_ops.deepest_conductor_layer (current_active_module);
 
 	
 	function is_double_layer_board return boolean is begin

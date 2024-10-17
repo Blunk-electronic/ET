@@ -434,12 +434,6 @@ package body et_project.modules is
 	
 
 	
-	function deepest_conductor_layer (
-		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return et_pcb_stack.type_signal_layer is
-	begin
-		return et_pcb_stack.deepest_layer (pac_generic_modules.element (module).board.stack);
-	end deepest_conductor_layer;
 
 	function layout_rules_assigned (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
@@ -454,6 +448,8 @@ package body et_project.modules is
 		end if;
 	end layout_rules_assigned;
 
+	
+
 	function get_pcb_design_rules (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return et_design_rules.type_design_rules -- JLP_ML4_standard.dru
@@ -462,6 +458,8 @@ package body et_project.modules is
 	begin
 		return get_rules (element (module).rules.layout); 
 	end get_pcb_design_rules;
+
+	
 
 	function get_user_settings (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver

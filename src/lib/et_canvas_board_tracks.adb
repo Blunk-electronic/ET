@@ -333,6 +333,8 @@ package body et_canvas_board_tracks is
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
+
+			use et_board_ops;
 		begin
 			gtk_new_vbox (box_signal_layer, homogeneous => false);
 			pack_start (box_v4, box_signal_layer, padding => guint (spacing));
@@ -782,7 +784,8 @@ package body et_canvas_board_tracks is
 		end select_first_proposed;
 
 		
-	
+		use et_board_ops;	
+		
 	begin
 		log (text => "locating segments ...", level => log_threshold);
 		log_indentation_up;

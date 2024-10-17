@@ -338,14 +338,7 @@ package et_project.modules is
 		device	: in et_devices.type_device_name)
 		return pac_device_variants.cursor;
 
-
 	
-
-	
-	-- Returns the index of the deepest conductor layer of the given module:
-	function deepest_conductor_layer (
-		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return et_pcb_stack.type_signal_layer;
 
 	
 	-- Returns true if a design rules file for the layout has been

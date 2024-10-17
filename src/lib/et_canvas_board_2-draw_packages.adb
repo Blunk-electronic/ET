@@ -93,6 +93,8 @@ with et_keepout;
 
 with et_contour_to_polygon;			use et_contour_to_polygon;
 
+with et_board_ops;
+
 
 separate (et_canvas_board_2)
 
@@ -102,7 +104,7 @@ is
 
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer : constant type_signal_layer := 
-		deepest_conductor_layer (current_active_module);
+		et_board_ops.deepest_conductor_layer (current_active_module);
 
 	
 	procedure draw_package (

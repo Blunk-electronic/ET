@@ -63,7 +63,7 @@ with et_time;
 
 with et_schematic_ops;
 with et_schematic_ops.submodules;
--- with et_board_ops;
+with et_board_ops;
 
 with et_schematic_shapes_and_text;
 with et_board_shapes_and_text;
@@ -2254,6 +2254,7 @@ is
 		use et_terminals;
 		use et_packages;
 		use et_pcb_stack;
+		use et_board_ops;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2300,6 +2301,8 @@ is
 		end if;
 		
 	end read_via;
+
+
 
 	
 	procedure build_via is 
@@ -2406,6 +2409,7 @@ is
 			invalid_keyword (kw);
 		end if;
 	end read_user_settings_vias;
+
 
 	
 	procedure read_user_settings_fill_zones_conductor is
@@ -2940,6 +2944,7 @@ is
 							name := to_package_name (base_name (et_packages.to_string (element (variant_cursor).package_model)));
 						end if;
 					end;
+
 					
 				begin -- get_package_name
 					log_indentation_up;
@@ -2960,6 +2965,9 @@ is
 					return name;
 				end get_package_name;
 
+
+				use et_board_ops;
+				
 				
 			begin -- insert_device
 				log (text => "device " & to_string (device_name), level => log_threshold + 1);
@@ -3084,6 +3092,7 @@ is
 				device_cursor : pac_devices_non_electric.cursor;
 				inserted : boolean;
 
+				
 			begin
 				log (text => "device (non-electric) " & to_string (device_name), level => log_threshold + 1);
 				log_indentation_up;
@@ -4187,6 +4196,7 @@ is
 					use et_pcb;
 					use et_conductor_text.boards;
 					use pac_conductor_texts;
+					use et_board_ops;
 
 					mirror : type_vector_text_mirrored;
 					
@@ -4210,6 +4220,7 @@ is
 						new_item	=> board_text_conductor);
 
 				end do_it;
+
 				
 			begin -- build_conductor_text
 				update_element (
@@ -4233,7 +4244,8 @@ is
 						container	=> module.board.conductors.placeholders,
 						new_item	=> board_text_conductor_placeholder);
 				end do_it;
-									
+
+				
 			begin -- insert_board_text_placeholder
 				update_element (
 					container	=> generic_modules,

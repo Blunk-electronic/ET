@@ -478,6 +478,7 @@ package body et_canvas_board_vias is
 			add_attribute (cbox_category, render, "markup", column_0);
 		end make_combo_category;
 
+
 		
 		-- BLIND
 		procedure make_combo_destination is -- for BLIND vias !
@@ -491,6 +492,8 @@ package body et_canvas_board_vias is
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
+
+			use et_board_ops;
 		begin
 			gtk_new_vbox (box_destination_blind, homogeneous => false);
 			pack_start (box_v4, box_destination_blind, padding => guint (spacing));
@@ -538,6 +541,7 @@ package body et_canvas_board_vias is
 
 		end make_combo_destination;
 
+
 		
 		-- BURIED
 		procedure make_combo_buried_upper is
@@ -551,6 +555,8 @@ package body et_canvas_board_vias is
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
+
+			use et_board_ops;
 		begin
 			gtk_new_vbox (box_buried_upper, homogeneous => false);
 			pack_start (box_v4, box_buried_upper, padding => guint (spacing));
@@ -598,6 +604,7 @@ package body et_canvas_board_vias is
 
 		end make_combo_buried_upper;
 
+
 		
 		procedure make_combo_buried_lower is
 			storage_model : gtk_list_store;
@@ -610,6 +617,8 @@ package body et_canvas_board_vias is
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
+
+			use et_board_ops;
 		begin
 			gtk_new_vbox (box_buried_lower, homogeneous => false);
 			pack_start (box_v4, box_buried_lower, padding => guint (spacing));
