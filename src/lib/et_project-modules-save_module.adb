@@ -37,7 +37,7 @@
 with et_coordinates_2;
 with et_pcb_coordinates_2;
 
-with et_geometry;					use et_geometry;
+with et_geometry;
 with et_net_labels;
 with et_symbols;
 with et_symbol_rw;
@@ -464,6 +464,8 @@ is
 				use pac_net_segments;
 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
+				use et_geometry;
+				
 				use pac_device_ports;
 				use pac_submodule_ports;
 
@@ -472,7 +474,7 @@ is
 
 				
 				procedure query_labels (segment : in type_net_segment) is
-					use pac_net_labels;
+					use pac_net_labels;					
 					label_cursor : pac_net_labels.cursor := segment.labels.first;
 				begin
 					if not is_empty (segment.labels) then
@@ -654,6 +656,8 @@ is
 			polygon_hatched_cursor	: pac_route_hatched.cursor := net.route.fill_zones.hatched.first;
 			--cutout_zone_cursor		: pac_cutouts.cursor := net.route.cutouts.first;
 
+			use et_geometry;
+			
 			
 			procedure write_vias is
 				use et_vias;
@@ -842,6 +846,7 @@ is
 
 	
 	procedure query_devices is
+		use et_geometry;
 		use et_devices;
 		use et_schematic;
 		use et_symbols;
@@ -1139,6 +1144,8 @@ is
 		section_mark (section_assembly_variants, FOOTER);
 	end query_assembly_variants;
 
+
+
 	
 	-- writes the netchangers in the module file
 	procedure query_netchangers is
@@ -1284,6 +1291,7 @@ is
 		use et_schematic;
 		use et_submodules;
 		use pac_submodules;
+		use et_geometry;
 
 		
 		procedure query_ports (port_cursor : in et_submodules.pac_submodule_ports.cursor) is
@@ -1346,6 +1354,7 @@ is
 			use et_symbol_rw;
 			use et_schematic_rw;
 			use et_sheets;
+			use et_geometry;
 		begin
 			section_mark (section_text, HEADER);
 			write

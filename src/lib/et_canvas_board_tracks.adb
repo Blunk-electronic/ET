@@ -352,7 +352,7 @@ package body et_canvas_board_tracks is
 				type_signal_layer'first .. 
 
 				-- The deepest available layer depends on the stack configuration:
-				deepest_conductor_layer (current_active_module) 
+				get_deepest_conductor_layer (current_active_module) 
 			loop
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0,
@@ -792,7 +792,7 @@ package body et_canvas_board_tracks is
 
 		-- Collect all segments in the vicinity of the given point:
 		-- CS should depend on enabled signal layer
-		for ly in 1 .. deepest_conductor_layer (current_active_module) loop
+		for ly in 1 .. get_deepest_conductor_layer (current_active_module) loop
 			collect (ly);
 		end loop;
 		

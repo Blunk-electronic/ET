@@ -513,7 +513,7 @@ package body et_canvas_board_vias is
 				-- The deepest available layer depends on the stack configuration.
 				-- The bottom layer must not be the destination because this 
 				-- is about BLIND vias:	
-				deepest_conductor_layer (current_active_module) - 1
+				get_deepest_conductor_layer (current_active_module) - 1
 			loop
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0,
@@ -576,7 +576,7 @@ package body et_canvas_board_vias is
 				-- The deepest available layer depends on the stack configuration.
 				-- The bottom layer must not be the destination because this 
 				-- is about BURIED vias:	
-				deepest_conductor_layer (current_active_module) - 1
+				get_deepest_conductor_layer (current_active_module) - 1
 			loop
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0,
@@ -638,7 +638,7 @@ package body et_canvas_board_vias is
 				-- The deepest available layer depends on the stack configuration.
 				-- The bottom layer must not be the destination because this 
 				-- is about BURIED vias:	
-				deepest_conductor_layer (current_active_module) - 1
+				get_deepest_conductor_layer (current_active_module) - 1
 			loop
 				storage_model.append (iter);
 				gtk.list_store.set (storage_model, iter, column_0,

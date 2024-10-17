@@ -1687,6 +1687,7 @@ package body et_board_ops.conductors is
 		text			: in type_text_fab_with_content;
 		log_threshold	: in type_log_level)
 	is
+
 		procedure place_text (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
@@ -1700,7 +1701,7 @@ package body et_board_ops.conductors is
 			c_text : type_conductor_text;
 			
 		begin
-			mirror := signal_layer_to_mirror (signal_layer, deepest_conductor_layer (module_cursor));
+			mirror := signal_layer_to_mirror (signal_layer, get_deepest_conductor_layer (module_cursor));
 
 			if mirror = YES then
 				log (text => "text is in deepest signal layer -> will be mirrored", level => log_threshold + 1);

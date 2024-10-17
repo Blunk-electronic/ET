@@ -1372,7 +1372,7 @@ is
 					buried_layers := to_buried_layers (
 								upper	=> f (9), 
 								lower	=> f (10),
-								bottom	=> deepest_conductor_layer (module_cursor));
+								bottom	=> get_deepest_conductor_layer (module_cursor));
 					buried;
 
 				elsif f (8) = keyword_blind then

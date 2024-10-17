@@ -36,7 +36,7 @@
 --   history of changes:
 --
 --  ToDo: 
---  - Move stuff related to board to et_board_ops.
+--  
 
 with ada.containers;
 with ada.containers.ordered_maps;

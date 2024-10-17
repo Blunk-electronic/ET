@@ -104,7 +104,7 @@ is
 
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer : constant type_signal_layer := 
-		et_board_ops.deepest_conductor_layer (current_active_module);
+		et_board_ops.get_deepest_conductor_layer (current_active_module);
 
 	
 	procedure draw_package (

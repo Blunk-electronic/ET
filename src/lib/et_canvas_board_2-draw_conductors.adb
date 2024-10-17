@@ -116,7 +116,7 @@ procedure draw_conductors is
 				origin := type_position (to_position (point, zero_rotation));
 				draw_origin (origin);
 
-				mirror := signal_layer_to_mirror (layer, deepest_conductor_layer (current_active_module));
+				mirror := signal_layer_to_mirror (layer, get_deepest_conductor_layer (current_active_module));
 				
 				-- Vectorize the text on the fly:
 				v_text := vectorize_text (
@@ -173,7 +173,7 @@ procedure draw_conductors is
 
 	-- The deepest conductor layer towards bottom is defined by the layer stack:
 	bottom_layer	: constant type_signal_layer := 
-		et_board_ops.deepest_conductor_layer (current_active_module);
+		et_board_ops.get_deepest_conductor_layer (current_active_module);
 
 	
 	function is_double_layer_board return boolean is begin
