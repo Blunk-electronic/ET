@@ -4158,6 +4158,58 @@ package body et_schematic_ops.submodules is
 
 
 
+
+	function alternative_submodule (
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
+		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
+		submod	: in et_general.pac_module_instance_name.bounded_string) -- OSC1
+		return pac_submodule_variants.cursor 
+	is
+		cursor : pac_submodule_variants.cursor; -- to be returned;
+
+		
+		procedure query_variants (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in et_schematic.type_module) 
+		is
+			use pac_assembly_variants;
+
+			variant_cursor : pac_assembly_variants.cursor;
+
+			
+			procedure query_submodules (
+				variant_name	: in pac_assembly_variant_name.bounded_string;
+				variant			: in type_assembly_variant) 
+			is
+				use pac_submodule_variants;
+			begin
+				cursor := find (variant.submodules, submod);
+			end query_submodules;
+
+			
+		begin -- query_variants
+			variant_cursor := find (module.variants, variant);
+
+			query_element (
+				position	=> variant_cursor,
+				process		=> query_submodules'access);
+		end;
+
+		
+	begin -- alternative_submodule
+		if is_default (variant) then
+			cursor := pac_submodule_variants.no_element;
+		else
+			pac_generic_modules.query_element (
+				position	=> module,
+				process		=> query_variants'access);
+		end if;
+		
+		return cursor;
+	end alternative_submodule;
+
+
+
 	
 	
 	

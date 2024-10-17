@@ -423,6 +423,9 @@ package body et_schematic_ops.netlists is
 					-- restore netlist_cursor
 					netlist_cursor := stack_netlist.pop;
 				end insert_submodule;
+
+
+				use et_schematic_ops.submodules;
 				
 			begin -- query_submodules
 				log_indentation_up;

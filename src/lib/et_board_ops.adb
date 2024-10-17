@@ -578,6 +578,8 @@ package body et_board_ops is
 
 				use et_assembly_variants.pac_submodule_variants;
 				alt_submod : et_assembly_variants.pac_submodule_variants.cursor;
+
+				use et_schematic_ops.submodules;
 			begin
 				log_indentation_up;
 

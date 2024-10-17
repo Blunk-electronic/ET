@@ -324,6 +324,25 @@ package et_schematic_ops.submodules is
 		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost				
 		return boolean;
 	
+
+	-- Returns a cursor to the alternative submodule variant in the given module
+	-- and given assembly variant.
+	-- Assumptions: 
+	-- - The module being searched in must be in the rig already.
+	-- - The assembly variant must exist in the module.
+	-- - The suubmodule must have been instantiated in the module.
+	-- - The submodule must have an entry in the given assembly variant,
+	--   otherwise the return is no_element.
+	-- If the given variant is an emtpy string (means default variant) the return
+	-- is no_element.
+	function alternative_submodule (
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
+		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost
+		submod	: in et_general.pac_module_instance_name.bounded_string) -- OSC1
+		return pac_submodule_variants.cursor;
+
+
+
 	
 	-- Sets the file name of a submodule instance.
 	procedure set_submodule_file (
