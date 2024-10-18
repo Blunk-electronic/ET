@@ -252,7 +252,7 @@ package body et_frames is
 		----------------------------------
 
 		-- TEXTS IN TITLE BLOCK
-		type type_texts is array (positive range <>) of type_text;
+		type type_texts is array (positive range <>) of type_static_text;
 
 		texts_sch : constant type_texts (1 .. 14) := (
 			(position => (  2, 36), size => 3, content => to_content ("Company:")),
@@ -292,16 +292,18 @@ package body et_frames is
 			(position => ( 90,  1), size => 3, content => to_content ("approved"))
 			);
 
+		
 		-- Collects the texts of the given array and returns them as a list:
-		function make_texts (texts : in type_texts) return pac_texts.list is
-			use pac_texts;
-			result : pac_texts.list;
+		function make_texts (texts : in type_texts) return pac_static_texts.list is
+			use pac_static_texts;
+			result : pac_static_texts.list;
 		begin
 			for i in texts'first .. texts'last loop
 				result.append (texts (i));
 			end loop;
 			return result;
 		end make_texts;
+		
 		
 	begin -- apply_defaults
 		case frame.domain is
@@ -312,7 +314,7 @@ package body et_frames is
 				frame.title_block_schematic.placeholders_common.project_name.position 				:= ( 30, 31);
 				frame.title_block_schematic.placeholders_common.module_file_name.position 			:= ( 30, 26);
 				frame.title_block_schematic.placeholders_common.active_assembly_variant.position	:= ( 30, 21);
-				frame.title_block_schematic.texts := make_texts (texts_sch);
+				frame.title_block_schematic.static_texts := make_texts (texts_sch);
 
 				frame.title_block_schematic.placeholders_additional.company.position 		:= ( 30, 36);
 				frame.title_block_schematic.placeholders_additional.customer.position 		:= ( 30, 16);
@@ -339,7 +341,7 @@ package body et_frames is
 				frame.title_block_pcb.placeholders_common.project_name.position				:= ( 30, 31);
 				frame.title_block_pcb.placeholders_common.module_file_name.position			:= ( 30, 26);
 				frame.title_block_pcb.placeholders_common.active_assembly_variant.position	:= ( 30, 21);
-				frame.title_block_pcb.texts := make_texts (texts_pcb);
+				frame.title_block_pcb.static_texts := make_texts (texts_pcb);
 
 				frame.title_block_pcb.placeholders_additional.company.position 				:= ( 30, 36);
 				frame.title_block_pcb.placeholders_additional.customer.position 			:= ( 30, 16);

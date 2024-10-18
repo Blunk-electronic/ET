@@ -264,11 +264,13 @@ package et_frames is
 
 
 	
-	type type_text is new type_placeholder with record
-		content			: pac_text_content.bounded_string;
+	-- Static texts are strings like "drawn" or "sheet".
+	-- They are usually placed left of a placeholder:
+	type type_static_text is new type_placeholder with record
+		content : pac_text_content.bounded_string;
 	end record;
 
-	package pac_texts is new doubly_linked_lists (type_text);
+	package pac_static_texts is new doubly_linked_lists (type_static_text);
 
 
 
@@ -282,7 +284,8 @@ package et_frames is
 		-- to the position of the title block:
 		lines				: pac_lines.list;
 		placeholders_common	: type_placeholders_common;
-		texts				: pac_texts.list;
+
+		static_texts		: pac_static_texts.list;
 	end record;
 
 
@@ -369,7 +372,7 @@ package et_frames is
 	-- Their content may be specified by the operator in the respective sections in the frame file (*.frb).
 	-- The content specified in the frame file overrides the default content. 
 	-- If they are not specified by the frame file, default position, size and content is used (see below).
-	type type_cam_marker is new type_text with null record;
+	type type_cam_marker is new type_static_text with null record;
 
 	type type_cam_markers is record
 		face			: type_cam_marker := (content => to_content ("FACE:"), others => <>);

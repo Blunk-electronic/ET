@@ -87,7 +87,7 @@ package et_canvas.drawing_frame is
 	-- This procedure draws the texts which are static
 	-- like "drawn" or "sheet":
 	procedure draw_static_texts (
-		texts					: in pac_texts.list;
+		texts					: in pac_static_texts.list;
 		title_block_position	: in pac_geometry.type_position);
 
 	

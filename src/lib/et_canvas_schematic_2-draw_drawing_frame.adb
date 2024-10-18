@@ -198,7 +198,7 @@ begin
 	draw_additional_placeholders;
 
 	draw_static_texts (
-		texts					=> title_block.texts,
+		texts					=> title_block.static_texts,
 		title_block_position	=> title_block_position);
 	
 		-- draw common placeholders and other texts

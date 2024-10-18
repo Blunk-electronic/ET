@@ -134,7 +134,7 @@ package body et_frame_rw is
 		end;
 
 		
-		procedure write_text (text : in type_text) is begin
+		procedure write_text (text : in type_static_text) is begin
 			section_mark (section_text, HEADER);
 			
 			-- position
@@ -164,10 +164,10 @@ package body et_frame_rw is
 		end;
 
 		
-		procedure write_texts (texts : in pac_texts.list) is
-			use pac_texts;
+		procedure write_texts (texts : in pac_static_texts.list) is
+			use pac_static_texts;
 
-			procedure write (cursor : in pac_texts.cursor) is begin
+			procedure write (cursor : in pac_static_texts.cursor) is begin
 				write_text (element (cursor));
 			end;
 			
@@ -324,9 +324,9 @@ package body et_frame_rw is
 
 
 			-- TEXTS
-			-- write texts (with content). they are basic elements of a title block
+			-- write static texts (with content). they are basic elements of a title block
 			section_mark (section_texts, HEADER);
-			write_texts (block.texts);
+			write_texts (block.static_texts);
 			section_mark (section_texts, FOOTER);
 			
 			-- PLACEHOLDERS
@@ -540,8 +540,8 @@ package body et_frame_rw is
 		tb_position 	: type_position;
 		tb_line 		: type_line;
 		tb_lines		: pac_lines.list;
-		tb_text			: type_text;
-		tb_texts		: pac_texts.list;
+		tb_text			: type_static_text;
+		tb_texts		: pac_static_texts.list;
 		tb_placeholder	: type_placeholder;
 		tb_placeholders_common	: type_placeholders_common;
 		tb_placeholders_basic	: type_placeholders_basic;
@@ -647,17 +647,17 @@ package body et_frame_rw is
 		procedure reset_placeholder is begin tb_placeholder := (others => <>); end;
 
 		procedure reset_cam_marker is begin tb_cam_marker := (others => <>); end;
+
 		
 		procedure assemble_title_block is 
 			use pac_lines;
-			use pac_texts;
-		begin
-								
+			use pac_static_texts;
+		begin								
 			case domain is
 				when SCHEMATIC => 
 					frame.title_block_schematic.position := tb_position;
 					frame.title_block_schematic.lines := tb_lines;
-					frame.title_block_schematic.texts := tb_texts;
+					frame.title_block_schematic.static_texts := tb_texts;
 					frame.title_block_schematic.placeholders_common := tb_placeholders_common;
 					frame.title_block_schematic.placeholders_additional := (
 						tb_placeholders_basic with 
@@ -668,7 +668,7 @@ package body et_frame_rw is
 				when PCB =>
 					frame.title_block_pcb.position := tb_position;
 					frame.title_block_pcb.lines := tb_lines;
-					frame.title_block_pcb.texts := tb_texts;
+					frame.title_block_pcb.static_texts := tb_texts;
 					frame.title_block_pcb.placeholders_common := tb_placeholders_common;
 					frame.title_block_pcb.placeholders_additional := (
 						tb_placeholders_basic with 
@@ -683,6 +683,7 @@ package body et_frame_rw is
 			tb_placeholders_common := (others => <>);
 		end;
 
+		
 		-- The content of a cam marker may not be specified via the frame template.
 		-- In this case the default content must be assigned to the tb_cam_marker.
 		procedure set_content (content : in et_text.pac_text_content.bounded_string) is 
@@ -692,6 +693,7 @@ package body et_frame_rw is
 				tb_cam_marker.content := content;
 			end if;
 		end set_content;
+
 		
 		procedure process_line is 
 
@@ -699,7 +701,7 @@ package body et_frame_rw is
 			-- Once a section concludes, the temporarily variables are read, evaluated
 			-- and finally assembled to actual objects:
 				use pac_lines;
-				use pac_texts;
+				use pac_static_texts;
 				
 			begin -- execute_section
 				case stack.current is
@@ -1100,11 +1102,12 @@ package body et_frame_rw is
 
 			end execute_section;
 
-			function set (
+			
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
 			-- Returns false if the current line is neither a section header or footer.
 			-- If it is a header, the section name is pushed onto the sections stack.
 			-- If it is a footer, the latest section name is popped from the stack.
+			function set (
 				section_keyword	: in string;
 				section			: in type_section) -- SEC_PROJECT_NAME
 				return boolean is 
@@ -1146,6 +1149,7 @@ package body et_frame_rw is
 				end if;
 			end set;
 
+			
 		begin -- process_line
 			if set (section_active_assembly_variant, SEC_ACTIVE_ASSEMBLY_VARIANT) then null;			
 			elsif set (section_approved_by, SEC_APPROVED_BY) then null;								

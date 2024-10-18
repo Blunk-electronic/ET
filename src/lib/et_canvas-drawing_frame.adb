@@ -380,10 +380,12 @@ package body et_canvas.drawing_frame is
 		use et_project.modules;
 		use et_assembly_variants;
 
+		-- A temporarily storage place for the
+		-- position of a placeholder:
 		pos : type_vector_model;
-	begin
-		-- PROJECT NAME:
 		
+	begin
+		-- PROJECT NAME:		
 		pos := to_vector (placeholders.project_name.position);
 
 		draw_text (
@@ -400,8 +402,7 @@ package body et_canvas.drawing_frame is
 
 
 		
-		-- MODULE FILE NAME:
-		
+		-- MODULE FILE NAME:		
 		pos := to_vector (placeholders.module_file_name.position);
 
 		draw_text (
@@ -418,8 +419,7 @@ package body et_canvas.drawing_frame is
 
 
 
-		-- ASSEMBLY VARIANT:
-		
+		-- ASSEMBLY VARIANT:		
 		pos := to_vector (placeholders.active_assembly_variant.position);
 
 		draw_text (
@@ -441,7 +441,7 @@ package body et_canvas.drawing_frame is
 
 
 	procedure draw_static_texts (
-		texts					: in pac_texts.list;
+		texts					: in pac_static_texts.list;
 		title_block_position	: in pac_geometry.type_position)
 	is
 
