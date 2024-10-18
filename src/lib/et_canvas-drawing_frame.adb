@@ -387,7 +387,7 @@ package body et_canvas.drawing_frame is
 		pos := to_vector (placeholders.project_name.position);
 
 		draw_text (
-			content		=> to_content (to_string (current_active_project)),					  
+			content		=> to_content (to_string (active_project)),					  
 			size		=> pac_geometry.type_distance_positive (placeholders.project_name.size),
 			font		=> font_placeholders,
 

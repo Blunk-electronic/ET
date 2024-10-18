@@ -1366,7 +1366,7 @@ package body et_canvas_board_2 is
 
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
 
-		set_directory (to_string (current_active_project));
+		set_directory (to_string (active_project));
 		
 		-- execute the board command
 		board_cmd (active_module, cmd, log_threshold);
@@ -1451,10 +1451,10 @@ package body et_canvas_board_2 is
 		--log (text => "full command " & enclose_in_quotes (to_string (cmd)), level => log_threshold + 1);
 
 		log (text => "changing to directory " &
-				enclose_in_quotes (to_string (current_active_project)) & " ...",
+				enclose_in_quotes (to_string (active_project)) & " ...",
 			level => log_threshold + 1);
 		
-		set_directory (to_string (current_active_project));
+		set_directory (to_string (active_project));
 		
 		-- execute the board command
 		board_cmd (active_module, cmd, log_threshold);

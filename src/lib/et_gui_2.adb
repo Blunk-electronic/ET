@@ -76,7 +76,7 @@ package body et_gui_2 is
 		log (text => "set active project " & enclose_in_quotes (to_string (project)), 
 			 level => log_threshold);
 
-		current_active_project := project;
+		active_project := project;
 
 
 		

@@ -51,24 +51,35 @@ with et_project.configuration;
 	
 package body et_project is
 	
-	function to_string (project_name : in pac_project_name.bounded_string) return string is
-	begin
+	function to_string (
+		project_name : in pac_project_name.bounded_string) 
+		return string 
+	is begin
 		return pac_project_name.to_string (project_name);
 	end to_string;
+
 	
-	function to_project_name (name : in string) return pac_project_name.bounded_string is
-	begin
+	function to_project_name (
+		name : in string) 
+		return pac_project_name.bounded_string 
+	is begin
 		return pac_project_name.to_bounded_string (name);
 	end to_project_name;
 
+
+	
 	function to_string (path : in type_et_project_path.bounded_string) return string is begin
 		return type_et_project_path.to_string (path);
 	end to_string;
 
+
+	
 	function to_project_path (path : in string) return type_et_project_path.bounded_string is begin
 		return type_et_project_path.to_bounded_string (path);
 	end to_project_path;
 
+
+	
 	procedure validate_project_name (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		log_threshold 	: in type_log_level)
@@ -400,7 +411,7 @@ package body et_project is
 		validate_project (project_name, log_threshold + 1);
 	
 		-- set global project name
-		current_active_project := project_name;
+		active_project := project_name;
 
 		-- change in project directory
 		set_directory (to_string (project_name));
