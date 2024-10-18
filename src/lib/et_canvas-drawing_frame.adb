@@ -388,7 +388,7 @@ package body et_canvas.drawing_frame is
 
 		draw_text (
 			content		=> to_content (to_string (active_project)),					  
-			size		=> pac_geometry.type_distance_positive (placeholders.project_name.size),
+			size		=> to_distance (placeholders.project_name.size),
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:
@@ -406,7 +406,7 @@ package body et_canvas.drawing_frame is
 
 		draw_text (
 			content		=> to_content (get_active_module),
-			size		=> pac_geometry.type_distance_positive (placeholders.module_file_name.size),
+			size		=> to_distance (placeholders.module_file_name.size),
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:
@@ -425,7 +425,7 @@ package body et_canvas.drawing_frame is
 		draw_text (
 			--content		=> to_content (to_variant (element (active_module).active_variant)),
 			content		=> to_content ("to do"), -- CS
-			size		=> pac_geometry.type_distance_positive (placeholders.active_assembly_variant.size),
+			size		=> to_distance (placeholders.active_assembly_variant.size),
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:

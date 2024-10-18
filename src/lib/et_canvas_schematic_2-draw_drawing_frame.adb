@@ -37,7 +37,7 @@
 --
 
 with ada.text_io;				use ada.text_io;
--- with et_text;
+with et_text;
 -- with et_meta;
 
 separate (et_canvas_schematic_2)
@@ -56,57 +56,6 @@ procedure draw_drawing_frame is
 
 	frame_general : type_frame_general := type_frame_general (frames.frame);
 		
-	
--- 	procedure draw_additional_placeholders is
--- 		
--- 		-- get placeholders:
--- 		phs : constant type_placeholders_schematic := 
--- 			self.get_frame.title_block_schematic.additional_placeholders;
--- 
--- 		use et_text;
--- 
--- 		
--- 		procedure draw_sheet_description is
--- 			use et_project;
--- 
--- 			-- Get the description of the current active sheet:
--- 			des : constant type_schematic_description := 
--- 					sheet_description (active_module, current_active_sheet);
--- 		begin
--- 			-- category (development, product, routing)
--- 			draw_text (
--- 				content	=> to_content (to_string (des.category)),
--- 				size	=> phs.category.size,
--- 				font	=> font_placeholders,
--- 				pos		=> phs.category.position,
--- 				tb_pos	=> title_block_position);
--- 
--- 			-- description
--- 			draw_text (
--- 				content	=> to_content (to_string (des.content)),
--- 				size	=> phs.description.size,
--- 				font	=> font_placeholders,
--- 				pos		=> phs.description.position,
--- 				tb_pos	=> title_block_position);
--- 						
--- 		end draw_sheet_description;
--- 
--- 		
--- 	begin -- draw_additional_placeholders
--- 		
--- 		-- sheet number n of m
--- 		draw_text (
--- 			content	=> to_content (to_sheet (current_active_sheet)), -- CS complete with "/of total"
--- 			size	=> phs.sheet_number.size,
--- 			font	=> font_placeholders,
--- 			pos		=> phs.sheet_number.position,
--- 			tb_pos	=> title_block_position);
--- 
--- 
--- 		draw_sheet_description;
--- 		
--- 	end draw_additional_placeholders;
--- 
 
 
 	-- The position of the title block.
@@ -146,7 +95,67 @@ procedure draw_drawing_frame is
 	end draw_title_block_lines;
 
 
+
 	
+	
+	procedure draw_additional_placeholders is
+
+		-- get placeholders:
+		phs : type_placeholders_schematic renames
+			frames.frame.title_block_schematic.placeholders_additional;
+		
+		use et_text;
+		use pac_draw_text;
+
+		
+-- 		procedure draw_sheet_description is
+-- 			use et_project;
+-- 
+-- 			-- Get the description of the current active sheet:
+-- 			des : constant type_schematic_description := 
+-- 					sheet_description (active_module, current_active_sheet);
+-- 		begin
+-- 			-- category (development, product, routing)
+-- 			draw_text (
+-- 				content	=> to_content (to_string (des.category)),
+-- 				size	=> phs.category.size,
+-- 				font	=> font_placeholders,
+-- 				pos		=> phs.category.position,
+-- 				tb_pos	=> title_block_position);
+-- 
+-- 			-- description
+-- 			draw_text (
+-- 				content	=> to_content (to_string (des.content)),
+-- 				size	=> phs.description.size,
+-- 				font	=> font_placeholders,
+-- 				pos		=> phs.description.position,
+-- 				tb_pos	=> title_block_position);
+-- 						
+-- 		end draw_sheet_description;
+
+		pos : type_vector_model;
+		
+	begin -- draw_additional_placeholders
+		null;
+
+		pos := to_vector (phs.sheet_number.position);
+		
+		-- sheet number n of m
+		draw_text (
+			content		=> to_content (to_sheet (current_active_sheet)), -- CS complete with "/of total"
+			size		=> to_distance (phs.sheet_number.size),
+			font		=> font_placeholders,
+			anchor		=> add (pos, title_block_position.place),
+			origin		=> false,
+			rotation	=> 0.0,
+			alignment	=> (LEFT, BOTTOM));
+
+
+
+		-- draw_sheet_description;
+		
+	end draw_additional_placeholders;
+
 
 	
 begin
@@ -170,7 +179,7 @@ begin
 		title_block_position	=> title_block_position);
 
 
-		-- draw_additional_placeholders;
+	draw_additional_placeholders;
 
 
 		-- draw common placeholders and other texts
