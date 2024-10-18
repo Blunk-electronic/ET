@@ -246,11 +246,11 @@ package body et_frame_rw is
 			section_mark (section_sheet_number, FOOTER);
 
 			section_mark (section_sheet_description, HEADER);			
-			write_placeholder (ph.description);
+			write_placeholder (ph.sheet_description);
 			section_mark (section_sheet_description, FOOTER);
 
 			section_mark (section_sheet_category, HEADER);						
-			write_placeholder (ph.category);
+			write_placeholder (ph.sheet_category);
 			section_mark (section_sheet_category, FOOTER);			
 		end;
 
@@ -661,9 +661,9 @@ package body et_frame_rw is
 					frame.title_block_schematic.placeholders_common := tb_placeholders_common;
 					frame.title_block_schematic.placeholders_additional := (
 						tb_placeholders_basic with 
-							sheet_number 	=> tb_sheet_number,
-							description		=> tb_sheet_description,
-							category		=> tb_sheet_category);
+							sheet_number 		=> tb_sheet_number,
+							sheet_description	=> tb_sheet_description,
+							sheet_category		=> tb_sheet_category);
 					
 				when PCB =>
 					frame.title_block_pcb.position := tb_position;

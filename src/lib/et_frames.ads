@@ -350,9 +350,9 @@ package et_frames is
 	-- The set of basic placeholders is extended by other things which are
 	-- required in the schematic:
 	type type_placeholders_schematic is new type_placeholders_basic with record
-		sheet_number	: type_placeholder;
-		description		: type_placeholder;
-		category		: type_placeholder; -- development, routing, product
+		sheet_number		: type_placeholder;
+		sheet_description	: type_placeholder;
+		sheet_category		: type_placeholder; -- development, routing, product
 	end record;
 	
 	type type_title_block_schematic is new type_title_block with record

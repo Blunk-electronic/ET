@@ -38,6 +38,7 @@
 
 with ada.text_io;				use ada.text_io;
 with et_text;
+with et_schematic_ops.sheets;
 -- with et_meta;
 
 separate (et_canvas_schematic_2)
@@ -107,53 +108,65 @@ procedure draw_drawing_frame is
 		use et_text;
 		use pac_draw_text;
 
+		-- A temporarily storage place for the
+		-- position of a placeholder:
+		pos : type_vector_model;		
+
 		
--- 		procedure draw_sheet_description is
--- 			use et_project;
--- 
--- 			-- Get the description of the current active sheet:
--- 			des : constant type_schematic_description := 
--- 					sheet_description (active_module, current_active_sheet);
--- 		begin
--- 			-- category (development, product, routing)
--- 			draw_text (
--- 				content	=> to_content (to_string (des.category)),
--- 				size	=> phs.category.size,
--- 				font	=> font_placeholders,
--- 				pos		=> phs.category.position,
--- 				tb_pos	=> title_block_position);
--- 
--- 			-- description
--- 			draw_text (
--- 				content	=> to_content (to_string (des.content)),
--- 				size	=> phs.description.size,
--- 				font	=> font_placeholders,
--- 				pos		=> phs.description.position,
--- 				tb_pos	=> title_block_position);
--- 						
--- 		end draw_sheet_description;
+		procedure draw_sheet_description is
+			use et_project;
+			use et_schematic_ops.sheets;
 
-		pos : type_vector_model;
+			-- Get the description of the current active sheet:
+			des : constant type_schematic_description := 
+					get_sheet_description (active_module, current_active_sheet);
+		begin
+			-- category (development, product, routing)
+			pos := to_vector (phs.sheet_category.position);
+			
+			draw_text (
+				content		=> to_content (to_string (des.category)),
+				size		=> to_distance (phs.sheet_category.size),
+				font		=> font_placeholders,
+				anchor		=> add (pos, title_block_position.place),
+				origin		=> false,
+				rotation	=> 0.0,
+				alignment	=> (LEFT, BOTTOM));
+
+			
+			-- description			
+			pos := to_vector (phs.sheet_description.position);
+			
+			draw_text (
+				content		=> to_content (to_string (des.content)),
+				size		=> to_distance (phs.sheet_description.size),
+				font		=> font_placeholders,
+				anchor		=> add (pos, title_block_position.place),
+				origin		=> false,
+				rotation	=> 0.0,
+				alignment	=> (LEFT, BOTTOM));
+						
+		end draw_sheet_description;
+
+
+
+		procedure draw_sheet_number is begin
+			pos := to_vector (phs.sheet_number.position);
+			
+			draw_text (
+				content		=> to_content (to_sheet (current_active_sheet)), -- CS complete with "/of total"
+				size		=> to_distance (phs.sheet_number.size),
+				font		=> font_placeholders,
+				anchor		=> add (pos, title_block_position.place),
+				origin		=> false,
+				rotation	=> 0.0,
+				alignment	=> (LEFT, BOTTOM));
+		end draw_sheet_number;
 		
-	begin -- draw_additional_placeholders
-		null;
-
-		pos := to_vector (phs.sheet_number.position);
 		
-		-- sheet number n of m
-		draw_text (
-			content		=> to_content (to_sheet (current_active_sheet)), -- CS complete with "/of total"
-			size		=> to_distance (phs.sheet_number.size),
-			font		=> font_placeholders,
-			anchor		=> add (pos, title_block_position.place),
-			origin		=> false,
-			rotation	=> 0.0,
-			alignment	=> (LEFT, BOTTOM));
-
-
-
-		-- draw_sheet_description;
-		
+	begin
+		draw_sheet_number;
+		draw_sheet_description;		
 	end draw_additional_placeholders;
 
 

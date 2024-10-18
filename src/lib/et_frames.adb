@@ -328,17 +328,17 @@ package body et_frames is
 				frame.title_block_schematic.placeholders_additional.checked_date.position 	:= (120,  6);
 				frame.title_block_schematic.placeholders_additional.approved_date.position 	:= (120,  1);
 			
-				frame.title_block_schematic.placeholders_additional.sheet_number.position 	:= (210, 21);
-				frame.title_block_schematic.placeholders_additional.description.position 	:= ( 90, 30);
-				frame.title_block_schematic.placeholders_additional.category.position 		:= (105, 21);
+				frame.title_block_schematic.placeholders_additional.sheet_number.position 		:= (210, 21);
+				frame.title_block_schematic.placeholders_additional.sheet_description.position 	:= ( 90, 30);
+				frame.title_block_schematic.placeholders_additional.sheet_category.position 	:= (105, 21);
 
 			when PCB =>
 				-- type_title_bock (basic stuff):
 				frame.title_block_pcb.position												:= ( 55,  6);
 				frame.title_block_pcb.lines := make_lines (lines_pcb);
-				frame.title_block_pcb.placeholders_common.project_name.position					:= ( 30, 31);
-				frame.title_block_pcb.placeholders_common.module_file_name.position				:= ( 30, 26);
-				frame.title_block_pcb.placeholders_common.active_assembly_variant.position			:= ( 30, 21);
+				frame.title_block_pcb.placeholders_common.project_name.position				:= ( 30, 31);
+				frame.title_block_pcb.placeholders_common.module_file_name.position			:= ( 30, 26);
+				frame.title_block_pcb.placeholders_common.active_assembly_variant.position	:= ( 30, 21);
 				frame.title_block_pcb.texts := make_texts (texts_pcb);
 
 				frame.title_block_pcb.placeholders_additional.company.position 				:= ( 30, 36);
