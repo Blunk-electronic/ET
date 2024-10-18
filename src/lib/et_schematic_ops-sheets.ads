@@ -50,15 +50,13 @@ package et_schematic_ops.sheets is
 
 	use pac_net_name;
 
-	-- CS rework procedures so that a module cursor
-	-- is used instead the module_name.
-	
+
 
 	-- Returns the description of a sheet of a generic module:
-	function sheet_description (
+	function get_sheet_description (
 		module	: in pac_generic_modules.cursor;
 		sheet	: in type_sheet)
-		return et_frames.type_schematic_description;
+		return type_schematic_description;
 	
 
 

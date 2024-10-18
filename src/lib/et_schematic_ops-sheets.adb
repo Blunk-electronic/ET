@@ -40,16 +40,14 @@
 with ada.text_io;					use ada.text_io;
 
 
-
 package body et_schematic_ops.sheets is
 
 
-	function sheet_description (
+	function get_sheet_description (
 		module	: in pac_generic_modules.cursor;
 		sheet	: in type_sheet)
-		return et_frames.type_schematic_description 
+		return type_schematic_description 
 	is
-		use et_frames;
 
 		use pac_schematic_descriptions;
 		cursor : pac_schematic_descriptions.cursor;
@@ -65,7 +63,7 @@ package body et_schematic_ops.sheets is
 		end query_descriptions;
 
 		
-	begin -- sheet_description
+	begin
 		query_element (
 			position	=> module,
 			process		=> query_descriptions'access);
@@ -76,7 +74,7 @@ package body et_schematic_ops.sheets is
 		-- If the sheet has no description, then return the defaults.
 			return (others => <>);
 		end if;
-	end sheet_description;
+	end get_sheet_description;
 
 	
 end et_schematic_ops.sheets;
