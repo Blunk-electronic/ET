@@ -444,9 +444,36 @@ package body et_canvas.drawing_frame is
 		texts					: in pac_static_texts.list;
 		title_block_position	: in pac_geometry.type_position)
 	is
+		use et_text;
+		use pac_draw_text;
+		
+		-- A temporarily storage place for the
+		-- position of a text:
+		pos : type_vector_model;
 
+		use pac_static_texts;
+
+		
+		procedure query_text (c : in pac_static_texts.cursor) is
+			text : type_static_text renames element (c);
+		begin
+			pos := to_vector (text.position);
+			
+			draw_text (
+				content		=> text.content,
+				size		=> to_distance (text.size),
+				font		=> font_placeholders,
+
+				-- The anchor point is offset by the position of the title block:
+				anchor		=> add (pos, title_block_position.place),
+				
+				origin		=> false,
+				rotation	=> 0.0,
+				alignment	=> (LEFT, BOTTOM));
+		end query_text;
+		
 	begin
-		null;
+		iterate (texts, query_text'access);
 	end draw_static_texts;
 
 	
