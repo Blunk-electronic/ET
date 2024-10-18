@@ -58,6 +58,9 @@ procedure draw_drawing_frame is
 	frame_general : type_frame_general := type_frame_general (frames.frame);
 		
 
+	title_block : type_title_block_schematic renames frames.frame.title_block_schematic;
+
+	
 
 	-- The position of the title block.
 	-- The block has no rotation. The x/y position will be
@@ -183,18 +186,21 @@ begin
 	-- TITLE BLOCK
 
 	-- Extract the position of the title block:
-	title_block_position.place := to_vector (frames.frame.title_block_schematic.position);
+	title_block_position.place := to_vector (title_block.position);
 
 	draw_title_block_lines;	
 
 	draw_common_placeholders (
-		placeholders			=> frames.frame.title_block_schematic.placeholders_common,
+		placeholders			=> title_block.placeholders_common,
 		title_block_position	=> title_block_position);
 
 
 	draw_additional_placeholders;
 
-
+	draw_static_texts (
+		texts					=> title_block.texts,
+		title_block_position	=> title_block_position);
+	
 		-- draw common placeholders and other texts
 		-- draw_texts (
 		-- 	ph_common	=> self.get_frame.title_block_schematic.placeholders,

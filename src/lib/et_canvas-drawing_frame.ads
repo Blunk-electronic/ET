@@ -83,6 +83,13 @@ package et_canvas.drawing_frame is
 		placeholders			: in type_placeholders_common;
 		title_block_position	: in pac_geometry.type_position);
 
+
+	-- This procedure draws the texts which are static
+	-- like "drawn" or "sheet":
+	procedure draw_static_texts (
+		texts					: in pac_texts.list;
+		title_block_position	: in pac_geometry.type_position);
+
 	
 end et_canvas.drawing_frame;
 

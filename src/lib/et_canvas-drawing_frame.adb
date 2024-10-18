@@ -439,6 +439,16 @@ package body et_canvas.drawing_frame is
 	end draw_common_placeholders;
 
 
+
+	procedure draw_static_texts (
+		texts					: in pac_texts.list;
+		title_block_position	: in pac_geometry.type_position)
+	is
+
+	begin
+		null;
+	end draw_static_texts;
+
 	
 end et_canvas.drawing_frame;
 
