@@ -54,7 +54,7 @@ procedure draw_texts is
 		use pac_draw_text;
 	begin		
 		-- We want to draw only those texts which are on the active sheet:
-		if element (cursor).sheet = current_active_sheet then
+		if element (cursor).sheet = active_sheet then
 
 			draw_text (
 				content		=> element (cursor).content,

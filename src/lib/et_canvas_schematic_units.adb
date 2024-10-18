@@ -355,7 +355,7 @@ package body et_canvas_schematic_units is
 		-- Collect all units in the vicinity of the given point:
 		proposed_units := collect_units (
 			module			=> active_module,
-			place			=> to_position (point, current_active_sheet),
+			place			=> to_position (point, active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
 
@@ -436,7 +436,7 @@ package body et_canvas_schematic_units is
 				device_name		=> key (su.device),
 				unit_name		=> key (su.unit),
 				coordinates		=> ABSOLUTE,
-				sheet			=> current_active_sheet,
+				sheet			=> active_sheet,
 				point			=> destination,
 				log_threshold	=> log_threshold);
 
@@ -574,7 +574,7 @@ package body et_canvas_schematic_units is
 		-- Collect all units in the vicinity of the given point:
 		proposed_units := collect_units (
 			module			=> active_module,
-			place			=> to_position (point, current_active_sheet),
+			place			=> to_position (point, active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
 
@@ -679,7 +679,7 @@ package body et_canvas_schematic_units is
 					end query_segment;
 					
 				begin -- query_strand
-					if get_sheet (element (s).position) = current_active_sheet then
+					if get_sheet (element (s).position) = active_sheet then
 						iterate (element (s).segments, query_segment'access);
 					end if;
 				end query_strand;
@@ -940,7 +940,7 @@ package body et_canvas_schematic_units is
 		-- Collect all units in the vicinity of the given point:
 		proposed_units := collect_units (
 			module			=> active_module,
-			place			=> to_position (point, current_active_sheet),
+			place			=> to_position (point, active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
 
@@ -1327,7 +1327,7 @@ package body et_canvas_schematic_units is
 			module_name		=> key (active_module),
 			device_model	=> pac_devices_lib.key (unit_add.device),
 			variant			=> unit_add.variant,
-			destination		=> to_position (position, current_active_sheet),
+			destination		=> to_position (position, active_sheet),
 			log_threshold	=> log_threshold + 1);
 
 		-- Commit the new state of the design:
@@ -1360,7 +1360,7 @@ package body et_canvas_schematic_units is
 				module_name		=> key (active_module),
 				device_name		=> unit_add.device_pre,
 				unit_name		=> unit_add.name,
-				destination		=> to_position (position, current_active_sheet),
+				destination		=> to_position (position, active_sheet),
 				log_threshold	=> log_threshold + 1);
 
 
@@ -1624,7 +1624,7 @@ package body et_canvas_schematic_units is
 		-- Collect all units in the vicinity of the given point:
 		proposed_units := collect_units (
 			module			=> active_module,
-			place			=> to_position (point, current_active_sheet),
+			place			=> to_position (point, active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
 
@@ -1909,7 +1909,7 @@ package body et_canvas_schematic_units is
 		-- Collect all placeholders in the vicinity of the given point:
 		proposed_placeholders := collect_placeholders (
 			module			=> active_module,
-			place			=> to_position (point, current_active_sheet),
+			place			=> to_position (point, active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			category		=> category,
 			log_threshold	=> log_threshold + 1);
@@ -2055,7 +2055,7 @@ package body et_canvas_schematic_units is
 		-- Collect all placeholders in the vicinity of the given point:
 		proposed_placeholders := collect_placeholders (
 			module			=> active_module,
-			place			=> to_position (point, current_active_sheet),
+			place			=> to_position (point, active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			category		=> category,
 			log_threshold	=> log_threshold + 1);
@@ -2274,7 +2274,7 @@ package body et_canvas_schematic_units is
 			-- Collect all units in the vicinity of the given point:
 			proposed_units := collect_units (
 				module			=> active_module,
-				place			=> to_position (point, current_active_sheet),
+				place			=> to_position (point, active_sheet),
 				zone			=> get_catch_zone (catch_zone),
 				log_threshold	=> log_threshold + 1);
 
@@ -2367,7 +2367,7 @@ package body et_canvas_schematic_units is
 		-- Collect all units in the vicinity of the given point:
 		proposed_units := collect_units (
 			module			=> active_module,
-			place			=> to_position (point, current_active_sheet),
+			place			=> to_position (point, active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
 

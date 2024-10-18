@@ -119,7 +119,7 @@ procedure draw_drawing_frame is
 
 			-- Get the description of the current active sheet:
 			des : constant type_schematic_description := 
-					get_sheet_description (active_module, current_active_sheet);
+					get_sheet_description (active_module, active_sheet);
 		begin
 			-- category (development, product, routing)
 			pos := to_vector (phs.sheet_category.position);
@@ -154,7 +154,7 @@ procedure draw_drawing_frame is
 			pos := to_vector (phs.sheet_number.position);
 			
 			draw_text (
-				content		=> to_content (to_sheet (current_active_sheet)), -- CS complete with "/of total"
+				content		=> to_content (to_sheet (active_sheet)), -- CS complete with "/of total"
 				size		=> to_distance (phs.sheet_number.size),
 				font		=> font_placeholders,
 				anchor		=> add (pos, title_block_position.place),

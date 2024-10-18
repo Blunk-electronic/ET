@@ -2348,7 +2348,7 @@ is
 		begin
 			module := to_module_name (f (5));
 			set_module (module);
-			current_active_sheet := sheet;
+			active_sheet := sheet;
 			
 			et_canvas_schematic_2.update_schematic_editor;
 			et_canvas_board_2.update_board_editor;
@@ -2367,7 +2367,7 @@ is
 				level => log_threshold + 1);
 			
 			sheet := to_sheet (f (6));
-			current_active_sheet := sheet;
+			active_sheet := sheet;
 
 			et_canvas_schematic_2.update_schematic_editor;
 			et_canvas_board_2.update_board_editor;

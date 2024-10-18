@@ -92,7 +92,7 @@ package body et_gui_2 is
 		log (text => "set active sheet " & type_sheet'image (sheet),
 			 level => log_threshold);
 
-		current_active_sheet := sheet;
+		active_sheet := sheet;
 
 		
 		

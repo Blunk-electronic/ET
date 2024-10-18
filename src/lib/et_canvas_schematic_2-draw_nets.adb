@@ -405,7 +405,7 @@ procedure draw_nets is
 								s : constant type_stub := query_stub (
 										module_cursor	=> active_module,
 										net_name		=> selected_net,
-										position		=> to_position (type_vector_model (l.position), current_active_sheet),
+										position		=> to_position (type_vector_model (l.position), active_sheet),
 										log_threshold	=> log_threshold + 1);
 
 									-- CS use a function query_stub that take a module cursor and
@@ -732,7 +732,7 @@ procedure draw_nets is
 			module_cursor	=> active_module,
 			segment			=> element (original_segment),
 			zone			=> zone,
-			point_of_attack	=> to_position (PS.point_of_attack, current_active_sheet),
+			point_of_attack	=> to_position (PS.point_of_attack, active_sheet),
 			log_threshold	=> log_threshold + 10) -- CS: avoids excessive log information. find a more elegant way.
 		then
 			-- segment is movable
@@ -868,7 +868,7 @@ procedure draw_nets is
 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
 			begin
 				-- draw nets of the active sheet only:
-				if get_sheet (strand.position) = current_active_sheet then
+				if get_sheet (strand.position) = active_sheet then
 
 					-- First we draw selected segments or those being moved/dragged:
 					set_color_nets (BRIGHT);
@@ -956,7 +956,7 @@ procedure draw_nets is
 				use et_colors.schematic;
 			begin
 				-- draw nets of the active sheet only:
-				if get_sheet (strand.position) = current_active_sheet then
+				if get_sheet (strand.position) = active_sheet then
 
 					set_color_nets (BRIGHT);
 					

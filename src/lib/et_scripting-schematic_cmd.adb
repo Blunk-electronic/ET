@@ -876,7 +876,7 @@ is
 				begin
 					if location.exists then
 						-- show the sheet where the unit is:
-						current_active_sheet := get_sheet (location.position);
+						active_sheet := get_sheet (location.position);
 
 						-- center on the first unit
 					-- CS center_on (canvas, location.position.place);
@@ -903,7 +903,7 @@ is
 				begin
 					if location.exists then
 						-- show the sheet where the unit is:
-						current_active_sheet := get_sheet (location.position);
+						active_sheet := get_sheet (location.position);
 
 						-- center on the unit
 					-- CS center_on (canvas, location.position.place);
@@ -931,7 +931,7 @@ is
 					use et_sheets;
 				begin
 					if location.exists then
-						if get_sheet (location.position) = current_active_sheet then
+						if get_sheet (location.position) = active_sheet then
 
 							-- center on the unit
 						-- CS	center_on (canvas, location.position.place);
@@ -1083,7 +1083,7 @@ is
 					strand_cursor := get_first_strand (net_cursor);
 
 					-- show the sheet where the first net is:
-					current_active_sheet := get_sheet (element (strand_cursor).position);
+					active_sheet := get_sheet (element (strand_cursor).position);
 
 					-- center drawing where the strand starts:
 				-- CS center_on (canvas, element (strand_cursor).position.place);
@@ -1101,7 +1101,7 @@ is
 					-- Get the cursor of the first strand on the current
 					-- active sheet:
 					strand_cursor := get_first_strand_on_sheet (
-										current_active_sheet, net_cursor);
+										active_sheet, net_cursor);
 
 					-- If the net does have a strand on the given sheet,
 					-- select it and show properties in status bar.
@@ -1283,7 +1283,7 @@ is
 
 			-- CS test whether sheet exists
 			
-			current_active_sheet := sheet;
+			active_sheet := sheet;
 			update_sheet_number_display;
 		end show;
 			
@@ -1318,7 +1318,7 @@ is
 			-- Show the module in schematic and board editor:
 			
 			active_module := locate_module (module_name);
-			current_active_sheet := 1;
+			active_sheet := 1;
 
 			-- Update module name in the schematic window title bar:
 			-- CS set_title_bar (active_module);
@@ -1358,7 +1358,7 @@ is
 		procedure module_and_first_sheet is begin
 			module := to_module_name (f (5));
 			set_module (module);
-			current_active_sheet := sheet;
+			active_sheet := sheet;
 			
 			update_schematic_editor;
 			et_canvas_board_2.update_board_editor;
@@ -1375,7 +1375,7 @@ is
 				level => log_threshold + 1);
 			
 			sheet := to_sheet (f (6));
-			current_active_sheet := sheet;
+			active_sheet := sheet;
 
 			update_schematic_editor;
 			et_canvas_board_2.update_board_editor;
@@ -1474,7 +1474,7 @@ is
 			if length (generic_modules) > 0 then
 				
 				active_module := generic_modules.first;
-				current_active_sheet := 1;
+				active_sheet := 1;
 
 				log (text => "set module " 
 					 & enclose_in_quotes (get_active_module), 
@@ -1512,7 +1512,7 @@ is
 			if length (generic_modules) > 0 then
 			
 				active_module := generic_modules.first;
-				current_active_sheet := 1;
+				active_sheet := 1;
 
 				log (text => "set module " 
 					 & enclose_in_quotes (get_active_module), 
@@ -2768,7 +2768,7 @@ is
 										units			=> units_on_sheet (
 															active_module,
 															device_name,
-															current_active_sheet,
+															active_sheet,
 															log_threshold + 1),
 										log_threshold	=> log_threshold + 1);
 
@@ -2791,7 +2791,7 @@ is
 
 										unit_delete.unit := unit_name;
 										
-										if sheet (active_module, unit_delete.device, unit_delete.unit) = current_active_sheet then
+										if sheet (active_module, unit_delete.device, unit_delete.unit) = active_sheet then
 
 											delete_unit (
 												module_cursor	=> active_module,
@@ -2838,7 +2838,7 @@ is
 										units			=> units_on_sheet (
 															active_module,
 															device_name,
-															current_active_sheet,
+															active_sheet,
 															log_threshold + 1),
 										log_threshold	=> log_threshold + 1);
 
@@ -2862,7 +2862,7 @@ is
 
 										unit_move.unit := unit_name;
 										
-										if sheet (active_module, unit_move.device, unit_move.unit) = current_active_sheet then
+										if sheet (active_module, unit_move.device, unit_move.unit) = active_sheet then
 											select_unit_for_move;
 											
 											-- use the current primary tool for moving the unit:
@@ -2946,7 +2946,7 @@ is
 										units			=> units_on_sheet (
 															active_module,
 															device_name,
-															current_active_sheet,
+															active_sheet,
 															log_threshold + 1),
 										log_threshold	=> log_threshold + 1);
 
@@ -2970,11 +2970,11 @@ is
 
 										unit_move.unit := unit_name;
 										
-										-- If the unit is not on the current_active_sheet then notify the
+										-- If the unit is not on the active_sheet then notify the
 										-- GUI that the sheet changes. This way the unit is drawn
 										-- on the current visible sheet independed of its original sheet number.
 										-- See et_canvas_schematic.draw_units.
-										if sheet (active_module, unit_move.device, unit_move.unit) /= current_active_sheet then
+										if sheet (active_module, unit_move.device, unit_move.unit) /= active_sheet then
 											unit_move.sheet_changes := true;
 
 											--set_status ("Moving unit from another sheet");
@@ -3021,7 +3021,7 @@ is
 										units			=> units_on_sheet (
 															active_module,
 															device_name,
-															current_active_sheet,
+															active_sheet,
 															log_threshold + 1),
 										log_threshold	=> log_threshold + 1);
 
@@ -3046,7 +3046,7 @@ is
 
 										placeholder_move.unit := unit_name;
 										
-										if sheet (active_module, placeholder_move.device, placeholder_move.unit) = current_active_sheet then
+										if sheet (active_module, placeholder_move.device, placeholder_move.unit) = active_sheet then
 											finish_placeholder_move;
 										else
 											unit_not_on_this_sheet;
@@ -3085,7 +3085,7 @@ is
 										units			=> units_on_sheet (
 															active_module,
 															device_name,
-															current_active_sheet,
+															active_sheet,
 															log_threshold + 1),
 										log_threshold	=> log_threshold + 1);
 
@@ -3109,7 +3109,7 @@ is
 
 										unit_move.unit := unit_name;
 										
-										if sheet (active_module, unit_move.device, unit_move.unit) = current_active_sheet then
+										if sheet (active_module, unit_move.device, unit_move.unit) = active_sheet then
 											finish_unit_move;
 										else
 											unit_not_on_this_sheet;
@@ -3144,7 +3144,7 @@ is
 										units			=> units_on_sheet (
 															active_module,
 															device_name,
-															current_active_sheet,
+															active_sheet,
 															log_threshold + 1),
 										log_threshold	=> log_threshold + 1);
 
@@ -3169,7 +3169,7 @@ is
 
 										placeholder_move.unit := unit_name;
 										
-										if sheet (active_module, placeholder_move.device, placeholder_move.unit) = current_active_sheet then
+										if sheet (active_module, placeholder_move.device, placeholder_move.unit) = active_sheet then
 											finish_placeholder_move;
 										else
 											unit_not_on_this_sheet;

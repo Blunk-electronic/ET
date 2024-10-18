@@ -364,7 +364,7 @@ package body et_canvas_schematic_nets is
 		-- Collect all segments in the vicinity of the given point:
 		proposed_segments := collect_segments (
 			module			=> active_module,
-			place			=> to_position (point, current_active_sheet),
+			place			=> to_position (point, active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
 
@@ -499,7 +499,7 @@ package body et_canvas_schematic_nets is
 						-- Insert a single net segment:
 						insert_net_segment (
 							module			=> active_module,
-							sheet			=> current_active_sheet,
+							sheet			=> active_sheet,
 							net_name_given	=> PS.net_name, -- RESET_N, or empty
 							segment			=> (
 									start_point	=> PS.path.start_point,
@@ -520,7 +520,7 @@ package body et_canvas_schematic_nets is
 						-- Insert first segment of the path:
 						insert_net_segment (
 							module			=> active_module,
-							sheet			=> current_active_sheet,
+							sheet			=> active_sheet,
 							net_name_given	=> PS.net_name, -- RESET_N, or empty
 							segment			=> (
 									start_point	=> PS.path.start_point,
@@ -539,7 +539,7 @@ package body et_canvas_schematic_nets is
 							-- Insert second segment of the path:
 							insert_net_segment (
 								module			=> active_module,
-								sheet			=> current_active_sheet,
+								sheet			=> active_sheet,
 								net_name_given	=> PS.net_name, -- RESET_N, or empty
 								segment			=> (
 										start_point	=> PS.path.bend_point,
@@ -746,7 +746,7 @@ package body et_canvas_schematic_nets is
 	begin
 		segments := collect_segments (
 			module			=> active_module,
-			place			=> to_position (point, current_active_sheet),
+			place			=> to_position (point, active_sheet),
 			log_threshold	=> log_threshold); 
 
 		-- If there are no segments at given point, then the point is valid:
@@ -821,7 +821,7 @@ package body et_canvas_schematic_nets is
 					when SHEET =>
 						position := to_position (
 										point => origin, -- don't care
-										sheet => current_active_sheet); -- sheet number
+										sheet => active_sheet); -- sheet number
 
 					when EVERYWHERE =>
 						position := to_position (
@@ -924,7 +924,7 @@ package body et_canvas_schematic_nets is
 		-- Collect all segments in the vicinity of the given point:
 		proposed_segments := collect_segments (
 			module			=> active_module,
-			place			=> to_position (point, current_active_sheet),
+			place			=> to_position (point, active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
 
@@ -1063,7 +1063,7 @@ package body et_canvas_schematic_nets is
 			net_name : pac_net_name.bounded_string;
 			
 			point_of_attack : et_coordinates_2.type_position := 
-				to_position (PS.point_of_attack, current_active_sheet);
+				to_position (PS.point_of_attack, active_sheet);
 		begin
 			log (text => "finalizing drag ...", level => log_threshold + 1);
 			log_indentation_up;
@@ -1418,7 +1418,7 @@ package body et_canvas_schematic_nets is
 		-- Collect all net labels in the vicinity of the given point:
 		proposed_labels := collect_labels (
 			module			=> active_module,
-			place			=> to_position (point, current_active_sheet),
+			place			=> to_position (point, active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			log_threshold	=> log_threshold + 1);
 
@@ -1526,7 +1526,7 @@ package body et_canvas_schematic_nets is
 									s : constant type_stub := query_stub (
 										module_cursor	=> module_cursor,
 										net_name		=> net_name,
-										position		=> to_position (type_vector_model (destination), current_active_sheet),
+										position		=> to_position (type_vector_model (destination), active_sheet),
 										log_threshold	=> log_threshold + 1);
 
 									-- CS use a function query_stub that take a module cursor and
@@ -1659,7 +1659,7 @@ package body et_canvas_schematic_nets is
 		-- Collect all net labels in the vicinity of the given point:
 		proposed_labels := collect_labels (
 			module			=> active_module,
-			place			=> to_position (point, current_active_sheet),
+			place			=> to_position (point, active_sheet),
 			zone			=> get_catch_zone (catch_zone),
 			category		=> category,
 			log_threshold	=> log_threshold + 1);

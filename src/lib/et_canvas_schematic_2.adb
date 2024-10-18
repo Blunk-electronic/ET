@@ -869,14 +869,14 @@ package body et_canvas_schematic_2 is
 
 				-- Advance to next sheet:
 				when GDK_KP_Add =>
-					current_active_sheet := current_active_sheet + 1;
+					active_sheet := active_sheet + 1;
 					update_sheet_number_display;
 					refresh;
 
 				-- Advance to previous sheet:
 				when GDK_KP_Subtract =>
-					if current_active_sheet > sheet_default then
-						current_active_sheet := current_active_sheet - 1;
+					if active_sheet > sheet_default then
+						active_sheet := active_sheet - 1;
 						update_sheet_number_display;
 						refresh;
 					end if;
@@ -1002,7 +1002,7 @@ package body et_canvas_schematic_2 is
 
 	
 	procedure update_sheet_number_display is begin
-		gtk_entry (cbox_sheet.get_child).set_text (to_sheet (current_active_sheet));
+		gtk_entry (cbox_sheet.get_child).set_text (to_sheet (active_sheet));
 	end update_sheet_number_display;
 
 	

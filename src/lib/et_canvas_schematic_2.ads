@@ -311,7 +311,7 @@ package et_canvas_schematic_2 is
 	
 
 	-- The current active sheet:
-	current_active_sheet : type_sheet := type_sheet'first;
+	active_sheet : type_sheet := type_sheet'first;
 
 	
 
