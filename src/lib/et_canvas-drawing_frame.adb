@@ -37,6 +37,12 @@
 --
 
 
+with et_project;
+with et_project.modules;
+with et_assembly_variants;
+
+
+
 package body et_canvas.drawing_frame is
 
 
@@ -62,10 +68,24 @@ package body et_canvas.drawing_frame is
 		return r;
 	end to_vector;
 
+
+
+	function to_line (
+		l : in et_frames.type_line)
+		return pac_geometry.type_line
+	is
+		result : pac_geometry.type_line;
+	begin
+		result.start_point := to_vector (l.start_point);
+		result.end_point   := to_vector (l.end_point);
+		return result;
+	end to_line;
+
+
 	
 	
 	procedure draw_frame (
-		frame : in type_frame_general)
+		frame : in type_frame_general'class)
 	is
 		-- This is a temporarily line that is used to
 		-- draw all the individual lines of the frame:
@@ -345,6 +365,78 @@ package body et_canvas.drawing_frame is
 
 		sector_delimiters;
 	end draw_frame;
+
+
+
+	
+
+	procedure draw_common_placeholders (
+		placeholders			: in type_placeholders_common;
+		title_block_position	: in pac_geometry.type_position)
+	is
+		use et_text;
+		use pac_draw_text;
+		use et_project;
+		use et_project.modules;
+		use et_assembly_variants;
+
+		pos : type_vector_model;
+	begin
+		-- PROJECT NAME:
+		
+		pos := to_vector (placeholders.project_name.position);
+
+		draw_text (
+			content		=> to_content (to_string (current_active_project)),					  
+			size		=> pac_geometry.type_distance_positive (placeholders.project_name.size),
+			font		=> font_placeholders,
+
+			-- The anchor point is offset by the position of the title block:
+			anchor		=> add (pos, title_block_position.place),
+			
+			origin		=> false,
+			rotation	=> 0.0,
+			alignment	=> (LEFT, BOTTOM));
+
+
+		
+		-- MODULE FILE NAME:
+		
+		pos := to_vector (placeholders.module_file_name.position);
+
+		draw_text (
+			content		=> to_content (get_active_module),
+			size		=> pac_geometry.type_distance_positive (placeholders.module_file_name.size),
+			font		=> font_placeholders,
+
+			-- The anchor point is offset by the position of the title block:
+			anchor		=> add (pos, title_block_position.place),
+			
+			origin		=> false,
+			rotation	=> 0.0,
+			alignment	=> (LEFT, BOTTOM));
+
+
+
+		-- ASSEMBLY VARIANT:
+		
+		pos := to_vector (placeholders.active_assembly_variant.position);
+
+		draw_text (
+			--content		=> to_content (to_variant (element (active_module).active_variant)),
+			content		=> to_content ("to do"), -- CS
+			size		=> pac_geometry.type_distance_positive (placeholders.active_assembly_variant.size),
+			font		=> font_placeholders,
+
+			-- The anchor point is offset by the position of the title block:
+			anchor		=> add (pos, title_block_position.place),
+			
+			origin		=> false,
+			rotation	=> 0.0,
+			alignment	=> (LEFT, BOTTOM));
+
+		
+	end draw_common_placeholders;
 
 
 	

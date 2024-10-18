@@ -280,9 +280,9 @@ package et_frames is
 
 		-- The positions of title block objects are relative
 		-- to the position of the title block:
-		lines			: pac_lines.list;
-		placeholders	: type_placeholders_common;
-		texts			: pac_texts.list;
+		lines				: pac_lines.list;
+		placeholders_common	: type_placeholders_common;
+		texts				: pac_texts.list;
 	end record;
 
 
@@ -356,7 +356,7 @@ package et_frames is
 	end record;
 	
 	type type_title_block_schematic is new type_title_block with record
-		additional_placeholders : type_placeholders_schematic;
+		placeholders_additional : type_placeholders_schematic;
 	end record;
 
 
@@ -391,7 +391,7 @@ package et_frames is
 	end record;
 	
 	type type_title_block_pcb is new type_title_block with record
-		additional_placeholders	: type_placeholders_pcb;
+		placeholders_additional	: type_placeholders_pcb;
 		cam_markers				: type_cam_markers;
 	end record;
 

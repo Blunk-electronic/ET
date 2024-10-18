@@ -61,12 +61,27 @@ package et_canvas.drawing_frame is
 		p : in et_frames.type_position)
 		return type_vector_model;
 
+
+	-- Converts a line of the frame domain to 
+	-- a line in the model domain:
+	function to_line (
+		l : in et_frames.type_line)
+		return pac_geometry.type_line;
+
 	
 
 	-- This procedure draws the outer and inner border
 	-- and the quadrant bars of the frame:
 	procedure draw_frame (
-		frame : in type_frame_general);
+		frame : in type_frame_general'class);
+
+
+	-- This procedure draws the placeholders which are
+	-- common in both schematic and board.
+	-- See package et_frames for details of common placeholders:
+	procedure draw_common_placeholders (
+		placeholders			: in type_placeholders_common;
+		title_block_position	: in pac_geometry.type_position);
 
 	
 end et_canvas.drawing_frame;

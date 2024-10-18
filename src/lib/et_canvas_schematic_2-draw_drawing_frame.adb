@@ -50,11 +50,11 @@ procedure draw_drawing_frame is
 	
 
 	-- Get the frames of the schematic:
-	f : type_frames_schematic := element (active_module).frames;
+	frames : type_frames_schematic := element (active_module).frames;
 	-- CS use query_element instead
 
 
-	frame_general : type_frame_general := type_frame_general (f.frame);
+	frame_general : type_frame_general := type_frame_general (frames.frame);
 		
 	
 -- 	procedure draw_additional_placeholders is
@@ -107,6 +107,47 @@ procedure draw_drawing_frame is
 -- 		
 -- 	end draw_additional_placeholders;
 -- 
+
+
+	-- The position of the title block.
+	-- The block has no rotation. The x/y position will be
+	-- extracted later:
+	title_block_position : pac_geometry.type_position := 
+		(rotation => 0.0, others => <>);
+	
+	
+	
+	-- This procedure draws the lines of the title block:
+	procedure draw_title_block_lines is
+
+		use pac_lines;
+	
+		procedure query_line (c : in pac_lines.cursor) is
+			l1 : et_frames.type_line renames element (c);
+			l2 : pac_geometry.type_line;
+		begin
+			l2 := to_line (l1);
+
+			-- The width of 0.0 has no meaning because 
+			-- the argument do_stroke is false by default
+			-- (see specs of draw_line):
+			draw_line (l2, title_block_position, 0.0);
+		end query_line;
+
+		
+	begin
+		set_linewidth (linewidth_1);
+		
+		iterate (
+			container	=> frames.frame.title_block_schematic.lines, 
+			process		=> query_line'access);
+			
+		stroke;
+	end draw_title_block_lines;
+
+
+	
+
 	
 begin
 	-- put_line ("draw_drawing_frame (schematic)");
@@ -114,19 +155,24 @@ begin
 	set_color_frame;
 
 	-- outer border:
-	draw_frame (frame_general);
+	draw_frame (frames.frame);
 
-		
-		-- TITLE BLOCK
-		-- lines
-		--iterate (self.get_frame.title_block_schematic.lines, query_line'access);
-		--cairo.stroke (context.cr);
+	
+	-- TITLE BLOCK
 
-		-- draw_title_block_lines (
-		-- 	lines		=> self.get_frame.title_block_schematic.lines,
-		-- 	tb_pos		=> title_block_position);
+	-- Extract the position of the title block:
+	title_block_position.place := to_vector (frames.frame.title_block_schematic.position);
 
-		
+	draw_title_block_lines;	
+
+	draw_common_placeholders (
+		placeholders			=> frames.frame.title_block_schematic.placeholders_common,
+		title_block_position	=> title_block_position);
+
+
+		-- draw_additional_placeholders;
+
+
 		-- draw common placeholders and other texts
 		-- draw_texts (
 		-- 	ph_common	=> self.get_frame.title_block_schematic.placeholders,
@@ -134,16 +180,8 @@ begin
 		-- 	texts		=> self.get_frame.title_block_schematic.texts,
 		-- 	meta		=> et_meta.type_basic (element (active_module).meta.board),
 		-- 	tb_pos		=> title_block_position);
-  -- 
 
-		-- draw_additional_placeholders;
-		
-		-- draw the sector delimiters
-		-- draw_sector_delimiters (
-		-- 	sectors			=> self.get_frame.sectors,
-		-- 	frame_size		=> frame_size,
-		-- 	border_width	=> self.get_frame.border_width);
-
+	
 	
 end draw_drawing_frame;
 

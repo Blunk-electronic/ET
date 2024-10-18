@@ -309,54 +309,54 @@ package body et_frames is
 				-- type_title_bock (basic stuff):
 				frame.title_block_schematic.position										:= ( 55,  6);
 				frame.title_block_schematic.lines := make_lines (lines_sch);
-				frame.title_block_schematic.placeholders.project_name.position 				:= ( 30, 31);
-				frame.title_block_schematic.placeholders.module_file_name.position 			:= ( 30, 26);
-				frame.title_block_schematic.placeholders.active_assembly_variant.position	:= ( 30, 21);
+				frame.title_block_schematic.placeholders_common.project_name.position 				:= ( 30, 31);
+				frame.title_block_schematic.placeholders_common.module_file_name.position 			:= ( 30, 26);
+				frame.title_block_schematic.placeholders_common.active_assembly_variant.position	:= ( 30, 21);
 				frame.title_block_schematic.texts := make_texts (texts_sch);
 
-				frame.title_block_schematic.additional_placeholders.company.position 		:= ( 30, 36);
-				frame.title_block_schematic.additional_placeholders.customer.position 		:= ( 30, 16);
-				frame.title_block_schematic.additional_placeholders.partcode.position 		:= ( 30, 11);
-				frame.title_block_schematic.additional_placeholders.drawing_number.position	:= ( 30,  6);
-				frame.title_block_schematic.additional_placeholders.revision.position 		:= ( 30,  1);
+				frame.title_block_schematic.placeholders_additional.company.position 		:= ( 30, 36);
+				frame.title_block_schematic.placeholders_additional.customer.position 		:= ( 30, 16);
+				frame.title_block_schematic.placeholders_additional.partcode.position 		:= ( 30, 11);
+				frame.title_block_schematic.placeholders_additional.drawing_number.position	:= ( 30,  6);
+				frame.title_block_schematic.placeholders_additional.revision.position 		:= ( 30,  1);
 
-				frame.title_block_schematic.additional_placeholders.drawn_by.position 		:= (152, 11);
-				frame.title_block_schematic.additional_placeholders.checked_by.position 	:= (152,  6);
-				frame.title_block_schematic.additional_placeholders.approved_by.position 	:= (152,  1);
+				frame.title_block_schematic.placeholders_additional.drawn_by.position 		:= (152, 11);
+				frame.title_block_schematic.placeholders_additional.checked_by.position 	:= (152,  6);
+				frame.title_block_schematic.placeholders_additional.approved_by.position 	:= (152,  1);
 
-				frame.title_block_schematic.additional_placeholders.drawn_date.position 	:= (120, 11);
-				frame.title_block_schematic.additional_placeholders.checked_date.position 	:= (120,  6);
-				frame.title_block_schematic.additional_placeholders.approved_date.position 	:= (120,  1);
+				frame.title_block_schematic.placeholders_additional.drawn_date.position 	:= (120, 11);
+				frame.title_block_schematic.placeholders_additional.checked_date.position 	:= (120,  6);
+				frame.title_block_schematic.placeholders_additional.approved_date.position 	:= (120,  1);
 			
-				frame.title_block_schematic.additional_placeholders.sheet_number.position 	:= (210, 21);
-				frame.title_block_schematic.additional_placeholders.description.position 	:= ( 90, 30);
-				frame.title_block_schematic.additional_placeholders.category.position 		:= (105, 21);
+				frame.title_block_schematic.placeholders_additional.sheet_number.position 	:= (210, 21);
+				frame.title_block_schematic.placeholders_additional.description.position 	:= ( 90, 30);
+				frame.title_block_schematic.placeholders_additional.category.position 		:= (105, 21);
 
 			when PCB =>
 				-- type_title_bock (basic stuff):
 				frame.title_block_pcb.position												:= ( 55,  6);
 				frame.title_block_pcb.lines := make_lines (lines_pcb);
-				frame.title_block_pcb.placeholders.project_name.position					:= ( 30, 31);
-				frame.title_block_pcb.placeholders.module_file_name.position				:= ( 30, 26);
-				frame.title_block_pcb.placeholders.active_assembly_variant.position			:= ( 30, 21);
+				frame.title_block_pcb.placeholders_common.project_name.position					:= ( 30, 31);
+				frame.title_block_pcb.placeholders_common.module_file_name.position				:= ( 30, 26);
+				frame.title_block_pcb.placeholders_common.active_assembly_variant.position			:= ( 30, 21);
 				frame.title_block_pcb.texts := make_texts (texts_pcb);
 
-				frame.title_block_pcb.additional_placeholders.company.position 				:= ( 30, 36);
-				frame.title_block_pcb.additional_placeholders.customer.position 			:= ( 30, 16);
-				frame.title_block_pcb.additional_placeholders.partcode.position 			:= ( 30, 11);
-				frame.title_block_pcb.additional_placeholders.drawing_number.position		:= ( 30,  6);
-				frame.title_block_pcb.additional_placeholders.revision.position 			:= ( 30,  1);
+				frame.title_block_pcb.placeholders_additional.company.position 				:= ( 30, 36);
+				frame.title_block_pcb.placeholders_additional.customer.position 			:= ( 30, 16);
+				frame.title_block_pcb.placeholders_additional.partcode.position 			:= ( 30, 11);
+				frame.title_block_pcb.placeholders_additional.drawing_number.position		:= ( 30,  6);
+				frame.title_block_pcb.placeholders_additional.revision.position 			:= ( 30,  1);
 
-				frame.title_block_pcb.additional_placeholders.drawn_by.position 			:= (152, 11);
-				frame.title_block_pcb.additional_placeholders.checked_by.position 			:= (152,  6);
-				frame.title_block_pcb.additional_placeholders.approved_by.position 			:= (152,  1);
+				frame.title_block_pcb.placeholders_additional.drawn_by.position 			:= (152, 11);
+				frame.title_block_pcb.placeholders_additional.checked_by.position 			:= (152,  6);
+				frame.title_block_pcb.placeholders_additional.approved_by.position 			:= (152,  1);
 
-				frame.title_block_pcb.additional_placeholders.drawn_date.position 			:= (120, 11);
-				frame.title_block_pcb.additional_placeholders.checked_date.position 		:= (120,  6);
-				frame.title_block_pcb.additional_placeholders.approved_date.position 		:= (120,  1);
+				frame.title_block_pcb.placeholders_additional.drawn_date.position 			:= (120, 11);
+				frame.title_block_pcb.placeholders_additional.checked_date.position 		:= (120,  6);
+				frame.title_block_pcb.placeholders_additional.approved_date.position 		:= (120,  1);
 
-				frame.title_block_pcb.additional_placeholders.face.position 				:= (120, 46);
-				frame.title_block_pcb.additional_placeholders.signal_layer.position 		:= (120, 41);
+				frame.title_block_pcb.placeholders_additional.face.position 				:= (120, 46);
+				frame.title_block_pcb.placeholders_additional.signal_layer.position 		:= (120, 41);
 
 				-- cam markers
 				frame.title_block_pcb.cam_markers.face.position 							:= ( 90, 46);

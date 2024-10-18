@@ -331,14 +331,14 @@ package body et_frame_rw is
 			
 			-- PLACEHOLDERS
 			section_mark (section_placeholders, HEADER);
-			write_placeholders_common (block.placeholders);
+			write_placeholders_common (block.placeholders_common);
 
 			if block'tag = type_title_block_schematic'tag then
-				ps := type_title_block_schematic (block).additional_placeholders;
+				ps := type_title_block_schematic (block).placeholders_additional;
 				write_placeholders_schematic (ps);
 				
 			elsif block'tag = type_title_block_pcb'tag then
-				pp := type_title_block_pcb (block).additional_placeholders;
+				pp := type_title_block_pcb (block).placeholders_additional;
 				write_placeholders_pcb (pp);
 			else
 				null; -- CS
@@ -658,8 +658,8 @@ package body et_frame_rw is
 					frame.title_block_schematic.position := tb_position;
 					frame.title_block_schematic.lines := tb_lines;
 					frame.title_block_schematic.texts := tb_texts;
-					frame.title_block_schematic.placeholders := tb_placeholders_common;
-					frame.title_block_schematic.additional_placeholders := (
+					frame.title_block_schematic.placeholders_common := tb_placeholders_common;
+					frame.title_block_schematic.placeholders_additional := (
 						tb_placeholders_basic with 
 							sheet_number 	=> tb_sheet_number,
 							description		=> tb_sheet_description,
@@ -669,8 +669,8 @@ package body et_frame_rw is
 					frame.title_block_pcb.position := tb_position;
 					frame.title_block_pcb.lines := tb_lines;
 					frame.title_block_pcb.texts := tb_texts;
-					frame.title_block_pcb.placeholders := tb_placeholders_common;
-					frame.title_block_pcb.additional_placeholders := (
+					frame.title_block_pcb.placeholders_common := tb_placeholders_common;
+					frame.title_block_pcb.placeholders_additional := (
 						tb_placeholders_basic with 
 							face			=> tb_face,
 							signal_layer	=> tb_signal_layer);
