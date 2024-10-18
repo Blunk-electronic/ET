@@ -563,19 +563,6 @@ package body et_canvas_schematic_2 is
 					event_handled := true;
 
 
-				-- Advance to next sheet:
-				when GDK_KP_Add =>
-					current_active_sheet := current_active_sheet + 1;
-					update_sheet_number_display;
-
-					
-				-- Advance to previous sheet:
-				when GDK_KP_Subtract =>
-					if current_active_sheet > sheet_default then
-						current_active_sheet := current_active_sheet - 1;
-						update_sheet_number_display;
-					end if;
-
 
 				-- Switch between modules:	
 				when GDK_F11 =>
@@ -884,12 +871,14 @@ package body et_canvas_schematic_2 is
 				when GDK_KP_Add =>
 					current_active_sheet := current_active_sheet + 1;
 					update_sheet_number_display;
+					refresh;
 
 				-- Advance to previous sheet:
 				when GDK_KP_Subtract =>
 					if current_active_sheet > sheet_default then
 						current_active_sheet := current_active_sheet - 1;
 						update_sheet_number_display;
+						refresh;
 					end if;
 
 					
