@@ -64,6 +64,17 @@ package et_board_ops.frame is
 		return et_frames.type_position;
 	
 
+	-- Sets the position of the lower-left corner
+	-- of the drawing frame:
+	procedure set_frame_position (
+		module_cursor	: in pac_generic_modules.cursor;
+		position		: in et_frames.type_position;
+		log_threshold	: in type_log_level);
+
+
+	-- CS subprograms to get and set the title block position ?
+	-- currently this is defined in the frame template file *.frb
+	
 end et_board_ops.frame;
 
 -- Soli Deo Gloria

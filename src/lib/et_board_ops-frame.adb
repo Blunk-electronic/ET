@@ -122,20 +122,51 @@ package body et_board_ops.frame is
 		
 	begin
 		log (text => "module " & to_string (key (module_cursor)) &
-			" query_frame drawing frame position",
+			" query drawing frame position",
 		level => log_threshold);
-
 		
 		query_element (
 			position	=> module_cursor,
 			process		=> get_origin'access);
-
 		
 		return result;
 	end get_frame_position;
 
 		
 
+
+
+	procedure set_frame_position (
+		module_cursor	: in pac_generic_modules.cursor;
+		position		: in et_frames.type_position;
+		log_threshold	: in type_log_level)
+	is
+		use et_frames;
+
+		
+		procedure set_origin (
+			module_name	: in pac_module_name.bounded_string;
+			module 		: in out type_module) 
+		is begin
+			set_position (module.board.frame.frame, position);
+		end set_origin;
+
+		
+	begin
+		log (text => "module " & to_string (key (module_cursor)) &
+			 " set drawing frame position"
+			 & to_string (position),
+		level => log_threshold);
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> set_origin'access);
+		
+	end set_frame_position;
+
+
+	
 end et_board_ops.frame;
 	
 -- Soli Deo Gloria

@@ -60,6 +60,10 @@ package et_schematic_ops.sheets is
 	
 
 
+	-- CS subprograms to get and set the title block position ?
+	-- currently this is defined in the frame template file *.frs
+	
+
 end et_schematic_ops.sheets;
 
 -- Soli Deo Gloria
