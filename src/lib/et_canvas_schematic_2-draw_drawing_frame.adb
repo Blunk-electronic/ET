@@ -38,8 +38,9 @@
 
 with ada.text_io;				use ada.text_io;
 with et_text;
+with et_schematic_ops;
 with et_schematic_ops.sheets;
--- with et_meta;
+
 
 separate (et_canvas_schematic_2)
 
@@ -51,13 +52,9 @@ procedure draw_drawing_frame is
 	
 
 	-- Get the frames of the schematic:
-	frames : type_frames_schematic := element (active_module).frames;
-	-- CS use query_element instead
+	frames : type_frames_schematic renames element (active_module).frames;
 
-
-	frame_general : type_frame_general := type_frame_general (frames.frame);
-		
-
+	-- Get the title block:
 	title_block : type_title_block_schematic renames frames.frame.title_block_schematic;
 
 	
@@ -65,7 +62,7 @@ procedure draw_drawing_frame is
 	-- The position of the title block.
 	-- The block has no rotation. The x/y position will be
 	-- extracted later:
-	title_block_position : pac_geometry.type_position := 
+	tb_position : pac_geometry.type_position := 
 		(rotation => 0.0, others => <>);
 	
 	
@@ -84,7 +81,7 @@ procedure draw_drawing_frame is
 			-- The width of 0.0 has no meaning because 
 			-- the argument do_stroke is false by default
 			-- (see specs of draw_line):
-			draw_line (l2, title_block_position, 0.0);
+			draw_line (l2, tb_position, 0.0);
 		end query_line;
 
 		
@@ -131,7 +128,7 @@ procedure draw_drawing_frame is
 				content		=> to_content (to_string (des.category)),
 				size		=> to_distance (phs.sheet_category.size),
 				font		=> font_placeholders,
-				anchor		=> add (pos, title_block_position.place),
+				anchor		=> add (pos, tb_position.place),
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (LEFT, BOTTOM));
@@ -144,7 +141,7 @@ procedure draw_drawing_frame is
 				content		=> to_content (to_string (des.content)),
 				size		=> to_distance (phs.sheet_description.size),
 				font		=> font_placeholders,
-				anchor		=> add (pos, title_block_position.place),
+				anchor		=> add (pos, tb_position.place),
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (LEFT, BOTTOM));
@@ -160,7 +157,7 @@ procedure draw_drawing_frame is
 				content		=> to_content (to_sheet (active_sheet)), -- CS complete with "/of total"
 				size		=> to_distance (phs.sheet_number.size),
 				font		=> font_placeholders,
-				anchor		=> add (pos, title_block_position.place),
+				anchor		=> add (pos, tb_position.place),
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (LEFT, BOTTOM));
@@ -177,42 +174,47 @@ procedure draw_drawing_frame is
 begin
 	-- put_line ("draw_drawing_frame (schematic)");
 
+	-- All entries in the drawwing frame have the
+	-- same color:
 	set_color_frame;
 
-	-- outer border:
+	-- FRAME:
 	draw_frame (frames.frame);
 
 	
 	-- TITLE BLOCK
 
 	-- Extract the position of the title block:
-	title_block_position.place := to_vector (title_block.position);
+	tb_position.place := to_vector (title_block.position);
 
+
+	-- Draw the lines the title block is composed of:
 	draw_title_block_lines;	
 
+	-- Draw schematic and board common placeholders like 
+	-- project name, module file name, active assembly variant:
 	draw_common_placeholders (
 		placeholders			=> title_block.placeholders_common,
-		title_block_position	=> title_block_position);
+		title_block_position	=> tb_position);
 
 
+	-- Draw schematic specific placeholders like sheet description
+	-- and sheet number:
 	draw_additional_placeholders;
 
+
+	-- Draw static texts like "sheet", "description", "company", ... :
 	draw_static_texts (
 		texts					=> title_block.static_texts,
-		title_block_position	=> title_block_position);
-	
-		-- draw common placeholders and other texts
-		-- draw_texts (
-		-- 	ph_common	=> self.get_frame.title_block_schematic.placeholders,
-		-- 	ph_basic	=> type_placeholders_basic (self.get_frame.title_block_schematic.additional_placeholders),
-		-- 	texts		=> self.get_frame.title_block_schematic.texts,
-		-- 	meta		=> et_meta.type_basic (element (active_module).meta.board),
-		-- 	tb_pos		=> title_block_position);
+		title_block_position	=> tb_position);
 
 
-	-- draw_basic_meta_information (
-	-- 	meta					=> get_meta_information (active_module),
-	-- 	title_block_position	=> title_block_position);
+	-- Draw meta information like company name, revision, persons
+	-- who have drawn, checked and approved the drawing ... :
+	draw_basic_meta_information (
+		meta					=> et_schematic_ops.get_basic_meta_information (active_module),
+		placeholders			=> type_placeholders_basic (title_block.placeholders_additional),
+		title_block_position	=> tb_position);
 	
 	
 end draw_drawing_frame;

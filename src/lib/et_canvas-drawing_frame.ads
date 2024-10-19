@@ -97,6 +97,7 @@ package et_canvas.drawing_frame is
 	-- See package et_meta for details:
 	procedure draw_basic_meta_information (
 		meta					: in et_meta.type_basic;
+		placeholders			: in type_placeholders_basic;
 		title_block_position	: in pac_geometry.type_position);
 
 	

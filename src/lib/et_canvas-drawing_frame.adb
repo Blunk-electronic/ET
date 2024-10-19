@@ -40,7 +40,7 @@
 with et_project;
 with et_project.modules;
 with et_assembly_variants;
-
+with et_time;
 
 
 package body et_canvas.drawing_frame is
@@ -477,14 +477,211 @@ package body et_canvas.drawing_frame is
 	end draw_static_texts;
 
 
+	
 
 	procedure draw_basic_meta_information (
 		meta					: in et_meta.type_basic;
+		placeholders			: in type_placeholders_basic;									  
 		title_block_position	: in pac_geometry.type_position)
 	is
+		use et_meta;
+		use et_time;
+		use et_text;
+		use pac_draw_text;
+		
+		-- A temporarily storage place for the
+		-- position of a text:
+		pos : type_vector_model;
+		
 	begin
+		-- COMPANY NAME:
+		pos := to_vector (placeholders.company.position);
+		
+		draw_text (
+			content		=> to_content (to_string (meta.company)),
+			size		=> to_distance (placeholders.company.size),
+			font		=> font_placeholders,
 
-		null;
+			-- The anchor point is offset by the position of the title block:
+			anchor		=> add (pos, title_block_position.place),
+			
+			origin		=> false,
+			rotation	=> 0.0,
+			alignment	=> (LEFT, BOTTOM));
+
+
+
+		-- CUSTOMER NAME:
+		pos := to_vector (placeholders.customer.position);
+		
+		draw_text (
+			content		=> to_content (to_string (meta.customer)),
+			size		=> to_distance (placeholders.customer.size),
+			font		=> font_placeholders,
+
+			-- The anchor point is offset by the position of the title block:
+			anchor		=> add (pos, title_block_position.place),
+			
+			origin		=> false,
+			rotation	=> 0.0,
+			alignment	=> (LEFT, BOTTOM));
+
+
+
+		-- PARTCODE:
+		pos := to_vector (placeholders.partcode.position);
+		
+		draw_text (
+			content		=> to_content (to_string (meta.partcode)),
+			size		=> to_distance (placeholders.partcode.size),
+			font		=> font_placeholders,
+
+			-- The anchor point is offset by the position of the title block:
+			anchor		=> add (pos, title_block_position.place),
+			
+			origin		=> false,
+			rotation	=> 0.0,
+			alignment	=> (LEFT, BOTTOM));
+
+
+
+		-- DRAWING NUMBER:
+		pos := to_vector (placeholders.drawing_number.position);
+		
+		draw_text (
+			content		=> to_content (to_string (meta.drawing_number)),
+			size		=> to_distance (placeholders.drawing_number.size),
+			font		=> font_placeholders,
+
+			-- The anchor point is offset by the position of the title block:
+			anchor		=> add (pos, title_block_position.place),
+			
+			origin		=> false,
+			rotation	=> 0.0,
+			alignment	=> (LEFT, BOTTOM));
+
+		
+
+		-- REVISION:
+		pos := to_vector (placeholders.revision.position);
+		
+		draw_text (
+			content		=> to_content (to_string (meta.revision)),
+			size		=> to_distance (placeholders.revision.size),
+			font		=> font_placeholders,
+
+			-- The anchor point is offset by the position of the title block:
+			anchor		=> add (pos, title_block_position.place),
+			
+			origin		=> false,
+			rotation	=> 0.0,
+			alignment	=> (LEFT, BOTTOM));
+
+
+
+		-- DRAWN BY:
+		pos := to_vector (placeholders.drawn_by.position);
+		
+		draw_text (
+			content		=> to_content (to_string (meta.drawn_by)),
+			size		=> to_distance (placeholders.drawn_by.size),
+			font		=> font_placeholders,
+
+			-- The anchor point is offset by the position of the title block:
+			anchor		=> add (pos, title_block_position.place),
+			
+			origin		=> false,
+			rotation	=> 0.0,
+			alignment	=> (LEFT, BOTTOM));
+
+
+
+		-- CHECKED BY:
+		pos := to_vector (placeholders.checked_by.position);
+		
+		draw_text (
+			content		=> to_content (to_string (meta.checked_by)),
+			size		=> to_distance (placeholders.checked_by.size),
+			font		=> font_placeholders,
+
+			-- The anchor point is offset by the position of the title block:
+			anchor		=> add (pos, title_block_position.place),
+			
+			origin		=> false,
+			rotation	=> 0.0,
+			alignment	=> (LEFT, BOTTOM));
+
+
+
+
+		-- APPROVED BY:
+		pos := to_vector (placeholders.approved_by.position);
+		
+		draw_text (
+			content		=> to_content (to_string (meta.approved_by)),
+			size		=> to_distance (placeholders.approved_by.size),
+			font		=> font_placeholders,
+
+			-- The anchor point is offset by the position of the title block:
+			anchor		=> add (pos, title_block_position.place),
+			
+			origin		=> false,
+			rotation	=> 0.0,
+			alignment	=> (LEFT, BOTTOM));
+
+
+
+
+		-- DRAWN DATE:
+		pos := to_vector (placeholders.drawn_date.position);
+		
+		draw_text (
+			content		=> to_content (to_string_YMD (meta.drawn_date)),
+			size		=> to_distance (placeholders.drawn_date.size),
+			font		=> font_placeholders,
+
+			-- The anchor point is offset by the position of the title block:
+			anchor		=> add (pos, title_block_position.place),
+			
+			origin		=> false,
+			rotation	=> 0.0,
+			alignment	=> (LEFT, BOTTOM));
+
+
+
+
+		-- CHECKED DATE:
+		pos := to_vector (placeholders.checked_date.position);
+		
+		draw_text (
+			content		=> to_content (to_string_YMD (meta.checked_date)),
+			size		=> to_distance (placeholders.checked_date.size),
+			font		=> font_placeholders,
+
+			-- The anchor point is offset by the position of the title block:
+			anchor		=> add (pos, title_block_position.place),
+			
+			origin		=> false,
+			rotation	=> 0.0,
+			alignment	=> (LEFT, BOTTOM));
+
+
+
+		-- APPROVED DATE:
+		pos := to_vector (placeholders.approved_date.position);
+		
+		draw_text (
+			content		=> to_content (to_string_YMD (meta.approved_date)),
+			size		=> to_distance (placeholders.approved_date.size),
+			font		=> font_placeholders,
+
+			-- The anchor point is offset by the position of the title block:
+			anchor		=> add (pos, title_block_position.place),
+			
+			origin		=> false,
+			rotation	=> 0.0,
+			alignment	=> (LEFT, BOTTOM));
+		
 	end draw_basic_meta_information;
 
 
