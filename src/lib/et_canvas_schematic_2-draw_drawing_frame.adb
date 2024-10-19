@@ -51,12 +51,17 @@ procedure draw_drawing_frame is
 	use pac_drawing_frame;
 	
 
-	-- Get the frames of the schematic:
+	-- Get the frames of the schematic.
+	-- NOTE: In the schematic domain we have many sheets
+	--       and hence many frames, each with a dedicated
+	--       description and sheet number.
 	frames : type_frames_schematic renames element (active_module).frames;
+	-- NOTE: The rename here serves just as a shortcut to the frame.
+
 
 	-- Get the title block:
 	title_block : type_title_block_schematic renames frames.frame.title_block_schematic;
-
+	-- NOTE: The rename here serves just as a shortcut to the title block.
 	
 
 	-- The position of the title block.
@@ -89,7 +94,7 @@ procedure draw_drawing_frame is
 		set_linewidth (linewidth_1);
 		
 		iterate (
-			container	=> frames.frame.title_block_schematic.lines, 
+			container	=> title_block.lines, 
 			process		=> query_line'access);
 			
 		stroke;

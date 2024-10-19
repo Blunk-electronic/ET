@@ -38,23 +38,71 @@
 
 with ada.text_io;				use ada.text_io;
 -- with ada.characters.handling;	use ada.characters.handling;
--- with et_text;
--- with et_meta;
+with et_text;
 -- with et_canvas_board_2.
+
 
 separate (et_canvas_board_2)
 
 procedure draw_drawing_frame is
+
 	use et_colors.board;
 	use et_frames;
 	use pac_drawing_frame;
 	
 
-	-- Get the frame of the board:
-	f : type_frame_pcb := element (active_module).board.frame;
-	-- CS use query_element instead
+	-- Get the frame of the board.
+	-- NOTE: In the board domain we have only one sheet
+	--       and hence only one frame.
+	frame : type_frame_pcb renames element (active_module).board.frame;
+	-- NOTE: The rename here serves just as a shortcut to the frame.
 
-	frame_general : type_frame_general := type_frame_general (f.frame);
+	
+	-- Get the title block:
+	title_block : type_title_block_pcb renames frame.frame.title_block_pcb;
+	-- NOTE: The rename here serves just as a shortcut to the title block.
+
+
+	-- The position of the title block.
+	-- The block has no rotation. The x/y position will be
+	-- extracted later:
+	tb_position : pac_geometry.type_position := 
+		(rotation => 0.0, others => <>);
+
+
+	
+
+	-- This procedure draws the lines of the title block:
+	procedure draw_title_block_lines is
+
+		use pac_lines;
+	
+		procedure query_line (c : in pac_lines.cursor) is
+			l1 : et_frames.type_line renames element (c);
+			l2 : pac_geometry.type_line;
+		begin
+			l2 := to_line (l1);
+
+			-- The width of 0.0 has no meaning because 
+			-- the argument do_stroke is false by default
+			-- (see specs of draw_line):
+			draw_line (l2, tb_position, 0.0);
+		end query_line;
+
+		
+	begin
+		set_linewidth (linewidth_1);
+		
+		iterate (
+			container	=> title_block.lines, 
+			process		=> query_line'access);
+			
+		stroke;
+	end draw_title_block_lines;
+
+
+
+	
 	
 -- 	procedure draw_cam_markers is
 -- 		cms : constant type_cam_markers := self.get_frame.title_block_pcb.cam_markers;
@@ -286,22 +334,21 @@ begin
 
 	set_color_frame;
 
-	-- Draw general things of a frema:
-	draw_frame (frame_general);
+	-- FRAME:
+	draw_frame (frame.frame);
 
-		-- title block lines
-		--pac_lines.iterate (self.get_frame.title_block_pcb.lines, query_line'access);
 
--- 		draw_title_block_lines (
--- 			lines		=> self.get_frame.title_block_pcb.lines,
--- 			tb_pos		=> title_block_position);
--- 		
--- 		-- draw the sector delimiters
--- 		draw_sector_delimiters (
--- 			sectors			=> self.get_frame.sectors,
--- 			frame_size		=> frame_size,
--- 			border_width	=> self.get_frame.border_width);
--- 
+	
+	-- TITLE BLOCK:
+
+	-- Extract the position of the title block:
+	tb_position.place := to_vector (title_block.position);
+
+
+	-- Draw the lines the title block is composed of:
+	draw_title_block_lines;	
+
+
 -- 		-- draw common placeholders and other texts
 -- 		draw_texts (
 -- 			ph_common	=> self.get_frame.title_block_pcb.placeholders,
