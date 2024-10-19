@@ -993,7 +993,7 @@ package body et_canvas_schematic_units is
 		all_lib_dirs : pac_preferred_libraries_schematic.list;
 		top_lib_dir : pac_preferred_library_schematic.bounded_string;
 	begin
-		all_lib_dirs := get_preferred_libraries_schematic (active_module);
+		all_lib_dirs := get_preferred_libraries (active_module);
 		top_lib_dir := element (all_lib_dirs.first);
 		
 		--return expand ("$HOME/git/BEL/ET_component_library/devices");

@@ -63,6 +63,28 @@ package body et_schematic_ops is
 	use et_submodules.pac_submodules;
 	use pac_strands;
 
+
+
+	function get_basic_meta_information (
+		module : in pac_generic_modules.cursor)
+		return et_meta.type_basic
+	is 
+		use et_meta;
+	begin
+		return type_basic (element (module).meta.schematic);
+	end get_basic_meta_information;
+	
+
+	
+	function get_preferred_libraries (
+		module : in pac_generic_modules.cursor)
+		return et_meta.pac_preferred_libraries_schematic.list
+	is begin
+		return element (module).meta.schematic.preferred_libs;
+	end get_preferred_libraries;
+
+
+	
 	
 	procedure device_not_found (name : in type_device_name) is begin
 		raise semantic_error_1 

@@ -99,19 +99,6 @@ package et_project.modules is
 		module : in pac_generic_modules.cursor)
 		return et_meta.type_meta;
 		
-	
-	-- Returns the list of preferred schematic libraries:
-	function get_preferred_libraries_schematic (module : in pac_generic_modules.cursor)
-		return et_meta.pac_preferred_libraries_schematic.list;
-
-	
-	
-	-- Returns the list of preferred board libraries (non-electrical packages):
-	function get_preferred_libraries_board (module : in pac_generic_modules.cursor)
-		return et_meta.pac_preferred_libraries_board.list;
-
-
-
 
 	
 	-- Saves the given generic module in the current working directory.
