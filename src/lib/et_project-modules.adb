@@ -59,19 +59,23 @@ with et_exceptions;				use et_exceptions;
 package body et_project.modules is
 
 	use pac_generic_modules;
+
 	
 	function to_string (project_name : in pac_project_name.bounded_string) return string is begin
 		return pac_project_name.to_string (project_name);
 	end to_string;
+
 	
 	function to_project_name (name : in string) return pac_project_name.bounded_string is begin
 		return pac_project_name.to_bounded_string (name);
 	end to_project_name;
 
+	
 	function to_string (path : in type_et_project_path.bounded_string) return string is begin
 		return type_et_project_path.to_string (path);
 	end to_string;
 
+	
 	function to_project_path (path : in string) return type_et_project_path.bounded_string is begin
 		return type_et_project_path.to_bounded_string (path);
 	end to_project_path;
@@ -109,6 +113,16 @@ package body et_project.modules is
 	end locate_module;
 
 
+
+	function get_meta_information (
+		module : in pac_generic_modules.cursor)
+		return et_meta.type_meta
+	is begin
+		return element (module).meta;
+	end get_meta_information;
+
+	
+
 	
 	-- Returns the list of preferred schematic libraries:
 	function get_preferred_libraries_schematic (module : in pac_generic_modules.cursor)
@@ -117,6 +131,8 @@ package body et_project.modules is
 		return element (module).meta.schematic.preferred_libs;
 	end get_preferred_libraries_schematic;
 
+
+	
 	-- Returns the list of preferred board libraries (non-electrical packages):
 	function get_preferred_libraries_board (module : in pac_generic_modules.cursor)
 		return et_meta.pac_preferred_libraries_board.list

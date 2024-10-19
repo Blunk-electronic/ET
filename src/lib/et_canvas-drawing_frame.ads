@@ -40,6 +40,8 @@
 
 with et_frames;					use et_frames;
 with et_canvas.text;
+with et_meta;
+
 
 generic
 	
@@ -90,6 +92,14 @@ package et_canvas.drawing_frame is
 		texts					: in pac_static_texts.list;
 		title_block_position	: in pac_geometry.type_position);
 
+
+	-- This procedure draws meta information.
+	-- See package et_meta for details:
+	procedure draw_basic_meta_information (
+		meta					: in et_meta.type_basic;
+		title_block_position	: in pac_geometry.type_position);
+
+	
 	
 end et_canvas.drawing_frame;
 

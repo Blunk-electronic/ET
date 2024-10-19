@@ -92,7 +92,13 @@ package et_project.modules is
 	function locate_module (name : in pac_module_name.bounded_string) -- motor_driver (without extension *.mod)
 		return pac_generic_modules.cursor;
 
-	
+
+	-- Fetches the meta information for the whole 
+	-- module (both schematic and board):
+	function get_meta_information (
+		module : in pac_generic_modules.cursor)
+		return et_meta.type_meta;
+		
 	
 	-- Returns the list of preferred schematic libraries:
 	function get_preferred_libraries_schematic (module : in pac_generic_modules.cursor)

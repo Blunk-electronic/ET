@@ -209,6 +209,10 @@ begin
 		-- 	meta		=> et_meta.type_basic (element (active_module).meta.board),
 		-- 	tb_pos		=> title_block_position);
 
+
+	-- draw_basic_meta_information (
+	-- 	meta					=> get_meta_information (active_module),
+	-- 	title_block_position	=> title_block_position);
 	
 	
 end draw_drawing_frame;

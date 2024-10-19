@@ -476,6 +476,18 @@ package body et_canvas.drawing_frame is
 		iterate (texts, query_text'access);
 	end draw_static_texts;
 
+
+
+	procedure draw_basic_meta_information (
+		meta					: in et_meta.type_basic;
+		title_block_position	: in pac_geometry.type_position)
+	is
+	begin
+
+		null;
+	end draw_basic_meta_information;
+
+
 	
 end et_canvas.drawing_frame;
 
