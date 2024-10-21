@@ -37,9 +37,7 @@
 --
 
 with ada.text_io;				use ada.text_io;
--- with ada.characters.handling;	use ada.characters.handling;
 with et_text;
--- with et_canvas_board_2.
 
 
 separate (et_canvas_board_2)
@@ -102,231 +100,340 @@ procedure draw_drawing_frame is
 
 
 
+
 	
+		
+	procedure draw_cam_markers is
+
+		-- Get the CAM markers of the title block.
+		-- The 'rename' statement serves just as a shortcut.
+		cms : type_cam_markers renames title_block.cam_markers;
+
+		-- Get additional placeholders of the title block.
+		-- The 'rename' statement serves just as a shortcut.
+		aps : type_placeholders_pcb renames title_block.placeholders_additional;
+		
+
+		use et_text;
+		use pac_draw_text;
+
+		-- These flags indicate whether a top or bottom layer is shown.
+		-- If none of them is true, no cam marker for face and no face itself
+		-- will be displayed at all.
+		top_enabled, bottom_enabled : boolean := false;
+
+
+		-- A temporarily storage place for the
+		-- position of a placeholder or a CAM marker:
+		pos : type_vector_model;		
+
+
+		-- This procedure drawns something like "SIDE: TOP"
+		procedure draw_side_name is 
+			
+			procedure top_bottom (
+				face : in string)
+			is begin
+				pos := to_vector (aps.face.position);
+				
+				draw_text (
+					content		=> to_content (face),
+					size		=> to_distance (aps.face.size),
+					font		=> font_placeholders,
+					anchor		=> add (pos, tb_position.place),
+					origin		=> false,
+					rotation	=> 0.0,
+					alignment	=> (LEFT, BOTTOM));
+			end top_bottom;
+
+			
+		begin			
+			-- Draw the CAM marker "SIDE:" 
+			-- if any top or bottom layer is enabled:
+			if top_enabled or bottom_enabled then
+				pos := to_vector (cms.face.position);
+				
+				draw_text (
+					content		=> to_content (to_string (cms.face.content)), -- "SIDE:"
+					size		=> to_distance (cms.face.size),
+					font		=> font_placeholders,
+					anchor		=> add (pos, tb_position.place),
+					origin		=> false,
+					rotation	=> 0.0,
+					alignment	=> (LEFT, BOTTOM));
+
+
+				-- Draw the name of the side like "TOP" or "BOTTOM":
+				if top_enabled and bottom_enabled then
+					top_bottom (type_face'image (TOP) & " & " & type_face'image (BOTTOM));
+
+				elsif top_enabled then
+					top_bottom (type_face'image (TOP));
+
+				elsif bottom_enabled then
+					top_bottom (type_face'image (BOTTOM));
+							
+				end if;
+			end if;
+		end draw_side_name;
+
+
+
+		use et_display;
+		use et_display.board;
+
+		
+		procedure silkscreen is begin
+			pos := to_vector (cms.silk_screen.position);
+			
+			draw_text (
+				content		=> to_content (to_string (cms.silk_screen.content)),
+				size		=> to_distance (cms.silk_screen.size),
+				font		=> font_placeholders,
+				anchor		=> add (pos, tb_position.place),
+				origin		=> false,
+				rotation	=> 0.0,
+				alignment	=> (LEFT, BOTTOM));
+		end silkscreen;
+			
+
+		procedure assy_doc is begin
+			pos := to_vector (cms.assy_doc.position);
+			
+			draw_text (
+				content		=> to_content (to_string (cms.assy_doc.content)),
+				size		=> to_distance (cms.assy_doc.size),
+				font		=> font_placeholders,
+				anchor		=> add (pos, tb_position.place),
+				origin		=> false,
+				rotation	=> 0.0,
+				alignment	=> (LEFT, BOTTOM));
+		end assy_doc;
+
+		
+		procedure keepout is begin
+			pos := to_vector (cms.keepout.position);
+
+			draw_text (
+				content		=> to_content (to_string (cms.keepout.content)),
+				size		=> to_distance (cms.keepout.size),
+				font		=> font_placeholders,
+				anchor		=> add (pos, tb_position.place),
+				origin		=> false,
+				rotation	=> 0.0,
+				alignment	=> (LEFT, BOTTOM));
+		end keepout;
+
+		
+		procedure stop_mask is begin
+			pos := to_vector (cms.stop_mask.position);
+
+			draw_text (
+				content		=> to_content (to_string (cms.stop_mask.content)),
+				size		=> to_distance (cms.stop_mask.size),
+				font		=> font_placeholders,
+				anchor		=> add (pos, tb_position.place),
+				origin		=> false,
+				rotation	=> 0.0,
+				alignment	=> (LEFT, BOTTOM));
+		end stop_mask;
+
+		
+		procedure stencil is begin
+			pos := to_vector (cms.stencil.position);
+
+			draw_text (
+				content		=> to_content (to_string (cms.stencil.content)),
+				size		=> to_distance (cms.stencil.size),
+				font		=> font_placeholders,
+				anchor		=> add (pos, tb_position.place),
+				origin		=> false,
+				rotation	=> 0.0,
+				alignment	=> (LEFT, BOTTOM));
+		end stencil;
+
+
+		procedure plated_millings is begin
+			pos := to_vector (cms.plated_millings.position);
+
+			draw_text (
+				content		=> to_content (to_string (cms.plated_millings.content)),
+				size		=> to_distance (cms.plated_millings.size),
+				font		=> font_placeholders,
+				anchor		=> add (pos, tb_position.place),
+				origin		=> false,
+				rotation	=> 0.0,
+				alignment	=> (LEFT, BOTTOM));
+		end plated_millings;
+
+
+		procedure outline is begin
+			pos := to_vector (cms.pcb_outline.position);
+
+			draw_text (
+				content		=> to_content (to_string (cms.pcb_outline.content)),
+				size		=> to_distance (cms.pcb_outline.size),
+				font		=> font_placeholders,
+				anchor		=> add (pos, tb_position.place),
+				origin		=> false,
+				rotation	=> 0.0,
+				alignment	=> (LEFT, BOTTOM));
+		end outline;
+
+
+		procedure route_restrict is begin
+			pos := to_vector (cms.route_restrict.position);
+
+			draw_text (
+				content		=> to_content (to_string (cms.route_restrict.content)),
+				size		=> to_distance (cms.route_restrict.size),
+				font		=> font_placeholders,
+				anchor		=> add (pos, tb_position.place),
+				origin		=> false,
+				rotation	=> 0.0,
+				alignment	=> (LEFT, BOTTOM));
+		end route_restrict;
+		
+
+		procedure via_restrict is begin
+			pos := to_vector (cms.via_restrict.position);
+
+			draw_text (
+				content		=> to_content (to_string (cms.via_restrict.content)),
+				size		=> to_distance (cms.via_restrict.size),
+				font		=> font_placeholders,
+				anchor		=> add (pos, tb_position.place),
+				origin		=> false,
+				rotation	=> 0.0,
+				alignment	=> (LEFT, BOTTOM));
+		end via_restrict;
+
+
+		procedure conductor_layers is begin
+			-- Draw something like "SGNL_LYR:"
+			pos := to_vector (cms.signal_layer.position);
+
+			draw_text (
+				content		=> to_content (to_string (cms.signal_layer.content)),
+				size		=> to_distance (cms.signal_layer.size),
+				font		=> font_placeholders,
+				anchor		=> add (pos, tb_position.place),
+				origin		=> false,
+				rotation	=> 0.0,
+				alignment	=> (LEFT, BOTTOM));
+			
+
+			-- Draw the layer numbers like: "1,2,5..32"
+			pos := to_vector (aps.signal_layer.position);
+				
+			draw_text (
+				content		=> to_content (enabled_conductor_layers),
+				size		=> to_distance (aps.signal_layer.size),
+				font		=> font_placeholders,
+				anchor		=> add (pos, tb_position.place),
+				origin		=> false,
+				rotation	=> 0.0,
+				alignment	=> (LEFT, BOTTOM));
+		end conductor_layers;
+
+		
+		
+	begin -- draw_cam_markers
 	
--- 	procedure draw_cam_markers is
--- 		cms : constant type_cam_markers := self.get_frame.title_block_pcb.cam_markers;
--- 
--- 		use et_text;
--- 		use et_display;
--- 		use et_display.board;
--- 
--- 		-- These flags indicate whether a top or bottom layer is shown.
--- 		-- If none of them is true, no cam marker for face and no face itself
--- 		-- will be displayed at all.
--- 		top_enabled, bottom_enabled : boolean := false;
--- 
--- 		
--- 		procedure evaluate_face is begin
--- 
--- 			-- Draw the CAM marker "FACE:" or "SIDE:" if a top or bottom layers is enabled.
--- 			if top_enabled or bottom_enabled then
--- 				draw_text (
--- 					content	=> to_content (to_string (cms.face.content)), -- "FACE:" or "SIDE:"
--- 					size	=> cms.face.size,
--- 					font	=> font_placeholders,
--- 					pos		=> cms.face.position,
--- 					tb_pos	=> title_block_position);
--- 
--- 				-- Draw the face like "TOP" or "BOTTOM":
--- 				if top_enabled and bottom_enabled then
--- 					draw_text (
--- 						content	=> to_content (type_face'image (TOP) & " & " & type_face'image (BOTTOM)), -- "TOP & BOTTOM"
--- 						size	=> self.get_frame.title_block_pcb.additional_placeholders.face.size, -- CS use renames
--- 						font	=> font_placeholders,
--- 						pos		=> self.get_frame.title_block_pcb.additional_placeholders.face.position,
--- 						tb_pos	=> title_block_position);
--- 
--- 					
--- 				elsif top_enabled then
--- 						draw_text (
--- 							content	=> to_content (type_face'image (TOP)), -- "TOP"
--- 							size	=> self.get_frame.title_block_pcb.additional_placeholders.face.size,
--- 							font	=> font_placeholders,
--- 							pos		=> self.get_frame.title_block_pcb.additional_placeholders.face.position,
--- 							tb_pos	=> title_block_position);
--- 							
--- 
--- 				elsif bottom_enabled then
--- 						draw_text (
--- 							content	=> to_content (type_face'image (BOTTOM)), -- "BOTTOM"
--- 							size	=> self.get_frame.title_block_pcb.additional_placeholders.face.size,
--- 							font	=> font_placeholders,
--- 							pos		=> self.get_frame.title_block_pcb.additional_placeholders.face.position,
--- 							tb_pos	=> title_block_position);
--- 							
--- 				end if;
--- 			end if;
--- 		end evaluate_face;
--- 
--- 		
--- 		procedure silkscreen is begin
--- 			draw_text (
--- 				content	=> to_content (to_string (cms.silk_screen.content)),
--- 				size	=> cms.silk_screen.size,
--- 				font	=> font_placeholders,
--- 				pos		=> cms.silk_screen.position,
--- 				tb_pos	=> title_block_position);				
--- 		end silkscreen;
--- 			
--- 
--- 		procedure assy_doc is begin
--- 			draw_text (
--- 				content	=> to_content (to_string (cms.assy_doc.content)),
--- 				size	=> cms.assy_doc.size,
--- 				font	=> font_placeholders,
--- 				pos		=> cms.assy_doc.position,
--- 				tb_pos	=> title_block_position);				
--- 		end assy_doc;
--- 
--- 		
--- 		procedure keepout is begin
--- 			draw_text (
--- 				content	=> to_content (to_string (cms.keepout.content)),
--- 				size	=> cms.keepout.size,
--- 				font	=> font_placeholders,
--- 				pos		=> cms.keepout.position,
--- 				tb_pos	=> title_block_position);				
--- 		end keepout;
--- 
--- 		
--- 		procedure stop_mask is begin
--- 			draw_text (
--- 				content	=> to_content (to_string (cms.stop_mask.content)),
--- 				size	=> cms.stop_mask.size,
--- 				font	=> font_placeholders,
--- 				pos		=> cms.stop_mask.position,
--- 				tb_pos	=> title_block_position);				
--- 		end stop_mask;
--- 
--- 		
--- 		procedure stencil is begin
--- 			draw_text (
--- 				content	=> to_content (to_string (cms.stencil.content)),
--- 				size	=> cms.stencil.size,
--- 				font	=> font_placeholders,
--- 				pos		=> cms.stencil.position,
--- 				tb_pos	=> title_block_position);
--- 		end stencil;
--- 
--- 		
--- 	begin -- draw_cam_markers
--- 
--- 		-- silkscreen
--- 		if silkscreen_enabled (TOP) then
--- 			silkscreen;
--- 			top_enabled := true;
--- 		end if;
--- 
--- 		if silkscreen_enabled (BOTTOM) then
--- 			silkscreen;
--- 			bottom_enabled := true;
--- 		end if;
--- 
--- 		-- assy doc
--- 		if assy_doc_enabled (TOP) then
--- 			assy_doc;
--- 			top_enabled := true;
--- 		end if;
--- 		
--- 		if assy_doc_enabled (BOTTOM) then
--- 			assy_doc;
--- 			bottom_enabled := true;
--- 		end if;
--- 
--- 		-- keepout
--- 		if keepout_enabled (TOP) then
--- 			keepout;
--- 			top_enabled := true;
--- 		end if;
--- 
--- 		if keepout_enabled (BOTTOM) then
--- 			keepout;
--- 			bottom_enabled := true;
--- 		end if;
--- 
--- 		-- plated millings
--- 		if plated_millings_enabled then
--- 			draw_text (
--- 				content	=> to_content (to_string (cms.plated_millings.content)),
--- 				size	=> cms.plated_millings.size,
--- 				font	=> font_placeholders,
--- 				pos		=> cms.plated_millings.position,
--- 				tb_pos	=> title_block_position);	
--- 		end if;
--- 
--- 		-- outline
--- 		if outline_enabled then
--- 			draw_text (
--- 				content	=> to_content (to_string (cms.pcb_outline.content)),
--- 				size	=> cms.pcb_outline.size,
--- 				font	=> font_placeholders,
--- 				pos		=> cms.pcb_outline.position,
--- 				tb_pos	=> title_block_position);
--- 		end if;
--- 
--- 		-- stop mask
--- 		if stop_mask_enabled (TOP) then
--- 			stop_mask;
--- 			top_enabled := true;
--- 		end if;
--- 	
--- 		if stop_mask_enabled (BOTTOM) then
--- 			stop_mask;
--- 			bottom_enabled := true;
--- 		end if;
--- 
--- 		-- stencil
--- 		if stencil_enabled (TOP) then
--- 			stencil;
--- 			top_enabled := true;
--- 		end if;
--- 
--- 		if stencil_enabled (BOTTOM) then
--- 			stencil;
--- 			bottom_enabled := true;
--- 		end if;
--- 		
--- 		-- route restrict
--- 		if route_restrict_enabled then
--- 			draw_text (
--- 				content	=> to_content (to_string (cms.route_restrict.content)),
--- 				size	=> cms.route_restrict.size,
--- 				font	=> font_placeholders,
--- 				pos		=> cms.route_restrict.position,
--- 				tb_pos	=> title_block_position);	
--- 		end if;
--- 
--- 		-- via restrict
--- 		if via_restrict_enabled then
--- 			draw_text (
--- 				content	=> to_content (to_string (cms.via_restrict.content)),
--- 				size	=> cms.via_restrict.size,
--- 				font	=> font_placeholders,
--- 				pos		=> cms.via_restrict.position,
--- 				tb_pos	=> title_block_position);				
--- 		end if;
--- 
--- 		-- conductor layers
--- 		if conductors_enabled then
--- 			draw_text (
--- 				content	=> to_content (to_string (cms.signal_layer.content)), -- "SGNL_LYR:"
--- 				size	=> cms.signal_layer.size,
--- 				font	=> font_placeholders,
--- 				pos		=> cms.signal_layer.position,
--- 				tb_pos	=> title_block_position);				
--- 
--- 			draw_text (
--- 				content	=> to_content (enabled_conductor_layers), -- "1,2,5..32"
--- 				size	=> self.get_frame.title_block_pcb.additional_placeholders.signal_layer.size,
--- 				font	=> font_placeholders,
--- 				pos		=> self.get_frame.title_block_pcb.additional_placeholders.signal_layer.position,
--- 				tb_pos	=> title_block_position);				
--- 		end if;
--- 
--- 		evaluate_face;
--- 		
--- 	end draw_cam_markers;
+		
+		-- silkscreen
+		if silkscreen_enabled (TOP) then
+			silkscreen;
+			top_enabled := true;
+		end if;
+
+		if silkscreen_enabled (BOTTOM) then
+			silkscreen;
+			bottom_enabled := true;
+		end if;
+
+		
+		-- assy doc
+		if assy_doc_enabled (TOP) then
+			assy_doc;
+			top_enabled := true;
+		end if;
+		
+		if assy_doc_enabled (BOTTOM) then
+			assy_doc;
+			bottom_enabled := true;
+		end if;
+
+		
+		-- keepout
+		if keepout_enabled (TOP) then
+			keepout;
+			top_enabled := true;
+		end if;
+
+		if keepout_enabled (BOTTOM) then
+			keepout;
+			bottom_enabled := true;
+		end if;
+
+		
+		-- plated millings
+		if plated_millings_enabled then
+			plated_millings;
+		end if;
+
+
+		-- outline
+		if outline_enabled then
+			outline;
+		end if;
+
+		
+		-- stop mask
+		if stop_mask_enabled (TOP) then
+			stop_mask;
+			top_enabled := true;
+		end if;
+	
+		if stop_mask_enabled (BOTTOM) then
+			stop_mask;
+			bottom_enabled := true;
+		end if;
+
+		
+		-- stencil
+		if stencil_enabled (TOP) then
+			stencil;
+			top_enabled := true;
+		end if;
+
+		if stencil_enabled (BOTTOM) then
+			stencil;
+			bottom_enabled := true;
+		end if;
+
+		
+		-- route restrict
+		if route_restrict_enabled then
+			route_restrict;
+		end if;
+
+		
+		-- via restrict
+		if via_restrict_enabled then
+			via_restrict;
+		end if;
+		
+
+		-- conductor layers
+		if conductors_enabled then
+			conductor_layers;
+		end if;
+
+		
+		draw_side_name;  -- draws something like "SIDE: TOP"
+		
+	end draw_cam_markers;
 	
 	
 begin
@@ -359,17 +466,30 @@ begin
 	draw_title_block_lines;	
 
 
--- 		-- draw common placeholders and other texts
--- 		draw_texts (
--- 			ph_common	=> self.get_frame.title_block_pcb.placeholders,
--- 			ph_basic	=> type_placeholders_basic (self.get_frame.title_block_pcb.additional_placeholders),
--- 			texts		=> self.get_frame.title_block_pcb.texts,
--- 			meta		=> et_meta.type_basic (element (active_module).meta.board),
--- 			tb_pos		=> title_block_position);
--- 
--- 		draw_cam_markers;
--- 		
+	-- Draw schematic and board common placeholders like 
+	-- project name, module file name, active assembly variant:
+	draw_common_placeholders (
+		placeholders			=> title_block.placeholders_common,
+		title_block_position	=> tb_position);
 
+
+	
+	-- Draw static texts like "sheet", "description", "company", ... :
+	draw_static_texts (
+		texts					=> title_block.static_texts,
+		title_block_position	=> tb_position);
+
+
+
+	-- Draw meta information like company name, revision, persons
+	-- who have drawn, checked and approved the drawing ... :
+	draw_basic_meta_information (
+		meta					=> et_board_ops.get_basic_meta_information (active_module),
+		placeholders			=> type_placeholders_basic (title_block.placeholders_additional),
+		title_block_position	=> tb_position);
+
+	
+	draw_cam_markers;
 	
 end draw_drawing_frame;
 
