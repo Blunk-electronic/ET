@@ -47,8 +47,8 @@ package et_board_ops.frame is
 	use pac_generic_modules;
 
 	
-	-- Moves the origin of the drawing frame to 
-	-- the given point:
+	-- Moves the lower-left corner (which is the origin)
+	-- of the drawing frame to the given point:
 	procedure move_drawing_frame (
 		module_cursor	: in pac_generic_modules.cursor;
 		coordinates		: in type_coordinates; -- relative/absolute		

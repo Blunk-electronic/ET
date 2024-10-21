@@ -181,7 +181,13 @@ package et_frames is
 		x, y : type_distance := 0;
 	end record;
 
-	-- position_default : constant type_position := (1,1);
+
+	-- Adds two position vectors:
+	function add (
+		right, left : in type_position)
+		return type_position;
+	
+
 
 	
 	type type_output_format is (

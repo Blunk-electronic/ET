@@ -147,6 +147,20 @@ package body et_frames is
 	end paper_dimension;
 
 
+
+	function add (
+		right, left : in type_position)
+		return type_position
+	is
+		result : type_position;
+	begin
+		result.x := right.x + left.x;
+		result.y := right.y + left.y;
+		return result;
+	end add;
+
+
+	
 	
 	function to_string (
 		p 		: in type_position;

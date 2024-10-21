@@ -341,9 +341,19 @@ begin
 	
 	-- TITLE BLOCK:
 
-	-- Extract the position of the title block:
-	tb_position.place := to_vector (title_block.position);
-
+	-- Compute the position of the title block
+	-- relative to the lower-left corner of the drawing frame.
+	-- The initial position of the title-block is specified
+	-- the template file (*.frb).
+	-- The final position of the title-block in the drawing 
+	-- is a result of adding the frame position to the
+	-- initial title-block position.
+	-- So when the frame position is changed, then the title-block
+	-- moves along with the frame.
+	tb_position.place := to_vector (add (
+		right	=> frame.frame.position, -- the lower-left corner of the frame
+		left	=> title_block.position)); -- the title-block position
+	
 
 	-- Draw the lines the title block is composed of:
 	draw_title_block_lines;	
