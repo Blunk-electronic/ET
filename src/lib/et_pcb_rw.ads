@@ -43,6 +43,7 @@ with ada.containers;            use ada.containers;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_general_rw;				use et_general_rw;
+with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
@@ -112,7 +113,7 @@ package et_pcb_rw is
 	
 	procedure write_text_properties_with_face (
 		t		: in type_text_fab'class;
-		face	: in et_pcb_coordinates_2.type_face);
+		face	: in type_face);
 
 	
 	procedure write_text (cursor : in pac_texts_fab_with_content.cursor);

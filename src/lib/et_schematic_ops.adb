@@ -45,6 +45,7 @@ with et_exceptions;					use et_exceptions;
 
 with et_modes;						use et_modes;
 with et_conventions;
+with et_pcb_sides;
 with et_pcb_coordinates_2;
 with et_pcb;
 with et_terminals;
@@ -180,6 +181,7 @@ package body et_schematic_ops is
 		device_cursor	: in pac_devices_sch.cursor;
 		log_threshold	: in type_log_level) 
 	is
+		use et_pcb_sides;
 		use et_pcb_coordinates_2;
 		use et_pcb_coordinates_2.pac_geometry_2;
 		use pac_devices_sch;

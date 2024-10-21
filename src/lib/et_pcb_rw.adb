@@ -95,7 +95,7 @@ package body et_pcb_rw is
 	
 	procedure write_text_properties_with_face (
 		t		: in type_text_fab'class;
-		face	: in et_pcb_coordinates_2.type_face) 
+		face	: in type_face) 
 	is begin
 		write (keyword => keyword_position, parameters => position (t.position) & 
 			space & keyword_face & to_string (face)); -- position x 0.000 y 5.555 rotation 0.00 face top

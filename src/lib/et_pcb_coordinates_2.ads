@@ -42,23 +42,11 @@ with et_geometry_2a;
 with et_geometry_2a.grid;
 with et_geometry_2a.path;
 
+with et_pcb_sides;				use et_pcb_sides;
+
 
 package et_pcb_coordinates_2 is
 
-	
- 	keyword_face	: constant string := "face";	
-	
-	type type_face is (TOP, BOTTOM);
-
-	face_default : constant type_face := TOP;
-	
-	function to_string (face : in type_face) return string;
-	
-	function to_face (face : in string) return type_face;
-
-	
-	-- Changes top to bottom and vice versa:
-	procedure toggle (face : in out type_face);
 	
 
 	-- IMPORTANT: UNIT IS METRIC MILLIMETERS !!

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -59,6 +59,7 @@ with et_general;
 with et_string_processing;				use et_string_processing;
 with et_logging;						use et_logging;
 
+with et_pcb_sides;
 with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
 with et_geometry;
 with et_board_shapes_and_text;			use et_board_shapes_and_text;
@@ -328,9 +329,11 @@ package et_pcb is
 
 
 
-	function package_position (position : in type_package_position) return string;
 	-- Returns the coordinates of a package (in a board) as string.
-	-- CS rename to to_string
+	-- CS rename to to_string or to get_package_position
+	function package_position (
+		position : in type_package_position) 
+		return string;
 
 
 

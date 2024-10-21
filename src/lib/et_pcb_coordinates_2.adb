@@ -41,28 +41,9 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.exceptions;
 
+
+
 package body et_pcb_coordinates_2 is
-
-
-		
-	function to_string (face : in type_face) return string is begin
-		return latin_1.space & to_lower (type_face'image (face));
-	end to_string;
-
-	
-	function to_face (face : in string) return type_face is begin
-		return type_face'value (face);
-	end to_face;
-
-	
-	procedure toggle (face : in out type_face) is begin
-		case face is 
-			when TOP => face := BOTTOM;
-			when BOTTOM => face := TOP;
-		end case;
-	end toggle;
-
-
 
 	
 	function to_string (

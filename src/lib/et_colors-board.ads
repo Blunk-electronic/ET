@@ -38,6 +38,7 @@
 --   ToDo: 
 
 with et_pcb_stack;				use et_pcb_stack;
+with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 
 with et_canvas_board_2;

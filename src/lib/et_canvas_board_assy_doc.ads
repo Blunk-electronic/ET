@@ -44,6 +44,7 @@ with ada.containers.indefinite_doubly_linked_lists;
 with gtk.box;							use gtk.box;
 
 with et_geometry;						use et_geometry;
+with et_pcb_sides;						use et_pcb_sides;
 with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
 use et_pcb_coordinates_2.pac_geometry_2;
 

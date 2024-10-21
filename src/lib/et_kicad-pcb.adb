@@ -538,7 +538,7 @@ package body et_kicad.pcb is
 		terminal_pad_shape_tht 	: type_pad_shape_tht;
 		terminal_pad_shape_smt 	: type_pad_shape_smt;
 
-		terminal_face 			: et_pcb_coordinates_2.type_face;
+		terminal_face 			: type_face;
 		terminal_drill_size		: type_drill_size; 
 		terminal_hole_shape		: type_tht_hole_shape; -- for slotted holes
 		terminal_milling_size_x	: type_pad_milling_size;

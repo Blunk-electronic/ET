@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                          CONDUCTOR TEXT                                  --
+--                              PCB SIDES                                   --
 --                                                                          --
---                              S p e c                                     --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -35,74 +35,34 @@
 --
 --   history of changes:
 --
---   to do:
+with ada.text_io;				use ada.text_io;
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
+with ada.exceptions;
 
-with ada.containers; 			use ada.containers;
+package body et_pcb_sides is
 
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-
-with et_geometry;				use et_geometry;
-with et_pcb_sides;				use et_pcb_sides;
-with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
-with et_design_rules;			use et_design_rules;
-with et_text;					use et_text;
-with et_pcb_stack;				use et_pcb_stack;
-with et_logging;				use et_logging;
-
-
-package et_conductor_text is
-
-	use pac_geometry_2;
-
-	
-	use pac_geometry_brd;
-	use pac_polygons;
-
-	
-	use et_board_shapes_and_text.pac_text_board;
-
-
-	function face_to_mirror (
-		f : in type_face)
-		return type_vector_text_mirrored;
-
-
-	type type_conductor_text 
-		is new type_text_fab_with_content with
-	record
-		vectors	: type_vector_text; -- CS rename to text ?
-	end record;
-
-
-	
-	-- Mirrors a text along the given axis:
-	procedure mirror_text (
-		text	: in out type_conductor_text;
-		axis	: in type_axis_2d := Y);
-
-
-	-- Rotates a text by the given angle about the origin:
-	procedure rotate_text (
-		text	: in out type_conductor_text;
-		angle	: in type_rotation_model);
-
-
-	-- Moves a text by the given offset:
-	procedure move_text (
-		text	: in out type_conductor_text;
-		offset	: in type_distance_relative);
 
 		
-
-	---- Logs the properties of the given text.
-	--procedure text_conductor_properties (
-		--cursor			: in pac_conductor_texts_board.cursor;
-		--log_threshold 	: in type_log_level);
+	function to_string (face : in type_face) return string is begin
+		return latin_1.space & to_lower (type_face'image (face));
+	end to_string;
 
 	
-end et_conductor_text;
+	function to_face (face : in string) return type_face is begin
+		return type_face'value (face);
+	end to_face;
+
+	
+	procedure toggle (face : in out type_face) is begin
+		case face is 
+			when TOP => face := BOTTOM;
+			when BOTTOM => face := TOP;
+		end case;
+	end toggle;
+	
+end et_pcb_sides;
 
 -- Soli Deo Gloria
 

@@ -47,6 +47,7 @@ with ada.exceptions; 			use ada.exceptions;
 with et_conductor_segment;		use et_conductor_segment;
 with et_pcb_contour;			use et_pcb_contour;
 with et_conventions;
+with et_pcb_sides;
 
 
 package body et_kicad_packages is
@@ -562,7 +563,7 @@ package body et_kicad_packages is
 		terminal_pad_shape_tht 	: type_pad_shape_tht;
 		terminal_pad_shape_smt 	: type_pad_shape_smt;
 
-		terminal_face 				: et_pcb_coordinates_2.type_face;
+		terminal_face 				: et_pcb_sides.type_face;
 		terminal_drill_size			: type_drill_size; 
 		terminal_hole_shape			: type_tht_hole_shape; -- for slotted holes
 		terminal_milling_size_x		: type_pad_milling_size;  -- CS use a composite instead ?
@@ -634,9 +635,9 @@ package body et_kicad_packages is
 		keepout : type_keepout_both_sides;
 
 		
-		procedure init_stop_and_mask is begin
 		-- Resets the temporarily status flags of solder paste and stop mask of an SMT terminal.
 		-- Does not affect THT terminals (stop mask always open, solder paste never applied).
+		procedure init_stop_and_mask is begin
 			terminal_top_solder_paste := type_solder_paste_status'first;
 			terminal_bot_solder_paste := type_solder_paste_status'first;
 			terminal_top_stop_mask := type_stop_mask_status'first;
@@ -644,8 +645,10 @@ package body et_kicad_packages is
 		end init_stop_and_mask;
 
 		
+		-- From the SMT terminal face, validates the status of 
+		-- stopmask and solder paste:
 		procedure set_stop_and_mask is
-		-- From the SMT terminal face, validates the status of stop mask and solder paste.
+			use et_pcb_sides;
 			use et_pcb_coordinates_2;
 			
 			procedure invalid is begin
@@ -854,17 +857,18 @@ package body et_kicad_packages is
 		end read_section;
 		
 
-		procedure read_arg is
 		-- Reads the arguments of a section.
 		-- Increments the argument counter after each argument.
 		-- Validates the arguments according to the current section.
 		-- Leaves the character_cursor at the position of the last character of the argument.
 		-- If the argument was enclosed in quotations the character_cursor is left at
 		-- the position of the trailing quotation.
+		procedure read_arg is
 			end_of_arg : integer; -- may become negative if no terminating character present
 
 			use type_argument;
 			use et_text.pac_text_content;
+			use et_pcb_sides;
 			use et_pcb_coordinates_2;
 			use pac_geometry_brd;
 		
@@ -875,12 +879,14 @@ package body et_kicad_packages is
 				raise constraint_error;
 			end invalid_layer;
 
+			
 			procedure too_many_arguments is begin
 				log (ERROR, "too many arguments in section " & to_string (section.name) & " !", console => true);
 				log (text => "excessive argument reads '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end too_many_arguments;
 
+			
 			procedure invalid_fp_text_keyword is begin
 				log (ERROR, "expect keyword '" & keyword_fp_text_reference 
 					 & "' or '" & keyword_fp_text_value 
@@ -889,12 +895,14 @@ package body et_kicad_packages is
 				raise constraint_error;
 			end invalid_fp_text_keyword;
 
+			
 			procedure invalid_placeholder_reference is begin
 				log (ERROR, "expect reference placeholder '" & placeholder_reference & "' !"
 					 & " found '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end invalid_placeholder_reference;
 
+			
 			procedure invalid_placeholder_value is
 			begin
 				log (ERROR, "expect value placeholder '" & to_string (package_name) & "' !"
@@ -902,6 +910,7 @@ package body et_kicad_packages is
 				raise constraint_error;
 			end invalid_placeholder_value;
 
+			
 			procedure invalid_package_name is
 			begin
 				log (ERROR, "expect package name '" & to_string (package_name) & "' !"
@@ -909,26 +918,29 @@ package body et_kicad_packages is
 				raise constraint_error;
 			end invalid_package_name;
 
-			procedure invalid_component_assembly_face is
-			begin
-				log (ERROR, "default assembly face " & et_pcb_coordinates_2.to_string (BOTTOM) 
-					 & " found. Must be " & et_pcb_coordinates_2.to_string (TOP) & " !", console => true);
+			
+			procedure invalid_component_assembly_face is begin
+				log (ERROR, "default assembly face " & to_string (BOTTOM) 
+					 & " found. Must be " & to_string (TOP) & " !", console => true);
 				raise constraint_error;
 			end invalid_component_assembly_face;
 
+			
 			procedure invalid_attribute is
 			begin
 				log (ERROR, "invalid attribute !", console => true);
 				raise constraint_error;
 			end invalid_attribute;
 
+			
 			procedure invalid_section is
 			begin
 				log (ERROR, "invalid subsection '" & to_string (section.name) 
 					 & "' in parent section '" & to_string (section.parent) & "' !", console => true);
 				raise constraint_error;
 			end invalid_section;
-				
+
+			
 		begin -- read_arg
 			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
 			if element (current_line, character_cursor) = latin_1.quotation then
@@ -1635,10 +1647,11 @@ package body et_kicad_packages is
 		end read_arg;
 
 		
-		procedure exec_section is
 		-- Performs an operation according to the active section and variables that have been
 		-- set earlier (when processing the arguments. see procedure read_arg).
 		-- Restores the previous section.
+		procedure exec_section is
+			use et_pcb_sides;
 			use et_pcb_coordinates_2;
 
 			procedure invalid_layer is begin
@@ -1874,6 +1887,7 @@ package body et_kicad_packages is
 
 				shape : type_contour;
 
+				
 				procedure insert_tht is begin 
 				-- NOTE: The pad shape (stored in shape) now must be assigned to
 				-- a therminal with either a circular or an oval hole.
@@ -2273,9 +2287,10 @@ package body et_kicad_packages is
 		end exec_section;
 
 		
-		procedure check_placeholders is
 		-- Checks if there is at least one placeholder for reference and for value.
 		-- CS: validate text sizes and width according to specifications in configuration file
+		procedure check_placeholders is
+			use et_pcb_sides;
 			use et_pcb_coordinates_2;
 			use pac_placeholders;
 			cursor 		: pac_placeholders.cursor;

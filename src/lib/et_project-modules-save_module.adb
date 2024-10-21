@@ -35,6 +35,8 @@
 --
 
 with et_coordinates_2;
+
+with et_pcb_sides;
 with et_pcb_coordinates_2;
 
 with et_geometry;
@@ -186,7 +188,11 @@ is
 
 	
 	
-	function face (point : et_pcb_coordinates_2.type_package_position) return string is
+	function face (
+		point : et_pcb_coordinates_2.type_package_position) 
+		return string 
+	is
+		use et_pcb_sides;
 		use et_pcb_coordinates_2;
 	begin
 		return to_string (get_face (point));
@@ -921,11 +927,12 @@ is
 			device_name : in type_device_name;
 			device 		: in type_device_sch) 
 		is
+			use et_pcb_sides;
 			use et_pcb_coordinates_2;
 			use et_device_placeholders.packages;
 			use pac_placeholders;
 
-			face : et_pcb_coordinates_2.type_face;
+			face : type_face;
 			layer : type_placeholder_layer;
 
 			
@@ -1584,12 +1591,13 @@ is
 				device_name : in type_device_name;
 				device 		: in type_device_non_electric) 
 			is
+				use et_pcb_sides;
 				use et_pcb_coordinates_2;
 				use et_device_placeholders;
 				use et_device_placeholders.packages;
 				use et_device_placeholders.packages.pac_placeholders;
 
-				face : et_pcb_coordinates_2.type_face;
+				face : type_face;
 				layer : type_placeholder_layer;
 				
 				procedure write_placeholder (

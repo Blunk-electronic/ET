@@ -299,6 +299,7 @@ package body et_canvas_board_devices is
 			set_status (status_move_device);			
 			reset_preliminary_electrical_device;
 		end finalize;
+
 		
 	begin
 		-- Initially the preliminary_electrical_device is not ready.
@@ -341,6 +342,7 @@ package body et_canvas_board_devices is
 		tool	: in type_tool;
 		point	: in type_vector_model)
 	is 
+		
 		-- Assigns the final position after the move to the selected 
 		-- non-electrical device.
 		-- Resets global variable preliminary_non_electrical_device:
@@ -379,6 +381,7 @@ package body et_canvas_board_devices is
 			set_status (status_move_device);			
 			reset_preliminary_non_electrical_device;
 		end finalize;
+
 		
 	begin
 		-- Initially the preliminary_non_electrical_device is not ready.
@@ -535,6 +538,7 @@ package body et_canvas_board_devices is
 			reset_preliminary_non_electrical_device;
 		end finalize;
 
+		
 	begin
 		-- Set the tool being used:
 		preliminary_non_electrical_device.tool := tool;
@@ -570,7 +574,9 @@ package body et_canvas_board_devices is
 		tool	: in type_tool;
 		point	: in type_vector_model)
 	is 
+		use et_pcb_sides;
 
+		
 		-- Flips the selected electrical device.
 		-- Resets global variable preliminary_electrical_device:
 		procedure finalize is
@@ -645,7 +651,9 @@ package body et_canvas_board_devices is
 		tool	: in type_tool;
 		point	: in type_vector_model)
 	is 
+		use et_pcb_sides;
 
+		
 		procedure finalize is
 			face : type_face;
 			use et_modes.board;
@@ -685,6 +693,7 @@ package body et_canvas_board_devices is
 			reset_preliminary_non_electrical_device;
 		end finalize;
 
+		
 	begin
 		-- Set the tool being used:
 		preliminary_non_electrical_device.tool := tool;

@@ -56,6 +56,7 @@ with et_canvas_messages;				use et_canvas_messages;
 
 
 with et_geometry;						use et_geometry;
+with et_pcb_sides;						use et_pcb_sides;
 with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
 use et_pcb_coordinates_2.pac_geometry_2;
 

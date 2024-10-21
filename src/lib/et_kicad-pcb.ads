@@ -56,6 +56,7 @@ with et_net_names;				use et_net_names;
 with et_terminals;				use et_terminals;
 with et_packages;
 with et_pcb;
+with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_kicad_general;			use et_kicad_general;
 with et_text;
