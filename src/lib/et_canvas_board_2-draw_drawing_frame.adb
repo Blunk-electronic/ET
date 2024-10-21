@@ -165,13 +165,13 @@ procedure draw_drawing_frame is
 
 				-- Draw the name of the side like "TOP" or "BOTTOM":
 				if top_enabled and bottom_enabled then
-					top_bottom (type_face'image (TOP) & " & " & type_face'image (BOTTOM));
+					top_bottom (to_string (TOP) & " & " & to_string (BOTTOM));
 
 				elsif top_enabled then
-					top_bottom (type_face'image (TOP));
+					top_bottom (to_string (TOP));
 
 				elsif bottom_enabled then
-					top_bottom (type_face'image (BOTTOM));
+					top_bottom (to_string (BOTTOM));
 							
 				end if;
 			end if;
