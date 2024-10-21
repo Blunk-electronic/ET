@@ -739,7 +739,7 @@ procedure draw_conductors is
 					anchor		=> position,
 					origin		=> false,
 					rotation	=> zero_rotation,
-					alignment	=> (center, center));
+					alignment	=> (ALIGN_CENTER, ALIGN_CENTER));
 
 				net_name_drawn := true;
 			end if;
@@ -769,7 +769,7 @@ procedure draw_conductors is
 				anchor		=> position,
 				origin		=> false,
 				rotation	=> zero_rotation,
-				alignment	=> (center, center));
+				alignment	=> (ALIGN_CENTER, ALIGN_CENTER));
 			
 		end draw_numbers;
 
@@ -801,7 +801,7 @@ procedure draw_conductors is
 					anchor		=> position,
 					origin		=> false,
 					rotation	=> zero_rotation,
-					alignment	=> (center, center));
+					alignment	=> (ALIGN_CENTER, ALIGN_CENTER));
 
 				drill_size_drawn := true;
 			end if;

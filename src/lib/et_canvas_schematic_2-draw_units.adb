@@ -149,22 +149,22 @@ procedure draw_units is
 				-- The vertical alignment is untouched and is always CENTER.
 				-- The horizontal alignment depends on the total rotation
 				-- which is a sum of port rotation and unit rotation.
-				alignment : type_text_alignment := (horizontal => center, vertical => center);
+				alignment : type_text_alignment := (horizontal => ALIGN_CENTER, vertical => ALIGN_CENTER);
 				rotation_total : constant type_rotation := add (element (c).rotation, unit_rotation);
 
 				use pac_draw_text;
 			begin
 				if rotation_total = 0.0 or rotation_total = 360.0 or rotation_total = -360.0 then
-					alignment.horizontal := RIGHT;
+					alignment.horizontal := ALIGN_RIGHT;
 
 				elsif rotation_total = 90.0 or rotation_total = -270.0 then
-					alignment.horizontal := RIGHT;
+					alignment.horizontal := ALIGN_RIGHT;
 					
 				elsif rotation_total = 180.0 or rotation_total = -180.0 then
-					alignment.horizontal := LEFT;
+					alignment.horizontal := ALIGN_LEFT;
 					
 				elsif rotation_total = -90.0 or rotation_total = 270.0 then
-					alignment.horizontal := LEFT;
+					alignment.horizontal := ALIGN_LEFT;
 					
 				else
 					raise constraint_error; -- CS should never happen
@@ -200,7 +200,7 @@ procedure draw_units is
 				-- The vertical alignment is untouched and is always BOTTOM.
 				-- The horizontal alignment depends on the total rotation
 				-- which is a sum of port rotation and unit rotation.
-				alignment : type_text_alignment := (horizontal => CENTER, vertical => BOTTOM);
+				alignment : type_text_alignment := (horizontal => ALIGN_CENTER, vertical => ALIGN_BOTTOM);
 				rotation_total : constant type_rotation := add (element (c).rotation, unit_rotation);
 
 				use et_terminals;
@@ -216,19 +216,19 @@ procedure draw_units is
 				-- its distance from the line of the port:
 				if rotation_total = 0.0 or rotation_total = 360.0 or rotation_total = -360.0 then
 					set (axis => Y, value => get_y (start_point) + terminal_name_spacing_line, point => pos_terminal_name);
-					alignment.horizontal := RIGHT;
+					alignment.horizontal := ALIGN_RIGHT;
 
 				elsif rotation_total = 90.0 or rotation_total = -270.0 then
 					set (axis => X, value => get_x (start_point) - terminal_name_spacing_line, point => pos_terminal_name);
-					alignment.horizontal := RIGHT;
+					alignment.horizontal := ALIGN_RIGHT;
 					
 				elsif rotation_total = 180.0 or rotation_total = -180.0 then
 					set (axis => Y, value => get_y (start_point) + terminal_name_spacing_line, point => pos_terminal_name);
-					alignment.horizontal := LEFT;
+					alignment.horizontal := ALIGN_LEFT;
 					
 				elsif rotation_total = -90.0 or rotation_total = 270.0 then
 					set (axis => X, value => get_x (start_point) - terminal_name_spacing_line, point => pos_terminal_name);
-					alignment.horizontal := LEFT;
+					alignment.horizontal := ALIGN_LEFT;
 					
 				else
 					raise constraint_error; -- CS should never happen

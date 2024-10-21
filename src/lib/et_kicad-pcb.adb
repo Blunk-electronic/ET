@@ -4126,7 +4126,7 @@ package body et_kicad.pcb is
 				use et_assy_doc.packages;
 			begin
 				-- Since there is no alignment information provided, use default values:
-				package_text.alignment := (horizontal => CENTER, vertical => BOTTOM);
+				package_text.alignment := (horizontal => ALIGN_CENTER, vertical => ALIGN_BOTTOM);
 
 				case package_text.meaning is
 					when REFERENCE =>

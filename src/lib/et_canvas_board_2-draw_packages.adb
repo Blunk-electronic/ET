@@ -1193,7 +1193,7 @@ is
 						anchor		=> pos_tmp,
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
-						alignment	=> (center, center));
+						alignment	=> (ALIGN_CENTER, ALIGN_CENTER));
 
 						-- CS The rotation should be so that the
 						-- name can be read from front and from the right.
@@ -1239,7 +1239,7 @@ is
 							anchor		=> pos_tmp,
 							origin		=> false, -- no origin required
 							rotation	=> zero_rotation,
-							alignment	=> (center, center));
+							alignment	=> (ALIGN_CENTER, ALIGN_CENTER));
 
 						-- CS The rotation should be so that the
 						-- name can be read from front and from the right.

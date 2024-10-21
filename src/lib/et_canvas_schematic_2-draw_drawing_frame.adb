@@ -136,7 +136,7 @@ procedure draw_drawing_frame is
 				anchor		=> add (pos, tb_position.place),
 				origin		=> false,
 				rotation	=> 0.0,
-				alignment	=> (LEFT, BOTTOM));
+				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 
 			
 			-- description			
@@ -149,7 +149,7 @@ procedure draw_drawing_frame is
 				anchor		=> add (pos, tb_position.place),
 				origin		=> false,
 				rotation	=> 0.0,
-				alignment	=> (LEFT, BOTTOM));
+				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 						
 		end draw_sheet_description;
 
@@ -165,7 +165,7 @@ procedure draw_drawing_frame is
 				anchor		=> add (pos, tb_position.place),
 				origin		=> false,
 				rotation	=> 0.0,
-				alignment	=> (LEFT, BOTTOM));
+				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 		end draw_sheet_number;
 		
 		

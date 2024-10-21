@@ -153,7 +153,7 @@ procedure draw_nets is
 		-- The alignment is assigned as if the text were drawn at zero rotation.
 		-- The vertical alignment is always CENTER. Horizontal alignment changes depending on 
 		-- the rotation of the label:
-		text_alignment : type_text_alignment := (vertical => CENTER, horizontal => <>);
+		text_alignment : type_text_alignment := (vertical => ALIGN_CENTER, horizontal => <>);
 
 		-- The text position is not the same as the label position, thus it must be 
 		-- calculated according to the label rotation and tag_label_text_offset:
@@ -177,7 +177,7 @@ procedure draw_nets is
 
 			text_rotation := zero_rotation;
 			text_position := set (get_x (label.position) + tag_label_text_offset, get_y (label.position));
-			text_alignment.horizontal := LEFT;
+			text_alignment.horizontal := ALIGN_LEFT;
 		end if;
 
 		
@@ -191,7 +191,7 @@ procedure draw_nets is
 
 			text_rotation := 90.0;
 			text_position := set (get_x (label.position), get_y (label.position) + tag_label_text_offset);
-			text_alignment.horizontal := LEFT;
+			text_alignment.horizontal := ALIGN_LEFT;
 		end if;
 
 		
@@ -203,7 +203,7 @@ procedure draw_nets is
 
 			text_rotation := zero_rotation;
 			text_position := set (get_x (label.position) - tag_label_text_offset, get_y (label.position));
-			text_alignment.horizontal := RIGHT;
+			text_alignment.horizontal := ALIGN_RIGHT;
 		end if;
 
 		
@@ -217,7 +217,7 @@ procedure draw_nets is
 
 			text_rotation := 90.0;
 			text_position := set (get_x (label.position), get_y (label.position) - tag_label_text_offset);
-			text_alignment.horizontal := RIGHT;
+			text_alignment.horizontal := ALIGN_RIGHT;
 		end if;
 
 

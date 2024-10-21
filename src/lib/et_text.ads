@@ -66,20 +66,24 @@ package et_text is
 
 	-- The alignment refers to the anchor point of the text.
 	-- The anchor point is usually where the origin of the text is.
-	type type_text_alignment_horizontal is (LEFT, CENTER, RIGHT);
+	type type_text_alignment_horizontal is (ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT);
+	
 	function to_string (alignment : in type_text_alignment_horizontal) return string;
 	function to_alignment_horizontal (alignment : in string) return type_text_alignment_horizontal;
+
 	
-	type type_text_alignment_vertical is (TOP, CENTER, BOTTOM);
+	type type_text_alignment_vertical is (ALIGN_TOP, ALIGN_CENTER, ALIGN_BOTTOM);
+	
 	function to_string (alignment : in type_text_alignment_vertical) return string;
 	function to_alignment_vertical (alignment : in string) return type_text_alignment_vertical;
+
 	
 	type type_text_alignment is record
-		horizontal	: type_text_alignment_horizontal := LEFT;
-		vertical	: type_text_alignment_vertical := BOTTOM;
+		horizontal	: type_text_alignment_horizontal := ALIGN_LEFT;
+		vertical	: type_text_alignment_vertical := ALIGN_BOTTOM;
 	end record;
 
-	text_alignment_default : constant type_text_alignment := (LEFT, BOTTOM);
+	text_alignment_default : constant type_text_alignment := (ALIGN_LEFT, ALIGN_BOTTOM);
 	
 	function to_alignment (
 		line : in type_fields_of_line; -- "alignment horizontal center vertical center"
@@ -160,7 +164,7 @@ package et_text is
 	-- CS: It seems sufficient to have at most 20 lines per character.
 	type type_segment_id is range 1 .. 20; 
 
-	vector_text_alignment_default : constant type_text_alignment := (LEFT, BOTTOM);
+	vector_text_alignment_default : constant type_text_alignment := (ALIGN_LEFT, ALIGN_BOTTOM);
 
 	type type_vector_text_mirrored is (NO, YES);
 	vector_text_mirror_default : constant type_vector_text_mirrored := NO;

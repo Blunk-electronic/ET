@@ -146,20 +146,20 @@ package body et_canvas.text is
 		
 		-- HORIZONTAL ALIGNMENT:
 		case alignment.horizontal is
-			when LEFT => 
+			when ALIGN_LEFT => 
 				sp.x := anchor.x;
 
-			when CENTER =>
+			when ALIGN_CENTER =>
 				sp.x := anchor.x - width / 2.0;
 
-			when RIGHT =>
+			when ALIGN_RIGHT =>
 				sp.x := anchor.x - width;
 		end case;
 
 
 		-- VERTICAL ALIGNMENT:
 		case alignment.vertical is
-			when BOTTOM =>
+			when ALIGN_BOTTOM =>
 				case mode_v is
 					when MODE_ALIGN_BY_USED_SPACE =>
 						sp.y := anchor.y - y_bearing - height;
@@ -169,7 +169,7 @@ package body et_canvas.text is
 				end case;
 
 				
-			when CENTER =>
+			when ALIGN_CENTER =>
 				case mode_v is
 					when MODE_ALIGN_BY_USED_SPACE =>
 						sp.y := anchor.y - y_bearing - height / 2.0;
@@ -179,7 +179,7 @@ package body et_canvas.text is
 				end case;
 
 				
-			when TOP =>
+			when ALIGN_TOP =>
 				case mode_v is
 					when MODE_ALIGN_BY_USED_SPACE =>
 						sp.y := anchor.y - y_bearing;

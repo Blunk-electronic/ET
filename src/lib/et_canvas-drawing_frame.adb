@@ -206,7 +206,7 @@ package body et_canvas.drawing_frame is
 					
 					origin		=> false,
 					rotation	=> 0.0,
-					alignment	=> (CENTER, CENTER));
+					alignment	=> (ALIGN_CENTER, ALIGN_CENTER));
 			end draw_index;
 
 			
@@ -398,7 +398,7 @@ package body et_canvas.drawing_frame is
 			
 			origin		=> false,
 			rotation	=> 0.0,
-			alignment	=> (LEFT, BOTTOM));
+			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 
 
 		
@@ -415,7 +415,7 @@ package body et_canvas.drawing_frame is
 			
 			origin		=> false,
 			rotation	=> 0.0,
-			alignment	=> (LEFT, BOTTOM));
+			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 
 
 
@@ -433,8 +433,7 @@ package body et_canvas.drawing_frame is
 			
 			origin		=> false,
 			rotation	=> 0.0,
-			alignment	=> (LEFT, BOTTOM));
-
+			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 		
 	end draw_common_placeholders;
 
@@ -469,7 +468,7 @@ package body et_canvas.drawing_frame is
 				
 				origin		=> false,
 				rotation	=> 0.0,
-				alignment	=> (LEFT, BOTTOM));
+				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 		end query_text;
 		
 	begin
@@ -507,7 +506,7 @@ package body et_canvas.drawing_frame is
 			
 			origin		=> false,
 			rotation	=> 0.0,
-			alignment	=> (LEFT, BOTTOM));
+			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 
 
 
@@ -524,7 +523,7 @@ package body et_canvas.drawing_frame is
 			
 			origin		=> false,
 			rotation	=> 0.0,
-			alignment	=> (LEFT, BOTTOM));
+			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 
 
 
@@ -541,7 +540,7 @@ package body et_canvas.drawing_frame is
 			
 			origin		=> false,
 			rotation	=> 0.0,
-			alignment	=> (LEFT, BOTTOM));
+			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 
 
 
@@ -558,7 +557,7 @@ package body et_canvas.drawing_frame is
 			
 			origin		=> false,
 			rotation	=> 0.0,
-			alignment	=> (LEFT, BOTTOM));
+			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 
 		
 
@@ -575,7 +574,7 @@ package body et_canvas.drawing_frame is
 			
 			origin		=> false,
 			rotation	=> 0.0,
-			alignment	=> (LEFT, BOTTOM));
+			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 
 
 
@@ -592,7 +591,7 @@ package body et_canvas.drawing_frame is
 			
 			origin		=> false,
 			rotation	=> 0.0,
-			alignment	=> (LEFT, BOTTOM));
+			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 
 
 
@@ -609,7 +608,7 @@ package body et_canvas.drawing_frame is
 			
 			origin		=> false,
 			rotation	=> 0.0,
-			alignment	=> (LEFT, BOTTOM));
+			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 
 
 
@@ -627,7 +626,7 @@ package body et_canvas.drawing_frame is
 			
 			origin		=> false,
 			rotation	=> 0.0,
-			alignment	=> (LEFT, BOTTOM));
+			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 
 
 
@@ -645,7 +644,7 @@ package body et_canvas.drawing_frame is
 			
 			origin		=> false,
 			rotation	=> 0.0,
-			alignment	=> (LEFT, BOTTOM));
+			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 
 
 
@@ -663,7 +662,7 @@ package body et_canvas.drawing_frame is
 			
 			origin		=> false,
 			rotation	=> 0.0,
-			alignment	=> (LEFT, BOTTOM));
+			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 
 
 
@@ -680,7 +679,7 @@ package body et_canvas.drawing_frame is
 			
 			origin		=> false,
 			rotation	=> 0.0,
-			alignment	=> (LEFT, BOTTOM));
+			alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 		
 	end draw_basic_meta_information;
 

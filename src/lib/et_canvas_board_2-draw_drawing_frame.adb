@@ -143,7 +143,7 @@ procedure draw_drawing_frame is
 					anchor		=> add (pos, tb_position.place),
 					origin		=> false,
 					rotation	=> 0.0,
-					alignment	=> (LEFT, BOTTOM));
+					alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 			end top_bottom;
 
 			
@@ -160,7 +160,7 @@ procedure draw_drawing_frame is
 					anchor		=> add (pos, tb_position.place),
 					origin		=> false,
 					rotation	=> 0.0,
-					alignment	=> (LEFT, BOTTOM));
+					alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 
 
 				-- Draw the name of the side like "TOP" or "BOTTOM":
@@ -193,7 +193,7 @@ procedure draw_drawing_frame is
 				anchor		=> add (pos, tb_position.place),
 				origin		=> false,
 				rotation	=> 0.0,
-				alignment	=> (LEFT, BOTTOM));
+				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 		end silkscreen;
 			
 
@@ -207,7 +207,7 @@ procedure draw_drawing_frame is
 				anchor		=> add (pos, tb_position.place),
 				origin		=> false,
 				rotation	=> 0.0,
-				alignment	=> (LEFT, BOTTOM));
+				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 		end assy_doc;
 
 		
@@ -221,7 +221,7 @@ procedure draw_drawing_frame is
 				anchor		=> add (pos, tb_position.place),
 				origin		=> false,
 				rotation	=> 0.0,
-				alignment	=> (LEFT, BOTTOM));
+				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 		end keepout;
 
 		
@@ -235,7 +235,7 @@ procedure draw_drawing_frame is
 				anchor		=> add (pos, tb_position.place),
 				origin		=> false,
 				rotation	=> 0.0,
-				alignment	=> (LEFT, BOTTOM));
+				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 		end stop_mask;
 
 		
@@ -249,7 +249,7 @@ procedure draw_drawing_frame is
 				anchor		=> add (pos, tb_position.place),
 				origin		=> false,
 				rotation	=> 0.0,
-				alignment	=> (LEFT, BOTTOM));
+				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 		end stencil;
 
 
@@ -263,7 +263,7 @@ procedure draw_drawing_frame is
 				anchor		=> add (pos, tb_position.place),
 				origin		=> false,
 				rotation	=> 0.0,
-				alignment	=> (LEFT, BOTTOM));
+				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 		end plated_millings;
 
 
@@ -277,7 +277,7 @@ procedure draw_drawing_frame is
 				anchor		=> add (pos, tb_position.place),
 				origin		=> false,
 				rotation	=> 0.0,
-				alignment	=> (LEFT, BOTTOM));
+				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 		end outline;
 
 
@@ -291,7 +291,7 @@ procedure draw_drawing_frame is
 				anchor		=> add (pos, tb_position.place),
 				origin		=> false,
 				rotation	=> 0.0,
-				alignment	=> (LEFT, BOTTOM));
+				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 		end route_restrict;
 		
 
@@ -305,7 +305,7 @@ procedure draw_drawing_frame is
 				anchor		=> add (pos, tb_position.place),
 				origin		=> false,
 				rotation	=> 0.0,
-				alignment	=> (LEFT, BOTTOM));
+				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 		end via_restrict;
 
 
@@ -320,7 +320,7 @@ procedure draw_drawing_frame is
 				anchor		=> add (pos, tb_position.place),
 				origin		=> false,
 				rotation	=> 0.0,
-				alignment	=> (LEFT, BOTTOM));
+				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 			
 
 			-- Draw the layer numbers like: "1,2,5..32"
@@ -333,7 +333,7 @@ procedure draw_drawing_frame is
 				anchor		=> add (pos, tb_position.place),
 				origin		=> false,
 				rotation	=> 0.0,
-				alignment	=> (LEFT, BOTTOM));
+				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
 		end conductor_layers;
 
 		

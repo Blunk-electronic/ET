@@ -2151,7 +2151,7 @@ package body et_kicad_packages is
 			begin
 					
 				-- Since there is no alignment information provided, use default values:
-				text.alignment := (horizontal => CENTER, vertical => BOTTOM);
+				text.alignment := (horizontal => ALIGN_CENTER, vertical => ALIGN_BOTTOM);
 
 				case text.meaning is
 					when REFERENCE =>

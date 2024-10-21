@@ -102,7 +102,7 @@ procedure draw_submodules is
 				anchor		=> position,
 				origin		=> false,
 				rotation	=> zero_rotation,
-				alignment	=> (LEFT, TOP));
+				alignment	=> (ALIGN_LEFT, ALIGN_TOP));
 
 		end draw_instance_name;
 
@@ -127,7 +127,7 @@ procedure draw_submodules is
 				anchor		=> position,
 				origin		=> false,
 				rotation	=> zero_rotation,
-				alignment	=> (LEFT, TOP));
+				alignment	=> (ALIGN_LEFT, ALIGN_TOP));
 
 		end draw_file_name;
 
@@ -163,7 +163,7 @@ procedure draw_submodules is
 				anchor		=> position,
 				origin		=> false,
 				rotation	=> 0.0,
-				alignment	=> (LEFT, TOP));
+				alignment	=> (ALIGN_LEFT, ALIGN_TOP));
 
 		end draw_position_in_board;
 
@@ -231,7 +231,7 @@ procedure draw_submodules is
 						anchor		=> move (pos, 0.0, port_symbol_width / 2.0),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
-						alignment	=> (CENTER, CENTER));
+						alignment	=> (ALIGN_CENTER, ALIGN_CENTER));
 					
 					-- Draw the port name. The text is placed on the RIGHT of the port rectangle:
 					draw_text (
@@ -241,7 +241,7 @@ procedure draw_submodules is
 						anchor		=> move (pos, 0.0, port_symbol_width + port_name_spacing),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
-						alignment	=> (LEFT, CENTER));
+						alignment	=> (ALIGN_LEFT, ALIGN_CENTER));
 					
 					-- Move pos down so that the port sits excatly at
 					-- the point where a net will be connected:
@@ -261,7 +261,7 @@ procedure draw_submodules is
 						anchor		=> move (pos, 180.0, port_symbol_width / 2.0),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
-						alignment	=> (CENTER, CENTER));
+						alignment	=> (ALIGN_CENTER, ALIGN_CENTER));
 					
 					-- Draw the port name. The text is placed on the LEFT of the port rectangle:
 					draw_text (
@@ -271,7 +271,7 @@ procedure draw_submodules is
 						anchor		=> move (pos, 180.0, port_symbol_width + port_name_spacing),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
-						alignment	=> (RIGHT, CENTER));
+						alignment	=> (ALIGN_RIGHT, ALIGN_CENTER));
 					
 					-- Move pos down and left so that the port sits excatly at
 					-- the point where a net will be connected:
@@ -291,7 +291,7 @@ procedure draw_submodules is
 						anchor		=> move (pos, 90.0, port_symbol_width / 2.0),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
-						alignment	=> (CENTER, CENTER));
+						alignment	=> (ALIGN_CENTER, ALIGN_CENTER));
 					
 					-- Draw the port name. The text is placed ABOVE the port rectangle:
 					draw_text (
@@ -301,7 +301,7 @@ procedure draw_submodules is
 						anchor		=> move (pos, 90.0, port_symbol_width + port_name_spacing),
 						origin		=> false, -- no origin required
 						rotation	=> 90.0,
-						alignment	=> (LEFT, CENTER));
+						alignment	=> (ALIGN_LEFT, ALIGN_CENTER));
 					
 					-- Move pos left so that the port sits excatly at
 					-- the point where a net will be connected:
@@ -321,7 +321,7 @@ procedure draw_submodules is
 						anchor		=> move (pos, 270.0, port_symbol_width / 2.0),
 						origin		=> false, -- no origin required
 						rotation	=> zero_rotation,
-						alignment	=> (CENTER, CENTER));
+						alignment	=> (ALIGN_CENTER, ALIGN_CENTER));
 					
 					-- Draw the port name. The text is placed BELOW the port rectangle:
 					draw_text (
@@ -331,7 +331,7 @@ procedure draw_submodules is
 						anchor		=> move (pos, 270.0, port_symbol_width + port_name_spacing),
 						origin		=> false, -- no origin required
 						rotation	=> 90.0,
-						alignment	=> (RIGHT, CENTER));
+						alignment	=> (ALIGN_RIGHT, ALIGN_CENTER));
 					
 					-- Move pos up and left so that the port sits excatly at
 					-- the point where a net will be connected:

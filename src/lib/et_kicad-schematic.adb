@@ -674,9 +674,9 @@ package body et_kicad.schematic is
 		a : et_text.type_text_alignment_horizontal;
 	begin
 		case type_field_alignment_horizontal'value(text) is
-			when L => a := LEFT;
-			when C => a := CENTER;
-			when R => a := RIGHT;
+			when L => a := ALIGN_LEFT;
+			when C => a := ALIGN_CENTER;
+			when R => a := ALIGN_RIGHT;
 		end case;
 		return a;
 	end to_alignment_horizontal;
@@ -689,9 +689,9 @@ package body et_kicad.schematic is
 		s : string (1..1) := text(text'first..text'first);
 	begin
 		case type_field_alignment_vertical'value(s) is
-			when T => a := TOP;
-			when C => a := CENTER;
-			when B => a := BOTTOM;
+			when T => a := ALIGN_TOP;
+			when C => a := ALIGN_CENTER;
+			when B => a := ALIGN_BOTTOM;
 		end case;
 		return a;
 	end to_alignment_vertical;
