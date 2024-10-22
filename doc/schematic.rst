@@ -210,15 +210,28 @@ Placeholders for Name, Value, Partcode and Purpose
 Nets and Net Labels
 +++++++++++++++++++
 
-#. Draw net
-
-	.. code-block::
-
-	draw net [RESET_N]
+#. Drawing Net Segments
 
 	|VNS| d n
 
 	change bend style: left mouse click or key b
+	
+	.. code-block::
+
+		draw net [RESET_N]
+
+
+	To draw a segment of a net on a given sheet starting
+	at a certain point and ending at a certain point:
+		
+	Example: Draw a segment of net GND on sheet 1 starting
+	at x/y 30/100 and ending at 50/100:
+		
+	.. code-block::
+
+		draw net GND  1  30 100  50 100
+
+	
 
 
 #. Showing and finding nets
@@ -243,6 +256,8 @@ Nets and Net Labels
 
 	|VNS| |NI|
 
+	
+	
 	
 #. Rename net
 
@@ -272,15 +287,21 @@ Nets and Net Labels
 	|VNS| n N
 
 
+	
+	
 #. Drag net segment
 
 	|VNS| g n
 
 	
+	
+	
 #. Delete net segment
 
 	|VNS| del n
 
+	
+	
 	
 #. Delete whole net
 
@@ -289,22 +310,53 @@ Nets and Net Labels
 		delete net RESET_N
 	
 	
-#. Place simple label
+	
+	
+#. Placing Simple Net Labels
 
+	A simple label is just a text next
+	to a net segment to indicate the net name.
+	
 	|VNS| p l
 
 	Rotate: right mouse click or key o
+
+	
+	Example: Place a simple net label on sheet 1 at x/y 30/100
+	with an x/y offset of 0/1 and a rotation of 0 degrees:
+		
+	.. code-block::
+
+		demo place label  1  30 100  1 1  0
+
 	
 	
-#. Place tag label
+	
+#. Placing Tag Labels
+
+	A tag label is a text inside a box that
+	is connected with a net segment. The box
+	indicates the nature of the label (input, output,
+	bidir, tristate, passive).
+	Inside the box the net name is shown.
 
 	|VNS| p L
+
+	Example: Place a tag label on sheet 1 at x/y position 50/100.
+	The label type is 'passive':
+	
+	.. code-block::
+	
+		demo place label  1  50 100  passive
+	
 	
 	
 #. Move label
 
 	|VNS| m l
 
+	
+	
 	
 #. Delete label
 
