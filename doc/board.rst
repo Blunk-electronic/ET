@@ -6,6 +6,20 @@
 Board Layout Editor
 *******************
 
++++++++++++++
+Board Outline
++++++++++++++
+
+#. Drawing the Board Outline
+
+	
+	Draw the outline of a EURO card with dimensions 160x100 mm:
+
+	.. code-block::
+		
+		draw outline line 0 0 line 160 0 line 160 80 line 0 80
+
+
 
 +++++++
 Devices
@@ -109,14 +123,24 @@ Ratsnest and Airwires
 Routing, laying out Tracks and Traces
 +++++++++++++++++++++++++++++++++++++
 
-#. Drawing tracks of a net
+#. Laying out Tacks of a Net
 
+	|VNS| r n
+	
 	.. code-block::
 
 		route net
 
-	|VNS| r n
+	This example places a track of net GND in
+	conductor layer 1 (topmost). 
+	The track is a line segment of 2mm width.
+	The segment starts at x/y 20/20 and ends at 50/20:
+		
+	.. code-block::
 
+		route net GND 1 line 2  20 20  50 20
+
+		
 
 	
 #. Ripping-up routed segments
