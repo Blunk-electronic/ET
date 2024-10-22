@@ -1217,8 +1217,10 @@ is
 				& " after " & enclose_in_quotes (to_lower (to_string (noun))) & " !";
 		end expect_keywords;
 
+		
 		use pac_generic_modules;
 		use et_schematic;
+
 		
 		procedure deactivate_drill (
 			module_name	: in pac_module_name.bounded_string;
@@ -1227,6 +1229,7 @@ is
 			module.board.user_settings.vias.drill.active := false;
 		end deactivate_drill;
 
+		
 		procedure activate_drill (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
@@ -1235,6 +1238,7 @@ is
 			module.board.user_settings.vias.drill.size := to_distance (f (6));
 		end activate_drill;
 
+		
 		procedure deactivate_inner_restring (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
@@ -1242,14 +1246,16 @@ is
 			module.board.user_settings.vias.restring_inner.active := false;
 		end deactivate_inner_restring;
 
+		
 		procedure activate_inner_restring (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
 			module.board.user_settings.vias.restring_inner.active := true;
-			module.board.user_settings.vias.restring_inner.width := to_distance (f (6));
+			module.board.user_settings.vias.restring_inner.width := to_distance (f (7));
 		end activate_inner_restring;
 
+		
 		procedure deactivate_outer_restring (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
@@ -1257,13 +1263,15 @@ is
 			module.board.user_settings.vias.restring_outer.active := false;
 		end deactivate_outer_restring;
 
+		
 		procedure activate_outer_restring (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module)
 		is begin
 			module.board.user_settings.vias.restring_outer.active := true;
-			module.board.user_settings.vias.restring_outer.width := to_distance (f (6));
+			module.board.user_settings.vias.restring_outer.width := to_distance (f (7));
 		end activate_outer_restring;
+
 		
 	begin -- set_via_properties
 		case cmd_field_count is
@@ -1292,7 +1300,7 @@ is
 							update_element (generic_modules, module_cursor, deactivate_inner_restring'access);
 						else
 							update_element (generic_modules, module_cursor, activate_inner_restring'access);
-
+							
 							-- CS validate against dru settings	
 						end if;
 
@@ -3022,9 +3030,7 @@ is
 						parse_canvas_command (VERB_SET, NOUN_ZOOM);
 
 					when NOUN_SCALE =>
-						set_scale;
-
-						
+						set_scale;						
 						
 					when NOUN_ZONE =>
 						set_fill_zone_properties; -- conductor layers related
