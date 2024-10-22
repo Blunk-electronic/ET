@@ -1132,6 +1132,66 @@ is
 
 
 
+
+	procedure place_net_label is 
+		use et_sheets;
+	begin
+		case cmd_field_count is
+			when 10 =>
+				-- SIMPLE LABEL
+				place_net_label
+					(
+					module_cursor		=> active_module,
+
+					segment_position	=> to_position (
+											point => type_vector_model (set (
+												x => to_distance (f (6)),
+												y => to_distance (f (7)))),
+											sheet => to_sheet (f (5))), -- sheet number
+
+					label_position		=> type_vector_model (set (
+												x => to_distance (f (8)),
+												y => to_distance (f (9)))),
+
+					rotation			=> to_rotation (f (10)), -- 0 / 90
+					appearance 			=> et_net_labels.SIMPLE,
+
+					-- A simple label does not indicate the direction
+					-- of information flow. But this procedure call requires a
+					-- direction. So we just pass direction PASSIVE. It has no 
+					-- further meaning.
+					direction			=> PASSIVE,
+
+					log_threshold		=> log_threshold + 1);
+
+				
+			when 8 =>
+				-- TAG LABEL
+				place_net_label
+					(
+					module_cursor		=> active_module,
+
+					segment_position	=> to_position (
+											point => type_vector_model (set (
+												x => to_distance (f (6)),
+												y => to_distance (f (7)))),
+											sheet => to_sheet (f (5))), -- sheet number
+
+					appearance 			=> TAG,
+
+					-- A tag label requires specification of signal direction:
+					direction			=> to_direction (f (8)), -- INPUT, OUTPUT, PASSIVE, ...
+
+					log_threshold		=> log_threshold + 1);
+				
+			when 11 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete; -- incl. field count of 9
+		end case;
+	end place_net_label;
+
+
+	
 	procedure delete_net_label is
 		use et_sheets;
 	begin
@@ -2016,58 +2076,8 @@ is
 
 						
 					when NOUN_LABEL =>
-						case cmd_field_count is
-							when 10 =>
-								-- SIMPLE LABEL
-								place_net_label
-									(
-									module_cursor		=> active_module,
+						place_net_label;
 
-									segment_position	=> to_position (
-															point => type_vector_model (set (
-																x => to_distance (f (6)),
-																y => to_distance (f (7)))),
-															sheet => to_sheet (f (5))), -- sheet number
-
-									label_position		=> type_vector_model (set (
-																x => to_distance (f (8)),
-																y => to_distance (f (9)))),
-
-									rotation			=> to_rotation (f (10)), -- 0 / 90
-									appearance 			=> et_net_labels.SIMPLE,
-
-									-- A simple label does not indicate the direction
-									-- of information flow. But this procedure call requires a
-									-- direction. So we just pass direction PASSIVE. It has no 
-									-- further meaning.
-									direction			=> PASSIVE,
-
-									log_threshold		=> log_threshold + 1);
-
-							when 8 =>
-								-- TAG LABEL
-								place_net_label
-									(
-									module_cursor		=> active_module,
-
-									segment_position	=> to_position (
-															point => type_vector_model (set (
-																x => to_distance (f (6)),
-																y => to_distance (f (7)))),
-															sheet => to_sheet (f (5))), -- sheet number
-
-									appearance 			=> TAG,
-
-									-- A tag label requires specification of signal direction:
-									direction			=> to_direction (f (8)), -- INPUT, OUTPUT, PASSIVE, ...
-
-									log_threshold		=> log_threshold + 1);
-								
-							when 11 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete; -- incl. field count of 9
-						end case;
-						
 					when others => invalid_noun (to_string (noun));
 				end case;
 
