@@ -2436,6 +2436,48 @@ is
 		end case;
 	end rename_device;
 
+
+	
+
+	-- This procedure parses a command to 
+	-- delete an object of the silkscreen:
+	procedure delete_silkscreen_object
+	is
+
+		procedure do_it is
+			use et_board_ops.silkscreen;
+		begin
+			update_mode_display;
+			
+			delete (
+				module_name 	=> module,
+				face			=> to_face (f (5)),
+				point			=> type_vector_model (set (
+						x => to_distance (dd => f (6)),
+						y => to_distance (dd => f (7)))),
+				zone			=> to_accuracy (f (8)),
+				
+				log_threshold	=> log_threshold + 1);
+			
+		end do_it;
+		
+		
+	begin
+		case cmd_field_count is
+			when 8 =>
+				do_it;
+				-- example: board led_driver delete silkscreen top 40 50 1
+
+			when 9 .. type_field_count'last =>
+				too_long;
+				
+			when others =>
+				command_incomplete;
+		end case;
+	end delete_silkscreen_object;
+
+	
+	
 	
 
 	procedure fill_polygons is 
@@ -2650,27 +2692,7 @@ is
 						delete_outline_segment;
 						
 					when NOUN_SILKSCREEN =>
-						-- board led_driver delete silkscreen top 40 50 1
-						case cmd_field_count is
-							when 8 =>
-								-- delete a segment of silk screen
-								et_board_ops.silkscreen.delete (
-									module_name 	=> module,
-									face			=> to_face (f (5)),
-									point			=> type_vector_model (set (
-											x => to_distance (dd => f (6)),
-											y => to_distance (dd => f (7)))),
-									accuracy		=> to_accuracy (f (8)),
-									
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. type_field_count'last =>
-								too_long;
-								
-							when others =>
-								command_incomplete;
-						end case;
+						delete_silkscreen_object;
 
 					when NOUN_ASSY =>
 						-- board led_driver delete assy top 40 50 1

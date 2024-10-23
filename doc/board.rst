@@ -461,7 +461,7 @@ Assembly Documentation
 Silkscreen
 ++++++++++
 
-#. Draw
+#. Drawing Objects
 
 	.. code-block::
 
@@ -474,13 +474,21 @@ Silkscreen
 
 	|VNS| m s
 	
+	
 
-#. Delete
+#. Deleting Objects
 
 	|VNS| del s
 
+	This example command deletes a silkscreen object
+	on the top side of the board in the vicinity of point
+	40/50. The search zone around the given point has
+	a radius of 1mm:
 	
-
+	.. code-block::
+	
+		delete silkscreen top 40 50 1
+		
 	
 +++++++++++++
 Drawing Frame

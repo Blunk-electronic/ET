@@ -297,16 +297,18 @@ package body et_board_ops.silkscreen is
 
 	end draw_circle;
 
+
 	
 	procedure delete (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_vector_model; -- x/y
-		accuracy		: in type_accuracy;
+		zone			: in type_accuracy;
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
@@ -382,7 +384,7 @@ package body et_board_ops.silkscreen is
 			end if;
 
 			if not deleted then
-				nothing_found (point, accuracy);
+				nothing_found (point, zone);
 			end if;
 			
 		end delete;
@@ -390,9 +392,9 @@ package body et_board_ops.silkscreen is
 		
 	begin -- delete_silk_screen
 		log (text => "module " & to_string (module_name) &
-			" deleting silk screen segment face" & to_string (face) &
+			" deleting silkscreen segment face" & to_string (face) &
 			" at" & to_string (point) &
-			" accuracy" & accuracy_to_string (accuracy),
+			" zone" & accuracy_to_string (zone),
 			level => log_threshold);
 
 		-- locate module
@@ -405,6 +407,8 @@ package body et_board_ops.silkscreen is
 		
 	end delete;
 
+
+	
 
 	procedure delete (
 		module_cursor	: in pac_generic_modules.cursor;
