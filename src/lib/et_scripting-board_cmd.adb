@@ -2250,60 +2250,80 @@ is
 
 
 	
-	procedure add_device is -- non-electric device !
-		use et_devices;
-		use et_board_ops.devices;
+
+	-- This procedure parses a command to add
+	-- a non-electric device:
+	procedure add_device is
+
+		procedure do_it is
+			use et_devices;
+			use et_board_ops.devices;
+			
+			model : constant pac_package_model_file_name.bounded_string := to_file_name (f (5));
+			prefix : constant pac_device_prefix.bounded_string := to_prefix (f (6));
+
+			xy : constant type_vector_model := type_vector_model (set (
+					x => to_distance (dd => f (7)),
+					y => to_distance (dd => f (8))));
+
+		begin
+			case cmd_field_count is
+				when 8 =>
+					add_device (
+						module_name		=> module,
+						package_model	=> model,
+						position		=> to_package_position
+							(
+							point	=> xy
+							),
+						prefix			=> prefix,
+						log_threshold	=> log_threshold + 1);
+
+				when 9 =>
+					add_device (
+						module_name		=> module,
+						package_model	=> model,
+						position		=> to_package_position
+							(
+							point		=> xy,
+							rotation	=> to_rotation (f (9))
+							),
+						prefix			=> prefix,
+						log_threshold	=> log_threshold + 1);
+
+				when 10 =>
+					add_device (
+						module_name		=> module,
+						package_model	=> model,
+						position		=> to_package_position
+							(
+							point		=> xy,
+							rotation	=> to_rotation (f (9)),
+							face		=> to_face (f (10))
+							),
+						prefix			=> prefix,
+						log_threshold	=> log_threshold + 1);
+					
+				when others => raise constraint_error; -- CS should never happen
+			end case;
+		end do_it;
+
 		
-		model : constant pac_package_model_file_name.bounded_string := to_file_name (f (5));
-		prefix : constant pac_device_prefix.bounded_string := to_prefix (f (6));
-
-		xy : constant type_vector_model := type_vector_model (set (
-				x => to_distance (dd => f (7)),
-				y => to_distance (dd => f (8))));
-
 	begin
 		case cmd_field_count is
-			when 8 =>
-				add_device (
-					module_name		=> module,
-					package_model	=> model,
-					position		=> to_package_position
-						(
-						point	=> xy
-						),
-					prefix			=> prefix,
-					log_threshold	=> log_threshold + 1);
+			when 8..10 => do_it;
+			-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5
+			-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0
+			-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0 top
 
-			when 9 =>
-				add_device (
-					module_name		=> module,
-					package_model	=> model,
-					position		=> to_package_position
-						(
-						point		=> xy,
-						rotation	=> to_rotation (f (9))
-						),
-					prefix			=> prefix,
-					log_threshold	=> log_threshold + 1);
-
-			when 10 =>
-				add_device (
-					module_name		=> module,
-					package_model	=> model,
-					position		=> to_package_position
-						(
-						point		=> xy,
-						rotation	=> to_rotation (f (9)),
-						face		=> to_face (f (10))
-						),
-					prefix			=> prefix,
-					log_threshold	=> log_threshold + 1);
-				
-			when others => raise constraint_error; -- CS should never happen
+			when 11 .. type_field_count'last => too_long;
+			
+			when others => command_incomplete;
 		end case;
 	end add_device;
+	
 
-
+	
 	
 	procedure delete_device is -- non-electric device !
 		-- board led_driver delete device FD1
@@ -2521,16 +2541,7 @@ is
 			when VERB_ADD =>
 				case noun is
 					when NOUN_DEVICE =>
-						case cmd_field_count is
-							when 8..10 => add_device;
-							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5
-							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0
-							-- board led_driver add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac 5 5 0 top
-
-							when 11 .. type_field_count'last => too_long;
-							
-							when others => command_incomplete;
-						end case;
+						add_device;
 
 					when NOUN_LAYER =>
 						case cmd_field_count is
