@@ -2266,6 +2266,34 @@ is
 	
 
 
+	-- This procedure parses a command to
+	-- delete a signal layer:
+	procedure delete_signal_layer is
+
+		procedure do_it is
+		begin
+			update_mode_display;
+			
+			delete_layer (
+				module_name 	=> module,
+				layer			=> to_signal_layer (f (5)),									
+				log_threshold	=> log_threshold + 1);
+
+		end do_it;
+
+	begin
+		case cmd_field_count is
+			when 5 =>
+				do_it;
+				-- example: board tree_1 delete layer 2
+
+			when 6 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end delete_signal_layer;
+
+	
 	
 
 	-- This procedure parses a command to add
@@ -2610,23 +2638,10 @@ is
 			when VERB_DELETE =>
 				case noun is
 					when NOUN_DEVICE =>
-						delete_device;
-						
+						delete_device;						
 
 					when NOUN_LAYER =>
-						case cmd_field_count is
-							when 5 =>
-								-- board tree_1 delete layer 2
-								delete_layer (
-									module_name 	=> module,
-									layer			=> to_signal_layer (f (5)),									
-									log_threshold	=> log_threshold + 1);
-
-							when 6 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-
-						end case;
+						delete_signal_layer;						
 
 					when NOUN_HOLE =>
 						delete_hole_segment;

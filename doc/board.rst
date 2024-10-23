@@ -35,6 +35,16 @@ Signal Layers
 		add layer 0.035 0.2
 		
 
+#. Deleting a Signal Layer
+
+	This example deletes signal layer 2:
+	
+	.. code-block::
+	
+		delete layer 2
+
+		
+		
 +++++++
 Devices
 +++++++
