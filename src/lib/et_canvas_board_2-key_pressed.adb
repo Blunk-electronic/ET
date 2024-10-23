@@ -382,8 +382,7 @@ is
 				
 			when GDK_LC_v =>
 				noun := NOUN_VIA;
-				show_via_properties;
-				set_status (status_place_via);
+				show_via_properties;				
 
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	

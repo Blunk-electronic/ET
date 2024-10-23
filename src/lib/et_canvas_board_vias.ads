@@ -144,7 +144,9 @@ package et_canvas_board_vias is
 		-- This tells the GUI whether the mouse or the
 		-- cursor position is to be used when drawing the via:
 		tool				: type_tool := MOUSE;
-		
+
+		-- This is the net name shown inside the via
+		-- while it is still being moved:
 		net_name			: pac_net_name.bounded_string := no_name;
 		
 		category			: type_via_category := type_via_category'first;

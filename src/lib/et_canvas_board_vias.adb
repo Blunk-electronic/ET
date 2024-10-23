@@ -734,14 +734,14 @@ package body et_canvas_board_vias is
 			
 	begin -- show_via_properties
 
-		-- If preliminary_via.net is initialized then the property
-		-- bar is allowed to be shown. This should usually be the case.
-		-- If the module has no nets, then preliminary_via.net is not
-		-- initialized which forbids placing vias.
-		-- if is_initialized (preliminary_via.net) then
+		-- Show the properties bar if there are nets in the module:
+		if et_schematic_ops.nets.get_net_count (active_module) > 0 then
 			
-		-- If the properties are already displayed, do nothing.
-		-- Otherwise show them:
+			-- Output adivse in status bar:
+			set_status (status_place_via);
+			
+			-- If the properties are already displayed, do nothing.
+			-- Otherwise show them:
 			if not box_properties.displayed then
 				init_preliminary_via;
 				
@@ -766,10 +766,10 @@ package body et_canvas_board_vias is
 				box_v0.show_all;  -- CS box_v4 ?
 			end if;
 
-		-- else
-		-- 	raise semantic_error_1 with
-		-- 	"ERROR: The module has no nets. So no vias can be placed !";
-		-- end if;
+		else
+			-- Output error message in status bar:
+			set_status ("ERROR: The module has no nets. So no vias can be placed !");
+		end if;
 	end show_via_properties;
 
 

@@ -39,12 +39,19 @@
 
 
 with et_net_labels;					use et_net_labels;
+with et_net_count;
 with et_pcb;
 
 
 package et_schematic_ops.nets is
 
+	-- This function returns the total number
+	-- of nets of the given module:
+	function get_net_count (
+		module		: in pac_generic_modules.cursor)
+		return et_net_count.type_net_count;
 
+		
 	-- Searches the module for an anonymous net with the lowest index available.
 	-- Example: If the module contains nets like N$2, N$4, N$5 and N$101 then
 	-- the lowest available name would be N$3.

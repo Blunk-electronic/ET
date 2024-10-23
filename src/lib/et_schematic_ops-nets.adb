@@ -59,6 +59,30 @@ package body et_schematic_ops.nets is
 	use pac_generic_modules;
 
 
+	
+	function get_net_count (
+		module		: in pac_generic_modules.cursor)
+		return et_net_count.type_net_count
+	is
+		use et_net_count;
+		result : type_net_count := 0;
+
+		procedure query_nets (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_module) 
+		is begin
+			result := type_net_count (length (module.nets));
+		end query_nets;
+		
+	begin
+		query_element (module, query_nets'access);
+		
+		return result;
+	end get_net_count;
+
+	
+
+	
 	function lowest_available_anonymous_net (
 		module		: in pac_generic_modules.cursor)
 		return pac_net_name.bounded_string
@@ -1406,6 +1430,12 @@ package body et_schematic_ops.nets is
 			process		=> query_module'access);
 
 		return result;
+
+		exception
+			when others => 
+				raise semantic_error_1 with
+					"ERROR: No net found in module !";
+			
 	end get_first_net;
 	
 	

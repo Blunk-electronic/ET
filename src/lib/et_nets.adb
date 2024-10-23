@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,8 +42,8 @@ with et_vias;
 
 
 package body et_nets is
-	
 
+	
 	function "<" (left, right : in type_device_port) return boolean is
 		use et_symbols.pac_port_name;
 		use et_devices.pac_unit_name;

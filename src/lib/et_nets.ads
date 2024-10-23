@@ -87,6 +87,8 @@ package et_nets is
 
 	
 
+	
+
 	type type_net_base is tagged record
 		route	: et_pcb.type_route; -- routing information -> pcb related
 
