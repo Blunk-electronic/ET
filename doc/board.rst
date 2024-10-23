@@ -69,6 +69,8 @@ non-electrical devices (without a representation in the schematic).
 		rotate device R1 relative -45
 
 	|VNS| o d
+	
+	
 
 #. Rotate non-electrical device
 
@@ -91,6 +93,7 @@ non-electrical devices (without a representation in the schematic).
 
 	|VNS| l d
 
+	
 
 #. Flip/mirror non-electrical device
 
@@ -100,6 +103,7 @@ non-electrical devices (without a representation in the schematic).
 
 	|VNS| l n
 
+	
 	
 #. Delete non-electrical device
 
@@ -112,6 +116,15 @@ non-electrical devices (without a representation in the schematic).
 	Note: Electrical devices can only be deleted in the schematic !
 	
 	
+
+	
+#. Renaming a Non-Electrical Device
+
+	.. code-block::
+
+		rename device FD1 FD2
+
+
 	
 	
 +++++++++++++++++++++
