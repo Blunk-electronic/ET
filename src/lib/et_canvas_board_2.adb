@@ -1248,7 +1248,6 @@ package body et_canvas_board_2 is
 		use et_canvas_board_vias;
 	begin
 		reset_preliminary_via;
---		init_preliminary_via;
 
 		--  CS init route
 		-- CS init text
