@@ -743,6 +743,8 @@ package body et_canvas_board_vias is
 		-- If the properties are already displayed, do nothing.
 		-- Otherwise show them:
 			if not box_properties.displayed then
+				init_preliminary_via;
+				
 				--put_line ("build via properties");
 				
 				box_properties.displayed := true;

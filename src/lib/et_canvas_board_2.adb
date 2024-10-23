@@ -1239,16 +1239,16 @@ package body et_canvas_board_2 is
 
 
 	
-	-- This procedure should be called each time after the current active module 
-	-- changes. 
+	-- This procedure should be called each time after the current 
+	-- active module changes. 
 	-- It removes all property bars (if being displayed) and
-	-- calls other procedures that initialize the values used in property
-	-- bars for vias, tracks, ...
+	-- calls other procedures that initialize the values used in 
+	-- property bars for vias, tracks, ...
 	procedure init_property_bars is 
 		use et_canvas_board_vias;
 	begin
 		reset_preliminary_via;
-		init_preliminary_via;
+--		init_preliminary_via;
 
 		--  CS init route
 		-- CS init text

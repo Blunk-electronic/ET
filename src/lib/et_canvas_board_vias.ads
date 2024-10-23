@@ -169,7 +169,7 @@ package et_canvas_board_vias is
 	-- This procedure initializes the preliminary_via
 	-- so that the via properties bar shows the user specific settings
 	-- or the values as defined in the DRU data set.
-	procedure init_preliminary_via;
+	-- procedure init_preliminary_via;
 
 
 	-- Builds the box for the via properties and

@@ -1351,22 +1351,26 @@ is
 		lower_layer		: type_via_layer;
 		upper_layer		: type_via_layer;
 
+		
 		procedure set_net_name is begin
 			-- CS check net name: characters, lenth, existence of net
 			net_name := to_net_name (f (5));
 		end set_net_name;
 
+		
 		procedure set_position is begin
 			drill.position := type_vector_model (to_point (f (6), f (7)));
 
 			-- CS check position: must be inside board area
 		end set_position;
 
+		
 		keyword_buried	: constant string := "buried";
 		keyword_blind	: constant string := "blind";
 		keyword_top		: constant string := "top";
 		keyword_bottom	: constant string := "bottom";
 
+		
 		procedure through is
 			via : type_via (THROUGH);
 		begin
@@ -1378,6 +1382,7 @@ is
 			et_board_ops.vias.place_via (module_cursor, net_name, via, log_threshold + 1);
 		end through;
 
+		
 		procedure blind_top is
 			via : type_via (BLIND_DRILLED_FROM_TOP);
 		begin
@@ -1390,6 +1395,7 @@ is
 			et_board_ops.vias.place_via (module_cursor, net_name, via, log_threshold + 1);
 		end blind_top;
 
+		
 		procedure blind_bottom is
 			via : type_via (BLIND_DRILLED_FROM_BOTTOM);
 		begin
@@ -1402,6 +1408,7 @@ is
 			et_board_ops.vias.place_via (module_cursor, net_name, via, log_threshold + 1);
 		end blind_bottom;
 
+		
 		procedure buried is
 			via : type_via (BURIED);
 		begin
@@ -1413,11 +1420,13 @@ is
 			et_board_ops.vias.place_via (module_cursor, net_name, via, log_threshold + 1);
 		end buried;
 
+		
 		use et_design_rules;
 		rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
 
 		-- get the user specific settings of the board
 		settings : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
+
 		
 	begin -- place_via
 		-- Set the drill size and restring according to a user specific values:
@@ -1432,6 +1441,7 @@ is
 
 		-- CS: take minimum drill diameter as defined in net class into account
 		-- Requres a command like "set via drill class"
+
 		
 		-- set outer restring:
 		if settings.vias.restring_outer.active then
@@ -1443,12 +1453,14 @@ is
 		restring_top	:= restring_outer; -- for blind via drilled from top
 		restring_bottom	:= restring_outer; -- for blind via drilled from bottom
 
+		
 		-- set inner restring:
 		if settings.vias.restring_inner.active then
 			restring_inner	:= settings.vias.restring_inner.width;
 		else
 			restring_inner	:= auto_set_restring (INNER, drill.diameter, rules.sizes.restring.delta_size);
 		end if;
+
 		
 		case cmd_field_count is
 			when 7 => 
@@ -1509,6 +1521,8 @@ is
 
 	end place_via;
 
+
+	
 
 
 -- ROUTE / TRACK / POLYGON
