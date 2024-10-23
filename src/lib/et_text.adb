@@ -48,23 +48,39 @@ package body et_text is
 
 
 -- TEXT ALIGNMENT
-	function to_string (alignment : in type_text_alignment_horizontal) return string is begin
-		return to_lower (type_text_alignment_horizontal'image (alignment));
+	function to_string (
+		alignment : in type_text_alignment_horizontal) 
+		return string 
+	is 
+		s : string := to_lower (type_text_alignment_horizontal'image (alignment));
+	begin
+		return s (alignment_prefix'length + 1 .. s'last); 
 	end;
 
 	
-	function to_alignment_horizontal (alignment : in string) return type_text_alignment_horizontal is begin
-		return type_text_alignment_horizontal'value (alignment);
+	function to_alignment_horizontal (
+		alignment : in string) 
+		return type_text_alignment_horizontal 
+	is begin
+		return type_text_alignment_horizontal'value (alignment_prefix & alignment);
 	end;
 
 	
-	function to_string (alignment : in type_text_alignment_vertical) return string is begin
-		return to_lower (type_text_alignment_vertical'image (alignment));
+	function to_string (
+		alignment : in type_text_alignment_vertical) 
+		return string 
+	is 
+		s : string := to_lower (type_text_alignment_vertical'image (alignment));
+	begin
+		return s (alignment_prefix'length + 1 .. s'last); 
 	end;
 
 	
-	function to_alignment_vertical (alignment : in string) return type_text_alignment_vertical is begin
-		return type_text_alignment_vertical'value (alignment);
+	function to_alignment_vertical (
+		alignment : in string) 
+		return type_text_alignment_vertical 
+	is begin
+		return type_text_alignment_vertical'value (alignment_prefix & alignment);
 	end;
 
 	

@@ -2269,6 +2269,8 @@ is
 		begin
 			case cmd_field_count is
 				when 8 =>
+					update_mode_display;
+					
 					add_device (
 						module_name		=> module,
 						package_model	=> model,
@@ -2280,6 +2282,8 @@ is
 						log_threshold	=> log_threshold + 1);
 
 				when 9 =>
+					update_mode_display;
+					
 					add_device (
 						module_name		=> module,
 						package_model	=> model,
@@ -2292,6 +2296,8 @@ is
 						log_threshold	=> log_threshold + 1);
 
 				when 10 =>
+					update_mode_display;
+					
 					add_device (
 						module_name		=> module,
 						package_model	=> model,
@@ -2324,34 +2330,68 @@ is
 	
 
 	
-	
-	procedure delete_device is -- non-electric device !
-		-- board led_driver delete device FD1
+	-- This procedure parses a command to delete
+	-- a non-electrical device:
+	procedure delete_device is
+		
 		use et_devices;
 		use et_board_ops.devices;
-	begin
-		delete_device (
-			module_name		=> module,
-			device_name		=> to_device_name (f (5)),
-			log_threshold	=> log_threshold + 1);
 
+		procedure do_it is begin
+			update_mode_display;
+			
+			delete_device (
+				module_name		=> module,
+				device_name		=> to_device_name (f (5)),
+				log_threshold	=> log_threshold + 1);
+		end do_it;
+		
+
+	begin
+		case cmd_field_count is
+			when 5 => do_it;
+				-- example: board led_driver delete device FD1
+			
+			when 6 .. type_field_count'last => too_long;
+			
+			when others => command_incomplete;
+		end case;		
 	end delete_device;
 
 	
+
 	
-	procedure rename_device is -- non-electric device !
-		-- board led_driver rename device FD1 FD3
+	-- This procedure parses a command to
+	-- rename a non-electrical device:
+	procedure rename_device is		
 		use et_devices;
 		use et_board_ops.devices;
-	begin
-		rename_device (
-			module_name			=> module,
-			device_name_before	=> to_device_name (f (5)),
-			device_name_after	=> to_device_name (f (6)),
-			log_threshold		=> log_threshold + 1);
 
+		
+		procedure do_it is begin
+			update_mode_display;
+			
+			rename_device (
+				module_name			=> module,
+				device_name_before	=> to_device_name (f (5)),
+				device_name_after	=> to_device_name (f (6)),
+				log_threshold		=> log_threshold + 1);
+
+		end do_it;
+
+		
+	begin
+		case cmd_field_count is
+			when 6 => do_it; 
+			-- exampe: board led_driver rename device FD1 FD3
+
+			when 7 .. type_field_count'last => too_long;
+			
+			when others => command_incomplete;
+		end case;
 	end rename_device;
 
+	
 
 	procedure fill_polygons is 
 		nets : pac_net_names.list;
@@ -2561,13 +2601,8 @@ is
 			when VERB_DELETE =>
 				case noun is
 					when NOUN_DEVICE =>
-						case cmd_field_count is
-							when 5 => delete_device; -- board led_driver delete device FD1
-
-							when 6 .. type_field_count'last => too_long;
-							
-							when others => command_incomplete;
-						end case;
+						delete_device;
+						
 
 					when NOUN_LAYER =>
 						case cmd_field_count is
@@ -2937,13 +2972,7 @@ is
 			when VERB_RENAME =>
 				case noun is
 					when NOUN_DEVICE =>
-						case cmd_field_count is
-							when 6 => rename_device; -- board led_driver renames device FD1 FD3
-
-							when 7 .. type_field_count'last => too_long;
-							
-							when others => command_incomplete;
-						end case;
+						rename_device;
 
 					when others => invalid_noun (to_string (noun));
 				end case;

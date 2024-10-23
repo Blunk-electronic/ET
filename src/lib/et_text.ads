@@ -60,10 +60,15 @@ with et_logical_pixels;			use et_logical_pixels;
 package et_text is
 
 -- TEXT ALIGNMENT
+
+	
 	keyword_alignment	: constant string := "alignment";
 	keyword_horizontal	: constant string := "horizontal";
 	keyword_vertical	: constant string := "vertical";		
 
+	
+	alignment_prefix	: constant string := ("ALIGN_");
+	
 	-- The alignment refers to the anchor point of the text.
 	-- The anchor point is usually where the origin of the text is.
 	type type_text_alignment_horizontal is (ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT);
@@ -71,6 +76,7 @@ package et_text is
 	function to_string (alignment : in type_text_alignment_horizontal) return string;
 	function to_alignment_horizontal (alignment : in string) return type_text_alignment_horizontal;
 
+	
 	
 	type type_text_alignment_vertical is (ALIGN_TOP, ALIGN_CENTER, ALIGN_BOTTOM);
 	
