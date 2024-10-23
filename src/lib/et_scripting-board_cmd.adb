@@ -1353,7 +1353,7 @@ is
 
 		
 		procedure set_net_name is begin
-			-- CS check net name: characters, lenth, existence of net
+			-- CS check net name: characters, length, existence of net
 			net_name := to_net_name (f (5));
 		end set_net_name;
 
@@ -1464,15 +1464,17 @@ is
 		
 		case cmd_field_count is
 			when 7 => 
-				-- board demo place via RESET_N 10 14
+				-- example: board demo place via RESET_N 10 14
+				update_mode_display;
 				set_net_name;
 				set_position;
 				through;
-				
-			when 10 =>
-				if f (8) = keyword_buried then
 
-					-- board demo place via RESET_N 10 14 buried 2 15
+				
+			when 10 =>				
+				if f (8) = keyword_buried then
+					-- example: board demo place via RESET_N 10 14 buried 2 15					
+					update_mode_display;
 					set_net_name;
 					set_position;
 					buried_layers := to_buried_layers (
@@ -1481,19 +1483,21 @@ is
 								bottom	=> get_deepest_conductor_layer (module_cursor));
 					buried;
 
+					
 				elsif f (8) = keyword_blind then
-
-					-- board demo place via RESET_N 10 14 blind top 5
-					-- board demo place via RESET_N 10 14 blind bottom 2
+					-- example: board demo place via RESET_N 10 14 blind top 5
+					-- example: board demo place via RESET_N 10 14 blind bottom 2
 					set_net_name;
 					set_position;
 
 					if f (9) = keyword_top then
 						lower_layer := to_signal_layer (f (10));
+						update_mode_display;
 						blind_top;
 						
 					elsif f (9) = keyword_bottom then
 						upper_layer := to_signal_layer (f (10));
+						update_mode_display;
 						blind_bottom;
 						
 					else
