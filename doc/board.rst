@@ -20,6 +20,20 @@ Board Outline
 		draw outline line 0 0 line 160 0 line 160 80 line 0 80
 
 
++++++++++++++
+Signal Layers
++++++++++++++
+
+#. Adding a Signal Layer
+
+	This example adds a signal layer with
+	conductor thickness of 0.035mm and a dielectric
+	thickness of 0.2mm:
+	
+	.. code-block::
+	
+		add layer 0.035 0.2
+		
 
 +++++++
 Devices

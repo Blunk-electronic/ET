@@ -2231,21 +2231,38 @@ is
 	end route_net;
 
 
-	
-	procedure add_layer is
-		use et_pcb_stack;
-		layer : type_layer;
-	begin
-		-- board tree_1 add layer 0.12 0.2				
-		layer.conductor.thickness := to_distance (f (5));
-		layer.dielectric.thickness := to_distance (f (6));
-		
-		add_layer (
-			module_name 	=> module,
-			layer			=> layer,
-			log_threshold	=> log_threshold + 1);
 
-	end add_layer;
+	-- This procedure parses a command to
+	-- add a new signal layer:
+	procedure add_signal_layer is
+
+		procedure do_it is
+			use et_pcb_stack;
+			layer : type_layer;
+		begin
+			update_mode_display;
+			
+			layer.conductor.thickness := to_distance (f (5));
+			layer.dielectric.thickness := to_distance (f (6));
+			
+			add_layer (
+				module_name 	=> module,
+				layer			=> layer,
+				log_threshold	=> log_threshold + 1);
+		end do_it;
+		
+
+	begin
+		case cmd_field_count is
+			when 6 =>
+				do_it;
+				-- example: board tree_1 add layer 0.035 0.2
+
+			when 7 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;		
+	end add_signal_layer;
 	
 
 
@@ -2584,15 +2601,7 @@ is
 						add_device;
 
 					when NOUN_LAYER =>
-						case cmd_field_count is
-							when 6 =>
-								-- board tree_1 add layer 0.12 0.2
-								add_layer;
-
-							when 7 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						add_signal_layer;
 
 					when others => invalid_noun (to_string (noun));
 				end case;
