@@ -29,6 +29,17 @@ Devices
 There are electrical devices (having a counterpart in the schematic) and
 non-electrical devices (without a representation in the schematic).
 
+#. Adding non-electrical Devices
+
+	This command places a fiducial (or reference mark) with prefix FD
+	at position 5/10:
+	
+	.. code-block::
+
+		add device $HOME/git/BEL/ET_component_library/packages/fiducials/crosshair_4.pac FD 5 10
+		
+
+
 #. Move electrical device
 
 	.. code-block::
