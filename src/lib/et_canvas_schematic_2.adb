@@ -59,7 +59,6 @@ with et_modes.board;
 with et_modes.schematic;	
 -- with et_project;
 
-with et_frames;
 with et_canvas_board_2;
 with et_display.schematic;			--use et_display.schematic;
 with et_colors.schematic;

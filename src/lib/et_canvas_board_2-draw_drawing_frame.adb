@@ -38,6 +38,7 @@
 
 with ada.text_io;				use ada.text_io;
 with et_text;
+with et_frames;
 
 
 separate (et_canvas_board_2)

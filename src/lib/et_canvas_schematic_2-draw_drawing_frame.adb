@@ -40,6 +40,7 @@ with ada.text_io;				use ada.text_io;
 with et_text;
 with et_schematic_ops;
 with et_schematic_ops.sheets;
+with et_frames;
 
 
 separate (et_canvas_schematic_2)

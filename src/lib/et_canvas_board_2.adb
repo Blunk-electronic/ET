@@ -48,8 +48,6 @@ with ada.containers;
 with ada.calendar;					use ada.calendar;
 with ada.calendar.formatting;		use ada.calendar.formatting;
 
--- with gtk.window;					use gtk.window;
-
 
 with et_scripting;
 with et_modes;
@@ -57,7 +55,6 @@ with et_modes.board;
 with et_modes.schematic;
 -- with et_project;
 
-with et_frames;
 -- with et_assembly_variants;			use et_assembly_variants;
 with et_canvas_schematic_2;			--use et_canvas_schematic;
 with et_canvas_tool;
@@ -70,10 +67,6 @@ with et_board_ops.grid;
 -- with et_design_rules;
 
 with et_text;
--- with et_meta;
--- with et_ratsnest;					--use et_ratsnest;
--- with et_exceptions;					use et_exceptions;
--- 
 with et_canvas_board_lines;
 with et_canvas_board_texts;
 with et_canvas_board_vias;
@@ -630,7 +623,6 @@ package body et_canvas_board_2 is
 		event_handled : boolean := true;
 
 		use et_text;
-		use et_frames;
 	begin
 		-- new_line;
 		put_line ("cb_draw (board) " & image (clock));
