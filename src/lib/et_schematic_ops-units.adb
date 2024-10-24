@@ -352,7 +352,7 @@ package body et_schematic_ops.units is
 				log (text => "module " & enclose_in_quotes (to_string (module_name))
 					& " moving " & enclose_in_quotes (to_string (device_name))
 					& " unit " & enclose_in_quotes (to_string (unit_name)) 
-					& " by " & to_sheet_relative (sheet) & " sheet(s)" 
+					& " by " & relative_to_string (sheet) & " sheet(s)" 
 					& to_string (point),
 					level => log_threshold);
 		end case;

@@ -35,13 +35,6 @@
 --
 --   history of changes:
 --
--- with ada.text_io;				use ada.text_io;
--- with ada.characters;			use ada.characters;
--- with ada.characters.handling;	use ada.characters.handling;
--- 
--- with ada.strings;				use ada.strings;
--- with ada.strings.maps;			use ada.strings.maps;
--- with ada.strings.bounded; 		use ada.strings.bounded;
 
 
 package et_sheets is
@@ -55,7 +48,7 @@ package et_sheets is
 	function to_string (sheet : in type_sheet) return string;
 	function to_sheet (sheet : in string) return type_sheet;
 
-	function to_sheet_relative (sheet : in type_sheet_relative) return string;
+	function relative_to_string (sheet : in type_sheet_relative) return string;
 	function to_sheet_relative (sheet : in string) return type_sheet_relative;
 	
 

@@ -2741,7 +2741,7 @@ package body et_schematic_ops.submodules is
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
 					" moving netchanger" & to_string (index) &
-					" by " & to_sheet_relative (sheet) & " sheet(s)" &
+					" by " & relative_to_string (sheet) & " sheet(s)" &
 					to_string (point), level => log_threshold);
 		end case;
 		
@@ -3388,7 +3388,7 @@ package body et_schematic_ops.submodules is
 			when RELATIVE =>
 				log (text => "module " & to_string (module_name) &
 					" moving submodule instance " & to_string (instance) &
-					" by " & to_sheet_relative (sheet) & " sheet(s)" &
+					" by " & relative_to_string (sheet) & " sheet(s)" &
 					to_string (point), level => log_threshold);
 		end case;
 		

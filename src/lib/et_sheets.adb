@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+-- with ada.text_io;				use ada.text_io;
 
 
 package body et_sheets is
@@ -48,7 +49,7 @@ package body et_sheets is
 		return type_sheet'value (sheet);
 	end;
 
-	function to_sheet_relative (sheet : in type_sheet_relative) return string is begin
+	function relative_to_string (sheet : in type_sheet_relative) return string is begin
 		return type_sheet_relative'image (sheet);
 	end;
 	
