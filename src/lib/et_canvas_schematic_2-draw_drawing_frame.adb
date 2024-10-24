@@ -160,7 +160,7 @@ procedure draw_drawing_frame is
 			pos := to_vector (phs.sheet_number.position);
 			
 			draw_text (
-				content		=> to_content (to_sheet (active_sheet)), -- CS complete with "/of total"
+				content		=> to_content (to_string (active_sheet)), -- CS complete with "/of total"
 				size		=> to_distance (phs.sheet_number.size),
 				font		=> font_placeholders,
 				anchor		=> add (pos, tb_position.place),

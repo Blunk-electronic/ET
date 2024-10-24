@@ -184,7 +184,7 @@ package body et_coordinates_2 is
 
 	begin
 		return coordinates_preamble_sheet
-			& to_sheet (position.sheet) 
+			& to_string (position.sheet) 
 			& space & axis_separator & space
 			& to_string (get_x (position))
 			& space & axis_separator & space

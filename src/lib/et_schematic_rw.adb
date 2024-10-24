@@ -53,7 +53,7 @@ package body et_schematic_rw is
 		
 	begin
 		return keyword_sheet
-			& to_sheet (get_sheet (pos)) 
+			& to_string (get_sheet (pos)) 
 			& text;
 	end position;
 

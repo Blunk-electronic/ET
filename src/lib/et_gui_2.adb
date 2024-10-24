@@ -277,7 +277,7 @@ package body et_gui_2 is
 		log (text => "project " & enclose_in_quotes (to_string (project)), level => log_threshold);
 		log (text => "runmode " & to_string (MODE_MODULE), level => log_threshold);
 		log (text => "module " & enclose_in_quotes (to_string (pac_generic_modules.key (module))), level => log_threshold);
-		log (text => "sheet" & to_sheet (sheet), level => log_threshold);
+		log (text => "sheet" & to_string (sheet), level => log_threshold);
 
 		if pac_script_name.length (script) > 0 then
 			log (text => "script " & enclose_in_quotes (to_string (script)), level => log_threshold);

@@ -35,29 +35,13 @@
 --
 --   history of changes:
 --
-with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
-with ada.characters.handling;	use ada.characters.handling;
-
-with ada.strings;				use ada.strings;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.containers; 			use ada.containers;
-
-with ada.containers.doubly_linked_lists;
-
-with et_geometry;				use et_geometry;
-
-with et_geometry_1;
-with et_geometry_1.et_polygons;
-with et_geometry_1.et_polygons.offsetting;
-
-with et_geometry_2a;
-with et_geometry_2a.grid;
-with et_geometry_2a.path;
-with et_geometry_2a.contours;
-
--- with et_logging;				use et_logging;
+-- with ada.text_io;				use ada.text_io;
+-- with ada.characters;			use ada.characters;
+-- with ada.characters.handling;	use ada.characters.handling;
+-- 
+-- with ada.strings;				use ada.strings;
+-- with ada.strings.maps;			use ada.strings.maps;
+-- with ada.strings.bounded; 		use ada.strings.bounded;
 
 
 package et_sheets is
@@ -68,7 +52,7 @@ package et_sheets is
 
 	sheet_default : constant type_sheet := type_sheet'first;
 	
-	function to_sheet (sheet : in type_sheet) return string;
+	function to_string (sheet : in type_sheet) return string;
 	function to_sheet (sheet : in string) return type_sheet;
 
 	function to_sheet_relative (sheet : in type_sheet_relative) return string;

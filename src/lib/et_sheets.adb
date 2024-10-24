@@ -40,7 +40,7 @@
 
 package body et_sheets is
 	
-	function to_sheet (sheet : in type_sheet) return string is begin
+	function to_string (sheet : in type_sheet) return string is begin
 		return type_sheet'image (sheet);
 	end;
 

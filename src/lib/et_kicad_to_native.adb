@@ -171,7 +171,7 @@ package body et_kicad_to_native is
 			end loop;
 
 			if not sheet_found then
-				log (ERROR, "sheet with number" & to_sheet (sheet_number) & " not found !");
+				log (ERROR, "sheet with number" & to_string (sheet_number) & " not found !");
 				raise constraint_error;
 			end if;
 			

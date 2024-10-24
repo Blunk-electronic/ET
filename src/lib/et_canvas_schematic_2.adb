@@ -734,7 +734,7 @@ package body et_canvas_schematic_2 is
 
 	
 	procedure update_sheet_number_display is begin
-		gtk_entry (cbox_sheet.get_child).set_text (to_sheet (active_sheet));
+		gtk_entry (cbox_sheet.get_child).set_text (to_string (active_sheet));
 	end update_sheet_number_display;
 
 	

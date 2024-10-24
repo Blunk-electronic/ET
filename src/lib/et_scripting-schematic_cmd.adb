@@ -1348,7 +1348,7 @@ is
 		end show;
 			
 	begin
-		log (text => "set sheet" & to_sheet (sheet), level => log_threshold + 1); 
+		log (text => "set sheet" & to_string (sheet), level => log_threshold + 1); 
 
 		update_mode_display;
 		
@@ -1431,7 +1431,7 @@ is
 			module := to_module_name (f (5));
 			set_module (module);
 
-			log (text => "sheet " & to_sheet (sheet), 
+			log (text => "sheet " & to_string (sheet), 
 				level => log_threshold + 1);
 			
 			sheet := to_sheet (f (6));

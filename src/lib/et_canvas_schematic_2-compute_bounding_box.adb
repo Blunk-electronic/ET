@@ -196,7 +196,7 @@ is
 					if debug then
 						put_line (to_string (c));
 						put_line ("processing strands on sheet" 
-							& to_sheet (active_sheet) & " ...");
+							& to_string (active_sheet) & " ...");
 					end if;
 					
 					iterate (net.strands, query_strand'access);

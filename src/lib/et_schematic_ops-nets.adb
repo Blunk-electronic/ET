@@ -304,7 +304,7 @@ package body et_schematic_ops.nets is
 			-- - from an attempt to rename on a sheet that does not exist 
 			-- - from the fact that the targeted sheet does not contain the targeted net 
 			if is_empty (strands_on_sheet) then
-				log (WARNING, "No strands have been renamed on sheet" & to_sheet (get_sheet (place)) &
+				log (WARNING, "No strands have been renamed on sheet" & to_string (get_sheet (place)) &
 					 ". Check net name and sheet number !");
 
 				if new_net_created then
@@ -448,7 +448,7 @@ package body et_schematic_ops.nets is
 					process		=> rename_everywhere'access);
 
 			when SHEET =>
-				log (text => "scope: all strands on sheet" & to_sheet (get_sheet (place)), level => log_threshold);
+				log (text => "scope: all strands on sheet" & to_string (get_sheet (place)), level => log_threshold);
 
 				update_element (
 					container	=> generic_modules,
@@ -518,7 +518,7 @@ package body et_schematic_ops.nets is
 				-- This simple check is a compare of the number of strands before with the
 				-- number of strands after the deletion:
 				if length (net.strands) = strand_count_before then -- nothing deleted
-					log (WARNING, "no strands have been deleted on sheet" & to_sheet (get_sheet (place)) &
+					log (WARNING, "no strands have been deleted on sheet" & to_string (get_sheet (place)) &
 						". Check net name and sheet number !");
 				end if;
 			end;
@@ -616,7 +616,7 @@ package body et_schematic_ops.nets is
 					process		=> delete_everywhere'access);
 
 			when SHEET =>
-				log (text => "scope: all strands on sheet" & to_sheet (get_sheet (place)), level => log_threshold);
+				log (text => "scope: all strands on sheet" & to_string (get_sheet (place)), level => log_threshold);
 
 				update_element (
 					container	=> generic_modules,

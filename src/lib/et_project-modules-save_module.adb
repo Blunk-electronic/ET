@@ -1213,7 +1213,7 @@ is
 					section_mark (section_sheet, HEADER);
 					write (
 						keyword		=> keyword_sheet_number,
-						parameters	=> to_sheet (key (s)));
+						parameters	=> to_string (key (s)));
 
 					write (
 						keyword		=> keyword_sheet_category,
@@ -1367,7 +1367,7 @@ is
 			write
 				(
 				keyword		=> et_schematic_rw.keyword_position,
-				parameters	=> keyword_sheet & to_sheet (element (text_cursor).sheet) 
+				parameters	=> keyword_sheet & to_string (element (text_cursor).sheet) 
 								& space & position (element (text_cursor).position)
 				); -- position sheet 1 x 30 y 180
 			

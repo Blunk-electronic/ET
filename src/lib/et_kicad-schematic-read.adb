@@ -1249,7 +1249,7 @@ is
 			-- The sheet number written here is meaningless:
 			--sheet_number_current := to_sheet_number (field (element (line_cursor), 2));
 			-- Instead we log the global sheet_number:
-			log (text => "sheet number" & to_sheet (sheet_number), level => log_threshold + 1);
+			log (text => "sheet number" & to_string (sheet_number), level => log_threshold + 1);
 
 			-- Get the total number of sheet of this design. 
 			sheet_count_total := to_sheet (f (element (line_cursor), 3));

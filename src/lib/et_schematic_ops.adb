@@ -811,7 +811,7 @@ package body et_schematic_ops is
 
 	begin --insert_ports
 		log (text => "inserting device ports in nets on sheet" & 
-			 to_sheet (sheet) & " ...", level => log_threshold);
+			 to_string (sheet) & " ...", level => log_threshold);
 		log_indentation_up;
 		
 		update_element (
@@ -2901,7 +2901,7 @@ package body et_schematic_ops is
 	begin -- units_on_sheet
 		log (text => "looking up units of " 
 			 & to_string (device_name) 
-			 & " on sheet " & to_sheet (sheet) & " ...",
+			 & " on sheet " & to_string (sheet) & " ...",
 			 level => log_threshold);
 
 		log_indentation_up;

@@ -344,7 +344,7 @@ package body et_schematic_ops.units is
 				log (text => "module " & enclose_in_quotes (to_string (module_name))
 					& " moving " & enclose_in_quotes (to_string (device_name)) 
 					& " unit " & enclose_in_quotes (to_string (unit_name)) 
-					& " to sheet" & to_sheet (sheet) 
+					& " to sheet" & to_string (sheet) 
 					& to_string (point),
 					level => log_threshold);
 
@@ -545,7 +545,7 @@ package body et_schematic_ops.units is
 
 	begin -- drag_net_segments
 		log (text => "dragging net segments with units on sheet" & 
-			 to_sheet (sheet) & " ...", level => log_threshold);
+			 to_string (sheet) & " ...", level => log_threshold);
 		log_indentation_up;
 
 		update_element (

@@ -627,7 +627,7 @@ package body et_canvas_schematic_nets is
 		use et_commit;
 		
 	begin -- insert_net_segment
-		log (text => "adding net segment on sheet " & to_sheet (sheet) & to_string (segment), 
+		log (text => "adding net segment on sheet " & to_string (sheet) & to_string (segment), 
 			 level => log_threshold);
 
 		log_indentation_up;

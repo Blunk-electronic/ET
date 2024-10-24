@@ -1456,7 +1456,7 @@ package body et_schematic_ops.submodules is
 		
 	begin -- drag_net_segments
 		log (text => "dragging net segments with netchangers on sheet" & 
-			 to_sheet (sheet) & " ...", level => log_threshold);
+			 to_string (sheet) & " ...", level => log_threshold);
 		log_indentation_up;
 
 		--------------
@@ -1644,7 +1644,7 @@ package body et_schematic_ops.submodules is
 		
 	begin -- drag_net_segments
 		log (text => "dragging net segments with submodule ports on sheet" & 
-			 to_sheet (get_sheet (pos_before)) & " ...", level => log_threshold);
+			 to_string (get_sheet (pos_before)) & " ...", level => log_threshold);
 		log_indentation_up;
 
 		update_element (
@@ -1999,7 +1999,7 @@ package body et_schematic_ops.submodules is
 		
 	begin --insert_ports
 		log (text => "inserting netchanger ports in nets on sheet" & 
-			 to_sheet (sheet) & " ...", level => log_threshold);
+			 to_string (sheet) & " ...", level => log_threshold);
 		log_indentation_up;
 		
 		update_element (
@@ -2529,7 +2529,7 @@ package body et_schematic_ops.submodules is
 
 						
 						procedure delete_port is begin
-							log (text => "sheet" & to_sheet (sheet) & " net " &
+							log (text => "sheet" & to_string (sheet) & " net " &
 								to_string (key (net_cursor)) & " " &
 								to_string (segment_cursor),
 								level => log_threshold + 1);
@@ -2735,7 +2735,7 @@ package body et_schematic_ops.submodules is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_name) &
 					" moving netchanger" & to_string (index) &
-					" to sheet" & to_sheet (sheet) &
+					" to sheet" & to_string (sheet) &
 					to_string (point), level => log_threshold);
 
 			when RELATIVE =>
@@ -3382,7 +3382,7 @@ package body et_schematic_ops.submodules is
 			when ABSOLUTE =>
 				log (text => "module " & to_string (module_name) &
 					" moving submodule instance " & to_string (instance) &
-					" to sheet" & to_sheet (sheet) &
+					" to sheet" & to_string (sheet) &
 					to_string (point), level => log_threshold);
 
 			when RELATIVE =>

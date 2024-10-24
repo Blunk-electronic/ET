@@ -5225,9 +5225,12 @@ is
 
 								-- Issue warning about this mismatch:
 								if strand.position.place /= position_found_in_module_file then
-									log (WARNING, affected_line (line) & "Sheet" & to_sheet (get_sheet (strand.position))
+									
+									log (WARNING, affected_line (line) 
+										 & "Sheet" & to_string (get_sheet (strand.position))
 										 & " net " 
 										 & to_string (net_name) & ": Lowest x/y position of strand invalid !");
+									
 									log (text => " Found " & to_string (position_found_in_module_file));
 									log (text => " Will be overridden by calculated position" & 
 											to_string (strand.position.place));
