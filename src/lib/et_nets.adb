@@ -499,6 +499,18 @@ package body et_nets is
 
 
 
+	
+	function to_string (
+		net_cursor : in pac_nets.cursor)
+		return string
+	is 
+		use pac_nets;
+	begin
+		return to_string (key (net_cursor));
+	end to_string;
+
+	
+
 	procedure iterate (
 		nets	: in pac_nets.map;
 		process	: not null access procedure (position : in pac_nets.cursor);

@@ -299,6 +299,13 @@ package et_nets is
 		element_type	=> type_net);
 
 
+	-- Returns the name of the net indicated
+	-- by the given net cursor:
+	function to_string (
+		net_cursor : in pac_nets.cursor)
+		return string;
+	
+	
 	-- Iterates the nets. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		nets	: in pac_nets.map;

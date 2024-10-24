@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                        CANVAS FOR SCHEMATIC                              --
+--              CANVAS FOR SCHEMATIC / COMPUTE BOUNDING BOX                 --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -52,15 +52,18 @@ with ada.containers;
 -- 
 
 with et_frames;
+with et_schematic;					use et_schematic;
+with et_nets;
+with et_net_labels;
 
 
 separate (et_canvas_schematic_2)
 
 
 procedure compute_bounding_box (
-		abort_on_first_error	: in boolean := false;
-		ignore_errors			: in boolean := false;
-		test_only				: in boolean := false)		
+	abort_on_first_error	: in boolean := false;
+	ignore_errors			: in boolean := false;
+	test_only				: in boolean := false)		
 is
 	-- debug : boolean := false;
 	debug : boolean := true;
@@ -119,78 +122,108 @@ is
 	end parse_drawing_frame;
 
 
-	procedure parse_database is
-			
--- 		-- This procedure is called each time an object of the database
--- 		-- is processed:
--- 		procedure query_object (oc : in pac_objects.cursor) is
--- 			-- This is the complex candidate object being handled:
--- 			object : type_complex_object renames element (oc);
--- 
--- 			
--- 			-- This procedure computes the bounding-box of a line:
--- 			procedure query_line (lc : in pac_lines.cursor) is
--- 				-- The candidate line being handled:
--- 				line : type_line renames element (lc);
--- 
--- 				-- Compute the preliminary bounding-box of the line:
--- 				b : type_area := get_bounding_box (line);
--- 			begin
--- 				-- Move the box by the position of the
--- 				-- complex object to get the final bounding-box
--- 				-- of the line candidate:
--- 				move_by (b.position, object.position);
--- 
--- 				-- If this is the first primitive object,
--- 				-- then use its bounding-box as seed to start from:
--- 				if first_object then
--- 					bbox_new := b;
--- 					first_object := false;
--- 				else
--- 				-- Otherwise, merge the box b with the box being built:
--- 					merge_areas (bbox_new, b);
--- 				end if;
--- 			end query_line;
--- 
--- 
--- 			-- This procedure computes the bounding-box of a circle:
--- 			procedure query_circle (cc : in pac_circles.cursor) is
--- 				-- The candidate circle being handled:
--- 				circle : type_circle renames element (cc);
--- 
--- 				-- Compute the preliminary bounding-box of the circle:
--- 				b : type_area := get_bounding_box (circle);
--- 			begin				
--- 				-- Move the box by the position of the
--- 				-- complex object to get the final bounding-box
--- 				-- of the circle candidate:
--- 				move_by (b.position, object.position);
--- 
--- 				-- If this is the first primitive object,
--- 				-- then use its bounding-box as seed to start from:
--- 				if first_object then
--- 					bbox_new := b;
--- 					first_object := false;
--- 				else
--- 				-- Otherwise, merge the box b with the box being built:
--- 					merge_areas (bbox_new, b);
--- 				end if;
--- 			end query_circle;
--- 
--- 			
--- 		begin
--- 			-- Iterate the lines, circles and other primitive
--- 			-- components of the current object:
--- 			object.lines.iterate (query_line'access);
--- 			object.circles.iterate (query_circle'access);
--- 			-- CS arcs
--- 		end query_object;
 
+	-- This procedure reads the schematic elements and computes
+	-- the bounding-box thereof.
+	-- NOTE: The flag "first_object" is not used here as the drawing
+	-- frame has alread handled the flag:
+	procedure parse_schematic is
+
+		-- This procedure iterates through:
+		-- 1. all nets
+		-- 2. all strands on the active sheet
+		-- 3. all net segments
+		-- in order to compute the bounding box of the nets:
+		procedure process_nets is
+
+			procedure query_nets (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in type_module)
+			is
+				use et_nets;
+				use pac_nets;
+				use pac_strands;
+				use pac_net_segments;
+
+				use et_net_labels;
+				use pac_net_labels;
+
+
+				procedure query_label (c : in pac_net_labels.cursor) is
+					label : type_net_label renames element (c);
+				begin
+					null;
+					-- CS: The text or label size must be inquired similar to
+					-- the process of drawing texts (see package et_canvas.text).
+				end query_label;
+				
+				
+				procedure query_segment (c : in pac_net_segments.cursor) is
+					segment : type_net_segment renames element (c);
+
+					-- Compute the preliminary bounding-box of the segment:
+					b : type_area := get_bounding_box (segment, net_line_width);
+				begin
+					if debug then
+						put_line (to_string (type_line (segment)));
+					end if;
+					
+					merge_areas (bbox_new, b);
+
+					if debug then
+						put_line ("processing labels ...");
+					end if;
+					
+					iterate (segment.labels, query_label'access);
+				end query_segment;
+				
+				
+				procedure query_strand (c : in pac_strands.cursor) is
+					strand : type_strand renames element (c);
+				begin
+					-- We are interested in the strands on the
+					-- active sheet only:
+					if get_sheet (c) = active_sheet then
+						iterate (strand.segments, query_segment'access);
+						null;
+					end if;
+				end query_strand;
+				
+										   
+				procedure query_net (c : in pac_nets.cursor) is
+					net : type_net renames element (c);					
+				begin
+					if debug then
+						put_line (to_string (c));
+						put_line ("processing strands on sheet" 
+							& to_sheet (active_sheet) & " ...");
+					end if;
+					
+					iterate (net.strands, query_strand'access);
+				end query_net;
+
+				
+			begin
+				iterate (module.nets, query_net'access);
+			end query_nets;
+		
+									 
+		begin
+			if debug then
+				put_line ("processing nets ...");
+			end if;
+			
+			query_element (active_module, query_nets'access);
+		end process_nets;
+
+		
 	begin
 		null;
 		-- CS
-		-- objects_database_model.iterate (query_object'access);
-	end parse_database;
+		process_nets;
+		
+	end parse_schematic;
+	
 		
 
 	-- This procedure updates the bounding-box and
@@ -242,10 +275,7 @@ begin
 	-- The drawing frame is regarded as part of the model:
 	parse_drawing_frame;
 	
-	-- The database that contains all objects of the model
-	-- must be parsed. This is the call of an iteration through
-	-- all objects of the database:
-	parse_database;
+	parse_schematic;
 
 
 	-- The temporary bounding-box bbox_new in its current

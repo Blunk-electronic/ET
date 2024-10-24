@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           CANVAS FOR BOARD                               --
+--                  CANVAS FOR BOARD / COMPUTE BOUNDING BOX                 --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
