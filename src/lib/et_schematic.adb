@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -241,6 +241,18 @@ package body et_schematic is
 		iterate (element (net).strands, query_strands'access);
 		return result;
 	end get_ports;
+
+
+	
+
+	function to_string (
+		device_cursor : in pac_devices_sch.cursor)
+		return string
+	is
+		use pac_devices_sch;
+	begin
+		return to_string (key (device_cursor));
+	end to_string;
 
 
 	

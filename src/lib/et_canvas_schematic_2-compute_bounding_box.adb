@@ -216,11 +216,61 @@ is
 			query_element (active_module, query_nets'access);
 		end process_nets;
 
+
+
+		-- This procedure iterates through:
+		-- 1. all devices
+		-- 2. all symbols on the active sheet
+		procedure process_devices is
+
+
+			procedure query_devices (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in type_module)
+			is
+				use pac_devices_sch;
+				use pac_units;
+
+
+				procedure query_unit (c : in pac_units.cursor) is
+					unit : type_unit renames element (c);
+				begin					
+					null;
+				end query_unit;
+
+				
+				procedure query_device (c : in pac_devices_sch.cursor) is
+					device : type_device_sch renames element (c);					
+				begin
+					if debug then
+						put_line (to_string (c));
+					end if;
+
+					iterate (device.units, query_unit'access);
+				end query_device;
+
+				
+			begin
+				iterate (module.devices, query_device'access);
+			end query_devices;
+
+			
+		begin
+			if debug then
+				put_line ("processing devices ...");
+			end if;
+			
+			query_element (active_module, query_devices'access);
+		end process_devices;
+
+			
+		
 		
 	begin
 		null;
 		-- CS
 		process_nets;
+		process_devices;
 		
 	end parse_schematic;
 	

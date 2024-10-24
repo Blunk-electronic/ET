@@ -308,6 +308,14 @@ package et_schematic is
 		key_type		=> type_device_name, -- something like "IC43"
  		element_type	=> type_device_sch);
 
+
+	-- Returns the name of the device indicated by
+	-- the given cursor:
+	function to_string (
+		device_cursor : in pac_devices_sch.cursor)
+		return string;
+	
+	
 	use pac_devices_sch;
 	
 
