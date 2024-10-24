@@ -1526,8 +1526,28 @@ is
 	end place_via;
 
 
+
+	-- This procedure parses a command
+	-- to move a via.
+	-- CS: Currently this procedure does not many things.	
+	procedure move_via is
+	begin
+		update_mode_display;
+	end move_via;
+		
 	
 
+	-- This procedure parses a command
+	-- to delete a via.
+	-- CS: Currently this procedure does not many things.	
+	procedure delete_via is
+	begin
+		update_mode_display;
+	end delete_via;
+
+
+
+	
 
 -- ROUTE / TRACK / POLYGON
 
@@ -2761,6 +2781,9 @@ is
 							when others => command_incomplete;
 						end case;
 
+					when NOUN_VIA =>
+						delete_via;
+						
 					when NOUN_ROUTE_RESTRICT =>
 						-- board led_driver delete route_restrict 40 50 1
 						case cmd_field_count is
@@ -2958,7 +2981,6 @@ is
 				case noun is
 					when NOUN_FRAME =>
 						move_drawing_frame;
-
 						
 					when NOUN_CURSOR =>
 						parse_canvas_command (VERB_MOVE, NOUN_CURSOR);
@@ -3002,6 +3024,9 @@ is
 							when others =>
 								command_incomplete;
 						end case;
+
+					when NOUN_VIA =>
+						move_via;
 						
 					when others => invalid_noun (to_string (noun));
 				end case;

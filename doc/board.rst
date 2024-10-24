@@ -240,7 +240,8 @@ Vias
 		
 		
 
-#. Place via
+		
+#. Placing Vias
 
 	|VNS| p v
 	
@@ -286,20 +287,21 @@ Vias
 		
 		
 		
-#. Move via
+#. Moving Vias
 
-.. 	.. code-block::
-.. 
-.. 		place via [net name]
+	.. code-block::
+
+		move via
 
 	|VNS| m v
 
 	
-#. Delete via
+	
+#. Deleting Vias
 
-.. 	.. code-block::
-.. 
-.. 		place via [net name]
+	.. code-block::
+
+		delete via
 
 	|VNS| del v
 

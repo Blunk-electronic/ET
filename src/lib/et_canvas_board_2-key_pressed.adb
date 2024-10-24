@@ -164,6 +164,7 @@ is
 	end fill;
 
 
+	
 	procedure flip is 
 		use et_canvas_board_devices;
 	begin
@@ -210,6 +211,7 @@ is
 		end case;
 	end flip;
 
+	
 	
 	procedure move is begin
 		case key is
@@ -332,6 +334,7 @@ is
 	end move;
 
 
+	
 	procedure draw is 
 		use pac_path_and_bend;
 		use et_canvas_board_lines;
@@ -367,7 +370,8 @@ is
 		end case;
 	end draw;
 		
-		
+
+	
 	procedure place is 
 		use et_canvas_board_texts;
 		use et_canvas_board_vias;
@@ -402,6 +406,7 @@ is
 	end place;
 
 
+	
 	procedure rotate is begin
 		case key is
 			when GDK_LC_d =>
@@ -452,6 +457,7 @@ is
 	end rotate;
 
 
+	
 	procedure route is 
 		use pac_path_and_bend;
 		use et_canvas_board_tracks;
@@ -575,6 +581,7 @@ is
 			when others => status_noun_invalid;
 		end case;
 	end update;
+
 
 	
 begin -- key_pressed
