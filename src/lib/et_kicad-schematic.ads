@@ -163,7 +163,7 @@ package et_kicad.schematic is
 	type type_unit_schematic is record
 		appearance	: type_appearance_schematic;
 		rotation	: type_rotation_model := zero_rotation;
-		mirror		: type_mirror := NO;
+		mirror		: type_mirror := MIRROR_NO;
 		position	: et_kicad_coordinates.type_position;		
 
 		-- We use the native type for a text placeholder here.

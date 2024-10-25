@@ -68,7 +68,7 @@ package et_units is
 	-- Placeholders are available if the device appears in both schematic and layout:
 	type type_unit (appearance : type_appearance_schematic) is record
 		position	: et_coordinates_2.type_position; -- incl. rotation and sheet number
-		mirror		: type_mirror := NO;
+		mirror		: type_mirror := MIRROR_NO;
 		case appearance is
 			when et_symbols.VIRTUAL => null; -- CS
 			when et_symbols.PCB =>

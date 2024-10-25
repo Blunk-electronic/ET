@@ -43,6 +43,17 @@ with ada.characters.handling;			use ada.characters.handling;
 
 package body et_mirroring is
 		
+
+	function to_string (
+		mirror	: in type_mirror)
+		return string
+	is
+		s : string := to_lower (type_mirror'image (mirror));
+	begin
+		return s (mirror_prefix'length + 1 .. s'last);
+	end to_string;
+
+
 	
 	function to_string (
 		mirror	: in type_mirror;
@@ -50,17 +61,20 @@ package body et_mirroring is
 		return string 
 	is begin
 		if verbose then
-			return "mirrored " & to_lower (type_mirror'image (mirror));
+			return "mirrored " & to_string (mirror);
 		else
-			return to_lower (type_mirror'image (mirror));
+			return to_string (mirror);
 		end if;
 	end to_string;
 
 
 
 	
-	function to_mirror_style (style : in string) return type_mirror is begin
-		return type_mirror'value (style);
+	function to_mirror_style (
+		style : in string) 
+		return type_mirror 
+	is begin
+		return type_mirror'value (mirror_prefix & style);
 	end to_mirror_style;
 
 	

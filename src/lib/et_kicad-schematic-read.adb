@@ -2707,9 +2707,9 @@ is
 						if mirror_1 = 0 then
 							case mirror_2 is
 								when -1 =>
-									mirror := X_AXIS;
+									mirror := MIRROR_ALONG_X_AXIS;
 								when  1 =>
-									mirror := NO;
+									mirror := MIRROR_NO;
 								when others =>
 									-- invalid mirror style
 									raise constraint_error;
@@ -2733,7 +2733,7 @@ is
 							case mirror_1 is
 								when -1 =>
 									if mirror_2 = 0 then
-										mirror := NO;
+										mirror := MIRROR_NO;
 									else
 										-- invalid mirror style
 										raise constraint_error;
@@ -2745,7 +2745,7 @@ is
 
 								when  1 =>
 									if mirror_2 = 0 then
-										mirror := X_AXIS;
+										mirror := MIRROR_ALONG_X_AXIS;
 									else
 										-- invaid mirror style
 										raise constraint_error;
@@ -2759,7 +2759,7 @@ is
 							case mirror_1 is
 								when -1 =>
 									if mirror_2 = 0 then
-										mirror := X_AXIS;
+										mirror := MIRROR_ALONG_X_AXIS;
 									else
 										-- invalid mirror style
 										raise constraint_error;
@@ -2771,7 +2771,7 @@ is
 
 								when  1 =>
 									if mirror_2 = 0 then
-										mirror := NO;
+										mirror := MIRROR_NO;
 									else
 										-- invalid mirror style
 										raise constraint_error;
@@ -2791,9 +2791,9 @@ is
 						if mirror_1 = 0 then
 							case mirror_2 is
 								when -1 =>
-									mirror := NO;
+									mirror := MIRROR_NO;
 								when  1 =>
-									mirror := X_AXIS;
+									mirror := MIRROR_ALONG_X_AXIS;
 								when others =>
 									-- invalid mirror style
 									raise constraint_error;
@@ -2808,8 +2808,8 @@ is
 						raise constraint_error;
 					end if;
 			end case;
-
 		end build_unit_orientation_and_mirror_style;
+		
 
 		procedure add_alternative_reference (line : in type_fields_of_line) is
 		-- Adds the alternative reference given in a line like 

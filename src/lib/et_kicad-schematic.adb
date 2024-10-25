@@ -4242,9 +4242,9 @@ package body et_kicad.schematic is
 					
 					-- Mirror port coordinates if required.
 					case mirror_style_of_unit (unit_name_lib, units_sch) is
-						when NO => null; -- unit not mirrored in schematic
-						when X_AXIS => mirror_point (port_coordinates, X);
-						when Y_AXIS => mirror_point (port_coordinates, Y);
+						when MIRROR_NO => null; -- unit not mirrored in schematic
+						when MIRROR_ALONG_X_AXIS => mirror_point (port_coordinates, X);
+						when MIRROR_ALONG_Y_AXIS => mirror_point (port_coordinates, Y);
 					end case;
 
 					-- offset port coordinates by the coordinates of the unit found in the schematic

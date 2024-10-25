@@ -40,11 +40,21 @@
 
 
 package et_mirroring is
-		
+
+	mirror_prefix : constant string := ("MIRROR_");
+	
 	
 	-- Objects can be placed mirrored along the x or y axis or not at all.
-	type type_mirror is (NO, X_AXIS, Y_AXIS);
+	type type_mirror is (
+		MIRROR_NO, 
+		MIRROR_ALONG_Y_AXIS,
+		MIRROR_ALONG_X_AXIS);
 
+
+	function to_string (
+		mirror	: in type_mirror)
+		return string;
+	
 	
 	-- returns the given mirror style as string
 	function to_string (
@@ -53,7 +63,9 @@ package et_mirroring is
 		return string;
 
 	
-	function to_mirror_style (style : in string) return type_mirror;
+	function to_mirror_style (
+		style : in string) 
+		return type_mirror;
 	
 
 	
