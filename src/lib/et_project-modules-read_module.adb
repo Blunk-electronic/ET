@@ -92,6 +92,7 @@ with et_assy_doc.boards;
 with et_keepout;
 with et_pcb_contour;
 with et_units;
+with et_mirroring;
 
 
 separate (et_project.modules)
@@ -1026,7 +1027,7 @@ is
 	--device_unit_rotation	: et_coordinates_2.type_rotation_model := geometry.zero_rotation;
 
 
-	device_unit_mirror		: et_units.type_mirror := et_units.NO;
+	device_unit_mirror		: et_mirroring.type_mirror := et_mirroring.NO;
 	device_unit_name		: et_devices.pac_unit_name.bounded_string; -- GPIO_BANK_1
 	device_unit_position	: et_coordinates_2.type_position; -- x,y,sheet,rotation
 
@@ -1037,6 +1038,8 @@ is
 		use pac_geometry_2;
 		use et_devices;
 		use et_units;
+		use et_mirroring;
+		
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2888,6 +2891,7 @@ is
 				use et_coordinates_2;
 				use et_symbols;
 				use et_units;
+				use et_mirroring;
 			begin
 				log_indentation_up;
 				-- log (text => "unit " & to_string (device_unit_name), log_threshold + 1);

@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                                UNITS                                     --
+--                              MIRRORING                                   --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,10 +20,10 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,48 +35,29 @@
 --
 --   history of changes:
 --
-
-with ada.text_io;						use ada.text_io;
--- with ada.strings.maps;					use ada.strings.maps;
--- with ada.strings.bounded;   		    use ada.strings.bounded;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.exceptions;
-
-package body et_units is
-
-	
-	function to_string (unit : in pac_units.cursor) return string is
-		use pac_units;
-	begin
-		return et_devices.to_string (key (unit)) 
-			--& to_string (type_vector_model (element (unit).position));
-			& to_string (element (unit).position.place);
-			-- CS output sheet number and rotation ?
-	end to_string;
+--   ToDo: 
 
 
 
-	
-	function unit_positions (
-		units : in pac_units.map)
-		return pac_unit_positions.map
-	is
-		list : pac_unit_positions.map; -- to be returned
-		use pac_units;
-		use pac_unit_positions;
+package et_mirroring is
 		
-		procedure query_unit (cursor : pac_units.cursor) is begin
-			list.insert (key (cursor), element (cursor).position);
-		end;
-		
-	begin
-		iterate (units, query_unit'access);
-		return list;
-	end unit_positions;
+	
+	-- Objects can be placed mirrored along the x or y axis or not at all.
+	type type_mirror is (NO, X_AXIS, Y_AXIS);
 
 	
+	-- returns the given mirror style as string
+	function to_string (
+		mirror	: in type_mirror;
+		verbose	: in boolean)
+		return string;
+
 	
-end et_units;
+	function to_mirror_style (style : in string) return type_mirror;
+	
+
+	
+end et_mirroring;
 
 -- Soli Deo Gloria
 

@@ -46,6 +46,7 @@ with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_symbols;						use et_symbols;
 with et_devices;						use et_devices;
+with et_mirroring;						use et_mirroring;
 
 
 package et_units is
@@ -53,21 +54,6 @@ package et_units is
 	use pac_unit_name;
 
 	use pac_geometry_2;
-
-	
-	
-	
-	-- Units can be placed mirrored along the x or y axis or not at all.
-	type type_mirror is (NO, X_AXIS, Y_AXIS);
-
-	
-	function to_string (
-		mirror	: in type_mirror;
-		verbose	: in boolean)
-		return string;
-	-- returns the given mirror style as string
-
-	function to_mirror_style (style : in string) return type_mirror;
 
 	
 	

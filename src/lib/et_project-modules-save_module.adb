@@ -89,6 +89,7 @@ with et_assy_doc.boards;
 with et_keepout;
 with et_pcb_contour;
 
+with et_mirroring;
 with et_units;
 
 
@@ -868,6 +869,8 @@ is
 			use et_coordinates_2;
 			use et_units;
 			use pac_units;
+			use et_mirroring;
+			
 			unit_cursor : pac_units.cursor := device.units.first;
 
 			use et_coordinates_2.pac_geometry_2;
