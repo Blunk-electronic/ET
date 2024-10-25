@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with et_mirroring;						use et_mirroring;
 with et_schematic_ops;
 with et_contour_to_polygon;
 with et_geometry;						use et_geometry;
@@ -1228,7 +1229,7 @@ package body et_device_query_board is
 						--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
 						rotation	=> get_rotation (ph.position),
 						position	=> ph.position.place,
-						mirror		=> NO,
+						mirror		=> MIRROR_NO,
 						line_width	=> ph.line_width,
 						alignment	=> ph.alignment); -- right, bottom
 
@@ -1331,7 +1332,7 @@ package body et_device_query_board is
 						--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
 						rotation	=> get_rotation (ph.position),
 						position	=> ph.position.place,
-						mirror		=> NO,
+						mirror		=> MIRROR_NO,
 						line_width	=> ph.line_width,
 						alignment	=> ph.alignment); -- right, bottom
 
@@ -1430,7 +1431,7 @@ package body et_device_query_board is
 						--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
 						rotation	=> get_rotation (ph.position),
 						position	=> ph.position.place,
-						mirror		=> NO,
+						mirror		=> MIRROR_NO,
 						line_width	=> ph.line_width,
 						alignment	=> ph.alignment); -- right, bottom
 
@@ -1532,7 +1533,7 @@ package body et_device_query_board is
 						--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
 						rotation	=> get_rotation (ph.position),
 						position	=> ph.position.place,
-						mirror		=> NO,
+						mirror		=> MIRROR_NO,
 						line_width	=> ph.line_width,
 						alignment	=> ph.alignment); -- right, bottom
 

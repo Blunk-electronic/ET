@@ -49,6 +49,7 @@ package et_mirroring is
 		MIRROR_NO, 
 		MIRROR_ALONG_Y_AXIS,
 		MIRROR_ALONG_X_AXIS);
+	-- CAUTION: Package et_text derives a subtype from type_mirror !
 
 
 	function to_string (

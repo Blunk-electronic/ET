@@ -654,7 +654,7 @@ package body et_text is
 				rotate_by (border, type_angle (rotation));
 				
 				-- Mirror if required:
-				if mirror = YES then
+				if mirror = MIRROR_ALONG_Y_AXIS then
 					mirror_vectors (vectors => border, axis => Y);
 				end if;
 				
@@ -744,7 +744,7 @@ package body et_text is
 					end if;
 
 					-- Mirror the text if required:
-					if mirror = YES then
+					if mirror = MIRROR_ALONG_Y_AXIS then
 						mirror_line (l, Y);
 					end if;
 					

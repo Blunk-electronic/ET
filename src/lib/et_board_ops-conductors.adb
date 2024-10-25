@@ -40,6 +40,7 @@ with ada.strings;					use ada.strings;
 with ada.exceptions;
 with ada.tags;
 
+with et_mirroring;					use et_mirroring;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_schematic_ops;				use et_schematic_ops;
 with et_exceptions;					use et_exceptions;
@@ -1703,7 +1704,7 @@ package body et_board_ops.conductors is
 		begin
 			mirror := signal_layer_to_mirror (signal_layer, get_deepest_conductor_layer (module_cursor));
 
-			if mirror = YES then
+			if mirror = MIRROR_ALONG_Y_AXIS then
 				log (text => "text is in deepest signal layer -> will be mirrored", level => log_threshold + 1);
 			else
 				log (text => "text is not in deepest signal layer -> no mirroring", level => log_threshold + 1);

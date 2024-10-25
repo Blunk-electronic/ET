@@ -55,6 +55,7 @@ with et_geometry_2a;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_logical_pixels;			use et_logical_pixels;
+with et_mirroring;				use et_mirroring;
 
 
 package et_text is
@@ -172,8 +173,10 @@ package et_text is
 
 	vector_text_alignment_default : constant type_text_alignment := (ALIGN_LEFT, ALIGN_BOTTOM);
 
-	type type_vector_text_mirrored is (NO, YES);
-	vector_text_mirror_default : constant type_vector_text_mirrored := NO;
+	subtype type_vector_text_mirrored is type_mirror 
+		range MIRROR_NO .. MIRROR_ALONG_Y_AXIS;
+	
+	vector_text_mirror_default : constant type_vector_text_mirrored := MIRROR_NO;
 
 
 

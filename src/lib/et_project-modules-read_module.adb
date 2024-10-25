@@ -4974,7 +4974,7 @@ is
 					begin
 						-- vectorize text:
 						if face = BOTTOM then
-							mirror := NO;
+							mirror := MIRROR_NO;
 						else
 							mirror := face_to_mirror (face);
 						end if;

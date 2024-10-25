@@ -48,6 +48,7 @@ with et_terminals;					use et_terminals;
 
 with et_conductor_text.packages;	use et_conductor_text.packages;
 with et_time;						use et_time;
+with et_mirroring;					use et_mirroring;
 
 
 package body et_pcb_rw.device_packages is
@@ -1250,7 +1251,7 @@ package body et_pcb_rw.device_packages is
 										size		=> pac_text.size,
 										rotation	=> pac_text.position.rotation,
 										position	=> pac_text.position.place,
-										mirror		=> YES,
+										mirror		=> MIRROR_ALONG_Y_AXIS,
 										line_width	=> pac_text.line_width,
 										alignment	=> pac_text.alignment,
 										make_border	=> true)));
@@ -1265,7 +1266,7 @@ package body et_pcb_rw.device_packages is
 										size		=> pac_text.size,
 										rotation	=> pac_text.position.rotation,
 										position	=> pac_text.position.place,
-										mirror		=> YES,
+										mirror		=> MIRROR_ALONG_Y_AXIS,
 										line_width	=> pac_text.line_width,
 										alignment	=> pac_text.alignment)));
 
@@ -1292,7 +1293,7 @@ package body et_pcb_rw.device_packages is
 										size		=> pac_text.size,
 										rotation	=> pac_text.position.rotation,
 										position	=> pac_text.position.place,
-										mirror		=> YES,
+										mirror		=> MIRROR_ALONG_Y_AXIS,
 										line_width	=> pac_text.line_width,
 										alignment	=> pac_text.alignment)));
 

@@ -40,8 +40,10 @@ with ada.strings.unbounded;
 with ada.exceptions;
 with ada.tags;
 
+with et_mirroring;					use et_mirroring;
 with et_text;						use et_text;
 with et_route_restrict.packages;
+
 
 package body et_pcb is
 
@@ -77,9 +79,9 @@ package body et_pcb is
 		use et_text;
 	begin
 		if current_layer = bottom_layer then
-			return YES;
+			return MIRROR_ALONG_Y_AXIS;
 		else
-			return NO;
+			return MIRROR_NO;
 		end if;
 	end signal_layer_to_mirror;
 
@@ -128,8 +130,8 @@ package body et_pcb is
 		use et_text;
 	begin
 		case flipped is
-			when YES => return YES;
-			when NO => return NO;
+			when YES => return MIRROR_ALONG_Y_AXIS;
+			when NO =>  return MIRROR_NO;
 		end case;
 	end to_mirror;
 
