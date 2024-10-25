@@ -126,12 +126,6 @@ package et_geometry is
 
 	
 
-	-- scale (relevant for GUI only):
-	scale_min : constant glib.gdouble := 0.2;
-	scale_max : constant glib.gdouble := 2000.0;
-	subtype type_scale is glib.gdouble range scale_min .. scale_max;
-	scale_default : constant type_scale := 1.0;
-	scale_factor_on_zoom : constant type_scale := 1.05;
 
 
 
