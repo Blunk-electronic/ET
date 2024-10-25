@@ -6,20 +6,21 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -41,7 +42,7 @@ package body et_keepout is
 
 	procedure mirror_zones (
 		zones	: in out pac_keepout_zones.list;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_keepout_zones.list;
 
@@ -100,7 +101,7 @@ package body et_keepout is
 	
 	procedure mirror_keepout_objects (
 		keepout	: in out type_keepout;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is begin
 		mirror_zones (keepout.zones);
 		-- CS mirror_cutouts (keepout.cutouts);

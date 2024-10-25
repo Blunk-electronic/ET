@@ -349,7 +349,7 @@ package body et_text is
 		
 		procedure mirror_text (
 			text	: in out type_text_fab;
-			axis	: in type_axis_2d := Y)
+			axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 		is begin
 			mirror (text.position.place, axis);
 		end mirror_text;
@@ -655,7 +655,7 @@ package body et_text is
 				
 				-- Mirror if required:
 				if mirror = MIRROR_ALONG_Y_AXIS then
-					mirror_vectors (vectors => border, axis => Y);
+					mirror_vectors (vectors => border, axis => MIRROR_ALONG_Y_AXIS);
 				end if;
 				
 				-- Move to final position as given by argument "position":
@@ -745,7 +745,7 @@ package body et_text is
 
 					-- Mirror the text if required:
 					if mirror = MIRROR_ALONG_Y_AXIS then
-						mirror_line (l, Y);
+						mirror_line (l, MIRROR_ALONG_Y_AXIS);
 					end if;
 					
 					-- Move the line to the given position. 
@@ -908,7 +908,7 @@ package body et_text is
 		
 		procedure mirror_vector_text (
 			text	: in out type_vector_text;
-			axis	: in type_axis_2d := Y)
+			axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 		is
 			use pac_polygons;
 			result : pac_character_lines.list;

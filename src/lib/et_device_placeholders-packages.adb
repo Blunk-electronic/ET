@@ -43,7 +43,7 @@ package body et_device_placeholders.packages is
 
 	procedure mirror_placeholders (
 		placeholders	: in out pac_placeholders.list;
-		axis			: in type_axis_2d := Y)
+		axis			: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_placeholders.list;
 

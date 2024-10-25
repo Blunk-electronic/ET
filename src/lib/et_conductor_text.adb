@@ -59,7 +59,7 @@ package body et_conductor_text is
 
 	procedure mirror_text (
 		text	: in out type_conductor_text;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is begin
 		mirror_vector_text (text.vectors);
 	end mirror_text;

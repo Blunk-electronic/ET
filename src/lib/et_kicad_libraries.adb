@@ -53,6 +53,7 @@ with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 with ada.environment_variables;
 
+with et_mirroring;						use et_mirroring;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_conventions;
 
@@ -1467,7 +1468,7 @@ package body et_kicad_libraries is
 
 					-- For some unknown reason, kicad saves the y position of library objects inverted.
 					-- It is probably a bug. However, when importing objects we must invert y. 
-					mirror (point => point, axis => x);
+					mirror (point => point, axis => MIRROR_ALONG_X_AXIS);
 					
 					polyline.points.append (point); -- append this point to the list of points
 					pos := pos + 2; -- advance field pointer to x coordinate of next point
@@ -1500,14 +1501,14 @@ package body et_kicad_libraries is
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
-				mirror (point => rectangle.corner_A, axis => x);
+				mirror (point => rectangle.corner_A, axis => MIRROR_ALONG_X_AXIS);
 				
 				set (rectangle.corner_B, X, mil_to_distance (mil => f (line,4)));
 				set (rectangle.corner_B, Y, mil_to_distance (mil => f (line,5)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
-				mirror (point => rectangle.corner_B, axis => x);
+				mirror (point => rectangle.corner_B, axis => MIRROR_ALONG_X_AXIS);
 
 				-- If line width is too small, use a lower limit instead.
 				if mil_to_distance (f (line, 8)) < type_line_width'first then
@@ -1544,7 +1545,7 @@ package body et_kicad_libraries is
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
-				mirror (point => circle.center, axis => x);
+				mirror (point => circle.center, axis => MIRROR_ALONG_X_AXIS);
 	
 				circle.radius := mil_to_distance (mil => f (line,4));
 
@@ -1588,7 +1589,7 @@ package body et_kicad_libraries is
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
-				mirror (point => arc.center, axis => x);
+				mirror (point => arc.center, axis => MIRROR_ALONG_X_AXIS);
 
 				arc.radius		:= mil_to_distance (mil => f (line,4));
 
@@ -1615,14 +1616,14 @@ package body et_kicad_libraries is
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
-				mirror (point => arc.start_point, axis => x);
+				mirror (point => arc.start_point, axis => MIRROR_ALONG_X_AXIS);
 
 				set (arc.end_point, X, mil_to_distance (mil => f (line,13)));
 				set (arc.end_point, Y, mil_to_distance (mil => f (line,14)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
-				mirror (point => arc.end_point, axis => x);
+				mirror (point => arc.end_point, axis => MIRROR_ALONG_X_AXIS);
 				
 				-- CS: log properties
 				return arc;
@@ -1705,7 +1706,7 @@ package body et_kicad_libraries is
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
-				mirror (point => text.position, axis => x);
+				mirror (point => text.position, axis => MIRROR_ALONG_X_AXIS);
 
 				text.size := mil_to_distance (mil => f (line,5));
 

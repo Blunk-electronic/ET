@@ -79,6 +79,7 @@ with et_geometry_1.et_polygons;
 with et_geometry_1.et_polygons.offsetting;
 with et_geometry_2a.contours;
 with et_text;
+with et_mirroring;				use et_mirroring;
 
 
 generic
@@ -1287,7 +1288,7 @@ package et_canvas is
 		line		: in type_line'class;
 		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		width		: in type_distance_positive;
-		mirror		: in type_mirror_style := mirror_style_default;
+		mirror		: in type_mirror := MIRROR_NO;
 		style		: in type_line_style := CONTINUOUS;
 		do_stroke	: in boolean := false;
 		polyline	: in boolean := false
@@ -1304,7 +1305,7 @@ package et_canvas is
 		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		filled		: in type_filled;
 		width		: in type_distance_positive;
-		mirror		: in type_mirror_style := mirror_style_default;
+		mirror		: in type_mirror := MIRROR_NO;
 		style		: in type_line_style := CONTINUOUS;
 		do_stroke	: in boolean := false);
 
@@ -1316,7 +1317,7 @@ package et_canvas is
 		arc			: in type_arc'class;
 		pos			: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		width		: in type_distance_positive;
-		mirror		: in type_mirror_style := mirror_style_default;
+		mirror		: in type_mirror := MIRROR_NO;
 		style		: in type_line_style := CONTINUOUS;
 		do_stroke	: in boolean := false);
 
@@ -1324,7 +1325,7 @@ package et_canvas is
 	procedure draw_rectangle (
 		rectangle	: in type_area;
 		pos			: in type_position := origin_zero_rotation;
-		mirror		: in type_mirror_style := mirror_style_default;
+		mirror		: in type_mirror := MIRROR_NO;
 		-- CS ? style		: in type_line_style := CONTINUOUS;
 		width		: in type_distance_positive);
 

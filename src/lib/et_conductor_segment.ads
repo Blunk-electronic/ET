@@ -49,6 +49,8 @@ with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_design_rules;			use et_design_rules;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
+with et_mirroring;				use et_mirroring;
+
 
 package et_conductor_segment is
 
@@ -96,7 +98,7 @@ package et_conductor_segment is
 	-- Mirrors a list of lines along the given axis:
 	procedure mirror_lines (
 		lines	: in out pac_conductor_lines.list;
-		axis	: in type_axis_2d := Y);
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	
 	-- Rotates a list of lines by the given angle about the origin:
@@ -159,7 +161,7 @@ package et_conductor_segment is
 	-- Mirrors a list of arcs along the given axis:
 	procedure mirror_arcs (
 		arcs	: in out pac_conductor_arcs.list;
-		axis	: in type_axis_2d := Y);
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	
 	-- Rotates a list of arcs by the given angle about the origin:
@@ -219,7 +221,7 @@ package et_conductor_segment is
 	-- Mirrors a list of circles along the given axis:
 	procedure mirror_circles (
 		circles	: in out pac_conductor_circles.list;
-		axis	: in type_axis_2d := Y);
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	
 	-- Rotates a list of circles by the given angle about the origin:

@@ -44,6 +44,7 @@ with ada.containers.doubly_linked_lists;
 
 with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
+with et_mirroring;				use et_mirroring;
 with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_contour_to_polygon;		use et_contour_to_polygon;
@@ -87,7 +88,7 @@ package et_route_restrict is
 	-- Mirrors a list of lines along the given axis:
 	procedure mirror_lines (
 		lines	: in out pac_route_restrict_lines.list;
-		axis	: in type_axis_2d := Y);
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 	
 	-- Rotates a list of lines by the given angle about the origin:
 	procedure rotate_lines (
@@ -129,7 +130,7 @@ package et_route_restrict is
 	-- Mirrors a list of arcs along the given axis:
 	procedure mirror_arcs (
 		arcs	: in out pac_route_restrict_arcs.list;
-		axis	: in type_axis_2d := Y);
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 	
 	-- Rotates a list of arcs by the given angle about the origin:
 	procedure rotate_arcs (
@@ -178,7 +179,7 @@ package et_route_restrict is
 	-- Mirrors a list of circles along the given axis:
 	procedure mirror_circles (
 		circles	: in out pac_route_restrict_circles.list;
-		axis	: in type_axis_2d := Y);
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 	
 	-- Rotates a list of circles by the given angle about the origin:
 	procedure rotate_circles (

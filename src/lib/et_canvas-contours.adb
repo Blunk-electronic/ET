@@ -59,7 +59,7 @@ package body et_canvas.contours is
 		style	: in type_line_style := CONTINUOUS;
 		filled	: in type_filled;
 		width	: in type_distance_positive;
-		mirror	: in type_mirror_style := mirror_style_default)
+		mirror	: in type_mirror := MIRROR_NO)
 		-- CS fill style
 	is
 		-- The line style, or the dash pattern, will be calculated 
@@ -136,11 +136,11 @@ package body et_canvas.contours is
 		rotate_by (offset_tmp, get_rotation (pos));
 		
 		case mirror is
-			when MIRROR_X =>
-				pac_geometry.mirror (offset_tmp, X);
+			when MIRROR_ALONG_X_AXIS =>
+				pac_geometry.mirror (offset_tmp, MIRROR_ALONG_X_AXIS);
 
-			when MIRROR_Y =>
-				pac_geometry.mirror (offset_tmp, Y);
+			when MIRROR_ALONG_Y_AXIS =>
+				pac_geometry.mirror (offset_tmp, MIRROR_ALONG_X_AXIS);
 
 			when others => null;
 		end case;
@@ -235,7 +235,7 @@ package body et_canvas.contours is
 		inner_border	: in type_circle;
 		pos 			: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		offset			: in type_position := origin_zero_rotation;
-		mirror			: in type_mirror_style := mirror_style_default)
+		mirror			: in type_mirror := MIRROR_NO)
 	is begin
 		-- draw outer contour:
 		draw_contour (outer_border, pos, offset, CONTINUOUS, YES, zero, mirror);
@@ -259,7 +259,7 @@ package body et_canvas.contours is
 		inner_border	: in type_contour'class;
 		pos 			: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		offset			: in type_position := origin_zero_rotation;
-		mirror			: in type_mirror_style := mirror_style_default)
+		mirror			: in type_mirror := MIRROR_NO)
 	is begin
 		-- draw outer contour:
 		draw_contour (outer_border, pos, offset, CONTINUOUS, YES, zero, mirror);

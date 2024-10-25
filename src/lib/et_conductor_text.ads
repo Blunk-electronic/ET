@@ -43,6 +43,7 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
 with et_geometry;				use et_geometry;
+with et_mirroring;				use et_mirroring;
 with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
@@ -80,7 +81,7 @@ package et_conductor_text is
 	-- Mirrors a text along the given axis:
 	procedure mirror_text (
 		text	: in out type_conductor_text;
-		axis	: in type_axis_2d := Y);
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 
 	-- Rotates a text by the given angle about the origin:

@@ -245,7 +245,7 @@ package body et_device_query_board is
 
 			
 			-- mirror terminal position alog Y axis (swap right x with left x)
-			mirror (terminal_position, Y);
+			mirror (terminal_position, MIRROR_ALONG_Y_AXIS);
 
 			-- Rotate the terminal position (x/y) by the rotation of the package:
 			rotate_by (terminal_position, - terminal_rotation);
@@ -422,7 +422,7 @@ package body et_device_query_board is
 		-- rotates the contour:
 		procedure mirror_and_rotate is begin
 			if terminal_position.face = BOTTOM then
-				mirror (contour, Y);
+				mirror (contour, MIRROR_ALONG_Y_AXIS);
 
 				-- if on bottom side: rotate CW
 				rotate_by (contour, - to_rotation (terminal_position.rotation));
@@ -493,7 +493,7 @@ package body et_device_query_board is
 					
 				elsif layer_category = OUTER_BOTTOM and terminal_position.face = BOTTOM then
 					contour := terminal.pad_shape_smt;
-					mirror (contour, Y);
+					mirror (contour, MIRROR_ALONG_Y_AXIS);
 					rotate_by (contour, - to_rotation (terminal_position.rotation));
 					finalize;
 				end if;

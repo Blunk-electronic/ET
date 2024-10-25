@@ -50,6 +50,7 @@ with et_geometry_1;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_object_status;			use et_object_status;
+with et_mirroring;				use et_mirroring;
 
 
 generic
@@ -531,7 +532,7 @@ package et_geometry_2a is
 	-- If axis is X then it swaps upper y with lower y.
 	procedure mirror (
 		point	: in out type_vector_model;
-		axis	: in type_axis_2d);	
+		axis	: in type_mirror);	
 
 	
 
@@ -726,7 +727,7 @@ package et_geometry_2a is
 	-- Mirrors a line along the given axis.
 	procedure mirror (
 		line		: in out type_line;
-		axis		: in type_axis_2d);
+		axis		: in type_mirror);
 
 
 
@@ -923,7 +924,7 @@ package et_geometry_2a is
 	-- Mirrors an arc along the given axis.
 	procedure mirror (
 		arc			: in out type_arc;
-		axis		: in type_axis_2d);
+		axis		: in type_mirror);
 
 
 	-- Rotates an arc about the origin by the given rotation.
@@ -1125,7 +1126,7 @@ package et_geometry_2a is
 	-- Mirrors the center of a circle along the given axis.
 	procedure mirror (
 		circle		: in out type_circle;
-		axis		: in type_axis_2d);
+		axis		: in type_mirror);
 	
 
 	procedure rotate_by (

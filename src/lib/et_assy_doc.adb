@@ -6,20 +6,21 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -92,7 +93,7 @@ package body et_assy_doc is
 	
 	procedure mirror_lines (
 		lines	: in out pac_doc_lines.list;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_doc_lines.list;
 
@@ -181,7 +182,7 @@ package body et_assy_doc is
 	
 	procedure mirror_arcs (
 		arcs	: in out pac_doc_arcs.list;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_doc_arcs.list;
 
@@ -267,7 +268,7 @@ package body et_assy_doc is
 
 	procedure mirror_circles (
 		circles	: in out pac_doc_circles.list;
-		axis	: in type_axis_2d := Y)		
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_doc_circles.list;
 
@@ -325,7 +326,7 @@ package body et_assy_doc is
 
 	procedure mirror_contours (
 		contours	: in out pac_doc_contours.list;
-		axis		: in type_axis_2d := Y)		
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_doc_contours.list;
 
@@ -384,7 +385,7 @@ package body et_assy_doc is
 
 	procedure mirror_texts (
 		texts	: in out pac_doc_texts.list;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_doc_texts.list;
 

@@ -981,13 +981,17 @@ package body et_geometry_2a is
 
 	procedure mirror (
 		point	: in out type_vector_model;
-		axis	: in type_axis_2d) 
+		axis	: in type_mirror) 
 	is begin
 		case axis is
-			when X =>
+			when MIRROR_ALONG_X_AXIS =>
 				point.y := point.y * (-1.0);
-			when Y =>
+				
+			when MIRROR_ALONG_Y_AXIS =>
 				point.x := point.x * (-1.0);
+				
+			when MIRROR_NO =>
+				null;
 		end case;
 	end mirror;
 
@@ -1354,7 +1358,7 @@ package body et_geometry_2a is
 
 	procedure mirror (
 		line		: in out type_line;
-		axis		: in type_axis_2d)
+		axis		: in type_mirror)
 	is begin
 		mirror (line.start_point, axis);
 		mirror (line.end_point, axis);
@@ -1693,7 +1697,7 @@ package body et_geometry_2a is
 
 	procedure mirror (
 		arc			: in out type_arc;
-		axis		: in type_axis_2d)
+		axis		: in type_mirror)
 	is begin
 		mirror (arc.center, axis);
 		mirror (arc.start_point, axis);
@@ -2525,7 +2529,7 @@ package body et_geometry_2a is
 
 	procedure mirror (
 		circle		: in out type_circle;
-		axis		: in type_axis_2d) 
+		axis		: in type_mirror) 
 	is begin
 		mirror (circle.center, axis);
 	end mirror;

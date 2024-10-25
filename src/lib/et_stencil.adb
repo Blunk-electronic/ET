@@ -6,20 +6,21 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -44,7 +45,7 @@ package body et_stencil is
 
 	procedure mirror_lines (
 		lines	: in out pac_stencil_lines.list;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_stencil_lines.list;
 
@@ -59,6 +60,7 @@ package body et_stencil is
 		lines.iterate (query_line'access);
 		lines := result;
 	end mirror_lines;
+
 	
 	
 	procedure rotate_lines (
@@ -80,6 +82,7 @@ package body et_stencil is
 	end rotate_lines;
 
 	
+	
 	procedure move_lines (
 		lines	: in out pac_stencil_lines.list;
 		offset	: in type_distance_relative)
@@ -99,12 +102,14 @@ package body et_stencil is
 	end move_lines;	
 
 
+
+	
 	
 -- ARCS
 	
 	procedure mirror_arcs (
 		arcs	: in out pac_stencil_arcs.list;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_stencil_arcs.list;
 
@@ -119,6 +124,7 @@ package body et_stencil is
 		arcs.iterate (query_arc'access);
 		arcs := result;
 	end mirror_arcs;
+
 	
 	
 	procedure rotate_arcs (
@@ -140,6 +146,7 @@ package body et_stencil is
 	end rotate_arcs;
 
 	
+	
 	procedure move_arcs (
 		arcs	: in out pac_stencil_arcs.list;
 		offset	: in type_distance_relative)
@@ -159,12 +166,14 @@ package body et_stencil is
 	end move_arcs;
 
 
+
+	
 	
 -- CIRCLES
 	
 	procedure mirror_circles (
 		circles	: in out pac_stencil_circles.list;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_stencil_circles.list;
 
@@ -180,6 +189,7 @@ package body et_stencil is
 		circles := result;
 	end mirror_circles;
 	
+
 	
 	procedure rotate_circles (
 		circles	: in out pac_stencil_circles.list;
@@ -200,6 +210,7 @@ package body et_stencil is
 	end rotate_circles;
 
 	
+	
 	procedure move_circles (
 		circles	: in out pac_stencil_circles.list;
 		offset	: in type_distance_relative)
@@ -219,12 +230,14 @@ package body et_stencil is
 	end move_circles;
 
 
+
+	
 	
 -- CONTOURS
 	
 	procedure mirror_contours (
 		contours	: in out pac_stencil_contours.list;
-		axis		: in type_axis_2d := Y)
+		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_stencil_contours.list;
 
@@ -279,10 +292,12 @@ package body et_stencil is
 	end move_contours;
 
 
+
+	
 	
 	procedure mirror_stencil_objects (
 		stencil	: in out type_stencil;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is begin
 		mirror_lines (stencil.lines);
 		mirror_arcs (stencil.arcs);

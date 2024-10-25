@@ -50,6 +50,7 @@ with et_string_processing;
 with et_logging;				use et_logging;
 with et_geometry;				use et_geometry;
 with et_sheets;					use et_sheets;
+with et_mirroring;				use et_mirroring;
 with et_coordinates_2;			use et_coordinates_2;
 use et_coordinates_2.pac_geometry_2;
 
@@ -111,7 +112,7 @@ package et_kicad_coordinates is
 
 	procedure mirror_point (
 		position	: in out type_position;
-		axis		: in type_axis_2D);
+		axis		: in type_mirror);
 
 
 	procedure move_point (

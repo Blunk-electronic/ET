@@ -150,7 +150,7 @@ package body et_kicad_coordinates is
 
 	procedure mirror_point (
 		position	: in out type_position;
-		axis		: in type_axis_2D)
+		axis		: in type_mirror)
 	is begin
 		mirror (position.point, axis);
 	end mirror_point;

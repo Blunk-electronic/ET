@@ -49,6 +49,8 @@ with gtk.main;					use gtk.main;
 
 with gtkada.types;
 
+with et_mirroring;
+
 
 package body et_canvas is
 
@@ -3495,7 +3497,7 @@ package body et_canvas is
 		line		: in type_line'class;
 		pos			: in type_position := origin_zero_rotation;
 		width		: in type_distance_positive;
-		mirror		: in type_mirror_style := mirror_style_default;
+		mirror		: in type_mirror := MIRROR_NO;
 		style		: in type_line_style := CONTINUOUS;
 		do_stroke	: in boolean := false;
 		polyline	: in boolean := false)
@@ -3512,16 +3514,17 @@ package body et_canvas is
 		-- The bounding-box of the line. It is required
 		-- for the area and size check:
 		b : type_area;
-		
+
+		use et_mirroring;
 	begin		
 		-- Rotate the line by pos.rotation
 		rotate_by (l, pos.rotation);
 
 		-- Mirror the line:
 		case mirror is
-			when NO_MIRROR => null;
-			when MIRROR_X  => pac_geometry.mirror (l, X);
-			when MIRROR_Y  => pac_geometry.mirror (l, Y);
+			when MIRROR_NO => null;
+			when MIRROR_ALONG_X_AXIS => pac_geometry.mirror (l, MIRROR_ALONG_X_AXIS);
+			when MIRROR_ALONG_Y_AXIS => pac_geometry.mirror (l, MIRROR_ALONG_Y_AXIS);
 		end case;
 		
 		-- Move the line to the given position:
@@ -3594,7 +3597,7 @@ package body et_canvas is
 		pos			: in type_position := origin_zero_rotation;
 		filled		: in type_filled;
 		width		: in type_distance_positive;
-		mirror		: in type_mirror_style := mirror_style_default;
+		mirror		: in type_mirror := MIRROR_NO;
 		style		: in type_line_style := CONTINUOUS;
 		do_stroke	: in boolean := false)
 	is
@@ -3619,9 +3622,9 @@ package body et_canvas is
 
 		-- Mirror the circle:
 		case mirror is
-			when NO_MIRROR => null;
-			when MIRROR_X  => pac_geometry.mirror (c, X);
-			when MIRROR_Y  => pac_geometry.mirror (c, Y);
+			when MIRROR_NO => null;
+			when MIRROR_ALONG_X_AXIS  => pac_geometry.mirror (c, MIRROR_ALONG_X_AXIS);
+			when MIRROR_ALONG_Y_AXIS  => pac_geometry.mirror (c, MIRROR_ALONG_Y_AXIS);
 		end case;
 		
 		-- Move the circle to the given position:
@@ -3694,7 +3697,7 @@ package body et_canvas is
 		arc			: in type_arc'class;
 		pos			: in type_position := origin_zero_rotation;
 		width		: in type_distance_positive;
-		mirror		: in type_mirror_style := mirror_style_default;		
+		mirror		: in type_mirror := MIRROR_NO;		
 		style		: in type_line_style := CONTINUOUS;
 		do_stroke	: in boolean := false)
 	is
@@ -3722,9 +3725,9 @@ package body et_canvas is
 
 		-- Mirror the circle:
 		case mirror is
-			when NO_MIRROR => null;
-			when MIRROR_X  => pac_geometry.mirror (c, X);
-			when MIRROR_Y  => pac_geometry.mirror (c, Y);
+			when MIRROR_NO => null;
+			when MIRROR_ALONG_X_AXIS  => pac_geometry.mirror (c, MIRROR_ALONG_X_AXIS);
+			when MIRROR_ALONG_Y_AXIS  => pac_geometry.mirror (c, MIRROR_ALONG_Y_AXIS);
 		end case;
 		
 		-- Move the arc to the given position:
@@ -3811,7 +3814,7 @@ package body et_canvas is
 	procedure draw_rectangle (
 		rectangle	: in type_area;
 		pos			: in type_position := origin_zero_rotation;
-		mirror		: in type_mirror_style := mirror_style_default;
+		mirror		: in type_mirror := MIRROR_NO;
 		width		: in type_distance_positive)
 	is
 		use et_geometry;

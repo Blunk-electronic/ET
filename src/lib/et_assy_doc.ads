@@ -47,6 +47,7 @@ with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_text;
 with et_logging;				use et_logging;
+with et_mirroring;				use et_mirroring;
 
 
 package et_assy_doc is
@@ -99,7 +100,7 @@ package et_assy_doc is
 	-- Mirrors a list of lines along the given axis:
 	procedure mirror_lines (
 		lines	: in out pac_doc_lines.list;
-		axis	: in type_axis_2d := Y);					
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);					
 
 	-- Rotates a list of lines by the given angle:
 	procedure rotate_lines (
@@ -137,7 +138,7 @@ package et_assy_doc is
 	-- Mirrors a list of arcs along the given axis:
 	procedure mirror_arcs (
 		arcs	: in out pac_doc_arcs.list;
-		axis	: in type_axis_2d := Y);					
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	-- Rotates a list of arcs by the given angle:
 	procedure rotate_arcs (
@@ -177,7 +178,7 @@ package et_assy_doc is
 	-- Mirrors a list of circles along the given axis:
 	procedure mirror_circles (
 		circles	: in out pac_doc_circles.list;
-		axis	: in type_axis_2d := Y);					
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	-- Rotates a list of circles by the given angle:
 	procedure rotate_circles (
@@ -201,7 +202,7 @@ package et_assy_doc is
 	-- Mirrors a list of contours along the given axis:
 	procedure mirror_contours (
 		contours	: in out pac_doc_contours.list;
-		axis		: in type_axis_2d := Y);					
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	-- Rotates a list of contours by the given angle:
 	procedure rotate_contours (
@@ -229,7 +230,7 @@ package et_assy_doc is
 	-- Mirrors a list of texts along the given axis:
 	procedure mirror_texts (
 		texts	: in out pac_doc_texts.list;
-		axis	: in type_axis_2d := Y);					
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	-- Rotates a list of texts by the given angle:
 	procedure rotate_texts (

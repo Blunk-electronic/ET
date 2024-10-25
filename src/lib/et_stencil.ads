@@ -42,6 +42,7 @@ with ada.containers.doubly_linked_lists;
 
 with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
+with et_mirroring;				use et_mirroring;
 with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_conductor_segment;
@@ -69,7 +70,7 @@ package et_stencil is
 	-- Mirrors a list of lines along the given axis:
 	procedure mirror_lines (
 		lines	: in out pac_stencil_lines.list;
-		axis	: in type_axis_2d := Y);
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	
 	-- Rotates a list of lines by the given angle about the origin:
@@ -101,7 +102,7 @@ package et_stencil is
 	-- Mirrors a list of arcs along the given axis:
 	procedure mirror_arcs (
 		arcs	: in out pac_stencil_arcs.list;
-		axis	: in type_axis_2d := Y);
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	
 	-- Rotates a list of arcs by the given angle about the origin:
@@ -132,7 +133,7 @@ package et_stencil is
 	-- Mirrors a list of circles along the given axis:
 	procedure mirror_circles (
 		circles	: in out pac_stencil_circles.list;
-		axis	: in type_axis_2d := Y);
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 	
 	-- Rotates a list of circles by the given angle about the origin:
 	procedure rotate_circles (
@@ -158,7 +159,7 @@ package et_stencil is
 	-- Mirrors a list of contours along the given axis:
 	procedure mirror_contours (
 		contours	: in out pac_stencil_contours.list;
-		axis		: in type_axis_2d := Y);
+		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS);
 	
 	-- Rotates a list of contours by the given angle about the origin:
 	procedure rotate_contours (
@@ -192,7 +193,7 @@ package et_stencil is
 	-- Mirrors the given objects along the given axis:
 	procedure mirror_stencil_objects (
 		stencil	: in out type_stencil;
-		axis	: in type_axis_2d := Y);
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 	
 	-- Rotates the given objects by the given angle
 	-- about the origin:

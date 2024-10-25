@@ -63,7 +63,7 @@ package et_canvas.contours is
 		style	: in type_line_style := CONTINUOUS;
 		filled	: in type_filled;
 		width	: in type_distance_positive;
-		mirror	: in type_mirror_style := mirror_style_default);
+		mirror	: in type_mirror := MIRROR_NO);
 		-- CS fill style
 
 
@@ -74,7 +74,7 @@ package et_canvas.contours is
 		inner_border	: in type_circle;
 		pos 			: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		offset			: in type_position := origin_zero_rotation;
-		mirror			: in type_mirror_style := mirror_style_default);
+		mirror			: in type_mirror := MIRROR_NO);
 
 	
 	-- This procedure draws a filled contour
@@ -84,7 +84,7 @@ package et_canvas.contours is
 		inner_border	: in type_contour'class;
 		pos 			: in type_position := origin_zero_rotation; -- includes x,y, rotation
 		offset			: in type_position := origin_zero_rotation;
-		mirror			: in type_mirror_style := mirror_style_default);
+		mirror			: in type_mirror := MIRROR_NO);
 
 	
 		

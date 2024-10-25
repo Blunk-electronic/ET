@@ -142,14 +142,14 @@ package body et_conductor_segment is
 
 	procedure mirror_lines (
 		lines	: in out pac_conductor_lines.list;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_conductor_lines.list;
 
 		procedure query_line (c : in pac_conductor_lines.cursor) is
 			line : type_conductor_line := element (c);
 		begin
-			mirror (line, Y);
+			mirror (line, MIRROR_ALONG_Y_AXIS);
 			result.append (line);
 		end;
 		
@@ -295,14 +295,14 @@ package body et_conductor_segment is
 
 	procedure mirror_arcs (
 		arcs	: in out pac_conductor_arcs.list;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_conductor_arcs.list;
 
 		procedure query_arc (c : in pac_conductor_arcs.cursor) is
 			arc : type_conductor_arc := element (c);
 		begin
-			mirror (arc, Y);
+			mirror (arc, MIRROR_ALONG_Y_AXIS);
 			result.append (arc);
 		end;
 		
@@ -434,14 +434,14 @@ package body et_conductor_segment is
 	
 	procedure mirror_circles (
 		circles	: in out pac_conductor_circles.list;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_conductor_circles.list;
 
 		procedure query_circle (c : in pac_conductor_circles.cursor) is
 			circle : type_conductor_circle := element (c);
 		begin
-			mirror (circle, Y);
+			mirror (circle, MIRROR_ALONG_Y_AXIS);
 			result.append (circle);
 		end;
 		

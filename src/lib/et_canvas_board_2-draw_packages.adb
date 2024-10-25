@@ -40,11 +40,13 @@ with ada.text_io;				use ada.text_io;
 
 with et_geometry;					use et_geometry;
 
+with et_mirroring;					use et_mirroring;
+
 with et_symbols;
 with et_devices;
 with et_schematic;
 
-with et_drills;					use et_drills;
+with et_drills;						use et_drills;
 
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
@@ -1178,7 +1180,7 @@ is
 					-- If the package is to be flipped then
 					-- mirror the pad POSITION along the Y-axis:
 					if flipped then
-						mirror (pos_tmp, Y);
+						mirror (pos_tmp, MIRROR_ALONG_Y_AXIS);
 					end if;
 
 					-- Now move the pad POSITION by the position
@@ -1224,7 +1226,7 @@ is
 						-- If the package is flipped, then the terminal position
 						-- must be mirrored along the Y axis.
 						if flipped then 
-							mirror (pos_tmp, Y); 
+							mirror (pos_tmp, MIRROR_ALONG_Y_AXIS); 
 						end if;
 						
 						-- Now move the pad POSITION by the position
@@ -1277,7 +1279,7 @@ is
 									pos		=> get_position (package_position),
 									offset	=> pad_position,
 									filled	=> YES,
-									mirror	=> MIRROR_Y,
+									mirror	=> MIRROR_ALONG_Y_AXIS,
 									width	=> zero);
 
 							else
@@ -1345,7 +1347,7 @@ is
 									pos		=> get_position (package_position),
 									offset	=> pad_position,
 									filled	=> YES,
-									mirror	=> MIRROR_Y,
+									mirror	=> MIRROR_ALONG_Y_AXIS,
 									width	=> zero);
 
 							else
@@ -1419,7 +1421,7 @@ is
 									pos		=> get_position (package_position),
 									offset	=> pad_position,
 									filled	=> YES,
-									mirror	=> MIRROR_Y,
+									mirror	=> MIRROR_ALONG_Y_AXIS,
 									width	=> zero);
 
 							else
@@ -1489,7 +1491,7 @@ is
 											inner_border	=> c,
 											pos				=> get_position (package_position),
 											offset			=> pad_position,
-											mirror			=> MIRROR_Y);
+											mirror			=> MIRROR_ALONG_Y_AXIS);
 
 									else
 										draw_contour_with_circular_cutout (
@@ -1508,7 +1510,7 @@ is
 											inner_border	=> hole_contours,
 											pos				=> get_position (package_position),
 											offset			=> pad_position,
-											mirror			=> MIRROR_Y);
+											mirror			=> MIRROR_ALONG_Y_AXIS);
 
 									else
 										draw_contour_with_arbitrary_cutout (
@@ -1572,7 +1574,7 @@ is
 									offset		=> pad_position,
 									filled		=> YES,
 									width		=> zero,
-									mirror		=> MIRROR_Y);
+									mirror		=> MIRROR_ALONG_Y_AXIS);
 							else
 								draw_contour (
 									contour		=> stopmask_contours,
@@ -1637,7 +1639,7 @@ is
 								inner_border	=> hole_contours,								   
 								pos				=> get_position (package_position),
 								offset			=> pad_position,
-								mirror			=> MIRROR_Y);
+								mirror			=> MIRROR_ALONG_Y_AXIS);
 						else
 							draw_contour_with_arbitrary_cutout (
 								outer_border	=> pad_contours,
@@ -1662,7 +1664,7 @@ is
 					use et_geometry;
 
 					circle : type_circle;
-					mirror_style : type_mirror_style := mirror_style_default;
+					mirror_style : type_mirror := MIRROR_NO;
 					
 				begin
 					if inner_conductors_enabled (bottom_layer) then
@@ -1673,7 +1675,7 @@ is
 						circle.radius := (drill_size + restring) * 0.5;
 
 						if flipped then
-							mirror_style := MIRROR_Y;
+							mirror_style := MIRROR_ALONG_Y_AXIS;
 						end if;
 						
 						set_color_tht_pad (brightness);

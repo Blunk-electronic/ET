@@ -53,6 +53,7 @@ with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_logging;				use et_logging;
+with et_mirroring;				use et_mirroring;
 
 
 package et_device_placeholders.packages is
@@ -73,7 +74,7 @@ package et_device_placeholders.packages is
 	-- Mirrors a list of placeholders along the given axis:
 	procedure mirror_placeholders (
 		placeholders	: in out pac_placeholders.list;
-		axis			: in type_axis_2d := Y);
+		axis			: in type_mirror := MIRROR_ALONG_Y_AXIS);
 	
 	-- Rotates a list of placeholders by the given angle:
 	procedure rotate_placeholders (

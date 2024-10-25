@@ -6,20 +6,21 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 -2024                                                 --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -39,6 +40,7 @@ with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 
 with ada.exceptions;
+
 
 package body et_packages is
 	
@@ -154,7 +156,7 @@ package body et_packages is
 
 	procedure mirror_conductor_objects (
 		conductors	: in out type_conductor_objects;
-		axis		: in type_axis_2d := Y)
+		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is begin
 		mirror_lines (conductors.lines, axis);
 		mirror_arcs (conductors.arcs, axis);
@@ -560,7 +562,7 @@ package body et_packages is
 
 		-- If the package is flipped, then the terminal position
 		-- must be mirrored along the Y axis.
-		if flipped = YES then mirror (term_pos.place, Y); end if;
+		if flipped = YES then mirror (term_pos.place, MIRROR_ALONG_Y_AXIS); end if;
 		
 		-- Move the given terminal position by the position of the package.
 		move_by (term_pos.place, package_position_relative);
@@ -579,7 +581,7 @@ package body et_packages is
 			-- If the package is flipped, then the
 			-- given outline (of a pad or a milled hole)
 			-- must be mirrored along the Y axis.
-			mirror (outline, Y); 
+			mirror (outline, MIRROR_ALONG_Y_AXIS); 
 		else				
 			-- The outline must be rotated by the rotation of the package
 			-- plus the rotation of the given position itself:

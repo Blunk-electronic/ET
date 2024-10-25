@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -60,14 +60,14 @@ package body et_via_restrict is
 
 	procedure mirror_lines (
 		lines	: in out pac_via_restrict_lines.list;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_via_restrict_lines.list;
 
 		procedure query_line (c : in pac_via_restrict_lines.cursor) is
 			line : type_via_restrict_line := element (c);
 		begin
-			mirror (line, Y);
+			mirror (line, MIRROR_ALONG_Y_AXIS);
 			result.append (line);
 		end;
 		
@@ -77,6 +77,7 @@ package body et_via_restrict is
 	end mirror_lines;
 
 
+	
 	procedure rotate_lines (
 		lines	: in out pac_via_restrict_lines.list;
 		angle	: in type_rotation_model)
@@ -96,6 +97,7 @@ package body et_via_restrict is
 	end rotate_lines;
 
 
+	
 	procedure move_lines (
 		lines	: in out pac_via_restrict_lines.list;
 		offset	: in type_distance_relative)
@@ -115,6 +117,7 @@ package body et_via_restrict is
 	end move_lines;
 
 
+	
 	function to_polygons (
 		lines		: in pac_via_restrict_lines.list;
 		tolerance	: in type_distance_positive)
@@ -132,6 +135,8 @@ package body et_via_restrict is
 	end to_polygons;
 
 
+
+	
 -- ARCS
 
 	function to_polygon (
@@ -152,14 +157,14 @@ package body et_via_restrict is
 	
 	procedure mirror_arcs (
 		arcs	: in out pac_via_restrict_arcs.list;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_via_restrict_arcs.list;
 
 		procedure query_arc (c : in pac_via_restrict_arcs.cursor) is
 			arc : type_via_restrict_arc := element (c);
 		begin
-			mirror (arc, Y);
+			mirror (arc, MIRROR_ALONG_Y_AXIS);
 			result.append (arc);
 		end;
 		
@@ -168,6 +173,7 @@ package body et_via_restrict is
 		arcs := result;
 	end mirror_arcs;
 
+	
 
 	procedure rotate_arcs (
 		arcs	: in out pac_via_restrict_arcs.list;
@@ -188,6 +194,7 @@ package body et_via_restrict is
 	end rotate_arcs;
 
 
+	
 	procedure move_arcs (
 		arcs	: in out pac_via_restrict_arcs.list;
 		offset	: in type_distance_relative)
@@ -208,6 +215,7 @@ package body et_via_restrict is
 
 
 
+	
 	function to_polygons (
 		arcs		: in pac_via_restrict_arcs.list;
 		tolerance	: in type_distance_positive)
@@ -226,6 +234,7 @@ package body et_via_restrict is
 
 
 
+	
 -- CIRCLES
 
 	function to_polygon_outside (
@@ -253,6 +262,7 @@ package body et_via_restrict is
 	end to_polygon_outside;
 
 
+	
 	function to_polygon_inside (
 		circle 		: in type_via_restrict_circle;
 		tolerance	: in type_distance_positive)							
@@ -281,14 +291,14 @@ package body et_via_restrict is
 	
 	procedure mirror_circles (
 		circles	: in out pac_via_restrict_circles.list;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_via_restrict_circles.list;
 
 		procedure query_circle (c : in pac_via_restrict_circles.cursor) is
 			circle : type_via_restrict_circle := element (c);
 		begin
-			mirror (circle, Y);
+			mirror (circle, MIRROR_ALONG_Y_AXIS);
 			result.append (circle);
 		end;
 		
@@ -298,6 +308,7 @@ package body et_via_restrict is
 	end mirror_circles;
 
 
+	
 	procedure rotate_circles (
 		circles	: in out pac_via_restrict_circles.list;
 		angle	: in type_rotation_model)
@@ -317,6 +328,7 @@ package body et_via_restrict is
 	end rotate_circles;
 
 
+	
 	procedure move_circles (
 		circles	: in out pac_via_restrict_circles.list;
 		offset	: in type_distance_relative)

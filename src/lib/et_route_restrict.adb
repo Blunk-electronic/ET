@@ -59,14 +59,14 @@ package body et_route_restrict is
 	
 	procedure mirror_lines (
 		lines	: in out pac_route_restrict_lines.list;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_route_restrict_lines.list;
 
 		procedure query_line (c : in pac_route_restrict_lines.cursor) is
 			line : type_route_restrict_line := element (c);
 		begin
-			mirror (line, Y);
+			mirror (line, MIRROR_ALONG_Y_AXIS);
 			result.append (line);
 		end;
 		
@@ -75,6 +75,7 @@ package body et_route_restrict is
 		lines := result;
 	end mirror_lines;
 
+	
 
 	procedure rotate_lines (
 		lines	: in out pac_route_restrict_lines.list;
@@ -94,6 +95,7 @@ package body et_route_restrict is
 		lines := result;
 	end rotate_lines;
 
+	
 
 	procedure move_lines (
 		lines	: in out pac_route_restrict_lines.list;
@@ -114,6 +116,7 @@ package body et_route_restrict is
 	end move_lines;
 
 
+	
 	function to_polygons (
 		lines		: in pac_route_restrict_lines.list;
 		tolerance	: in type_distance_positive)
@@ -131,6 +134,7 @@ package body et_route_restrict is
 	end to_polygons;
 
 
+	
 	
 	
 -- ARCS
@@ -152,14 +156,14 @@ package body et_route_restrict is
 	
 	procedure mirror_arcs (
 		arcs	: in out pac_route_restrict_arcs.list;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_route_restrict_arcs.list;
 
 		procedure query_arc (c : in pac_route_restrict_arcs.cursor) is
 			arc : type_route_restrict_arc := element (c);
 		begin
-			mirror (arc, Y);
+			mirror (arc, MIRROR_ALONG_Y_AXIS);
 			result.append (arc);
 		end;
 		
@@ -168,6 +172,7 @@ package body et_route_restrict is
 		arcs := result;
 	end mirror_arcs;
 
+	
 
 	procedure rotate_arcs (
 		arcs	: in out pac_route_restrict_arcs.list;
@@ -188,6 +193,7 @@ package body et_route_restrict is
 	end rotate_arcs;
 
 
+	
 	procedure move_arcs (
 		arcs	: in out pac_route_restrict_arcs.list;
 		offset	: in type_distance_relative)
@@ -207,6 +213,7 @@ package body et_route_restrict is
 	end move_arcs;
 
 
+	
 
 	function to_polygons (
 		arcs		: in pac_route_restrict_arcs.list;
@@ -254,6 +261,7 @@ package body et_route_restrict is
 	end to_polygon_outside;
 
 
+	
 	function to_polygon_inside (
 		circle 		: in type_route_restrict_circle;
 		tolerance	: in type_distance_positive)							
@@ -282,14 +290,14 @@ package body et_route_restrict is
 	
 	procedure mirror_circles (
 		circles	: in out pac_route_restrict_circles.list;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_route_restrict_circles.list;
 
 		procedure query_circle (c : in pac_route_restrict_circles.cursor) is
 			circle : type_route_restrict_circle := element (c);
 		begin
-			mirror (circle, Y);
+			mirror (circle, MIRROR_ALONG_Y_AXIS);
 			result.append (circle);
 		end;
 		
@@ -299,6 +307,7 @@ package body et_route_restrict is
 	end mirror_circles;
 
 
+	
 	procedure rotate_circles (
 		circles	: in out pac_route_restrict_circles.list;
 		angle	: in type_rotation_model)
@@ -317,6 +326,7 @@ package body et_route_restrict is
 		circles := result;
 	end rotate_circles;
 
+	
 
 	procedure move_circles (
 		circles	: in out pac_route_restrict_circles.list;
@@ -354,6 +364,7 @@ package body et_route_restrict is
 		return result;
 	end to_polygons_outside;
 
+	
 
 	function to_polygons_inside (
 		circles		: in pac_route_restrict_circles.list;
@@ -386,6 +397,7 @@ package body et_route_restrict is
 			 & to_string (type_line (line)), level => log_threshold);
 	end line_route_restrict_properties;
 
+	
 	
 	procedure arc_route_restrict_properties (
 		face			: in type_face;

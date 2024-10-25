@@ -277,7 +277,7 @@ package et_text is
 		-- Mirrors a text along the given axis:
 		procedure mirror_text (
 			text	: in out type_text_fab;
-			axis	: in type_axis_2d := Y);
+			axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 		-- Rotates a text by the given angle about the origin:
 		procedure rotate_text (
@@ -1831,7 +1831,7 @@ package et_text is
 		-- Mirrors a vector text along the given axis:
 		procedure mirror_vector_text (
 			text	: in out type_vector_text;
-			axis	: in type_axis_2d := Y);
+			axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 		
 
 		-- Rotates a vector text by the given angle about the origin:

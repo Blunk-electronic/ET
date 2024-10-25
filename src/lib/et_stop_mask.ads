@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             STOP MASK                                    --
+--                          SOLDER STOPMASK                                 --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -43,6 +43,7 @@ with ada.strings;				use ada.strings;
 
 with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
+with et_mirroring;				use et_mirroring;
 with et_geometry;				use et_geometry;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_conductor_segment;
@@ -72,7 +73,7 @@ package et_stop_mask is
 	-- Mirrors a list of lines along the given axis:
 	procedure mirror_lines (
 		lines	: in out pac_stop_lines.list;
-		axis	: in type_axis_2d := Y);					
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	-- Rotates a list of lines by the given angle:
 	procedure rotate_lines (
@@ -101,7 +102,7 @@ package et_stop_mask is
 	-- Mirrors a list of arcs along the given axis:
 	procedure mirror_arcs (
 		arcs	: in out pac_stop_arcs.list;
-		axis	: in type_axis_2d := Y);					
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	-- Rotates a list of arcs by the given angle:
 	procedure rotate_arcs (
@@ -128,7 +129,7 @@ package et_stop_mask is
 	-- Mirrors a list of circles along the given axis:
 	procedure mirror_circles (
 		circles	: in out pac_stop_circles.list;
-		axis	: in type_axis_2d := Y);					
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);	
 
 	-- Rotates a list of circles by the given angle:
 	procedure rotate_circles (
@@ -151,7 +152,7 @@ package et_stop_mask is
 	-- Mirrors a list of contours along the given axis:
 	procedure mirror_contours (
 		contours	: in out pac_stop_contours.list;
-		axis		: in type_axis_2d := Y);					
+		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	-- Rotates a list of contours by the given angle:
 	procedure rotate_contours (
@@ -181,7 +182,7 @@ package et_stop_mask is
 	-- Mirrors a list of texts along the given axis:
 	procedure mirror_texts (
 		texts	: in out pac_stop_texts.list;
-		axis	: in type_axis_2d := Y);					
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	-- Rotates a list of texts by the given angle:
 	procedure rotate_texts (

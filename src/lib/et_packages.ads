@@ -54,6 +54,7 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_general;
+with et_mirroring;				use et_mirroring;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_pcb_sides;				use et_pcb_sides;
@@ -220,8 +221,9 @@ package et_packages is
 	-- along the given axis:
 	procedure mirror_conductor_objects (
 		conductors	: in out type_conductor_objects;
-		axis		: in type_axis_2d := Y);
+		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
+	
 	-- Rotates the given non-electric conductor objects 
 	-- by the given angle about the origin:
 	procedure rotate_conductor_objects (

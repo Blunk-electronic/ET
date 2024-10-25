@@ -44,6 +44,7 @@ with ada.numerics;
 with ada.numerics.generic_elementary_functions;
 
 with et_geometry;				use et_geometry;
+with et_mirroring;				use et_mirroring;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
@@ -561,7 +562,7 @@ package et_geometry_1 is
 	-- Mirrors the location vector along the given axis:
 	procedure mirror (
 		v		: in out type_vector;
-		axis	: in type_axis_2d);
+		axis	: in type_mirror);
 
 
 	-- Returns the displacement vector from v1 to v2.
@@ -622,7 +623,7 @@ package et_geometry_1 is
 	-- Mirrors a list of location vectors along the given axis:
 	procedure mirror_vectors (
 		vectors	: in out pac_vectors.list;
-		axis	: in type_axis_2d);  
+		axis	: in type_mirror);  
 
 	
 	-- Appends all location vectors of source to the target:
@@ -938,7 +939,7 @@ package et_geometry_1 is
 	-- Mirrors a line along the given axis:
 	procedure mirror_line (
 		line	: in out type_line_fine;
-		axis	: in type_axis_2d);
+		axis	: in type_mirror);
 
 	
 	-- Swaps start and end point of a line:
