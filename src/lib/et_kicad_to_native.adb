@@ -48,6 +48,7 @@ with gnat.source_info;
 
 with et_nets;
 with et_net_labels;
+with et_units;
 with et_schematic;
 
 with et_geometry;					use et_geometry;
@@ -2490,6 +2491,7 @@ package body et_kicad_to_native is
 
 			return model_return;
 		end rename_package_model;
+
 		
 		procedure copy_components is
 		-- Transfer components from kicad module to native module.
@@ -2504,21 +2506,22 @@ package body et_kicad_to_native is
 			component_cursor_native	: pac_devices_sch.cursor;
 			component_inserted		: boolean;
 
-			procedure copy_units (
+			
 			-- Copies the kicad units to the native component.
+			procedure copy_units (
 				reference	: in type_device_name;
-				component	: in out type_device_sch) is
-
+				component	: in out type_device_sch) 
+			is
 				use et_kicad.schematic.type_units_schematic;
 				units_kicad			: et_kicad.schematic.type_units_schematic.map := element (component_cursor_kicad).units;
 				unit_cursor_kicad	: et_kicad.schematic.type_units_schematic.cursor := units_kicad.first; -- point to first unit
 
-				use et_schematic.pac_units;
-				unit_cursor_native	: et_schematic.pac_units.cursor;
+				use et_units.pac_units;
+				unit_cursor_native	: et_units.pac_units.cursor;
 				unit_inserted		: boolean;
 
-				unit_native_virtual	: et_schematic.type_unit (et_symbols.VIRTUAL);
-				unit_native_real	: et_schematic.type_unit (et_symbols.PCB);
+				unit_native_virtual	: et_units.type_unit (et_symbols.VIRTUAL);
+				unit_native_real	: et_units.type_unit (et_symbols.PCB);
 
 				use et_symbols;
 			begin -- copy_units
@@ -2543,7 +2546,7 @@ package body et_kicad_to_native is
 												rotation 	=> element (unit_cursor_kicad).rotation),
 								appearance	=> VIRTUAL);
 							
-							et_schematic.pac_units.insert (
+							et_units.pac_units.insert (
 								container	=> component.units,
 								key			=> key (unit_cursor_kicad),
 								position	=> unit_cursor_native,
@@ -2568,7 +2571,7 @@ package body et_kicad_to_native is
 								purpose		=> (meaning => PURPOSE, others => <>)
 								);
 							
-							et_schematic.pac_units.insert (
+							et_units.pac_units.insert (
 								container	=> component.units,
 								key			=> key (unit_cursor_kicad),
 								position	=> unit_cursor_native,

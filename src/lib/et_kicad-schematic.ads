@@ -79,6 +79,9 @@ with et_frames;
 with et_kicad_libraries;		use et_kicad_libraries;
 with et_kicad_packages;			use et_kicad_packages;
 
+with et_units;					use et_units;
+
+
 package et_kicad.schematic is
 
 	use et_kicad_libraries.pac_text;
@@ -157,9 +160,9 @@ package et_kicad.schematic is
 	
 	-- A kicad unit:
 	type type_unit_schematic is record
-		appearance	: et_schematic.type_appearance_schematic;
+		appearance	: type_appearance_schematic;
 		rotation	: type_rotation_model := zero_rotation;
-		mirror		: et_schematic.type_mirror := et_schematic.NO;
+		mirror		: type_mirror := NO;
 		position	: et_kicad_coordinates.type_position;		
 
 		-- We use the native type for a text placeholder here.
@@ -170,6 +173,8 @@ package et_kicad.schematic is
 		timestamp	: et_kicad_general.type_timestamp;
 		alt_repres	: type_de_morgan_representation;
 	end record;
+
+	
 
 	procedure add_unit (
 	-- Adds a unit into the given commponent.
@@ -186,12 +191,16 @@ package et_kicad.schematic is
 		"<"				=> et_devices.pac_unit_name."<",
 		element_type	=> type_unit_schematic);
 
+
+	
 	function unit_exists (
 	-- Returns true if the unit with the given name exists in the given list of units.
 		name	: in et_devices.pac_unit_name.bounded_string; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return boolean;
 
+
+	
 	function position_of_unit (
 	-- Returns the coordinates of the unit with the given name.
 	-- It is assumed, the unit in question exists.
@@ -199,14 +208,18 @@ package et_kicad.schematic is
 		name	: in et_devices.pac_unit_name.bounded_string; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
 		return et_kicad_coordinates.type_position;
+
+
 	
-	function mirror_style_of_unit (
 	-- Returns the mirror style of the given unit.
 	-- It is assumed, the unit in question exists.
 	-- The unit is an element in the given list of units.
+	function mirror_style_of_unit (
 		name	: in et_devices.pac_unit_name.bounded_string; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
-		return et_schematic.type_mirror;
+		return type_mirror;
+
+
 	
 	function orientation_of_unit (
 	-- Returns the orientation of the given unit.
@@ -215,6 +228,8 @@ package et_kicad.schematic is
 		name 	: in et_devices.pac_unit_name.bounded_string; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
 		return et_coordinates_2.type_rotation_model;
+
+
 	
 	procedure write_unit_properties (
 	-- Writes the properties of the unit indicated by the given cursor.
@@ -226,6 +241,8 @@ package et_kicad.schematic is
 	-- example: AR Path="/59F17FDE/5A991D18" Ref="RPH1"  Part="1" 
 	package type_alternative_reference_path is new doubly_linked_lists (
 		element_type => et_kicad_general.type_timestamp); -- 5A991D18
+
+
 	
 	type type_alternative_reference is record
 		path		: type_alternative_reference_path.list; -- 59F17FDE 5A991D18 ...
@@ -238,7 +255,7 @@ package et_kicad.schematic is
 
 	
 	-- This is a component as it appears in the schematic.
-	type type_component_schematic (appearance : et_schematic.type_appearance_schematic) is record
+	type type_component_schematic (appearance : type_appearance_schematic) is record
 		library_name	: type_device_library_name.bounded_string; -- lib name like ../libraries/transistors.lib
 		generic_name	: type_component_generic_name.bounded_string; -- example: "TRANSISTOR_PNP"
 		alt_references	: type_alternative_references.list;
@@ -324,6 +341,7 @@ package et_kicad.schematic is
 
 	type type_port_open is new boolean;
 	type type_port_connected is (YES, NO);
+
 	
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
@@ -331,12 +349,13 @@ package et_kicad.schematic is
 		coordinates 	: et_kicad_coordinates.type_position;
 		direction		: type_port_direction; -- example: "passive"
 		style			: type_port_style;
-		appearance		: et_schematic.type_appearance_schematic;
+		appearance		: type_appearance_schematic;
 		intended_open	: type_port_open; -- set while portlist generation. true if port is to be left open intentionally (by a no_connection-flag)
 		connected		: type_port_connected; -- set while netlist generation. true when port connected with a net
 		power_flag		: type_power_flag; -- indicates if port belongs to a power_flag
 	end record;
 
+	
 	-- Ports can be collected in a simple list:
 	package type_ports is new doubly_linked_lists (type_port); 
 	--use type_ports;

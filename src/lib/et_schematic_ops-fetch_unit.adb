@@ -50,19 +50,21 @@ is
 	
 	module_cursor : pac_generic_modules.cursor; -- points to the targeted module
 
+	
 	procedure query_devices (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in out type_module) is
-
+		module		: in out type_module) 
+	is
 		use et_symbols;
 		use et_schematic.pac_devices_sch;
 		device_cursor_sch : et_schematic.pac_devices_sch.cursor;
 
+		
 		procedure query_units_in_use (
 			device_name	: in type_device_name;
 			device		: in type_device_sch)
 		is
-			use et_schematic.pac_units;
+			use pac_units;
 		begin
 			if contains (device.units, unit_name) then
 				log (ERROR, to_string (device_name) &
@@ -76,6 +78,7 @@ is
 				
 			end if;
 		end query_units_in_use;
+		
 
 		device_model : pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		device_cursor_lib : pac_devices_lib.cursor;

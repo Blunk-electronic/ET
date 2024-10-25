@@ -49,6 +49,7 @@ with et_board_ops.grid;
 with et_pcb;
 
 with et_coordinates_2;
+with et_units;
 with et_schematic;
 with et_sheets;
 with et_net_labels;						use et_net_labels;
@@ -836,9 +837,11 @@ is
 		unit	: in et_devices.pac_unit_name.bounded_string := to_unit_name (""); -- A, B, ..
 		mode	: in type_show_device := FIRST_UNIT)
 	is
+		use et_units;
 		use et_devices;
 		use et_canvas_schematic_2;
 
+		
 		function locate (unit : in et_devices.pac_unit_name.bounded_string) 
 			return type_unit_query
 		is begin
@@ -882,11 +885,9 @@ is
 					-- CS center_on (canvas, location.position.place);
 
 						-- Make the whole device (with all its units) selected:
-						proposed_units.append (new_item =>
-							(
+						proposed_units.append (new_item => (
 							device	=> locate_device (active_module, device),
-							unit	=> et_schematic.pac_units.no_element
-							));
+							unit	=> pac_units.no_element));
 
 						selected_unit := proposed_units.first;
 
@@ -896,6 +897,7 @@ is
 					end if;
 				end;
 
+				
 			when BY_UNIT_NAME =>
 				declare
 					-- The unit name is explicitely given:
@@ -909,11 +911,9 @@ is
 					-- CS center_on (canvas, location.position.place);
 
 						-- Make the whole device (with all its units) selected:
-						proposed_units.append (new_item =>
-							(
+						proposed_units.append (new_item => (
 							device	=> locate_device (active_module, device),
-							unit	=> locate_unit (active_module, device, unit)
-							));
+							unit	=> locate_unit (active_module, device, unit)));
 
 						selected_unit := proposed_units.first;
 
@@ -923,6 +923,7 @@ is
 					end if;
 				end;
 
+				
 			when FIRST_UNIT_ON_CURRENT_SHEET =>
 				declare
 					-- The unit name is empty because we will center just 
@@ -937,11 +938,9 @@ is
 						-- CS	center_on (canvas, location.position.place);
 
 							-- Make the whole device (with all its units) selected:
-							proposed_units.append (new_item =>
-								(
+							proposed_units.append (new_item => (
 								device	=> locate_device (active_module, device),
-								unit	=> et_schematic.pac_units.no_element
-								));
+								unit	=> pac_units.no_element));
 
 							selected_unit := proposed_units.first;
 							

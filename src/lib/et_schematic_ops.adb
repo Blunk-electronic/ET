@@ -2226,6 +2226,8 @@ package body et_schematic_ops is
 		return unit_cursor;
 	end locate_unit;
 
+	
+
 	function deployed (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
@@ -2922,6 +2924,8 @@ package body et_schematic_ops is
 
 	end units_on_sheet;
 
+
+	
 	function position (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
@@ -2958,6 +2962,8 @@ package body et_schematic_ops is
 		return unit_position;
 	end position;
 
+
+	
 	function position (
 		device	: in pac_devices_sch.cursor; -- R2
 		unit	: in pac_units.cursor)
@@ -2983,6 +2989,8 @@ package body et_schematic_ops is
 		return unit_position;
 	end position;
 
+
+	
 	
 	function position (
 		device		: in pac_devices_sch.cursor; -- R2
@@ -3028,6 +3036,7 @@ package body et_schematic_ops is
 		return placeholder_position;
 	end position;
 
+	
 
 	
 	function sheet (

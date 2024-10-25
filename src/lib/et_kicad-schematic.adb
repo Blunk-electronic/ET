@@ -111,6 +111,8 @@ package body et_kicad.schematic is
 		end if;
 	end unit_exists;
 
+
+	
 	function position_of_unit (
 	-- Returns the coordinates of the unit with the given name.
 	-- It is assumed, the unit in question exists.
@@ -124,19 +126,21 @@ package body et_kicad.schematic is
 		return type_units_schematic.element (unit_cursor).position;
 	end position_of_unit;
 
+
+	
 	function mirror_style_of_unit (
-	-- Returns the mirror style of the given unit.
-	-- It is assumed, the unit in question exists.
-	-- The unit is an element in the given list of units.
 		name 	: in et_devices.pac_unit_name.bounded_string; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
-		return et_schematic.type_mirror is
+		return type_mirror 
+	is
 		unit_cursor : type_units_schematic.cursor;
 	begin
 		unit_cursor := type_units_schematic.find (container => units, key => name);
 		return type_units_schematic.element (unit_cursor).mirror;
 	end mirror_style_of_unit;
 
+
+	
 	function orientation_of_unit (
 	-- Returns the orientation of the given unit.
 	-- It is assumed, the unit in question exists.
@@ -184,7 +188,7 @@ package body et_kicad.schematic is
 		log (text => to_string (type_units_schematic.element (unit).rotation), level => log_threshold);
 
 		-- mirror style
-		log (text => et_schematic.to_string (type_units_schematic.element (unit).mirror, verbose => true), level => log_threshold);
+		log (text => to_string (type_units_schematic.element (unit).mirror, verbose => true), level => log_threshold);
 
 		-- placeholders
 		log (text => "placeholders", level => log_threshold + 1);
@@ -223,6 +227,8 @@ package body et_kicad.schematic is
 		log_indentation_down;		
 	end write_unit_properties;
 
+
+	
 	function units_of_component (component_cursor : in type_components_schematic.cursor) return type_units_schematic.map is
 	-- Returns the units of the given component.
 		u : type_units_schematic.map;
@@ -242,6 +248,8 @@ package body et_kicad.schematic is
 		-- CS: do something if cursor invalid. via exception handler ?
 		return u;
 	end units_of_component;
+
+	
 
 	procedure check_prefix_characters (
 		prefix 		: in pac_device_prefix.bounded_string;
@@ -266,6 +274,8 @@ package body et_kicad.schematic is
 			raise constraint_error;
 		end if;
 	end check_prefix_characters;
+
+	
 	
 	function to_component_reference (	
 	-- Converts a string like "IC303" to a composite type_device_name.

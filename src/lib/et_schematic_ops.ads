@@ -78,6 +78,7 @@ with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;
 
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+with et_units;							use et_units;
 
 
 package et_schematic_ops is
@@ -355,7 +356,7 @@ package et_schematic_ops is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
 		unit	: in pac_unit_name.bounded_string)
-		return et_schematic.pac_units.cursor;
+		return pac_units.cursor;
 	
 
 	-- Returns true if the unit of the given device in the 
@@ -534,9 +535,9 @@ package et_schematic_ops is
 	
 	-- Returns the position (x/y/sheet) of the given unit.
 	-- Raises constraint error if device or unit does not exist.
-	function position (
+	function position ( -- CS rename to get_position
 		device	: in pac_devices_sch.cursor; -- R2
-		unit	: in et_schematic.pac_units.cursor)
+		unit	: in pac_units.cursor)
 		return et_coordinates_2.type_position;
 
 	
@@ -545,7 +546,7 @@ package et_schematic_ops is
 	-- Raises constraint error if device or unit does not exist.
 	function position ( -- CS rename to get_position
 		device		: in pac_devices_sch.cursor; -- R2
-		unit		: in et_schematic.pac_units.cursor;
+		unit		: in pac_units.cursor;
 		category	: in type_placeholder_meaning)
 		return type_vector_model;
 

@@ -52,6 +52,7 @@ with et_project.modules;			use et_project.modules;
 with et_symbols;					use et_symbols;
 with et_devices;					use et_devices;
 with et_nets;						use et_nets;
+with et_units;						use et_units;
 with et_schematic;					
 with et_schematic_ops;				use et_schematic_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;
@@ -80,12 +81,14 @@ package et_canvas_schematic_units is
 
 		-- If the cursor to the actual unit is no_element then
 		-- the whole device is regarded as selected:
-		unit	: et_schematic.pac_units.cursor;
+		unit	: pac_units.cursor;
 	end record;
 
+	
 	package pac_proposed_units is new doubly_linked_lists (type_selected_unit);
 	use pac_proposed_units;
 
+	
 	-- These variables are used by the GUI when the operator selects a unit:
 	proposed_units	: pac_proposed_units.list;
 	selected_unit	: pac_proposed_units.cursor;

@@ -91,7 +91,7 @@ with et_silkscreen;
 with et_assy_doc.boards;
 with et_keepout;
 with et_pcb_contour;
-
+with et_units;
 
 
 separate (et_project.modules)
@@ -1021,12 +1021,12 @@ is
 	
 	
 	device_value			: et_devices.pac_device_value.bounded_string; -- 470R
-	device_appearance		: et_schematic.type_appearance_schematic;
+	device_appearance		: et_units.type_appearance_schematic;
 	--device_unit				: et_schematic.type_unit;
 	--device_unit_rotation	: et_coordinates_2.type_rotation_model := geometry.zero_rotation;
 
 
-	device_unit_mirror		: et_schematic.type_mirror := et_schematic.NO;
+	device_unit_mirror		: et_units.type_mirror := et_units.NO;
 	device_unit_name		: et_devices.pac_unit_name.bounded_string; -- GPIO_BANK_1
 	device_unit_position	: et_coordinates_2.type_position; -- x,y,sheet,rotation
 
@@ -1036,6 +1036,7 @@ is
 		use et_coordinates_2;	
 		use pac_geometry_2;
 		use et_devices;
+		use et_units;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -1056,7 +1057,7 @@ is
 
 		elsif kw = keyword_mirrored then -- mirrored no/x_axis/y_axis
 			expect_field_count (line, 2);
-			device_unit_mirror := et_schematic.to_mirror_style (f (line, 2));
+			device_unit_mirror := to_mirror_style (f (line, 2));
 
 		else
 			invalid_keyword (kw);
@@ -1250,7 +1251,7 @@ is
 
 	
 	-- temporarily collection of units:
-	device_units	: et_schematic.pac_units.map; -- PWR, A, B, ...
+	device_units	: et_units.pac_units.map; -- PWR, A, B, ...
 	
 	device_partcode	: pac_device_partcode.bounded_string;
 	device_purpose	: et_devices.pac_device_purpose.bounded_string;
@@ -2886,6 +2887,7 @@ is
 			procedure insert_unit is 
 				use et_coordinates_2;
 				use et_symbols;
+				use et_units;
 			begin
 				log_indentation_up;
 				-- log (text => "unit " & to_string (device_unit_name), log_threshold + 1);
@@ -2896,7 +2898,7 @@ is
 				
 				case device_appearance is
 					when VIRTUAL =>
-						et_schematic.pac_units.insert (
+						pac_units.insert (
 							container	=> device_units,
 							key			=> device_unit_name,
 							new_item	=> (
@@ -2906,7 +2908,7 @@ is
 												
 					when PCB =>
 						-- A unit of a real device has placeholders:
-						et_schematic.pac_units.insert (
+						pac_units.insert (
 							container	=> device_units,
 							key			=> device_unit_name,
 							new_item	=> (
@@ -2926,7 +2928,7 @@ is
 				device_unit_position := zero_position;
 				device_unit_name := et_devices.unit_name_default;
 				--device_unit := (others => <>);
-				device_unit_mirror := et_schematic.NO;
+				device_unit_mirror := NO;
 				--device_unit_rotation := geometry.zero_rotation;
 
 				-- CS reset placeholders for name, value and purpose ?
@@ -5795,7 +5797,7 @@ is
 							device.units := device_units;
 
 							-- clear temporarily collection of units for next device
-							et_schematic.pac_units.clear (device_units);
+							et_units.pac_units.clear (device_units);
 							
 						when others => invalid_section;
 					end case;

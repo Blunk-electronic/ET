@@ -89,6 +89,7 @@ with et_assy_doc.boards;
 with et_keepout;
 with et_pcb_contour;
 
+with et_units;
 
 
 separate (et_project.modules)
@@ -865,7 +866,8 @@ is
 			device		: in type_device_sch) 
 		is
 			use et_coordinates_2;
-			use et_schematic.pac_units;
+			use et_units;
+			use pac_units;
 			unit_cursor : pac_units.cursor := device.units.first;
 
 			use et_coordinates_2.pac_geometry_2;

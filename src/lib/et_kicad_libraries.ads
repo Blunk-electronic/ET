@@ -6,20 +6,21 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -68,6 +69,8 @@ with et_devices;				use et_devices;
 
 with et_device_placeholders;			--use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
+
+with et_units;							use et_units;
 
 
 package et_kicad_libraries is
@@ -473,7 +476,7 @@ package et_kicad_libraries is
 		coordinates 	: et_kicad_coordinates.type_position;
 		direction		: type_port_direction; -- example: "passive"
 		style			: type_port_style;
-		appearance		: et_schematic.type_appearance_schematic;
+		appearance		: type_appearance_schematic;
 		intended_open	: type_port_open; -- set while portlist generation. true if port is to be left open intentionally (by a no_connection-flag)
 		connected		: type_port_connected; -- set while netlist generation. true when port connected with a net
 		power_flag		: type_power_flag; -- indicates if port belongs to a power_flag
