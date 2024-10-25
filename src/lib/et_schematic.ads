@@ -86,6 +86,7 @@ with et_meta;
 with et_design_rules;
 with et_commit;
 with et_object_status;			use et_object_status;
+with et_units;					use et_units;
 
 
 package et_schematic is
@@ -117,67 +118,12 @@ package et_schematic is
 	package pac_texts is new doubly_linked_lists (type_text);
 
 
-	
-	
-	-- Units can be placed mirrored along the x or y axis or not at all.
-	type type_mirror is (NO, X_AXIS, Y_AXIS);
-
-	
-	function to_string (
-		mirror	: in type_mirror;
-		verbose	: in boolean)
-		return string;
-	-- returns the given mirror style as string
-
-	function to_mirror_style (style : in string) return type_mirror;
-
-	
-	
-	-- In a schematic we handle only virtual devices (like GND symbols)
-	-- and those which appear in both schematic an layout (so called real devices):
-	subtype type_appearance_schematic is et_symbols.type_appearance 
-		range et_symbols.VIRTUAL .. et_symbols.PCB;
-
-	
-	-- In a schematic we find units spread all over.
-	-- A unit is a subset of a device.
-	-- Placeholders are available if the device appears in both schematic and layout:
-	type type_unit (appearance : type_appearance_schematic) is record
-		position	: et_coordinates_2.type_position; -- incl. rotation and sheet number
-		mirror		: type_mirror := NO;
-		case appearance is
-			when et_symbols.VIRTUAL => null; -- CS
-			when et_symbols.PCB =>
-				name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
-				value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
-				purpose	: type_text_placeholder (meaning => et_device_placeholders.PURPOSE); -- to be filled in schematic later by the user
-		end case;
-		-- NOTE: The placeholders are defined in et_symbols. Thus they have only
-		-- basic coordinates (x/y relative to the unit position).
-		-- Via the unit position the sheet number can be obtained.
-	end record;
-
-	
-	-- Units of a device are collected in a map.
-	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
-	package pac_units is new indefinite_ordered_maps (
-		key_type		=> pac_unit_name.bounded_string,
-		element_type 	=> type_unit);
-
-	
-	-- Returns a string that tells the name and position of given unit.
-	function to_string (unit : in pac_units.cursor) return string;
 
 
 
 	
-	package pac_unit_positions is new ordered_maps (
-		key_type		=> pac_unit_name.bounded_string, -- A, B, IO_BANK_1
-		element_type	=> et_coordinates_2.type_position); -- sheet, x, y
 
 	
-	function unit_positions (units : in pac_units.map) return pac_unit_positions.map;
-	--Returns a list of units and their coordinates in the schematic.	
 
 
 	-- This is a device as it appears in the schematic.

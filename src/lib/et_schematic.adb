@@ -273,58 +273,11 @@ package body et_schematic is
 	end iterate;
 
 	
-
 	
 
 	
 
-
 	
-	
-	function to_string (
-		mirror	: in type_mirror;
-		verbose : in boolean)
-		return string 
-	is begin
-		if verbose then
-			return "mirrored " & to_lower (type_mirror'image (mirror));
-		else
-			return to_lower (type_mirror'image (mirror));
-		end if;
-	end to_string;
-
-	
-	function to_mirror_style (style : in string) return type_mirror is begin
-		return type_mirror'value (style);
-	end to_mirror_style;
-
-	
-	function to_string (unit : in pac_units.cursor) return string is
-		use pac_units;
-	begin
-		return et_devices.to_string (key (unit)) 
-			--& to_string (type_vector_model (element (unit).position));
-			& to_string (element (unit).position.place);
-			-- CS output sheet number and rotation ?
-	end to_string;
-
-	
-	function unit_positions (
-		units : in pac_units.map)
-		return pac_unit_positions.map
-	is
-		list : pac_unit_positions.map; -- to be returned
-		use pac_units;
-		use pac_unit_positions;
-		
-		procedure query_unit (cursor : pac_units.cursor) is begin
-			list.insert (key (cursor), element (cursor).position);
-		end;
-		
-	begin
-		iterate (units, query_unit'access);
-		return list;
-	end unit_positions;
 
 
 
