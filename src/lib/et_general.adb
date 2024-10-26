@@ -169,48 +169,6 @@ package body et_general is
 		return entries;
 	end directory_entries;
 
-	procedure show_cdl_switches is
-	-- Outputs the command line switches that initiate something.
-		dash : constant character := hyphen;
-	begin
-		put_line ("available commandline switches:");
-		put_line (dash & switch_version);
-
-		put_line (dash & switch_native_project_create);
-		put_line (dash & switch_native_project_open);
-		put_line (dash & switch_native_project_save_as);
-
-		put_line (dash & switch_native_package_create);
-		put_line (dash & switch_native_package_open);		
-		put_line (dash & switch_native_package_save_as);
-
-		put_line (dash & switch_native_symbol_create);
-		put_line (dash & switch_native_symbol_open);		
-		put_line (dash & switch_native_symbol_save_as);
-
-		put_line (dash & switch_native_device_create);
-		put_line (dash & switch_native_device_open);		
-		put_line (dash & switch_native_device_save_as);
-
-		put_line (dash & switch_frame_schematic_create);
-		put_line (dash & switch_frame_schematic_open);		
-		put_line (dash & switch_frame_schematic_save_as);
-
-		put_line (dash & switch_frame_pcb_create);
-		put_line (dash & switch_frame_pcb_open);		
-		put_line (dash & switch_frame_pcb_save_as);
-		
-		put_line (dash & switch_execute_script);
-		put_line (dash & switch_make_default_conv);
-		put_line (dash & switch_import_project);
-
-		put_line (dash & switch_runmode);
-		
-		put_line ("For additional switches and examples see <https://github.com/Blunk-electronic/ET>");
-	end show_cdl_switches;
-
-
-	
 	
 
 	
