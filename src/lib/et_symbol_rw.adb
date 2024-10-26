@@ -45,6 +45,7 @@ with ada.exceptions;
 with et_primitive_objects;			use et_primitive_objects;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_general;					use et_general;
+with et_directory_and_file_ops;
 with et_general_rw;					use et_general_rw;
 with et_axes;						use et_axes;
 with et_text;
@@ -1105,7 +1106,7 @@ package body et_symbol_rw is
 			open (
 				file => file_handle,
 				mode => in_file, 
-				name => expand (to_string (file_name)));
+				name => et_directory_and_file_ops.expand (to_string (file_name)));
 
 			set_input (file_handle);
 			

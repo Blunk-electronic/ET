@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -39,6 +39,8 @@
 
 with ada.directories;
 with et_string_processing;		use et_string_processing;
+with et_directory_and_file_ops;
+
 
 package body et_meta is
 
@@ -100,6 +102,7 @@ package body et_meta is
 		return boolean 
 	is
 		use ada.directories;
+		use et_directory_and_file_ops;
 	begin
 		if exists (expand (to_string (lib))) then
 			return true;
@@ -114,6 +117,7 @@ package body et_meta is
 	is begin
 		return to_bounded_string (lib);
 	end to_preferred_library_schematic;
+
 	
 	function to_string (lib : in pac_preferred_library_schematic.bounded_string)
 		return string
@@ -121,10 +125,12 @@ package body et_meta is
 		return pac_preferred_library_schematic.to_string (lib);
 	end to_string;
 
+	
 	function exists (lib : in pac_preferred_library_board.bounded_string)
 		return boolean 
 	is
 		use ada.directories;
+		use et_directory_and_file_ops;
 	begin
 		if exists (expand (to_string (lib))) then
 			return true;
@@ -132,12 +138,14 @@ package body et_meta is
 			return false;
 		end if;
 	end exists;
+
 	
 	function to_preferred_library_board (lib : in string)
 		return pac_preferred_library_board.bounded_string
 	is begin
 		return to_bounded_string (lib);
 	end to_preferred_library_board;
+
 
 	function to_string (lib : in pac_preferred_library_board.bounded_string)
 		return string

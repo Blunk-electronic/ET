@@ -41,6 +41,7 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.exceptions;
 with ada.directories;
 with gnat.directory_operations;
+with et_directory_and_file_ops;
 
 with et_export;
 with et_general_rw;				use et_general_rw;
@@ -87,6 +88,7 @@ package body et_project is
 		use et_string_processing;
 		use ada.directories;
 		use gnat.directory_operations;
+		use et_directory_and_file_ops;
 		expanded_name : constant string := expand (to_string (project_name));
 	begin
 		-- The project must be a directory inside the current directory.
@@ -104,6 +106,8 @@ package body et_project is
 			raise constraint_error;
 		end if;
 	end validate_project_name;
+
+	
 	
 	procedure create_supplementary_directories (
 		path			: in string;
@@ -446,6 +450,7 @@ package body et_project is
 	-- 3. The expanded file_name may be an absolute path pointing elsewhere in the filesystem.
 	--    In this case the expanded path starts with / and the return will be false.
 		use gnat.directory_operations;
+		use et_directory_and_file_ops;
 		expanded_name : constant string := expand (file_name);
 	begin
 		if 	index (expanded_name, to_set (dir_separator)) = 1 or -- absolute path

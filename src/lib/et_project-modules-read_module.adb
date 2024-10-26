@@ -95,6 +95,7 @@ with et_keepout;
 with et_pcb_contour;
 with et_units;
 with et_mirroring;						use et_mirroring;
+with et_directory_and_file_ops;
 
 
 separate (et_project.modules)
@@ -113,6 +114,7 @@ is
 	-- so that the environment variables are replaced by the real paths like:
 	-- templates/clock_generator.mod or
 	-- /home/user/et_templates/pwr_supply.mod.
+	use et_directory_and_file_ops;
 	file_name_expanded : constant string := expand (file_name);
 		
 	file_handle : ada.text_io.file_type;

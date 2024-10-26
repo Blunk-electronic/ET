@@ -49,6 +49,7 @@ with et_pcb_contour;			use et_pcb_contour;
 with et_conventions;
 with et_pcb_sides;
 with et_axes;					use et_axes;
+with et_directory_and_file_ops;
 
 
 package body et_kicad_packages is
@@ -2549,6 +2550,7 @@ package body et_kicad_packages is
 
 	
 	procedure read_libraries (
+		log_threshold 	: in type_log_level) 
 	-- Reads package libraries.
 	-- V4: 
 	-- 	- Creates the libraries in container package_libraries.
@@ -2556,11 +2558,10 @@ package body et_kicad_packages is
 	-- V5:
 	--	- The list package_libraries has been created on reading the project file with empty libraries inside.
 	-- 	- Now the libraries must be filled.
-		log_threshold 	: in type_log_level) is
-
+	is
 		use ada.directories;
-		use et_general;
-		use et_general.pac_directory_entries;
+		use et_directory_and_file_ops;
+		use pac_directory_entries;
 		use et_packages;
 
 		-- V4 RELATED ------------------------------------------------------------------------------------------

@@ -52,6 +52,7 @@ with ada.containers.ordered_maps;
 
 with et_assembly_variants;			use et_assembly_variants;
 with et_general;				--use et_general;
+with et_directory_and_file_ops;
 with et_primitive_objects;			use et_primitive_objects;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_coordinates_2;				use et_coordinates_2;
@@ -1417,6 +1418,7 @@ package body et_device_rw is
 		end process_line;
 
 		previous_input : ada.text_io.file_type renames current_input;
+
 		
 	begin -- read_device_file
 		log_indentation_up;
@@ -1430,7 +1432,8 @@ package body et_device_rw is
 		else
 			-- If the model file is to be read, first check if the file exists.
 			declare
-				file : string := et_general.expand (to_string (file_name));
+				use et_directory_and_file_ops;
+				file : string := expand (to_string (file_name));
 			begin
 				if ada.directories.exists (file) then
 

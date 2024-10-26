@@ -82,6 +82,7 @@ with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 
 with et_commit;
 with et_undo_redo;
+with et_directory_and_file_ops;
 
 
 package body et_canvas_schematic_units is
@@ -991,6 +992,8 @@ package body et_canvas_schematic_units is
 		use et_meta.pac_preferred_libraries_schematic;
 		all_lib_dirs : pac_preferred_libraries_schematic.list;
 		top_lib_dir : pac_preferred_library_schematic.bounded_string;
+
+		use et_directory_and_file_ops;
 	begin
 		all_lib_dirs := get_preferred_libraries (active_module);
 		top_lib_dir := element (all_lib_dirs.first);
@@ -1230,7 +1233,8 @@ package body et_canvas_schematic_units is
 		
 		button_directory, button_model : gtk_file_chooser_button;
 		filter : gtk_file_filter;
-		
+
+		use et_directory_and_file_ops;
 	begin
 		-- BUILD THE DEVICE SELECTION WINDOW:
 

@@ -49,6 +49,7 @@ with ada.tags;
 with ada.exceptions;
 
 with et_general;					use et_general;
+with et_directory_and_file_ops;
 with et_primitive_objects;			use et_primitive_objects;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_text;
@@ -1305,7 +1306,11 @@ package body et_frame_rw is
 				return false;
 			end if;
 		end is_dummy_frame;
-				
+
+		
+		use et_directory_and_file_ops;
+		
+		
 	begin -- read_frame
 		log (text => "reading frame " & to_string (file_name) & " ...", level => log_threshold);
 		log_indentation_up;

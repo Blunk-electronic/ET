@@ -46,6 +46,7 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.exceptions;
 with ada.directories;
 with gnat.directory_operations;
+with et_directory_and_file_ops;
 
 with et_export;
 with et_text;					use et_text;
@@ -155,6 +156,7 @@ package body et_project.modules is
 		module_cursor : pac_generic_modules.cursor;
 		inserted : boolean;
 		use et_string_processing;
+		use et_directory_and_file_ops;
 	begin
 		log (
 			text	=> "creating module " & enclose_in_quotes (to_string (module_name)) & " ...",

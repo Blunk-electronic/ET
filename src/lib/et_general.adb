@@ -52,55 +52,6 @@ with et_logging;					use et_logging;
 package body et_general is
 
 
-
-	
-	function expand (
-	-- Translates a file name like $HOME/libraries/devices/7400.dev to
-	-- /home/user/libraries/devices/7400.dev
-	-- CS: works on unix/linux only
-		name_in			: in string) -- $HOME/libraries/devices/7400.dev
-		--log_threshold	: et_string_processing.type_log_level)
-		return string is
-
-		prefix : constant string := ("$"); -- CS: windows ? (like %home%)
-		separator : constant string := (1 * gnat.directory_operations.dir_separator); -- /\
-		
-		place_prefix, place_separator : natural := 0;
-		--use gnat.directory_operations;
-		--use et_string_processing;
-		
--- 		function do_it (path : in string) return string is begin
--- 			log ("full path is " & path, log_threshold + 1);
--- 			return path;
--- 		end;
-		
-	begin -- expand
-		place_prefix := index (name_in, prefix);
-		place_separator := index (name_in, separator);
-
-		if place_prefix = 0 then -- no environment variable found
-			return name_in; -- return given name as it is
-		else
-			-- name contains an environment variable
-			--log_indentation_up;
-			
-			--log ("expanding " & name_in, log_threshold);
-			-- CS test_vars (name_in); -- test if environment variables exist
-			
-			--log_indentation_down;
-			
-			--return do_it (gnat.directory_operations.expand_path (name_in));
-			return gnat.directory_operations.expand_path (name_in);
-		end if;
-
-	end expand;
-
-	function make_filter_pattern (extension : in string) return string is 
-		use ada.directories;
-	begin
-		return compose (name => "*", extension => extension);
-	end make_filter_pattern;
-
 	
 	function to_module_file_name (name : in string) return pac_module_file_name.bounded_string is begin
 		return pac_module_file_name.to_bounded_string (name);
@@ -129,45 +80,6 @@ package body et_general is
 		return file_name & '.' & module_file_name_extension;
 	end;
 	
-	function directory_entries (
-	-- Returns the entries of the given directory. Parameter category determines whether to
-	-- search for directories, ordinary files or special files.
-		target_directory	: in string;						-- ../lbr
-		category			: in ada.directories.file_kind;		-- directory, ordinary_file, special_file
-		pattern				: in string) 						-- *.txt
-		return pac_directory_entries.list is
-
-		use ada.directories;
-		filter : filter_type;
-		entries : pac_directory_entries.list; -- to be returned
-		
-		procedure do_it (item : in directory_entry_type) is
-		-- appends items to the container "entries"
-		begin
-			pac_directory_entries.append (
-				container => entries,
-				new_item => simple_name (item));
-		end do_it;
-
-	begin -- directory_entries
-
-		-- set filter according to the item category:
-		case category is
-			when directory =>
-				filter := (directory => true, others => false);
-
-			when ordinary_file =>
-				filter := (ordinary_file => true, others => false);
-
-			when special_file =>
-				filter := (special_file => true, others => false);
-		end case;
-
-		-- start search
-		search (target_directory, pattern, filter, do_it'access);
-		
-		return entries;
-	end directory_entries;
 
 	
 

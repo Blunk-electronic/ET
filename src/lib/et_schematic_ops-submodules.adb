@@ -39,6 +39,7 @@
 
 with ada.exceptions;
 with ada.directories;
+with et_directory_and_file_ops;
 
 with et_mirroring;					use et_mirroring;
 with et_pcb_coordinates_2;
@@ -2983,6 +2984,7 @@ package body et_schematic_ops.submodules is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
+		use et_directory_and_file_ops;
 		full_file_name : constant string := expand (et_submodules.to_string (file));
 		
 		use et_submodules;
@@ -4222,6 +4224,7 @@ package body et_schematic_ops.submodules is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
+		use et_directory_and_file_ops;
 		full_file_name : constant string := expand (et_submodules.to_string (file));
 		
 		use et_submodules;
