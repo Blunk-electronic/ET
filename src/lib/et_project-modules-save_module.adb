@@ -40,6 +40,7 @@ with et_pcb_sides;
 with et_pcb_coordinates_2;
 
 with et_geometry;
+with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_net_labels;
 with et_symbols;
@@ -1326,7 +1327,7 @@ is
 			write (keyword => keyword_name, parameters => et_general.to_string (key (submodule_cursor))); -- name stepper_driver_1
 			write (keyword => keyword_file, parameters => pac_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
 
-			write (keyword => et_schematic_rw.keyword_position, parameters => position (element (submodule_cursor).position));
+			write (keyword => keyword_position, parameters => position (element (submodule_cursor).position));
 			write (keyword => et_submodules.keyword_size, parameters => 
 				space & keyword_x & to_string (element (submodule_cursor).size.x) &
 				space & keyword_y & to_string (element (submodule_cursor).size.y)); -- size x 50 y 70
@@ -1371,7 +1372,7 @@ is
 			section_mark (section_text, HEADER);
 			write
 				(
-				keyword		=> et_schematic_rw.keyword_position,
+				keyword		=> keyword_position,
 				parameters	=> keyword_sheet & to_string (element (text_cursor).sheet) 
 								& space & position (element (text_cursor).position)
 				); -- position sheet 1 x 30 y 180

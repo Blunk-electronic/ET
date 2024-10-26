@@ -83,6 +83,17 @@ package et_primitive_objects is
 	type type_line_style is (CONTINUOUS, DASHED);
 	-- CS other pattersn like jotted, dash-point, ... ?
 
+
+
+	keyword_direction	: constant string := "direction";
+	keyword_start		: constant string := "start";
+	keyword_end			: constant string := "end";
+	keyword_center		: constant string := "center";		
+	keyword_radius		: constant string := "radius";		
+	keyword_diameter	: constant string := "diameter";
+	keyword_filled 		: constant string := "filled";
+
+	
 	
 		
 end et_primitive_objects;

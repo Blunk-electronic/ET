@@ -44,17 +44,6 @@ with et_string_processing;		use et_string_processing;
 
 package et_geometry is
 	
-	-- keyword_position	: constant string := "position";
-	keyword_x 			: constant string := "x";
-	keyword_y 			: constant string := "y";		
-	keyword_rotation 	: constant string := "rotation";
-	keyword_direction	: constant string := "direction";
-	keyword_start		: constant string := "start";
-	keyword_end			: constant string := "end";
-	keyword_center		: constant string := "center";		
-	keyword_radius		: constant string := "radius";		
-	keyword_diameter	: constant string := "diameter";
-	keyword_filled 		: constant string := "filled";
 
 	procedure dummy;
 		

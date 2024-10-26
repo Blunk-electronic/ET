@@ -47,9 +47,11 @@ with ada.tags;
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
-with et_axes;					use et_axes;
-with et_text;					use et_text;
-with et_exceptions;				use et_exceptions;
+with et_axes;						use et_axes;
+with et_coordinates_formatting;		use et_coordinates_formatting;
+with et_primitive_objects;			use et_primitive_objects;
+with et_text;						use et_text;
+with et_exceptions;					use et_exceptions;
 
 package body et_pcb_rw is
 
@@ -157,7 +159,7 @@ package body et_pcb_rw is
 		write (keyword => keyword_center, parameters => to_string (arc.center));
 		write (keyword => keyword_start, parameters => to_string (arc.start_point));
 		write (keyword => keyword_end, parameters => to_string (arc.end_point));
-		write (keyword => et_geometry.keyword_direction, parameters => to_string (arc.direction));
+		write (keyword => keyword_direction, parameters => to_string (arc.direction));
 	end write_arc;
 
 	
@@ -662,7 +664,7 @@ package body et_pcb_rw is
 			-- extract the center position starting at field 2 of line
 			board_arc.center := to_position (line, 2);
 
-		elsif kw = et_geometry.keyword_direction then -- direction ccw
+		elsif kw = keyword_direction then -- direction ccw
 			expect_field_count (line, 2);
 
 			board_arc.direction := to_direction (f (line, 2));
@@ -672,6 +674,7 @@ package body et_pcb_rw is
 		end if;
 	end read_board_arc;
 
+	
 	
 	-- Reads start and end point of the board_arc. If the statement is invalid then it returns a false.
 	function read_board_arc (line : type_fields_of_line) return boolean is
@@ -702,7 +705,7 @@ package body et_pcb_rw is
 
 			return true;
 
-		elsif kw = et_geometry.keyword_direction then -- direction ccw
+		elsif kw = keyword_direction then -- direction ccw
 			expect_field_count (line, 2);
 
 			board_arc.direction := to_direction (f (line, 2));
@@ -713,6 +716,8 @@ package body et_pcb_rw is
 			return false;
 		end if;
 	end;
+
+	
 	
 	-- Reads center and radius of the board_circle. If the statement is invalid then an error issued.
 	procedure read_board_circle (line : type_fields_of_line) is

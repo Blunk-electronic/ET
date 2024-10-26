@@ -49,6 +49,7 @@ with et_terminals;					use et_terminals;
 with et_conductor_text.packages;	use et_conductor_text.packages;
 with et_time;						use et_time;
 with et_mirroring;					use et_mirroring;
+with et_coordinates_formatting;		use et_coordinates_formatting;
 
 
 package body et_pcb_rw.device_packages is

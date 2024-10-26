@@ -55,7 +55,6 @@ package et_axes is
 		axis : in string)
 		return type_axis;
 
-	
 		
 end et_axes;
 

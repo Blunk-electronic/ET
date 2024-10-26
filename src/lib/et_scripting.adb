@@ -133,7 +133,7 @@ package body et_scripting is
 
 	
 	procedure expect_keyword_filled (field : in count_type) is begin
-		log (ERROR, "Expect keyword " & enclose_in_quotes (et_geometry.keyword_filled) &
+		log (ERROR, "Expect keyword " & enclose_in_quotes (keyword_filled) &
 			" in field no." & count_type'image (field) & " !",
 			 console => true);
 		raise constraint_error;

@@ -50,10 +50,11 @@ with ada.exceptions;
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
-with et_assembly_variants;		use et_assembly_variants;
+with et_assembly_variants;			use et_assembly_variants;
 with et_general;				--use et_general;
-with et_primitive_objects;		use et_primitive_objects;
-with et_coordinates_2;			use et_coordinates_2;
+with et_primitive_objects;			use et_primitive_objects;
+with et_coordinates_formatting;		use et_coordinates_formatting;
+with et_coordinates_2;				use et_coordinates_2;
 use et_coordinates_2.pac_geometry_2;
 
 with et_string_processing;
@@ -1175,7 +1176,7 @@ package body et_device_rw is
 										-- extract the end position starting at field 2
 										symbol_arc.end_point := to_position (line,2);
 
-									elsif kw = et_geometry.keyword_direction then -- direction ccw
+									elsif kw = et_primitive_objects.keyword_direction then -- direction ccw
 										expect_field_count (line, 2);
 
 										symbol_arc.direction := to_direction (f (line, 2));

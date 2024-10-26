@@ -49,12 +49,14 @@ with ada.tags;
 with ada.exceptions;
 
 with et_geometry;
-with et_general;				use et_general;
+with et_general;					use et_general;
+with et_primitive_objects;			use et_primitive_objects;
+with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_text;
-with et_frames;					use et_frames;
-with et_string_processing;		use et_string_processing;
-with et_time;					use et_time;
-with et_general_rw;				use et_general_rw;
+with et_frames;						use et_frames;
+with et_string_processing;			use et_string_processing;
+with et_time;						use et_time;
+with et_general_rw;					use et_general_rw;
 
 package body et_frame_rw is
 

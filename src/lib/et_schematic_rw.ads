@@ -42,7 +42,7 @@ package et_schematic_rw is
 
 	keyword_sheet				: constant string := "sheet";	
 
-	keyword_position				: constant string := "position";	
+	-- keyword_position				: constant string := "position";	
 	keyword_position_in_board		: constant string := "position_in_board";
 	keyword_position_in_schematic	: constant string := "position_in_schematic";	
 	keyword_view_mode				: constant string := "view_mode";

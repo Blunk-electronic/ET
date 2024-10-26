@@ -51,7 +51,7 @@ package et_symbol_rw is
 	
 	use pac_geometry_2;
 
-	keyword_position	: constant string := "position";
+	-- keyword_position	: constant string := "position";
 -- 	keyword_style		: constant string := "style";
 	keyword_width 		: constant string := "width";
 	

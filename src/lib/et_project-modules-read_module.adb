@@ -42,6 +42,7 @@ with et_coordinates_2;
 with et_pcb_sides;
 with et_pcb_coordinates_2;
 
+with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_axes;						use et_axes;
 with et_geometry;
@@ -713,7 +714,7 @@ is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = et_schematic_rw.keyword_position then -- position sheet 1 x 1.000 y 5.555
+		if kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
 			expect_field_count (line, 7);
 
 			-- extract strand position starting at field 2
@@ -787,7 +788,7 @@ is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = et_schematic_rw.keyword_position then -- position x 148.59 y 104.59
+		if kw = keyword_position then -- position x 148.59 y 104.59
 			expect_field_count (line, 5);
 
 			-- extract label position starting at field 2 of line
@@ -1048,7 +1049,7 @@ is
 			expect_field_count (line, 2);
 			device_unit_name := to_unit_name (f (line, 2));
 			
-		elsif kw = et_schematic_rw.keyword_position then -- position sheet 1 x 1.000 y 5.555
+		elsif kw = keyword_position then -- position sheet 1 x 1.000 y 5.555
 			expect_field_count (line, 7);
 
 			-- extract position of unit starting at field 2
@@ -1289,7 +1290,7 @@ is
 			expect_field_count (line, 2);
 			device_text_placeholder_layer := to_layer (f (line, 2));
 			
-		elsif kw = et_pcb_rw.keyword_position then -- position x 0.000 y 5.555 rotation 0.00 face top
+		elsif kw = keyword_position then -- position x 0.000 y 5.555 rotation 0.00 face top
 			expect_field_count (line, 9);
 
 			-- extract position of placeholder starting at field 2
@@ -1341,7 +1342,7 @@ is
 			expect_field_count (line, 2);
 			unit_placeholder_meaning := to_meaning (f (line, 2));
 			
-		elsif kw = et_schematic_rw.keyword_position then -- position x 0.000 y 5.555
+		elsif kw = keyword_position then -- position x 0.000 y 5.555
 			expect_field_count (line, 5);
 
 			-- extract position of placeholder starting at field 2
@@ -1387,7 +1388,7 @@ is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = et_pcb_rw.keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+		if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
 			expect_field_count (line, 7);
 
 			-- extract position of note starting at field 2
@@ -1817,7 +1818,7 @@ is
 			expect_field_count (line, 2);
 			submodule_name := to_instance_name (f (line, 2));
 
-		elsif kw = et_schematic_rw.keyword_position then -- position sheet 3 x 130 y 210
+		elsif kw = keyword_position then -- position sheet 3 x 130 y 210
 			expect_field_count (line, 7);
 
 			-- extract position of submodule starting at field 2
@@ -1854,7 +1855,7 @@ is
 			expect_field_count (line, 2);
 			submodule_port_name := to_net_name (f (line, 2));
 
-		elsif kw = et_schematic_rw.keyword_position then -- position x 0 y 10
+		elsif kw = keyword_position then -- position x 0 y 10
 			expect_field_count (line, 5);
 
 			-- extract port position starting at field 2
@@ -1918,7 +1919,7 @@ is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = et_pcb_rw.keyword_position then -- position x 163.500 y 92.500 rotation 0.00 face top
+		if kw = keyword_position then -- position x 163.500 y 92.500 rotation 0.00 face top
 			expect_field_count (line, 9);
 
 			-- extract package position starting at field 2
@@ -1949,7 +1950,7 @@ is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = et_pcb_rw.keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+		if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
 			expect_field_count (line, 7);
 
 			-- extract position of note starting at field 2
@@ -1992,7 +1993,7 @@ is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = et_schematic_rw.keyword_position then -- position sheet 2 x 91.44 y 118.56
+		if kw = keyword_position then -- position sheet 2 x 91.44 y 118.56
 			expect_field_count (line, 7);
 
 			declare
@@ -2043,7 +2044,7 @@ is
 				| SEC_KEEPOUT | SEC_STENCIL =>
 
 				-- CS: In the following: set a corresponding parameter-found-flag
-				if kw = et_pcb_rw.keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+				if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
 					expect_field_count (line, 7);
 
 					-- extract position starting at field 2
@@ -2086,7 +2087,7 @@ is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = et_pcb_rw.keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+		if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
 			expect_field_count (line, 7);
 
 			-- extract position starting at field 2
@@ -2130,7 +2131,7 @@ is
 		kw : constant  string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = et_pcb_rw.keyword_position then -- position x 91.44 y 118.56 rotation 45.0
+		if kw = keyword_position then -- position x 91.44 y 118.56 rotation 45.0
 			expect_field_count (line, 7);
 
 			-- extract position starting at field 2
@@ -2278,7 +2279,7 @@ is
 			expect_field_count (line, 2);
 			device_name := to_device_name (f (line, 2));
 
-		elsif kw = et_pcb_rw.keyword_position then -- position x 163.500 y 92.500 rotation 0.00 face top
+		elsif kw = keyword_position then -- position x 163.500 y 92.500 rotation 0.00 face top
 			expect_field_count (line, 9);
 
 			-- extract device position (in the layout) starting at field 2
@@ -2326,7 +2327,7 @@ is
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
-		if kw = et_pcb_rw.keyword_position then -- position x 22.3 y 23.3
+		if kw = keyword_position then -- position x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the position starting at field 2 of line

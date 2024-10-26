@@ -43,6 +43,7 @@ with ada.text_io;				use ada.text_io;
 with ada.exceptions;
 
 with et_primitive_objects;			use et_primitive_objects;
+with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_general;					use et_general;
 with et_general_rw;					use et_general_rw;
 with et_geometry;					use et_geometry;
@@ -211,7 +212,7 @@ package body et_symbol_rw is
 			write (keyword => keyword_center, parameters => position (element (cursor).center));
 			write (keyword => keyword_start , parameters => position (element (cursor).start_point));
 			write (keyword => keyword_end   , parameters => position (element (cursor).end_point));
-			write (keyword => et_geometry.keyword_direction, parameters => to_string (element (cursor).direction));
+			write (keyword => et_primitive_objects.keyword_direction, parameters => to_string (element (cursor).direction));
 			write (keyword => keyword_width , parameters => to_string (element (cursor).width));
 			section_mark (section_arc, FOOTER);
 		end write_arc;
@@ -871,7 +872,7 @@ package body et_symbol_rw is
 										-- extract the end position starting at field 2
 										symbol_arc.end_point := to_position (line,2);
 
-									elsif kw = et_geometry.keyword_direction then -- direction ccw
+									elsif kw = et_primitive_objects.keyword_direction then -- direction ccw
 										expect_field_count (line, 2);
 
 										symbol_arc.direction := to_direction (f (line, 2));
