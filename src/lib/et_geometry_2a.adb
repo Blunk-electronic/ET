@@ -475,14 +475,15 @@ package body et_geometry_2a is
 
 	function invert (
 		point	: in type_vector_model;
-		axis	: in type_axis_2d)
+		axis	: in type_mirror)
 		return type_vector_model
 	is
 		p : type_vector_model := point;
 	begin
 		case axis is
-			when X => p.x := - p.x;
-			when Y => p.y := - p.y;
+			when MIRROR_ALONG_X_AXIS => p.x := - p.x;
+			when MIRROR_ALONG_Y_AXIS => p.y := - p.y;
+			when MIRROR_NO => null;
 		end case;
 
 		return p;

@@ -49,6 +49,7 @@ with ada.containers.doubly_linked_lists;
 with et_string_processing;
 with et_logging;				use et_logging;
 with et_geometry;				use et_geometry;
+with et_axes;					use et_axes;
 with et_sheets;					use et_sheets;
 with et_mirroring;				use et_mirroring;
 with et_coordinates_2;			use et_coordinates_2;

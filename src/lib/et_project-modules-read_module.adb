@@ -43,6 +43,7 @@ with et_pcb_sides;
 with et_pcb_coordinates_2;
 
 with et_primitive_objects;			use et_primitive_objects;
+with et_axes;						use et_axes;
 with et_geometry;
 with et_net_labels;
 with et_symbols;

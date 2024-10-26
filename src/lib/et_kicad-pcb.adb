@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -51,6 +51,8 @@ with et_symbols;
 with et_nets;
 
 with et_pcb_contour;			use et_pcb_contour;
+with et_axes;					use et_axes;
+
 
 package body et_kicad.pcb is
 

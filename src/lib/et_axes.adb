@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                           PCB CONTOURS                                   --
+--                       AXES OF COORDINATES SYSTEMS                        --
 --                                                                          --
---                              S p e c                                     --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -35,86 +35,32 @@
 --
 --   history of changes:
 --
---   to do:
 
-with ada.containers; 				use ada.containers;
-with ada.containers.doubly_linked_lists;
+with ada.text_io;				use ada.text_io;
 
-with et_geometry;					use et_geometry;
-with et_mirroring;					use et_mirroring;
-with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
-with et_board_shapes_and_text;		use et_board_shapes_and_text;
-with et_contour_to_polygon;
+with ada.strings;				use ada.strings;
+with ada.strings.fixed;			use ada.strings.fixed;
+with ada.strings.unbounded;
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
 
 
-package et_pcb_contour is
 
-	use pac_geometry_brd;
-
-	use pac_geometry_2;
-	use pac_contours;
-	use pac_polygons;
+package body et_axes is
 	
-	use pac_text_board;
 
+	function to_string (axis : in type_axis) return string is begin
+		return to_lower (type_axis'image (axis));
+	end;
 
-	-- As a safety measure we derive dedicated types for
-	-- the outer and inner edge of the PCB from the general contour type.
-	
-	-- There is only one outer contour of a PCB:
-	type type_outer_contour is new type_contour with null record;
-
-
-	
-	-- There can be many holes inside the PCB area:
-	-- This is a single hole:
-	type type_hole is new type_contour with null record;
-
-	-- These are all holes inside the PCB area:
-	package pac_holes is new doubly_linked_lists (type_hole);
-	use pac_holes;
-
-
-	-- Mirrors a list of holes along the given axis:
-	procedure mirror_holes (
-		holes	: in out pac_holes.list;
-		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
-
-
-	-- Rotates a list of holes about the origin by the given angle:
-	procedure rotate_holes (
-		holes	: in out pac_holes.list;
-		angle	: in type_rotation_model);
-
-
-	-- Moves a list of holes by the gvien offset:
-	procedure move_holes (
-		holes	: in out pac_holes.list;
-		offset	: in type_distance_relative);
-
-	
-	-- Converts a list of holes to a list of polygons:
-	function to_polygons (
-		holes		: in pac_holes.list;
-		tolerance	: in type_distance_positive)
-		return pac_polygon_list.list;
-
-
-	-- Offsets a list of holes.
-	-- The parameter "offset" is always positive because
-	-- holes can only become greater:
-	procedure offset_holes (
-		holes		: in out pac_polygon_list.list;
-		offset		: in type_distance_positive;
-		debug		: in boolean := false);
+	function to_axis (axis : in string) return type_axis is begin
+		return type_axis'value (axis);
+	end;
 
 	
 		
-	-- GUI relevant only: The line width of contours:
-	pcb_contour_line_width : constant type_distance_positive := 0.1;
-
-	
-end et_pcb_contour;
+end et_axes;
 
 -- Soli Deo Gloria
 

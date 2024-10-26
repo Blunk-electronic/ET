@@ -55,6 +55,7 @@ with ada.containers;
 -- 
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
+with et_axes;						use et_axes;
 with et_scripting;
 with et_modes;						--use et_modes;
 with et_modes.board;

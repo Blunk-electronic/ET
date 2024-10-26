@@ -46,6 +46,7 @@ with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 with ada.environment_variables;
 
+with et_axes;					use et_axes;
 with et_sheets;					use et_sheets;
 with et_conventions;
 with et_kicad.pcb;				use et_kicad.pcb;
@@ -547,8 +548,8 @@ package body et_kicad.schematic is
 		x := mil_to_distance (x_in);
 		y := mil_to_distance (y_in);
 
-		set (point, et_geometry.X, x);
-		set (point, et_geometry.Y, y);
+		set (point, et_axes.X, x);
+		set (point, et_axes.Y, y);
 		
 		return point;
 	end to_point;

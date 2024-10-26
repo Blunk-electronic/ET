@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -48,6 +48,7 @@ with et_conductor_segment;		use et_conductor_segment;
 with et_pcb_contour;			use et_pcb_contour;
 with et_conventions;
 with et_pcb_sides;
+with et_axes;					use et_axes;
 
 
 package body et_kicad_packages is

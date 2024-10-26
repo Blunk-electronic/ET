@@ -48,13 +48,6 @@ with et_exceptions;				use et_exceptions;
 package body et_geometry is
 	
 	
-	function to_string (axis : in type_axis) return string is begin
-		return to_lower (type_axis'image (axis));
-	end;
-
-	function to_axis (axis : in string) return type_axis is begin
-		return type_axis'value (axis);
-	end;
 
 	
 	

@@ -45,7 +45,7 @@ package body et_pcb_contour is
 
 	procedure mirror_holes (
 		holes	: in out pac_holes.list;
-		axis	: in type_axis_2d := Y)
+		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_holes.list;
 

@@ -52,6 +52,8 @@ with et_units;
 with et_schematic;
 
 with et_geometry;					use et_geometry;
+with et_mirroring;					use et_mirroring;
+with et_axes;						use et_axes;
 with et_general;					use et_general;
 with et_string_processing;			use et_string_processing;
 with et_project.modules;
@@ -2277,8 +2279,8 @@ package body et_kicad_to_native is
 			log (text => "width" & to_string (width), level => log_threshold + 2);
 			
 			if width < zero then
-				rectangle.corner_A := type_vector_model (invert (rectangle.corner_A, X));
-				rectangle.corner_B := type_vector_model (invert (rectangle.corner_B, X));
+				rectangle.corner_A := type_vector_model (invert (rectangle.corner_A, MIRROR_ALONG_X_AXIS));
+				rectangle.corner_B := type_vector_model (invert (rectangle.corner_B, MIRROR_ALONG_X_AXIS));
 				width := - width;
 			end if;
 			
@@ -2287,8 +2289,8 @@ package body et_kicad_to_native is
 			log (text => "height" & to_string (height), level => log_threshold + 2);
 			
 			if height < zero then
-				rectangle.corner_A := type_vector_model (invert (rectangle.corner_A, Y));
-				rectangle.corner_B := type_vector_model (invert (rectangle.corner_B, Y));
+				rectangle.corner_A := type_vector_model (invert (rectangle.corner_A, MIRROR_ALONG_Y_AXIS));
+				rectangle.corner_B := type_vector_model (invert (rectangle.corner_B, MIRROR_ALONG_Y_AXIS));
 				height := - height;
 			end if;
 

@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                       VIA RESTRICT PACKAGES                              --
+--                       AXES OF COORDINATES SYSTEMS                        --
 --                                                                          --
---                              B o d y                                     --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -35,71 +35,22 @@
 --
 --   history of changes:
 --
---   to do:
+
+with ada.text_io;				use ada.text_io;
 
 
-package body et_via_restrict.packages is
+package et_axes is
 	
 
-	procedure mirror_via_restrict_objects (
-		restrict	: in out type_one_side;
-		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)
-	is begin
-		mirror_lines (restrict.lines);
-		mirror_arcs (restrict.arcs);
-		mirror_circles (restrict.circles);
-		-- CS zones
-	end mirror_via_restrict_objects;
-	
-
-	procedure rotate_via_restrict_objects (
-		restrict	: in out type_one_side;
-		angle		: in type_rotation_model)
-	is begin
-		rotate_lines (restrict.lines, angle);
-		rotate_arcs (restrict.arcs, angle);
-		rotate_circles (restrict.circles, angle);
-		-- CS zones
-	end rotate_via_restrict_objects;
-
-
-	procedure move_via_restrict_objects (
-		restrict	: in out type_one_side;
-		offset		: in type_distance_relative)
-	is begin
-		move_lines (restrict.lines, offset);
-		move_arcs (restrict.arcs, offset);
-		move_circles (restrict.circles, offset);
-		-- CS zones
-	end move_via_restrict_objects;
+	type type_axis is (X, Y, Z);
+	subtype type_axis_2d is type_axis range X .. Y;
+ 
+	function to_string (axis : in type_axis) return string;
+	function to_axis (axis : in string) return type_axis;
 
 	
-	function to_polygons (
-		restrict	: in type_one_side;
-		tolerance	: in type_distance_positive)
-		return pac_polygon_list.list
-	is
-		scratch, result : pac_polygon_list.list;
 		
-	begin
-		-- lines:
-		result := to_polygons (restrict.lines, tolerance);
-
-		-- arcs:
-		scratch := to_polygons (restrict.arcs, tolerance);
-		result.splice (before => pac_polygon_list.no_element, source => scratch);
-
-		-- circles:
-		scratch := to_polygons_outside (restrict.circles, tolerance);
-		result.splice (before => pac_polygon_list.no_element, source => scratch);
-
-		-- zones:
-		-- CS
-		return result;
-	end to_polygons;
-
-	
-end et_via_restrict.packages;
+end et_axes;
 
 -- Soli Deo Gloria
 

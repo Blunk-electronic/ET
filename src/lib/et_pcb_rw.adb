@@ -47,6 +47,7 @@ with ada.tags;
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
+with et_axes;					use et_axes;
 with et_text;					use et_text;
 with et_exceptions;				use et_exceptions;
 

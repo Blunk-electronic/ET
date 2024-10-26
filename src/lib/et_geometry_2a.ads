@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 -2024                                                 --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -44,6 +44,7 @@ with ada.numerics;
 with ada.numerics.generic_elementary_functions;
 
 with et_geometry;				use et_geometry;
+with et_axes;					use et_axes;
 with et_primitive_objects;		use et_primitive_objects;
 with et_geometry_1;
 
@@ -308,7 +309,7 @@ package et_geometry_2a is
 	-- Inverts the point on the given axis.
 	function invert (
 		point	: in type_vector_model;
-		axis	: in type_axis_2d)
+		axis	: in type_mirror)
 		return type_vector_model;
 
 

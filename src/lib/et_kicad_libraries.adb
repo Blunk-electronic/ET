@@ -54,6 +54,7 @@ with ada.exceptions; 			use ada.exceptions;
 with ada.environment_variables;
 
 with et_primitive_objects;				use et_primitive_objects;
+with et_axes;							use et_axes;
 with et_mirroring;						use et_mirroring;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_conventions;
@@ -462,8 +463,8 @@ package body et_kicad_libraries is
 		x := mil_to_distance (x_in);
 		y := mil_to_distance (y_in);
 
-		set (point, et_geometry.X, x);
-		set (point, et_geometry.Y, y);
+		set (point, et_axes.X, x);
+		set (point, et_axes.Y, y);
 		
 		return point;
 	end to_point;
