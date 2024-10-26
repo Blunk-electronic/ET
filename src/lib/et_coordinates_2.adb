@@ -41,6 +41,9 @@ with ada.exceptions;
 
 with ada.numerics.generic_elementary_functions;
 
+with et_vector_formatting;					use et_vector_formatting;
+
+
 package body et_coordinates_2 is
 -- 	pragma assertion_policy (check);
 

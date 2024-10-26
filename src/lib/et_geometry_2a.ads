@@ -1232,12 +1232,6 @@ package et_geometry_2a is
 
 -- POSITION:
 	
-	point_preamble_with_rotation : constant string := 
-		" (x"
-		& axis_separator
-		& "y"
-		& axis_separator
-		& "rotation)";
 
 
 	-- The position of an object is a composite

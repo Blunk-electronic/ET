@@ -126,14 +126,6 @@ package et_pcb_coordinates_2 is
 
 	package_position_default : constant type_package_position;
  
-	position_preamble : constant string := 
-			" (x"
-			& axis_separator
-			& "y"
-			& axis_separator
-			& "rotation"
-			& axis_separator
-			& "face)";
 
 	
 	overriding function to_string (p : in type_package_position) return string;

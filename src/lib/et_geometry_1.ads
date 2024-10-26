@@ -400,8 +400,6 @@ package et_geometry_1 is
 		return type_offset;
 
 
-	vector_preamble_2d : constant string := "(x" & axis_separator & "y) ";
-	vector_preamble_3d : constant string := "(x" & axis_separator & "y" & axis_separator & "z) ";
 
 
 	function to_string (
@@ -1195,6 +1193,15 @@ package et_geometry_1 is
 	end record;
 
 
+
+	type type_line_range is (
+		BETWEEN_END_POINTS,	-- start and end point excluded
+		WITH_END_POINTS,	-- start and end point included
+		BEYOND_END_POINTS	-- indefinite long line assumed. extends beyond both start and end point into infinity
+		);
+
+
+	
 	-- Computes the shortest distance (perpendicular) of a
 	-- point to a line. 
 	-- CS insufficient ! More details !!! especially on the out_of_range flag

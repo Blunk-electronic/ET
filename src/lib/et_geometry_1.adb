@@ -45,6 +45,8 @@ with ada.characters.handling;	use ada.characters.handling;
 
 with et_exceptions;				use et_exceptions;
 
+with et_vector_formatting;		use et_vector_formatting;
+
 
 
 package body et_geometry_1 is

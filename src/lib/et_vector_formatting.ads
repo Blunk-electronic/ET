@@ -2,9 +2,9 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                            PCB COORDINATES                               --
+--                         COORDINATES FORMATTING                           --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -35,95 +35,48 @@
 --
 --   history of changes:
 --
+
 with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.exceptions;
-
-with et_vector_formatting;			use et_vector_formatting;
 
 
-package body et_pcb_coordinates_2 is
-
-	
-	function to_string (
-		p : in type_package_position) 
-		return string 
-	is begin
-		return position_preamble
-				& to_string (get_x (p))
-				& axis_separator
-				& to_string (get_y (p))
-				& axis_separator
-				& to_string (get_rotation (p))
-				& axis_separator
-				& to_string (p.face);
-
-	end to_string;
-
-	
-	function to_package_position (
-		point 		: in type_vector_model;
-		rotation	: in type_rotation_model := zero_rotation;
-		face		: in type_face := TOP)
-		return type_package_position 
-	is begin
-		return pos : type_package_position do
-			set (pos, point);
-			set (pos, rotation);
-			pos.face := face;
-		end return;
-	end to_package_position;
-
-	
-	procedure set_face (
-		face	: in type_face;
-		position: in out type_package_position) 
-	is begin
-		position.face := face;
-	end set_face;
-
-	
-	function get_face (
-		packge : in type_package_position)
-		return type_face 
-	is begin
-		return packge.face;
-	end get_face;
+package et_vector_formatting is
 	
 
-	function get_place (
-		position : in type_package_position)
-		return type_vector_model
-	is begin
-		return position.place;
-	end get_place;
-
-
-	function get_position (
-		position : in type_package_position)
-		return type_position
-	is begin
-		return type_position (position);
-	end get_position;
+	axis_separator : constant string := "/";
+	point_preamble : constant string := " (x" & axis_separator & "y) ";
+	--point_preamble_with_rotation : constant string := 
+		--" (x"
+		--& axis_separator
+		--& "y"
+		--& axis_separator
+		--& "rotation)";
 
 	
+	vector_preamble_2d : constant string := "(x" & axis_separator & "y) ";
+	vector_preamble_3d : constant string := "(x" & axis_separator & "y" & axis_separator & "z) ";
+
+
+	point_preamble_with_rotation : constant string := 
+		" (x"
+		& axis_separator
+		& "y"
+		& axis_separator
+		& "rotation)";
+
+
+
+	position_preamble : constant string := 
+			" (x"
+			& axis_separator
+			& "y"
+			& axis_separator
+			& "rotation"
+			& axis_separator
+			& "face)";
+
 	
-	function to_terminal_position (
-		point		: in type_vector_model;
-		rotation	: in type_rotation_model)
-		return type_position'class 
-	is
-		pos : type_position;
-	begin
-		--pos := (point with rotation);
-		set (pos, point);
-		set (pos, rotation);
-		return pos;
-	end to_terminal_position;
-	
-end et_pcb_coordinates_2;
+		
+end et_vector_formatting;
 
 -- Soli Deo Gloria
 

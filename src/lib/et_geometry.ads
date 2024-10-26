@@ -64,16 +64,6 @@ package et_geometry is
 	function to_axis (axis : in string) return type_axis;
 
 
-	axis_separator : constant string := "/";
-	point_preamble : constant string := " (x" & axis_separator & "y) ";
-	--point_preamble_with_rotation : constant string := 
-		--" (x"
-		--& axis_separator
-		--& "y"
-		--& axis_separator
-		--& "rotation)";
-
-	
 
 	
 	type type_coordinates is (RELATIVE, ABSOLUTE);
@@ -81,20 +71,8 @@ package et_geometry is
 	function to_string (coordinates : in type_coordinates) return string;
 	function to_coordinates (coordinates : in string) return type_coordinates;
 
-	
 
 
-
-
--- DISTANCE POINT TO LINE
-	
-	type type_line_range is (
-		BETWEEN_END_POINTS,	-- start and end point excluded
-		WITH_END_POINTS,	-- start and end point included
-		BEYOND_END_POINTS	-- indefinite long line assumed. extends beyond both start and end point into infinity
-		);
-
-	
 		
 end et_geometry;
 
