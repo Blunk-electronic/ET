@@ -104,6 +104,23 @@ package body et_geometry_2a is
 	end get_info;
 
 
+
+
+	function to_string (coordinates : in type_coordinates) return string is begin
+		return space & to_lower (type_coordinates'image (coordinates));
+	end;
+
+	function to_coordinates (coordinates : in string) return type_coordinates is begin
+		return type_coordinates'value (coordinates);
+
+-- 			exception
+-- 				when event: others =>
+-- 					log (text => ada.exceptions.exception_information (event), console => true);
+-- 					raise;
+	end;
+
+
+
 	
 -- DISTANCE:
 

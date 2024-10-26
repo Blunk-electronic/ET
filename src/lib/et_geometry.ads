@@ -56,16 +56,7 @@ package et_geometry is
 	keyword_diameter	: constant string := "diameter";
 	keyword_filled 		: constant string := "filled";
 
-
-
-	
-	type type_coordinates is (RELATIVE, ABSOLUTE);
-
-	function to_string (coordinates : in type_coordinates) return string;
-	function to_coordinates (coordinates : in string) return type_coordinates;
-
-
-
+	procedure dummy;
 		
 end et_geometry;
 

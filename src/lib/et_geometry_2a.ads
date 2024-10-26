@@ -86,7 +86,13 @@ package et_geometry_2a is
 
 
 
+	-- CS use prefix ?
+	type type_coordinates is (RELATIVE, ABSOLUTE);
 
+	function to_string (coordinates : in type_coordinates) return string;
+	function to_coordinates (coordinates : in string) return type_coordinates;
+
+	
 
 		
 -- DISTANCE:

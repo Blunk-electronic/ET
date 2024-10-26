@@ -731,6 +731,7 @@ package body et_canvas_schematic_nets is
 		log_indentation_down;
 	end insert_net_segment;
 
+
 	
 	function valid_for_net_segment (
 		point			: in type_vector_model;
@@ -776,6 +777,7 @@ package body et_canvas_schematic_nets is
 		return result;
 	end valid_for_net_segment;
 
+	
 
 	procedure reset_preliminary_segment is 
 		PS : type_preliminary_segment renames preliminary_segment;
@@ -855,6 +857,7 @@ package body et_canvas_schematic_nets is
 	end property_entered;
 	
 
+	
 	procedure window_set_property is
 		use gtk.window;
 		use gtk.box;
@@ -909,6 +912,7 @@ package body et_canvas_schematic_nets is
 
 	end window_set_property;
 
+	
 
 	
 -- DRAG/MOVE NET SEGMENT
@@ -1049,6 +1053,7 @@ package body et_canvas_schematic_nets is
 	end find_segments;
 
 
+	
 	procedure drag_segment (
 		tool		: in type_tool;
 		position	: in type_vector_model)
@@ -1080,7 +1085,7 @@ package body et_canvas_schematic_nets is
 						module_cursor	=> active_module,
 						net_name		=> net_name,
 						point_of_attack	=> point_of_attack,
-						coordinates		=> et_geometry.ABSOLUTE,
+						coordinates		=> ABSOLUTE,
 						destination		=> position,
 						log_threshold	=> log_threshold + 2);
 
@@ -1126,6 +1131,7 @@ package body et_canvas_schematic_nets is
 			commit (POST, verb, noun, log_threshold + 1);
 		end if;		
 	end drag_segment;
+
 
 	
 	
