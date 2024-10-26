@@ -2031,6 +2031,7 @@ is
 
 
 		use et_devices;
+		use et_pcb_coordinates_2.pac_grid;
 
 		
 	begin -- route_net

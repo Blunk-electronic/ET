@@ -56,6 +56,7 @@ package et_board_ops.conductors is
 	use et_board_shapes_and_text;
 	use pac_text_board;
 	use pac_net_name;
+	use pac_grid;
 
 
 -- TRACKS:

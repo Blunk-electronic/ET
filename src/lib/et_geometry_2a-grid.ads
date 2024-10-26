@@ -133,6 +133,26 @@ package et_geometry_2a.grid is
 		grid		: in out type_grid);
 	
 
+
+	
+
+	-- For specifiying distances this type can be used.
+	-- The distance would then be notches multiplied with
+	-- the grid spacing:
+	type type_grid_notches is new positive;
+
+	function to_notches (
+		notches : in string) 
+		return type_grid_notches;
+	
+	function to_string (
+		notches : in type_grid_notches) 
+		return string;
+
+
+
+	
+	
 	keyword_on_off	: constant string := "on_off";
 	keyword_on		: constant string := "on";
 	keyword_off		: constant string := "off";

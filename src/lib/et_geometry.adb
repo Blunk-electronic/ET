@@ -81,13 +81,6 @@ package body et_geometry is
 
 	
 
-	function to_notches (notches : in string) return type_grid_notches is begin
-		return type_grid_notches'value (notches);
-	end;
-
-	function to_string (notches : in type_grid_notches) return string is begin
-		return type_grid_notches'image (notches);
-	end;
 
 
 

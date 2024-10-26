@@ -90,10 +90,6 @@ package et_geometry is
 
 
 	
-	type type_grid_notches is new positive;
-
-	function to_notches (notches : in string) return type_grid_notches;
-	function to_string (notches : in type_grid_notches) return string;
 
 
 

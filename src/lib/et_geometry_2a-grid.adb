@@ -117,6 +117,26 @@ package body et_geometry_2a.grid is
 		grid.spacing.y := grid_spacing_default;
 	end reset_grid_density;
 
+
+
+	
+	function to_notches (
+		notches : in string) 
+		return type_grid_notches 
+	is begin
+		return type_grid_notches'value (notches);
+	end;
+
+	
+	function to_string (
+		notches : in type_grid_notches) 
+		return string 
+	is begin
+		return type_grid_notches'image (notches);
+	end;
+
+	
+
 	
 end et_geometry_2a.grid;
 
