@@ -37,15 +37,15 @@
 --
 
 
-with ada.strings;				use ada.strings;
-with ada.strings.fixed;			use ada.strings.fixed;
-with ada.strings.unbounded;		use ada.strings.unbounded;
+with ada.strings;					use ada.strings;
+with ada.strings.fixed;				use ada.strings.fixed;
+with ada.strings.unbounded;			use ada.strings.unbounded;
 with ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
+with ada.characters.handling;		use ada.characters.handling;
 
-with et_exceptions;				use et_exceptions;
+with et_exceptions;					use et_exceptions;
 
-with et_vector_formatting;		use et_vector_formatting;
+with et_coordinates_formatting;		use et_coordinates_formatting;
 
 
 

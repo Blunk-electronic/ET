@@ -44,7 +44,7 @@ with ada.exceptions;
 with ada.numerics.generic_elementary_functions;
 with et_string_processing;
 with et_geometry;
-with et_vector_formatting;		use et_vector_formatting;
+with et_coordinates_formatting;		use et_coordinates_formatting;
 
 
 package body et_kicad_coordinates is

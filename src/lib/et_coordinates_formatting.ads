@@ -39,7 +39,7 @@
 with ada.text_io;				use ada.text_io;
 
 
-package et_vector_formatting is
+package et_coordinates_formatting is
 	
 
 	axis_separator : constant string := "/";
@@ -76,7 +76,7 @@ package et_vector_formatting is
 
 	
 		
-end et_vector_formatting;
+end et_coordinates_formatting;
 
 -- Soli Deo Gloria
 

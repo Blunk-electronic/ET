@@ -41,7 +41,7 @@ with ada.exceptions;
 
 with ada.numerics.generic_elementary_functions;
 
-with et_vector_formatting;					use et_vector_formatting;
+with et_coordinates_formatting;					use et_coordinates_formatting;
 
 
 package body et_coordinates_2 is

@@ -39,7 +39,7 @@
 
 
 with et_geometry;			use et_geometry;
-with et_vector_formatting;		use et_vector_formatting;
+with et_coordinates_formatting;		use et_coordinates_formatting;
 
 
 

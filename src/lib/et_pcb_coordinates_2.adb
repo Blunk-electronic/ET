@@ -41,7 +41,7 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.exceptions;
 
-with et_vector_formatting;			use et_vector_formatting;
+with et_coordinates_formatting;			use et_coordinates_formatting;
 
 
 package body et_pcb_coordinates_2 is

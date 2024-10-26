@@ -53,7 +53,7 @@ with ada.containers;
 -- with et_terminals;
 -- with et_devices;					use et_devices;
 -- 
-with et_vector_formatting;			use et_vector_formatting;
+with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_scripting;
 with et_modes;						--use et_modes;
