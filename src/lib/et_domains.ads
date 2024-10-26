@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               COMMIT                                     --
+--                               DOMAINS                                    --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.                                          --
+-- <http://www.gnu.org/licenses/>.   
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -36,73 +36,31 @@
 --   history of changes:
 --
 
-with ada.strings.bounded;       	use ada.strings.bounded;
-
-with ada.calendar;
-with et_time;						use et_time;
-with et_general;					use et_general;
-with et_domains;					use et_domains;
-
-
-package et_commit is
-
-
-	-- The commit stage regards the state of the design
-	-- before and after a certain operation:
-	type type_commit_stage is (
-		PRE,
-		POST);
-
-	function to_string (stage : in type_commit_stage) return string;
-	
-	
-	subtype type_commit_index_zero_based is natural range 0 .. 100;  
-	-- CS increase upper limit
-	
-	subtype type_commit_index is type_commit_index_zero_based 
-		range 1 .. type_commit_index_zero_based'last;
-
-	procedure increment (
-		index	: in out type_commit_index_zero_based;
-		count	: in type_commit_index := 1);
-
-	procedure decrement (
-		index	: in out type_commit_index_zero_based;
-		count	: in type_commit_index := 1);
-
-
-	commit_message_length_max : constant positive := 50;
-	package pac_commit_message is new generic_bounded_length (commit_message_length_max);
+package et_domains is
 
 	
-	generic
-		type type_item is private;
-	package pac_commit is
-
-		type type_commit is record
-			index		: type_commit_index;
-			stage		: type_commit_stage;
-			item		: type_item;
-			timestamp	: ada.calendar.time; -- the time of the commit
-			message		: pac_commit_message.bounded_string;
-			domain		: type_domain; -- schematic, board
-		end record;
-
-		function "=" (
-			left, right : in type_commit)
-			return boolean;
-		
-		function make_commit (
-			index	: in type_commit_index;
-			stage	: in type_commit_stage;
-			item	: in type_item;
-			message	: in pac_commit_message.bounded_string;
-			domain	: in type_domain)
-			return type_commit;
-		
-	end pac_commit;	
+	domain_prefix	: constant string := ("DOM_");
 	
-end et_commit;
+	type type_domain is (
+		DOM_PROJECT,
+--		DOM_RIG,
+		DOM_SCHEMATIC,
+		DOM_BOARD
+-- 		DOM_DEVICE,
+-- 		DOM_SYMBOL,
+-- 		DOM_PACKAGE
+		);
+	
+	function to_string (
+		domain : in type_domain) 
+		return string;
+	
+	function to_domain (
+		domain : in string)
+		return type_domain;
+
+	
+end et_domains;
 
 -- Soli Deo Gloria
 

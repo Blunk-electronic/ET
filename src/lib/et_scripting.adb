@@ -47,6 +47,7 @@ with gnat.directory_operations;
 
 with et_exceptions;				use et_exceptions;
 
+with et_domains;
 with et_project;
 with et_primitive_objects;		use et_primitive_objects;
 with et_axes;					use et_axes;
@@ -349,7 +350,8 @@ package body et_scripting is
 
 		-- Get the number of fields of the given command:
 		field_count : constant type_field_count := get_field_count (cmd);
-		
+
+		use et_domains;
 		use et_project;
 		use et_project.modules;
 		

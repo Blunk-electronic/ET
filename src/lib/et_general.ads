@@ -53,26 +53,6 @@ package et_general is
 	system_name_cmd_line	: constant string := "et ";
 
 	
-	domain_prefix	: constant string := ("DOM_");
-	
-	type type_domain is (
-		DOM_PROJECT,
---		DOM_RIG,
-		DOM_SCHEMATIC,
-		DOM_BOARD
--- 		DOM_DEVICE,
--- 		DOM_SYMBOL,
--- 		DOM_PACKAGE
-		);
-	
-	function to_string (
-		domain : in type_domain) 
-		return string;
-	
-	function to_domain (
-		domain : in string)
-		return type_domain;
-
 	
 	
 	function expand (

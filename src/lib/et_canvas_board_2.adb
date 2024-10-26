@@ -48,6 +48,7 @@ with ada.containers;
 with ada.calendar;					use ada.calendar;
 with ada.calendar.formatting;		use ada.calendar.formatting;
 
+with et_domains;
 with et_primitive_objects;				use et_primitive_objects;
 with et_scripting;
 with et_modes;
@@ -1039,6 +1040,7 @@ package body et_canvas_board_2 is
 		use ada.directories;
 		use et_scripting;
 		use et_modes;
+		use et_domains;
 		use et_project;
 
 		-- We assemble a command that executes a script
@@ -1124,6 +1126,7 @@ package body et_canvas_board_2 is
 		use et_string_processing;
 		use et_scripting;
 		use et_modes;
+		use et_domains;
 		use et_project;
 		
 		-- The operator enters a command like "rename device R1 R2".

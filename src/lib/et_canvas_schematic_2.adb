@@ -53,6 +53,7 @@ with ada.containers;
 -- with et_terminals;
 -- with et_devices;					use et_devices;
 -- 
+with et_domains;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_axes;						use et_axes;
@@ -902,6 +903,7 @@ package body et_canvas_schematic_2 is
 		use et_scripting;
 		use et_modes;
 		use et_project;
+		use et_domains;
 		
 		-- We compose a command that executes a script
 		-- like "schematic motor_driver execute script my_script.scr:
@@ -986,6 +988,7 @@ package body et_canvas_schematic_2 is
 		use et_scripting;
 		use et_modes;
 		use et_project;
+		use et_domains;
 		
 		-- The operator enters a command like "rename device R1 R2".
 		-- The operator is not required to type domain and module name.

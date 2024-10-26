@@ -51,27 +51,6 @@ with et_logging;					use et_logging;
 
 package body et_general is
 
-	function to_string (
-		domain : in type_domain) 
-		return string 
-	is 
-		s : string := type_domain'image (domain);
-	begin
-		return s (domain_prefix'length + 1 .. s'last);
-	end to_string;
-
-	
-	function to_domain (
-		domain : in string) 
-		return type_domain 
-	is begin
-		return type_domain'value (domain_prefix & domain);
-
-		exception when event: others => 
-			log (ERROR, "domain " & enclose_in_quotes (domain) & " invalid !", console => true);
-			--put_line ("ERROR domain " & domain & " invalid !");
-			raise;
-	end to_domain;
 
 
 	
