@@ -548,8 +548,8 @@ package body et_kicad.schematic is
 		x := mil_to_distance (x_in);
 		y := mil_to_distance (y_in);
 
-		set (point, et_axes.X, x);
-		set (point, et_axes.Y, y);
+		set (point, AXIS_X, x);
+		set (point, AXIS_Y, y);
 		
 		return point;
 	end to_point;

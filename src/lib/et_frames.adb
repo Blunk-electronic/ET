@@ -115,14 +115,14 @@ package body et_frames is
 				case paper_size is 
 					when A3 =>
 						case axis is
-							when X => dimension := paper_size_A3_x;
-							when Y => dimension := paper_size_A3_y;
+							when AXIS_X => dimension := paper_size_A3_x;
+							when AXIS_Y => dimension := paper_size_A3_y;
 						end case;
 
 					when A4 =>
 						case axis is
-							when X => dimension := paper_size_A4_x;
-							when Y => dimension := paper_size_A4_y;
+							when AXIS_X => dimension := paper_size_A4_x;
+							when AXIS_Y => dimension := paper_size_A4_y;
 						end case;
 				end case;
 
@@ -130,14 +130,14 @@ package body et_frames is
 				case paper_size is 
 					when A3 =>
 						case axis is
-							when X => dimension := paper_size_A3_y;
-							when Y => dimension := paper_size_A3_x;
+							when AXIS_X => dimension := paper_size_A3_y;
+							when AXIS_Y => dimension := paper_size_A3_x;
 						end case;
 
 					when A4 =>
 						case axis is
-							when X => dimension := paper_size_A4_y;
-							when Y => dimension := paper_size_A4_x;
+							when AXIS_X => dimension := paper_size_A4_y;
+							when AXIS_Y => dimension := paper_size_A4_x;
 						end case;
 				end case;
 

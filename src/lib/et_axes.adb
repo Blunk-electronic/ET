@@ -40,7 +40,6 @@ with ada.text_io;				use ada.text_io;
 
 with ada.strings;				use ada.strings;
 with ada.strings.fixed;			use ada.strings.fixed;
-with ada.strings.unbounded;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
@@ -50,12 +49,21 @@ with ada.characters.handling;	use ada.characters.handling;
 package body et_axes is
 	
 
-	function to_string (axis : in type_axis) return string is begin
-		return to_lower (type_axis'image (axis));
+	function to_string (
+		axis : in type_axis) 
+		return string 
+	is 
+		s : string := to_lower (type_axis'image (axis));
+	begin
+		return s (axis_prefix'length + 1 .. s'last);
 	end;
 
-	function to_axis (axis : in string) return type_axis is begin
-		return type_axis'value (axis);
+	
+	function to_axis (
+		axis : in string) 
+		return type_axis 
+	is begin
+		return type_axis'value (axis_prefix & axis);
 	end;
 
 	

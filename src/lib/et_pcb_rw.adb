@@ -326,14 +326,14 @@ package body et_pcb_rw is
 			if f (line, place) = keyword_x then
 				set (
 					point	=> point,
-					axis	=> X,
+					axis	=> AXIS_X,
 					value 	=> to_distance (f (line, place + 1)));
 
 			-- We expect after the y the corresponding value for y
 			elsif f (line, place) = keyword_y then
 				set (
 					point	=> point,
-					axis 	=> Y,
+					axis 	=> AXIS_Y,
 					value 	=> to_distance (f (line, place + 1)));
 
 			else
@@ -364,11 +364,11 @@ package body et_pcb_rw is
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
-				set (point => point.place, axis => X, value => to_distance (f (line, place + 1)));
+				set (point => point.place, axis => AXIS_X, value => to_distance (f (line, place + 1)));
 
 			-- We expect after the y the corresponding value for y
 			elsif f (line, place) = keyword_y then
-				set (point => point.place, axis => Y, value => to_distance (f (line, place + 1)));
+				set (point => point.place, axis => AXIS_Y, value => to_distance (f (line, place + 1)));
 
 			-- We expect after "rotation" the corresponding value for the rotation
 			elsif f (line, place) = keyword_rotation then

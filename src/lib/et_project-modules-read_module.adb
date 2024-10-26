@@ -433,11 +433,11 @@ is
 				
 			-- We expect after the x the corresponding value for x
 			elsif f (line, place) = keyword_x then
-				point.set (X, to_distance (f (line, place + 1)));
+				point.set (AXIS_X, to_distance (f (line, place + 1)));
 
 			-- We expect after the y the corresponding value for y
 			elsif f (line, place) = keyword_y then
-				point.set (Y, to_distance (f (line, place + 1)));
+				point.set (AXIS_Y, to_distance (f (line, place + 1)));
 
 			else
 				invalid_keyword (f (line, place));
@@ -510,11 +510,11 @@ is
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
-				set (point => point.place, axis => X, value => to_distance (f (line, place + 1)));
+				set (point => point.place, axis => AXIS_X, value => to_distance (f (line, place + 1)));
 
 			-- We expect after the y the corresponding value for y
 			elsif f (line, place) = keyword_y then
-				set (point => point.place, axis => Y, value => to_distance (f (line, place + 1)));
+				set (point => point.place, axis => AXIS_Y, value => to_distance (f (line, place + 1)));
 
 			-- We expect after "rotation" the corresponding value for the rotation
 			elsif f (line, place) = keyword_rotation then

@@ -358,7 +358,7 @@ package body et_geometry_2a.contours is
 		begin
 			new_y := offset - get_y (point);
 			--point.set (Y, new_y);
-			set (point, Y, new_y);
+			set (point, AXIS_Y, new_y);
 		end move;
 
 		
@@ -1603,7 +1603,7 @@ package body et_geometry_2a.contours is
 	
 	procedure mirror_contours (
 		contours	: in out pac_contour_list.list;
-		axis		: in type_axis_2d := Y)
+		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
 		result : pac_contour_list.list;
 		

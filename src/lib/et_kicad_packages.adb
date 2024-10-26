@@ -1129,9 +1129,9 @@ package body et_kicad_packages is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => X, point => circle.center, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => circle.center, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => Y, point => circle.center, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => circle.center, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1144,9 +1144,9 @@ package body et_kicad_packages is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => X, point => line.start_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => line.start_point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => Y, point => line.start_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => line.start_point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1154,9 +1154,9 @@ package body et_kicad_packages is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => X, point => arc.center, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => arc.center, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => Y, point => arc.center, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => arc.center, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 							
@@ -1169,9 +1169,9 @@ package body et_kicad_packages is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => X, point => line.end_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => line.end_point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => Y, point => line.end_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => line.end_point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1179,9 +1179,9 @@ package body et_kicad_packages is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => X, point => arc.start_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => arc.start_point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => Y, point => arc.start_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => arc.start_point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1189,9 +1189,9 @@ package body et_kicad_packages is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => X, point => circle.point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => circle.point, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => Y, point => circle.point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => circle.point, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1446,9 +1446,9 @@ package body et_kicad_packages is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => X, point => terminal_position.place, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => terminal_position.place, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => Y, point => terminal_position.place, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => terminal_position.place, value => to_distance (to_string (arg)));
 								when 3 => 
 									set (terminal_position, to_rotation (to_string (arg)));
 								when others => too_many_arguments;
@@ -1460,9 +1460,9 @@ package body et_kicad_packages is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => X, point => text.position.place, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => text.position.place, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => Y, point => text.position.place, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => text.position.place, value => to_distance (to_string (arg)));
 								when 3 => 
 									--text.angle := to_angle (to_string (arg));
 									set (text.position, to_rotation (to_string (arg)));
@@ -1507,8 +1507,8 @@ package body et_kicad_packages is
 						when SEC_DRILL =>
 							case section.arg_counter is
 								when 0 => null;
-								when 1 => set (axis => X, point => terminal_pad_drill_offset, value => to_distance (to_string (arg)));
-								when 2 => set (axis => Y, point => terminal_pad_drill_offset, value => to_distance (to_string (arg)));
+								when 1 => set (axis => AXIS_X, point => terminal_pad_drill_offset, value => to_distance (to_string (arg)));
+								when 2 => set (axis => AXIS_Y, point => terminal_pad_drill_offset, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 						when others => invalid_section;

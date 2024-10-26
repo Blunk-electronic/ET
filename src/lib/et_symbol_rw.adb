@@ -117,11 +117,11 @@ package body et_symbol_rw is
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
-				set (point, X, to_distance (f (line, place + 1)));
+				set (point, AXIS_X, to_distance (f (line, place + 1)));
 
 			-- We expect after the y the corresponding value for y
 			elsif f (line, place) = keyword_y then
-				set (point, Y, to_distance (f (line, place + 1)));
+				set (point, AXIS_Y, to_distance (f (line, place + 1)));
 
 			else
 				invalid_keyword (f (line, place));

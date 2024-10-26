@@ -206,14 +206,15 @@ package body et_kicad_to_native is
 
 			-- get the paper height of the sheet
 			--sheet_height		:= et_schematic_sheets.pac_frames.paper_dimension (axis => Y, paper_size => sheet_paper_size);
-			sheet_height		:= type_distance_positive (et_frames.paper_dimension (axis => Y, paper_size => sheet_paper_size));
+			sheet_height		:= type_distance_positive (et_frames.paper_dimension (
+									axis => AXIS_Y, paper_size => sheet_paper_size));
 
 			-- calculate the new y position
 			--new_y				:= sheet_height - distance (axis => Y, point => point);
 			new_y				:= sheet_height - et_kicad_coordinates.get_y (point);
 
 			-- assign the new y position to the given point
-			et_kicad_coordinates.set (point, Y, new_y);
+			et_kicad_coordinates.set (point, AXIS_Y, new_y);
 		end move;
 
 
@@ -243,7 +244,8 @@ package body et_kicad_to_native is
 
 			-- get the paper height of the sheet
 			--sheet_height		:= et_schematic_sheets.pac_frames.paper_dimension (axis => Y, paper_size => sheet_paper_size);
-			sheet_height		:= type_distance_positive (et_frames.paper_dimension (axis => Y, paper_size => sheet_paper_size));
+			sheet_height		:= type_distance_positive (et_frames.paper_dimension (
+									axis => AXIS_Y, paper_size => sheet_paper_size));
 			
 			-- calculate the new y position
 			--new_y				:= sheet_height - distance_y (point_actual);
@@ -252,7 +254,7 @@ package body et_kicad_to_native is
 
 			-- assign the new y position to the given point
 			--set_y (point_actual, new_y);
-			set (point_actual, Y, new_y);
+			set (point_actual, AXIS_Y, new_y);
 		end move;
 
 
@@ -282,7 +284,7 @@ package body et_kicad_to_native is
 			--  axis => Y, paper_size => board_paper_size);
 
 			layout_sheet_height := pac_geometry_2.type_distance_positive (
-				et_frames.paper_dimension (axis => Y, paper_size => board_paper_size));
+				et_frames.paper_dimension (axis => AXIS_Y, paper_size => board_paper_size));
 		end prepare_layout_y_movements;
 
 
@@ -297,7 +299,7 @@ package body et_kicad_to_native is
 			new_y : type_position_axis;
 		begin
 			new_y := layout_sheet_height - get_y (point);
-			set (point, Y, new_y);
+			set (point, AXIS_Y, new_y);
 		end move;
 
 
@@ -347,6 +349,8 @@ package body et_kicad_to_native is
 
 			log_indentation_down;
 		end flatten_notes;
+
+		
 
 		procedure flatten_frames (
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
@@ -2274,7 +2278,7 @@ package body et_kicad_to_native is
 				 level => log_threshold + 2);
 			
 			-- compute width and height of the rectangle:
-			width  := get_distance (axis => X, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
+			width  := get_distance (axis => AXIS_X, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
 
 			log (text => "width" & to_string (width), level => log_threshold + 2);
 			
@@ -2284,7 +2288,7 @@ package body et_kicad_to_native is
 				width := - width;
 			end if;
 			
-			height := get_distance (axis => Y, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
+			height := get_distance (axis => AXIS_Y, point_2 => rectangle.corner_B, point_1 => rectangle.corner_A);
 
 			log (text => "height" & to_string (height), level => log_threshold + 2);
 			

@@ -437,7 +437,7 @@ package et_geometry_2a.contours is
 	-- Mirrors a list of contours along the given axis:
 	procedure mirror_contours (
 		contours	: in out pac_contour_list.list;
-		axis		: in type_axis_2d := Y);
+		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 
 	-- Rotates a list of contours by the given angle:

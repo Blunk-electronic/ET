@@ -36,17 +36,24 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-
 
 package et_axes is
 	
+	axis_prefix : constant string := "AXIS_";
+	
+	type type_axis is (AXIS_X, AXIS_Y, AXIS_Z);
+	
+	subtype type_axis_2d is type_axis range AXIS_X .. AXIS_Y;
 
-	type type_axis is (X, Y, Z);
-	subtype type_axis_2d is type_axis range X .. Y;
- 
-	function to_string (axis : in type_axis) return string;
-	function to_axis (axis : in string) return type_axis;
+	
+	function to_string (
+		axis : in type_axis) 
+		return string;
+
+	
+	function to_axis (
+		axis : in string)
+		return type_axis;
 
 	
 		

@@ -171,8 +171,8 @@ package body et_kicad_coordinates is
 		value		: in type_distance_model)
 	is begin
 		case axis is
-			when X => position.point.x := value;
-			when Y => position.point.y := value;
+			when AXIS_X => position.point.x := value;
+			when AXIS_Y => position.point.y := value;
 		end case;
 	end set;
 	

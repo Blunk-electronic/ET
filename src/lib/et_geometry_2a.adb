@@ -567,7 +567,7 @@ package body et_geometry_2a is
 		-- compute new x   -- (cos rotation) * distance_to_origin
 		scratch := cos (type_float (rotation), units_per_cycle);
 		set (
-			axis	=> X,
+			axis	=> AXIS_X,
 			point	=> point,
 			value	=> to_distance (scratch * distance_to_origin)
 			);
@@ -575,7 +575,7 @@ package body et_geometry_2a is
 		-- compute new y   -- (sin rotation) * distance_to_origin
 		scratch := sin (type_float (rotation), units_per_cycle);
 		set (
-			axis 	=> Y,
+			axis 	=> AXIS_Y,
 			point	=> point,
 			value	=> to_distance (scratch * distance_to_origin)
 			);
@@ -635,10 +635,10 @@ package body et_geometry_2a is
 		d : type_distance;
 	begin
 		case axis is
-			when X =>
+			when AXIS_X =>
 				d := (point_2.x - point_1.x);
 
-			when Y =>
+			when AXIS_Y =>
 				d := (point_2.y - point_1.y);
 		end case;
 
@@ -726,8 +726,8 @@ package body et_geometry_2a is
 		value	: in type_position_axis)
 	is begin
 		case axis is
-			when X => point.x := value;
-			when Y => point.y := value;
+			when AXIS_X => point.x := value;
+			when AXIS_Y => point.y := value;
 		end case;
 	end;
 
@@ -917,10 +917,10 @@ package body et_geometry_2a is
 		d : type_distance_positive;
 	begin
 		case axis is
-			when X =>
+			when AXIS_X =>
 				d := abs (point_2.x - point_1.x);
 
-			when Y =>
+			when AXIS_Y =>
 				d := abs (point_2.y - point_1.y);
 		end case;
 				
@@ -3000,8 +3000,8 @@ package body et_geometry_2a is
 		value		: in type_position_axis)
 	is begin
 		case axis is
-			when X => position.place.x := value;
-			when Y => position.place.y := value;
+			when AXIS_X => position.place.x := value;
+			when AXIS_Y => position.place.y := value;
 		end case;
 	end set;
 
@@ -3188,14 +3188,14 @@ package body et_geometry_2a is
 		
 		-- The greater distance from start to end point in X or Y determines 
 		-- whether the line is handled like a horizontal or vertical drawn line.
-		if get_distance_abs (line.start_point, line.end_point, X) > 
-			get_distance_abs (line.start_point, line.end_point, Y) then
+		if get_distance_abs (line.start_point, line.end_point, AXIS_X) > 
+			get_distance_abs (line.start_point, line.end_point, AXIS_Y) then
 
 			-- distance in X greater -> decision will be made along the X axis.
 			-- The line will be handled like a horizontal drawn line.
 			
 			-- calculate the zone border. This depends on the line length in X direction.
-			line_length := get_distance_abs (line.start_point, line.end_point, X);
+			line_length := get_distance_abs (line.start_point, line.end_point, AXIS_X);
 			zone_border := line_length / type_distance (line_zone_division_factor);
 			-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
 			
@@ -3226,7 +3226,7 @@ package body et_geometry_2a is
 			-- The line will be handled like a vertical drawn line.
 
 			-- calculate the zone border. This depends on the line length in Y direction.
-			line_length := get_distance_abs (line.start_point, line.end_point, Y);
+			line_length := get_distance_abs (line.start_point, line.end_point, AXIS_Y);
 			zone_border := line_length / type_distance (line_zone_division_factor);
 			-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
 			

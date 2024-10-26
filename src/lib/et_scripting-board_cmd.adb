@@ -2104,7 +2104,7 @@ is
 							-- THE TRACK ENDS ON A GRID LINE ALONG A GIVEN AXIS:
 							
 							-- board motor_driver route net NET_1 1 line 0.25 R1 1 to x 5
-							if f (12) = to_string (X) or f (12) = to_string (Y) then
+							if f (12) = to_string (AXIS_X) or f (12) = to_string (AXIS_Y) then
 								case cmd_field_count is
 									when 13 =>
 										draw_track_line (
@@ -2167,7 +2167,7 @@ is
 							-- THE TRACK ENDS AT A GIVEN GRID LINE ALONG A GIVEN AXIS
 							
 							-- board motor_driver route net NET_1 1 line 0.25 R1 1 direction 45 x 5
-							if f (13) = to_string (X) or f (13) = to_string (Y) then
+							if f (13) = to_string (AXIS_X) or f (13) = to_string (AXIS_Y) then
 								
 								case cmd_field_count is
 									when 14 =>

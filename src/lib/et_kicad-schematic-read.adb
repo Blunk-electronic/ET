@@ -1439,8 +1439,8 @@ is
 			--log (text => "path " & to_string (path (sheet.coordinates)));
 			set_sheet (sheet.coordinates, sheet_number);
 			
-			set (sheet.coordinates, X, mil_to_distance (f (element (line_cursor), 2)));
-			set (sheet.coordinates, Y, mil_to_distance (f (element (line_cursor), 3)));
+			set (sheet.coordinates, AXIS_X, mil_to_distance (f (element (line_cursor), 2)));
+			set (sheet.coordinates, AXIS_Y, mil_to_distance (f (element (line_cursor), 3)));
 
 			sheet.size_x := mil_to_distance (f (element (line_cursor), 4));
 			sheet.size_y := mil_to_distance (f (element (line_cursor), 5));                                
@@ -1598,10 +1598,10 @@ is
 		set_sheet (segment.coordinates_end, sheet_number);
 
 		-- the x/y position
-		set (segment.coordinates_start, X, mil_to_distance (f (element (line_cursor), 1)));
-		set (segment.coordinates_start, Y, mil_to_distance (f (element (line_cursor), 2)));
-		set (segment.coordinates_end, X, mil_to_distance (f (element (line_cursor), 3)));
-		set (segment.coordinates_end, Y, mil_to_distance (f (element (line_cursor), 4)));
+		set (segment.coordinates_start, AXIS_X, mil_to_distance (f (element (line_cursor), 1)));
+		set (segment.coordinates_start, AXIS_Y, mil_to_distance (f (element (line_cursor), 2)));
+		set (segment.coordinates_end,   AXIS_X, mil_to_distance (f (element (line_cursor), 3)));
+		set (segment.coordinates_end,   AXIS_Y, mil_to_distance (f (element (line_cursor), 4)));
 
 		-- Ignore net segments with zero length (CS: for some reason they may exist. could be a kicad bug)
 		-- If a net segment has zero length, issue a warning.
@@ -1662,8 +1662,8 @@ is
 		set_path (junction.coordinates, path_to_sheet);
 		set_sheet (junction.coordinates, sheet_number);
 		
-		set (junction.coordinates, X, mil_to_distance (f (line,3)));
-		set (junction.coordinates, Y, mil_to_distance (f (line,4)));
+		set (junction.coordinates, AXIS_X, mil_to_distance (f (line,3)));
+		set (junction.coordinates, AXIS_Y, mil_to_distance (f (line,4)));
 
 		-- for the log
 		log (text => "net junction" & to_string (junction => junction, scope => xy), level => log_threshold);
@@ -1715,8 +1715,8 @@ is
 		line_cursor := pac_lines_of_file.first (lines);
 
 		-- Build a temporarily simple label from a line like "Text Label 5350 3050 0    60   ~ 0" :
-		set (label.coordinates, X, mil_to_distance (f (element (line_cursor), 3)));
-		set (label.coordinates, Y, mil_to_distance (f (element (line_cursor), 4)));
+		set (label.coordinates, AXIS_X, mil_to_distance (f (element (line_cursor), 3)));
+		set (label.coordinates, AXIS_Y, mil_to_distance (f (element (line_cursor), 4)));
 		
 		label.rotation := to_relative_rotation (f (element (line_cursor), 5));
 		label.size := mil_to_distance (f (element (line_cursor), 6));
@@ -1794,8 +1794,8 @@ is
 			label.global := true;
 		end if;
 
-		set (label.coordinates, X, mil_to_distance (f (element (line_cursor), 3)));
-		set (label.coordinates, Y, mil_to_distance (f (element (line_cursor), 4)));
+		set (label.coordinates, AXIS_X, mil_to_distance (f (element (line_cursor), 3)));
+		set (label.coordinates, AXIS_Y, mil_to_distance (f (element (line_cursor), 4)));
 
 		label.rotation := to_relative_rotation (f (element (line_cursor), 5));
 		label.direction := to_direction (f (element (line_cursor), 7));
@@ -1874,8 +1874,8 @@ is
 		set_path (note.position, path_to_sheet);
 		set_sheet (note.position, sheet_number);
 
-		set (note.position, X, mil_to_distance (f (element (line_cursor), 3)));
-		set (note.position, Y, mil_to_distance (f (element (line_cursor), 4)));
+		set (note.position, AXIS_X, mil_to_distance (f (element (line_cursor), 3)));
+		set (note.position, AXIS_Y, mil_to_distance (f (element (line_cursor), 4)));
 		
 		rotation := to_relative_rotation (f (element (line_cursor), 5));
 
@@ -2033,8 +2033,8 @@ is
 			-- test if the field content is longer than allowed:
 			check_text_content_length (f (element (line_cursor), 3));
 			
-			set (text_position, X, mil_to_distance (f (element (line_cursor), 5)));
-			set (text_position, Y, mil_to_distance (f (element (line_cursor), 6)));
+			set (text_position, AXIS_X, mil_to_distance (f (element (line_cursor), 5)));
+			set (text_position, AXIS_Y, mil_to_distance (f (element (line_cursor), 6)));
 
 			-- Kicad provides the absolute position of a text placeholder.
 			-- But ET requires the position relative to the unit:
@@ -3000,8 +3000,8 @@ is
 			-- Read unit coordinates from a line like "P 3200 4500".
 			elsif f (element (line_cursor), 1) = schematic_component_identifier_coord then -- "P"
 			
-				set (unit_position, X, mil_to_distance (f (element (line_cursor), 2))); -- "3200"
-				set (unit_position, Y, mil_to_distance (f (element (line_cursor), 3))); -- "4500"
+				set (unit_position, AXIS_X, mil_to_distance (f (element (line_cursor), 2))); -- "3200"
+				set (unit_position, AXIS_Y, mil_to_distance (f (element (line_cursor), 3))); -- "4500"
 
 				-- The unit coordinates is more than just x/y. We also have path and sheet number:
 				set_path (unit_position, path_to_sheet);
@@ -3151,8 +3151,8 @@ is
 		set_path (no_connection_flag.coordinates, path_to_sheet);
 		set_sheet (no_connection_flag.coordinates, sheet_number);
 		
-		set (no_connection_flag.coordinates, X, mil_to_distance (f (line,3)));
-		set (no_connection_flag.coordinates, Y, mil_to_distance (f (line,4)));
+		set (no_connection_flag.coordinates, AXIS_X, mil_to_distance (f (line,3)));
+		set (no_connection_flag.coordinates, AXIS_Y, mil_to_distance (f (line,4)));
 		
 		-- for the log
 		log (text => "no-connection-flag" & to_string (no_connection_flag => no_connection_flag, scope => xy),

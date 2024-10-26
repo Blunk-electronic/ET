@@ -135,8 +135,8 @@ package body et_coordinates_2 is
 		use et_geometry;
 		use et_sheets;
 	begin
-		position.set (X, get_x (position) + get_x (offset));
-		position.set (Y, get_y (position) + get_y (offset));
+		position.set (AXIS_X, get_x (position) + get_x (offset));
+		position.set (AXIS_Y, get_y (position) + get_y (offset));
 
 		-- Constraint error will arise here if resulting sheet number is less than 1.
 		position.sheet := type_sheet (type_sheet_relative (position.sheet) + offset.sheet);
