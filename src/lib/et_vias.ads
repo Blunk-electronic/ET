@@ -56,7 +56,6 @@ with et_string_processing;		use et_string_processing;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_contour_to_polygon;
-with et_geometry;
 with et_terminals;				use et_terminals;
 with et_drills;					use et_drills;
 with et_pcb_stack;				use et_pcb_stack;

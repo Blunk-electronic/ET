@@ -3817,7 +3817,6 @@ package body et_canvas is
 		mirror		: in type_mirror := MIRROR_NO;
 		width		: in type_distance_positive)
 	is
-		use et_geometry;
 		use cairo;
 		l : type_line;
 	begin

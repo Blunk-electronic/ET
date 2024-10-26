@@ -132,7 +132,6 @@ package body et_coordinates_2 is
 		position	: in out type_position'class;
 		offset		: in type_position_relative) 
 	is
-		use et_geometry;
 		use et_sheets;
 	begin
 		position.set (AXIS_X, get_x (position) + get_x (offset));

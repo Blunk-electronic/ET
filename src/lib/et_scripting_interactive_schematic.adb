@@ -49,7 +49,6 @@ with gtk.gentry;					use gtk.gentry;
 with ada.text_io;					use ada.text_io;
 with ada.containers;				use ada.containers;
 
-with et_geometry;
 with et_coordinates_2;				use et_coordinates_2;
 with et_project.modules;			use et_project.modules;
 with et_packages;
@@ -312,7 +311,7 @@ package body et_scripting_interactive_schematic is
 
 		use pac_geometry_2;
 		pos : type_vector_model;
-		use et_geometry;
+
 	begin
 		-- Append the cursors of the device and unit to the list of proposed units.
 		-- There will be only one single item in that list.
@@ -341,6 +340,8 @@ package body et_scripting_interactive_schematic is
 		
 	end select_unit_for_move;
 
+
+	
 	-- Maps from the current noun to the category of the placeholder.
 	-- May be called when the noun is NOUN_NAME, NOUN_PURPOSE or NOUN_VALUE.
 	-- If the noun is something different, then a constraint_error is raised.
@@ -556,7 +557,6 @@ package body et_scripting_interactive_schematic is
 
 		use pac_geometry_2;
 		pos : type_vector_model;
-		use et_geometry;
 	begin
 		-- Append the cursors of the device and unit to the list of proposed placeholders.
 		-- There will be only one single item in that list.
@@ -567,8 +567,6 @@ package body et_scripting_interactive_schematic is
 		-- Set the selected placeholder. This signals the GUI which placeholder is to be
 		-- drawn at the cursor or mouse position:
 		selected_placeholder := proposed_placeholders.first;
-
-
 
 		
 		-- Move the cursor to the placeholder:

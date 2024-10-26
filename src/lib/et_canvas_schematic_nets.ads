@@ -43,7 +43,6 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
 with et_net_names;					use et_net_names;
-with et_geometry;					use et_geometry;
 with et_general;					use et_general;
 with et_canvas_messages;			use et_canvas_messages;
 with et_canvas_tool;				use et_canvas_tool;

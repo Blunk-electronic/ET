@@ -41,7 +41,6 @@
 with et_text;
 with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
-with et_geometry;				use et_geometry;
 with et_geometry_2a;
 with et_geometry_2a.contours;
 with et_geometry_1.et_polygons;

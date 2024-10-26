@@ -37,7 +37,6 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with et_geometry;
 with et_schematic;
 
 with et_pcb_contour;			use et_pcb_contour;
@@ -73,7 +72,6 @@ procedure draw_outline is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in et_schematic.type_module)
 	is 
-		use et_geometry;
 	begin
 		if module.board.contours.outline.contour.circular then
 
@@ -93,9 +91,9 @@ procedure draw_outline is
 		module		: in et_schematic.type_module) 
 	is
 		use pac_holes;
+
 		
 		procedure query_hole (c : in pac_holes.cursor) is 
-			use et_geometry;
 		begin
 			if element (c).contour.circular then
 
@@ -108,6 +106,7 @@ procedure draw_outline is
 				iterate (element (c).contour.segments, query_segment'access);
 			end if;
 		end query_hole;
+
 		
 	begin
 		iterate (module.board.contours.holes, query_hole'access);

@@ -51,7 +51,6 @@ with et_general;				use et_general;
 with et_net_names;				use et_net_names;
 with et_nets;					use et_nets;
 with et_project;
-with et_geometry;				use et_geometry;
 with et_net_labels;				use et_net_labels;
 with et_schematic;
 with et_terminals;

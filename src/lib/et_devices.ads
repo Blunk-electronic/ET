@@ -51,7 +51,6 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_coordinates_2;			use et_coordinates_2;
-with et_geometry;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_general;

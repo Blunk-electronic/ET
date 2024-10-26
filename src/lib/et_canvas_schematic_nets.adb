@@ -46,7 +46,6 @@ with gtk.box;
 with gtk.label;
 with gtk.gentry;
 
-with et_geometry;					use et_geometry;
 with et_canvas_schematic_2;			use et_canvas_schematic_2;
 
 with et_modes.schematic;			use et_modes.schematic;

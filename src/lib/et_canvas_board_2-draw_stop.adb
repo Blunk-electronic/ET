@@ -38,7 +38,6 @@
 
 with ada.text_io;				use ada.text_io;
 
-with et_geometry;
 with et_stop_mask;				use et_stop_mask;
 with et_colors;					use et_colors;
 with et_board_ops.text;			use et_board_ops.text;
@@ -96,7 +95,6 @@ is
 
 	
 	procedure query_circle (c : in pac_stop_circles.cursor) is 
-		use et_geometry;
 		-- CS use renames
 	begin
 		draw_circle (
@@ -111,7 +109,6 @@ is
 	
 	procedure query_polygon (c : in pac_stop_contours.cursor) is -- CS rename to query_contour
 		-- CS use renames
-		use et_geometry;
 		use pac_draw_contours;
 	begin
 		draw_contour (

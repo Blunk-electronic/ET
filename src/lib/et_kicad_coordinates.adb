@@ -43,7 +43,6 @@ with ada.exceptions;
 
 with ada.numerics.generic_elementary_functions;
 with et_string_processing;
-with et_geometry;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 
 
@@ -274,15 +273,15 @@ package body et_kicad_coordinates is
 -- 		return to_string (result);
 -- 	end to_string;
 
-	function to_string (
+
+	
 	-- Returns the given position as string. Scope specifies how much position is to
 	-- be displayed. See specification of type_scope.
+	function to_string (
 		position	: in type_position;
 		scope		: in type_scope := SHEET)
 		return string 
 	is
-		use et_geometry;
-		
 		coordinates_preamble_xy : constant string := " pos "
 			& "(x"
 			& axis_separator

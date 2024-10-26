@@ -38,9 +38,9 @@
 --
 
 with ada.strings; 					use ada.strings;
-with et_geometry;					use et_geometry;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_sheets;						use et_sheets;
+
 
 package body et_schematic_rw is
 

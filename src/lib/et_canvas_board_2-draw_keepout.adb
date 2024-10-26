@@ -38,7 +38,6 @@
 
 with ada.text_io;				use ada.text_io;
 
-with et_geometry;
 with et_keepout;				use et_keepout;
 with et_colors;					use et_colors;
 with et_modes.board;
@@ -66,7 +65,6 @@ is
 	
 	procedure query_polygon (c : in pac_keepout_zones.cursor) is -- CS rename to query_contour
 		-- CS use rename
-		use et_geometry;
 		use pac_draw_contours;
 	begin
 		draw_contour (
@@ -78,7 +76,6 @@ is
 	
 	procedure query_cutout (c : in pac_keepout_cutouts.cursor) is 
 		-- CS use rename
-		use et_geometry;
 		use pac_draw_contours;
 	begin
 		set_color_background;

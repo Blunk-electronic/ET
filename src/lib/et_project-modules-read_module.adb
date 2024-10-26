@@ -45,7 +45,6 @@ with et_pcb_coordinates_2;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_axes;						use et_axes;
-with et_geometry;
 with et_net_labels;
 with et_symbols;
 with et_symbol_rw;
@@ -414,7 +413,6 @@ is
 		from : in ada.containers.count_type) -- CS use a dedicated type instead
 		return et_coordinates_2.type_position
 	is		
-		use et_geometry;
 		use et_coordinates_2;
 		use pac_geometry_2;
 		use et_sheets;
@@ -458,7 +456,6 @@ is
 		from : in ada.containers.count_type) -- CS use a dedicated type instead
 		return et_submodules.type_submodule_size 
 	is
-		use et_geometry;
 		use et_coordinates_2.pac_geometry_2;
 		use ada.containers;
 		
@@ -496,7 +493,6 @@ is
 		from : in ada.containers.count_type) -- CS use a dedicated type instead
 		return et_pcb_coordinates_2.type_package_position
 	is
-		use et_geometry;
 		use ada.containers;
 		use et_pcb_sides;
 		use et_pcb_coordinates_2;
@@ -731,7 +727,6 @@ is
 
 	
 	procedure set_junction (place : in string) is 
-		use et_geometry;
 	begin
 		if f (line, 2) = keyword_start then
 			net_junctions.start_point := true;
@@ -744,7 +739,6 @@ is
 
 	
 	procedure read_net_segment is
-		use et_geometry;
 		use et_symbol_rw;
 		kw : constant string := f (line, 1);
 	begin
@@ -780,7 +774,6 @@ is
 
 	
 	procedure read_label is
-		use et_geometry;
 		use et_symbol_rw;
 		use et_coordinates_2;	
 		use pac_geometry_2;
@@ -1036,7 +1029,6 @@ is
 
 	
 	procedure read_unit is
-		use et_geometry;
 		use et_coordinates_2;	
 		use pac_geometry_2;
 		use et_devices;
@@ -1330,7 +1322,6 @@ is
 
 	
 	procedure read_unit_placeholder is
-		use et_geometry;
 		use et_device_placeholders;
 		use et_schematic_shapes_and_text;
 		use et_symbol_rw;
@@ -1610,7 +1601,6 @@ is
 	
 	-- Reads parameters of a conductor fill zone connected with a net:
 	procedure read_fill_zone_route is
-		use et_geometry;
 		use et_board_shapes_and_text;
 		use et_pcb_coordinates_2.pac_geometry_2;
 		use et_fill_zones;
@@ -1678,7 +1668,6 @@ is
 
 	
 	procedure read_fill_zone_non_conductor is
-		use et_geometry;
 		use et_board_shapes_and_text;
 		use et_packages;
 		use et_pcb_coordinates_2.pac_geometry_2;
@@ -1700,7 +1689,6 @@ is
 
 	
 	procedure read_fill_zone_keepout is
-		use et_geometry;
 		use et_pcb_rw;
 		kw : constant string := f (line, 1);
 	begin
@@ -1718,7 +1706,6 @@ is
 
 	
 	procedure read_fill_zone_restrict is
-		use et_geometry;
 		use et_pcb_stack;
 		use et_pcb_rw;
 		use et_packages;
@@ -1744,7 +1731,6 @@ is
 
 	
 	procedure read_fill_zone_conductor_non_electric is
-		use et_geometry;
 		use et_board_shapes_and_text;
 		use et_pcb_stack;
 		use et_pcb_rw;
@@ -1986,7 +1972,6 @@ is
 
 	
 	procedure read_schematic_text is
-		use et_geometry;
 		use et_schematic_shapes_and_text;
 		use et_coordinates_2;	
 		use pac_geometry_2;
@@ -2315,7 +2300,6 @@ is
 
 	
 	procedure read_via is
-		use et_geometry;
 		use et_pcb_coordinates_2.pac_geometry_2;
 		use et_pcb;
 		use et_pcb_rw;
@@ -2483,7 +2467,6 @@ is
 
 	
 	procedure read_user_settings_fill_zones_conductor is
-		use et_geometry;
 		use et_board_shapes_and_text;
 		use et_fill_zones;
 		use et_fill_zones.boards;		
@@ -4187,7 +4170,6 @@ is
 				use et_fill_zones;
 				use et_fill_zones.boards;
 				use et_pcb_rw;
-				use et_geometry;
 				
 				
 				procedure do_it (
@@ -4740,7 +4722,6 @@ is
 				use et_fill_zones.boards;
 				use et_thermal_relief;
 				use et_pcb_rw;
-				use et_geometry;
 				
 				
 				procedure solid_polygon is
@@ -6013,7 +5994,6 @@ is
 		use et_device_rw;
 		use et_pcb_rw;
 		use et_pcb_rw.restrict;
-		use et_geometry;
 		
 		
 	begin -- process_line

@@ -39,7 +39,6 @@
 with et_mirroring;						use et_mirroring;
 with et_schematic_ops;
 with et_contour_to_polygon;
-with et_geometry;						use et_geometry;
 with et_logging;						use et_logging;
 with et_string_processing;				use et_string_processing;
 

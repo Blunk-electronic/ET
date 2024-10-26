@@ -43,7 +43,6 @@ with ada.containers.doubly_linked_lists;
 with ada.numerics;
 with ada.numerics.generic_elementary_functions;
 
-with et_geometry;				use et_geometry;
 with et_axes;					use et_axes;
 with et_primitive_objects;		use et_primitive_objects;
 with et_geometry_1;

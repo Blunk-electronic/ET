@@ -54,7 +54,6 @@ with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;
 with et_canvas_board_2;
 
-with et_geometry;						use et_geometry;
 with et_primitive_objects;				use et_primitive_objects;
 with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
 use et_pcb_coordinates_2.pac_geometry_2;

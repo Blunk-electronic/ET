@@ -39,7 +39,6 @@ with et_coordinates_2;
 with et_pcb_sides;
 with et_pcb_coordinates_2;
 
-with et_geometry;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_net_labels;
@@ -474,8 +473,6 @@ is
 				use pac_net_segments;
 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
-				use et_geometry;
-				
 				use pac_device_ports;
 				use pac_submodule_ports;
 
@@ -666,9 +663,7 @@ is
 			polygon_hatched_cursor	: pac_route_hatched.cursor := net.route.fill_zones.hatched.first;
 			--cutout_zone_cursor		: pac_cutouts.cursor := net.route.cutouts.first;
 
-			use et_geometry;
-			
-			
+	
 			procedure write_vias is
 				use et_vias;
 				use pac_vias;
@@ -856,7 +851,6 @@ is
 
 	
 	procedure query_devices is
-		use et_geometry;
 		use et_devices;
 		use et_schematic;
 		use et_symbols;
@@ -1304,7 +1298,6 @@ is
 		use et_schematic;
 		use et_submodules;
 		use pac_submodules;
-		use et_geometry;
 
 		
 		procedure query_ports (port_cursor : in et_submodules.pac_submodule_ports.cursor) is
@@ -1367,7 +1360,6 @@ is
 			use et_symbol_rw;
 			use et_schematic_rw;
 			use et_sheets;
-			use et_geometry;
 		begin
 			section_mark (section_text, HEADER);
 			write

@@ -39,7 +39,6 @@
 
 with ada.text_io;				use ada.text_io;
 
-with et_geometry;				use et_geometry;
 with et_text;					use et_text;
 with et_nets;
 with et_net_names;				use et_net_names;

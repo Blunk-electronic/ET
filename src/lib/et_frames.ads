@@ -43,7 +43,6 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.directories;			use ada.directories;
 
-with et_geometry;				use et_geometry;
 with et_axes;					use et_axes;
 with et_general;				use et_general;
 with et_text;					use et_text;

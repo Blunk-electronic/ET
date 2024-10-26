@@ -64,7 +64,6 @@ with et_schematic_rw;			use et_schematic_rw;
 with et_symbol_rw;				use et_symbol_rw;
 with et_pcb_rw.device_packages;
 with et_conventions;
-with et_geometry;				use et_geometry;
 with et_text;
 with et_symbols;				use et_symbols;
 with et_packages;				use et_packages;

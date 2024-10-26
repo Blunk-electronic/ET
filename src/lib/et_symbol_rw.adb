@@ -46,7 +46,6 @@ with et_primitive_objects;			use et_primitive_objects;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_general;					use et_general;
 with et_general_rw;					use et_general_rw;
-with et_geometry;					use et_geometry;
 with et_axes;						use et_axes;
 with et_text;
 

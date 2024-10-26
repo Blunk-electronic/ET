@@ -51,7 +51,6 @@ with et_net_labels;
 with et_units;
 with et_schematic;
 
-with et_geometry;					use et_geometry;
 with et_mirroring;					use et_mirroring;
 with et_axes;						use et_axes;
 with et_general;					use et_general;

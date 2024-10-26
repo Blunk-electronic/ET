@@ -77,7 +77,6 @@ with et_submodules;
 with et_numbering;
 with et_material;
 with et_netlists;
-with et_geometry;
 with et_text;
 with et_symbols;				use et_symbols;
 with et_devices;				use et_devices;

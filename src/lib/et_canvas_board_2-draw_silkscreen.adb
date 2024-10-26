@@ -38,7 +38,6 @@
 
 with ada.text_io;				use ada.text_io;
 
-with et_geometry;
 with et_silkscreen;				use et_silkscreen;
 with et_silkscreen.boards;		use et_silkscreen.boards;
 with et_colors;					use et_colors;
@@ -151,7 +150,6 @@ is
 	
 	procedure query_contour (c : in pac_silk_contours.cursor) is 
 		-- CS use rename
-		use et_geometry;
 		use pac_draw_contours;
 	begin
 		draw_contour (

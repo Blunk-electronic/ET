@@ -38,8 +38,6 @@
 
 with ada.text_io;				use ada.text_io;
 
-with et_geometry;					use et_geometry;
-
 with et_mirroring;					use et_mirroring;
 
 with et_symbols;
@@ -1072,7 +1070,6 @@ is
 				
 				procedure query_circle (c : in pac_conductor_circles.cursor) is
 					circle : type_conductor_circle renames element (c);
-					use et_geometry;
 				begin
 					-- See comments in procedure query_line.
 					draw_circle (
@@ -1661,8 +1658,6 @@ is
 					restring		: in type_restring_width;
 					pad_position	: in type_position) -- the center of the pad, rotation has no meaning
 				is
-					use et_geometry;
-
 					circle : type_circle;
 					mirror_style : type_mirror := MIRROR_NO;
 					

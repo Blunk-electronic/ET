@@ -38,7 +38,6 @@
 
 with ada.text_io;				use ada.text_io;
 
-with et_geometry;
 with et_assy_doc;				use et_assy_doc;
 with et_assy_doc.boards;		use et_assy_doc.boards;
 with ada.text_io;				use ada.text_io;
@@ -142,7 +141,6 @@ is
 	
 	procedure query_circle (c : in pac_doc_circles.cursor) is 
 		circle : type_doc_circle renames element (c);
-		use et_geometry;
 	begin
 		-- CS is_selected
 		
@@ -156,7 +154,6 @@ is
 	
 	procedure query_polygon (c : in pac_doc_contours.cursor) is -- CS rename to query_contour
 		contour : type_doc_contour renames element (c);
-		use et_geometry;
 		use pac_draw_contours;
 	begin
 		draw_contour (

@@ -53,7 +53,6 @@ with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
-with et_geometry;				use et_geometry;
 with et_pcb_stack;				use et_pcb_stack;
 with et_drills;					use et_drills;
 with et_text;

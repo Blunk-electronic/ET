@@ -48,7 +48,6 @@ with ada.containers.ordered_maps;
 with ada.tags;
 with ada.exceptions;
 
-with et_geometry;
 with et_general;					use et_general;
 with et_primitive_objects;			use et_primitive_objects;
 with et_coordinates_formatting;		use et_coordinates_formatting;
@@ -64,8 +63,8 @@ package body et_frame_rw is
 	function to_position (line : in type_fields_of_line)
 	-- Converts the fields like "x 220 y 239" of a line to a type_position.
 	-- Starts processing from field 2. Ignores field 1 and fields after field 5.
-		return type_position is
-		use et_geometry; -- for keywords only
+		return type_position 
+	is
 		position : type_position;
 
 		procedure error (p : count_type) is begin invalid_keyword (f (line, p)); end;
@@ -91,8 +90,6 @@ package body et_frame_rw is
 		file_name		: in pac_template_name.bounded_string;
 		log_threshold	: in type_log_level) 
 	is
-		use et_geometry;  -- for keywords only		
-		
 		file_handle : ada.text_io.file_type;
 
 		
@@ -538,6 +535,7 @@ package body et_frame_rw is
 			end if;
 		end;
 
+		
 		-- TEMPORARILY VARIABLES AND CONTAINERS
 		tb_position 	: type_position;
 		tb_line 		: type_line;
@@ -553,9 +551,9 @@ package body et_frame_rw is
 		tb_face					: type_placeholder; -- for pcb only
 		tb_signal_layer			: type_placeholder; -- for pcb only
 		tb_cam_marker			: type_cam_marker;
+
 		
 		procedure read_title_block_position is
-			use et_geometry; -- for keywords only
 			kw : constant string := f (line, 1);
 		begin
 			if kw = keyword_position then -- position x 100 y 200
@@ -563,9 +561,9 @@ package body et_frame_rw is
 				tb_position := to_position (line);
 			end if;
 		end;
+
 		
 		procedure read_line_properties is
-			use et_geometry; -- for keywords only
 			kw : constant string := f (line, 1);
 		begin
 			-- CS: In the following: set a corresponding parameter-found-flag
@@ -581,8 +579,8 @@ package body et_frame_rw is
 			end if;
 		end;
 
+		
 		procedure read_text_properties is
-			use et_geometry; -- for keywords only
 			use et_text; -- for keywords only
 			kw : constant string := f (line, 1);
 		begin
@@ -604,8 +602,8 @@ package body et_frame_rw is
 			end if;
 		end;
 
+		
 		procedure read_cam_marker_properties is
-			use et_geometry; -- for keywords only
 			use et_text; -- for keywords only
 			kw : constant string := f (line, 1);
 		begin
@@ -626,9 +624,9 @@ package body et_frame_rw is
 				invalid_keyword (kw);
 			end if;
 		end;
+
 		
 		procedure read_placeholder_properties is
-			use et_geometry; -- for keywords only
 			use et_text; -- for keywords only
 			kw : constant string := f (line, 1);
 		begin
@@ -645,6 +643,7 @@ package body et_frame_rw is
 				invalid_keyword (kw);
 			end if;
 		end;
+
 		
 		procedure reset_placeholder is begin tb_placeholder := (others => <>); end;
 

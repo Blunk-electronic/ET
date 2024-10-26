@@ -77,8 +77,6 @@ with et_logging;						use et_logging;
 with et_string_processing;				use et_string_processing;
 with et_exceptions;						use et_exceptions;
 
-with et_geometry;
-
 with et_undo_redo;
 with et_commit;
 with et_object_status;

@@ -89,8 +89,7 @@ package body et_board_ops is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		use et_geometry;
-		
+
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
@@ -99,6 +98,7 @@ package body et_board_ops is
 		begin
 			append (module.board.stack.layers, layer);
 		end add;
+
 		
 	begin -- add_layer
 		log (text => "module " & to_string (module_name) &
@@ -116,6 +116,8 @@ package body et_board_ops is
 		
 	end add_layer;
 
+
+	
 	
 	function layer_count (module_cursor	: in et_project.modules.pac_generic_modules.cursor) 
 		return et_pcb_stack.type_signal_layer 

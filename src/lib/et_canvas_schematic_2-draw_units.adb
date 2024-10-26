@@ -36,8 +36,6 @@
 --   history of changes:
 --
 
-with et_geometry;						use et_geometry;
-
 with et_colors;							use et_colors;
 
 with et_text;

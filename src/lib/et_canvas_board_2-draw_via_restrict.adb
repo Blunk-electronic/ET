@@ -38,8 +38,6 @@
 
 with ada.text_io;				use ada.text_io;
 
-with et_geometry;
-
 with et_display.board;			use et_display.board;
 with et_colors;					use et_colors;
 -- with et_conductor_text.boards;	use et_conductor_text.boards;
@@ -96,7 +94,6 @@ procedure draw_via_restrict is
 	
 	procedure query_circle (c : in pac_via_restrict_circles.cursor) is 
 		circle : type_via_restrict_circle renames element (c);
-		use et_geometry;
 	begin
 		-- Draw the circle if restrict layer is enabled:
 		if via_restrict_layer_enabled (circle.layers) then
@@ -114,7 +111,6 @@ procedure draw_via_restrict is
 	procedure query_polygon (c : in pac_via_restrict_contours.cursor) is -- rename to query_contour
 		-- CS use rename ?
 		use pac_draw_contours;
-		use et_geometry;
 	begin
 		-- Draw the polygon if restrict layer is enabled:
 		if via_restrict_layer_enabled (element (c).layers) then
@@ -131,7 +127,6 @@ procedure draw_via_restrict is
 	procedure query_cutout (c : in pac_via_restrict_cutouts.cursor) is 
 		-- CS use rename
 		use pac_draw_contours;
-		use et_geometry;
 		use et_colors.board;
 	begin
 		-- Draw the zone if restrict layer is enabled:

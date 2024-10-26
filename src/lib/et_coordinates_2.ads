@@ -46,8 +46,6 @@ with ada.containers; 			use ada.containers;
 
 with ada.containers.doubly_linked_lists;
 
-with et_geometry;				use et_geometry;
-
 with et_geometry_1;
 with et_geometry_1.et_polygons;
 with et_geometry_1.et_polygons.offsetting;

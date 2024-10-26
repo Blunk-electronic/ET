@@ -38,7 +38,6 @@
 
 with ada.text_io;				use ada.text_io;
 
-with et_geometry;
 with et_stencil;				use et_stencil;
 with et_colors;					use et_colors;
 with et_modes.board;
@@ -89,7 +88,6 @@ is
 	
 	procedure query_circle (c : in pac_stencil_circles.cursor) is 
 		-- CS use renames
-		use et_geometry;
 	begin
 		draw_circle (
 			circle		=> element (c),
@@ -101,7 +99,6 @@ is
 	
 	procedure query_polygon (c : in pac_stencil_contours.cursor) is -- CS rename to query_contour
 		-- CS use renames
-		use et_geometry;
 		use pac_draw_contours;
 	begin
 		draw_contour (

@@ -47,7 +47,6 @@ with et_meta;
 with et_nets;						use et_nets;
 with et_net_names;					use et_net_names;
 with et_general;					use et_general;
-with et_geometry;					use et_geometry;
 with et_primitive_objects;			use et_primitive_objects;
 with et_axes;						use et_axes;
 with et_string_processing;			use et_string_processing;

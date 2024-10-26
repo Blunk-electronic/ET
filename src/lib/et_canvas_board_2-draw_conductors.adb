@@ -38,8 +38,6 @@
 
 --with ada.text_io;					use ada.text_io;
 
-with et_geometry;
-
 with et_pcb;						use et_pcb;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
 with et_fill_zones;					use et_fill_zones;
@@ -332,7 +330,6 @@ procedure draw_conductors is
 		
 		procedure draw_edge (e : in pac_edges.cursor) is 
 			edge : type_edge renames element (e);
-			use et_geometry;
 		begin
 			draw_line (
 				line	=> to_line_coarse (type_line_fine (edge)),
@@ -366,7 +363,6 @@ procedure draw_conductors is
 	procedure query_fill_zone (c : in pac_floating_solid.cursor) is 
 		-- CS use rename ?
 		use pac_draw_contours;
-		use et_geometry;
 	begin
 		-- Draw the zone if it is in the current layer:
 		if element (c).properties.layer = current_layer then
@@ -393,7 +389,6 @@ procedure draw_conductors is
 	procedure query_fill_zone (c : in pac_floating_hatched.cursor) is 
 		-- CS use rename ?
 		use pac_draw_contours;
-		use et_geometry;
 	begin
 		-- Draw the zone if it is in the current layer:
 		if element (c).properties.layer = current_layer then
@@ -442,7 +437,6 @@ procedure draw_conductors is
 	procedure query_fill_zone (c : in pac_route_solid.cursor) is 
 		zone : type_route_solid renames element (c);
 
-		use et_geometry;
 		use pac_reliefes;
 		use pac_draw_contours;
 	begin
@@ -475,7 +469,6 @@ procedure draw_conductors is
 	procedure query_fill_zone (c : in pac_route_hatched.cursor) is
 		zone : type_route_hatched renames element (c);
 
-		use et_geometry;
 		use pac_reliefes;
 		use pac_draw_contours;
 	begin		
@@ -507,7 +500,6 @@ procedure draw_conductors is
 	
 	procedure query_cutout (c : in pac_cutouts.cursor) is 
 		-- CS use rename ?
-		use et_geometry;
 		use pac_draw_contours;
 	begin
 		-- Draw the zone if it is in the current layer:

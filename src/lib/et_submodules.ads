@@ -56,7 +56,6 @@ with et_logging;				use et_logging;
 with et_general;				use et_general;
 with et_net_names;				use et_net_names;
 with et_text;
-with et_geometry;
 with et_primitive_objects;		use et_primitive_objects;
 with et_coordinates_2;			use et_coordinates_2;
 with et_pcb;

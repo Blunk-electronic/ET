@@ -36,7 +36,6 @@
 --   history of changes:
 --
 
-with et_geometry;				use et_geometry;
 with et_geometry_1;
 with et_geometry_2a;
 with et_geometry_2a.grid;
