@@ -42,9 +42,10 @@ with ada.text_io;				use ada.text_io;
 
 with ada.exceptions;
 
-with et_general;				use et_general;
-with et_general_rw;				use et_general_rw;
-with et_geometry;				use et_geometry;
+with et_primitive_objects;			use et_primitive_objects;
+with et_general;					use et_general;
+with et_general_rw;					use et_general_rw;
+with et_geometry;					use et_geometry;
 with et_text;
 
 with et_device_placeholders;		use et_device_placeholders;

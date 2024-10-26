@@ -46,28 +46,6 @@ with ada.characters.handling;	use ada.characters.handling;
 with et_exceptions;				use et_exceptions;
 
 package body et_geometry is
-
-
-	function to_string (direction : in type_direction_of_rotation) return string is begin
-		return to_lower (type_direction_of_rotation'image (direction));
-	end to_string;
-
-	
-	function to_direction (direction : in string) return type_direction_of_rotation is begin
-		return type_direction_of_rotation'value (direction);
-	end to_direction;
-
-	
-	function reverse_direction (direction : in type_direction_of_rotation)
-		return type_direction_of_rotation is
-	begin
-		case direction is 
-			when CW => return CCW;
-			when CCW => return CW;
-		end case;
-	end reverse_direction;
-
-
 	
 	
 	function to_string (axis : in type_axis) return string is begin
@@ -78,21 +56,6 @@ package body et_geometry is
 		return type_axis'value (axis);
 	end;
 
-
-	
-
-
-
-
-	function to_shape (shape : in string) return type_shape is begin
-		return type_shape'value (shape);
-	end;
-
-	function to_string (shape : in type_shape) return string is begin
-		return to_lower (type_shape'image (shape));
-	end;
-
-	
 	
 	
 	function to_string (coordinates : in type_coordinates) return string is begin
@@ -107,26 +70,6 @@ package body et_geometry is
 -- 					log (text => ada.exceptions.exception_information (event), console => true);
 -- 					raise;
 	end;
-
-
-	function to_string (filled : in type_filled) return string is begin
-		return to_lower (type_filled'image (filled));
-	end to_string;
-
-	function to_filled (filled : in string) return type_filled is begin
-		return type_filled'value (filled);
-	end to_filled;
-
-
-	-- FILL STYLE
-	function to_string (fill_style : in type_fill_style) return string is begin
-		return to_lower (type_fill_style'image (fill_style));
-	end;
-
-	function to_fill_style (fill_style : in string) return type_fill_style is begin
-		return type_fill_style'value (fill_style);
-	end;
-
 	
 	
 end et_geometry;

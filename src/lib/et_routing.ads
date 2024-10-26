@@ -6,7 +6,9 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -19,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -43,6 +44,7 @@ with ada.containers.ordered_sets;
 
 with et_general;				use et_general;
 with et_geometry;				use et_geometry;
+with et_primitive_objects;		use et_primitive_objects;
 with et_design_rules;			use et_design_rules;
 with et_net_names;				use et_net_names;
 with et_vias;					use et_vias;

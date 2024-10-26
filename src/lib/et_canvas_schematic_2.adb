@@ -53,6 +53,7 @@ with ada.containers;
 -- with et_terminals;
 -- with et_devices;					use et_devices;
 -- 
+with et_primitive_objects;				use et_primitive_objects;
 with et_scripting;
 with et_modes;						--use et_modes;
 with et_modes.board;

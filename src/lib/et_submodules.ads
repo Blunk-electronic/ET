@@ -57,6 +57,7 @@ with et_general;				use et_general;
 with et_net_names;				use et_net_names;
 with et_text;
 with et_geometry;
+with et_primitive_objects;		use et_primitive_objects;
 with et_coordinates_2;			use et_coordinates_2;
 with et_pcb;
 with et_pcb_stack;
@@ -292,7 +293,7 @@ package et_submodules is
 						center		=> (x => 0.0, y => 0.0),
 						start_point	=> (x => -5.0, y => 0.0),
 						end_point	=> (x =>  5.0, y => 0.0),
-						direction	=> et_geometry.CW,
+						direction	=> CW,
 						width		=> et_symbols.port_line_width,
 						others		=> <>);
 	end record;

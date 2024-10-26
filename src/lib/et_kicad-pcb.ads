@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -50,6 +50,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
+with et_primitive_objects;		use et_primitive_objects;
 with et_geometry;				use et_geometry;
 with et_schematic;				use et_schematic;
 with et_net_names;				use et_net_names;
@@ -674,7 +675,7 @@ package et_kicad.pcb is
 		priority_level		: type_priority := type_priority'first;
 		isolation_gap		: type_track_clearance := type_track_clearance'first; -- the space between foreign pads and the fill_zone
 		corners				: type_polygon_points.list;
-		fill_style			: et_geometry.type_fill_style := et_geometry.SOLID; -- a fill_zone is always filled
+		fill_style			: type_fill_style := SOLID; -- a fill_zone is always filled
 		hatching			: type_hatching;
 		easing				: type_easing;
 	end record;

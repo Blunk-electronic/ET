@@ -48,7 +48,7 @@ with ada.containers;
 with ada.calendar;					use ada.calendar;
 with ada.calendar.formatting;		use ada.calendar.formatting;
 
-
+with et_primitive_objects;				use et_primitive_objects;
 with et_scripting;
 with et_modes;
 with et_modes.board;				

@@ -302,7 +302,7 @@ procedure draw_conductors is
 			-- We draw a normal non-filled circle:
 			draw_circle (
 				circle		=> circle,
-				filled		=> et_geometry.NO,
+				filled		=> NO,
 				width		=> circle.width,
 				do_stroke	=> true);
 
@@ -700,7 +700,7 @@ procedure draw_conductors is
 			
 			draw_circle (
 				circle		=> circle,
-				filled		=> et_geometry.NO,
+				filled		=> NO,
 				width		=> linewidth,
 				do_stroke	=> true);			
 		end draw_restring;

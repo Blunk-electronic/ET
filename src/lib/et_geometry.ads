@@ -75,50 +75,11 @@ package et_geometry is
 
 	
 
-	type type_direction_of_rotation is (
-		CW,		-- clockwise
-		CCW);	-- counterclockwise
-
-	function to_string (direction : in type_direction_of_rotation) return string;
-	function to_direction (direction : in string) return type_direction_of_rotation;
-
-	-- Changes CCW to CW and vice versa.
-	function reverse_direction (direction : in type_direction_of_rotation)
-		return type_direction_of_rotation;
-
-	
-
-
-	
-
-
-
-	type type_shape is (LINE, ARC, CIRCLE);
-
-	function to_shape (shape : in string) return type_shape;
-	function to_string (shape : in type_shape) return string;
-	
-
 	
 	type type_coordinates is (RELATIVE, ABSOLUTE);
 
 	function to_string (coordinates : in type_coordinates) return string;
 	function to_coordinates (coordinates : in string) return type_coordinates;
-
-	
-	type type_filled is (NO, YES);
-	function to_string (filled : in type_filled) return string;
-	function to_filled (filled : in string) return type_filled;
-	filled_default : constant type_filled := NO;
-
-
-	-- FILL STYLE OF OBJECTS WITH A CLOSED CIRCUMFENCE		
-	keyword_fill_style : constant string := "fill_style";	
-	type type_fill_style is (SOLID, HATCHED);
-	fill_style_default : constant type_fill_style := SOLID;
-	
-	function to_string (fill_style : in type_fill_style) return string;
-	function to_fill_style (fill_style : in string) return type_fill_style;
 
 	
 
@@ -132,12 +93,6 @@ package et_geometry is
 		WITH_END_POINTS,	-- start and end point included
 		BEYOND_END_POINTS	-- indefinite long line assumed. extends beyond both start and end point into infinity
 		);
-
-	
-	
-	-- Whether a line, arc, circle or contour is drawn dashed or not:
-	type type_line_style is (CONTINUOUS, DASHED);
-	-- CS other pattersn like jotted, dash-point, ... ?
 
 	
 		

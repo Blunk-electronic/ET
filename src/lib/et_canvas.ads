@@ -63,7 +63,7 @@ with gtk.text_buffer;			use gtk.text_buffer;
 
 with cairo;
 
-
+with et_primitive_objects;		use et_primitive_objects;
 with et_logical_pixels;			use et_logical_pixels;
 with et_geometry;				use et_geometry;
 with et_geometry_2a;

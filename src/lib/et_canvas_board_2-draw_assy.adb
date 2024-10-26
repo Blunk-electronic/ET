@@ -148,7 +148,7 @@ is
 		
 		draw_circle (
 			circle		=> circle,
-			filled		=> et_geometry.NO,
+			filled		=> NO,
 			width		=> circle.width,
 			do_stroke	=> true);				
 	end query_circle;

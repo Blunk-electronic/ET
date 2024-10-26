@@ -48,6 +48,7 @@ with et_nets;						use et_nets;
 with et_net_names;					use et_net_names;
 with et_general;					use et_general;
 with et_geometry;					use et_geometry;
+with et_primitive_objects;			use et_primitive_objects;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 with et_project.modules;			use et_project.modules;

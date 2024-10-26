@@ -48,7 +48,7 @@ with gnat.directory_operations;
 with et_exceptions;				use et_exceptions;
 
 with et_project;
-
+with et_primitive_objects;		use et_primitive_objects;
 with et_geometry;				use et_geometry; -- due to frequently used keywords
 
 with et_display;				use et_display;
