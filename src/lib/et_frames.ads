@@ -46,9 +46,7 @@ with ada.directories;			use ada.directories;
 with et_axes;					use et_axes;
 with et_text;					use et_text;
 with et_sheets;					use et_sheets;
-
-with cairo;
-with et_fonts;
+with et_fonts;					use et_fonts;
 
 
 package et_frames is
@@ -296,26 +294,18 @@ package et_frames is
 	end record;
 
 
-
-	use et_fonts;
 	
 	-- GUI relevant only: The font of placeholders:
-	font_placeholders : constant type_font := (
-		family	=> to_family ("monospace"),
-		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
-		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);	
+	font_placeholders : constant type_font :=
+		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);	
 
 	-- GUI relevant only: The font of other texts:
-	font_texts : constant type_font := (
-		family	=> to_family ("monospace"),
-		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
-		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);	
+	font_texts : constant type_font :=
+		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);	
 
 	-- GUI relevant only: The font of column and row indexes:
-	font_indexes : constant type_font := (
-		family	=> to_family ("monospace"),
-		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
-		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);	
+	font_indexes : constant type_font :=
+		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
 
 	-- GUI relevant only: The font size of column and row indexes:
 	font_indexes_size : constant type_distance := 3;

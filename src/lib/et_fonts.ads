@@ -64,8 +64,10 @@ package et_fonts is
 		FAMILY_MONOSPACE); -- others
 
 	type type_slant is (
-		SLANT_NORMAL); -- CS others ?
+		SLANT_NORMAL,
+		SLANT_ITALIC); -- CS others ?
 
+	
 	type type_weight is (
 		WEIGHT_NORMAL); -- CS others ?
 							

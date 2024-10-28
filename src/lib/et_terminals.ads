@@ -57,8 +57,7 @@ with et_drills;					use et_drills;
 with et_text;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_design_rules;			use et_design_rules;
-with cairo;
-with et_fonts;
+with et_fonts;					use et_fonts;
 
 
 package et_terminals is
@@ -380,13 +379,10 @@ package et_terminals is
 	package pac_terminal_names is new doubly_linked_lists (pac_terminal_name.bounded_string);
 	
 
-	use et_fonts;
 	
 	-- GUI relevant only:
-	terminal_name_font : constant type_font := (
-		family	=> to_family ("monospace"),
-		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
-		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+	terminal_name_font : constant type_font :=
+		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
 
 	terminal_name_size : constant pac_text_board.type_text_size := 0.5;
 	

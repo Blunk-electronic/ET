@@ -80,6 +80,9 @@ package body et_fonts is
 			when SLANT_NORMAL =>
 				result.slant := CAIRO_FONT_SLANT_NORMAL;
 
+			when SLANT_ITALIC =>
+				result.slant := CAIRO_FONT_SLANT_ITALIC;
+				
 			when others =>
 				null; -- CS
 		end case;

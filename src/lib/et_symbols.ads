@@ -88,10 +88,8 @@ package et_symbols is
 	end record;
 
 	-- GUI relevant only:
-	text_font : constant type_font := (
-		family	=> to_family ("monospace"),
-		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
-		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+	text_font : constant type_font := 
+		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
 	
 
 	procedure write_text_properies (
