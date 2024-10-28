@@ -53,9 +53,6 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with cairo;						--use cairo;
-
-
 with et_nets;					use et_nets;
 with et_net_names;				use et_net_names;
 with et_sheets;					use et_sheets;

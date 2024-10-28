@@ -50,8 +50,6 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
 
-with cairo;
-
 with et_logging;				use et_logging;
 with et_net_names;				use et_net_names;
 with et_text;

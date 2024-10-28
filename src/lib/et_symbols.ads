@@ -50,8 +50,6 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
-with cairo;
-
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 
 with et_device_placeholders;			use et_device_placeholders;

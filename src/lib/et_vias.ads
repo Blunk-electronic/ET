@@ -49,8 +49,6 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
-with cairo;
-
 with et_string_processing;		use et_string_processing;
 
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
@@ -61,7 +59,7 @@ with et_drills;					use et_drills;
 with et_pcb_stack;				use et_pcb_stack;
 with et_design_rules;			use et_design_rules;
 with et_text;					use et_text;
-with et_fonts;
+with et_fonts;					use et_fonts;
 
 
 package et_vias is
@@ -212,12 +210,9 @@ package et_vias is
 
 
 
-	use et_fonts;
 
-	via_text_font : constant type_font := (
-		family	=> to_family ("monospace"),
-		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
-		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+	via_text_font : constant type_font :=
+		to_font (FAMILY_MONOSPACE, SLANT_NORMAL, WEIGHT_NORMAL);
 
 	
 	-- This constant defines the text size of the layer numbers
