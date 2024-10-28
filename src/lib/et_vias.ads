@@ -61,6 +61,8 @@ with et_drills;					use et_drills;
 with et_pcb_stack;				use et_pcb_stack;
 with et_design_rules;			use et_design_rules;
 with et_text;					use et_text;
+with et_fonts;
+
 
 package et_vias is
 	
@@ -208,10 +210,12 @@ package et_vias is
 		process	: not null access procedure (position : in pac_vias.cursor);
 		proceed	: not null access boolean);
 
-	
 
-	via_text_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
+
+	use et_fonts;
+
+	via_text_font : constant type_font := (
+		family	=> to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 

@@ -48,6 +48,8 @@ with et_text;					use et_text;
 with et_sheets;					use et_sheets;
 
 with cairo;
+with et_fonts;
+
 
 package et_frames is
 
@@ -295,7 +297,7 @@ package et_frames is
 
 
 
-	
+	use et_fonts;
 	
 	-- GUI relevant only: The font of placeholders:
 	font_placeholders : constant type_font := (

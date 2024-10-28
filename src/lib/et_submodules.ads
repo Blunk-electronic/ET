@@ -63,6 +63,8 @@ with et_pcb_coordinates_2;
 with et_symbols;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_module_names;					use et_module_names;
+with et_fonts;
+
 
 
 package et_submodules is
@@ -139,13 +141,17 @@ package et_submodules is
 	port_symbol : constant type_port_symbol := (port_symbol_width, port_symbol_height);
 	port_symbol_line_width : constant et_symbols.type_line_width := 0.2;
 
+
+
+	use et_fonts;
 	
 	-- GUI relevant only: The font of the port name:
-	port_name_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
+	port_name_font : constant type_font := (
+		family	=> to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
+	
 	-- The font size of the port name:
 	port_name_font_size : constant type_text_size := 2.0;
 
@@ -154,10 +160,11 @@ package et_submodules is
 
 
 	-- GUI relevant only: The font of the port direction:
-	port_direction_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
+	port_direction_font : constant type_font := (
+		family	=> to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
+	
 
 	-- The font size of the port direction:
 	port_direction_font_size : constant type_text_size :=
@@ -217,8 +224,8 @@ package et_submodules is
 
 	
 	-- GUI relevant only: The font of the instance name:
-	instance_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
+	instance_font : constant type_font := (
+		family	=> to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
@@ -227,8 +234,8 @@ package et_submodules is
 
 
 	-- GUI relevant only: The font of the file name:
-	file_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
+	file_font : constant type_font := (
+		family	=> to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_ITALIC,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
@@ -238,8 +245,8 @@ package et_submodules is
 	
 
 	-- GUI relevant only: The font of the position in board:
-	position_board_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
+	position_board_font : constant type_font := (
+		family	=> to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 

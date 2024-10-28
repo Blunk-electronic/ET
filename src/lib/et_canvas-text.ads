@@ -39,6 +39,7 @@
 
 with et_text;					use et_text;
 with et_alignment;				use et_alignment;
+with et_fonts;					use et_fonts;
 
 
 generic
@@ -84,7 +85,7 @@ package et_canvas.text is
 	function get_text_extents (
 		content		: in et_text.pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
-		font		: in et_text.type_font)
+		font		: in type_font)
 		return cairo.cairo_text_extents;
 
 
@@ -119,7 +120,7 @@ package et_canvas.text is
 	procedure draw_text (
 		content		: in et_text.pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
-		font		: in et_text.type_font;
+		font		: in type_font;
 		anchor		: in type_vector_model; -- the anchor point in the model
 		origin		: in boolean; -- when true, an origin is drawn at the anchor point
 		rotation	: in type_rotation;

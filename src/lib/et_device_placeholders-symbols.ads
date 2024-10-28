@@ -52,9 +52,9 @@ with et_logging;					use et_logging;
 
 with cairo;
 
-
 package et_device_placeholders.symbols is
 
+	use et_fonts;
 	use pac_geometry_2;
 	use pac_text_schematic;
 	
@@ -77,18 +77,18 @@ package et_device_placeholders.symbols is
 
 
 	-- GUI relevant only:
-	name_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
+	name_font : constant type_font := (
+		family	=> to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
-	value_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
+	value_font : constant type_font := (
+		family	=> to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_ITALIC,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
-	purpose_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
+	purpose_font : constant type_font := (
+		family	=> to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 	

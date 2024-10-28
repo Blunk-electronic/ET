@@ -71,7 +71,7 @@ package body et_canvas.text is
 	function get_text_extents (
 		content		: in et_text.pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
-		font		: in et_text.type_font)
+		font		: in type_font)
 		return cairo.cairo_text_extents 
 	is
 		use cairo;
@@ -203,7 +203,7 @@ package body et_canvas.text is
 	procedure draw_text (
 		content		: in et_text.pac_text_content.bounded_string;
 		size		: in pac_text.type_text_size;
-		font		: in et_text.type_font;
+		font		: in type_font;
 		anchor		: in type_vector_model;
 		origin		: in boolean;		
 		rotation	: in type_rotation;

@@ -43,8 +43,6 @@ with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_ordered_maps;
 
-with cairo;
-
 with et_geometry_1;
 with et_geometry_1.et_polygons;
 with et_geometry_1.et_polygons.offsetting;
@@ -60,21 +58,8 @@ with et_alignment;				use et_alignment;
 package et_text is
 
 	
--- FONT
-	font_family_length_max : constant positive := 50;
-	package pac_font_family is new generic_bounded_length (font_family_length_max);
-
-	function to_string (family : in pac_font_family.bounded_string) return string;
-	function to_family (family : in string) return pac_font_family.bounded_string;
-	
-	type type_font is record
-		family	: pac_font_family.bounded_string; -- string := "monospace";
-		slant	: cairo.cairo_font_slant := cairo.CAIRO_FONT_SLANT_NORMAL;
-		weight	: cairo.cairo_font_weight := cairo.CAIRO_FONT_WEIGHT_NORMAL;
-	end record;
-
-	
 -- CONTENT
+	
 	-- A text may have up to 200 characters which seems sufficient for now.
 	keyword_content : constant string := "content";
 	
@@ -123,6 +108,8 @@ package et_text is
 
 	-- Toggles between HORIZONTAL and VERTICAL:
 	procedure toggle_rotation (rotation : in out type_rotation_documentation);
+
+
 
 	
 -- VECTORIZED TEXT

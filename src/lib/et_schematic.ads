@@ -85,6 +85,7 @@ with et_design_rules;
 with et_commit;
 with et_object_status;			use et_object_status;
 with et_units;					use et_units;
+with et_fonts;
 
 
 package et_schematic is
@@ -95,11 +96,13 @@ package et_schematic is
 	use pac_geometry_2;
 
 	
--- TEXT FIELD
+	-- TEXT FIELD
+
+	use et_fonts;
 
 	-- GUI relevant only: The font of a text/note in the schematic:
-	text_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
+	text_font : constant type_font := (
+		family	=> to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 

@@ -46,6 +46,8 @@ with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.maps;			use ada.strings.maps;
 
+with et_fonts;
+
 
 package et_device_placeholders is
 

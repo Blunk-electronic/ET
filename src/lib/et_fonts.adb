@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                   DEVICE PLACEHOLDERS IN SYMBOLS                         --
+--                              TEXT FONTS                                  --
 --                                                                          --
---                              B o d y                                     --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -21,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -36,45 +35,32 @@
 --
 --   history of changes:
 --
---   to do:
 
 
-with et_alignment;				use et_alignment;
 
-
-package body et_device_placeholders.symbols is
-
+package body et_fonts is
 	
-	procedure write_placeholder_properties (
-		placeholder		: in type_text_placeholder;
-		log_threshold	: in type_log_level) 
+
+	function to_string (
+		family : in pac_font_family.bounded_string) 
+		return string
 	is begin
-		-- meaning
-		log (text => to_string (placeholder.meaning), level => log_threshold);
-		log_indentation_up;
-		
-		-- position
-		log (text => to_string (placeholder.position), level => log_threshold);
+		return pac_font_family.to_string (family);
+	end to_string;
 
-		-- size
-		log (text => to_string (placeholder.size), level => log_threshold);
-
-		-- rotation
-		log (text => to_string (placeholder.rotation), level => log_threshold); 
-
-		-- visible
-		--log (text => "visible "
-		--	& to_lower (et_libraries.type_text_visible'image (placeholder.visible)), level => log_threshold);
-
-		-- alignment
-		log (text => to_string (placeholder.alignment),
-			level => log_threshold);
-
-		log_indentation_down;
-	end write_placeholder_properties;
 
 	
-end et_device_placeholders.symbols;
+	function to_family (
+		family : in string) 
+		return pac_font_family.bounded_string 
+	is begin
+		return pac_font_family.to_bounded_string (family);
+	end to_family;
+
+	
+
+end et_fonts;
+
 
 -- Soli Deo Gloria
 

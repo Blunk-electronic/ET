@@ -45,17 +45,7 @@ with et_exceptions;				use et_exceptions;
 
 package body et_text is
 
-	function to_string (family : in pac_font_family.bounded_string) return string is begin
-		return pac_font_family.to_string (family);
-	end to_string;
 
-	
-	function to_family (family : in string) return pac_font_family.bounded_string is begin
-		return pac_font_family.to_bounded_string (family);
-	end to_family;
-
-
-	
 
 	function to_string (text_content : in pac_text_content.bounded_string) return string is begin
 		return pac_text_content.to_string (text_content);

@@ -46,6 +46,8 @@ with et_text;							use et_text;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 
 with et_alignment;						use et_alignment;
+with et_fonts;
+
 
 
 package et_net_labels is
@@ -106,10 +108,12 @@ package et_net_labels is
 	package pac_net_labels is new indefinite_doubly_linked_lists (type_net_label);
 
 
+
+	use et_fonts;
 	
 	-- GUI relevant only: The font of a net label:
-	net_label_font : constant et_text.type_font := (
-		family	=> et_text.to_family ("monospace"),
+	net_label_font : constant type_font := (
+		family	=> to_family ("monospace"),
 		slant	=> cairo.CAIRO_FONT_SLANT_NORMAL,
 		weight	=> cairo.CAIRO_FONT_WEIGHT_NORMAL);
 
