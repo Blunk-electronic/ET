@@ -3011,7 +3011,7 @@ is
 							when 8 =>
 								move_submodule (
 									module_name 	=> module,
-									instance		=> et_general.to_instance_name (f (5)), -- OSC1
+									instance		=> to_instance_name (f (5)), -- OSC1
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
 									point			=> type_vector_model (set (
 														x => to_distance (dd => f (7)),

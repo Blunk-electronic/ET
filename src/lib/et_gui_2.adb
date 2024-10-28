@@ -48,6 +48,9 @@ with et_pcb_coordinates_2;
 with et_schematic_ops.grid;
 with et_board_ops.grid;
 
+with et_module_names;				use et_module_names;
+
+
 
 package body et_gui_2 is
 

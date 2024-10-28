@@ -39,6 +39,7 @@
 with et_conductor_segment.boards;
 with et_fill_zones.boards;
 with et_vias;
+with et_module_names;
 
 
 package body et_nets is
@@ -82,7 +83,8 @@ package body et_nets is
 
 	
 	function "<" (left, right : in type_submodule_port) return boolean is
-		use et_general.pac_module_instance_name;
+		use et_module_names;
+		use pac_module_instance_name;
 		use et_net_names.pac_net_name;
 	begin
 		if left.module_name < right.module_name then
@@ -97,12 +99,14 @@ package body et_nets is
 	end;
 
 
+	
 	function to_string (port : in type_device_port) return string is begin
 		return "device " & to_string (port.device_name)
 			& " unit " & et_devices.to_string (port.unit_name)
 			& " port " & et_symbols.to_string (port.port_name);
 	end to_string;
 
+	
 	
 	procedure iterate (
 		ports	: in pac_device_ports.set;

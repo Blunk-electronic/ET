@@ -1333,7 +1333,7 @@ package body et_board_ops.devices is
 	--  - The submodule instance must exist in the module.
 	function get_position (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in et_general.pac_module_instance_name.bounded_string) -- OSC1
+		instance		: in pac_module_instance_name.bounded_string) -- OSC1
 		return type_position 
 	is		
 		position : type_position := origin_zero_rotation; -- to be returned

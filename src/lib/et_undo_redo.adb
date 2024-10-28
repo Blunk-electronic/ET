@@ -49,6 +49,7 @@ with et_pcb;
 with et_modes.schematic;
 with et_modes.board;
 with et_time;							use et_time;
+with et_module_names;					use et_module_names;
 
 
 package body et_undo_redo is

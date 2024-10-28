@@ -88,7 +88,7 @@ package body et_material is
 		procedure set_file_name is 
 			use ada.directories;
 			use gnat.directory_operations;
-			use pac_module_name;
+			-- use pac_module_name;
 			use pac_assembly_variant_name;
 			use et_export;
 		begin
@@ -99,7 +99,7 @@ package body et_material is
 								containing_directory	=> directory_export & dir_separator & directory_cam &
 															dir_separator & directory_bom,
 
-								name					=> et_general.to_string (module_name),
+								name					=> to_string (module_name),
 								extension				=> extension_bom
 							));
 
@@ -110,7 +110,7 @@ package body et_material is
 								containing_directory	=> directory_export & dir_separator & directory_cam &
 															dir_separator & directory_bom,
 
-								name					=> et_general.to_string (module_name) & "_" & 
+								name					=> to_string (module_name) & "_" & 
 															to_variant (variant_name),
 								extension				=> extension_bom
 							));

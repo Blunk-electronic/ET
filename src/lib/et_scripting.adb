@@ -58,6 +58,7 @@ with et_display.board;
 
 with et_canvas_schematic_2;
 with et_canvas_board_2;
+with et_module_names;			use et_module_names;
 
 
 

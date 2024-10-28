@@ -62,6 +62,7 @@ package body et_pick_and_place is
 		return pac_pnp_file_name.to_bounded_string (name);
 	end;
 
+	
 	procedure write_pnp (
 		pnp				: in pac_devices.map;
 		module_name		: in pac_module_name.bounded_string; -- motor_driver 
@@ -75,10 +76,10 @@ package body et_pick_and_place is
 		pnp_handle : ada.text_io.file_type;
 		device_cursor : pac_devices.cursor := pnp.first;
 
+		
 		procedure set_file_name is 
 			use ada.directories;
 			use gnat.directory_operations;
-			use pac_module_name;
 			use pac_assembly_variant_name;
 			use et_export;
 		begin
@@ -89,7 +90,7 @@ package body et_pick_and_place is
 								containing_directory	=> directory_export & dir_separator & directory_cam &
 															dir_separator & directory_pick_and_place,
 
-								name					=> et_general.to_string (module_name),
+								name					=> to_string (module_name),
 								extension				=> extension_pnp
 							));
 
@@ -100,7 +101,7 @@ package body et_pick_and_place is
 								containing_directory	=> directory_export & dir_separator & directory_cam &
 															dir_separator & directory_pick_and_place,
 
-								name					=> et_general.to_string (module_name) & "_" & 
+								name					=> to_string (module_name) & "_" & 
 															to_variant (variant_name),
 								extension				=> extension_pnp
 							));

@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                            PICK AND PLACE                                --
+--                             MODULE NAMES                                 --
 --                                                                          --
---                              S p e c                                     --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your editor to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,62 +35,60 @@
 --
 --   history of changes:
 --
---   ToDo: 
 
 
-with ada.text_io;				use ada.text_io;
+with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
-with ada.containers;            use ada.containers;
-with ada.containers.ordered_maps;
 
-with et_general;				use et_general;
-with et_module_names;			use et_module_names;
-with et_assembly_variants;		use et_assembly_variants;
-with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
-with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
-with et_devices;				use et_devices;
 
-package et_pick_and_place is
+
+package et_module_names is
+	
+
+
+	-- The module file name:
+	module_file_name_length_max : constant positive := 100;
+	package pac_module_file_name is new generic_bounded_length (module_file_name_length_max);
+
+	function to_module_file_name (name : in string) return pac_module_file_name.bounded_string;
+	function to_string (name : in pac_module_file_name.bounded_string) return string;
+	
+	
+
+	module_file_name_extension : constant string := "mod";
+	module_file_name_extension_asterisk : constant string := "*." & module_file_name_extension;
+	
+	function remove_extension (file_name : in string) return string;
+	-- Removes from a string like templates/clock_generator.mod the extension so that
+	-- the return would be templates/clock_generator .
+
+	function append_extension (file_name : in string) return string;
+	-- Appends to a string like templates/clock_generator the extension "mod" so that
+	-- the return would be templates/clock_generator.mod .
+
+
+
+
+-- MODULES AND INSTANCE NAMES
+	
+	-- Generic modules are named with this type:
+	-- (The actual file has the same name with extension *.mod.)
+	module_name_length_max : constant := 100;
+	package pac_module_name is new generic_bounded_length (module_name_length_max);
+
+	function to_string (name : in pac_module_name.bounded_string) return string;
+	function to_module_name (name : in string) return pac_module_name.bounded_string;
+
+	-- The module instance name is something like LMX_1 or DRV_1. 
+	module_instance_name_length_max : constant positive := 20;
+	package pac_module_instance_name is new generic_bounded_length (module_instance_name_length_max);
+
+	function to_string (name : in pac_module_instance_name.bounded_string) return string;
+	function to_instance_name (name : in string) return pac_module_instance_name.bounded_string;
 
 	
-	-- Whenever we deal with pick & place files this type should be used:
-	file_name_length_max : constant positive := 100; -- CS: should suffice for now
-	package pac_pnp_file_name is new generic_bounded_length (file_name_length_max); 
-
-	extension_pnp : constant string := "pnp";
-
-	function to_string (name : in pac_pnp_file_name.bounded_string) return string;
-	function to_file_name (name : in string) return pac_pnp_file_name.bounded_string;
-
-	type type_device is record
-		position : et_pcb_coordinates_2.type_package_position; -- x/y, rotation and face
-		-- CS value and partcode ?
-	end record;
-
-	package pac_devices is new ordered_maps (
-		key_type		=> type_device_name, -- IC4
-		element_type	=> type_device);
-
-	type type_pnp_format is (
-		NATIVE,
-		EAGLE,
-		KICAD
-		-- CS others ?
-		);		
 	
-	procedure write_pnp (
-	-- Creates the P&P file (which inevitably and intentionally overwrites the previous file).
-	-- Writes the content of the given container pnp in the file.
-	-- - The P&P file will be named after the module name and the assembly variant.
-	-- - Exports the P&P data of the given module to the export/CAM/pick_and_place directory.
-		pnp				: in pac_devices.map;
-		module_name		: in pac_module_name.bounded_string; -- motor_driver 
-		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
-		format			: in type_pnp_format := NATIVE;
-		log_threshold	: in type_log_level);
-	
-end et_pick_and_place;
+end et_module_names;
 
 -- Soli Deo Gloria
 

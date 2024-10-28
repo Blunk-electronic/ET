@@ -420,7 +420,7 @@ is
 			when 9 =>
 				add_port (
 					module_name 	=> module,
-					instance		=> et_general.to_instance_name (f (5)),
+					instance		=> to_instance_name (f (5)),
 					port_name		=> to_net_name (f (6)),
 					position		=> type_vector_model (set 
 								(
@@ -447,7 +447,7 @@ is
 			when 9 =>
 				drag_port (
 					module_name 	=> module,
-					instance		=> et_general.to_instance_name (f (5)),
+					instance		=> to_instance_name (f (5)),
 					port_name		=> to_net_name (f (6)),
 					coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 					point			=> type_vector_model (set (
@@ -472,7 +472,7 @@ is
 				delete_port
 					(
 					module_name 	=> module,
-					instance		=> et_general.to_instance_name (f (5)),
+					instance		=> to_instance_name (f (5)),
 					port_name		=> to_net_name (f (6)),
 					log_threshold	=> log_threshold + 1
 					);
@@ -492,7 +492,7 @@ is
 			when 9 =>
 				move_port (
 					module_name 	=> module,
-					instance		=> et_general.to_instance_name (f (5)),
+					instance		=> to_instance_name (f (5)),
 					port_name		=> to_net_name (f (6)),
 					coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 					point			=> type_vector_model (set (
@@ -518,7 +518,7 @@ is
 				add_submodule (
 					module_name 	=> module, -- parent module (where the submodule is to be inserted)
 					file			=> et_submodules.to_submodule_path (f (5)),
-					instance		=> et_general.to_instance_name (f (6)), -- submodule instance name
+					instance		=> to_instance_name (f (6)), -- submodule instance name
 					position		=> to_position 
 						(
 						sheet => to_sheet (f (7)),
@@ -551,7 +551,7 @@ is
 			when 9 =>
 				move_submodule (
 					module_name 	=> module,
-					instance		=> et_general.to_instance_name (f (5)),
+					instance		=> to_instance_name (f (5)),
 					coordinates		=> to_coordinates (f (6)),  -- relative/absolute
 					sheet			=> to_sheet_relative (f (7)),
 					point			=> type_vector_model (set (
@@ -576,7 +576,7 @@ is
 			when 8 =>
 				drag_submodule (
 					module_name 	=> module,
-					instance		=> et_general.to_instance_name (f (5)),
+					instance		=> to_instance_name (f (5)),
 					coordinates		=> to_coordinates (f (6)),  -- relative/absolute
 					point			=> type_vector_model (set (
 								x => to_distance (f (7)),
@@ -600,8 +600,8 @@ is
 			when 9 =>
 				copy_submodule (
 					module_name 	=> module, -- parent module (where the submodule is to be copied)
-					instance_origin	=> et_general.to_instance_name (f (5)), -- submodule instance name
-					instance_new	=> et_general.to_instance_name (f (6)), -- submodule instance name
+					instance_origin	=> to_instance_name (f (5)), -- submodule instance name
+					instance_new	=> to_instance_name (f (6)), -- submodule instance name
 					destination		=> to_position 
 						(
 						sheet => to_sheet (f (7)),
@@ -629,7 +629,7 @@ is
 			when 5 =>
 				delete_submodule (
 					module_name 	=> module, -- parent module (where the submodule is to be deleted)
-					instance		=> et_general.to_instance_name (f (5)), -- submodule instance name
+					instance		=> to_instance_name (f (5)), -- submodule instance name
 					log_threshold	=> log_threshold + 1
 					);
 
@@ -650,8 +650,8 @@ is
 				rename_submodule
 					(
 					module_name		=> module,
-					instance_old	=> et_general.to_instance_name (f (5)), -- OSC1
-					instance_new	=> et_general.to_instance_name (f (6)), -- OSC2
+					instance_old	=> to_instance_name (f (5)), -- OSC1
+					instance_new	=> to_instance_name (f (6)), -- OSC2
 					log_threshold	=> log_threshold + 1);
 
 			when 7 .. type_field_count'last => too_long;
@@ -672,7 +672,7 @@ is
 					(
 					module_name		=> module,
 					variant_parent	=> to_variant (f (5)), -- low_cost
-					instance		=> et_general.to_instance_name (f (6)), -- OSC1
+					instance		=> to_instance_name (f (6)), -- OSC1
 					variant_submod	=> to_variant (f (7)), -- fixed_frequency
 					log_threshold	=> log_threshold + 1);
 
@@ -696,7 +696,7 @@ is
 					(
 					module_name		=> module,
 					variant_parent	=> to_variant (f (5)),
-					instance		=> et_general.to_instance_name (f (6)), -- OSC1
+					instance		=> to_instance_name (f (6)), -- OSC1
 					log_threshold	=> log_threshold + 1);
 
 			when 7 .. type_field_count'last => too_long;
@@ -715,7 +715,7 @@ is
 			when 6 =>
 				set_submodule_file (
 					module_name 	=> module,
-					instance		=> et_general.to_instance_name (f (5)),
+					instance		=> to_instance_name (f (5)),
 					file			=> et_submodules.to_submodule_path (f (6)),
 					log_threshold	=> log_threshold + 1
 					);

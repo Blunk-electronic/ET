@@ -54,6 +54,7 @@ with et_schematic;
 with et_mirroring;					use et_mirroring;
 with et_axes;						use et_axes;
 with et_general;					use et_general;
+with et_module_names;				use et_module_names;
 with et_string_processing;			use et_string_processing;
 with et_project.modules;
 with et_vias;

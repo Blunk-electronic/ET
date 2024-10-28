@@ -63,6 +63,7 @@ with et_pcb_stack;
 with et_pcb_coordinates_2;
 with et_symbols;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+with et_module_names;					use et_module_names;
 
 
 package et_submodules is

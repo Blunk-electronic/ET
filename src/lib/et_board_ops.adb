@@ -209,7 +209,7 @@ package body et_board_ops is
 	--  - The submodule instance must exist in the module.
 	function get_position (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
-		instance		: in et_general.pac_module_instance_name.bounded_string) -- OSC1
+		instance		: in pac_module_instance_name.bounded_string) -- OSC1
 		return type_position 
 	is		
 		position : type_position := origin_zero_rotation; -- to be returned
@@ -264,7 +264,7 @@ package body et_board_ops is
 
 			
 			procedure move (
-				instance	: in et_general.pac_module_instance_name.bounded_string;
+				instance	: in pac_module_instance_name.bounded_string;
 				submodule	: in out et_submodules.type_submodule) 
 			is begin
 				case coordinates is
@@ -589,13 +589,13 @@ package body et_board_ops is
 			position_in_board : type_position := origin_zero_rotation;
 
 			
-			procedure query_submodules is 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
 			-- until the deepest submodule (the bottom of the design structure) has been reached.
+			procedure query_submodules is 
 				use et_numbering.pac_modules;
 				module_name 	: pac_module_name.bounded_string; -- motor_driver
 				parent_name 	: pac_module_name.bounded_string; -- water_pump
-				module_instance	: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
+				module_instance	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
 				offset			: et_devices.type_name_index;
 
 				use et_assembly_variants.pac_submodule_variants;

@@ -59,7 +59,7 @@ is
 	begin
 		section_mark (section_module, HEADER);			
 		write (keyword => keyword_generic_name, parameters => to_string (element (instance_cursor).generic_name));
-		write (keyword => keyword_instance_name, parameters => et_general.to_string (key (instance_cursor)));
+		write (keyword => keyword_instance_name, parameters => to_string (key (instance_cursor)));
 		section_mark (section_module, FOOTER);
 	end;
 

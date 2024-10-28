@@ -317,6 +317,8 @@ package body et_netlists is
 		return result;
 	end is_primary;
 
+
+	
 	-- Returns true if net (indicated by net_cursor) is connected with the
 	-- given port of a submodule instance.
 	function contains (
@@ -336,7 +338,7 @@ package body et_netlists is
 			use pac_submodule_ports_extended;
 			port_cursor : pac_submodule_ports_extended.cursor := net.submodules.first;
 			use pac_net_name;
-			use et_general.pac_module_instance_name;
+			use pac_module_instance_name;
 		begin
 			while port_cursor /= pac_submodule_ports_extended.no_element loop
 				
@@ -357,9 +359,11 @@ package body et_netlists is
 
 		return result;
 	end contains;
+
+
 	
-	function global_nets_in_submodules (
 	-- Returns a list of cursors to same named nets in submodules.
+	function global_nets_in_submodules (
 		module_cursor	: in pac_modules.cursor; -- the module that contains the port
 		net_cursor		: in pac_nets.cursor;
 		log_threshold	: in type_log_level)
@@ -370,8 +374,9 @@ package body et_netlists is
 		
 		global_nets : pac_global_nets.list; -- to be returned
 
+		
 		procedure query_submodules (submodule_cursor : in pac_modules.cursor) is
-			use et_general.pac_module_instance_name;
+			use pac_module_instance_name;
 
 			procedure query_nets (module : in type_module) is
 			-- Search for a global net named after the given net (via net_cursor).
@@ -409,6 +414,7 @@ package body et_netlists is
 
 				-- If no net found, net_cursor points to no_element.
 			end query_nets;
+
 			
 		begin -- query_submodules
 -- 			log (text => "submodule " &
@@ -419,6 +425,7 @@ package body et_netlists is
 			query_element (submodule_cursor, query_nets'access);
 
 		end query_submodules;
+
 		
 	begin -- global_nets_in_submodules
 		log_indentation_up;
@@ -436,21 +443,24 @@ package body et_netlists is
 		log_indentation_down;		
 		return global_nets;
 	end global_nets_in_submodules;
+
+
 	
-	function net_on_netchanger (
 	-- Returns a cursor to the net connected with the given netchanger
 	-- port opposide to the given port.
 	-- If the given port is a master, then the net connected with the
 	-- slave is returned (and vice versa).
 	-- If the netchanger is not connected then the return is no_element.
+	function net_on_netchanger (
 		module_cursor	: in pac_modules.cursor; -- the module that contains the port
 		port			: in type_port_netchanger;
 		log_threshold	: in type_log_level)
-		return pac_nets.cursor is
-
+		return pac_nets.cursor 
+	is
 		use pac_nets;
 		net_cursor : pac_nets.cursor; -- to be returned
 
+		
 		procedure query_nets (module : in type_module) is
 
 			ports : type_port_count;
@@ -476,6 +486,7 @@ package body et_netlists is
 					);
 					-- the given port is a composite of index and port name (master/slave)
 			end query_netchangers;
+			
 			
 		begin -- query_nets
 			log_indentation_up;
@@ -507,6 +518,7 @@ package body et_netlists is
 			log_indentation_down;
 		end query_nets;
 		
+		
 	begin -- net_on_netchanger
 		log_indentation_up;
 		
@@ -528,10 +540,12 @@ package body et_netlists is
 		return net_cursor;
 	end net_on_netchanger;
 
-	function net_in_submodule (
+
+	
 	-- Returns a cursor to the submodule net connected with the given
 	-- submodule port.
 	-- If the port is not connected inside the submodule then the return is no_element.
+	function net_in_submodule (
 		module_cursor	: in pac_modules.cursor; -- the module that contains the port
 		port			: in type_submodule_port_extended;
 		log_threshold	: in type_log_level)
@@ -542,7 +556,7 @@ package body et_netlists is
 		net_cursor : pac_nets.cursor; -- to be returned
 
 		procedure query_submodules (submodule_cursor : in pac_modules.cursor) is
-			use et_general.pac_module_instance_name;
+			use pac_module_instance_name;
 
 			procedure query_nets (module : in type_module) is
 			-- Search for the net specified by "port.port". The search ends
@@ -693,6 +707,7 @@ package body et_netlists is
 		return net_cursor_parent;
 	end net_in_parent_module;
 
+
 	
 	procedure write_netlist (
 		netlist			: in pac_netlist.tree;
@@ -702,11 +717,11 @@ package body et_netlists is
 	is
 
 		file_name : pac_netlist_file_name.bounded_string;
+
 		
 		procedure set_file_name is 
 			use ada.directories;
 			use gnat.directory_operations;
-			use pac_module_name;
 			use pac_assembly_variant_name;
 			use et_export;
 		begin
@@ -717,7 +732,7 @@ package body et_netlists is
 								containing_directory	=> directory_export & dir_separator & directory_cam &
 															dir_separator & directory_netlists,
 
-								name					=> et_general.to_string (module_name),
+								name					=> to_string (module_name),
 								extension				=> extension_netlist
 							));
 
@@ -728,20 +743,22 @@ package body et_netlists is
 								containing_directory	=> directory_export & dir_separator & directory_cam &
 															dir_separator & directory_netlists,
 
-								name					=> et_general.to_string (module_name) & "_" & 
+								name					=> to_string (module_name) & "_" & 
 															to_variant (variant_name),
 								extension				=> extension_netlist
 							));
 			end if;
 		end;	
+
 		
 		netlist_handle : ada.text_io.file_type;
 
+		
+		-- writes a nice header in the netlist file
 		procedure write_header is 
 			use pac_netlist;
 			netlist_cursor : pac_netlist.cursor := root (netlist);
 		begin
-		-- writes a nice header in the netlist file
 			put_line (netlist_handle, comment_mark & " " & et_general.system_name & " " & et_general.version & " netlist");
 			put_line (netlist_handle, comment_mark & " " & get_date);
 			put_line (netlist_handle, comment_mark & " module " & enclose_in_quotes (to_string (module_name)));
@@ -757,6 +774,7 @@ package body et_netlists is
 			put_line (netlist_handle, comment_mark & "  Names of secondary nets are comments.");
 			put_line (netlist_handle, comment_mark & " " & row_separator_single);
 		end write_header;
+
 		
 		procedure write_footer is begin
 		-- writes a nice footer in the netlist file
@@ -765,10 +783,13 @@ package body et_netlists is
 			put_line (netlist_handle, comment_mark & " end of list");
 		end write_footer;
 
+
+		
 		procedure write_nets is 
 			use pac_netlist;
 			use et_terminals;
 
+			
 			procedure query_device (port_cursor : in pac_device_ports_extended.cursor) is
 			-- Writes the device port in the netlist file.
 				use pac_device_ports_extended;
@@ -782,6 +803,7 @@ package body et_netlists is
 					-- CS .characteristics
 			end;
 
+			
 			procedure query_secondary_net (net_cursor : in pac_netlist.cursor) is begin
 				-- Extract the ports of devices of the secondary net:
 
@@ -801,6 +823,7 @@ package body et_netlists is
 
 				log_indentation_down;
 			end;
+
 			
 			procedure write_primary_net (net_cursor : in pac_netlist.cursor) is begin
 				log_indentation_up;
@@ -824,6 +847,7 @@ package body et_netlists is
 		begin -- write_nets
 			iterate_children (root (netlist), write_primary_net'access);
 		end write_nets;
+
 		
 	begin -- write_netlist
 		set_file_name;
@@ -862,6 +886,7 @@ package body et_netlists is
 
 	end write_netlist;
 
+	
 	
 	function make_netlist (
 		modules			: in pac_modules.tree;

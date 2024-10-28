@@ -4061,7 +4061,7 @@ package body et_schematic_ops.submodules is
 
 	function submodule_instance_exists (
 		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
-		instance	: in et_general.pac_module_instance_name.bounded_string) -- OSC1
+		instance	: in pac_module_instance_name.bounded_string) -- OSC1
 		return boolean
 	is
 
@@ -4094,7 +4094,7 @@ package body et_schematic_ops.submodules is
 
 	function assembly_variant_exists (
 		module		: in pac_generic_modules.cursor; -- the parent module that contains the submodule instance
-		instance	: in et_general.pac_module_instance_name.bounded_string; -- OSC1
+		instance	: in pac_module_instance_name.bounded_string; -- OSC1
 		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost				
 		return boolean 
 	is
@@ -4165,7 +4165,7 @@ package body et_schematic_ops.submodules is
 	function get_alternative_submodule (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
-		submod	: in et_general.pac_module_instance_name.bounded_string) -- OSC1
+		submod	: in pac_module_instance_name.bounded_string) -- OSC1
 		return pac_submodule_variants.cursor 
 	is
 		cursor : pac_submodule_variants.cursor; -- to be returned;

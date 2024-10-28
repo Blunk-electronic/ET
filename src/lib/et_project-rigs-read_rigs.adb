@@ -148,8 +148,9 @@ is
 					rig			: in out type_rig) is
 					connection_inserted : boolean;
 					connection_cursor : type_module_connectors.cursor;
+					
 					use pac_device_purpose;
-					use et_general.pac_module_instance_name;
+					use pac_module_instance_name;
 				begin
 					-- If NONE of the four elements that make a module connection is specified,
 					-- then do nothing. Otherwise ALL of them must be specified.

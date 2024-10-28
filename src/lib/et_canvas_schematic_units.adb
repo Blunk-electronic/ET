@@ -74,6 +74,7 @@ with et_board_ops.ratsnest;
 
 with et_material;
 with et_meta;
+with et_module_names;				use et_module_names;
 with et_modes.schematic;			use et_modes.schematic;
 
 with et_canvas_schematic_2;			use et_canvas_schematic_2;

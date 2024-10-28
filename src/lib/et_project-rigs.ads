@@ -43,7 +43,9 @@ with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
 with et_devices;					use et_devices;
 with et_conventions;
-with et_assembly_variants;		use et_assembly_variants;
+with et_assembly_variants;			use et_assembly_variants;
+with et_module_names;				use et_module_names;
+
 
 package et_project.rigs is
 
@@ -63,15 +65,16 @@ package et_project.rigs is
 
 	-- Lots of module instances are a map from the instance name to the type_module_instance.
 	package type_module_instances is new ordered_maps (
-		key_type		=> et_general.pac_module_instance_name.bounded_string, -- LMX_1
-		"<"				=> et_general.pac_module_instance_name."<",
+		key_type		=> pac_module_instance_name.bounded_string, -- LMX_1
+		"<"				=> pac_module_instance_name."<",
 		element_type	=> type_module_instance);
 
+	
 	-- module connection (or board-to-board connector). NOTE: This could be a cable as well.
 	type type_connector is record
-		instance_A	: et_general.pac_module_instance_name.bounded_string; -- LMX_2
+		instance_A	: pac_module_instance_name.bounded_string; -- LMX_2
 		purpose_A	: pac_device_purpose.bounded_string; -- pwr_in
-		instance_B	: et_general.pac_module_instance_name.bounded_string; -- PWR
+		instance_B	: pac_module_instance_name.bounded_string; -- PWR
 		purpose_B	: pac_device_purpose.bounded_string; -- pwr_out
 
 		-- CS

@@ -51,6 +51,7 @@ with ada.containers.ordered_sets;
 with et_meta;
 with et_net_names;				use et_net_names;
 with et_general;				use et_general;
+with et_module_names;			use et_module_names;
 with et_sheets;					use et_sheets;
 with et_coordinates_2;			use et_coordinates_2;
 use et_coordinates_2.pac_geometry_2;

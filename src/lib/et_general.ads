@@ -54,54 +54,6 @@ package et_general is
 
 		
 
-
-	-- The module file name:
-	module_file_name_length_max : constant positive := 100;
-	package pac_module_file_name is new generic_bounded_length (module_file_name_length_max);
-
-	function to_module_file_name (name : in string) return pac_module_file_name.bounded_string;
-	function to_string (name : in pac_module_file_name.bounded_string) return string;
-	
-	
-
-	module_file_name_extension : constant string := "mod";
-	module_file_name_extension_asterisk : constant string := "*." & module_file_name_extension;
-	
-	function remove_extension (file_name : in string) return string;
-	-- Removes from a string like templates/clock_generator.mod the extension so that
-	-- the return would be templates/clock_generator .
-
-	function append_extension (file_name : in string) return string;
-	-- Appends to a string like templates/clock_generator the extension "mod" so that
-	-- the return would be templates/clock_generator.mod .
-	
-		
-
-
-
-	
-
-
--- MODULES AND INSTANCE NAMES
-	
-	-- Generic modules are named with this type:
-	-- (The actual file has the same name with extension *.mod.)
-	module_name_length_max : constant := 100;
-	package pac_module_name is new generic_bounded_length (module_name_length_max);
-
-	function to_string (name : in pac_module_name.bounded_string) return string;
-	function to_module_name (name : in string) return pac_module_name.bounded_string;
-
-	-- The module instance name is something like LMX_1 or DRV_1. 
-	module_instance_name_length_max : constant positive := 20;
-	package pac_module_instance_name is new generic_bounded_length (module_instance_name_length_max);
-
-	function to_string (name : in pac_module_instance_name.bounded_string) return string;
-	function to_instance_name (name : in string) return pac_module_instance_name.bounded_string;
-
-
-
-
 -- SCRIPT NAME
 	script_name_length_max : constant positive := 100; -- CS increase if necessary
 	package pac_script_name is new generic_bounded_length (script_name_length_max);

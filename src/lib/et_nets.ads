@@ -48,6 +48,7 @@ with ada.containers.ordered_sets;
 with ada.containers.ordered_maps;
 
 with et_general;				use et_general;
+with et_module_names;			use et_module_names;
 with et_coordinates_2;			use et_coordinates_2;
 with et_symbols;
 with et_devices;				use et_devices;

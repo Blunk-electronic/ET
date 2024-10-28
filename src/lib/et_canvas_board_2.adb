@@ -54,7 +54,7 @@ with et_scripting;
 with et_modes;
 with et_modes.board;				
 with et_modes.schematic;
--- with et_project;
+with et_module_names;				use et_module_names;
 
 -- with et_assembly_variants;			use et_assembly_variants;
 with et_canvas_schematic_2;			--use et_canvas_schematic;

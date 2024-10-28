@@ -865,10 +865,11 @@ is
 				invalid_keyword (f (line, 3));
 			end if;
 
+			
 		elsif kw = keyword_submodule then -- submodule motor_driver port mot_on_off
 			expect_field_count (line, 4);
 			
-			net_submodule_port.module_name := et_general.to_instance_name (f (line, 2)); -- motor_driver
+			net_submodule_port.module_name := to_instance_name (f (line, 2)); -- motor_driver
 
 			if f (line, 3) = keyword_port then -- port
 				net_submodule_port.port_name := to_net_name (f (line, 4)); -- A
@@ -891,6 +892,7 @@ is
 				invalid_keyword (f (line, 3));
 			end if;
 
+			
 		elsif kw = keyword_netchanger then -- netchanger 1 port master/slave
 			expect_field_count (line, 4);
 			
@@ -1085,7 +1087,7 @@ is
 		device			: access type_device_variant;
 		device_cursor	: pac_device_variants.cursor;
 		
-		submod_name		: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
+		submod_name		: pac_module_instance_name.bounded_string; -- MOT_DRV_3
 		submod_var		: pac_assembly_variant_name.bounded_string; -- low_cost
 		submod_cursor	: pac_submodule_variants.cursor;
 		inserted		: boolean;
@@ -1200,12 +1202,12 @@ is
 			-- there must be 4 fields:
 			expect_field_count (line, 4);
 
-			submod_name := et_general.to_instance_name (f (line, 2)); -- OSC1
+			submod_name := to_instance_name (f (line, 2)); -- OSC1
 
 			-- test whether submodule instance exists
 			if not submodule_instance_exists (module_cursor, submod_name) then
 				log (ERROR, "submodule instance " &
-						enclose_in_quotes (et_general.to_string (submod_name)) &
+						enclose_in_quotes (to_string (submod_name)) &
 						" does not exist !", console => true);
 				raise constraint_error;
 			end if;
@@ -1231,7 +1233,7 @@ is
 				-- Raise error if submodule occurs more than once:
 				if not inserted then
 					log (ERROR, "submodule " &
-						enclose_in_quotes (et_general.to_string (submod_name)) &
+						enclose_in_quotes (to_string (submod_name)) &
 						" already specified !", console => true);
 					raise constraint_error;
 				end if;
@@ -1785,7 +1787,7 @@ is
 	-- submodules	
 	submodule_port_name	: pac_net_name.bounded_string; -- RESET
 	submodule_ports		: et_submodules.pac_submodule_ports.map;
-	submodule_name 		: et_general.pac_module_instance_name.bounded_string; -- MOT_DRV_3
+	submodule_name 		: pac_module_instance_name.bounded_string; -- MOT_DRV_3
 	submodule_port 		: et_submodules.type_submodule_port;
 	submodule 			: et_submodules.type_submodule;
 
@@ -2717,7 +2719,7 @@ is
 				use et_submodules.pac_submodules;
 				cursor : et_submodules.pac_submodules.cursor;
 			begin
-				log (text => "submodule " & et_general.to_string (submodule_name), level => log_threshold + 1);
+				log (text => "submodule " & to_string (submodule_name), level => log_threshold + 1);
 
 				-- CS: notify about missing parameters (by reading the parameter-found-flags)
 				-- If a parameter is missing, the default is assumed. See type_submodule spec.
@@ -2730,7 +2732,7 @@ is
 					position	=> cursor);
 
 				if not inserted then
-					log (ERROR, "submodule '" & et_general.to_string (submodule_name) 
+					log (ERROR, "submodule '" & to_string (submodule_name) 
 						& "' already exists !", console => true);
 					raise constraint_error;
 				end if;

@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               GENERAL                                    --
+--                            MODULE NAMES                                  --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -36,66 +36,75 @@
 --   history of changes:
 --
 
+
 with ada.text_io;				use ada.text_io;
 with ada.strings; 				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
-with ada.directories;
-with gnat.directory_operations;
-
-with et_string_processing;			use et_string_processing;
-with et_logging;					use et_logging;
-
-
-package body et_general is
 
 
 
+package body et_module_names is
 
-	function to_string (name : in pac_script_name.bounded_string) return string is begin
-		return pac_script_name.to_string (name);
+	
+	function to_module_file_name (name : in string) return pac_module_file_name.bounded_string is begin
+		return pac_module_file_name.to_bounded_string (name);
 	end;
-		
-	function to_script_name (name : in string) return pac_script_name.bounded_string is begin
-		return pac_script_name.to_bounded_string (name);
+
+	function to_string (name : in pac_module_file_name.bounded_string) return string is begin
+		return pac_module_file_name.to_string (name);
 	end;
 
 
+	
+	function remove_extension (file_name : in string) return string is
+	-- Removes from a string like templates/clock_generator.mod the extension so that
+	-- the return would be templates/clock_generator .
+		name_length : positive := file_name'length;
+		pos_last_character : positive;
+	begin
+		pos_last_character := name_length - module_file_name_extension'length - 1;
+		return file_name (file_name'first .. pos_last_character);
+	end remove_extension;
 
--- GENERICS
 
 	
-	package body stack_lifo is
-		s : array (1..max) of item;
-		top : natural range 0..max;
-
-		procedure push(x : item) is
-		begin
-			top := top + 1;
-			s(top) := x;
-		end push;
-
-		function pop return item is
-		begin
-			top := top - 1;
-			return s(top + 1);
-		end pop;
-
-		function depth return natural is
-		begin
-			return top;
-		end depth;
-
-		procedure init is
-		begin
-			top := 0;
-		end init;
+	function append_extension (file_name : in string) return string is
+	-- Appends to a string like templates/clock_generator the extension "mod" so that
+	-- the return would be templates/clock_generator.mod .
+	begin
+		return file_name & '.' & module_file_name_extension;
+	end;
 	
-	end stack_lifo;
 
-end et_general;
+	
+
+	
+	function to_string (name : in pac_module_name.bounded_string) return string is begin
+		return pac_module_name.to_string (name);
+	end;
+
+	
+	function to_module_name (name : in string) return pac_module_name.bounded_string is begin
+		return pac_module_name.to_bounded_string (name);
+	end;
+	
+
+	
+	function to_string (name : in pac_module_instance_name.bounded_string) return string is begin
+		return pac_module_instance_name.to_string (name);
+	end;
+
+
+	function to_instance_name (name : in string) return pac_module_instance_name.bounded_string is begin
+		return pac_module_instance_name.to_bounded_string (name);
+	end;
+	
+	
+	
+end et_module_names;
 
 -- Soli Deo Gloria
 

@@ -1099,7 +1099,7 @@ is
 			while submodule_cursor /= pac_submodule_variants.no_element loop
 				write (
 					keyword		=> keyword_submodule,
-					parameters	=> et_general.to_string (key (submodule_cursor)) &
+					parameters	=> to_string (key (submodule_cursor)) &
 									space & keyword_variant & space &
 									to_variant (element (submodule_cursor).variant));
 				
@@ -1317,7 +1317,7 @@ is
 			use et_pcb_rw;
 		begin
 			section_mark (section_submodule, HEADER);
-			write (keyword => keyword_name, parameters => et_general.to_string (key (submodule_cursor))); -- name stepper_driver_1
+			write (keyword => keyword_name, parameters => to_string (key (submodule_cursor))); -- name stepper_driver_1
 			write (keyword => keyword_file, parameters => pac_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
 
 			write (keyword => keyword_position, parameters => position (element (submodule_cursor).position));
