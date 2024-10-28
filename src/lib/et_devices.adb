@@ -6,20 +6,21 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -35,21 +36,28 @@
 --   history of changes:
 --
 
+with ada.text_io;				use ada.text_io;
+
+with ada.characters;			use ada.characters;
+with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
+
 with ada.strings; 				use ada.strings;
---with ada.strings.hash;
-with ada.strings.maps.constants;
 with ada.strings.fixed; 		use ada.strings.fixed;
 
+with et_string_processing;		use et_string_processing;
 with et_exceptions;				use et_exceptions;
+
 
 package body et_devices is
 	
-	use et_terminals;
 	
 	function to_string (purpose : in pac_device_purpose.bounded_string) return string is begin
 		return pac_device_purpose.to_string (purpose);
 	end to_string;
 
+
+	
 	function purpose_length_valid (purpose : in string) return boolean is 
 	begin
 		if purpose'length > purpose_length_max then
@@ -61,7 +69,9 @@ package body et_devices is
 			return true;
 		end if;
 	end;
-		
+
+
+	
 	function purpose_characters_valid (
 	-- Tests if the given value contains only valid characters as specified
 	-- by given character set. Returns false if invalid character found.
@@ -88,6 +98,8 @@ package body et_devices is
 		end if;
 	end purpose_characters_valid;
 
+
+	
 	procedure purpose_invalid (purpose : in string) is 
 	begin
 		--log (ERROR, "purpose " & enclose_in_quotes (purpose) &
@@ -96,6 +108,8 @@ package body et_devices is
 		raise syntax_error_1 with
 			"ERROR: Purpose " & enclose_in_quotes (purpose) & " invalid !";
 	end purpose_invalid;
+
+	
 
 	function to_purpose (
 	-- Tests the given purpose for length and invalid characters.
@@ -122,6 +136,8 @@ package body et_devices is
 		return purpose_out;
 	end to_purpose;
 
+	
+
 	function is_empty (purpose : in pac_device_purpose.bounded_string) return boolean is 
 		use pac_device_purpose;
 	begin
@@ -138,6 +154,8 @@ package body et_devices is
 		return pac_device_model_file.to_string (name);
 	end;
 
+
+	
 	function to_file_name (name : in string) 
 		return pac_device_model_file.bounded_string is
 	begin
@@ -145,13 +163,18 @@ package body et_devices is
 	end;
 	
 
+
+	
 	function to_string (value : in pac_device_value.bounded_string) return string is begin
 		return pac_device_value.to_string (value);
 	end;
 
+
+	
 	function to_value (value : in string) return pac_device_value.bounded_string is begin
 		return pac_device_value.to_bounded_string (value);
 	end;
+
 
 	
 	function value_length_valid (value : in string) return boolean is
@@ -167,6 +190,8 @@ package body et_devices is
 		end if;
 	end value_length_valid;
 
+	
+
 	function truncate (value : in string) return pac_device_value.bounded_string is
 		value_out : string (1 .. value_length_max);
 	begin
@@ -175,6 +200,9 @@ package body et_devices is
 		log (WARNING, "value will be truncated to " & enclose_in_quotes (value_out));
 		return pac_device_value.to_bounded_string (value_out);
 	end truncate;
+
+
+	
 	
 	function value_characters_valid (
 		value		: in pac_device_value.bounded_string;
@@ -202,6 +230,9 @@ package body et_devices is
 		end if;
 	end value_characters_valid;
 
+
+	
+
 	procedure value_invalid (value : in string) is 
 	begin
 		--log (ERROR, "value " & enclose_in_quotes (value) &
@@ -211,6 +242,9 @@ package body et_devices is
 			"ERROR: Value " & enclose_in_quotes (value) & " invalid !";
 	end value_invalid;
 
+
+
+	
 	function to_value_with_check (
 	-- Tests the given value for length and invalid characters.
 		value						: in string;
@@ -239,6 +273,9 @@ package body et_devices is
 		return value_out;
 	end to_value_with_check;
 
+
+	
+
 	-- Returns true if value is empty ("").
 	function is_empty (value : in pac_device_value.bounded_string) return boolean is 
 		use pac_device_value;
@@ -260,10 +297,14 @@ package body et_devices is
 		return pac_device_prefix.to_string (prefix); -- leading space not allowd !
 	end to_string;
 
+
+	
 	function to_prefix (prefix : in string) return pac_device_prefix.bounded_string is begin
 		return pac_device_prefix.to_bounded_string (prefix);
 	end to_prefix;
 
+
+	
 	procedure check_prefix_length (prefix : in string) is
 	-- Tests if the given prefix is longer than allowed.
 	begin
@@ -274,6 +315,8 @@ package body et_devices is
 			raise constraint_error;
 		end if;
 	end check_prefix_length;
+
+	
 	
 	procedure check_prefix_characters (prefix : in pac_device_prefix.bounded_string) is
 	-- Tests if the given prefix contains only valid characters.
@@ -303,10 +346,14 @@ package body et_devices is
 		return latin_1.space & trim (type_name_index'image (index), left);
 	end;
 
+
+
 	function to_index (index : in string) return type_name_index is begin
 		return type_name_index'value (index);
 	end;
 
+
+	
 	function same_prefix (left, right : in type_device_name) return boolean is begin
 		if prefix (left) = prefix (right) then
 			return true;
@@ -314,6 +361,8 @@ package body et_devices is
 			return false;
 		end if;
 	end same_prefix;
+
+	
 	
 	function to_device_name (text_in : in string) return type_device_name is
 
@@ -344,6 +393,7 @@ package body et_devices is
 
 		use pac_device_prefix;
 
+		
 	begin -- to_device_name
 		-- assemble prefix
 		for i in text_in_justified'first .. text_in_justified'last loop
@@ -403,6 +453,8 @@ package body et_devices is
 		return r;
 	end to_device_name;
 
+	
+
 	function "<" (left, right : in type_device_name) return boolean is
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.
@@ -432,6 +484,8 @@ package body et_devices is
 		return result;
 	end;	
 
+
+	
 	function "=" (left, right : in type_device_name) return boolean is
 	-- Returns true if left equals right.
 	-- Example: if IC4 = IC4 then return true.
@@ -455,6 +509,8 @@ package body et_devices is
 		return result;
 	end;
 
+
+	
 	function to_string (name : in type_device_name) return string is
 	-- Returns the given device name as string.
 	-- Prepends leading zeros according to name.id_width.
@@ -478,17 +534,23 @@ package body et_devices is
 					& lz * '0' & trim (natural'image (name.id),left);
 		end case;
 	end to_string;
+
+
 	
 	function prefix (name : in type_device_name) return pac_device_prefix.bounded_string is begin
 	-- Returns the prefix of the given device name.
 		return name.prefix;
 	end;
 
+
+	
 	function index (name : in type_device_name) return type_name_index is begin
 	-- Returns the index of the given device name.
 		return name.id;
 	end;
 
+
+	
 	function to_device_name (
 		prefix	: in pac_device_prefix.bounded_string; 	-- R, C, L
 		index	: in type_name_index;				-- 1, 20, ..
@@ -551,11 +613,15 @@ package body et_devices is
 		return pac_unit_name.to_string (unit_name);
 	end;
 
+
+	
 	function to_unit_name (unit_name : in string) return pac_unit_name.bounded_string is begin
 		-- CS do character and length checks
 		return pac_unit_name.to_bounded_string (to_upper (unit_name));
 	end;
 
+
+	
 	function to_full_name (
 		device_name	: in type_device_name; -- IC34
 		symbol_name	: in pac_unit_name.bounded_string; -- PWR
@@ -600,12 +666,16 @@ package body et_devices is
 		return pac_package_variant_name.to_string (package_variant);
 	end;
 
+
+	
 	function to_variant_name (variant_name : in string) 
 		return pac_package_variant_name.bounded_string
 	is begin
 		return pac_package_variant_name.to_bounded_string (variant_name);
 	end;
 
+
+	
 	procedure check_variant_name_length (variant_name : in string) is
 	-- tests if the given variant name is not longer than allowed
 	begin
@@ -614,6 +684,7 @@ package body et_devices is
 				 & positive'image (variant_name_length_max) & " !");
 		end if;
 	end check_variant_name_length;
+
 
 	
 	procedure check_variant_name_characters (
@@ -635,6 +706,8 @@ package body et_devices is
 		end if;
 	end check_variant_name_characters;
 
+
+	
 
 	function get_unit_and_port (
 		variant		: in pac_variants.cursor;
@@ -854,6 +927,7 @@ package body et_devices is
 
 	
 
+	
 	function first_unit (
 		device_cursor : in pac_devices_lib.cursor) 
 		return type_device_units
@@ -969,6 +1043,8 @@ package body et_devices is
 		return cursors;
 	end first_unit;
 
+	
+
 	function first_unit (
 		device_cursor : in pac_devices_lib.cursor) 
 		return pac_unit_name.bounded_string
@@ -998,6 +1074,8 @@ package body et_devices is
 
 		return unit_name;
 	end first_unit;
+
+
 	
 	function any_unit (
 		device_cursor	: in pac_devices_lib.cursor;
@@ -1058,6 +1136,8 @@ package body et_devices is
 		
 		return cursors;
 	end any_unit;
+
+
 	
 	function all_units (
 		device_cursor	: in pac_devices_lib.cursor)
@@ -1084,6 +1164,7 @@ package body et_devices is
 		return result;
 	end all_units;
 
+	
 
 	
 	function units_total (
@@ -1099,6 +1180,8 @@ package body et_devices is
 		return type_unit_count (e + i);
 	end units_total;
 
+
+	
 
 	function get_package_variant (
 		device_cursor	: in pac_devices_lib.cursor;
@@ -1130,6 +1213,8 @@ package body et_devices is
 		return result;
 	end get_package_variant;
 
+
+	
 	
 	
 	function variant_available (
@@ -1156,6 +1241,9 @@ package body et_devices is
 		return result;
 	end variant_available;
 
+
+	
+
 	function available_variants (
 		device_cursor	: in pac_devices_lib.cursor)
 		return pac_variants.map
@@ -1171,6 +1259,8 @@ package body et_devices is
 		return result;
 	end available_variants;
 
+
+	
 	
 	function locate_device (model : in pac_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
 		return pac_devices_lib.cursor 
@@ -1180,6 +1270,8 @@ package body et_devices is
 	begin
 		return cursor;
 	end;
+
+
 
 	
 	function locate_unit (
@@ -1226,6 +1318,8 @@ package body et_devices is
 		end case;
 
 	end locate_unit;
+
+
 
 	
 	function get_package_model (
