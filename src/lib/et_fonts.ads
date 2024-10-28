@@ -37,8 +37,6 @@
 --
 
 with cairo;						use cairo;
-
-with ada.strings;				use ada.strings;
 with ada.strings.bounded; 		use ada.strings.bounded;
 
 
@@ -79,13 +77,8 @@ package et_fonts is
 	end record;
 
 
-	-- type type_font_2 is record
-	-- 	family	: type_family;
-	-- 	slant	: type_slant;
-	-- 	weight	: type_weight;
-	-- end record;
-
-	
+	-- This function buildss a font type
+	-- from the given family, slant and weight:
 	function to_font (
 		family	: in type_family;
 		slant	: in type_slant;
