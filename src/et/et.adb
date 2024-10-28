@@ -50,6 +50,7 @@ with ada.directories;			use ada.directories;
 with et_modes;					use et_modes;
 with et_general;				use et_general;
 with et_module_names;			use et_module_names;
+with et_script_names;			use et_script_names;
 with et_directory_and_file_ops;	use et_directory_and_file_ops;
 with et_commandline_switches;	use et_commandline_switches;
 with et_string_processing;		use et_string_processing;
@@ -124,6 +125,8 @@ procedure et is
 	dummy_name : constant string := "dummy";
 
 	message_error : constant string := "ERROR ! ";
+
+
 	
 	procedure get_commandline_arguments is
 		use ada.characters.latin_1;
@@ -181,6 +184,7 @@ procedure et is
 						& space & switch_runmode & equals
 					) is
 
+				
 				when hyphen => -- which is a '-'
 					if full_switch = switch_version then
 						put_line (system_name & " version " & version);
@@ -334,6 +338,8 @@ procedure et is
 				
 	end get_commandline_arguments;
 
+		
+
 	procedure backup_projects_root_directory is
 		use et_project;
 		use et_project.type_projects_root_dir;
@@ -342,6 +348,7 @@ procedure et is
 		projects_root_dir := to_bounded_string (current_directory);
 	end;
 
+	
 	procedure restore_projects_root_directory is
 		use et_project;
 		use et_project.type_projects_root_dir;
@@ -352,6 +359,7 @@ procedure et is
 		set_directory (to_string (projects_root_dir));
 	end;
 	
+	
 	procedure create_work_directory is
 		use et_general;
 	begin
@@ -361,6 +369,7 @@ procedure et is
 		end if;
 	end;
 
+	
 	procedure create_report_directory is begin	
 		if not exists (compose (work_directory, report_directory)) then
 			put_line ("creating report directory ...");
@@ -368,6 +377,7 @@ procedure et is
 		end if;
 	end;
 
+	
 	procedure import_project is -- CS move to et_import ?
 	-- As a result of the import, a native project is created in the work_directory (ET/...).
 		use et_project.pac_project_name;
@@ -479,6 +489,7 @@ procedure et is
 		use pac_module_file_name;
 		use pac_module_name;
 
+
 		generic_module_name : pac_module_name.bounded_string;
 		module_cursor : pac_generic_modules.cursor;
 		script_name_tmp : pac_script_name.bounded_string;
@@ -530,7 +541,6 @@ procedure et is
 
 	procedure process_commandline_arguments is
 		use et_project.pac_project_name;
-		use pac_script_name;
 		use et_conventions.pac_file_name;
 		use et_packages.pac_package_model_file_name;
 		use et_symbols.pac_symbol_model_file;
@@ -574,7 +584,7 @@ procedure et is
 				et_project.open_project (project_name_open, log_threshold => 0);
 
 				-- If operator whishes to execute a script on the native project:
-				if length (script_name) > 0 then
+				if get_length (script_name) > 0 then
 
 					-- NOTE: In headless mode the script will be executed right here.
 					-- Function et_scripting.execute_script parses the script line per line
@@ -595,16 +605,16 @@ procedure et is
 							-- evaluate exit code
 							case exit_code_script is
 								when et_scripting.ERROR =>
-									log (ERROR, "Execution of script " & et_general.to_string (script_name) &
+									log (ERROR, "Execution of script " & to_string (script_name) &
 										" failed !", console => true);
 									raise constraint_error;
 
 								when et_scripting.WARNINGS =>
-									log (WARNING, "Execution of script " & et_general.to_string (script_name) &
+									log (WARNING, "Execution of script " & to_string (script_name) &
 										" produced warnings !", console => true);
 
 								when et_scripting.SUCCESSFUL =>
-									log (text => "Execution of script " & et_general.to_string (script_name) & " successful");
+									log (text => "Execution of script " & to_string (script_name) & " successful");
 									
 							end case;
 

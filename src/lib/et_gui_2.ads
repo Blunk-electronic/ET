@@ -44,6 +44,7 @@ with et_general;				use et_general;
 with et_project;				use et_project;
 with et_project.modules;		use et_project.modules;
 with et_sheets;
+with et_script_names;			use et_script_names;
 
 with gdk;						use gdk;
 with gdk.event;					use gdk.event;

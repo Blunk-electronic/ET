@@ -53,17 +53,6 @@ package body et_general is
 
 
 
-
-	function to_string (name : in pac_script_name.bounded_string) return string is begin
-		return pac_script_name.to_string (name);
-	end;
-		
-	function to_script_name (name : in string) return pac_script_name.bounded_string is begin
-		return pac_script_name.to_bounded_string (name);
-	end;
-
-
-
 -- GENERICS
 
 	

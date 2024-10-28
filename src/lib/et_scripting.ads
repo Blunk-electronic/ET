@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -51,6 +51,7 @@ with et_project.modules;		use et_project.modules;
 with et_modes;					use et_modes;
 
 with et_cmd_sts;				use et_cmd_sts;
+with et_script_names;			use et_script_names;
 
 
 package et_scripting is

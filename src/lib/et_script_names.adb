@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               GENERAL                                    --
+--                            SCRIPT NAMES                                  --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,37 +36,41 @@
 --   history of changes:
 --
 
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded;       use ada.strings.bounded;
-with ada.directories;
-with ada.containers; 			use ada.containers;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.vectors;
 
 
-package et_general is
-
-	version					: constant string := "version 001";
-	system_name				: constant string := "SYSTEM ET";
-
-	system_name_cmd_line	: constant string := "et ";
-
-		
+package body et_script_names is
 
 	
-	generic
-		max : positive;
-		type item is private;
-	package stack_lifo is
-		procedure push (x : item);
-		function pop return item;
-		function depth return natural;
-		procedure init;
-	end stack_lifo;
+	function get_length (
+		name : in pac_script_name.bounded_string)
+		return natural
+	is begin
+		return natural (length (name));
+	end get_length;
+
+
 
 	
-end et_general;
+	function to_string (
+		name : in pac_script_name.bounded_string) 
+		return string 
+	is begin
+		return pac_script_name.to_string (name);
+	end;
+
+
+	
+	function to_script_name (
+		name : in string) 
+		return pac_script_name.bounded_string 
+	is begin
+		return pac_script_name.to_bounded_string (name);
+	end;
+
+
+
+	
+end et_script_names;
 
 -- Soli Deo Gloria
 

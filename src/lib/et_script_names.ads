@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               GENERAL                                    --
+--                            SCRIPT NAMES                                  --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -38,35 +38,32 @@
 
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
-with ada.directories;
-with ada.containers; 			use ada.containers;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.vectors;
 
 
-package et_general is
+package et_script_names is
 
-	version					: constant string := "version 001";
-	system_name				: constant string := "SYSTEM ET";
+	script_name_length_max : constant positive := 100; -- CS increase if necessary
+	
+	package pac_script_name is new generic_bounded_length (script_name_length_max);
+	use pac_script_name;
+	
 
-	system_name_cmd_line	: constant string := "et ";
-
-		
+	function get_length (
+		name : in pac_script_name.bounded_string)
+		return natural;
+	
+	
+	function to_string (
+		name : in pac_script_name.bounded_string) 
+		return string;
 
 	
-	generic
-		max : positive;
-		type item is private;
-	package stack_lifo is
-		procedure push (x : item);
-		function pop return item;
-		function depth return natural;
-		procedure init;
-	end stack_lifo;
+	function to_script_name (
+		name : in string) 
+		return pac_script_name.bounded_string;
 
 	
-end et_general;
+end et_script_names;
 
 -- Soli Deo Gloria
 
