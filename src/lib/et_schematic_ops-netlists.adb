@@ -6,20 +6,21 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -38,6 +39,7 @@
 with ada.exceptions;				use ada.exceptions;
 with et_device_query_schematic;		use et_device_query_schematic;
 with et_schematic_ops.Submodules;
+with et_generic_stacks;
 
 
 package body et_schematic_ops.netlists is
@@ -193,8 +195,10 @@ package body et_schematic_ops.netlists is
 		use et_assembly_variants.pac_assembly_variants;
 		use pac_assembly_variant_name;
 
-		procedure make_for_variant (variant_name : in pac_assembly_variant_name.bounded_string) is
-
+		
+		procedure make_for_variant (
+			variant_name : in pac_assembly_variant_name.bounded_string)
+		is
 			-- Since we are dealing with hierarchic designs, a tree of modules (each of them having its
 			-- own netlist) is required. In the course of this procedure the netlist_tree is built
 			-- and finally passed to netlists.write_netlist for further processing.
@@ -204,15 +208,15 @@ package body et_schematic_ops.netlists is
 			netlist_cursor : et_netlists.pac_modules.cursor := et_netlists.pac_modules.root (netlist_tree);
 
 			-- This stack keeps record of the netlist_cursor as we go trough the design structure.
-			package stack_netlist is new stack_lifo (
+			package stack_netlist is new et_generic_stacks.stack_lifo (
 				item	=> et_netlists.pac_modules.cursor,
 				max 	=> et_submodules.nesting_depth_max);
 
 			
-			procedure collect_nets (
 			-- Collects net names of the given module and its variant in container netlist.
 			-- Adds to the device index the given offset.
 			-- If offset is zero, we are dealing with the top module.
+			procedure collect_nets (
 				module_cursor	: in et_project.modules.pac_generic_modules.cursor;
 				variant			: in pac_assembly_variant_name.bounded_string;
 				prefix			: in pac_net_name.bounded_string; -- DRV3/OSC1/
@@ -367,22 +371,22 @@ package body et_schematic_ops.netlists is
 
 			
 			-- A stack keeps record of the submodule level where tree_cursor is pointing at.
-			package stack_level is new stack_lifo (
+			package stack_level is new et_generic_stacks.stack_lifo (
 				item	=> et_numbering.pac_modules.cursor,
 				max 	=> et_submodules.nesting_depth_max);
 
 			
 			-- Another stack keeps record of the assembly variant at the submodule level.
-			package stack_variant is new stack_lifo (
+			package stack_variant is new et_generic_stacks.stack_lifo (
 				item	=> pac_assembly_variant_name.bounded_string,
 				max 	=> et_submodules.nesting_depth_max);
 			
 			variant : pac_assembly_variant_name.bounded_string; -- low_cost
 
 			
-			procedure query_submodules is 
 			-- Reads the submodule tree submod_tree. It is recursive, means it calls itself
 			-- until the deepest submodule (the bottom of the design structure) has been reached.
+			procedure query_submodules is 
 				use et_numbering.pac_modules;
 				module_name 	: pac_module_name.bounded_string; -- motor_driver
 				parent_name 	: pac_module_name.bounded_string; -- water_pump
@@ -475,8 +479,10 @@ package body et_schematic_ops.netlists is
 
 					end if;
 
+					
 					-- Insert submodule in netlist_tree.
 					insert_submodule;
+
 					
 					if first_child (tree_cursor) = et_numbering.pac_modules.no_element then 
 					-- No submodules on the current level. means we can't go deeper:
@@ -505,6 +511,7 @@ package body et_schematic_ops.netlists is
 
 					next_sibling (tree_cursor); -- next submodule on this level
 				end loop;
+
 				
 				log_indentation_down;
 

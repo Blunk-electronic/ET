@@ -45,7 +45,7 @@ with et_mirroring;					use et_mirroring;
 with et_pcb_coordinates_2;
 with et_device_query_schematic;
 with et_packages;
-
+with et_generic_stacks;
 
 
 package body et_schematic_ops.submodules is
@@ -4713,7 +4713,7 @@ package body et_schematic_ops.submodules is
 		tree_cursor : et_numbering.pac_modules.cursor := et_numbering.pac_modules.root (submod_tree);
 
 		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
-		package stack is new stack_lifo (
+		package stack is new et_generic_stacks.stack_lifo (
 			item	=> et_numbering.pac_modules.cursor,
 			max 	=> et_submodules.nesting_depth_max);
 
@@ -5052,13 +5052,15 @@ package body et_schematic_ops.submodules is
 			submod_tree : et_numbering.pac_modules.tree := et_numbering.pac_modules.empty_tree;
 			tree_cursor : et_numbering.pac_modules.cursor := et_numbering.pac_modules.root (submod_tree);
 
+			
 			-- A stack keeps record of the submodule level where tree_cursor is pointing at.
-			package stack_level is new stack_lifo (
+			package stack_level is new et_generic_stacks.stack_lifo (
 				item	=> et_numbering.pac_modules.cursor,
 				max 	=> et_submodules.nesting_depth_max);
 
+			
 			-- Another stack keeps record of the assembly variant on submodule levels.
-			package stack_variant is new stack_lifo (
+			package stack_variant is new et_generic_stacks.stack_lifo (
 				item	=> pac_assembly_variant_name.bounded_string,
 				max 	=> et_submodules.nesting_depth_max);
 			
@@ -5343,7 +5345,7 @@ package body et_schematic_ops.submodules is
 		tree_cursor : et_numbering.pac_modules.cursor;
 
 		-- A stack keeps record of the submodule level where tree_cursor is pointing at.
-		package stack is new stack_lifo (
+		package stack is new et_generic_stacks.stack_lifo (
 			item	=> et_numbering.pac_modules.cursor,
 			max 	=> et_submodules.nesting_depth_max);
 

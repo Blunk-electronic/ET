@@ -49,7 +49,7 @@ with et_numbering;
 with et_symbols;
 with et_conductor_segment.boards;
 with et_exceptions;					use et_exceptions;
-
+with et_generic_stacks;
 with et_canvas_board_2;
 
 
@@ -569,19 +569,19 @@ package body et_board_ops is
 
 			
 			-- A stack keeps record of the submodule level where tree_cursor is pointing at.
-			package stack_level is new et_general.stack_lifo (
+			package stack_level is new et_generic_stacks.stack_lifo (
 				item	=> et_numbering.pac_modules.cursor,
 				max 	=> et_submodules.nesting_depth_max);
 
 			-- Another stack keeps record of the assembly variant on submodule levels.
-			package stack_variant is new et_general.stack_lifo (
+			package stack_variant is new et_generic_stacks.stack_lifo (
 				item	=> pac_assembly_variant_name.bounded_string,
 				max 	=> et_submodules.nesting_depth_max);
 			
 			variant : pac_assembly_variant_name.bounded_string; -- low_cost
 
 			-- Another stack keeps record of the submodule position (inside the parent module) on submodule levels.
-			package stack_position_in_board is new et_general.stack_lifo (
+			package stack_position_in_board is new et_generic_stacks.stack_lifo (
 				item	=> type_position,
 				max 	=> et_submodules.nesting_depth_max);
 

@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               GENERAL                                    --
+--                           GENERIC STACKS                                 --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,24 +37,40 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.directories;
-with gnat.directory_operations;
-
-with et_string_processing;			use et_string_processing;
-with et_logging;					use et_logging;
 
 
-package body et_general is
+package body et_generic_stacks is
 
-	procedure dummy is begin null; end;
+	package body stack_lifo is
+		s : array (1..max) of item;
+		top : natural range 0..max;
 
+		procedure push(x : item) is
+		begin
+			top := top + 1;
+			s(top) := x;
+		end push;
 
-end et_general;
+		function pop return item is
+		begin
+			top := top - 1;
+			return s(top + 1);
+		end pop;
+
+		function depth return natural is
+		begin
+			return top;
+		end depth;
+
+		procedure init is
+		begin
+			top := 0;
+		end init;
+	
+	end stack_lifo;
+
+	
+end et_generic_stacks;
 
 -- Soli Deo Gloria
 

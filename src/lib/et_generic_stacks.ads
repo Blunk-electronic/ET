@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                               GENERAL                                    --
+--                           GENERIC STACKS                                 --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,25 +36,23 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with ada.strings; 				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.directories;
-with gnat.directory_operations;
 
-with et_string_processing;			use et_string_processing;
-with et_logging;					use et_logging;
+package et_generic_stacks is
 
 
-package body et_general is
+	generic
+		max : positive;
+		type item is private;
+	package stack_lifo is
+		procedure push (x : item);
+		function pop return item;
+		function depth return natural;
+		procedure init;
+	end stack_lifo;
 
-	procedure dummy is begin null; end;
-
-
-end et_general;
+	
+	
+end et_generic_stacks;
 
 -- Soli Deo Gloria
 

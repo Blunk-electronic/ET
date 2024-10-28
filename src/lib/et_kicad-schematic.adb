@@ -46,6 +46,7 @@ with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 with ada.environment_variables;
 
+with et_generic_stacks;
 with et_axes;					use et_axes;
 with et_sheets;					use et_sheets;
 with et_conventions;
@@ -1962,7 +1963,8 @@ package body et_kicad.schematic is
 		-- NOTE: The sheet number written in the schematic file header (a line like "Sheet 1 7") has no meaning.
 		sheet_number : type_sheet := 1;
 
-		package stack_of_sheet_lists is new et_general.stack_lifo (max => 10, item => type_hierarchic_sheet_file_names_extended);
+		use et_generic_stacks;
+		package stack_of_sheet_lists is new stack_lifo (max => 10, item => type_hierarchic_sheet_file_names_extended);
         use stack_of_sheet_lists;
 
 		
@@ -2425,7 +2427,7 @@ package body et_kicad.schematic is
 					-- on stack (see procedure read_section).
 					-- One leaving a subsection the previous section is popped 
 					-- from stack (see end of procedure exec_section).
-					package sections_stack is new et_general.stack_lifo (max => 20, item => type_section);
+					package sections_stack is new stack_lifo (max => 20, item => type_section);
 
 					function to_string (section : in type_keyword) return string is
 					-- Converts a section name to a string.

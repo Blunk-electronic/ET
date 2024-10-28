@@ -50,6 +50,7 @@ with et_conventions;
 with et_pcb_sides;
 with et_axes;					use et_axes;
 with et_directory_and_file_ops;
+with et_generic_stacks;
 
 
 package body et_kicad_packages is
@@ -508,7 +509,8 @@ package body et_kicad_packages is
 		-- on stack (see procedure read_section).
 		-- One leaving a subsection the previous section is popped 
 		-- from stack (see end of procedure exec_section).
-		package sections_stack is new et_general.stack_lifo (max => 20, item => type_section);
+		package sections_stack is new et_generic_stacks.stack_lifo (
+			max => 20, item => type_section);
 
 
 

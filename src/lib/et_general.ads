@@ -52,20 +52,9 @@ package et_general is
 
 	system_name_cmd_line	: constant string := "et ";
 
-		
 
-	
-	generic
-		max : positive;
-		type item is private;
-	package stack_lifo is
-		procedure push (x : item);
-		function pop return item;
-		function depth return natural;
-		procedure init;
-	end stack_lifo;
-
-	
+	procedure dummy;
+			
 end et_general;
 
 -- Soli Deo Gloria
