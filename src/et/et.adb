@@ -49,6 +49,9 @@ with ada.directories;			use ada.directories;
 
 with et_modes;					use et_modes;
 with et_general;				use et_general;
+with et_module_names;			use et_module_names;
+with et_directory_and_file_ops;	use et_directory_and_file_ops;
+with et_commandline_switches;	use et_commandline_switches;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_import;
@@ -436,6 +439,7 @@ procedure et is
 		end if;
 	end;
 
+
 	
 	procedure save_symbol_as is 
 		use et_symbols.pac_symbol_model_file;
@@ -450,6 +454,8 @@ procedure et is
 		end if;
 	end;
 
+
+	
 	procedure save_device_as is 
 		use pac_device_model_file;
 	begin
@@ -463,6 +469,8 @@ procedure et is
 		end if;
 	end;
 
+
+	
 	procedure launch_schematic_and_board_editor is 
 		use ada.containers;
 		use et_gui_2;
@@ -471,7 +479,7 @@ procedure et is
 		use pac_module_file_name;
 		use pac_module_name;
 
-		generic_module_name : et_general.pac_module_name.bounded_string;
+		generic_module_name : pac_module_name.bounded_string;
 		module_cursor : pac_generic_modules.cursor;
 		script_name_tmp : pac_script_name.bounded_string;
 	begin
@@ -517,6 +525,8 @@ procedure et is
 			log_threshold	=> 0);
 		
 	end launch_schematic_and_board_editor;
+
+	
 
 	procedure process_commandline_arguments is
 		use et_project.pac_project_name;
@@ -696,6 +706,8 @@ procedure et is
 	end process_commandline_arguments;
 
 
+
+	
 	procedure log_sys_info is 
 	begin
 		log (text => et_pcb_coordinates_2.pac_geometry_2.get_info ("layout/board"));
