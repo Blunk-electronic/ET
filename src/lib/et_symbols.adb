@@ -36,18 +36,17 @@
 --   history of changes:
 --
 
+with ada.text_io;				use ada.text_io;
+
+with ada.characters;			use ada.characters;
+with ada.characters.handling;	use ada.characters.handling;
+
 with ada.strings; 				use ada.strings;
---with ada.strings.maps;
-with ada.strings.maps.constants;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.strings.unbounded; 	use ada.strings.unbounded;
-with ada.numerics.real_arrays;  use ada.numerics.real_arrays;
-with ada.directories;			use ada.directories;
 with ada.exceptions; 			use ada.exceptions;
 with et_alignment;				use et_alignment;
 
--- with et_import;
 
 package body et_symbols is
 
