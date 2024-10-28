@@ -68,14 +68,6 @@ package et_symbols is
 	use pac_geometry_2;
 
 	use pac_text_schematic;
-	
--- CS: if required some day, move to package et_text:
--- 	type type_text_style is (NORMAL, ITALIC, BOLD, ITALIC_BOLD);
--- 	function to_string (style : in type_text_style) return string;
--- 	function to_text_style (style : in string) return type_text_style;
-	
-
-
 
 
 	
