@@ -54,6 +54,7 @@ with et_assembly_variants;		use et_assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_symbols;
+with et_symbol_ports;			use et_symbol_ports;
 with et_terminals;
 with et_packages;
 with et_devices;				use et_devices;
@@ -78,12 +79,13 @@ package et_netlists is
 
 
 	-- For netlists the connected devices are modelled by this type:
-	type type_device_port_extended (direction : et_symbols.type_port_direction) is record
+	type type_device_port_extended (direction : type_port_direction) is record
 		device			: type_device_name; -- IC4		
-		port			: et_symbols.pac_port_name.bounded_string; -- CLOCK, CE, VDD, GND
-		characteristics	: et_symbols.type_port (direction); -- direction, sensitivity, ...
+		port			: pac_port_name.bounded_string; -- CLOCK, CE, VDD, GND
+		characteristics	: et_symbol_ports.type_port (direction); -- direction, sensitivity, ...
 		terminal		: et_terminals.pac_terminal_name.bounded_string; -- H4, 1, 16
 	end record;
+
 	
 	function "<" (left, right : in type_device_port_extended) return boolean;
 	

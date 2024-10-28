@@ -46,7 +46,7 @@ package body et_nets is
 
 	
 	function "<" (left, right : in type_device_port) return boolean is
-		use et_symbols.pac_port_name;
+		use pac_port_name;
 		use et_devices.pac_unit_name;
 	begin
 		-- compare device names:
@@ -103,7 +103,7 @@ package body et_nets is
 	function to_string (port : in type_device_port) return string is begin
 		return "device " & to_string (port.device_name)
 			& " unit " & et_devices.to_string (port.unit_name)
-			& " port " & et_symbols.to_string (port.port_name);
+			& " port " & to_string (port.port_name);
 	end to_string;
 
 	

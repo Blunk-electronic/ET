@@ -133,6 +133,7 @@ package et_symbol_ports is
 	-- line width
 	keyword_line_width : constant string := "line_width"; -- NOTE: do not confuse with text line width !
 	subtype type_line_width is type_distance_positive range 0.1 .. 10.0;
+	-- CS rename to type_port_linewidth
 	line_width_default : constant type_line_width := 0.15;
 	
 	-- A port is basically a line. Its start point is the port position.

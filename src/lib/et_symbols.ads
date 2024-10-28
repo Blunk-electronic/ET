@@ -108,7 +108,7 @@ package et_symbols is
 	
 
 
-	
+	-- CS subtype type_linewidth is type_distance_positive range 0.1 .. 10.0;
 
 
 -- LINES

@@ -58,6 +58,7 @@ with et_coordinates_2;			use et_coordinates_2;
 with et_pcb;
 with et_pcb_stack;
 with et_pcb_coordinates_2;
+with et_symbol_ports;				use et_symbol_ports;
 with et_symbols;
 with et_schematic_shapes_and_text;	use et_schematic_shapes_and_text;
 with et_module_names;				use et_module_names;
@@ -137,7 +138,7 @@ package et_submodules is
 	end record;
 
 	port_symbol : constant type_port_symbol := (port_symbol_width, port_symbol_height);
-	port_symbol_line_width : constant et_symbols.type_line_width := 0.2;
+	port_symbol_line_width : constant type_line_width := 0.2;
 
 
 
@@ -213,7 +214,8 @@ package et_submodules is
 	end record;
 
 	-- GUI relevant only: The line width of the box:
-	submod_box_line_width : constant et_symbols.type_line_width := 0.2;
+	submod_box_line_width : constant et_symbol_ports.type_line_width := 0.2;
+	-- CS should be et_symbols.type_linewidth
 
 
 	
@@ -264,7 +266,7 @@ package et_submodules is
 
 	type type_netchanger_port is record
 		position	: type_vector_model;
-		length		: et_symbols.type_port_length; 
+		length		: type_port_length; 
 		rotation	: type_rotation_model;
 	end record;
 
@@ -288,7 +290,7 @@ package et_submodules is
 						start_point	=> (x => -5.0, y => 0.0),
 						end_point	=> (x =>  5.0, y => 0.0),
 						direction	=> CW,
-						width		=> et_symbols.port_line_width,
+						width		=> port_line_width,
 						others		=> <>);
 	end record;
 

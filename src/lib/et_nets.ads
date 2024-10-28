@@ -49,6 +49,7 @@ with ada.containers.ordered_maps;
 
 with et_module_names;			use et_module_names;
 with et_coordinates_2;			use et_coordinates_2;
+with et_symbol_ports;			use et_symbol_ports;
 with et_symbols;
 with et_devices;				use et_devices;
 with et_string_processing;		use et_string_processing;
@@ -103,7 +104,7 @@ package et_nets is
 	type type_device_port is record
 		device_name	: type_device_name; -- IC4
 		unit_name	: pac_unit_name.bounded_string; -- A
-		port_name	: et_symbols.pac_port_name.bounded_string; -- IN1
+		port_name	: pac_port_name.bounded_string; -- IN1
 	end record;
 
 	function "<" (left, right : in type_device_port) return boolean;
@@ -179,7 +180,7 @@ package et_nets is
 
 	
 		
-	net_line_width : constant et_symbols.type_line_width := et_symbols.port_line_width;	
+	net_line_width : constant et_symbol_ports.type_line_width := et_symbol_ports.port_line_width;
 
 
 
