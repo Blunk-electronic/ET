@@ -45,6 +45,8 @@ with et_coordinates_2;					use et_coordinates_2;
 with et_text;							use et_text;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 
+with et_alignment;						use et_alignment;
+
 
 package et_net_labels is
 
@@ -113,7 +115,7 @@ package et_net_labels is
 
 	
 	-- GUI relevant only: The alignment for simple labels:
-	net_label_alignment : constant et_text.type_text_alignment := 
+	net_label_alignment : constant type_text_alignment := 
 		(ALIGN_LEFT, ALIGN_BOTTOM);
 
 

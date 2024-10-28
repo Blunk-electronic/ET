@@ -55,48 +55,9 @@ with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_logical_pixels;			use et_logical_pixels;
 with et_mirroring;				use et_mirroring;
-
+with et_alignment;				use et_alignment;
 
 package et_text is
-
--- TEXT ALIGNMENT
-
-	
-	keyword_alignment	: constant string := "alignment";
-	keyword_horizontal	: constant string := "horizontal";
-	keyword_vertical	: constant string := "vertical";		
-
-	
-	alignment_prefix	: constant string := ("ALIGN_");
-	
-	-- The alignment refers to the anchor point of the text.
-	-- The anchor point is usually where the origin of the text is.
-	type type_text_alignment_horizontal is (ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT);
-	
-	function to_string (alignment : in type_text_alignment_horizontal) return string;
-	function to_alignment_horizontal (alignment : in string) return type_text_alignment_horizontal;
-
-	
-	
-	type type_text_alignment_vertical is (ALIGN_TOP, ALIGN_CENTER, ALIGN_BOTTOM);
-	
-	function to_string (alignment : in type_text_alignment_vertical) return string;
-	function to_alignment_vertical (alignment : in string) return type_text_alignment_vertical;
-
-	
-	type type_text_alignment is record
-		horizontal	: type_text_alignment_horizontal := ALIGN_LEFT;
-		vertical	: type_text_alignment_vertical := ALIGN_BOTTOM;
-	end record;
-
-	text_alignment_default : constant type_text_alignment := (ALIGN_LEFT, ALIGN_BOTTOM);
-	
-	function to_alignment (
-		line : in type_fields_of_line; -- "alignment horizontal center vertical center"
-		from : in count_type)
-		return type_text_alignment;
-	
-	function to_string (alignment : in type_text_alignment) return string;
 
 	
 -- FONT

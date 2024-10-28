@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                   DEVICE PLACEHOLDERS IN SYMBOLS                         --
+--                              ALIGNMENT                                   --
 --                                                                          --
---                              B o d y                                     --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -21,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -36,46 +35,58 @@
 --
 --   history of changes:
 --
---   to do:
+
+with ada.strings;				use ada.strings;
+with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.containers; 			use ada.containers;
+with ada.containers.doubly_linked_lists;
+with ada.containers.indefinite_ordered_maps;
+
+with et_string_processing;		use et_string_processing;
 
 
-with et_alignment;				use et_alignment;
-
-
-
-package body et_device_placeholders.symbols is
+package et_alignment is
+	
+	keyword_alignment	: constant string := "alignment";
+	keyword_horizontal	: constant string := "horizontal";
+	keyword_vertical	: constant string := "vertical";		
 
 	
-	procedure write_placeholder_properties (
-		placeholder		: in type_text_placeholder;
-		log_threshold	: in type_log_level) 
-	is begin
-		-- meaning
-		log (text => to_string (placeholder.meaning), level => log_threshold);
-		log_indentation_up;
-		
-		-- position
-		log (text => to_string (placeholder.position), level => log_threshold);
-
-		-- size
-		log (text => to_string (placeholder.size), level => log_threshold);
-
-		-- rotation
-		log (text => to_string (placeholder.rotation), level => log_threshold); 
-
-		-- visible
-		--log (text => "visible "
-		--	& to_lower (et_libraries.type_text_visible'image (placeholder.visible)), level => log_threshold);
-
-		-- alignment
-		log (text => to_string (placeholder.alignment),
-			level => log_threshold);
-
-		log_indentation_down;
-	end write_placeholder_properties;
+	alignment_prefix	: constant string := ("ALIGN_");
+	
+	-- The alignment refers to the anchor point of the text.
+	-- The anchor point is usually where the origin of the text is.
+	type type_text_alignment_horizontal is (ALIGN_LEFT, ALIGN_CENTER, ALIGN_RIGHT);
+	
+	function to_string (alignment : in type_text_alignment_horizontal) return string;
+	function to_alignment_horizontal (alignment : in string) return type_text_alignment_horizontal;
 
 	
-end et_device_placeholders.symbols;
+	
+	type type_text_alignment_vertical is (ALIGN_TOP, ALIGN_CENTER, ALIGN_BOTTOM);
+	
+	function to_string (alignment : in type_text_alignment_vertical) return string;
+	function to_alignment_vertical (alignment : in string) return type_text_alignment_vertical;
+
+	
+	type type_text_alignment is record
+		horizontal	: type_text_alignment_horizontal := ALIGN_LEFT;
+		vertical	: type_text_alignment_vertical := ALIGN_BOTTOM;
+	end record;
+
+	text_alignment_default : constant type_text_alignment := (ALIGN_LEFT, ALIGN_BOTTOM);
+	
+	function to_alignment (
+		line : in type_fields_of_line; -- "alignment horizontal center vertical center"
+		from : in count_type)
+		return type_text_alignment;
+	
+	function to_string (alignment : in type_text_alignment) return string;
+
+
+end et_alignment;
+
 
 -- Soli Deo Gloria
 

@@ -113,7 +113,7 @@ package body et_canvas.text is
 	
 	function get_text_start_point (
 		extents		: in cairo.cairo_text_extents;
-		alignment	: in et_text.type_text_alignment;
+		alignment	: in type_text_alignment;
 		anchor		: in type_logical_pixels_vector;
 		mode_v		: in type_align_mode_vertical;
 		size		: in pac_text.type_text_size)
@@ -207,7 +207,7 @@ package body et_canvas.text is
 		anchor		: in type_vector_model;
 		origin		: in boolean;		
 		rotation	: in type_rotation;
-		alignment	: in et_text.type_text_alignment)
+		alignment	: in type_text_alignment)
 	is
 		use glib;
 		use cairo;

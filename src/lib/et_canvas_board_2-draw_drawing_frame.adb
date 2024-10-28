@@ -39,6 +39,7 @@
 with ada.text_io;				use ada.text_io;
 with et_text;
 with et_frames;
+with et_alignment;
 
 
 separate (et_canvas_board_2)
@@ -116,6 +117,7 @@ procedure draw_drawing_frame is
 		
 
 		use et_text;
+		use et_alignment;
 		use pac_draw_text;
 
 		-- These flags indicate whether a top or bottom layer is shown.

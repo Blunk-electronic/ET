@@ -51,6 +51,7 @@ with et_axes;						use et_axes;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_text;						use et_text;
+with et_alignment;					use et_alignment;
 with et_exceptions;					use et_exceptions;
 
 

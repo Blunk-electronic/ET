@@ -41,6 +41,7 @@ with et_project;
 with et_project.modules;
 with et_assembly_variants;
 with et_time;
+with et_alignment;
 
 
 package body et_canvas.drawing_frame is
@@ -194,6 +195,7 @@ package body et_canvas.drawing_frame is
 				pos		: in type_vector_model) 
 			is 
 				use pac_draw_text;
+				use et_alignment;
 			begin
 				draw_text (
 					content		=> content,
@@ -375,6 +377,7 @@ package body et_canvas.drawing_frame is
 		title_block_position	: in pac_geometry.type_position)
 	is
 		use et_text;
+		use et_alignment;
 		use pac_draw_text;
 		use et_project;
 		use et_project.modules;
@@ -444,6 +447,7 @@ package body et_canvas.drawing_frame is
 		title_block_position	: in pac_geometry.type_position)
 	is
 		use et_text;
+		use et_alignment;
 		use pac_draw_text;
 		
 		-- A temporarily storage place for the
@@ -486,6 +490,7 @@ package body et_canvas.drawing_frame is
 		use et_meta;
 		use et_time;
 		use et_text;
+		use et_alignment;
 		use pac_draw_text;
 		
 		-- A temporarily storage place for the

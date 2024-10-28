@@ -40,6 +40,7 @@
 with ada.text_io;				use ada.text_io;
 
 with et_text;					use et_text;
+with et_alignment;
 with et_nets;
 with et_net_names;				use et_net_names;
 with et_submodules;				use et_submodules;
@@ -91,6 +92,7 @@ procedure draw_submodules is
 					y => - text_spacing));
 
 			use pac_draw_text;
+			use et_alignment;
 		begin
 			move_by (position, offset);
 			
@@ -116,6 +118,7 @@ procedure draw_submodules is
 					y => - (2.0 * text_spacing + instance_font_size)));
 
 			use pac_draw_text;
+			use et_alignment;
 		begin
 			move_by (position, offset);
 			
@@ -152,6 +155,7 @@ procedure draw_submodules is
 					rotation;
 
 			use pac_draw_text;
+			use et_alignment;
 		begin
 			move_by (position, offset);
 			
@@ -206,6 +210,8 @@ procedure draw_submodules is
 				
 
 				use pac_draw_text;
+				use et_alignment;
+
 				
 			begin -- draw_port
 				-- Detect the edge where the port sits at. Depending on the edge

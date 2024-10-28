@@ -96,6 +96,7 @@ with et_pcb_contour;
 with et_units;
 with et_mirroring;						use et_mirroring;
 with et_directory_and_file_ops;
+with et_alignment;						use et_alignment;
 
 
 separate (et_project.modules)
@@ -1301,11 +1302,11 @@ is
 
 			device_text_placeholder.line_width := to_distance (f (line, 2));
 
-		elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+		elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 			expect_field_count (line, 5);
 
 			-- extract alignment of placeholder starting at field 2
-			device_text_placeholder.alignment := et_text.to_alignment (line, 2);
+			device_text_placeholder.alignment := to_alignment (line, 2);
 			
 		else
 			invalid_keyword (kw);
@@ -1357,11 +1358,11 @@ is
 -- 
 -- 												unit_placeholder.style := et_symbols.to_text_style (f (line, 2));
 
-		elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+		elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 			expect_field_count (line, 5);
 
 			-- extract alignment of placeholder starting at field 2
-			unit_placeholder.alignment := et_text.to_alignment (line, 2);
+			unit_placeholder.alignment := to_alignment (line, 2);
 			
 		else
 			invalid_keyword (kw);
@@ -1397,11 +1398,11 @@ is
 			expect_field_count (line, 2);
 			board_text_placeholder.line_width := to_distance (f (line, 2));
 
-		elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+		elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 			expect_field_count (line, 5);
 
 			-- extract alignment starting at field 2
-			board_text_placeholder.alignment := et_text.to_alignment (line, 2);
+			board_text_placeholder.alignment := to_alignment (line, 2);
 			
 		elsif kw = keyword_meaning then -- meaning project_name
 			expect_field_count (line, 2);
@@ -1954,11 +1955,11 @@ is
 			expect_field_count (line, 2);
 			board_text_conductor_placeholder.line_width := to_distance (f (line, 2));
 
-		elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+		elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 			expect_field_count (line, 5);
 
 			-- extract alignment starting at field 2
-			board_text_conductor_placeholder.alignment := et_text.to_alignment (line, 2);
+			board_text_conductor_placeholder.alignment := to_alignment (line, 2);
 			
 		elsif kw = keyword_meaning then -- meaning revision/project_name/...
 			expect_field_count (line, 2);
@@ -2010,11 +2011,11 @@ is
 			-- schematic_text.font := et_symbols.to_text_style (f (line, 2)); -- CS
 			-- CS: currently font and style are ignored.
 
-		elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+		elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 			expect_field_count (line, 5);
 
 			-- extract alignment starting at field 2
-			schematic_text.alignment := et_text.to_alignment (line, 2);
+			schematic_text.alignment := to_alignment (line, 2);
 			
 		else
 			invalid_keyword (kw);
@@ -2049,11 +2050,11 @@ is
 
 					-- CS validate against dru settings
 					
-				elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+				elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 					expect_field_count (line, 5);
 
 					-- extract alignment starting at field 2
-					board_text.alignment := et_text.to_alignment (line, 2);
+					board_text.alignment := to_alignment (line, 2);
 					
 				elsif kw = keyword_content then -- content "WATER KETTLE CONTROL"
 					expect_field_count (line, 2); -- actual content in quotes !
@@ -2092,11 +2093,11 @@ is
 
 			-- CS validate against dru settings
 			
-		elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+		elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 			expect_field_count (line, 5);
 
 			-- extract alignment starting at field 2
-			board_text_conductor.alignment := et_text.to_alignment (line, 2);
+			board_text_conductor.alignment := to_alignment (line, 2);
 			
 		elsif kw = keyword_content then -- content "TOP", "L2", "BOT"
 			expect_field_count (line, 2); -- actual content in quotes !
@@ -2134,11 +2135,11 @@ is
 			expect_field_count (line, 2);
 			board_text.line_width := to_distance (f (line, 2));
 
-		elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+		elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 			expect_field_count (line, 5);
 
 			-- extract alignment starting at field 2
-			board_text.alignment := et_text.to_alignment (line, 2);
+			board_text.alignment := to_alignment (line, 2);
 			
 		elsif kw = keyword_content then -- content "WATER KETTLE CONTROL"
 			expect_field_count (line, 2); -- actual content in quotes !

@@ -39,7 +39,7 @@
 with et_colors;							use et_colors;
 
 with et_text;
-
+with et_alignment;
 with et_symbols;
 with et_units;							use et_units;
 with et_devices;						use et_devices;
@@ -142,6 +142,8 @@ procedure draw_units is
 			pos_port_name		: type_vector_model;
 			pos_terminal_name	: type_vector_model;
 
+			use et_alignment;
+			
 			
 			procedure draw_port_name is
 				use et_text;

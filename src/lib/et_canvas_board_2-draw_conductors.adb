@@ -63,7 +63,7 @@ with et_schematic;
 with et_net_names;
 
 with et_ratsnest;
-
+with et_alignment;
 with et_canvas_tool;
 
 
@@ -711,6 +711,7 @@ procedure draw_conductors is
 		procedure draw_net_name is 
 			use et_colors.board;
 			use et_text;
+			use et_alignment;
 
 			use et_net_names;
 			use pac_net_name;
@@ -743,6 +744,7 @@ procedure draw_conductors is
 		procedure draw_numbers (from, to : in string) is 
 			use et_colors.board;
 			use et_text;
+			use et_alignment;
 			position : type_vector_model := circle.center;
 			offset : constant type_distance_relative := to_distance_relative (
 				set (zero, + radius_base * text_position_layer_and_drill_factor));
@@ -771,6 +773,7 @@ procedure draw_conductors is
 		procedure draw_drill_size is 
 			use et_colors.board;
 			use et_text;
+			use et_alignment;
 			position : type_vector_model := circle.center;
 			offset : type_distance_relative;
 

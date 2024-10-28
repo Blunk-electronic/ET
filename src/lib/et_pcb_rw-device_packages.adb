@@ -44,6 +44,7 @@ with ada.exceptions;
 with et_directory_and_file_ops;
 with et_general_rw;					use et_general_rw;
 with et_text;						use et_text;
+with et_alignment;					use et_alignment;
 with et_terminals;					use et_terminals;
 
 with et_conductor_text.packages;	use et_conductor_text.packages;
@@ -898,11 +899,11 @@ package body et_pcb_rw.device_packages is
 				expect_field_count (line, 2);
 				pac_text.line_width := to_distance (f (line, 2));
 
-			elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+			elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 				expect_field_count (line, 5);
 
 				-- extract alignment starting at field 2
-				pac_text.alignment := et_text.to_alignment (line, 2);
+				pac_text.alignment := to_alignment (line, 2);
 				
 			elsif kw = keyword_content then -- content "keep clear"
 				expect_field_count (line, 2); -- actual content in quotes !
@@ -913,6 +914,7 @@ package body et_pcb_rw.device_packages is
 			end if;
 		end read_text;
 
+		
 		
 		procedure read_placeholder is
 			kw : constant string := f (line, 1);
@@ -932,11 +934,11 @@ package body et_pcb_rw.device_packages is
 				expect_field_count (line, 2);
 				pac_text_placeholder.line_width := to_distance (f (line, 2));
 
-			elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+			elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 				expect_field_count (line, 5);
 
 				-- extract alignment starting at field 2
-				pac_text_placeholder.alignment := et_text.to_alignment (line, 2);
+				pac_text_placeholder.alignment := to_alignment (line, 2);
 				
 			elsif kw = keyword_meaning then -- meaning reference, value, purpose
 				expect_field_count (line, 2);
@@ -946,6 +948,7 @@ package body et_pcb_rw.device_packages is
 				invalid_keyword (kw);
 			end if;
 		end read_placeholder;
+
 
 		
 		procedure read_terminal is

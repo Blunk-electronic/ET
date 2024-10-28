@@ -92,6 +92,7 @@ with et_pcb_contour;
 
 with et_mirroring;					use et_mirroring;
 with et_units;
+with et_alignment;					use et_alignment;
 
 
 separate (et_project.modules)

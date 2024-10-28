@@ -51,6 +51,7 @@ with et_pcb_sides;
 with et_axes;					use et_axes;
 with et_directory_and_file_ops;
 with et_generic_stacks;
+with et_alignment;
 
 
 package body et_kicad_packages is
@@ -2162,10 +2163,12 @@ package body et_kicad_packages is
 
 			end insert_terminal;
 
+
 			
 			procedure insert_fp_text is 
 				use et_packages;
 				use et_text;
+				use et_alignment;
 			begin
 					
 				-- Since there is no alignment information provided, use default values:

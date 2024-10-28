@@ -70,6 +70,7 @@ with et_colors;						use et_colors;
 with et_colors.board;				use et_colors.board;
 with et_design_rules;				use et_design_rules;
 with et_text;
+with et_alignment;
 
 with et_conductor_segment;
 with et_conductor_text.packages;
@@ -1145,6 +1146,7 @@ is
 		procedure draw_terminals is
 			use et_terminals;
 			use pac_terminals;
+			use et_alignment;
 
 			
 			procedure query_terminal (

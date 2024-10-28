@@ -51,6 +51,7 @@ with et_axes;					use et_axes;
 with et_sheets;					use et_sheets;
 with et_conventions;
 with et_kicad.pcb;				use et_kicad.pcb;
+with et_alignment;				use et_alignment;
 
 
 package body et_kicad.schematic is
@@ -679,11 +680,11 @@ package body et_kicad.schematic is
 				log (ERROR, "invalid text orientation !", console => true);
 				raise;
 	end to_field_orientation;
+
 	
-	function to_alignment_horizontal (text : in string) return et_text.type_text_alignment_horizontal is
 	-- Converts a horizontal kicad text alignment to type_text_alignment_horizontal.
-		use et_text;
-		a : et_text.type_text_alignment_horizontal;
+	function to_alignment_horizontal (text : in string) return type_text_alignment_horizontal is
+		a : type_text_alignment_horizontal;
 	begin
 		case type_field_alignment_horizontal'value(text) is
 			when L => a := ALIGN_LEFT;
@@ -693,7 +694,8 @@ package body et_kicad.schematic is
 		return a;
 	end to_alignment_horizontal;
 
-	function to_alignment_vertical (text : in string) return et_text.type_text_alignment_vertical is
+	
+	function to_alignment_vertical (text : in string) return type_text_alignment_vertical is
 	-- Converts a vertical kicad text alignment to type_text_alignment_vertical.
 	-- The given text is something like CNN. We are interested in the first character only.
 		use et_text;
@@ -8022,6 +8024,7 @@ package body et_kicad.schematic is
 	-- Writes the properties of the given note
 		use et_string_processing;
 		use et_text;
+		use et_alignment;
 	begin
 		log (text => "text note" & to_string (
 			position => note.position, scope => et_kicad_coordinates.XY), level => log_threshold);
@@ -8053,7 +8056,7 @@ package body et_kicad.schematic is
 			--log (text => "visible " & to_lower (et_libraries.type_text_visible'image (note.visible)));
 
 			-- alignment
-			log (text => et_text.to_string (note.alignment));
+			log (text => to_string (note.alignment));
 		end if;
 		
 		log_indentation_down;

@@ -38,6 +38,7 @@
 
 
 with et_text;					use et_text;
+with et_alignment;				use et_alignment;
 
 
 generic
@@ -105,7 +106,7 @@ package et_canvas.text is
 	-- is to be drawn:
 	function get_text_start_point (
 		extents		: in cairo.cairo_text_extents;
-		alignment	: in et_text.type_text_alignment;
+		alignment	: in type_text_alignment;
 		anchor		: in type_logical_pixels_vector; -- the anchor point of the text
 		mode_v		: in type_align_mode_vertical;
 		size		: in pac_text.type_text_size) -- the size of the text
@@ -122,7 +123,7 @@ package et_canvas.text is
 		anchor		: in type_vector_model; -- the anchor point in the model
 		origin		: in boolean; -- when true, an origin is drawn at the anchor point
 		rotation	: in type_rotation;
-		alignment	: in et_text.type_text_alignment);
+		alignment	: in type_text_alignment);
 
 
 	

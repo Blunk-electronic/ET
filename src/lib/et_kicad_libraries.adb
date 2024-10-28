@@ -58,6 +58,7 @@ with et_axes;							use et_axes;
 with et_mirroring;						use et_mirroring;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_conventions;
+with et_alignment;					use et_alignment;
 
 
 package body et_kicad_libraries is
@@ -597,10 +598,9 @@ package body et_kicad_libraries is
 	end to_field_orientation;
 
 	
-	function to_alignment_horizontal (text : in string) return et_text.type_text_alignment_horizontal is
 	-- Converts a horizontal kicad text alignment to type_text_alignment_horizontal.
-		use et_text;
-		a : et_text.type_text_alignment_horizontal;
+	function to_alignment_horizontal (text : in string) return type_text_alignment_horizontal is
+		a : type_text_alignment_horizontal;
 	begin
 		case type_field_alignment_horizontal'value(text) is
 			when L => a := ALIGN_LEFT;
@@ -611,10 +611,9 @@ package body et_kicad_libraries is
 	end to_alignment_horizontal;
 
 	
-	function to_alignment_vertical (text : in string) return et_text.type_text_alignment_vertical is
 	-- Converts a vertical kicad text alignment to type_text_alignment_vertical.
 	-- The given text is something like CNN. We are interested in the first character only.
-		use et_text;
+	function to_alignment_vertical (text : in string) return type_text_alignment_vertical is
 		a : type_text_alignment_vertical;
 		s : string (1..1) := text(text'first..text'first);
 	begin
@@ -3541,10 +3540,15 @@ package body et_kicad_libraries is
 		return comp_cursor;
 	end find_component;
 
+
+
+
+	
+	-- Writes the properties of the given note
 	procedure write_note_properties (
 		note 			: in type_text;
-		log_threshold	: in type_log_level := 0) is
-	-- Writes the properties of the given note
+		log_threshold	: in type_log_level := 0) 
+	is
 		use et_text;
 	begin
 		log (text => "text note" & to_string (
@@ -3577,7 +3581,7 @@ package body et_kicad_libraries is
 			--log (text => "visible " & to_lower (et_libraries.type_text_visible'image (note.visible)));
 
 			-- alignment
-			log (text => et_text.to_string (note.alignment));
+			log (text => to_string (note.alignment));
 		end if;
 		
 		log_indentation_down;

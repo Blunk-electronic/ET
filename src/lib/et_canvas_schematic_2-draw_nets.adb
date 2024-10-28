@@ -45,6 +45,7 @@ with ada.containers;						use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 with et_text;								use et_text;
+with et_alignment;
 with et_nets;								use et_nets;
 with et_net_labels;							use et_net_labels;
 with et_net_names;							use et_net_names;
@@ -137,6 +138,7 @@ procedure draw_nets is
 		label	: in type_net_label)
 	is
 		use pac_net_name;
+		use et_alignment;
 
 		box : type_area;
 		
@@ -285,6 +287,7 @@ procedure draw_nets is
 	is 
 		use pac_net_name;
 		use pac_draw_text;
+		use et_alignment;
 	begin
 		case element (label).appearance is
 			when SIMPLE =>

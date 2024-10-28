@@ -59,7 +59,7 @@ with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
 use et_pcb_coordinates_2.pac_geometry_2;
 
 with et_text;							use et_text;
-
+with et_alignment;						use et_alignment;
 with et_board_shapes_and_text;			use et_board_shapes_and_text;
 use et_board_shapes_and_text.pac_text_board;
 

@@ -54,6 +54,8 @@ with et_pcb_contour;			use et_pcb_contour;
 with et_axes;					use et_axes;
 with et_generic_stacks;
 with et_system_info;
+with et_alignment;				use et_alignment;
+
 
 
 package body et_kicad.pcb is

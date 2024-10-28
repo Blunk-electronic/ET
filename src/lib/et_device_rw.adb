@@ -65,6 +65,7 @@ with et_symbol_rw;					use et_symbol_rw;
 with et_pcb_rw.device_packages;
 with et_conventions;
 with et_text;
+with et_alignment;					use et_alignment;
 with et_symbols;					use et_symbols;
 with et_packages;					use et_packages;
 with et_device_placeholders;		use et_device_placeholders;
@@ -1273,9 +1274,9 @@ package body et_device_rw is
 -- 										expect_field_count (line, 2);
 -- 										symbol_text_base.style := to_text_style (f (line, 2));
 
-									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+									elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
-										symbol_text_base.alignment := et_text.to_alignment (line, 2);
+										symbol_text_base.alignment := to_alignment (line, 2);
 
 									else
 										invalid_keyword (kw);
@@ -1320,9 +1321,9 @@ package body et_device_rw is
 										expect_field_count (line, 2);
 										symbol_text_base.rotation := pac_text_schematic.to_rotation_doc (f (line, 2));
 
-									elsif kw = et_text.keyword_alignment then -- alignment horizontal center vertical center
+									elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);
-										symbol_text_base.alignment := et_text.to_alignment (line, 2);
+										symbol_text_base.alignment := to_alignment (line, 2);
 
 									else
 										invalid_keyword (kw);
