@@ -51,14 +51,6 @@ with et_alignment;				use et_alignment;
 
 package body et_symbols is
 
--- 	function to_string (style : in type_text_style) return string is begin
--- 		return to_lower (type_text_style'image (style));
--- 	end;
--- 	
--- 	function to_text_style (style : in string) return type_text_style is begin
--- 		return type_text_style'value (style);
--- 	end;
-	
 	
 	procedure write_text_properies (
 		text 			: in type_text;
@@ -115,120 +107,6 @@ package body et_symbols is
 
 	
 	
-	function to_string (direction : in type_port_direction) return string is begin
-		return to_lower (type_port_direction'image (direction));
-	end;
-	
-	function to_port_direction (direction : in string) return type_port_direction is begin
-		return type_port_direction'value (direction);
-	end;
-
-
-
-
-	function to_string (visible : in type_port_name_visible) return string is begin
-		return to_lower (type_port_name_visible'image (visible));
-	end;
-
-	function to_port_name_visible (visible : in string) return type_port_name_visible is begin
-		return type_port_name_visible'value (visible);
-	end;
-
-
-
-
-	function to_string (visible : in type_terminal_name_visible) return string is begin
-		return to_lower (type_terminal_name_visible'image (visible));
-	end;
-
-	function to_terminal_name_visible (visible : in string) return type_terminal_name_visible is begin
-		return type_terminal_name_visible'value (visible);
-	end;
-
-	
-
-	function to_string (port : in pac_port_name.bounded_string) return string is begin
-		return pac_port_name.to_string (port);
-	end;
-
-	function to_port_name (name : in string) return pac_port_name.bounded_string is begin
-		return pac_port_name.to_bounded_string (name);
-	end;
-
-	
-
-
-
-	function to_string (sensitivity : in type_sensitivity_edge) return string is begin
-		return to_lower (type_sensitivity_edge'image (sensitivity));
-	end;
-
-	function to_sensitivity_edge (sensitivity : in string) return type_sensitivity_edge is begin
-		return type_sensitivity_edge'value (sensitivity);
-	end;
-
-	
-
-	function to_string (sensitivity : in type_sensitivity_level) return string is begin
-		return to_lower (type_sensitivity_level'image (sensitivity));
-	end;
-
-	function to_sensitivity_level (sensitivity : in string) return type_sensitivity_level is begin
-		return type_sensitivity_level'value (sensitivity);
-	end;
-
-
-
-
-	function to_string (inverted : in type_output_inverted) return string is begin
-		return to_lower (type_output_inverted'image (inverted));
-	end;
-
-	function to_output_inverted (inverted : in string) return type_output_inverted is begin
-		return type_output_inverted'value (inverted);
-	end;
-
-
-
-	function to_string (weakness : in type_output_weakness) return string is begin
-		return to_lower (type_output_weakness'image (weakness));
-	end;
-
-	function to_output_weakness (weakness : in string) return type_output_weakness is begin
-		return type_output_weakness'value (weakness);
-	end;
-
-
-
-	function to_string (tristate : in type_output_tristate) return string is begin
-		return to_lower (type_output_tristate'image (tristate));
-	end;
-
-	function to_output_tristate (tristate : in string) return type_output_tristate is begin
-		return type_output_tristate'value (tristate);
-	end;
-
-
-
-
-
-	function to_string (level : in type_power_level) return string is
-	-- Converts the power level (like LEVEL_POSITIVE) to a string (like positive).
-	-- The prefix LEVEL_ is removed.
-		level_string : string := to_lower (type_power_level'image (level)); -- level_positive, level_negative
-		A : positive := index (level_string, "_") + 1; -- the position after the first underscore
-		B : positive := level_string'length;
-	begin
-		return level_string (A .. B);
-	end;
-
-	function to_power_level (level : in string) return type_power_level is 
-	-- Converts the power level (like positive) to power level (like LEVEL_POSITIVE).
-	-- The prefix LEVEL_ is prepended.
-	begin
-		return type_power_level'value ("LEVEL_" & level);
-	end;
-
 
 
 	function to_string (
