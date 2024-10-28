@@ -47,6 +47,8 @@ with ada.directories;
 
 with et_general_rw;					use et_general_rw;
 with et_time;						use et_time;
+with et_system_info;
+
 
 
 package body et_project.rigs is
@@ -104,9 +106,10 @@ package body et_project.rigs is
 		
 		return r;
 	end compare_connectors;
+
 	
 	procedure write_rig_configuration_header is 
-		use et_general;
+		use et_system_info;
 		use et_string_processing;
 	begin
 		-- write a nice header
@@ -116,6 +119,7 @@ package body et_project.rigs is
 		new_line;
 	end;
 
+	
 	procedure write_rig_configuration_footer is
 		use et_string_processing;
 	begin

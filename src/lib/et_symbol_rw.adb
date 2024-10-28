@@ -44,7 +44,7 @@ with ada.exceptions;
 
 with et_primitive_objects;			use et_primitive_objects;
 with et_coordinates_formatting;		use et_coordinates_formatting;
-with et_general;					use et_general;
+with et_system_info;
 with et_directory_and_file_ops;
 with et_general_rw;					use et_general_rw;
 with et_axes;						use et_axes;
@@ -351,12 +351,14 @@ package body et_symbol_rw is
 	end write_symbol;
 
 	
+	
 	procedure save_symbol (
 		file_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
 		symbol			: in type_symbol; -- the actual symbol model
 		log_threshold	: in type_log_level)
 	is
 		use et_string_processing;
+		use et_system_info;
 		file_handle : ada.text_io.file_type;
 	begin
 		log (text => to_string (file_name), level => log_threshold);
@@ -369,7 +371,7 @@ package body et_symbol_rw is
 		set_output (file_handle);
 		
 		-- write a nice header
-		put_line (comment_mark & " " & et_general.system_name & " symbol");
+		put_line (comment_mark & " " & system_name & " symbol");
 		put_line (comment_mark & " " & get_date);
 		put_line (comment_mark & " " & row_separator_double);
 		new_line;

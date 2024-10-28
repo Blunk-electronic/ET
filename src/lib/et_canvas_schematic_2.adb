@@ -76,6 +76,7 @@ with et_undo_redo;
 
 with et_schematic_ops.grid;
 with et_board_ops.grid;
+with et_system_info;
 
 
 package body et_canvas_schematic_2 is
@@ -84,7 +85,9 @@ package body et_canvas_schematic_2 is
 	procedure set_title_bar (
 		-- CS project name
 		module		: in pac_generic_modules.cursor)
-	is begin		
+	is 
+		use et_system_info;
+	begin		
 		main_window.set_title (
 			system_name 
 			& " - SCHEMATIC - " 

@@ -6,20 +6,22 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 --                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -49,6 +51,8 @@ with et_general_rw;					use et_general_rw;
 
 with et_conventions;
 with et_time;						use et_time;
+with et_system_info;
+
 
 
 package body et_project.configuration is
@@ -59,6 +63,8 @@ package body et_project.configuration is
 		return to_lower (type_section_name'image (section) (5..len));
 	end to_string;
 
+	
+
 	function conventions_specified return boolean is begin
 		if et_conventions.pac_file_name.length (project.rules.conventions) > 0 then
 			return true;
@@ -66,14 +72,18 @@ package body et_project.configuration is
 			return false;
 		end if;
 	end conventions_specified;
+
+	
 	
 	procedure read_configuration (
 		project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in type_log_level) 
 		is separate;
 
+
+		
 	procedure write_configuration_header is 
-		use et_general;
+		use et_system_info;
 		use et_string_processing;
 	begin
 		-- write a nice header
@@ -82,6 +92,8 @@ package body et_project.configuration is
 		put_line (comment_mark & " " & row_separator_double);
 		new_line;
 	end;
+
+	
 
 	procedure write_configuration_footer is
 		use et_string_processing;
@@ -94,6 +106,8 @@ package body et_project.configuration is
 		new_line;
 	end;
 
+
+	
 	procedure save_configuration (
 		project_name 	: in pac_project_name.bounded_string; -- blood_sample_analyzer
 		log_threshold 	: in type_log_level) 

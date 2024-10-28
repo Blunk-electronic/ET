@@ -53,6 +53,7 @@ with et_nets;
 with et_pcb_contour;			use et_pcb_contour;
 with et_axes;					use et_axes;
 with et_generic_stacks;
+with et_system_info;
 
 
 package body et_kicad.pcb is
@@ -5171,11 +5172,14 @@ package body et_kicad.pcb is
 							end loop;
 							
 						end query_terminals;
-							
+
+						
 					begin -- to_net_name
 						log_indentation_up;
-						log (text => "translating anonymous kicad net name " & to_string (net_name_in) & " to " &
-							et_general.system_name & " name ... ", level => log_threshold + 3);
+						log (text => "translating anonymous kicad net name " 
+							 & to_string (net_name_in) & " to " 
+							 & et_system_info.system_name & " name ... ", 
+							 level => log_threshold + 3);
 
 						-- Loop in packages until a suitable terminal has been found.
 						while package_cursor /= type_packages_board.no_element and not terminal_found loop
@@ -5203,7 +5207,7 @@ package body et_kicad.pcb is
 						net_name_out := connected_net (mod_name, package_name, terminal_name, log_threshold + 4);
 
 						log_indentation_up;
-						log (text => "the " & et_general.system_name & " net name is " 
+						log (text => "the " & et_system_info.system_name & " net name is " 
 							 & to_string (net_name_out), level => log_threshold + 3);
 						log_indentation_down;
 						

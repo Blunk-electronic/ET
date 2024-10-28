@@ -44,12 +44,14 @@ with gnat.directory_operations;
 with et_directory_and_file_ops;
 
 with et_export;
+with et_system_info;
 with et_general_rw;				use et_general_rw;
 
 with et_project.modules;
 with et_project.rigs;
 with et_project.configuration;
-	
+
+
 package body et_project is
 	
 	function to_string (

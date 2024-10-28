@@ -47,10 +47,6 @@ with ada.containers.vectors;
 
 package et_general is
 
-	version					: constant string := "version 001";
-	system_name				: constant string := "SYSTEM ET";
-
-	system_name_cmd_line	: constant string := "et ";
 
 
 	procedure dummy;

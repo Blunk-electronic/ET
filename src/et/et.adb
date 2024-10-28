@@ -47,6 +47,7 @@ with ada.directories;			use ada.directories;
 
 --with gnat.source_info;
 
+with et_system_info;
 with et_modes;					use et_modes;
 with et_general;				use et_general;
 with et_module_names;			use et_module_names;
@@ -130,6 +131,7 @@ procedure et is
 	
 	procedure get_commandline_arguments is
 		use ada.characters.latin_1;
+		use et_system_info;
 		
 		arg : constant string := ("argument: -");
 		equals : character renames equals_sign;
@@ -362,6 +364,7 @@ procedure et is
 	
 	procedure create_work_directory is
 		use et_general;
+		use et_system_info;
 	begin
 		if not exists (work_directory) then
 			put_line ("creating " & system_name & " work directory " & work_directory & " ...");
@@ -382,6 +385,7 @@ procedure et is
 	-- As a result of the import, a native project is created in the work_directory (ET/...).
 		use et_project.pac_project_name;
 		use et_import;
+		use et_system_info;
 	begin
 		-- Test if project name specified and if project base directory exists:
 		if length (project_name_import) > 0 then
@@ -411,7 +415,7 @@ procedure et is
 
 				-- convert to native project (with a default rig configuration file)
 				log (text => et_string_processing.row_separator_single);
-				log (text => "converting to " & et_general.system_name & " native project ...", console => true);
+				log (text => "converting to " & system_name & " native project ...", console => true);
 				log_indentation_up;
 
 				-- The project will be saved in the current working directory:

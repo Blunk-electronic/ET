@@ -51,6 +51,7 @@ with et_conductor_text.packages;	use et_conductor_text.packages;
 with et_time;						use et_time;
 with et_mirroring;					use et_mirroring;
 with et_coordinates_formatting;		use et_coordinates_formatting;
+with et_system_info;
 
 
 package body et_pcb_rw.device_packages is
@@ -753,7 +754,7 @@ package body et_pcb_rw.device_packages is
 		set_output (file_handle);
 		
 		-- write a nice header
-		put_line (comment_mark & " " & et_general.system_name & " package");
+		put_line (comment_mark & " " & et_system_info.system_name & " package");
 		put_line (comment_mark & " " & get_date);
 		put_line (comment_mark & " " & row_separator_double);
 		new_line;

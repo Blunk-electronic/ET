@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           GENERIC STACKS                                 --
+--                             SYSTEM INFO                                  --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.                                          --
+-- <http://www.gnu.org/licenses/>.   
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -36,41 +36,18 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+
+package et_system_info is
 
 
-package body et_generic_stacks is
+	version					: constant string := "version 001";
+	system_name				: constant string := "SYSTEM ET";
 
-	package body stack_lifo is
-		s : array (1..max) of item;
-		top : natural range 0..max;
-
-		procedure push(x : item) is
-		begin
-			top := top + 1;
-			s(top) := x;
-		end push;
-
-		function pop return item is
-		begin
-			top := top - 1;
-			return s(top + 1);
-		end pop;
-
-		function depth return natural is
-		begin
-			return top;
-		end depth;
-
-		procedure init is
-		begin
-			top := 0;
-		end init;
-	
-	end stack_lifo;
+	system_name_cmd_line	: constant string := "et ";
 
 	
-end et_generic_stacks;
+	
+end et_system_info;
 
 -- Soli Deo Gloria
 

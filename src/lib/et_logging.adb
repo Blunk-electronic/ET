@@ -42,6 +42,8 @@ with ada.strings.unbounded; 	use ada.strings.unbounded;
 with et_directory_and_file_ops;
 with gnat.source_info;
 with et_time;					use et_time;
+with et_system_info;
+
 
 
 package body et_logging is
@@ -267,7 +269,7 @@ package body et_logging is
 	
 	
 	procedure create_report is
-		use et_general;
+		use et_system_info;
 		previous_output : ada.text_io.file_type renames current_output;
     begin
 		create (file => report_handle,
@@ -287,7 +289,7 @@ package body et_logging is
 
 	
 	procedure close_report is
-		use et_general;
+		use et_system_info;
 	begin
 		if is_open (report_handle) then
 

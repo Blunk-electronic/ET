@@ -60,16 +60,17 @@ use et_coordinates_2.pac_geometry_2;
 
 with et_string_processing;
 with et_time;
-with et_general_rw;				use et_general_rw;
-with et_schematic_rw;			use et_schematic_rw;
-with et_symbol_rw;				use et_symbol_rw;
+with et_general_rw;					use et_general_rw;
+with et_schematic_rw;				use et_schematic_rw;
+with et_symbol_rw;					use et_symbol_rw;
 with et_pcb_rw.device_packages;
 with et_conventions;
 with et_text;
-with et_symbols;				use et_symbols;
-with et_packages;				use et_packages;
-with et_device_placeholders;	use et_device_placeholders;
-with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+with et_symbols;					use et_symbols;
+with et_packages;					use et_packages;
+with et_device_placeholders;		use et_device_placeholders;
+with et_schematic_shapes_and_text;	use et_schematic_shapes_and_text;
+with et_system_info;
 
 
 package body et_device_rw is
@@ -113,24 +114,28 @@ package body et_device_rw is
 		log_indentation_down;
 	end create_device;
 
+
 	
-	procedure save_device (
 	-- Saves the given device model in a file specified by name.
+	procedure save_device (
 		file_name		: in pac_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 		device			: in type_device_lib; -- the actual device model
 		log_threshold	: in type_log_level)
 	is
 		use et_string_processing;
 		use et_time;
+		use et_system_info;
 		
 		file_handle : ada.text_io.file_type;
 
 		use pac_variants;
 		variant_cursor : pac_variants.cursor;
+
 		
 		procedure write_variant (
 			packge	: in pac_package_variant_name.bounded_string;
-			variant	: in type_variant) is
+			variant	: in type_variant) 
+		is
 			use pac_terminal_port_map;	
 
 			procedure write_terminal (terminal_cursor : in pac_terminal_port_map.cursor) is begin
@@ -148,12 +153,14 @@ package body et_device_rw is
 			section_mark (section_terminal_port_map, FOOTER);						
 		end write_variant;
 
+		
 		use pac_units_internal;
 		unit_internal_cursor : pac_units_internal.cursor := device.units_internal.first;
 		
 		use pac_units_external;
 		unit_external_cursor : pac_units_external.cursor := device.units_external.first;
 
+		
 		procedure query_internal_unit (
 			name	: in pac_unit_name.bounded_string;
 			unit	: in type_unit_internal) is
@@ -167,6 +174,7 @@ package body et_device_rw is
 			section_mark (section_symbol, FOOTER);
 		end query_internal_unit;
 
+		
 		procedure query_external_unit (
 			name	: in pac_unit_name.bounded_string;
 			unit	: in type_unit_external) is
@@ -177,6 +185,7 @@ package body et_device_rw is
 			write (keyword => keyword_add_level , parameters => to_string (unit.add_level));
 			write (keyword => keyword_symbol_file, parameters => to_string (unit.model));
 		end query_external_unit;
+
 		
 	begin -- save_device
 		log (text => to_string (file_name), level => log_threshold);
@@ -189,7 +198,7 @@ package body et_device_rw is
 		set_output (file_handle);
 		
 		-- write a nice header
-		put_line (comment_mark & " " & et_general.system_name & " device");
+		put_line (comment_mark & " " & system_name & " device");
 		put_line (comment_mark & " " & get_date);
 		put_line (comment_mark & " " & row_separator_double);
 		new_line;

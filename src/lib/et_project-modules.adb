@@ -47,7 +47,7 @@ with ada.exceptions;
 with ada.directories;
 with gnat.directory_operations;
 with et_directory_and_file_ops;
-
+with et_system_info;
 with et_export;
 with et_text;					use et_text;
 with et_general_rw;				use et_general_rw;

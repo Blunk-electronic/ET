@@ -60,6 +60,7 @@ with et_export;
 with et_generic_stacks;
 with et_csv;						use et_csv;
 with et_time;						use et_time;
+with et_system_info;
 
 
 package body et_netlists is
@@ -67,10 +68,12 @@ package body et_netlists is
 	function to_string (name : in pac_netlist_file_name.bounded_string) return string is begin
 		return pac_netlist_file_name.to_string (name);
 	end;
+
 	
 	function to_file_name (name : in string) return pac_netlist_file_name.bounded_string is begin
 		return pac_netlist_file_name.to_bounded_string (name);
 	end;
+
 
 	function "<" (left, right : in type_device_port_extended) return boolean is
 		use et_symbols.pac_port_name;
@@ -94,6 +97,8 @@ package body et_netlists is
 		return result;
 	end;
 
+
+	
 	function "<" (left, right : in type_submodule_port_extended) return boolean is
 		use pac_module_instance_name;
 		use pac_net_name;
@@ -116,6 +121,8 @@ package body et_netlists is
 		
 		return result;
 	end;
+
+	
 	
 	function to_prefix (instance : in pac_module_instance_name.bounded_string) -- OSC1
 		return pac_net_name.bounded_string is
@@ -135,14 +142,17 @@ package body et_netlists is
 		end if;
 	end;
 
+
 	
 	function to_string (net_scope : in type_net_scope) return string is begin
 		return " " & to_lower (type_net_scope'image (net_scope));
 	end to_string;
 
+	
 	function to_net_scope (scope : in string) return type_net_scope is begin
 		return type_net_scope'value (scope);
 	end to_net_scope;
+
 
 	
 	procedure log_net_name (
@@ -167,6 +177,7 @@ package body et_netlists is
 		end if;
 	end log_net_name;
 
+
 	
 	function "<" (left, right : in type_net_name) return boolean is
 		result : boolean := false;
@@ -190,6 +201,8 @@ package body et_netlists is
 		return result;
 	end;
 
+
+	
 	function port_count (net_cursor : in pac_nets.cursor)
 		return type_port_count is
 	-- Returns the number of netchanger and submodule ports in the given net.
@@ -243,6 +256,8 @@ package body et_netlists is
 		return port_count;
 	end port_count;
 
+
+	
 	function is_primary (net_cursor : in pac_nets.cursor) return boolean is
 	-- Returns true if given net is a primary net.
 	-- Performs some other important checks on slave ports of netchangers and submodules.
@@ -557,9 +572,11 @@ package body et_netlists is
 		use pac_nets;
 		net_cursor : pac_nets.cursor; -- to be returned
 
+		
 		procedure query_submodules (submodule_cursor : in pac_modules.cursor) is
 			use pac_module_instance_name;
 
+			
 			procedure query_nets (module : in type_module) is
 			-- Search for the net specified by "port.port". The search ends
 			-- once the net has been found. The search is conducted by comparing
@@ -584,6 +601,7 @@ package body et_netlists is
 
 				-- If no net found, net_cursor points to no_element.
 			end query_nets;
+
 			
 		begin -- query_submodules
 			if element (submodule_cursor).instance_name = port.module then -- submodule found
@@ -597,6 +615,7 @@ package body et_netlists is
 
 			end if;
 		end query_submodules;
+
 		
 	begin -- net_in_submodule
 		log_indentation_up;
@@ -618,6 +637,8 @@ package body et_netlists is
 		return net_cursor;
 	end net_in_submodule;
 
+
+	
 	function net_in_parent_module (
 	-- Returns a cursor to the net in the parent module connected with the given net.
 	-- Searches for a net in the parent module that is connected to the submodule instance
@@ -629,8 +650,8 @@ package body et_netlists is
 		module_cursor	: in pac_modules.cursor; -- the module that contains the net
 		net_cursor		: in pac_nets.cursor;
 		log_threshold	: in type_log_level)
-		return pac_nets.cursor is
-
+		return pac_nets.cursor 
+	is
 		use pac_modules;
 		use pac_nets;
 		net_cursor_parent : pac_nets.cursor; -- to be returned
@@ -641,6 +662,7 @@ package body et_netlists is
 
 		port_to_search_for : type_submodule_port_extended; -- the submodule port we are looking for
 		port_found : boolean := false; -- signals loop in procedure query_nets to cancel the search
+
 		
 		procedure query_submodules (
 			net_name	: in type_net_name;
@@ -655,6 +677,7 @@ package body et_netlists is
 				port_found := true;
 			end if;
 		end query_submodules;
+		
 		
 		procedure query_nets (module : in type_module) is
 			net_cursor : pac_nets.cursor := module.nets.first;
@@ -675,6 +698,7 @@ package body et_netlists is
 				next (net_cursor);
 			end loop;
 		end query_nets;
+
 		
 	begin -- net_in_parent_module
 		if is_root (parent_module_cursor) then -- this is the top module
@@ -759,9 +783,10 @@ package body et_netlists is
 		-- writes a nice header in the netlist file
 		procedure write_header is 
 			use pac_netlist;
+			use et_system_info;
 			netlist_cursor : pac_netlist.cursor := root (netlist);
 		begin
-			put_line (netlist_handle, comment_mark & " " & et_general.system_name & " " & et_general.version & " netlist");
+			put_line (netlist_handle, comment_mark & " " & system_name & " " & version & " netlist");
 			put_line (netlist_handle, comment_mark & " " & get_date);
 			put_line (netlist_handle, comment_mark & " module " & enclose_in_quotes (to_string (module_name)));
 			put_line (netlist_handle, comment_mark & " " & row_separator_double);
@@ -778,8 +803,8 @@ package body et_netlists is
 		end write_header;
 
 		
-		procedure write_footer is begin
 		-- writes a nice footer in the netlist file
+		procedure write_footer is begin
 			new_line (netlist_handle);
 			put_line (netlist_handle, comment_mark & " " & row_separator_double);
 			put_line (netlist_handle, comment_mark & " end of list");

@@ -48,6 +48,7 @@ with ada.containers;
 with ada.calendar;					use ada.calendar;
 with ada.calendar.formatting;		use ada.calendar.formatting;
 
+with et_system_info;
 with et_domains;
 with et_primitive_objects;				use et_primitive_objects;
 with et_scripting;
@@ -85,7 +86,9 @@ package body et_canvas_board_2 is
 	procedure set_title_bar (
 		-- CS project name
 		module		: in pac_generic_modules.cursor)
-	is begin
+	is 
+		use et_system_info;
+	begin
 		main_window.set_title (
 			system_name 
 			& " - BOARD - " 

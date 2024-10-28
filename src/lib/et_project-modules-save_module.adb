@@ -120,7 +120,7 @@ is
 		use gnat.directory_operations;
 		use pac_project_name;
 		use type_et_project_path;
-		use et_general;
+		use et_system_info;
 	begin
 		if pac_module_name.length (save_as_name) = 0 then
 			-- The module is to be saved with its own name:

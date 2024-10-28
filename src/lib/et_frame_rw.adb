@@ -57,6 +57,8 @@ with et_frames;						use et_frames;
 with et_string_processing;			use et_string_processing;
 with et_time;						use et_time;
 with et_general_rw;					use et_general_rw;
+with et_system_info;
+
 
 package body et_frame_rw is
 
@@ -364,7 +366,9 @@ package body et_frame_rw is
 		set_output (file_handle);
 
 		-- write a nice header
-		put_line (comment_mark & space & et_general.system_name & space & "drawing frame template");
+		put_line (comment_mark & space & et_system_info.system_name 
+				  & space & "drawing frame template");
+		
 		put_line (comment_mark & space & get_date);
 		put_line (comment_mark & space & row_separator_double);
 		new_line;
