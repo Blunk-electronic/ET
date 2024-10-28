@@ -37,11 +37,7 @@
 --
 
 with ada.strings;				use ada.strings;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_ordered_maps;
 
 with et_string_processing;		use et_string_processing;
 
