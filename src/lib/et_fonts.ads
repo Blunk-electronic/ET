@@ -60,13 +60,35 @@ package et_fonts is
 		return pac_font_family.bounded_string;
 
 
+	type type_family is (
+		FAMILY_MONOSPACE); -- others
+
+	type type_slant is (
+		SLANT_NORMAL); -- CS others ?
+
+	type type_weight is (
+		WEIGHT_NORMAL); -- CS others ?
+							
 	
 	type type_font is record
 		family	: pac_font_family.bounded_string; -- string := "monospace";
-		slant	: cairo.cairo_font_slant := cairo.CAIRO_FONT_SLANT_NORMAL;
-		weight	: cairo.cairo_font_weight := cairo.CAIRO_FONT_WEIGHT_NORMAL;
+		slant	: cairo_font_slant :=  CAIRO_FONT_SLANT_NORMAL;
+		weight	: cairo_font_weight := CAIRO_FONT_WEIGHT_NORMAL;
 	end record;
 
+
+	-- type type_font_2 is record
+	-- 	family	: type_family;
+	-- 	slant	: type_slant;
+	-- 	weight	: type_weight;
+	-- end record;
+
+	
+	function to_font (
+		family	: in type_family;
+		slant	: in type_slant;
+		weight	: in type_weight)
+		return type_font;
 	
 
 end et_fonts;

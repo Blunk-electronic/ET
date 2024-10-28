@@ -57,6 +57,43 @@ package body et_fonts is
 		return pac_font_family.to_bounded_string (family);
 	end to_family;
 
+
+	function to_font (
+		family	: in type_family;
+		slant	: in type_slant;
+		weight	: in type_weight)
+		return type_font
+	is
+		use cairo;
+		result : type_font;
+	begin
+		case family is
+			when FAMILY_MONOSPACE =>
+				result.family := to_family ("monospace");
+
+			when others =>
+				null; -- CS
+		end case;
+
+
+		case slant is
+			when SLANT_NORMAL =>
+				result.slant := CAIRO_FONT_SLANT_NORMAL;
+
+			when others =>
+				null; -- CS
+		end case;
+
+
+		case weight is
+			when WEIGHT_NORMAL =>
+				result.weight := CAIRO_FONT_WEIGHT_NORMAL;
+
+			when others => null;
+		end case;
+
+		return result;
+	end to_font;
 	
 
 end et_fonts;
