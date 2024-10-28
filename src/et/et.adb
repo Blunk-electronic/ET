@@ -49,7 +49,6 @@ with ada.directories;			use ada.directories;
 
 with et_system_info;
 with et_modes;					use et_modes;
-with et_general;				use et_general;
 with et_module_names;			use et_module_names;
 with et_script_names;			use et_script_names;
 with et_directory_and_file_ops;	use et_directory_and_file_ops;
@@ -363,7 +362,6 @@ procedure et is
 	
 	
 	procedure create_work_directory is
-		use et_general;
 		use et_system_info;
 	begin
 		if not exists (work_directory) then

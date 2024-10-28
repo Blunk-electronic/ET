@@ -42,7 +42,6 @@ with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.multiway_trees;
 
-with et_general;				use et_general;
 with et_module_names;			use et_module_names;
 with et_coordinates_2;			use et_coordinates_2;
 with et_string_processing;		use et_string_processing;

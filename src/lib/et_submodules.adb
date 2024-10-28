@@ -106,7 +106,6 @@ package body et_submodules is
 	function to_module_name (path : in pac_submodule_path.bounded_string) 
 		return pac_module_name.bounded_string 
 	is
-		use et_general;
 		use pac_module_name;
 		name : pac_module_name.bounded_string;
 	begin

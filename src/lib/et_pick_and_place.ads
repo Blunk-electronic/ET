@@ -43,7 +43,6 @@ with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
-with et_general;				use et_general;
 with et_module_names;			use et_module_names;
 with et_assembly_variants;		use et_assembly_variants;
 with et_string_processing;		use et_string_processing;

@@ -40,7 +40,6 @@ with ada.strings.bounded;       	use ada.strings.bounded;
 
 with ada.calendar;
 with et_time;						use et_time;
-with et_general;					use et_general;
 with et_domains;					use et_domains;
 
 

@@ -43,7 +43,6 @@ with ada.containers; 			use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 
-with et_general;				use et_general;
 with et_drills;
 with et_terminals;				use et_terminals;
 

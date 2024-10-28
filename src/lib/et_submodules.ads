@@ -53,7 +53,6 @@ with ada.containers.ordered_sets;
 with cairo;
 
 with et_logging;				use et_logging;
-with et_general;				use et_general;
 with et_net_names;				use et_net_names;
 with et_text;
 with et_primitive_objects;		use et_primitive_objects;

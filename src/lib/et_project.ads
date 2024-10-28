@@ -42,7 +42,6 @@ with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 
 with et_net_names;				use et_net_names;
-with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_module_names;			use et_module_names;

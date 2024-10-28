@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -50,7 +50,6 @@ with ada.containers.ordered_sets;
 
 with ada.calendar;				use ada.calendar;
 
-with et_general;				use et_general;
 with et_coordinates_2;			use et_coordinates_2;
 with et_string_processing;
 with et_time;					use et_time;

@@ -47,8 +47,6 @@ with ada.containers;            use ada.containers;
 with ada.containers.indefinite_vectors;
 
 
-with et_general;
-
 package et_string_processing is
 
 

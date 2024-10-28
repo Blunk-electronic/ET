@@ -50,13 +50,13 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.exceptions;
 
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
-with et_general;
 with et_system_info;
 with et_time;							use et_time;
 with et_project;
 with et_project.modules;
 -- with et_import;
 -- with et_csv;
+
 
 package body et_conventions is
 

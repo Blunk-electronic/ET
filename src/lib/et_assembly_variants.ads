@@ -46,7 +46,6 @@ with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 
-with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 with et_devices;				use et_devices;
 with et_logging;				use et_logging;

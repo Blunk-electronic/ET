@@ -48,7 +48,6 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.indefinite_doubly_linked_lists;
 
-with et_general;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_pcb_sides;				use et_pcb_sides;

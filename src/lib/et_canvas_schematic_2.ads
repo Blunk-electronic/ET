@@ -69,8 +69,6 @@ with cairo;							use cairo;
 
 with et_logical_pixels;				use et_logical_pixels;
 
-
-with et_general;					use et_general;
 with et_module_names;				use et_module_names;
 with et_script_names;				use et_script_names;
 with et_sheets;						use et_sheets;

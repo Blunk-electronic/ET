@@ -150,11 +150,12 @@ package body et_project is
 		create_directory (compose (path, directory_miscellaneous));
 	end create_supplementary_directories;
 
+	
 	procedure create_project_directory (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		module_name		: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver
-		log_threshold	: in type_log_level) is
-		use et_general;
+		log_threshold	: in type_log_level) 
+	is
 		use ada.directories;
 		use et_string_processing;
 		use pac_project_name;
@@ -336,17 +337,19 @@ package body et_project is
 				raise;
 		
 	end create_project_directory;
-		
+
+
+	
 	procedure create_project_directory_bare (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		log_threshold	: in type_log_level) is
-		
-		use et_general;
+		log_threshold	: in type_log_level) 
+	is		
 		use ada.directories;
 		use et_string_processing;
 		use pac_project_name;
 
 		path : constant string := to_string (project_name);
+
 		
 		procedure create_library_subdirs is
 		begin
@@ -355,6 +358,7 @@ package body et_project is
 			create_directory (compose (path, directory_libraries_packages));			
 		end create_library_subdirs;
 
+		
 	begin -- create_project_directory_bare
 		log (text => "creating bare native project " & enclose_in_quotes (path) & " ...",
 			 level => log_threshold);

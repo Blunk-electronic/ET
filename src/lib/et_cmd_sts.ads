@@ -38,7 +38,6 @@
 
 with ada.text_io;				use ada.text_io;
 
-with et_general;				use et_general;
 with et_string_processing;		use et_string_processing;
 with et_script_names;			use et_script_names;
 

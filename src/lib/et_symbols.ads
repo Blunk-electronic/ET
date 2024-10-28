@@ -58,7 +58,6 @@ with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_coordinates_2;			use et_coordinates_2;
 with et_string_processing;
-with et_general;
 with et_text;
 with et_logging;				use et_logging;
 

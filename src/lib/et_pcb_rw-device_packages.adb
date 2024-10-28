@@ -41,7 +41,6 @@ with ada.strings; 				use ada.strings;
 with ada.text_io;				use ada.text_io;
 with ada.exceptions;
 
-with et_general;					use et_general;
 with et_directory_and_file_ops;
 with et_general_rw;					use et_general_rw;
 with et_text;						use et_text;

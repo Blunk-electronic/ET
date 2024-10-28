@@ -48,7 +48,6 @@ with ada.containers.multiway_trees;
 with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_sets;
 
-with et_general;				use et_general;
 with et_net_names;				use et_net_names;
 with et_submodules;				use et_submodules;
 with et_assembly_variants;		use et_assembly_variants;

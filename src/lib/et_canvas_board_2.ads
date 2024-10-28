@@ -59,10 +59,7 @@ with glib;							use glib;
 with cairo;							use cairo;
 
 -- with et_net_names;					use et_net_names;
-with et_general;					use et_general;
 with et_script_names;				use et_script_names;
--- with et_geometry;					use et_geometry;
-
 with et_logical_pixels;				use et_logical_pixels;
 
 with et_pcb_sides;					use et_pcb_sides;
