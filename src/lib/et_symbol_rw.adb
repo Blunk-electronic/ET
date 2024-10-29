@@ -42,7 +42,7 @@ with ada.text_io;				use ada.text_io;
 
 with ada.exceptions;
 
-with et_primitive_objects;			use et_primitive_objects;
+with et_primitive_objects;			--use et_primitive_objects;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_system_info;
 with et_directory_and_file_ops;
@@ -50,7 +50,8 @@ with et_general_rw;					use et_general_rw;
 with et_axes;						use et_axes;
 with et_text;
 with et_alignment;					use et_alignment;
-with et_port_names;					--use et_port_names;
+with et_port_direction;
+with et_port_names;
 with et_symbol_ports;				use et_symbol_ports;
 with et_device_placeholders;		use et_device_placeholders;
 with et_time;						use et_time;
@@ -198,9 +199,11 @@ package body et_symbol_rw is
 		use pac_symbol_circles;
 		use pac_texts;
 		use pac_ports;
-
 		
-		procedure write_line (cursor : in pac_symbol_lines.cursor) is begin
+		
+		procedure write_line (cursor : in pac_symbol_lines.cursor) is 
+			use et_primitive_objects;
+		begin
 			section_mark (section_line, HEADER);
 			write (keyword => keyword_start, parameters => position (element (cursor).start_point));
 			write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
@@ -209,7 +212,9 @@ package body et_symbol_rw is
 		end write_line;
 
 		
-		procedure write_arc (cursor : in pac_symbol_arcs.cursor) is begin
+		procedure write_arc (cursor : in pac_symbol_arcs.cursor) is 
+			use et_primitive_objects;
+		begin
 			section_mark (section_arc, HEADER);
 			write (keyword => keyword_center, parameters => position (element (cursor).center));
 			write (keyword => keyword_start , parameters => position (element (cursor).start_point));
@@ -221,6 +226,7 @@ package body et_symbol_rw is
 
 		
 		procedure write_circle (cursor : in pac_symbol_circles.cursor) is 
+			use et_primitive_objects;
 			use et_coordinates_2.pac_geometry_sch;
 		begin
 			section_mark (section_circle, HEADER);
@@ -274,11 +280,12 @@ package body et_symbol_rw is
 		
 		procedure write_port (cursor : in pac_ports.cursor) is 
 			use et_port_names;
+			use et_port_direction;
 		begin
 			section_mark (section_port, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (cursor)));
 			write (keyword => keyword_position, parameters => position (element (cursor).position));
-			write (keyword => et_symbol_ports.keyword_direction, parameters => to_string (element (cursor).direction));
+			write (keyword => keyword_direction, parameters => to_string (element (cursor).direction));
 			
 			case element (cursor).direction is
 				when INPUT_DIGITAL =>
@@ -449,7 +456,7 @@ package body et_symbol_rw is
 		
 		port					: type_port_base;
 		port_name				: et_port_names.pac_port_name.bounded_string;
-		port_direction			: type_port_direction := port_direction_default;
+		port_direction			: et_port_direction.type_port_direction := et_port_direction.port_direction_default;
 		port_sensitivity_edge	: type_sensitivity_edge := sensitivity_edge_default;
 		port_sensitivity_level	: type_sensitivity_level := sensitivity_level_default;
 		port_output_inverted	: type_output_inverted := output_inverted_default;
@@ -463,6 +470,7 @@ package body et_symbol_rw is
 			cursor		: pac_ports.cursor;
 
 			use et_port_names;
+			use et_port_direction;
 		begin
 			case port_direction is
 				when PASSIVE =>
@@ -829,6 +837,7 @@ package body et_symbol_rw is
 							when SEC_DRAW =>
 								declare
 									kw : string := f (line, 1);
+									use et_primitive_objects;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_start then -- start x 1 y 2
@@ -859,6 +868,7 @@ package body et_symbol_rw is
 						case stack.parent is
 							when SEC_DRAW =>
 								declare
+									use et_primitive_objects;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -901,6 +911,7 @@ package body et_symbol_rw is
 						case stack.parent is
 							when SEC_DRAW =>
 								declare
+									use et_primitive_objects;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
@@ -1013,6 +1024,7 @@ package body et_symbol_rw is
 							when SEC_PORTS =>
 								declare
 									kw : string := f (line, 1);
+									use et_primitive_objects;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_position then -- position x 1 y 2
@@ -1050,9 +1062,9 @@ package body et_symbol_rw is
 										expect_field_count (line, 2);
 										port.terminal_name_size := to_distance (f (line, 2));
 
-									elsif kw = et_symbol_ports.keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
+									elsif kw = et_port_direction.keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
 										expect_field_count (line, 2);
-										port_direction := to_port_direction (f (line, 2));
+										port_direction := et_port_direction.to_port_direction (f (line, 2));
 
 									elsif kw = keyword_sensitivity_edge then -- sensitivity_edge rising/falling/any
 										expect_field_count (line, 2);

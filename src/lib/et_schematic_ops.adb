@@ -48,6 +48,7 @@ with et_conventions;
 with et_pcb_sides;
 with et_pcb_coordinates_2;
 with et_pcb;
+with et_port_direction;
 with et_terminals;
 with et_packages;
 with et_device_rw;
@@ -3944,6 +3945,7 @@ package body et_schematic_ops is
 		
 		terminal_name : et_terminals.pac_terminal_name.bounded_string;
 
+		use et_port_direction;
 		port_direction : type_port_direction := PASSIVE;
 		port_properties_cursor : pac_ports.cursor;
 

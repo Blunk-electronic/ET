@@ -44,7 +44,7 @@ with ada.containers.indefinite_ordered_maps;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_coordinates_2;					use et_coordinates_2;
 with et_port_names;
-
+with et_port_direction;					use et_port_direction;
 
 
 package et_symbol_ports is
@@ -84,33 +84,6 @@ package et_symbol_ports is
 	subtype type_port_length is type_distance_positive range 0.0 .. 20.0; -- unit is millimeters.
 	port_length_default : constant type_port_length := 2.5;
 	
-	-- The port has an electrical direction:
-
-	keyword_direction : constant string := "direction";	
-	
-	type type_port_direction is (
-		PASSIVE,		-- almost all passive components like resistors, capacitors, .. have such ports
-
-		INPUT_ANALOG,	-- signal input analog
-		INPUT_DIGITAL,	-- signal input digital
-
-		OUTPUT_ANALOG,	-- signal output analog		
-		OUTPUT_DIGITAL,	-- signal outputs
-
-		BIDIR_DIGITAL,	-- bidirectional ports
-		-- CS BIDIR_ANALOG, ??
-
-		POWER_OUT,		-- a power source like power symbol (VCC, GND, ..)
-		POWER_IN,		-- a power sink like power ports of ICs
-
-		NOT_CONNECTED	-- advised by manufacturer to be left unconnected
-		);
-
-	port_direction_default : constant type_port_direction := OUTPUT_ANALOG; 
-	-- CS: should be the one with the most severe implications.
-	
-	function to_string (direction : in type_port_direction) return string;
-	function to_port_direction (direction : in string) return type_port_direction;
 	
 	type type_port_name_visible is (YES, NO);
 	port_name_visible_default : constant type_port_name_visible := YES;

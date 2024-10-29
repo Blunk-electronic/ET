@@ -66,6 +66,7 @@ with et_pcb_rw.device_packages;
 with et_conventions;
 with et_text;
 with et_alignment;					use et_alignment;
+with et_port_direction;
 with et_port_names;
 with et_symbol_ports;				use et_symbol_ports;
 with et_symbols;					use et_symbols;
@@ -427,7 +428,7 @@ package body et_device_rw is
 		
 		port					: type_port_base;
 		port_name				: et_port_names.pac_port_name.bounded_string;
-		port_direction			: type_port_direction := port_direction_default;
+		port_direction			: et_port_direction.type_port_direction := et_port_direction.port_direction_default;
 		port_sensitivity_edge	: type_sensitivity_edge := sensitivity_edge_default;
 		port_sensitivity_level	: type_sensitivity_level := sensitivity_level_default;
 		port_output_inverted	: type_output_inverted := output_inverted_default;
@@ -544,6 +545,7 @@ package body et_device_rw is
 			inserted	: boolean;
 			cursor		: pac_ports.cursor;
 
+			use et_port_direction;
 			use et_port_names;
 		begin
 			case port_direction is
@@ -1395,9 +1397,9 @@ package body et_device_rw is
 										expect_field_count (line, 2);
 										port.terminal_name_size := to_distance (f (line, 2));
 
-									elsif kw = et_symbol_ports.keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
+									elsif kw = et_port_direction.keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
 										expect_field_count (line, 2);
-										port_direction := to_port_direction (f (line, 2));
+										port_direction := et_port_direction.to_port_direction (f (line, 2));
 
 									elsif kw = keyword_sensitivity_edge then -- sensitivity_edge rising/falling/any
 										expect_field_count (line, 2);

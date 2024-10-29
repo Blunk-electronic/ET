@@ -74,6 +74,7 @@ with et_pcb_rw;
 with et_pcb_rw.device_packages;
 with et_device_rw;
 with et_port_names;
+with et_port_direction;
 with et_symbol_ports;
 with et_symbols;
 with et_devices;					use et_devices;
@@ -3243,6 +3244,8 @@ package body et_kicad_to_native is
 						port_inserted : boolean;
 						port_cursor : pac_ports.cursor;
 
+
+						use et_port_direction;
 						
 					begin -- copy_ports
 						-- Loop in kicad ports and append them to the current native unit portlist.

@@ -54,6 +54,7 @@ with et_assembly_variants;		use et_assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_symbols;
+with et_port_direction;			use et_port_direction;
 with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
 with et_terminals;

@@ -46,16 +46,6 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 
 package body et_symbol_ports is
 
-	
-	function to_string (direction : in type_port_direction) return string is begin
-		return to_lower (type_port_direction'image (direction));
-	end;
-	
-	function to_port_direction (direction : in string) return type_port_direction is begin
-		return type_port_direction'value (direction);
-	end;
-
-
 
 
 	function to_string (visible : in type_port_name_visible) return string is begin
