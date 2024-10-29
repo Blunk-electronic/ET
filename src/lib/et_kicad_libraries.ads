@@ -245,18 +245,20 @@ package et_kicad_libraries is
 		"="				=> "=");
 
 	type type_symbol_polyline is record
-		width	: et_symbol_ports.type_line_width;
+		width	: type_distance_positive;
 		fill	: type_fill;
 		points	: type_symbol_points.list;
 	end record;
+	
 	package type_symbol_polylines is new doubly_linked_lists (type_symbol_polyline);
 
+	
 	-- rectangles of a symbol:
 	-- It is sufficient to specifiy the diagonal of the rectangle.
 	type type_symbol_rectangle is record
 		corner_A	: type_vector_model;
 		corner_B	: type_vector_model; -- diagonal to corner_A
-		width		: et_symbol_ports.type_line_width;
+		width		: type_distance_positive;
 		fill		: type_fill;
 	end record;
 	package type_symbol_rectangles is new doubly_linked_lists (type_symbol_rectangle);	

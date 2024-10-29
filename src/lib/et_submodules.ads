@@ -138,7 +138,7 @@ package et_submodules is
 	end record;
 
 	port_symbol : constant type_port_symbol := (port_symbol_width, port_symbol_height);
-	port_symbol_line_width : constant type_line_width := 0.2;
+	port_symbol_line_width : constant type_distance_positive := 0.2;
 
 
 
@@ -214,8 +214,8 @@ package et_submodules is
 	end record;
 
 	-- GUI relevant only: The line width of the box:
-	submod_box_line_width : constant et_symbol_ports.type_line_width := 0.2;
-	-- CS should be et_symbols.type_linewidth
+	submod_box_line_width : constant type_distance_positive := 0.2;
+	-- CS rename to submod_box_linewidth
 
 
 	

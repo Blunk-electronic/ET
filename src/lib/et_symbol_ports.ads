@@ -130,12 +130,6 @@ package et_symbol_ports is
 	function to_port_name (name : in string) return pac_port_name.bounded_string;
 	
 	
-	-- line width
-	keyword_line_width : constant string := "line_width"; -- NOTE: do not confuse with text line width !
-	subtype type_line_width is type_distance_positive range 0.1 .. 10.0;
-	-- CS rename to type_port_linewidth
-	line_width_default : constant type_line_width := 0.15;
-	
 	-- A port is basically a line. Its start point is the port position.
 	-- At the start point a net will be attached.
 	-- The end point points towards the symbol body. Depending on the port
@@ -145,8 +139,8 @@ package et_symbol_ports is
 	--  downwards if the rotation is 90 degree. net attached from above.
 	--  upwards if the rotation is 270 degree. net attached from below.
 	
-	port_line_width : constant type_line_width := 0.2;				-- relevant for GUI only
-	port_circle_line_width : constant type_line_width := 0.1; 		-- relevant for GUI only
+	port_line_width : constant type_distance_positive := 0.2;		-- relevant for GUI only
+	port_circle_line_width : constant type_distance_positive := 0.1; 		-- relevant for GUI only
 	port_circle_radius : constant type_distance_positive := 0.8;	-- relevant for GUI only
 
 	-- The distance between port end point and port name:

@@ -179,8 +179,9 @@ package et_nets is
 
 
 	
-		
-	net_line_width : constant et_symbol_ports.type_line_width := et_symbol_ports.port_line_width;
+
+	net_line_width : constant type_distance_positive := 0.2;
+	-- CS rename to net_linewidth ?
 
 
 
