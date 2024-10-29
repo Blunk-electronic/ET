@@ -66,6 +66,7 @@ with et_pcb_rw.device_packages;
 with et_conventions;
 with et_text;
 with et_alignment;					use et_alignment;
+with et_port_visibility;
 with et_port_direction;
 with et_port_names;
 with et_symbol_ports;				use et_symbol_ports;
@@ -1360,6 +1361,7 @@ package body et_device_rw is
 						case stack.parent is
 							when SEC_PORTS =>
 								declare
+									use et_port_visibility;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag

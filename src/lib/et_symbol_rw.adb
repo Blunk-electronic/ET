@@ -50,6 +50,7 @@ with et_general_rw;					use et_general_rw;
 with et_axes;						use et_axes;
 with et_text;
 with et_alignment;					use et_alignment;
+with et_port_visibility;
 with et_port_direction;
 with et_port_names;
 with et_symbol_ports;				use et_symbol_ports;
@@ -281,6 +282,7 @@ package body et_symbol_rw is
 		procedure write_port (cursor : in pac_ports.cursor) is 
 			use et_port_names;
 			use et_port_direction;
+			use et_port_visibility;
 		begin
 			section_mark (section_port, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (cursor)));
@@ -1025,6 +1027,7 @@ package body et_symbol_rw is
 								declare
 									kw : string := f (line, 1);
 									use et_primitive_objects;
+									use et_port_visibility;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_position then -- position x 1 y 2

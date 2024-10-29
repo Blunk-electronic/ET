@@ -59,6 +59,7 @@ with et_mirroring;						use et_mirroring;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_conventions;
 with et_alignment;						use et_alignment;
+with et_port_visibility;
 
 
 package body et_kicad_libraries is
@@ -1244,8 +1245,8 @@ package body et_kicad_libraries is
 			tmp_prefix				: pac_device_prefix.bounded_string; -- IC -- CS: rename to prefix
 			tmp_appearance			: type_appearance; -- CS: rename to appearance
 
-			tmp_port_name_visible		: type_port_name_visible;
-			tmp_terminal_name_visible	: type_terminal_name_visible;
+			tmp_port_name_visible		: et_port_visibility.type_port_name_visible;
+			tmp_terminal_name_visible	: et_port_visibility.type_terminal_name_visible;
 			tmp_port_name_offset		: et_coordinates_2.type_distance_model; -- CS: rename to port_name_offset
 			tmp_terminal_name			: et_terminals.pac_terminal_name.bounded_string;
 			
@@ -1334,11 +1335,12 @@ package body et_kicad_libraries is
 			end to_swap_level;
 
 			
-			function to_pin_visibile (vis_in : in string)
 			-- Converts the kicad "show pin number" flag to the et type_terminal_name_visible.
 			-- Used when reading component libraries.		
-				return type_terminal_name_visible is
-
+			function to_pin_visibile (vis_in : in string)
+				return et_port_visibility.type_terminal_name_visible 
+			is
+				use et_port_visibility;
 				v_in	: type_show_pin_number;
 				v_out	: type_terminal_name_visible;
 			begin
@@ -1361,16 +1363,16 @@ package body et_kicad_libraries is
 
 				log_indentation_down;
 				log_indentation_down;
-				return v_out;
-				
+				return v_out;				
 			end to_pin_visibile;
 
 			
-			function to_port_visibile (vis_in : in string)
 			-- Converts the kicad "show pin name" flag to the et type_port_name_visible.
 			-- Used when reading component libraries.		
-				return type_port_name_visible is
-
+			function to_port_visibile (vis_in : in string)
+				return et_port_visibility.type_port_name_visible 
+			is
+				use et_port_visibility;
 				v_in	: type_show_pin_name;
 				v_out	: type_port_name_visible;
 			begin

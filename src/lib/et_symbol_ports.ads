@@ -45,6 +45,7 @@ with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_coordinates_2;					use et_coordinates_2;
 with et_port_names;
 with et_port_direction;					use et_port_direction;
+with et_port_visibility;				use et_port_visibility;
 
 
 package et_symbol_ports is
@@ -56,14 +57,12 @@ package et_symbol_ports is
 -- TERMINALS
 
 	keyword_terminal				: constant string := "terminal";
-	keyword_terminal_name_visible	: constant string := "terminal_name_visible";
 	keyword_terminal_name_size		: constant string := "terminal_name_size";
 
 	
 	
 -- PORTS
 	keyword_port					: constant string := "port";
-	keyword_port_name_visible		: constant string := "port_name_visible";
 	keyword_port_name_size			: constant string := "port_name_size";
 	keyword_length					: constant string := "length";
 	keyword_level					: constant string := "level";	
@@ -84,19 +83,7 @@ package et_symbol_ports is
 	subtype type_port_length is type_distance_positive range 0.0 .. 20.0; -- unit is millimeters.
 	port_length_default : constant type_port_length := 2.5;
 	
-	
-	type type_port_name_visible is (YES, NO);
-	port_name_visible_default : constant type_port_name_visible := YES;
-	function to_string (visible : in type_port_name_visible) return string;
-	function to_port_name_visible (visible : in string) return type_port_name_visible;	
 
-	
-	type type_terminal_name_visible is (YES, NO);
-	terminal_name_visible_default : constant type_terminal_name_visible := YES;
-	function to_string (visible : in type_terminal_name_visible) return string;	
-	function to_terminal_name_visible (visible : in string) return type_terminal_name_visible;
-
-	
 	
 	
 	-- A port is basically a line. Its start point is the port position.
