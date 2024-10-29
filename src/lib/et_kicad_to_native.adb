@@ -74,6 +74,7 @@ with et_pcb_rw;
 with et_pcb_rw.device_packages;
 with et_device_rw;
 with et_port_sensitivity;
+with et_port_strength;
 with et_port_names;
 with et_port_direction;
 with et_symbol_ports;
@@ -3126,11 +3127,12 @@ package body et_kicad_to_native is
 			-- board frame:
 			module.board.frame.template := template_pcb_default;
 		end copy_frames;
+
 		
 		procedure copy_libraries (
 			module_name : in et_kicad_coordinates.type_submodule_name.bounded_string;
-			module		: in et_kicad.pcb.type_module) is
-			
+			module		: in et_kicad.pcb.type_module) 
+		is			
 			-- This cursor points to the kicad component library being converted:
 			use et_kicad_libraries.type_device_libraries;
 			component_library_cursor : et_kicad_libraries.type_device_libraries.cursor := module.component_libraries.first;
@@ -3143,6 +3145,7 @@ package body et_kicad_to_native is
 			package_library_cursor : et_kicad_packages.type_libraries.cursor := module.footprints.first;
 
 			use et_packages.pac_package_model_file_name;
+
 			
 			procedure query_components (
 				library_name	: in et_kicad_general.type_device_library_name.bounded_string; -- lbr/logic.lib
@@ -3161,11 +3164,11 @@ package body et_kicad_to_native is
 
 
 				
-				procedure copy_units (
 				-- Transfers the kicad units to native units in the current native ET device.
+				procedure copy_units (
 					device_name	: in pac_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
-					device		: in out et_devices.type_device_lib) is
-
+					device		: in out et_devices.type_device_lib) 
+				is
 					use et_kicad_libraries;
 					
 					-- Make a copy of the kicad units of the current kicad component:
@@ -3248,6 +3251,7 @@ package body et_kicad_to_native is
 
 
 						use et_port_direction;
+						use et_port_strength;
 						
 					begin -- copy_ports
 						-- Loop in kicad ports and append them to the current native unit portlist.
@@ -3530,11 +3534,12 @@ package body et_kicad_to_native is
 
 				
 
-				procedure rename_package_model_in_variants (
 				-- The package associated with a variant must be changed so that it becomes 
 				-- something like libraries/packages/__-__-lbr-transistors.pretty_S_0805.pac
+				procedure rename_package_model_in_variants (
 					device_name	: in pac_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
-					device		: in out et_devices.type_device_lib) is
+					device		: in out et_devices.type_device_lib) 
+				is
 
 					use et_devices.pac_variants;
 					variant_cursor : et_devices.pac_variants.cursor := device.variants.first;

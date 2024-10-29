@@ -47,6 +47,7 @@ with et_port_names;
 with et_port_direction;					use et_port_direction;
 with et_port_visibility;				use et_port_visibility;
 with et_port_sensitivity;				use et_port_sensitivity;
+with et_port_strength;					use et_port_strength;
 
 
 package et_symbol_ports is
@@ -134,19 +135,6 @@ package et_symbol_ports is
 	function to_string (inverted : in type_output_inverted) return string;
 	function to_output_inverted (inverted : in string) return type_output_inverted;
 
-	type type_output_weakness is (
-		NONE, -- push-pull
-		WEAK0, WEAK1, -- requires external pull-down/up resistor
-		PULL0, PULL1  -- internal pull-down/up resistor
-		);
-	output_weakness_default : constant type_output_weakness := NONE;
-	function to_string (weakness : in type_output_weakness) return string;
-	function to_output_weakness (weakness : in string) return type_output_weakness;
-
-	type type_output_tristate is (NO, YES);
-	output_tristate_default : constant type_output_tristate := NO;
-	function to_string (tristate : in type_output_tristate) return string;
-	function to_output_tristate (tristate : in string) return type_output_tristate;
 
 	
 	type type_power_level is (LEVEL_ZERO, LEVEL_POSITIVE, LEVEL_NEGATIVE);

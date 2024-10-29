@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                            SYMBOL PORTS                                  --
+--                           PORT STRENGTH                                  --
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
@@ -35,51 +35,37 @@
 --
 --   history of changes:
 --
-with ada.text_io;				use ada.text_io;
+
 with ada.characters;			use ada.characters;
 -- with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
-with ada.strings.fixed; 		use ada.strings.fixed;
 
 
+package body et_port_strength is
 
-package body et_symbol_ports is
 
-	function to_string (inverted : in type_output_inverted) return string is begin
-		return to_lower (type_output_inverted'image (inverted));
+	function to_string (weakness : in type_output_weakness) return string is begin
+		return to_lower (type_output_weakness'image (weakness));
 	end;
 
-	function to_output_inverted (inverted : in string) return type_output_inverted is begin
-		return type_output_inverted'value (inverted);
-	end;
-
-
-
-
-
-	function to_string (level : in type_power_level) return string is
-	-- Converts the power level (like LEVEL_POSITIVE) to a string (like positive).
-	-- The prefix LEVEL_ is removed.
-		level_string : string := to_lower (type_power_level'image (level)); -- level_positive, level_negative
-		A : positive := index (level_string, "_") + 1; -- the position after the first underscore
-		B : positive := level_string'length;
-	begin
-		return level_string (A .. B);
-	end;
-
-	function to_power_level (level : in string) return type_power_level is 
-	-- Converts the power level (like positive) to power level (like LEVEL_POSITIVE).
-	-- The prefix LEVEL_ is prepended.
-	begin
-		return type_power_level'value ("LEVEL_" & level);
+	function to_output_weakness (weakness : in string) return type_output_weakness is begin
+		return type_output_weakness'value (weakness);
 	end;
 
 
+
+	function to_string (tristate : in type_output_tristate) return string is begin
+		return to_lower (type_output_tristate'image (tristate));
+	end;
+
+	function to_output_tristate (tristate : in string) return type_output_tristate is begin
+		return type_output_tristate'value (tristate);
+	end;
 
 	
 	
-end et_symbol_ports;
+end et_port_strength;
 
 -- Soli Deo Gloria
 

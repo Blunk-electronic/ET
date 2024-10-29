@@ -51,6 +51,7 @@ with et_axes;						use et_axes;
 with et_text;
 with et_alignment;					use et_alignment;
 with et_port_sensitivity;
+with et_port_strength;
 with et_port_visibility;
 with et_port_direction;
 with et_port_names;
@@ -285,6 +286,7 @@ package body et_symbol_rw is
 			use et_port_direction;
 			use et_port_visibility;
 			use et_port_sensitivity;
+			use et_port_strength;
 		begin
 			section_mark (section_port, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (cursor)));
@@ -464,8 +466,8 @@ package body et_symbol_rw is
 		port_sensitivity_edge	: et_port_sensitivity.type_sensitivity_edge := et_port_sensitivity.sensitivity_edge_default;
 		port_sensitivity_level	: et_port_sensitivity.type_sensitivity_level := et_port_sensitivity.sensitivity_level_default;
 		port_output_inverted	: type_output_inverted := output_inverted_default;
-		port_output_tristate	: type_output_tristate := output_tristate_default;
-		port_output_weakness	: type_output_weakness := output_weakness_default;
+		port_output_tristate	: et_port_strength.type_output_tristate := et_port_strength.output_tristate_default;
+		port_output_weakness	: et_port_strength.type_output_weakness := et_port_strength.output_weakness_default;
 		port_power_level		: type_power_level := port_power_level_default;
 
 		
@@ -476,6 +478,7 @@ package body et_symbol_rw is
 			use et_port_names;
 			use et_port_direction;
 			use et_port_sensitivity;
+			use et_port_strength;
 		begin
 			case port_direction is
 				when PASSIVE =>
@@ -1032,6 +1035,7 @@ package body et_symbol_rw is
 									use et_primitive_objects;
 									use et_port_visibility;
 									use et_port_sensitivity;
+									use et_port_strength;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_position then -- position x 1 y 2
