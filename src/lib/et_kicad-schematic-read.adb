@@ -1369,10 +1369,13 @@ is
 		use et_conventions;
 
 		text_size : et_kicad_libraries.pac_text.type_text_size; -- temporarily storage of a text size before being checked
-	
-		function to_direction (dir_in : in string) return type_port_direction is
+
+		
 		-- Converts a string to type_port_direction.
-			result : type_port_direction;
+		function to_direction (dir_in : in string) 
+			return et_kicad_libraries.type_port_direction 
+		is
+			result : et_kicad_libraries.type_port_direction;
 			dir : type_sheet_port_direction; -- see et_kicad.ads
 		begin
 			dir := type_sheet_port_direction'value (dir_in);

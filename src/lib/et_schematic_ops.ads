@@ -69,6 +69,7 @@ with et_numbering;
 with et_material;
 with et_netlists;
 with et_terminals;
+with et_symbol_ports;			use et_symbol_ports;
 with et_symbols;
 with et_devices;				use et_devices;
 with et_conventions;
@@ -125,7 +126,7 @@ package et_schematic_ops is
 	function get_ports_of_unit (
 		device_cursor	: in pac_devices_sch.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
-		return et_symbols.pac_ports.map;
+		return pac_ports.map;
 
 	
 	-- Deletes ports of the given device in module.nets.
@@ -133,14 +134,14 @@ package et_schematic_ops is
 	procedure delete_ports (
 		module			: in pac_generic_modules.cursor;		-- the module
 		device			: in type_device_name;			-- the device
-		ports			: in et_symbols.pac_ports.map := et_symbols.pac_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
+		ports			: in pac_ports.map := pac_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
 		sheets			: in pac_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
 		log_threshold	: in type_log_level);
 
 	
 	-- Moves the given unit ports by given offset.
 	procedure move_ports ( -- CS move to et_symbols ?
-		ports	: in out et_symbols.pac_ports.map; -- the portlist
+		ports	: in out pac_ports.map; -- the portlist
 		offset	: in et_coordinates_2.type_position); -- the offset (only x/y matters)
 
 	
@@ -155,14 +156,14 @@ package et_schematic_ops is
 		module			: in pac_generic_modules.cursor;		-- the module
 		device			: in type_device_name;					-- the device
 		unit			: in pac_unit_name.bounded_string;	-- the unit name like A, C, PWR
-		ports			: in et_symbols.pac_ports.map; -- the ports to be inserted
+		ports			: in pac_ports.map; -- the ports to be inserted
 		sheet			: in type_sheet;				-- the sheet to look at
 		log_threshold	: in type_log_level);
 
 	
 	-- Rotates the given unit ports by given angle about the origin.
 	procedure rotate_ports ( -- CS move to et_symbols ?
-		ports	: in out et_symbols.pac_ports.map; -- the portlist
+		ports	: in out pac_ports.map; -- the portlist
 		angle	: in et_coordinates_2.type_rotation_model); -- 90
 
 	
@@ -177,7 +178,7 @@ package et_schematic_ops is
 	function position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC34
-		port_name		: in et_symbols.pac_port_name.bounded_string; -- CE
+		port_name		: in pac_port_name.bounded_string; -- CE
 		log_threshold	: in type_log_level)
 		return et_coordinates_2.type_position;
 
@@ -253,8 +254,8 @@ package et_schematic_ops is
 
 	-- CS move to et_schematic ?	
 	package type_drags_of_ports is new ada.containers.ordered_maps (
-		key_type		=> et_symbols.pac_port_name.bounded_string,
-		"<"				=> et_symbols.pac_port_name."<",
+		key_type		=> pac_port_name.bounded_string,
+		"<"				=> pac_port_name."<",
 		element_type	=> type_drag);
 
 	
@@ -431,22 +432,22 @@ package et_schematic_ops is
 
 
 	
-	function exists_device_port (
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.
+	function exists_device_port (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
-		port_name		: in et_symbols.pac_port_name.bounded_string) -- CE
+		port_name		: in pac_port_name.bounded_string) -- CE
 		return boolean;
 
 
 	
-	function exists_device_unit_port (
 	-- Returns true if given device exists in module indicated by module_cursor.
 	-- The unit and port names are optionally.
+	function exists_device_unit_port (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string := to_unit_name (""); -- A
-		port_name		: in et_symbols.pac_port_name.bounded_string := et_symbols.to_port_name ("")) -- CE		
+		port_name		: in pac_port_name.bounded_string := to_port_name ("")) -- CE		
 		return boolean;						
 	
 
@@ -663,7 +664,7 @@ package et_schematic_ops is
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
-		port_name		: in et_symbols.pac_port_name.bounded_string) -- CE
+		port_name		: in pac_port_name.bounded_string) -- CE
 		return type_port_properties_access;
 	
 	

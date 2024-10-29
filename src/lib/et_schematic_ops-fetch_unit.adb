@@ -181,10 +181,10 @@ is
 							others 		=> <>)
 							);
 			end case;
-
 		end add_unit_external;
 
-		ports : et_symbols.pac_ports.map; -- the positions of the unit ports
+		ports : pac_ports.map; -- the positions of the unit ports
+		
 		
 	begin -- query_devices
 		if contains (module.devices, device_name) then -- device exists in schematic

@@ -62,6 +62,7 @@ with et_kicad_packages;			use et_kicad_packages;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_text;					use et_text;
+with et_symbol_ports;			use et_symbol_ports;
 with et_symbols;				use et_symbols;
 with et_devices;				use et_devices;
 
@@ -203,8 +204,8 @@ package et_kicad_libraries is
 		preamble	: in boolean := true) return string;
 
 	
-	type type_port_library is new et_symbols.type_port_base with record 	-- CS: set defaults
-		name		: et_symbols.pac_port_name.bounded_string; -- like CLOCK or CE
+	type type_port_library is new type_port_base with record 	-- CS: set defaults
+		name		: pac_port_name.bounded_string; -- like CLOCK or CE
 		direction 	: type_port_direction;
 		style 		: type_port_style := NONE;
 
@@ -244,7 +245,7 @@ package et_kicad_libraries is
 		"="				=> "=");
 
 	type type_symbol_polyline is record
-		width	: et_symbols.type_line_width;
+		width	: et_symbol_ports.type_line_width;
 		fill	: type_fill;
 		points	: type_symbol_points.list;
 	end record;
@@ -255,7 +256,7 @@ package et_kicad_libraries is
 	type type_symbol_rectangle is record
 		corner_A	: type_vector_model;
 		corner_B	: type_vector_model; -- diagonal to corner_A
-		width		: et_symbols.type_line_width;
+		width		: et_symbol_ports.type_line_width;
 		fill		: type_fill;
 	end record;
 	package type_symbol_rectangles is new doubly_linked_lists (type_symbol_rectangle);	
@@ -470,7 +471,7 @@ package et_kicad_libraries is
 	
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
-		name			: et_symbols.pac_port_name.bounded_string; -- the port name like GPIO1, GPIO2
+		name			: pac_port_name.bounded_string; -- the port name like GPIO1, GPIO2
 		coordinates 	: et_kicad_coordinates.type_position;
 		direction		: type_port_direction; -- example: "passive"
 		style			: type_port_style;

@@ -58,7 +58,7 @@ with et_axes;							use et_axes;
 with et_mirroring;						use et_mirroring;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_conventions;
-with et_alignment;					use et_alignment;
+with et_alignment;						use et_alignment;
 
 
 package body et_kicad_libraries is
@@ -225,6 +225,7 @@ package body et_kicad_libraries is
 		
 		return r;
 	end to_component_reference;
+
 	
 	function to_package_name (
 		library_name	: in et_kicad_general.type_device_library_name.bounded_string; -- ../libraries/transistors.lib
@@ -238,6 +239,7 @@ package body et_kicad_libraries is
 		return package_name;
 	end to_package_name;
 
+	
 	function to_string (
 		no_connection_flag	: in type_no_connection_flag;
 		scope				: in et_kicad_coordinates.type_scope) return string is
@@ -246,11 +248,12 @@ package body et_kicad_libraries is
 		return (to_string (position => no_connection_flag.coordinates, scope => scope));
 	end to_string;
 
+	
 	function to_string (port : in type_port_with_reference) return string is
 	-- Returns the properties of the given port as string.
 	begin
 		return "reference " & to_string (port.reference) 
-			& " port " & et_symbols.to_string (port.name)
+			& " port " & to_string (port.name)
 			& " coordinates " & to_string (position => port.coordinates, scope => module);
 	end to_string;
 

@@ -455,7 +455,7 @@ package body et_kicad.schematic is
 	-- Returns the properties of the given port as string.
 	begin
 		return "reference " & to_string (port.reference) 
-			& " port " & et_symbols.to_string (port.name)
+			& " port " & to_string (port.name)
 			& " coordinates " & to_string (position => port.coordinates, scope => module);
 	end to_string;
 
@@ -7238,28 +7238,31 @@ package body et_kicad.schematic is
 
 			library_cursor	: type_device_libraries.cursor;
 
-			procedure locate_component_in_library (
+			
 			-- Locates the given component by its generic name in the library.
+			procedure locate_component_in_library (
 				library_name 	: in et_kicad_general.type_device_library_name.bounded_string;
-				components 		: in type_components_library.map) is
-
+				components 		: in type_components_library.map) 
+			is
 				use type_components_library;
 				component_cursor : type_components_library.cursor;
 
+				
 				procedure query_variants (
 				-- Looks up the list of variants of the component.
 					name 		: in type_component_generic_name.bounded_string;
-					component 	: in type_component_library) is
-				
+					component 	: in type_component_library) 
+				is				
 					use et_devices.pac_variants;
 					variant_cursor : pac_variants.cursor;
 
+					
 					procedure locate_terminal (
 					-- Locates the given terminal in the package variant.
 						variant_name 	: in pac_package_variant_name.bounded_string;
-						variant 		: in et_devices.type_variant) is
+						variant 		: in et_devices.type_variant) 
+					is
 						use pac_terminal_port_map;
-						use pac_port_name;
 						terminal_cursor : pac_terminal_port_map.cursor;
 					begin -- locate_terminal
 						terminal_cursor := variant.terminal_port_map.find (terminal);
@@ -7270,13 +7273,14 @@ package body et_kicad.schematic is
 							port.reference := reference; -- the given component reference
 							port.name := element (terminal_cursor).name; -- the port name
 							
-							log (text => "port name " & et_symbols.to_string (port.name), level => log_threshold + 4);
+							log (text => "port name " & to_string (port.name), level => log_threshold + 4);
 						else
 							log (ERROR, "terminal " & et_terminals.to_string (terminal) & " not found !",
 								 console => true);
 							raise constraint_error;
 						end if;
 					end locate_terminal;
+
 					
 				begin -- query_variants
 					log (text => "locating variant " & to_string (package_variant) & " ...", level => log_threshold + 3);

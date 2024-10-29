@@ -46,6 +46,7 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_axes;						use et_axes;
 with et_net_labels;
+with et_symbol_ports;
 with et_symbols;
 with et_symbol_rw;
 with et_schematic_rw;
@@ -840,6 +841,7 @@ is
 	procedure read_ports is
 		use et_devices;
 		use et_symbols;
+		use et_symbol_ports;
 		use et_nets;
 		kw : constant string := f (line, 1);
 	begin

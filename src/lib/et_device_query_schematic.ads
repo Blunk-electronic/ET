@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with et_symbol_ports;					use et_symbol_ports;
 with et_symbols;						use et_symbols;
 with et_packages;						use et_packages;
 with et_devices;						use et_devices;

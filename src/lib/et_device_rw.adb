@@ -66,6 +66,7 @@ with et_pcb_rw.device_packages;
 with et_conventions;
 with et_text;
 with et_alignment;					use et_alignment;
+with et_symbol_ports;				use et_symbol_ports;
 with et_symbols;					use et_symbols;
 with et_packages;					use et_packages;
 with et_device_placeholders;		use et_device_placeholders;
@@ -1380,7 +1381,7 @@ package body et_device_rw is
 										expect_field_count (line, 2);
 										port.terminal_name_size := to_distance (f (line, 2));
 
-									elsif kw = et_symbols.keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
+									elsif kw = et_symbol_ports.keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
 										expect_field_count (line, 2);
 										port_direction := to_port_direction (f (line, 2));
 

@@ -41,6 +41,7 @@ with et_colors;							use et_colors;
 with et_text;
 with et_alignment;
 with et_symbols;
+with et_symbol_ports;
 with et_units;							use et_units;
 with et_devices;						use et_devices;
 with et_schematic;
@@ -82,6 +83,7 @@ procedure draw_units is
 		preview			: in boolean := false)
 	is
 		use et_symbols;
+		use et_symbol_ports;
 		use pac_text_schematic;
 		use pac_geometry_2;
 		

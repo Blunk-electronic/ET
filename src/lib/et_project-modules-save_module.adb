@@ -42,6 +42,7 @@ with et_pcb_coordinates_2;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_net_labels;
+with et_symbol_ports;
 with et_symbols;
 with et_symbol_rw;
 with et_schematic_rw;
@@ -535,6 +536,7 @@ is
 				
 				procedure query_device_ports (segment : in type_net_segment) is
 					use et_symbols;
+					use et_symbol_ports;
 					port_cursor : pac_device_ports.cursor := segment.ports.devices.first;
 					use et_devices;
 				begin
@@ -551,6 +553,7 @@ is
 				
 				procedure query_submodule_ports (segment : in type_net_segment) is
 					use et_symbols;
+					use et_symbol_ports;
 					port_cursor : pac_submodule_ports.cursor := segment.ports.submodules.first;
 				begin
 					while port_cursor /= pac_submodule_ports.no_element loop
@@ -568,6 +571,7 @@ is
 				
 				procedure query_netchanger_ports (segment : in type_net_segment) is
 					use et_symbols;
+					use et_symbol_ports;
 					port_cursor : pac_netchanger_ports.cursor := segment.ports.netchangers.first;
 				begin
 					while port_cursor /= pac_netchanger_ports.no_element loop

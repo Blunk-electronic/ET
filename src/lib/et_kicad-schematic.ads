@@ -63,6 +63,7 @@ use et_coordinates_2.pac_geometry_2;
 
 with et_pcb_coordinates_2;
 with et_text;
+with et_symbol_ports;			use et_symbol_ports;
 with et_symbols;
 with et_devices;				use et_devices;
 
@@ -344,9 +345,9 @@ package et_kicad.schematic is
 	
 	-- For portlists and netlists we need a component port with its basic elements:
 	type type_port is tagged record -- CS: use a controlled type since some selectors do not apply for virtual ports
-		name			: et_symbols.pac_port_name.bounded_string; -- the port name like GPIO1, GPIO2
+		name			: pac_port_name.bounded_string; -- the port name like GPIO1, GPIO2
 		coordinates 	: et_kicad_coordinates.type_position;
-		direction		: type_port_direction; -- example: "passive"
+		direction		: et_kicad_libraries.type_port_direction; -- example: "passive"
 		style			: type_port_style;
 		appearance		: type_appearance_schematic;
 		intended_open	: type_port_open; -- set while portlist generation. true if port is to be left open intentionally (by a no_connection-flag)
@@ -392,7 +393,7 @@ package et_kicad.schematic is
 	type type_port_of_module is record
 		module		: type_submodule_name.bounded_string;			-- nucleo_core_3
 		reference	: et_devices.type_device_name;		-- N409
-		name		: et_symbols.pac_port_name.bounded_string;	-- 2
+		name		: pac_port_name.bounded_string;	-- 2
 	end record;
 	
 	-- This is a set of ports as we need in the netlist.
@@ -798,7 +799,7 @@ package et_kicad.schematic is
 	-- On the box edges are ports. 
 	-- It serves as link between a hierachical net and the parent module.
 	type type_hierarchic_sheet_port is record
-		direction	: type_port_direction;
+		direction	: et_kicad_libraries.type_port_direction;
 		text_size	: et_schematic_shapes_and_text.pac_text_schematic.type_text_size;
 		coordinates	: type_vector_model;
         orientation	: et_coordinates_2.type_rotation_model;

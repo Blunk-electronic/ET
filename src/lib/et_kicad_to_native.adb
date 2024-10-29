@@ -73,6 +73,7 @@ with et_text;
 with et_pcb_rw;
 with et_pcb_rw.device_packages;
 with et_device_rw;
+with et_symbol_ports;
 with et_symbols;
 with et_devices;					use et_devices;
 with et_frames;	
@@ -2013,6 +2014,7 @@ package body et_kicad_to_native is
 			use et_kicad.schematic.type_netlist;
 			net_cursor : et_kicad.schematic.type_netlist.cursor := module.netlist.first;
 
+			
 			procedure query_ports (
 				net_name	: in pac_net_name.bounded_string;
 				ports		: in out et_kicad.schematic.type_ports_with_reference.set) is
@@ -2022,7 +2024,9 @@ package body et_kicad_to_native is
 				port : et_kicad.schematic.type_port_with_reference;
 				
 				use et_coordinates_2;
-			begin -- query_ports
+				use et_symbol_ports;
+				
+			begin
 				log (text => "net " & to_string (net_name), level => log_threshold + 3);
 				log_indentation_up;
 
@@ -2032,7 +2036,7 @@ package body et_kicad_to_native is
 					
 					log (text => to_string (port.reference)
 						& " port "
-						& et_symbols.to_string (port.name), level => log_threshold + 4);
+						& to_string (port.name), level => log_threshold + 4);
 					log_indentation_up;
 
 					-- show old position
@@ -2893,6 +2897,7 @@ package body et_kicad_to_native is
 					use et_coordinates_2;
 					use pac_geometry_sch;
 					use pac_geometry_2;
+					use et_symbol_ports;
 					
 					dist : pac_geometry_sch.type_distance_point_line;
 
@@ -2951,7 +2956,7 @@ package body et_kicad_to_native is
 								log (text => to_string (element (port_cursor_kicad).reference) 
 									 & " unit " & to_string (terminal.unit)
 									 & " port "
-									 & et_symbols.to_string (element (port_cursor_kicad).name)
+									 & to_string (element (port_cursor_kicad).name)
 									 & et_kicad_coordinates.to_string (
 											position	=> element (port_cursor_kicad).coordinates,
 											scope		=> et_kicad_coordinates.XY),
@@ -3149,6 +3154,8 @@ package body et_kicad_to_native is
 				device_cursor : pac_devices_lib.cursor;
 				inserted : boolean;
 
+
+				
 				procedure copy_units (
 				-- Transfers the kicad units to native units in the current native ET device.
 					device_name	: in pac_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
@@ -3169,14 +3176,18 @@ package body et_kicad_to_native is
 					-- This cursor points to a native ET unit.
 					unit_cursor : et_devices.pac_units_internal.cursor;
 					inserted	: boolean;
+
 					
 					procedure copy_ports (
 						unit_name	: in et_devices.pac_unit_name.bounded_string;
-						unit		: in out et_devices.type_unit_internal) is
+						unit		: in out et_devices.type_unit_internal) 
+					is
+						use et_symbol_ports;
 
-						function to_level (style : in type_port_style) 
 						-- Maps from kicad port style to native port characteristic.
-							return et_symbols.type_sensitivity_level is 
+						function to_level (style : in type_port_style) 
+							return type_sensitivity_level 
+						is 
 							use et_kicad;
 						begin
 							case style is
@@ -3187,9 +3198,11 @@ package body et_kicad_to_native is
 							end case;
 						end to_level;
 
-						function to_edge (style : in type_port_style) 
+						
 						-- Maps from kicad port style to native port characteristic.
-							return et_symbols.type_sensitivity_edge is 
+						function to_edge (style : in type_port_style) 
+							return type_sensitivity_edge 
+						is 
 							use et_kicad;
 						begin
 							case style is
@@ -3203,9 +3216,11 @@ package body et_kicad_to_native is
 							end case;
 						end to_edge;
 
-						function to_inverted (style : in type_port_style) 
+						
 						-- Maps from kicad port style to native port characteristic.
-							return et_symbols.type_output_inverted is 
+						function to_inverted (style : in type_port_style) 
+							return type_output_inverted 
+						is 
 							use et_kicad;
 						begin
 							case style is
@@ -3215,6 +3230,7 @@ package body et_kicad_to_native is
 								when others => return NO;
 							end case;
 						end to_inverted;
+
 						
 						-- This cursor points to a port of a kicad unit. We initialize it so that
 						-- it points to the first port of the current unit.
@@ -3222,7 +3238,8 @@ package body et_kicad_to_native is
 						port_cursor_kicad : type_ports_library.cursor := ports_kicad.first;
 
 						port_inserted : boolean;
-						port_cursor : et_symbols.pac_ports.cursor;
+						port_cursor : pac_ports.cursor;
+
 						
 					begin -- copy_ports
 						-- Loop in kicad ports and append them to the current native unit portlist.
@@ -3234,7 +3251,7 @@ package body et_kicad_to_native is
 
 							case element (port_cursor_kicad).direction is
 								when PASSIVE | UNKNOWN =>
-									et_symbols.pac_ports.insert (
+									pac_ports.insert (
 										container	=> unit.symbol.ports,
 										key			=> element (port_cursor_kicad).name,
 										position	=> port_cursor,
@@ -3245,7 +3262,7 @@ package body et_kicad_to_native is
 								when INPUT =>
 									case element (port_cursor_kicad).style is
 										when NON_LOGIC | INVISIBLE_NON_LOGIC =>
-											et_symbols.pac_ports.insert (
+											pac_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
@@ -3254,7 +3271,7 @@ package body et_kicad_to_native is
 																direction => INPUT_ANALOG));
 
 										when others => -- all other styles indicate a digital input
-											et_symbols.pac_ports.insert (
+											pac_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,																			   
 												position	=> port_cursor,
@@ -3265,10 +3282,11 @@ package body et_kicad_to_native is
 													sensitivity_level	=> to_level (element (port_cursor_kicad).style)));
 									end case;
 
+									
 								when OUTPUT =>
 									case element (port_cursor_kicad).style is
 										when NON_LOGIC | INVISIBLE_NON_LOGIC =>
-											et_symbols.pac_ports.insert (
+											pac_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
@@ -3279,7 +3297,7 @@ package body et_kicad_to_native is
 													output_analog_weakness	=> NONE));
 
 										when others => -- all other styles indicate a digital output
-											et_symbols.pac_ports.insert (
+											pac_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
@@ -3294,7 +3312,7 @@ package body et_kicad_to_native is
 								when TRISTATE =>
 									case element (port_cursor_kicad).style is
 										when NON_LOGIC | INVISIBLE_NON_LOGIC =>
-											et_symbols.pac_ports.insert (
+											pac_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
@@ -3305,7 +3323,7 @@ package body et_kicad_to_native is
 													output_analog_weakness	=> NONE));
 											
 										when others => -- all other styles indicate a digital output
-											et_symbols.pac_ports.insert (
+											pac_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
@@ -3320,7 +3338,7 @@ package body et_kicad_to_native is
 								when WEAK0 =>
 									case element (port_cursor_kicad).style is
 										when NON_LOGIC | INVISIBLE_NON_LOGIC =>
-											et_symbols.pac_ports.insert (
+											pac_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
@@ -3331,7 +3349,7 @@ package body et_kicad_to_native is
 													output_analog_weakness	=> WEAK0));
 											
 										when others => -- all other styles indicate a digital output
-											et_symbols.pac_ports.insert (
+											pac_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
@@ -3346,7 +3364,7 @@ package body et_kicad_to_native is
 								when WEAK1 =>
 									case element (port_cursor_kicad).style is
 										when NON_LOGIC | INVISIBLE_NON_LOGIC =>
-											et_symbols.pac_ports.insert (
+											pac_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
@@ -3357,7 +3375,7 @@ package body et_kicad_to_native is
 													output_analog_weakness	=> WEAK1));
 											
 										when others => -- all other styles indicate a digital output
-											et_symbols.pac_ports.insert (
+											pac_ports.insert (
 												container	=> unit.symbol.ports,
 												key			=> element (port_cursor_kicad).name,
 												position	=> port_cursor,
@@ -3370,7 +3388,7 @@ package body et_kicad_to_native is
 									end case;
 									
 								when BIDIR =>
-									et_symbols.pac_ports.insert (
+									pac_ports.insert (
 										container	=> unit.symbol.ports,
 										key			=> element (port_cursor_kicad).name,
 										position	=> port_cursor,
@@ -3384,7 +3402,7 @@ package body et_kicad_to_native is
 											input_sensitivity_level	=> to_level (element (port_cursor_kicad).style)));
 
 								when POWER_OUT =>
-									et_symbols.pac_ports.insert (
+									pac_ports.insert (
 										container	=> unit.symbol.ports,
 										key			=> element (port_cursor_kicad).name,
 										position	=> port_cursor,
@@ -3395,7 +3413,7 @@ package body et_kicad_to_native is
 											-- CS: The level could be reasoned from the port name such as +12V or -5V.
 
 								when POWER_IN =>
-									et_symbols.pac_ports.insert (
+									pac_ports.insert (
 										container	=> unit.symbol.ports,
 										key			=> element (port_cursor_kicad).name,
 										position	=> port_cursor,
@@ -3406,7 +3424,7 @@ package body et_kicad_to_native is
 											-- CS: The level could be reasoned from the port name such as +12V or -5V.
 
 								when NOT_CONNECTED =>
-									et_symbols.pac_ports.insert (
+									pac_ports.insert (
 										container	=> unit.symbol.ports,
 										key			=> element (port_cursor_kicad).name,
 										position	=> port_cursor,
@@ -3421,6 +3439,7 @@ package body et_kicad_to_native is
 							next (port_cursor_kicad);
 						end loop;
 					end copy_ports;
+
 					
 				begin -- copy_units
 					while unit_cursor_kicad /= et_kicad_libraries.type_units_library.no_element loop
@@ -3452,7 +3471,7 @@ package body et_kicad_to_native is
 											with 
 												shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes, log_threshold + 5),
 												appearance	=> PCB,
-												ports		=> et_symbols.pac_ports.empty_map, -- ports will come later
+												ports		=> et_symbol_ports.pac_ports.empty_map, -- ports will come later
 												name		=> element (unit_cursor_kicad).symbol.name, 	-- placeholder
 												value		=> element (unit_cursor_kicad).symbol.value,	-- placeholder
 												purpose		=> ( -- we must invent a placeholder for purpose since kicad does not know such a thing
@@ -3481,7 +3500,7 @@ package body et_kicad_to_native is
 											with 
 												shapes		=> convert_shapes (element (unit_cursor_kicad).symbol.shapes, log_threshold + 5),
 												appearance	=> VIRTUAL,
-												ports		=> et_symbols.pac_ports.empty_map, -- ports will come later
+												ports		=> et_symbol_ports.pac_ports.empty_map, -- ports will come later
 												-- NOTE: Other placeholders discarded here.
 												
 												others		=> <>)
@@ -3500,6 +3519,8 @@ package body et_kicad_to_native is
 						log_indentation_down;
 					end loop;
 				end copy_units;
+
+				
 
 				procedure rename_package_model_in_variants (
 				-- The package associated with a variant must be changed so that it becomes 

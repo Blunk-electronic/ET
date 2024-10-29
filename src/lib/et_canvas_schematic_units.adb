@@ -66,6 +66,7 @@ with et_assembly_variants;			use et_assembly_variants;
 with et_devices;					use et_devices;
 with et_device_rw;
 with et_packages;
+with et_symbol_ports;
 
 with et_schematic;					use et_schematic;
 with et_device_query_schematic;		use et_device_query_schematic;
@@ -235,6 +236,7 @@ package body et_canvas_schematic_units is
 			-- There will be only one unit in this container.
 			position_of_unit : pac_unit_positions.map;
 
+			use et_symbol_ports;
 			ports : pac_ports.map;
 
 			procedure query_units (
@@ -535,6 +537,7 @@ package body et_canvas_schematic_units is
 		
 		reset_unit_move;
 	end finalize_drag;
+
 	
 
 	procedure drag_unit (
@@ -564,6 +567,7 @@ package body et_canvas_schematic_units is
 		end if;
 	end drag_unit;
 
+	
 	
 	procedure find_units_for_move (point : in type_vector_model) is 
 		use et_modes.schematic;
@@ -613,11 +617,14 @@ package body et_canvas_schematic_units is
 		log_indentation_down;
 	end find_units_for_move;
 
+
 	
 	procedure find_attached_segments is
 		-- Device and unit name of the selected unit:
 		use pac_devices_sch;
 		use pac_units;
+		use et_symbol_ports;
+		
 		su : type_selected_unit := element (selected_unit);
 		device_name : constant type_device_name := key (su.device);
 		unit_name : constant pac_unit_name.bounded_string := key (su.unit);
@@ -726,6 +733,7 @@ package body et_canvas_schematic_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) 
 		is
+			use et_symbol_ports;
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
 
