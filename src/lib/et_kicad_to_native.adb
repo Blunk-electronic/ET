@@ -73,6 +73,7 @@ with et_text;
 with et_pcb_rw;
 with et_pcb_rw.device_packages;
 with et_device_rw;
+with et_port_names;
 with et_symbol_ports;
 with et_symbols;
 with et_devices;					use et_devices;
@@ -2017,14 +2018,15 @@ package body et_kicad_to_native is
 			
 			procedure query_ports (
 				net_name	: in pac_net_name.bounded_string;
-				ports		: in out et_kicad.schematic.type_ports_with_reference.set) is
-
+				ports		: in out et_kicad.schematic.type_ports_with_reference.set) 
+			is
 				use et_kicad.schematic.type_ports_with_reference;
 				port_cursor : et_kicad.schematic.type_ports_with_reference.cursor := ports.first;
 				port : et_kicad.schematic.type_port_with_reference;
 				
 				use et_coordinates_2;
 				use et_symbol_ports;
+				use et_port_names;
 				
 			begin
 				log (text => "net " & to_string (net_name), level => log_threshold + 3);
@@ -2898,6 +2900,7 @@ package body et_kicad_to_native is
 					use pac_geometry_sch;
 					use pac_geometry_2;
 					use et_symbol_ports;
+					use et_port_names;
 					
 					dist : pac_geometry_sch.type_distance_point_line;
 

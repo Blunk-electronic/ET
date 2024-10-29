@@ -43,6 +43,8 @@ with ada.containers.indefinite_ordered_maps;
 
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_coordinates_2;					use et_coordinates_2;
+with et_port_names;
+
 
 
 package et_symbol_ports is
@@ -122,12 +124,6 @@ package et_symbol_ports is
 	function to_terminal_name_visible (visible : in string) return type_terminal_name_visible;
 
 	
- 	port_name_length_max : constant natural := 100;
-	package pac_port_name is new generic_bounded_length (port_name_length_max);
-	use pac_port_name;
-
-	function to_string (port : in pac_port_name.bounded_string) return string;
-	function to_port_name (name : in string) return pac_port_name.bounded_string;
 	
 	
 	-- A port is basically a line. Its start point is the port position.
@@ -254,11 +250,18 @@ package et_symbol_ports is
 			when others => null;
 		end case;
 	end record;
+
+
+	
 	
 	-- Ports of a symbol are collected in a map. A map because a port with a certain name
 	-- like GND may exist only once in the symbol. Te symbol is an abstraction of a
 	-- function block within a device. It does not matter how many GND terminals exist
 	-- at the package (footprint):
+
+	use et_port_names;
+	use pac_port_name;
+	
 	package pac_ports is new indefinite_ordered_maps (
 		key_type		=> pac_port_name.bounded_string, -- CLOCK, CE, VDD, GND
 		element_type	=> type_port);

@@ -49,6 +49,7 @@ with ada.containers.ordered_maps;
 
 with et_module_names;			use et_module_names;
 with et_coordinates_2;			use et_coordinates_2;
+with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
 with et_symbols;
 with et_devices;				use et_devices;

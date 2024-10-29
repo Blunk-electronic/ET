@@ -46,6 +46,7 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_axes;						use et_axes;
 with et_net_labels;
+with et_port_names;
 with et_symbol_ports;
 with et_symbols;
 with et_symbol_rw;
@@ -840,7 +841,7 @@ is
 	-- immediately when the line is read. See main code of process_line.
 	procedure read_ports is
 		use et_devices;
-		use et_symbols;
+		use et_port_names;
 		use et_symbol_ports;
 		use et_nets;
 		kw : constant string := f (line, 1);

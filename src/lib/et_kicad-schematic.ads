@@ -63,6 +63,7 @@ use et_coordinates_2.pac_geometry_2;
 
 with et_pcb_coordinates_2;
 with et_text;
+with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
 with et_symbols;
 with et_devices;				use et_devices;

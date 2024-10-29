@@ -66,6 +66,7 @@ with et_pcb_rw.device_packages;
 with et_conventions;
 with et_text;
 with et_alignment;					use et_alignment;
+with et_port_names;
 with et_symbol_ports;				use et_symbol_ports;
 with et_symbols;					use et_symbols;
 with et_packages;					use et_packages;
@@ -137,6 +138,7 @@ package body et_device_rw is
 			packge	: in pac_package_variant_name.bounded_string;
 			variant	: in type_variant) 
 		is
+			use et_port_names;
 			use pac_terminal_port_map;	
 
 			procedure write_terminal (terminal_cursor : in pac_terminal_port_map.cursor) is begin
@@ -313,7 +315,11 @@ package body et_device_rw is
 		variants			: pac_variants.map;
 		terminal_port_map	: pac_terminal_port_map.map;
 
-		procedure insert_terminal (line : in type_fields_of_line) is -- terminal 14 unit 5 VCC
+		
+		procedure insert_terminal (
+			line : in type_fields_of_line)  -- terminal 14 unit 5 VCC
+		is
+			use et_port_names;
 			use pac_terminal_port_map;
 			inserted	: boolean;
 			position	: pac_terminal_port_map.cursor;
@@ -372,6 +378,7 @@ package body et_device_rw is
 			port		:= to_port_name ("");
 		end insert_terminal;
 
+		
 		procedure insert_variant is
 			use pac_variants;
 			inserted : boolean;
@@ -419,7 +426,7 @@ package body et_device_rw is
 		symbol_placeholder_meaning	: type_placeholder_meaning := placeholder_meaning_default;
 		
 		port					: type_port_base;
-		port_name				: pac_port_name.bounded_string;
+		port_name				: et_port_names.pac_port_name.bounded_string;
 		port_direction			: type_port_direction := port_direction_default;
 		port_sensitivity_edge	: type_sensitivity_edge := sensitivity_edge_default;
 		port_sensitivity_level	: type_sensitivity_level := sensitivity_level_default;
@@ -429,6 +436,7 @@ package body et_device_rw is
 		port_power_level		: type_power_level := port_power_level_default;
 
 		unit_external : type_unit_external;
+
 		
 		procedure insert_unit_internal is
 		-- Inserts in the temporarily collection of internal units a new unit.
@@ -493,6 +501,7 @@ package body et_device_rw is
 			
 		end insert_unit_internal;
 
+		
 		procedure insert_unit_external is
 		-- Inserts in the temporarily collection of external units a new unit.
 			position : pac_units_external.cursor;
@@ -530,9 +539,12 @@ package body et_device_rw is
 			unit_external := (others => <>);
 		end insert_unit_external;
 
+		
 		procedure insert_port is 
 			inserted	: boolean;
 			cursor		: pac_ports.cursor;
+
+			use et_port_names;
 		begin
 			case port_direction is
 				when PASSIVE =>
@@ -854,6 +866,7 @@ package body et_device_rw is
 
 			end execute_section;
 
+			
 			function set (
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
 			-- Returns false if the current line is neither a section header or footer.
@@ -900,6 +913,7 @@ package body et_device_rw is
 				end if;
 			end set;
 
+			
 		begin -- process_line
 			if set (section_variants, SEC_VARIANTS) then null;
 			elsif set (section_variant, SEC_VARIANT) then null;
@@ -1355,7 +1369,7 @@ package body et_device_rw is
 
 									elsif kw = keyword_name then -- name I1A
 										expect_field_count (line, 2);
-										port_name := to_port_name (f (line, 2));
+										port_name := et_port_names.to_port_name (f (line, 2));
 
 									elsif kw = keyword_length then -- length 5
 										expect_field_count (line, 2);

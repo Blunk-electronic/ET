@@ -41,6 +41,7 @@ with et_colors;							use et_colors;
 with et_text;
 with et_alignment;
 with et_symbols;
+with et_port_names;
 with et_symbol_ports;
 with et_units;							use et_units;
 with et_devices;						use et_devices;
@@ -148,6 +149,7 @@ procedure draw_units is
 			
 			
 			procedure draw_port_name is
+				use et_port_names;
 				use et_text;
 				-- The vertical alignment is untouched and is always CENTER.
 				-- The horizontal alignment depends on the total rotation

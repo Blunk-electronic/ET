@@ -50,6 +50,7 @@ with et_general_rw;					use et_general_rw;
 with et_axes;						use et_axes;
 with et_text;
 with et_alignment;					use et_alignment;
+with et_port_names;					--use et_port_names;
 with et_symbol_ports;				use et_symbol_ports;
 with et_device_placeholders;		use et_device_placeholders;
 with et_time;						use et_time;
@@ -271,7 +272,9 @@ package body et_symbol_rw is
 		end write_placeholders;
 
 		
-		procedure write_port (cursor : in pac_ports.cursor) is begin
+		procedure write_port (cursor : in pac_ports.cursor) is 
+			use et_port_names;
+		begin
 			section_mark (section_port, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (cursor)));
 			write (keyword => keyword_position, parameters => position (element (cursor).position));
@@ -445,7 +448,7 @@ package body et_symbol_rw is
 		symbol_placeholder_meaning	: type_placeholder_meaning := placeholder_meaning_default;
 		
 		port					: type_port_base;
-		port_name				: pac_port_name.bounded_string;
+		port_name				: et_port_names.pac_port_name.bounded_string;
 		port_direction			: type_port_direction := port_direction_default;
 		port_sensitivity_edge	: type_sensitivity_edge := sensitivity_edge_default;
 		port_sensitivity_level	: type_sensitivity_level := sensitivity_level_default;
@@ -458,6 +461,8 @@ package body et_symbol_rw is
 		procedure insert_port is 
 			inserted	: boolean;
 			cursor		: pac_ports.cursor;
+
+			use et_port_names;
 		begin
 			case port_direction is
 				when PASSIVE =>
@@ -1018,7 +1023,7 @@ package body et_symbol_rw is
 
 									elsif kw = keyword_name then -- name I1A
 										expect_field_count (line, 2);
-										port_name := to_port_name (f (line, 2));
+										port_name := et_port_names.to_port_name (f (line, 2));
 
 									elsif kw = keyword_length then -- length 5
 										expect_field_count (line, 2);

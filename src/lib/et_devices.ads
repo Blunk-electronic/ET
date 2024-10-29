@@ -50,10 +50,12 @@ with ada.containers.ordered_sets;
 with et_coordinates_2;			use et_coordinates_2;
 with et_logging;				use et_logging;
 with et_text;
+with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
 with et_symbols;				use et_symbols;
 with et_terminals;				use et_terminals;
 with et_packages;				use et_packages;
+
 
 package et_devices is
 

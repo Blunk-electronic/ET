@@ -42,6 +42,7 @@ with et_pcb_coordinates_2;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_net_labels;
+with et_port_names;
 with et_symbol_ports;
 with et_symbols;
 with et_symbol_rw;
@@ -535,7 +536,7 @@ is
 
 				
 				procedure query_device_ports (segment : in type_net_segment) is
-					use et_symbols;
+					use et_port_names;
 					use et_symbol_ports;
 					port_cursor : pac_device_ports.cursor := segment.ports.devices.first;
 					use et_devices;
