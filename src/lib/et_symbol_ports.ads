@@ -46,6 +46,7 @@ with et_coordinates_2;					use et_coordinates_2;
 with et_port_names;
 with et_port_direction;					use et_port_direction;
 with et_port_visibility;				use et_port_visibility;
+with et_port_sensitivity;				use et_port_sensitivity;
 
 
 package et_symbol_ports is
@@ -66,8 +67,6 @@ package et_symbol_ports is
 	keyword_port_name_size			: constant string := "port_name_size";
 	keyword_length					: constant string := "length";
 	keyword_level					: constant string := "level";	
-	keyword_sensitivity_edge		: constant string := "sensitivity_edge";
-	keyword_sensitivity_level		: constant string := "sensitivity_level";
 	keyword_inverted				: constant string := "inverted";
 	keyword_weakness				: constant string := "weakness";
 	keyword_tristate				: constant string := "tristate";	
@@ -129,22 +128,6 @@ package et_symbol_ports is
 		-- CS: port swap level ? -> would require a derived new type
 	end record;
 
-	-- Sensitity of inputs:
-	type type_sensitivity_edge is (
-		NONE, 		-- passive and analog
-		RISING,		-- digital
-		FALLING,	-- digital
-		ANY			-- digtial
-		);
-	
-	sensitivity_edge_default : constant type_sensitivity_edge := NONE;
-	function to_string (sensitivity : in type_sensitivity_edge) return string;
-	function to_sensitivity_edge (sensitivity : in string) return type_sensitivity_edge;
-
-	type type_sensitivity_level is (NONE, LOW, HIGH); -- CS NONE required ?
-	sensitivity_level_default : constant type_sensitivity_level := HIGH; -- CS good idea ?
-	function to_string (sensitivity : in type_sensitivity_level) return string;
-	function to_sensitivity_level (sensitivity : in string) return type_sensitivity_level;
 	
 	type type_output_inverted is (NO, YES);
 	output_inverted_default : constant type_output_inverted := NO;

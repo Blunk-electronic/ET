@@ -73,6 +73,7 @@ with et_text;
 with et_pcb_rw;
 with et_pcb_rw.device_packages;
 with et_device_rw;
+with et_port_sensitivity;
 with et_port_names;
 with et_port_direction;
 with et_symbol_ports;
@@ -3187,6 +3188,7 @@ package body et_kicad_to_native is
 						unit		: in out et_devices.type_unit_internal) 
 					is
 						use et_symbol_ports;
+						use et_port_sensitivity;
 
 						-- Maps from kicad port style to native port characteristic.
 						function to_level (style : in type_port_style) 
