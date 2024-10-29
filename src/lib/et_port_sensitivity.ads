@@ -60,6 +60,10 @@ package et_port_sensitivity is
 	keyword_sensitivity_edge		: constant string := "sensitivity_edge";
 	keyword_sensitivity_level		: constant string := "sensitivity_level";
 
+	keyword_input_sensitivity_edge	: constant string := "input_sensitivity_edge";
+	keyword_input_sensitivity_level	: constant string := "input_sensitivity_level";
+
+
 	
 	
 end et_port_sensitivity;

@@ -55,6 +55,15 @@ package et_port_strength is
 	function to_output_tristate (tristate : in string) return type_output_tristate;
 
 	
+
+	keyword_weakness				: constant string := "weakness";
+	keyword_tristate				: constant string := "tristate";	
+
+	keyword_output_inverted			: constant string := "output_inverted";
+	keyword_output_weakness			: constant string := "output_weakness";
+	keyword_output_tristate			: constant string := "output_tristate";
+
+	
 	
 end et_port_strength;
 
