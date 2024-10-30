@@ -1998,7 +1998,7 @@ is
 		use et_schematic;
 
 		reference					: type_device_name;	-- like IC5	
-		appearance					: et_symbols.type_appearance := et_symbols.VIRTUAL; -- CS: why this default ?
+		appearance					: type_appearance := VIRTUAL; -- CS: why this default ?
 		generic_name_in_lbr			: type_component_generic_name.bounded_string; -- like TRANSISTOR_PNP
 
 		-- V5:
@@ -2199,7 +2199,7 @@ is
 			-- fields to be checked. If it is about a virtual component, those 
 			-- fields are ignored and thus NOT checked:
 			case appearance is
-				when et_symbols.PCB =>
+				when et_device_appearance.PCB =>
 						
 					-- package
 					log (text => "package/footprint", level => log_threshold + 1);
@@ -2461,6 +2461,7 @@ is
 			end case;
 			
 			log_indentation_up;
+
 			
 			-- The component is inserted into the components list of the module according to its appearance.
 			-- If the component has already been inserted, it will not be inserted again.
@@ -2474,7 +2475,7 @@ is
 					add_component (
 						reference	=> remove_leading_hash (reference), -- #PWR03 becomes PWR03
 						component	=> (
-							appearance		=> et_symbols.VIRTUAL,
+							appearance		=> et_device_appearance.VIRTUAL,
 
 							-- Whether the component is a "power flag" can be reasoned from its reference:
 							power_flag		=> to_power_flag (reference),
@@ -2494,12 +2495,13 @@ is
 							units 			=> type_units_schematic.empty_map),
 						log_threshold => log_threshold + 2);
 
-				when et_symbols.PCB => -- we have a line like "L 74LS00 U1"
+					
+				when et_device_appearance.PCB => -- we have a line like "L 74LS00 U1"
 
 					add_component ( 
 						reference => reference,
 						component => (
-							appearance		=> et_symbols.PCB,
+							appearance		=> et_device_appearance.PCB,
 
 							library_name	=> full_component_library_name, -- ../lbr/bel_logic.lib
 							generic_name	=> generic_name_in_lbr,
@@ -2600,7 +2602,7 @@ is
 						log_threshold => log_threshold + 2);
 										
 
-				when et_symbols.PCB =>
+				when et_device_appearance.PCB =>
 
 					add_unit 
 						(
@@ -2608,7 +2610,7 @@ is
 						unit_name	=> unit_name, -- "I/O Bank 3" or "PWR" or "A" or "B" ...	
 						unit 		=> 
 							(
-							appearance		=> et_symbols.PCB,
+							appearance		=> et_device_appearance.PCB,
 							position		=> unit_position,
 							rotation		=> orientation,
 							mirror			=> mirror,
@@ -2640,6 +2642,8 @@ is
 
 			log_indentation_down;
 		end insert_unit;
+
+		
 
 		procedure verify_unit_name_and_position (line : in type_fields_of_line) is
 		-- Checks if the x/y position of the unit matches that provided in given line.
@@ -2967,7 +2971,7 @@ is
 						log (text => "reference " & to_string (reference) & " (preliminary)", level => log_threshold);
 						validate_prefix (reference);
 
-					when et_symbols.PCB =>
+					when et_device_appearance.PCB =>
 						-- we have a line like "L 74LS00 IC13"
 						-- -- Build a reference type from the given reference string.
 						-- Afterward we validate the prefix of the reference. 

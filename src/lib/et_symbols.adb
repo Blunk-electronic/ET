@@ -48,6 +48,7 @@ with ada.exceptions; 			use ada.exceptions;
 with et_alignment;				use et_alignment;
 
 
+
 package body et_symbols is
 
 	
@@ -108,31 +109,6 @@ package body et_symbols is
 	
 
 
-	function to_string (
-		appearance	: in type_appearance;
-		verbose		: in boolean := false)
-		return string is
-	-- Returns the given component appearance as string.
-	begin
-		if verbose then
-			case appearance is
-				when VIRTUAL =>
-					return ("appears in schematic only (virtual device)");
-				when PCB =>
-					return ("appears in schematic and layout");
-			end case;
-		else
-			return to_lower (type_appearance'image (appearance));
-		end if;
-	end;
-
-	function to_appearance (appearance : in string) return type_appearance is begin
-		return type_appearance'value (appearance);
-	end;	
-
-
-
-
 
 	function to_string (filled : in type_circle_filled) return string is begin
 		return to_lower (type_circle_filled'image (filled));
@@ -169,6 +145,8 @@ package body et_symbols is
 		return pac_symbols.find (symbols, symbol);
 	end locate;
 
+
+	
 	function is_real (symbol : in pac_symbols.cursor)
 		return boolean
 	is begin

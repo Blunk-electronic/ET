@@ -52,11 +52,13 @@ procedure copy_device (
 	log_threshold	: in type_log_level)
 is
 	module_cursor : pac_generic_modules.cursor; -- points to the module being modified
+
 	
 	procedure query_devices (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_module) 
 	is
+		use et_device_appearance;
 		use et_schematic.pac_devices_sch;
 		device_cursor_sch : et_schematic.pac_devices_sch.cursor;
 
@@ -76,10 +78,11 @@ is
 
 		use pac_units_internal;
 		use pac_units_external;
+
 		
-		procedure add_unit_internal (
 		-- Add an internal unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.int.
+		procedure add_unit_internal (
 			device_name	: in type_device_name;
 			device		: in out type_device_sch) 
 		is begin
@@ -117,10 +120,11 @@ is
 			
 		end add_unit_internal;
 
+
 		
-		procedure add_unit_external (
 		-- Add an external unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.ext.
+		procedure add_unit_external (
 			device_name	: in type_device_name;
 			device		: in out type_device_sch) 
 		is

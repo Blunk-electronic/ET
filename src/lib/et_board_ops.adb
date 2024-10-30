@@ -47,6 +47,7 @@ with et_schematic_ops;				use et_schematic_ops;
 with et_submodules;
 with et_numbering;
 with et_symbols;
+with et_device_appearance;
 with et_conductor_segment.boards;
 with et_exceptions;					use et_exceptions;
 with et_generic_stacks;
@@ -407,6 +408,7 @@ package body et_board_ops is
 
 						use et_assembly_variants.pac_device_variants;
 						use et_symbols;
+						use et_device_appearance;
 
 					begin -- query_properties_default
 
@@ -439,13 +441,17 @@ package body et_board_ops is
 						end if;
 					end query_properties_default;
 
+
 					
-					procedure query_properties_variants (cursor_schematic : in pac_devices_sch.cursor) is 
+					procedure query_properties_variants (
+						cursor_schematic : in pac_devices_sch.cursor) 
+					is 
 						cursor_pnp : et_pick_and_place.pac_devices.cursor;
 
 						alt_dev_cursor : et_assembly_variants.pac_device_variants.cursor;
 						use et_assembly_variants.pac_device_variants;
 						use et_symbols;
+						use et_device_appearance;
 						
 					begin -- query_properties_variants
 

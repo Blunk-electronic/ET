@@ -53,6 +53,7 @@ with et_text;
 with et_fonts;							use et_fonts;
 with et_logging;						use et_logging;
 with et_symbol_ports;					use et_symbol_ports;
+with et_device_appearance;				use et_device_appearance;
 
 
 package et_symbols is
@@ -89,22 +90,6 @@ package et_symbols is
 	
 	
 	
--- APPEARANCE	
-	type type_appearance is (
-		VIRTUAL,	-- a device that exists in the schematic only (like power symbols)
-		PCB			-- a device that exists in both schematic and soldered on a pcb
-		-- CS: cable 
-		-- CS: wire
-		-- ...
-		);
-
-	function to_string (
-		appearance	: in type_appearance;
-		verbose		: in boolean := false)
-		return string;
-	-- Returns the given device appearance as string.
-
-	function to_appearance (appearance : in string) return type_appearance;
 	
 
 

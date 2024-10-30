@@ -45,6 +45,7 @@ with et_net_labels;
 with et_port_names;
 with et_symbol_ports;
 with et_symbols;
+with et_device_appearance;
 with et_symbol_rw;
 with et_schematic_rw;
 with et_device_rw;
@@ -892,7 +893,7 @@ is
 
 			use et_devices;
 			use et_device_rw;
-
+			use et_device_appearance;
 			
 		begin -- query_units
 			section_mark (section_units, HEADER);
@@ -979,6 +980,7 @@ is
 		procedure write (d : in pac_devices_sch.cursor) is 
 			use et_material;
 			use et_pcb_rw;
+			use et_device_appearance;
 		begin
 			section_mark (section_device, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (d)));

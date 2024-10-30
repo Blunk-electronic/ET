@@ -56,6 +56,7 @@ is
 		module		: in out type_module) 
 	is
 		use et_symbols;
+		use et_device_appearance;
 		use et_schematic.pac_devices_sch;
 		device_cursor_sch : et_schematic.pac_devices_sch.cursor;
 
@@ -89,12 +90,14 @@ is
 		use pac_units_external;
 		use pac_units_internal;
 		use pac_devices_lib;
+
 		
-		procedure add_unit_internal (
 		-- Add an internal unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.int.
+		procedure add_unit_internal (
 			device_name	: in type_device_name;
-			device		: in out type_device_sch) is
+			device		: in out type_device_sch) 
+		is
 			use et_symbols;
 		begin
 			log (text => "invoking internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
@@ -131,11 +134,13 @@ is
 			
 		end add_unit_internal;
 
-		procedure add_unit_external (
+		
 		-- Add an external unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.ext.
+		procedure add_unit_external (
 			device_name	: in type_device_name;
-			device		: in out type_device_sch) is
+			device		: in out type_device_sch) 
+		is
 			use et_symbols;
 			use et_symbols.pac_symbols;
 			symbol_cursor : pac_symbols.cursor;
@@ -266,6 +271,7 @@ is
 			device_not_found (device_name);
 		end if;
 	end query_devices;
+
 	
 begin -- invoke_unit
 	log (text => "module " & to_string (module_name) &

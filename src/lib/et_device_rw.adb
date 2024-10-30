@@ -88,7 +88,7 @@ package body et_device_rw is
 	-- Creates a device and stores it in container et_devices.devices.
 	procedure create_device (
 		device_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
-		appearance		: in et_symbols.type_appearance;
+		appearance		: in type_appearance;
 		log_threshold	: in type_log_level) 
 	is
 		use et_string_processing;

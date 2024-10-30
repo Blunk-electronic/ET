@@ -81,6 +81,7 @@ with et_port_names;
 with et_port_direction;
 with et_symbol_ports;
 with et_symbols;
+with et_device_appearance;
 with et_devices;					use et_devices;
 with et_frames;	
 with et_fill_zones;					use et_fill_zones;
@@ -440,9 +441,9 @@ package body et_kicad_to_native is
 				end change_path;
 
 				
-				procedure move_package is
 				-- moves the position of the package in layout
-					use et_symbols;
+				procedure move_package is
+					use et_device_appearance;
 					use et_pcb_coordinates_2;
 					use et_pcb_coordinates_2.pac_geometry_2;
 				begin
@@ -2518,6 +2519,7 @@ package body et_kicad_to_native is
 		-- Changes the links to device models so that they point to the libraries
 		-- in project/libraries/devices/...
 			use et_schematic;
+			use et_device_appearance;
 			use et_kicad.schematic.type_components_schematic;
 			components_kicad		: et_kicad.schematic.type_components_schematic.map;
 			component_cursor_kicad	: et_kicad.schematic.type_components_schematic.cursor;
@@ -2540,11 +2542,11 @@ package body et_kicad_to_native is
 				unit_cursor_native	: et_units.pac_units.cursor;
 				unit_inserted		: boolean;
 
-				unit_native_virtual	: et_units.type_unit (et_symbols.VIRTUAL);
-				unit_native_real	: et_units.type_unit (et_symbols.PCB);
+				unit_native_virtual	: et_units.type_unit (VIRTUAL);
+				unit_native_real	: et_units.type_unit (PCB);
 
 				use et_symbols;
-			begin -- copy_units
+			begin
 				log_indentation_up;
 				
 				while unit_cursor_kicad /= et_kicad.schematic.type_units_schematic.no_element loop
@@ -3155,9 +3157,10 @@ package body et_kicad_to_native is
 			
 			procedure query_components (
 				library_name	: in et_kicad_general.type_device_library_name.bounded_string; -- lbr/logic.lib
-				library			: in et_kicad_libraries.type_components_library.map) is
-				
+				library			: in et_kicad_libraries.type_components_library.map) 
+			is				
 				use et_symbols;
+				use et_device_appearance;
 				use et_kicad_libraries.type_components_library;
 				component_cursor : et_kicad_libraries.type_components_library.cursor := library.first;
 
@@ -3577,6 +3580,7 @@ package body et_kicad_to_native is
 					end loop;
 				end rename_package_model_in_variants;
 
+				
 				function remove_leading_hash (
 				-- Removes the leading hash character from the prefix of a virtual component like #FLG or #PWR.
 					prefix : in pac_device_prefix.bounded_string) return
@@ -3585,6 +3589,7 @@ package body et_kicad_to_native is
 				begin
 					return et_devices.to_prefix (slice (prefix, 2, length (prefix))); -- FLG, PWR
 				end;
+
 				
 			begin -- query_components
 				while component_cursor /= et_kicad_libraries.type_components_library.no_element loop
@@ -3669,10 +3674,13 @@ package body et_kicad_to_native is
 				end loop;
 			end query_components;
 
-			procedure query_packages (
+
+			
 			-- Creates with the library name and package name new native package models.
+			procedure query_packages (
 				library_name	: in et_kicad_general.type_package_library_name.bounded_string; -- projects/lbr/smd_packages.pretty
-				library			: in et_kicad_packages.type_packages_library.map) is
+				library			: in et_kicad_packages.type_packages_library.map) 
+			is
 
 				use et_kicad_packages.type_packages_library;
 				package_cursor_kicad	: et_kicad_packages.type_packages_library.cursor := library.first;
@@ -3715,7 +3723,8 @@ package body et_kicad_to_native is
 					next (package_cursor_kicad);
 				end loop;
 			end query_packages;
-										 
+
+			
 		begin -- copy_libraries
 
 			-- Loop in kicad component libraries:
@@ -3784,8 +3793,10 @@ package body et_kicad_to_native is
 			
 		end copy_libraries;
 
-		procedure save_libraries (
+
+		
 		-- Saves the library containers in the current working directory.
+		procedure save_libraries (
 			log_threshold	: in type_log_level) is
 			use et_string_processing;
 			use pac_devices_lib;
@@ -3816,6 +3827,7 @@ package body et_kicad_to_native is
 					packge			=> element (package_cursor),
 					log_threshold	=> log_threshold + 1); 
 			end save_package;
+
 			
 		begin -- save_libraries
 			log (text => "saving libraries ...", level => log_threshold);

@@ -75,6 +75,7 @@ with et_material;
 with et_netlists;
 with et_text;
 with et_symbols;				use et_symbols;
+with et_device_appearance;		use et_device_appearance;
 with et_devices;				use et_devices;
 with et_frames;
 with et_meta;
@@ -135,7 +136,7 @@ package et_schematic is
 		
 		case appearance is
 			-- If a device appears in both schematic and layout it has got:
-			when et_symbols.PCB =>
+			when PCB =>
 				value		: pac_device_value.bounded_string; -- 470R
 				
 				partcode	: pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
@@ -166,7 +167,7 @@ package et_schematic is
 
 				status : type_object_status;
 				
-			when et_symbols.VIRTUAL => null;
+			when VIRTUAL => null;
 
 		end case;
 	end record;

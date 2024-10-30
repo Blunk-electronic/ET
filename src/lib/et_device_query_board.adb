@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with et_device_appearance;				use et_device_appearance;
 with et_mirroring;						use et_mirroring;
 with et_schematic_ops;
 with et_contour_to_polygon;
@@ -778,6 +779,7 @@ package body et_device_query_board is
 		return restrict;
 	end get_route_restrict_objects;
 
+
 	
 	function get_route_restrict_polygons (
 		device_cursor	: in pac_devices_non_electric.cursor;
@@ -812,6 +814,7 @@ package body et_device_query_board is
 	end get_route_restrict_polygons;
 	
 
+	
 	
 -- VIA RESTRICT
 	

@@ -46,6 +46,7 @@ with et_pcb_coordinates_2;
 with et_device_query_schematic;
 with et_packages;
 with et_generic_stacks;
+with et_device_appearance;
 
 
 package body et_schematic_ops.submodules is
@@ -4923,6 +4924,7 @@ package body et_schematic_ops.submodules is
 						use et_assembly_variants.pac_device_variants;
 						use et_symbols;
 						use et_device_query_schematic;
+						use et_device_appearance;
 						use et_packages;
 					begin
 						-- the device must be real (appearance SCH_PCB)

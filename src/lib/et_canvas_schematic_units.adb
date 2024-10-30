@@ -67,6 +67,7 @@ with et_devices;					use et_devices;
 with et_device_rw;
 with et_packages;
 with et_symbol_ports;
+with et_device_appearance;
 
 with et_schematic;					use et_schematic;
 with et_device_query_schematic;		use et_device_query_schematic;
@@ -1091,6 +1092,7 @@ package body et_canvas_schematic_units is
 		use gtk.menu_item;
 		use et_device_rw;
 		use et_packages;
+		use et_device_appearance;
 		
 		device_model : pac_device_model_file.bounded_string;
 
@@ -1794,9 +1796,12 @@ package body et_canvas_schematic_units is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) 
 		is
+			use et_device_appearance;
 			use pac_devices_sch;
+			
 			device_cursor : pac_devices_sch.cursor := module.devices.first;
 
+			
 			procedure query_units (
 				device_name	: in type_device_name;
 				device		: in type_device_sch)
@@ -2329,9 +2334,10 @@ package body et_canvas_schematic_units is
 		log_indentation_down;
 	end set_property_selected_unit;
 
+	
 
-	procedure show_properties_of_selected_device
-	is
+	procedure show_properties_of_selected_device is
+		use et_device_appearance;
 		use pac_devices_sch;
 		use pac_units;
 		

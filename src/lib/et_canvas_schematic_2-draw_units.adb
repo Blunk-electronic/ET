@@ -45,6 +45,7 @@ with et_port_names;
 with et_port_visibility;
 with et_symbol_ports;
 with et_units;							use et_units;
+with et_device_appearance;				use et_device_appearance;
 with et_devices;						use et_devices;
 with et_schematic;
 

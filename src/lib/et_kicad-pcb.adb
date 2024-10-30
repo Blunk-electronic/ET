@@ -50,6 +50,7 @@ with et_pcb_stack;
 with et_symbols;
 with et_nets;
 
+with et_device_appearance;
 with et_pcb_contour;			use et_pcb_contour;
 with et_axes;					use et_axes;
 with et_generic_stacks;
@@ -5317,8 +5318,10 @@ package body et_kicad.pcb is
 					
 				end transfer_floating_polygons;
 
+				
 				use et_symbols;
 				use schematic.type_nets;
+				use et_device_appearance;
 
 				
 			begin -- add_board_objects
@@ -5364,15 +5367,17 @@ package body et_kicad.pcb is
 					next (net_cursor);
 				end loop;
 
+				
 				-- transfer the kicad net classes to the schematic module
 				transfer_net_classes;
+				
 
 				-- update package positions in schematic module
 				while component_cursor /= type_components_schematic.no_element loop -- (cursor points to schematic components)
 
 					-- We are interested in real components only. Virtual schematic components
 					-- do not appear in a board and thus are skipped.
-					if element (component_cursor).appearance = et_symbols.PCB then
+					if element (component_cursor).appearance = et_device_appearance.PCB then
 
 						-- set package reference as the component reference (from schematic)
 						package_reference := key (component_cursor);

@@ -6,20 +6,21 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -36,12 +37,13 @@
 --
 
 with et_string_processing;
-with et_logging;				use et_logging;
+with et_logging;						use et_logging;
 with et_terminals;
-with et_devices;				use et_devices;
+with et_devices;						use et_devices;
 with et_symbols;
+with et_device_appearance;				use et_device_appearance;
 with et_pcb_stack;
-with et_device_placeholders;		use et_device_placeholders;
+with et_device_placeholders;			use et_device_placeholders;
 
 
 package et_device_rw is
@@ -81,22 +83,26 @@ package et_device_rw is
 		SEC_UNITS_EXTERNAL
 		);
 
+	
+	-- Creates adevice and stores it in container et_devices.devices.
 	procedure create_device (
-	-- Creates a device and stores it in container et_devices.devices.
 		device_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
-		appearance		: in et_symbols.type_appearance;
+		appearance		: in type_appearance;
 		log_threshold	: in type_log_level);
+
+
 	
 	procedure save_device (
 		file_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		device			: in type_device_lib; -- the actual device model
 		log_threshold	: in type_log_level);
 
-	procedure read_device (
+	
 	-- Opens the device and stores it in container et_libraries.devices.
 	-- If check_layers.check is YES, then a check will be done that tests
 	-- whether all conductor layers are are in 
 	-- range type_signal_layer'first .. deepest conductor layer.
+	procedure read_device (
 		file_name 		: in pac_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
 		log_threshold	: in type_log_level);

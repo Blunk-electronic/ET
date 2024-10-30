@@ -65,6 +65,7 @@ with et_text;					use et_text;
 with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
 with et_symbols;				use et_symbols;
+with et_device_appearance;		use et_device_appearance;
 with et_devices;				use et_devices;
 
 with et_device_placeholders;			--use et_device_placeholders;
@@ -292,9 +293,10 @@ package et_kicad_libraries is
 		LINE, POLYLINE, RECTANGLE, ARC, CIRCLE, -- shapes
 		PORT, 
 		TEXT); -- text embedded in a symbol
+
 	
 	type type_symbol is new et_symbols.type_symbol_base with record
-		appearance	: et_symbols.type_appearance;
+		appearance	: type_appearance;
 		shapes		: type_symbol_shapes; -- the collection of shapes		
 		ports		: type_ports_library.list := type_ports_library.empty_list; -- the ports of the symbol
 
@@ -305,8 +307,9 @@ package et_kicad_libraries is
 		value	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.VALUE);
 	end record;
 
+	
 	-- a component unit in the library
-	type type_unit_library (appearance : et_symbols.type_appearance) is record
+	type type_unit_library (appearance : type_appearance) is record
 		symbol		: type_symbol := (appearance => appearance, others => <>);
 		coordinates	: type_vector_model;
 		-- Units that harbor component wide pins have this flag set.
@@ -315,6 +318,7 @@ package et_kicad_libraries is
 		global		: boolean := false; -- CS: use a boolean derived type 
 	end record;
 
+	
 	package type_units_library is new indefinite_ordered_maps (
 		key_type		=> et_devices.pac_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
 		"<"				=> et_devices.pac_unit_name."<",
@@ -341,7 +345,7 @@ package et_kicad_libraries is
 
 	
 	-- This is a component as it appears in the library:.
-	type type_component_library (appearance : et_symbols.type_appearance) is record
+	type type_component_library (appearance : type_appearance) is record
 		prefix			: pac_device_prefix.bounded_string; -- R, C, IC, ...
 		value			: pac_device_value.bounded_string; -- 74LS00
 		units			: type_units_library.map := type_units_library.empty_map;
@@ -354,19 +358,19 @@ package et_kicad_libraries is
 			-- those components enforce net names (like GND or P3V3). Power flags do not
 			-- enforce net names. In order to distinguish them from regular power symbols the
 			-- power_flag is provided.
-			when et_symbols.VIRTUAL => 
+			when VIRTUAL => 
 				power_flag		: type_power_flag := NO;
 
 			-- If a component appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
-			when et_symbols.PCB => 
+			when PCB => 
 				package_filter	: type_package_filter.set := type_package_filter.empty_set;
 				datasheet		: type_component_datasheet.bounded_string;
 				variants		: et_devices.pac_variants.map;
 				
 		end case;
-
 	end record;
+	
 
 	-- The generic name of a component in the library is something like TRANSISTOR_NPN or RESISTOR
  	component_generic_name_length_max : constant natural := 100;
@@ -418,21 +422,24 @@ package et_kicad_libraries is
 		generic_name	: in type_component_generic_name.bounded_string);
 	
 	
-	function component_appearance (cursor : in type_components_library.cursor)
 	-- Returns the component appearance where cursor points to.
-		return et_symbols.type_appearance;
+	function component_appearance (cursor : in type_components_library.cursor)
+		return type_appearance;
 
+	
+	-- Returns the package name of the given component. 
 	function to_package_name (
 		library_name	: in type_device_library_name.bounded_string; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
 		package_variant	: in pac_package_variant_name.bounded_string) -- N, D
 		return et_packages.pac_package_name.bounded_string;
-	-- Returns the package name of the given component. 
+
 	
 	-- Alternative references used in instances of sheets:
 	-- example: AR Path="/59F17FDE/5A991D18" Ref="RPH1"  Part="1" 
 	package type_alternative_reference_path is new doubly_linked_lists (
 		element_type => et_kicad_general.type_timestamp); -- 5A991D18
+
 	
 	type type_alternative_reference is record
 		path		: type_alternative_reference_path.list; -- 59F17FDE 5A991D18 ...
@@ -440,6 +447,7 @@ package et_kicad_libraries is
 		part		: et_devices.pac_unit_name.bounded_string; -- CS is this about a unit name ? currently written but never read
 	end record;
 
+	
 	package type_alternative_references is new doubly_linked_lists (type_alternative_reference);
 	
 

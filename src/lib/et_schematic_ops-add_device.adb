@@ -57,6 +57,7 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in out type_module) 
 	is
+		use et_device_appearance;
 		use et_schematic.pac_devices_sch;
 		device_cursor_sch : et_schematic.pac_devices_sch.cursor;
 		inserted : boolean;
@@ -71,13 +72,15 @@ is
 
 		use pac_units_internal;
 		use pac_units_external;
+
 		
-		procedure add_unit_internal (
 		-- Add an internal unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.int.
+		procedure add_unit_internal (
 			device_name	: in type_device_name;
 			device		: in out type_device_sch) 
-		is begin
+		is 
+		begin
 			log (text => "adding internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
 			
 			case element (device_cursor_lib).appearance is

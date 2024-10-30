@@ -48,6 +48,7 @@ with et_axes;						use et_axes;
 with et_net_labels;
 with et_port_names;
 with et_symbol_ports;
+with et_device_appearance;
 with et_symbols;
 with et_symbol_rw;
 with et_schematic_rw;
@@ -2204,6 +2205,7 @@ is
 		use et_symbols;
 		use et_devices;
 		use et_schematic;
+		use et_device_appearance;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2884,6 +2886,7 @@ is
 				use et_coordinates_2;
 				use et_symbols;
 				use et_units;
+				use et_device_appearance;
 			begin
 				log_indentation_up;
 				-- log (text => "unit " & to_string (device_unit_name), log_threshold + 1);
@@ -3037,6 +3040,7 @@ is
 
 				use et_board_ops;
 				use et_device_rw;
+				use et_device_appearance;
 				
 				
 			begin -- insert_device

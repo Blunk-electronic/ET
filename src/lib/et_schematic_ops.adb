@@ -51,6 +51,7 @@ with et_pcb;
 with et_port_direction;
 with et_terminals;
 with et_packages;
+with et_device_appearance;
 with et_device_rw;
 with et_device_query_schematic;		use et_device_query_schematic;
 with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
@@ -187,6 +188,7 @@ package body et_schematic_ops is
 		use et_pcb_coordinates_2.pac_geometry_2;
 		use pac_devices_sch;
 		use et_symbols;
+		use et_device_appearance;
 	begin
 		if element (device_cursor).appearance = PCB then
 			log (text => "location in board:" & 
@@ -1030,6 +1032,7 @@ package body et_schematic_ops is
 		return et_symbols.type_default_text_positions 
 	is		
 		use et_symbols;
+		use et_device_appearance;
 		use pac_devices_sch;
 
 		-- The positions to be returned depend on the appearance of the requested device:
@@ -1048,14 +1051,16 @@ package body et_schematic_ops is
 			append (result.texts, element (c).position);
 		end;
 
+		
 		-- Indicates whether the unit is internal or external:
 		unit_status : type_unit_ext_int := EXT;
 
 		
 		procedure query_internal_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in type_device_lib) is
-			use pac_units_internal;
+			device	: in type_device_lib) 
+		is
+			use pac_units_internal;			
 			unit_cursor : pac_units_internal.cursor;
 		begin
 			-- locate the given unit among the internal units
@@ -1097,8 +1102,8 @@ package body et_schematic_ops is
 			
 			procedure query_symbol (
 				symbol_name	: in pac_symbol_model_file.bounded_string;
-				symbol		: in type_symbol ) is
-			begin
+				symbol		: in type_symbol ) 
+			is begin
 				-- Collect the positions of texts and store them in result.text
 				-- in the same order as they are listed in symbol.texts:
 				iterate (symbol.texts, query_text'access);
@@ -1942,30 +1947,37 @@ package body et_schematic_ops is
 		log_indentation_down;
 	end rename_device;
 
-	procedure set_value (
+
+	
 	-- Sets the value of a device.
+	procedure set_value (
 		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_device_name; -- R2
 		value				: in pac_device_value.bounded_string; -- 470R
-		log_threshold		: in type_log_level) is
+		log_threshold		: in type_log_level) 
+	is
 		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 			use pac_devices_sch;
 
 			device_cursor : pac_devices_sch.cursor;
 
 			procedure set_value (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) is
-			begin
+				device		: in out type_device_sch) 
+			is begin
 				device.value := value;
 			end;
 
+			
 			use et_symbols;
+			use et_device_appearance;
+
 			
 		begin -- query_devices
 			-- locate the device
@@ -2010,6 +2022,7 @@ package body et_schematic_ops is
 				device_not_found (device_name);
 			end if;
 		end query_devices;
+
 		
 	begin -- set_value
 		log (text => "module " 
@@ -2031,13 +2044,15 @@ package body et_schematic_ops is
 		log_indentation_down;
 	end set_value;
 
-	procedure set_purpose (
+
+	
 	-- Sets the purpose of a device.
+	procedure set_purpose (
 		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name			: in type_device_name; -- R2
 		purpose				: in pac_device_purpose.bounded_string; -- brightness_control
-		log_threshold		: in type_log_level) is
-
+		log_threshold		: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
@@ -2054,7 +2069,10 @@ package body et_schematic_ops is
 				device.purpose := purpose;
 			end;
 
+			
 			use et_symbols;
+			use et_device_appearance;
+
 			
 		begin -- query_devices
 			-- locate the device
@@ -2080,6 +2098,7 @@ package body et_schematic_ops is
 			end if;
 		end query_devices;
 
+		
 	begin -- set_purpose
 		log (text => "module " & to_string (module_name) &
 			" setting " & to_string (device_name) & " purpose to " &
@@ -2108,6 +2127,7 @@ package body et_schematic_ops is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_module) is
@@ -2123,6 +2143,8 @@ package body et_schematic_ops is
 			end;
 
 			use et_symbols;
+			use et_device_appearance;
+			
 			
 		begin -- query_devices
 			-- locate the device
@@ -2148,6 +2170,7 @@ package body et_schematic_ops is
 			end if;
 		end query_devices;
 
+		
 	begin -- set_partcode
 		log (text => "module " & to_string (module_name) &
 			" setting " & to_string (device_name) & " partcode to " &
@@ -2167,6 +2190,7 @@ package body et_schematic_ops is
 		log_indentation_down;
 	end set_partcode;
 
+	
 	
 	function exists (
 		module	: in pac_generic_modules.cursor;

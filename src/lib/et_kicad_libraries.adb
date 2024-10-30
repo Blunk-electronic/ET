@@ -296,14 +296,17 @@ package body et_kicad_libraries is
 		raise constraint_error;
 	end no_generic_model_found;
 
+
 	
-	function component_appearance (cursor : in type_components_library.cursor)
 	-- Returns the component appearance where cursor points to.
-		return et_symbols.type_appearance is
+	function component_appearance (cursor : in type_components_library.cursor)
+		return type_appearance is
 	begin
 		return type_components_library.element (cursor).appearance;
 	end component_appearance;
 
+
+	
 	function first_unit (
 	-- Returns the cursor to the first unit of the given component.
 		component_cursor : in type_components_library.cursor)

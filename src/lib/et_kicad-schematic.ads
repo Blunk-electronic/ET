@@ -66,6 +66,7 @@ with et_text;
 with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
 with et_symbols;
+with et_device_appearance;		use et_device_appearance;
 with et_devices;				use et_devices;
 
 with et_schematic_shapes_and_text;
@@ -264,7 +265,7 @@ package et_kicad.schematic is
 		units			: type_units_schematic.map; -- PWR, A, B, ...
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
-			when et_symbols.PCB => 
+			when PCB => 
 				datasheet			: type_component_datasheet.bounded_string;
 				variant				: pac_package_variant_name.bounded_string; -- D, N
 
@@ -278,7 +279,7 @@ package et_kicad.schematic is
 			-- those component may enforce net names (like GND or P3V3). Power flags do not
 			-- enforce net names. In order to distinguish them from regular power symbols the
 			-- power_flag is provided.
-			when et_symbols.VIRTUAL => 
+			when VIRTUAL => 
 				power_flag	: type_power_flag := NO;
 
 		end case;

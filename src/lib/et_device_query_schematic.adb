@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,13 +36,18 @@
 --   history of changes:
 --
 
+with et_device_appearance;
+
+
 package body et_device_query_schematic is
 
 
 	function is_real (
 		device : in pac_devices_sch.cursor)
 		return boolean 
-	is begin
+	is 
+		use et_device_appearance;
+	begin
 		case pac_devices_sch.element (device).appearance is
 			when PCB		=> return true;
 			when VIRTUAL	=> return false;
