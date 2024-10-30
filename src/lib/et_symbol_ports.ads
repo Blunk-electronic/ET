@@ -69,7 +69,6 @@ package et_symbol_ports is
 	keyword_port					: constant string := "port";
 	keyword_port_name_size			: constant string := "port_name_size";
 	keyword_length					: constant string := "length";
-	keyword_level					: constant string := "level";	
 	
 
 	
@@ -175,6 +174,8 @@ package et_symbol_ports is
 
 	
 	procedure dummy;
+
+	-- CS procedure that outputs the properties of a port
 	
 end et_symbol_ports;
 

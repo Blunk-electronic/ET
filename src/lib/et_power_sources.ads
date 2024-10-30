@@ -54,6 +54,8 @@ package et_power_sources is
 	-- The prefix LEVEL_ is prepended.
 
 
+
+	keyword_level					: constant string := "level";	
 	
 	
 end et_power_sources;
