@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                            SYMBOL PORTS                                  --
+--                           POWER SOURCES                                  --
 --                                                                          --
---                              B o d y                                     --
+--                              S p e c                                     --
 --                                                                          --
 -- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -35,20 +35,28 @@
 --
 --   history of changes:
 --
-with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
--- with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
+
+package et_power_sources is
 
 
-package body et_symbol_ports is
+	type type_power_level is (LEVEL_ZERO, LEVEL_POSITIVE, LEVEL_NEGATIVE);
+	-- The prefix "LEVEL_" is a workaround because GNAT regards "POSITIVE" as keyword.
+	-- CAUTION: Adapt functions to_string and to_power_level when changing anything here !
+	
+	port_power_level_default : constant type_power_level := LEVEL_ZERO;
 
+	function to_string (level : in type_power_level) return string;
+	-- Converts the power level (like LEVEL_POSITIVE) to a string (like positive).
+	-- The prefix LEVEL_ is removed.
+	
+	function to_power_level (level : in string) return type_power_level;	
+	-- Converts the power level (like positive) to power level (like LEVEL_POSITIVE).
+	-- The prefix LEVEL_ is prepended.
 
-	procedure dummy is begin null; end;
 
 	
 	
-end et_symbol_ports;
+end et_power_sources;
 
 -- Soli Deo Gloria
 

@@ -73,6 +73,7 @@ with et_text;
 with et_pcb_rw;
 with et_pcb_rw.device_packages;
 with et_device_rw;
+with et_power_sources;
 with et_logic;
 with et_port_sensitivity;
 with et_port_strength;
@@ -398,9 +399,12 @@ package body et_kicad_to_native is
 			log_indentation_down;
 		end flatten_frames;
 
+
+		
 		procedure flatten_components (
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
-			module		: in out et_kicad.pcb.type_module) is
+			module		: in out et_kicad.pcb.type_module) 
+		is
 		-- Changes the path and y position of units of components (in schematic) to root path.
 		-- Moves the y position of components (in layout).
 			
@@ -500,7 +504,8 @@ package body et_kicad_to_native is
 
 		procedure flatten_nets (
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
-			module		: in out et_kicad.pcb.type_module) is
+			module		: in out et_kicad.pcb.type_module) 
+		is
 		-- Changes the path and y position of net segments, junctions and labels (in schematic) to root path.
 		-- MOves the y position of copper objects (in layout).
 
@@ -3194,6 +3199,8 @@ package body et_kicad_to_native is
 						use et_symbol_ports;
 						use et_port_sensitivity;
 						use et_logic;
+						use et_power_sources;
+						
 
 						-- Maps from kicad port style to native port characteristic.
 						function to_level (style : in type_port_style) 

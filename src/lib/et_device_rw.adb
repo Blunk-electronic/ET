@@ -66,6 +66,7 @@ with et_pcb_rw.device_packages;
 with et_conventions;
 with et_text;
 with et_alignment;					use et_alignment;
+with et_power_sources;
 with et_logic;
 with et_port_strength;
 with et_port_sensitivity;
@@ -283,8 +284,11 @@ package body et_device_rw is
 		
 	end save_device;
 
-	procedure read_device (
+
+
+	
 	-- Opens the device and stores it in container devices.
+	procedure read_device (
 		file_name 		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
 		log_threshold	: in type_log_level) 
@@ -438,7 +442,7 @@ package body et_device_rw is
 		port_output_inverted	: et_logic.type_output_inverted := et_logic.output_inverted_default;
 		port_output_tristate	: et_port_strength.type_output_tristate := et_port_strength.output_tristate_default;
 		port_output_weakness	: et_port_strength.type_output_weakness := et_port_strength.output_weakness_default;
-		port_power_level		: type_power_level := port_power_level_default;
+		port_power_level		: et_power_sources.type_power_level := et_power_sources.port_power_level_default;
 
 		unit_external : type_unit_external;
 
@@ -554,6 +558,7 @@ package body et_device_rw is
 			use et_port_sensitivity;
 			use et_port_strength;
 			use et_logic;
+			use et_power_sources;
 		begin
 			case port_direction is
 				when PASSIVE =>
@@ -1371,6 +1376,7 @@ package body et_device_rw is
 									use et_port_sensitivity;
 									use et_port_strength;
 									use et_logic;
+									use et_power_sources;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag

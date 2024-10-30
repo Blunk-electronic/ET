@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                            SYMBOL PORTS                                  --
+--                           POWER SOURCES                                  --
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
@@ -35,20 +35,39 @@
 --
 --   history of changes:
 --
+
 with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
 -- with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
+with ada.strings.fixed; 		use ada.strings.fixed;
 
 
-package body et_symbol_ports is
+package body et_power_sources is
 
 
-	procedure dummy is begin null; end;
+	-- Converts the power level (like LEVEL_POSITIVE) to a string (like positive).
+	-- The prefix LEVEL_ is removed.
+	function to_string (level : in type_power_level) return string is
+		level_string : string := to_lower (type_power_level'image (level)); -- level_positive, level_negative
+		A : positive := index (level_string, "_") + 1; -- the position after the first underscore
+		B : positive := level_string'length;
+	begin
+		return level_string (A .. B);
+	end;
+
+
+	
+	-- Converts the power level (like positive) to power level (like LEVEL_POSITIVE).
+	-- The prefix LEVEL_ is prepended.
+	function to_power_level (level : in string) return type_power_level is 
+	begin
+		return type_power_level'value ("LEVEL_" & level);
+	end;
 
 	
 	
-end et_symbol_ports;
+end et_power_sources;
 
 -- Soli Deo Gloria
 

@@ -49,7 +49,7 @@ with et_port_visibility;				use et_port_visibility;
 with et_port_sensitivity;				use et_port_sensitivity;
 with et_port_strength;					use et_port_strength;
 with et_logic;							use et_logic;
-
+with et_power_sources;					use et_power_sources;
 
 
 package et_symbol_ports is
@@ -127,21 +127,6 @@ package et_symbol_ports is
 	
 
 
-	
-	type type_power_level is (LEVEL_ZERO, LEVEL_POSITIVE, LEVEL_NEGATIVE);
-	-- The prefix "LEVEL_" is a workaround because GNAT regards "POSITIVE" as keyword.
-	-- CAUTION: Adapt functions to_string and to_power_level when changing anything here !
-	
-	port_power_level_default : constant type_power_level := LEVEL_ZERO;
-
-	function to_string (level : in type_power_level) return string;
-	-- Converts the power level (like LEVEL_POSITIVE) to a string (like positive).
-	-- The prefix LEVEL_ is removed.
-	
-	function to_power_level (level : in string) return type_power_level;	
-	-- Converts the power level (like positive) to power level (like LEVEL_POSITIVE).
-	-- The prefix LEVEL_ is prepended.
-
 
 	
 	type type_port (direction : type_port_direction) is new type_port_base with record 
@@ -189,7 +174,7 @@ package et_symbol_ports is
 		element_type	=> type_port);
 
 	
-	
+	procedure dummy;
 	
 end et_symbol_ports;
 
