@@ -66,6 +66,7 @@ with et_pcb_rw.device_packages;
 with et_conventions;
 with et_text;
 with et_alignment;					use et_alignment;
+with et_logic;
 with et_port_strength;
 with et_port_sensitivity;
 with et_port_visibility;
@@ -83,8 +84,8 @@ package body et_device_rw is
 
 	use et_terminals;
 	
-	procedure create_device (
 	-- Creates a device and stores it in container et_devices.devices.
+	procedure create_device (
 		device_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		appearance		: in et_symbols.type_appearance;
 		log_threshold	: in type_log_level) 
@@ -434,7 +435,7 @@ package body et_device_rw is
 		port_direction			: et_port_direction.type_port_direction := et_port_direction.port_direction_default;
 		port_sensitivity_edge	: et_port_sensitivity.type_sensitivity_edge := et_port_sensitivity.sensitivity_edge_default;
 		port_sensitivity_level	: et_port_sensitivity.type_sensitivity_level := et_port_sensitivity.sensitivity_level_default;
-		port_output_inverted	: type_output_inverted := output_inverted_default;
+		port_output_inverted	: et_logic.type_output_inverted := et_logic.output_inverted_default;
 		port_output_tristate	: et_port_strength.type_output_tristate := et_port_strength.output_tristate_default;
 		port_output_weakness	: et_port_strength.type_output_weakness := et_port_strength.output_weakness_default;
 		port_power_level		: type_power_level := port_power_level_default;
@@ -442,9 +443,9 @@ package body et_device_rw is
 		unit_external : type_unit_external;
 
 		
-		procedure insert_unit_internal is
 		-- Inserts in the temporarily collection of internal units a new unit.
 		-- The symbol of the unit is the one accessed by pointer unit_symbol.
+		procedure insert_unit_internal is
 			position : pac_units_internal.cursor;
 			inserted : boolean;
 		begin
@@ -506,8 +507,8 @@ package body et_device_rw is
 		end insert_unit_internal;
 
 		
-		procedure insert_unit_external is
 		-- Inserts in the temporarily collection of external units a new unit.
+		procedure insert_unit_external is
 			position : pac_units_external.cursor;
 			inserted : boolean;
 		begin
@@ -552,6 +553,7 @@ package body et_device_rw is
 			use et_port_names;
 			use et_port_sensitivity;
 			use et_port_strength;
+			use et_logic;
 		begin
 			case port_direction is
 				when PASSIVE =>
@@ -1368,6 +1370,7 @@ package body et_device_rw is
 									use et_port_visibility;
 									use et_port_sensitivity;
 									use et_port_strength;
+									use et_logic;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag

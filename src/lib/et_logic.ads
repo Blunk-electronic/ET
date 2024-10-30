@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                           PORT STRENGTH                                  --
+--                          LOGIC FUNCTIONS                                 --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -36,35 +36,23 @@
 --   history of changes:
 --
 
-package et_port_strength is
+package et_logic is
 
 
-	type type_output_weakness is (
-		NONE, -- push-pull
-		WEAK0, WEAK1, -- requires external pull-down/up resistor
-		PULL0, PULL1  -- internal pull-down/up resistor
-		);
-
-	output_weakness_default : constant type_output_weakness := NONE;
-	function to_string (weakness : in type_output_weakness) return string;
-	function to_output_weakness (weakness : in string) return type_output_weakness;
-
-	type type_output_tristate is (NO, YES);
-	output_tristate_default : constant type_output_tristate := NO;
-	function to_string (tristate : in type_output_tristate) return string;
-	function to_output_tristate (tristate : in string) return type_output_tristate;
-
+	type type_output_inverted is (NO, YES);
 	
+	output_inverted_default : constant type_output_inverted := NO;
+	
+	function to_string (inverted : in type_output_inverted) return string;
+	function to_output_inverted (inverted : in string) return type_output_inverted;
 
-	keyword_weakness				: constant string := "weakness";
-	keyword_tristate				: constant string := "tristate";	
 
-	keyword_output_weakness			: constant string := "output_weakness";
-	keyword_output_tristate			: constant string := "output_tristate";
-
+	keyword_inverted				: constant string := "inverted";
+	keyword_output_inverted			: constant string := "output_inverted";
 	
 	
-end et_port_strength;
+	
+end et_logic;
 
 -- Soli Deo Gloria
 

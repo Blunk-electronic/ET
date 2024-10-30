@@ -48,6 +48,8 @@ with et_port_direction;					use et_port_direction;
 with et_port_visibility;				use et_port_visibility;
 with et_port_sensitivity;				use et_port_sensitivity;
 with et_port_strength;					use et_port_strength;
+with et_logic;							use et_logic;
+
 
 
 package et_symbol_ports is
@@ -68,7 +70,7 @@ package et_symbol_ports is
 	keyword_port_name_size			: constant string := "port_name_size";
 	keyword_length					: constant string := "length";
 	keyword_level					: constant string := "level";	
-	keyword_inverted				: constant string := "inverted";
+	
 
 	
 	-- A port is something where a net can be attached to.
@@ -123,10 +125,6 @@ package et_symbol_ports is
 	end record;
 
 	
-	type type_output_inverted is (NO, YES);
-	output_inverted_default : constant type_output_inverted := NO;
-	function to_string (inverted : in type_output_inverted) return string;
-	function to_output_inverted (inverted : in string) return type_output_inverted;
 
 
 	

@@ -50,6 +50,7 @@ with et_general_rw;					use et_general_rw;
 with et_axes;						use et_axes;
 with et_text;
 with et_alignment;					use et_alignment;
+with et_logic;
 with et_port_sensitivity;
 with et_port_strength;
 with et_port_visibility;
@@ -287,6 +288,7 @@ package body et_symbol_rw is
 			use et_port_visibility;
 			use et_port_sensitivity;
 			use et_port_strength;
+			use et_logic;
 		begin
 			section_mark (section_port, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (cursor)));
@@ -415,6 +417,8 @@ package body et_symbol_rw is
 		
 	end save_symbol;
 
+
+
 	
 	procedure read_symbol (
 		file_name 		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
@@ -465,7 +469,7 @@ package body et_symbol_rw is
 		port_direction			: et_port_direction.type_port_direction := et_port_direction.port_direction_default;
 		port_sensitivity_edge	: et_port_sensitivity.type_sensitivity_edge := et_port_sensitivity.sensitivity_edge_default;
 		port_sensitivity_level	: et_port_sensitivity.type_sensitivity_level := et_port_sensitivity.sensitivity_level_default;
-		port_output_inverted	: type_output_inverted := output_inverted_default;
+		port_output_inverted	: et_logic.type_output_inverted := et_logic.output_inverted_default;
 		port_output_tristate	: et_port_strength.type_output_tristate := et_port_strength.output_tristate_default;
 		port_output_weakness	: et_port_strength.type_output_weakness := et_port_strength.output_weakness_default;
 		port_power_level		: type_power_level := port_power_level_default;
@@ -479,6 +483,7 @@ package body et_symbol_rw is
 			use et_port_direction;
 			use et_port_sensitivity;
 			use et_port_strength;
+			use et_logic;
 		begin
 			case port_direction is
 				when PASSIVE =>
@@ -1036,6 +1041,7 @@ package body et_symbol_rw is
 									use et_port_visibility;
 									use et_port_sensitivity;
 									use et_port_strength;
+									use et_logic;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_position then -- position x 1 y 2

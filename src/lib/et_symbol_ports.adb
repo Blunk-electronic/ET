@@ -46,16 +46,6 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 
 package body et_symbol_ports is
 
-	function to_string (inverted : in type_output_inverted) return string is begin
-		return to_lower (type_output_inverted'image (inverted));
-	end;
-
-	function to_output_inverted (inverted : in string) return type_output_inverted is begin
-		return type_output_inverted'value (inverted);
-	end;
-
-
-
 
 
 	function to_string (level : in type_power_level) return string is

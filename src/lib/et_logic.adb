@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                           PORT STRENGTH                                  --
+--                          LOGIC FUNCTIONS                                 --
 --                                                                          --
---                              S p e c                                     --
+--                              B o d y                                     --
 --                                                                          --
 -- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -36,35 +36,26 @@
 --   history of changes:
 --
 
-package et_port_strength is
+with ada.characters;			use ada.characters;
+-- with ada.characters.latin_1;	use ada.characters.latin_1;
+with ada.characters.handling;	use ada.characters.handling;
 
 
-	type type_output_weakness is (
-		NONE, -- push-pull
-		WEAK0, WEAK1, -- requires external pull-down/up resistor
-		PULL0, PULL1  -- internal pull-down/up resistor
-		);
 
-	output_weakness_default : constant type_output_weakness := NONE;
-	function to_string (weakness : in type_output_weakness) return string;
-	function to_output_weakness (weakness : in string) return type_output_weakness;
+package body et_logic is
 
-	type type_output_tristate is (NO, YES);
-	output_tristate_default : constant type_output_tristate := NO;
-	function to_string (tristate : in type_output_tristate) return string;
-	function to_output_tristate (tristate : in string) return type_output_tristate;
 
-	
+	function to_string (inverted : in type_output_inverted) return string is begin
+		return to_lower (type_output_inverted'image (inverted));
+	end;
 
-	keyword_weakness				: constant string := "weakness";
-	keyword_tristate				: constant string := "tristate";	
-
-	keyword_output_weakness			: constant string := "output_weakness";
-	keyword_output_tristate			: constant string := "output_tristate";
+	function to_output_inverted (inverted : in string) return type_output_inverted is begin
+		return type_output_inverted'value (inverted);
+	end;
 
 	
 	
-end et_port_strength;
+end et_logic;
 
 -- Soli Deo Gloria
 
