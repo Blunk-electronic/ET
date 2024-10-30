@@ -72,6 +72,7 @@ with et_pcb_rw.device_packages;
 with et_symbols;
 with et_symbol_rw;
 
+with et_device_appearance;
 with et_devices;				use et_devices;
 with et_device_rw;
 
@@ -108,12 +109,12 @@ procedure et is
 	symbol_name_create		: et_symbols.pac_symbol_model_file.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
 	symbol_name_open		: et_symbols.pac_symbol_model_file.bounded_string; -- the symbol to be opened
 	symbol_name_save_as		: et_symbols.pac_symbol_model_file.bounded_string; -- the symbol to be saved as
-	symbol_appearance		: et_symbols.type_appearance := et_symbols.PCB; -- virtual/pcb. mostly pcb.
+	symbol_appearance		: et_device_appearance.type_appearance := et_device_appearance.PCB; -- virtual/pcb. mostly pcb.
 	
 	device_name_create		: pac_device_model_file.bounded_string; -- the device to be created like libraries/devices/TL084.dev
 	device_name_open		: pac_device_model_file.bounded_string; -- the device to be opened
 	device_name_save_as		: pac_device_model_file.bounded_string; -- the device to be saved as
-	device_appearance		: et_symbols.type_appearance := et_symbols.PCB; -- virtual/pcb. mostly pcb.
+	device_appearance		: et_device_appearance.type_appearance := et_device_appearance.PCB; -- virtual/pcb. mostly pcb.
 
 	frame_name_create		: et_frames.pac_template_name.bounded_string; -- the frame to be created like lib/frames/A3_landscape.frs
 	frame_name_open			: et_frames.pac_template_name.bounded_string;
@@ -250,7 +251,7 @@ procedure et is
 
 					elsif full_switch = switch_symbol_appearance then -- virtual/pcb
 						log (text => arg & full_switch & space & parameter);
-						symbol_appearance := et_symbols.to_appearance (parameter); -- if not provided -> default used
+						symbol_appearance := et_device_appearance.to_appearance (parameter); -- if not provided -> default used
 						
 					elsif full_switch = switch_native_symbol_open then
 						log (text => arg & full_switch & space & parameter);
@@ -268,7 +269,7 @@ procedure et is
 
 					elsif full_switch = switch_device_appearance then -- virtual/pcb
 						log (text => arg & full_switch & space & parameter);
-						device_appearance := et_symbols.to_appearance (parameter); -- if not provided -> default used
+						device_appearance := et_device_appearance.to_appearance (parameter); -- if not provided -> default used
 						
 					elsif full_switch = switch_native_device_open then
 						log (text => arg & full_switch & space & parameter);
