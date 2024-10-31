@@ -52,6 +52,7 @@ with et_sheets;					use et_sheets;
 with et_conventions;
 with et_kicad.pcb;				use et_kicad.pcb;
 with et_alignment;				use et_alignment;
+with et_erc;
 
 
 package body et_kicad.schematic is
@@ -4856,17 +4857,21 @@ package body et_kicad.schematic is
 
 	end check_open_ports;
 
-	procedure check_non_deployed_units (log_threshold : in type_log_level) is
+
+	
 	-- Warns about not deployed units and open ports thereof.
+	procedure check_non_deployed_units (log_threshold : in type_log_level) is
 		use et_string_processing;
 		use type_modules;
 
+		
 		procedure query_schematic_components (
 		-- Queries the schematic components one after another.
 		-- Opens the library where the generic model is stored.
 		-- The library name is provided by the schematic component.
 			module_name : in type_submodule_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_module) 
+		is
 
 			use type_components_schematic;
 			component_sch : type_components_schematic.cursor := module.components.first;
@@ -4874,34 +4879,43 @@ package body et_kicad.schematic is
 
 			use type_libraries;
 			
+			
 			procedure query_library_components (
 			-- Queries the generic models stored in the library.
 				library		: in et_kicad_general.type_device_library_name.bounded_string;
-				components	: in type_components_library.map) is
+				components	: in type_components_library.map) 
+			is
 				use type_components_library;
 				component_lib : type_components_library.cursor := components.first;
 
+				
 				procedure query_units_lib (
 					component_name	: in type_component_generic_name.bounded_string;
-					component 		: in type_component_library) is
+					component 		: in type_component_library) 
+				is
 					use type_units_library;
 					unit : type_units_library.cursor := component.units.first;
 
+					
 					procedure query_units_sch (
 						component_name	: in type_device_name;
-						component 		: in type_component_schematic) is
+						component 		: in type_component_schematic) 
+					is
 						use type_units_schematic;
 						unit_cursor : type_units_schematic.cursor := component.units.first;
 						unit_deployed : boolean := false;
 						use pac_unit_name;
 						use et_import;
+						use et_erc;
 
+						
 						function unit_not_deployed return string is begin
 							return to_string (key (component_sch)) 
 								& " unit " & et_devices.to_string (key (unit))
 								& " not deployed !";
 						end unit_not_deployed;
-		
+
+						
 					begin
 						while unit_cursor /= type_units_schematic.no_element loop
 							if key (unit_cursor) = key (unit) then
@@ -4948,7 +4962,7 @@ package body et_kicad.schematic is
 -- 									
 -- 								when et_libraries.next | et_libraries.always =>
 									log (WARNING, unit_not_deployed
-										& et_schematic.show_danger (et_schematic.floating_input));
+										& show_danger (FLOATING_INPUT));
 -- 
 -- 								-- CS: special threatment for "always" ?
 -- 									
@@ -4956,6 +4970,8 @@ package body et_kicad.schematic is
 						end if;
 							
 					end query_units_sch;
+
+					
 					
 				begin -- query_units_lib
 					while unit /= type_units_library.no_element loop
@@ -6314,13 +6330,17 @@ package body et_kicad.schematic is
 
 		procedure query_nets (
 			module_name : in type_submodule_name.bounded_string;
-			module 		: in type_module) is
+			module 		: in type_module) 
+		is
 			use type_netlist;
 			net_cursor : type_netlist.cursor := module.netlist.first;
 
+			
 			procedure query_ports (
 				net_name	: in pac_net_name.bounded_string;
-				ports 		: in type_ports_with_reference.set) is
+				ports 		: in type_ports_with_reference.set) 
+			is
+				use et_erc;
 				use type_ports_with_reference;
 				port_cursor : type_ports_with_reference.cursor := ports.first;
 
@@ -6384,7 +6404,7 @@ package body et_kicad.schematic is
 						when UNKNOWN	=> -- CS: verification required
 							log (ERROR, show_net & " has a port with unknown direction at " 
 								& to_string (element (port_cursor).coordinates, scope => et_kicad_coordinates.MODULE)
-								& et_schematic.show_danger (et_schematic.not_predictable),
+								& show_danger (NOT_PREDICTABLE),
 								console => true
 								);
 							raise constraint_error;
@@ -6392,6 +6412,7 @@ package body et_kicad.schematic is
 							when others		=> null; -- CS: TRISTATE, PASSIVE, POWER_IN
 					end case;
 
+					
 					-- Count ports by component category (address real components only)
 					--if element (port_cursor).appearance = et_libraries.sch_pcb then
 					--if et_libraries."=" (element (port_cursor).appearance, et_libraries.sch_pcb) then
@@ -6417,6 +6438,7 @@ package body et_kicad.schematic is
 					next (port_cursor);
 				end loop;
 
+				
 				-- Test if net has zero OR one single port. Warn about floating inputs:
 				case length (ports) is
 					when 0 =>
@@ -6431,26 +6453,28 @@ package body et_kicad.schematic is
 						-- warn about single inputs
 						if input_count = 1 then
 							log (WARNING, show_net & " has only one input !" & 
-							 et_schematic.show_danger (et_schematic.floating_input));
+							 show_danger (FLOATING_INPUT));
 							-- CS: show affected ports and their coordinates. use a loop in ports and show inputs.
 						end if;
+						
 						
 					when others =>
 						if sum_drivers = 0 then -- no kind of driver
 							if input_count > 0 then -- one or more inputs
 								if others_count = 0 then
 									log (WARNING, show_net & " has no energy sources !" &
-										et_schematic.show_danger (et_schematic.floating_input));
+										show_danger (FLOATING_INPUT));
 									-- CS: show affected ports and their coordinates. use a loop in ports and show inputs.
 								end if;
 							end if;
 						end if;
 				end case;
 
+				
 				-- Test if outputs drive against each other:
 				if output_count > 1 then
 					log (WARNING, show_net & " has more than one output !" &
-						et_schematic.show_danger (et_schematic.contention));
+						show_danger (CONTENTION));
 					-- CS: show affected ports and their coordinates. use a loop in ports and show outputs
 				end if;
 
@@ -6460,7 +6484,7 @@ package body et_kicad.schematic is
 					-- could pull the net to a definite level:
 					if length (ports) = count_type (bidir_count) then
 						log (WARNING, show_net & " has no pull resistors !" &
-							et_schematic.show_danger (et_schematic.floating_input));
+							show_danger (FLOATING_INPUT));
 					end if;
 				end if;
 
@@ -6470,7 +6494,7 @@ package body et_kicad.schematic is
 					-- could pull the net to a definite level:
 					if length (ports) = count_type (weak0_count) then
 						log (WARNING, show_net & " has no pull-down resistors !" & 
-							et_schematic.show_danger (et_schematic.floating_input));
+							show_danger (FLOATING_INPUT));
 					end if;
 				end if;
 
@@ -6480,21 +6504,21 @@ package body et_kicad.schematic is
 					-- could pull the net to a definite level:
 					if length (ports) = count_type (weak1_count) then
 						log (WARNING, show_net & " has no pull-up resistors !" &
-							et_schematic.show_danger (et_schematic.floating_input));
+							show_danger (FLOATING_INPUT));
 					end if;
 				end if;
 				
 				-- Test contending weak0 against weak1 outputs -- CS: verification required
 				if weak0_count > 0 and weak1_count > 0 then
 					log (WARNING, show_net & " has weak0 and weak1 outputs !" &
-						et_schematic.show_danger (et_schematic.contention));
+						show_danger (contention));
 				end if;
 				
 				-- Test if any outputs are connected with a power source
 				if power_out_count > 0 then
 					if output_count > 0 then -- CS: or bidir_count pull_high pull_low
 						log (ERROR, show_net & " has outputs connected with power sources !" &
-							 et_schematic.show_danger (et_schematic.short_circuit));
+							 show_danger (SHORT_CIRCUIT));
 						-- CS: show affected ports and their coordinates. use a loop in ports and show outputs and power outs.
 						raise constraint_error;
 					end if;
@@ -6510,7 +6534,8 @@ package body et_kicad.schematic is
 -- 				end if;
 						
 			end query_ports;
-				
+
+			
 		begin -- query_nets
 			log_indentation_up;
 		
@@ -6530,6 +6555,7 @@ package body et_kicad.schematic is
 				
 			log_indentation_down;
 		end query_nets;
+
 		
 	begin -- net_test
 		log (text => "net test ...", level => log_threshold);

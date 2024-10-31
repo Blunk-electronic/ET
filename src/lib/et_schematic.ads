@@ -402,19 +402,6 @@ package et_schematic is
 	end record;
 
 
-
-
-	
--- MISC
-	type type_danger is (
-		FLOATING_INPUT,
-		CONTENTION,
-		SHORT_CIRCUIT,
-		NO_POWER_SUPPLY,
-		NOT_PREDICTABLE
-		);
-	
-	function show_danger (danger : in type_danger) return string;
 		
 end et_schematic;
 

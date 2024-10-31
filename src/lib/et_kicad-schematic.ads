@@ -51,7 +51,6 @@ with et_net_names;				use et_net_names;
 with et_nets;					use et_nets;
 with et_project;
 with et_net_labels;				use et_net_labels;
-with et_schematic;
 with et_terminals;
 with et_packages;
 with et_pcb;

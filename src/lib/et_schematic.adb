@@ -318,20 +318,7 @@ package body et_schematic is
 		raise constraint_error;
 	end device_name_in_use;
 
-
 	
-		
-	function show_danger (danger : in type_danger) return string is
-		preamble : constant string (1..9) := " RISK OF ";
-	begin
-		case danger is
-			when floating_input		=> return preamble & "FLOATING INPUT(S) !";
-			when contention			=> return preamble & "CONTENTION !";
-			when short_circuit		=> return preamble & "SHORT CIRCUIT OR OVERLOAD !";
-			when no_power_supply	=> return preamble & "COMPONENT DAMAGE !";
-			when not_predictable	=> return preamble & "UNPREDICTABLE HARM !";
-		end case;	
-	end show_danger;
 
 	
 end et_schematic;
