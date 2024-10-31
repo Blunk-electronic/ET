@@ -6,7 +6,9 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 --    This program is free software: you can redistribute it and/or modify  --
 --    it under the terms of the GNU General Public License as published by  --
@@ -109,12 +111,12 @@ procedure et is
 	symbol_name_create		: et_symbols.pac_symbol_model_file.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
 	symbol_name_open		: et_symbols.pac_symbol_model_file.bounded_string; -- the symbol to be opened
 	symbol_name_save_as		: et_symbols.pac_symbol_model_file.bounded_string; -- the symbol to be saved as
-	symbol_appearance		: et_device_appearance.type_appearance := et_device_appearance.PCB; -- virtual/pcb. mostly pcb.
+	symbol_appearance		: et_device_appearance.type_appearance := et_device_appearance.APPEARANCE_PCB; -- virtual/pcb. mostly pcb.
 	
 	device_name_create		: pac_device_model_file.bounded_string; -- the device to be created like libraries/devices/TL084.dev
 	device_name_open		: pac_device_model_file.bounded_string; -- the device to be opened
 	device_name_save_as		: pac_device_model_file.bounded_string; -- the device to be saved as
-	device_appearance		: et_device_appearance.type_appearance := et_device_appearance.PCB; -- virtual/pcb. mostly pcb.
+	device_appearance		: et_device_appearance.type_appearance := et_device_appearance.APPEARANCE_PCB; -- virtual/pcb. mostly pcb.
 
 	frame_name_create		: et_frames.pac_template_name.bounded_string; -- the frame to be created like lib/frames/A3_landscape.frs
 	frame_name_open			: et_frames.pac_template_name.bounded_string;

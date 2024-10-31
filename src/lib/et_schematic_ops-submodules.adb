@@ -4927,8 +4927,8 @@ package body et_schematic_ops.submodules is
 						use et_device_appearance;
 						use et_packages;
 					begin
-						-- the device must be real (appearance SCH_PCB)
-						if element (cursor_schematic).appearance = PCB then -- skip virtual devices
+						-- the device must be real
+						if element (cursor_schematic).appearance = APPEARANCE_PCB then -- skip virtual devices
 
 							-- the package must be real
 							if has_real_package (cursor_schematic) then

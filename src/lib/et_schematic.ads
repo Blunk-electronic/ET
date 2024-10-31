@@ -136,7 +136,7 @@ package et_schematic is
 		
 		case appearance is
 			-- If a device appears in both schematic and layout it has got:
-			when PCB =>
+			when APPEARANCE_PCB =>
 				value		: pac_device_value.bounded_string; -- 470R
 				
 				partcode	: pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
@@ -167,7 +167,7 @@ package et_schematic is
 
 				status : type_object_status;
 				
-			when VIRTUAL => null;
+			when APPEARANCE_VIRTUAL => null;
 
 		end case;
 	end record;

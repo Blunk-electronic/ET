@@ -190,7 +190,7 @@ package body et_schematic_ops is
 		use et_symbols;
 		use et_device_appearance;
 	begin
-		if element (device_cursor).appearance = PCB then
+		if element (device_cursor).appearance = APPEARANCE_PCB then
 			log (text => "location in board:" & 
 				to_string (element (device_cursor).position.place) &
 				" face" & 
@@ -200,9 +200,9 @@ package body et_schematic_ops is
 	end;
 
 	
-	function positions_of_units (
 	-- Collects the positions of all units (in schematic) of the given device and returns
 	-- them in a list.
+	function positions_of_units ( -- CS rename to get_unit_positions
 		device_cursor : in pac_devices_sch.cursor) 
 		return pac_unit_positions.map is
 
@@ -1078,7 +1078,7 @@ package body et_schematic_ops is
 				-- If it is about a real device, take a copy of the default 
 				-- placeholders as they are specified in the symbol model:
 				case result.appearance is
-					when PCB =>
+					when APPEARANCE_PCB =>
 						result.name 	:= element (unit_cursor).symbol.name;
 						result.value	:= element (unit_cursor).symbol.value;
 						result.purpose	:= element (unit_cursor).symbol.purpose;
@@ -1111,7 +1111,7 @@ package body et_schematic_ops is
 				-- If it is about a real device, take a copy of the default 
 				-- placeholders as they are specified in the symbol model:
 				case result.appearance is
-					when PCB =>
+					when APPEARANCE_PCB =>
 						result.name 	:= symbol.name;
 						result.value	:= symbol.value;
 						result.purpose	:= symbol.purpose;
@@ -1195,6 +1195,7 @@ package body et_schematic_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use et_symbols;
+
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
@@ -1210,6 +1211,7 @@ package body et_schematic_ops is
 				use pac_units;
 				unit_cursor : pac_units.cursor;
 
+				
 				procedure rotate_placeholder (
 					name	: in pac_unit_name.bounded_string; -- A
 					unit	: in out type_unit) 
@@ -1226,6 +1228,7 @@ package body et_schematic_ops is
 
 					end case;
 				end rotate_placeholder;
+
 				
 			begin -- query_units
 				if contains (device.units, unit_name) then
@@ -1242,6 +1245,7 @@ package body et_schematic_ops is
 				end if;
 			end query_units;
 
+			
 		begin -- query_devices
 			if contains (module.devices, device_name) then
 
@@ -1258,6 +1262,7 @@ package body et_schematic_ops is
 			end if;
 		end query_devices;
 		
+		
 	begin -- rotate_unit_placeholder
 		log (text => "module " & to_string (module_name) &
 			" rotating " & to_string (device_name) & " unit " &
@@ -1273,6 +1278,7 @@ package body et_schematic_ops is
 			process		=> query_devices'access);
 
 	end rotate_unit_placeholder;
+
 
 	
 	function locate_net (
@@ -1955,8 +1961,7 @@ package body et_schematic_ops is
 		device_name			: in type_device_name; -- R2
 		value				: in pac_device_value.bounded_string; -- 470R
 		log_threshold		: in type_log_level) 
-	is
-		
+	is		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
@@ -1986,7 +1991,7 @@ package body et_schematic_ops is
 			if device_cursor /= pac_devices_sch.no_element then -- the device should be there
 
 				-- Only real devices have a value.
-				if element (device_cursor).appearance = PCB then
+				if element (device_cursor).appearance = APPEARANCE_PCB then
 
 					-- Check value regarding the device category:
 					if et_conventions.value_valid (value, prefix (device_name)) then 
@@ -2057,15 +2062,16 @@ package body et_schematic_ops is
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 			use pac_devices_sch;
 
 			device_cursor : pac_devices_sch.cursor;
 
 			procedure set_purpose (
 				device_name	: in type_device_name;
-				device		: in out type_device_sch) is
-			begin
+				device		: in out type_device_sch) 
+			is begin
 				device.purpose := purpose;
 			end;
 
@@ -2081,7 +2087,7 @@ package body et_schematic_ops is
 			if device_cursor /= pac_devices_sch.no_element then -- the device should be there
 
 				-- Only real devices have a purpose. Issue warning if targeted device is virtual.
-				if element (device_cursor).appearance = PCB then
+				if element (device_cursor).appearance = APPEARANCE_PCB then
 
 					update_element (
 						container	=> module.devices,
@@ -2118,6 +2124,8 @@ package body et_schematic_ops is
 		log_indentation_down;
 	end set_purpose;
 
+
+	
 	
 	procedure set_partcode (
 		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -2153,7 +2161,7 @@ package body et_schematic_ops is
 			if device_cursor /= pac_devices_sch.no_element then -- the device should be there
 
 				-- Only real devices have a purpose. Issue warning if targeted device is virtual.
-				if element (device_cursor).appearance = PCB then
+				if element (device_cursor).appearance = APPEARANCE_PCB then
 
 					update_element (
 						container	=> module.devices,
@@ -2190,6 +2198,7 @@ package body et_schematic_ops is
 		log_indentation_down;
 	end set_partcode;
 
+
 	
 	
 	function exists (
@@ -2217,6 +2226,8 @@ package body et_schematic_ops is
 		return device_found;
 	end exists;
 
+
+
 	
 	function locate_device (
 		module	: in pac_generic_modules.cursor;
@@ -2241,6 +2252,8 @@ package body et_schematic_ops is
 		return result;
 	end locate_device;
 
+
+	
 	
 	function locate_device (
 		module	: in pac_generic_modules.cursor;
@@ -2256,6 +2269,8 @@ package body et_schematic_ops is
 		return get_device_model (cursor_sch);
 	end locate_device;
 
+
+	
 	
 	function locate_unit (
 		module	: in pac_generic_modules.cursor;

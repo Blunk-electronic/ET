@@ -178,14 +178,14 @@ package et_symbols is
 		shapes			: type_shapes; -- the collection of shapes
 		ports			: pac_ports.map;
 		case appearance is
-			when PCB =>
+			when APPEARANCE_PCB =>
 				-- Placeholders for device wide texts. To be filled with content when 
 				-- a symbol is placed in the schematic:
 				name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
 				value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
 				purpose : type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
 
-			when VIRTUAL => null;				
+			when APPEARANCE_VIRTUAL => null;				
 		end case;
 	end record;
 
@@ -203,12 +203,12 @@ package et_symbols is
 
 		-- The placeholders are copies of those in the symbol (see type_symbol):
 		case appearance is
-			when PCB =>
+			when APPEARANCE_PCB =>
 				name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
 				value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
 				purpose : type_text_placeholder (meaning => et_device_placeholders.PURPOSE);
 				
-			when VIRTUAL => null;
+			when APPEARANCE_VIRTUAL => null;
 		end case;
 	end record;
 

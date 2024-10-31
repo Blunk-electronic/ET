@@ -2220,14 +2220,14 @@ is
 			device_appearance := to_appearance (f (line, 2));
 
 			case device_appearance is
-				when VIRTUAL =>
+				when APPEARANCE_VIRTUAL =>
 					device := new type_device_sch'(
-						appearance	=> VIRTUAL,
+						appearance	=> APPEARANCE_VIRTUAL,
 						others		=> <>);
 
-				when PCB =>
+				when APPEARANCE_PCB =>
 					device := new type_device_sch'(
-						appearance	=> PCB,
+						appearance	=> APPEARANCE_PCB,
 						others		=> <>);
 			end case;
 					
@@ -2896,16 +2896,16 @@ is
 				-- is inserted in the unit list of the device.
 				
 				case device_appearance is
-					when VIRTUAL =>
+					when APPEARANCE_VIRTUAL =>
 						pac_units.insert (
 							container	=> device_units,
 							key			=> device_unit_name,
 							new_item	=> (
-								appearance	=> VIRTUAL,
+								appearance	=> APPEARANCE_VIRTUAL,
 								mirror		=> device_unit_mirror,
 								position	=> device_unit_position));
 												
-					when PCB =>
+					when APPEARANCE_PCB =>
 						-- A unit of a real device has placeholders:
 						pac_units.insert (
 							container	=> device_units,
@@ -2914,7 +2914,7 @@ is
 								mirror		=> device_unit_mirror,
 
 								position	=> device_unit_position,
-								appearance	=> PCB,
+								appearance	=> APPEARANCE_PCB,
 
 								-- The placeholders for reference, value and purpose have
 								-- been built and can now be assigned to the unit:
@@ -3057,7 +3057,7 @@ is
 				device.model := device_model;
 
 				-- assign appearance specific temporarily variables and write log information
-				if device.appearance = PCB then
+				if device.appearance = APPEARANCE_PCB then
 
 					if not value_characters_valid (device_value) then
 						log (WARNING, "value of " & to_string (device_name) &
@@ -3122,7 +3122,7 @@ is
 					log_threshold	=> log_threshold + 2);
 
 				-- Validate partcode according to category, package and value:
-				if device.appearance = PCB then
+				if device.appearance = APPEARANCE_PCB then
 					et_conventions.validate_partcode (
 						partcode		=> device.partcode,
 						device_name		=> device_name,

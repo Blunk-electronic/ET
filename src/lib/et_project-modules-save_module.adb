@@ -894,6 +894,7 @@ is
 			use et_devices;
 			use et_device_rw;
 			use et_device_appearance;
+
 			
 		begin -- query_units
 			section_mark (section_units, HEADER);
@@ -911,7 +912,7 @@ is
 					   
 				write (keyword => keyword_mirrored, parameters => to_string (element (unit_cursor).mirror, verbose => false)); -- x_axis, y_axis, none
 
-				if element (unit_cursor).appearance = PCB then
+				if element (unit_cursor).appearance = APPEARANCE_PCB then
 					section_mark (section_placeholders, HEADER);
 					
 					write_placeholder (element (unit_cursor).name);
@@ -988,7 +989,7 @@ is
 			write (keyword => keyword_model, parameters => to_string (element (d).model));
 
 			case element (d).appearance is
-				when PCB =>
+				when APPEARANCE_PCB =>
 					-- write the value if a value exists for the device:
 					if not is_empty (element (d).value) then
 						write (keyword => keyword_value, parameters => to_string (element (d).value));
@@ -1018,7 +1019,7 @@ is
 					query_element (d, query_placeholders'access);
 					section_mark (section_package, FOOTER);
 					
-				when VIRTUAL => null;
+				when APPEARANCE_VIRTUAL => null;
 			end case;
 
 			query_element (d, query_units'access);

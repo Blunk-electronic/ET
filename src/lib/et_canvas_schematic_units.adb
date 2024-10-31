@@ -1166,7 +1166,7 @@ package body et_canvas_schematic_units is
 		variants := available_variants (device_cursor_lib);
 
 		case element (device_cursor_lib).appearance is
-			when PCB =>
+			when APPEARANCE_PCB =>
 				if length (variants) > 1 then
 					show_variants_menu;
 				else
@@ -1178,7 +1178,7 @@ package body et_canvas_schematic_units is
 					set_status (status_add);
 				end if;
 				
-			when VIRTUAL => null;
+			when APPEARANCE_VIRTUAL => null;
 		end case;
 			
 		-- CS exception handler in case read_device fails ?
@@ -1874,7 +1874,7 @@ package body et_canvas_schematic_units is
 			while device_cursor /= pac_devices_sch.no_element loop
 
 				-- Only real devices have placeholders. Virtual devices are skipped here:
-				if element (device_cursor).appearance = PCB then
+				if element (device_cursor).appearance = APPEARANCE_PCB then
 				
 					log (text => "probing device " & to_string (key (device_cursor)),
 						level => log_threshold + 1);
@@ -2357,7 +2357,7 @@ package body et_canvas_schematic_units is
 			pc	: constant string := ", partcode ";
 		begin
 			case element (su.device).appearance is
-				when PCB =>
+				when APPEARANCE_PCB =>
 					return var & to_string (element (su.device).variant)
 						& pc & to_string (element (su.device).partcode);
 

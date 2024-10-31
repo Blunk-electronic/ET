@@ -1998,7 +1998,7 @@ is
 		use et_schematic;
 
 		reference					: type_device_name;	-- like IC5	
-		appearance					: type_appearance := VIRTUAL; -- CS: why this default ?
+		appearance					: type_appearance := APPEARANCE_VIRTUAL; -- CS: why this default ?
 		generic_name_in_lbr			: type_component_generic_name.bounded_string; -- like TRANSISTOR_PNP
 
 		-- V5:
@@ -2199,7 +2199,7 @@ is
 			-- fields to be checked. If it is about a virtual component, those 
 			-- fields are ignored and thus NOT checked:
 			case appearance is
-				when et_device_appearance.PCB =>
+				when APPEARANCE_PCB =>
 						
 					-- package
 					log (text => "package/footprint", level => log_threshold + 1);
@@ -2470,12 +2470,12 @@ is
 			
 			case appearance is
 				
-				when VIRTUAL => -- we have a line like "L P3V3 #PWR07"
+				when APPEARANCE_VIRTUAL => -- we have a line like "L P3V3 #PWR07"
 			
 					add_component (
 						reference	=> remove_leading_hash (reference), -- #PWR03 becomes PWR03
 						component	=> (
-							appearance		=> et_device_appearance.VIRTUAL,
+							appearance		=> APPEARANCE_VIRTUAL,
 
 							-- Whether the component is a "power flag" can be reasoned from its reference:
 							power_flag		=> to_power_flag (reference),
@@ -2496,12 +2496,12 @@ is
 						log_threshold => log_threshold + 2);
 
 					
-				when et_device_appearance.PCB => -- we have a line like "L 74LS00 U1"
+				when APPEARANCE_PCB => -- we have a line like "L 74LS00 U1"
 
 					add_component ( 
 						reference => reference,
 						component => (
-							appearance		=> et_device_appearance.PCB,
+							appearance		=> APPEARANCE_PCB,
 
 							library_name	=> full_component_library_name, -- ../lbr/bel_logic.lib
 							generic_name	=> generic_name_in_lbr,
@@ -2555,26 +2555,27 @@ is
 			
 		end insert_component;
 
-		procedure insert_unit is 
+
+		
 		-- Inserts a unit into the unit list of a component. The text fields around a unit are placeholders.
 		-- The properties of the placeholder texts are loaded with the properties of the text fields of the units
 		-- found in the schematic. The idea behind is to store just basic text properties (type_text_basic) 
 		-- for the texts around the unit, but not its content. The content is stored with the component as a kind
 		-- of meta-data. See procedure insert_component.
 		-- Raises constraint error if unit already in unit list of component.
+		procedure insert_unit is 
 			use et_symbols;
 		begin
 			log_indentation_up;
 			
 			case appearance is
-
-				when VIRTUAL =>
+				when APPEARANCE_VIRTUAL =>
 
 					add_unit (
 						reference	=> remove_leading_hash (reference), -- #PWR03 becomes PWR03
 						unit_name	=> unit_name, -- "I/O Bank 3" or "PWR" or "A" or "B" ...	
 						unit 		=> (
-							appearance		=> VIRTUAL,
+							appearance		=> APPEARANCE_VIRTUAL,
 							position		=> unit_position,
 							rotation		=> orientation,
 							mirror			=> mirror,
@@ -2602,7 +2603,7 @@ is
 						log_threshold => log_threshold + 2);
 										
 
-				when et_device_appearance.PCB =>
+				when APPEARANCE_PCB =>
 
 					add_unit 
 						(
@@ -2610,7 +2611,7 @@ is
 						unit_name	=> unit_name, -- "I/O Bank 3" or "PWR" or "A" or "B" ...	
 						unit 		=> 
 							(
-							appearance		=> et_device_appearance.PCB,
+							appearance		=> APPEARANCE_PCB,
 							position		=> unit_position,
 							rotation		=> orientation,
 							mirror			=> mirror,
@@ -2954,12 +2955,12 @@ is
 				appearance := to_appearance (line => element (line_cursor), schematic => true);
 				log (text => to_string (appearance, verbose => true), level => log_threshold + 3);
 
+				
 				-- Depending on the appearance of the component the reference is built and checked.
 				-- IMPORTANT: The reference is preliminary. Due to possible hierarchic design, it
 				-- might be overwritten once alternative references are found in this sheet.
-				case appearance is
-				
-					when VIRTUAL => 
+				case appearance is				
+					when APPEARANCE_VIRTUAL => 
 						-- We have a line like "L P3V3 #PWR07".
 						-- Build a reference type from the given reference string.
 						-- Afterward we validate the prefix of the reference. It must be
@@ -2971,7 +2972,8 @@ is
 						log (text => "reference " & to_string (reference) & " (preliminary)", level => log_threshold);
 						validate_prefix (reference);
 
-					when et_device_appearance.PCB =>
+						
+					when APPEARANCE_PCB =>
 						-- we have a line like "L 74LS00 IC13"
 						-- -- Build a reference type from the given reference string.
 						-- Afterward we validate the prefix of the reference. 

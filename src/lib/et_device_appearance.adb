@@ -57,9 +57,9 @@ package body et_device_appearance is
 	is begin
 		if verbose then
 			case appearance is
-				when VIRTUAL =>
+				when APPEARANCE_VIRTUAL =>
 					return ("appears in schematic only (virtual device)");
-				when PCB =>
+				when APPEARANCE_PCB =>
 					return ("appears in schematic and layout");
 			end case;
 		else
@@ -69,8 +69,11 @@ package body et_device_appearance is
 
 
 	
-	function to_appearance (appearance : in string) return type_appearance is begin
-		return type_appearance'value (appearance);
+	function to_appearance (
+		appearance : in string) 
+		return type_appearance 
+	is begin
+		return type_appearance'value (appearance_prefix & appearance);
 	end;	
 
 	

@@ -265,7 +265,7 @@ package et_kicad.schematic is
 		units			: type_units_schematic.map; -- PWR, A, B, ...
 		case appearance is
 			-- If a component appears in both schematic and layout it has got:
-			when PCB => 
+			when APPEARANCE_PCB => 
 				datasheet			: type_component_datasheet.bounded_string;
 				variant				: pac_package_variant_name.bounded_string; -- D, N
 
@@ -279,7 +279,7 @@ package et_kicad.schematic is
 			-- those component may enforce net names (like GND or P3V3). Power flags do not
 			-- enforce net names. In order to distinguish them from regular power symbols the
 			-- power_flag is provided.
-			when VIRTUAL => 
+			when APPEARANCE_VIRTUAL => 
 				power_flag	: type_power_flag := NO;
 
 		end case;

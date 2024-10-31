@@ -89,17 +89,17 @@ is
 			log (text => "adding internal unit " & to_string (key (unit_cursors.int)), level => log_threshold + 2);
 			
 			case element (device_cursor_lib).appearance is
-				when VIRTUAL =>
+				when APPEARANCE_VIRTUAL =>
 					pac_units.insert (
 						container	=> device.units,
 						key			=> key (unit_cursors.int), -- the unit name like A, B
 						new_item	=> (
-							appearance	=> VIRTUAL,
+							appearance	=> APPEARANCE_VIRTUAL,
 							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
 							others 		=> <>)
 							);
 					
-				when PCB =>
+				when APPEARANCE_PCB =>
 
 					-- Rotate the positions of placeholders and their rotation about
 					-- their own origin according to rotation given by caller:
@@ -109,7 +109,7 @@ is
 						container	=> device.units,
 						key			=> key (unit_cursors.int), -- the unit name like A, B, VCC_IO_BANK_1
 						new_item	=> (
-							appearance	=> PCB,
+							appearance	=> APPEARANCE_PCB,
 							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
 							name		=> placeholders.name,
 							value		=> placeholders.value,
@@ -135,17 +135,17 @@ is
 			log (text => "adding external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
 			
 			case element (device_cursor_lib).appearance is
-				when VIRTUAL =>
+				when APPEARANCE_VIRTUAL =>
 					pac_units.insert (
 						container	=> device.units,
 						key			=> key (unit_cursors.ext), -- the unit name like A, B
 						new_item	=> (
-							appearance	=> VIRTUAL,
+							appearance	=> APPEARANCE_VIRTUAL,
 							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
 							others 		=> <>)
 							);
 					
-				when PCB =>
+				when APPEARANCE_PCB =>
 					-- The symbol file name is provided by unit_cursors.ext.
 					symbol_file := element (unit_cursors.ext).model; -- *.sym
 					
@@ -164,7 +164,7 @@ is
 						container	=> device.units,
 						key			=> key (unit_cursors.ext), -- the unit name like A, B, VCC_IO_BANK_1
 						new_item	=> (
-							appearance	=> PCB,
+							appearance	=> APPEARANCE_PCB,
 							position	=> destination, -- the coordinates provided by the calling unit (sheet,x,y,rotation)
 							name		=> placeholders.name,	
 							value		=> placeholders.value,	
@@ -191,26 +191,26 @@ is
 			-- Create a new device. Copy lots of properties from the original device.
 			-- The unit list is empty for the time being:
 			case element (device_cursor_sch).appearance is
-				when VIRTUAL =>
+				when APPEARANCE_VIRTUAL =>
 					et_schematic.pac_devices_sch.insert (
 						container	=> module.devices,
 						inserted	=> inserted,
 						position	=> device_cursor_sch,
 						key			=> next_name,
 						new_item	=> (
-							appearance 	=> VIRTUAL,
+							appearance 	=> APPEARANCE_VIRTUAL,
 							model		=> element (device_cursor_sch).model,
 							units		=> pac_units.empty_map
 							));
 
-				when PCB =>
+				when APPEARANCE_PCB =>
 					et_schematic.pac_devices_sch.insert (
 						container	=> module.devices,
 						inserted	=> inserted,
 						position	=> device_cursor_sch,
 						key			=> next_name,
 						new_item	=> (
-							appearance 	=> PCB,
+							appearance 	=> APPEARANCE_PCB,
 							model		=> element (device_cursor_sch).model,
 							units		=> pac_units.empty_map,
 							value		=> element (device_cursor_sch).value, -- if predefined in dev. model

@@ -358,12 +358,12 @@ package et_kicad_libraries is
 			-- those components enforce net names (like GND or P3V3). Power flags do not
 			-- enforce net names. In order to distinguish them from regular power symbols the
 			-- power_flag is provided.
-			when VIRTUAL => 
+			when APPEARANCE_VIRTUAL => 
 				power_flag		: type_power_flag := NO;
 
 			-- If a component appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
-			when PCB => 
+			when APPEARANCE_PCB => 
 				package_filter	: type_package_filter.set := type_package_filter.empty_set;
 				datasheet		: type_component_datasheet.bounded_string;
 				variants		: et_devices.pac_variants.map;

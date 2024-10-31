@@ -386,7 +386,7 @@ procedure draw_units is
 			-- Draw terminal name if this is the symbol of a real device. 
 			-- Virtual symbols do not have terminal names.
 			if not preview then
-				if symbol.appearance = PCB and then element (c).terminal_name_visible = YES then
+				if symbol.appearance = APPEARANCE_PCB and then element (c).terminal_name_visible = YES then
 					draw_terminal_name;
 				end if;
 			end if;
@@ -548,7 +548,7 @@ procedure draw_units is
 		
 		-- Draw placeholders if this is the symbol of a real device. 
 		-- Virtual symbols do not have placeholders.
-		if symbol.appearance = PCB then
+		if symbol.appearance = APPEARANCE_PCB then
 			draw_placeholders;
 		end if;
 
@@ -848,7 +848,7 @@ procedure draw_units is
 				-- NOTE: There can only be just one placeholder being moved.
 				-- Which one is determined by the selector placeholder.category.
 				
-				if element (unit_cursor).appearance = PCB then
+				if element (unit_cursor).appearance = APPEARANCE_PCB then
 					sch_placeholder_name := element (unit_cursor).name;
 					sch_placeholder_value := element (unit_cursor).value;
 					sch_placeholder_purpose := element (unit_cursor).purpose;
@@ -979,7 +979,7 @@ procedure draw_units is
 					-- placeholders of the unit.
 					-- NOTE: The position of the placeholders is relative to
 					-- the unit position !
-					if element (unit_cursor).appearance = PCB then
+					if element (unit_cursor).appearance = APPEARANCE_PCB then
 						sch_placeholder_name := element (unit_cursor).name;
 						sch_placeholder_value := element (unit_cursor).value;
 						sch_placeholder_purpose := element (unit_cursor).purpose;		
@@ -1004,7 +1004,7 @@ procedure draw_units is
 		
 		-- Get device name, value, purpose and number of units of the current device.
 		-- Procedure draw_symbol needs them later:
-		if element (device_cursor).appearance = PCB then
+		if element (device_cursor).appearance = APPEARANCE_PCB then
 			device_name := key (device_cursor); -- like R1, IC100
 			device_value := element (device_cursor).value; -- like 100R or TL084
 			device_purpose := element (device_cursor).purpose; -- like "brightness control"
@@ -1065,11 +1065,11 @@ procedure draw_units is
 			-- If the symbol is virtual, then the placeholders are meaningless
 			-- and assume default values.
 				case element (unit_cursor.internal).appearance is
-					when PCB =>
+					when APPEARANCE_PCB =>
 						sch_placeholder_name	:= element (unit_cursor.internal).symbol.name;
 						sch_placeholder_value	:= element (unit_cursor.internal).symbol.value;
 						sch_placeholder_purpose := element (unit_cursor.internal).symbol.purpose;
-					when VIRTUAL =>
+					when APPEARANCE_VIRTUAL =>
 						sch_placeholder_name	:= (meaning => NAME, others => <>);
 						sch_placeholder_value	:= (meaning => VALUE, others => <>);
 						sch_placeholder_purpose := (meaning => PURPOSE, others => <>);

@@ -879,8 +879,8 @@ package body et_devices is
 		use pac_devices_lib;
 	begin
 		case element (device_cursor).appearance is
-			when VIRTUAL => return false;
-			when PCB => return true;
+			when APPEARANCE_VIRTUAL => return false;
+			when APPEARANCE_PCB => return true;
 		end case;
 	end is_real;
 
@@ -1252,8 +1252,8 @@ package body et_devices is
 		use pac_devices_lib;
 	begin
 		case element (device_cursor).appearance is
-			when PCB		=> result := element (device_cursor).variants;
-			when VIRTUAL	=> null;
+			when APPEARANCE_PCB		=> result := element (device_cursor).variants;
+			when APPEARANCE_VIRTUAL	=> null;
 		end case;
 		
 		return result;

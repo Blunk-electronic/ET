@@ -39,10 +39,12 @@
 
 package et_device_appearance is
 
+	appearance_prefix	: constant string := ("APPEARANCE_");
+
 	
 	type type_appearance is (
-		VIRTUAL,	-- a device that exists in the schematic only (like power symbols)
-		PCB			-- a device that exists in both schematic and soldered on a pcb
+		APPEARANCE_VIRTUAL,	-- a device that exists in the schematic only (like power symbols)
+		APPEARANCE_PCB			-- a device that exists in both schematic and soldered on a pcb
 		-- CS: cable 
 		-- CS: wire
 		-- ...
@@ -56,7 +58,11 @@ package et_device_appearance is
 		verbose		: in boolean := false)
 		return string;
 
-	function to_appearance (appearance : in string) return type_appearance;
+
+	
+	function to_appearance (
+		appearance : in string) 
+		return type_appearance;
 	
 
 	

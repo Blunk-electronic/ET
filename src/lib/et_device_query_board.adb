@@ -526,7 +526,7 @@ package body et_device_query_board is
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
 	begin
-		if device.appearance = PCB then
+		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
 
 			if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
@@ -560,7 +560,7 @@ package body et_device_query_board is
 		packge : pac_package_models.cursor;
 		conductors : type_conductor_objects; -- non-electrical
 	begin
-		if device.appearance = PCB then
+		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
 
 			if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
@@ -692,7 +692,7 @@ package body et_device_query_board is
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
 	begin
-		if device.appearance = PCB then
+		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
 				
 			if layer_category /= INNER then -- route restrict objects exist in outer layers only
@@ -726,7 +726,7 @@ package body et_device_query_board is
 		use et_route_restrict.packages;
 		restrict : type_one_side;
 	begin
-		if device.appearance = PCB then
+		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
 				
 			if layer_category /= INNER then -- route restrict objects exist in outer layers only
@@ -829,7 +829,7 @@ package body et_device_query_board is
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
 	begin
-		if device.appearance = PCB then
+		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
 				
 			if layer_category /= INNER then -- via restrict objects exist in outer layers only
@@ -895,7 +895,7 @@ package body et_device_query_board is
 		packge : pac_package_models.cursor;
 		rotation : type_rotation_model;
 	begin
-		if device.appearance = PCB then
+		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
 			
@@ -980,7 +980,7 @@ package body et_device_query_board is
 		packge : pac_package_models.cursor;
 		rotation : type_rotation_model;
 	begin
-		if device.appearance = PCB then
+		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
 			
@@ -1067,7 +1067,7 @@ package body et_device_query_board is
 
 		use et_stop_mask.packages;
 	begin
-		if device.appearance = PCB then
+		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
 
@@ -1245,7 +1245,7 @@ package body et_device_query_board is
 
 		
 	begin -- get_silkscreen_objects
-		if device.appearance = PCB then
+		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
 
@@ -1447,7 +1447,7 @@ package body et_device_query_board is
 
 		
 	begin -- get_assy_doc_objects
-		if device.appearance = PCB then
+		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
 
@@ -1608,7 +1608,7 @@ package body et_device_query_board is
 
 		rotation : type_rotation_model;
 	begin
-		if device.appearance = PCB then
+		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
 			
@@ -1641,7 +1641,7 @@ package body et_device_query_board is
 		
 		rotation : type_rotation_model;
 	begin
-		if device.appearance = PCB then
+		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
 			rotation := device.position.rotation;
 			

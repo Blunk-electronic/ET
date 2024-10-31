@@ -50,7 +50,7 @@ with et_pcb_stack;
 with et_symbols;
 with et_nets;
 
-with et_device_appearance;
+with et_device_appearance;		use et_device_appearance;
 with et_pcb_contour;			use et_pcb_contour;
 with et_axes;					use et_axes;
 with et_generic_stacks;
@@ -5377,7 +5377,7 @@ package body et_kicad.pcb is
 
 					-- We are interested in real components only. Virtual schematic components
 					-- do not appear in a board and thus are skipped.
-					if element (component_cursor).appearance = et_device_appearance.PCB then
+					if element (component_cursor).appearance = APPEARANCE_PCB then
 
 						-- set package reference as the component reference (from schematic)
 						package_reference := key (component_cursor);

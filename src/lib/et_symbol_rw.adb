@@ -155,6 +155,7 @@ package body et_symbol_rw is
 				);
 	end write_text_properties;
 
+
 	
 	procedure create_symbol (
 		symbol_name		: in pac_symbol_model_file.bounded_string; -- libraries/symbols/nand.sym
@@ -173,18 +174,18 @@ package body et_symbol_rw is
 			log (WARNING, text => "symbol already exists -> skipped", level => log_threshold + 1);
 		else
 			case appearance is
-				when PCB =>
+				when APPEARANCE_PCB =>
 					insert (
 						container	=> symbols,
 						key			=> symbol_name,
-						new_item	=> (appearance => PCB, others => <>)
+						new_item	=> (appearance => APPEARANCE_PCB, others => <>)
 						);
 
-				when VIRTUAL =>
+				when APPEARANCE_VIRTUAL =>
 					insert (
 						container	=> symbols,
 						key			=> symbol_name,
-						new_item	=> (appearance => VIRTUAL, others => <>)
+						new_item	=> (appearance => APPEARANCE_VIRTUAL, others => <>)
 						);
 			end case;					
 		end if;
@@ -192,6 +193,7 @@ package body et_symbol_rw is
 		log_indentation_down;
 	end create_symbol;
 
+	
 	
 	procedure write_symbol ( 
 		symbol			: in type_symbol;
@@ -254,7 +256,7 @@ package body et_symbol_rw is
 
 		procedure write_placeholders is begin
 			case symbol.appearance is
-				when PCB =>
+				when APPEARANCE_PCB =>
 
 					section_mark (section_placeholders, HEADER);
 					
@@ -361,7 +363,7 @@ package body et_symbol_rw is
 		section_mark (section_texts, FOOTER);
 
 		-- PLACEHOLDERS
-		if symbol.appearance = PCB then
+		if symbol.appearance = APPEARANCE_PCB then
 			write_placeholders;
 		end if;
 
@@ -825,14 +827,14 @@ package body et_symbol_rw is
 
 								-- Create a new symbol where pointer "symbol" is pointing at.
 								case appearance is
-									when VIRTUAL =>
+									when APPEARANCE_VIRTUAL =>
 										symbol := new type_symbol' (
-											appearance	=> VIRTUAL,
+											appearance	=> APPEARANCE_VIRTUAL,
 											others		=> <>);
 
-									when PCB =>
+									when APPEARANCE_PCB =>
 										symbol := new type_symbol' (
-											appearance	=> PCB,
+											appearance	=> APPEARANCE_PCB,
 											others		=> <>);
 
 								end case;

@@ -103,18 +103,18 @@ package body et_device_rw is
 			log (WARNING, text => "device already exists -> skipped", level => log_threshold + 1);
 		else
 			case appearance is
-				when PCB =>
+				when APPEARANCE_PCB =>
 					insert (
 						container	=> devices,
 						key			=> device_name,
-						new_item	=> (appearance => PCB, others => <>)
+						new_item	=> (appearance => APPEARANCE_PCB, others => <>)
 						);
 
-				when VIRTUAL =>
+				when APPEARANCE_VIRTUAL =>
 					insert (
 						container	=> devices,
 						key			=> device_name,
-						new_item	=> (appearance => VIRTUAL, others => <>)
+						new_item	=> (appearance => APPEARANCE_VIRTUAL, others => <>)
 						);
 			end case;					
 		end if;
@@ -218,9 +218,10 @@ package body et_device_rw is
 		write (keyword => keyword_prefix, parameters => to_string (device.prefix));
 		write (keyword => keyword_appearance, parameters => to_string (device.appearance));
 
+		
 		-- package variants
 		case device.appearance is
-			when PCB =>
+			when APPEARANCE_PCB =>
 				write (keyword => keyword_value, parameters => to_string (device.value));
 				--write (keyword => keyword_partcode, parameters => to_string (device.partcode));
 
@@ -244,6 +245,7 @@ package body et_device_rw is
 			when others => null;				
 		end case;
 
+		
 		-- internal units
 		section_mark (section_units_internal, HEADER);
 		while unit_internal_cursor /= pac_units_internal.no_element loop
@@ -252,8 +254,10 @@ package body et_device_rw is
 			section_mark (section_unit, FOOTER);
 			next (unit_internal_cursor);
 		end loop;
+		
 		section_mark (section_units_internal, FOOTER);
 
+		
 		-- external units
 		section_mark (section_units_external, HEADER);
 		while unit_external_cursor /= pac_units_external.no_element loop
@@ -262,6 +266,7 @@ package body et_device_rw is
 			section_mark (section_unit, FOOTER);
 			next (unit_external_cursor);
 		end loop;
+		
 		section_mark (section_units_external, FOOTER);
 
 		-- write footer
@@ -456,27 +461,27 @@ package body et_device_rw is
 			-- Depending on the appearance of the device, a unit with the same
 			-- appearance is inserted in units_internal.
 			case appearance is 
-				when VIRTUAL =>
+				when APPEARANCE_VIRTUAL =>
 					pac_units_internal.insert (
 						container	=> units_internal,
 						position	=> position,
 						inserted	=> inserted,
 						key			=> unit_name,
 						new_item	=> (
-								appearance	=> VIRTUAL,
+								appearance	=> APPEARANCE_VIRTUAL,
 								symbol		=> unit_symbol.all,
 								position	=> unit_position,
 								swap_level	=> unit_swap_level,
 								add_level	=> unit_add_level));
 
-				when PCB =>
+				when APPEARANCE_PCB =>
 					pac_units_internal.insert (
 						container	=> units_internal,
 						position	=> position,
 						inserted	=> inserted,
 						key			=> unit_name,
 						new_item	=> (
-								appearance	=> PCB,
+								appearance	=> APPEARANCE_PCB,
 								symbol		=> unit_symbol.all,
 								position	=> unit_position,
 								swap_level	=> unit_swap_level,
@@ -1070,14 +1075,14 @@ package body et_device_rw is
 										-- The symbol assumes the appearance of the device.
 										-- The symbol will be copied to the current unit later.
 										case appearance is
-											when VIRTUAL =>
+											when APPEARANCE_VIRTUAL =>
 												unit_symbol := new type_symbol' (
-													appearance	=> VIRTUAL,
+													appearance	=> APPEARANCE_VIRTUAL,
 													others		=> <>);
 
-											when PCB =>
+											when APPEARANCE_PCB =>
 												unit_symbol := new type_symbol' (
-													appearance	=> PCB,
+													appearance	=> APPEARANCE_PCB,
 													others		=> <>);
 
 											when others => 
@@ -1524,7 +1529,7 @@ package body et_device_rw is
 
 			-- Assemble final device and insert it in devices:
 			case appearance is
-				when PCB => -- a real device
+				when APPEARANCE_PCB => -- a real device
 
 					-- If a value was specified (via an entry like "value 100R),
 					-- check if it meets certain conventions regarding its prefix.
@@ -1541,7 +1546,7 @@ package body et_device_rw is
 						container	=> devices, 
 						key			=> file_name, -- libraries/devices/7400.dev
 						new_item	=> (
-								appearance		=> PCB,
+								appearance		=> APPEARANCE_PCB,
 								prefix			=> prefix, -- IC
 								units_internal	=> units_internal,
 								units_external	=> units_external,
@@ -1549,12 +1554,12 @@ package body et_device_rw is
 								--partcode		=> partcode,
 								variants		=> variants));
 
-				when VIRTUAL =>
+				when APPEARANCE_VIRTUAL =>
 					pac_devices_lib.insert (
 						container	=> devices, 
 						key			=> file_name, -- libraries/devices/power_gnd.dev
 						new_item	=> (
-								appearance		=> VIRTUAL,
+								appearance		=> APPEARANCE_VIRTUAL,
 								prefix			=> prefix, -- PWR
 								units_internal	=> units_internal,
 								units_external	=> units_external));

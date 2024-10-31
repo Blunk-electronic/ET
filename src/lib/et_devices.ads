@@ -477,12 +477,12 @@ package et_devices is
 			-- and thus does not have any package variants.
 			-- Such components are power symbols. Later when building netlists
 			-- those components enforce net names (like GND or P3V3).
-			when VIRTUAL => 
+			when APPEARANCE_VIRTUAL => 
 				null;
 
 			-- If a device appears in both schematic and layout it comes 
 			-- with at least one package/footprint variant. We store variants in a map.
-			when PCB => 
+			when APPEARANCE_PCB => 
 				value		: pac_device_value.bounded_string; -- 74LS00
 				--partcode	: type_component_partcode.bounded_string;
 				variants	: pac_variants.map;

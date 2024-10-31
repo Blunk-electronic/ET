@@ -49,8 +49,8 @@ package body et_device_query_schematic is
 		use et_device_appearance;
 	begin
 		case pac_devices_sch.element (device).appearance is
-			when PCB		=> return true;
-			when VIRTUAL	=> return false;
+			when APPEARANCE_PCB		=> return true;
+			when APPEARANCE_VIRTUAL	=> return false;
 		end case;
 	end is_real;
 

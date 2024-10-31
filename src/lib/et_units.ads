@@ -60,7 +60,7 @@ package et_units is
 	-- In a schematic we handle only virtual devices (like GND symbols)
 	-- and those which appear in both schematic an layout (so called real devices):
 	subtype type_appearance_schematic is type_appearance 
-		range VIRTUAL .. PCB;
+		range APPEARANCE_VIRTUAL .. APPEARANCE_PCB;
 
 	
 	-- In a schematic we find units spread all over.
@@ -70,8 +70,8 @@ package et_units is
 		position	: et_coordinates_2.type_position; -- incl. rotation and sheet number
 		mirror		: type_mirror := MIRROR_NO;
 		case appearance is
-			when VIRTUAL => null; -- CS
-			when PCB =>
+			when APPEARANCE_VIRTUAL => null; -- CS
+			when APPEARANCE_PCB =>
 				name	: type_text_placeholder (meaning => et_device_placeholders.NAME);
 				value	: type_text_placeholder (meaning => et_device_placeholders.VALUE);
 				purpose	: type_text_placeholder (meaning => et_device_placeholders.PURPOSE); -- to be filled in schematic later by the user

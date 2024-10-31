@@ -158,8 +158,8 @@ package body et_kicad.schematic is
 	end orientation_of_unit;
 
 	
-	procedure write_unit_properties (
 	-- Writes the properties of the unit indicated by the given cursor.
+	procedure write_unit_properties (
 		unit			: in type_units_schematic.cursor;
 		log_threshold	: in type_log_level) 
 	is
@@ -209,7 +209,7 @@ package body et_kicad.schematic is
 
 			-- some placeholders exist depending on the component appearance
 			case type_units_schematic.element (unit).appearance is
-				when et_device_appearance.PCB =>
+				when APPEARANCE_PCB =>
 					null;
 					
 -- 					-- package/footprint
@@ -395,8 +395,8 @@ package body et_kicad.schematic is
 
 	
 
-	procedure write_component_properties (
 	-- Writes the properties of the component indicated by the given cursor.
+	procedure write_component_properties (
 		component 		: in type_components_schematic.cursor;
 		log_threshold 	: in type_log_level) 
 	is
@@ -426,7 +426,7 @@ package body et_kicad.schematic is
 
 		-- depending on the component appearance there is more to report:
 		case type_components_schematic.element(component).appearance is
-			when et_device_appearance.PCB =>
+			when APPEARANCE_PCB =>
 
 -- 				-- package
 -- 				log (text => "package " 
@@ -446,10 +446,10 @@ package body et_kicad.schematic is
 
 	
 
+	-- Returns the position of the given no-connection-flag as string.
 	function to_string (
 		no_connection_flag	: in type_no_connection_flag;
 		scope				: in et_kicad_coordinates.type_scope) return string is
-	-- Returns the position of the given no-connection-flag as string.
 	begin	
 		return (to_string (position => no_connection_flag.coordinates, scope => scope));
 	end to_string;
@@ -809,7 +809,6 @@ package body et_kicad.schematic is
 
 
 	
-	function to_appearance (line : in type_fields_of_line; schematic : in boolean) 
 	-- Converts the apperance flag to type_device_appearance.
 	-- The parameter "schematic" specifies whether we are dealing with a schematic
 	-- or a library component.
@@ -817,6 +816,7 @@ package body et_kicad.schematic is
 	-- example: DEF 74LS00 IC 0 30 Y Y 4 F N
 	-- In a schematic it is defined by a hash sign:
 	-- example: L P3V3 #PWR07
+	function to_appearance (line : in type_fields_of_line; schematic : in boolean) 
 		return et_device_appearance.type_appearance is
 
 		use et_symbols;
@@ -831,6 +831,7 @@ package body et_kicad.schematic is
 			raise constraint_error;
 		end invalid_appearance;	
 
+		
 	begin -- to_appearance
 		case schematic is
 
@@ -839,9 +840,9 @@ package body et_kicad.schematic is
 				-- character of the 3rd subfield is a hash sign.
 				if f (line,3) (f (line,3)'first) 
 					= schematic_component_power_symbol_prefix then
-					comp_app := VIRTUAL;
+					comp_app := APPEARANCE_VIRTUAL;
 				else
-					comp_app := et_device_appearance.PCB;
+					comp_app := APPEARANCE_PCB;
 				end if;
 				
 			when false =>
@@ -852,9 +853,9 @@ package body et_kicad.schematic is
 				-- Evaluate lca and set comp_app accordingly.
 				case lca is
 					when N =>
-						comp_app := et_device_appearance.PCB;
+						comp_app := APPEARANCE_PCB;
 					when P => 
-						comp_app := VIRTUAL;
+						comp_app := APPEARANCE_VIRTUAL;
 				end case;
 		end case;
 		
@@ -866,6 +867,8 @@ package body et_kicad.schematic is
 				raise;
 				
 	end to_appearance;
+
+		
 
 	function to_alternative_representation (line : in type_fields_of_line; schematic : in boolean)
 	-- Converts the kicad alternative (deMorgan) representation to the type_de_morgan_representation.
@@ -3420,7 +3423,7 @@ package body et_kicad.schematic is
 		-- Only vitual components have the power flag property. 
 		-- For real components the return is always false;
 -- 		if et_libraries."=" (type_components_library.element (cursor).appearance, et_libraries.SCH) then
-		if type_components_library.element (cursor).appearance = VIRTUAL then
+		if type_components_library.element (cursor).appearance = APPEARANCE_VIRTUAL then
 			--log (text => "virtual component");
 			--if type_components.element (cursor).power_flag then
 			--	log (text => "power flag on");
@@ -4153,6 +4156,7 @@ package body et_kicad.schematic is
 		-- For tempoarily storage of units of a component (taken from the schematic):
 		units_sch : type_units_schematic.map;
 
+		
 		procedure extract_ports is
 		-- Extracts the ports of the component indicated by component_cursor_lib.
 		-- NOTE: The library contains the relative (x/y) positions of the ports.
@@ -4171,6 +4175,7 @@ package body et_kicad.schematic is
 			unit_position : et_kicad_coordinates.type_position; -- the coordinates of the current unit
 			-- CS: external units
 
+			
 			procedure add_port is
 			-- Builds a new port and appends it to portlist of the current 
 			-- component (indicated by component_cursor_portlists).
@@ -4235,6 +4240,7 @@ package body et_kicad.schematic is
 						-- If this statement is reached, no flag was found -> return false
 						return port_open;
 					end left_open;
+
 					
 				begin -- add
 					-- Init port coordinates with the coordinates of the port found in the library.
@@ -4278,7 +4284,7 @@ package body et_kicad.schematic is
 					-- This action depends on the appearance of the schematic component being processed.
 					-- For example: only virtual components can be power_flags.
 					case element (component_cursor_sch).appearance is
-						when VIRTUAL =>
+						when APPEARANCE_VIRTUAL =>
 							type_ports.append (
 								container => ports,
 								new_item => (
@@ -4306,7 +4312,7 @@ package body et_kicad.schematic is
 									connected	=> no -- used by netlist generator (procedure make_netlists)
 									));
 
-						when et_device_appearance.PCB =>
+						when APPEARANCE_PCB =>
 							type_ports.append (
 								container => ports,
 								new_item => (
@@ -4342,6 +4348,7 @@ package body et_kicad.schematic is
 					log (text => to_string (position => type_ports.last_element (ports).coordinates), level => log_threshold + 3);
 					log_indentation_down;
 				end add;
+
 				
 			begin -- add_port
 				-- We update the portlist of the component in container portlists.
@@ -4352,6 +4359,7 @@ package body et_kicad.schematic is
 					process		=> add'access);
 			end add_port;
 
+			
 			procedure ports_of_global_unit is
 			-- Searches in the component (indicated by component_cursor_lib) for units
 			-- with the "global" flag set.
@@ -6333,7 +6341,7 @@ package body et_kicad.schematic is
 					-- Count ports by component category (address real components only)
 					--if element (port_cursor).appearance = et_libraries.sch_pcb then
 					--if et_libraries."=" (element (port_cursor).appearance, et_libraries.sch_pcb) then
-					if element (port_cursor).appearance = et_device_appearance.PCB then
+					if element (port_cursor).appearance = APPEARANCE_PCB then
 						case category (element (port_cursor).reference) is
 
 							-- count "connectives"
@@ -7138,6 +7146,7 @@ package body et_kicad.schematic is
 
 					log_indentation_down;	
 				end query_variants;
+
 				
 			begin -- locate_component_in_library
 				log (text => "locating generic component " & to_string (generic_name) 
@@ -7166,6 +7175,7 @@ package body et_kicad.schematic is
 
 				log_indentation_down;
 			end locate_component_in_library;
+
 			
 		begin -- locate_component_in_schematic
 			log (text => "locating component in schematic ...", level => log_threshold + 1);
@@ -7188,7 +7198,8 @@ package body et_kicad.schematic is
 
 			log_indentation_down;
 		end locate_component_in_schematic;
-	
+
+		
 	begin -- to_terminal
 		log (text => "locating in module " & to_string (module) & " terminal (according to package variant) for " 
 			& to_string (port.reference) 
@@ -7197,7 +7208,7 @@ package body et_kicad.schematic is
 
 		-- Abort if given port is not a real component.
 		--if et_libraries."=" (port.appearance, et_libraries.sch_pcb) then -- real component
-		if port.appearance = et_device_appearance.PCB then -- real component			
+		if port.appearance = APPEARANCE_PCB then -- real component			
 
 			query_element (
 				position	=> find (modules, module), -- sets indirectly the cursor to the module
@@ -7212,6 +7223,8 @@ package body et_kicad.schematic is
 		log_indentation_down;
 		return terminal; 
 	end to_terminal;
+
+	
 
 	function connected_net (
 		module			: in type_submodule_name.bounded_string; -- nucleo_core
@@ -7233,10 +7246,11 @@ package body et_kicad.schematic is
 
 		module_cursor : type_modules.cursor; -- points to the module being searched in
 
-		procedure query_components (
 		-- Searches the components of the module for the given reference.
+		procedure query_components (
 			module_name : in type_submodule_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_module) 
+		is
 			use type_components_schematic;
 			component_cursor_schematic : type_components_schematic.cursor := module.components.first;
 
@@ -7467,12 +7481,12 @@ package body et_kicad.schematic is
 							-- Depending on the appearance of the component we output just the 
 							-- port name or both the terminal name and the port name.
 							case port.appearance is
-								when et_device_appearance.PCB =>
+								when APPEARANCE_PCB =>
 									terminal := to_terminal (port, module_name, log_threshold + 3); -- fetch the terminal
 									log (text => to_string (port => port) 
 										& et_devices.to_string (terminal, show_unit => true, preamble => true));
 
-								when VIRTUAL =>
+								when APPEARANCE_VIRTUAL =>
 									log (text => to_string (port => port));
 							end case;
 								
@@ -7535,11 +7549,13 @@ package body et_kicad.schematic is
 		
 		ports_real : type_ports_with_reference.set; -- to be returned
 
-		procedure locate_net (
+		
 		-- Locates the given net in the netlist of the given module.
 		-- The ports connected with the net are copied to variable "ports".
+		procedure locate_net (
 			module_name : in type_submodule_name.bounded_string;
-			module 		: in type_module) is
+			module 		: in type_module) 
+		is
 			net_cursor	: type_netlist.cursor;
 			port_cursor : type_ports_with_reference.cursor;
 			ports_all 	: type_ports_with_reference.set; -- all ports of the net
@@ -7564,7 +7580,7 @@ package body et_kicad.schematic is
 					while type_ports_with_reference."/=" (port_cursor, type_ports_with_reference.no_element) loop
 						port := type_ports_with_reference.element (port_cursor); -- load the port
 					
-						if port.appearance = et_device_appearance.PCB then
+						if port.appearance = APPEARANCE_PCB then
 							ports_real.insert (port); -- insert real port in list to be returned
 
 							-- log terminal

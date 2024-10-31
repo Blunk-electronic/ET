@@ -151,8 +151,8 @@ package body et_symbols is
 		return boolean
 	is begin
 		case element (symbol).appearance is
-			when PCB		=> return true;
-			when VIRTUAL	=> return false;
+			when APPEARANCE_PCB		=> return true;
+			when APPEARANCE_VIRTUAL	=> return false;
 		end case;
 	end is_real;
 

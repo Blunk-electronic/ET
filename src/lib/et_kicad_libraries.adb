@@ -749,9 +749,9 @@ package body et_kicad_libraries is
 				-- character of the 3rd subfield is a hash sign.
 				if f (line,3) (f (line,3)'first) 
 					= schematic_component_power_symbol_prefix then
-					comp_app := VIRTUAL;
+					comp_app := APPEARANCE_VIRTUAL;
 				else
-					comp_app := PCB;
+					comp_app := APPEARANCE_PCB;
 				end if;
 				
 			when false =>
@@ -762,9 +762,9 @@ package body et_kicad_libraries is
 				-- Evaluate lca and set comp_app accordingly.
 				case lca is
 					when N =>
-						comp_app := PCB;
+						comp_app := APPEARANCE_PCB;
 					when P => 
-						comp_app := VIRTUAL;
+						comp_app := APPEARANCE_VIRTUAL;
 				end case;
 		end case;
 		
@@ -2046,7 +2046,7 @@ package body et_kicad_libraries is
 				
 				-- appearance specific fields:
 				case tmp_appearance is
-					when PCB =>
+					when APPEARANCE_PCB =>
 						-- This is a real component.
 
 						-- Since this is a real component. we do the prefix character check 
@@ -2087,7 +2087,7 @@ package body et_kicad_libraries is
 							check_schematic_text_size (category => COMPONENT_ATTRIBUTE, size => field_datasheet.size);
 						end if;
 
-					when VIRTUAL =>
+					when APPEARANCE_VIRTUAL =>
 						-- Since this is a virtual component, we do the prefix character check
 						-- against the Kicad specific character set for prefixes. see et_kicad.ads.
 						-- Afterward we validate the prefix. The prefixes for virtual components
@@ -2128,7 +2128,7 @@ package body et_kicad_libraries is
 				check_text_fields (log_threshold + 2);
 
 				case tmp_appearance is
-					when VIRTUAL =>
+					when APPEARANCE_VIRTUAL =>
 
 						-- we insert into the given components list a new component
 						type_components_library.insert(
@@ -2137,7 +2137,7 @@ package body et_kicad_libraries is
 							position	=> comp_cursor,
 							inserted	=> comp_inserted,
 							new_item	=> (
-								appearance	=> VIRTUAL,
+								appearance	=> APPEARANCE_VIRTUAL,
 
 								-- Whether the component is a power flag can be reasoned by the prefix.
 								-- At library level there is no indexed prefix. Power flags have just 
@@ -2160,7 +2160,7 @@ package body et_kicad_libraries is
 								)
 							);
 						
-					when PCB =>
+					when APPEARANCE_PCB =>
 
 						-- we insert into the given components list a new component
 						type_components_library.insert(
@@ -2169,7 +2169,7 @@ package body et_kicad_libraries is
 							position	=> comp_cursor,
 							inserted	=> comp_inserted,
 							new_item	=> (
-								appearance		=> PCB,
+								appearance		=> APPEARANCE_PCB,
 								prefix			=> tmp_prefix,
 								value			=> to_value_with_check (content (field_value)),
 								units			=> type_units_library.empty_map,
@@ -2845,7 +2845,7 @@ package body et_kicad_libraries is
 						full_package_library_name : type_package_library_name.bounded_string;
 					begin
 						case component.appearance is
-							when PCB => -- real component
+							when APPEARANCE_PCB => -- real component
 
 								-- The name of the default variant is the package
 								-- name itself (instead of an empty string or a string like "default"):
@@ -3023,8 +3023,9 @@ package body et_kicad_libraries is
 								-- read the appearance flag (N/P) in subfield #10
 								-- This is about a component in a library -> schematic => false
 								tmp_appearance := to_appearance (line => line, schematic => false);
-
 							end if;
+
+							
 						else -- we are inside a component section and process subsections
 
 							-- We wait for the end of component mark (ENDDEF) and clear the component_entered flag accordingly.
@@ -3037,7 +3038,7 @@ package body et_kicad_libraries is
 								set_text_placeholder_properties;
 
 								-- If this is a real component, build package variant from tmp_terminal_port_map
-								if tmp_appearance = PCB then
+								if tmp_appearance = APPEARANCE_PCB then
 									build_package_variant;
 								end if;
 								
@@ -3462,14 +3463,16 @@ package body et_kicad_libraries is
 		return variant;
 	end to_package_variant;
 
-	function component_power_flag (cursor : in type_components_library.cursor)
+
+	
 	-- Returns the component power flag status.
+	function component_power_flag (cursor : in type_components_library.cursor)
 		return type_power_flag is
 	begin
 		-- Only vitual components have the power flag property. 
 		-- For real components the return is always false;
 -- 		if et_libraries."=" (type_components_library.element (cursor).appearance, et_libraries.SCH) then
-		if type_components_library.element (cursor).appearance = VIRTUAL then
+		if type_components_library.element (cursor).appearance = APPEARANCE_VIRTUAL then
 			--log (text => "virtual component");
 			--if type_components.element (cursor).power_flag then
 			--	log (text => "power flag on");
@@ -3483,8 +3486,11 @@ package body et_kicad_libraries is
 		end if;
 	end component_power_flag;
 
-	function first_port (component_cursor : in type_portlists.cursor) return type_ports.cursor is
+
+
+	
 	-- Returns a cursor pointing to the first port of a component in the portlists.
+	function first_port (component_cursor : in type_portlists.cursor) return type_ports.cursor is
 		port_cursor : type_ports.cursor;
 	
 		procedure set_cursor (
@@ -3501,9 +3507,11 @@ package body et_kicad_libraries is
 
 		return port_cursor;
 	end first_port;
+
+
 	
-	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.
+	function find_component (
 		library		: in et_kicad_general.type_device_library_name.bounded_string;
 		component	: in type_component_generic_name.bounded_string) 
 		return type_components_library.cursor is

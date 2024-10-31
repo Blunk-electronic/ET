@@ -413,7 +413,7 @@ package body et_board_ops is
 					begin -- query_properties_default
 
 						-- the device must be real (appearance PCB)
-						if element (cursor_schematic).appearance = PCB then -- skip virtual devices
+						if element (cursor_schematic).appearance = APPEARANCE_PCB then -- skip virtual devices
 
 							-- the package of the device must be real
 							if has_real_package (cursor_schematic) then
@@ -456,7 +456,7 @@ package body et_board_ops is
 					begin -- query_properties_variants
 
 						-- the device must be real (appearance PCB)
-						if element (cursor_schematic).appearance = PCB then -- skip virtual devices
+						if element (cursor_schematic).appearance = APPEARANCE_PCB then -- skip virtual devices
 
 							-- the package of the device must be real
 							if has_real_package (cursor_schematic) then
