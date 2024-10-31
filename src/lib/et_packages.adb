@@ -259,6 +259,7 @@ package body et_packages is
 	end to_string;
 
 	
+	
 	function to_package_description (description : in string) 
 		return pac_package_description.bounded_string 
 	is begin
@@ -266,11 +267,13 @@ package body et_packages is
 	end to_package_description;
 
 	
+	
 	function get_package_model (model_name : in pac_package_model_file_name.bounded_string) -- ../lbr/smd/SO15.pac
 		return pac_package_models.cursor 
 	is begin
 		return pac_package_models.find (package_models, model_name);
 	end;
+
 
 	
 	function is_real (package_name : in pac_package_model_file_name.bounded_string) return boolean is
@@ -279,13 +282,15 @@ package body et_packages is
 	begin
 		cursor := find (package_models, package_name);
 
-		if element (cursor).appearance = REAL then
+		if element (cursor).appearance = APPEARANCE_REAL then
 			return true;
 		else
 			return false;
 		end if;
 	end is_real;
 
+
+	
 	
 	function get_terminal (
 		cursor		: in pac_package_models.cursor;
@@ -312,6 +317,8 @@ package body et_packages is
 	end get_terminal;
 	
 
+
+	
 	function get_terminal_contours (
 		package_cursor	: in pac_package_models.cursor;
 		layer_category	: in type_signal_layer_category)
@@ -383,6 +390,8 @@ package body et_packages is
 	end get_terminal_contours;
 
 
+
+	
 	function get_conductor_objects (
 		package_cursor	: in pac_package_models.cursor;
 		layer_category	: in type_signal_layer_category)
@@ -403,6 +412,8 @@ package body et_packages is
 	end get_conductor_objects;
 	
 
+
+	
 	function get_route_restrict_objects (
 		package_cursor	: in pac_package_models.cursor;
 		layer_category	: in type_signal_layer_category)
@@ -423,6 +434,8 @@ package body et_packages is
 	end get_route_restrict_objects;
 
 
+
+	
 	function get_via_restrict_objects (
 		package_cursor	: in pac_package_models.cursor;
 		layer_category	: in type_signal_layer_category)
@@ -442,6 +455,8 @@ package body et_packages is
 		end case;
 	end get_via_restrict_objects;
 
+
+	
 	
 	function get_hole_contours (
 		package_cursor	: in pac_package_models.cursor)
@@ -452,6 +467,8 @@ package body et_packages is
 		return packge.holes;
 	end get_hole_contours;
 
+
+	
 
 	function get_keepout_objects (
 		package_cursor	: in pac_package_models.cursor;

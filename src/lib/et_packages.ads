@@ -315,9 +315,9 @@ package et_packages is
 		
 		-- Only REAL packages have 3d contours:
 		case appearance is
-			when REAL =>
+			when APPEARANCE_REAL =>
 				null; -- CS
-			when VIRTUAL =>
+			when APPEARANCE_VIRTUAL =>
 				null; -- fiducials, testpoints, board edge connectors, ...
 		end case;
 	end record;

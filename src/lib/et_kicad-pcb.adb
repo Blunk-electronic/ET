@@ -514,7 +514,7 @@ package body et_kicad.pcb is
 		package_technology 	: type_assembly_technology := THT;
 
 		-- By default a package is something real (with x,y,z dimension)
-		package_appearance 	: type_package_appearance := REAL;
+		package_appearance 	: type_package_appearance := APPEARANCE_REAL;
 
 		package_text 		: type_text_package;
 		package_reference 	: type_device_name := default_component_reference;
@@ -1410,7 +1410,7 @@ package body et_kicad.pcb is
 									if to_string (arg) = attribute_technology_smd then
 										package_technology := SMT; -- overwrite default (see declarations)
 									elsif to_string (arg) = attribute_technology_virtual then
-										package_appearance := VIRTUAL;  -- overwrite default (see declarations)
+										package_appearance := APPEARANCE_VIRTUAL;  -- overwrite default (see declarations)
 									else
 										invalid_attribute;
 									end if;
@@ -3034,11 +3034,12 @@ package body et_kicad.pcb is
 
 		end read_arg;
 
+
 		
-		procedure exec_section is
 		-- Performs an operation according to the active section and variables that have been
 		-- set earlier (when processing the arguments. see procedure read_arg).
 		-- Restores the previous section.
+		procedure exec_section is
 			use et_pcb_coordinates_2;
 
 			procedure invalid_layer_reference is begin
@@ -3065,19 +3066,20 @@ package body et_kicad.pcb is
 			end invalid_layer;
 
 			
+			-- Warns operator if a terminal is not connected to a net.
 			procedure warn_on_missing_net is 
 				use pac_net_name;
 			begin
-			-- Warns operator if a terminal is not connected to a net.
 				if length (terminal_net_name) = 0 then
 					log (WARNING, to_string (package_reference) & latin_1.space
 						 & et_terminals.to_string (terminal_name) & " not connected with a net !");
 				end if;
 			end warn_on_missing_net;
+
 			
-			procedure insert_package is 
 			-- Builds and inserts package in board.
 			-- Raises alarm if package already exists in container.
+			procedure insert_package is 
 			
 				-- This cursor points to the last inserted package:
 				package_cursor : type_packages_board.cursor;
@@ -3089,14 +3091,14 @@ package body et_kicad.pcb is
 				-- CS warning if value is empty ?
 			
 				case package_appearance is
-					when REAL =>
+					when APPEARANCE_REAL =>
 						board.packages.insert (
 							position	=> package_cursor,
 							inserted	=> package_inserted,
 							key			=> package_reference,
 							new_item	=> (
 								position		=> package_position,
-								appearance		=> REAL, -- !!!!!!!
+								appearance		=> APPEARANCE_REAL, -- !!!!!!!
 								technology		=> package_technology,
 								description		=> package_description,
 								time_stamp		=> package_time_stamp,
@@ -3121,14 +3123,14 @@ package body et_kicad.pcb is
 								)
 							);
 						
-					when VIRTUAL =>
+					when APPEARANCE_VIRTUAL =>
 						board.packages.insert (
 							position	=> package_cursor,
 							inserted	=> package_inserted,
 							key			=> package_reference,
 							new_item	=> (
 								position		=> package_position,
-								appearance		=> VIRTUAL, --- !!!!!!!!
+								appearance		=> APPEARANCE_VIRTUAL, --- !!!!!!!!
 								technology		=> package_technology,
 								description		=> package_description,
 								time_stamp		=> package_time_stamp,
@@ -3174,7 +3176,7 @@ package body et_kicad.pcb is
 
 					-- reset technology and appearance
 					package_technology := THT;
-					package_appearance := REAL;
+					package_appearance := APPEARANCE_REAL;
 
 					-- reset reference and value
 					package_reference := default_component_reference;
@@ -3231,8 +3233,8 @@ package body et_kicad.pcb is
 			end insert_package;
 
 			
-			procedure insert_layer is
 			-- Inserts the layer (when reading section "layers") in the temporarily container "layers".
+			procedure insert_layer is
 				layer_cursor : type_layers.cursor; -- mandatory, never read
 				layer_inserted : boolean; -- goes true if layer id already used
 			begin -- insert_layer
@@ -3258,8 +3260,8 @@ package body et_kicad.pcb is
 			end insert_layer;
 
 			
-			procedure insert_net_class is
 			-- Inserts the net class in board
+			procedure insert_net_class is
 				net_class_inserted	: boolean := false;
 				net_class_cursor	: type_net_classes.cursor;
 			begin -- insert_net_class

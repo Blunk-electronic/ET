@@ -45,13 +45,21 @@ with ada.characters.handling;		use ada.characters.handling;
 package body et_package_appearance is
 
 
-	function to_string (appearance : in type_package_appearance) return string is begin
-		return to_lower (type_package_appearance'image (appearance));
+	function to_string (
+		appearance : in type_package_appearance) 
+		return string 
+	is 
+		s : string := to_lower (type_package_appearance'image (appearance));
+	begin
+		return s (appearance_prefix'length + 1 .. s'last); 
 	end;
 
 	
-	function to_appearance (appearance : in string) return type_package_appearance is begin
-		return type_package_appearance'value (appearance);
+	function to_appearance (
+		appearance : in string) 
+		return type_package_appearance 
+	is begin
+		return type_package_appearance'value (appearance_prefix & appearance);
 	end;
 	
 	

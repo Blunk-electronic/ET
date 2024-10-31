@@ -41,19 +41,27 @@
 
 package et_package_appearance is
 
-	-- CS use prefix
+
+	appearance_prefix : constant string := "APPEARANCE_";
 	
 	type type_package_appearance is (
-		REAL,	-- packages with x,y,z dimension
-		VIRTUAL -- for things that do not have a real package 
+		APPEARANCE_REAL,	-- packages with x,y,z dimension
+		APPEARANCE_VIRTUAL -- for things that do not have a real package 
 				-- (like testpoints, edge connectors, mounting holes, fiducials, ...)
 		);	
 
-	package_appearance_default : constant type_package_appearance := REAL;
+	
+	package_appearance_default : constant type_package_appearance := APPEARANCE_REAL;
 
-	function to_string (appearance : in type_package_appearance) return string;
+	
+	function to_string (
+		appearance : in type_package_appearance) 
+		return string;
 
-	function to_appearance (appearance : in string) return type_package_appearance;
+	
+	function to_appearance (
+		appearance : in string) 
+		return type_package_appearance;
 
 	
 	

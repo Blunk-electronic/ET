@@ -75,18 +75,18 @@ package body et_pcb_rw.device_packages is
 			log (WARNING, text => "package already exists -> skipped", level => log_threshold + 1);
 		else
 			case appearance is
-				when REAL =>
+				when APPEARANCE_REAL =>
 					pac_package_models.insert (
 						container	=> package_models,
 						key			=> package_name,
-						new_item	=> (appearance => REAL, others => <>)
+						new_item	=> (appearance => APPEARANCE_REAL, others => <>)
 						);
 
-				when VIRTUAL =>
+				when APPEARANCE_VIRTUAL =>
 					pac_package_models.insert (
 						container	=> package_models,
 						key			=> package_name,
-						new_item	=> (appearance => VIRTUAL, others => <>)
+						new_item	=> (appearance => APPEARANCE_VIRTUAL, others => <>)
 						);
 			end case;					
 		end if;
@@ -780,7 +780,7 @@ package body et_pcb_rw.device_packages is
 		write_terminals; -- incl. pad properties, drill sizes, millings, ...
 
 		-- 3D stuff
-		if packge.appearance = REAL then
+		if packge.appearance = APPEARANCE_REAL then
 			null;
 			--write_package_contour;  -- CS uncomment when 3d support available
 		end if;
@@ -805,6 +805,8 @@ package body et_pcb_rw.device_packages is
 
 	end save_package;
 
+
+	
 	
 	procedure read_package (
 		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac
@@ -2376,14 +2378,14 @@ package body et_pcb_rw.device_packages is
 								-- Depending on the appearance we create a virtual or real package
 								-- where pointer packge is pointing at:
 								case pac_appearance is
-									when REAL =>
+									when APPEARANCE_REAL =>
 										packge := new type_package_model' (
-													appearance	=> REAL,
+													appearance	=> APPEARANCE_REAL,
 													others		=> <>);
 
-									when VIRTUAL =>
+									when APPEARANCE_VIRTUAL =>
 										packge := new type_package_model' (
-													appearance	=> VIRTUAL,
+													appearance	=> APPEARANCE_VIRTUAL,
 													others		=> <>);
 								end case;
 										
