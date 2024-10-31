@@ -75,6 +75,7 @@ with et_silkscreen.packages;			use et_silkscreen.packages;
 with et_assy_doc.packages;				use et_assy_doc.packages;
 with et_keepout;						use et_keepout;
 with et_pcb_contour;					use et_pcb_contour;
+with et_package_appearance;				use et_package_appearance;
 
 
 -- CS remove
@@ -274,23 +275,7 @@ package et_packages is
 	--end record;
 
 
-
-
 	
-
-	
-	
--- APPEARANCE
-
-	type type_package_appearance is (
-		REAL,	-- packages with x,y,z dimension
-		VIRTUAL -- for things that do not have a real package 
-				-- (like testpoints, edge connectors, mounting holes, fiducials, ...)
-		);	
-
-	package_appearance_default : constant type_package_appearance := REAL;
-	function to_string (appearance : in type_package_appearance) return string;
-	function to_appearance (appearance : in string) return type_package_appearance;
 	
 
 	

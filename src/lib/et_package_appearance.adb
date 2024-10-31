@@ -4,7 +4,7 @@
 --                                                                          --
 --                         PACKAGE APPEARANCE                               --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -37,24 +37,22 @@
 --   history of changes:
 --
 
+with ada.text_io;					use ada.text_io;
+with ada.characters.handling;		use ada.characters.handling;
 
 
-package et_package_appearance is
 
-	-- CS use prefix
+package body et_package_appearance is
+
+
+	function to_string (appearance : in type_package_appearance) return string is begin
+		return to_lower (type_package_appearance'image (appearance));
+	end;
+
 	
-	type type_package_appearance is (
-		REAL,	-- packages with x,y,z dimension
-		VIRTUAL -- for things that do not have a real package 
-				-- (like testpoints, edge connectors, mounting holes, fiducials, ...)
-		);	
-
-	package_appearance_default : constant type_package_appearance := REAL;
-
-	function to_string (appearance : in type_package_appearance) return string;
-
-	function to_appearance (appearance : in string) return type_package_appearance;
-
+	function to_appearance (appearance : in string) return type_package_appearance is begin
+		return type_package_appearance'value (appearance);
+	end;
 	
 	
 end et_package_appearance;

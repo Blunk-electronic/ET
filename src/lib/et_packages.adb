@@ -246,15 +246,6 @@ package body et_packages is
 	
 	
 	
-	function to_string (appearance : in type_package_appearance) return string is begin
-		return to_lower (type_package_appearance'image (appearance));
-	end;
-
-	function to_appearance (appearance : in string) return type_package_appearance is begin
-		return type_package_appearance'value (appearance);
-	end;
-	
-	
 	
 	function to_string (
 		description : in pac_package_description.bounded_string;

@@ -55,7 +55,7 @@ with et_axes;					use et_axes;
 with et_generic_stacks;
 with et_system_info;
 with et_alignment;				use et_alignment;
-
+with et_package_appearance;
 
 
 package body et_kicad.pcb is
@@ -225,12 +225,16 @@ package body et_kicad.pcb is
 		return type_layer_name.to_bounded_string (name);
 	end to_layer_name;
 
+
+	
 	function to_layer_meaning (meaning : in string) return type_layer_meaning is
 	-- converts a layer meaning given as string to a bounded string		
 	begin
 		return type_layer_meaning'value (meaning);
 	end to_layer_meaning;
 
+
+	
 	function default_component_reference return type_device_name is
 	-- Returns a default device name with an empty prefix and and id 0.
 	-- Used to initialize a component reference.	
@@ -241,6 +245,8 @@ package body et_kicad.pcb is
 			id			=> name_index_default,
 			id_width	=> 1));
 	end default_component_reference;
+
+
 	
 	function to_board (
 		file_name		: in string; -- pwr_supply.kicad_pcb
@@ -252,6 +258,7 @@ package body et_kicad.pcb is
 
 		use et_pcb;
 		use et_packages;
+		use et_package_appearance;
 		use pac_lines_of_file;
 
 		-- This cursor points to the line being processed (in the list of lines given in "lines"):

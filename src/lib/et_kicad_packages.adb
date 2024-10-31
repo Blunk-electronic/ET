@@ -52,6 +52,7 @@ with et_axes;					use et_axes;
 with et_directory_and_file_ops;
 with et_generic_stacks;
 with et_alignment;
+with et_package_appearance;
 
 
 package body et_kicad_packages is
@@ -552,6 +553,7 @@ package body et_kicad_packages is
 		package_technology : type_assembly_technology := THT;
 
 		-- By default a package is something real (with x,y,z dimension)
+		use et_package_appearance;
 		package_appearance : type_package_appearance := REAL;
 
 		line	: type_line;
