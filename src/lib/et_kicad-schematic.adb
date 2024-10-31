@@ -164,7 +164,6 @@ package body et_kicad.schematic is
 		log_threshold	: in type_log_level) 
 	is
 		use et_string_processing;
-		use et_symbols;
 		use et_device_placeholders.symbols;
 	begin
 		log_indentation_up;
@@ -386,9 +385,9 @@ package body et_kicad.schematic is
 
 
 	
+	-- Returns the component reference where cursor points to.
 	function component_reference (cursor : in type_components_schematic.cursor) 
 		return type_device_name is
-	-- Returns the component reference where cursor points to.
 	begin
 		return type_components_schematic.key (cursor);
 	end component_reference;
@@ -401,8 +400,6 @@ package body et_kicad.schematic is
 		log_threshold 	: in type_log_level) 
 	is
 		use et_string_processing;
-		use et_symbols;
-
 	begin
 		-- reference (serves as key in list of components)
 		log (text => "component " & to_string (type_components_schematic.key (component)) & " properties",
@@ -466,13 +463,11 @@ package body et_kicad.schematic is
 
 	
 	
-	function compare_ports (left, right : in type_port_with_reference) return boolean is
 	-- Returns true if left comes before right. Compares by component reference and port name.
 	-- If left equals right, the return is false.	
 	-- CS: needs verification !
+	function compare_ports (left, right : in type_port_with_reference) return boolean is
 		result : boolean := false;
-		use et_symbols;
-		use et_schematic;
 	begin
 		-- First we compare the component reference.
 		-- Examples: C56 comes before R4, LED5 comes before LED7
@@ -817,10 +812,8 @@ package body et_kicad.schematic is
 	-- In a schematic it is defined by a hash sign:
 	-- example: L P3V3 #PWR07
 	function to_appearance (line : in type_fields_of_line; schematic : in boolean) 
-		return et_device_appearance.type_appearance is
-
-		use et_symbols;
-		
+		return et_device_appearance.type_appearance 
+	is		
 		comp_app	: type_appearance;
 		lca			: type_library_component_appearance;
 
@@ -1759,9 +1752,9 @@ package body et_kicad.schematic is
 	end process_hierarchic_nets;
 
 
-	procedure write_nets (log_threshold : in type_log_level) is
 	-- Writes a nice overview of all nets, strands, segments and labels.
 	-- Bases on the element "nets" of the modules. See specification of type_module.
+	procedure write_nets (log_threshold : in type_log_level) is
 		use et_string_processing;
 	
 		procedure query_label (
@@ -1799,6 +1792,7 @@ package body et_kicad.schematic is
 				log_indentation_down;
 			end if;
 		end query_label;
+
 		
 		procedure query_segment (
 			strand : in type_strand) is
@@ -1828,6 +1822,7 @@ package body et_kicad.schematic is
 				log_indentation_down;
 			end if;
 		end query_segment;
+
 		
 		procedure query_strand (
 			net_name 	: in pac_net_name.bounded_string;
@@ -1858,6 +1853,7 @@ package body et_kicad.schematic is
 			end if;
 		end query_strand;
 		
+		
 		procedure query_net (
 			mod_name	: in type_submodule_name.bounded_string;
 			module 		: in type_module) is
@@ -1880,6 +1876,7 @@ package body et_kicad.schematic is
 
 		use type_modules;
 		
+		
 	begin -- write_nets
 		if log_level >= log_threshold then
 			log (text => "net report");
@@ -1901,6 +1898,8 @@ package body et_kicad.schematic is
 		end if;
 	end write_nets;
 
+
+	
 	-- Converts the rotaton of a label or a text to a relative rotation.
 	function to_relative_rotation (text_in : in string) 
 		return et_coordinates_2.type_rotation_relative is
@@ -1925,7 +1924,6 @@ package body et_kicad.schematic is
 	is
 	-- Converts the direction of a label to a type_label_direction. 
 	-- CS: currently case sensitive ! Use dedicated type for input parameter.
-		--use et_schematic;		
 		d_out : type_net_label_direction := input;
 	begin
 		if text_in = schematic_keyword_label_dir_input then
@@ -3413,12 +3411,13 @@ package body et_kicad.schematic is
 		return sits_on_segment;
 	end junction_sits_on_segment;
 
+
 	
-	function component_power_flag (cursor : in type_components_library.cursor)
 	-- Returns the component power flag status.
-		return type_power_flag is
+	function component_power_flag (cursor : in type_components_library.cursor)
+		return type_power_flag 
+	is
 		use et_string_processing;
-		use et_symbols;
 	begin
 		-- Only vitual components have the power flag property. 
 		-- For real components the return is always false;
@@ -3437,6 +3436,7 @@ package body et_kicad.schematic is
 		end if;
 	end component_power_flag;
 
+	
 	
 -- 	function purpose ( -- CS move to et_schematic or et_project
 -- 	-- Returns the purpose of the given component in the given module.
@@ -3530,6 +3530,9 @@ package body et_kicad.schematic is
 			);
 	end add_strand;
 
+
+
+	
 	function first_strand return type_strands.cursor is
 	-- Returns a cursor pointing to the first strand of the module (indicated by module_cursor).
 		cursor : type_strands.cursor;	
@@ -3549,6 +3552,9 @@ package body et_kicad.schematic is
 		return cursor;
 	end first_strand;
 
+
+
+	
 	function first_port (component_cursor : in type_portlists.cursor) return type_ports.cursor is
 	-- Returns a cursor pointing to the first port of a component in the portlists.
 		port_cursor : type_ports.cursor;
@@ -3568,24 +3574,27 @@ package body et_kicad.schematic is
 		return port_cursor;
 	end first_port;
 
-	procedure rename_strands (
+
+
+	
 	-- Renames all strands with the name_before to the name_after.
 	-- Changes the scope of the affected strands to "global".
 	-- This procdure is required if a strand is connected to a power-out port.
 	-- The power-out port enforces its name onto the strand.
+	procedure rename_strands (
 		name_before		: in pac_net_name.bounded_string;
 		name_after		: in pac_net_name.bounded_string;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level)
+	is
 		use et_string_processing;
-		use et_schematic;
 
 		count : natural := 0;
 	
+
 		procedure rename (
 			mod_name	: in type_submodule_name.bounded_string;
-			module		: in out et_kicad.pcb.type_module) is
-
+			module		: in out et_kicad.pcb.type_module) 
+		is
 			use type_strands;
 			
 			cursor : type_strands.cursor := module.strands.first;
@@ -3619,6 +3628,7 @@ package body et_kicad.schematic is
 					renamed := true; -- signal that renaming took place
 				end if;
 			end do_it;
+	
 			
 		begin -- rename
 			while cursor /= type_strands.no_element loop
@@ -3635,6 +3645,7 @@ package body et_kicad.schematic is
 				next (cursor);
 			end loop;
 		end rename;
+
 		
 	begin -- rename_strands
 		log (text => "renaming strands from " & to_string (name_before)
@@ -3655,8 +3666,10 @@ package body et_kicad.schematic is
 		end if;
 	end rename_strands;
 
-	function port_connected_with_segment (
+
+	
 	-- Returns true if the given port sits on the given net segment.
+	function port_connected_with_segment (
 		port	: in type_port'class; -- CS class wide required ?
 		segment	: in type_net_segment_base'class) -- CS class wide required ?
 		-- NOTE: Passing a cursor to given segment does not work. This measure would make
@@ -3826,13 +3839,14 @@ package body et_kicad.schematic is
 		
 		return sits_on_segment;
 	end port_connected_with_segment;
+
 	
 	
-	procedure update_strand_names (log_threshold : in type_log_level) is
+	
 	-- Tests if a power in/out port is connected to a strand and renames the strand if necessary.
 	-- Depending on the CAE system power-out or power-in ports may enforce their name on a strand.
+	procedure update_strand_names (log_threshold : in type_log_level) is
 		use et_string_processing;
-		--use et_schematic;
 	
 		portlists : type_portlists.map := type_portlists.empty_map;
 
@@ -3841,11 +3855,11 @@ package body et_kicad.schematic is
 		component	: type_portlists.cursor;
 		port		: type_ports.cursor;
 
-		use et_symbols;
 		use type_strands;
 		use type_net_segments;
 		use type_portlists;
 		use type_ports;
+
 		
 		function to_net_name (port_name : in pac_port_name.bounded_string) 
 		-- Converts the given port name to a net name.
@@ -3853,6 +3867,7 @@ package body et_kicad.schematic is
 		begin
 			return to_net_name (to_string (port_name));
 		end to_net_name;
+
 		
 	begin -- update_strand_names
 		log (text => "updating strand names by power-out ports ...", level => log_threshold);
@@ -3954,6 +3969,9 @@ package body et_kicad.schematic is
 		
 	end update_strand_names;
 
+
+
+	
 	procedure write_strands (log_threshold : in type_log_level) is
 	-- Writes a nice overview of strands, net segments and labels
 	-- CS: output consequtive number for strands and segments (as in procedure write_nets)
@@ -3983,7 +4001,8 @@ package body et_kicad.schematic is
 				log_indentation_down;
 			end if;
 		end query_label;
-	
+
+		
 		procedure query_segment (
 			strand : in type_strand) is
 			segment : type_net_segments.cursor := strand.segments.first;
@@ -4003,7 +4022,8 @@ package body et_kicad.schematic is
 				end loop;
 			end if;
 		end query_segment;
-	
+
+		
 		procedure query_strands (
 			mod_name	: in type_submodule_name.bounded_string;
 			module		: in type_module) is
@@ -4029,6 +4049,7 @@ package body et_kicad.schematic is
 				end loop;
 			end if;
 		end query_strands;
+
 		
 	begin -- write_strands
 		if log_level >= log_threshold then
@@ -4107,6 +4128,8 @@ package body et_kicad.schematic is
 			);
 	end reset_component_cursor;
 
+
+	
 	function build_portlists (log_threshold : in type_log_level) 
 		return type_portlists.map is
 	-- Returns a list of components with the absolute positions of their ports as they are placed in the schematic.
@@ -4156,14 +4179,13 @@ package body et_kicad.schematic is
 		-- For tempoarily storage of units of a component (taken from the schematic):
 		units_sch : type_units_schematic.map;
 
+
 		
-		procedure extract_ports is
 		-- Extracts the ports of the component indicated by component_cursor_lib.
 		-- NOTE: The library contains the relative (x/y) positions of the ports.
+		procedure extract_ports is
 			use type_ports_library;
-			use et_schematic;
 			use et_devices;
-			use et_symbols;
 		
 			-- The unit cursor of the component advances through the units stored in the library.
 			unit_cursor : type_units_library.cursor;
@@ -4176,9 +4198,9 @@ package body et_kicad.schematic is
 			-- CS: external units
 
 			
-			procedure add_port is
 			-- Builds a new port and appends it to portlist of the current 
 			-- component (indicated by component_cursor_portlists).
+			procedure add_port is
 			
 			-- The library defined properties of the port are taken from where port_cursor points to.
 			-- They are copied to the new port without change.
@@ -4476,9 +4498,9 @@ package body et_kicad.schematic is
 			
 		end extract_ports;
 
+		
 		-- Verifies appearance of schematic component against library component.
 		procedure check_appearance_sch_vs_lib is
-			use et_symbols;
 		begin
 -- 			if et_schematic.component_appearance (component_cursor_sch) = 
 -- 			   et_libraries.component_appearance (component_cursor_lib) then
@@ -4495,6 +4517,8 @@ package body et_kicad.schematic is
 			end if;
 		end check_appearance_sch_vs_lib;
 
+
+		
 		procedure save_portlists is
 		-- Save the portlists in the module (indicated by module_cursor).
 		-- module_cursor points already there.
@@ -4607,24 +4631,30 @@ package body et_kicad.schematic is
 		
 		return portlists;
 	end build_portlists;
+
+
+
 	
-	procedure check_open_ports (log_threshold : in type_log_level) is
 	-- Warns about unintentionally left open ports. That are ports without a no_connection_flag.
 	-- Must be called AFTER make_netlists !
+	procedure check_open_ports (log_threshold : in type_log_level) is
 
-		use et_symbols;
 		use type_modules;
 		use et_string_processing;
 
+		
 		procedure query_portlists (
 			module_name	: in type_submodule_name.bounded_string;
-			module 		: in type_module) is
+			module 		: in type_module) 
+		is
 			use type_portlists;
 			portlist_cursor : type_portlists.cursor := module.portlists.first;
 
+			
 			procedure query_ports (
 				component	: in type_device_name;
-				ports 		: in type_ports.list) is
+				ports 		: in type_ports.list) 
+			is
 				port_cursor : type_ports.cursor := ports.first;
 				use type_ports;
 				use et_import;
@@ -4714,15 +4744,15 @@ package body et_kicad.schematic is
 -- 				end segment_here;
 -- DO NOT REMOVE ! END OF BLOCK.
 
-				function connected_by_other_unit return boolean is
+				
 				-- Searches the portlist for another port with same name.
 				-- Tests if the port is NOT intentionally left open
 				-- AND if the port is connected to any net segment. When positive, exits 
 				-- prematurely with a return value "true". If no suitable port found, 
 				-- returns "false".
+				function connected_by_other_unit return boolean is
 					port_cursor_secondary : type_ports.cursor := ports.first;
 					use pac_port_name;
-					use et_schematic;
 				begin
 					-- search the portlist but skip the port of origin
 					while port_cursor_secondary /= type_ports.no_element loop
@@ -6021,32 +6051,40 @@ package body et_kicad.schematic is
 		log_indentation_down;
 	end check_misplaced_no_connection_flags;
 
-	procedure check_orphaned_no_connection_flags (log_threshold : in type_log_level) is
+
+
+	
 	-- Warns about orphaned no_connection_flags.
+	procedure check_orphaned_no_connection_flags (log_threshold : in type_log_level) is
 
 		use type_modules;
 		use et_string_processing;
-	
-		procedure query_no_connect_flags (
+		
 		-- Query junctions. Exits prematurely once a junction is found.
+		procedure query_no_connect_flags (
 			module_name : in type_submodule_name.bounded_string;
-			module 		: in type_module) is
+			module 		: in type_module) 
+		is
 			use type_no_connection_flags;
 			no_connection_flag_cursor : type_no_connection_flags.cursor := module.no_connections.first;
 
-			procedure query_portlists (
+			
 			-- Query junctions. Exits prematurely once a junction is found.
+			procedure query_portlists (
 				module_name : in type_submodule_name.bounded_string;
-				module 		: in type_module) is
+				module 		: in type_module) 
+			is
 				use type_portlists;
 				portlist_cursor : type_portlists.cursor := module.portlists.first;
 
 				-- As long as no port is detected, we consider the flag as orphaned.
 				flag_orphaned : boolean := true;
+
 				
 				procedure query_ports (
 					component 	: in type_device_name;
-					ports 		: in type_ports.list) is
+					ports 		: in type_ports.list) 
+				is
 					port_cursor : type_ports.cursor := ports.first;
 					use type_ports;
 				begin -- query_ports
@@ -6063,6 +6101,7 @@ package body et_kicad.schematic is
 						next (port_cursor);
 					end loop;
 				end query_ports;
+				
 				
 			begin -- query_portlists
 				-- Search in the portlists for a port that has the no_connection_flag attached.
@@ -6085,6 +6124,7 @@ package body et_kicad.schematic is
 					
 			end query_portlists;
 			
+			
 		begin -- query_no_connect_flags
 			log (text => "quering no_connection_flags ...", level => log_threshold + 1);
 			while no_connection_flag_cursor /= type_no_connection_flags.no_element loop
@@ -6096,6 +6136,7 @@ package body et_kicad.schematic is
 				next (no_connection_flag_cursor);	
 			end loop;
 		end query_no_connect_flags;
+		
 
 	begin -- check_orphaned_no_connection_flags
 		log (text => "detecting orphaned no-connection-flags ...", level => log_threshold);
@@ -6124,11 +6165,13 @@ package body et_kicad.schematic is
 		log_indentation_down;
 	end check_orphaned_no_connection_flags;
 
-	function simple_name (net_name : in pac_net_name.bounded_string)
+
+
+	
+	function simple_name (net_name : in pac_net_name.bounded_string) -- CS rename to get_simple_name
 		return pac_net_name.bounded_string 
 	is
 		position_of_last_separator : natural := 0;
-		use et_schematic;
 		name : pac_net_name.bounded_string;
 	begin
 		-- Detect position of last hierarchy separator.
@@ -6148,10 +6191,11 @@ package body et_kicad.schematic is
 	end simple_name;
 
 
+	
+
 	-- Writes the properties of the given net label in the logfile.
 	procedure write_label_properties (label : in type_net_label) is
 		use et_string_processing;
-		use et_schematic;
 		log_threshold : type_log_level := 2;
 	begin
 		log_indentation_up;
@@ -6196,6 +6240,7 @@ package body et_kicad.schematic is
 		log_indentation_down;
 
 	end write_label_properties;
+
 	
 
 	-- Returns the coordinates of the given label as string.
@@ -6205,15 +6250,21 @@ package body et_kicad.schematic is
 		return to_string (label.coordinates);
 	end to_string;
 
+
+
+	
+	-- Returns the position of the given junction as string.
 	function to_string (
 		junction	: in type_net_junction;
 		scope		: in et_kicad_coordinates.type_scope) 
 		return string is
-		-- Returns the position of the given junction as string.
 	begin	
 		return (to_string (position => junction.coordinates, scope => scope));
 	end to_string;
 
+
+
+	
 	
 	-- Returns the length of the given net segment.
 	function length (segment : in type_net_segment_base) 
@@ -6228,12 +6279,14 @@ package body et_kicad.schematic is
 		return len;
 	end length;
 
+
 	
+	
+	-- Returns the start and end coordinates of the given net segment.
 	function to_string (
 		segment	: in type_net_segment_base'class;
 		scope 	: in et_kicad_coordinates.type_scope := et_kicad_coordinates.SHEET)
 		return string is
-	-- Returns the start and end coordinates of the given net segment.
 		use et_kicad_coordinates;
 	begin
 		return (" start"
@@ -6241,6 +6294,7 @@ package body et_kicad.schematic is
 			& " end" 
 			& to_string (position => segment.coordinates_end, scope => XY));
 	end to_string;
+
 
 	
 	function to_string (scope : in type_strand_scope) return string is
@@ -6250,13 +6304,13 @@ package body et_kicad.schematic is
 		return type_strand_scope'image (scope);
 	end to_string;
 
+
 	
-	procedure net_test (log_threshold : in type_log_level) is
 	-- Tests nets for number of inputs, outputs, bidirs, ...
 	-- CS: improve test coverage by including component categories like connectors, jumpers, testpads, ...
+	procedure net_test (log_threshold : in type_log_level) is
 		use et_string_processing;
 		use type_modules;
-		use et_symbols;
 
 		procedure query_nets (
 			module_name : in type_submodule_name.bounded_string;
@@ -6501,33 +6555,39 @@ package body et_kicad.schematic is
 		log_indentation_down;
 	end net_test;
 
-	function connected_net (
+
+
+	
+	function connected_net ( -- CS rename to get_connected_net
 		port			: in type_port_of_module; -- contains something like nucleo_core_1 X701 port 4
 		log_threshold	: in type_log_level)
 		return pac_net_name.bounded_string 
 	is
 		use et_string_processing;
 		use type_modules;
-		use et_symbols;
 
 		module_cursor : type_modules.cursor; -- points to the module being searched in
 
 		net_name_to_return : pac_net_name.bounded_string; -- to be returned
 
+		
 		procedure query_nets (
 			module_name	: in type_submodule_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_module) 
+		is
 			net_cursor	: type_netlist.cursor;
 		
 			net_found : boolean := false; -- goes true once a suitable net found (should be only one)
+
 			
 			procedure query_ports (
 				net_name	: in pac_net_name.bounded_string;
-				ports		: in type_ports_with_reference.set) is
+				ports		: in type_ports_with_reference.set) 
+			is
 				port_cursor : type_ports_with_reference.cursor;
 				use pac_port_name;
 				use type_ports_with_reference;
-			begin -- query_ports
+			begin
 				log (text => "querying ports ...", level => log_threshold + 2);
 				log_indentation_up;
 
@@ -6553,6 +6613,7 @@ package body et_kicad.schematic is
 
 				log_indentation_down;	
 			end query_ports;
+
 			
 		begin -- query_nets
 			log (text => "querying nets ...", level => log_threshold + 1);
@@ -6590,6 +6651,7 @@ package body et_kicad.schematic is
 
 			log_indentation_down;
 		end query_nets;
+
 		
 	begin -- connected_net
 		log (text => "locating in module " & to_string (port.module) & " net connected with " 
@@ -6619,16 +6681,15 @@ package body et_kicad.schematic is
 
 
 	
-	procedure make_netlists (log_threshold : in type_log_level) is
 	-- Builds the netlists of all modules. 
 	-- Currently there is only one module. kicad does not support multiple modules at the same time.
 	-- Addresses ALL components both virtual and real. Virtual components are things like GND or VCC symbols.
 	-- Virtual components are filtered out on exporting the netlist in a file.
 	-- Bases on the portlists and nets/strands information of the module.
 	-- Detects if a junction is missing where a port is connected with a net.
+	procedure make_netlists (log_threshold : in type_log_level) is
 	
 		use et_string_processing;
-		use et_symbols;
 		use type_modules;
 
 		function make_netlist return type_netlist.map is
@@ -7053,13 +7114,15 @@ package body et_kicad.schematic is
 	end terminal_count;
 
 
+	
+	-- Returns the terminal and unit name of the given port in a composite type.
+	-- Raises error if given port is of a virtual component (appearance sch).
 	function to_terminal (
 		port 			: in type_port_with_reference;
 		module			: in type_submodule_name.bounded_string; -- the name of the module
 		log_threshold 	: in type_log_level) -- see et_libraries spec
-		return et_devices.type_terminal is
-	-- Returns the terminal and unit name of the given port in a composite type.
-	-- Raises error if given port is of a virtual component (appearance sch).
+		return et_devices.type_terminal 
+	is
 
 	-- NOTE: In contrast to Kicad, the terminal name is stored in a package variant. The package variant in
 	-- turn is maintained in the symbol component library.
@@ -7071,15 +7134,15 @@ package body et_kicad.schematic is
 	-- 5. get package variant
 	-- 6. look up given port name and return terminal/unit name
 
-		use et_symbols;
 		use type_modules;
 		use et_string_processing;
 		terminal : et_devices.type_terminal; -- to be returned
 
+		
 		procedure locate_component_in_schematic (
 			module_name : in type_submodule_name.bounded_string;
-			module		: in type_module) is
-		
+			module		: in type_module) 
+		is		
 			use type_components_schematic;
 			component_cursor: type_components_schematic.cursor;
 			
@@ -7090,17 +7153,21 @@ package body et_kicad.schematic is
 			--use type_libraries;
 			library_cursor	: type_device_libraries.cursor;
 
+			
 			procedure locate_component_in_library (
 				library_name 	: in et_kicad_general.type_device_library_name.bounded_string;
-				components 		: in type_components_library.map) is
+				components 		: in type_components_library.map) 
+			is
 				use type_components_library;
 
 				component_cursor : type_components_library.cursor;
 
+				
 				procedure query_variants (
 				-- Looks up the list of variants of the component.
 					name 		: in type_component_generic_name.bounded_string;
-					component 	: in type_component_library) is
+					component 	: in type_component_library) 
+				is
 					use et_devices.pac_variants;
 
 					variant_cursor : et_devices.pac_variants.cursor;
@@ -7130,6 +7197,7 @@ package body et_kicad.schematic is
 							next (terminal_cursor);
 						end loop;
 					end locate_terminal;
+
 					
 				begin -- query_variants
 					log (text => "locating variant " & et_devices.to_string (package_variant)
@@ -7226,7 +7294,7 @@ package body et_kicad.schematic is
 
 	
 
-	function connected_net (
+	function connected_net ( -- CS rename to get_gonnected_net
 		module			: in type_submodule_name.bounded_string; -- nucleo_core
 		reference		: in type_device_name;	-- IC45
 		terminal		: in et_terminals.pac_terminal_name.bounded_string; -- E14
@@ -7241,11 +7309,11 @@ package body et_kicad.schematic is
 		port : type_port_of_module; 
 
 		use et_string_processing;
-		use et_symbols;
 		use type_modules;
 
 		module_cursor : type_modules.cursor; -- points to the module being searched in
 
+		
 		-- Searches the components of the module for the given reference.
 		procedure query_components (
 			module_name : in type_submodule_name.bounded_string;
@@ -7328,6 +7396,7 @@ package body et_kicad.schematic is
 					end if;
 					log_indentation_down;	
 				end query_variants;
+
 				
 			begin -- locate_component_in_library
 				log (text => "locating generic component " & to_string (generic_name) 
@@ -7362,7 +7431,8 @@ package body et_kicad.schematic is
 					
 				log_indentation_down;
 			end locate_component_in_library;
-				
+
+			
 		begin -- query_components
 			log (text => "querying components in schematic ...", level => log_threshold + 1);
 			log_indentation_up;
@@ -7396,6 +7466,7 @@ package body et_kicad.schematic is
 			log_indentation_down;
 		end query_components;
 
+		
 	begin -- connected_net
 		log (text => "locating in module " & to_string (module) & " net connected with " 
 			& to_string (reference) & " terminal " & et_terminals.to_string (terminal) & " ...", level => log_threshold);
@@ -7425,6 +7496,9 @@ package body et_kicad.schematic is
 		return net;
 	end connected_net;
 
+
+
+	
 	function components_in_net (
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in pac_net_name.bounded_string; -- motor_on_off
@@ -7432,7 +7506,6 @@ package body et_kicad.schematic is
 		return type_ports_with_reference.set 
 	is
 		use et_string_processing;
-		use et_symbols;
 		use type_modules;
 
 		module_cursor : type_modules.cursor;
@@ -7535,14 +7608,14 @@ package body et_kicad.schematic is
 	end components_in_net;
 
 
-	function real_components_in_net (
+	
+	function real_components_in_net ( -- CS rename to get_real_components_in_net
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in pac_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in type_log_level)
 		return type_ports_with_reference.set 
 	is
 		use et_string_processing;
-		use et_symbols;
 		use type_modules;
 
 		module_cursor : type_modules.cursor;
@@ -7605,7 +7678,8 @@ package body et_kicad.schematic is
 
 			log_indentation_down;
 		end locate_net;
-			
+
+		
 	begin -- real_components_in_net
 		log (text => "locating real components in module " & to_string (module) & " net " &
 			 to_string (net) & " ...",
@@ -7630,6 +7704,8 @@ package body et_kicad.schematic is
 		return ports_real;
 	end real_components_in_net;
 
+
+	
 -- 	procedure multiple_purpose_warning ( -- CS move to et_schematic or et_project
 -- 	-- Outputs a warning message on multiple usage of a purpose of a component category.
 -- 		category		: in et_conventions.type_component_category; -- CONNECTOR, LIGHT_EMMITTING_DIODE, ...

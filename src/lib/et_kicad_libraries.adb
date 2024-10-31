@@ -259,13 +259,11 @@ package body et_kicad_libraries is
 	end to_string;
 
 	
-	function compare_ports (left, right : in type_port_with_reference) return boolean is
 	-- Returns true if left comes before right. Compares by component reference and port name.
 	-- If left equals right, the return is false.	
 	-- CS: needs verification !
+	function compare_ports (left, right : in type_port_with_reference) return boolean is
 		result : boolean := false;
-		use et_symbols;
-		use et_schematic;
 	begin
 		-- First we compare the component reference.
 		-- Examples: C56 comes before R4, LED5 comes before LED7
@@ -284,6 +282,8 @@ package body et_kicad_libraries is
 		return result;
 	end compare_ports;
 
+
+	
 	procedure no_generic_model_found (
 		reference		: in type_device_name; -- IC303
 		library			: in et_kicad_general.type_device_library_name.bounded_string; -- ../lib/transistors.lib

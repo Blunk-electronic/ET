@@ -1995,7 +1995,6 @@ is
 	--  1    0    0   1  -- orientation 180, mirror |
 	--  1    0    0   1  -- orientation -90, mirror |
 
-		use et_schematic;
 
 		reference					: type_device_name;	-- like IC5	
 		appearance					: type_appearance := APPEARANCE_VIRTUAL; -- CS: why this default ?
@@ -2404,6 +2403,9 @@ is
 
 		end full_name_of_component_library;
 
+
+
+		
 		function remove_leading_hash (reference : in type_device_name) return
 		-- Removes from a reference like #PWR04 the leading hash character.
 		-- CS: This function should be applied on virtual components (such as power flags or power symbols) only.
@@ -2419,6 +2421,9 @@ is
 			--log (text => " to " & to_string (reference_out));
 			return reference_out;
 		end remove_leading_hash;
+
+
+
 		
 		procedure insert_component is
 		-- Inserts the component in the component list of the module (indicated by module_cursor).
@@ -2431,7 +2436,6 @@ is
 
 			full_component_library_name : type_device_library_name.bounded_string;
 
-			use et_symbols;
 			use et_import;
 			
 		begin -- insert_component
@@ -2563,8 +2567,7 @@ is
 		-- for the texts around the unit, but not its content. The content is stored with the component as a kind
 		-- of meta-data. See procedure insert_component.
 		-- Raises constraint error if unit already in unit list of component.
-		procedure insert_unit is 
-			use et_symbols;
+		procedure insert_unit is
 		begin
 			log_indentation_up;
 			
@@ -2884,6 +2887,7 @@ is
 								));
 			
 		end add_alternative_reference;
+
 		
 		function generic_name (text : in string) return type_component_generic_name.bounded_string is
 		-- Extracts from a given string like "bel_logic:7400" the generic component name "7400".
@@ -2898,6 +2902,7 @@ is
 			return type_component_generic_name.to_bounded_string (text (pos + 1 .. text'last)); -- 7400
 		end generic_name;
 
+		
 		function extract_library_name (text : in string) return type_library_name.bounded_string is
 		-- Extracts from a given string like "bel_logic:7400" the library name "bel_logic".
 			ifs : constant string (1..1) := ":";
@@ -2911,7 +2916,7 @@ is
 			return type_library_name.to_bounded_string (text (text'first .. pos - 1)); -- bel_logic
 		end extract_library_name;
 
-		use et_symbols;
+
 		
 	begin -- make_component (schematic)
 		log (text => "making component ...", level => log_threshold);

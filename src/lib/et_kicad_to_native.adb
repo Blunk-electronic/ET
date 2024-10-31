@@ -2513,11 +2513,12 @@ package body et_kicad_to_native is
 			return model_return;
 		end rename_package_model;
 
+
 		
-		procedure copy_components is
 		-- Transfer components from kicad module to native module.
 		-- Changes the links to device models so that they point to the libraries
 		-- in project/libraries/devices/...
+		procedure copy_components is
 			use et_schematic;
 			use et_device_appearance;
 			use et_kicad.schematic.type_components_schematic;
@@ -2544,8 +2545,6 @@ package body et_kicad_to_native is
 
 				unit_native_virtual	: et_units.type_unit (APPEARANCE_VIRTUAL);
 				unit_native_real	: et_units.type_unit (APPEARANCE_PCB);
-
-				use et_symbols;
 			begin
 				log_indentation_up;
 				

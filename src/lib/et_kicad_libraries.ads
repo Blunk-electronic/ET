@@ -45,7 +45,6 @@ with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
 with ada.containers.indefinite_ordered_maps;
 
-with et_schematic;
 with et_drills;
 with et_terminals;
 with et_packages;

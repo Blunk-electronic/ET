@@ -47,7 +47,6 @@ with ada.exceptions;
 with et_import;
 with et_vias;
 with et_pcb_stack;
-with et_symbols;
 with et_nets;
 
 with et_device_appearance;		use et_device_appearance;
@@ -4630,9 +4629,9 @@ package body et_kicad.pcb is
 	end floating_copper_polygon_properties;
 
 	
-	procedure read_board (
 	-- Reads the board file. Copies general board stuff to the schematic module.
 	-- Global module_cursor is expected to point to the schematic module.
+	procedure read_board (
 		file_name 		: in string;
 		log_threshold	: in type_log_level) 
 	is
@@ -4662,7 +4661,6 @@ package body et_kicad.pcb is
 		-- Only the package position, reference position and value position are read and assigned to the
 		-- selectors "position" and "text_placeholders" of a schematic component. See specs et_schematic.type_component
 		-- for details.
-			use et_schematic;
 
 			function to_net_name (
 			-- Returns for the given component reference and terminal the name of the attached net.
@@ -5319,7 +5317,6 @@ package body et_kicad.pcb is
 				end transfer_floating_polygons;
 
 				
-				use et_symbols;
 				use schematic.type_nets;
 				use et_device_appearance;
 
