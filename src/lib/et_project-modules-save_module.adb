@@ -54,7 +54,6 @@ with et_frames;
 with et_sheets;
 with et_pcb_rw;
 with et_pcb_rw.restrict;
-with et_packages;
 with et_package_names;
 with et_terminals;
 with et_material;
@@ -1407,7 +1406,6 @@ is
 	
 	
 	procedure query_board is
-		--use et_packages;
 		--use et_terminals;
 		use et_board_shapes_and_text;
 		use pac_text_board;
@@ -1594,7 +1592,6 @@ is
 		is
 			use et_devices;
 			use et_pcb;
-			use et_packages;
 			use et_package_names;
 			use et_pcb_sides;
 

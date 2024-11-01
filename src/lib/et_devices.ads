@@ -55,7 +55,6 @@ with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
 with et_symbols;				use et_symbols;
 with et_terminals;				use et_terminals;
-with et_packages;				use et_packages;
 with et_device_appearance;		use et_device_appearance;
 with et_package_names;			use et_package_names;
 

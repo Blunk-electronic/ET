@@ -2027,17 +2027,20 @@ package body et_conventions is
 		return type_partcode_keyword_argument.to_bounded_string (argument);
 	end to_partcode_keyword_argument;
 
+	
 	function to_string (argument : in type_partcode_keyword_argument.bounded_string) return string is
 	-- Converts a type_partcode_keyword_argument to a string.
 	begin
 		return type_partcode_keyword_argument.to_string (argument);
 	end to_string;
+
 	
 	function to_string (keyword : in type_partcode_keyword.bounded_string) return string is
 	-- Converts a type_partcode_keyword to a string.
 	begin
 		return type_partcode_keyword.to_string (keyword);
 	end to_string;
+
 	
 	procedure check_partcode_keyword_length (keyword : in string) is
 	-- Tests if the given partcode keyword is longer than allowed.
@@ -2050,6 +2053,7 @@ package body et_conventions is
 			raise constraint_error;
 		end if;
 	end check_partcode_keyword_length;
+
 	
 	procedure check_partcode_keyword_characters (
 		keyword		: in type_partcode_keyword.bounded_string;
@@ -2078,6 +2082,7 @@ package body et_conventions is
 		end if;
 
 	end check_partcode_keyword_characters;
+	
 
 	procedure validate_partcode_keyword (keyword : in type_partcode_keyword.bounded_string) is
 	-- Checks whether given keyword is specified in 
@@ -2109,9 +2114,10 @@ package body et_conventions is
 		end if;
 		
 	end validate_partcode_keyword;
+
+
 	
 	function to_partcode_keyword (keyword : in string) return type_partcode_keyword.bounded_string is
-	-- Converts a string to a type_partcode_keyword.
 	begin
 		return type_partcode_keyword.to_bounded_string (keyword);
 	end to_partcode_keyword;
@@ -2128,7 +2134,6 @@ package body et_conventions is
 		return pac_device_partcode.bounded_string 
 	is
 		use et_devices;
-		use et_packages;
 		use pac_device_prefix;
 		use pac_device_value;
 		use pac_device_partcode;

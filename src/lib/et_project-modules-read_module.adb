@@ -59,7 +59,6 @@ with et_sheets;
 with et_pcb_rw;
 with et_pcb_rw.device_packages;
 with et_pcb_rw.restrict;
-with et_packages;
 with et_package_names;
 with et_drills;
 with et_vias;
@@ -614,7 +613,6 @@ is
 	procedure read_net_class is 
 		use et_terminals;
 		use et_drills;
-		use et_packages;									
 		use et_pcb;
 		use et_pcb_rw;
 		kw : constant string := f (line, 1);
@@ -1559,7 +1557,6 @@ is
 	procedure read_cutout_restrict is
 		use et_pcb_stack;
 		use et_pcb_rw;
-		use et_packages;
 		use et_pcb_coordinates_2.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
@@ -1679,7 +1676,6 @@ is
 	
 	procedure read_fill_zone_non_conductor is
 		use et_board_shapes_and_text;
-		use et_packages;
 		use et_pcb_coordinates_2.pac_geometry_2;
 		use et_fill_zones;
 		use et_pcb_rw;
@@ -1718,7 +1714,6 @@ is
 	procedure read_fill_zone_restrict is
 		use et_pcb_stack;
 		use et_pcb_rw;
-		use et_packages;
 		use et_pcb_coordinates_2.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
@@ -2268,7 +2263,6 @@ is
 	
 	procedure read_device_non_electric is
 		use et_devices;
-		use et_packages;
 		use et_pcb_sides;
 		use et_package_names;
 		kw : constant string := f (line, 1);
@@ -2299,6 +2293,7 @@ is
 	end read_device_non_electric;
 
 	
+	
 	-- This variable provides the basic things for a simple drill
 	-- and a via (the type_via is derived from type_drill):
 	drill : et_drills.type_drill;
@@ -2318,7 +2313,6 @@ is
 		use et_pcb_rw;
 		use et_vias;
 		use et_terminals;
-		use et_packages;
 		use et_pcb_stack;
 		use et_board_ops;
 		kw : constant string := f (line, 1);
@@ -2984,7 +2978,6 @@ is
 				use et_schematic;
 				use et_symbols;
 				use et_devices;
-				use et_packages;
 				use et_package_names;
 				use et_pcb_stack;
 				
@@ -3165,7 +3158,6 @@ is
 				use et_schematic;
 				
 				use et_devices;
-				use et_packages;
 				use et_pcb_sides;
 				use et_package_names;
 				use et_pcb_stack;
@@ -3337,7 +3329,6 @@ is
 				use et_pcb_coordinates_2;
 				use pac_geometry_2;
 				
-				use et_packages;
 				use et_stop_mask;
 				use et_stencil;
 				use et_silkscreen;
@@ -3538,7 +3529,6 @@ is
 				is
 					use et_board_shapes_and_text;
 					use pac_contours;
-					use et_packages;
 					use et_pcb_sides;
 					
 					procedure append_silk_polygon_top is begin
@@ -3807,7 +3797,6 @@ is
 			procedure insert_cutout_conductor is
 				use et_board_shapes_and_text;
 				use pac_contours;
-				use et_packages;
 				use et_pcb;
 				use et_fill_zones.boards;
 				use et_pcb_rw;
@@ -4792,10 +4781,11 @@ is
 					end case;
 				end solid_polygon;
 
+
 				
 				procedure hatched_polygon is
 					use pac_route_hatched;
-					use et_packages;
+
 
 					procedure connection_thermal is
 						p : type_route_hatched (connection => THERMAL);
@@ -6496,7 +6486,6 @@ is
 
 								declare
 									use et_pcb_stack;
-									use et_packages;
 									use et_pcb_coordinates_2.pac_geometry_2;
 									kw : string := f (line, 1);
 								begin

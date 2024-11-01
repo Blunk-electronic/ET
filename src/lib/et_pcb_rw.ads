@@ -48,7 +48,6 @@ with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_drills;					use et_drills;
-with et_packages;				use et_packages;
 with et_pcb;
 with et_pcb_contour;
 with et_pcb_stack;

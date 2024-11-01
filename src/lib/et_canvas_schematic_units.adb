@@ -65,7 +65,6 @@ with et_sheets;						use et_sheets;
 with et_assembly_variants;			use et_assembly_variants;
 with et_devices;					use et_devices;
 with et_device_rw;
-with et_packages;
 with et_package_names;
 with et_symbol_ports;
 with et_device_appearance;
@@ -1092,7 +1091,6 @@ package body et_canvas_schematic_units is
 		use gtk.menu;
 		use gtk.menu_item;
 		use et_device_rw;
-		use et_packages;
 		use et_device_appearance;
 		
 		device_model : pac_device_model_file.bounded_string;

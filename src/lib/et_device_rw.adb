@@ -75,7 +75,6 @@ with et_port_direction;
 with et_port_names;
 with et_symbol_ports;				use et_symbol_ports;
 with et_symbols;					use et_symbols;
-with et_packages;					use et_packages;
 with et_package_names;				use et_package_names;
 with et_device_placeholders;		use et_device_placeholders;
 with et_schematic_shapes_and_text;	use et_schematic_shapes_and_text;

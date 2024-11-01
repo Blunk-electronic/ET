@@ -44,7 +44,6 @@ with et_directory_and_file_ops;
 with et_mirroring;					use et_mirroring;
 with et_pcb_coordinates_2;
 with et_device_query_schematic;
-with et_packages;
 with et_generic_stacks;
 with et_device_appearance;
 with et_package_names;

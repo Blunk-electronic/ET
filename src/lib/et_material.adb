@@ -59,9 +59,9 @@ with ada.exceptions;
 with et_string_processing;		use et_string_processing;
 with et_export;
 with et_csv;					use et_csv;
-with et_packages;
 with et_devices;				use et_devices;
 with et_exceptions;				use et_exceptions;
+
 
 package body et_material is
 	
@@ -139,7 +139,6 @@ package body et_material is
 
 			
 			procedure query_device (cursor : in pac_bom_devices.cursor) is
-				use et_packages;
 			begin
 				put_field (file => bom_handle, text => to_string (key (cursor))); -- R4
 				put_field (file => bom_handle, text => to_string (element (cursor).value)); -- 100R
@@ -185,6 +184,8 @@ package body et_material is
 			
 		end;
 
+
+		
 		procedure native is -- CS not complete. accessories ?
 			use et_csv;
 
@@ -196,7 +197,6 @@ package body et_material is
 			column_purpose		: constant string := "PURPOSE";
 
 			procedure query_device (cursor : in pac_bom_devices.cursor) is
-				use et_packages;
 			begin
 				put_field (file => bom_handle); -- CS item number
 				put_field (file => bom_handle, text => to_string (key (cursor))); -- R4

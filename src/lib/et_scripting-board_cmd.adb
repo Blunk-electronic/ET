@@ -78,7 +78,6 @@ with et_canvas.cmd;
 with et_frames;
 
 with et_terminals;
-with et_packages;
 with et_package_names;
 with et_devices;
 with et_vias;
@@ -98,7 +97,6 @@ is
 	use et_board_ops;
 	use et_board_ops.conductors;
 	use et_board_ops.vias;
-	use et_packages;
 	use et_board_shapes_and_text;
 	use pac_contours;
 	use et_drills;

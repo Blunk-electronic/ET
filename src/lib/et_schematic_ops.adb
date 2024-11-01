@@ -2753,7 +2753,6 @@ package body et_schematic_ops is
 		variant	: in pac_package_variant_name.bounded_string) -- N, D, S_0805
 		return et_device_placeholders.packages.type_text_placeholders
 	is
-		use et_packages;
 		use et_package_names;
 		use et_device_placeholders.packages;
 		use pac_devices_lib;

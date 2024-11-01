@@ -51,7 +51,6 @@ with ada.containers;				use ada.containers;
 
 with et_coordinates_2;				use et_coordinates_2;
 with et_project.modules;			use et_project.modules;
-with et_packages;
 with et_schematic;					use et_schematic;
 with et_device_query_schematic;		use et_device_query_schematic;
 with et_scripting;					use et_scripting;
