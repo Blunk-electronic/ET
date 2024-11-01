@@ -66,6 +66,7 @@ with et_assembly_variants;			use et_assembly_variants;
 with et_devices;					use et_devices;
 with et_device_rw;
 with et_packages;
+with et_package_names;
 with et_symbol_ports;
 with et_device_appearance;
 
@@ -1048,7 +1049,7 @@ package body et_canvas_schematic_units is
 		use pac_variants;
 		variant_name : constant string := to_string (key (variant));
 
-		use et_packages;
+		use et_package_names;
 		package_model : constant string := to_string (element (variant).package_model);
 	begin
 		-- Build the menu item. NOTE: The actual variant name must be

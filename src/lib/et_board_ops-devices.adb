@@ -815,10 +815,12 @@ package body et_board_ops.devices is
 		end return;
 	end get_placeholders;
 	
+
+
 	
 	procedure add_device ( -- non-electric !
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		package_model	: in et_packages.pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
+		package_model	: in pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 		position		: in type_package_position; -- x,y,rotation,face
 		prefix			: in pac_device_prefix.bounded_string; -- FD
 		log_threshold	: in type_log_level) 
@@ -895,6 +897,8 @@ package body et_board_ops.devices is
 	end add_device;
 
 
+
+	
 	
 	procedure move_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -1005,6 +1009,9 @@ package body et_board_ops.devices is
 		update_ratsnest (module_cursor, log_threshold + 1);
 	end move_device;
 
+
+
+	
 	
 	procedure rotate_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -1213,6 +1220,9 @@ package body et_board_ops.devices is
 
 	end rename_device;
 	
+
+
+
 	
 	procedure flip_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)

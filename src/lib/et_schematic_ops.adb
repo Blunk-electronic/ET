@@ -51,6 +51,7 @@ with et_pcb;
 with et_port_direction;
 with et_terminals;
 with et_packages;
+with et_package_names;
 with et_device_appearance;
 with et_device_rw;
 with et_device_query_schematic;		use et_device_query_schematic;
@@ -2742,7 +2743,9 @@ package body et_schematic_ops is
 		return next_name;
 	end next_device_name;
 
-	
+
+
+		
 	-- Returns the placeholders of the package of a device. The package is indirectly selected
 	-- by the given variant name. The given device is accessed by the given device cursor.
 	function placeholders_of_package (
@@ -2751,6 +2754,7 @@ package body et_schematic_ops is
 		return et_device_placeholders.packages.type_text_placeholders
 	is
 		use et_packages;
+		use et_package_names;
 		use et_device_placeholders.packages;
 		use pac_devices_lib;
 		use pac_variants;
@@ -2788,6 +2792,8 @@ package body et_schematic_ops is
 		return placeholders;
 	end placeholders_of_package;
 
+
+
 	
 	procedure add_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -2796,15 +2802,19 @@ package body et_schematic_ops is
 		destination		: in et_coordinates_2.type_position; -- sheet/x/y,rotation
 		log_threshold	: in type_log_level) is separate;
 
+
 	
-	procedure copy_device (
+	
 	-- Copies the given device. Places the first unit of the device (according to add level)
 	-- at the given destination in the schematic.
+	procedure copy_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
 		destination		: in et_coordinates_2.type_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level) is separate;
 
+
+	
 	function available_units (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1

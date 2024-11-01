@@ -2212,8 +2212,8 @@ is
 						-- make sure the library exists. mind search order of footprint libraries
 
 						-- check/validate package name (length, characters, ...)
-						et_packages.check_package_name_length (et_packages.to_string (package_name (content (field_package))));
-						et_packages.check_package_name_characters (package_name (content (field_package)));
+						check_package_name_length (to_string (package_name (content (field_package))));
+						check_package_name_characters (package_name (content (field_package)));
 					end if;
 
 					-- datasheet
@@ -3063,9 +3063,9 @@ is
 					when component_field_package =>
 						field_package_found := true;
 						field_package := to_field;
-						et_packages.check_package_name_length (content (field_package));
-						et_packages.check_package_name_characters (
-							packge		=> et_packages.pac_package_name.to_bounded_string (content (field_package)),
+						check_package_name_length (content (field_package));
+						check_package_name_characters (
+							packge		=> pac_package_name.to_bounded_string (content (field_package)),
 							characters	=> component_package_name_characters);
 						
 					when component_field_datasheet =>

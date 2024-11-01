@@ -55,6 +55,7 @@ with et_sheets;
 with et_pcb_rw;
 with et_pcb_rw.restrict;
 with et_packages;
+with et_package_names;
 with et_terminals;
 with et_material;
 
@@ -1593,6 +1594,7 @@ is
 			use et_devices;
 			use et_pcb;
 			use et_packages;
+			use et_package_names;
 
 			procedure query_placeholders (
 				device_name : in type_device_name;

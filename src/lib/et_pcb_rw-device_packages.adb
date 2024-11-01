@@ -94,16 +94,16 @@ package body et_pcb_rw.device_packages is
 		log_indentation_down;
 	end create_package;
 
+	
 
 	procedure save_package (
 		file_name 		: in pac_package_model_file_name.bounded_string; -- libraries/packages/S_SO14.pac							   
 		packge			: in type_package_model; -- the actual package model
 		log_threshold	: in type_log_level) 
 	is
-		use pac_package_model_file_name;
-		
 		file_handle : ada.text_io.file_type;
 
+		
 		procedure write_text (cursor : in pac_conductor_texts.cursor) is begin
 			text_begin;
 			write (keyword => keyword_content, wrap => true,
@@ -744,12 +744,12 @@ package body et_pcb_rw.device_packages is
 
 		
 	begin -- save_package
-		log (text => et_packages.to_string (file_name), level => log_threshold);
+		log (text => to_string (file_name), level => log_threshold);
 
 		create (
 			file 	=> file_handle,
 			mode	=> out_file,
-			name	=> et_packages.to_string (file_name));
+			name	=> to_string (file_name));
 
 		set_output (file_handle);
 		

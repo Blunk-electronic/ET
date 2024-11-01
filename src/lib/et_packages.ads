@@ -76,7 +76,7 @@ with et_assy_doc.packages;				use et_assy_doc.packages;
 with et_keepout;						use et_keepout;
 with et_pcb_contour;					use et_pcb_contour;
 with et_package_appearance;				use et_package_appearance;
-
+with et_package_names;					use et_package_names;
 
 -- CS remove
 with et_device_placeholders;			use et_device_placeholders;
@@ -94,60 +94,6 @@ package et_packages is
 	use pac_polygons;
 	use pac_contours;
 	use pac_text_board;
-
-
-	
-
-	
-	-- A package (or a footprint) is something like "SOT32" or "NDIP14". 
-	-- It is a more or less standardized (JEDEC)
-	-- designator for the housing or the case of an electronical component.
-	-- The package name is independed of
-	-- the actual purpose of a device. An LED can have an SOT23 package and
-	-- a transistor can also come in an SOT23.
-
-	-- Package names like "SOT23" or "TO220" are stored in bounded strings:
-	package_name_characters : character_set := to_set 
-		(ranges => (('a','z'),('A','Z'),('0','9'))) 
-		or to_set('.')
-		or to_set('-')
-		or to_set('_'); 
-
-	package_name_length_max : constant positive := 100;
-	package pac_package_name is new generic_bounded_length (package_name_length_max);
-
-	function to_string (packge : in pac_package_name.bounded_string) return string;
-	-- Returns the given package name as as string.
-	-- CS: provide a parameter that turns the preamble on/off
-
-	function to_package_name (package_name : in string) return pac_package_name.bounded_string;
-	-- Converts a string to a pac_package_name.
-	
-	procedure check_package_name_length (packge : in string);
-	-- Tests if the given package name is longer than allowed.
-	
-	procedure check_package_name_characters (
-		packge		: in pac_package_name.bounded_string;
-		characters	: in character_set := package_name_characters);
-	-- Tests if the given package name contains only valid characters as specified
-	-- by given character set.
-	-- Raises exception if invalid character found.
-
-
-
-	
-
-	package_model_file_name_length_max : constant positive := 300;
-	package pac_package_model_file_name is new generic_bounded_length (package_model_file_name_length_max);
-
-	package_model_file_extension : constant string := "pac";
-	
-	use pac_package_model_file_name;
-	
-	function to_string (name : in pac_package_model_file_name.bounded_string) return string;
-	function to_file_name (name : in string) return pac_package_model_file_name.bounded_string;
-	
-	
 
 	
 
@@ -338,6 +284,8 @@ package et_packages is
 
 
 
+
+	use pac_package_model_file_name;
 	
 	-- CS: this should be a hashed map:
 	package pac_package_models is new indefinite_ordered_maps ( -- CS ordered_maps ?

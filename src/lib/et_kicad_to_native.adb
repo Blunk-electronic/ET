@@ -58,6 +58,7 @@ with et_string_processing;			use et_string_processing;
 with et_project.modules;
 with et_vias;
 with et_board_shapes_and_text;
+with et_package_names;
 with et_packages;
 with et_kicad_general;
 with et_kicad_libraries;
@@ -2385,6 +2386,8 @@ package body et_kicad_to_native is
 		project_name	: in et_project.pac_project_name.bounded_string;
 		log_threshold	: in type_log_level) 
 	is
+		use et_package_names;
+		
 -- 		-- When the native project is created we need a project path and a project name:
 -- 		project_path : et_project.type_et_project_path.bounded_string :=
 -- 						et_project.type_et_project_path.to_bounded_string (
@@ -2394,8 +2397,8 @@ package body et_kicad_to_native is
 			et_devices.to_file_name (compose (
 				et_project.directory_libraries, et_project.directory_libraries_devices));
 	
-		prefix_packages_dir : et_kicad_general.type_package_library_name.bounded_string := -- libraries/packages
-			et_packages.to_file_name (compose (
+		prefix_packages_dir : pac_package_model_file_name.bounded_string := -- libraries/packages
+			to_file_name (compose (
 				et_project.directory_libraries, et_project.directory_libraries_packages));
 
 		-- Since V4 package libraries are stored in et_kicad_pcb.package_libraries
@@ -2409,6 +2412,7 @@ package body et_kicad_to_native is
 		-- This is a single native target module used as scratch.
 		module : et_schematic.type_module; 
 
+		
 		-- Converts kicad texts to native texts:
 		function to_texts (texts_in : et_kicad.schematic.type_texts.list) 
 			return et_schematic.pac_texts.list 
@@ -2442,6 +2446,8 @@ package body et_kicad_to_native is
 			et_kicad.schematic.type_texts.iterate (texts_in, query_texts'access);
 			return texts_out;
 		end;
+
+
 		
 		procedure copy_general_stuff is begin
 			module.board_available	:= element (module_cursor_kicad).board_available;
@@ -2450,6 +2456,8 @@ package body et_kicad_to_native is
 			module.net_classes		:= element (module_cursor_kicad).net_classes;
 		end copy_general_stuff;
 
+
+		
 		function concatenate_lib_name_and_generic_name (
 			library	: in et_kicad_general.type_device_library_name.bounded_string; -- ../../lbr/bel_logic.lib
 			device	: in et_kicad_libraries.type_component_generic_name.bounded_string) -- 7400
@@ -2490,25 +2498,29 @@ package body et_kicad_to_native is
 			return name;
 		end concatenate_lib_name_and_generic_name;
 
+		
+
 		function rename_package_model (
-			model_in : in et_kicad_general.type_package_library_name.bounded_string) -- ../../lbr/transistors.pretty/S_0805
-			return et_packages.pac_package_model_file_name.bounded_string is
+			model_in : in pac_package_model_file_name.bounded_string) -- ../../lbr/transistors.pretty/S_0805
+			return pac_package_model_file_name.bounded_string 
+		is
 			-- The return is something like: libraries/packages/__-__-lbr-transistors.pretty_S_0805.pac .
 
-			use et_kicad_general.type_package_library_name;
+			use et_package_names;
+			use pac_package_model_file_name;
 
 			-- In the containing directory . and / must be replaced by _ and -:
 			characters : character_mapping := to_mapping ("./","_-");
 
-			model_copy : et_kicad_general.type_package_library_name.bounded_string := model_in; -- ../../lbr/transistors.pretty/S_0805
-			model_return : et_packages.pac_package_model_file_name.bounded_string;
+			model_copy : pac_package_model_file_name.bounded_string := model_in; -- ../../lbr/transistors.pretty/S_0805
+			model_return : pac_package_model_file_name.bounded_string;
 		begin
 			translate (model_copy, characters);
 
-			model_return := et_packages.to_file_name (compose (
-					containing_directory	=> et_packages.to_string (prefix_packages_dir),
-					name					=> et_packages.to_string (model_copy),
-					extension				=> et_packages.package_model_file_extension));
+			model_return := to_file_name (compose (
+					containing_directory	=> to_string (name => prefix_packages_dir),
+					name					=> to_string (name => model_copy),
+					extension				=> package_model_file_extension));
 
 			return model_return;
 		end rename_package_model;
@@ -3150,7 +3162,7 @@ package body et_kicad_to_native is
 			use et_kicad_packages.type_libraries;
 			package_library_cursor : et_kicad_packages.type_libraries.cursor := module.footprints.first;
 
-			use et_packages.pac_package_model_file_name;
+			use pac_package_model_file_name;
 
 			
 			procedure query_components (
@@ -3554,6 +3566,7 @@ package body et_kicad_to_native is
 					use et_devices.pac_variants;
 					variant_cursor : et_devices.pac_variants.cursor := device.variants.first;
 
+					
 					procedure rename (
 						variant_name	: in pac_package_variant_name.bounded_string; -- N, D, ...
 						variant			: in out et_devices.type_variant) is
@@ -3562,8 +3575,9 @@ package body et_kicad_to_native is
 
 						log (text => "package variant " & et_devices.to_string (variant_name) 
 							 & " now uses package " 
-							 & et_packages.to_string (variant.package_model), level => log_threshold + 4);
+							 & to_string (name => variant.package_model), level => log_threshold + 4);
 					end rename;
+					
 					
 				begin -- rename_package_model_in_variants
 					-- Loop in variants and rename the package names.
@@ -3676,14 +3690,14 @@ package body et_kicad_to_native is
 			
 			-- Creates with the library name and package name new native package models.
 			procedure query_packages (
-				library_name	: in et_kicad_general.type_package_library_name.bounded_string; -- projects/lbr/smd_packages.pretty
+				library_name	: in pac_package_model_file_name.bounded_string; -- projects/lbr/smd_packages.pretty
 				library			: in et_kicad_packages.type_packages_library.map) 
 			is
 
 				use et_kicad_packages.type_packages_library;
 				package_cursor_kicad	: et_kicad_packages.type_packages_library.cursor := library.first;
-				package_name			: et_packages.pac_package_name.bounded_string;
-				package_model			: et_packages.pac_package_model_file_name.bounded_string := library_name; -- projects/lbr/smd_packages.pretty
+				package_name			: pac_package_name.bounded_string;
+				package_model			: pac_package_model_file_name.bounded_string := library_name; -- projects/lbr/smd_packages.pretty
 
 				use et_packages.pac_package_models;
 				package_cursor			: et_packages.pac_package_models.cursor;
@@ -3695,13 +3709,13 @@ package body et_kicad_to_native is
 					--log (text => "package name " & et_libraries.to_string (package_name), level => log_threshold + 2);
 
 					-- build the new native package model name
-					package_model := et_packages.to_file_name (compose (
-								containing_directory	=> et_packages.to_string (library_name), -- projects/lbr/smd_packages.pretty
-								name					=> et_packages.to_string (package_name))); -- S_0805
+					package_model := to_file_name (compose (
+								containing_directory	=> to_string (name => library_name), -- projects/lbr/smd_packages.pretty
+								name					=> to_string (packge => package_name))); -- S_0805
 
 					-- replace . and / in package_model 
 					package_model := rename_package_model (package_model);
-					log (text => "package model " & et_packages.to_string (package_model), level => log_threshold + 3);
+					log (text => "package model " & to_string (name => package_model), level => log_threshold + 3);
 
 					-- Insert the new package model in et_pcb.packages. In case the package is already in the 
 					-- container (due to other project imports), the flag "inserted" will go false. The package
@@ -3754,7 +3768,7 @@ package body et_kicad_to_native is
 
 						-- Loop in footprint libraries:
 						while package_library_cursor /= et_kicad_packages.type_libraries.no_element loop
-							log (text => "package library " & to_string (key (package_library_cursor)), level => log_threshold + 2);
+							log (text => "package library " & to_string (name => key (package_library_cursor)), level => log_threshold + 2);
 
 							log_indentation_up;
 
@@ -3768,13 +3782,14 @@ package body et_kicad_to_native is
 
 						packages_v4_copied := true; -- When processing the next module, there is no need for copying again.
 					end if;
+
 					
 				-- Kicad V5 package libraries are module specific (selector "footprints") and are converted here:
 				when et_import.KICAD_V5 =>
 
 					-- Loop in footprint libraries:
 					while package_library_cursor /= et_kicad_packages.type_libraries.no_element loop
-						log (text => "package library " & to_string (key (package_library_cursor)), level => log_threshold + 2);
+						log (text => "package library " & to_string (name => key (package_library_cursor)), level => log_threshold + 2);
 
 						log_indentation_up;
 
@@ -3795,10 +3810,12 @@ package body et_kicad_to_native is
 		
 		-- Saves the library containers in the current working directory.
 		procedure save_libraries (
-			log_threshold	: in type_log_level) is
+			log_threshold	: in type_log_level) 
+		is
 			use et_string_processing;
 			use pac_devices_lib;
 
+			
 			procedure save_device (device_cursor : in pac_devices_lib.cursor) is
 			begin
 				et_device_rw.save_device (
@@ -3811,15 +3828,16 @@ package body et_kicad_to_native is
 					log_threshold	=> log_threshold + 1); 
 			end save_device;
 
+			
 			use et_packages.pac_package_models;
+
 			
 			procedure save_package (package_cursor : in et_packages.pac_package_models.cursor) is
-				use et_packages.pac_package_model_file_name;
 			begin
 				et_pcb_rw.device_packages.save_package (
 					-- package name like: 
 					-- libraries/packages/__-__-lbr-bel_connector_and_jumper_FEMALE_01X06.pac
-					file_name		=> et_packages.to_file_name (to_string (key (package_cursor))),
+					file_name		=> to_file_name (name => to_string (key (package_cursor))),
 
 					-- the package model itself:
 					packge			=> element (package_cursor),
@@ -3844,6 +3862,7 @@ package body et_kicad_to_native is
 			log_indentation_down;			
 		end save_libraries;
 
+		
 		use et_project.pac_project_name;
 
 	begin -- to_native

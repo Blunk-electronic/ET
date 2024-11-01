@@ -2598,13 +2598,14 @@ package body et_kicad_packages is
 		-- The library_cursor points to the library in the container package_libraries.
 		use type_libraries;
 		library_cursor : type_libraries.cursor;
+
 		
-		procedure read_packages (
 		-- Creates empty packages in the package_libraries. The package names are
 		-- named after the packages found in the library directories.
-			library_name	: in type_package_library_name.bounded_string;
-			packages		: in out type_packages_library.map) is
-
+		procedure read_packages (
+			library_name	: in pac_package_model_file_name.bounded_string;
+			packages		: in out type_packages_library.map) 
+		is
 			package_names : pac_directory_entries.list;
 			package_name_cursor : pac_directory_entries.cursor;
 			

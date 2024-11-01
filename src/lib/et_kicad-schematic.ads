@@ -52,6 +52,7 @@ with et_nets;					use et_nets;
 with et_project;
 with et_net_labels;				use et_net_labels;
 with et_terminals;
+with et_package_names;			use et_package_names;
 with et_packages;
 with et_pcb;
 with et_kicad_general;			use et_kicad_general;
@@ -733,12 +734,15 @@ package et_kicad.schematic is
 	-- provided as string together with procedure check_reference_characters (see et_libraries):
 	component_reference_characters : character_set := component_prefix_characters or to_set (span => ('0','9'));
 
+	
 	-- Kicad combines the library and package/footprint name in a single string like bel_capacitors:S_0805
 	-- Therefore the character set used here includes the colon additionally.
-	component_package_name_characters : character_set := et_packages.package_name_characters or to_set (':');
+	component_package_name_characters : character_set := package_name_characters or to_set (':');
 
+	
 	-- In the library a component name may have a tilde. Therefore we extend the standard character set by a tilde.
 	component_generic_name_characters_lib : character_set := component_generic_name_characters or to_set ('~');
+
 	
 	type type_symbol_interchangeable is (L, F); -- L means swapping not allowed, F means swapping allowed 
 	type type_show_pin_number is (Y, N); -- show pin/pad number yes/no
@@ -864,11 +868,14 @@ package et_kicad.schematic is
 
 	
 
-	function library_name (text : in string) return type_library_name.bounded_string;
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
-
-	function package_name (text : in string) return et_packages.pac_package_name.bounded_string;
+	function library_name (text : in string) return type_library_name.bounded_string;
+	-- CS rename to get_library_name
+	
+	
 	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
+	function package_name (text : in string) return pac_package_name.bounded_string;
+	-- CS rename to get_package_name
 
 
 	function junction_sits_on_segment (

@@ -47,6 +47,7 @@ with ada.containers.indefinite_ordered_maps;
 
 with et_drills;
 with et_terminals;
+with et_package_names;			use et_package_names;
 with et_packages;
 with et_pcb;
 with et_kicad_general;			use et_kicad_general;
@@ -431,7 +432,7 @@ package et_kicad_libraries is
 		library_name	: in type_device_library_name.bounded_string; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
 		package_variant	: in pac_package_variant_name.bounded_string) -- N, D
-		return et_packages.pac_package_name.bounded_string;
+		return pac_package_name.bounded_string;
 
 	
 	-- Alternative references used in instances of sheets:
@@ -740,7 +741,7 @@ package et_kicad_libraries is
 
 	-- Kicad combines the library and package/footprint name in a single string like bel_capacitors:S_0805
 	-- Therefore the character set used here includes the colon additionally.
-	component_package_name_characters : character_set := et_packages.package_name_characters or to_set (':');
+	component_package_name_characters : character_set := package_name_characters or to_set (':');
 
 	-- In the library a component name may have a tilde. Therefore we extend the standard character set by a tilde.
 	component_generic_name_characters_lib : character_set := component_generic_name_characters or to_set ('~');
@@ -768,22 +769,28 @@ package et_kicad_libraries is
 	note_entered				: boolean := false;	
 
 
-	function library_name (text : in string) return type_library_name.bounded_string;
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
+	function library_name (text : in string) return type_library_name.bounded_string;
+	-- CS rename to get_library_name
 
-	function package_name (text : in string) return et_packages.pac_package_name.bounded_string;
+	
 	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
+	function package_name (text : in string) return pac_package_name.bounded_string;
+	-- CS rename to get_package_name
+
 	
 	function component_power_flag (cursor : in type_components_library.cursor)
 	-- Returns the component power flag status.
 		return type_power_flag;
 
+	
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.
 		library		: in type_device_library_name.bounded_string; -- incl. path and file name
 		component	: in type_component_generic_name.bounded_string) 
 		return type_components_library.cursor;
 
+	
 	procedure write_note_properties (
 		note			: in type_text;
 		log_threshold	: in type_log_level := 0);
@@ -795,28 +802,36 @@ package et_kicad_libraries is
 	-- Units may have alternative representations such as de_Morgan
 	type type_de_morgan_representation is (NO, YES);
 
-	function prepend_tilde (generic_name : in type_component_generic_name.bounded_string) return
-		type_component_generic_name.bounded_string;
+
+	
 	-- Prepends a heading tilde character to a generic component name.
 	-- example: TRANSISTOR_NPN becomes ~TRANSISTOR_NPN
 	-- The leading tilde marks a component whose value is set to "invisible".
+	function prepend_tilde (generic_name : in type_component_generic_name.bounded_string) return
+		type_component_generic_name.bounded_string;
 
+
+		
 	-- Returns the first library directory (in search_list_project_lib_dirs) that
 	-- contains the given package library with the given package.
-	function full_library_name (
+	function full_library_name ( -- CS rename to get_full_library_name
 		library_name	: in type_library_name.bounded_string; -- bel_logic
-		package_name 	: in et_packages.pac_package_name.bounded_string; -- S_SO14
+		package_name 	: in pac_package_name.bounded_string; -- S_SO14
 		log_threshold	: in type_log_level)
-		return type_package_library_name.bounded_string;
+		return pac_package_model_file_name.bounded_string;
 
+
+	
 	-- Used when terminal_port_maps are to be used for packages.
 	-- The given package is specified by the library name and package name.
 	-- Returns true if the terminal_port_map fits on the given package.
 	function terminal_port_map_fits (
-		library_name		: in type_package_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
-		package_name 		: in et_packages.pac_package_name.bounded_string;	-- S_SO14
+		library_name		: in pac_package_model_file_name.bounded_string;		-- ../lbr/bel_ic.pretty
+		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
 		terminal_port_map	: in pac_terminal_port_map.map) 
 		return boolean;
+
+
 	
 	-- Reads component libraries.
 	procedure read_components_libraries (log_threshold : in type_log_level);

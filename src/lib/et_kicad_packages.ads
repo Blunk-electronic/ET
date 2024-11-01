@@ -66,6 +66,7 @@ with et_keepout;				use et_keepout;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 
+with et_package_names;			use et_package_names;
 with et_packages;
 with et_kicad_general;			use et_kicad_general;
 with et_import;
@@ -290,15 +291,15 @@ package et_kicad_packages is
 	
 	-- Lots of packages (in a library) can be collected in a map:
 	package type_packages_library is new indefinite_ordered_maps (
-		key_type 		=> et_packages.pac_package_name.bounded_string, -- S_SO14, T_0207
-		"<"				=> et_packages.pac_package_name."<",
+		key_type 		=> pac_package_name.bounded_string, -- S_SO14, T_0207
+		"<"				=> pac_package_name."<",
 		element_type 	=> type_package_library);
 	
 	package type_libraries is new ordered_maps ( -- CS rename to pac_package_libraries
-		key_type		=> type_package_library_name.bounded_string, -- projects/lbr/smd_packages.pretty
+		key_type		=> pac_package_model_file_name.bounded_string, -- projects/lbr/smd_packages.pretty
 		element_type	=> type_packages_library.map,
 		"="				=> type_packages_library."=",
-		"<"				=> type_package_library_name."<");
+		"<"				=> pac_package_model_file_name."<");
 	-- CS the element could be a record consisting of type_packages_library.map, lib_type, options and desrciption
 	-- lib_type, options and description are provided in V5 and should be stored here in the future.
 	

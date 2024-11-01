@@ -55,6 +55,7 @@ with et_schematic;				use et_schematic;
 with et_net_names;				use et_net_names;
 with et_terminals;				use et_terminals;
 with et_packages;
+with et_package_names;			use et_package_names;
 with et_pcb;
 with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
@@ -731,8 +732,10 @@ package et_kicad.pcb is
 	-- Imports layout files. The files to be imported are named after the schematic modules.
 	-- The schematic modules are indicated by module_cursor.
 
-	function terminal_count (
-		packge : in type_package_library_name.bounded_string) -- ../lbr/bel_ic/S_SO14
+
+	-- Returns the number of terminals of the given package in the given library.
+	function terminal_count ( -- CS rename to get_terminal_count
+		packge : in pac_package_model_file_name.bounded_string) -- ../lbr/bel_ic/S_SO14
 		return et_devices.type_terminal_count;
 	
 

@@ -42,6 +42,7 @@ with et_schematic_ops;
 with et_contour_to_polygon;
 with et_logging;						use et_logging;
 with et_string_processing;				use et_string_processing;
+with et_package_names;					use et_package_names;
 
 
 package body et_device_query_board is

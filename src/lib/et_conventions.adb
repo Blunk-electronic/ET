@@ -2116,19 +2116,20 @@ package body et_conventions is
 		return type_partcode_keyword.to_bounded_string (keyword);
 	end to_partcode_keyword;
 
-	function compose_partcode_root (
+
+	
 	-- The root of a partcode in general is something like R_PAC_S_0805_VAL_ .
 	-- If optionally the value is provided, it gets appended which would result
 	-- in something like R_PAC_S_0805_VAL_100R.
+	function compose_partcode_root (
 		prefix		: in pac_device_prefix.bounded_string;			-- R
-		packge		: in et_packages.pac_package_name.bounded_string;	-- S_0805
+		packge		: in pac_package_name.bounded_string;	-- S_0805
 		value 		: in pac_device_value.bounded_string := to_value ("")) -- 100R
 		return pac_device_partcode.bounded_string 
 	is
 		use et_devices;
 		use et_packages;
 		use pac_device_prefix;
-		use pac_package_name;
 		use pac_device_value;
 		use pac_device_partcode;
 
@@ -2138,7 +2139,7 @@ package body et_conventions is
 				& partcode_keyword_separator				-- _
 				& to_partcode_keyword (COMPONENT_PACKAGE)	-- PAC
 				& partcode_keyword_separator				-- _
-				& et_packages.to_string (packge));			-- S_0805
+				& to_string (packge));			-- S_0805
 	begin
 		if is_empty (value) then
 			return base; -- X_PAC_S_USB-MINI
@@ -2150,6 +2151,9 @@ package body et_conventions is
 				& et_devices.to_string (value));		-- 100R
 		end if;
 	end compose_partcode_root;
+
+
+	
 
 	procedure validate_other_partcode_keywords (
 	-- Validates optional keywords as specified in configuration file.
@@ -2276,19 +2280,12 @@ package body et_conventions is
 
 	
 	procedure validate_partcode (
-	-- Tests if the given partcode of a device is correct.
-	-- The given properties are assumed to be those of a real device.
-	--  - If partcode keywords are not specified in the 
-	--    configuration file, nothing is validated. It is the users responsibility 
-	--    to specify a correct partcode.
-	--  - If partcode keywords are specified in the configuration file,
-	--    the root part (like R_PAC_S_0805_VAL_) is validated.
 		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		device_name		: in type_device_name;						-- R45
-		packge			: in et_packages.pac_package_name.bounded_string;	-- S_0805
+		packge			: in pac_package_name.bounded_string;	-- S_0805
 		value 			: in pac_device_value.bounded_string; -- 100R
 		log_threshold	: in type_log_level)
-		is
+	is
 
 		use et_string_processing;
 		use pac_device_partcode;

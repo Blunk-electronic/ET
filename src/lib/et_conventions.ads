@@ -6,20 +6,21 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -54,6 +55,8 @@ with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_devices;				use et_devices;
 with et_packages;
+with et_package_names;			use et_package_names;
+
 
 package et_conventions is
 
@@ -472,7 +475,7 @@ package et_conventions is
 	-- in the conventions file section [PART_CODE_KEYWORDS].
 	-- If no keyword specified (or no conf. file applied) returns an empty string.
 
-	procedure validate_partcode (
+	
 	-- Tests if the given partcode of a device is correct.
 	-- The given properties are assumed to be those of a real device.
 	--  - If partcode keywords are not specified in the 
@@ -480,9 +483,10 @@ package et_conventions is
 	--    to specify a correct partcode.
 	--  - If partcode keywords are specified in the conventions file,
 	--    the root part (like R_PAC_S_0805_VAL_) is validated.
+	procedure validate_partcode (
 		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
 		device_name		: in type_device_name; -- R45
-		packge			: in et_packages.pac_package_name.bounded_string;	-- S_0805
+		packge			: in pac_package_name.bounded_string;	-- S_0805
 		value 			: in pac_device_value.bounded_string; -- 100R
 		log_threshold	: in type_log_level);
 

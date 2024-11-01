@@ -582,10 +582,10 @@ package body et_kicad.schematic is
 	end to_string;
 
 	
-	function package_name (text : in string) return et_packages.pac_package_name.bounded_string is
-	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
+	
+	function package_name (text : in string) return pac_package_name.bounded_string is
 	begin
-		return et_packages.pac_package_name.to_bounded_string (
+		return pac_package_name.to_bounded_string (
 			f (
 				read_line (
 					line			=> text,
@@ -596,6 +596,8 @@ package body et_kicad.schematic is
 				);
 	end package_name;
 
+
+	
 	function to_text_meaning (
 	-- Extracts from a scheamtic field like "F 0 "#PWR01" H 2000 3050 50  0001 C CNN" its meaning.
 	-- Extracts from a component field like "F0 "IC" 0 50 50 H V C CNN" its meaning.
@@ -921,6 +923,8 @@ package body et_kicad.schematic is
 		-- CS: exception handler
 	end to_degrees;
 
+
+	
 	function to_power_flag (reference : in type_device_name) 
 		return type_power_flag is
 	-- If the given component reference is one that belongs to a "power flag" returns YES.
@@ -936,10 +940,13 @@ package body et_kicad.schematic is
 		end if;
 	end to_power_flag;
 
-	procedure validate_component_package_name 
-		(name : in et_packages.pac_package_name.bounded_string) is
+
+	
 	-- Tests if the given component package name meets certain conventions.
-		use et_packages.pac_package_name;
+	procedure validate_component_package_name 
+		(name : in pac_package_name.bounded_string) 
+	is
+		use pac_package_name;
 		use et_string_processing;
 		
 		procedure no_package is
@@ -949,25 +956,28 @@ package body et_kicad.schematic is
 			raise constraint_error;
 		end no_package;
 			
-	begin -- validate_component_package_name
+	begin
 		if length (name) > 0 then
-			et_packages.check_package_name_characters (name, component_package_name_characters);
+			check_package_name_characters (name, component_package_name_characters);
 		else
 			no_package;
 		end if;
 	end validate_component_package_name;
 
-	function to_package_variant (
+
+
+	
 	-- Used when reading schematic. Returns the package variant of a component.
 	-- Input parameters: the full name of the component library, generic name therein,
 	-- name of package library and package name.
+	function to_package_variant (
 		component_library 	: in et_kicad_general.type_device_library_name.bounded_string; 	-- ../lbr/bel_logic.lib
 		generic_name 		: in type_component_generic_name.bounded_string; 				-- 7400
 		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
-		package_name 		: in et_packages.pac_package_name.bounded_string;	-- S_SO14
+		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
 		log_threshold		: in type_log_level)
-		return pac_package_variant_name.bounded_string is 					-- D
-
+		return pac_package_variant_name.bounded_string -- D
+	is
 		library_cursor : type_device_libraries.cursor; -- points to the component library
 		
 		use et_string_processing;
@@ -976,27 +986,29 @@ package body et_kicad.schematic is
 		variant : pac_package_variant_name.bounded_string; -- variant name to be returned
 		
 		-- temporarily here the name of the package library is stored:
-		use type_package_library_name;
-		full_package_library_name : type_package_library_name.bounded_string; -- ../lbr/bel_ic
+		full_package_library_name : pac_package_model_file_name.bounded_string; -- ../lbr/bel_ic
 
 		use et_packages;
-		
-		procedure locate_component (
-		-- Locates the given generic component in the component libraray.
-			library_name	: in type_device_library_name.bounded_string;
-			components 		: in out type_components_library.map) is
 
+		
+		-- Locates the given generic component in the component libraray.
+		procedure locate_component (
+			library_name	: in type_device_library_name.bounded_string;
+			components 		: in out type_components_library.map) 
+		is
 			use type_components_library;
 			component_cursor : type_components_library.cursor; -- points to the generic component
-			
-			procedure query_variants (
-			-- Queries the package variants of the generic component.
-				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
-				component 		: in out type_component_library) is
 
+			
+			-- Queries the package variants of the generic component.
+			procedure query_variants (
+				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
+				component 		: in out type_component_library) 
+			is
 				use pac_package_name;
 				use pac_variants;
 				use pac_package_variant_name;
+				use pac_package_model_file_name;
 
 				-- This cursor points to the package variant being queryied.
 				variant_cursor : pac_variants.cursor := component.variants.first;
@@ -1022,10 +1034,10 @@ package body et_kicad.schematic is
 					-- From the library and package name we can reason the variant name.
 					-- So if both the given library and package name match, the variant name
 					-- is set to be returned.
-					if element (variant_cursor).package_model = et_packages.to_file_name (compose (
-							containing_directory	=> et_packages.to_string (full_package_library_name),
-							name					=> et_packages.to_string (package_name))) then
-						
+					if element (variant_cursor).package_model = to_file_name (compose (
+							containing_directory	=> to_string (name => full_package_library_name),
+							name					=> to_string (packge => package_name))) 
+					then						
 						log (text => "variant " 
 							& to_string (package_variant => key (variant_cursor)) 
 							& " used", level => log_threshold + 1);
@@ -1039,6 +1051,7 @@ package body et_kicad.schematic is
 					next (variant_cursor);
 				end loop;
 
+				
 				-- If no suitable package variant has been found, a new one must be created.
 				if variant_cursor = pac_variants.no_element then
 					
@@ -1062,9 +1075,9 @@ package body et_kicad.schematic is
 
 						-- build the new package variant
 						new_variant := (
-							package_model => et_packages.to_file_name (compose (
-								containing_directory	=> et_packages.to_string (full_package_library_name),
-								name					=> et_packages.to_string (package_name))),
+							package_model => to_file_name (compose (
+								containing_directory	=> to_string (name => full_package_library_name),
+								name					=> to_string (packge => package_name))),
 							
 							terminal_port_map	=> element (variant_cursor).terminal_port_map
 							);
@@ -1098,6 +1111,7 @@ package body et_kicad.schematic is
 							raise;
 
 			end query_variants;
+				
 			
 		begin -- locate_component
 			log (text => "locating generic component " & enclose_in_quotes (to_string (generic_name)) 
@@ -1128,6 +1142,7 @@ package body et_kicad.schematic is
 						raise;
 
 		end locate_component;
+			
 		
 	begin -- to_package_variant
 		log (text => "validating/making package variant ...", level => log_threshold);
@@ -1141,7 +1156,7 @@ package body et_kicad.schematic is
 			log_threshold	=> log_threshold + 1);
 
 		log (text => "full package library name is " 
-			 & enclose_in_quotes (et_packages.to_string (full_package_library_name)),
+			 & enclose_in_quotes (to_string (full_package_library_name)),
 			 level => log_threshold + 1);
 		
 		-- locate the given component library
@@ -1165,7 +1180,7 @@ package body et_kicad.schematic is
 	end to_package_variant;
 
 
-	procedure link_strands (log_threshold : in type_log_level) is
+	
 	-- Links local and global strands to nets (see type_module.nets).
 
 	-- Builds the nets (see type_module.nets) of the current module from its strands (see type_module.strands).
@@ -1177,6 +1192,7 @@ package body et_kicad.schematic is
 	-- each other. For example a strand named "VCC3V3" exists on submodule A on sheet 2. 
 	-- Another strand "VCC3V3" exists on submodule C on sheet 1. They do not "know" each other
 	-- and must be merged into a single net.
+	procedure link_strands (log_threshold : in type_log_level) is
 		use et_string_processing;
 		use type_strands;
 
@@ -2361,7 +2377,7 @@ package body et_kicad.schematic is
 							-- create empty package/footprint library
 							type_libraries.insert (
 								container	=> package_libraries,
-								key 		=> et_packages.to_file_name (et_devices.to_string (uri)),
+								key 		=> to_file_name (et_devices.to_string (uri)),
 								new_item	=> type_packages_library.empty_map
 								); 
 

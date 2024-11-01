@@ -44,67 +44,6 @@ with ada.exceptions;
 
 package body et_packages is
 	
-	
-	function to_string (packge : in pac_package_name.bounded_string) return string is
-	-- CS: provide a parameter that turns the preamble on/off
-	begin
-		return pac_package_name.to_string (packge);
-	end to_string;
-
-	function to_package_name (package_name : in string) return pac_package_name.bounded_string is
-	begin
-		return pac_package_name.to_bounded_string (package_name);
-	end to_package_name;
-
-	
-	procedure check_package_name_length (packge : in string) is
-	begin
-		if packge'length > package_name_length_max then
-			log (WARNING, "package name too long. Max. length is" 
-				 & positive'image (package_name_length_max) & " !");
-		end if;
-	end check_package_name_length;
-
-	
-	procedure check_package_name_characters (
-		packge		: in pac_package_name.bounded_string;
-		characters	: in character_set := package_name_characters)
-	is
-		use pac_package_name;
-		invalid_character_position : natural := 0;
-	begin
-		invalid_character_position := index (
-			source => packge,
-			set => characters,
-			test => outside);
-
-		if invalid_character_position > 0 then
-			log (WARNING, "package name " & enclose_in_quotes (to_string (packge))
-				 & " has invalid character at position"
-				 & natural'image (invalid_character_position));
-		end if;
-	end check_package_name_characters;
-
-
-
-
-	
-	function to_string (name : in pac_package_model_file_name.bounded_string) 
-		return string is
-	begin
-		return pac_package_model_file_name.to_string (name);
-	end;
-
-	function to_file_name (name : in string) 
-		return pac_package_model_file_name.bounded_string is
-	begin
-		return pac_package_model_file_name.to_bounded_string (name);
-	end;
-
-
-
-
-
 
 	procedure validate_pad_size (size : in type_distance_model) is
 	begin

@@ -60,6 +60,7 @@ with et_pcb_rw;
 with et_pcb_rw.device_packages;
 with et_pcb_rw.restrict;
 with et_packages;
+with et_package_names;
 with et_drills;
 with et_vias;
 with et_terminals;
@@ -1072,7 +1073,7 @@ is
 	
 
 	device_non_electric			: et_pcb.type_device_non_electric;
-	device_non_electric_model	: et_packages.pac_package_model_file_name.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
+	device_non_electric_model	: et_package_names.pac_package_model_file_name.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
 
 
 	
@@ -2267,6 +2268,7 @@ is
 	procedure read_device_non_electric is
 		use et_devices;
 		use et_packages;
+		use et_package_names;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2287,12 +2289,11 @@ is
 			
 		elsif kw = keyword_model then -- model /lib/fiducials/crosshair.pac
 			expect_field_count (line, 2);
-			device_non_electric_model := et_packages.to_file_name (f (line, 2));
+			device_non_electric_model := to_file_name (f (line, 2));
 
 		else
 			invalid_keyword (kw);
 		end if;
-
 	end read_device_non_electric;
 
 	
@@ -2982,14 +2983,15 @@ is
 				use et_symbols;
 				use et_devices;
 				use et_packages;
+				use et_package_names;
 				use et_pcb_stack;
 				
 				device_cursor : pac_devices_sch.cursor;
 				inserted : boolean;
 
-				function get_package_name return pac_package_name.bounded_string is
 				-- Derives package name from device.model and device.variant.
 				-- Checks if variant exits in device.model.
+				function get_package_name return pac_package_name.bounded_string is
 					name : pac_package_name.bounded_string; -- S_SO14 -- to be returned
 					device_cursor : pac_devices_lib.cursor;
 
@@ -3013,7 +3015,7 @@ is
 								" not available in device model " & to_string (model) & " !", console => true);
 							raise constraint_error;
 						else
-							name := to_package_name (base_name (et_packages.to_string (element (variant_cursor).package_model)));
+							name := to_package_name (base_name (to_string (element (variant_cursor).package_model)));
 						end if;
 					end;
 
@@ -3162,6 +3164,7 @@ is
 				
 				use et_devices;
 				use et_packages;
+				use et_package_names;
 				use et_pcb_stack;
 				
 				device_cursor : pac_devices_non_electric.cursor;

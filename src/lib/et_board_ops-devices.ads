@@ -38,6 +38,7 @@
 --   ToDo: 
 
 
+with et_package_names;					use et_package_names;
 with et_packages;						use et_packages;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;
@@ -169,7 +170,7 @@ package et_board_ops.devices is
 	-- Adds a non-electric device to the board:
 	procedure add_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		package_model	: in et_packages.pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
+		package_model	: in pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 		position		: in type_package_position; -- x,y,rotation,face
 		prefix			: in pac_device_prefix.bounded_string; -- FD
 		log_threshold	: in type_log_level);

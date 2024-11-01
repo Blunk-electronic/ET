@@ -227,31 +227,34 @@ package body et_kicad_libraries is
 		return r;
 	end to_component_reference;
 
+
+
 	
 	function to_package_name (
 		library_name	: in et_kicad_general.type_device_library_name.bounded_string; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
 		package_variant	: in pac_package_variant_name.bounded_string) -- N, D
-		return et_packages.pac_package_name.bounded_string is
-	-- Returns the package name for of the given component.
-		package_name : et_packages.pac_package_name.bounded_string; -- to be returned
+		return pac_package_name.bounded_string 
+	is
+		package_name : pac_package_name.bounded_string; -- to be returned
 	begin -- to_package_name
 		-- CS
 		return package_name;
 	end to_package_name;
 
 	
+	
+	-- Returns the position of the given no-connection-flag as string.
 	function to_string (
 		no_connection_flag	: in type_no_connection_flag;
 		scope				: in et_kicad_coordinates.type_scope) return string is
-	-- Returns the position of the given no-connection-flag as string.
 	begin	
 		return (to_string (position => no_connection_flag.coordinates, scope => scope));
 	end to_string;
 
 	
-	function to_string (port : in type_port_with_reference) return string is
 	-- Returns the properties of the given port as string.
+	function to_string (port : in type_port_with_reference) return string is
 	begin
 		return "reference " & to_string (port.reference) 
 			& " port " & to_string (port.name)
@@ -478,6 +481,7 @@ package body et_kicad_libraries is
 	end to_point;
 
 	
+	
 	function library_name (text : in string) return et_kicad_general.type_library_name.bounded_string is
 	-- extracts from a string like "bel_ic:S_SO14" the library name "bel_ic"
 	begin
@@ -496,11 +500,12 @@ package body et_kicad_libraries is
 -- 	begin
 -- 		return type_library_directory.to_string (dir);
 -- 	end to_string;
+
+
 	
-	function package_name (text : in string) return et_packages.pac_package_name.bounded_string is
-	-- extracts from a string like "bel_ic:S_SO14" the package name "S_SO14"
+	function package_name (text : in string) return pac_package_name.bounded_string is
 	begin
-		return et_packages.pac_package_name.to_bounded_string (
+		return pac_package_name.to_bounded_string (
 			f (
 				read_line (
 					line			=> text,
@@ -511,6 +516,9 @@ package body et_kicad_libraries is
 				);
 	end package_name;
 
+
+
+	
 	function to_text_meaning (
 	-- Extracts from a scheamtic field like "F 0 "#PWR01" H 2000 3050 50  0001 C CNN" its meaning.
 	-- Extracts from a component field like "F0 "IC" 0 50 50 H V C CNN" its meaning.
@@ -880,6 +888,9 @@ package body et_kicad_libraries is
 		end if;
 	end check_generic_name_characters;
 
+
+
+	
 	function to_string (generic_name : in type_component_generic_name.bounded_string) return string is
 	-- Returns the given generic name as as string.
 	-- CS: provide a parameter that turns the pretext like "generic name" on/off
@@ -887,6 +898,9 @@ package body et_kicad_libraries is
 		--return ("generic name " & type_component_generic_name.to_string (name_in_library));
 		return type_component_generic_name.to_string (generic_name);
 	end to_string;
+
+
+
 	
 	function strip_tilde (generic_name : in type_component_generic_name.bounded_string) return
 		type_component_generic_name.bounded_string is
@@ -905,6 +919,9 @@ package body et_kicad_libraries is
 		end if;
 	end strip_tilde;
 
+
+
+	
 	function prepend_tilde (generic_name : in type_component_generic_name.bounded_string) return
 		type_component_generic_name.bounded_string is
 		use et_import;
@@ -913,10 +930,14 @@ package body et_kicad_libraries is
 		return '~' & generic_name;
 	end prepend_tilde;
 
-	procedure validate_component_package_name 
-		(name : in et_packages.pac_package_name.bounded_string) is
+
+
+	
 	-- Tests if the given component package name meets certain conventions.
-		use et_packages.pac_package_name;
+	procedure validate_component_package_name 
+		(name : in pac_package_name.bounded_string) 
+	is
+		use pac_package_name;
 		
 		procedure no_package is begin
 			log (ERROR, "no package associated !", 
@@ -924,19 +945,22 @@ package body et_kicad_libraries is
 			raise constraint_error;
 		end no_package;
 			
-	begin -- validate_component_package_name
+	begin
 		if length (name) > 0 then
-			et_packages.check_package_name_characters (name, component_package_name_characters);
+			check_package_name_characters (name, component_package_name_characters);
 		else
 			no_package;
 		end if;
 	end validate_component_package_name;
 
+
+
+	
 	function full_library_name (
 		library_name	: in type_library_name.bounded_string; -- bel_logic
-		package_name 	: in et_packages.pac_package_name.bounded_string; -- S_SO14
+		package_name 	: in pac_package_name.bounded_string; -- S_SO14
 		log_threshold	: in type_log_level)
-		return type_package_library_name.bounded_string 
+		return pac_package_model_file_name.bounded_string 
 	is
 	-- Returns the full library name of the library that
 	-- contains the given package library with the given package.
@@ -951,12 +975,13 @@ package body et_kicad_libraries is
 	--	- Looks up the fp-lib-table for the first occurence of the given library name.
 	--	- The entry in the fp-lib-table in turn provides the full library name (incl. path).
 		
-		lib : type_package_library_name.bounded_string; -- to be returned
+		lib : pac_package_model_file_name.bounded_string; -- to be returned
 
 		use et_import;
 		use type_project_lib_dirs;
 		use et_packages;
-		use type_package_library_name;
+		use et_package_names;
+		-- use pac_package_model_file;
 		use ada.directories;
 
 		-- V4:
@@ -968,13 +993,14 @@ package body et_kicad_libraries is
 		fp_lib_table_cursor : type_lib_table.cursor := fp_lib_tables.first; -- CS access fp_lib_tables in module.fp_lib_tables instead
 
 		use type_library_name;
-		full_library_name : type_package_library_name.bounded_string;
+		full_library_name : pac_package_model_file_name.bounded_string;
 		package_found : boolean := false;
 
-		procedure search_package (
+		
 		-- Searches the library (indicated by lib_cursor) for the given package.
 		-- Sets the flag package_found if the library contains the given package.
-			lib_name	: in type_package_library_name.bounded_string;
+		procedure search_package (
+			lib_name	: in pac_package_model_file_name.bounded_string;
 			library		: in type_packages_library.map) is
 		begin
 			if type_packages_library.contains (
@@ -984,6 +1010,7 @@ package body et_kicad_libraries is
 				package_found := true;
 			end if;
 		end search_package;
+		
 	
 	begin -- full_library_name
 		log (text => "locating library '" & et_kicad_general.to_string (library_name) &
@@ -1000,12 +1027,12 @@ package body et_kicad_libraries is
 					-- Test if library exists. package_libraries hosts libraries by their full name.
 					-- So the library to test is formed by the current directory name, the given library name
 					-- and the package_library_directory_extension (*.pretty)
-					full_library_name := et_packages.to_file_name (ada.directories.compose (
+					full_library_name := to_file_name (ada.directories.compose (
 						containing_directory	=> to_string (element (dir_cursor)),
 						name					=> et_kicad_general.to_string (library_name),
 						extension				=> package_library_directory_extension (2..package_library_directory_extension'last))); 
 
-					log (text => "searching in " & et_packages.to_string (full_library_name) & " ...", level => log_threshold + 1);
+					log (text => "searching in " & to_string (full_library_name) & " ...", level => log_threshold + 1);
 					
 					lib_cursor := type_libraries.find (
 						container	=> package_libraries,
@@ -1028,6 +1055,7 @@ package body et_kicad_libraries is
 					next (dir_cursor);
 				end loop;
 
+				
 			when KICAD_V5 =>
 
 				-- Search for the given library_name in the fp-lib-tables.
@@ -1039,9 +1067,9 @@ package body et_kicad_libraries is
 					-- On match, open the library (by its uri).
 					if element (fp_lib_table_cursor).lib_name = library_name then
 
-						full_library_name := et_packages.to_file_name (et_devices.to_string (element (fp_lib_table_cursor).lib_uri));
+						full_library_name := to_file_name (et_devices.to_string (element (fp_lib_table_cursor).lib_uri));
 
-						log (text => "searching in " & et_packages.to_string (full_library_name) & " ...", level => log_threshold + 1);
+						log (text => "searching in " & to_string (full_library_name) & " ...", level => log_threshold + 1);
 						
 						-- locate the library by full name (uri)
 						lib_cursor := type_libraries.find (
@@ -1062,7 +1090,7 @@ package body et_kicad_libraries is
 				end loop;
 
 				-- If the library could not be located anywhere, abort here:
-				if length (full_library_name) = 0 then
+				if pac_package_model_file_name.length (full_library_name) = 0 then
 					log (ERROR, "No library '" & et_kicad_general.to_string (library_name) 
 						 & "' found ! Check local and global fp-lib-tables !", console => true);
 					raise constraint_error;
@@ -1086,21 +1114,24 @@ package body et_kicad_libraries is
 		return full_library_name;
 	end full_library_name;
 
-	function terminal_port_map_fits (
-	-- Used when terminal_port_maps are to be used for packages.
-	-- The given package is specified by the library name and package name.
-	-- Returns true if the terminal_port_map fits on the given package.
-		library_name		: in type_package_library_name.bounded_string;		-- ../lbr/bel_ic.pretty
-		package_name 		: in et_packages.pac_package_name.bounded_string;	-- S_SO14
-		terminal_port_map	: in pac_terminal_port_map.map) 
-		return boolean is
 
+
+	
+	function terminal_port_map_fits (
+		library_name		: in pac_package_model_file_name.bounded_string;		-- ../lbr/bel_ic.pretty
+		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
+		terminal_port_map	: in pac_terminal_port_map.map) 
+		return boolean 
+	is
 		use type_libraries;
 		library_cursor : type_libraries.cursor;
 
-		procedure validate_terminals (package_terminals : in et_terminals.pac_terminals.map) is
+		use et_package_names;
+
+		
 		-- Test if the terminals of the terminal_port_map are also in the given package.
 		-- Raises constraint_error if a terminal could not be found in the package.
+		procedure validate_terminals (package_terminals : in et_terminals.pac_terminals.map) is
 			use et_terminals.pac_terminals; -- the terminals of the package
 			use pac_terminal_port_map;
 		
@@ -1109,7 +1140,7 @@ package body et_kicad_libraries is
 
 			-- For temporarily storage of a terminal name:
 			terminal_name_in_map : et_terminals.pac_terminal_name.bounded_string;
-		begin -- validate_terminals
+		begin
 			-- Loop in terminal_port_map. Test each terminal whether it occurs
 			-- in the package_terminals.
 			terminal_cursor := terminal_port_map.first;
@@ -1117,7 +1148,7 @@ package body et_kicad_libraries is
 				terminal_name_in_map := key (terminal_cursor);
 
 				if package_terminals.find (terminal_name_in_map) = et_terminals.pac_terminals.no_element then
-					log (ERROR, "package " & et_packages.to_string (packge => package_name)
+					log (ERROR, "package " & to_string (packge => package_name)
 						 & " does not have a terminal '" 
 						 & et_terminals.to_string (terminal_name_in_map) & "' !", console => true);
 					raise constraint_error;
@@ -1128,9 +1159,9 @@ package body et_kicad_libraries is
 		end validate_terminals;
 			
 	
-		procedure locate_package (
 		-- Locates the package by package_name in the given package library.
-			library_name	: in type_package_library_name.bounded_string;
+		procedure locate_package (
+			library_name	: in pac_package_model_file_name.bounded_string;
 			packages		: in type_packages_library.map) 
 		is
 			package_cursor : type_packages_library.cursor;
@@ -1141,15 +1172,15 @@ package body et_kicad_libraries is
 			terminals : et_devices.type_terminal_count;
 		begin
 			if is_empty (packages) then
-				log (ERROR, "package library " & et_packages.to_string (library_name)
+				log (ERROR, "package library " & to_string (library_name)
 					 & " is empty !", console => true);
 				raise constraint_error;
 			else
 				-- locate the package
 				package_cursor := packages.find (package_name);
 				if package_cursor = type_packages_library.no_element then
-					log (ERROR, "package " & et_packages.to_string (packge => package_name)
-						& " not found in library " & et_packages.to_string (library_name)
+					log (ERROR, "package " & to_string (packge => package_name)
+						& " not found in library " & to_string (library_name)
 						& " !", console => true);
 					raise constraint_error;
 				else
@@ -1158,7 +1189,7 @@ package body et_kicad_libraries is
 
 					-- If the package has less terminals than the given terminal_port_map abort:
 					if et_devices."<" (terminals, et_devices.type_terminal_count (length (terminal_port_map))) then
-						log (ERROR, "package " & et_packages.to_string (packge => package_name)
+						log (ERROR, "package " & to_string (packge => package_name)
 							& " as too few terminals !",
 							console => true);
 						raise constraint_error;
@@ -1171,13 +1202,14 @@ package body et_kicad_libraries is
 			end if;
 			
 		end locate_package;
+
 		
 	begin -- terminal_port_map_fits
 		if not is_empty (package_libraries) then
 			library_cursor := package_libraries.find (library_name);
 
 			if library_cursor = type_libraries.no_element then
-				log (ERROR, "package library " & et_packages.to_string (library_name)
+				log (ERROR, "package library " & to_string (library_name)
 					 --& " not found in " & et_libraries.to_string (et_libraries.library_group)
 					 & " not found"
 					 & " !", console => true);
@@ -1206,6 +1238,7 @@ package body et_kicad_libraries is
 	end terminal_port_map_fits;
 
 
+	
 	
 	-- Reads component libraries.
 	procedure read_components_libraries (log_threshold : in type_log_level) is
@@ -2822,27 +2855,28 @@ package body et_kicad_libraries is
 			end read_field;
 		
 
-			procedure build_package_variant is
 			-- Builds from tmp_terminal_port_map and field_package the default package variant.
 			-- NOTE: Since kicad does not know package variants, we can only build the
 			-- one and only DEFAULT variant. The default variant name is the same as the package name.
 			-- All this applies for real components only (appearance sch_pcb).
+			procedure build_package_variant is
 				
 				procedure locate_component (
 					lib_name	: in type_device_library_name.bounded_string;
-					components	: in out type_components_library.map) is
+					components	: in out type_components_library.map)
+				is
 
 					procedure build (
 						comp_name	: in type_component_generic_name.bounded_string;
-						component	: in out type_component_library) is
-
+						component	: in out type_component_library) 
+					is
 						use pac_variants;
 						use pac_terminal_port_map;
 
 						tmp_variant_name : pac_package_variant_name.bounded_string; -- temporarily used for building the variant name
 						tmp_variants : pac_variants.map; -- temporarily used for building the variant
 
-						full_package_library_name : type_package_library_name.bounded_string;
+						full_package_library_name : pac_package_model_file_name.bounded_string;
 					begin
 						case component.appearance is
 							when APPEARANCE_PCB => -- real component
@@ -3258,14 +3292,14 @@ package body et_kicad_libraries is
 	end read_components_libraries;
 
 
-	function to_package_variant (
 	-- Used when reading schematic. Returns the package variant of a component.
 	-- Input parameters: the full name of the component library, generic name therein,
 	-- name of package library and package name.
+	function to_package_variant (
 		component_library 	: in et_kicad_general.type_device_library_name.bounded_string; 	-- ../lbr/bel_logic.lib
 		generic_name 		: in type_component_generic_name.bounded_string; 				-- 7400
 		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
-		package_name 		: in et_packages.pac_package_name.bounded_string;	-- S_SO14
+		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
 		log_threshold		: in type_log_level)
 		return pac_package_variant_name.bounded_string -- D
 	is
@@ -3275,25 +3309,25 @@ package body et_kicad_libraries is
 		variant : pac_package_variant_name.bounded_string; -- variant name to be returned
 		
 		-- temporarily here the name of the package library is stored:
-		use type_package_library_name;
-		full_package_library_name : type_package_library_name.bounded_string; -- ../lbr/bel_ic
+		full_package_library_name : pac_package_model_file_name.bounded_string; -- ../lbr/bel_ic
 
 		use et_packages;
-		
-		procedure locate_component (
-		-- Locates the given generic component in the component libraray.
-			library_name	: in type_device_library_name.bounded_string;
-			components 		: in out type_components_library.map) is
 
+		
+		-- Locates the given generic component in the component libraray.
+		procedure locate_component (
+			library_name	: in type_device_library_name.bounded_string;
+			components 		: in out type_components_library.map) 
+		is
 			use type_components_library;
 			component_cursor : type_components_library.cursor; -- points to the generic component
-			
-			procedure query_variants (
-			-- Queries the package variants of the generic component.
-				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
-				component 		: in out type_component_library) is
 
-				use pac_package_name;
+			
+			-- Queries the package variants of the generic component.
+			procedure query_variants (
+				component_name	: in type_component_generic_name.bounded_string; -- RESISTOR
+				component 		: in out type_component_library) 
+			is
 				use pac_variants;
 				use pac_package_variant_name;
 
@@ -3302,7 +3336,8 @@ package body et_kicad_libraries is
 
 				-- If a new package variant is to be built, it is temporarily stored here:
 				new_variant : type_variant;
-			
+
+				use pac_package_model_file_name;
 			begin -- query_variants
 				log (text => "querying package variants ...", level => log_threshold + 2);
 				log_indentation_up;
@@ -3321,9 +3356,9 @@ package body et_kicad_libraries is
 					-- From the library and package name we can reason the variant name.
 					-- So if both the given library and package name match, the variant name
 					-- is set to be returned.
-					if element (variant_cursor).package_model = et_packages.to_file_name (compose (
-							containing_directory	=> et_packages.to_string (full_package_library_name),
-							name					=> et_packages.to_string (package_name))) then
+					if element (variant_cursor).package_model = to_file_name (compose (
+							containing_directory	=> to_string (name => full_package_library_name),
+							name					=> to_string (packge => package_name))) then
 						
 						log (text => "variant " 
 							& to_string (package_variant => key (variant_cursor)) 
@@ -3338,6 +3373,7 @@ package body et_kicad_libraries is
 					next (variant_cursor);
 				end loop;
 
+				
 				-- If no suitable package variant has been found, a new one must be created.
 				if variant_cursor = pac_variants.no_element then
 					
@@ -3361,9 +3397,9 @@ package body et_kicad_libraries is
 
 						-- build the new package variant
 						new_variant := (
-							package_model => et_packages.to_file_name (compose (
-								containing_directory	=> et_packages.to_string (full_package_library_name),
-								name					=> et_packages.to_string (package_name))),
+							package_model => to_file_name (compose (
+								containing_directory	=> to_string (name => full_package_library_name),
+								name					=> to_string (packge => package_name))),
 							
 							terminal_port_map	=> element (variant_cursor).terminal_port_map
 							);
@@ -3386,6 +3422,7 @@ package body et_kicad_libraries is
 
 					log_indentation_down;
 				end if;
+				
 
 				log_indentation_down;
 				
@@ -3397,6 +3434,7 @@ package body et_kicad_libraries is
 							raise;
 
 			end query_variants;
+				
 			
 		begin -- locate_component
 			log (text => "locating generic component " & enclose_in_quotes (to_string (generic_name)) 
@@ -3427,6 +3465,7 @@ package body et_kicad_libraries is
 						raise;
 
 		end locate_component;
+
 		
 	begin -- to_package_variant
 		log (text => "validating/making package variant ...", level => log_threshold);
@@ -3440,7 +3479,7 @@ package body et_kicad_libraries is
 			log_threshold	=> log_threshold + 1);
 
 		log (text => "full package library name is " 
-			 & enclose_in_quotes (et_packages.to_string (full_package_library_name)),
+			 & enclose_in_quotes (to_string (full_package_library_name)),
 			 level => log_threshold + 1);
 		
 		-- locate the given component library

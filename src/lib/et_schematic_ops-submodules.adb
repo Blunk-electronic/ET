@@ -47,6 +47,7 @@ with et_device_query_schematic;
 with et_packages;
 with et_generic_stacks;
 with et_device_appearance;
+with et_package_names;
 
 
 package body et_schematic_ops.submodules is
@@ -4925,7 +4926,7 @@ package body et_schematic_ops.submodules is
 						use et_symbols;
 						use et_device_query_schematic;
 						use et_device_appearance;
-						use et_packages;
+						use et_package_names;
 					begin
 						-- the device must be real
 						if element (cursor_schematic).appearance = APPEARANCE_PCB then -- skip virtual devices
@@ -4993,8 +4994,8 @@ package body et_schematic_ops.submodules is
 											et_conventions.validate_partcode (
 												partcode		=> pac_bom_devices.element (cursor_bom).partcode,
 												device_name		=> device_name,
-												packge			=> et_packages.to_package_name (ada.directories.base_name 
-																	(et_packages.to_string (pac_bom_devices.element (cursor_bom).packge))),
+												packge			=> to_package_name (ada.directories.base_name 
+																	(to_string (pac_bom_devices.element (cursor_bom).packge))),
 												value			=> pac_bom_devices.element (cursor_bom).value,
 												log_threshold	=> log_threshold + 3);
 

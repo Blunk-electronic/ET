@@ -501,7 +501,7 @@ package body et_kicad.pcb is
 		section_polygon_entered : boolean;
 		
 		-- PACKAGES
-		package_name 			: et_packages.pac_package_name.bounded_string;
+		package_name 			: pac_package_name.bounded_string;
 		package_library_name	: et_kicad_general.type_library_name.bounded_string;
 		package_position		: et_pcb_coordinates_2.type_package_position;
 		
@@ -5563,21 +5563,22 @@ package body et_kicad.pcb is
 
 
 	function terminal_count (
-	-- Returns the number of terminals of the given package in the given library.
-		packge : in type_package_library_name.bounded_string) -- ../lbr/bel_ic.pretty/S_SO14
+		packge : in pac_package_model_file_name.bounded_string) -- ../lbr/bel_ic.pretty/S_SO14
 		return et_devices.type_terminal_count 
 	is
-		library_name : type_package_library_name.bounded_string;
-		package_name : et_packages.pac_package_name.bounded_string;
+		library_name : pac_package_model_file_name.bounded_string;
+		package_name : pac_package_name.bounded_string;
 		
 		use type_libraries;
 		
 		terminals : et_devices.type_terminal_count; -- to be returned
 		library_cursor : type_libraries.cursor; -- points to the library
 
+		
 		procedure locate_package (
-			library_name	: in type_package_library_name.bounded_string;
-			packages		: in type_packages_library.map) is
+			library_name	: in pac_package_model_file_name.bounded_string;
+			packages		: in type_packages_library.map) 
+		is
 			use et_terminals.pac_terminals;
 			use type_packages_library;
 			package_cursor : type_packages_library.cursor;
@@ -5588,18 +5589,18 @@ package body et_kicad.pcb is
 			-- get number of terminals
 			terminals := et_devices.type_terminal_count (length (element (package_cursor).terminals));
 		end locate_package;
+
 		
 	begin -- terminal_count
-
 		-- extract the library and package name from the given package
-		package_name := et_packages.to_package_name (ada.directories.simple_name (et_packages.to_string (packge))); -- S_SO14
-		library_name := et_packages.to_file_name (ada.directories.containing_directory (et_packages.to_string (packge))); -- ../lbr/bel_ic.pretty
+		package_name := to_package_name (ada.directories.simple_name (to_string (packge))); -- S_SO14
+		library_name := to_file_name (ada.directories.containing_directory (to_string (packge))); -- ../lbr/bel_ic.pretty
 		
 		-- locate the library
 		library_cursor := type_libraries.find (package_libraries, library_name);
 
 		if library_cursor = type_libraries.no_element then
-			log (ERROR, et_packages.to_string (library_name) & " not found !", console => true);
+			log (ERROR, to_string (library_name) & " not found !", console => true);
 			raise constraint_error;
 		else
 			-- query packages in library
