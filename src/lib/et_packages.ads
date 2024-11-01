@@ -77,6 +77,7 @@ with et_keepout;						use et_keepout;
 with et_pcb_contour;					use et_pcb_contour;
 with et_package_appearance;				use et_package_appearance;
 with et_package_names;					use et_package_names;
+with et_package_description;			use et_package_description;
 
 -- CS remove
 with et_device_placeholders;			use et_device_placeholders;
@@ -219,23 +220,6 @@ package et_packages is
 		--top		: type_assembly_documentation;
 		--bottom	: type_assembly_documentation;
 	--end record;
-
-
-	
-	
-
-	
--- DESCRIPTION
-	
-	package_description_length_max : constant positive := 200;
-	package pac_package_description is new generic_bounded_length (package_description_length_max);
-
-	function to_string (
-		description : in pac_package_description.bounded_string;
-		verbose		: in boolean := false) return string;
-
-	function to_package_description (description : in string) 
-		return pac_package_description.bounded_string;
 
 
 	

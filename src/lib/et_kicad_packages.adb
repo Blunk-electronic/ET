@@ -48,11 +48,12 @@ with et_conductor_segment;		use et_conductor_segment;
 with et_pcb_contour;			use et_pcb_contour;
 with et_conventions;
 with et_pcb_sides;
-with et_axes;					use et_axes;
+with et_axes;							use et_axes;
 with et_directory_and_file_ops;
 with et_generic_stacks;
 with et_alignment;
 with et_package_appearance;
+with et_package_description;			use et_package_description;
 
 
 package body et_kicad_packages is

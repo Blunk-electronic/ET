@@ -56,6 +56,8 @@ with et_generic_stacks;
 with et_system_info;
 with et_alignment;				use et_alignment;
 with et_package_appearance;
+with et_package_description;
+
 
 
 package body et_kicad.pcb is
@@ -522,7 +524,7 @@ package body et_kicad.pcb is
 
 		package_time_stamp	: type_timestamp; -- temporarily storage of package timestamp
 		package_time_edit	: type_timestamp; -- temporarily storage of package time of edit
-		package_description	: pac_package_description.bounded_string; -- temp. storage of package description
+		package_description	: et_package_description.pac_package_description.bounded_string; -- temp. storage of package description
 		package_tags 		: type_package_tags.bounded_string; -- temp. storage of package keywords
 
 		package_line 		: et_kicad_packages.type_line;
@@ -1366,7 +1368,7 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									package_description := to_package_description (to_string (arg));
+									package_description := et_package_description.to_package_description (to_string (arg));
 									-- CS check length and characters
 								when others => too_many_arguments;
 							end case;
@@ -3171,7 +3173,7 @@ package body et_kicad.pcb is
 					-- must be reset and lists must be cleared for the next package:
 
 					-- reset description and tags
-					package_description := to_package_description ("");
+					package_description := et_package_description.to_package_description ("");
 					package_tags := to_package_tags ("");
 
 					-- reset technology and appearance
@@ -4418,7 +4420,7 @@ package body et_kicad.pcb is
 							log (text => "time stamp " & string (package_time_stamp), level => log_threshold + 1);
 							
 						when SEC_DESCR =>
-							log (text => to_string (package_description, verbose => true), level => log_threshold + 1);
+							log (text => et_package_description.to_string (package_description, verbose => true), level => log_threshold + 1);
 							
 						when SEC_TAGS =>
 							log (text => to_string (package_tags), level => log_threshold + 1);
