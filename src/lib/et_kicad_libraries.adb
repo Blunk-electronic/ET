@@ -979,9 +979,7 @@ package body et_kicad_libraries is
 
 		use et_import;
 		use type_project_lib_dirs;
-		use et_packages;
 		use et_package_names;
-		-- use pac_package_model_file;
 		use ada.directories;
 
 		-- V4:
@@ -1243,7 +1241,6 @@ package body et_kicad_libraries is
 	-- Reads component libraries.
 	procedure read_components_libraries (log_threshold : in type_log_level) is
 
-		use et_packages;
 		use et_devices;
 		use type_full_library_names;
 
@@ -3310,8 +3307,6 @@ package body et_kicad_libraries is
 		
 		-- temporarily here the name of the package library is stored:
 		full_package_library_name : pac_package_model_file_name.bounded_string; -- ../lbr/bel_ic
-
-		use et_packages;
 
 		
 		-- Locates the given generic component in the component libraray.
