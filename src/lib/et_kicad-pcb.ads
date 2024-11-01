@@ -54,7 +54,6 @@ with et_primitive_objects;		use et_primitive_objects;
 with et_schematic;				use et_schematic;
 with et_net_names;				use et_net_names;
 with et_terminals;				use et_terminals;
-with et_packages;
 with et_package_names;			use et_package_names;
 with et_pcb;
 with et_pcb_sides;				use et_pcb_sides;

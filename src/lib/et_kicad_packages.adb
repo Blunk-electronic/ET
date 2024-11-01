@@ -420,7 +420,6 @@ package body et_kicad_packages is
 		use pac_lines_of_file;
 		use et_drills;
 		use et_terminals;
-		use et_packages;
 		use et_pcb_coordinates_2;
 		use et_pcb_coordinates_2.pac_geometry_brd;
 
@@ -1682,8 +1681,8 @@ package body et_kicad_packages is
 			end invalid_layer_user;
 
 			
-			procedure insert_fp_arc is begin
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
+			procedure insert_fp_arc is begin
 				
 				-- compute end point of arc from center, start_point and angle
 				arc.end_point := type_vector_model (arc_end_point (arc.center, arc.start_point, arc.angle));
@@ -1742,11 +1741,8 @@ package body et_kicad_packages is
 			end insert_fp_arc;
 			
 
-			procedure insert_fp_circle is 
-				use et_packages;
-			begin
 			-- Append the circle to the container corresponding to the layer. Then log the circle properties.
-
+			procedure insert_fp_circle is begin
 				
 				-- Compute the circle radius from its center and point at circle:
 				circle.radius := to_distance (get_distance_total (circle.center, circle.point));
@@ -1827,8 +1823,8 @@ package body et_kicad_packages is
 			end insert_fp_circle;
 			
 
-			procedure insert_fp_line is begin
 			-- Append the line to the container corresponding to the layer. Then log the line properties.
+			procedure insert_fp_line is begin
 				
 				case line.layer is
 					when TOP_SILK =>
@@ -1881,9 +1877,9 @@ package body et_kicad_packages is
 			end insert_fp_line;
 			
 
-			procedure insert_terminal is 
 			-- Insert a terminal in the list "terminals".
 			-- This is library related stuff.
+			procedure insert_terminal is 
 
 				use et_terminals;
 				
@@ -2169,7 +2165,6 @@ package body et_kicad_packages is
 
 			
 			procedure insert_fp_text is 
-				use et_packages;
 				use et_text;
 				use et_alignment;
 			begin
@@ -2573,7 +2568,6 @@ package body et_kicad_packages is
 		use ada.directories;
 		use et_directory_and_file_ops;
 		use pac_directory_entries;
-		use et_packages;
 
 		-- V4 RELATED ------------------------------------------------------------------------------------------
 		-- The directory search lists have been created on reading the project file.

@@ -48,7 +48,6 @@ with ada.containers.indefinite_ordered_maps;
 with et_drills;
 with et_terminals;
 with et_package_names;			use et_package_names;
--- with et_packages;
 with et_pcb;
 with et_kicad_general;			use et_kicad_general;
 with et_kicad_coordinates;		use et_kicad_coordinates;

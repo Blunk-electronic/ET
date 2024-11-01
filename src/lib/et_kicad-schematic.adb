@@ -988,8 +988,6 @@ package body et_kicad.schematic is
 		-- temporarily here the name of the package library is stored:
 		full_package_library_name : pac_package_model_file_name.bounded_string; -- ../lbr/bel_ic
 
-		use et_packages;
-
 		
 		-- Locates the given generic component in the component libraray.
 		procedure locate_component (
