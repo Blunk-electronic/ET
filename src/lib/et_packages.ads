@@ -38,24 +38,10 @@
 --   to do:
 
 
-with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
-
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
 
 with et_mirroring;				use et_mirroring;
-with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
 with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_pcb_stack;				use et_pcb_stack;
@@ -79,12 +65,6 @@ with et_package_appearance;				use et_package_appearance;
 with et_package_names;					use et_package_names;
 with et_package_description;			use et_package_description;
 
--- CS remove
-with et_device_placeholders;			use et_device_placeholders;
-with et_device_placeholders.packages;	use et_device_placeholders.packages;
-
-
-with cairo;
 
 
 package et_packages is
