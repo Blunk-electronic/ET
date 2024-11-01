@@ -67,6 +67,8 @@ with et_project.modules;
 with et_project.rigs;
 with et_scripting;
 
+with et_package_appearance;
+with et_package_names;			use et_package_names;
 with et_packages;
 with et_pcb_rw;
 with et_pcb_rw.device_packages;
@@ -102,11 +104,11 @@ procedure et is
 	module_file_name		: pac_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
 	module_sheet			: et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
 	
-	package_name_create		: et_packages.pac_package_model_file_name.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
-	package_name_import		: et_packages.pac_package_model_file_name.bounded_string; -- the package to be imported
-	package_name_open		: et_packages.pac_package_model_file_name.bounded_string; -- the package to be opened
-	package_name_save_as	: et_packages.pac_package_model_file_name.bounded_string; -- the package to be saved as
-	package_appearance		: et_packages.type_package_appearance := et_packages.REAL; -- virtual/real. mostly real.
+	package_name_create		: pac_package_model_file_name.bounded_string; -- the package to be created like libraries/packages/S_SO14.pac
+	package_name_import		: pac_package_model_file_name.bounded_string; -- the package to be imported
+	package_name_open		: pac_package_model_file_name.bounded_string; -- the package to be opened
+	package_name_save_as	: pac_package_model_file_name.bounded_string; -- the package to be saved as
+	package_appearance		: et_package_appearance.type_package_appearance := et_package_appearance.APPEARANCE_REAL; -- virtual/real. mostly real.
 
 	symbol_name_create		: et_symbols.pac_symbol_model_file.bounded_string; -- the symbol to be created like libraries/symbols/nand.sym
 	symbol_name_open		: et_symbols.pac_symbol_model_file.bounded_string; -- the symbol to be opened
@@ -232,19 +234,19 @@ procedure et is
 					-- package
 					elsif full_switch = switch_native_package_create then
 						log (text => arg & full_switch); -- no parameter
-						package_name_create := et_packages.to_file_name (dummy_name);
+						package_name_create := to_file_name (dummy_name);
 
 					elsif full_switch = switch_package_appearance then -- virtual/real
 						log (text => arg & full_switch & space & parameter);
-						package_appearance := et_packages.to_appearance (parameter); -- if not provided -> default used
+						package_appearance := et_package_appearance.to_appearance (parameter); -- if not provided -> default used
 						
 					elsif full_switch = switch_native_package_open then
 						log (text => arg & full_switch & space & parameter);
-						package_name_open := et_packages.to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
+						package_name_open := to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
 
 					elsif full_switch = switch_native_package_save_as then
 						log (text => arg & full_switch & space & parameter);
-						package_name_save_as := et_packages.to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
+						package_name_save_as := to_file_name (parameter); -- libraries/packages/smd/SOT23.pac
 
 					-- symbol
 					elsif full_switch = switch_native_symbol_create then
@@ -439,7 +441,7 @@ procedure et is
 	
 	procedure save_package_as is 
 		use et_packages;
-		use et_packages.pac_package_model_file_name;
+		use pac_package_model_file_name;
 	begin
 		-- If package_name_save_as is empty nothing happens.
 		-- Otherwise the latest and only packagein et_packages.packages is saved.
@@ -547,7 +549,7 @@ procedure et is
 	procedure process_commandline_arguments is
 		use et_project.pac_project_name;
 		use et_conventions.pac_file_name;
-		use et_packages.pac_package_model_file_name;
+		use pac_package_model_file_name;
 		use et_symbols.pac_symbol_model_file;
 		use pac_device_model_file;
 		use et_frames.pac_template_name;
