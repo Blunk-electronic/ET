@@ -66,8 +66,8 @@ with et_device_placeholders;	--use et_device_placeholders;
 with et_device_placeholders.packages;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
-with et_packages;				use et_packages;
 with et_pcb;
+with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;
 with et_submodules;
 with et_numbering;

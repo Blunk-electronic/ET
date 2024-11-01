@@ -36,13 +36,6 @@
 --   history of changes:
 --
 
--- with et_geometry;				use et_geometry;
--- with et_geometry_1;
--- with et_geometry_2a;
--- with et_geometry_2a.grid;
--- with et_geometry_2a.path;
-
-
 package et_pcb_sides is
 
 	
@@ -60,6 +53,15 @@ package et_pcb_sides is
 	-- Changes top to bottom and vice versa:
 	procedure toggle (face : in out type_face);
 	
+
+
+	-- To indicate whether a package has been flipped in the board:
+	type type_flipped is (NO, YES);
+	flipped_default : constant type_flipped := NO;
+
+	function to_string (flipped : in type_flipped) return string;
+	function to_flipped (flipped : in string) return type_flipped;
+
 	
 end et_pcb_sides;
 

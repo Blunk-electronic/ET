@@ -395,12 +395,6 @@ package et_packages is
 		return type_assy_doc_package;
 	
 	
-	-- To indicate whether a package has been flipped in the board:
-	type type_flipped is (NO, YES);
-	flipped_default : constant type_flipped := NO;
-
-	function to_string (flipped : in type_flipped) return string;
-	function to_flipped (flipped : in string) return type_flipped;
 
 
 	-- Rotates/mirrors/moves the contours of stop mask, stencil, holes, ...

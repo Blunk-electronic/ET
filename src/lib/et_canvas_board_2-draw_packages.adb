@@ -112,7 +112,7 @@ is
 		electric			: in boolean;
 		device_electric		: in et_schematic.pac_devices_sch.cursor;
 		device_non_electric	: in et_pcb.pac_devices_non_electric.cursor;					   
-		flip				: in et_packages.type_flipped;
+		flip				: in type_flipped;
 		brightness			: in type_brightness)
 	is
 		package_position : type_package_position;  -- incl. rotation and face

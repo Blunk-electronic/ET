@@ -980,6 +980,7 @@ is
 
 		
 		procedure write (d : in pac_devices_sch.cursor) is 
+			use et_pcb_sides;
 			use et_material;
 			use et_pcb_rw;
 			use et_device_appearance;
@@ -1011,7 +1012,7 @@ is
 					section_mark (section_package, HEADER);
 
 					-- Flip status:
-					write (keyword => keyword_flipped, parameters => et_packages.to_string (element (d).flipped));
+					write (keyword => keyword_flipped, parameters => to_string (element (d).flipped));
 					
 					-- This is the position of the package in the layout, 
 					write (keyword => keyword_position, parameters => -- position x 34.5 y 60.1 face top/bottom
@@ -1595,12 +1596,13 @@ is
 			use et_pcb;
 			use et_packages;
 			use et_package_names;
+			use et_pcb_sides;
 
+			
 			procedure query_placeholders (
 				device_name : in type_device_name;
 				device 		: in type_device_non_electric) 
 			is
-				use et_pcb_sides;
 				use et_pcb_coordinates_2;
 				use et_device_placeholders;
 				use et_device_placeholders.packages;

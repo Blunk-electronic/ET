@@ -61,6 +61,18 @@ package body et_pcb_sides is
 			when BOTTOM => face := TOP;
 		end case;
 	end toggle;
+
+
+
+	function to_string (flipped : in type_flipped) return string is begin
+		return to_lower (type_flipped'image (flipped));
+	end;
+
+	function to_flipped (flipped : in string) return type_flipped is begin
+		return type_flipped'value (flipped);
+	end;
+
+
 	
 end et_pcb_sides;
 

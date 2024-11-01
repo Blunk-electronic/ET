@@ -1908,10 +1908,11 @@ is
 
 	
 	device_position	: et_pcb_coordinates_2.type_package_position; -- in the layout ! incl. angle and face
-	device_flipped	: et_packages.type_flipped := et_packages.flipped_default;
+	device_flipped	: et_pcb_sides.type_flipped := et_pcb_sides.flipped_default;
 
 	
 	procedure read_package is
+		use et_pcb_sides;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -1924,7 +1925,7 @@ is
 		elsif kw = keyword_flipped then -- flipped no/yes
 			expect_field_count (line, 2);
 
-			device_flipped := et_packages.to_flipped (f (line, 2));
+			device_flipped := to_flipped (f (line, 2));
 		else
 			invalid_keyword (kw);
 		end if;
@@ -2268,6 +2269,7 @@ is
 	procedure read_device_non_electric is
 		use et_devices;
 		use et_packages;
+		use et_pcb_sides;
 		use et_package_names;
 		kw : constant string := f (line, 1);
 	begin
@@ -2285,7 +2287,7 @@ is
 		elsif kw = keyword_flipped then -- flipped no/yes
 			expect_field_count (line, 2);
 
-			device_flipped := et_packages.to_flipped (f (line, 2));
+			device_flipped := to_flipped (f (line, 2));
 			
 		elsif kw = keyword_model then -- model /lib/fiducials/crosshair.pac
 			expect_field_count (line, 2);
@@ -3164,6 +3166,7 @@ is
 				
 				use et_devices;
 				use et_packages;
+				use et_pcb_sides;
 				use et_package_names;
 				use et_pcb_stack;
 				
@@ -5775,7 +5778,7 @@ is
 							device_position := et_pcb_coordinates_2.package_position_default;
 
 							-- reset flip flag for next device
-							device_flipped := et_packages.flipped_default;
+							device_flipped := et_pcb_sides.flipped_default;
 
 						when others => invalid_section;
 					end case;
