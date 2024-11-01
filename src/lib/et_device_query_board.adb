@@ -37,6 +37,7 @@
 --
 
 with et_device_appearance;				use et_device_appearance;
+with et_device_purpose;					use et_device_purpose;
 with et_mirroring;						use et_mirroring;
 with et_schematic_ops;
 with et_contour_to_polygon;

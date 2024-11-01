@@ -49,6 +49,7 @@ with et_net_labels;
 with et_port_names;
 with et_symbol_ports;
 with et_device_appearance;
+with et_device_purpose;
 with et_symbols;
 with et_symbol_rw;
 with et_schematic_rw;
@@ -1084,6 +1085,7 @@ is
 	
 	procedure read_assembly_variant is
 		use et_devices;
+		use et_device_purpose;
 		use et_pcb_rw;
 		
 		kw : constant string := f (line, 1);
@@ -1259,7 +1261,7 @@ is
 	device_units	: et_units.pac_units.map; -- PWR, A, B, ...
 	
 	device_partcode	: pac_device_partcode.bounded_string;
-	device_purpose	: et_devices.pac_device_purpose.bounded_string;
+	device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;
 	device_variant	: et_devices.pac_package_variant_name.bounded_string; -- D, N
 
 	
@@ -2201,6 +2203,7 @@ is
 	procedure read_device is
 		use et_symbols;
 		use et_devices;
+		use et_device_purpose;
 		use et_schematic;
 		use et_device_appearance;
 		kw : constant string := f (line, 1);
@@ -3038,6 +3041,7 @@ is
 				use et_board_ops;
 				use et_device_rw;
 				use et_device_appearance;
+				use et_device_purpose;
 				
 				
 			begin -- insert_device

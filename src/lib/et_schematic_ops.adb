@@ -3300,6 +3300,8 @@ package body et_schematic_ops is
 		
 	end describe_assembly_variant;
 
+
+	
 	procedure mount_device (
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
 		variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
@@ -3307,25 +3309,27 @@ package body et_schematic_ops is
 		value			: in pac_device_value.bounded_string; -- 220R
 		partcode		: in pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_220R
 		purpose			: in pac_device_purpose.bounded_string := pac_device_purpose.to_bounded_string (""); -- set temperature
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_assembly_variants;
 
+		
 		function write_purpose return string is
-			use pac_device_purpose;
 		begin
-			if length (purpose) = 0 then
+			if get_length (purpose) = 0 then
 				return "";
 			else
-				return " purpose " & enclose_in_quotes (et_devices.to_string (purpose));
+				return " purpose " & enclose_in_quotes (to_string (purpose));
 			end if;
 		end;
 
+		
 		procedure mount (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
@@ -3359,6 +3363,7 @@ package body et_schematic_ops is
 					
 			end insert_device;
 			
+			
 		begin -- mount
 			-- the variant must exists
 			cursor := et_assembly_variants.pac_assembly_variants.find (module.variants, variant_name);
@@ -3376,6 +3381,7 @@ package body et_schematic_ops is
 
 		end mount;
 
+		
 	begin -- mount_device
 		log (text => "module " & to_string (module_name) &
 			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
@@ -3401,6 +3407,9 @@ package body et_schematic_ops is
 		end if;
 	end mount_device;
 
+
+
+	
 	procedure unmount_device (
 	-- Sets the gvien device as not mounted in 
 	-- the given assembly variant. An already existing device will be overwritten

@@ -50,7 +50,7 @@ with et_string_processing;		use et_string_processing;
 with et_devices;				use et_devices;
 with et_logging;				use et_logging;
 with et_module_names;			use et_module_names;
-
+with et_device_purpose;			use et_device_purpose;
 
 
 package et_assembly_variants is

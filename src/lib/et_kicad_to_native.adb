@@ -83,6 +83,7 @@ with et_port_direction;
 with et_symbol_ports;
 with et_symbols;
 with et_device_appearance;
+with et_device_purpose;
 with et_devices;					use et_devices;
 with et_frames;	
 with et_fill_zones;					use et_fill_zones;
@@ -2533,7 +2534,9 @@ package body et_kicad_to_native is
 		procedure copy_components is
 			use et_schematic;
 			use et_device_appearance;
+			use et_device_purpose;
 			use et_kicad.schematic.type_components_schematic;
+			
 			components_kicad		: et_kicad.schematic.type_components_schematic.map;
 			component_cursor_kicad	: et_kicad.schematic.type_components_schematic.cursor;
 
@@ -2657,6 +2660,7 @@ package body et_kicad_to_native is
 
 							inserted	=> component_inserted); -- should always be true
 
+						
 					when APPEARANCE_PCB =>
 -- 						log (text => "placeholders silk top" & count_type'image (et_packages.pac_text_placeholders.length (
 -- 							element (component_cursor_kicad).text_placeholders.silk_screen.top)));
@@ -2684,7 +2688,7 @@ package body et_kicad_to_native is
 
 								value		=> element (component_cursor_kicad).value,
 								partcode	=> to_partcode (partcode_default), -- not provided by kicad
-								purpose		=> et_devices.to_purpose (et_devices.purpose_default), -- not provided by kicad
+								purpose		=> to_purpose (purpose_default), -- not provided by kicad
 								variant		=> element (component_cursor_kicad).variant,
 
 								position			=> element (component_cursor_kicad).position,
@@ -2708,6 +2712,7 @@ package body et_kicad_to_native is
 		end copy_components;
 
 		
+		
 		procedure copy_nets is
 			use et_schematic;
 			
@@ -2720,6 +2725,7 @@ package body et_kicad_to_native is
 			net_cursor_native	: et_nets.pac_nets.cursor;
 			net_inserted		: boolean;
 
+			
 			procedure insert_strands (
 			-- copies the kicad strands to native strands of a net.
 			-- Strand names (from kicad) are discarded. ET does not provide a name for a strand.

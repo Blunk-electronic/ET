@@ -46,6 +46,7 @@ with et_port_names;
 with et_symbol_ports;
 with et_symbols;
 with et_device_appearance;
+with et_device_purpose;
 with et_symbol_rw;
 with et_schematic_rw;
 with et_device_rw;
@@ -983,6 +984,7 @@ is
 			use et_material;
 			use et_pcb_rw;
 			use et_device_appearance;
+			use et_device_purpose;
 		begin
 			section_mark (section_device, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (d)));
@@ -1054,13 +1056,12 @@ is
 
 			
 			function purpose return string is 
-				use et_devices;
-				use pac_device_purpose;
+				use et_device_purpose;
 			begin
-				if length (element (device_cursor).purpose) > 0 then
+				if get_length (element (device_cursor).purpose) > 0 then
 					return space & keyword_purpose & space &
 						enclose_in_quotes (
-							text_in => et_devices.to_string (element (device_cursor).purpose),
+							text_in => to_string (element (device_cursor).purpose),
 							quote	=> latin_1.quotation);
 				else
 					return "";

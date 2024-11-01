@@ -68,6 +68,7 @@ with et_device_rw;
 with et_package_names;
 with et_symbol_ports;
 with et_device_appearance;
+with et_device_purpose;				use et_device_purpose;
 
 with et_schematic;					use et_schematic;
 with et_device_query_schematic;		use et_device_query_schematic;
@@ -2240,7 +2241,7 @@ package body et_canvas_schematic_units is
 
 				when NOUN_PURPOSE =>
 					gtk_new (label, "Purpose of " & device_name);
-					set_property_before (et_devices.to_string (get_purpose (su.device)));
+					set_property_before (to_string (get_purpose (su.device)));
 					
 				when NOUN_VALUE =>
 					gtk_new (label, "Value of " & device_name);

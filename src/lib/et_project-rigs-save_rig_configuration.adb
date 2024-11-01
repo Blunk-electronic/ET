@@ -68,10 +68,10 @@ is
 	begin
 		section_mark (section_connector, HEADER);
 		write (keyword => keyword_instance_A, parameters => to_string (con.instance_A));
-		write (keyword => keyword_purpose_A, wrap => true, parameters => et_devices.to_string (con.purpose_A));
+		write (keyword => keyword_purpose_A, wrap => true, parameters => to_string (con.purpose_A));
 		new_line;
 		write (keyword => keyword_instance_B, parameters => to_string (con.instance_B));
-		write (keyword => keyword_purpose_B, wrap => true, parameters => et_devices.to_string (con.purpose_B));
+		write (keyword => keyword_purpose_B, wrap => true, parameters => to_string (con.purpose_B));
 
 		-- CS: net comparator, warnings
 		
