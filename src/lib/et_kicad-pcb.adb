@@ -50,6 +50,7 @@ with et_pcb_stack;
 with et_nets;
 
 with et_device_appearance;		use et_device_appearance;
+with et_device_prefix;
 with et_pcb_contour;			use et_pcb_contour;
 with et_axes;					use et_axes;
 with et_generic_stacks;
@@ -240,7 +241,7 @@ package body et_kicad.pcb is
 	function default_component_reference return type_device_name is
 	-- Returns a default device name with an empty prefix and and id 0.
 	-- Used to initialize a component reference.	
-		use et_devices;
+		use et_device_prefix;
 	begin
 		return ((
 			prefix		=> pac_device_prefix.to_bounded_string (""),

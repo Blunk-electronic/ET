@@ -80,6 +80,7 @@ with et_frames;
 with et_terminals;
 with et_package_names;
 with et_devices;
+with et_device_prefix;
 with et_vias;
 with et_pcb;
 with et_pcb_stack;
@@ -2324,6 +2325,7 @@ is
 			use et_devices;
 			use et_board_ops.devices;
 			use et_package_names;
+			use et_device_prefix;
 			
 			model : constant pac_package_model_file_name.bounded_string := to_file_name (f (5));
 			prefix : constant pac_device_prefix.bounded_string := to_prefix (f (6));

@@ -269,7 +269,7 @@ package body et_kicad.schematic is
 			test	=> outside);
 
 		if invalid_character_position > 0 then
-			log (ERROR, "component prefix " & et_devices.to_string (prefix) 
+			log (ERROR, "component prefix " & to_string (prefix => prefix) 
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position),
 				console => true
@@ -504,18 +504,19 @@ package body et_kicad.schematic is
 		raise constraint_error;
 	end invalid_field;
 
+
+	
 	procedure validate_prefix (prefix : in pac_device_prefix.bounded_string) is
 	-- Tests if the given prefix is a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
 		use et_string_processing;
-		use pac_device_prefix;
 	begin
-		if et_devices.to_string (prefix) = power_flag_prefix 
-			or et_devices.to_string (prefix) = power_symbol_prefix then
+		if to_string (prefix) = power_flag_prefix 
+			or to_string (prefix) = power_symbol_prefix then
 			null;
 		else
 			log (ERROR, "invalid prefix "
-				 & et_devices.to_string (prefix) & " !"
+				 & to_string (prefix) & " !"
 				 & " Expected " 
 				 & power_flag_prefix & " or "
 				 & power_symbol_prefix & " !",
@@ -525,18 +526,18 @@ package body et_kicad.schematic is
 		end if;
 	end validate_prefix;
 
+
 	
 	procedure validate_prefix (reference : in type_device_name) is
 	-- Tests if the given reference has a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
-		use pac_device_prefix;
 	begin
-		if et_devices.to_string (reference.prefix) = power_flag_prefix 
-			or et_devices.to_string (reference.prefix) = power_symbol_prefix then
+		if to_string (reference.prefix) = power_flag_prefix 
+			or to_string (reference.prefix) = power_symbol_prefix then
 			null;
 		else
 			log (ERROR, "invalid prefix in component reference "
-				 & et_devices.to_string (reference) & " !"
+				 & to_string (reference) & " !"
 				 & " Expected " 
 				 & power_flag_prefix & " or "
 				 & power_symbol_prefix & " !",
@@ -545,6 +546,7 @@ package body et_kicad.schematic is
 			raise constraint_error;
 		end if;
 	end validate_prefix;
+
 
 	
 	function to_point (x_in, y_in : in string) return type_vector_model is

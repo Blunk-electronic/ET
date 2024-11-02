@@ -80,6 +80,7 @@ with et_device_placeholders;		use et_device_placeholders;
 with et_schematic_shapes_and_text;	use et_schematic_shapes_and_text;
 with et_system_info;
 with et_device_value;
+with et_device_prefix;
 
 
 package body et_device_rw is
@@ -135,6 +136,7 @@ package body et_device_rw is
 		use et_time;
 		use et_system_info;
 		use et_device_value;
+		use et_device_prefix;
 		
 		file_handle : ada.text_io.file_type;
 
@@ -303,6 +305,8 @@ package body et_device_rw is
 	is
 		use et_string_processing;
 		use et_device_value;
+		use et_device_prefix;
+		
 		use et_text;
 		file_handle : ada.text_io.file_type;
 

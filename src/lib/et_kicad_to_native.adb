@@ -86,6 +86,7 @@ with et_device_appearance;
 with et_device_purpose;
 with et_devices;					use et_devices;
 with et_device_model_names;			use et_device_model_names;
+with et_device_prefix;				use et_device_prefix;
 with et_frames;	
 with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;	
@@ -3605,10 +3606,11 @@ package body et_kicad_to_native is
 				-- Removes the leading hash character from the prefix of a virtual component like #FLG or #PWR.
 				function remove_leading_hash (
 					prefix : in pac_device_prefix.bounded_string) return
-					pac_device_prefix.bounded_string is
+					pac_device_prefix.bounded_string 
+				is
 					use pac_device_prefix;
 				begin
-					return et_devices.to_prefix (slice (prefix, 2, length (prefix))); -- FLG, PWR
+					return to_prefix (slice (prefix, 2, length (prefix))); -- FLG, PWR
 				end;
 
 				

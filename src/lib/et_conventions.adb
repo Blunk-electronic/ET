@@ -795,6 +795,8 @@ package body et_conventions is
 				raise constraint_error;
 	end to_category;
 
+
+	
 	function component_prefixes_specified return boolean is
 	-- Returns true if any component prefixes are specified via conventions file.
 		use type_component_prefixes;
@@ -805,11 +807,12 @@ package body et_conventions is
 			return true;
 		end if;
 	end component_prefixes_specified;
+
+
 	
 	function category (prefix : in pac_device_prefix.bounded_string) return
 		type_device_category is
 		use et_devices;
-		use pac_device_prefix;
 		use type_component_prefixes;
 
 		prefix_cursor : type_component_prefixes.cursor;
@@ -821,7 +824,7 @@ package body et_conventions is
 		-- Otherwise return the respecitve category.
 		if prefix_cursor = type_component_prefixes.no_element then
 			log (WARNING, "category of prefix " 
-				 & et_devices.to_string (prefix)
+				 & to_string (prefix)
 				 & latin_1.space
 				 & to_string (UNKNOWN) & " !");
 			return UNKNOWN;
@@ -830,6 +833,7 @@ package body et_conventions is
 		end if;
 	end category;
 
+	
 	
 	function category (reference : in type_device_name) return
 		type_device_category is
@@ -2134,12 +2138,11 @@ package body et_conventions is
 		return pac_device_partcode.bounded_string 
 	is
 		use et_devices;
-		use pac_device_prefix;
 		use pac_device_partcode;
 
 		base : constant pac_device_partcode.bounded_string :=
 			to_bounded_string (
-				et_devices.to_string (prefix)				-- R
+				to_string (prefix)				-- R
 				& partcode_keyword_separator				-- _
 				& to_partcode_keyword (COMPONENT_PACKAGE)	-- PAC
 				& partcode_keyword_separator				-- _
@@ -3230,13 +3233,15 @@ package body et_conventions is
 		-- If there are prefixes specified, test if the given prefix is among them:
 		if component_prefixes_specified then
 			if component_prefixes.find (prefix) = type_component_prefixes.no_element then
-				log (WARNING, "invalid prefix " & et_devices.to_string (prefix) & " !");
+				log (WARNING, "invalid prefix " & to_string (prefix => prefix) & " !");
 				result := false;
 			end if;
 		end if;
 
 		return result;
 	end prefix_valid;
+
+
 	
 	function prefix_valid (device_name : in type_device_name) return boolean is
 		use pac_device_prefix;

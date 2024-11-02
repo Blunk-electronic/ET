@@ -42,6 +42,7 @@ with et_package_names;					use et_package_names;
 with et_packages;						use et_packages;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;
+with et_device_prefix; 					use et_device_prefix;
 
 
 package et_board_ops.devices is

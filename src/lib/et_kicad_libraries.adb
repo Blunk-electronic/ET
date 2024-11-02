@@ -94,19 +94,25 @@ package body et_kicad_libraries is
 			return space & to_lower (type_port_direction'image (direction));
 		end if;
 	end to_string;
+
+
+
 	
 	function to_string (fill : in type_fill) return string is begin
 		return space & to_lower (type_fill_border'image (fill.border))
 		& space & "pattern" & space 
 		& to_lower (type_fill_pattern'image (fill.pattern));
 	end to_string;
+
+
+
 	
+	-- Tests if the given prefix contains only valid characters as specified
+	-- by given character set. Raises exception if invalid character found.
 	procedure check_prefix_characters (
 		prefix 		: in pac_device_prefix.bounded_string;
 		characters	: in character_set) 
 	is
-	-- Tests if the given prefix contains only valid characters as specified
-	-- by given character set. Raises exception if invalid character found.
 		use pac_device_prefix;
 		invalid_character_position : natural := 0;
 	begin
@@ -116,7 +122,7 @@ package body et_kicad_libraries is
 			test	=> outside);
 
 		if invalid_character_position > 0 then
-			log (ERROR, "component prefix " & et_devices.to_string (prefix) 
+			log (ERROR, "component prefix " & to_string (prefix => prefix) 
 				 & " has invalid character at position"
 				 & natural'image (invalid_character_position),
 				console => true
@@ -124,6 +130,9 @@ package body et_kicad_libraries is
 			raise constraint_error;
 		end if;
 	end check_prefix_characters;
+
+
+	
 	
 	function to_component_reference (	
 	-- Converts a string like "IC303" to a composite type_device_name.
@@ -426,17 +435,18 @@ package body et_kicad_libraries is
 		raise constraint_error;
 	end invalid_field;
 
+
+	
 	procedure validate_prefix (prefix : in pac_device_prefix.bounded_string) is
 	-- Tests if the given prefix is a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
-		use pac_device_prefix;
 	begin
-		if et_devices.to_string (prefix) = power_flag_prefix 
-			or et_devices.to_string (prefix) = power_symbol_prefix then
+		if to_string (prefix) = power_flag_prefix 
+			or to_string (prefix) = power_symbol_prefix then
 			null;
 		else
 			log (ERROR, "invalid prefix "
-				 & et_devices.to_string (prefix) & " !"
+				 & to_string (prefix) & " !"
 				 & " Expected " 
 				 & power_flag_prefix & " or "
 				 & power_symbol_prefix & " !",
@@ -446,13 +456,14 @@ package body et_kicad_libraries is
 		end if;
 	end validate_prefix;
 
+
+	
 	procedure validate_prefix (reference : in type_device_name) is
 	-- Tests if the given reference has a power_flag_prefix or a power_symbol_prefix.
 	-- Raises exception if not.
-		use pac_device_prefix;
 	begin
-		if et_devices.to_string (reference.prefix) = power_flag_prefix 
-			or et_devices.to_string (reference.prefix) = power_symbol_prefix then
+		if to_string (reference.prefix) = power_flag_prefix 
+			or to_string (reference.prefix) = power_symbol_prefix then
 			null;
 		else
 			log (ERROR, "invalid prefix in component reference "

@@ -51,55 +51,6 @@ with et_exceptions;				use et_exceptions;
 
 package body et_devices is
 
-
-	function to_string (prefix : in pac_device_prefix.bounded_string) return string is
-	begin
-		return pac_device_prefix.to_string (prefix); -- leading space not allowd !
-	end to_string;
-
-
-	
-	function to_prefix (prefix : in string) return pac_device_prefix.bounded_string is begin
-		return pac_device_prefix.to_bounded_string (prefix);
-	end to_prefix;
-
-
-	
-	procedure check_prefix_length (prefix : in string) is
-	-- Tests if the given prefix is longer than allowed.
-	begin
-		if prefix'length > prefix_length_max then
-			log (ERROR, "max. number of characters for device name prefix is" 
-				 & positive'image (prefix_length_max) & " !",
-				console => true);
-			raise constraint_error;
-		end if;
-	end check_prefix_length;
-
-	
-	
-	procedure check_prefix_characters (prefix : in pac_device_prefix.bounded_string) is
-	-- Tests if the given prefix contains only valid characters.
-	-- Raises exception if invalid character found.
-		invalid_character_position : natural := 0;
-	begin
-		invalid_character_position := index (
-			source	=> prefix,
-			set		=> prefix_characters,
-			test	=> outside);
-
-		if invalid_character_position > 0 then
-			log (ERROR, "device prefix " & to_string (prefix) 
-				 & " has invalid character at position"
-				 & natural'image (invalid_character_position),
-				console => true
-				);
-			raise constraint_error;
-		end if;
-	end check_prefix_characters;
-
-	
-
 	
 
 	function to_string (index : in type_name_index) return string is begin
@@ -114,7 +65,12 @@ package body et_devices is
 
 
 	
-	function same_prefix (left, right : in type_device_name) return boolean is begin
+	function same_prefix (
+		left, right : in type_device_name) 
+		return boolean 
+	is 
+		use pac_device_prefix;
+	begin
 		if prefix (left) = prefix (right) then
 			return true;
 		else
@@ -343,6 +299,8 @@ package body et_devices is
 		return device_name;
 	end;
 
+
+	
 	procedure offset_index (
 		name	: in out type_device_name;
 		offset	: in type_name_index) is
