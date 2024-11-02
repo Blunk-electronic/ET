@@ -66,6 +66,7 @@ with et_drills;					use et_drills;
 
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
+with et_device_value;					use et_device_value;
 with et_packages;
 with et_devices;						use et_devices;
 with et_frames;

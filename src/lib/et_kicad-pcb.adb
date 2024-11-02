@@ -1452,13 +1452,13 @@ package body et_kicad.pcb is
 											package_text.content := to_bounded_string (to_string (arg));
 											-- CS character check
 
-											if not et_devices.value_length_valid (to_string (arg)) then 
+											if not value_length_valid (to_string (arg)) then 
 												null; -- CS write something useful
 											end if;
 											
-											package_value := et_devices.to_value_with_check (to_string (arg));
+											package_value := to_value_with_check (to_string (arg));
 											
-											if not et_devices.value_characters_valid (package_value) then
+											if not value_characters_valid (package_value) then
 												null; -- CS write something useful
 											end if;
 											
@@ -3182,7 +3182,7 @@ package body et_kicad.pcb is
 
 					-- reset reference and value
 					package_reference := default_component_reference;
-					package_value := et_devices.to_value ("");
+					package_value := to_value ("");
 
 					-- delete list of terminals
 					terminals.clear;

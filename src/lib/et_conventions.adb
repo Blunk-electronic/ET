@@ -2135,7 +2135,6 @@ package body et_conventions is
 	is
 		use et_devices;
 		use pac_device_prefix;
-		use pac_device_value;
 		use pac_device_partcode;
 
 		base : constant pac_device_partcode.bounded_string :=
@@ -2153,7 +2152,7 @@ package body et_conventions is
 				partcode_keyword_separator				-- _
 				& to_partcode_keyword (COMPONENT_VALUE)	-- VAL
 				& partcode_keyword_separator			-- _
-				& et_devices.to_string (value));		-- 100R
+				& to_string (value));		-- 100R
 		end if;
 	end compose_partcode_root;
 
@@ -2994,28 +2993,26 @@ package body et_conventions is
 
 	end read_conventions;
 
+
+	
 	function value_valid (
-	-- Tests if the given device value meets certain conventions.
-	-- This test depends on the category of the device. If no prefixes specified
-	-- in the configuration file, this test does nothing.
-	-- Returns false if any violation has been detected.							 
-	-- CS: If value is 10,0R outputs the same warning multiple times. Rework required.
 		value 	: in pac_device_value.bounded_string; -- 100R, 1A5
 		prefix	: in pac_device_prefix.bounded_string) -- R, F
-		return boolean is
-
+		return boolean 
+	is
+		-- CS: If value is 10,0R outputs the same warning multiple times. Rework required.
+		
 		-- This flag goes false once an error has been detected.
 		result : boolean := true;
 		
 		use et_string_processing;
 		use et_devices;
-		use pac_device_value;
 		
 		component_category : type_device_category;
 		value_length : natural := pac_device_value.length (value);
 
 		procedure value_invalid is begin
-			log (WARNING, "value " & enclose_in_quotes (et_devices.to_string (value)) &
+			log (WARNING, "value " & enclose_in_quotes (to_string (value)) &
 				" invalid ! Check unit of measurement !");
 			result := false;			
 		end;
@@ -3024,11 +3021,13 @@ package body et_conventions is
 			log (WARNING, "no value found !");
 			result := false;
 		end;
+
+
 		
-		procedure unit_of_measurement_valid is
 		-- Tests if the unit of measurement is valid and placed properly in something like 220k56 .
 		-- Tests if the first character is a digit.
 		-- Sets the result to false on first error and exits prematurely.
+		procedure unit_of_measurement_valid is
 			use ada.strings.maps.constants;
 			place		: positive := 1; -- the pointer to the character being examined
 			char 		: character; -- the character being examined
@@ -3038,12 +3037,15 @@ package body et_conventions is
 		
 			use type_unit_abbrevation;
 			use type_units_of_measurement;
-		
-			function valid (unit : in type_unit_of_measurement) 
-				return boolean is
+
+			
 			-- Sets unit_ok flag true if the given abbrevation starts at position "place".
 			-- If so, sets "place" to the position of the last character of the unit.
 			-- If at "place" unit not found, set result to false.
+			function valid (unit : in type_unit_of_measurement) 
+				return boolean 
+			is
+				use pac_device_value;
 				abbrevation : type_unit_abbrevation.bounded_string := to_abbrevation (unit);
 			begin
 				if index (value, to_string (abbrevation), place) = place then
@@ -3056,7 +3058,11 @@ package body et_conventions is
 					return false;
 				end if;
 			end;
-						
+
+
+			use pac_device_value;
+
+			
 		begin -- unit_of_measurement_valid
 			-- We process one character after another in the given value.
 			while place <= value_length and result = true loop
@@ -3153,6 +3159,7 @@ package body et_conventions is
 
 		end unit_of_measurement_valid;
 
+		
 	begin -- validate_value
 		-- Do the test if component prefixes specified. Otherwise do nothing.
 		if component_prefixes_specified then
@@ -3206,6 +3213,7 @@ package body et_conventions is
 				return false;
 
 	end value_valid;
+
 
 	
 	function prefix_valid (prefix : in pac_device_prefix.bounded_string) return boolean is

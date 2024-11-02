@@ -79,6 +79,7 @@ with et_package_names;				use et_package_names;
 with et_device_placeholders;		use et_device_placeholders;
 with et_schematic_shapes_and_text;	use et_schematic_shapes_and_text;
 with et_system_info;
+with et_device_value;
 
 
 package body et_device_rw is
@@ -133,6 +134,7 @@ package body et_device_rw is
 		use et_string_processing;
 		use et_time;
 		use et_system_info;
+		use et_device_value;
 		
 		file_handle : ada.text_io.file_type;
 
@@ -300,6 +302,7 @@ package body et_device_rw is
 		log_threshold	: in type_log_level) 
 	is
 		use et_string_processing;
+		use et_device_value;
 		use et_text;
 		file_handle : ada.text_io.file_type;
 
@@ -313,12 +316,14 @@ package body et_device_rw is
 			item	=> type_section,
 			max 	=> max_section_depth);
 
+		
 		function to_string (section : in type_section) return string is
 		-- Converts a section like SEC_VARIANT to a string "variant".
 			len : positive := type_section'image (section)'length;
 		begin
 			return to_lower (type_section'image (section) (5..len));
 		end to_string;
+		
 		
 		-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 		prefix				: pac_device_prefix.bounded_string; -- T, IC
@@ -422,6 +427,7 @@ package body et_device_rw is
 			variant := (others => <>);
 		end insert_variant;
 
+		
 		unit_name			: pac_unit_name.bounded_string; -- IO_BANK_2
 		unit_position		: type_vector_model := origin; -- the position of the unit inside the device editor
 		unit_swap_level		: type_swap_level := swap_level_default;

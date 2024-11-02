@@ -51,6 +51,7 @@ with et_symbol_ports;
 with et_device_appearance;
 with et_device_purpose;
 with et_device_model_names;
+with et_device_value;
 with et_symbols;
 with et_symbol_rw;
 with et_schematic_rw;
@@ -1026,7 +1027,7 @@ is
 	device_name				: et_devices.type_device_name; -- C12
 	device_model			: et_device_model_names.pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
 	
-	device_value			: et_devices.pac_device_value.bounded_string; -- 470R
+	device_value			: et_device_value.pac_device_value.bounded_string; -- 470R
 	device_appearance		: et_units.type_appearance_schematic;
 	--device_unit				: et_schematic.type_unit;
 	--device_unit_rotation	: et_coordinates_2.type_rotation_model := geometry.zero_rotation;
@@ -1087,6 +1088,7 @@ is
 	procedure read_assembly_variant is
 		use et_devices;
 		use et_device_purpose;
+		use et_device_value;
 		use et_pcb_rw;
 		
 		kw : constant string := f (line, 1);
@@ -2210,6 +2212,7 @@ is
 		use et_device_model_names;
 		use et_schematic;
 		use et_device_appearance;
+		use et_device_value;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -3047,7 +3050,7 @@ is
 				use et_device_rw;
 				use et_device_appearance;
 				use et_device_purpose;
-				
+				use et_device_value;				
 				
 			begin -- insert_device
 				log (text => "device " & to_string (device_name), level => log_threshold + 1);

@@ -75,6 +75,7 @@ with et_symbols;
 with et_devices;				use et_devices;
 with et_device_purpose;			use et_device_purpose;
 with et_device_model_names;		use et_device_model_names;
+with et_device_value;			use et_device_value;
 with et_conventions;
 
 with et_device_placeholders;			use et_device_placeholders;

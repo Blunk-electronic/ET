@@ -3060,7 +3060,7 @@ is
 						declare
 							value : pac_device_value.bounded_string;
 						begin
-							value := et_devices.to_value_with_check (
+							value := to_value_with_check (
 									value 						=> content (field_value),
 									error_on_invalid_character	=> false);
 							-- For the operators convenice no error is raised if invalid

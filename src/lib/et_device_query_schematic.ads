@@ -46,7 +46,9 @@ with et_schematic;						use et_schematic;
 with et_assembly_variants;				use et_assembly_variants;
 with et_coordinates_2;					use et_coordinates_2;
 with et_device_purpose;					use et_device_purpose;
+with et_device_value;					use et_device_value;
 with et_terminals;
+
 
 
 package et_device_query_schematic is

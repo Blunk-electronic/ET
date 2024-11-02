@@ -55,6 +55,7 @@ with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_devices;				use et_devices;
 with et_package_names;			use et_package_names;
+with et_device_value;			use et_device_value;
 
 
 package et_conventions is
@@ -513,14 +514,16 @@ package et_conventions is
 		log_threshold	: in type_log_level);
 	-- Reads the given conventions file.
 
-	function value_valid (
+	
 	-- Tests if the given device value meets certain conventions.
 	-- This test depends on the category of the device. If no prefixes specified
 	-- in the conventions file, this test does nothing.
 	-- Returns false if any violation has been detected.
-		value 	: in et_devices.pac_device_value.bounded_string;
+	function value_valid (
+		value 	: in pac_device_value.bounded_string;
 		prefix	: in pac_device_prefix.bounded_string)
 		return boolean;
+
 	
 	-- Tests if the given reference has a valid prefix as specified in the conventions file.
 	-- Raises warning if not and returns false. 

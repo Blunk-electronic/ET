@@ -48,6 +48,7 @@ with et_symbols;
 with et_device_appearance;
 with et_device_purpose;
 with et_device_model_names;
+with et_device_value;
 with et_symbol_rw;
 with et_schematic_rw;
 with et_device_rw;
@@ -987,6 +988,7 @@ is
 			use et_device_appearance;
 			use et_device_model_names;
 			use et_device_purpose;
+			use et_device_value;
 		begin
 			section_mark (section_device, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (d)));
@@ -1047,6 +1049,7 @@ is
 	procedure query_assembly_variants is
 		use et_assembly_variants;
 		use pac_assembly_variants;
+		use et_device_value;
 
 		
 		procedure query_devices (

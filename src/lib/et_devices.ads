@@ -59,6 +59,7 @@ with et_device_appearance;		use et_device_appearance;
 with et_package_names;			use et_package_names;
 with et_device_purpose;			use et_device_purpose;
 with et_device_model_names;		use et_device_model_names;
+with et_device_value;			use et_device_value;
 
 
 package et_devices is
@@ -69,49 +70,6 @@ package et_devices is
 	keyword_package_model : constant string := "package_model";
 
 	
-
-	-- The device value is something like 330R or 100n or 74LS00
-	keyword_value : constant string := "value";
-	
-	value_length_max : constant positive := 50;
-
-	-- Define the characters that are allowed for a value:
-	value_characters : character_set := 
-		to_set (ranges => (('A','Z'),('a','z'),('0','9'))) 
-		or to_set ('_')
-		or to_set ('-');
-	
-	package pac_device_value is new generic_bounded_length (value_length_max);
-
-	function to_string (value : in pac_device_value.bounded_string) return string;
-	function to_value (value : in string) return pac_device_value.bounded_string;
-	
-	function value_length_valid (value : in string) return boolean;
-	-- Tests if the given value is longer than allowed. Returns false if too long.
-	-- Returns true if length is in allowed range.
-
-	function truncate (value : in string) return pac_device_value.bounded_string;
-	
-	function value_characters_valid (
-		value		: in pac_device_value.bounded_string;
-		characters	: in character_set := value_characters)
-		return boolean;
-	-- Tests if the given value contains only valid characters as specified
-	-- by given character set. Returns false if invalid character found.
-	-- Issues warning.	
-
-	procedure value_invalid (value : in string);
-	-- Issues error message and raises constraint error.
-
-	function to_value_with_check (
-	-- Tests the given value for length and invalid characters.
-		value						: in string;
-		error_on_invalid_character	: in boolean := true)
-		return pac_device_value.bounded_string;
-
-	-- Returns true if value is empty ("").
-	function is_empty (value : in pac_device_value.bounded_string) return boolean;
-
 
 
 	-- A device name consists of a prefix (like R, C, IC, ..)
