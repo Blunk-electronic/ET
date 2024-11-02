@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                                UNITS                                     --
+--                          DEVICE UNITS IN SCHEMATIC                       --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
