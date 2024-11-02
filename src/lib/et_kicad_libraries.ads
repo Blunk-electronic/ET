@@ -65,6 +65,7 @@ with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
 with et_symbols;				use et_symbols;
 with et_device_appearance;		use et_device_appearance;
+with et_device_model_names;		use et_device_model_names;
 with et_devices;				use et_devices;
 
 with et_device_placeholders;			--use et_device_placeholders;
@@ -417,7 +418,7 @@ package et_kicad_libraries is
 	
 	procedure no_generic_model_found (
 		reference		: in et_devices.type_device_name; -- IC303
-		library			: in type_device_library_name.bounded_string; -- ../lib/xilinx/spartan.lib
+		library			: in pac_device_model_file.bounded_string; -- ../lib/xilinx/spartan.lib
 		generic_name	: in type_component_generic_name.bounded_string);
 	
 	
@@ -428,7 +429,7 @@ package et_kicad_libraries is
 	
 	-- Returns the package name of the given component. 
 	function to_package_name (
-		library_name	: in type_device_library_name.bounded_string; -- ../libraries/transistors.lib
+		library_name	: in pac_device_model_file.bounded_string; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
 		package_variant	: in pac_package_variant_name.bounded_string) -- N, D
 		return pac_package_name.bounded_string;
@@ -519,12 +520,12 @@ package et_kicad_libraries is
 	-- Full library names can be stored further-on in a simple list:
 	-- We use a simple list because the order of the library names sometimes matters and must be kept.
     package type_full_library_names is new doubly_linked_lists ( -- CS remove
-		element_type 	=> type_device_library_name.bounded_string,
-		"="				=> type_device_library_name."=");
+		element_type 	=> pac_device_model_file.bounded_string,
+		"="				=> pac_device_model_file."=");
 
 	package type_device_libraries is new ordered_maps (
-		key_type 		=> type_device_library_name.bounded_string, -- ../../lbr/passive/capacitors.lib
-		"<"				=> type_device_library_name."<",
+		key_type 		=> pac_device_model_file.bounded_string, -- ../../lbr/passive/capacitors.lib
+		"<"				=> pac_device_model_file."<",
 		element_type 	=> type_components_library.map,
 		"=" 			=> type_components_library."=");
 	-- CS the element could be a record consisting of type_components_library.map, lib_type, options and desrciption
@@ -581,7 +582,7 @@ package et_kicad_libraries is
 	type type_lib_table_entry is record
 		lib_name	: type_library_name.bounded_string;
 		lib_type	: type_lib_type;
-		lib_uri		: type_device_library_name.bounded_string;
+		lib_uri		: pac_device_model_file.bounded_string;
 		-- CS to be exact: there should be a distinct type_lib_table_entry for components and packages each.
 		-- Currently lib_uri is used for both component and package libraries.
 		
@@ -785,7 +786,7 @@ package et_kicad_libraries is
 	
 	function find_component (
 	-- Searches the given library for the given component. Returns a cursor to that component.
-		library		: in type_device_library_name.bounded_string; -- incl. path and file name
+		library		: in pac_device_model_file.bounded_string; -- incl. path and file name
 		component	: in type_component_generic_name.bounded_string) 
 		return type_components_library.cursor;
 

@@ -64,7 +64,7 @@ with et_netlists;
 with et_devices;
 with et_device_placeholders;
 with et_device_purpose;					use et_device_purpose;
-
+with et_device_model_names;
 with et_canvas.cmd;
 
 
@@ -243,6 +243,7 @@ is
 
 	procedure add_device is
 		use et_sheets;
+		use et_device_model_names;
 	begin
 		case cmd_field_count is
 			when 9 =>

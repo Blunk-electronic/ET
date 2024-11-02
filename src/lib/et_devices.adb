@@ -50,26 +50,6 @@ with et_exceptions;				use et_exceptions;
 
 
 package body et_devices is
-	
-	
-
-
-	
-	function to_string (name : in pac_device_model_file.bounded_string) 
-		return string is
-	begin
-		return pac_device_model_file.to_string (name);
-	end;
-
-
-	
-	function to_file_name (name : in string) 
-		return pac_device_model_file.bounded_string is
-	begin
-		return pac_device_model_file.to_bounded_string (name);
-	end;
-	
-
 
 	
 	function to_string (value : in pac_device_value.bounded_string) return string is begin

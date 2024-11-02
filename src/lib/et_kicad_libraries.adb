@@ -231,7 +231,7 @@ package body et_kicad_libraries is
 
 	
 	function to_package_name (
-		library_name	: in et_kicad_general.type_device_library_name.bounded_string; -- ../libraries/transistors.lib
+		library_name	: in pac_device_model_file.bounded_string; -- ../libraries/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string; -- TRANSISTOR_PNP
 		package_variant	: in pac_package_variant_name.bounded_string) -- N, D
 		return pac_package_name.bounded_string 
@@ -289,7 +289,7 @@ package body et_kicad_libraries is
 	
 	procedure no_generic_model_found (
 		reference		: in type_device_name; -- IC303
-		library			: in et_kicad_general.type_device_library_name.bounded_string; -- ../lib/transistors.lib
+		library			: in pac_device_model_file.bounded_string; -- ../lib/transistors.lib
 		generic_name	: in type_component_generic_name.bounded_string) -- TRANSISTOR_NPN
 		is
 	begin
@@ -1065,7 +1065,7 @@ package body et_kicad_libraries is
 					-- On match, open the library (by its uri).
 					if element (fp_lib_table_cursor).lib_name = library_name then
 
-						full_library_name := to_file_name (et_devices.to_string (element (fp_lib_table_cursor).lib_uri));
+						full_library_name := to_file_name (to_string (element (fp_lib_table_cursor).lib_uri));
 
 						log (text => "searching in " & to_string (full_library_name) & " ...", level => log_threshold + 1);
 						
@@ -2148,7 +2148,7 @@ package body et_kicad_libraries is
 			-- Updates the current library by inserting the component.
 			-- If the component was inserted (should be) the comp_cursor points to the component
 			-- for later inserting the units:
-				key			: in type_device_library_name.bounded_string;
+				key			: in pac_device_model_file.bounded_string;
 				components	: in out type_components_library.map) 
 			is begin
 
@@ -2245,7 +2245,7 @@ package body et_kicad_libraries is
 				end locate_unit;
 
 				procedure locate_component ( 
-					key			: in et_kicad_general.type_device_library_name.bounded_string;
+					key			: in pac_device_model_file.bounded_string;
 					components	: in type_components_library.map) is
 				begin
 					type_components_library.query_element (comp_cursor, locate_unit'access);
@@ -2300,7 +2300,7 @@ package body et_kicad_libraries is
 				end insert_unit;
 
 				procedure locate_component ( 
-					key			: in type_device_library_name.bounded_string;
+					key			: in pac_device_model_file.bounded_string;
 					components	: in out type_components_library.map) is
 				begin
 					components.update_element (comp_cursor, insert_unit'access);
@@ -2416,7 +2416,7 @@ package body et_kicad_libraries is
 				
 				procedure locate_component ( 
 				-- Locates the component indicated by comp_cursor.
-					key			: in type_device_library_name.bounded_string;
+					key			: in pac_device_model_file.bounded_string;
 					components	: in out type_components_library.map) is
 				begin -- locate_component
 					components.update_element (comp_cursor, locate_unit'access);
@@ -2499,7 +2499,7 @@ package body et_kicad_libraries is
 				
 				procedure locate_component ( 
 				-- Locates the component indicated by comp_cursor.
-					key			: in type_device_library_name.bounded_string;
+					key			: in pac_device_model_file.bounded_string;
 					components	: in out type_components_library.map) is
 				begin -- locate_component
 					components.update_element (comp_cursor, locate_unit'access);
@@ -2765,7 +2765,7 @@ package body et_kicad_libraries is
 					end insert_footprint;
 					
 					procedure locate_component ( 
-						key			: in type_device_library_name.bounded_string;
+						key			: in pac_device_model_file.bounded_string;
 						components	: in out type_components_library.map) is
 					begin
 						components.update_element (comp_cursor, insert_footprint'access);
@@ -2859,7 +2859,7 @@ package body et_kicad_libraries is
 			procedure build_package_variant is
 				
 				procedure locate_component (
-					lib_name	: in type_device_library_name.bounded_string;
+					lib_name	: in pac_device_model_file.bounded_string;
 					components	: in out type_components_library.map)
 				is
 
@@ -3293,7 +3293,7 @@ package body et_kicad_libraries is
 	-- Input parameters: the full name of the component library, generic name therein,
 	-- name of package library and package name.
 	function to_package_variant (
-		component_library 	: in et_kicad_general.type_device_library_name.bounded_string; 	-- ../lbr/bel_logic.lib
+		component_library 	: in pac_device_model_file.bounded_string; 	-- ../lbr/bel_logic.lib
 		generic_name 		: in type_component_generic_name.bounded_string; 				-- 7400
 		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
 		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
@@ -3311,7 +3311,7 @@ package body et_kicad_libraries is
 		
 		-- Locates the given generic component in the component libraray.
 		procedure locate_component (
-			library_name	: in type_device_library_name.bounded_string;
+			library_name	: in pac_device_model_file.bounded_string;
 			components 		: in out type_components_library.map) 
 		is
 			use type_components_library;
@@ -3546,7 +3546,7 @@ package body et_kicad_libraries is
 	
 	-- Searches the given library for the given component. Returns a cursor to that component.
 	function find_component (
-		library		: in et_kicad_general.type_device_library_name.bounded_string;
+		library		: in pac_device_model_file.bounded_string;
 		component	: in type_component_generic_name.bounded_string) 
 		return type_components_library.cursor is
 
@@ -3557,7 +3557,7 @@ package body et_kicad_libraries is
 		use type_device_libraries;
 
 		procedure locate (
-			library 	: in et_kicad_general.type_device_library_name.bounded_string;
+			library 	: in pac_device_model_file.bounded_string;
 			components	: in type_components_library.map) is
 		begin
 			-- Generic names in library sometimes start with a tilde. 
@@ -3583,7 +3583,7 @@ package body et_kicad_libraries is
 				position	=> lib_cursor,
 				process		=> locate'access);
 		else
-			log (WARNING, "library " & et_devices.to_string (library) & " not found !");
+			log (WARNING, "library " & to_string (library) & " not found !");
 			-- CS: raise constraint_error ?
 		end if;
 

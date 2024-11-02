@@ -58,24 +58,17 @@ with et_terminals;				use et_terminals;
 with et_device_appearance;		use et_device_appearance;
 with et_package_names;			use et_package_names;
 with et_device_purpose;			use et_device_purpose;
+with et_device_model_names;		use et_device_model_names;
 
 
 package et_devices is
 
 	use pac_geometry_2;
-	
-	
-	
+
 	-- To handle names of package models like libraries/packages/smd/SOT23.pac use this:
 	keyword_package_model : constant string := "package_model";
 
-	device_model_file_name_length_max : constant positive := 200;
-	package pac_device_model_file is new generic_bounded_length (device_model_file_name_length_max); -- ../lbr/logic_ttl/7400.dev
-	function to_string (name : in pac_device_model_file.bounded_string) return string;
-	function to_file_name (name : in string) return pac_device_model_file.bounded_string;
-
-
-
+	
 
 	-- The device value is something like 330R or 100n or 74LS00
 	keyword_value : constant string := "value";
@@ -293,6 +286,7 @@ package et_devices is
 		key_type		=> pac_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
 		element_type	=> type_unit_internal);
 
+	
 	-- An external unit has a reference and a swap level.
     type type_unit_external is record
         -- file is the link to the symbol in container "symbols":
@@ -497,7 +491,7 @@ package et_devices is
 
 
 	
-	device_model_file_extension : constant string := "dev";
+
 
 	-- HERE RIG WIDE DEVICES ARE KEPT:
 	devices : pac_devices_lib.map;

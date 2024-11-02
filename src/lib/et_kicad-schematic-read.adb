@@ -2244,28 +2244,32 @@ is
 
 		end check_text_fields;
 
-		function generic_name_to_library (
+
+		
 		-- Returns the full name of the library where given generic component is contained.
 		-- The given reference serves to provide a helpful error message on the affected 
 		-- component in the schematic.
+		function generic_name_to_library (
 			component 		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
 			reference 		: in type_device_name; -- the reference in the schematic like "R4"
 			log_threshold	: in type_log_level)
-			return type_device_library_name.bounded_string is -- the full library name like "../libraries/resistors.lib"
-
+			return pac_device_model_file.bounded_string -- the full library name like "../libraries/resistors.lib"
+		is
 			use type_device_libraries;
-			use type_device_library_name;
+			-- use pac_device_model_file;
 		
 			component_found : boolean := false; -- goes true once the given component was found in any library
 			
 			lib_cursor : type_device_libraries.cursor := tmp_component_libraries.first; -- points to the library being searched in
-			library : type_device_library_name.bounded_string; -- the full library name to be returned
+			library : pac_device_model_file.bounded_string; -- the full library name to be returned
 
-			procedure query_components (
+			
 			-- Queries the components in the current library. Exits prematurely once the 
 			-- given generic component was found.
-				lib_name 	: in type_device_library_name.bounded_string;
-				components 	: in type_components_library.map) is
+			procedure query_components (
+				lib_name 	: in pac_device_model_file.bounded_string;
+				components 	: in type_components_library.map) 
+			is
 				use type_components_library;
 				component_cursor : type_components_library.cursor := components.first;
 				--use type_component_generic_name;
@@ -2287,6 +2291,7 @@ is
 				log_indentation_down;
 			end query_components;
 			
+			
 		begin -- generic_name_to_library
 			log_indentation_up;
 			log (text => "locating library containing generic component " & to_string (component) & " ...", level => log_threshold);
@@ -2295,7 +2300,7 @@ is
 			while lib_cursor /= type_device_libraries.no_element loop
 				log_indentation_up;
 				log (text => "probing " 
-						& et_devices.to_string (key (lib_cursor)) 
+						& to_string (key (lib_cursor)) 
 						& " ...", level => log_threshold + 1);
 
 				query_element (
@@ -2328,15 +2333,16 @@ is
 			end if;
 			
 		end generic_name_to_library;
+		
 
-		function full_name_of_component_library (
 		-- The given reference serves to provide a helpful error message on the affected 
 		-- component in the schematic.
+		function full_name_of_component_library (
 			component 		: in type_component_generic_name.bounded_string; -- the generic name like "RESISTOR"
 			reference 		: in type_device_name; -- the reference in the schematic like "R4"
 			log_threshold 	: in type_log_level) 
-			return type_device_library_name.bounded_string is
-
+			return pac_device_model_file.bounded_string 
+		is
 			use type_lib_table;
 			sym_lib_cursor : type_lib_table.cursor := sym_lib_tables.first;
 
@@ -2345,19 +2351,22 @@ is
 			
 			use type_library_name;
 			
-			full_name : type_device_library_name.bounded_string;
+			full_name : pac_device_model_file.bounded_string;
 			component_found : boolean := false;
 
-			procedure search_component (
+			
 			-- Seaches a component library for the given generic component.
-				lib_name	: in type_device_library_name.bounded_string;
-				lib			: in type_components_library.map) is
+			procedure search_component (
+				lib_name	: in pac_device_model_file.bounded_string;
+				lib			: in type_components_library.map) 
+			is
 				use type_components_library;
 			begin
 				if contains (lib, component) then
 					component_found := true;
 				end if;
 			end search_component;
+			
 			
 		begin -- full_name_of_component_library
 			log_indentation_up;
@@ -2434,7 +2443,7 @@ is
 		-- The component to be inserted gets assembled from the temporarily variables assigned until now.
 		-- Tests if a footprint has been associated with the component.
 
-			full_component_library_name : type_device_library_name.bounded_string;
+			full_component_library_name : pac_device_model_file.bounded_string;
 
 			use et_import;
 			

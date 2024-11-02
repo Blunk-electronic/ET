@@ -50,6 +50,7 @@ with et_port_names;
 with et_symbol_ports;
 with et_device_appearance;
 with et_device_purpose;
+with et_device_model_names;
 with et_symbols;
 with et_symbol_rw;
 with et_schematic_rw;
@@ -1023,18 +1024,18 @@ is
 	device					: access et_schematic.type_device_sch;
 	
 	device_name				: et_devices.type_device_name; -- C12
-	device_model			: et_devices.pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
-	
+	device_model			: et_device_model_names.pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
 	
 	device_value			: et_devices.pac_device_value.bounded_string; -- 470R
 	device_appearance		: et_units.type_appearance_schematic;
 	--device_unit				: et_schematic.type_unit;
 	--device_unit_rotation	: et_coordinates_2.type_rotation_model := geometry.zero_rotation;
 
-
 	device_unit_mirror		: type_mirror := MIRROR_NO;
 	device_unit_name		: et_devices.pac_unit_name.bounded_string; -- GPIO_BANK_1
 	device_unit_position	: et_coordinates_2.type_position; -- x,y,sheet,rotation
+
+
 
 	
 	procedure read_unit is
@@ -2199,11 +2200,14 @@ is
 		end if;
 	end;
 
+
+
 	
 	procedure read_device is
 		use et_symbols;
 		use et_devices;
 		use et_device_purpose;
+		use et_device_model_names;
 		use et_schematic;
 		use et_device_appearance;
 		kw : constant string := f (line, 1);
@@ -2981,6 +2985,7 @@ is
 				use et_schematic;
 				use et_symbols;
 				use et_devices;
+				use et_device_model_names;
 				use et_package_names;
 				use et_pcb_stack;
 				
@@ -3162,6 +3167,7 @@ is
 				use et_schematic;
 				
 				use et_devices;
+				use et_device_model_names;
 				use et_pcb_sides;
 				use et_package_names;
 				use et_pcb_stack;

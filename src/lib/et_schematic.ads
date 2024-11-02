@@ -77,6 +77,7 @@ with et_text;
 with et_symbols;				use et_symbols;
 with et_device_appearance;		use et_device_appearance;
 with et_device_purpose;			use et_device_purpose;
+with et_device_model_names;		use et_device_model_names;
 with et_devices;				use et_devices;
 with et_frames;
 with et_meta;

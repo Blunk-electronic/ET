@@ -971,7 +971,7 @@ package body et_kicad.schematic is
 	-- Input parameters: the full name of the component library, generic name therein,
 	-- name of package library and package name.
 	function to_package_variant (
-		component_library 	: in et_kicad_general.type_device_library_name.bounded_string; 	-- ../lbr/bel_logic.lib
+		component_library 	: in pac_device_model_file.bounded_string; 	-- ../lbr/bel_logic.lib
 		generic_name 		: in type_component_generic_name.bounded_string; 				-- 7400
 		package_library 	: in et_kicad_general.type_library_name.bounded_string; 		-- bel_ic
 		package_name 		: in pac_package_name.bounded_string;	-- S_SO14
@@ -991,7 +991,7 @@ package body et_kicad.schematic is
 		
 		-- Locates the given generic component in the component libraray.
 		procedure locate_component (
-			library_name	: in type_device_library_name.bounded_string;
+			library_name	: in pac_device_model_file.bounded_string;
 			components 		: in out type_components_library.map) 
 		is
 			use type_components_library;
@@ -2140,7 +2140,7 @@ package body et_kicad.schematic is
 									-- create empty component library
 									type_device_libraries.insert (
 										container	=> tmp_component_libraries,
-										key 		=> type_device_library_name.to_bounded_string (compose (
+										key 		=> pac_device_model_file.to_bounded_string (compose (
 											containing_directory	=> to_string (element (search_list_lib_dir_cursor)), -- ../../lbr
 											name					=> to_string (element (search_list_library_cursor)), -- connectors, active, ...
 											extension				=> file_extension_schematic_lib)),
@@ -2316,7 +2316,7 @@ package body et_kicad.schematic is
 					lib_cursor : type_lib_table.cursor := sym_lib_tables.first;
 					use type_lib_table;
 					use et_devices;
-					uri : type_device_library_name.bounded_string;
+					uri : pac_device_model_file.bounded_string;
 				begin
 					log (text => "locating libraries ...", level => log_threshold + 1);
 					log_indentation_up;
@@ -2351,13 +2351,13 @@ package body et_kicad.schematic is
 				end locate_component_libraries;
 
 				
-				procedure locate_package_libraries is
 				-- Tests if the libraries (listed in fp_lib_table) exist.
 				-- If a library was found, a same-named empty library is created in the container et_kicad_pcb.package_libraries.
+				procedure locate_package_libraries is
 					lib_cursor : type_lib_table.cursor := fp_lib_tables.first;
 					use type_lib_table;
 
-					uri : type_device_library_name.bounded_string; 
+					uri : pac_device_model_file.bounded_string; 
 					-- CS: not really correct. see spec for type_lib_table_entry
 
 					use et_kicad_packages;
@@ -2367,15 +2367,15 @@ package body et_kicad.schematic is
 
 					while lib_cursor /= type_lib_table.no_element loop
 						uri := element (lib_cursor).lib_uri; -- get full name like /home/user/kicad_libs/bel_ic.pretty
-						log (text => et_devices.to_string (uri), level => log_threshold + 2);
+						log (text => to_string (uri), level => log_threshold + 2);
 
 						-- Test if library file exists:
-						if ada.directories.exists (et_devices.to_string (uri)) then
+						if ada.directories.exists (to_string (uri)) then
 
 							-- create empty package/footprint library
 							type_libraries.insert (
 								container	=> package_libraries,
-								key 		=> to_file_name (et_devices.to_string (uri)),
+								key 		=> to_file_name (to_string (uri)),
 								new_item	=> type_packages_library.empty_map
 								); 
 
@@ -2384,7 +2384,7 @@ package body et_kicad.schematic is
 							
 						-- raise alarm and abort if library file not found
 						else
-							log (ERROR, "library " & et_devices.to_string (uri) 
+							log (ERROR, "library " & to_string (uri) 
 								 & " not found !", console => true);
 							raise constraint_error;
 						end if;
@@ -2395,9 +2395,9 @@ package body et_kicad.schematic is
 				end locate_package_libraries;
 
 				
-				function read_table return type_lib_table.list is
 				-- Reads the file that contains a sym-lib-table or fp-lib-table. The current_input points to the particular file.
 				-- The file is read into container "lines" which is then parsed to obtain the table content.
+				function read_table return type_lib_table.list is
 					table : type_lib_table.list; -- to be returned
 
 					line : type_fields_of_line; -- a line of the table
@@ -2483,7 +2483,7 @@ package body et_kicad.schematic is
 
 					lib_name	: et_kicad_general.type_library_name.bounded_string;
 					lib_type	: type_lib_type;
-					lib_uri		: et_kicad_general.type_device_library_name.bounded_string; -- CS not exact. see specs of type type_lib_table_entry
+					lib_uri		: pac_device_model_file.bounded_string; -- CS not exact. see specs of type type_lib_table_entry
 					-- CS lib_options
 					-- CS lib_description
 
@@ -2693,7 +2693,7 @@ package body et_kicad.schematic is
 										case section.arg_counter is
 											when 0 => null;
 											when 1 =>
-												lib_uri := et_devices.to_file_name (to_string (arg));
+												lib_uri := to_file_name (to_string (arg));
 											when others => too_many_arguments;
 										end case;
 
@@ -2733,11 +2733,10 @@ package body et_kicad.schematic is
 					end read_arg;
 					
 
-					procedure exec_section is
 					-- Performs an operation according to the active section and variables that have been
 					-- set earlier (when processing the arguments. see procedure read_arg).
 					-- Restores the previous section.
-					begin -- exec_section
+					procedure exec_section is begin
 						log (text => process_section (section.name), level => log_threshold + 3);
 						case section.parent is
 							when SEC_SYM_LIB_TABLE | SEC_FP_LIB_TABLE =>
@@ -2752,7 +2751,7 @@ package body et_kicad.schematic is
 											 & type_lib_type'image (lib_type)
 											 & " path "
 											 -- CS options and description
-											 & et_devices.to_string (lib_uri), 
+											 & to_string (lib_uri), 
 											level => log_threshold + 2); 
 
 										type_lib_table.append (
@@ -2783,6 +2782,8 @@ package body et_kicad.schematic is
 									raise;
 
 					end exec_section;
+
+						
 
 				begin -- read_table
 					log_indentation_up;
@@ -2900,11 +2901,15 @@ package body et_kicad.schematic is
 					return table;
 				end read_table;
 
+
+				
 				procedure warning_on_multiple_entry_in_lib_table (library : in string) is
 				begin
 					log (WARNING, "global library table: '" & library 
 						 & "' already in local library table -> skipped !");
 				end warning_on_multiple_entry_in_lib_table;
+
+
 				
 				procedure concatenate_local_and_global_sym_tables is
 				-- Concatenates local and global sym-lib-tables so that global libraries come AFTER local libraries.
@@ -2930,7 +2935,7 @@ package body et_kicad.schematic is
 
 						else -- entry already in local table -> warning and skip
 							warning_on_multiple_entry_in_lib_table (
-								et_devices.to_string (element (cursor).lib_uri));
+								to_string (element (cursor).lib_uri));
 						end if;
 						
 						next (cursor);
@@ -2941,6 +2946,8 @@ package body et_kicad.schematic is
 					sym_lib_tables := sym_table_local;
 				end concatenate_local_and_global_sym_tables;
 
+
+				
 				procedure concatenate_local_and_global_fp_tables is
 				-- Concatenates local and global fp-lib-tables so that global libraries come AFTER local libraries.
 					use type_lib_table;
@@ -2965,7 +2972,7 @@ package body et_kicad.schematic is
 
 						else -- entry already in local table -> warning and skip
 							warning_on_multiple_entry_in_lib_table (
-								et_devices.to_string (element (cursor).lib_uri));
+								to_string (element (cursor).lib_uri));
 						end if;
 						
 						next (cursor);
@@ -2975,6 +2982,7 @@ package body et_kicad.schematic is
 					-- When the module is created, it will be copied into the modules.
 					fp_lib_tables := fp_table_local;
 				end concatenate_local_and_global_fp_tables;
+				
 				
 			begin -- read_lib_tables
 				log (text => "reading sym-lib-tables", level => log_threshold);
@@ -2996,6 +3004,7 @@ package body et_kicad.schematic is
 					close (lib_table_handle);
 				end if;
 
+				
 				-- global table
 				lib_table_path := to_bounded_string (value ("HOME") & file_sym_lib_table_global_linux);
 				if ada.directories.exists (to_string (lib_table_path)) then
@@ -4078,13 +4087,14 @@ package body et_kicad.schematic is
 	end write_strands;
 
 
-	
-	function find_component (
-	-- Searches the given library for the given component. Returns a cursor to that component.
-		library		: in et_kicad_general.type_device_library_name.bounded_string;
-		component	: in type_component_generic_name.bounded_string) 
-		return type_components_library.cursor is
 
+	
+	-- Searches the given library for the given component. Returns a cursor to that component.
+	function find_component (
+		library		: in pac_device_model_file.bounded_string;
+		component	: in type_component_generic_name.bounded_string) 
+		return type_components_library.cursor 
+	is
 		lib_cursor	: type_device_libraries.cursor;
 		
 		use type_components_library;
@@ -4093,7 +4103,7 @@ package body et_kicad.schematic is
 		use type_device_libraries;
 
 		procedure locate (
-			library 	: in et_kicad_general.type_device_library_name.bounded_string;
+			library 	: in pac_device_model_file.bounded_string;
 			components	: in type_components_library.map) is
 		begin
 			-- Generic names in library sometimes start with a tilde. 
@@ -4119,16 +4129,18 @@ package body et_kicad.schematic is
 				position	=> lib_cursor,
 				process		=> locate'access);
 		else
-			log (WARNING, "library " & et_devices.to_string (library) & " not found !");
+			log (WARNING, "library " & to_string (library) & " not found !");
 			-- CS: raise constraint_error ?
 		end if;
 
 		return comp_cursor;
 	end find_component;
 
-	procedure reset_component_cursor (cursor : in out type_components_schematic.cursor) is
+
+	
 	-- Resets the given component cursor to the begin of the component list
 	-- of the module indicated by module_cursor.
+	procedure reset_component_cursor (cursor : in out type_components_schematic.cursor) is
 		procedure reset (
 			name	: in type_submodule_name.bounded_string;
 			module	: in type_module) is
@@ -4601,7 +4613,7 @@ package body et_kicad.schematic is
 			log (text => "generic name " 
 				& enclose_in_quotes (to_string (element (component_cursor_sch).generic_name)) 
 				& " in " 
-				& enclose_in_quotes (et_devices.to_string (element (component_cursor_sch).library_name)),
+				& enclose_in_quotes (to_string (element (component_cursor_sch).library_name)),
 				level => log_threshold + 2);
 
 			-- Set cursor of the generic model in library. If cursor is empty, the component
@@ -4896,7 +4908,7 @@ package body et_kicad.schematic is
 			
 			procedure query_library_components (
 			-- Queries the generic models stored in the library.
-				library		: in et_kicad_general.type_device_library_name.bounded_string;
+				library		: in pac_device_model_file.bounded_string;
 				components	: in type_components_library.map) 
 			is
 				use type_components_library;
@@ -7032,14 +7044,14 @@ package body et_kicad.schematic is
 		
 			component_cursor: type_components_schematic.cursor;
 			
-			library_name	: et_kicad_general.type_device_library_name.bounded_string;
+			library_name	: pac_device_model_file.bounded_string;
 			generic_name	: type_component_generic_name.bounded_string;
 			package_variant	: pac_package_variant_name.bounded_string;
 
 			library_cursor	: type_device_libraries.cursor;
 
 			procedure locate_component_in_library (
-				library_name 	: in et_kicad_general.type_device_library_name.bounded_string;
+				library_name 	: in pac_device_model_file.bounded_string;
 				components 		: in type_components_library.map) is
 				use type_components_library;
 
@@ -7092,7 +7104,7 @@ package body et_kicad.schematic is
 				
 			begin -- locate_component_in_library
 				log (text => "locating generic component " & to_string (generic_name) 
-						& " in library " & et_devices.to_string (library_name) 
+						& " in library " & to_string (library_name) 
 						& " ...", level => log_threshold + 2);
 				log_indentation_up;
 
@@ -7118,6 +7130,7 @@ package body et_kicad.schematic is
 				log_indentation_down;
 			end locate_component_in_library;
 			
+			
 		begin -- locate_component_in_schematic
 			log (text => "locating component in schematic ...", level => log_threshold + 1);
 			log_indentation_up;
@@ -7139,6 +7152,7 @@ package body et_kicad.schematic is
 
 			log_indentation_down;
 		end locate_component_in_schematic;
+
 		
 	begin -- terminal_count
 		log (text => "fetching terminal count of " & to_string (reference) & " ...", level => log_threshold);
@@ -7152,6 +7166,7 @@ package body et_kicad.schematic is
 
 		return terminals;
 	end terminal_count;
+
 
 
 	
@@ -7186,7 +7201,7 @@ package body et_kicad.schematic is
 			use type_components_schematic;
 			component_cursor: type_components_schematic.cursor;
 			
-			library_name	: et_kicad_general.type_device_library_name.bounded_string;
+			library_name	: pac_device_model_file.bounded_string;
 			generic_name	: type_component_generic_name.bounded_string;
 			package_variant	: pac_package_variant_name.bounded_string;
 
@@ -7195,7 +7210,7 @@ package body et_kicad.schematic is
 
 			
 			procedure locate_component_in_library (
-				library_name 	: in et_kicad_general.type_device_library_name.bounded_string;
+				library_name 	: in pac_device_model_file.bounded_string;
 				components 		: in type_components_library.map) 
 			is
 				use type_components_library;
@@ -7258,7 +7273,7 @@ package body et_kicad.schematic is
 				
 			begin -- locate_component_in_library
 				log (text => "locating generic component " & to_string (generic_name) 
-						& " in library " & et_devices.to_string (library_name) 
+						& " in library " & to_string (library_name) 
 						& " ...", level => log_threshold + 2);
 				log_indentation_up;
 
@@ -7364,7 +7379,7 @@ package body et_kicad.schematic is
 
 			--package_name : pac_package_name.bounded_string;
 
-			library_name	: et_kicad_general.type_device_library_name.bounded_string;
+			library_name	: pac_device_model_file.bounded_string;
 			generic_name	: type_component_generic_name.bounded_string;
 			package_variant	: pac_package_variant_name.bounded_string;
 
@@ -7373,7 +7388,7 @@ package body et_kicad.schematic is
 			
 			-- Locates the given component by its generic name in the library.
 			procedure locate_component_in_library (
-				library_name 	: in et_kicad_general.type_device_library_name.bounded_string;
+				library_name 	: in pac_device_model_file.bounded_string;
 				components 		: in type_components_library.map) 
 			is
 				use type_components_library;
@@ -7494,7 +7509,7 @@ package body et_kicad.schematic is
 						position	=> library_cursor,
 						process		=> locate_component_in_library'access);
 				else -- library not found -> abort
-					log (ERROR, "library " & et_devices.to_string (library_name) & " not found !", console => true);
+					log (ERROR, "library " & to_string (library_name) & " not found !", console => true);
 					raise constraint_error;
 				end if;
 

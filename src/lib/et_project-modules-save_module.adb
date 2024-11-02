@@ -47,6 +47,7 @@ with et_symbol_ports;
 with et_symbols;
 with et_device_appearance;
 with et_device_purpose;
+with et_device_model_names;
 with et_symbol_rw;
 with et_schematic_rw;
 with et_device_rw;
@@ -984,6 +985,7 @@ is
 			use et_material;
 			use et_pcb_rw;
 			use et_device_appearance;
+			use et_device_model_names;
 			use et_device_purpose;
 		begin
 			section_mark (section_device, HEADER);

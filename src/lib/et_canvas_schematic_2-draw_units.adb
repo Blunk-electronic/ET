@@ -48,6 +48,7 @@ with et_units;							use et_units;
 with et_device_appearance;				use et_device_appearance;
 with et_device_purpose;					use et_device_purpose;
 with et_devices;						use et_devices;
+with et_device_model_names;
 with et_schematic;
 
 with et_terminals;
@@ -708,7 +709,10 @@ procedure draw_units is
 
 
 	
-	procedure query_devices (device_cursor : in pac_devices_sch.cursor) is
+	procedure query_devices (
+		device_cursor : in pac_devices_sch.cursor) 
+	is
+		use et_device_model_names;
 		
 		-- get the model of the current device
 		device_model : pac_device_model_file.bounded_string :=

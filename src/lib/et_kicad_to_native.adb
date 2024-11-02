@@ -85,6 +85,7 @@ with et_symbols;
 with et_device_appearance;
 with et_device_purpose;
 with et_devices;					use et_devices;
+with et_device_model_names;			use et_device_model_names;
 with et_frames;	
 with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;	
@@ -2382,6 +2383,7 @@ package body et_kicad_to_native is
 		return native_shapes;
 	end convert_shapes;
 
+
 	
 	procedure to_native (
 		project_name	: in et_project.pac_project_name.bounded_string;
@@ -2394,8 +2396,8 @@ package body et_kicad_to_native is
 -- 						et_project.type_et_project_path.to_bounded_string (
 -- 							compose (et_general.work_directory, et_project.directory_import));
 
-		prefix_devices_dir : et_kicad_general.type_device_library_name.bounded_string := -- libraries/devices
-			et_devices.to_file_name (compose (
+		prefix_devices_dir : pac_device_model_file.bounded_string := -- libraries/devices
+			to_file_name (compose (
 				et_project.directory_libraries, et_project.directory_libraries_devices));
 	
 		prefix_packages_dir : pac_package_model_file_name.bounded_string := -- libraries/packages
@@ -2459,40 +2461,39 @@ package body et_kicad_to_native is
 
 
 		
+		-- The return is a composition of prefix_devices_dir, library containing directory,
+		-- generic component name and device model extension 
+		-- like: libraries/devices/__-__-lbr-bel_logic_7400.dev
 		function concatenate_lib_name_and_generic_name (
-			library	: in et_kicad_general.type_device_library_name.bounded_string; -- ../../lbr/bel_logic.lib
+			library	: in pac_device_model_file.bounded_string; -- ../../lbr/bel_logic.lib
 			device	: in et_kicad_libraries.type_component_generic_name.bounded_string) -- 7400
+			return pac_device_model_file.bounded_string
+		is
 
-			-- The return is a composition of prefix_devices_dir, library containing directory,
-			-- generic component name and device model extension 
-			-- like: libraries/devices/__-__-lbr-bel_logic_7400.dev
-			return pac_device_model_file.bounded_string is
-
-			use et_kicad_general.type_device_library_name;
-			dir : et_kicad_general.type_device_library_name.bounded_string; -- ../../lbr
+			use pac_device_model_file;
+			dir : pac_device_model_file.bounded_string; -- ../../lbr
 			name : pac_device_model_file.bounded_string; -- to be returned -- libraries/devices/__-__-lbr-bel_logic_7400.dev
 
 			-- In the containing directory . and / must be replaced by _ and -:
 			characters : character_mapping := to_mapping ("./","_-");
 			
 		begin -- concatenate_lib_name_and_generic_name
-			dir := et_devices.to_file_name (containing_directory (
-							et_devices.to_string (library)) & '-'); -- "..-..-lbr"
+			dir := to_file_name (containing_directory (to_string (name => library)) & '-'); -- "..-..-lbr"
 								 
-			translate (dir, characters); -- __-__-lbr
+			pac_device_model_file.translate (dir, characters); -- __-__-lbr
 			--log (text => "dir " & et_libraries.to_string (dir));
 			
-			name := et_devices.to_file_name (base_name (et_devices.to_string (library))); -- bel_logic
+			name := to_file_name (base_name (to_string (name => library))); -- bel_logic
 			name := dir & name;
 			--log (text => "name " & et_libraries.to_string (name));
 
-			name := name & '_' & et_devices.to_file_name (et_kicad_libraries.to_string (device));
+			name := name & '_' & to_file_name (et_kicad_libraries.to_string (device));
 			--log (text => "name " & et_libraries.to_string (name));
 
-			name := et_devices.to_file_name (compose (
-					containing_directory	=> et_devices.to_string (prefix_devices_dir),
-					name					=> et_devices.to_string (name),
-					extension				=> et_devices.device_model_file_extension));
+			name := to_file_name (compose (
+					containing_directory	=> to_string (name => prefix_devices_dir),
+					name					=> to_string (name => name),
+					extension				=> device_model_file_extension));
 
 			--log (text => "name " & et_libraries.to_string (name));
 			
@@ -3139,10 +3140,11 @@ package body et_kicad_to_native is
 		end copy_nets;
 		
 
-		procedure copy_frames is
+		
 		-- Converts the kicad drawing frame templates (schematic and layout) to native templates.
 		-- CS: not completed yet.
 		-- For the time being the native module gets dummy templates assigned.
+		procedure copy_frames is
 			use et_frames;
 		begin
 			-- schematic frames:
@@ -3151,6 +3153,7 @@ package body et_kicad_to_native is
 			-- board frame:
 			module.board.frame.template := template_pcb_default;
 		end copy_frames;
+
 
 		
 		procedure copy_libraries (
@@ -3161,18 +3164,18 @@ package body et_kicad_to_native is
 			use et_kicad_libraries.type_device_libraries;
 			component_library_cursor : et_kicad_libraries.type_device_libraries.cursor := module.component_libraries.first;
 
-			use et_kicad_general.type_device_library_name;
-			component_library_name : et_kicad_general.type_device_library_name.bounded_string; -- lbr/logic.lib
+			use pac_device_model_file;
+			component_library_name : pac_device_model_file.bounded_string; -- lbr/logic.lib
 
 			-- This cursor points to the kicad footprint library being converted:			
 			use et_kicad_packages.type_libraries;
 			package_library_cursor : et_kicad_packages.type_libraries.cursor := module.footprints.first;
 
-			use pac_package_model_file_name;
+			-- use pac_package_model_file_name;
 
 			
 			procedure query_components (
-				library_name	: in et_kicad_general.type_device_library_name.bounded_string; -- lbr/logic.lib
+				library_name	: in pac_device_model_file.bounded_string; -- lbr/logic.lib
 				library			: in et_kicad_libraries.type_components_library.map) 
 			is				
 				use et_symbols;
@@ -3599,8 +3602,8 @@ package body et_kicad_to_native is
 				end rename_package_model_in_variants;
 
 				
-				function remove_leading_hash (
 				-- Removes the leading hash character from the prefix of a virtual component like #FLG or #PWR.
+				function remove_leading_hash (
 					prefix : in pac_device_prefix.bounded_string) return
 					pac_device_prefix.bounded_string is
 					use pac_device_prefix;
@@ -3618,7 +3621,7 @@ package body et_kicad_to_native is
 					device_model := concatenate_lib_name_and_generic_name (component_library_name, generic_name); -- ../lbr/logic_ttl/7400.dev
 
 					-- Create a new device model in container et_libraries.devices:
-					log (text => "device model " & et_devices.to_string (device_model), level => log_threshold + 3);
+					log (text => "device model " & to_string (name => device_model), level => log_threshold + 3);
 					log_indentation_up;
 
 					case element (component_cursor).appearance is
@@ -3748,7 +3751,7 @@ package body et_kicad_to_native is
 			-- Loop in kicad component libraries:
 			while component_library_cursor /= et_kicad_libraries.type_device_libraries.no_element loop
 				component_library_name := key (component_library_cursor);
-				log (text => "component library " & et_devices.to_string (component_library_name), level => log_threshold + 2);
+				log (text => "component library " & to_string (name => component_library_name), level => log_threshold + 2);
 
 				log_indentation_up;
 				

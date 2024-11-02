@@ -37,6 +37,7 @@
 --
 
 with et_device_appearance;
+with et_device_model_names;
 
 
 package body et_device_query_schematic is
@@ -55,10 +56,12 @@ package body et_device_query_schematic is
 	end is_real;
 
 
+	
 	function get_device_model (
 		device : in pac_devices_sch.cursor)
 		return pac_devices_lib.cursor
 	is
+		use et_device_model_names;
 		model_file : pac_device_model_file.bounded_string;
 	begin
 		-- The name of the device model file is THE link
@@ -67,6 +70,7 @@ package body et_device_query_schematic is
 		return locate_device (model_file);
 	end get_device_model;
 
+	
 
 	function get_value (
 		device : in pac_devices_sch.cursor)
@@ -75,6 +79,7 @@ package body et_device_query_schematic is
 		return pac_devices_sch.element (device).value;
 	end get_value;
 
+	
 
 	function get_purpose (
 		device : in pac_devices_sch.cursor)
@@ -83,6 +88,7 @@ package body et_device_query_schematic is
 		return pac_devices_sch.element (device).purpose;
 	end get_purpose;
 
+	
 	
 	function get_partcode (
 		device : in pac_devices_sch.cursor)
@@ -105,6 +111,7 @@ package body et_device_query_schematic is
 		device : in pac_devices_sch.cursor)
 		return pac_package_model_file_name.bounded_string -- libraries/packages/smd/SOT23.pac
 	is
+		use et_device_model_names;
 		device_model		: pac_device_model_file.bounded_string;
 		device_cursor_lib	: pac_devices_lib.cursor;
 		device_variant		: pac_package_variant_name.bounded_string; -- N, D
@@ -171,6 +178,9 @@ package body et_device_query_schematic is
 		-- This is the package variant used by the given device:
 		variant_sch : constant pac_package_variant_name.bounded_string :=
 			pac_devices_sch.element (device).variant; -- N, D
+
+		
+		use et_device_model_names;
 
 		
 		procedure query_model (
