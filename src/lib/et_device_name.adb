@@ -173,6 +173,7 @@ package body et_device_name is
 
 	
 
+	
 	function "<" (left, right : in type_device_name) return boolean is
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.
@@ -201,6 +202,7 @@ package body et_device_name is
 		-- in case of equivalence of left and right, we return false (default)
 		return result;
 	end;	
+
 
 
 	
@@ -277,7 +279,8 @@ package body et_device_name is
 		prefix	: in pac_device_prefix.bounded_string; 	-- R, C, L
 		index	: in type_name_index;				-- 1, 20, ..
 		width	: in type_index_width := type_index_width'first) -- the number of digits
-		return type_device_name is
+		return type_device_name 
+	is
 		device_name : type_device_name; -- to be returned
 	begin
 		-- assign prefix and index as requested:
@@ -309,8 +312,8 @@ package body et_device_name is
 	
 	procedure offset_index (
 		name	: in out type_device_name;
-		offset	: in type_name_index) is
-	begin
+		offset	: in type_name_index) 
+	is begin
 		name := to_device_name (
 			prefix	=> get_prefix (name),
 			index	=> name.id + offset);

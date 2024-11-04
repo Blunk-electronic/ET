@@ -47,13 +47,20 @@ package et_device_name is
 	
 	prefix_default : constant pac_device_prefix.bounded_string := pac_device_prefix.to_bounded_string ("?");
 
+	
 	subtype type_name_index is natural range natural'first .. 99_999; -- R1..R99999, IC1..IC99999 should be enough
+
 	name_index_default : constant type_name_index := 0;
 
+	
 	function to_string (index : in type_name_index) return string;
+
 	function to_index (index : in string) return type_name_index;
 
+	
 	subtype type_index_width is positive range positive'first .. 5; -- see number of digits of type_device_name_index
+
+
 	
 	type type_device_name is record -- CS: should be private
 		prefix		: pac_device_prefix.bounded_string := prefix_default; -- like "IC"
@@ -63,8 +70,12 @@ package et_device_name is
 		-- NOTE: This allows something like R091 or IC0 (there are reasons for such strange things ...)
 	end record;
 
+
+	
 	-- Returns true if the prefixes of left and right are equal:
 	function same_prefix (left, right : in type_device_name) return boolean;
+
+
 	
 	-- Converts a string like "IC303" to a composite type_device_name.
 	-- Raises constraint error if prefix contains invalid characters.
@@ -72,16 +83,21 @@ package et_device_name is
 	-- Leading zeroes in the index are removed. R002 becomes R2.
 	function to_device_name (text_in : in string) return type_device_name;
 
-	function "<" (left, right : in type_device_name) return boolean;
+
+
 	-- Returns true if left comes before right.
 	-- If left equals right, the return is false.	
+	function "<" (left, right : in type_device_name) return boolean;
 
-	function "=" (left, right : in type_device_name) return boolean;
-	-- Returns true if left equals right.
+
 	
-	function to_string (name : in type_device_name) return string;
+	-- Returns true if left equals right.
+	function "=" (left, right : in type_device_name) return boolean;
+
+	
 	-- Returns the given device name as string.
 	-- Prepends leading zeros according to name.id_width.
+	function to_string (name : in type_device_name) return string;
 
 	
 	-- Returns the prefix of the given device name.
@@ -106,9 +122,11 @@ package et_device_name is
 		width	: in type_index_width := type_index_width'first) -- the number of digits
 		return type_device_name;
 
-	procedure offset_index (
+
+	
 	-- Adds to the device index the given offset. 
 	-- Example: given name is R4, given offset is 100. Result R104.
+	procedure offset_index (
 		name	: in out type_device_name;
 		offset	: in type_name_index);
 
