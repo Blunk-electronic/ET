@@ -1024,7 +1024,7 @@ is
 	-- The temporarily device will exist where "device" points at:
 	device					: access et_schematic.type_device_sch;
 	
-	device_name				: et_devices.type_device_name; -- C12
+	device_name				: et_device_name.type_device_name; -- C12
 	device_model			: et_device_model_names.pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
 	
 	device_value			: et_device_value.pac_device_value.bounded_string; -- 470R
@@ -3077,7 +3077,7 @@ is
 					
 					log (text => "value " & to_string (device_value), level => log_threshold + 2);
 					device.value := device_value;
-					if not et_conventions.value_valid (device_value, prefix (device_name)) then
+					if not et_conventions.value_valid (device_value, get_prefix (device_name)) then
 						log (WARNING, "value of " & to_string (device_name) &
 							" not conformant with conventions !");
 					end if;

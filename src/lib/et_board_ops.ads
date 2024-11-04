@@ -65,6 +65,7 @@ with et_board_shapes_and_text;
 with et_assembly_variants;
 with et_pick_and_place;
 with et_devices;					use et_devices;
+with et_device_name;				use et_device_name;
 with et_design_rules;				use et_design_rules;
 
 with et_exceptions;					use et_exceptions;

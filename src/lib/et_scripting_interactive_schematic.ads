@@ -43,6 +43,7 @@ with gtk.menu_shell;			use gtk.menu_shell;
 
 with et_symbols;				use et_symbols;
 with et_devices;				use et_devices;
+with et_device_name;			use et_device_name;
 with et_schematic;				use et_schematic;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
@@ -136,7 +137,8 @@ package et_scripting_interactive_schematic is
 	-- Sets the package variant of the given device.
 	-- The device must exist in the current active module.
 	-- Otherwise constraint error rises.
-	procedure set_variant (device : in et_devices.type_device_name);
+	procedure set_variant (
+		device : in type_device_name);
 	
 
 -- SET PROPERTIES (partcode, purpose, value)
@@ -146,7 +148,10 @@ package et_scripting_interactive_schematic is
 	-- according to the current verb and noun.
 	-- The device must exist in the current active module.
 	-- Otherwise constraint error rises.
-	procedure set_property (device : in et_devices.type_device_name);
+	procedure set_property (
+		device : in type_device_name);
+
+
 	
 end et_scripting_interactive_schematic;
 

@@ -50,6 +50,7 @@ use et_coordinates_2.pac_geometry_2;
 with et_project.modules;			use et_project.modules;
 with et_symbols;					use et_symbols;
 with et_devices;					use et_devices;
+with et_device_name;				use et_device_name;
 with et_nets;						use et_nets;
 with et_units;						use et_units;
 with et_schematic;					
@@ -348,7 +349,7 @@ package et_canvas_schematic_units is
 		-- The prospective device name (like IC4) once the 
 		-- add operation is complete.
 		-- This is relevant for the preview only:
-		device_pre	: et_devices.type_device_name := (others => <>);
+		device_pre	: type_device_name := (others => <>);
 
 		-- When drawing a unit being added via fetch:
 		via_fetch	: boolean := false;

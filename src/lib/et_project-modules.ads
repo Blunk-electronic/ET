@@ -47,6 +47,7 @@ with et_assembly_variants;		use et_assembly_variants;
 with et_pcb;
 with et_pcb_stack;
 with et_devices;
+with et_device_name;			use et_device_name;
 
 with et_design_rules;			use et_design_rules;
 with et_meta;
@@ -312,7 +313,7 @@ package et_project.modules is
 	function device_exists (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
-		device	: in et_devices.type_device_name)
+		device	: in type_device_name)
 		return boolean;
 
 
@@ -328,7 +329,7 @@ package et_project.modules is
 	function get_alternative_device (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
-		device	: in et_devices.type_device_name)
+		device	: in type_device_name)
 		return pac_device_variants.cursor;
 
 	

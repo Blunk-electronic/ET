@@ -528,7 +528,7 @@ package body et_board_ops is
 						log (text => "collecting devices from module " &
 								enclose_in_quotes (to_string (module_name)) &
 								" default variant by applying device index offset" & 
-								et_devices.to_string (offset), -- 100
+								to_string (offset), -- 100
 							level => log_threshold + 1);
 
 						log_position_in_board;
@@ -545,7 +545,7 @@ package body et_board_ops is
 								enclose_in_quotes (to_string (module_name)) &
 								" variant " & enclose_in_quotes (to_variant (variant)) &
 								" by applying device index offset" & 
-								et_devices.to_string (offset), -- 100
+								to_string (offset), -- 100
 							level => log_threshold + 1);
 
 						log_position_in_board;
@@ -602,7 +602,7 @@ package body et_board_ops is
 				module_name 	: pac_module_name.bounded_string; -- motor_driver
 				parent_name 	: pac_module_name.bounded_string; -- water_pump
 				module_instance	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
-				offset			: et_devices.type_name_index;
+				offset			: type_name_index;
 
 				use et_assembly_variants.pac_submodule_variants;
 				alt_submod : et_assembly_variants.pac_submodule_variants.cursor;

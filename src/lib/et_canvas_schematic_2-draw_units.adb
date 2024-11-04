@@ -50,6 +50,7 @@ with et_device_purpose;					use et_device_purpose;
 with et_devices;						use et_devices;
 with et_device_model_names;
 with et_device_value;					use et_device_value;
+with et_device_name;					use et_device_name;
 with et_schematic;
 
 with et_terminals;
@@ -71,7 +72,7 @@ procedure draw_units is
 	
 	procedure draw_symbol (
 		symbol			: in et_symbols.type_symbol;
-		device_name		: in et_devices.type_device_name := (others => <>);
+		device_name		: in type_device_name := (others => <>);
 		device_value	: in pac_device_value.bounded_string := to_value (""); -- like 100R or TL084
 		device_purpose	: in pac_device_purpose.bounded_string := to_purpose (""); -- like "brightness control"
 		unit_name		: in et_devices.pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
@@ -567,7 +568,7 @@ procedure draw_units is
 	use pac_units;
 	
 	-- The name, value and purpose of the current device:
-	device_name	: et_devices.type_device_name; -- like R1, IC100	
+	device_name	: type_device_name; -- like R1, IC100	
 	device_value : pac_device_value.bounded_string; -- like 100R or TL084
 	device_purpose : pac_device_purpose.bounded_string; -- like "brightness control"
 

@@ -88,6 +88,7 @@ is
 
 	use pac_text_schematic;
 	use et_devices;
+	use et_device_name;
 	use et_canvas_schematic_2;
 	use et_canvas_schematic_2.pac_canvas;
 	use et_display.schematic;
@@ -785,7 +786,7 @@ is
 	
 
 	procedure copy_device is
-		use et_sheets;
+		use et_sheets;		
 	begin
 		case cmd_field_count is
 			when 9 =>
@@ -836,7 +837,7 @@ is
 	--    All units of the device selected and highlighted.
 	--    The given unit name will be ignored.
 	procedure show_device ( -- GUI related
-		device	: in et_devices.type_device_name; -- IC45
+		device	: in type_device_name; -- IC45
 		unit	: in et_devices.pac_unit_name.bounded_string := to_unit_name (""); -- A, B, ..
 		mode	: in type_show_device := FIRST_UNIT)
 	is
@@ -2591,7 +2592,7 @@ is
 		use et_canvas_schematic_nets;
 		use et_project.modules;
 
-		device_name		: et_devices.type_device_name;
+		device_name		: type_device_name;
 		unit_name		: pac_unit_name.bounded_string;
 		--net_name		: pac_net_name.bounded_string;
 

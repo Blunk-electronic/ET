@@ -77,6 +77,7 @@ with et_device_purpose;			use et_device_purpose;
 with et_device_model_names;		use et_device_model_names;
 with et_device_value;			use et_device_value;
 with et_device_prefix;			use et_device_prefix;
+with et_device_name;			use et_device_name;
 with et_conventions;
 
 with et_device_placeholders;			use et_device_placeholders;
@@ -420,7 +421,7 @@ package et_schematic_ops is
 	-- in the according device model:
 	procedure set_variant (
 		module			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device			: in et_devices.type_device_name; -- R2
+		device			: in type_device_name; -- R2
 		variant			: in pac_package_variant_name.bounded_string; -- N, D
 		log_threshold	: in type_log_level);
 

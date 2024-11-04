@@ -85,6 +85,7 @@ with et_symbols;
 with et_device_appearance;
 with et_device_purpose;
 with et_devices;					use et_devices;
+with et_device_name;				--use et_device_name;
 with et_device_model_names;			use et_device_model_names;
 with et_device_prefix;				use et_device_prefix;
 with et_frames;	
@@ -416,6 +417,9 @@ package body et_kicad_to_native is
 			use et_kicad.schematic.type_components_schematic;
 			component_cursor : et_kicad.schematic.type_components_schematic.cursor := module.components.first;
 
+			use et_device_name;
+			
+			
 			procedure query_units (
 				reference	: in type_device_name;
 				component	: in out et_kicad.schematic.type_component_schematic) is
@@ -2041,6 +2045,7 @@ package body et_kicad_to_native is
 				use et_coordinates_2;
 				use et_symbol_ports;
 				use et_port_names;
+				use et_device_name;
 				
 			begin
 				log (text => "net " & to_string (net_name), level => log_threshold + 3);
@@ -2537,6 +2542,7 @@ package body et_kicad_to_native is
 			use et_schematic;
 			use et_device_appearance;
 			use et_device_purpose;
+			use et_device_name;			
 			use et_kicad.schematic.type_components_schematic;
 			
 			components_kicad		: et_kicad.schematic.type_components_schematic.map;
@@ -2930,6 +2936,7 @@ package body et_kicad_to_native is
 					use pac_geometry_2;
 					use et_symbol_ports;
 					use et_port_names;
+					use et_device_name;
 					
 					dist : pac_geometry_sch.type_distance_point_line;
 

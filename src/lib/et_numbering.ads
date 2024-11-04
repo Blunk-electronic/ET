@@ -47,6 +47,7 @@ with et_coordinates_2;			use et_coordinates_2;
 with et_string_processing;		use et_string_processing;
 
 with et_devices;				use et_devices;
+with et_device_name;			use et_device_name;
 
 
 package et_numbering is

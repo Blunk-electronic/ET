@@ -5255,17 +5255,19 @@ package body et_schematic_ops.submodules is
 
 		index_range : et_numbering.type_index_range; -- to be returned
 
+		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_module) 
+		is
 			use pac_devices_sch;
 
 			device_cursor : pac_devices_sch.cursor := module.devices.first;
 			index_current : type_name_index;
-		begin -- query_devices
+		begin
 			while device_cursor /= pac_devices_sch.no_element loop
 
-				index_current := index (key (device_cursor));
+				index_current := get_index (key (device_cursor));
 				
 				if index_current < index_range.lowest then -- see specs of type_index_range for defaults
 					index_range.lowest := index_current;

@@ -69,6 +69,7 @@ with et_devices;				use et_devices;
 with et_device_model_names;		use et_device_model_names;
 with et_device_value;			use et_device_value;
 with et_device_prefix;			use et_device_prefix;
+with et_device_name;			use et_device_name;
 
 with et_schematic_shapes_and_text;
 
@@ -179,9 +180,9 @@ package et_kicad.schematic is
 
 	
 
-	procedure add_unit (
 	-- Adds a unit into the given commponent.
-		reference		: in et_devices.type_device_name;
+	procedure add_unit (
+		reference		: in type_device_name;
 		unit_name		: in et_devices.pac_unit_name.bounded_string;
 		unit 			: in type_unit_schematic;
 		log_threshold	: in type_log_level);
@@ -249,7 +250,7 @@ package et_kicad.schematic is
 	
 	type type_alternative_reference is record
 		path		: type_alternative_reference_path.list; -- 59F17FDE 5A991D18 ...
-		reference	: et_devices.type_device_name; -- R452
+		reference	: type_device_name; -- R452
 		part		: et_devices.pac_unit_name.bounded_string; -- CS is this about a unit name ? currently written but never read
 	end record;
 
@@ -288,22 +289,30 @@ package et_kicad.schematic is
 
 	
 	
-	procedure add_component (
 	-- Adds a component into the the module (indicated by module_cursor).
-		reference		: in et_devices.type_device_name;
+	-- If a component is already in the list, nothing happens.
+	-- Components may occur multiple times in the schematic if they 
+	-- consist of more than one unit.
+	-- CS: This assumption may not apply for all CAE systems. Currently we
+	-- consider only kicad. In other cases the "inserted" check (see below) 
+	-- must be enabled via an argument.
+	procedure add_component (
+		reference		: in type_device_name;
 		component		: in type_component_schematic;
 		log_threshold	: in type_log_level);
 
 
 	-- The components of a module are collected in a map.
  	package type_components_schematic is new indefinite_ordered_maps (
-		key_type 		=> et_devices.type_device_name, -- something like "IC43"
-		"<" 			=> et_devices."<",
+		key_type 		=> type_device_name, -- something like "IC43"
+		"<" 			=> et_device_name."<",
  		element_type 	=> type_component_schematic);
 
+
+	
+	-- Returns the component reference where cursor points to.
 	function component_reference (cursor : in type_components_schematic.cursor) 
 		return type_device_name;
-	-- Returns the component reference where cursor points to.
 	
 	
 	function units_of_component (component_cursor : in type_components_schematic.cursor) return type_units_schematic.map;
@@ -358,27 +367,32 @@ package et_kicad.schematic is
 		power_flag		: type_power_flag; -- indicates if port belongs to a power_flag
 	end record;
 
+
 	
 	-- Ports can be collected in a simple list:
 	package type_ports is new doubly_linked_lists (type_port); 
 	--use type_ports;
 
+	
 	-- The components with their ports are collected in a map with the component reference as key:
 	package type_portlists is new ordered_maps (
-		key_type		=> et_devices.type_device_name,
+		key_type		=> type_device_name,
 		element_type	=> type_ports.list,
-		"<"				=> et_devices."<",
+		"<"				=> et_device_name."<",
 		"="				=> type_ports."=");
 
+	
 	-- If component ports are to be listed, 
 	-- we need additionally the component reference like R102 or IC7
 	type type_port_with_reference is new type_port with record
-		reference : et_devices.type_device_name;
+		reference : type_device_name;
 	end record;
 
+	
 	function to_string (port : in type_port_with_reference) return string;
 	-- Returns the properties of the given port as string.
 
+	
 	function to_terminal (
 		port 			: in type_port_with_reference;
 		module			: in type_submodule_name.bounded_string; -- the name of the module 
@@ -391,13 +405,15 @@ package et_kicad.schematic is
 	function compare_ports (left, right : in type_port_with_reference) return boolean;
 	-- Returns true if left comes before right. Compares by component reference and port name.
 	-- If left equals right, the return is false.	
+
 	
 	-- When inquiring the net connected with certain component we use this composite:
 	type type_port_of_module is record
 		module		: type_submodule_name.bounded_string;			-- nucleo_core_3
-		reference	: et_devices.type_device_name;		-- N409
+		reference	: type_device_name;		-- N409
 		name		: pac_port_name.bounded_string;	-- 2
 	end record;
+
 	
 	-- This is a set of ports as we need in the netlist.
 	package type_ports_with_reference is new ordered_sets (
@@ -1013,22 +1029,25 @@ package et_kicad.schematic is
 	-- Virtual components are filtered out on exporting the netlist in a file.
 	-- Bases on the portlists and nets/strands information of the module.
 	-- Detects if a junction is missing where a port is connected with a net.
+
 	
-	function terminal_count (
-		reference		: in et_devices.type_device_name;
-		log_threshold	: in type_log_level)
-		return et_devices.type_terminal_count;
 	-- Returns the number of terminals of the given component reference.
 	-- Requires module_cursor (global variable) to point to the current module.
+	function terminal_count ( -- CS rename to get_terminal_count
+		reference		: in type_device_name;
+		log_threshold	: in type_log_level)
+		return et_devices.type_terminal_count;
+
 	
 	-- Returns the name of the net connected with the given component and terminal.
-	function connected_net (
+	function connected_net ( -- CS rename to get_connected_net
 		module			: in type_submodule_name.bounded_string;	-- nucleo_core
-		reference		: in et_devices.type_device_name;	-- IC45
+		reference		: in type_device_name;	-- IC45
 		terminal		: in et_terminals.pac_terminal_name.bounded_string; -- E14
 		log_threshold	: in type_log_level)		
 		return pac_net_name.bounded_string;
 
+	
 -- 	procedure write_statistics (log_threshold : in type_log_level);  -- CS this is general and should be in et_schematic
 -- 	-- Writes the statistics on components and nets of the modules.
 -- 	-- Distinguishes between CAD and CAM related things.

@@ -41,6 +41,7 @@ with ada.text_io;				use ada.text_io;
 with ada.containers;			use ada.containers;
 with ada.exceptions;			use ada.exceptions;
 
+with et_device_name;
 with et_net_names;				use et_net_names;
 with et_text;					use et_text;
 with et_string_processing;		use et_string_processing;

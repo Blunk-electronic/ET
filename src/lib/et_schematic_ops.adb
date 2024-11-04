@@ -1995,7 +1995,7 @@ package body et_schematic_ops is
 				if element (device_cursor).appearance = APPEARANCE_PCB then
 
 					-- Check value regarding the device category:
-					if et_conventions.value_valid (value, prefix (device_name)) then 
+					if et_conventions.value_valid (value, get_prefix (device_name)) then 
 					
 						update_element (
 							container	=> module.devices,
@@ -2286,7 +2286,7 @@ package body et_schematic_ops is
 		unit_cursor : pac_units.cursor; -- to be returned
 
 		procedure query_units (
-			device_name	: in et_devices.type_device_name; -- R2
+			device_name	: in type_device_name; -- R2
 			device		: in type_device_sch)
 		is begin
 			unit_cursor := find (device.units, unit);
@@ -2331,6 +2331,8 @@ package body et_schematic_ops is
 		return element (locate_device (module, device)).model;
 	end device_model_name;
 
+
+	
 	function get_available_variants (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
@@ -2341,6 +2343,9 @@ package body et_schematic_ops is
 		cursor_lib := locate_device (module, device);
 		return available_variants (cursor_lib);
 	end get_available_variants;
+
+
+
 	
 	function get_variant (
 		module	: in pac_generic_modules.cursor;
@@ -2354,6 +2359,9 @@ package body et_schematic_ops is
 		return pac_devices_sch.element (cursor_sch).variant;
 	end get_variant;
 
+
+
+	
 	procedure set_variant (
 		module	: in pac_generic_modules.cursor;
 		device	: in pac_devices_sch.cursor;
@@ -2361,12 +2369,14 @@ package body et_schematic_ops is
 	is
 		use pac_devices_sch;
 
+		
 		procedure query_device (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 
 			procedure do_it (
-				name	: in et_devices.type_device_name;
+				name	: in type_device_name;
 				dev		: in out type_device_sch)
 			is 
 				cursor_lib : pac_devices_lib.cursor;
@@ -2382,6 +2392,7 @@ package body et_schematic_ops is
 				end if;
 			end do_it;
 
+			
 		begin
 			update_element (
 				container	=> module.devices,
@@ -2403,10 +2414,12 @@ package body et_schematic_ops is
 		end if;
 	end set_variant;
 
+
+
 	
 	procedure set_variant (
 		module			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device			: in et_devices.type_device_name; -- R2
+		device			: in type_device_name; -- R2
 		variant			: in pac_package_variant_name.bounded_string; -- N, D
 		log_threshold	: in type_log_level)
 	is
@@ -2624,9 +2637,9 @@ package body et_schematic_ops is
 			gap_found : boolean := false; -- goes true once a gap has been found
 		begin
 			while device_cursor /= pac_devices_sch.no_element loop
-				if et_devices.prefix (key (device_cursor)) = prefix then -- prefix match
+				if get_prefix (key (device_cursor)) = prefix then -- prefix match
 					
-					if index (key (device_cursor)) /= index_expected then -- we have a gap
+					if get_index (key (device_cursor)) /= index_expected then -- we have a gap
 
 						-- build the next available device name (like IC12)
 						next_name := to_device_name (prefix, index_expected);
@@ -2665,10 +2678,10 @@ package body et_schematic_ops is
 		end search_gap_electric;
 
 		
-		procedure search_gap_non_electric (
 		-- Searches for the lowest available non-electrical device name. Looks at devices
 		-- whose prefix equals the given prefix. Example: If given prefix is MH, it looks
 		-- for the lowest available mounting hole index.
+		procedure search_gap_non_electric (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module) 
 		is
@@ -2683,9 +2696,9 @@ package body et_schematic_ops is
 			gap_found : boolean := false; -- goes true once a gap has been found
 		begin -- search_gap
 			while device_cursor /= pac_devices_non_electric.no_element loop
-				if et_devices.prefix (key (device_cursor)) = prefix then -- prefix match
+				if get_prefix (key (device_cursor)) = prefix then -- prefix match
 					
-					if index (key (device_cursor)) /= index_expected then -- we have a gap
+					if get_index (key (device_cursor)) /= index_expected then -- we have a gap
 
 						-- build the next available device name and exit
 						next_name := to_device_name (prefix, index_expected);
@@ -3864,7 +3877,7 @@ package body et_schematic_ops is
 
 						-- build the new device name
 						name_after := to_device_name (
-								prefix	=> prefix (name_before), -- R, C, IC
+								prefix	=> get_prefix (name_before), -- R, C, IC
 								index 	=> device_index); -- 407
 
 						-- Do the renaming if the new name differs from the old name.

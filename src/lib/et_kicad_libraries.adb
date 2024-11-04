@@ -467,7 +467,7 @@ package body et_kicad_libraries is
 			null;
 		else
 			log (ERROR, "invalid prefix in component reference "
-				 & et_devices.to_string (reference) & " !"
+				 & to_string (reference) & " !"
 				 & " Expected " 
 				 & power_flag_prefix & " or "
 				 & power_symbol_prefix & " !",
@@ -866,7 +866,7 @@ package body et_kicad_libraries is
 		use pac_device_prefix;
 	begin
 		--log (text => et_schematic.to_string (reference));
-		if prefix (reference) = power_flag_prefix then
+		if get_prefix (reference) = power_flag_prefix then
 			--log (text => "power flag on");
 			return YES;
 		else

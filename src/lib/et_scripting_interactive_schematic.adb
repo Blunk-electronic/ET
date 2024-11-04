@@ -624,8 +624,12 @@ package body et_scripting_interactive_schematic is
 		
 		--return result;		
 	--end variant_selection_key_event;
+
+
 	
-	procedure set_variant (device : in et_devices.type_device_name) is
+	procedure set_variant (
+		device : in type_device_name) 
+	is
 		use pac_variants;
 		variants : pac_variants.map;
 		device_cursor_sch : pac_devices_sch.cursor;
@@ -652,6 +656,7 @@ package body et_scripting_interactive_schematic is
 			m.popup;
 
 		end show_variants_menu;
+
 		
 	begin -- set_variant
 		device_cursor_sch := locate_device (active_module, device);
@@ -677,7 +682,11 @@ package body et_scripting_interactive_schematic is
 	end set_variant;
 
 
-	procedure set_property (device : in et_devices.type_device_name) is
+	
+	
+	procedure set_property (
+		device : in type_device_name) 
+	is
 		su : type_selected_unit;
 	begin
 		-- If the properties window is already open, then the window
@@ -705,6 +714,8 @@ package body et_scripting_interactive_schematic is
 			window_properties.window.present;
 		end if;
 	end set_property;
+
+
 	
 end et_scripting_interactive_schematic;
 

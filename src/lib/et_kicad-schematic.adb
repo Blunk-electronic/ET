@@ -933,7 +933,7 @@ package body et_kicad.schematic is
 		use pac_device_prefix;
 	begin
 		--log (text => et_schematic.to_string (reference));
-		if prefix (reference) = power_flag_prefix then
+		if get_prefix (reference) = power_flag_prefix then
 			--log (text => "power flag on");
 			return YES;
 		else
@@ -5327,17 +5327,13 @@ package body et_kicad.schematic is
 			);
 	end add_note;
 
+
+	
 	procedure add_component (
-	-- Adds a component into the the module (indicated by module_cursor).
-	-- If a component is already in the list, nothing happens.
-	-- Components may occur multiple times in the schematic if they 
-	-- consist of more than one unit.
-	-- CS: This assumption may not apply for all CAE systems. Currently we
-	-- consider only kicad. In other cases the "inserted" check (see below) 
-	-- must be enabled via an argument.
 		reference		: in type_device_name;
 		component		: in type_component_schematic;
-		log_threshold 	: in type_log_level) is
+		log_threshold 	: in type_log_level) 
+	is
 		
 		procedure add (
 			name	: in type_submodule_name.bounded_string;
@@ -5368,13 +5364,15 @@ package body et_kicad.schematic is
 			process		=> add'access
 			);
 	end add_component;
+
+
 	
 	procedure add_unit (
-	-- Adds a unit to the given commponent.
 		reference		: in type_device_name;
 		unit_name		: in et_devices.pac_unit_name.bounded_string;
 		unit 			: in type_unit_schematic;
-		log_threshold	: in type_log_level) is
+		log_threshold	: in type_log_level) 
+	is
 
 		procedure add (
 			reference	: in type_device_name;
@@ -7031,17 +7029,16 @@ package body et_kicad.schematic is
 	function terminal_count (
 		reference		: in type_device_name;
 		log_threshold	: in type_log_level)
-		return et_devices.type_terminal_count is
-	-- Returns the number of terminals of the given component reference.
-	-- Requires module_cursor (global variable) to point to the current module.
-
+		return et_devices.type_terminal_count 
+	is
 		use type_modules;
 		use et_string_processing;
 		terminals : et_devices.type_terminal_count; -- to be returned
 
 		procedure locate_component_in_schematic (
 			module_name : in type_submodule_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_module) 
+		is
 			use type_components_schematic;
 		
 			component_cursor: type_components_schematic.cursor;
@@ -7052,17 +7049,21 @@ package body et_kicad.schematic is
 
 			library_cursor	: type_device_libraries.cursor;
 
+			
 			procedure locate_component_in_library (
 				library_name 	: in pac_device_model_file.bounded_string;
-				components 		: in type_components_library.map) is
+				components 		: in type_components_library.map) 
+			is
 				use type_components_library;
 
 				component_cursor : type_components_library.cursor;
 
-				procedure query_variants (
+				
 				-- Looks up the list of variants of the component.
+				procedure query_variants (
 					name 		: in type_component_generic_name.bounded_string;
-					component 	: in type_component_library) is
+					component 	: in type_component_library) 
+				is
 					use et_devices.pac_variants;
 					use et_import;
 
@@ -7103,6 +7104,7 @@ package body et_kicad.schematic is
 								raise;
 					
 				end query_variants;
+
 				
 			begin -- locate_component_in_library
 				log (text => "locating generic component " & to_string (generic_name) 
@@ -7351,7 +7353,7 @@ package body et_kicad.schematic is
 
 	
 
-	function connected_net ( -- CS rename to get_gonnected_net
+	function connected_net (
 		module			: in type_submodule_name.bounded_string; -- nucleo_core
 		reference		: in type_device_name;	-- IC45
 		terminal		: in et_terminals.pac_terminal_name.bounded_string; -- E14

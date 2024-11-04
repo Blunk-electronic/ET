@@ -3252,7 +3252,7 @@ package body et_conventions is
 		if component_prefixes_specified then
 			if component_prefixes.find (device_name.prefix) = type_component_prefixes.no_element then
 				log (WARNING, "invalid prefix in device name "
-					 & et_devices.to_string (device_name) & " !");
+					 & to_string (device_name) & " !");
 				result := false;
 			end if;
 		end if;

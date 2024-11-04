@@ -67,6 +67,7 @@ with et_drills;					use et_drills;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_device_value;					use et_device_value;
+with et_device_name;					use et_device_name;
 with et_packages;
 with et_devices;						use et_devices;
 with et_frames;
@@ -553,9 +554,9 @@ package et_kicad.pcb is
 
 	-- Lots of packages (in a board) can be collected in a map:
 	package type_packages_board is new indefinite_ordered_maps (
-		key_type 		=> et_devices.type_device_name, -- IC46
+		key_type 		=> type_device_name, -- IC46
 		element_type 	=> type_package_board,
-		"<"				=> et_devices."<");
+		"<"				=> et_device_name."<");
 
 
 

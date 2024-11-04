@@ -114,6 +114,9 @@ is
 	use et_display.board;
 	use et_modes.board;
 
+	use et_device_name;
+	
+
 	package pac_canvas_cmd is new et_canvas_board_2.pac_canvas.cmd;
 	use pac_canvas_cmd;
 
@@ -3226,22 +3229,26 @@ is
 		use et_canvas_board_texts;
 		use et_canvas_board_vias;
 		
-		device_name		: et_devices.type_device_name;
+		device_name : type_device_name;
+
 		
 		procedure module_name_missing is begin
 			set_status (incomplete & module_missing);
 		end module_name_missing;
 
+		
 		procedure device_name_missing is begin
 			set_status (incomplete & device_missing);
 			-- No menu required and not reasonable.
 			-- It might become very long if there were hundreds of devices.
 		end device_name_missing;
 
+		
 		procedure device_not_found is begin
 			set_status ("ERROR: Device " & to_string (device_name) & " not found !");
 		end device_not_found;
 
+		
 		procedure net_name_missing is begin
 			set_status (incomplete & net_missing);
 		end net_name_missing;
