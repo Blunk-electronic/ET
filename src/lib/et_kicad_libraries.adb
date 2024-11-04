@@ -1178,7 +1178,8 @@ package body et_kicad_libraries is
 			use type_packages_library;
 			use et_terminals.pac_terminals;
 			use pac_terminal_port_map;
-			terminals : et_devices.type_terminal_count;
+			
+			terminals : natural;
 		begin
 			if is_empty (packages) then
 				log (ERROR, "package library " & to_string (library_name)
@@ -1194,10 +1195,10 @@ package body et_kicad_libraries is
 					raise constraint_error;
 				else
 					-- load the total number of terminals the package provides
-					terminals := et_devices.type_terminal_count (length (element (package_cursor).terminals));
+					terminals := natural (length (element (package_cursor).terminals));
 
 					-- If the package has less terminals than the given terminal_port_map abort:
-					if et_devices."<" (terminals, et_devices.type_terminal_count (length (terminal_port_map))) then
+					if terminals < natural (length (terminal_port_map)) then
 						log (ERROR, "package " & to_string (packge => package_name)
 							& " as too few terminals !",
 							console => true);

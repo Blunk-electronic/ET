@@ -71,28 +71,8 @@ package et_devices is
 	-- To handle names of package models like libraries/packages/smd/SOT23.pac use this:
 	keyword_package_model : constant string := "package_model";
 
-
-
-
 	keyword_device : constant string := "device";
 	
-	
-
-	
--- TERMINALS	
-
-	type type_terminal_count is new count_type; -- CS: limit to a reasonable range ?
-
-	-- Returns the given number of terminals as string.
-	function to_string (terminals : in type_terminal_count) return string;
-	
-
-
-
-
-	
-
-
 	
 
 	keyword_unit		: constant string := "unit";		

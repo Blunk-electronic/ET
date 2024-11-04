@@ -724,20 +724,22 @@ package et_kicad.pcb is
 		polygons	: type_polygons.list;
 	end record;
 
+
+	
 	procedure read_board (
 		file_name 		: in string;
 		log_threshold	: in type_log_level);
 
 
-	procedure read_boards (log_threshold : in type_log_level);
 	-- Imports layout files. The files to be imported are named after the schematic modules.
 	-- The schematic modules are indicated by module_cursor.
+	procedure read_boards (log_threshold : in type_log_level);
 
 
 	-- Returns the number of terminals of the given package in the given library.
-	function terminal_count ( -- CS rename to get_terminal_count
+	function get_terminal_count (
 		packge : in pac_package_model_file_name.bounded_string) -- ../lbr/bel_ic/S_SO14
-		return et_devices.type_terminal_count;
+		return natural;
 	
 
 -- 	procedure to_native (log_threshold : in type_log_level);

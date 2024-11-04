@@ -53,11 +53,11 @@ package body et_devices is
 
 
 
-	function to_string (terminals : in type_terminal_count) return string is
-	-- Returns the given number of terminals as string.
-	begin
-		return " terminal count" & type_terminal_count'image (terminals);
-	end to_string;
+	-- function to_string (terminals : in type_terminal_count) return string is
+	-- -- Returns the given number of terminals as string.
+	-- begin
+	-- 	return " terminal count" & type_terminal_count'image (terminals);
+	-- end to_string;
 	
 	
 

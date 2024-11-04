@@ -7026,15 +7026,17 @@ package body et_kicad.schematic is
 	
 
 	
-	function terminal_count (
+	function get_terminal_count (
 		reference		: in type_device_name;
 		log_threshold	: in type_log_level)
-		return et_devices.type_terminal_count 
+		return natural 
 	is
 		use type_modules;
 		use et_string_processing;
-		terminals : et_devices.type_terminal_count; -- to be returned
+		
+		terminals : natural; -- to be returned
 
+		
 		procedure locate_component_in_schematic (
 			module_name : in type_submodule_name.bounded_string;
 			module		: in type_module) 
@@ -7088,7 +7090,7 @@ package body et_kicad.schematic is
 -- 														& et_kicad_pcb.package_library_directory_extension), -- .pretty
 -- 									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
 -- 					else
-						terminals := et_kicad.pcb.terminal_count (
+						terminals := get_terminal_count (
 -- 									library_name	=> element (variant_cursor).packge.library,	-- ../lbr/bel_ic
 -- 									package_name	=> element (variant_cursor).packge.name);	-- S_SO14
 									element (variant_cursor).package_model);
@@ -7169,7 +7171,7 @@ package body et_kicad.schematic is
 		log_indentation_down;
 
 		return terminals;
-	end terminal_count;
+	end get_terminal_count;
 
 
 

@@ -1033,10 +1033,10 @@ package et_kicad.schematic is
 	
 	-- Returns the number of terminals of the given component reference.
 	-- Requires module_cursor (global variable) to point to the current module.
-	function terminal_count ( -- CS rename to get_terminal_count
+	function get_terminal_count (
 		reference		: in type_device_name;
 		log_threshold	: in type_log_level)
-		return et_devices.type_terminal_count;
+		return natural;
 
 	
 	-- Returns the name of the net connected with the given component and terminal.
