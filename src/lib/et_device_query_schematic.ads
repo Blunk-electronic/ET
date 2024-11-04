@@ -49,7 +49,7 @@ with et_device_purpose;					use et_device_purpose;
 with et_device_value;					use et_device_value;
 with et_unit_name;						use et_unit_name;
 with et_terminals;
-
+with et_package_variant;				use et_package_variant;
 
 
 package et_device_query_schematic is

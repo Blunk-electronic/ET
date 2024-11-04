@@ -86,6 +86,7 @@ with et_device_appearance;
 with et_device_purpose;
 with et_unit_name;					use et_unit_name;
 with et_devices;					use et_devices;
+with et_package_variant;
 with et_device_name;				--use et_device_name;
 with et_device_model_names;			use et_device_model_names;
 with et_device_prefix;				use et_device_prefix;
@@ -2944,10 +2945,11 @@ package body et_kicad_to_native is
 					use et_port_names;
 					use et_device_name;
 					use pac_unit_name;
+					use et_package_variant;
 					
 					dist : pac_geometry_sch.type_distance_point_line;
 
-					terminal : et_devices.type_terminal;
+					terminal : type_terminal;
 				begin
 					log_indentation_up;
 					
@@ -3589,28 +3591,30 @@ package body et_kicad_to_native is
 					device_name	: in pac_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
 					device		: in out et_devices.type_device_lib) 
 				is
-
-					use et_devices.pac_variants;
-					variant_cursor : et_devices.pac_variants.cursor := device.variants.first;
+					use et_package_variant;
+					use pac_package_variant_name;
+					use pac_variants;
+					
+					variant_cursor : pac_variants.cursor := device.variants.first;
 
 					
 					procedure rename (
 						variant_name	: in pac_package_variant_name.bounded_string; -- N, D, ...
-						variant			: in out et_devices.type_variant) is
-					begin -- rename
+						variant			: in out type_variant)
+					is begin
 						variant.package_model := (rename_package_model (variant.package_model)); -- ../../lbr/transistors.pretty/S_0805
 
-						log (text => "package variant " & et_devices.to_string (variant_name) 
+						log (text => "package variant " & to_string (variant_name) 
 							 & " now uses package " 
 							 & to_string (name => variant.package_model), level => log_threshold + 4);
 					end rename;
 					
 					
-				begin -- rename_package_model_in_variants
+				begin
 					-- Loop in variants and rename the package names.
-					while variant_cursor /= et_devices.pac_variants.no_element loop
+					while variant_cursor /= pac_variants.no_element loop
 
-						et_devices.pac_variants.update_element (
+						pac_variants.update_element (
 							container	=> device.variants,
 							position	=> variant_cursor,
 							process		=> rename'access);

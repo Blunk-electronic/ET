@@ -81,6 +81,7 @@ with et_device_model_names;		use et_device_model_names;
 with et_device_value;			use et_device_value;
 with et_device_name;			use et_device_name;
 with et_devices;				use et_devices;
+with et_package_variant;		use et_package_variant;
 with et_frames;
 with et_meta;
 with et_design_rules;

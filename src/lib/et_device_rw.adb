@@ -84,6 +84,7 @@ with et_device_prefix;
 with et_unit_name;
 with et_unit_swap_level;
 with et_unit_add_level;
+with et_package_variant;
 
 
 package body et_device_rw is
@@ -143,22 +144,28 @@ package body et_device_rw is
 
 		use et_unit_name;
 		use pac_unit_name;
-
 		
 		file_handle : ada.text_io.file_type;
 
+		
+		use et_package_variant;
 		use pac_variants;
+		use pac_package_variant_name;
+		
 		variant_cursor : pac_variants.cursor;
 
+		
 		
 		procedure write_variant (
 			packge	: in pac_package_variant_name.bounded_string;
 			variant	: in type_variant) 
 		is
+			use pac_package_variant_name;
 			use et_port_names;
 			use et_package_names;
 			use pac_terminal_port_map;	
 
+			
 			procedure write_terminal (terminal_cursor : in pac_terminal_port_map.cursor) is begin
 				write (keyword => keyword_terminal, parameters => 
 					space & to_string (key (terminal_cursor)) & space -- terminal name like G14 or 16
@@ -167,7 +174,8 @@ package body et_device_rw is
 					);
 			end write_terminal;
 
-		begin -- write_variant
+			
+		begin
 			write (keyword => keyword_package_model, parameters => to_string (variant.package_model)); -- CS path correct ??
 			section_mark (section_terminal_port_map, HEADER);
 			iterate (variant.terminal_port_map, write_terminal'access);
@@ -320,6 +328,7 @@ package body et_device_rw is
 		use et_device_value;
 		use et_device_prefix;
 		use et_unit_name;
+		use et_package_variant;
 		
 		use et_text;
 		file_handle : ada.text_io.file_type;
@@ -416,9 +425,12 @@ package body et_device_rw is
 			port		:= to_port_name ("");
 		end insert_terminal;
 
+
 		
 		procedure insert_variant is
 			use pac_variants;
+			use pac_package_variant_name;
+			
 			inserted : boolean;
 			position : pac_variants.cursor;
 		begin
@@ -1052,6 +1064,7 @@ package body et_device_rw is
 						case stack.parent is
 							when SEC_VARIANTS =>
 								declare
+									use pac_package_variant_name;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag

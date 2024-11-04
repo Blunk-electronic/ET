@@ -71,6 +71,7 @@ with et_device_value;			use et_device_value;
 with et_device_prefix;			use et_device_prefix;
 with et_device_name;			use et_device_name;
 with et_unit_name;				use et_unit_name;
+with et_package_variant;		use et_package_variant;
 
 with et_schematic_shapes_and_text;
 
@@ -394,13 +395,13 @@ package et_kicad.schematic is
 	-- Returns the properties of the given port as string.
 
 	
+	-- Returns the terminal and unit name of the given port in a composite type.
+	-- Raises error if given port is of a virtual component (appearance sch).
 	function to_terminal (
 		port 			: in type_port_with_reference;
 		module			: in type_submodule_name.bounded_string; -- the name of the module 
 		log_threshold 	: in type_log_level)
-		return et_devices.type_terminal;
-	-- Returns the terminal and unit name of the given port in a composite type.
-	-- Raises error if given port is of a virtual component (appearance sch).
+		return et_package_variant.type_terminal;
 
 	
 	function compare_ports (left, right : in type_port_with_reference) return boolean;

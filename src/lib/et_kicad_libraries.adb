@@ -2895,6 +2895,7 @@ package body et_kicad_libraries is
 					is
 						use pac_variants;
 						use pac_terminal_port_map;
+						use pac_package_variant_name;
 
 						tmp_variant_name : pac_package_variant_name.bounded_string; -- temporarily used for building the variant name
 						tmp_variants : pac_variants.map; -- temporarily used for building the variant
@@ -3315,6 +3316,8 @@ package body et_kicad_libraries is
 	end read_components_libraries;
 
 
+	
+
 	-- Used when reading schematic. Returns the package variant of a component.
 	-- Input parameters: the full name of the component library, generic name therein,
 	-- name of package library and package name.
@@ -3328,7 +3331,7 @@ package body et_kicad_libraries is
 	is
 		library_cursor : type_device_libraries.cursor; -- points to the component library
 		
-		use et_devices;
+		use pac_package_variant_name;
 		variant : pac_package_variant_name.bounded_string; -- variant name to be returned
 		
 		-- temporarily here the name of the package library is stored:
@@ -3350,7 +3353,6 @@ package body et_kicad_libraries is
 				component 		: in out type_component_library) 
 			is
 				use pac_variants;
-				use pac_package_variant_name;
 
 				-- This cursor points to the package variant being queryied.
 				variant_cursor : pac_variants.cursor := component.variants.first;
@@ -3359,7 +3361,7 @@ package body et_kicad_libraries is
 				new_variant : type_variant;
 
 				use pac_package_model_file_name;
-			begin -- query_variants
+			begin
 				log (text => "querying package variants ...", level => log_threshold + 2);
 				log_indentation_up;
 
@@ -3371,7 +3373,7 @@ package body et_kicad_libraries is
 				while variant_cursor /= pac_variants.no_element loop
 
 					log (text => "probing " 
-						 & enclose_in_quotes (et_devices.to_string (key (variant_cursor)))
+						 & enclose_in_quotes (to_string (key (variant_cursor)))
 						 & " ...", level => log_threshold + 3);
 
 					-- From the library and package name we can reason the variant name.
@@ -3382,7 +3384,7 @@ package body et_kicad_libraries is
 							name					=> to_string (packge => package_name))) then
 						
 						log (text => "variant " 
-							& to_string (package_variant => key (variant_cursor)) 
+							& to_string (key (variant_cursor)) 
 							& " used", level => log_threshold + 1);
 
 						-- Set the variant name to be returned:

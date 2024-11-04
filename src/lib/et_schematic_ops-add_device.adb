@@ -46,6 +46,7 @@ procedure add_device (
 	log_threshold	: in type_log_level) 
 is	
 	use et_symbols;
+	use pac_package_variant_name;
 	
 	module_cursor : pac_generic_modules.cursor; -- points to the targeted module
 
@@ -72,7 +73,7 @@ is
 
 		use pac_units_internal;
 		use pac_units_external;
-
+		
 		use pac_unit_name;
 		
 		

@@ -66,6 +66,7 @@ with et_assembly_variants;			use et_assembly_variants;
 with et_devices;					use et_devices;
 with et_device_rw;
 with et_package_names;
+with et_package_variant;
 with et_symbol_ports;
 with et_device_appearance;
 with et_device_purpose;				use et_device_purpose;
@@ -1058,6 +1059,7 @@ package body et_canvas_schematic_units is
 		return string 
 	is
 		use pac_variants;
+		use pac_package_variant_name;
 		variant_name : constant string := to_string (key (variant));
 
 		use et_package_names;
@@ -1077,6 +1079,7 @@ package body et_canvas_schematic_units is
 
 	
 	procedure variant_selected (self : access gtk.menu_item.gtk_menu_item_record'class) is
+		use pac_package_variant_name;
 	begin
 		unit_add.variant := extract_variant_name (self.get_label);
 		
@@ -2247,6 +2250,8 @@ package body et_canvas_schematic_units is
 
 		use pac_devices_sch;
 		device_name : constant string := to_string (key (su.device)); -- IC2
+
+		use pac_package_variant_name;
 	begin		
 		-- Properties of real devices can be changed.
 		-- Virtual devices (like GND symbols) can not be changed.
@@ -2281,7 +2286,7 @@ package body et_canvas_schematic_units is
 
 				when NOUN_VARIANT =>
 					gtk_new (label, "Package variant of " & device_name);
-					set_property_before (et_devices.to_string (get_package_variant (su.device)));
+					set_property_before (to_string (get_package_variant (su.device)));
 					
 				when others => raise constraint_error;
 			end case;				
@@ -2386,10 +2391,13 @@ package body et_canvas_schematic_units is
 
 		model	: constant pac_device_model_file.bounded_string := element (su.device).model;
 
+		
 		function further_properties return string is 
 			use et_material;
 			var	: constant string := ", variant ";
 			pc	: constant string := ", partcode ";
+
+			use pac_package_variant_name;
 		begin
 			case element (su.device).appearance is
 				when APPEARANCE_PCB =>
@@ -2399,7 +2407,8 @@ package body et_canvas_schematic_units is
 				when others => return "";
 			end case;
 		end further_properties;
-	
+
+		
 	begin
 		reset_request_clarification;
 		
@@ -2408,6 +2417,8 @@ package body et_canvas_schematic_units is
 			& further_properties); -- variant, partcode, ...	
 		
 	end show_properties_of_selected_device;
+
+
 
 	
 	procedure find_units_for_show (point : in type_vector_model) is 

@@ -58,6 +58,7 @@ with et_system_info;
 with et_alignment;				use et_alignment;
 with et_package_appearance;
 with et_package_description;
+with et_package_variant;
 
 
 
@@ -4723,9 +4724,10 @@ package body et_kicad.pcb is
 				return net;
 			end to_net_name;
 
+
 			
-			procedure add_board_objects (
 			-- Adds board objects to the schematic module.
+			procedure add_board_objects (
 				mod_name : in et_kicad_coordinates.type_submodule_name.bounded_string;
 				module   : in out type_module) 
 			is
@@ -4749,8 +4751,12 @@ package body et_kicad.pcb is
 
 				text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 
-				function to_net_id (name : in pac_net_name.bounded_string) return type_net_id is
+				
 				-- Converts the given net name to a net id.
+				function to_net_id (
+					name : in pac_net_name.bounded_string) 
+					return type_net_id 
+				is
 					use type_netlist;
 					net_cursor : type_netlist.cursor := board.netlist.first;
 					id : type_net_id; -- to be returned
@@ -4758,11 +4764,10 @@ package body et_kicad.pcb is
 					use type_ports_with_reference;
 					portlist	: type_ports_with_reference.set;
 					port		: schematic.type_port_with_reference;
-					terminal	: et_devices.type_terminal;
+					terminal	: et_package_variant.type_terminal;
 					net_name_in_board : pac_net_name.bounded_string;
 
-				begin -- to_net_id
-
+				begin
 					-- If the given net has a proper name (like MCU_CLK), then the net id
 					-- can be obtained by just looking up board.netlist.
 					if not anonymous (name) then -- net has an explicitely given name
@@ -4817,9 +4822,13 @@ package body et_kicad.pcb is
 					return id;
 				end to_net_id;
 
+
 				
-				function route (net_id : in type_net_id) return et_pcb.type_route is
 				-- Collects segments and vias by the given net_id and returns them as a type_route.
+				function route (
+					net_id : in type_net_id) 
+					return et_pcb.type_route 
+				is
 					route : et_pcb.type_route; -- to be returned
 					use type_segments;
 					segment_cursor : type_segments.cursor := board.segments.first;
@@ -4834,7 +4843,7 @@ package body et_kicad.pcb is
 					polygon_cursor : type_polygons.cursor := board.polygons.first;
 
 					use et_pcb_coordinates_2;
-				begin -- route
+				begin
 					log_indentation_up;
 					log (text => "segments, vias and polygons (signal layers in IPC notation (TOP..BOTTOM / 1..n):", level => log_threshold + 3);
 					 
@@ -5008,11 +5017,11 @@ package body et_kicad.pcb is
 				end route;
 
 				
-				procedure add_route (
 				-- adds routing information to the schematic module
+				procedure add_route (
 					net_name	: in pac_net_name.bounded_string;
-					net			: in out schematic.type_net) is
-				begin
+					net			: in out schematic.type_net) 
+				is begin
 					net.route := route (net_id);
 				end add_route;
 

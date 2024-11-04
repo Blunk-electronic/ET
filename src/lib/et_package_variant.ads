@@ -66,7 +66,7 @@ package et_package_variant is
 	package pac_package_variant_name is new generic_bounded_length (variant_name_length_max);
 	use pac_package_variant_name;
 
-	function to_string (package_variant : in pac_package_variant_name.bounded_string) return string;
+	-- function to_string (package_variant : in pac_package_variant_name.bounded_string) return string;
 	-- converts a pac_package_variant_name to a string.
 	
 	function to_variant_name (variant_name : in string) return pac_package_variant_name.bounded_string;

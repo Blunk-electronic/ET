@@ -652,9 +652,11 @@ package body et_scripting_interactive_schematic is
 		variants : pac_variants.map;
 		device_cursor_sch : pac_devices_sch.cursor;
 
+		
 		procedure show_variants_menu is
 			m : gtk_menu;
 			i : gtk_menu_item;
+
 			
 			procedure query_variant (c : in pac_variants.cursor) is begin
 				-- Build the menu item:
@@ -663,6 +665,7 @@ package body et_scripting_interactive_schematic is
 				m.append (i);
 				i.show;
 			end query_variant;
+	
 			
 		begin
 			m := gtk_menu_new;

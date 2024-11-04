@@ -67,6 +67,7 @@ with et_device_placeholders;
 with et_device_purpose;					use et_device_purpose;
 with et_device_model_names;
 with et_device_value;					use et_device_value;
+with et_package_variant;
 with et_canvas.cmd;
 
 
@@ -247,6 +248,7 @@ is
 	procedure add_device is
 		use et_sheets;
 		use et_device_model_names;
+		use et_package_variant;
 	begin
 		case cmd_field_count is
 			when 9 =>
@@ -2439,6 +2441,7 @@ is
 						case cmd_field_count is
 							when 6 =>
 								declare
+									use et_package_variant;
 									variant : pac_package_variant_name.bounded_string; -- N, D
 								begin
 									-- validate variant

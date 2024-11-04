@@ -50,9 +50,9 @@ with et_exceptions;				use et_exceptions;
 package body et_package_variant is
 
 	
-	function to_string (package_variant : in pac_package_variant_name.bounded_string) return string is begin
-		return pac_package_variant_name.to_string (package_variant);
-	end;
+	-- function to_string (package_variant : in pac_package_variant_name.bounded_string) return string is begin
+	-- 	return pac_package_variant_name.to_string (package_variant);
+	-- end;
 
 
 	

@@ -52,6 +52,7 @@ with et_device_appearance;
 with et_device_purpose;
 with et_device_model_names;
 with et_device_value;
+with et_package_variant;
 with et_symbols;
 with et_symbol_rw;
 with et_schematic_rw;
@@ -1267,7 +1268,7 @@ is
 	
 	device_partcode	: pac_device_partcode.bounded_string;
 	device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;
-	device_variant	: et_devices.pac_package_variant_name.bounded_string; -- D, N
+	device_variant	: et_package_variant.pac_package_variant_name.bounded_string; -- D, N
 
 	
 	-- These two variables assist when a particular placeholder is appended to the
@@ -2215,6 +2216,8 @@ is
 		use et_schematic;
 		use et_device_appearance;
 		use et_device_value;
+		use et_package_variant;
+		
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -2994,23 +2997,28 @@ is
 				use et_device_model_names;
 				use et_package_names;
 				use et_pcb_stack;
+				use et_package_variant;
+				use pac_package_variant_name;
 				
 				device_cursor : pac_devices_sch.cursor;
 				inserted : boolean;
 
+				
 				-- Derives package name from device.model and device.variant.
 				-- Checks if variant exits in device.model.
 				function get_package_name return pac_package_name.bounded_string is
 					name : pac_package_name.bounded_string; -- S_SO14 -- to be returned
 					device_cursor : pac_devices_lib.cursor;
 
+					
 					procedure query_variants (
 						model	: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 						dev_lib	: in et_devices.type_device_lib) -- a device in the library 
-						is
+					is
 						use pac_variants;
 						variant_cursor : pac_variants.cursor;
 						use ada.directories;
+						
 					begin -- query_variants
 						-- Locate the variant (specified by the device in the module) in
 						-- the device model.

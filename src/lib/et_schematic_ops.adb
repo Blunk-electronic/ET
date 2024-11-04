@@ -2390,6 +2390,7 @@ package body et_schematic_ops is
 				dev		: in out type_device_sch)
 			is 
 				cursor_lib : pac_devices_lib.cursor;
+				use pac_package_variant_name;
 			begin
 				cursor_lib := locate_device (dev.model);
 
@@ -2409,6 +2410,7 @@ package body et_schematic_ops is
 				position	=> device,
 				process		=> do_it'access);
 		end query_device;
+
 		
 	begin
 		if is_real (device) then
@@ -2436,6 +2438,8 @@ package body et_schematic_ops is
 		use pac_generic_modules;
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 		device_cursor : pac_devices_sch.cursor;
+
+		use pac_package_variant_name;
 	begin
 		log (text => "module " & enclose_in_quotes (to_string (module))
 			 & " setting package variant of " & to_string (device)
@@ -4089,7 +4093,7 @@ package body et_schematic_ops is
 				
 				procedure query_ports (
 					variant_name	: in pac_package_variant_name.bounded_string;
-					variant			: in et_devices.type_variant) 
+					variant			: in type_variant) 
 				is
 					use pac_terminal_port_map;
 					terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;

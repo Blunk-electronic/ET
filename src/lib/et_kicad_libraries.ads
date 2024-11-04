@@ -71,6 +71,7 @@ with et_device_prefix;			use et_device_prefix;
 with et_device_name;			use et_device_name;
 with et_unit_name;				use et_unit_name;
 with et_devices;				use et_devices;
+with et_package_variant;		use et_package_variant;
 
 with et_device_placeholders;			--use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
@@ -370,7 +371,7 @@ package et_kicad_libraries is
 			when APPEARANCE_PCB => 
 				package_filter	: type_package_filter.set := type_package_filter.empty_set;
 				datasheet		: type_component_datasheet.bounded_string;
-				variants		: et_devices.pac_variants.map;
+				variants		: pac_variants.map;
 				
 		end case;
 	end record;

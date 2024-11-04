@@ -49,6 +49,7 @@ with et_device_appearance;
 with et_device_purpose;
 with et_device_model_names;
 with et_device_value;
+with et_package_variant;
 with et_symbol_rw;
 with et_schematic_rw;
 with et_device_rw;
@@ -992,6 +993,8 @@ is
 			use et_device_model_names;
 			use et_device_purpose;
 			use et_device_value;
+			use et_package_variant;
+			use pac_package_variant_name;
 		begin
 			section_mark (section_device, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (d)));

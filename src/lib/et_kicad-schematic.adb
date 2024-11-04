@@ -987,7 +987,7 @@ package body et_kicad.schematic is
 		
 		use et_string_processing;
 
-		use et_devices;
+		use pac_package_variant_name;
 		variant : pac_package_variant_name.bounded_string; -- variant name to be returned
 		
 		-- temporarily here the name of the package library is stored:
@@ -1010,7 +1010,6 @@ package body et_kicad.schematic is
 			is
 				use pac_package_name;
 				use pac_variants;
-				use pac_package_variant_name;
 				use pac_package_model_file_name;
 
 				-- This cursor points to the package variant being queryied.
@@ -1031,7 +1030,7 @@ package body et_kicad.schematic is
 				while variant_cursor /= pac_variants.no_element loop
 
 					log (text => "probing " 
-						 & enclose_in_quotes (et_devices.to_string (key (variant_cursor)))
+						 & enclose_in_quotes (to_string (key (variant_cursor)))
 						 & " ...", level => log_threshold + 3);
 
 					-- From the library and package name we can reason the variant name.
@@ -1042,7 +1041,7 @@ package body et_kicad.schematic is
 							name					=> to_string (packge => package_name))) 
 					then						
 						log (text => "variant " 
-							& to_string (package_variant => key (variant_cursor)) 
+							& to_string (key (variant_cursor)) 
 							& " used", level => log_threshold + 1);
 
 						-- Set the variant name to be returned:
@@ -7117,12 +7116,13 @@ package body et_kicad.schematic is
 					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) 
 				is
-					use et_devices.pac_variants;
+					use pac_variants;
+					use pac_package_variant_name;
 					use et_import;
 
-					variant_cursor : et_devices.pac_variants.cursor;
-				begin -- query_variants
-					log (text => "locating variant " & pac_package_variant_name.to_string (package_variant)
+					variant_cursor : pac_variants.cursor;
+				begin
+					log (text => "locating variant " & to_string (package_variant)
 						& " ...", level => log_threshold + 3);
 					log_indentation_up;
 
@@ -7233,7 +7233,7 @@ package body et_kicad.schematic is
 		port 			: in type_port_with_reference;
 		module			: in type_submodule_name.bounded_string; -- the name of the module
 		log_threshold 	: in type_log_level) -- see et_libraries spec
-		return et_devices.type_terminal 
+		return et_package_variant.type_terminal 
 	is
 
 	-- NOTE: In contrast to Kicad, the terminal name is stored in a package variant. The package variant in
@@ -7248,7 +7248,7 @@ package body et_kicad.schematic is
 
 		use type_modules;
 		use et_string_processing;
-		terminal : et_devices.type_terminal; -- to be returned
+		terminal : et_package_variant.type_terminal; -- to be returned
 
 		
 		procedure locate_component_in_schematic (
@@ -7275,18 +7275,21 @@ package body et_kicad.schematic is
 				component_cursor : type_components_library.cursor;
 
 				
-				procedure query_variants (
 				-- Looks up the list of variants of the component.
+				procedure query_variants (
 					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) 
 				is
-					use et_devices.pac_variants;
+					use pac_variants;
+					variant_cursor : pac_variants.cursor;
 
-					variant_cursor : et_devices.pac_variants.cursor;
+					use pac_package_variant_name;
 
+					
 					procedure locate_terminal (
 						variant_name 	: in pac_package_variant_name.bounded_string;
-						variant 		: in et_devices.type_variant) is
+						variant 		: in type_variant) 
+					is
 						use pac_terminal_port_map;
 						use pac_port_name;
 						terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
@@ -7312,7 +7315,7 @@ package body et_kicad.schematic is
 
 					
 				begin -- query_variants
-					log (text => "locating variant " & et_devices.to_string (package_variant)
+					log (text => "locating variant " & to_string (package_variant)
 						& " ...", level => log_threshold + 3);
 					log_indentation_up;
 
@@ -7320,7 +7323,7 @@ package body et_kicad.schematic is
 					-- CS Otherwise an exception would occur here:
 					variant_cursor := component.variants.find (package_variant);
 
-					et_devices.pac_variants.query_element (
+					pac_variants.query_element (
 						position	=> variant_cursor,
 						process		=> locate_terminal'access);
 
@@ -7452,23 +7455,23 @@ package body et_kicad.schematic is
 				component_cursor : type_components_library.cursor;
 
 				
-				procedure query_variants (
 				-- Looks up the list of variants of the component.
+				procedure query_variants (
 					name 		: in type_component_generic_name.bounded_string;
 					component 	: in type_component_library) 
 				is				
-					use et_devices.pac_variants;
+					use pac_variants;
 					variant_cursor : pac_variants.cursor;
 
 					
-					procedure locate_terminal (
 					-- Locates the given terminal in the package variant.
+					procedure locate_terminal (
 						variant_name 	: in pac_package_variant_name.bounded_string;
-						variant 		: in et_devices.type_variant) 
+						variant 		: in type_variant) 
 					is
 						use pac_terminal_port_map;
 						terminal_cursor : pac_terminal_port_map.cursor;
-					begin -- locate_terminal
+					begin
 						terminal_cursor := variant.terminal_port_map.find (terminal);
 						if terminal_cursor /= pac_terminal_port_map.no_element then -- given terminal found
 
@@ -7485,8 +7488,11 @@ package body et_kicad.schematic is
 						end if;
 					end locate_terminal;
 
+
+					use pac_package_variant_name;
+
 					
-				begin -- query_variants
+				begin
 					log (text => "locating variant " & to_string (package_variant) & " ...", level => log_threshold + 3);
 					log_indentation_up;
 
@@ -7624,15 +7630,17 @@ package body et_kicad.schematic is
 		
 		ports : type_ports_with_reference.set; -- to be returned
 
-		procedure locate_net (
+		
 		-- Locates the given net in the netlist of the given module.
 		-- The ports connected with the net are copied to variable "ports".
+		procedure locate_net (
 			module_name : in type_submodule_name.bounded_string;
-			module 		: in type_module) is
+			module 		: in type_module) 
+		is
 			net_cursor 	: type_netlist.cursor;
 			port_cursor : type_ports_with_reference.cursor;
 			port 		: type_port_with_reference;
-			terminal 	: et_devices.type_terminal;
+			terminal 	: et_package_variant.type_terminal;
 			port_count 	: count_type;
 		begin
 			log (text => "locating net ... ", level => log_threshold + 1);
@@ -7669,7 +7677,7 @@ package body et_kicad.schematic is
 								when APPEARANCE_PCB =>
 									terminal := to_terminal (port, module_name, log_threshold + 3); -- fetch the terminal
 									log (text => to_string (port => port) 
-										& et_devices.to_string (terminal, show_unit => true, preamble => true));
+										& to_string (terminal, show_unit => true, preamble => true));
 
 								when APPEARANCE_VIRTUAL =>
 									log (text => to_string (port => port));
@@ -7694,7 +7702,8 @@ package body et_kicad.schematic is
 
 			log_indentation_down;
 		end locate_net;
-			
+
+		
 	begin -- components_in_net
 		log (text => "locating components in module " & to_string (module) & " net " &
 			 to_string (net) & " ...",
@@ -7745,7 +7754,9 @@ package body et_kicad.schematic is
 			port_cursor : type_ports_with_reference.cursor;
 			ports_all 	: type_ports_with_reference.set; -- all ports of the net
 			port 		: type_port_with_reference;
-			terminal 	: et_devices.type_terminal;
+			terminal 	: et_package_variant.type_terminal;
+
+			use pac_package_variant_name;
 		begin
 			log (text => "locating net ... ", level => log_threshold + 1);
 			log_indentation_up;
@@ -7770,7 +7781,7 @@ package body et_kicad.schematic is
 
 							-- log terminal
 							terminal := to_terminal (port, module_name, log_threshold + 2); -- fetch the terminal
-							log (text => to_string (port) & et_devices.to_string (
+							log (text => to_string (port) & to_string (
 									terminal, show_unit => true, preamble => true),
 								 level => log_threshold + 2);
 						end if;
