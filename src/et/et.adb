@@ -78,6 +78,7 @@ with et_symbol_rw;
 
 with et_device_appearance;
 with et_devices;				use et_devices;
+with et_device_model_names;		use et_device_model_names;
 with et_device_rw;
 
 with et_frames;
@@ -269,7 +270,7 @@ procedure et is
 					-- device
 					elsif full_switch = switch_native_device_create then
 						log (text => arg & full_switch); -- no parameter
-						device_name_create := et_devices.to_file_name (dummy_name);
+						device_name_create := to_file_name (dummy_name);
 
 					elsif full_switch = switch_device_appearance then -- virtual/pcb
 						log (text => arg & full_switch & space & parameter);
@@ -277,11 +278,11 @@ procedure et is
 						
 					elsif full_switch = switch_native_device_open then
 						log (text => arg & full_switch & space & parameter);
-						device_name_open := et_devices.to_file_name (parameter); -- libraries/devices/TL084.dev
+						device_name_open := to_file_name (parameter); -- libraries/devices/TL084.dev
 
 					elsif full_switch = switch_native_device_save_as then
 						log (text => arg & full_switch & space & parameter);
-						device_name_save_as := et_devices.to_file_name (parameter);
+						device_name_save_as := to_file_name (parameter);
 
 						
 					-- frame schematic
