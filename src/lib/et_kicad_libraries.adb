@@ -61,6 +61,8 @@ with et_conventions;
 with et_alignment;						use et_alignment;
 with et_port_visibility;
 with et_unit_swap_level;
+with et_unit_add_level;
+
 
 
 package body et_kicad_libraries is
@@ -1308,8 +1310,10 @@ package body et_kicad_libraries is
 
 			use et_unit_swap_level;
 			tmp_unit_swap_level	: type_swap_level := swap_level_default; -- CS: rename to unit_swap_level
-			
+
+			use et_unit_add_level;
 			tmp_unit_add_level	: type_add_level := type_add_level'first; -- CS: rename to unit_add_level
+			
 			tmp_unit_global		: boolean := false; -- specifies if a unit harbors component wide pins (such as power supply) -- CS: rename to unit_global
 			
 			field_reference		: type_text_placeholder (meaning => NAME); -- CS: should be field_prefix as it contains just the prefix 

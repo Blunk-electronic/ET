@@ -70,19 +70,6 @@ package body et_devices is
 	
 
 	
-	function to_string (add_level : in type_add_level) return string is begin
-		return to_lower (type_add_level'image (add_level));
-	end;
-
-	function to_add_level (add_level : in string) return type_add_level is begin
-		return type_add_level'value (add_level);
-	end;
-
-	
-
-	
-
-	
 	
 	function to_string (package_variant : in pac_package_variant_name.bounded_string) return string is begin
 		return pac_package_variant_name.to_string (package_variant);
@@ -415,7 +402,7 @@ package body et_devices is
 
 						-- if no REQUEST-unit found, search for a CAN-unit
 						if cursors.int = pac_units_internal.no_element then
-							cursors.int := first_internal (CAN);
+							cursors.int := first_internal (et_unit_add_level.CAN);
 						end if;
 					end if;					
 				end if;
@@ -441,7 +428,7 @@ package body et_devices is
 
 							-- if no REQUEST-unit found, search for a CAN-unit
 							if cursors.ext = pac_units_external.no_element then
-								cursors.ext := first_external (CAN);
+								cursors.ext := first_external (et_unit_add_level.CAN);
 							end if;
 						end if;					
 					end if;

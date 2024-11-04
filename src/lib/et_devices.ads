@@ -64,6 +64,9 @@ with et_device_prefix;			use et_device_prefix;
 with et_device_name;			use et_device_name;
 with et_unit_name;				use et_unit_name;
 with et_unit_swap_level;		use et_unit_swap_level;
+with et_unit_add_level;			use et_unit_add_level;
+
+
 
 package et_devices is
 
@@ -72,18 +75,19 @@ package et_devices is
 	-- To handle names of package models like libraries/packages/smd/SOT23.pac use this:
 	keyword_package_model : constant string := "package_model";
 
-	keyword_device : constant string := "device";
-	
-	
+	keyword_device : constant string := "device";	
 
 	keyword_unit		: constant string := "unit";		
-	keyword_add_level	: constant string := "add_level";
+
 
 	
 	device_unit_separator : constant character := '.';
 
+	
 	-- A device may have up to 1000 units. CS: seems to be reasonable limit
 	subtype type_unit_count is positive range 1 .. 1000;
+
+
 	
 	-- This function concatenates the device name and unit name, separated
 	-- by the device_unit_separator. If the given unit_count is 1 then just
@@ -97,17 +101,7 @@ package et_devices is
 
 	
 
-	type type_add_level is (
-		NEXT, 		-- should be default. for things like logic gates, multi-OP-Amps, ...
-		REQUEST, 	-- for power supply 
-		CAN,		-- OPTIONAl units. things like relay contacts
-		ALWAYS,		-- units that SHOULD be used always
-		MUST);		-- units that MUST be used. things like relay coils.
-
-	add_level_default : constant type_add_level := type_add_level'first;
-	
-	function to_string (add_level : in type_add_level) return string;
-	function to_add_level (add_level : in string) return type_add_level;
+-- INTERNAL UNITS:
 	
 	-- An internal unit is a symbol with a swap level.
 	-- An internal unit is owned by the particular device exclusively.
@@ -121,12 +115,17 @@ package et_devices is
 
 	
 	use pac_unit_name;
+
 	
 	-- Internal units are collected in a map:
 	package pac_units_internal is new indefinite_ordered_maps (
 		key_type		=> pac_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
 		element_type	=> type_unit_internal);
 
+
+
+
+-- EXTERNAL UNITS:
 	
 	-- An external unit has a reference and a swap level.
     type type_unit_external is record
@@ -136,6 +135,7 @@ package et_devices is
 		swap_level	: type_swap_level := swap_level_default;
 		add_level	: type_add_level := type_add_level'first;
 	end record;
+	
 
 	-- External units are collected in a map;
 	package pac_units_external is new ordered_maps (

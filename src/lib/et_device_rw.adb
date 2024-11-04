@@ -83,6 +83,7 @@ with et_device_value;
 with et_device_prefix;
 with et_unit_name;
 with et_unit_swap_level;
+with et_unit_add_level;
 
 
 package body et_device_rw is
@@ -186,6 +187,7 @@ package body et_device_rw is
 			unit	: in type_unit_internal) 
 		is
 			use et_unit_swap_level;
+			use et_unit_add_level;
 		begin
 			write (keyword => keyword_name, parameters => to_string (name));
 			write (keyword => keyword_position, parameters => position (unit.position));
@@ -202,6 +204,7 @@ package body et_device_rw is
 			unit	: in type_unit_external) 
 		is
 			use et_unit_swap_level;
+			use et_unit_add_level;
 		begin
 			write (keyword => keyword_name, parameters => to_string (name));
 			write (keyword => keyword_position, parameters => position (unit.position));
@@ -446,7 +449,7 @@ package body et_device_rw is
 		unit_name			: pac_unit_name.bounded_string; -- IO_BANK_2
 		unit_position		: type_vector_model := origin; -- the position of the unit inside the device editor
 		unit_swap_level		: et_unit_swap_level.type_swap_level := et_unit_swap_level.swap_level_default;
-		unit_add_level		: type_add_level := add_level_default;
+		unit_add_level		: et_unit_add_level.type_add_level := et_unit_add_level.add_level_default;
 		unit_symbol			: access type_symbol;
 		units_internal		: pac_units_internal.map;
 		units_external		: pac_units_external.map;
@@ -482,6 +485,7 @@ package body et_device_rw is
 
 			use pac_unit_name;
 			use et_unit_swap_level;
+			use et_unit_add_level;
 		begin
 			-- Depending on the appearance of the device, a unit with the same
 			-- appearance is inserted in units_internal.
@@ -1093,6 +1097,7 @@ package body et_device_rw is
 								declare
 									kw : string := f (line, 1);
 									use et_unit_swap_level;
+									use et_unit_add_level;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then
@@ -1141,6 +1146,7 @@ package body et_device_rw is
 							when SEC_UNITS_EXTERNAL =>
 								declare
 									use et_unit_swap_level;
+									use et_unit_add_level;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
