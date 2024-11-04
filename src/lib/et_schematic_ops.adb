@@ -118,7 +118,9 @@ package body et_schematic_ops is
 	end;
 
 	
-	procedure unit_not_found (name : in pac_unit_name.bounded_string) is begin
+	procedure unit_not_found (name : in pac_unit_name.bounded_string) is 
+		use pac_unit_name;
+	begin
 		raise semantic_error_1 with
 			"ERROR: Unit " & to_string (name) & " not found !";
 	end unit_not_found;
@@ -161,9 +163,12 @@ package body et_schematic_ops is
 	
 	procedure log_unit_positions (
 		positions 		: in pac_unit_positions.map;
-		log_threshold	: in type_log_level) is
+		log_threshold	: in type_log_level) 
+	is
 		
-		procedure write (cursor : in pac_unit_positions.cursor) is begin
+		procedure write (cursor : in pac_unit_positions.cursor) is 
+			use pac_unit_name;
+		begin
 			log (text => 
 				"unit " &
 				to_string (pac_unit_positions.key (cursor)) & -- unit name
@@ -177,6 +182,8 @@ package body et_schematic_ops is
 		pac_unit_positions.iterate (positions, write'access);
 		log_indentation_down;
 	end;
+
+
 
 	
 	-- Writes the position of the package in the log file. If device is virtual, nothing happens.
@@ -858,6 +865,8 @@ package body et_schematic_ops is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		use pac_unit_name;
+
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
@@ -1196,6 +1205,7 @@ package body et_schematic_ops is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		use et_symbols;
+		use pac_unit_name;
 
 		
 		procedure query_devices (
@@ -1547,7 +1557,7 @@ package body et_schematic_ops is
 						use et_symbols;
 						use pac_ports;
 					begin
-						log (text => "unit " & et_devices.to_string (key (unit_cursor)) &
+						log (text => "unit " & to_string (key (unit_cursor)) &
 							 " port " & to_string (key (port_cursor)) &
 							 " at" & to_string (element (port_cursor).position),
 							 level => log_threshold + 2);
@@ -2843,8 +2853,9 @@ package body et_schematic_ops is
 		all_unit_names : pac_unit_names.list;
 		names_of_available_units : pac_unit_names.list;
 
+		
 		procedure query_in_use (c : in pac_unit_names.cursor) is 
-
+			use pac_unit_name;
 			in_use : boolean := false;
 
 			-- Sets the in_use flag if given unit is already in use:
@@ -2874,6 +2885,7 @@ package body et_schematic_ops is
 			end if;
 		end query_in_use;
 
+		
 		procedure get_device_model (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_module)
@@ -2886,6 +2898,7 @@ package body et_schematic_ops is
 			log (text => "device model " & to_string (device_model),
 				level => log_threshold + 1);
 		end get_device_model;
+		
 		
 	begin -- available_units
 		log (text => "looking up available units of " 
@@ -2919,6 +2932,8 @@ package body et_schematic_ops is
 			--return names_of_available_units;
 	end available_units;
 
+
+	
 	function unit_available (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
@@ -2935,6 +2950,7 @@ package body et_schematic_ops is
 		use pac_unit_names;
 		all_unit_names : pac_unit_names.list;
 
+		
 		-- Clears the "available" flag if given unit is already in use:
 		procedure query_in_use (
 			device_name	: in type_device_name;
@@ -2946,6 +2962,7 @@ package body et_schematic_ops is
 				available := false;
 			end if;
 		end query_in_use;
+		
 		
 	begin -- unit_available
 		device_cursor_lib := device_model_cursor (module_cursor, device_name);
@@ -2972,6 +2989,8 @@ package body et_schematic_ops is
 		return available;
 	end unit_available;
 
+	
+
 	function units_on_sheet (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
@@ -2984,18 +3003,19 @@ package body et_schematic_ops is
 
 		names_of_units : pac_unit_names.list;
 
+		
 		procedure query_units (
 			device_name	: in type_device_name;
 			device		: in type_device_sch)
 		is 
 			procedure query_unit (c : in pac_units.cursor) is 
-				use et_devices.pac_unit_name;
+				use pac_unit_name;
 				use pac_units;
 				use pac_unit_names;
 			begin
 				-- If the unit is on the given sheet then append it to the result:
 				if get_sheet (element (c).position) = sheet then
-					log (text => "unit " & et_devices.to_string (key (c)) & " on sheet.",
+					log (text => "unit " & to_string (key (c)) & " on sheet.",
 						level => log_threshold + 2);
 					
 					names_of_units.append (key (c));
@@ -3004,7 +3024,8 @@ package body et_schematic_ops is
 		begin
 			device.units.iterate (query_unit'access);
 		end query_units;
-			
+
+		
 	begin -- units_on_sheet
 		log (text => "looking up units of " 
 			 & to_string (device_name) 
@@ -3672,10 +3693,13 @@ package body et_schematic_ops is
 
 	end rename_device;
 
+
+	
 	function sort_by_coordinates_2 (
 		module_cursor 	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level) 
-		return et_numbering.pac_devices.map is
+		return et_numbering.pac_devices.map 
+	is
 		use et_numbering;
 		devices : et_numbering.pac_devices.map; -- to be returned
 
@@ -3688,12 +3712,17 @@ package body et_schematic_ops is
 				use pac_units;
 				device_name : type_device_name := pac_devices_sch.key (device_cursor); -- R1
 
-				procedure sort (unit_cursor : in pac_units.cursor) is 
+				
+				procedure sort (
+					unit_cursor : in pac_units.cursor) 
+				is 
 					unit_name : pac_unit_name.bounded_string := key (unit_cursor);  -- 1, C, IO_BANK1
 					unit_position : et_coordinates_2.type_position := element (unit_cursor).position;
 					inserted : boolean := false;
 					cursor_sort : et_numbering.pac_devices.cursor;
-				begin -- sort
+
+					use pac_unit_name;
+				begin
 					log (text => "unit " & to_string (unit_name) &
 						" at " & to_string (position => unit_position),
 						 level => log_threshold + 2);
@@ -3718,12 +3747,11 @@ package body et_schematic_ops is
 							 " sits on top of another unit !",
 							 console => true);
 						raise constraint_error;
-					end if;
-							 
+					end if;							 
 				end sort;
+
 				
-			begin -- query_units
-				
+			begin				
 				log (text => "device " & to_string (device_name), -- R1, IC3
 					 level => log_threshold + 1);
 				
@@ -3736,12 +3764,14 @@ package body et_schematic_ops is
 				log_indentation_down;
 			end query_units;
 			
+			
 		begin -- query_devices
 			pac_devices_sch.iterate (
 				container	=> module.devices,
 				process		=> query_units'access);
 		end query_devices;
 
+		
 	begin -- sort_by_coordinates_2
 		log (text => "sorting devices/units by schematic coordinates ...", level => log_threshold);
 
@@ -3757,6 +3787,9 @@ package body et_schematic_ops is
 		return devices;
 	end sort_by_coordinates_2;
 
+
+
+	
 	function unit_positions_valid (
 	-- Returns true if no unit sits on top of another.
 		module_cursor 	: in pac_generic_modules.cursor;
@@ -3775,27 +3808,36 @@ package body et_schematic_ops is
 			return false;
 		
 	end unit_positions_valid;
+
+
+
 	
-	procedure renumber_devices (
 	-- Renumbers devices according to the sheet number.
+	procedure renumber_devices (
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		step_width		: in type_name_index;
-		log_threshold	: in type_log_level) is
-
+		log_threshold	: in type_log_level) 
+	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
 		use et_conventions;
 		use et_numbering;
+		use pac_unit_name;
+		
 
 		-- The list of devices sorted by their coordinates.
 		-- By their order in this list the devices will be renumbered.
 		devices : et_numbering.pac_devices.map;
 
-		function renumber (cat : in et_conventions.type_device_category) return boolean is
+		
 		-- Renumbers devices of given category. Returns true if all devices
 		-- have been renamed.
 		-- Marks every renamed unit in the device list so that the second
 		-- run of this function does not try to renumber them again.
+		function renumber (
+			cat : in et_conventions.type_device_category) 
+			return boolean 
+		is
 			result : boolean := true;
 			
 			use et_numbering.pac_devices;
@@ -3806,9 +3848,10 @@ package body et_schematic_ops is
 			index_on_sheet : type_name_index := type_name_index'first;
 			device_index : type_name_index;
 
-			procedure update_index is begin
+			
 			-- Detects when the sheet number changes. In this case
 			-- resets the index_on_sheet so that the indexing starts anew.
+			procedure update_index is begin
 				sheet_now := get_sheet (key (cursor));
 
 				if sheet_now = sheet_before then -- no change
@@ -3819,8 +3862,10 @@ package body et_schematic_ops is
 				end if;
 			end update_index;
 
-			procedure mark_units_done is
+
+			
 			-- Sets the "done" flag of all devices with name_before in the device list.
+			procedure mark_units_done is
 
 				-- Start with the unit indicated by cursor. All other
 				-- units of the device come after this one.
@@ -3832,6 +3877,7 @@ package body et_schematic_ops is
 				begin
 					device.done := true;
 				end;
+
 				
 			begin -- mark_units_done
 				log (text => "marking all units done ...", level => log_threshold + 2);
@@ -3853,6 +3899,8 @@ package body et_schematic_ops is
 					next (cursor_done);
 				end loop;
 			end mark_units_done;
+
+
 			
 		begin -- renumber
 			while cursor /= et_numbering.pac_devices.no_element loop
@@ -4046,7 +4094,7 @@ package body et_schematic_ops is
 					use pac_terminal_port_map;
 					terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
 					use pac_port_name;
-					use et_devices.pac_unit_name;
+					use pac_unit_name;
 				begin
 					while terminal_cursor /= pac_terminal_port_map.no_element loop
 						if	element (terminal_cursor).unit = unit_name and then
@@ -4071,6 +4119,7 @@ package body et_schematic_ops is
 
 			
 			use pac_ports;
+
 			
 		begin -- query_devices
 			-- locate the device in schematic (default assembly variant):
@@ -4111,6 +4160,7 @@ package body et_schematic_ops is
 			
 		end query_devices;
 
+		
 	begin
 		query_element (
 			position	=> module_cursor,
@@ -4132,10 +4182,12 @@ package body et_schematic_ops is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- C
 		query_result	: in type_unit_query)
-		return string is 
+		return string 
+	is 
+		use pac_unit_name;
 	begin
 		if query_result.exists then
-			if pac_unit_name.length (unit_name) > 0 then
+			if get_length (unit_name) > 0 then
 				return "Location of device " & to_string (device_name)
 					& " unit " & to_string (unit_name)
 					& " :" & to_string (query_result.position);
@@ -4150,30 +4202,33 @@ package body et_schematic_ops is
 		end if;
 	end to_string;
 
+
+	
 	
 	function unit_position (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string) -- C
-		return type_unit_query is
-
+		return type_unit_query 
+	is
 		exists : boolean := false;
 		pos : et_coordinates_2.type_position; -- x/y, rotation, sheet
+
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
-
+			module		: in type_module) 
+		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
 
+			
 			procedure query_units (
 				device_name	: in type_device_name; -- IC45
-				device		: in type_device_sch) is
-
+				device		: in type_device_sch) 
+			is
 				use pac_units;
-				unit_cursor : pac_units.cursor;
-				
+				unit_cursor : pac_units.cursor;				
 			begin
 				-- If the given unit_name contains something, locate the unit
 				-- by its name. If unit_name is empty, locate the first unit.
@@ -4203,6 +4258,7 @@ package body et_schematic_ops is
 				end if;
 			end query_units;
 			
+			
 		begin -- query_devices
 			-- locate the device:
 			device_cursor := pac_devices_sch.find (module.devices, device_name);
@@ -4215,6 +4271,7 @@ package body et_schematic_ops is
 			
 		end query_devices;
 		
+		
 	begin -- unit_position
 		query_element (module_cursor, query_devices'access);
 
@@ -4223,6 +4280,7 @@ package body et_schematic_ops is
 		end if;
 		
 	end unit_position;
+	
 	
 end et_schematic_ops;
 	

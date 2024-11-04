@@ -2658,13 +2658,14 @@ is
 
 		
 
-		procedure verify_unit_name_and_position (line : in type_fields_of_line) is
 		-- Checks if the x/y position of the unit matches that provided in given line.
 		-- It is about the strange repetition of the unit name and its x/y coordinates in a line like
 		-- "2    6000 4000"
-		begin -- verify_unit_name_and_position
-			
-			if et_devices.to_string (unit_name) /= f (line,1) then
+		procedure verify_unit_name_and_position (line : in type_fields_of_line) is
+			use et_unit_name;
+			use pac_unit_name;
+		begin			
+			if to_string (unit_name) /= f (line,1) then
 				log (ERROR, "invalid unit name '" & f (line,1) & "'", console => true);
 				raise constraint_error;
 			end if;
@@ -2680,8 +2681,9 @@ is
 			if get_y (unit_position) /= mil_to_distance (f (line,3)) then
 				raise constraint_error; -- CS: write useful message
 			end if;
-
 		end verify_unit_name_and_position;
+
+		
 
 		procedure build_unit_orientation_and_mirror_style (line : in type_fields_of_line) is
 		-- Builds from a line (see below) the component orientation and mirror style:

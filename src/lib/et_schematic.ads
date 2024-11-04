@@ -86,6 +86,7 @@ with et_meta;
 with et_design_rules;
 with et_commit;
 with et_object_status;			use et_object_status;
+with et_unit_name;				use et_unit_name;
 with et_units;					use et_units;
 with et_fonts;					use et_fonts;
 

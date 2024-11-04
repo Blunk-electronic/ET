@@ -44,6 +44,7 @@ with gtk.menu_shell;			use gtk.menu_shell;
 with et_symbols;				use et_symbols;
 with et_devices;				use et_devices;
 with et_device_name;			use et_device_name;
+with et_unit_name;				use et_unit_name;
 with et_schematic;				use et_schematic;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;

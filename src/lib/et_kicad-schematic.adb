@@ -53,6 +53,7 @@ with et_conventions;
 with et_kicad.pcb;				use et_kicad.pcb;
 with et_alignment;				use et_alignment;
 with et_erc;
+with et_unit_name;
 
 
 package body et_kicad.schematic is
@@ -101,11 +102,12 @@ package body et_kicad.schematic is
 	end module_not_found;
 
 	
+	
 	function unit_exists (
-	-- Returns true if the unit with the given name exists in the given list of units.
-		name	: in et_devices.pac_unit_name.bounded_string; -- the unit being inquired
+		name	: in pac_unit_name.bounded_string; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
-		return boolean is
+		return boolean 
+	is
 		use type_units_schematic;
 	begin
 		if type_units_schematic.find (container => units, key => name) = type_units_schematic.no_element then
@@ -118,12 +120,10 @@ package body et_kicad.schematic is
 
 	
 	function position_of_unit (
-	-- Returns the coordinates of the unit with the given name.
-	-- It is assumed, the unit in question exists.
-	-- The unit is an element in the given list of units.
-		name 	: in et_devices.pac_unit_name.bounded_string; -- the unit being inquired
+		name 	: in pac_unit_name.bounded_string; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
-		return et_kicad_coordinates.type_position is
+		return et_kicad_coordinates.type_position 
+	is
 		unit_cursor : type_units_schematic.cursor;
 	begin
 		unit_cursor := type_units_schematic.find (container => units, key => name);
@@ -133,7 +133,7 @@ package body et_kicad.schematic is
 
 	
 	function mirror_style_of_unit (
-		name 	: in et_devices.pac_unit_name.bounded_string; -- the unit being inquired
+		name 	: in pac_unit_name.bounded_string; -- the unit being inquired
 		units 	: in type_units_schematic.map) -- the list of units
 		return type_mirror 
 	is
@@ -144,19 +144,19 @@ package body et_kicad.schematic is
 	end mirror_style_of_unit;
 
 
+
 	
 	function orientation_of_unit (
-	-- Returns the orientation of the given unit.
-	-- It is assumed, the unit in question exists.
-	-- The unit is an element in the given list of units.
-		name	: in et_devices.pac_unit_name.bounded_string; -- the unit being inquired
+		name	: in pac_unit_name.bounded_string; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
-		return et_coordinates_2.type_rotation_model is
+		return et_coordinates_2.type_rotation_model 
+	is
 		unit_cursor : type_units_schematic.cursor;
 	begin
 		unit_cursor := type_units_schematic.find (container => units, key => name);
 		return type_units_schematic.element (unit_cursor).rotation;
 	end orientation_of_unit;
+
 
 	
 	-- Writes the properties of the unit indicated by the given cursor.
@@ -166,6 +166,9 @@ package body et_kicad.schematic is
 	is
 		use et_string_processing;
 		use et_device_placeholders.symbols;
+		
+		use et_unit_name;
+		use pac_unit_name;
 	begin
 		log_indentation_up;
 		
@@ -4411,10 +4414,10 @@ package body et_kicad.schematic is
 			end add_port;
 
 			
-			procedure ports_of_global_unit is
 			-- Searches in the component (indicated by component_cursor_lib) for units
 			-- with the "global" flag set.
 			-- Sets the port_cursor for each port and leaves the rest of the work to procedure add_port.
+			procedure ports_of_global_unit is
 				unit_cursor : type_units_library.cursor;
 				use type_units_library;
 			begin
@@ -4454,6 +4457,11 @@ package body et_kicad.schematic is
 				end loop;
 
 			end ports_of_global_unit;
+
+
+			use et_unit_name;
+			use pac_unit_name;
+			
 			
 		begin -- extract_ports
 			-- Loop in unit list of the component (indicated by component_cursor_lib).
@@ -4924,6 +4932,8 @@ package body et_kicad.schematic is
 					use type_units_library;
 					unit : type_units_library.cursor := component.units.first;
 
+					use et_unit_name.pac_unit_name;
+					
 					
 					procedure query_units_sch (
 						component_name	: in type_device_name;
@@ -4932,14 +4942,15 @@ package body et_kicad.schematic is
 						use type_units_schematic;
 						unit_cursor : type_units_schematic.cursor := component.units.first;
 						unit_deployed : boolean := false;
-						use pac_unit_name;
+
 						use et_import;
 						use et_erc;
 
 						
-						function unit_not_deployed return string is begin
+						function unit_not_deployed return string is
+						begin
 							return to_string (key (component_sch)) 
-								& " unit " & et_devices.to_string (key (unit))
+								& " unit " & to_string (key (unit))
 								& " not deployed !";
 						end unit_not_deployed;
 
@@ -5003,7 +5014,7 @@ package body et_kicad.schematic is
 					
 				begin -- query_units_lib
 					while unit /= type_units_library.no_element loop
-						log (text => "unit " & et_devices.to_string (key (unit)) 
+						log (text => "unit " & to_string (key (unit)) 
 							 --& et_libraries.to_string (element (unit).add_level), level => log_threshold + 2);
 							 , level => log_threshold + 2);
 
@@ -5017,8 +5028,10 @@ package body et_kicad.schematic is
 					end loop;
 				end query_units_lib;
 
+				
 				use type_component_generic_name;
 				generic_model_found : boolean := false; -- goes true once the generic model was found
+
 				
 			begin -- query_library_components
 				-- Loop in components of library. Once the generic model name matches 
@@ -5058,6 +5071,7 @@ package body et_kicad.schematic is
 				end if;
 					
 			end query_library_components;
+
 			
 		begin -- query_schematic_components
 			while component_sch /= type_components_schematic.no_element loop
@@ -5079,6 +5093,7 @@ package body et_kicad.schematic is
 			end loop;
 		end query_schematic_components;
 
+		
 	begin -- check_non_deployed_units
 		log (text => "detecting non-deployed units ...", level => log_threshold);
 		log_indentation_up;
@@ -5104,6 +5119,9 @@ package body et_kicad.schematic is
 		log_indentation_down;
 	end check_non_deployed_units;
 
+
+
+	
 	function net_count return count_type is
 	-- Returns the number of nets of the current module as string.
 		count : count_type := 0;
@@ -5123,6 +5141,9 @@ package body et_kicad.schematic is
 		return count;
 	end net_count;
 
+
+
+	
 	function junction_count return count_type is
 	-- Returns the number of junctions of the current module as string.
 		count : count_type := 0;
@@ -5135,6 +5156,7 @@ package body et_kicad.schematic is
 			count := type_junctions.length (module.junctions);
 		end count_junctions;
 
+		
 	begin -- junction_count
 		type_modules.query_element (
 			position	=> module_cursor,
@@ -5144,6 +5166,8 @@ package body et_kicad.schematic is
 	end junction_count;
 
 
+	
+
 	function module_count return natural is
 	-- Returns the number of modules in the module collection.
 		use type_modules;
@@ -5151,6 +5175,9 @@ package body et_kicad.schematic is
 		return natural (length (modules));
 	end module_count;
 
+
+
+	
 	procedure validate_module (
 		module_name : in type_submodule_name.bounded_string) is
 	-- Tests if the given module exists. Raises error if not existent.
@@ -5166,6 +5193,9 @@ package body et_kicad.schematic is
 		end if;
 	end validate_module;
 
+
+
+	
 	function compare_hierarchic_sheets (left, right : in type_hierarchic_sheet_name) return boolean is
 	-- Returns true if left comes before right. If left equals right, the return is false.
 		use type_schematic_file_name;
@@ -5188,6 +5218,9 @@ package body et_kicad.schematic is
 		end if;
 
 	end compare_hierarchic_sheets;
+
+
+
 	
 	procedure add_hierarchic_sheet (
 	-- Inserts a hierachic sheet in the module (indicated by module_cursor)
@@ -5231,6 +5264,8 @@ package body et_kicad.schematic is
 	end add_hierarchic_sheet;
 
 
+	
+
 	procedure add_sheet_header (
 	-- Inserts a sheet header in the module (indicated by module_cursor).
 		header	: in type_sheet_header;
@@ -5272,6 +5307,7 @@ package body et_kicad.schematic is
 	end add_sheet_header;
 
 
+	
 	procedure add_frame (
 	-- Inserts a drawing frame in the the module (indicated by module_cursor).
 	-- As drawing frames are collected in a simple list, the same frame
@@ -5369,19 +5405,21 @@ package body et_kicad.schematic is
 	
 	procedure add_unit (
 		reference		: in type_device_name;
-		unit_name		: in et_devices.pac_unit_name.bounded_string;
+		unit_name		: in pac_unit_name.bounded_string;
 		unit 			: in type_unit_schematic;
 		log_threshold	: in type_log_level) 
 	is
 
 		procedure add (
 			reference	: in type_device_name;
-			component	: in out type_component_schematic) is
-
+			component	: in out type_component_schematic) 
+		is
 			inserted	: boolean := false;
 			cursor		: type_units_schematic.cursor;
 
 			use et_string_processing;
+			use et_unit_name.pac_unit_name;
+			
 		begin
 			component.units.insert (
 				key			=> unit_name,
@@ -5401,10 +5439,12 @@ package body et_kicad.schematic is
 				raise constraint_error;
 			end if;
 		end add;
+
 		
 		procedure locate_component (
 			name	: in type_submodule_name.bounded_string;
-			module	: in out type_module) is
+			module	: in out type_module) 
+		is
 			
 			cursor : type_components_schematic.cursor;
 		begin
@@ -5417,12 +5457,15 @@ package body et_kicad.schematic is
 				);
 		end locate_component;
 		
+		
 	begin
 		modules.update_element (
 			position	=> module_cursor,
 			process		=> locate_component'access
 			);
 	end add_unit;
+
+	
 
 	procedure check_junctions (log_threshold : in type_log_level) is
 	-- Verifies that junctions are placed where net segments are connected with each other.
@@ -5657,6 +5700,9 @@ package body et_kicad.schematic is
 		log_indentation_down;
 	end check_junctions;
 
+
+
+	
 	procedure check_orphaned_junctions (log_threshold : in type_log_level) is
 	-- Warns about orphaned junctions.
 		use type_modules;
@@ -5746,7 +5792,8 @@ package body et_kicad.schematic is
 				next (junction_cursor);	
 			end loop;
 		end query_junctions;
-	
+
+		
 	begin -- check_orphaned_junctions
 		log (text => "detecting orphaned net junctions ...", level => log_threshold);
 		log_indentation_up;
@@ -5771,6 +5818,8 @@ package body et_kicad.schematic is
 		log_indentation_down;
 	end check_orphaned_junctions;
 
+
+	
 	procedure check_misplaced_junctions (log_threshold : in type_log_level) is
 	-- Warns about misplaced junctions. A junction is considered as "misplaced" if:
 	-- - it is placed at the end of a net segment where no another segment meets 
@@ -5948,6 +5997,8 @@ package body et_kicad.schematic is
 
 		log_indentation_down;
 	end check_misplaced_junctions;
+
+
 	
 	procedure check_misplaced_no_connection_flags (log_threshold : in type_log_level) is
 	-- Warns about no_connection_flags placed at nets.

@@ -62,6 +62,7 @@ with et_device_model_names;		use et_device_model_names;
 with et_device_value;			use et_device_value;
 with et_device_prefix;			use et_device_prefix;
 with et_device_name;			use et_device_name;
+with et_unit_name;				use et_unit_name;
 
 
 package et_devices is
@@ -79,15 +80,6 @@ package et_devices is
 	keyword_swap_level	: constant string := "swap_level";
 	keyword_add_level	: constant string := "add_level";
 
-	unit_name_length_max : constant natural := 50;	
-	-- CS unit_name_characters, length check, character check
-	package pac_unit_name is new generic_bounded_length (unit_name_length_max);
-	use pac_unit_name;
-
-	unit_name_default : constant pac_unit_name.bounded_string := pac_unit_name.to_bounded_string ("");
-	
-	function to_string (unit_name : in pac_unit_name.bounded_string) return string;
-	function to_unit_name (unit_name : in string) return pac_unit_name.bounded_string; 
 	
 	device_unit_separator : constant character := '.';
 
@@ -133,6 +125,10 @@ package et_devices is
 		add_level	: type_add_level := add_level_default;
 	end record;
 
+
+	
+	use pac_unit_name;
+	
 	-- Internal units are collected in a map:
 	package pac_units_internal is new indefinite_ordered_maps (
 		key_type		=> pac_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"

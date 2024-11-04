@@ -90,6 +90,7 @@ package body et_scripting_interactive_schematic is
 
 
 	
+	
 -- DELETE
 
 	procedure unit_selected_on_delete (self : access gtk_menu_item_record'class) is
@@ -109,6 +110,7 @@ package body et_scripting_interactive_schematic is
 	end unit_selected_on_delete;
 
 	
+
 	
 	procedure menu_propose_units_on_delete (
 		device			: in type_device_name;
@@ -118,12 +120,14 @@ package body et_scripting_interactive_schematic is
 		use gtk.menu;
 		use gtk.menu_item;
 		use pac_unit_names;
+		use pac_unit_name;
 
 		unit_name : pac_unit_name.bounded_string;
 
 		m : gtk_menu; -- the menu
 		i : gtk_menu_item; -- an item on the menu
 
+		
 		procedure query_name (c : in pac_unit_names.cursor) is begin
 			-- Build the menu item. NOTE: The actual unit name must be
 			-- the 2nd string of the entry.
@@ -136,6 +140,7 @@ package body et_scripting_interactive_schematic is
 			m.append (i);
 			i.show;
 		end query_name;
+
 		
 	begin -- menu_propose_units_on_delete
 		log (text => "proposing units of " & to_string (device) 
@@ -222,6 +227,7 @@ package body et_scripting_interactive_schematic is
 		use gtk.menu;
 		use gtk.menu_item;
 		use pac_unit_names;
+		use pac_unit_name;
 
 		unit_name : pac_unit_name.bounded_string;
 
@@ -352,6 +358,9 @@ package body et_scripting_interactive_schematic is
 			when others			=> raise constraint_error; -- CS should never happen
 		end case;
 	end to_category;							 
+
+
+
 	
 	-- The interactive completition process of moving, dragging or rotating 
 	-- a unit comes to an end here.
@@ -387,6 +396,8 @@ package body et_scripting_interactive_schematic is
 		-- CS redraw;
 	end finish_unit_move;
 
+
+
 	
 	procedure finish_placeholder_move is begin
 		select_placeholder_for_move;
@@ -414,6 +425,8 @@ package body et_scripting_interactive_schematic is
 		-- CS redraw;
 	end finish_placeholder_move;
 
+
+	
 	
 	procedure unit_selected_on_move (self : access gtk_menu_item_record'class) is
 		name : constant string := extract_unit_name (self.get_label);
@@ -437,6 +450,8 @@ package body et_scripting_interactive_schematic is
 				
 	end unit_selected_on_move;
 	
+
+
 	
 	procedure menu_propose_units_on_move (
 		units			: in pac_unit_names.list;
@@ -445,11 +460,13 @@ package body et_scripting_interactive_schematic is
 		use gtk.menu;
 		use gtk.menu_item;
 		use pac_unit_names;
+		use pac_unit_name;
 		use pac_proposed_units;
 		
 		m : gtk_menu; -- the menu
 		i : gtk_menu_item; -- an item on the menu
 
+		
 		procedure query_name (c : in pac_unit_names.cursor) is begin
 			-- Build the menu item. NOTE: The actual unit name must be
 			-- the 2nd string of the entry.
@@ -462,6 +479,7 @@ package body et_scripting_interactive_schematic is
 			m.append (i);
 			i.show;
 		end query_name;
+
 		
 	begin -- menu_propose_units_on_move
 		case noun is

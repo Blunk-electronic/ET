@@ -45,11 +45,12 @@ procedure fetch_unit (
 	destination		: in et_coordinates_2.type_position; -- sheet/x/y/rotation
 	log_threshold	: in type_log_level) 
 is
-
 	use et_coordinates_2;
 	
 	module_cursor : pac_generic_modules.cursor; -- points to the targeted module
 
+	use pac_unit_name;
+	
 	
 	procedure query_devices (
 		module_name	: in pac_module_name.bounded_string;
@@ -60,6 +61,7 @@ is
 		use et_schematic.pac_devices_sch;
 		device_cursor_sch : et_schematic.pac_devices_sch.cursor;
 
+		
 		
 		procedure query_units_in_use (
 			device_name	: in type_device_name;

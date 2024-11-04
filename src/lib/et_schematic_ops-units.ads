@@ -38,6 +38,9 @@
 --   ToDo: 
 
 package et_schematic_ops.units is
+
+	use pac_unit_name;
+	
 	
 	-- Deletes a unit of a device. 
 	-- In case the last unit has been deleted, then the device is 

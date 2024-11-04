@@ -45,6 +45,7 @@ with et_coordinates_2;					use et_coordinates_2;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_devices;						use et_devices;
+with et_unit_name;						use et_unit_name;
 with et_mirroring;						use et_mirroring;
 with et_device_appearance;				use et_device_appearance;
 

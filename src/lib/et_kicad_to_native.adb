@@ -84,6 +84,7 @@ with et_symbol_ports;
 with et_symbols;
 with et_device_appearance;
 with et_device_purpose;
+with et_unit_name;					use et_unit_name;
 with et_devices;					use et_devices;
 with et_device_name;				--use et_device_name;
 with et_device_model_names;			use et_device_model_names;
@@ -407,13 +408,12 @@ package body et_kicad_to_native is
 
 
 		
+		-- Changes the path and y position of units of components (in schematic) to root path.
+		-- Moves the y position of components (in layout).
 		procedure flatten_components (
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out et_kicad.pcb.type_module) 
-		is
-		-- Changes the path and y position of units of components (in schematic) to root path.
-		-- Moves the y position of components (in layout).
-			
+		is			
 			use et_kicad.schematic.type_components_schematic;
 			component_cursor : et_kicad.schematic.type_components_schematic.cursor := module.components.first;
 
@@ -422,17 +422,20 @@ package body et_kicad_to_native is
 			
 			procedure query_units (
 				reference	: in type_device_name;
-				component	: in out et_kicad.schematic.type_component_schematic) is
+				component	: in out et_kicad.schematic.type_component_schematic) 
+			is
 				use et_coordinates_2;
 				use et_kicad.schematic.type_units_schematic;
 				unit_cursor : et_kicad.schematic.type_units_schematic.cursor := component.units.first;
 
+				use pac_unit_name;
+				
 				
 				procedure change_path (
-					unit_name	: in et_devices.pac_unit_name.bounded_string;
-					unit		: in out et_kicad.schematic.type_unit_schematic) is
-				begin
-					log (text => "unit " & et_devices.to_string (unit_name), level => log_threshold + 4);
+					unit_name	: in pac_unit_name.bounded_string;
+					unit		: in out et_kicad.schematic.type_unit_schematic) 
+				is begin
+					log (text => "unit " & to_string (unit_name), level => log_threshold + 4);
 					log_indentation_up;
 					
 					log (text => before & et_kicad_coordinates.to_string (position => unit.position, scope => et_kicad_coordinates.MODULE),
@@ -492,7 +495,8 @@ package body et_kicad_to_native is
 				
 				log_indentation_down;
 			end query_units;
-				
+
+			
 		begin -- flatten_components
 			log (text => "components ...", level => log_threshold + 2);
 			log_indentation_up;
@@ -2568,11 +2572,13 @@ package body et_kicad_to_native is
 
 				unit_native_virtual	: et_units.type_unit (APPEARANCE_VIRTUAL);
 				unit_native_real	: et_units.type_unit (APPEARANCE_PCB);
+
+				use pac_unit_name;
 			begin
 				log_indentation_up;
 				
 				while unit_cursor_kicad /= et_kicad.schematic.type_units_schematic.no_element loop
-					log (text => "unit " & et_devices.to_string (key (unit_cursor_kicad)), level => log_threshold + 3);
+					log (text => "unit " & to_string (key (unit_cursor_kicad)), level => log_threshold + 3);
 
 					-- depending on the appearance of the kicad component, we create a virtual or real 
 					-- unit in the native schematic module:
@@ -2937,6 +2943,7 @@ package body et_kicad_to_native is
 					use et_symbol_ports;
 					use et_port_names;
 					use et_device_name;
+					use pac_unit_name;
 					
 					dist : pac_geometry_sch.type_distance_point_line;
 
@@ -3223,7 +3230,7 @@ package body et_kicad_to_native is
 
 					
 					procedure copy_ports (
-						unit_name	: in et_devices.pac_unit_name.bounded_string;
+						unit_name	: in pac_unit_name.bounded_string;
 						unit		: in out et_devices.type_unit_internal) 
 					is
 						use et_symbol_ports;
@@ -3490,6 +3497,9 @@ package body et_kicad_to_native is
 							next (port_cursor_kicad);
 						end loop;
 					end copy_ports;
+
+
+					use pac_unit_name;
 
 					
 				begin -- copy_units

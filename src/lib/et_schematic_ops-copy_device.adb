@@ -74,7 +74,9 @@ is
 		
 		unit_cursors : type_device_units;
 		ports : pac_ports.map;
-		unit_name : et_devices.pac_unit_name.bounded_string;
+
+		use pac_unit_name;
+		unit_name : pac_unit_name.bounded_string;
 
 		use pac_units_internal;
 		use pac_units_external;

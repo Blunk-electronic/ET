@@ -47,6 +47,7 @@ with et_assembly_variants;				use et_assembly_variants;
 with et_coordinates_2;					use et_coordinates_2;
 with et_device_purpose;					use et_device_purpose;
 with et_device_value;					use et_device_value;
+with et_unit_name;						use et_unit_name;
 with et_terminals;
 
 

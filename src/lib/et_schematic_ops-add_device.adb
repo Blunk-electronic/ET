@@ -73,6 +73,8 @@ is
 		use pac_units_internal;
 		use pac_units_external;
 
+		use pac_unit_name;
+		
 		
 		-- Add an internal unit to the schematic device.
 		-- The unit to be added is accessed by unit_cursors.int.
@@ -126,7 +128,7 @@ is
 			use pac_symbols;
 			symbol_cursor : pac_symbols.cursor;
 			symbol_file : pac_symbol_model_file.bounded_string; -- *.sym
-					
+
 		begin
 			log (text => "adding external unit " & to_string (key (unit_cursors.ext)), level => log_threshold + 2);
 			
@@ -172,8 +174,9 @@ is
 
 		end add_unit_external;
 
+		
 		ports : pac_ports.map;
-		unit_name : et_devices.pac_unit_name.bounded_string;
+		unit_name : pac_unit_name.bounded_string;
 
 		
 	begin -- add

@@ -354,18 +354,22 @@ package body et_kicad_libraries is
 	end first_unit;
 
 
-	function first_port (
-	-- Returns the cursor to the first port of the given unit
-		unit_cursor : in type_units_library.cursor)
-		return type_ports_library.cursor is
 
+	
+	-- Returns the cursor to the first port of the given unit
+	function first_port (
+		unit_cursor : in type_units_library.cursor)
+		return type_ports_library.cursor 
+	is
 		port_cursor : type_ports_library.cursor; -- to be returned
 
+		
 		procedure locate (
-			name : in et_devices.pac_unit_name.bounded_string;
-			unit : in type_unit_library) is
-
+			name : in pac_unit_name.bounded_string;
+			unit : in type_unit_library) 
+		is
 			use type_ports_library;
+			use pac_unit_name;
 		begin
 			-- Set the port cursor to the first port of the unit.
 			port_cursor := type_ports_library.first (unit.symbol.ports);
@@ -373,12 +377,13 @@ package body et_kicad_libraries is
 			-- In case the unit has no ports, abort.
 			if port_cursor = type_ports_library.no_element then
 				log (WARNING, "generic unit " 
-						& et_devices.to_string (unit_name => type_units_library.key (unit_cursor)) 
+						& to_string (type_units_library.key (unit_cursor)) 
 						& " has no ports !");
 					--console => true);
 				--CS raise constraint_error;
 			end if;
 		end locate;
+		
 
 	begin
 		type_units_library.query_element (unit_cursor, locate'access);
@@ -388,6 +393,8 @@ package body et_kicad_libraries is
 	end first_port;
 
 
+
+	
 	procedure check_datasheet_length (datasheet : in string) is
 	-- Tests if the given datasheet is longer than allowed.
 	begin

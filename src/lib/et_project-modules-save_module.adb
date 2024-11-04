@@ -97,6 +97,7 @@ with et_keepout;
 with et_pcb_contour;
 
 with et_mirroring;					use et_mirroring;
+with et_unit_name;
 with et_units;
 with et_alignment;					use et_alignment;
 
@@ -894,9 +895,11 @@ is
 				section_mark (section_placeholder, FOOTER);
 			end write_placeholder;
 
+			
 			use et_devices;
 			use et_device_rw;
 			use et_device_appearance;
+			use et_unit_name.pac_unit_name;
 
 			
 		begin -- query_units

@@ -229,6 +229,7 @@ package body et_canvas_schematic_units is
 	is
 		use pac_devices_sch;
 		use pac_units;
+		use pac_unit_name;
 
 		
 		procedure query_devices (
@@ -306,7 +307,7 @@ package body et_canvas_schematic_units is
 			et_board_ops.ratsnest.update_ratsnest (module_cursor, log_threshold + 1);
 		end query_devices;
 		
-
+		
 	begin -- delete_unit
 		log (text => "module " & to_string (key (module_cursor)) &
 			 " deleting " & to_string (key (unit.device)) & " unit " & 
@@ -321,6 +322,8 @@ package body et_canvas_schematic_units is
 		
 		log_indentation_down;				
 	end delete_unit;
+
+
 
 	
 	procedure finalize_delete (
@@ -349,6 +352,8 @@ package body et_canvas_schematic_units is
 		clear_proposed_units;
 	end finalize_delete;
 
+
+	
 	
 	procedure delete_unit (point : in type_vector_model) is 
 		use et_schematic_ops.units;
@@ -388,6 +393,8 @@ package body et_canvas_schematic_units is
 		
 		log_indentation_down;
 	end delete_unit;
+
+
 
 	
 	procedure delete_selected_unit is
@@ -731,6 +738,8 @@ package body et_canvas_schematic_units is
 
 		use pac_devices_sch;
 		use pac_units;
+		use pac_unit_name;
+		
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
@@ -745,6 +754,7 @@ package body et_canvas_schematic_units is
 
 			ports_lib, ports_scratch : pac_ports.map;
 
+			
 			procedure query_units (
 				device_name	: in type_device_name;
 				device		: in out type_device_sch)
@@ -1100,7 +1110,8 @@ package body et_canvas_schematic_units is
 		use pac_devices_lib;
 		device_cursor_lib : pac_devices_lib.cursor; -- points to the device in the library
 
-		unit_name : et_devices.pac_unit_name.bounded_string;
+		use pac_unit_name;
+		unit_name : pac_unit_name.bounded_string;
 		
 		use pac_variants;
 		variants : pac_variants.map;
@@ -1481,6 +1492,8 @@ package body et_canvas_schematic_units is
 		
 		unit_names : pac_unit_names.list;
 
+		use pac_unit_name;
+
 		
 		procedure show_menu is
 			--use glib;
@@ -1628,6 +1641,8 @@ package body et_canvas_schematic_units is
 	end show_units;
 
 
+
+	
 	
 	procedure fetch_unit (point : in type_vector_model) is 
 		use et_schematic_ops.units;
@@ -1668,6 +1683,7 @@ package body et_canvas_schematic_units is
 -- PLACEHOLDERS
 
 	procedure clarify_placeholder is
+		use pac_unit_name;
 		use pac_devices_sch;
 		use pac_units;
 		u : pac_units.cursor;
@@ -1956,6 +1972,8 @@ package body et_canvas_schematic_units is
 		log_indentation_down;
 	end find_placeholders;
 
+
+
 	
 	procedure rotate_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1967,6 +1985,8 @@ package body et_canvas_schematic_units is
 
 		use pac_devices_sch;
 		use pac_units;
+		use pac_unit_name;
+		
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
@@ -2005,6 +2025,7 @@ package body et_canvas_schematic_units is
 
 					end case;
 				end rotate_placeholder;
+
 				
 			begin -- query_units
 				-- Locate the given unit inside the device:
@@ -2016,7 +2037,8 @@ package body et_canvas_schematic_units is
 					process		=> rotate_placeholder'access);
 				
 			end query_units;
-						
+
+			
 		begin -- query_devices
 			-- Locate the given device inside the module:
 			device_cursor := find (module.devices, key (unit.device));
@@ -2025,9 +2047,9 @@ package body et_canvas_schematic_units is
 				container	=> module.devices,
 				position	=> device_cursor,
 				process		=> query_units'access);
-
 			
 		end query_devices;
+		
 		
 	begin -- rotate_placeholder
 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) 
@@ -2047,6 +2069,8 @@ package body et_canvas_schematic_units is
 		log_indentation_down;				
 	end rotate_placeholder;
 
+
+
 	
 	procedure rotate_selected_placeholder (
 		category	: in type_placeholder_meaning)
@@ -2059,6 +2083,8 @@ package body et_canvas_schematic_units is
 		log_indentation_down;
 	end rotate_selected_placeholder;
 
+
+	
 	
 	procedure rotate_placeholder (
 		point 		: in type_vector_model;
@@ -2104,6 +2130,8 @@ package body et_canvas_schematic_units is
 	end rotate_placeholder;
 
 
+
+	
 -- SET PROPERTIES SUCH AS NAME, VALUE, PURPOSE, PARCODE
 
 	-- Called when the operator presses ENTER after typing a property in
@@ -2121,6 +2149,7 @@ package body et_canvas_schematic_units is
 
 		partcode : pac_device_partcode.bounded_string;
 
+		
 		procedure clean_up is begin
 			properties_confirmed := true;
 			window_properties.window.destroy;
@@ -2129,6 +2158,7 @@ package body et_canvas_schematic_units is
 			clear_proposed_units;
 		-- CS redraw;
 		end clean_up;
+
 		
 	begin -- property_entered
 		case noun is
@@ -2200,6 +2230,7 @@ package body et_canvas_schematic_units is
 			set_status_properties (exception_message (event));
 			
 	end property_entered;
+
 
 	
 	procedure window_set_property is
@@ -2280,6 +2311,8 @@ package body et_canvas_schematic_units is
 		end if;
 	end window_set_property;
 
+
+
 	
 	procedure set_property (point : in type_vector_model) is begin
 		-- If the properties window is already open, then it
@@ -2323,6 +2356,7 @@ package body et_canvas_schematic_units is
 		end if;
 	end set_property;
 
+	
 	
 	procedure set_property_selected_unit is
 		use et_schematic_ops.units;

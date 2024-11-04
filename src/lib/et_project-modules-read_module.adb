@@ -99,6 +99,7 @@ with et_silkscreen;
 with et_assy_doc.boards;
 with et_keepout;
 with et_pcb_contour;
+with et_unit_name;
 with et_units;
 with et_mirroring;						use et_mirroring;
 with et_directory_and_file_ops;
@@ -1033,7 +1034,7 @@ is
 	--device_unit_rotation	: et_coordinates_2.type_rotation_model := geometry.zero_rotation;
 
 	device_unit_mirror		: type_mirror := MIRROR_NO;
-	device_unit_name		: et_devices.pac_unit_name.bounded_string; -- GPIO_BANK_1
+	device_unit_name		: et_unit_name.pac_unit_name.bounded_string; -- GPIO_BANK_1
 	device_unit_position	: et_coordinates_2.type_position; -- x,y,sheet,rotation
 
 
@@ -1042,8 +1043,9 @@ is
 	procedure read_unit is
 		use et_coordinates_2;	
 		use pac_geometry_2;
-		use et_devices;
 		use et_units;
+		use et_unit_name;
+		use pac_unit_name;
 		
 		kw : constant string := f (line, 1);
 	begin
@@ -2893,6 +2895,7 @@ is
 				use et_coordinates_2;
 				use et_symbols;
 				use et_units;
+				use et_unit_name;
 				use et_device_appearance;
 			begin
 				log_indentation_up;
@@ -2932,7 +2935,7 @@ is
 
 				-- clean up for next unit
 				device_unit_position := zero_position;
-				device_unit_name := et_devices.unit_name_default;
+				device_unit_name := unit_name_default;
 				--device_unit := (others => <>);
 				device_unit_mirror := MIRROR_NO;
 				--device_unit_rotation := geometry.zero_rotation;

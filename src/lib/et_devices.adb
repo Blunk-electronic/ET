@@ -52,20 +52,6 @@ with et_exceptions;				use et_exceptions;
 package body et_devices is
 
 	
-
-	function to_string (unit_name : in pac_unit_name.bounded_string) return string is begin
-		return pac_unit_name.to_string (unit_name);
-	end;
-
-
-	
-	function to_unit_name (unit_name : in string) return pac_unit_name.bounded_string is begin
-		-- CS do character and length checks
-		return pac_unit_name.to_bounded_string (to_upper (unit_name));
-	end;
-
-
-	
 	function to_full_name (
 		device_name	: in type_device_name; -- IC34
 		symbol_name	: in pac_unit_name.bounded_string; -- PWR

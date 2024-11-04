@@ -44,6 +44,7 @@ with et_symbols;
 with et_port_names;
 with et_port_visibility;
 with et_symbol_ports;
+with et_unit_name;						use et_unit_name;
 with et_units;							use et_units;
 with et_device_appearance;				use et_device_appearance;
 with et_device_purpose;					use et_device_purpose;
@@ -75,7 +76,7 @@ procedure draw_units is
 		device_name		: in type_device_name := (others => <>);
 		device_value	: in pac_device_value.bounded_string := to_value (""); -- like 100R or TL084
 		device_purpose	: in pac_device_purpose.bounded_string := to_purpose (""); -- like "brightness control"
-		unit_name		: in et_devices.pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
+		unit_name		: in pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 		unit_count		: in et_devices.type_unit_count;
 
 		-- CS: Unit position and rotation should be unified
@@ -576,7 +577,7 @@ procedure draw_units is
 	unit_count	: et_devices.type_unit_count; -- the total number of units
 
 	-- The name of the current unit:
-	unit_name	: et_devices.pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
+	unit_name	: pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
 
 	-- The placeholders as given by the schematic:
 	sch_placeholder_name	: type_text_placeholder (meaning => NAME);

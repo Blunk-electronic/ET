@@ -84,6 +84,7 @@ with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;
 
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+with et_unit_name;						use et_unit_name;
 with et_units;							use et_units;
 
 
@@ -699,7 +700,7 @@ package et_schematic_ops is
 	-- then the position of the first unit is returned.
 	-- This is useful when a device has only one unit.
 	-- If the given device or unit does not exist, then the return is false.
-	function unit_position (
+	function unit_position ( -- CS rename to get_unit_position
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string) -- C

@@ -46,12 +46,12 @@ with gtk.window;					use gtk.window;
 with et_coordinates_2;				use et_coordinates_2;
 use et_coordinates_2.pac_geometry_2;
 
--- with et_canvas_general;				use et_canvas_general;
 with et_project.modules;			use et_project.modules;
 with et_symbols;					use et_symbols;
 with et_devices;					use et_devices;
 with et_device_name;				use et_device_name;
 with et_nets;						use et_nets;
+with et_unit_name;					use et_unit_name;
 with et_units;						use et_units;
 with et_schematic;					
 with et_schematic_ops;				use et_schematic_ops;
@@ -127,10 +127,12 @@ package et_canvas_schematic_units is
 	-- deleted entirely from the module.
 	procedure delete_unit (point : in type_vector_model);
 
+	
 	-- Deletes the unit being pointed at by cursor selected_unit.
 	-- Call this procedure after a clarification.
 	procedure delete_selected_unit;
 
+	
 	type type_unit_being_deleted is record
 		device	: type_device_name := (others => <>); -- IC45
 		unit	: pac_unit_name.bounded_string; -- A

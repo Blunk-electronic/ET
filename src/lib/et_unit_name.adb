@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                             NUMBERING                                    --
+--                             UNIT NAMES                                   --
 --                                                                          --
---                               S p e c                                    --
+--                              B o d y                                     --
 --                                                                          --
 -- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -23,9 +23,9 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your editor to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
---   The two letters "CS" indicate a "construction side" where things are not
+--   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
 
 --   Please send your questions and comments to:
@@ -35,64 +35,37 @@
 --
 --   history of changes:
 --
---   ToDo: 
 
 with ada.text_io;				use ada.text_io;
-with ada.containers;            use ada.containers;
-with ada.containers.ordered_maps;
-with ada.containers.multiway_trees;
-
-with et_module_names;			use et_module_names;
-with et_coordinates_2;			use et_coordinates_2;
-with et_string_processing;		use et_string_processing;
-
-with et_devices;				use et_devices;
-with et_device_name;			use et_device_name;
-with et_unit_name;				use et_unit_name;
+with ada.characters.handling;	use ada.characters.handling;
 
 
-package et_numbering is
+package body et_unit_name is
 
-	type type_device is record
-		name	: type_device_name; -- R56, IC4
-		unit	: pac_unit_name.bounded_string; -- 1, A, B, ...
-		done	: boolean := false; -- indicates whether the device has been renumbered
-	end record;
+	function get_length (
+		unit : in pac_unit_name.bounded_string)
+		return natural
+	is begin
+		return natural (length (unit));
+	end get_length;
 
 
-	package pac_devices is new ordered_maps (
-		key_type		=> type_position, -- sheet/x/y
-		element_type	=> type_device);
 
-	type type_index_range is record
-		lowest	: type_name_index := type_name_index'last; -- "last" is not a bug
-		highest	: type_name_index := type_name_index'first; -- "first" is not a bug	
-	end record;
+	
+	-- function to_string (unit_name : in pac_unit_name.bounded_string) return string is begin
+	-- 	return pac_unit_name.to_string (unit_name);
+	-- end;
 
-	function to_index_range (
-	-- Returns a string like "module 'templates/clock_generator' range 78 .. 133"
-		module_name	: in pac_module_name.bounded_string;
-		index_range	: in type_index_range) return string;
 
-	function below (left, right : in type_index_range) return boolean;
-	-- Returns true if left index range is below right index range.
+	
+	function to_unit_name (unit_name : in string) return pac_unit_name.bounded_string is begin
+		-- CS do character and length checks
+		return pac_unit_name.to_bounded_string (to_upper (unit_name));
+	end;
+
+	
 		
-	function above (left, right : in type_index_range) return boolean;
-	-- Returns true if left index range is above right index range.		
-	
-	type type_module is record
-		name				: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
-		instance			: pac_module_instance_name.bounded_string; -- AMP_2, DRV1
-		device_names_offset	: type_name_index := type_name_index'first;	-- R88 turns to R1088
-	end record;
-
-	function "<" (left, right : in type_module) return boolean;
-
-
-	package pac_modules is new multiway_trees (type_module);
-
-	
-end et_numbering;
+end et_unit_name;
 
 -- Soli Deo Gloria
 

@@ -81,6 +81,7 @@ with et_schematic_shapes_and_text;	use et_schematic_shapes_and_text;
 with et_system_info;
 with et_device_value;
 with et_device_prefix;
+with et_unit_name;
 
 
 package body et_device_rw is
@@ -137,6 +138,10 @@ package body et_device_rw is
 		use et_system_info;
 		use et_device_value;
 		use et_device_prefix;
+
+		use et_unit_name;
+		use pac_unit_name;
+
 		
 		file_handle : ada.text_io.file_type;
 
@@ -306,6 +311,7 @@ package body et_device_rw is
 		use et_string_processing;
 		use et_device_value;
 		use et_device_prefix;
+		use et_unit_name;
 		
 		use et_text;
 		file_handle : ada.text_io.file_type;
@@ -468,6 +474,8 @@ package body et_device_rw is
 		procedure insert_unit_internal is
 			position : pac_units_internal.cursor;
 			inserted : boolean;
+
+			use pac_unit_name;
 		begin
 			-- Depending on the appearance of the device, a unit with the same
 			-- appearance is inserted in units_internal.
@@ -531,6 +539,8 @@ package body et_device_rw is
 		procedure insert_unit_external is
 			position : pac_units_external.cursor;
 			inserted : boolean;
+
+			use pac_unit_name;
 		begin
 			pac_units_external.insert (
 				container	=> units_external,

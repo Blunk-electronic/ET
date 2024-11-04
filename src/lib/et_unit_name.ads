@@ -1,12 +1,12 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                              SYSTEM ET                                   --
+--                             SYSTEM ET                                    --
 --                                                                          --
---                          DEVICE UNITS IN SCHEMATIC                       --
+--                             UNIT NAMES                                   --
 --                                                                          --
---                               B o d y                                    --
+--                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -36,47 +36,34 @@
 --   history of changes:
 --
 
-with ada.text_io;						use ada.text_io;
--- with ada.strings.maps;					use ada.strings.maps;
--- with ada.strings.bounded;   		    use ada.strings.bounded;
-with ada.characters.handling;			use ada.characters.handling;
-with ada.exceptions;
+with ada.strings.maps;			use ada.strings.maps;
+with ada.strings.bounded; 		use ada.strings.bounded;
 
-package body et_units is
 
+package et_unit_name is
+
+	unit_name_length_max : constant natural := 50;	
+
+	-- CS unit_name_characters, length check, character check
+	package pac_unit_name is new generic_bounded_length (unit_name_length_max);
+
+	use pac_unit_name;
+
+
+	function get_length (
+		unit : in pac_unit_name.bounded_string)
+		return natural;
 	
-	function to_string (unit : in pac_units.cursor) return string is
-		use pac_units;
-	begin
-		return to_string (key (unit)) 
-			--& to_string (type_vector_model (element (unit).position));
-			& to_string (element (unit).position.place);
-			-- CS output sheet number and rotation ?
-	end to_string;
-
-
-
 	
-	function unit_positions (
-		units : in pac_units.map)
-		return pac_unit_positions.map
-	is
-		list : pac_unit_positions.map; -- to be returned
-		use pac_units;
-		use pac_unit_positions;
+	unit_name_default : constant pac_unit_name.bounded_string := pac_unit_name.to_bounded_string ("");
+	
+	-- function to_string (unit_name : in pac_unit_name.bounded_string) return string;
+
+	function to_unit_name (unit_name : in string) return pac_unit_name.bounded_string; 
+	
+	
 		
-		procedure query_unit (cursor : pac_units.cursor) is begin
-			list.insert (key (cursor), element (cursor).position);
-		end;
-		
-	begin
-		iterate (units, query_unit'access);
-		return list;
-	end unit_positions;
-
-	
-	
-end et_units;
+end et_unit_name;
 
 -- Soli Deo Gloria
 

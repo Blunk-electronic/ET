@@ -49,6 +49,7 @@ with et_board_ops.grid;
 with et_pcb;
 
 with et_coordinates_2;
+with et_unit_name;						use et_unit_name;
 with et_units;
 with et_schematic;
 with et_sheets;
@@ -838,15 +839,16 @@ is
 	--    The given unit name will be ignored.
 	procedure show_device ( -- GUI related
 		device	: in type_device_name; -- IC45
-		unit	: in et_devices.pac_unit_name.bounded_string := to_unit_name (""); -- A, B, ..
+		unit	: in pac_unit_name.bounded_string := to_unit_name (""); -- A, B, ..
 		mode	: in type_show_device := FIRST_UNIT)
 	is
+		use pac_unit_name;
 		use et_units;
 		use et_devices;
 		use et_canvas_schematic_2;
 
 		
-		function locate (unit : in et_devices.pac_unit_name.bounded_string) 
+		function locate (unit : in pac_unit_name.bounded_string) 
 			return type_unit_query
 		is begin
 			return unit_position (
@@ -2624,20 +2626,26 @@ is
 		end device_not_found;
 
 		
-		procedure unit_not_found is begin
+		procedure unit_not_found is 
+			use pac_unit_name;
+		begin
 			set_status ("ERROR: Device " & to_string (device_name) 
 				& " does not provide unit " & to_string (unit_name) & " !");
 		end unit_not_found;
 
 		
-		procedure unit_not_deployed is begin
+		procedure unit_not_deployed is 
+			use pac_unit_name;
+		begin
 			set_status ("ERROR: Unit " & to_string (unit_name) 
 				& " of device " & to_string (device_name) 
 				& " not deployed !");
 		end unit_not_deployed;
 
 		
-		procedure unit_in_use is begin
+		procedure unit_in_use is 
+			use pac_unit_name;
+		begin
 			set_status ("ERROR: Unit " & to_string (unit_name) 
 				& " of device " & to_string (device_name) 
 				& " already in use !");
@@ -2645,7 +2653,9 @@ is
 		end unit_in_use;
 
 		
-		procedure unit_not_on_this_sheet is begin
+		procedure unit_not_on_this_sheet is 
+			use pac_unit_name;
+		begin
 			set_status ("ERROR: Unit " & to_string (unit_name) & " is not on this sheet !");
 		end unit_not_on_this_sheet;
 
