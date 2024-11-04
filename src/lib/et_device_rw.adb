@@ -82,6 +82,7 @@ with et_system_info;
 with et_device_value;
 with et_device_prefix;
 with et_unit_name;
+with et_unit_swap_level;
 
 
 package body et_device_rw is
@@ -182,8 +183,10 @@ package body et_device_rw is
 		
 		procedure query_internal_unit (
 			name	: in pac_unit_name.bounded_string;
-			unit	: in type_unit_internal) is
-		begin -- query_internal_unit
+			unit	: in type_unit_internal) 
+		is
+			use et_unit_swap_level;
+		begin
 			write (keyword => keyword_name, parameters => to_string (name));
 			write (keyword => keyword_position, parameters => position (unit.position));
 			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
@@ -196,8 +199,10 @@ package body et_device_rw is
 		
 		procedure query_external_unit (
 			name	: in pac_unit_name.bounded_string;
-			unit	: in type_unit_external) is
-		begin -- query_external_unit
+			unit	: in type_unit_external) 
+		is
+			use et_unit_swap_level;
+		begin
 			write (keyword => keyword_name, parameters => to_string (name));
 			write (keyword => keyword_position, parameters => position (unit.position));
 			write (keyword => keyword_swap_level, parameters => to_string (unit.swap_level));
@@ -440,7 +445,7 @@ package body et_device_rw is
 		
 		unit_name			: pac_unit_name.bounded_string; -- IO_BANK_2
 		unit_position		: type_vector_model := origin; -- the position of the unit inside the device editor
-		unit_swap_level		: type_swap_level := swap_level_default;
+		unit_swap_level		: et_unit_swap_level.type_swap_level := et_unit_swap_level.swap_level_default;
 		unit_add_level		: type_add_level := add_level_default;
 		unit_symbol			: access type_symbol;
 		units_internal		: pac_units_internal.map;
@@ -476,6 +481,7 @@ package body et_device_rw is
 			inserted : boolean;
 
 			use pac_unit_name;
+			use et_unit_swap_level;
 		begin
 			-- Depending on the appearance of the device, a unit with the same
 			-- appearance is inserted in units_internal.
@@ -1086,6 +1092,7 @@ package body et_device_rw is
 							when SEC_UNITS_INTERNAL =>
 								declare
 									kw : string := f (line, 1);
+									use et_unit_swap_level;
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
 									if kw = keyword_name then
@@ -1133,6 +1140,7 @@ package body et_device_rw is
 								
 							when SEC_UNITS_EXTERNAL =>
 								declare
+									use et_unit_swap_level;
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag

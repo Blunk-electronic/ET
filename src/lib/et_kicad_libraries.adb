@@ -60,6 +60,7 @@ with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_conventions;
 with et_alignment;						use et_alignment;
 with et_port_visibility;
+with et_unit_swap_level;
 
 
 package body et_kicad_libraries is
@@ -1305,7 +1306,9 @@ package body et_kicad_libraries is
 			tmp_units_total		: type_units_total; -- see spec for range -- CS rename to units_total	
 			tmp_unit_id			: type_unit_id; -- assumes 0 if all units are affected, -- see spec	-- CS rename to unit_id
 
+			use et_unit_swap_level;
 			tmp_unit_swap_level	: type_swap_level := swap_level_default; -- CS: rename to unit_swap_level
+			
 			tmp_unit_add_level	: type_add_level := type_add_level'first; -- CS: rename to unit_add_level
 			tmp_unit_global		: boolean := false; -- specifies if a unit harbors component wide pins (such as power supply) -- CS: rename to unit_global
 			

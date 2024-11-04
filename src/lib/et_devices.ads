@@ -63,7 +63,7 @@ with et_device_value;			use et_device_value;
 with et_device_prefix;			use et_device_prefix;
 with et_device_name;			use et_device_name;
 with et_unit_name;				use et_unit_name;
-
+with et_unit_swap_level;		use et_unit_swap_level;
 
 package et_devices is
 
@@ -77,7 +77,6 @@ package et_devices is
 	
 
 	keyword_unit		: constant string := "unit";		
-	keyword_swap_level	: constant string := "swap_level";
 	keyword_add_level	: constant string := "add_level";
 
 	
@@ -97,12 +96,6 @@ package et_devices is
 
 
 	
-	swap_level_max : constant natural := 10;
-	type type_swap_level is new natural range 0 .. swap_level_max;
-	swap_level_default : constant := type_swap_level'first;
-
-	function to_string (swap_level : in type_swap_level) return string;
-	function to_swap_level (swap_level : in string) return type_swap_level;	
 
 	type type_add_level is (
 		NEXT, 		-- should be default. for things like logic gates, multi-OP-Amps, ...
