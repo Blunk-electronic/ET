@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                         DEVICES IN LIBRARIES                             --
+--                            DEVICE MODEL                                  --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
@@ -142,7 +142,7 @@ package et_devices is
 
 -- DEVICES:
 	
-	type type_device_lib (appearance : type_appearance) is record -- CS rename to type_device_model ?
+	type type_device_model (appearance : type_appearance) is record
 		prefix			: pac_device_prefix.bounded_string; -- R, C, IC, ...
 		units_internal	: pac_units_internal.map := pac_units_internal.empty_map;
 		units_external	: pac_units_external.map := pac_units_external.empty_map;
@@ -187,10 +187,10 @@ package et_devices is
 		--return hash_type;
 
 	--function equivalent_models (
-		--d1, d2 : in type_device_lib)
+		--d1, d2 : in type_device_model)
 		--return boolean;
 
-	--subtype type_t is type_device_lib (PCB);
+	--subtype type_t is type_device_model (PCB);
 	
 	--package pac_devices_lib2 is new hashed_maps (
 		--key_type 		=> pac_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev
@@ -205,7 +205,7 @@ package et_devices is
 	package pac_devices_lib is new indefinite_ordered_maps (
 		key_type 		=> pac_device_model_file.bounded_string, -- ../libraries/devices/logic_ttl/7400.dev
 		"<"				=> pac_device_model_file."<",
-		element_type	=> type_device_lib);
+		element_type	=> type_device_model);
 
 	use pac_devices_lib;
 

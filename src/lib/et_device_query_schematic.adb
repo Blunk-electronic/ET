@@ -185,7 +185,7 @@ package body et_device_query_schematic is
 		
 		procedure query_model (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in type_device_lib)
+			device	: in type_device_model)
 		is
 			use pac_variants;
 

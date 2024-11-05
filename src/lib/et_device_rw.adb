@@ -134,7 +134,7 @@ package body et_device_rw is
 	-- Saves the given device model in a file specified by name.
 	procedure save_device (
 		file_name		: in pac_device_model_file.bounded_string; -- ../lbr/logic_ttl/7400.dev
-		device			: in type_device_lib; -- the actual device model
+		device			: in type_device_model; -- the actual device model
 		log_threshold	: in type_log_level)
 	is
 		use et_string_processing;

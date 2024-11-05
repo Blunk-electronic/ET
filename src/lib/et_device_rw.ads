@@ -95,7 +95,7 @@ package et_device_rw is
 	
 	procedure save_device (
 		file_name		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
-		device			: in type_device_lib; -- the actual device model
+		device			: in type_device_model; -- the actual device model
 		log_threshold	: in type_log_level);
 
 	

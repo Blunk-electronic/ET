@@ -3013,7 +3013,7 @@ is
 					
 					procedure query_variants (
 						model	: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
-						dev_lib	: in et_devices.type_device_lib) -- a device in the library 
+						dev_lib	: in type_device_model) -- a device in the library 
 					is
 						use pac_variants;
 						variant_cursor : pac_variants.cursor;

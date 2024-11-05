@@ -457,7 +457,7 @@ package body et_schematic_ops is
 		
 		procedure query_internal_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in type_device_lib) 
+			device	: in type_device_model) 
 		is
 			use pac_units_internal;
 			unit_cursor : pac_units_internal.cursor;
@@ -474,7 +474,7 @@ package body et_schematic_ops is
 		
 		procedure query_external_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in type_device_lib) 
+			device	: in type_device_model) 
 		is
 			use pac_units_external;
 			unit_cursor : pac_units_external.cursor;
@@ -1068,7 +1068,7 @@ package body et_schematic_ops is
 		
 		procedure query_internal_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in type_device_lib) 
+			device	: in type_device_model) 
 		is
 			use pac_units_internal;			
 			unit_cursor : pac_units_internal.cursor;
@@ -1103,7 +1103,7 @@ package body et_schematic_ops is
 		
 		procedure query_external_units (
 			model	: in pac_device_model_file.bounded_string;
-			device	: in type_device_lib) 
+			device	: in type_device_model) 
 		is
 			use pac_units_external;
 			unit_cursor : pac_units_external.cursor;
@@ -4086,7 +4086,7 @@ package body et_schematic_ops is
 			
 			procedure query_variants (
 				model	: in pac_device_model_file.bounded_string;
-				device	: in type_device_lib) 
+				device	: in type_device_model) 
 			is
 				variant_cursor : pac_variants.cursor;
 
