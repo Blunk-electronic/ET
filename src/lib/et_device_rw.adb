@@ -81,6 +81,7 @@ with et_schematic_shapes_and_text;	use et_schematic_shapes_and_text;
 with et_system_info;
 with et_device_value;
 with et_device_prefix;
+with et_units;
 with et_unit_name;
 with et_unit_swap_level;
 with et_unit_add_level;
@@ -164,7 +165,7 @@ package body et_device_rw is
 			use et_port_names;
 			use et_package_names;
 			use pac_terminal_port_map;	
-
+			use et_units;
 			
 			procedure write_terminal (terminal_cursor : in pac_terminal_port_map.cursor) is begin
 				write (keyword => keyword_terminal, parameters => 
@@ -366,6 +367,7 @@ package body et_device_rw is
 		procedure insert_terminal (
 			line : in type_fields_of_line)  -- terminal 14 unit 5 VCC
 		is
+			use et_units;
 			use et_port_names;
 			use pac_terminal_port_map;
 			inserted	: boolean;

@@ -71,9 +71,6 @@ package et_devices is
 
 	keyword_device : constant string := "device";	
 
-	keyword_unit		: constant string := "unit";		
-
-
 	
 	device_unit_separator : constant character := '.';
 
