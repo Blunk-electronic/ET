@@ -72,7 +72,7 @@ with et_terminals;
 with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
 with et_symbols;
-with et_device_model;			use et_device_model;
+with et_device_library;			use et_device_library;
 with et_package_variant;		use et_package_variant;
 with et_device_purpose;			use et_device_purpose;
 with et_device_model_names;		use et_device_model_names;
@@ -87,6 +87,7 @@ with et_device_placeholders.packages;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_unit_name;						use et_unit_name;
 with et_units;							use et_units;
+with et_device_library;					use et_device_library;
 
 
 package et_schematic_ops is

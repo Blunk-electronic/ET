@@ -55,6 +55,7 @@ with et_package_names;
 with et_device_appearance;
 with et_device_rw;
 with et_device_query_schematic;		use et_device_query_schematic;
+with et_device_model;				use et_device_model;
 with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 
 with et_canvas_schematic_2;
@@ -4141,7 +4142,7 @@ package body et_schematic_ops is
 					process		=> query_variants'access);
 
 				-- Get the electrical properties of the port of the current device:
-				port_properties_cursor := et_device_model.properties (device_cursor_lib, port_name);
+				port_properties_cursor := et_device_library.properties (device_cursor_lib, port_name);
 
 				-- Create the port where pointer "properties" is pointing at.
 				-- It is created with the direction obtained from port_properties_cursor:

@@ -41,7 +41,6 @@ with et_symbol_ports;					use et_symbol_ports;
 with et_symbols;						use et_symbols;
 with et_packages;						use et_packages;
 with et_package_names;					use et_package_names;
-with et_device_model;					use et_device_model;
 with et_schematic;						use et_schematic;
 with et_assembly_variants;				use et_assembly_variants;
 with et_coordinates_2;					use et_coordinates_2;
@@ -50,6 +49,7 @@ with et_device_value;					use et_device_value;
 with et_unit_name;						use et_unit_name;
 with et_terminals;
 with et_package_variant;				use et_package_variant;
+with et_device_library;					use et_device_library;
 
 
 package et_device_query_schematic is

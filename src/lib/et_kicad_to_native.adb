@@ -86,6 +86,7 @@ with et_device_appearance;
 with et_device_purpose;
 with et_unit_name;					use et_unit_name;
 with et_device_model;				use et_device_model;
+with et_device_library;				use et_device_library;
 with et_package_variant;
 with et_device_name;				--use et_device_name;
 with et_device_model_names;			use et_device_model_names;

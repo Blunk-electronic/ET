@@ -38,6 +38,7 @@
 
 with et_device_appearance;
 with et_device_model_names;
+with et_device_model;					use et_device_model;
 
 
 package body et_device_query_schematic is

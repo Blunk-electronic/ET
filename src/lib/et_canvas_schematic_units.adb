@@ -1157,7 +1157,7 @@ package body et_canvas_schematic_units is
 			log_threshold	=> log_threshold + 1);
 
 		-- locate the device in the library
-		device_cursor_lib := find (et_device_model.devices, device_model);
+		device_cursor_lib := find (et_device_library.devices, device_model);
 
 		-- assign the cursor to the device model:
 		unit_add.device := device_cursor_lib;

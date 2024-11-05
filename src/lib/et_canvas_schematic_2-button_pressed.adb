@@ -41,6 +41,7 @@
 with et_text;
 
 with et_device_model;
+with et_device_library;			use et_device_library;
 -- with et_canvas_schematic_nets;
 with et_device_placeholders;
 

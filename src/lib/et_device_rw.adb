@@ -86,6 +86,7 @@ with et_unit_name;
 with et_unit_swap_level;
 with et_unit_add_level;
 with et_package_variant;
+with et_device_library;				use et_device_library;
 
 
 package body et_device_rw is

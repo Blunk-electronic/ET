@@ -52,6 +52,7 @@ with et_device_appearance;
 with et_device_purpose;
 with et_device_model_names;
 with et_device_value;
+with et_device_library;				use et_device_library;
 with et_package_variant;
 with et_symbols;
 with et_symbol_rw;
@@ -3044,7 +3045,7 @@ is
 
 					-- Locate the device in the library. CS: It should be there, otherwise exception arises here:
 					device_cursor := pac_devices_lib.find (
-						container	=> et_device_model.devices,
+						container	=> et_device_library.devices,
 						key			=> device.model); -- libraries/devices/7400.dev
 
 					-- Query package variants

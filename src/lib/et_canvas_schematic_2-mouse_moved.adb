@@ -39,6 +39,7 @@
 
 
 with et_device_model;					use et_device_model;
+with et_device_library;					use et_device_library;
 
 
 separate (et_canvas_schematic_2)

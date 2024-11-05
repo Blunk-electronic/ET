@@ -41,6 +41,7 @@ with ada.exceptions;
 with et_conventions;
 with et_netlists;
 with et_device_model;
+with et_device_library;				use et_device_library;
 with et_device_query_schematic;		use et_device_query_schematic;
 with et_device_query_board;			use et_device_query_board;
 with et_schematic_ops;				use et_schematic_ops;
