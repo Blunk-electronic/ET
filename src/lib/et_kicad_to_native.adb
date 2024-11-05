@@ -85,7 +85,7 @@ with et_symbols;
 with et_device_appearance;
 with et_device_purpose;
 with et_unit_name;					use et_unit_name;
-with et_devices;					use et_devices;
+with et_device_model;				use et_device_model;
 with et_package_variant;
 with et_device_name;				--use et_device_name;
 with et_device_model_names;			use et_device_model_names;
@@ -3212,7 +3212,7 @@ package body et_kicad_to_native is
 				-- Transfers the kicad units to native units in the current native ET device.
 				procedure copy_units (
 					device_name	: in pac_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
-					device		: in out et_devices.type_device_model) 
+					device		: in out type_device_model) 
 				is
 					use et_kicad_libraries;
 					
@@ -3227,13 +3227,13 @@ package body et_kicad_to_native is
 					ports_kicad : et_kicad_libraries.type_ports_library.list;
 					
 					-- This cursor points to a native ET unit.
-					unit_cursor : et_devices.pac_units_internal.cursor;
+					unit_cursor : pac_units_internal.cursor;
 					inserted	: boolean;
 
 					
 					procedure copy_ports (
 						unit_name	: in pac_unit_name.bounded_string;
-						unit		: in out et_devices.type_unit_internal) 
+						unit		: in out type_unit_internal) 
 					is
 						use et_symbol_ports;
 						use et_port_sensitivity;
@@ -3518,7 +3518,7 @@ package body et_kicad_to_native is
 						case element (unit_cursor_kicad).appearance is
 							when APPEARANCE_PCB => -- real
 						
-								et_devices.pac_units_internal.insert (
+								pac_units_internal.insert (
 									container	=> device.units_internal,
 									key			=> key (unit_cursor_kicad), -- the name of the unit
 									position	=> unit_cursor, -- set unit_cursor for later updating the current unit
@@ -3547,7 +3547,7 @@ package body et_kicad_to_native is
 
 							when APPEARANCE_VIRTUAL => -- virtual unit
 								
-								et_devices.pac_units_internal.insert (
+								pac_units_internal.insert (
 									container	=> device.units_internal,
 									key			=> key (unit_cursor_kicad), -- the name of the unit
 									position	=> unit_cursor, -- set unit_cursor for later updating the current unit
@@ -3572,7 +3572,7 @@ package body et_kicad_to_native is
 						end case;
 								
 						-- copy ports 
-						et_devices.pac_units_internal.update_element (
+						pac_units_internal.update_element (
 							container	=> device.units_internal,
 							position	=> unit_cursor,
 							process		=> copy_ports'access);
@@ -3589,7 +3589,7 @@ package body et_kicad_to_native is
 				-- something like libraries/packages/__-__-lbr-transistors.pretty_S_0805.pac
 				procedure rename_package_model_in_variants (
 					device_name	: in pac_device_model_file.bounded_string; -- libraries/devices/transistors/pnp.dev
-					device		: in out et_devices.type_device_model) 
+					device		: in out type_device_model) 
 				is
 					use et_package_variant;
 					use pac_package_variant_name;
@@ -3650,7 +3650,7 @@ package body et_kicad_to_native is
 					case element (component_cursor).appearance is
 						when APPEARANCE_VIRTUAL =>
 							pac_devices_lib.insert (
-								container	=> et_devices.devices,
+								container	=> devices,
 								position	=> device_cursor,
 								inserted	=> inserted,
 								key			=> device_model,
@@ -3667,7 +3667,7 @@ package body et_kicad_to_native is
 							--log (text => "variant count " & count_type'image (pac_variants.length (element (component_cursor).variants)));
 							
 							pac_devices_lib.insert (
-								container	=> et_devices.devices,
+								container	=> devices,
 								position	=> device_cursor,
 								inserted	=> inserted,
 								key			=> device_model,
@@ -3692,7 +3692,7 @@ package body et_kicad_to_native is
 								if inserted then
 									-- rename package model file name in variants
 									pac_devices_lib.update_element (
-										container	=> et_devices.devices,
+										container	=> devices,
 										position	=> device_cursor,
 										process		=> rename_package_model_in_variants'access);
 								end if;
@@ -3705,7 +3705,7 @@ package body et_kicad_to_native is
 					if inserted then
 						-- Copy units.
 						pac_devices_lib.update_element (
-							container	=> et_devices.devices,
+							container	=> devices,
 							position	=> device_cursor,
 							process		=> copy_units'access);
 					else
@@ -3883,7 +3883,7 @@ package body et_kicad_to_native is
 
 			log (text => "devices (former KiCad components) ...", level => log_threshold + 1);
 			log_indentation_up;
-			iterate (et_devices.devices, save_device'access);
+			iterate (devices, save_device'access);
 			log_indentation_down;
 			
 			log (text => "packages (former KiCad footprints) ...", level => log_threshold + 1);

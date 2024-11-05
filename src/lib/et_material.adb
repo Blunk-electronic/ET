@@ -59,7 +59,6 @@ with ada.exceptions;
 with et_string_processing;		use et_string_processing;
 with et_export;
 with et_csv;					use et_csv;
-with et_devices;				use et_devices;
 with et_exceptions;				use et_exceptions;
 
 

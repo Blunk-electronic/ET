@@ -69,7 +69,6 @@ with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_device_value;					use et_device_value;
 with et_device_name;					use et_device_name;
 with et_packages;
-with et_devices;						use et_devices;
 with et_frames;
 with et_design_rules;				use et_design_rules;
 

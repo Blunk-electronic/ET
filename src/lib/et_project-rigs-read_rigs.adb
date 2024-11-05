@@ -383,7 +383,7 @@ is
 						case stack.parent is
 							when SEC_MODULE_CONNECTIONS =>
 								declare
-									use et_devices;
+									-- use et_devices;
 									kw : string := f (line, 1);
 								begin
 									if kw = keyword_instance_A then

@@ -2845,7 +2845,7 @@ package body et_schematic_ops is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
 		log_threshold	: in type_log_level)
-		return et_devices.pac_unit_names.list
+		return pac_unit_names.list
 	is
 		use pac_devices_sch;
 		device_cursor_sch : pac_devices_sch.cursor;
@@ -3000,7 +3000,7 @@ package body et_schematic_ops is
 		device_name		: in type_device_name; -- IC1
 		sheet			: in type_sheet;
 		log_threshold	: in type_log_level)
-		return et_devices.pac_unit_names.list
+		return pac_unit_names.list
 	is
 		use pac_devices_sch;
 		device_cursor_sch : pac_devices_sch.cursor;
@@ -4071,8 +4071,6 @@ package body et_schematic_ops is
 		port_direction : type_port_direction := PASSIVE;
 		port_properties_cursor : pac_ports.cursor;
 
-		use et_devices;
-
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
@@ -4143,7 +4141,7 @@ package body et_schematic_ops is
 					process		=> query_variants'access);
 
 				-- Get the electrical properties of the port of the current device:
-				port_properties_cursor := et_devices.properties (device_cursor_lib, port_name);
+				port_properties_cursor := et_device_model.properties (device_cursor_lib, port_name);
 
 				-- Create the port where pointer "properties" is pointing at.
 				-- It is created with the direction obtained from port_properties_cursor:

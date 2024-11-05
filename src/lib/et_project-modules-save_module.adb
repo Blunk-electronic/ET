@@ -45,6 +45,7 @@ with et_net_labels;
 with et_port_names;
 with et_symbol_ports;
 with et_symbols;
+with et_device_model;
 with et_device_appearance;
 with et_device_purpose;
 with et_device_model_names;
@@ -545,7 +546,7 @@ is
 					use et_port_names;
 					use et_symbol_ports;
 					port_cursor : pac_device_ports.cursor := segment.ports.devices.first;
-					use et_devices;
+					use et_device_model;
 				begin
 					while port_cursor /= pac_device_ports.no_element loop
 						write (keyword => keyword_device, parameters => 
@@ -863,7 +864,6 @@ is
 
 	
 	procedure query_devices is
-		use et_devices;
 		use et_schematic;
 		use et_symbols;
 		use et_device_placeholders.symbols;
@@ -897,7 +897,7 @@ is
 			end write_placeholder;
 
 			
-			use et_devices;
+			-- use et_devices;
 			use et_device_rw;
 			use et_device_appearance;
 			use et_unit_name.pac_unit_name;
@@ -1079,7 +1079,7 @@ is
 				end if;
 			end;
 
-			use et_devices;
+			use et_device_model;
 
 			
 		begin -- query_devices
@@ -1602,7 +1602,6 @@ is
 		procedure query_devices_non_electric (
 			c : in et_pcb.pac_devices_non_electric.cursor) 
 		is
-			use et_devices;
 			use et_pcb;
 			use et_package_names;
 			use et_pcb_sides;

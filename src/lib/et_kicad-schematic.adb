@@ -283,19 +283,17 @@ package body et_kicad.schematic is
 
 	
 	
-	function to_component_reference (	
 	-- Converts a string like "IC303" to a composite type_device_name.
 	-- If allow_special_character_in_prefix is given true, the first character
 	-- is allowed to be a special character (like in #FLG01).
 	-- Raises constraint error if prefix contains invalid characters.
 	-- Raises constraint error if id contains non-digit characters.
 	-- Leading zeroes in the id are removed. R002 becomes R2.
+	function to_component_reference (	
 		text_in			: in string;
-		leading_hash	: in boolean := false
-		) return type_device_name is
-		
-		use et_devices;
-
+		leading_hash	: in boolean := false)
+		return type_device_name 
+	is
 		-- justify given text_in on the left
 		text_in_justified : string (1 .. text_in'length) := text_in;
 	
@@ -306,7 +304,8 @@ package body et_kicad.schematic is
 	
 		c : character;
 		p : pac_device_prefix.bounded_string;
-	
+
+		
 		procedure invalid_reference is
 			use et_string_processing;
 		begin
@@ -316,6 +315,7 @@ package body et_kicad.schematic is
 			raise constraint_error;
 		end invalid_reference;
 
+		
 		d : positive;
 		digit : natural := 0;
 
@@ -2313,13 +2313,13 @@ package body et_kicad.schematic is
 
 				-- After reading the local and global fp-lib-tables they are stored here:
 				fp_table_local, fp_table_global : type_lib_table.list;
+
 				
 				procedure locate_component_libraries is
 				-- Tests if the libraries (listed in sym_lib_table) exist.
 				-- If a library was found, a same-named empty library is created in the container tmp_component_libraries.
 					lib_cursor : type_lib_table.cursor := sym_lib_tables.first;
 					use type_lib_table;
-					use et_devices;
 					uri : pac_device_model_file.bounded_string;
 				begin
 					log (text => "locating libraries ...", level => log_threshold + 1);
@@ -4216,7 +4216,6 @@ package body et_kicad.schematic is
 		-- NOTE: The library contains the relative (x/y) positions of the ports.
 		procedure extract_ports is
 			use type_ports_library;
-			use et_devices;
 		
 			-- The unit cursor of the component advances through the units stored in the library.
 			unit_cursor : type_units_library.cursor;

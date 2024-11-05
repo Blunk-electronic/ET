@@ -49,7 +49,7 @@ use et_pcb_coordinates_2.pac_geometry_2;
 with et_project.modules;			use et_project.modules;
 with et_schematic;					use et_schematic;
 with et_pcb;						use et_pcb;
-with et_devices;					use et_devices;
+with et_device_model;				use et_device_model;
 with et_device_name;				use et_device_name;
 with et_logging;					use et_logging;
 

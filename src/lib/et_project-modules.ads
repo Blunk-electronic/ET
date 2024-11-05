@@ -46,7 +46,7 @@ with et_nets;
 with et_assembly_variants;		use et_assembly_variants;
 with et_pcb;
 with et_pcb_stack;
-with et_devices;
+with et_device_model;
 with et_device_name;			use et_device_name;
 
 with et_design_rules;			use et_design_rules;

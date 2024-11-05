@@ -79,7 +79,7 @@ with et_frames;
 
 with et_terminals;
 with et_package_names;
-with et_devices;
+-- with et_device_model;
 with et_device_prefix;
 with et_vias;
 with et_pcb;
@@ -2033,7 +2033,7 @@ is
 		end make_polygon;
 
 
-		use et_devices;
+		-- use et_devices;
 		use et_pcb_coordinates_2.pac_grid;
 
 		
@@ -2325,7 +2325,6 @@ is
 	procedure add_device is
 
 		procedure do_it is
-			use et_devices;
 			use et_board_ops.devices;
 			use et_package_names;
 			use et_device_prefix;
@@ -2400,14 +2399,15 @@ is
 	end add_device;
 	
 
+
+
 	
 	-- This procedure parses a command to delete
 	-- a non-electrical device:
 	procedure delete_device is
-		
-		use et_devices;
 		use et_board_ops.devices;
 
+		
 		procedure do_it is begin
 			update_mode_display;
 			
@@ -2435,7 +2435,6 @@ is
 	-- This procedure parses a command to
 	-- rename a non-electrical device:
 	procedure rename_device is		
-		use et_devices;
 		use et_board_ops.devices;
 
 		
@@ -2464,12 +2463,13 @@ is
 
 
 	
+	
 
 	-- This procedure parses a command to 
 	-- delete an object of the silkscreen:
-	procedure delete_silkscreen_object
-	is
+	procedure delete_silkscreen_object is
 
+		
 		procedure do_it is
 			use et_board_ops.silkscreen;
 		begin
@@ -2679,7 +2679,6 @@ is
 	
 	-- Parses the single_cmd_status.cmd:
 	procedure parse is 
-		use et_devices;
 	begin
 		log (text => "parsing command: " 
 			& enclose_in_quotes (to_string (single_cmd_status.cmd)),
@@ -3223,8 +3222,6 @@ is
 	
 	
 	procedure propose_arguments is
-		use et_devices;
-		
 		use et_canvas_board_devices;
 		use et_canvas_board_texts;
 		use et_canvas_board_vias;

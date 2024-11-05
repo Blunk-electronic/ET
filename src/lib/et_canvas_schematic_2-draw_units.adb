@@ -48,7 +48,7 @@ with et_unit_name;						use et_unit_name;
 with et_units;							use et_units;
 with et_device_appearance;				use et_device_appearance;
 with et_device_purpose;					use et_device_purpose;
-with et_devices;						use et_devices;
+with et_device_model;					use et_device_model;
 with et_device_model_names;
 with et_device_value;					use et_device_value;
 with et_device_name;					use et_device_name;
@@ -77,7 +77,7 @@ procedure draw_units is
 		device_value	: in pac_device_value.bounded_string := to_value (""); -- like 100R or TL084
 		device_purpose	: in pac_device_purpose.bounded_string := to_purpose (""); -- like "brightness control"
 		unit_name		: in pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
-		unit_count		: in et_devices.type_unit_count;
+		unit_count		: in type_unit_count;
 
 		-- CS: Unit position and rotation should be unified
 		-- to a single argument ?:
@@ -217,7 +217,6 @@ procedure draw_units is
 				rotation_total : constant type_rotation := add (element (c).rotation, unit_rotation);
 
 				use et_terminals;
-				use et_devices;
 				properties : type_port_properties_access;
 
 				use pac_draw_text;
@@ -434,7 +433,6 @@ procedure draw_units is
 		
 		-- This procedure draws text placeholders for device name, value and purpose:
 		procedure draw_placeholders is 
-			use et_devices;
 			use et_text;
 			p : type_vector_model;
 
@@ -574,7 +572,7 @@ procedure draw_units is
 	device_purpose : pac_device_purpose.bounded_string; -- like "brightness control"
 
 	-- The number of units provided by the current device:
-	unit_count	: et_devices.type_unit_count; -- the total number of units
+	unit_count	: type_unit_count; -- the total number of units
 
 	-- The name of the current unit:
 	unit_name	: pac_unit_name.bounded_string; -- like "I/O Bank 3" or "PWR" or "A" or "B" ...
@@ -635,7 +633,6 @@ procedure draw_units is
 		return boolean
 	is
 		use pac_proposed_units;
-		use et_devices;
 		use pac_unit_name;
 	begin
 		-- If there are no selected units at all, then there is nothing to do:
@@ -686,7 +683,6 @@ procedure draw_units is
 		return boolean
 	is
 		use pac_proposed_placeholders;
-		use et_devices;
 		use pac_unit_name;
 	begin
 		-- If there are no selected placeholders at all, then there is nothing to do:
@@ -726,8 +722,7 @@ procedure draw_units is
 		brightness : type_brightness := NORMAL;
 
 		
-		procedure locate_symbol (unit_cursor : in et_devices.type_unit_cursors) is
-			use et_devices;
+		procedure locate_symbol (unit_cursor : in type_unit_cursors) is
 			use pac_units_external;
 			use pac_units_internal;
 
@@ -791,7 +786,6 @@ procedure draw_units is
 
 		
 		procedure query_units (unit_cursor : in pac_units.cursor) is
-			use et_devices;
 			use et_symbols;
 			
 			device_cursor_lib : pac_devices_lib.cursor;
@@ -1031,11 +1025,10 @@ procedure draw_units is
 	procedure draw_unit_being_added is
 		brightness : type_brightness := BRIGHT;
 		
-		use et_devices;
 		use pac_devices_lib;
 
 		
-		procedure locate_symbol (unit_cursor : in et_devices.type_unit_cursors) is
+		procedure locate_symbol (unit_cursor : in type_unit_cursors) is
 			use pac_units_external;
 			use pac_units_internal;
 
@@ -1048,12 +1041,13 @@ procedure draw_units is
 			symbol_model : pac_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
 			symbol_cursor : et_symbols.pac_symbols.cursor;
 
-			procedure fetch_placeholders_ext is begin
+			
 			-- Drawing the symbol of a real device requires placeholders
 			-- for name, value an purpose. We fetch them from the symbol model
 			-- in this case.
 			-- If the symbol is virtual, then the placeholders are meaningless
 			-- and assume default values.
+			procedure fetch_placeholders_ext is begin
 				if is_real (symbol_cursor) then
 					sch_placeholder_name	:= element (symbol_cursor).name;
 					sch_placeholder_value	:= element (symbol_cursor).value;

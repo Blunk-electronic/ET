@@ -62,7 +62,7 @@ with et_submodules;
 with et_assembly_variants;
 -- with et_pick_and_place;
 with et_netlists;
-with et_devices;
+with et_device_model;					use et_device_model;
 with et_device_placeholders;
 with et_device_purpose;					use et_device_purpose;
 with et_device_model_names;
@@ -89,7 +89,7 @@ is
 	use pac_geometry_2;
 
 	use pac_text_schematic;
-	use et_devices;
+	-- use et_devices;
 	use et_device_name;
 	use et_canvas_schematic_2;
 	use et_canvas_schematic_2.pac_canvas;
@@ -846,7 +846,7 @@ is
 	is
 		use pac_unit_name;
 		use et_units;
-		use et_devices;
+		-- use et_devices;
 		use et_canvas_schematic_2;
 
 		

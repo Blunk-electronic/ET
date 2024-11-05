@@ -47,7 +47,6 @@ with et_design_rules;			use et_design_rules;
 with et_net_names;				use et_net_names;
 with et_vias;					use et_vias;
 with et_terminals;				use et_terminals;
-with et_devices;
 with et_schematic;
 with et_nets;						use et_nets;
 

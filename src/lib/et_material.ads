@@ -48,7 +48,6 @@ with et_module_names;			use et_module_names;
 with et_assembly_variants;		use et_assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
-with et_devices;				use et_devices;
 with et_package_names;			use et_package_names;
 with et_device_purpose;			use et_device_purpose;
 with et_device_value;			use et_device_value;

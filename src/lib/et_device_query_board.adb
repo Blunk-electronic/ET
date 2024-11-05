@@ -294,7 +294,7 @@ package body et_device_query_board is
 		return pac_terminals.map
 	is
 		use pac_generic_modules;
-		use et_devices;
+		-- use et_devices;
 		use et_nets;
 		use pac_terminals;
 		use et_schematic_ops;
@@ -1159,7 +1159,7 @@ package body et_device_query_board is
 		use et_text;
 		result : pac_text_content.bounded_string;
 
-		use et_devices;
+		-- use et_devices;
 	begin
 		case placeholder.meaning is
 			when NAME 		=> result := to_content (to_string (key (device_cursor)));
@@ -1182,7 +1182,7 @@ package body et_device_query_board is
 		use et_text;
 		result : pac_text_content.bounded_string;
 
-		use et_devices;
+		-- use et_devices;
 	begin
 		case placeholder.meaning is
 			when NAME 		=> result := to_content (to_string (key (device_cursor)));

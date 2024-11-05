@@ -65,7 +65,6 @@ with et_text;
 with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
 with et_device_appearance;		use et_device_appearance;
-with et_devices;				use et_devices;
 with et_device_model_names;		use et_device_model_names;
 with et_device_value;			use et_device_value;
 with et_device_prefix;			use et_device_prefix;

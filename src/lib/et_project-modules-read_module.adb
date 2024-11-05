@@ -845,7 +845,7 @@ is
 	-- the port is appended to the corresponding port collection 
 	-- immediately when the line is read. See main code of process_line.
 	procedure read_ports is
-		use et_devices;
+		use et_device_model;
 		use et_port_names;
 		use et_symbol_ports;
 		use et_nets;
@@ -1089,7 +1089,7 @@ is
 
 	
 	procedure read_assembly_variant is
-		use et_devices;
+		use et_device_model;
 		use et_device_purpose;
 		use et_device_value;
 		use et_pcb_rw;
@@ -2210,7 +2210,7 @@ is
 	
 	procedure read_device is
 		use et_symbols;
-		use et_devices;
+		use et_device_model;
 		use et_device_purpose;
 		use et_device_model_names;
 		use et_schematic;
@@ -2277,7 +2277,7 @@ is
 
 	
 	procedure read_device_non_electric is
-		use et_devices;
+		use et_device_model;
 		use et_pcb_sides;
 		use et_package_names;
 		kw : constant string := f (line, 1);
@@ -2993,7 +2993,7 @@ is
 			is
 				use et_schematic;
 				use et_symbols;
-				use et_devices;
+				use et_device_model;
 				use et_device_model_names;
 				use et_package_names;
 				use et_pcb_stack;
@@ -3044,7 +3044,7 @@ is
 
 					-- Locate the device in the library. CS: It should be there, otherwise exception arises here:
 					device_cursor := pac_devices_lib.find (
-						container	=> et_devices.devices,
+						container	=> et_device_model.devices,
 						key			=> device.model); -- libraries/devices/7400.dev
 
 					-- Query package variants
@@ -3062,6 +3062,7 @@ is
 				use et_device_appearance;
 				use et_device_purpose;
 				use et_device_value;				
+
 				
 			begin -- insert_device
 				log (text => "device " & to_string (device_name), level => log_threshold + 1);
@@ -3180,7 +3181,7 @@ is
 				use et_pcb;
 				use et_schematic;
 				
-				use et_devices;
+				use et_device_model;
 				use et_device_model_names;
 				use et_pcb_sides;
 				use et_package_names;

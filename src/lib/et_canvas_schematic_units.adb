@@ -63,7 +63,7 @@ with gtk.menu_shell;
 
 with et_sheets;						use et_sheets;
 with et_assembly_variants;			use et_assembly_variants;
-with et_devices;					use et_devices;
+-- with et_devices;					use et_devices;
 with et_device_rw;
 with et_package_names;
 with et_package_variant;
@@ -1046,7 +1046,7 @@ package body et_canvas_schematic_units is
 			text_in		=> menu_item,
 			position	=> 3);
 
-		use et_devices;
+		-- use et_devices;
 	begin
 		return to_variant_name (var_name);
 	end extract_variant_name;
@@ -1159,7 +1159,7 @@ package body et_canvas_schematic_units is
 			log_threshold	=> log_threshold + 1);
 
 		-- locate the device in the library
-		device_cursor_lib := find (et_devices.devices, device_model);
+		device_cursor_lib := find (et_device_model.devices, device_model);
 
 		-- assign the cursor to the device model:
 		unit_add.device := device_cursor_lib;
@@ -1340,7 +1340,6 @@ package body et_canvas_schematic_units is
 	procedure drop_unit (
 		position	: in type_vector_model)
 	is 
-		use et_devices;
 		use pac_devices_lib;
 
 		use et_commit;

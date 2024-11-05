@@ -39,7 +39,7 @@
 with et_string_processing;
 with et_logging;						use et_logging;
 with et_terminals;
-with et_devices;						use et_devices;
+with et_device_model;					use et_device_model;
 with et_symbols;
 with et_device_appearance;				use et_device_appearance;
 with et_device_model_names;				use et_device_model_names;

@@ -36,7 +36,7 @@
 --   history of changes:
 --
 
-with et_schematic;
+
 with et_string_processing;			use et_string_processing;
 
 

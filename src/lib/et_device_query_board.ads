@@ -47,7 +47,7 @@ with et_stencil;						use et_stencil;
 
 
 with et_text;							use et_text;
-with et_devices;
+-- with et_devices;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 

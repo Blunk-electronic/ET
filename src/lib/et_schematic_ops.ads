@@ -72,7 +72,7 @@ with et_terminals;
 with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
 with et_symbols;
-with et_devices;				use et_devices;
+with et_device_model;			use et_device_model;
 with et_package_variant;		use et_package_variant;
 with et_device_purpose;			use et_device_purpose;
 with et_device_model_names;		use et_device_model_names;
@@ -498,11 +498,11 @@ package et_schematic_ops is
 	-- Returns the names of available units of the given device in the 
 	-- given generic module. "Available" means the unit exists and is
 	-- not already placed somewhere in the schematic:
-	function available_units (
+	function available_units ( -- CS rename to get_available_units
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
 		log_threshold	: in type_log_level)
-		return et_devices.pac_unit_names.list;
+		return pac_unit_names.list;
 
 
 
@@ -521,12 +521,12 @@ package et_schematic_ops is
 	
 	-- Returns the names of units of the given device in the 
 	-- given generic module on the given sheet.
-	function units_on_sheet (
+	function units_on_sheet ( -- CS rename to get_units_on_sheet
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
 		sheet			: in type_sheet;
 		log_threshold	: in type_log_level)
-		return et_devices.pac_unit_names.list;
+		return pac_unit_names.list;
 
 
 

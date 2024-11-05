@@ -137,19 +137,17 @@ package body et_kicad_libraries is
 
 	
 	
-	function to_component_reference (	
 	-- Converts a string like "IC303" to a composite type_device_name.
 	-- If allow_special_character_in_prefix is given true, the first character
 	-- is allowed to be a special character (like in #FLG01).
 	-- Raises constraint error if prefix contains invalid characters.
 	-- Raises constraint error if id contains non-digit characters.
 	-- Leading zeroes in the id are removed. R002 becomes R2.
+	function to_component_reference (	
 		text_in			: in string;
-		leading_hash	: in boolean := false
-		) return type_device_name is
-		
-		use et_devices;
-
+		leading_hash	: in boolean := false)
+		return type_device_name 
+	is
 		-- justify given text_in on the left
 		text_in_justified : string (1 .. text_in'length) := text_in;
 	
@@ -1261,9 +1259,9 @@ package body et_kicad_libraries is
 	
 	
 	-- Reads component libraries.
-	procedure read_components_libraries (log_threshold : in type_log_level) is
-
-		use et_devices;
+	procedure read_components_libraries (
+		log_threshold : in type_log_level) 
+	is
 		use type_full_library_names;
 
 		-- This is the library cursor. It points to the library being processed (in the list tmp_component_libraries):

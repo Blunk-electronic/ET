@@ -351,7 +351,7 @@ begin -- add_device
 		log_threshold	=> log_threshold + 1);
 
 	-- locate the device in the library
-	device_cursor_lib := find (et_devices.devices, device_model);
+	device_cursor_lib := find (devices, device_model);
 	
 	update_element (
 		container	=> generic_modules,

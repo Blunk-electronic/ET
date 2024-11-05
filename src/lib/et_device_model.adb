@@ -49,7 +49,7 @@ with et_string_processing;		use et_string_processing;
 with et_exceptions;				use et_exceptions;
 
 
-package body et_devices is
+package body et_device_model is
 
 	
 	function to_full_name (
@@ -684,7 +684,7 @@ package body et_devices is
 	end properties;
 
 	
-end et_devices;
+end et_device_model;
 
 -- Soli Deo Gloria
 

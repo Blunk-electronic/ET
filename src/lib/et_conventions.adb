@@ -810,9 +810,10 @@ package body et_conventions is
 
 
 	
-	function category (prefix : in pac_device_prefix.bounded_string) return
-		type_device_category is
-		use et_devices;
+	function category (
+		prefix : in pac_device_prefix.bounded_string) 
+		return type_device_category 
+	is
 		use type_component_prefixes;
 
 		prefix_cursor : type_component_prefixes.cursor;
@@ -2137,7 +2138,6 @@ package body et_conventions is
 		value 		: in pac_device_value.bounded_string := to_value ("")) -- 100R
 		return pac_device_partcode.bounded_string 
 	is
-		use et_devices;
 		use pac_device_partcode;
 
 		base : constant pac_device_partcode.bounded_string :=
@@ -2647,10 +2647,10 @@ package body et_conventions is
 		lines : type_lines.list := type_lines.empty_list;
 
 		
-		procedure process_previous_section is
 		-- Processes the section indicated by section_entered. 
 		-- The lines of the section are in container "lines".
 		-- Clears "lines" after processing.
+		procedure process_previous_section is
 			line_cursor : type_lines.cursor := lines.first; -- points to the line being processed
 			component_prefix_cursor : type_component_prefixes.cursor; -- CS: rename to prefix_cursor
 			unit_cursor : type_units_of_measurement.cursor;
@@ -2659,7 +2659,6 @@ package body et_conventions is
 			-- we deal with columns and need to index them
 			subtype type_column is positive range 1..8;
 		
-			use et_devices;
 			use et_coordinates_2;
 			use pac_geometry_2;
 
@@ -3009,7 +3008,6 @@ package body et_conventions is
 		result : boolean := true;
 		
 		use et_string_processing;
-		use et_devices;
 		
 		component_category : type_device_category;
 		value_length : natural := pac_device_value.length (value);

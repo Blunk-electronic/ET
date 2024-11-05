@@ -62,7 +62,7 @@ with et_unit_add_level;			use et_unit_add_level;
 with et_package_variant;		use et_package_variant;
 
 
-package et_devices is
+package et_device_model is
 
 	use pac_geometry_2;
 
@@ -214,7 +214,7 @@ package et_devices is
 
 
 	-- HERE RIG WIDE DEVICES ARE KEPT:
-	devices : pac_devices_lib.map;
+	devices : pac_devices_lib.map; -- CS rename to device_models ?
 
 
 	-- Returns true if the given device has a physical counterpart in 
@@ -351,7 +351,7 @@ package et_devices is
 
 	
 	-- Returns the properties of the given port of the given device.
-	function properties (
+	function properties ( -- CS rename to get_properties
 		device_cursor	: in pac_devices_lib.cursor;
 		port_name		: in pac_port_name.bounded_string)
 		return pac_ports.cursor;
@@ -360,7 +360,7 @@ package et_devices is
 	
 	
 		
-end et_devices;
+end et_device_model;
 
 -- Soli Deo Gloria
 

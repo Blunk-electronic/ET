@@ -49,7 +49,7 @@ use et_coordinates_2.pac_geometry_2;
 with et_project.modules;			use et_project.modules;
 with et_symbols;					use et_symbols;
 with et_package_variant;			use et_package_variant;
-with et_devices;					use et_devices;
+with et_device_model;				use et_device_model;
 with et_device_name;				use et_device_name;
 with et_nets;						use et_nets;
 with et_unit_name;					use et_unit_name;

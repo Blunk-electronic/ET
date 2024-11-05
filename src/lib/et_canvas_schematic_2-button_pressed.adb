@@ -40,7 +40,7 @@
 
 with et_text;
 
-with et_devices;
+with et_device_model;
 -- with et_canvas_schematic_nets;
 with et_device_placeholders;
 
@@ -57,7 +57,7 @@ is
 
 	
 	procedure left_button is 
-		use et_devices;
+		use et_device_model;
 		use pac_devices_lib;
 		
 		use et_canvas_schematic_nets;

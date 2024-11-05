@@ -41,7 +41,6 @@ with ada.text_io;				use ada.text_io;
 with et_mirroring;					use et_mirroring;
 
 with et_symbols;
-with et_devices;
 with et_device_name;
 with et_schematic;
 
@@ -1908,8 +1907,8 @@ is
 				-- If the device is being moved, then the x/y position
 				-- will be overwritten by the position of the mouse or the cursor.
 
-				use et_devices;
 				use et_device_name;
+
 				
 				procedure set_position (
 					name	: in type_device_name;
@@ -2033,7 +2032,6 @@ is
 				-- If the device is being moved, then the x/y position
 				-- will be overwritten by the position of the mouse or the cursor.
 				
-				use et_devices;
 				use et_device_name;
 				
 				
@@ -2052,6 +2050,7 @@ is
 					end case;
 				end set_position;
 
+				
 				-- Create a temporary map of devices. 
 				-- This map will contain just a single device:
 				m_tmp : pac_devices_non_electric.map;

@@ -48,7 +48,6 @@ with et_assembly_variants;		use et_assembly_variants;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
-with et_devices;				use et_devices;
 with et_device_name;			use et_device_name;
 
 package et_pick_and_place is
