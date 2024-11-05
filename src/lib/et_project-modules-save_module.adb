@@ -897,7 +897,6 @@ is
 			end write_placeholder;
 
 			
-			-- use et_devices;
 			use et_device_rw;
 			use et_device_appearance;
 			use et_unit_name.pac_unit_name;

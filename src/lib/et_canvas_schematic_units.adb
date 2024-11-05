@@ -63,7 +63,6 @@ with gtk.menu_shell;
 
 with et_sheets;						use et_sheets;
 with et_assembly_variants;			use et_assembly_variants;
--- with et_devices;					use et_devices;
 with et_device_rw;
 with et_package_names;
 with et_package_variant;
@@ -1046,7 +1045,6 @@ package body et_canvas_schematic_units is
 			text_in		=> menu_item,
 			position	=> 3);
 
-		-- use et_devices;
 	begin
 		return to_variant_name (var_name);
 	end extract_variant_name;

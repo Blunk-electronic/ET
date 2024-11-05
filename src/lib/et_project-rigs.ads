@@ -41,7 +41,6 @@
 with ada.containers;            	use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
--- with et_devices;					use et_devices;
 with et_device_purpose;				use et_device_purpose;
 with et_conventions;
 with et_assembly_variants;			use et_assembly_variants;
