@@ -203,7 +203,7 @@ is
 				-- A real device requires a package variant.
 				if pac_package_variant_name.length (variant) > 0 then
 
-					if variant_available (device_cursor_lib, variant) then
+					if is_variant_available (device_cursor_lib, variant) then
 						et_schematic.pac_devices_sch.insert (
 							container	=> module.devices,
 							inserted	=> inserted,
@@ -245,7 +245,7 @@ is
 
 		-- Add first available unit (according to search order specified in function first_unit)
 		-- to device in schematic.
-		unit_cursors := first_unit (device_cursor_lib);
+		unit_cursors := get_first_unit (device_cursor_lib);
 
 		-- If an internal unit is available, add it to device. If no internal unit available
 		-- but an external, add it to the device. So the operator will not take notice

@@ -229,7 +229,7 @@ is
 
 			-- Add first available unit (according to search order specified in function first_unit)
 			-- to device in schematic.
-			unit_cursors := first_unit (device_cursor_lib);
+			unit_cursors := get_first_unit (device_cursor_lib);
 
 			-- If an internal unit is available, add it to device. If no internal unit available
 			-- but an external, add it to the device. So the operator will not take notice

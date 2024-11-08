@@ -79,9 +79,7 @@ package body et_device_library is
 	function is_real (
 		device_cursor : in pac_devices_lib.cursor)
 		return boolean
-	is 
-		use pac_devices_lib;
-	begin
+	is begin
 		case element (device_cursor).appearance is
 			when APPEARANCE_VIRTUAL => return false;
 			when APPEARANCE_PCB => return true;
@@ -132,23 +130,24 @@ package body et_device_library is
 	
 
 	
-	function first_unit (
+	function get_first_unit (
 		device_cursor : in pac_devices_lib.cursor) 
 		return type_device_units
 	is
 		cursors : type_device_units; -- to be returned
 		
-		use pac_devices_lib;
 		use pac_units_internal;
 		use pac_units_external;
 
 		
 		procedure query_units (
 			device_name	: in pac_device_model_file.bounded_string;
-			device		: in type_device_model) is
+			device		: in type_device_model) 
+		is
 
 			function first_internal (add_level : in type_add_level) 
-				return pac_units_internal.cursor is
+				return pac_units_internal.cursor 
+			is
 			-- Searches for a unit with given add_level. Returns the cursor of that unit.
 			-- If no suitable unit found, returns cursor with no_element.
 				cursor : pac_units_internal.cursor := device.units_internal.first;
@@ -163,8 +162,10 @@ package body et_device_library is
 				return pac_units_internal.no_element;
 			end;
 
+			
 			function first_external (add_level : in type_add_level) 
-				return pac_units_external.cursor is
+				return pac_units_external.cursor 
+			is
 			-- Searches for a unit with given add_level. Returns the cursor of that unit.
 			-- If no suitable unit found, returns cursor with no_element.
 				cursor : pac_units_external.cursor := device.units_external.first;
@@ -178,6 +179,7 @@ package body et_device_library is
 				-- no unit found. return no_element:
 				return pac_units_external.no_element;
 			end;
+
 			
 		begin -- query_units
 			-- First search among the internal units for a MUST-unit:
@@ -203,6 +205,7 @@ package body et_device_library is
 				end if;
 			end if;
 
+			
 			-- if no suitable internal unit found, search among the external units:
 			if cursors.int = pac_units_internal.no_element then
 
@@ -239,21 +242,21 @@ package body et_device_library is
 			
 		end query_units;
 		
-	begin -- first_unit
+	begin
 		query_element (
 			position	=> device_cursor,
 			process		=> query_units'access);
 		
 		return cursors;
-	end first_unit;
+	end get_first_unit;
 
 	
 
-	function first_unit (
+	function get_first_unit (
 		device_cursor : in pac_devices_lib.cursor) 
 		return pac_unit_name.bounded_string
 	is
-		fu : constant type_device_units := first_unit (device_cursor);
+		fu : constant type_device_units := get_first_unit (device_cursor);
 
 		use pac_units_internal;
 		use pac_units_external;
@@ -277,26 +280,26 @@ package body et_device_library is
 		end if;
 
 		return unit_name;
-	end first_unit;
+	end get_first_unit;
+
 
 
 	
-	function any_unit (
+	function get_unit (
 		device_cursor	: in pac_devices_lib.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
-		return type_device_units is
-
+		return type_device_units 
+	is
 		cursors : type_device_units; -- to be returned
 		
-		use pac_devices_lib;
 		use pac_units_internal;
 		use pac_units_external;
 
 		
 		procedure query_units (
 			device_name	: in pac_device_model_file.bounded_string;
-			device		: in type_device_model) is
-		begin -- query_units
+			device		: in type_device_model) 
+		is begin
 			-- First search among the internal units:
 			cursors.int := device.units_internal.first;
 
@@ -333,23 +336,23 @@ package body et_device_library is
 			
 		end query_units;
 		
-	begin -- any_unit
+	begin
 		query_element (
 			position	=> device_cursor,
 			process		=> query_units'access);
 		
 		return cursors;
-	end any_unit;
+	end get_unit;
+
 
 
 	
-	function all_units (
+	function get_all_units (
 		device_cursor	: in pac_devices_lib.cursor)
 		return pac_unit_names.list
 	is
 		result : pac_unit_names.list; -- to be returned
 
-		use pac_devices_lib;
 		use pac_units_internal;
 		use pac_units_external;
 		
@@ -366,15 +369,15 @@ package body et_device_library is
 		iterate (element (device_cursor).units_external, query_external'access);
 
 		return result;
-	end all_units;
+	end get_all_units;
 
 	
 
 	
-	function units_total (
+	function get_unit_count (
 		device_cursor	: in pac_devices_lib.cursor)
-		return type_unit_count is
-		use pac_devices_lib;
+		return type_unit_count 
+	is
 		use pac_units_external;
 		use pac_units_internal;
 		e, i : count_type;
@@ -382,7 +385,7 @@ package body et_device_library is
 		e := length (element (device_cursor).units_external);
 		i := length (element (device_cursor).units_internal);
 		return type_unit_count (e + i);
-	end units_total;
+	end get_unit_count;
 
 
 	
@@ -421,7 +424,7 @@ package body et_device_library is
 	
 	
 	
-	function variant_available (
+	function is_variant_available (
 		device_cursor	: in pac_devices_lib.cursor;
 		variant			: in pac_package_variant_name.bounded_string)  -- D, N
 		return boolean is
@@ -443,17 +446,16 @@ package body et_device_library is
 			process		=> query_variants'access);
 		
 		return result;
-	end variant_available;
+	end is_variant_available;
 
 
 	
 
-	function available_variants (
+	function get_available_variants (
 		device_cursor	: in pac_devices_lib.cursor)
 		return pac_variants.map
 	is
 		result : pac_variants.map; -- to be returned
-		use pac_devices_lib;
 	begin
 		case element (device_cursor).appearance is
 			when APPEARANCE_PCB		=> result := element (device_cursor).variants;
@@ -461,15 +463,15 @@ package body et_device_library is
 		end case;
 		
 		return result;
-	end available_variants;
+	end get_available_variants;
 
 
 	
 	
-	function locate_device (model : in pac_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
+	function locate_device (
+		model : in pac_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
 		return pac_devices_lib.cursor 
 	is
-		use pac_devices_lib;
 		cursor : pac_devices_lib.cursor := find (device_library, model);
 	begin
 		return cursor;
@@ -483,7 +485,6 @@ package body et_device_library is
 		unit_name		: in pac_unit_name.bounded_string) -- like "I/O-Bank 3"
 		return type_unit_cursors 
 	is
-		use pac_devices_lib;
 		use pac_units_external;
 		use pac_units_internal;
 
@@ -554,15 +555,15 @@ package body et_device_library is
 
 
 	
-	function properties (
-	-- Returns the poperties of the given port of the given device.
+
+	function get_properties (
 		device_cursor	: in pac_devices_lib.cursor;
 		port_name		: in pac_port_name.bounded_string)
-		return pac_ports.cursor is
+		return pac_ports.cursor 
+	is
 
 		port_cursor : pac_ports.cursor; -- to be returned
 
-		use pac_devices_lib;
 
 		procedure query_units (
 			model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
@@ -576,18 +577,21 @@ package body et_device_library is
 
 			use pac_ports;
 
-			procedure query_ports (
+			
 			-- Query ports of internal unit.
+			procedure query_ports (
 				unit_name	: in pac_unit_name.bounded_string;
 				unit		: in type_unit_internal) is
 			begin				
 				port_cursor := find (unit.symbol.ports, port_name);
 			end query_ports;
 
-			procedure query_symbols (
+			
 			-- Query ports of external unit.
+			procedure query_symbols (
 				unit_name	: in pac_unit_name.bounded_string;
-				unit		: in type_unit_external) is
+				unit		: in type_unit_external) 
+			is
 				use pac_symbols;
 				symbol_cursor : pac_symbols.cursor := locate (unit.model);
 
@@ -603,6 +607,7 @@ package body et_device_library is
 					position	=> symbol_cursor,
 					process		=> query_ports'access);
 			end query_symbols;
+			
 			
 		begin -- query_units
 			-- search the port among the internal units first
@@ -638,14 +643,15 @@ package body et_device_library is
 			end if;
 
 		end query_units;
+
 		
-	begin -- properties
+	begin
 		query_element (
 			position	=> device_cursor,
 			process		=> query_units'access);
 		
 		return port_cursor;
-	end properties;
+	end get_properties;
 
 	
 		

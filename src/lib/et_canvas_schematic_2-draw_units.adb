@@ -944,7 +944,7 @@ procedure draw_units is
 				end if;
 
 				device_cursor_lib := locate_device (device_model);
-				unit_count := units_total (device_cursor_lib);
+				unit_count := get_unit_count (device_cursor_lib);
 
 				-- locate and draw the symbol:
 				locate_symbol (locate_unit (device_cursor_lib, unit_name));
@@ -989,7 +989,7 @@ procedure draw_units is
 					end if;
 
 					device_cursor_lib := locate_device (device_model);
-					unit_count := units_total (device_cursor_lib);
+					unit_count := get_unit_count (device_cursor_lib);
 
 					-- locate and draw the symbol:
 					locate_symbol (locate_unit (device_cursor_lib, unit_name));

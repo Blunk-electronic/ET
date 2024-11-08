@@ -135,7 +135,7 @@ package et_device_library is
 	-- units in the return is no_element.
 	--  If no suitable external unit found, the cursor of external
 	-- units in the return is no_element.
-	function first_unit (
+	function get_first_unit (
 		device_cursor : in pac_devices_lib.cursor) 
 		return type_device_units;
 
@@ -143,7 +143,7 @@ package et_device_library is
 	
 	-- Returns the name of the first unit.
 	-- It can be an internal or an external unit.
-	function first_unit (
+	function get_first_unit (
 		device_cursor : in pac_devices_lib.cursor) 
 		return pac_unit_name.bounded_string;
 
@@ -151,7 +151,7 @@ package et_device_library is
 	
 							
 	-- Returns the cursor of the desired internal or external unit.
-	function any_unit (
+	function get_unit (
 		device_cursor	: in pac_devices_lib.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return type_device_units;
@@ -161,14 +161,14 @@ package et_device_library is
 	package pac_unit_names is new doubly_linked_lists (pac_unit_name.bounded_string);
 
 	-- Returns a list of all unit names of the given device:
-	function all_units (
+	function get_all_units (
 		device_cursor	: in pac_devices_lib.cursor)
 		return pac_unit_names.list;
 
 
 	
 	-- Returns the total number of units the given device provides:
-	function units_total (
+	function get_unit_count (
 		device_cursor	: in pac_devices_lib.cursor)
 		return type_unit_count;
 
@@ -186,7 +186,7 @@ package et_device_library is
 	
 	-- Returns true if given device provides the given package variant.								   
 	-- The given device must be real. Means appearance SCH_PCB.
-	function variant_available (
+	function is_variant_available (
 		device_cursor	: in pac_devices_lib.cursor;
 		variant			: in pac_package_variant_name.bounded_string)  -- D, N
 		return boolean;
@@ -195,14 +195,15 @@ package et_device_library is
 	
 	-- Returns a list of available variants of the given device.
 	-- If the device is virtual, then an empty list will be returned.
-	function available_variants (
+	function get_available_variants (
 		device_cursor	: in pac_devices_lib.cursor)
 		return pac_variants.map;
 
 
 	
 	-- Locates the given generic device in container "devices".
-	function locate_device (model : in pac_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
+	function locate_device (
+		model : in pac_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
 		return pac_devices_lib.cursor;
 
 
@@ -219,6 +220,7 @@ package et_device_library is
 		end case;
 	end record;
 
+	
 	
 	-- Searches the given unit in the given device. Returns a cursor to 
 	-- either the internal or external unit.
@@ -254,7 +256,7 @@ package et_device_library is
 
 	
 	-- Returns the properties of the given port of the given device.
-	function properties ( -- CS rename to get_properties
+	function get_properties (
 		device_cursor	: in pac_devices_lib.cursor;
 		port_name		: in pac_port_name.bounded_string)
 		return pac_ports.cursor;

@@ -1166,17 +1166,17 @@ package body et_canvas_schematic_units is
 		-- NOTE: When adding a device, the first unit within the device
 		-- will be placed first. Further units are to be placed via
 		-- fetch operations:
-		unit_add.name := first_unit (device_cursor_lib);
+		unit_add.name := get_first_unit (device_cursor_lib);
 
 		-- For a nice preview we also need the total of units provided
 		-- the the device:
-		unit_add.total := units_total (unit_add.device);
+		unit_add.total := get_unit_count (unit_add.device);
 		
 		-- assign the prospective device name:
 		unit_add.device_pre := next_device_name (active_module, element (device_cursor_lib).prefix);
 		
 		-- get the available package variants:
-		variants := available_variants (device_cursor_lib);
+		variants := get_available_variants (device_cursor_lib);
 
 		case element (device_cursor_lib).appearance is
 			when APPEARANCE_PCB =>
@@ -1622,7 +1622,7 @@ package body et_canvas_schematic_units is
 		-- For a nice preview we also need the total of units provided
 		-- the the device:
 		-- put_line ("assign total");
-		unit_add.total := units_total (unit_add.device);
+		unit_add.total := get_unit_count (unit_add.device);
 			
 		-- assign the prospective device name:
 		-- put_line ("assign prospective device");
@@ -1630,7 +1630,7 @@ package body et_canvas_schematic_units is
 
 		-- collect the names of all units of the selected device:
 		-- put_line ("get all units");
-		unit_names := all_units (device_cursor_lib);
+		unit_names := get_all_units (device_cursor_lib);
 
 		-- Show the units of the device in a menu. After the operator
 		-- has selected a unit, procedure unit_selected finally

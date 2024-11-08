@@ -89,7 +89,6 @@ is
 	use pac_geometry_2;
 
 	use pac_text_schematic;
-	-- use et_devices;
 	use et_device_name;
 	use et_canvas_schematic_2;
 	use et_canvas_schematic_2.pac_canvas;
@@ -2687,7 +2686,7 @@ is
 						--unit_add.variant	:= device_variant_name (active_module, device_name);
 						-- CS: really required ? requires test whether the device is real
 						
-						unit_add.total		:= units_total (unit_add.device);
+						unit_add.total		:= get_unit_count (unit_add.device);
 						unit_add.device_pre	:= device_name;
 					
 						menu_propose_units_on_fetch (
@@ -2713,7 +2712,7 @@ is
 						--unit_add.variant	:= device_variant_name (active_module, device_name);
 						-- CS: really required ? requires test whether the device is real
 
-						unit_add.total		:= units_total (unit_add.device);
+						unit_add.total		:= get_unit_count (unit_add.device);
 						unit_add.device_pre	:= device_name;
 						
 						unit_name := to_unit_name (f (6));

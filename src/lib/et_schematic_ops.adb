@@ -2358,7 +2358,7 @@ package body et_schematic_ops is
 		cursor_lib : pac_devices_lib.cursor;	
 	begin
 		cursor_lib := locate_device (module, device);
-		return available_variants (cursor_lib);
+		return get_available_variants (cursor_lib);
 	end get_available_variants;
 
 
@@ -2401,7 +2401,7 @@ package body et_schematic_ops is
 			begin
 				cursor_lib := locate_device (dev.model);
 
-				if variant_available (cursor_lib, variant) then
+				if is_variant_available (cursor_lib, variant) then
 					dev.variant := variant;
 				else
 					raise semantic_error_1 with
@@ -2927,7 +2927,7 @@ package body et_schematic_ops is
 		log_indentation_up;
 		
 		-- get the names of all units of the device
-		all_unit_names := all_units (device_cursor_lib);
+		all_unit_names := get_all_units (device_cursor_lib);
 
 		-- extract available units
 		all_unit_names.iterate (query_in_use'access);
@@ -2979,7 +2979,7 @@ package body et_schematic_ops is
 		device_cursor_lib := device_model_cursor (module_cursor, device_name);
 
 		-- get the names of all units of the device
-		all_unit_names := all_units (device_cursor_lib);
+		all_unit_names := get_all_units (device_cursor_lib);
 
 		-- test whether the given unit is defined in the model:
 		if contains (all_unit_names, unit_name) then
@@ -4148,7 +4148,7 @@ package body et_schematic_ops is
 					process		=> query_variants'access);
 
 				-- Get the electrical properties of the port of the current device:
-				port_properties_cursor := et_device_library.properties (device_cursor_lib, port_name);
+				port_properties_cursor := get_properties (device_cursor_lib, port_name);
 
 				-- Create the port where pointer "properties" is pointing at.
 				-- It is created with the direction obtained from port_properties_cursor:

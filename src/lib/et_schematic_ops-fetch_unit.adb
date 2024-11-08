@@ -211,7 +211,7 @@ is
 
 			-- Get cursor to the desired unit in device model.
 			-- The unit can be internal or external.
-			unit_cursors := any_unit (device_cursor_lib, unit_name);
+			unit_cursors := get_unit (device_cursor_lib, unit_name);
 
 			-- If the unit is internal, add it to the device in the schematic:
 			if unit_cursors.int /= pac_units_internal.no_element then
