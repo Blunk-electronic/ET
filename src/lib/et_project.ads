@@ -49,6 +49,9 @@ with et_project_name;			use et_project_name;
 
 
 package et_project is
+
+
+-- DIRECTORY NAMES:
 	
 	-- after importing a foreign project, native ET projects are created here:
 	directory_import		: constant string := "et_import";
@@ -75,34 +78,59 @@ package et_project is
 	directory_miscellaneous	: constant string := "miscellaneous";		
 
 
--- KEYWORDS
+
+	
+	
+-- KEYWORDS:
+	
 	keyword_default			: constant string := "default";
 
+
+
+	
+-- PROJECTS ROOT DIRECTORY:
 	
 	-- This is the root directory where all projects live:
 	projects_root_dir_length : constant natural := 100;
-	package type_projects_root_dir is new generic_bounded_length (projects_root_dir_length);
-	projects_root_dir : type_projects_root_dir.bounded_string;
+	
+	package pac_root_directory is new generic_bounded_length (projects_root_dir_length);
+	
+	projects_root_dir : pac_root_directory.bounded_string;
 	
 	
 
+
+	
+-- PROJECT PATH:
+	
+	project_path_max : constant natural := 200;
+	
+	package pac_project_path is new generic_bounded_length (project_path_max);
+	
+	function to_string (path : in pac_project_path.bounded_string) return string;
+	
+	function to_project_path (path : in string) return pac_project_path.bounded_string;
+
+
+
+	
+	
+-- ACTIVE PROJECT:
 	
 	-- Here we store the name of the currently open project:
 	active_project : pac_project_name.bounded_string;
 
 	
 
-	
-	project_path_max : constant natural := 200;
-	package type_et_project_path is new generic_bounded_length (project_path_max);
-	function to_string (path : in type_et_project_path.bounded_string) return string;
-	function to_project_path (path : in string) return type_et_project_path.bounded_string;
 
+
+	
 	-- Tests whether the project name is a child directory of the current working directory.
 	-- Raises constraint error otherwise.
 	procedure validate_project_name (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		log_threshold 	: in type_log_level);
+
 	
 	-- Creates given project directory.
 	-- Creates a default rig configuration file.										   
@@ -112,12 +140,16 @@ package et_project is
 		module_name		: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver
 		log_threshold	: in type_log_level);
 
+
+	
 	-- Creates a bare project (without any configuration files).
 	-- Already existing projects in given path are overwritten.
 	procedure create_project_directory_bare (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		log_threshold	: in type_log_level);
 
+
+	
 	-- Opens the project with the given name. Assumes the project to exist
 	-- in the current directory.
 	-- Assigns to the global variable "current_project" the given project_name.
@@ -125,9 +157,13 @@ package et_project is
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		log_threshold 	: in type_log_level);
 
+
+	
 	-- Files outside the project directory MUST NOT be saved. To test a file for its location
 	-- this function shall be used.
 	function inside_project_directory (file_name : in string) return boolean;
+
+
 	
 	-- Saves the current project under the given destination like blood_sample_analyzer_experimental.
 	-- Saves generic modules that are inside the project. Modules outside the project directory are
@@ -140,6 +176,8 @@ package et_project is
 	procedure save_project (
 		destination		: in pac_project_name.bounded_string; -- blood_sample_analyzer_experimental
 		log_threshold 	: in type_log_level);
+
+
 	
 end et_project;
 

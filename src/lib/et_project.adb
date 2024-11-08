@@ -57,14 +57,14 @@ package body et_project is
 
 
 	
-	function to_string (path : in type_et_project_path.bounded_string) return string is begin
-		return type_et_project_path.to_string (path);
+	function to_string (path : in pac_project_path.bounded_string) return string is begin
+		return pac_project_path.to_string (path);
 	end to_string;
 
 
 	
-	function to_project_path (path : in string) return type_et_project_path.bounded_string is begin
-		return type_et_project_path.to_bounded_string (path);
+	function to_project_path (path : in string) return pac_project_path.bounded_string is begin
+		return pac_project_path.to_bounded_string (path);
 	end to_project_path;
 
 
@@ -146,7 +146,7 @@ package body et_project is
 	is
 		use ada.directories;
 		use et_string_processing;
-		use type_et_project_path;
+		use pac_project_path;
 
 -- 		use modules;
 		use modules.pac_generic_modules;
@@ -456,6 +456,8 @@ package body et_project is
 		end if;
 	end inside_project_directory;
 
+
+	
 	
 	procedure save_project (
 		destination		: in pac_project_name.bounded_string; -- blood_sample_analyzer_experimental
@@ -474,7 +476,7 @@ package body et_project is
 		current_working_directory : constant string := current_directory;
 
 		-- break down destination into path and project name:
-		path : type_et_project_path.bounded_string := to_project_path (containing_directory (to_string (destination)));
+		path : pac_project_path.bounded_string := to_project_path (containing_directory (to_string (destination)));
 		name : pac_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
 		
 		procedure query_modules (module_cursor : in pac_generic_modules.cursor) is

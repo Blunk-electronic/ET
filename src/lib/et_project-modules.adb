@@ -72,15 +72,6 @@ package body et_project.modules is
 	end to_project_name;
 
 	
-	function to_string (path : in type_et_project_path.bounded_string) return string is begin
-		return type_et_project_path.to_string (path);
-	end to_string;
-
-	
-	function to_project_path (path : in string) return type_et_project_path.bounded_string is begin
-		return type_et_project_path.to_bounded_string (path);
-	end to_project_path;
-
 
 	function get_active_module return string is
 		use pac_module_name;
