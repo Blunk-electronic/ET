@@ -62,7 +62,8 @@ with et_export;
 with et_conventions;
 with et_kicad.schematic;
 with et_kicad_to_native;
-with et_project;
+with et_project_name;			use et_project_name;
+-- with et_project;
 with et_project.modules;
 with et_project.rigs;
 with et_scripting;
@@ -97,10 +98,10 @@ procedure et is
 	conv_file_name_create	: et_conventions.pac_file_name.bounded_string;
 -- 	conv_file_name_use		: et_conventions.pac_file_name.bounded_string;
 
-	project_name_create		: et_project.pac_project_name.bounded_string; -- the project to be created
-	project_name_import		: et_project.pac_project_name.bounded_string; -- the project to be imported
-	project_name_open 		: et_project.pac_project_name.bounded_string; -- the project to be opened
-	project_name_save_as	: et_project.pac_project_name.bounded_string; -- the "save as" name of the project
+	project_name_create		: pac_project_name.bounded_string; -- the project to be created
+	project_name_import		: pac_project_name.bounded_string; -- the project to be imported
+	project_name_open 		: pac_project_name.bounded_string; -- the project to be opened
+	project_name_save_as	: pac_project_name.bounded_string; -- the "save as" name of the project
 
 	module_file_name		: pac_module_file_name.bounded_string;	-- the name of the module file like "motor_driver.mod"
 	module_sheet			: et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
@@ -201,7 +202,7 @@ procedure et is
 
 					elsif full_switch = switch_import_project then
 						log (text => arg & full_switch & space & strip_directory_separator (parameter));
-						project_name_import := et_project.to_project_name (parameter);
+						project_name_import := to_project_name (parameter);
 
 					elsif full_switch = switch_import_format then
 						log (text => arg & full_switch & space & parameter);
@@ -214,15 +215,15 @@ procedure et is
 					-- project
 					elsif full_switch = switch_native_project_create then
 						log (text => arg & full_switch & space & parameter);
-						project_name_create := et_project.to_project_name (remove_trailing_directory_separator (parameter));
+						project_name_create := to_project_name (remove_trailing_directory_separator (parameter));
 						
 					elsif full_switch = switch_native_project_open then
 						log (text => arg & full_switch & space & parameter);
-						project_name_open := et_project.to_project_name (remove_trailing_directory_separator (parameter));
+						project_name_open := to_project_name (remove_trailing_directory_separator (parameter));
 
 					elsif full_switch = switch_native_project_save_as then
 						log (text => arg & full_switch & space & parameter);
-						project_name_save_as := et_project.to_project_name (remove_trailing_directory_separator (parameter));
+						project_name_save_as := to_project_name (remove_trailing_directory_separator (parameter));
 
 					elsif full_switch = switch_native_project_module then
 						log (text => arg & full_switch & space & parameter);
@@ -376,6 +377,7 @@ procedure et is
 		end if;
 	end;
 
+
 	
 	procedure create_report_directory is begin	
 		if not exists (compose (work_directory, report_directory)) then
@@ -384,15 +386,15 @@ procedure et is
 		end if;
 	end;
 
+
 	
 	procedure import_project is -- CS move to et_import ?
 	-- As a result of the import, a native project is created in the work_directory (ET/...).
-		use et_project.pac_project_name;
 		use et_import;
 		use et_system_info;
 	begin
 		-- Test if project name specified and if project base directory exists:
-		if length (project_name_import) > 0 then
+		if get_length (project_name_import) > 0 then
 
 			-- If project name was provided with a trailing directory separator it must be removed.
 -- 			project_name_import := et_project.to_project_name (strip_directory_separator (et_project.to_string (project_name_import)));
@@ -408,7 +410,7 @@ procedure et is
 			raise constraint_error;
 		end if;		
 
-		log (text => "importing project " & et_project.to_string (project_name_import) & " ...", console => true);
+		log (text => "importing project " & to_string (project_name_import) & " ...", console => true);
 		log (text => "CAD format " & to_string (et_import.cad_format));
 				
 		case et_import.cad_format is
@@ -423,7 +425,7 @@ procedure et is
 				log_indentation_up;
 
 				-- The project will be saved in the current working directory:
-				et_kicad_to_native.to_native (et_project.to_project_name
+				et_kicad_to_native.to_native (to_project_name
 					(base_name (to_string (project_name_import))), log_threshold => 0);
 				log_indentation_down;
 				
@@ -548,7 +550,6 @@ procedure et is
 	
 
 	procedure process_commandline_arguments is
-		use et_project.pac_project_name;
 		use et_conventions.pac_file_name;
 		use pac_package_model_file_name;
 		use et_symbols.pac_symbol_model_file;
@@ -570,7 +571,7 @@ procedure et is
 			et_conventions.make_default_conventions (conv_file_name_create, log_threshold => 0);
 		else
 			-- If operator wants to create a new project it will be created in the current directory:
-			if length (project_name_create) > 0 then
+			if get_length (project_name_create) > 0 then
 
 				-- create project directory
 				runmode := MODE_HEADLESS;
@@ -583,11 +584,11 @@ procedure et is
 					log_threshold	=> 0);
 				
 			-- If operator wants to import a project it will be done here.
-			elsif length (project_name_import) > 0 then
+			elsif get_length (project_name_import) > 0 then
 				import_project;
 
 			-- Otherwise a native project will be opened:
-			elsif length (project_name_open) > 0 then
+			elsif get_length (project_name_open) > 0 then
 
 				et_project.open_project (project_name_open, log_threshold => 0);
 
@@ -632,7 +633,7 @@ procedure et is
 				end if;
 				
 				-- optionally the project can be saved with a different name
-				if length (project_name_save_as) > 0 then
+				if get_length (project_name_save_as) > 0 then
 					et_project.save_project (project_name_save_as, log_threshold => 0);
 				end if;
 
