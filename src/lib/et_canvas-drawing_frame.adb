@@ -37,7 +37,7 @@
 --
 
 
-with et_project;
+with et_project_name;
 with et_project.modules;
 with et_assembly_variants;
 with et_time;
@@ -380,6 +380,7 @@ package body et_canvas.drawing_frame is
 		use et_alignment;
 		use pac_draw_text;
 		use et_project;
+		use et_project_name;
 		use et_project.modules;
 		use et_assembly_variants;
 

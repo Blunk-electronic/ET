@@ -1975,11 +1975,8 @@ package body et_kicad.schematic is
 
 
 	
-	-- Imports the design libraries and the actual design as specified by parameter "project".
-	-- Inserts the created (sub)module in the module collection (see type_modules).
-	-- Leaves the global module_cursor pointing where the module was inserted.
 	procedure import_design (
-		project			: in et_project.pac_project_name.bounded_string;
+		project			: in pac_project_name.bounded_string;
 		log_threshold	: in type_log_level)
 	is
 		-- backup current working directory
@@ -2179,7 +2176,7 @@ package body et_kicad.schematic is
 				log (
 					text => "V4 project file is " 
 					& enclose_in_quotes (compose (
-						name		=> base_name (et_project.pac_project_name.to_string (project)), 
+						name		=> base_name (to_string (project)), 
 						extension	=> file_extension_project)) & " ...",
 					level => log_threshold + 1
 					);
@@ -2196,10 +2193,11 @@ package body et_kicad.schematic is
 					file => project_file_handle,
 					mode => in_file,
 					name => compose (
-								name		=> base_name (et_project.pac_project_name.to_string (project)), 
+								name		=> base_name (to_string (project)), 
 								extension	=> file_extension_project)
 					);
 				set_input (project_file_handle);
+
 				
 				while not end_of_file loop
 
@@ -3077,8 +3075,8 @@ package body et_kicad.schematic is
 				locate_package_libraries; -- as given in container fp_lib_tables. creates empty libraries in et_kicad_pcb.package_libraries.
 				
 				log_indentation_down;
-
 			end read_lib_tables;
+
 			
 			use et_import;
 			
@@ -3116,7 +3114,7 @@ package body et_kicad.schematic is
 			-- It is just a matter of file extension.
 			return to_schematic_file_name (
 				compose (
-					name		=> base_name (et_project.pac_project_name.to_string (project)),
+					name		=> base_name (to_string (project)),
 					extension	=> file_extension_schematic)
 					);
 		end read_project_file;
@@ -3134,6 +3132,7 @@ package body et_kicad.schematic is
 		module_name : type_submodule_name.bounded_string; -- the name of the module to be created
 		module_inserted : boolean := false; -- goes true if module already created. should never happen
 
+		
 		procedure save_libraries is
 			use et_import;
 
@@ -3169,11 +3168,12 @@ package body et_kicad.schematic is
 			
 		end save_libraries;
 		
+		
 	begin -- import_design
 
 		-- change to given project directory
-		log (text => "changing to project directory " & (et_project.to_string (project) & " ..."), level => log_threshold);
-		set_directory (et_project.to_string (project));
+		log (text => "changing to project directory " & (to_string (project) & " ..."), level => log_threshold);
+		set_directory (to_string (project));
 		
 		case et_import.cad_format is
 			when et_import.KICAD_V4 | et_import.KICAD_V5 =>

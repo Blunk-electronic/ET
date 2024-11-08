@@ -54,20 +54,6 @@ with et_project.configuration;
 
 package body et_project is
 	
-	function to_string (
-		project_name : in pac_project_name.bounded_string) 
-		return string 
-	is begin
-		return pac_project_name.to_string (project_name);
-	end to_string;
-
-	
-	function to_project_name (
-		name : in string) 
-		return pac_project_name.bounded_string 
-	is begin
-		return pac_project_name.to_bounded_string (name);
-	end to_project_name;
 
 
 	
@@ -150,6 +136,8 @@ package body et_project is
 		create_directory (compose (path, directory_miscellaneous));
 	end create_supplementary_directories;
 
+
+
 	
 	procedure create_project_directory (
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
@@ -158,7 +146,6 @@ package body et_project is
 	is
 		use ada.directories;
 		use et_string_processing;
-		use pac_project_name;
 		use type_et_project_path;
 
 -- 		use modules;
@@ -205,7 +192,8 @@ package body et_project is
 			close (file_handle);
 			
 		end create_project_configuration;
-		
+
+
 		procedure create_module_file is
 			-- backup the current working directory
 			previous_directory : constant string := current_directory;
@@ -241,6 +229,7 @@ package body et_project is
 			set_directory (previous_directory);
 		end create_module_file;
 
+		
 		-- Creates an example rig configuration file.
 		procedure create_rig_configuration is
 			file_handle : ada.text_io.file_type;
@@ -304,6 +293,7 @@ package body et_project is
 			close (file_handle);
 			
 		end create_rig_configuration;
+
 		
 	begin -- create_project_directory
 		log (text => "creating native project " & enclose_in_quotes (to_string (project_name)) &
@@ -346,7 +336,6 @@ package body et_project is
 	is		
 		use ada.directories;
 		use et_string_processing;
-		use pac_project_name;
 
 		path : constant string := to_string (project_name);
 

@@ -79,6 +79,9 @@ with et_canvas_board_tracks;
 
 with et_undo_redo;
 
+with et_project_name;
+
+
 
 package body et_canvas_board_2 is
 
@@ -1041,6 +1044,7 @@ package body et_canvas_board_2 is
 		script : in pac_script_name.bounded_string) 
 	is
 		use ada.directories;
+		use et_project_name;
 		use et_scripting;
 		use et_modes;
 		use et_domains;
@@ -1126,6 +1130,7 @@ package body et_canvas_board_2 is
 	
 	procedure execute_command (self : access gtk_entry_record'class) is 
 		use ada.directories;
+		use et_project_name;
 		use et_string_processing;
 		use et_scripting;
 		use et_modes;

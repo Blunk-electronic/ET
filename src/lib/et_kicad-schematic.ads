@@ -49,7 +49,7 @@ with ada.containers.vectors;
 
 with et_net_names;				use et_net_names;
 with et_nets;					use et_nets;
-with et_project;
+with et_project_name;			use et_project_name;
 with et_net_labels;				use et_net_labels;
 with et_terminals;
 with et_package_names;			use et_package_names;
@@ -542,13 +542,16 @@ package et_kicad.schematic is
 		element_type	=> type_net);
 	
 	
-	procedure import_design (
-		--first_instance 	: in boolean := false;
-		project			: in et_project.pac_project_name.bounded_string;								
-		log_threshold	: in type_log_level); 
 	-- Imports the design as specified by project_name.
 	-- Inserts the created submodule in container "modules".
 	-- Leaves the module_cursor pointing where the module was inserted.
+	-- Imports the design libraries and the actual design as specified by parameter "project".
+	-- Inserts the created (sub)module in the module collection (see type_modules).
+	-- Leaves the global module_cursor pointing where the module was inserted.
+	procedure import_design (
+		--first_instance 	: in boolean := false;
+		project			: in pac_project_name.bounded_string;								
+		log_threshold	: in type_log_level); 
 
 
 -- PROJECT FILE RELATED KEYWORDS AND VARIABLES

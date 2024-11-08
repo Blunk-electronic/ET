@@ -48,7 +48,7 @@ with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
 
 with et_net_names;					use et_net_names;
-with et_project;
+with et_project_name;				use et_project_name;
 with et_coordinates_2;
 with et_logging;					use et_logging;
 with et_pcb;
@@ -65,14 +65,14 @@ package et_kicad_to_native is
 	-- 2. Moves schematic objects from negative to positive y coordinates.
 	--    (The origin in kicad is the upper left corner. The origin in ET is the lower left corner.)
 	
-	procedure to_native (
-		project_name	: in et_project.pac_project_name.bounded_string;
-		log_threshold	: in type_log_level);
 	-- Converts the kicad module (incl. component libraries) to a native module.
 	-- Converts the packages (from package_libraries) to native packages.
 	-- NOTE: Packages of the board (incl. their deviations/modifications
 	-- from the package_libraries) are ignored !
 	-- Creates a directory named after project_name and saves the module in that directory.
+	procedure to_native (
+		project_name	: in pac_project_name.bounded_string;
+		log_threshold	: in type_log_level);
 		
 end et_kicad_to_native;
 

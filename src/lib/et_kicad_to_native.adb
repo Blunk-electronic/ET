@@ -2398,7 +2398,7 @@ package body et_kicad_to_native is
 
 	
 	procedure to_native (
-		project_name	: in et_project.pac_project_name.bounded_string;
+		project_name	: in pac_project_name.bounded_string;
 		log_threshold	: in type_log_level) 
 	is
 		use et_package_names;
@@ -3895,8 +3895,7 @@ package body et_kicad_to_native is
 			log_indentation_down;			
 		end save_libraries;
 
-		
-		use et_project.pac_project_name;
+
 
 	begin -- to_native
 	

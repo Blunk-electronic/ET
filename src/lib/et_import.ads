@@ -45,7 +45,7 @@ with ada.directories;			use ada.directories;
 with ada.strings.bounded; 		use ada.strings.bounded;
 
 with et_schematic;				use et_schematic;
-with et_project;
+with et_project_name;			use et_project_name;
 
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
@@ -72,11 +72,13 @@ package et_import is
 
 	function invalid_cad_format (format : in type_cad_format) return string;
 	-- Returns a message that the given format is not supported.
+
+
 	
-	procedure validate_project (
-		name 		: in et_project.pac_project_name.bounded_string;
-		cad_format	: in type_cad_format := UNKNOWN);
 	-- Checks if the given project of the given format exists in the current working directory.
+	procedure validate_project (
+		name 		: in pac_project_name.bounded_string;
+		cad_format	: in type_cad_format := UNKNOWN);
 	
 end et_import;
 

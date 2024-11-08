@@ -45,6 +45,7 @@ with et_net_names;				use et_net_names;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_module_names;			use et_module_names;
+with et_project_name;			use et_project_name;
 
 
 package et_project is
@@ -84,21 +85,12 @@ package et_project is
 	projects_root_dir : type_projects_root_dir.bounded_string;
 	
 	
-	project_name_max : constant natural := 100;
-	package pac_project_name is new generic_bounded_length (project_name_max);
 
 	
 	-- Here we store the name of the currently open project:
 	active_project : pac_project_name.bounded_string;
 
 	
-	function to_string (
-		project_name : in pac_project_name.bounded_string) 
-		return string;
-
-	function to_project_name (
-		name : in string) 
-		return pac_project_name.bounded_string;
 
 	
 	project_path_max : constant natural := 200;
