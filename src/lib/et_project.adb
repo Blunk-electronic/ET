@@ -50,6 +50,7 @@ with et_general_rw;				use et_general_rw;
 with et_project.modules;
 with et_project.rigs;
 with et_project.configuration;
+with et_rig_name;
 
 
 package body et_project is
@@ -235,6 +236,7 @@ package body et_project is
 			file_handle : ada.text_io.file_type;
 
 			use et_project.rigs;
+			use et_rig_name;
 			rig_conf_file : pac_file_name.bounded_string; -- led_matrix.conf
 
 			example_instance_name : constant string := "MOD1";
@@ -509,7 +511,12 @@ package body et_project is
 			log_indentation_down;			
 		end query_modules;
 
-		procedure query_rig_configuration (rig_cursor : in rigs.pac_rigs.cursor) is
+		
+		
+		procedure query_rig_configuration (
+			rig_cursor : in rigs.pac_rigs.cursor) 
+		is
+			use et_rig_name;
 			use pac_file_name;
 			rig_name : pac_file_name.bounded_string := key (rig_cursor);
 		begin
@@ -525,6 +532,8 @@ package body et_project is
 			log_indentation_down;
 		end query_rig_configuration;
 
+
+		
 		procedure copy_design_rules is
 		begin
 			log (text => "copying pcb design rules ...", level => log_threshold + 1);
