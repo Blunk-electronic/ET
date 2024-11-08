@@ -77,7 +77,7 @@ with et_symbols;
 with et_symbol_rw;
 
 with et_device_appearance;
-with et_devices;				use et_devices;
+with et_device_library;			use et_device_library;
 with et_device_model_names;		use et_device_model_names;
 with et_device_rw;
 
@@ -482,7 +482,7 @@ procedure et is
 		if length (device_name_save_as) > 0 then
 			et_device_rw.save_device (
 				file_name 		=> device_name_save_as,
-				device			=> et_devices.pac_devices_lib.last_element (et_devices.devices),
+				device			=> pac_devices_lib.last_element (devices),
 				log_threshold	=> 0);
 		end if;
 	end;

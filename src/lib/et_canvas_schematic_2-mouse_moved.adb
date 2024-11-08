@@ -38,7 +38,6 @@
 --
 
 
-with et_device_model;					use et_device_model;
 with et_device_library;					use et_device_library;
 
 

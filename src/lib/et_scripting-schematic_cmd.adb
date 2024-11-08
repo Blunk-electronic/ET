@@ -62,7 +62,6 @@ with et_submodules;
 with et_assembly_variants;
 -- with et_pick_and_place;
 with et_netlists;
-with et_device_model;					use et_device_model;
 with et_device_library;					use et_device_library;
 with et_device_placeholders;
 with et_device_purpose;					use et_device_purpose;
