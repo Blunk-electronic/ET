@@ -442,17 +442,20 @@ package body et_schematic_ops is
 	end delete_device;
 
 	
+
+
 	
 	function get_ports_of_unit (
 		device_cursor	: in pac_devices_sch.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return pac_ports.map 
 	is
-
 		use et_symbols;
 		ports : pac_ports.map; -- to be returned
 		
 		model : pac_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
+
+		use pac_devices_lib;
 		device_cursor_lib : pac_devices_lib.cursor;
 
 		
@@ -517,11 +520,11 @@ package body et_schematic_ops is
 
 		-- Get cursor to device in device library (the model name is the key into the device library).
 		-- CS: constraint_error will arise here if no associated device exists.
-		device_cursor_lib := pac_devices_lib.find (devices, model);
+		device_cursor_lib := find (device_library, model);
 
 		-- Query external units of device (in library). It is most likely that
 		-- the unit is among the external units:
-		pac_devices_lib.query_element (
+		query_element (
 			position	=> device_cursor_lib,
 			process		=> query_external_units'access);
 
@@ -529,7 +532,7 @@ package body et_schematic_ops is
 		if pac_ports.length (ports) = 0 then
 
 			-- Query internal units of device (in library):
-			pac_devices_lib.query_element (
+			query_element (
 				position	=> device_cursor_lib,
 				process		=> query_internal_units'access);
 		end if;
@@ -549,6 +552,8 @@ package body et_schematic_ops is
 		
 	end get_ports_of_unit;
 
+
+	
 	
 	procedure move_ports (
 		ports	: in out pac_ports.map; -- the portlist
@@ -1045,6 +1050,7 @@ package body et_schematic_ops is
 		use et_symbols;
 		use et_device_appearance;
 		use pac_devices_sch;
+		use pac_devices_lib;
 
 		-- The positions to be returned depend on the appearance of the requested device:
 		result : type_default_text_positions (element (device_cursor).appearance); -- to be returned
@@ -1161,11 +1167,11 @@ package body et_schematic_ops is
 
 		-- Get cursor to device in device library (the model name is the key into the device library).
 		-- CS: constraint_error will arise here if no associated device exists.
-		device_cursor_lib := pac_devices_lib.find (devices, model);
+		device_cursor_lib := find (device_library, model);
 
 		-- Query external units of device (in library). It is most likely that
 		-- the unit is among the external units:
-		pac_devices_lib.query_element (
+		query_element (
 			position	=> device_cursor_lib,
 			process		=> query_external_units'access);
 
@@ -1173,7 +1179,7 @@ package body et_schematic_ops is
 		if unit_status = INT then
 
 			-- Query internal units of device (in library):
-			pac_devices_lib.query_element (
+			query_element (
 				position	=> device_cursor_lib,
 				process		=> query_internal_units'access);
 		end if;

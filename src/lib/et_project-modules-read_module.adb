@@ -3045,7 +3045,7 @@ is
 
 					-- Locate the device in the library. CS: It should be there, otherwise exception arises here:
 					device_cursor := pac_devices_lib.find (
-						container	=> et_device_library.devices,
+						container	=> et_device_library.device_library,
 						key			=> device.model); -- libraries/devices/7400.dev
 
 					-- Query package variants

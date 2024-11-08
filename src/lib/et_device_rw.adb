@@ -107,20 +107,20 @@ package body et_device_rw is
 		log (text => "appearance " & to_string (appearance) & " ...", level => log_threshold);
 		
 		-- Test if device already exists. If already exists, issue warning and exit.
-		if contains (devices, device_name) then
+		if contains (device_library, device_name) then
 			log (WARNING, text => "device already exists -> skipped", level => log_threshold + 1);
 		else
 			case appearance is
 				when APPEARANCE_PCB =>
 					insert (
-						container	=> devices,
+						container	=> device_library,
 						key			=> device_name,
 						new_item	=> (appearance => APPEARANCE_PCB, others => <>)
 						);
 
 				when APPEARANCE_VIRTUAL =>
 					insert (
-						container	=> devices,
+						container	=> device_library,
 						key			=> device_name,
 						new_item	=> (appearance => APPEARANCE_VIRTUAL, others => <>)
 						);
@@ -320,7 +320,7 @@ package body et_device_rw is
 
 
 	
-	-- Opens the device and stores it in container devices.
+	-- Opens the device and stores it in container device_library.
 	procedure read_device (
 		file_name 		: in pac_device_model_file.bounded_string; -- libraries/devices/7400.dev
 		check_layers	: in et_pcb_stack.type_layer_check := (check => et_pcb_stack.NO);
@@ -1524,9 +1524,9 @@ package body et_device_rw is
 		log (text => "reading device model " & to_string (file_name) & " ...", level => log_threshold);
 		log_indentation_up;
 		
-		-- test if container devices already contains a model
+		-- test if container device_library already contains a model
 		-- named "file_name". If so, there would be no need to read the file_name again.
-		if pac_devices_lib.contains (devices, file_name) then
+		if pac_devices_lib.contains (device_library, file_name) then
 			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
 			-- If the model file is to be read, first check if the file exists.
@@ -1578,7 +1578,7 @@ package body et_device_rw is
 			set_input (previous_input);
 			close (file_handle);
 
-			-- Assemble final device and insert it in devices:
+			-- Assemble final device and insert it in device_library:
 			case appearance is
 				when APPEARANCE_PCB => -- a real device
 
@@ -1594,7 +1594,7 @@ package body et_device_rw is
 					end if;
 
 					pac_devices_lib.insert (
-						container	=> devices, 
+						container	=> device_library, 
 						key			=> file_name, -- libraries/devices/7400.dev
 						new_item	=> (
 								appearance		=> APPEARANCE_PCB,
@@ -1607,7 +1607,7 @@ package body et_device_rw is
 
 				when APPEARANCE_VIRTUAL =>
 					pac_devices_lib.insert (
-						container	=> devices, 
+						container	=> device_library, 
 						key			=> file_name, -- libraries/devices/power_gnd.dev
 						new_item	=> (
 								appearance		=> APPEARANCE_VIRTUAL,

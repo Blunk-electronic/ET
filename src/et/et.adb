@@ -482,7 +482,7 @@ procedure et is
 		if length (device_name_save_as) > 0 then
 			et_device_rw.save_device (
 				file_name 		=> device_name_save_as,
-				device			=> pac_devices_lib.last_element (devices),
+				device			=> pac_devices_lib.last_element (device_library),
 				log_threshold	=> 0);
 		end if;
 	end;

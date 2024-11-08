@@ -100,7 +100,7 @@ package et_device_library is
 
 
 	-- HERE RIG WIDE DEVICES ARE KEPT:
-	devices : pac_devices_lib.map; -- CS rename to device_models ?
+	device_library : pac_devices_lib.map;
 
 
 	-- Returns true if the given device has a physical counterpart in 

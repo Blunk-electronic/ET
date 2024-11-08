@@ -470,7 +470,7 @@ package body et_device_library is
 		return pac_devices_lib.cursor 
 	is
 		use pac_devices_lib;
-		cursor : pac_devices_lib.cursor := pac_devices_lib.find (devices, model);
+		cursor : pac_devices_lib.cursor := find (device_library, model);
 	begin
 		return cursor;
 	end;

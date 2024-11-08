@@ -3651,7 +3651,7 @@ package body et_kicad_to_native is
 					case element (component_cursor).appearance is
 						when APPEARANCE_VIRTUAL =>
 							pac_devices_lib.insert (
-								container	=> devices,
+								container	=> device_library,
 								position	=> device_cursor,
 								inserted	=> inserted,
 								key			=> device_model,
@@ -3668,7 +3668,7 @@ package body et_kicad_to_native is
 							--log (text => "variant count " & count_type'image (pac_variants.length (element (component_cursor).variants)));
 							
 							pac_devices_lib.insert (
-								container	=> devices,
+								container	=> device_library,
 								position	=> device_cursor,
 								inserted	=> inserted,
 								key			=> device_model,
@@ -3693,7 +3693,7 @@ package body et_kicad_to_native is
 								if inserted then
 									-- rename package model file name in variants
 									pac_devices_lib.update_element (
-										container	=> devices,
+										container	=> device_library,
 										position	=> device_cursor,
 										process		=> rename_package_model_in_variants'access);
 								end if;
@@ -3706,7 +3706,7 @@ package body et_kicad_to_native is
 					if inserted then
 						-- Copy units.
 						pac_devices_lib.update_element (
-							container	=> devices,
+							container	=> device_library,
 							position	=> device_cursor,
 							process		=> copy_units'access);
 					else
@@ -3884,7 +3884,7 @@ package body et_kicad_to_native is
 
 			log (text => "devices (former KiCad components) ...", level => log_threshold + 1);
 			log_indentation_up;
-			iterate (devices, save_device'access);
+			iterate (device_library, save_device'access);
 			log_indentation_down;
 			
 			log (text => "packages (former KiCad footprints) ...", level => log_threshold + 1);

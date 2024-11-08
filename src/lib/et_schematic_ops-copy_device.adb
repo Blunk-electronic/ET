@@ -225,7 +225,7 @@ is
 			end case;
 
 			-- locate the device in the library
-			device_cursor_lib := find (devices, element (device_cursor_sch).model);
+			device_cursor_lib := find (device_library, element (device_cursor_sch).model);
 
 			-- Add first available unit (according to search order specified in function first_unit)
 			-- to device in schematic.
