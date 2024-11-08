@@ -46,22 +46,10 @@ with et_conventions;
 with et_assembly_variants;			use et_assembly_variants;
 with et_module_names;				use et_module_names;
 with et_rig_name;					use et_rig_name;
+with et_module_instance;			use et_module_instance;
 
 
 package et_project.rigs is
-
-
-	type type_module_instance is record
-		generic_name		: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		assembly_variant	: pac_assembly_variant_name.bounded_string; -- low_cost
-		-- CS other properties ?
-	end record;
-
-	-- Lots of module instances are a map from the instance name to the type_module_instance.
-	package type_module_instances is new ordered_maps (
-		key_type		=> pac_module_instance_name.bounded_string, -- LMX_1
-		"<"				=> pac_module_instance_name."<",
-		element_type	=> type_module_instance);
 
 	
 	-- module connection (or board-to-board connector). NOTE: This could be a cable as well.
