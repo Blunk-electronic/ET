@@ -63,9 +63,7 @@ with et_conventions;
 with et_kicad.schematic;
 with et_kicad_to_native;
 with et_project_name;			use et_project_name;
--- with et_project;
 with et_project.modules;
-with et_project.rigs;
 with et_scripting;
 
 with et_package_appearance;
