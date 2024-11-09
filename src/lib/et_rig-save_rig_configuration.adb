@@ -2,24 +2,25 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                    PROJECT SAVE RIG CONFIGURATION                        --
+--                        SAVE RIG CONFIGURATION                            --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2021 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                -- 
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -35,7 +36,12 @@
 --   history of changes:
 --
 
-separate (et_project.rigs)
+with ada.exceptions;				use ada.exceptions;
+
+with et_general_rw;					use et_general_rw;
+with et_module_names;				use et_module_names;
+
+separate (et_rig)
 
 procedure save_rig_configuration (
 	rig_cursor		: in pac_rigs.cursor;
@@ -47,8 +53,9 @@ is
 	use pac_module_instances;
 	use pac_module_connections;
 
-	-- For the final full file name like /home/user/et_projects/blood_sample_analyzer.conf
-	file_name : pac_file_name.bounded_string;
+	-- For the final full file name like 
+	-- /home/user/et_projects/blood_sample_analyzer.conf
+	file_name : et_rig_name.pac_file_name.bounded_string;
 
 	-- backup the previous output
 	previous_output : ada.text_io.file_type renames current_output;
@@ -80,6 +87,7 @@ is
 		
 		section_mark (section_connector, FOOTER);
 	end;
+
 	
 begin -- save_rig_configuration
 	log (text => "saving rig configuration ...", level => log_threshold);

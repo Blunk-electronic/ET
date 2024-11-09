@@ -422,7 +422,7 @@ package body et_project is
 		configuration.read_configuration (project_name, log_threshold + 1);
 		
 		-- read the rig configurations and generic modules:
-		rigs.read_rigs (log_threshold + 1);
+		et_rig.read_rigs (log_threshold + 1);
 		
 		-- Restore working directory.
 		set_directory (current_working_directory);
@@ -564,7 +564,7 @@ package body et_project is
 		iterate (generic_modules, query_modules'access);
 
 		-- save rig configuration files
-		pac_rigs.iterate (et_project.rigs.rigs, query_rig_configuration'access);
+		pac_rigs.iterate (et_rig.rigs, query_rig_configuration'access);
 
 		-- save project configuration
 		configuration.save_configuration (

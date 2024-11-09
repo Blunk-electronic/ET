@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                         PROJECT READ RIGS                                --
+--                              READ RIGS                                   --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -37,11 +37,14 @@
 --   history of changes:
 --
 
+
+with et_general_rw;					use et_general_rw;
+with et_module_names;				use et_module_names;
 with et_project.configuration;
 with et_project.modules;
 with et_assembly_variant_name;		use et_assembly_variant_name;
 
-separate (et_project.rigs)
+separate (et_rig)
 
 
 procedure read_rigs (

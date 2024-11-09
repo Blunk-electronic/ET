@@ -43,9 +43,10 @@ with ada.containers;            	use ada.containers;
 with ada.containers.ordered_sets;
 with ada.containers.ordered_maps;
 
+with et_logging;					use et_logging;
 with et_module_instance;			use et_module_instance;
 with et_device_purpose;				use et_device_purpose;
-with et_conventions;				use et_conventions;
+with et_conventions;				--use et_conventions;
 with et_rig_name;					use et_rig_name;
 
 
@@ -103,6 +104,8 @@ package et_rig is
 
 
 
+	-- The collection of rig configurations:
+	rigs : pac_rigs.map;
 
 
 
@@ -147,6 +150,26 @@ package et_rig is
 	
 	procedure write_rig_configuration_header;
 	procedure write_rig_configuration_footer;
+
+
+	-- Saves the given rig in the current working directory
+	-- in a *.rig file.
+	procedure save_rig_configuration ( -- CS rename to save_rig
+		rig_cursor		: in pac_rigs.cursor;
+		log_threshold 	: in type_log_level);
+
+
+	-- Assumes the current working directory is a project.
+	-- Searches for rig configuration files (*.rig), reads them and 
+	-- stores them in et_project.rigs.rigs.
+	-- Searches for module files (*.mod) in the current directory,
+	-- reads them and stores then
+	-- in et_project.modules.generic_modules.
+	-- Use this procedure when opening a project.
+	procedure read_rigs (
+		log_threshold 	: in type_log_level);
+
+
 
 	
 	

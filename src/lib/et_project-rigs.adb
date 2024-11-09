@@ -54,19 +54,7 @@ with et_system_info;
 package body et_project.rigs is
 
 
-	procedure save_rig_configuration (
-		rig_cursor		: in pac_rigs.cursor;
-		log_threshold 	: in type_log_level) 
-		is separate;
-
-
-
-		
-	procedure read_rigs (
-		log_threshold 	: in type_log_level)
-		is separate;
-
-
+	procedure dummy is begin null; end;
 	
 end et_project.rigs;
 	

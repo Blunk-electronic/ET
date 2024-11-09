@@ -51,27 +51,8 @@ with et_rig;						use et_rig;
 package et_project.rigs is
 	
 
-	-- The collection of rig configurations:
-	rigs : pac_rigs.map;
 
-
-
-	-- Saves the given rig in the current working directory
-	-- in a *.rig file.
-	procedure save_rig_configuration ( -- CS rename to save_rig
-		rig_cursor		: in pac_rigs.cursor;
-		log_threshold 	: in type_log_level);
-
-
-	-- Assumes the current working directory is a project.
-	-- Searches for rig configuration files (*.rig), reads them and 
-	-- stores them in et_project.rigs.rigs.
-	-- Searches for module files (*.mod) in the current directory,
-	-- reads them and stores then
-	-- in et_project.modules.generic_modules.
-	-- Use this procedure when opening a project.
-	procedure read_rigs (
-		log_threshold 	: in type_log_level);
+	procedure dummy;
 
 
 	

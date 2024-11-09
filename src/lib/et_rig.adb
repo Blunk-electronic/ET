@@ -40,6 +40,7 @@
 with ada.text_io;				use ada.text_io;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
+with ada.directories;
 
 with et_string_processing;		use et_string_processing;
 with et_system_info;
@@ -107,6 +108,7 @@ package body et_rig is
 	procedure write_rig_configuration_header is 
 		use et_system_info;
 		use et_string_processing;
+		use et_conventions;
 	begin
 		-- write a nice header
 		put_line (comment_mark & " " & system_name & " rig configuration file");
@@ -118,6 +120,7 @@ package body et_rig is
 	
 	procedure write_rig_configuration_footer is
 		use et_string_processing;
+		use et_conventions;
 	begin
 		-- write a nice footer
 		new_line;
@@ -126,6 +129,23 @@ package body et_rig is
 		put_line (comment_mark & " rig configuration file end");
 		new_line;
 	end;
+
+
+
+
+	
+	procedure save_rig_configuration (
+		rig_cursor		: in pac_rigs.cursor;
+		log_threshold 	: in type_log_level) 
+		is separate;
+
+
+		
+	procedure read_rigs (
+		log_threshold 	: in type_log_level)
+		is separate;
+
+
 
 	
 end et_rig;
