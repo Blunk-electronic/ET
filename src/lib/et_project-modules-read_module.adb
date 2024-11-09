@@ -53,6 +53,7 @@ with et_device_purpose;
 with et_device_model_names;
 with et_device_value;
 with et_device_library;				use et_device_library;
+with et_device_partcode;
 with et_package_variant;
 with et_symbols;
 with et_symbol_rw;
@@ -162,7 +163,6 @@ is
 	-- Assigns to the module the active assembly variant.
 	procedure set_active_assembly_variant is
 		use et_schematic;
-		use et_assembly_variants;
 		
 		kw : constant string := f (line, 1);
 
@@ -1093,6 +1093,7 @@ is
 		use et_device_model;
 		use et_device_purpose;
 		use et_device_value;
+		use et_device_partcode;
 		use et_pcb_rw;
 		
 		kw : constant string := f (line, 1);
@@ -1159,10 +1160,10 @@ is
 				device.value := to_value_with_check (f (line, 4));
 
 				-- read partcode
-				if f (line, 5) = et_assembly_variants.keyword_partcode then
-					device.partcode := et_assembly_variants.to_partcode (f (line, 6));
+				if f (line, 5) = keyword_partcode then
+					device.partcode := to_partcode (f (line, 6));
 				else -- keyword partcode not found
-					log (ERROR, "expect keyword " & enclose_in_quotes (et_assembly_variants.keyword_partcode) &
+					log (ERROR, "expect keyword " & enclose_in_quotes (keyword_partcode) &
 							" after value !", console => true);
 					raise constraint_error;
 				end if;
@@ -1267,7 +1268,7 @@ is
 	-- temporarily collection of units:
 	device_units	: et_units.pac_units.map; -- PWR, A, B, ...
 	
-	device_partcode	: pac_device_partcode.bounded_string;
+	device_partcode	: et_device_partcode.pac_device_partcode.bounded_string;
 	device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;
 	device_variant	: et_package_variant.pac_package_variant_name.bounded_string; -- D, N
 
@@ -2217,6 +2218,7 @@ is
 		use et_schematic;
 		use et_device_appearance;
 		use et_device_value;
+		use et_device_partcode;
 		use et_package_variant;
 		
 		kw : constant string := f (line, 1);
@@ -2259,7 +2261,7 @@ is
 			check_variant_name_length (f (line, 2));
 			device_variant := to_variant_name (f (line, 2));
 
-		elsif kw = et_assembly_variants.keyword_partcode then -- partcode LED_PAC_S_0805_VAL_red
+		elsif kw = keyword_partcode then -- partcode LED_PAC_S_0805_VAL_red
 			expect_field_count (line, 2);
 
 			-- validate partcode
@@ -3063,6 +3065,7 @@ is
 				use et_device_appearance;
 				use et_device_purpose;
 				use et_device_value;				
+				use et_device_partcode;
 
 				
 			begin -- insert_device
@@ -4712,7 +4715,6 @@ is
 				module		: in out et_schematic.type_module) 
 			is
 				inserted : boolean;
-				use et_assembly_variants;
 				use et_assembly_variants.pac_assembly_variants;
 				cursor : et_assembly_variants.pac_assembly_variants.cursor;
 			begin
@@ -4720,7 +4722,7 @@ is
 						enclose_in_quotes (to_variant (assembly_variant_name)), level => log_threshold + 2);
 
 				-- insert variant in container variants
-				et_assembly_variants.pac_assembly_variants.insert (
+				insert (
 					container	=> module.variants,
 					key			=> assembly_variant_name,
 					inserted	=> inserted,
@@ -6869,7 +6871,6 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in et_schematic.type_module)
 		is
-			use et_assembly_variants;
 			use et_assembly_variants.pac_assembly_variants;
 			
 			variant_cursor : pac_assembly_variants.cursor := module.variants.first;

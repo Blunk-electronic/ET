@@ -66,6 +66,7 @@ with et_netlists;
 with et_device_library;					use et_device_library;
 with et_device_placeholders;
 with et_device_purpose;					use et_device_purpose;
+with et_device_partcode;				use et_device_partcode;
 with et_device_model_names;
 with et_device_value;					use et_device_value;
 with et_package_variant;

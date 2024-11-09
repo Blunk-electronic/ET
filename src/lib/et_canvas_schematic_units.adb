@@ -62,13 +62,13 @@ with gtk.menu_item;
 with gtk.menu_shell;
 
 with et_sheets;						use et_sheets;
-with et_assembly_variants;			use et_assembly_variants;
 with et_device_rw;
 with et_package_names;
 with et_package_variant;
 with et_symbol_ports;
 with et_device_appearance;
 with et_device_purpose;				use et_device_purpose;
+with et_device_partcode;			use et_device_partcode;
 with et_device_model_names;			use et_device_model_names;
 with et_device_value;				use et_device_value;
 with et_schematic;					use et_schematic;

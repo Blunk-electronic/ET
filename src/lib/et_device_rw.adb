@@ -50,7 +50,6 @@ with ada.exceptions;
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
-with et_assembly_variants;			use et_assembly_variants;
 with et_directory_and_file_ops;
 with et_primitive_objects;			use et_primitive_objects;
 with et_coordinates_formatting;		use et_coordinates_formatting;
@@ -77,6 +76,7 @@ with et_symbol_ports;				use et_symbol_ports;
 with et_symbols;					use et_symbols;
 with et_package_names;				use et_package_names;
 with et_device_placeholders;		use et_device_placeholders;
+with et_device_partcode;			use et_device_partcode;
 with et_schematic_shapes_and_text;	use et_schematic_shapes_and_text;
 with et_system_info;
 with et_device_value;

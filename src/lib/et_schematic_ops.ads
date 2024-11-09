@@ -80,6 +80,7 @@ with et_device_model_names;		use et_device_model_names;
 with et_device_value;			use et_device_value;
 with et_device_prefix;			use et_device_prefix;
 with et_device_name;			use et_device_name;
+with et_device_partcode;		use et_device_partcode;
 with et_conventions;
 
 with et_device_placeholders;			use et_device_placeholders;

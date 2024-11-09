@@ -6,20 +6,21 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -53,6 +54,8 @@ with et_device_purpose;			use et_device_purpose;
 with et_device_value;			use et_device_value;
 with et_device_name;			use et_device_name;
 with et_assembly_variant_name;	use et_assembly_variant_name;
+with et_device_partcode;		use et_device_partcode;
+
 
 package et_assembly_variants is
 
@@ -69,45 +72,6 @@ package et_assembly_variants is
 
 
 
-	-- The part code is THE key into the ERP system of the user. It can be a cryptic SAP number
-	-- or something human readable like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5".
-	-- The keywords for the latter can be specified via the conventions file. See package "convention".
-	keyword_partcode : constant string := "partcode";	
-
-	partcode_characters : character_set := to_set
-		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_/"); 
-	partcode_length_max : constant positive := 100;
-	
-	package pac_device_partcode is new generic_bounded_length (partcode_length_max);
-	use pac_device_partcode;
-
-	partcode_default : constant string := "N/A"; -- means not assigned
-	
-	function to_string (partcode : in pac_device_partcode.bounded_string) return string;
-
-	function partcode_length_valid (partcode : in string) return boolean;
-	-- Returns true if length of given partcode is ok. Issues warning if not.
-	
-	function partcode_characters_valid (
-		partcode	: in pac_device_partcode.bounded_string;
-		characters	: in character_set := partcode_characters) return boolean;
-	-- Tests if the given partcode contains only valid characters as specified
-	-- by given character set. Returns false if not. Issues warning.
-
-	procedure partcode_invalid (partcode : in string);
-	-- Issues error message and raises constraint error.
-
-	function is_empty (partcode : in pac_device_partcode.bounded_string) return boolean;
-	
-	function to_partcode (
-	-- Tests the given value for length and invalid characters.							 
-		partcode 					: in string;
-		error_on_invalid_character	: in boolean := true) 
-		return pac_device_partcode.bounded_string;
-
-
-
-	
 	
 
 	

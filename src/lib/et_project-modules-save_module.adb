@@ -50,6 +50,7 @@ with et_device_appearance;
 with et_device_purpose;
 with et_device_model_names;
 with et_device_value;
+with et_device_partcode;
 with et_package_variant;
 with et_symbol_rw;
 with et_schematic_rw;
@@ -992,6 +993,7 @@ is
 			use et_device_model_names;
 			use et_device_purpose;
 			use et_device_value;
+			use et_device_partcode;
 			use et_package_variant;
 			use pac_package_variant_name;
 		begin
@@ -1052,9 +1054,9 @@ is
 	
 	-- writes the assembly variants in the module file
 	procedure query_assembly_variants is
-		use et_assembly_variants;
 		use pac_assembly_variants;
 		use et_device_value;
+		use et_device_partcode;
 
 		
 		procedure query_devices (
@@ -1097,7 +1099,7 @@ is
 								space &
 								keyword_value & space &
 								to_string (element (device_cursor).value) &
-								space & et_assembly_variants.keyword_partcode & space &
+								space & keyword_partcode & space &
 								to_string (element (device_cursor).partcode) &
 								purpose);
 
@@ -1113,7 +1115,6 @@ is
 			variant_name	: in pac_assembly_variant_name.bounded_string;
 			variant			: in type_assembly_variant) 
 		is
-			use et_assembly_variants;
 			use pac_submodule_variants;
 			submodule_cursor : pac_submodule_variants.cursor := variant.submodules.first;
 		begin

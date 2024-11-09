@@ -45,7 +45,6 @@ with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
 with et_module_names;			use et_module_names;
-with et_assembly_variants;		use et_assembly_variants;
 with et_assembly_variant_name;	use et_assembly_variant_name;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
@@ -53,6 +52,7 @@ with et_package_names;			use et_package_names;
 with et_device_purpose;			use et_device_purpose;
 with et_device_value;			use et_device_value;
 with et_device_name;			use et_device_name;
+with et_device_partcode;		use et_device_partcode;
 
 
 package et_material is

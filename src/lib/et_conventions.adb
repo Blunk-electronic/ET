@@ -2175,7 +2175,7 @@ package body et_conventions is
 		use type_partcode_keyword_argument;
 		use et_string_processing;
 		
-		len 		: positive := length (partcode); 	-- the length of the given partcode
+		len 		: positive := get_length (partcode); 	-- the length of the given partcode
 		place 		: positive := from; 				-- the position of the character being processed
 		keyword_end : positive;							-- the last character position of the current keyword
 
@@ -2186,6 +2186,7 @@ package body et_conventions is
 		argument_start : positive;
 		argument : type_partcode_keyword_argument.bounded_string; -- the argument being processed
 
+		
 		procedure validate_argument (
 			kw	: in type_partcode_keyword.bounded_string;
 			arg	: in type_partcode_keyword_argument.bounded_string) is
@@ -2199,7 +2200,8 @@ package body et_conventions is
 			-- Instead of comma, use unit of measurement (same scheme as in component value).
 			-- The format of the argument should be specified in the configuration file.
 		end validate_argument;
-			
+
+		
 	begin -- validate_other_partcode_keywords
 		log (text => "optional keywords ...", level => log_threshold);
 		log_indentation_up;
@@ -2241,6 +2243,7 @@ package body et_conventions is
 					place := place + 1;	-- next character of keyword
 				end if;
 
+				
 			else -- argument follows
 				--log ("reading argument", level => log_threshold + 1);
 				
@@ -2278,12 +2281,14 @@ package body et_conventions is
 			when event:
 				others =>
 				log (WARNING, "Error in optional keywords of partcode " & 
-					 enclose_in_quotes (et_assembly_variants.to_string (partcode)) &
+					 enclose_in_quotes (pac_device_partcode.to_string (partcode)) &
 					 " at position" & positive'image (place) & " !");
 				
 				log (text => ada.exceptions.exception_message (event));
 		
 	end validate_other_partcode_keywords;
+
+
 
 	
 	procedure validate_partcode (
@@ -2302,11 +2307,12 @@ package body et_conventions is
 		
 		procedure partcode_invalid is begin
 			log (WARNING, "device " & to_string (device_name)
-				 & " partcode invalid ! Found " & enclose_in_quotes (et_assembly_variants.to_string (partcode)) &
-				". Expected " & enclose_in_quotes (et_assembly_variants.to_string (partcode_root)) & " !");
+				 & " partcode invalid ! Found " & enclose_in_quotes (pac_device_partcode.to_string (partcode)) &
+				". Expected " & enclose_in_quotes (pac_device_partcode.to_string (partcode_root)) & " !");
 		end partcode_invalid;
 
 		use et_material;
+
 		
 	begin -- validate_partcode
 		if partcode_keywords_specified then
@@ -2325,7 +2331,7 @@ package body et_conventions is
 			-- The root of the partcode must be the very first part of the given partcode.
 			-- In that case other keywords can be checked.
 			-- If the root partcode is somewhere else or too long, issue warning.
-			place := index (partcode, et_assembly_variants.to_string (partcode_root));
+			place := index (partcode, pac_device_partcode.to_string (partcode_root));
 			
 			if place = 1 and length (partcode) = length (partcode_root) then
 
@@ -2343,6 +2349,8 @@ package body et_conventions is
 			log_indentation_down;
 		end if;
 	end validate_partcode;
+
+	
 	
 	function to_partcode_section (text : in string) return type_partcode_section is
 	-- converts a string to a type_partcode_section.

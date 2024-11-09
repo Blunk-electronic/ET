@@ -50,7 +50,7 @@ with ada.directories;			use ada.directories;
 with et_coordinates_2;
 -- with et_import;
 with et_material;
-with et_assembly_variants;		use et_assembly_variants;
+with et_device_partcode;		use et_device_partcode;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_package_names;			use et_package_names;

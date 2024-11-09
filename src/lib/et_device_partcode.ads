@@ -2,9 +2,9 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          ASSEMBLY VARIANTS                               --
+--                           DEVICE PARTCODE                                --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,77 +35,65 @@
 --
 --   history of changes:
 --
-
-with ada.characters;			use ada.characters;
-with ada.characters.handling;	use ada.characters.handling;
-
-with et_string_processing;		use et_string_processing;
-with et_exceptions;				use et_exceptions;
+--   ToDo: 
 
 
+with ada.strings.bounded;       use ada.strings.bounded;
+with ada.strings.maps;			use ada.strings.maps;
 
-package body et_assembly_variants is
+
+package et_device_partcode is
+
+
+
+	-- The part code is THE key into the ERP system of the user. It can be a cryptic SAP number
+	-- or something human readable like "R_PAC_S_0805_VAL_100R_PMAX_125_TOL_5".
+	-- The keywords for the latter can be specified via the conventions file. See package "convention".
+	keyword_partcode : constant string := "partcode";	
+
+	partcode_characters : character_set := to_set
+		(ranges => (('a','z'),('A','Z'),('0','9'))) or to_set ("_/"); 
+	partcode_length_max : constant positive := 100;
+	
+	package pac_device_partcode is new generic_bounded_length (partcode_length_max);
+	use pac_device_partcode;
+
+
+	function get_length (
+		partcode : in pac_device_partcode.bounded_string)
+		return natural;
 
 	
-	function to_mounted (mounted : in string) return type_mounted is begin
-		return type_mounted'value (mounted);
-	end;
 		
-	function to_mounted (mounted : in type_mounted) return string is begin
-		return space & to_lower (type_mounted'image (mounted));
-	end;
+	partcode_default : constant string := "N/A"; -- means not assigned
+	
+	function to_string (partcode : in pac_device_partcode.bounded_string) return string;
+
+	function partcode_length_valid (partcode : in string) return boolean;
+	-- Returns true if length of given partcode is ok. Issues warning if not.
+	
+	function partcode_characters_valid (
+		partcode	: in pac_device_partcode.bounded_string;
+		characters	: in character_set := partcode_characters) return boolean;
+	-- Tests if the given partcode contains only valid characters as specified
+	-- by given character set. Returns false if not. Issues warning.
+
+	procedure partcode_invalid (partcode : in string);
+	-- Issues error message and raises constraint error.
+
+	function is_empty (partcode : in pac_device_partcode.bounded_string) return boolean;
+	
+	function to_partcode (
+	-- Tests the given value for length and invalid characters.							 
+		partcode 					: in string;
+		error_on_invalid_character	: in boolean := true) 
+		return pac_device_partcode.bounded_string;
+
+
 
 	
-	function is_mounted (
-		device	: in type_device_name; -- IC1
-		variant	: in pac_assembly_variants.cursor)
-		return boolean 
-	is		
-		cursor : pac_device_variants.cursor;
-		
-		procedure query_devices (
-			variant_name	: in pac_assembly_variant_name.bounded_string; -- low_cost
-			variant			: in type_assembly_variant) 
-		is begin
-			cursor := find (variant.devices, device);
-		end query_devices;
-		
-	begin -- is_mounted
-		if variant = pac_assembly_variants.no_element then -- assume default variant
-			return true; -- device is to be mounted
-		else
-			
-			query_element (
-				position	=> variant,
-				process		=> query_devices'access);
+end et_device_partcode;
 
-			if cursor = pac_device_variants.no_element then
-				-- Device has no entry in assembly variant and thus is to be mounted
-				-- as it is in the default variant:
-				return true;
-			else
-				-- Device has an entry in assembly variant. The question now
-				-- is whether the entry requests the device mounted or not.
-				if element (cursor).mounted = YES then
-					return true;
-				else
-					return false;
-				end if;
-				
-			end if;
-
-		end if;
-		
--- 		exception
--- 			when event: others =>
--- 				log_indentation_reset;
--- 				log (text => "B " & ada.exceptions.exception_information (event), console => true);
--- 				raise;
-		
-	end is_mounted;
-	
-end et_assembly_variants;
-	
 -- Soli Deo Gloria
 
 -- For God so loved the world that he gave 
