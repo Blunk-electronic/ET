@@ -38,6 +38,8 @@
 
 with et_meta;
 
+with et_assembly_variants;
+
 
 package body et_board_ops.text is
 

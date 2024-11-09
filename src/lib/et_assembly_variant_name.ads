@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           MODULE INSTANCE                                --
+--                          ASSEMBLY VARIANT NAME                           --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -39,35 +39,26 @@
 
 with ada.strings.bounded;       	use ada.strings.bounded;
 
-with ada.containers;            	use ada.containers;
-with ada.containers.ordered_maps;
 
-with et_module_names;				use et_module_names;
-with et_assembly_variant_name;		use et_assembly_variant_name;
-
-
-package et_module_instance is
+package et_assembly_variant_name is
 	
+	-- The name of an assembly variant is a text like "low_cost" or "with temperature sensor" or just a number like V345:
+	variant_name_length_max : constant positive := 100;
+	package pac_assembly_variant_name is new generic_bounded_length (variant_name_length_max);
+	use pac_assembly_variant_name;
 
-	type type_module_instance is record
-		generic_name		: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		assembly_variant	: pac_assembly_variant_name.bounded_string; -- low_cost
-		-- CS other properties ?
-	end record;
-
-
+	default : constant pac_assembly_variant_name.bounded_string := pac_assembly_variant_name.to_bounded_string ("");
 	
-	-- Lots of module instances are a map from the instance name to the type_module_instance.
-	package type_module_instances is new ordered_maps (
-		key_type		=> pac_module_instance_name.bounded_string, -- LMX_1
-		"<"				=> pac_module_instance_name."<",
-		element_type	=> type_module_instance);
+	function is_default (variant : in pac_assembly_variant_name.bounded_string) return boolean;
+	-- Returns true if the given variant name is empty.
+	
+	function to_variant (variant : in pac_assembly_variant_name.bounded_string) return string;
+	function to_variant (variant : in string) return pac_assembly_variant_name.bounded_string;
+
 
 	
-
-	procedure dummy;
 	
-end et_module_instance;
+end et_assembly_variant_name;
 
 -- Soli Deo Gloria
 

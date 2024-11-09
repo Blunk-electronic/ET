@@ -39,6 +39,7 @@
 with ada.exceptions;
 
 with et_conventions;
+with et_assembly_variants;
 with et_netlists;
 with et_device_model;
 with et_device_library;				use et_device_library;

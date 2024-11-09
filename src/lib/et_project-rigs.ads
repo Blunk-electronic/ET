@@ -43,7 +43,7 @@ with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
 with et_device_purpose;				use et_device_purpose;
 with et_conventions;
-with et_assembly_variants;			use et_assembly_variants;
+with et_assembly_variant_name;		use et_assembly_variant_name;
 with et_module_names;				use et_module_names;
 with et_rig_name;					use et_rig_name;
 with et_module_instance;			use et_module_instance;

@@ -65,6 +65,7 @@ with et_project.modules;		use et_project.modules;
 with et_text;
 with et_submodules;
 with et_assembly_variants;		use et_assembly_variants;
+with et_assembly_variant_name;	use et_assembly_variant_name;
 with et_numbering;
 with et_material;
 with et_netlists;

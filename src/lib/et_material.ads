@@ -46,6 +46,7 @@ with ada.containers.ordered_maps;
 
 with et_module_names;			use et_module_names;
 with et_assembly_variants;		use et_assembly_variants;
+with et_assembly_variant_name;	use et_assembly_variant_name;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_package_names;			use et_package_names;

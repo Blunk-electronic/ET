@@ -44,6 +44,7 @@ with ada.containers.ordered_maps;
 with et_schematic;
 with et_nets;
 with et_assembly_variants;		use et_assembly_variants;
+with et_assembly_variant_name;	use et_assembly_variant_name;
 with et_pcb;
 with et_pcb_stack;
 with et_device_model;

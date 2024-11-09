@@ -58,6 +58,7 @@ with et_net_names;				use et_net_names;
 with et_sheets;					use et_sheets;
 with et_coordinates_2;			use et_coordinates_2;
 with et_assembly_variants;		use et_assembly_variants;
+with et_assembly_variant_name;	use et_assembly_variant_name;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 

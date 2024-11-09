@@ -52,24 +52,13 @@ with et_module_names;			use et_module_names;
 with et_device_purpose;			use et_device_purpose;
 with et_device_value;			use et_device_value;
 with et_device_name;			use et_device_name;
-
+with et_assembly_variant_name;	use et_assembly_variant_name;
 
 package et_assembly_variants is
 
 	use pac_module_instance_name;
 
-	-- The name of an assembly variant is a text like "low_cost" or "with temperature sensor" or just a number like V345:
-	variant_name_length_max : constant positive := 100;
-	package pac_assembly_variant_name is new generic_bounded_length (variant_name_length_max);
 	use pac_assembly_variant_name;
-
-	default : constant pac_assembly_variant_name.bounded_string := pac_assembly_variant_name.to_bounded_string ("");
-	
-	function is_default (variant : in pac_assembly_variant_name.bounded_string) return boolean;
-	-- Returns true if the given variant name is empty.
-	
-	function to_variant (variant : in pac_assembly_variant_name.bounded_string) return string;
-	function to_variant (variant : in string) return pac_assembly_variant_name.bounded_string;
 
 	
 	
@@ -150,7 +139,7 @@ package et_assembly_variants is
 
 	
 	-- Submodules may come with their own assembly variants. 
-	-- NOTE: In contrast to type_device there is no option to not mount a submodule.
+	-- NOTE: In contrast to a device, there is no option not to mount a submodule.
 	-- There might be further extensions in the future, so we use a record:
 	type type_submodule_variant is record
 		variant : pac_assembly_variant_name.bounded_string; -- low_cost, fixed_frequency

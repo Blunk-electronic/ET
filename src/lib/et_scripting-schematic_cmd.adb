@@ -60,6 +60,7 @@ with et_schematic_ops.nets;
 with et_schematic_ops.units;
 with et_submodules;
 with et_assembly_variants;
+with et_assembly_variant_name;			use et_assembly_variant_name;
 -- with et_pick_and_place;
 with et_netlists;
 with et_device_library;					use et_device_library;

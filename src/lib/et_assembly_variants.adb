@@ -6,20 +6,21 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -42,25 +43,6 @@ with et_string_processing;		use et_string_processing;
 with et_exceptions;				use et_exceptions;
 
 package body et_assembly_variants is
-
-	function is_default (variant : in pac_assembly_variant_name.bounded_string) return boolean is begin
-	-- Returns true if the given variant name is empty.
-		if pac_assembly_variant_name.length (variant) = 0 then -- CS better compare with constant "default"
-			return true;
-		else
-			return false;
-		end if;
-	end;
-
-	function to_variant (variant : in pac_assembly_variant_name.bounded_string) return string is begin
-		return pac_assembly_variant_name.to_string (variant);
-	end;
-
-	function to_variant (variant : in string) return pac_assembly_variant_name.bounded_string is begin
-		-- CS lenght and character check
-		return pac_assembly_variant_name.to_bounded_string (variant);
-	end;
-
 
 
 	function to_string (partcode : in pac_device_partcode.bounded_string) return string is begin
