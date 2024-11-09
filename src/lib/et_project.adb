@@ -48,7 +48,6 @@ with et_system_info;
 with et_general_rw;				use et_general_rw;
 
 with et_project.modules;
-with et_project.rigs;
 with et_project.configuration;
 with et_rig_name;
 with et_rig;
@@ -466,7 +465,6 @@ package body et_project is
 		destination		: in pac_project_name.bounded_string; -- blood_sample_analyzer_experimental
 		log_threshold 	: in type_log_level) 
 	is
-		use et_project.rigs;
 		use et_rig;
 		use pac_rigs;		
 
@@ -527,7 +525,7 @@ package body et_project is
 			log (text => "rig configuration " & to_string (rig_name), level => log_threshold + 1);
 			log_indentation_up;
 			
-			save_rig_configuration (
+			save_rig (
 				rig_cursor		=> rig_cursor,
 				log_threshold 	=> log_threshold + 1);
 			
@@ -545,8 +543,10 @@ package body et_project is
 			--copy_file ("test", "test2");
 			log_indentation_down;
 		end copy_design_rules;
+
 		
-	begin -- save_project
+		
+	begin
 		log (text => row_separator_double, level => log_threshold);
 		log (text => "saving project as " & to_string (destination) & " ...",
 			 level => log_threshold, console => true);

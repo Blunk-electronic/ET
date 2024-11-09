@@ -52,8 +52,6 @@ with et_export;
 with et_text;					use et_text;
 with et_general_rw;				use et_general_rw;
 with et_meta;
-
-with et_project.rigs;
 with et_exceptions;				use et_exceptions;
 
 

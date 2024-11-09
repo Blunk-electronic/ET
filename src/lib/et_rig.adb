@@ -134,7 +134,7 @@ package body et_rig is
 
 
 	
-	procedure save_rig_configuration (
+	procedure save_rig (
 		rig_cursor		: in pac_rigs.cursor;
 		log_threshold 	: in type_log_level) 
 		is separate;

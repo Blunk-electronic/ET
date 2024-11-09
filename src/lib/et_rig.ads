@@ -154,7 +154,7 @@ package et_rig is
 
 	-- Saves the given rig in the current working directory
 	-- in a *.rig file.
-	procedure save_rig_configuration ( -- CS rename to save_rig
+	procedure save_rig (
 		rig_cursor		: in pac_rigs.cursor;
 		log_threshold 	: in type_log_level);
 

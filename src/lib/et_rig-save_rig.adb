@@ -43,7 +43,8 @@ with et_module_names;				use et_module_names;
 
 separate (et_rig)
 
-procedure save_rig_configuration (
+
+procedure save_rig (
 	rig_cursor		: in pac_rigs.cursor;
 	log_threshold 	: in type_log_level) 
 is
@@ -135,7 +136,7 @@ begin -- save_rig_configuration
 			set_output (previous_output);
 			raise;
 
-end save_rig_configuration;
+end save_rig;
 	
 -- Soli Deo Gloria
 
