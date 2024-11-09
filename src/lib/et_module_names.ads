@@ -68,9 +68,6 @@ package et_module_names is
 
 
 
-
--- MODULES AND INSTANCE NAMES
-	
 	-- Generic modules are named with this type:
 	-- (The actual file has the same name with extension *.mod.)
 	module_name_length_max : constant := 100;
@@ -78,13 +75,6 @@ package et_module_names is
 
 	function to_string (name : in pac_module_name.bounded_string) return string;
 	function to_module_name (name : in string) return pac_module_name.bounded_string;
-
-	-- The module instance name is something like LMX_1 or DRV_1. 
-	module_instance_name_length_max : constant positive := 20;
-	package pac_module_instance_name is new generic_bounded_length (module_instance_name_length_max);
-
-	function to_string (name : in pac_module_instance_name.bounded_string) return string;
-	function to_instance_name (name : in string) return pac_module_instance_name.bounded_string;
 
 	
 	

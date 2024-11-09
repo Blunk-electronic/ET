@@ -48,7 +48,18 @@ with et_assembly_variant_name;		use et_assembly_variant_name;
 
 package et_module_instance is
 	
+	
 
+	-- The module instance name is something like LMX_1 or DRV_1. 
+	module_instance_name_length_max : constant positive := 20;
+	package pac_module_instance_name is new generic_bounded_length (module_instance_name_length_max);
+
+	function to_string (name : in pac_module_instance_name.bounded_string) return string;
+	function to_instance_name (name : in string) return pac_module_instance_name.bounded_string;
+
+
+	
+	
 	type type_module_instance is record
 		generic_name		: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		assembly_variant	: pac_assembly_variant_name.bounded_string; -- low_cost
@@ -65,8 +76,6 @@ package et_module_instance is
 
 	
 
-	procedure dummy;
-	
 end et_module_instance;
 
 -- Soli Deo Gloria

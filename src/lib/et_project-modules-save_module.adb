@@ -46,6 +46,7 @@ with et_port_names;
 with et_symbol_ports;
 with et_symbols;
 with et_device_model;
+with et_module_instance;
 with et_device_appearance;
 with et_device_purpose;
 with et_device_model_names;
@@ -563,6 +564,7 @@ is
 				procedure query_submodule_ports (segment : in type_net_segment) is
 					use et_symbols;
 					use et_symbol_ports;
+					use et_module_instance;
 					port_cursor : pac_submodule_ports.cursor := segment.ports.submodules.first;
 				begin
 					while port_cursor /= pac_submodule_ports.no_element loop
@@ -1115,6 +1117,7 @@ is
 			variant_name	: in pac_assembly_variant_name.bounded_string;
 			variant			: in type_assembly_variant) 
 		is
+			use et_module_instance;
 			use pac_submodule_variants;
 			submodule_cursor : pac_submodule_variants.cursor := variant.submodules.first;
 		begin
@@ -1337,6 +1340,7 @@ is
 			use et_coordinates_2.pac_geometry_2;
 			use et_schematic_rw;
 			use et_pcb_rw;
+			use et_module_instance;
 		begin
 			section_mark (section_submodule, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (submodule_cursor))); -- name stepper_driver_1

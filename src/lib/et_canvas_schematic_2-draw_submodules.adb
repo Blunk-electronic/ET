@@ -44,6 +44,7 @@ with et_alignment;
 with et_nets;
 with et_net_names;				use et_net_names;
 with et_submodules;				use et_submodules;
+with et_module_instance;		use et_module_instance;
 with et_display.schematic;
 
 with et_pcb_coordinates_2;

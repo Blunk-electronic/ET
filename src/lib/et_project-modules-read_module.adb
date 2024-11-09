@@ -45,6 +45,7 @@ with et_pcb_coordinates_2;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_axes;						use et_axes;
+with et_module_instance;			use et_module_instance;
 with et_net_labels;
 with et_port_names;
 with et_symbol_ports;
@@ -846,6 +847,7 @@ is
 	-- the port is appended to the corresponding port collection 
 	-- immediately when the line is read. See main code of process_line.
 	procedure read_ports is
+		use et_module_instance;
 		use et_device_model;
 		use et_port_names;
 		use et_symbol_ports;
@@ -1095,6 +1097,7 @@ is
 		use et_device_value;
 		use et_device_partcode;
 		use et_pcb_rw;
+		use et_module_instance;
 		
 		kw : constant string := f (line, 1);
 		device_name		: type_device_name; -- R1
@@ -1798,7 +1801,7 @@ is
 	-- submodules	
 	submodule_port_name	: pac_net_name.bounded_string; -- RESET
 	submodule_ports		: et_submodules.pac_submodule_ports.map;
-	submodule_name 		: pac_module_instance_name.bounded_string; -- MOT_DRV_3
+	submodule_name 		: et_module_instance.pac_module_instance_name.bounded_string; -- MOT_DRV_3
 	submodule_port 		: et_submodules.type_submodule_port;
 	submodule 			: et_submodules.type_submodule;
 

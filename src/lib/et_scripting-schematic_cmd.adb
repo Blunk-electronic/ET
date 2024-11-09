@@ -49,6 +49,7 @@ with et_board_ops.grid;
 with et_pcb;
 
 with et_coordinates_2;
+with et_module_instance;				use et_module_instance;
 with et_unit_name;						use et_unit_name;
 with et_units;
 with et_schematic;

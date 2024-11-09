@@ -1626,10 +1626,13 @@ package body et_schematic_ops is
 				--log_indentation_down;
 			end query_devices;
 
+
+			
 			procedure query_submodules (submodule_cursor : in et_submodules.pac_submodules.cursor) is
 				submodule_position : et_coordinates_2.type_position;
 				ports : et_submodules.pac_submodule_ports.map;
 
+				
 				procedure query_port (port_cursor : in et_submodules.pac_submodule_ports.cursor) is
 					use et_submodules.pac_submodule_ports;
 					use pac_net_name;
@@ -1655,6 +1658,7 @@ package body et_schematic_ops is
 					end if;
 				end query_port;
 
+				
 			begin -- query_submodules
 				submodule_position := element (submodule_cursor).position;
 
@@ -1670,9 +1674,10 @@ package body et_schematic_ops is
 					et_submodules.pac_submodule_ports.iterate (ports, query_port'access);
 
 					log_indentation_down;
-				end if;
-				
+				end if;				
 			end query_submodules;
+
+			
 
 			procedure query_netchangers (netchanger_cursor : in et_submodules.pac_netchangers.cursor) is
 				netchanger_position : et_coordinates_2.type_position;
@@ -1733,12 +1738,14 @@ package body et_schematic_ops is
 					log_indentation_down;
 				end if;
 			end query_netchangers;
-						
+
+			
 		begin -- query_module
 			iterate (module.devices, query_devices'access);
 			iterate (module.submods, query_submodules'access);
 			iterate (module.netchangers, query_netchangers'access);
 		end query_module;
+
 		
 	begin -- ports_at_place
 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
@@ -1755,6 +1762,7 @@ package body et_schematic_ops is
 		log_indentation_down;
 		return ports;
 	end ports_at_place;
+
 	
 
 	-- Renames the device ports of the net segments affected by a rename operation.

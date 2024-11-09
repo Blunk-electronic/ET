@@ -38,6 +38,7 @@
 --   ToDo:
 --   - command to define a global cutout area
 
+with et_module_instance;			use et_module_instance;
 with et_schematic;
 with et_pcb_sides;
 with et_pcb_coordinates_2;

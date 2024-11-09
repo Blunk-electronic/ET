@@ -43,8 +43,15 @@ with ada.text_io;				use ada.text_io;
 package body et_module_instance is
 	
 
-	procedure dummy is begin null; end;
-	
+	function to_string (name : in pac_module_instance_name.bounded_string) return string is begin
+		return pac_module_instance_name.to_string (name);
+	end;
+
+
+	function to_instance_name (name : in string) return pac_module_instance_name.bounded_string is begin
+		return pac_module_instance_name.to_bounded_string (name);
+	end;
+
 	
 end et_module_instance;
 

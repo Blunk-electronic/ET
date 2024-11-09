@@ -37,24 +37,19 @@
 --
 --   ToDo: 
 
-with ada.text_io;				use ada.text_io;
-with ada.strings;				use ada.strings;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded;       use ada.strings.bounded;
+
 with ada.strings.unbounded;     use ada.strings.unbounded;
 
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 
-with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
-with et_module_names;			use et_module_names;
+with et_module_instance;		use et_module_instance;
 with et_device_purpose;			use et_device_purpose;
 with et_device_value;			use et_device_value;
+with et_device_partcode;		use et_device_partcode;
 with et_device_name;			use et_device_name;
 with et_assembly_variant_name;	use et_assembly_variant_name;
-with et_device_partcode;		use et_device_partcode;
 
 
 package et_assembly_variants is
@@ -69,8 +64,6 @@ package et_assembly_variants is
 	
 	-- An assembly variant should be described more or less detailled by the operator:
 	type type_description is new unbounded_string;
-
-
 
 	
 
@@ -94,6 +87,8 @@ package et_assembly_variants is
 		end case;
 	end record;
 
+	
+
 	-- Variants of devices are collected in a map.
 	package pac_device_variants is new indefinite_ordered_maps (
 		key_type		=> type_device_name, -- something like "IC43"
@@ -101,6 +96,7 @@ package et_assembly_variants is
 
 	use pac_device_variants;
 
+	
 	
 	-- Submodules may come with their own assembly variants. 
 	-- NOTE: In contrast to a device, there is no option not to mount a submodule.
@@ -110,11 +106,14 @@ package et_assembly_variants is
 	end record;
 
 	
+	
 	-- Variants of submodules are collected in a map.	
 	package pac_submodule_variants is new ordered_maps (
 		key_type		=> pac_module_instance_name.bounded_string, -- MOT_DRV_3
 		element_type	=> type_submodule_variant);
 
+
+	
 	
 	-- The final assembly variant is composed of a description and the affected devices:
 	type type_assembly_variant is record
@@ -124,6 +123,7 @@ package et_assembly_variants is
 	end record;
 
 	
+	
 	-- Since a board may have lots of variants, we keep them in a map.
 	-- NOTE: The default variant ("") is never inserted here.
 	package pac_assembly_variants is new ordered_maps (
@@ -131,6 +131,7 @@ package et_assembly_variants is
 		element_type	=> type_assembly_variant);
 
 	use pac_assembly_variants;
+
 	
 	
 	-- Returns true if the given device is to be mounted according to given assembly variant.
@@ -139,6 +140,7 @@ package et_assembly_variants is
 		device	: in type_device_name; -- IC1
 		variant	: in pac_assembly_variants.cursor)
 		return boolean;
+
 	
 end et_assembly_variants;
 
