@@ -446,7 +446,7 @@ is
 		-- create an empty rig - named after the given configuration file but without extension
 		pac_rigs.insert (
 			container	=> rigs,
-			key			=> to_bounded_string (base_name (file_name)), -- demo, low_cost, fully_equipped
+			key			=> pac_file_name.to_bounded_string (base_name (file_name)), -- demo, low_cost, fully_equipped
 			inserted	=> rig_inserted, -- should always be true
 			position	=> rig_cursor);
 

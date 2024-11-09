@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                            PROJECT RIGS                                  --
+--                                 RIG                                      --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -21,10 +21,9 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab with in your edtior to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -37,39 +36,100 @@
 --   history of changes:
 --
 
+
+with ada.text_io;				use ada.text_io;
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 
-with ada.tags;
-
-with ada.exceptions;
-with ada.directories;
-
-with et_general_rw;					use et_general_rw;
-with et_time;						use et_time;
+with et_string_processing;		use et_string_processing;
 with et_system_info;
 
+with et_time;					use et_time;
 
 
-package body et_project.rigs is
+package body et_rig is
+	
+
+	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
+	function to_string (section : in type_section_name) return string is
+		len : positive := type_section_name'image (section)'length;
+	begin
+		return to_lower (type_section_name'image (section) (5..len));
+	end to_string;
 
 
-	procedure save_rig_configuration (
-		rig_cursor		: in pac_rigs.cursor;
-		log_threshold 	: in type_log_level) 
-		is separate;
+	
+	function compare_connectors (left, right : in type_module_connection) return boolean is
+		use pac_device_purpose;
+		use pac_module_instance_name;
+		r : boolean := false; -- to be returned
+	begin
+		-- First we compare instance_A
+		if left.instance_A > right.instance_A then
+			r := true;
+		elsif left.instance_A < right.instance_A then
+			r := false;
+		else -- left instance_A equals right instance_A
 
+			-- compare instance_B
+			if left.instance_B > right.instance_B then
+				r := true;
+			elsif left.instance_B < right.instance_B then
+				r := false;
+			else -- left instance_B equals right instance_B
 
+				-- compare purpose_A
+				if left.purpose_A > right.purpose_A then
+					r := true;
+				elsif left.purpose_A < right.purpose_A then
+					r := false;
+				else -- left purpose_A equals right purpose_A
 
+					-- compare purpose_B
+					if left.purpose_B > right.purpose_B then
+						r := true;
+					elsif left.purpose_B < right.purpose_B then
+						r := false;
+					else 
+						-- left purpose_B equals right purpose_B
+						-- means: connectors are equal
+						r := false;
+					end if;
+				end if;
+			end if;
+		end if;
 		
-	procedure read_rigs (
-		log_threshold 	: in type_log_level)
-		is separate;
+		return r;
+	end compare_connectors;
 
 
+
+	procedure write_rig_configuration_header is 
+		use et_system_info;
+		use et_string_processing;
+	begin
+		-- write a nice header
+		put_line (comment_mark & " " & system_name & " rig configuration file");
+		put_line (comment_mark & " " & get_date);
+		put_line (comment_mark & " " & row_separator_double);
+		new_line;
+	end;
+
 	
-end et_project.rigs;
+	procedure write_rig_configuration_footer is
+		use et_string_processing;
+	begin
+		-- write a nice footer
+		new_line;
+		put_line (comment_mark & " " & row_separator_double);
+		put_line (comment_mark & " " & get_date);
+		put_line (comment_mark & " rig configuration file end");
+		new_line;
+	end;
+
 	
+end et_rig;
+
 -- Soli Deo Gloria
 
 -- For God so loved the world that he gave 

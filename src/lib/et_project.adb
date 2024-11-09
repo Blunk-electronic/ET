@@ -51,6 +51,7 @@ with et_project.modules;
 with et_project.rigs;
 with et_project.configuration;
 with et_rig_name;
+with et_rig;
 
 
 package body et_project is
@@ -235,7 +236,7 @@ package body et_project is
 		procedure create_rig_configuration is
 			file_handle : ada.text_io.file_type;
 
-			use et_project.rigs;
+			use et_rig;
 			use et_rig_name;
 			rig_conf_file : pac_file_name.bounded_string; -- led_matrix.conf
 
@@ -466,7 +467,8 @@ package body et_project is
 		log_threshold 	: in type_log_level) 
 	is
 		use et_project.rigs;
-		use rigs.pac_rigs;		
+		use et_rig;
+		use pac_rigs;		
 
 		use et_string_processing;
 		use ada.directories;
@@ -480,6 +482,7 @@ package body et_project is
 		-- break down destination into path and project name:
 		path : pac_project_path.bounded_string := to_project_path (containing_directory (to_string (destination)));
 		name : pac_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
+
 		
 		procedure query_modules (module_cursor : in pac_generic_modules.cursor) is
 		-- Saves a project internal module or a submodule (indicated by module_cursor).
@@ -514,7 +517,7 @@ package body et_project is
 		
 		
 		procedure query_rig_configuration (
-			rig_cursor : in rigs.pac_rigs.cursor) 
+			rig_cursor : in pac_rigs.cursor) 
 		is
 			use et_rig_name;
 			use pac_file_name;

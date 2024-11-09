@@ -39,113 +39,29 @@
 --   ToDo: 
 
 with ada.containers;            	use ada.containers;
-with ada.containers.ordered_maps;
-with ada.containers.ordered_sets;
+-- with ada.containers.ordered_maps;
+-- with ada.containers.ordered_sets;
 with et_device_purpose;				use et_device_purpose;
 with et_conventions;
 with et_module_names;				use et_module_names;
 with et_rig_name;					use et_rig_name;
 with et_module_instance;			use et_module_instance;
-
+with et_rig;						use et_rig;
 
 package et_project.rigs is
-
 	
-	-- module connection (or board-to-board connector). NOTE: This could be a cable as well.
-	type type_module_connection is record
-		instance_A	: pac_module_instance_name.bounded_string; -- LMX_2
-		purpose_A	: pac_device_purpose.bounded_string; -- pwr_in
-		instance_B	: pac_module_instance_name.bounded_string; -- PWR
-		purpose_B	: pac_device_purpose.bounded_string; -- pwr_out
-
-		-- CS
-		-- net_comparator : on/off 
-		-- warn_only : on/off 
-		-- cable model ?
-	end record;
-
-	
-	-- Returns true if left connector comes before right connector.
-	-- Returns false if connectors are equal.
-	function compare_connectors (left, right : in type_module_connection) return boolean;
-
-
-	
-	package pac_module_connections is new ordered_sets (
-		element_type	=> type_module_connection,
-		"<"				=> compare_connectors);
-
-	
-	
-	-- A rig consists of a list of module instances
-	-- and a list of module-to-module connectors (or board-to-board connectors).
-	-- Conventions apply for the whole rig.
-
-	
-	-- A single rig is modelled by this type and stored in a 
-	-- similar structured rig configuration file:
-	type type_rig is record
-		module_instances	: pac_module_instances.map;
-		connections			: pac_module_connections.set;
-		conventions			: et_conventions.pac_file_name.bounded_string; -- ../conventions.txt
-		-- CS description, docs, links, images ... ?
-	end record;
-
-
-	use et_rig_name.pac_file_name;
-
-	
-	-- Lots of rigs are stored in a map:
-	package pac_rigs is new ordered_maps (
-		key_type		=> et_rig_name.pac_file_name.bounded_string, -- CS dedicated type_rig_name ?
-		element_type	=> type_rig);
 
 	-- The collection of rig configurations:
 	rigs : pac_rigs.map;
 
-	
-	type type_section_name is (
-		SEC_INIT,
-		SEC_MODULE_INSTANCES,
-		SEC_MODULE,
-		SEC_MODULE_CONNECTIONS,
-		SEC_CONNECTOR
-		);
-
-	
-	function to_string (section : in type_section_name) return string;
-	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
 
 
-	procedure write_rig_configuration_header;
-	procedure write_rig_configuration_footer;
-	
 	-- Saves the given rig in the current working directory
 	-- in a *.rig file.
 	procedure save_rig_configuration ( -- CS rename to save_rig
 		rig_cursor		: in pac_rigs.cursor;
 		log_threshold 	: in type_log_level);
 
-	
-
--- KEYWORDS
-
-	keyword_generic_name			: constant string := "generic_name";
-	keyword_instance_name			: constant string := "instance_name";
-	keyword_instance_A				: constant string := "instance_A";
-	keyword_instance_B				: constant string := "instance_B";		
-	keyword_purpose_A				: constant string := "purpose_A";
-	keyword_purpose_B				: constant string := "purpose_B";	
-	keyword_net_comparator			: constant string := "net_comparator";
-	keyword_net_comparator_warn_only: constant string := "warn_only";
-
-	
--- SECTION NAMES
-	
-	section_module_instances	: constant string := "[MODULE_INSTANCES";
-	section_module_connections	: constant string := "[MODULE_CONNECTIONS";
-	section_connector			: constant string := "[CONNECTOR";
-	section_module				: constant string := "[MODULE";
 
 	-- Assumes the current working directory is a project.
 	-- Searches for rig configuration files (*.rig), reads them and 
@@ -156,6 +72,8 @@ package et_project.rigs is
 	-- Use this procedure when opening a project.
 	procedure read_rigs (
 		log_threshold 	: in type_log_level);
+
+
 	
 end et_project.rigs;
 

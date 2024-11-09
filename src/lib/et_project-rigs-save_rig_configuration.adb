@@ -88,14 +88,14 @@ begin -- save_rig_configuration
 
 	-- compose the full file name
 	file_name := pac_file_name.to_bounded_string (compose (
-		name 		=> to_string (key (rig_cursor)), -- fully_equipped
+		name 		=> pac_file_name.to_string (key (rig_cursor)), -- fully_equipped
 		extension 	=> file_extension)); -- conf
 
 	-- create the file
 	create (
 		file => file_handle,
 		mode => out_file, 
-		name => to_string (file_name));
+		name => pac_file_name.to_string (file_name));
 	
 	set_output (file_handle);
 	write_rig_configuration_header;		
