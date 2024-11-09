@@ -39,6 +39,7 @@
 
 with et_project.configuration;
 with et_project.modules;
+with et_assembly_variant_name;		use et_assembly_variant_name;
 
 separate (et_project.rigs)
 
@@ -120,7 +121,7 @@ is
 					rig			: in out type_rig) 
 				is
 					instance_created : boolean;
-					instance_cursor : type_module_instances.cursor;
+					instance_cursor : pac_module_instances.cursor;
 				begin
 					-- CS: test length of generic name and instance name. must be greater zero
 
@@ -147,7 +148,7 @@ is
 					rig_name	: in pac_file_name.bounded_string;
 					rig			: in out type_rig) is
 					connection_inserted : boolean;
-					connection_cursor : type_module_connectors.cursor;
+					connection_cursor : pac_module_connections.cursor;
 					
 					use pac_device_purpose;
 					use pac_module_instance_name;

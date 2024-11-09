@@ -43,7 +43,6 @@ with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
 with et_device_purpose;				use et_device_purpose;
 with et_conventions;
-with et_assembly_variant_name;		use et_assembly_variant_name;
 with et_module_names;				use et_module_names;
 with et_rig_name;					use et_rig_name;
 with et_module_instance;			use et_module_instance;
@@ -53,7 +52,7 @@ package et_project.rigs is
 
 	
 	-- module connection (or board-to-board connector). NOTE: This could be a cable as well.
-	type type_connector is record
+	type type_module_connection is record
 		instance_A	: pac_module_instance_name.bounded_string; -- LMX_2
 		purpose_A	: pac_device_purpose.bounded_string; -- pwr_in
 		instance_B	: pac_module_instance_name.bounded_string; -- PWR
@@ -62,31 +61,39 @@ package et_project.rigs is
 		-- CS
 		-- net_comparator : on/off 
 		-- warn_only : on/off 
-		-- cable moodel ?
+		-- cable model ?
 	end record;
 
-	function compare_connectors (left, right : in type_connector) return boolean;
+	
 	-- Returns true if left connector comes before right connector.
+	-- Returns false if connectors are equal.
+	function compare_connectors (left, right : in type_module_connection) return boolean;
 
-	package type_module_connectors is new ordered_sets (
-		element_type	=> type_connector,
+
+	
+	package pac_module_connections is new ordered_sets (
+		element_type	=> type_module_connection,
 		"<"				=> compare_connectors);
+
+	
 	
 	-- A rig consists of a list of module instances
 	-- and a list of module-to-module connectors (or board-to-board connectors).
 	-- Conventions apply for the whole rig.
+
 	
 	-- A single rig is modelled by this type and stored in a 
 	-- similar structured rig configuration file:
 	type type_rig is record
-		module_instances	: type_module_instances.map;
-		connections			: type_module_connectors.set;
+		module_instances	: pac_module_instances.map;
+		connections			: pac_module_connections.set;
 		conventions			: et_conventions.pac_file_name.bounded_string; -- ../conventions.txt
 		-- CS description, docs, links, images ... ?
 	end record;
 
 
 	use et_rig_name.pac_file_name;
+
 	
 	-- Lots of rigs are stored in a map:
 	package pac_rigs is new ordered_maps (
@@ -105,6 +112,7 @@ package et_project.rigs is
 		SEC_CONNECTOR
 		);
 
+	
 	function to_string (section : in type_section_name) return string;
 	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
 

@@ -68,8 +68,8 @@ package et_module_instance is
 
 
 	
-	-- Lots of module instances are a map from the instance name to the type_module_instance.
-	package type_module_instances is new ordered_maps (
+	-- Lots of module instances are stored in a map:
+	package pac_module_instances is new ordered_maps (
 		key_type		=> pac_module_instance_name.bounded_string, -- LMX_1
 		"<"				=> pac_module_instance_name."<",
 		element_type	=> type_module_instance);

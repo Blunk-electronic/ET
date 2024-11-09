@@ -44,8 +44,8 @@ is
 
 	use pac_rigs;
 	use ada.directories;
-	use type_module_instances;
-	use type_module_connectors;
+	use pac_module_instances;
+	use pac_module_connections;
 
 	-- For the final full file name like /home/user/et_projects/blood_sample_analyzer.conf
 	file_name : pac_file_name.bounded_string;
@@ -55,7 +55,8 @@ is
 	
 	file_handle : ada.text_io.file_type;
 
-	procedure query_instance (instance_cursor : in type_module_instances.cursor) is
+	
+	procedure query_instance (instance_cursor : in pac_module_instances.cursor) is
 	begin
 		section_mark (section_module, HEADER);			
 		write (keyword => keyword_generic_name, parameters => to_string (element (instance_cursor).generic_name));
@@ -63,8 +64,10 @@ is
 		section_mark (section_module, FOOTER);
 	end;
 
-	procedure query_connections (connection_cursor : in type_module_connectors.cursor) is
-		con : type_connector := element (connection_cursor);
+
+	
+	procedure query_connections (connection_cursor : in pac_module_connections.cursor) is
+		con : type_module_connection := element (connection_cursor);
 	begin
 		section_mark (section_connector, HEADER);
 		write (keyword => keyword_instance_A, parameters => to_string (con.instance_A));

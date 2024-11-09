@@ -55,16 +55,16 @@ package body et_project.rigs is
 
 	--use et_general.pac_net_name;
 
-	function to_string (section : in type_section_name) return string is
 	-- Converts a section like SEC_MODULE_INSTANCES to a string "module_instances".
+	function to_string (section : in type_section_name) return string is
 		len : positive := type_section_name'image (section)'length;
 	begin
 		return to_lower (type_section_name'image (section) (5..len));
 	end to_string;
 
-	function compare_connectors (left, right : in type_connector) return boolean is
-	-- Returns true if left connector comes before right connector.
-	-- Returns false if connectors are equal.
+
+	
+	function compare_connectors (left, right : in type_module_connection) return boolean is
 		use pac_device_purpose;
 		use pac_module_instance_name;
 		r : boolean := false; -- to be returned
