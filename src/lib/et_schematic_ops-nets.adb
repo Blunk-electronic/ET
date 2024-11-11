@@ -829,7 +829,7 @@ package body et_schematic_ops.nets is
 		begin -- search_ports
 			while device /= pac_device_ports.no_element loop
 
-				if position ( -- CS use a similar function that takes only cursors ?
+				if get_position ( -- CS use a similar function that takes only cursors ?
 					module_name		=> key (module_cursor),
 					device_name		=> element (device).device_name,
 					port_name		=> element (device).port_name,
@@ -2517,7 +2517,7 @@ package body et_schematic_ops.nets is
 								port_name	:= element (cursor).port_name;
 
 								-- locate the port by module, device and port name:
-								port_position := position (module_name, device_name, port_name, log_threshold + 1).place;
+								port_position := get_position (module_name, device_name, port_name, log_threshold + 1).place;
 								log_indentation_up;
 								
 								log (text => "device " & to_string (device_name) & " port " & to_string (port_name) &

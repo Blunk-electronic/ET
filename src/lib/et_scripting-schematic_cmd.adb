@@ -2819,7 +2819,7 @@ is
 
 										unit_delete.unit := unit_name;
 										
-										if sheet (active_module, unit_delete.device, unit_delete.unit) = active_sheet then
+										if get_sheet (active_module, unit_delete.device, unit_delete.unit) = active_sheet then
 
 											delete_unit (
 												module_cursor	=> active_module,
@@ -2890,7 +2890,7 @@ is
 
 										unit_move.unit := unit_name;
 										
-										if sheet (active_module, unit_move.device, unit_move.unit) = active_sheet then
+										if get_sheet (active_module, unit_move.device, unit_move.unit) = active_sheet then
 											select_unit_for_move;
 											
 											-- use the current primary tool for moving the unit:
@@ -3002,7 +3002,7 @@ is
 										-- GUI that the sheet changes. This way the unit is drawn
 										-- on the current visible sheet independed of its original sheet number.
 										-- See et_canvas_schematic.draw_units.
-										if sheet (active_module, unit_move.device, unit_move.unit) /= active_sheet then
+										if get_sheet (active_module, unit_move.device, unit_move.unit) /= active_sheet then
 											unit_move.sheet_changes := true;
 
 											--set_status ("Moving unit from another sheet");
@@ -3074,7 +3074,7 @@ is
 
 										placeholder_move.unit := unit_name;
 										
-										if sheet (active_module, placeholder_move.device, placeholder_move.unit) = active_sheet then
+										if get_sheet (active_module, placeholder_move.device, placeholder_move.unit) = active_sheet then
 											finish_placeholder_move;
 										else
 											unit_not_on_this_sheet;
@@ -3137,7 +3137,7 @@ is
 
 										unit_move.unit := unit_name;
 										
-										if sheet (active_module, unit_move.device, unit_move.unit) = active_sheet then
+										if get_sheet (active_module, unit_move.device, unit_move.unit) = active_sheet then
 											finish_unit_move;
 										else
 											unit_not_on_this_sheet;
@@ -3197,7 +3197,7 @@ is
 
 										placeholder_move.unit := unit_name;
 										
-										if sheet (active_module, placeholder_move.device, placeholder_move.unit) = active_sheet then
+										if get_sheet (active_module, placeholder_move.device, placeholder_move.unit) = active_sheet then
 											finish_placeholder_move;
 										else
 											unit_not_on_this_sheet;

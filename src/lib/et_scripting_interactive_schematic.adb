@@ -337,7 +337,7 @@ package body et_scripting_interactive_schematic is
 				--device	=> su.device,
 				--unit	=> su.unit));
 
-		pos := position (
+		pos := get_position (
 				device	=> su.device,
 				unit	=> su.unit).place;
 		
@@ -590,7 +590,7 @@ package body et_scripting_interactive_schematic is
 		sp := element (selected_placeholder);
 			
 		-- Get the x/y position of the placeholder:
-		pos := position (
+		pos := get_position (
 				device		=> sp.device,
 				unit		=> sp.unit,
 				category	=> to_category); -- maps from noun to placeholder category

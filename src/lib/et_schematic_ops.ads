@@ -187,7 +187,7 @@ package et_schematic_ops is
 
 	
 	-- Returns the sheet/x/y position of the given device and port.
-	function position (
+	function get_position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC34
 		port_name		: in pac_port_name.bounded_string; -- CE
@@ -537,7 +537,7 @@ package et_schematic_ops is
 	
 	-- Returns the position (x/y/sheet) of the given unit.
 	-- Raises constraint error if device or unit does not exist.
-	function position (
+	function get_position (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
 		unit	: in pac_unit_name.bounded_string)
@@ -547,7 +547,7 @@ package et_schematic_ops is
 	
 	-- Returns the position (x/y/sheet) of the given unit.
 	-- Raises constraint error if device or unit does not exist.
-	function position ( -- CS rename to get_position
+	function get_position (
 		device	: in pac_devices_sch.cursor; -- R2
 		unit	: in pac_units.cursor)
 		return et_coordinates_2.type_position;
@@ -556,7 +556,7 @@ package et_schematic_ops is
 	
 	-- Returns the position (x/y) of the given placeholder.
 	-- Raises constraint error if device or unit does not exist.
-	function position ( -- CS rename to get_position
+	function get_position (
 		device		: in pac_devices_sch.cursor; -- R2
 		unit		: in pac_units.cursor;
 		category	: in type_placeholder_meaning)
@@ -565,7 +565,7 @@ package et_schematic_ops is
 	
 	-- Returns the sheet number of the given unit.
 	-- Raises constraint error if device or unit does not exist.
-	function sheet (
+	function get_sheet (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
 		unit	: in pac_unit_name.bounded_string)

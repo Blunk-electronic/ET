@@ -209,19 +209,20 @@ package body et_schematic_ops is
 	end;
 
 	
+	
 	-- Collects the positions of all units (in schematic) of the given device and returns
 	-- them in a list.
-	function positions_of_units ( -- CS rename to get_unit_positions
+	function get_unit_positions (
 		device_cursor : in pac_devices_sch.cursor) 
-		return pac_unit_positions.map is
-
+		return pac_unit_positions.map 
+	is
 		-- temporarily storage of unit coordinates:
 		positions : pac_unit_positions.map;
 		
 		procedure get_positions (
 			device_name : in type_device_name;
-			device		: in type_device_sch) is
-		begin
+			device		: in type_device_sch) 
+		is begin
 			positions := unit_positions (device.units);
 		end;
 
@@ -233,6 +234,8 @@ package body et_schematic_ops is
 		return positions;
 	end;
 
+
+	
 	
 	procedure delete_ports (
 		module			: in pac_generic_modules.cursor;		-- the module
@@ -401,7 +404,7 @@ package body et_schematic_ops is
 				-- units must be fetched. These coordinates will later assist
 				-- in deleting the port names from connected net segments.
 				device_cursor := find (module.devices, device_name); -- the device should be there
-				position_of_units := positions_of_units (device_cursor);
+				position_of_units := get_unit_positions (device_cursor);
 
 				log_indentation_up;
 				log_unit_positions (position_of_units, log_threshold + 1);
@@ -580,8 +583,9 @@ package body et_schematic_ops is
 	end move_ports;
 
 	
+
 	
-	function position (
+	function get_position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC34
 		port_name		: in pac_port_name.bounded_string; -- CE
@@ -671,9 +675,8 @@ package body et_schematic_ops is
 			end if;
 		end query_devices;
 
-
 		
-	begin -- position
+	begin
 		log (text => "module " & to_string (module_name) &
 			 " locating device " & to_string (device_name) & 
 			 " port " & to_string (port_name) & " ...", level => log_threshold);
@@ -686,7 +689,7 @@ package body et_schematic_ops is
 			process		=> query_devices'access);
 		
 		return port_position;
-	end position;
+	end get_position;
 
 	
 
@@ -1763,6 +1766,7 @@ package body et_schematic_ops is
 		return ports;
 	end ports_at_place;
 
+
 	
 
 	-- Renames the device ports of the net segments affected by a rename operation.
@@ -1865,6 +1869,7 @@ package body et_schematic_ops is
 		begin -- query_nets
 			pac_nets.iterate (module.nets, query_net'access);
 		end query_nets;
+
 		
 	begin -- rename_ports
 		log (text => "renaming ports in nets ...", level => log_threshold);
@@ -1878,18 +1883,23 @@ package body et_schematic_ops is
 
 		log_indentation_down;
 	end rename_ports;
+
+
 	
 	procedure rename_device (
 		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name_before	: in type_device_name; -- IC1
 		device_name_after	: in type_device_name; -- IC23
-		log_threshold		: in type_log_level) is
+		log_threshold		: in type_log_level) 
+	is
 
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 			use pac_devices_sch;
 
 			device_cursor_before : pac_devices_sch.cursor;
@@ -1926,7 +1936,7 @@ package body et_schematic_ops is
 				-- Before deleting the old device, the coordinates of the
 				-- units must be fetched. These coordinates will later assist
 				-- in renaming the port names in connected net segments.
-				position_of_units := positions_of_units (device_cursor_before);
+				position_of_units := get_unit_positions (device_cursor_before);
 				
 				-- delete the old device
 				pac_devices_sch.delete (
@@ -1945,6 +1955,7 @@ package body et_schematic_ops is
 				device_not_found (device_name_before);
 			end if;
 		end query_devices;
+		
 
 	begin -- rename_device
 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
@@ -3071,7 +3082,7 @@ package body et_schematic_ops is
 
 
 	
-	function position (
+	function get_position (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
 		unit	: in pac_unit_name.bounded_string)
@@ -3105,11 +3116,11 @@ package body et_schematic_ops is
 			process		=> query_unit'access);
 
 		return unit_position;
-	end position;
+	end get_position;
 
 
 	
-	function position (
+	function get_position (
 		device	: in pac_devices_sch.cursor; -- R2
 		unit	: in pac_units.cursor)
 		return et_coordinates_2.type_position
@@ -3132,12 +3143,12 @@ package body et_schematic_ops is
 			process		=> query_unit'access);
 
 		return unit_position;
-	end position;
+	end get_position;
 
 
 	
 	
-	function position (
+	function get_position (
 		device		: in pac_devices_sch.cursor; -- R2
 		unit		: in pac_units.cursor;
 		category	: in type_placeholder_meaning)
@@ -3179,19 +3190,19 @@ package body et_schematic_ops is
 			process		=> query_unit'access);
 
 		return placeholder_position;
-	end position;
+	end get_position;
 
 	
 
 	
-	function sheet (
+	function get_sheet (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
 		unit	: in pac_unit_name.bounded_string)
 		return type_sheet
 	is begin		
-		return get_sheet (position (module, device, unit));
-	end sheet;
+		return get_sheet (get_position (module, device, unit));
+	end get_sheet;
 		
 
 	
@@ -3628,21 +3639,23 @@ package body et_schematic_ops is
 	end remove_device;
 
 
-	function rename_device (
 	-- Renames the given device. Returns true if device has been renamed.
 	-- Assumes that the device with name device_name_before exists.
 	-- Does not perform any conformity checks on given device names.
+	function rename_device (
 		module_cursor		: in pac_generic_modules.cursor; -- the cursor to the module
 		device_name_before	: in type_device_name; -- IC1
 		device_name_after	: in type_device_name; -- IC101
 		log_threshold		: in type_log_level) 
-		return boolean is
+		return boolean 
+	is
 
 		result : boolean := false;
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_module) 
+		is
 			use pac_devices_sch;
 
 			device_cursor_before : pac_devices_sch.cursor;
@@ -3652,6 +3665,7 @@ package body et_schematic_ops is
 			-- temporarily storage of unit coordinates:
 			position_of_units : pac_unit_positions.map;
 
+			
 		begin -- query_devices
 			-- locate the device by the old name
 			device_cursor_before := find (module.devices, device_name_before); -- IC1
@@ -3669,7 +3683,7 @@ package body et_schematic_ops is
 				-- Before deleting the old device, the coordinates of the
 				-- units must be fetched. These coordinates will later assist
 				-- in renaming the port names in connected net segments.
-				position_of_units := positions_of_units (device_cursor_before);
+				position_of_units := get_unit_positions (device_cursor_before);
 				
 				-- delete the old device
 				pac_devices_sch.delete (
@@ -3690,6 +3704,7 @@ package body et_schematic_ops is
 					" already used -> skipped", level => log_threshold + 1);
 			end if;
 		end query_devices;
+		
 
 	begin -- rename_device
 		log (text => "renaming " & to_string (device_name_before) & " to " & 
