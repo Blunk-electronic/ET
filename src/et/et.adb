@@ -51,6 +51,7 @@ with ada.directories;			use ada.directories;
 
 with et_system_info;
 with et_modes;					use et_modes;
+with et_generic_module;			use et_generic_module;
 with et_module_names;			use et_module_names;
 with et_script_names;			use et_script_names;
 with et_directory_and_file_ops;	use et_directory_and_file_ops;
@@ -493,7 +494,7 @@ procedure et is
 		use ada.containers;
 		use et_gui_2;
 		use et_project.modules;
-		use et_project.modules.pac_generic_modules;
+		use pac_generic_modules;
 		use pac_module_file_name;
 		use pac_module_name;
 
@@ -503,7 +504,7 @@ procedure et is
 		script_name_tmp : pac_script_name.bounded_string;
 	begin
 		-- If no generic modules available at all, create an untitled module:
-		if length (generic_modules) = 0 then
+		if get_count (generic_modules) = 0 then
 			
 			create_module (
 				module_name		=> to_module_name (untitled),
