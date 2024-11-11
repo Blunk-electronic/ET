@@ -2646,27 +2646,26 @@ package body et_schematic_ops is
 
 
 	
-	function next_device_name (
-	-- Returns for the given device prefix the next available device name in the module.
-	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 the return will be C2.
-
-	-- CS: look up non-electric devices
-
+	function get_next_device_name (
 		module_cursor	: in pac_generic_modules.cursor;
 		prefix			: in pac_device_prefix.bounded_string; -- R, L, C, IC, FD, H, ...
 		category		: in type_device_category := ELECTRICAL)
-		return type_device_name is -- C2
+		return type_device_name
+	is
+		-- CS: look up non-electric devices
 		
 		next_name : type_device_name; -- to be returned
 
 		use pac_device_prefix;
+
 		
-		procedure search_gap_electric (
 		-- Searches for the lowest available device name. Looks at devices
 		-- whose prefix equals the given prefix. Example: If given prefix is R, it looks
 		-- for the lowest available resistor index.
+		procedure search_gap_electric (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_module) 
+		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor := module.devices.first;
 
@@ -2775,8 +2774,9 @@ package body et_schematic_ops is
 			end if;
 			
 		end search_gap_non_electric;
+
 		
-	begin -- next_device_name
+	begin
 
 		-- The device category decides where to look first for a free device name.
 		case category is
@@ -2794,7 +2794,7 @@ package body et_schematic_ops is
 		end case;
 				
 		return next_name;
-	end next_device_name;
+	end get_next_device_name;
 
 
 
@@ -2866,6 +2866,117 @@ package body et_schematic_ops is
 		log_threshold	: in type_log_level) is separate;
 
 
+
+	function device_exists (
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
+		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
+		device	: in type_device_name)
+		return boolean 
+	is
+		result : boolean := false; -- to be returned
+
+		
+		procedure query_variants (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in et_schematic.type_module) 
+		is
+			use pac_assembly_variants;
+			variant_cursor : pac_assembly_variants.cursor;
+
+			
+			procedure query_devices (
+				variant_name	: in pac_assembly_variant_name.bounded_string;
+				variant			: in type_assembly_variant) 
+			is
+				use et_assembly_variants;
+				use pac_device_variants;
+				device_cursor : pac_device_variants.cursor;
+			begin
+				device_cursor := find (variant.devices, device);
+
+				-- The device may be listed in the assembly variant:
+				if device_cursor /= pac_device_variants.no_element then
+					case element (device_cursor).mounted is
+						when YES => result := true; -- mounted with alternative value, partcode or purpose
+						when NO  => result := false; -- not mounted
+					end case;
+				else
+				-- The device may be NOT listed in the assembly variant. Means it is mounted always.
+					result := true;
+				end if;
+					
+			end query_devices;
+
+			
+		begin -- query_variants
+			variant_cursor := find (module.variants, variant);
+
+			query_element (
+				position	=> variant_cursor,
+				process		=> query_devices'access);
+		end;
+
+		
+	begin
+-- 		log (text => "module " & enclose_in_quotes (to_string (module_name)) &
+-- 			" variant " & enclose_in_quotes (to_variant (variant)) &
+-- 			" querying device " & to_string (device),
+-- 			level => log_threshold);
+
+		pac_generic_modules.query_element (
+			position	=> module,
+			process		=> query_variants'access);
+		
+		return result;
+	end device_exists;
+
+
+
+
+	function get_alternative_device (
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
+		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
+		device	: in type_device_name)
+		return pac_device_variants.cursor 
+	is
+
+		cursor : pac_device_variants.cursor; -- to be returned;
+		
+		procedure query_variants (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in et_schematic.type_module) is
+			use pac_assembly_variants;
+			
+			variant_cursor : pac_assembly_variants.cursor;
+
+			procedure query_devices (
+				variant_name	: in pac_assembly_variant_name.bounded_string;
+				variant			: in type_assembly_variant) is
+				use pac_device_variants;
+			begin
+				cursor := find (variant.devices, device);
+			end query_devices;
+				
+		begin -- query_variants
+			variant_cursor := find (module.variants, variant);
+
+			query_element (
+				position	=> variant_cursor,
+				process		=> query_devices'access);
+		end;
+		
+	begin
+		pac_generic_modules.query_element (
+			position	=> module,
+			process		=> query_variants'access);
+		
+		return cursor;
+	end get_alternative_device;
+
+
+
+
+	
 	
 	function available_units (
 		module_cursor	: in pac_generic_modules.cursor;

@@ -1173,7 +1173,7 @@ package body et_canvas_schematic_units is
 		unit_add.total := get_unit_count (unit_add.device);
 		
 		-- assign the prospective device name:
-		unit_add.device_pre := next_device_name (active_module, element (device_cursor_lib).prefix);
+		unit_add.device_pre := get_next_device_name (active_module, element (device_cursor_lib).prefix);
 		
 		-- get the available package variants:
 		variants := get_available_variants (device_cursor_lib);

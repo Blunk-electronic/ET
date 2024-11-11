@@ -465,9 +465,9 @@ package et_schematic_ops is
 
 
 	
-	function next_device_name (
 	-- Returns for the given device prefix the next available device name in the module.
 	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 the return will be C2.
+	function get_next_device_name (
 		module_cursor	: in pac_generic_modules.cursor;
 		prefix			: in pac_device_prefix.bounded_string; -- C
 		category		: in type_device_category := ELECTRICAL)
@@ -497,6 +497,36 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level);
 
 
+
+	-- Returns true if the given module and assembly variant 
+	-- provides the given device.
+	-- Assumptions: 
+	-- - The module being searched in must be in the rig already.
+	-- - The assembly variant must exist in the module.
+	-- - The device must exist in the module.
+	function device_exists (
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
+		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
+		device	: in type_device_name)
+		return boolean;
+
+
+
+	-- Returns a cursor to the alternative device in the given module
+	-- and given assembly variant.
+	-- Assumptions: 
+	-- - The module being searched in must be in the rig already.
+	-- - The assembly variant must exist in the module.
+	-- - The device must exist in the module.
+	-- - The device must have an entry in the given assembly variant,
+	--   otherwise the return is no_element.
+	function get_alternative_device (
+		module	: in pac_generic_modules.cursor; -- the module like motor_driver
+		variant	: in pac_assembly_variant_name.bounded_string; -- low_cost				
+		device	: in type_device_name)
+		return pac_device_variants.cursor;
+
+	
 
 	
 	-- Returns the names of available units of the given device in the 

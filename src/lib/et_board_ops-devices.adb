@@ -840,7 +840,7 @@ package body et_board_ops.devices is
 			inserted : boolean;
 
 			-- build the next available device name:
-			next_name : type_device_name := next_device_name (module_cursor, prefix, NON_ELECTRICAL);
+			next_name : type_device_name := get_next_device_name (module_cursor, prefix, NON_ELECTRICAL);
 		begin -- add
 			log (text => "adding device " & to_string (next_name), level => log_threshold + 1);
 			log_indentation_up;

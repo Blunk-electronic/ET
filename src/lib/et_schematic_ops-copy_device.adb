@@ -186,7 +186,7 @@ is
 			log_indentation_up;
 
 			-- build the next available device name:
-			next_name := next_device_name (module_cursor, get_prefix (key (device_cursor_sch))); -- IC46
+			next_name := get_next_device_name (module_cursor, get_prefix (key (device_cursor_sch))); -- IC46
 			log (text => "adding device " & to_string (next_name), level => log_threshold + 1);
 			log_indentation_up;
 			

@@ -65,7 +65,7 @@ is
 
 		-- build the next available device name:
 		next_name : type_device_name := 
-			next_device_name (module_cursor, element (device_cursor_lib).prefix);
+			get_next_device_name (module_cursor, element (device_cursor_lib).prefix);
 
 		placeholders : type_rotated_placeholders;
 		
