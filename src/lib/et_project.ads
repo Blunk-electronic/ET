@@ -42,7 +42,6 @@ with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
 
 with et_net_names;				use et_net_names;
-with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_module_names;			use et_module_names;
 with et_project_name;			use et_project_name;
@@ -120,16 +119,10 @@ package et_project is
 	-- Here we store the name of the currently open project:
 	active_project : pac_project_name.bounded_string;
 
-	
 
 
 
 	
-	-- Tests whether the project name is a child directory of the current working directory.
-	-- Raises constraint error otherwise.
-	procedure validate_project_name (
-		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		log_threshold 	: in type_log_level);
 
 	
 	-- Creates given project directory.

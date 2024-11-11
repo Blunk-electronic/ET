@@ -40,6 +40,7 @@
 
 with ada.strings.bounded;       use ada.strings.bounded;
 
+with et_logging;				use et_logging;
 
 package et_project_name is
 
@@ -67,6 +68,15 @@ package et_project_name is
 	function to_project_name (
 		name : in string) 
 		return pac_project_name.bounded_string;
+
+
+
+	-- Tests whether the project name is a child directory 
+	-- of the current working directory.
+	-- Raises constraint error otherwise.
+	procedure validate_project_name (
+		project_name	: in pac_project_name.bounded_string; -- blood_sample_analyzer
+		log_threshold 	: in type_log_level);
 
 	
 

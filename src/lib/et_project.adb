@@ -37,15 +37,16 @@
 --   history of changes:
 --
 
-with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings.fixed;
 with ada.exceptions;
 with ada.directories;
 with gnat.directory_operations;
 with et_directory_and_file_ops;
+with et_string_processing;			use et_string_processing;
 
 with et_export;
 with et_system_info;
-with et_general_rw;				use et_general_rw;
+with et_general_rw;
 
 with et_project.modules;
 with et_project.configuration;
@@ -70,39 +71,12 @@ package body et_project is
 
 
 	
-	procedure validate_project_name (
-		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
-		log_threshold 	: in type_log_level)
-	is
-		use et_string_processing;
-		use ada.directories;
-		use gnat.directory_operations;
-		use et_directory_and_file_ops;
-		expanded_name : constant string := expand (to_string (project_name));
-	begin
-		-- The project must be a directory inside the current directory.
-		-- The project name must not be something like "ecad/et_projects/blood_sample_analyzer".
-		-- The easiest way to check that is to detect directory separators ("/").
-		if index (expanded_name, to_set (dir_separator)) = 0 then -- no separators
-			if kind (expanded_name) = DIRECTORY then -- is a directory
-				null;
-			else
-				log (ERROR, "The project must be a directory !", console => true);
-				raise constraint_error;
-			end if;
-		else
-			log (ERROR, "The project must be a child directory !", console => true);
-			raise constraint_error;
-		end if;
-	end validate_project_name;
-
 	
 	
 	procedure create_supplementary_directories (
 		path			: in string;
 		log_threshold	: in type_log_level) 
 	is
-		use et_string_processing;
 		use ada.directories;
 		use gnat.directory_operations;
 
@@ -115,6 +89,7 @@ package body et_project is
 		end create_library_subdirs;
 
 		use et_export;
+
 		
 	begin -- create_supplementary_directories
 		log (text => "creating subdirectories for supplementary stuff ...", level => log_threshold);
@@ -146,16 +121,16 @@ package body et_project is
 		log_threshold	: in type_log_level) 
 	is
 		use ada.directories;
-		use et_string_processing;
+		use et_general_rw;
 		use pac_project_path;
 
--- 		use modules;
 		use modules.pac_generic_modules;
 
 		module_cursor : modules.pac_generic_modules.cursor;
 
-		procedure create_project_configuration is
+		
 		-- create the project configuration file
+		procedure create_project_configuration is
 			file_handle : ada.text_io.file_type;
 
 			use et_project.configuration;
@@ -190,10 +165,10 @@ package body et_project is
 			-- close the file
 			write_configuration_footer;
 			set_output (standard_output);
-			close (file_handle);
-			
+			close (file_handle);			
 		end create_project_configuration;
 
+		
 
 		procedure create_module_file is
 			-- backup the current working directory
@@ -230,6 +205,7 @@ package body et_project is
 			set_directory (previous_directory);
 		end create_module_file;
 
+		
 		
 		-- Creates an example rig configuration file.
 		procedure create_rig_configuration is
@@ -337,8 +313,6 @@ package body et_project is
 		log_threshold	: in type_log_level) 
 	is		
 		use ada.directories;
-		use et_string_processing;
-
 		path : constant string := to_string (project_name);
 
 		
@@ -382,7 +356,6 @@ package body et_project is
 		project_name	: in pac_project_name.bounded_string;
 		log_threshold 	: in type_log_level)
 	is
-		use et_string_processing;
 		use ada.directories;
 	begin
 		if exists (to_string (project_name)) then
@@ -402,7 +375,6 @@ package body et_project is
 		project_name	: in pac_project_name.bounded_string;		-- blood_sample_analyzer
 		log_threshold 	: in type_log_level)
 	is
-		use et_string_processing;
 		use ada.directories;
 		
 		-- We need a backup of the current working directory. When this procedure finishes,
@@ -446,6 +418,7 @@ package body et_project is
 	--    In this case the return would be true.
 	-- 3. The expanded file_name may be an absolute path pointing elsewhere in the filesystem.
 	--    In this case the expanded path starts with / and the return will be false.
+		use ada.strings.fixed;
 		use gnat.directory_operations;
 		use et_directory_and_file_ops;
 		expanded_name : constant string := expand (file_name);
@@ -468,7 +441,6 @@ package body et_project is
 		use et_rig;
 		use pac_rigs;		
 
-		use et_string_processing;
 		use ada.directories;
 		use et_project.modules;
 		use et_project.modules.pac_generic_modules;
@@ -482,8 +454,8 @@ package body et_project is
 		name : pac_project_name.bounded_string := to_project_name (simple_name (to_string (destination)));
 
 		
-		procedure query_modules (module_cursor : in pac_generic_modules.cursor) is
 		-- Saves a project internal module or a submodule (indicated by module_cursor).
+		procedure query_modules (module_cursor : in pac_generic_modules.cursor) is
 			module_name : pac_module_name.bounded_string := key (module_cursor); -- motor_driver
 		begin
 			log_indentation_up;
