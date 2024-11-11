@@ -49,6 +49,7 @@ with et_system_info;
 with et_general_rw;
 
 with et_project.modules;
+with et_generic_module;				use et_generic_module;
 with et_project.configuration;
 with et_rig_name;
 with et_rig;
@@ -124,9 +125,9 @@ package body et_project is
 		use et_general_rw;
 		use pac_project_path;
 
-		use modules.pac_generic_modules;
+		-- use modules.pac_generic_modules;
 
-		module_cursor : modules.pac_generic_modules.cursor;
+		module_cursor : pac_generic_modules.cursor;
 
 		
 		-- create the project configuration file
@@ -195,7 +196,7 @@ package body et_project is
 			end if;
 				
 			-- Save the single and first module:
-			module_cursor := modules.generic_modules.first;
+			module_cursor := generic_modules.first;
 
 			modules.save_module (
 				module_cursor	=> module_cursor,
@@ -211,6 +212,7 @@ package body et_project is
 		procedure create_rig_configuration is
 			file_handle : ada.text_io.file_type;
 
+			use pac_generic_modules;
 			use et_rig;
 			use et_rig_name;
 			rig_conf_file : pac_file_name.bounded_string; -- led_matrix.conf
@@ -443,7 +445,7 @@ package body et_project is
 
 		use ada.directories;
 		use et_project.modules;
-		use et_project.modules.pac_generic_modules;
+		use pac_generic_modules;
 
 		-- We need a backup of the current working directory. When this procedure finishes,
 		-- the working directory must be restored.

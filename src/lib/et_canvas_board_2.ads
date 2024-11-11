@@ -73,6 +73,7 @@ with et_board_shapes_and_text;
 -- with et_conductor_segment;
 with et_project;
 with et_project.modules;			use et_project.modules;
+with et_generic_module;				use et_generic_module;
 -- with et_frames;
 
 with et_canvas.drawing_frame;
@@ -85,7 +86,7 @@ with et_logging;					use et_logging;
 
 package et_canvas_board_2 is
 
-	use et_project.modules.pac_generic_modules;
+	use pac_generic_modules;
 
 	
 	-- In the title bar of the main window follwing information

@@ -217,7 +217,7 @@ package body et_schematic_ops.netlists is
 			-- Adds to the device index the given offset.
 			-- If offset is zero, we are dealing with the top module.
 			procedure collect_nets (
-				module_cursor	: in et_project.modules.pac_generic_modules.cursor;
+				module_cursor	: in pac_generic_modules.cursor;
 				variant			: in pac_assembly_variant_name.bounded_string;
 				prefix			: in pac_net_name.bounded_string; -- DRV3/OSC1/
 				offset			: in type_name_index) 
@@ -334,7 +334,7 @@ package body et_schematic_ops.netlists is
 				
 			begin -- collect_nets
 					
-				et_project.modules.pac_generic_modules.query_element (
+				query_element (
 					position	=> module_cursor,
 					process		=> query_nets'access);
 
@@ -632,7 +632,7 @@ package body et_schematic_ops.netlists is
 			-- Update the netlist (indicated by variant_name) in the module by variable "netlist".
 			-- NOTE: This is about the internal netlist (module.netlists) and has nothing to do
 			-- with netlist files to be exported for manufacturing and testing:
-			et_project.modules.pac_generic_modules.update_element (
+			update_element (
 				container		=> generic_modules,
 				position		=> module_cursor,
 				process			=> update_netlist'access);

@@ -70,75 +70,9 @@ package body et_project.modules is
 		return pac_project_name.to_bounded_string (name);
 	end to_project_name;
 
-	
-
-	function get_active_module return string is
-		use pac_module_name;
-	begin
-		return pac_module_name.to_string (key (active_module)); -- motor_driver (without extension)
-	end get_active_module;
-
-
-	
-	function generic_module_exists (
-		module : in pac_module_name.bounded_string) 
-		return boolean
-	is begin
-		return pac_generic_modules.contains (generic_modules, module);
-	end;
-
-
-	
-	function locate_module (name : in pac_module_name.bounded_string) -- motor_driver (without extension *.mod)
-		return pac_generic_modules.cursor 
-	is
-		cursor : pac_generic_modules.cursor := find (generic_modules, name);
-	begin
-		if cursor = pac_generic_modules.no_element then
-			raise semantic_error_1 with
-				"ERROR: Module " & enclose_in_quotes (to_string (name)) 
-				& " does not exist !";
-		else
-			return find (generic_modules, name);
-		end if;
-	end locate_module;
 
 
 
-	function get_meta_information (
-		module : in pac_generic_modules.cursor)
-		return et_meta.type_meta
-	is begin
-		return element (module).meta;
-	end get_meta_information;
-
-
-
-	
-	procedure save_module (
-		module_cursor	: in pac_generic_modules.cursor;
-		save_as_name	: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver, templates/clock_generator							  
-		log_threshold	: in type_log_level) 
-	is separate;
-
-
-	
-	function to_string (section : in type_section) return string is
-	-- Converts a section like SEC_NET to a string "net".
-		len : positive := type_section'image (section)'length;
-	begin
-		return to_lower (type_section'image (section) (5..len));
-	end to_string;
-
-
-	
-	procedure read_module (
-		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
-		log_threshold	: in type_log_level) 
-		is separate;
-
-
-		
 	procedure create_module (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level) 
@@ -173,55 +107,11 @@ package body et_project.modules is
 					"ERROR: Module " & enclose_in_quotes (to_string (module_name)) 
 					& " already exists -> not created.";
 			end if;
-		end if;
-		
+		end if;		
 	end create_module;
-
-
 	
-	procedure save_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
-		log_threshold	: in type_log_level) 
-	is
-		module_cursor : pac_generic_modules.cursor := locate_module (module_name);
-
-		use et_string_processing;
-		use ada.directories;
-
-		file_name : constant string := to_string (module_name) &
-			latin_1.full_stop & module_file_name_extension;
-		-- motor_driver.mod or templates/clock_generator.mod
-	begin
-		log (
-			text	=> "saving module " & enclose_in_quotes (to_string (module_name)) & " ...",
-			level	=> log_threshold);
-
-		-- We save the module if it exists:
-		if module_cursor /= pac_generic_modules.no_element then
-	
-			-- Make sure the module file is inside the current project directory.
-			-- If the file is outside the project, issue a warning and do not save.
-			if inside_project_directory (to_string (module_name)) then
-			
-				save_module (
-					module_cursor	=> module_cursor,
-					log_threshold 	=> log_threshold + 1);
-
-			else
-				log (WARNING, "module " & enclose_in_quotes (to_string (module_name)) &
-					 " is outside the project and will not be saved !");
-			end if;
-			
-		else
-			log (WARNING, "module " & enclose_in_quotes (to_string (module_name)) &
-					" does not exist !");
-		end if;
-		
-	end save_module;
 
 
-
-	
 	procedure delete_module (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level) 
@@ -276,37 +166,72 @@ package body et_project.modules is
 	end delete_module;
 
 
+	
+	
+	procedure save_module (
+		module_cursor	: in pac_generic_modules.cursor;
+		save_as_name	: in pac_module_name.bounded_string := to_module_name (""); -- motor_driver, templates/clock_generator							  
+		log_threshold	: in type_log_level) 
+	is separate;
+
 
 	
-	function assembly_variant_exists (
-		module		: in pac_generic_modules.cursor;
-		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost
-		return boolean 
-	is
-		use pac_assembly_variants;
-
-		result : boolean := false; -- to be returned
-
-		procedure query_variants (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in et_schematic.type_module) is
-		begin
-			result := contains (module.variants, variant);
-		end;
-		
+	function to_string (section : in type_section) return string is
+	-- Converts a section like SEC_NET to a string "net".
+		len : positive := type_section'image (section)'length;
 	begin
-		if pac_assembly_variant_name.length (variant) = 0 then
-			result := true;
-		else
-			
-			pac_generic_modules.query_element (
-				position	=> module,
-				process		=> query_variants'access);
+		return to_lower (type_section'image (section) (5..len));
+	end to_string;
 
+
+	
+	procedure read_module (
+		file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
+		log_threshold	: in type_log_level) 
+		is separate;
+		
+
+
+	
+	procedure save_module (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		log_threshold	: in type_log_level) 
+	is
+		module_cursor : pac_generic_modules.cursor := locate_module (module_name);
+
+		use et_string_processing;
+		use ada.directories;
+
+		file_name : constant string := to_string (module_name) &
+			latin_1.full_stop & module_file_name_extension;
+		-- motor_driver.mod or templates/clock_generator.mod
+	begin
+		log (
+			text	=> "saving module " & enclose_in_quotes (to_string (module_name)) & " ...",
+			level	=> log_threshold);
+
+		-- We save the module if it exists:
+		if module_cursor /= pac_generic_modules.no_element then
+	
+			-- Make sure the module file is inside the current project directory.
+			-- If the file is outside the project, issue a warning and do not save.
+			if inside_project_directory (to_string (module_name)) then
+			
+				save_module (
+					module_cursor	=> module_cursor,
+					log_threshold 	=> log_threshold + 1);
+
+			else
+				log (WARNING, "module " & enclose_in_quotes (to_string (module_name)) &
+					 " is outside the project and will not be saved !");
+			end if;
+			
+		else
+			log (WARNING, "module " & enclose_in_quotes (to_string (module_name)) &
+					" does not exist !");
 		end if;
-					
-		return result;
-	end assembly_variant_exists;
+		
+	end save_module;
 
 	
 	

@@ -105,7 +105,7 @@ package body et_board_ops.conductors is
 	-- If the terminal is an SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning must be issued.
 	procedure check_terminal_face_vs_layer (
-		module_cursor	: in et_project.modules.pac_generic_modules.cursor;											   
+		module_cursor	: in pac_generic_modules.cursor;											   
 		terminal		: in type_terminal_position_fine;
 		layer			: in et_pcb_stack.type_signal_layer) 
 	is
@@ -175,8 +175,9 @@ package body et_board_ops.conductors is
 
 		end do_it;
 
-	begin -- add_named_track
-		et_project.modules.pac_generic_modules.update_element (
+		
+	begin
+		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> do_it'access);

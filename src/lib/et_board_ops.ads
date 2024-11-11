@@ -53,6 +53,7 @@ with et_axes;						use et_axes;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
 with et_project.modules;			use et_project.modules;
+with et_generic_module;				use et_generic_module;
 with et_schematic;					use et_schematic;
 with et_terminals;					use et_terminals;
 with et_pcb;						use et_pcb;
@@ -107,7 +108,7 @@ package et_board_ops is
 	
 	-- Returns the total number of signal layers used by the given module.
 	function layer_count (module_cursor	: in pac_generic_modules.cursor) 
-		return et_pcb_stack.type_signal_layer;
+		return et_pcb_stack.type_signal_layer; -- CS rename to get_layer_count
 
 	
 	-- Tests whether the given layer is allowed according to current layer stack
@@ -147,7 +148,7 @@ package et_board_ops is
 	-- Tests the given set of signal layers whether each of them is available
 	-- according to the current layer stack of the given module.
 	procedure test_layers (
-		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		layers 			: in et_pcb_stack.type_signal_layers.set);	
 
 

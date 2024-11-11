@@ -67,6 +67,7 @@ with gtk.text_iter;
 --with gtk.menu_shell;
 
 with et_project.modules;				use et_project.modules;
+with et_generic_module;					use et_generic_module;
 with et_canvas_board_2;
 use et_canvas_board_2.pac_canvas;
 

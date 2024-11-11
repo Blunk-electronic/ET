@@ -70,6 +70,7 @@ with cairo;							use cairo;
 with et_logical_pixels;				use et_logical_pixels;
 
 with et_module_names;				use et_module_names;
+with et_generic_module;				use et_generic_module;
 with et_script_names;				use et_script_names;
 with et_sheets;						use et_sheets;
 with et_coordinates_2;				use et_coordinates_2;
@@ -96,7 +97,7 @@ with et_logging;					use et_logging;
 
 package et_canvas_schematic_2 is
 	
-	use et_project.modules.pac_generic_modules;
+	use pac_generic_modules;
 
 	
 	-- In the title bar of the main window follwing information

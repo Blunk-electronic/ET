@@ -175,7 +175,7 @@ package body et_device_query_board is
 	
 
 	function get_terminal_position (
-		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		device_cursor	: in pac_devices_sch.cursor; -- IC45
 		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position_fine

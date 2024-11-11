@@ -120,7 +120,7 @@ package body et_board_ops is
 
 	
 	
-	function layer_count (module_cursor	: in et_project.modules.pac_generic_modules.cursor) 
+	function layer_count (module_cursor	: in pac_generic_modules.cursor) 
 		return et_pcb_stack.type_signal_layer 
 	is
 		use package_layers;
@@ -130,7 +130,7 @@ package body et_board_ops is
 
 	
 	procedure test_layer (
-		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer) 
 	is
 		layers_used : et_pcb_stack.type_signal_layer := layer_count (module_cursor);
@@ -562,8 +562,8 @@ package body et_board_ops is
 				end query_devices;
 
 				
-			begin -- collect
-				et_project.modules.pac_generic_modules.query_element (
+			begin
+				query_element (
 					position	=> module_cursor,
 					process		=> query_devices'access);
 				
@@ -800,7 +800,7 @@ package body et_board_ops is
 	
 	
 	procedure test_layers (
-		module_cursor	: in et_project.modules.pac_generic_modules.cursor;
+		module_cursor	: in pac_generic_modules.cursor;
 		layers 			: in et_pcb_stack.type_signal_layers.set)
 	is
 		use type_signal_layers;

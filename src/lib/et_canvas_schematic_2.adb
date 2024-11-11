@@ -868,8 +868,7 @@ package body et_canvas_schematic_2 is
 		module	: in pac_module_name.bounded_string)  -- motor_driver
 	is
 		use et_project.modules;
-		use et_project.modules.pac_generic_modules;
-		cursor : et_project.modules.pac_generic_modules.cursor := find (generic_modules, module);
+		cursor : pac_generic_modules.cursor := find (generic_modules, module);
 	begin
 		-- If module already loaded in collection of generic modules, set the active_module:
 		if cursor /= pac_generic_modules.no_element then 

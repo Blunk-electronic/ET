@@ -48,7 +48,7 @@ with et_module_instance;			use et_module_instance;
 with et_device_purpose;				use et_device_purpose;
 with et_conventions;				--use et_conventions;
 with et_rig_name;					use et_rig_name;
-
+with et_generic_module;				use et_generic_module;
 
 package et_rig is
 	

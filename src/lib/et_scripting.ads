@@ -48,6 +48,7 @@ with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
 with et_project.modules;		use et_project.modules;
+with et_generic_module;			use et_generic_module;
 with et_modes;					use et_modes;
 
 with et_cmd_sts;				use et_cmd_sts;

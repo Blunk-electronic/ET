@@ -56,6 +56,7 @@ with et_axes;						use et_axes;
 with et_module_names;				use et_module_names;
 with et_string_processing;			use et_string_processing;
 with et_project.modules;
+with et_generic_module;				use et_generic_module;
 with et_vias;
 with et_board_shapes_and_text;
 with et_package_names;
@@ -3946,10 +3947,11 @@ package body et_kicad_to_native is
 			-- and copy_libraries would update the scratch module inside the list.
 			declare 
 				current_working_directory : constant string := current_directory;
-				module_list : et_project.modules.pac_generic_modules.map; -- set up the list
+				use pac_generic_modules;
+				module_list : pac_generic_modules.map; -- set up the list
 			begin
 				-- insert the scratch module in the list
-				et_project.modules.pac_generic_modules.insert (
+				insert (
 					container 	=> module_list,
 					key			=> to_module_name (to_string (project_name)), -- blood_sample_analyzer
 					new_item	=> module); -- the native generic scratch module

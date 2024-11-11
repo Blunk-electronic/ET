@@ -61,6 +61,7 @@ with gtk.gentry;						use gtk.gentry;
 with gtk.container;						use gtk.container;
 
 with et_project.modules;				use et_project.modules;
+with et_generic_module;					use et_generic_module;
 with et_canvas_board_2;
 
 with et_board_ops;						use et_board_ops;

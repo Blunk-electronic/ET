@@ -39,6 +39,7 @@
 
 with et_project_name;
 with et_project.modules;
+with et_generic_module;			use et_generic_module;
 with et_assembly_variants;
 with et_time;
 with et_alignment;

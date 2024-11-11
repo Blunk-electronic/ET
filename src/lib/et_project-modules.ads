@@ -52,54 +52,29 @@ with et_device_name;			use et_device_name;
 
 with et_design_rules;			use et_design_rules;
 with et_meta;
+with et_generic_module;			use et_generic_module;
 
 
 package et_project.modules is
 
 	use pac_net_name;
 		
-	-- Generic modules and submodules (which contain schematic and layout stuff)
-	-- are collected here.
-	-- Module names are things like "motor_driver" or "temperature_controller".
-	-- Submodule names are things like "templates/clock_generator" or
-	-- "$TEMPLATES/clock_generator" or "/home/user/templates/clock_generator":
-	package pac_generic_modules is new ada.containers.ordered_maps (
-		key_type		=> pac_module_name.bounded_string, -- motor_driver (without extension *.mod)
-		"<"				=> pac_module_name."<",
-		element_type	=> et_schematic.type_module,
-		"="				=> et_schematic."=");
 
-	generic_modules : pac_generic_modules.map;
-
-
-	-- The current active module is stored here. Whenever objects of the schematic
-	-- or board are to be drawn, this variable must be read.
-	active_module : et_project.modules.pac_generic_modules.cursor; -- the currently active module
-
-
-	-- Returns the name of the currently active module:
-	function get_active_module return string;
+	-- Creates an empty generic module in container modules.
+	-- Does not create the actual module file if the module
+	-- name is "untitled". If the module name is something other
+	-- than "untitled" then the module file will also be created.
+	procedure create_module (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		log_threshold	: in type_log_level);
 
 
 	
-	
-	-- Returns true if the module with the given name exists in container modules.
-	function generic_module_exists (
-		module : in pac_module_name.bounded_string) 
-		return boolean;
-
-
-	
-	-- Locates the given module in the global container "modules".
-	function locate_module (name : in pac_module_name.bounded_string) -- motor_driver (without extension *.mod)
-		return pac_generic_modules.cursor;
-
-
-	-- Fetches the meta information for the whole 
-	-- module (both schematic and board):
-	function get_meta_information (
-		module : in pac_generic_modules.cursor)
-		return et_meta.type_meta;
+	-- Deletes a generic module (from container generic_modules) and
+	-- the module file (*.mod) itself.
+	procedure delete_module (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
+		log_threshold	: in type_log_level);
 		
 
 	
@@ -268,15 +243,6 @@ package et_project.modules is
 		log_threshold	: in type_log_level);
 
 	
-	-- Creates an empty generic module in container modules.
-	-- Does not create the actual module file if the module
-	-- name is "untitled". If the module name is something other
-	-- than "untitled" then the module file will also be created.
-	procedure create_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
-		log_threshold	: in type_log_level);
-
-	
 	-- Saves a generic module (from container generic_modules) in a file inside 
 	-- the current project directory.
 	-- The module must be inside the current project. If it is outside
@@ -286,25 +252,7 @@ package et_project.modules is
 	procedure save_module (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
 		log_threshold	: in type_log_level);
-
 	
-	-- Deletes a generic module (from container generic_modules) and
-	-- the module file (*.mod) itself.
-	procedure delete_module (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver, templates/clock_generator
-		log_threshold	: in type_log_level);
-	
-
-	
-	-- Returns true if the given module provides the given assembly variant.
-	-- If the variant is an empty string then it is about the default variant
-	-- which is always provided. The return is true in that case.
-	function assembly_variant_exists (
-		module		: in pac_generic_modules.cursor;
-		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost
-		return boolean;	
-
-
 	
 end et_project.modules;
 

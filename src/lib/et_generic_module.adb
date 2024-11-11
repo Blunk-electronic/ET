@@ -2,9 +2,9 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                             GUI GENERAL                                  --
+--                           GENERIC MODULE                                 --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -21,10 +21,9 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -36,50 +35,105 @@
 --
 --   history of changes:
 --
+--  ToDo: 
+--  
 
-with ada.text_io;				use ada.text_io;
+
 with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
-with et_project;				use et_project;
-with et_project_name;			use et_project_name;
-with et_project.modules;		use et_project.modules;
-with et_generic_module;			use et_generic_module;
-with et_sheets;
-with et_script_names;			use et_script_names;
 
-with gdk;						use gdk;
-with gdk.event;					use gdk.event;
+with et_meta;
+with et_exceptions;				use et_exceptions;
 
-with gtk.main;
-with gtk.window; 				use gtk.window;
-with gtk.widget;  				use gtk.widget;
-with gtk.box;					use gtk.box;
-with gtk.button;     			use gtk.button;
-with gtk.toolbar; 				use gtk.toolbar;
-with gtk.tool_button;			use gtk.tool_button;
-with gtk.enums;					use gtk.enums;
-with gtk.gentry;				use gtk.gentry;
-with gtk.frame;					use gtk.frame;
-with gtk.scrolled_window;		use gtk.scrolled_window;
--- with gtk.combo_box_text;	with gtk.combo_box_text;	
--- with gtkada.style;			use gtkada.style;
 
-with glib;						use glib;
-with glib.object;				use glib.object;
+package body et_generic_module is
 
-package et_gui_2 is
 
-	-- Starts the GUI and displays the given module (schematic and board):
-	procedure single_module (
-		project			: in pac_project_name.bounded_string;	-- blood_sample_analyzer
-		module			: in pac_generic_modules.cursor;				-- cursor of generic module
-		sheet			: in et_sheets.type_sheet := et_sheets.type_sheet'first; -- the sheet to be opened
-		script			: in pac_script_name.bounded_string; -- rename_nets.scr
-		log_threshold	: in type_log_level
-		);
+	function get_count (
+		modules : in pac_generic_modules.map)
+		return natural
+	is begin
+		return natural (length (modules));
+	end get_count;
+
 
 	
-end et_gui_2;
+	function get_active_module return string is
+		use pac_module_name;
+	begin
+		return pac_module_name.to_string (key (active_module)); -- motor_driver (without extension)
+	end get_active_module;
+
+
+	
+	function generic_module_exists (
+		module : in pac_module_name.bounded_string) 
+		return boolean
+	is begin
+		return pac_generic_modules.contains (generic_modules, module);
+	end;
+
+
+	
+	function locate_module (name : in pac_module_name.bounded_string) -- motor_driver (without extension *.mod)
+		return pac_generic_modules.cursor 
+	is
+		cursor : pac_generic_modules.cursor := find (generic_modules, name);
+	begin
+		if cursor = pac_generic_modules.no_element then
+			raise semantic_error_1 with
+				"ERROR: Module " & enclose_in_quotes (to_string (name)) 
+				& " does not exist !";
+		else
+			return find (generic_modules, name);
+		end if;
+	end locate_module;
+
+
+
+	function get_meta_information (
+		module : in pac_generic_modules.cursor)
+		return et_meta.type_meta
+	is begin
+		return element (module).meta;
+	end get_meta_information;
+	
+
+	
+
+
+
+	function assembly_variant_exists (
+		module		: in pac_generic_modules.cursor;
+		variant		: in pac_assembly_variant_name.bounded_string) -- low_cost
+		return boolean 
+	is
+		use pac_assembly_variants;
+
+		result : boolean := false; -- to be returned
+
+		procedure query_variants (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in et_schematic.type_module) is
+		begin
+			result := contains (module.variants, variant);
+		end;
+		
+	begin
+		if pac_assembly_variant_name.length (variant) = 0 then
+			result := true;
+		else
+			
+			pac_generic_modules.query_element (
+				position	=> module,
+				process		=> query_variants'access);
+
+		end if;
+					
+		return result;
+	end assembly_variant_exists;
+
+	
+end et_generic_module;
 
 -- Soli Deo Gloria
 

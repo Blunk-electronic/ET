@@ -63,6 +63,7 @@ with et_net_labels;				use et_net_labels;
 with et_schematic;				use et_schematic;
 with et_project;				use et_project;
 with et_project.modules;		use et_project.modules;
+with et_generic_module;			use et_generic_module;
 with et_text;
 with et_submodules;
 with et_assembly_variants;		use et_assembly_variants;

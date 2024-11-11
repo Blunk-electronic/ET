@@ -444,7 +444,7 @@ package body et_canvas_schematic_units is
 			commit (PRE, verb, noun, log_threshold);
 			
 			move_unit (
-				module_name		=> et_project.modules.pac_generic_modules.key (active_module),
+				module_name		=> pac_generic_modules.key (active_module),
 				device_name		=> key (su.device),
 				unit_name		=> key (su.unit),
 				coordinates		=> ABSOLUTE,
@@ -526,7 +526,7 @@ package body et_canvas_schematic_units is
 			commit (PRE, verb, noun, log_threshold);
 			
 			drag_unit (
-				module_name		=> et_project.modules.pac_generic_modules.key (active_module),
+				module_name		=> pac_generic_modules.key (active_module),
 				device_name		=> key (su.device),
 				unit_name		=> key (su.unit),
 				coordinates		=> ABSOLUTE,
@@ -1741,7 +1741,7 @@ package body et_canvas_schematic_units is
 			su := element (selected_placeholder);
 
 			move_unit_placeholder (
-				module_name		=> et_project.modules.pac_generic_modules.key (active_module),
+				module_name		=> pac_generic_modules.key (active_module),
 				device_name		=> key (su.device),
 				unit_name		=> key (su.unit),
 				coordinates		=> ABSOLUTE,

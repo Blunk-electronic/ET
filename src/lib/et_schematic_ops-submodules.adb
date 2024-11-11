@@ -4694,7 +4694,7 @@ package body et_schematic_ops.submodules is
 		log_indentation_up;
 		
 		module_cursor := locate_module (module_name);
-		et_project.modules.pac_generic_modules.query_element (module_cursor, query_submodules'access);
+		query_element (module_cursor, query_submodules'access);
 
 		log_indentation_down;
 	end dump_tree;
@@ -5044,7 +5044,7 @@ package body et_schematic_ops.submodules is
 
 				
 			begin
-				et_project.modules.pac_generic_modules.query_element (
+				query_element (
 					position	=> module_cursor,
 					process		=> query_devices'access);
 				
@@ -5468,7 +5468,7 @@ package body et_schematic_ops.submodules is
 			module_name	: pac_module_name.bounded_string := element (submod_cursor).name; -- motor_driver
 			-- module_name now contains the generic module name like motor_driver
 			
-			module_cursor : et_project.modules.pac_generic_modules.cursor := locate_module (module_name);
+			module_cursor : pac_generic_modules.cursor := locate_module (module_name);
 			-- module_cursor now points to the generic module
 		begin
 			-- If the range for this generic module has not been computed already, then do
@@ -5543,7 +5543,7 @@ package body et_schematic_ops.submodules is
 
 		-- Replace the old submodule tree by the new submod_tree. The new submod_tree now
 		-- contains the device name offsets for the instantiated submodules.
-		et_project.modules.pac_generic_modules.update_element (generic_modules, module_cursor, replace_tree'access);
+		update_element (generic_modules, module_cursor, replace_tree'access);
 		
 		log_indentation_down;
 

@@ -52,6 +52,7 @@ use et_coordinates_2.pac_path_and_bend;
 
 with et_text;
 with et_project.modules;			use et_project.modules;
+with et_generic_module;				use et_generic_module;
 with et_symbols;
 with et_net_labels;					use et_net_labels;
 with et_nets;						use et_nets;
@@ -65,7 +66,8 @@ package et_canvas_schematic_nets is
 
 	-- use et_canvas_schematic.pac_canvas;
 	
-	use et_project.modules.pac_generic_modules;
+	use pac_generic_modules;
+	
 
 	use pac_net_name;
 	use pac_nets;
