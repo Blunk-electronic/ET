@@ -337,6 +337,7 @@ package body et_canvas_board_vias is
 
 	procedure init_preliminary_via is
 		use et_pcb;
+		use et_board_ops;
 
 		rules : constant type_design_rules := get_pcb_design_rules (active_module);
 

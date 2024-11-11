@@ -305,48 +305,6 @@ package et_project.modules is
 		return boolean;	
 
 
-
-
-	
-	-- Returns true if a design rules file for the layout has been
-	-- assigned to the given module.
-	function layout_rules_assigned (
-		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return boolean;
-
-	
-	-- Returns the PCB design rules of the given module:
-	function get_pcb_design_rules (
-		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return et_design_rules.type_design_rules; -- JLP_ML4_standard.dru
-
-	
-	function get_user_settings (
-		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return et_pcb.type_user_settings;
-
-	
-	-- Returns the settings of the required net class
-	-- of the given module.
-	-- If the given class name is "default" then the settings
-	-- are returned as defined by the design rules (DRU).
-	-- Assumes that the given class exists for the module.
-	-- Otherwise constraint error is raised.
-	function get_net_class (
-		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		class	: in et_pcb.pac_net_class_name.bounded_string) -- hi-voltage, si-critical
-		return et_pcb.type_net_class;
-
-	
-	-- Returns the class settings of a net in a module.
-	-- If given net is no_element (freetrack) then the settings of the
-	-- "default" class will be returned:
-	function get_net_class (
-		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		net		: in et_nets.pac_nets.cursor)  -- GND, RESET_N, ...
-		return et_pcb.type_net_class;
-
-
 	
 end et_project.modules;
 

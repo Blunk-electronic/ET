@@ -298,6 +298,7 @@ is
 	procedure query_rules is
 		use et_design_rules;
 		use et_schematic;
+		use et_board_ops;
 		rules : constant type_rules := element (module_cursor).rules;
 	begin
 		log_indentation_up;
@@ -1671,8 +1672,10 @@ is
 		
 		
 		procedure query_user_settings is
+			use et_board_ops;
 			us : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
 
+			
 			procedure vias is begin
 				section_mark (section_vias, HEADER);
 
