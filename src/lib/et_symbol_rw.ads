@@ -71,9 +71,6 @@ package et_symbol_rw is
 		return type_vector_model;
 
 
-	-- Returns something like "x 12.34 y 45.0".
-	function position (pos : in type_vector_model) return string;
-
 	
 	function to_position (
 		line : in type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"

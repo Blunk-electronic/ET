@@ -98,18 +98,7 @@ package body et_symbol_rw is
 
 
 	
-	function position (pos : in type_vector_model) return string is
 
-		function text return string is begin return 
-			keyword_x & to_string (get_x (pos)) 
-			& space & keyword_y & to_string (get_y (pos));
-		end text;
-		
-	begin
-		return text; -- a 2d point has just x and y
-	end position;
-
-	
 	function to_position (
 		line : in type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
 		from : in count_type)
@@ -212,8 +201,8 @@ package body et_symbol_rw is
 			use et_primitive_objects;
 		begin
 			section_mark (section_line, HEADER);
-			write (keyword => keyword_start, parameters => position (element (cursor).start_point));
-			write (keyword => keyword_end  , parameters => position (element (cursor).end_point));
+			write (keyword => keyword_start, parameters => to_string (element (cursor).start_point, FORMAT_2));
+			write (keyword => keyword_end  , parameters => to_string (element (cursor).end_point, FORMAT_2));
 			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 			section_mark (section_line, FOOTER);
 		end write_line;
@@ -223,9 +212,9 @@ package body et_symbol_rw is
 			use et_primitive_objects;
 		begin
 			section_mark (section_arc, HEADER);
-			write (keyword => keyword_center, parameters => position (element (cursor).center));
-			write (keyword => keyword_start , parameters => position (element (cursor).start_point));
-			write (keyword => keyword_end   , parameters => position (element (cursor).end_point));
+			write (keyword => keyword_center, parameters => to_string (element (cursor).center, FORMAT_2));
+			write (keyword => keyword_start , parameters => to_string (element (cursor).start_point, FORMAT_2));
+			write (keyword => keyword_end   , parameters => to_string (element (cursor).end_point, FORMAT_2));
 			write (keyword => et_primitive_objects.keyword_direction, parameters => to_string (element (cursor).direction));
 			write (keyword => keyword_width , parameters => to_string (element (cursor).width));
 			section_mark (section_arc, FOOTER);
@@ -237,7 +226,7 @@ package body et_symbol_rw is
 			use et_coordinates_2.pac_geometry_sch;
 		begin
 			section_mark (section_circle, HEADER);
-			write (keyword => keyword_center, parameters => position (element (cursor).center));
+			write (keyword => keyword_center, parameters => to_string (element (cursor).center, FORMAT_2));
 			write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
 			write (keyword => keyword_width , parameters => to_string (element (cursor).width));
 			write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
@@ -247,7 +236,7 @@ package body et_symbol_rw is
 
 		procedure write_text (cursor : in pac_texts.cursor) is begin
 			section_mark (section_text, HEADER);
-			write (keyword => keyword_position, parameters => position (element (cursor).position));
+			write (keyword => keyword_position, parameters => to_string (element (cursor).position, FORMAT_2));
 			write (keyword => keyword_content , parameters => to_string (element (cursor).content));			
 			write_text_properties (element (cursor));
 			section_mark (section_text, FOOTER);
@@ -262,19 +251,19 @@ package body et_symbol_rw is
 					
 					section_mark (section_placeholder, HEADER);
 					write (keyword => keyword_meaning, parameters => to_string (symbol.name.meaning));
-					write (keyword => keyword_position, parameters => position (symbol.name.position));
+					write (keyword => keyword_position, parameters => to_string (symbol.name.position, FORMAT_2));
 					write_text_properties (symbol.name);
 					section_mark (section_placeholder, FOOTER);
 
 					section_mark (section_placeholder, HEADER);
 					write (keyword => keyword_meaning , parameters => to_string (symbol.value.meaning));
-					write (keyword => keyword_position, parameters => position (symbol.value.position));
+					write (keyword => keyword_position, parameters => to_string (symbol.value.position, FORMAT_2));
 					write_text_properties (symbol.value);
 					section_mark (section_placeholder, FOOTER);
 
 					section_mark (section_placeholder, HEADER);
 					write (keyword => keyword_meaning , parameters => to_string (symbol.purpose.meaning));
-					write (keyword => keyword_position, parameters => position (symbol.purpose.position));
+					write (keyword => keyword_position, parameters => to_string (symbol.purpose.position, FORMAT_2));
 					write_text_properties (symbol.purpose);
 					section_mark (section_placeholder, FOOTER);
 
@@ -296,7 +285,7 @@ package body et_symbol_rw is
 		begin
 			section_mark (section_port, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (cursor)));
-			write (keyword => keyword_position, parameters => position (element (cursor).position));
+			write (keyword => keyword_position, parameters => to_string (element (cursor).position, FORMAT_2));
 			write (keyword => keyword_direction, parameters => to_string (element (cursor).direction));
 			
 			case element (cursor).direction is

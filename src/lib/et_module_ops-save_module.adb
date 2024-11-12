@@ -515,7 +515,7 @@ is
 						while label_cursor /= pac_net_labels.no_element loop
 							section_mark (section_label, HEADER);
 							
-							write (keyword => keyword_position, parameters => position (element (label_cursor).position));
+							write (keyword => keyword_position, parameters => to_string (element (label_cursor).position, FORMAT_2));
 
 							case element (label_cursor).appearance is
 								when SIMPLE =>
@@ -617,8 +617,11 @@ is
 				while segment_cursor /= pac_net_segments.no_element loop
 					section_mark (section_segment, HEADER);
 
-					write (keyword => keyword_start, parameters => position (element (segment_cursor).start_point));
-					write (keyword => keyword_end,   parameters => "  " & position (element (segment_cursor).end_point));
+					write (keyword => keyword_start, 
+						parameters => to_string (element (segment_cursor).start_point, FORMAT_2));
+					
+					write (keyword => keyword_end,
+						parameters => "  " & to_string (element (segment_cursor).end_point, FORMAT_2));
 
 					query_element (segment_cursor, query_labels'access);
 					query_element (segment_cursor, query_junctions'access);
@@ -908,7 +911,7 @@ is
 			begin
 				section_mark (section_placeholder, HEADER);
 				write (keyword => keyword_meaning, parameters => to_string (ph.meaning));
-				write (keyword => keyword_position, parameters => position (ph.position));
+				write (keyword => keyword_position, parameters => to_string (ph.position, FORMAT_2));
 				write_text_properties (ph);
 				section_mark (section_placeholder, FOOTER);
 			end write_placeholder;
@@ -1333,7 +1336,7 @@ is
 
 	
 	procedure query_submodules is		
-		use et_symbol_rw;
+		use et_coordinates_2.pac_geometry_2;
 		use et_schematic;
 		use et_submodules;
 		use pac_submodules;
@@ -1346,7 +1349,10 @@ is
 		begin
 			section_mark (et_module_rw.section_port, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (port_cursor))); -- name clk_out
-			write (keyword => keyword_position, parameters => position (element (port_cursor).position)); -- position x 0 y 10
+
+			write (keyword => keyword_position, 
+				   parameters => to_string (element (port_cursor).position, FORMAT_2)); -- position x 0 y 10
+			
 			write (keyword => et_submodules.keyword_direction, parameters => to_string (element (port_cursor).direction)); -- direction master/slave
 			section_mark (et_module_rw.section_port, FOOTER);
 		end;
@@ -1399,7 +1405,6 @@ is
 		
 		
 		procedure write (text_cursor : in pac_texts.cursor) is 
-			use et_symbol_rw;
 			use et_schematic_rw;
 			use et_sheets;
 		begin
@@ -1408,7 +1413,7 @@ is
 				(
 				keyword		=> keyword_position,
 				parameters	=> keyword_sheet & to_string (element (text_cursor).sheet) 
-								& space & position (element (text_cursor).position)
+								& space & to_string (element (text_cursor).position, FORMAT_2)
 				); -- position sheet 1 x 30 y 180
 			
 			write (keyword => keyword_rotation, 
