@@ -43,6 +43,7 @@ with et_module_names;				use et_module_names;
 with et_project.configuration;
 with et_module_ops;
 with et_assembly_variant_name;		use et_assembly_variant_name;
+with et_module_rw;					use et_module_rw;
 
 separate (et_rig)
 

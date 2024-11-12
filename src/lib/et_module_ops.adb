@@ -165,12 +165,6 @@ package body et_module_ops is
 
 
 	
-	function to_string (section : in type_section) return string is
-	-- Converts a section like SEC_NET to a string "net".
-		len : positive := type_section'image (section)'length;
-	begin
-		return to_lower (type_section'image (section) (5..len));
-	end to_string;
 
 
 	

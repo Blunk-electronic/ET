@@ -42,6 +42,7 @@ with ada.containers;
 
 with et_coordinates_2;
 
+with et_module_rw;					use et_module_rw;
 with et_pcb_sides;
 with et_pcb_coordinates_2;
 
@@ -1674,7 +1675,7 @@ is
 			signal_layer := et_pcb_stack.to_signal_layer (f (line, 2));
 			validate_signal_layer;
 			
-		elsif kw = keyword_width then -- width 0.3
+		elsif kw = et_module_rw.keyword_width then -- width 0.3
 			expect_field_count (line, 2);
 			polygon_width_min := to_distance (f (line, 2));
 
@@ -1788,7 +1789,7 @@ is
 			expect_field_count (line, 2);													
 			fill_spacing := to_distance (f (line, 2));
 
-		elsif kw = keyword_width then -- width 0.5
+		elsif kw = et_module_rw.keyword_width then -- width 0.5
 			expect_field_count (line, 2);
 			polygon_width_min := to_distance (f (line, 2));
 			
@@ -2584,7 +2585,7 @@ is
 
 	
 	procedure process_line is 
-		use et_symbol_rw;
+		-- use et_symbol_rw;
 
 		
 		procedure execute_section is
