@@ -53,6 +53,7 @@ with et_mirroring;					use et_mirroring;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_system_info;
 with et_package_description;		use et_package_description;
+with et_module_rw;					use et_module_rw;
 
 
 package body et_pcb_rw.device_packages is

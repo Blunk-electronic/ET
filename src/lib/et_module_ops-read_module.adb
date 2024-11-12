@@ -6501,7 +6501,7 @@ is
 											kw : string := f (line, 1);
 										begin
 											-- CS: In the following: set a corresponding parameter-found-flag
-											if kw = et_board_shapes_and_text.keyword_width then -- circumfence line width 0.5
+											if kw = keyword_width then -- circumfence line width 0.5
 												expect_field_count (line, 2);
 												board_line_width := to_distance (f (line, 2));
 											else
@@ -6566,7 +6566,7 @@ is
 									kw : string := f (line, 1);
 								begin
 									-- CS: In the following: set a corresponding parameter-found-flag
-									if kw = et_board_shapes_and_text.keyword_width then -- width 0.5
+									if kw = keyword_width then -- width 0.5
 										expect_field_count (line, 2);
 										board_line_width := to_distance (f (line, 2));
 										

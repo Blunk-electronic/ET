@@ -53,6 +53,7 @@ with et_primitive_objects;			use et_primitive_objects;
 with et_text;						use et_text;
 with et_alignment;					use et_alignment;
 with et_exceptions;					use et_exceptions;
+with et_module_rw;					use et_module_rw;
 
 
 package body et_pcb_rw is
