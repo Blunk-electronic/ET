@@ -39,7 +39,6 @@
 
 
 with et_sheets;					use et_sheets;
-with et_project.modules;		use et_project.modules;
 with et_frames;					use et_frames;
 
 

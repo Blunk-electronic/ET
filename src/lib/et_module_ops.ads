@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           PROJECT MODULES                                --
+--                           MODULE OPERATIONS                              --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -53,11 +53,11 @@ with et_device_name;			use et_device_name;
 with et_design_rules;			use et_design_rules;
 with et_meta;
 with et_generic_module;			use et_generic_module;
+with et_module_names;			use et_module_names;
+with et_logging;				use et_logging;
 
 
-package et_project.modules is
-
-	use pac_net_name;
+package et_module_ops is
 		
 
 	-- Creates an empty generic module in container modules.
@@ -235,7 +235,7 @@ package et_project.modules is
 	-- Converts a section like SEC_NET to a string "net".
 
 	
-	-- Reads a module file and stores its content as generic module in container modules.
+	-- Reads a module file and stores its content as generic module.
 	-- The file name may contain environment variables.
 	-- The file must exist, must be visible from the current working directory.
 	procedure read_module (
@@ -254,7 +254,7 @@ package et_project.modules is
 		log_threshold	: in type_log_level);
 	
 	
-end et_project.modules;
+end et_module_ops;
 
 -- Soli Deo Gloria
 

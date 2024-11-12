@@ -37,7 +37,6 @@
 --
 
 with et_modes.schematic;
-with et_project.modules;
 with et_canvas_schematic_units;
 with et_canvas_schematic_nets;
 with et_scripting_interactive_schematic;
@@ -1372,8 +1371,6 @@ is
 
 
 	procedure create_module is
-		use et_project.modules;
-
 		
 		procedure do_it (
 			module_name : in pac_module_name.bounded_string) 
@@ -1524,7 +1521,6 @@ is
 
 	procedure delete_module is
 
-		use et_project.modules;
 		use pac_generic_modules;
 
 		
@@ -1647,7 +1643,6 @@ is
 	
 	-- Parses the single_cmd_status.cmd:
 	procedure parse is 
-		use et_project.modules;
 		use et_sheets;
 		use et_device_placeholders;
 		use et_assembly_variants;
@@ -2597,7 +2592,6 @@ is
 		use et_scripting_interactive_schematic;
 		use et_canvas_schematic_units;
 		use et_canvas_schematic_nets;
-		use et_project.modules;
 
 		device_name		: type_device_name;
 		unit_name		: pac_unit_name.bounded_string;

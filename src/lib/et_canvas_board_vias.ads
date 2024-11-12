@@ -59,7 +59,6 @@ with et_drills;							use et_drills;
 with et_vias;							use et_vias;
 with et_pcb_stack;						use et_pcb_stack;
 with et_design_rules;					use et_design_rules;
-with et_project.modules;				use et_project.modules;
 with et_pcb;
 with et_board_ops.vias;					use et_board_ops.vias;
 with et_logging;						use et_logging;

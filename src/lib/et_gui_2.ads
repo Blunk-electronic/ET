@@ -42,7 +42,7 @@ with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_project;				use et_project;
 with et_project_name;			use et_project_name;
-with et_project.modules;		use et_project.modules;
+with et_module_ops;				use et_module_ops;
 with et_generic_module;			use et_generic_module;
 with et_sheets;
 with et_script_names;			use et_script_names;

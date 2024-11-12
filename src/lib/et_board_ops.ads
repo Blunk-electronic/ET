@@ -52,7 +52,6 @@ with et_primitive_objects;			use et_primitive_objects;
 with et_axes;						use et_axes;
 with et_string_processing;			use et_string_processing;
 with et_logging;					use et_logging;
-with et_project.modules;			use et_project.modules;
 with et_generic_module;				use et_generic_module;
 with et_schematic;					use et_schematic;
 with et_terminals;					use et_terminals;

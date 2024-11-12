@@ -51,7 +51,6 @@ use et_coordinates_2.pac_geometry_2;
 use et_coordinates_2.pac_path_and_bend;
 
 with et_text;
-with et_project.modules;			use et_project.modules;
 with et_generic_module;				use et_generic_module;
 with et_symbols;
 with et_net_labels;					use et_net_labels;

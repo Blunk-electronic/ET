@@ -34,6 +34,8 @@
 --   history of changes:
 --
 
+with ada.text_io;					use ada.text_io;
+
 with et_coordinates_2;
 
 with et_pcb_sides;
@@ -41,6 +43,7 @@ with et_pcb_coordinates_2;
 
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
+with et_net_names;
 with et_net_labels;
 with et_port_names;
 with et_symbol_ports;
@@ -106,7 +109,7 @@ with et_units;
 with et_alignment;					use et_alignment;
 
 
-separate (et_project.modules)
+separate (et_module_ops)
 
 
 procedure save_module (
@@ -130,8 +133,8 @@ is
 	procedure write_header is 
 		use ada.directories;
 		use gnat.directory_operations;
-		use pac_project_name;
-		use pac_project_path;
+		-- use pac_project_name;
+		-- use pac_project_path;
 		use et_system_info;
 	begin
 		if pac_module_name.length (save_as_name) = 0 then
@@ -465,9 +468,10 @@ is
 		use pac_text_schematic;
 		use et_nets;
 		use pac_nets;
-		use et_net_labels;
 		use et_pcb;
-
+		use et_net_labels;		
+		use et_net_names;
+		use pac_net_name;
 
 		
 		procedure query_strands (
@@ -1324,6 +1328,8 @@ is
 		use et_schematic;
 		use et_submodules;
 		use pac_submodules;
+		use et_net_names;
+		use pac_net_name;
 
 		
 		procedure query_ports (port_cursor : in et_submodules.pac_submodule_ports.cursor) is

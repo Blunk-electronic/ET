@@ -48,7 +48,7 @@ with et_export;
 with et_system_info;
 with et_general_rw;
 
-with et_project.modules;
+with et_module_ops;
 with et_generic_module;				use et_generic_module;
 with et_project.configuration;
 with et_rig_name;
@@ -171,9 +171,10 @@ package body et_project is
 
 		
 
+		-- backup the current working directory
 		procedure create_module_file is
-			-- backup the current working directory
 			previous_directory : constant string := current_directory;
+			use et_module_ops;
 			use pac_module_name;
 		begin
 			-- change into project directory
@@ -183,13 +184,13 @@ package body et_project is
 			-- If no module name given then the module will be named after the project.
 			if length (module_name) > 0 then
 
-				modules.create_module (
+				create_module (
 					module_name		=> module_name, -- as given module name
 					log_threshold	=> log_threshold + 1);
 
 			else
 
-				modules.create_module (
+				create_module (
 					module_name		=> to_module_name (to_string (project_name)), -- name as project
 					log_threshold	=> log_threshold + 1);
 
@@ -198,7 +199,7 @@ package body et_project is
 			-- Save the single and first module:
 			module_cursor := generic_modules.first;
 
-			modules.save_module (
+			save_module (
 				module_cursor	=> module_cursor,
 				log_threshold	=> log_threshold + 1);
 			
@@ -444,7 +445,7 @@ package body et_project is
 		use pac_rigs;		
 
 		use ada.directories;
-		use et_project.modules;
+		use et_module_ops;
 		use pac_generic_modules;
 
 		-- We need a backup of the current working directory. When this procedure finishes,

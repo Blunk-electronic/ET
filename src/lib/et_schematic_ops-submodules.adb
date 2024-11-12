@@ -47,6 +47,7 @@ with et_device_query_schematic;
 with et_generic_stacks;
 with et_device_appearance;
 with et_package_names;
+with et_module_ops;
 
 
 package body et_schematic_ops.submodules is
@@ -2987,7 +2988,8 @@ package body et_schematic_ops.submodules is
 
 		use et_directory_and_file_ops;
 		full_file_name : constant string := expand (et_submodules.to_string (file));
-		
+
+		use et_module_ops;
 		use et_submodules;
 
 		
@@ -3065,8 +3067,8 @@ package body et_schematic_ops.submodules is
 		end if;
 
 		-- THIS IS ABOUT THE ACTUAL SCHEMATIC AND LAYOUT STUFF OF THE SUBMODULE:
-		-- Read the submodule file and store its content in container et_project.modules:
-		et_project.modules.read_module (to_string (file), log_threshold + 1);		
+		-- Read the submodule file and store it as generic module:
+		read_module (to_string (file), log_threshold + 1);		
 
 	end add_submodule;
 
@@ -4227,7 +4229,8 @@ package body et_schematic_ops.submodules is
 
 		use et_directory_and_file_ops;
 		full_file_name : constant string := expand (et_submodules.to_string (file));
-		
+
+		use et_module_ops;
 		use et_submodules;
 
 		

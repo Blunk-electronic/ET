@@ -54,8 +54,9 @@ with et_schematic;
 with et_mirroring;					use et_mirroring;
 with et_axes;						use et_axes;
 with et_module_names;				use et_module_names;
+with et_module_ops;
 with et_string_processing;			use et_string_processing;
-with et_project.modules;
+with et_project;
 with et_generic_module;				use et_generic_module;
 with et_vias;
 with et_board_shapes_and_text;
@@ -2402,6 +2403,7 @@ package body et_kicad_to_native is
 		project_name	: in pac_project_name.bounded_string;
 		log_threshold	: in type_log_level) 
 	is
+		use et_project;
 		use et_package_names;
 		
 -- 		-- When the native project is created we need a project path and a project name:
@@ -2411,11 +2413,11 @@ package body et_kicad_to_native is
 
 		prefix_devices_dir : pac_device_model_file.bounded_string := -- libraries/devices
 			to_file_name (compose (
-				et_project.directory_libraries, et_project.directory_libraries_devices));
+				directory_libraries, directory_libraries_devices));
 	
 		prefix_packages_dir : pac_package_model_file_name.bounded_string := -- libraries/packages
 			to_file_name (compose (
-				et_project.directory_libraries, et_project.directory_libraries_packages));
+				directory_libraries, directory_libraries_packages));
 
 		-- Since V4 package libraries are stored in et_kicad_pcb.package_libraries
 		-- the copy/convert process must be performed only once.
@@ -3949,6 +3951,7 @@ package body et_kicad_to_native is
 				current_working_directory : constant string := current_directory;
 				use pac_generic_modules;
 				module_list : pac_generic_modules.map; -- set up the list
+				use et_module_ops;
 			begin
 				-- insert the scratch module in the list
 				insert (
@@ -3962,7 +3965,7 @@ package body et_kicad_to_native is
 				log (text => "saving module " & enclose_in_quotes (to_string (project_name)),
 					 level => log_threshold + 3);
 				
-				et_project.modules.save_module (
+				save_module (
 					module_cursor	=> module_list.first,
 					log_threshold	=> log_threshold);
 

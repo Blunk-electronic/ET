@@ -38,7 +38,7 @@
 
 
 with et_project_name;
-with et_project.modules;
+with et_project;
 with et_generic_module;			use et_generic_module;
 with et_assembly_variants;
 with et_time;
@@ -382,7 +382,7 @@ package body et_canvas.drawing_frame is
 		use pac_draw_text;
 		use et_project;
 		use et_project_name;
-		use et_project.modules;
+		-- use et_project.modules;
 		use et_assembly_variants;
 
 		-- A temporarily storage place for the

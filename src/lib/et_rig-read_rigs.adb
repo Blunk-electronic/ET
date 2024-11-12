@@ -41,7 +41,7 @@
 with et_general_rw;					use et_general_rw;
 with et_module_names;				use et_module_names;
 with et_project.configuration;
-with et_project.modules;
+with et_module_ops;
 with et_assembly_variant_name;		use et_assembly_variant_name;
 
 separate (et_rig)
@@ -51,14 +51,16 @@ procedure read_rigs (
 	log_threshold 	: in type_log_level) 
 is
 	use ada.directories;
-	use et_project.modules;
 
 	-- The search of rig module files requires this stuff:
 	module_file_search : search_type; -- the state of the search
 	module_file_filter : filter_type := (ordinary_file => true, others => false);
 
 	
-	procedure read_module_file_pre (module_file_handle : in directory_entry_type) is 
+	procedure read_module_file_pre (
+	module_file_handle : in directory_entry_type) 
+	is 
+		use et_module_ops;
 		file_name : string := simple_name (module_file_handle); -- motor_driver.mod
 	begin
 		read_module (file_name, log_threshold + 1);
@@ -338,6 +340,7 @@ is
 						case stack.parent is
 							when SEC_MODULE_INSTANCES =>							
 								declare
+									use et_module_ops;
 									kw : string := f (line, 1);
 									module_cursor : pac_generic_modules.cursor;
 								begin

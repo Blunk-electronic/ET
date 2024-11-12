@@ -77,6 +77,7 @@ with et_schematic_ops.grid;
 with et_board_ops.grid;
 with et_system_info;
 with et_project_name;
+with et_module_ops;
 
 
 package body et_canvas_schematic_2 is
@@ -449,6 +450,7 @@ package body et_canvas_schematic_2 is
 		use ada.directories;
 		use et_project_name;
 		use et_project;
+		use et_module_ops;
 
 		-- Backup the current directory (like /home/user/et/blood_sample_analyzer):
 		cur_dir_bak : constant string := current_directory;
@@ -867,7 +869,7 @@ package body et_canvas_schematic_2 is
 	procedure set_module (
 		module	: in pac_module_name.bounded_string)  -- motor_driver
 	is
-		use et_project.modules;
+		use et_module_ops;
 		cursor : pac_generic_modules.cursor := find (generic_modules, module);
 	begin
 		-- If module already loaded in collection of generic modules, set the active_module:

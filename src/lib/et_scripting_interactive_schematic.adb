@@ -50,7 +50,6 @@ with ada.text_io;					use ada.text_io;
 with ada.containers;				use ada.containers;
 
 with et_coordinates_2;				use et_coordinates_2;
-with et_project.modules;			use et_project.modules;
 with et_generic_module;				use et_generic_module;
 with et_schematic;					use et_schematic;
 with et_device_query_schematic;		use et_device_query_schematic;

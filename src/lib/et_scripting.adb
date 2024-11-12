@@ -194,9 +194,9 @@ package body et_scripting is
 
 
 	
-	procedure validate_module_name (module : in pac_module_name.bounded_string) is 
-		use et_project.modules;
-	begin
+	procedure validate_module_name (
+		module : in pac_module_name.bounded_string) 
+	is begin
 		if not generic_module_exists (module) then
 			log (ERROR, "module " & to_string (module) &
 				" not found !", console => true);
@@ -354,7 +354,6 @@ package body et_scripting is
 
 		use et_domains;
 		use et_project;
-		use et_project.modules;
 		
 		domain	: type_domain; -- DOM_SCHEMATIC
 		module	: pac_module_name.bounded_string; -- motor_driver (without extension *.mod)

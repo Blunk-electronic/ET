@@ -80,7 +80,6 @@ with et_coordinates_2;				use et_coordinates_2;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 
 with et_project;
-with et_project.modules;			use et_project.modules;
 -- with et_symbols;
 -- with et_schematic;
 -- with et_schematic_ops;

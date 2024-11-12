@@ -51,6 +51,7 @@ with ada.directories;			use ada.directories;
 
 with et_system_info;
 with et_modes;					use et_modes;
+with et_module_ops;
 with et_generic_module;			use et_generic_module;
 with et_module_names;			use et_module_names;
 with et_script_names;			use et_script_names;
@@ -64,7 +65,7 @@ with et_conventions;
 with et_kicad.schematic;
 with et_kicad_to_native;
 with et_project_name;			use et_project_name;
-with et_project.modules;
+with et_project;
 with et_scripting;
 
 with et_package_appearance;
@@ -493,11 +494,10 @@ procedure et is
 	procedure launch_schematic_and_board_editor is 
 		use ada.containers;
 		use et_gui_2;
-		use et_project.modules;
 		use pac_generic_modules;
 		use pac_module_file_name;
 		use pac_module_name;
-
+		use et_module_ops;
 
 		generic_module_name : pac_module_name.bounded_string;
 		module_cursor : pac_generic_modules.cursor;

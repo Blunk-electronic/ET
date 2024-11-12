@@ -69,7 +69,7 @@ with et_pcb_contour;					use et_pcb_contour;
 
 with et_nets;
 
-with et_project.modules;				use et_project.modules;
+-- with et_project.modules;				use et_project.modules;
 with et_generic_module;					use et_generic_module;
 with et_object_status;
 

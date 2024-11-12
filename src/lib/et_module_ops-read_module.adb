@@ -37,6 +37,8 @@
 --   history of changes:
 --
 
+with ada.text_io;					use ada.text_io;
+
 with et_coordinates_2;
 
 with et_pcb_sides;
@@ -46,6 +48,7 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_axes;						use et_axes;
 with et_module_instance;			use et_module_instance;
+with et_net_names;					use et_net_names;
 with et_net_labels;
 with et_port_names;
 with et_symbol_ports;
@@ -110,7 +113,7 @@ with et_directory_and_file_ops;
 with et_alignment;						use et_alignment;
 
 
-separate (et_project.modules)
+separate (et_module_ops)
 
 procedure read_module (
 	file_name 		: in string; -- motor_driver.mod, templates/clock_generator.mod
@@ -852,6 +855,7 @@ is
 		use et_port_names;
 		use et_symbol_ports;
 		use et_nets;
+		use pac_net_name;
 		kw : constant string := f (line, 1);
 	begin
 		if kw = keyword_device then -- device R1 port 1
@@ -1882,6 +1886,7 @@ is
 		inserted : boolean;
 
 		use et_schematic_ops.submodules;
+		use pac_net_name;
 	begin
 		-- Test whether the port sits at the edge of the submodule box:
 		if et_submodules.at_edge (submodule_port.position, submodule.size) then
@@ -2704,6 +2709,7 @@ is
 				module		: in out et_schematic.type_module)
 			is
 				use et_nets;
+				use pac_net_name;
 				inserted : boolean;
 				cursor : pac_nets.cursor;
 			begin -- insert_net
@@ -5242,6 +5248,7 @@ is
 								use et_coordinates_2;
 								use pac_geometry_2;
 								use et_sheets;
+								use pac_net_name;
 								position_found_in_module_file : type_vector_model := strand.position.place;
 							begin
 								-- Calculate the lowest x/y position and set sheet number of the strand

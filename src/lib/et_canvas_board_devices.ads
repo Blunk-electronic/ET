@@ -46,7 +46,6 @@ with et_pcb_sides;
 with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
 use et_pcb_coordinates_2.pac_geometry_2;
 
-with et_project.modules;			use et_project.modules;
 with et_schematic;					use et_schematic;
 with et_pcb;						use et_pcb;
 with et_device_model;				use et_device_model;

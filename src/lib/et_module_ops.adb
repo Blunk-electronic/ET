@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                           PROJECT MODULES                                --
+--                           MODULE OPERATIONS                              --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -54,22 +54,23 @@ with et_text;					use et_text;
 with et_general_rw;				use et_general_rw;
 with et_meta;
 with et_exceptions;				use et_exceptions;
+with et_project;
 
 
-package body et_project.modules is
+package body et_module_ops is
 
 	use pac_generic_modules;
 
-	
-	function to_string (project_name : in pac_project_name.bounded_string) return string is begin
-		return pac_project_name.to_string (project_name);
-	end to_string;
-
-	
-	function to_project_name (name : in string) return pac_project_name.bounded_string is begin
-		return pac_project_name.to_bounded_string (name);
-	end to_project_name;
-
+-- 	
+-- 	function to_string (project_name : in pac_project_name.bounded_string) return string is begin
+-- 		return pac_project_name.to_string (project_name);
+-- 	end to_string;
+-- 
+-- 	
+-- 	function to_project_name (name : in string) return pac_project_name.bounded_string is begin
+-- 		return pac_project_name.to_bounded_string (name);
+-- 	end to_project_name;
+-- 
 
 
 
@@ -201,6 +202,7 @@ package body et_project.modules is
 
 		use et_string_processing;
 		use ada.directories;
+		use et_project;
 
 		file_name : constant string := to_string (module_name) &
 			latin_1.full_stop & module_file_name_extension;
@@ -235,7 +237,7 @@ package body et_project.modules is
 
 	
 	
-end et_project.modules;
+end et_module_ops;
 	
 -- Soli Deo Gloria
 
