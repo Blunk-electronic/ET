@@ -38,6 +38,7 @@ with ada.text_io;					use ada.text_io;
 
 with et_coordinates_2;
 
+with et_keywords;					use et_keywords;
 with et_module_rw;					use et_module_rw;
 with et_pcb_sides;
 with et_pcb_coordinates_2;
@@ -745,7 +746,7 @@ is
 				write (keyword => keyword_start, parameters => to_string (element (line_cursor).start_point));
 				write (keyword => keyword_end  , parameters => to_string (element (line_cursor).end_point));
 				write (keyword => keyword_layer, parameters => to_string (element (line_cursor).layer));
-				write (keyword => et_module_rw.keyword_width, parameters => to_string (element (line_cursor).width));
+				write (keyword => keyword_width, parameters => to_string (element (line_cursor).width));
 
 				section_mark (section_line, FOOTER);
 				next (line_cursor);
@@ -757,7 +758,7 @@ is
 				write (keyword => keyword_center, parameters => to_string (element (arc_cursor).center));
 				write (keyword => keyword_start , parameters => to_string (element (arc_cursor).start_point));
 				write (keyword => keyword_end   , parameters => to_string (element (arc_cursor).end_point));
-				write (keyword => et_module_rw.keyword_width , parameters => to_string (element (arc_cursor).width));
+				write (keyword => keyword_width , parameters => to_string (element (arc_cursor).width));
 				write (keyword => keyword_layer , parameters => to_string (element (arc_cursor).layer));
 				
 				section_mark (section_arc, FOOTER);

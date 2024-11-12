@@ -54,6 +54,7 @@ with et_text;						use et_text;
 with et_alignment;					use et_alignment;
 with et_exceptions;					use et_exceptions;
 with et_module_rw;					use et_module_rw;
+with et_keywords;					use et_keywords;
 
 
 package body et_pcb_rw is

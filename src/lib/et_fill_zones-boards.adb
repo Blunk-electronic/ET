@@ -39,7 +39,7 @@
 
 with ada.strings.unbounded;
 with ada.tags;
-with et_module_rw;					use et_module_rw;
+with et_keywords;					use et_keywords;
 
 
 

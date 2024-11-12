@@ -41,29 +41,6 @@
 
 package et_module_rw is
 
-
--- KEYWORDS
-
-	keyword_assembly_variant		: constant string := "assembly_variant";
-	keyword_not_mounted				: constant string := "not_mounted";
-	keyword_class					: constant string := "class";
-	keyword_scope					: constant string := "scope";	
-	keyword_flipped					: constant string := "flipped";
-	keyword_rotation_in_schematic	: constant string := "rotation_in_schematic";
-	keyword_junction				: constant string := "junction";
-	keyword_submodule				: constant string := "submodule";
-	keyword_netchanger				: constant string := "netchanger";		
-	keyword_height					: constant string := "height";	
-	keyword_width					: constant string := "width";
-	-- keyword_template				: constant string := "template";
-	keyword_origin					: constant string := "origin";
-	keyword_model					: constant string := "model";				
-	keyword_variant					: constant string := "variant";
-	keyword_mirrored				: constant string := "mirrored";
-	keyword_sheet_number			: constant string := "number";
-	keyword_sheet_category			: constant string := "category";
-	keyword_sheet_description		: constant string := "text";
-
 	
 -- SECTION NAMES
 
