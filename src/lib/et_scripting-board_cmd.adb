@@ -85,6 +85,7 @@ with et_device_prefix;
 with et_vias;
 with et_pcb;
 with et_pcb_stack;
+with et_keywords;					use et_keywords;
 
 -- to do:
 

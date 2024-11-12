@@ -60,6 +60,7 @@ with et_port_names;
 with et_symbol_ports;				use et_symbol_ports;
 with et_device_placeholders;		use et_device_placeholders;
 with et_time;						use et_time;
+with et_keywords;					use et_keywords;
 
 
 package body et_symbol_rw is

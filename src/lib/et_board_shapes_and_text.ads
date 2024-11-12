@@ -104,8 +104,7 @@ package et_board_shapes_and_text is
 		width : in et_pcb_coordinates_2.type_distance_model);
 
 
-	-- keyword_width 		: constant string := "width";
-	keyword_linewidth	: constant string := "linewidth";
+
 
 
 

@@ -52,6 +52,7 @@ package et_keywords is
 	keyword_submodule				: constant string := "submodule";
 	keyword_netchanger				: constant string := "netchanger";		
 	keyword_height					: constant string := "height";	
+	keyword_linewidth				: constant string := "linewidth";
 	keyword_width					: constant string := "width";
 	-- keyword_template				: constant string := "template";
 	keyword_origin					: constant string := "origin";
