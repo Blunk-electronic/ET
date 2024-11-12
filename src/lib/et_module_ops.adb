@@ -61,17 +61,6 @@ package body et_module_ops is
 
 	use pac_generic_modules;
 
--- 	
--- 	function to_string (project_name : in pac_project_name.bounded_string) return string is begin
--- 		return pac_project_name.to_string (project_name);
--- 	end to_string;
--- 
--- 	
--- 	function to_project_name (name : in string) return pac_project_name.bounded_string is begin
--- 		return pac_project_name.to_bounded_string (name);
--- 	end to_project_name;
--- 
-
 
 
 	procedure create_module (
@@ -80,7 +69,7 @@ package body et_module_ops is
 	is
 		module_cursor : pac_generic_modules.cursor;
 		inserted : boolean;
-		use et_string_processing;
+
 		use et_directory_and_file_ops;
 	begin
 		log (
@@ -119,7 +108,6 @@ package body et_module_ops is
 	is
 		module_cursor : pac_generic_modules.cursor := locate_module (module_name);
 
-		use et_string_processing;
 		use ada.directories;
 
 		file_name : constant string := append_extension (to_string (module_name));
@@ -200,7 +188,6 @@ package body et_module_ops is
 	is
 		module_cursor : pac_generic_modules.cursor := locate_module (module_name);
 
-		use et_string_processing;
 		use ada.directories;
 		use et_project;
 

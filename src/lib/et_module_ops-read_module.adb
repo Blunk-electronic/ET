@@ -38,20 +38,27 @@
 --
 
 with ada.text_io;					use ada.text_io;
+with ada.containers;
 
 with et_coordinates_2;
 
 with et_pcb_sides;
 with et_pcb_coordinates_2;
 
+with et_assembly_variants;			use et_assembly_variants;
+with et_assembly_variant_name;		use et_assembly_variant_name;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_primitive_objects;			use et_primitive_objects;
 with et_axes;						use et_axes;
 with et_module_instance;			use et_module_instance;
+with et_nets;
 with et_net_names;					use et_net_names;
 with et_net_labels;
 with et_port_names;
 with et_symbol_ports;
+with et_device_name;				use et_device_name;
+with et_design_rules;				use et_design_rules;
+with et_device_model;
 with et_device_appearance;
 with et_device_purpose;
 with et_device_model_names;
@@ -61,11 +68,14 @@ with et_device_partcode;
 with et_package_variant;
 with et_symbols;
 with et_symbol_rw;
+with et_schematic;
 with et_schematic_rw;
 with et_device_rw;
 with et_frames;
 with et_frame_rw;
 with et_sheets;
+with et_pcb;
+with et_pcb_stack;
 with et_pcb_rw;
 with et_pcb_rw.device_packages;
 with et_pcb_rw.restrict;

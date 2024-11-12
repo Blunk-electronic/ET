@@ -38,20 +38,7 @@
 --  ToDo: 
 --  
 
-with ada.containers;
-with ada.containers.ordered_maps;
 
-with et_schematic;
-with et_nets;
-with et_assembly_variants;		use et_assembly_variants;
-with et_assembly_variant_name;	use et_assembly_variant_name;
-with et_pcb;
-with et_pcb_stack;
-with et_device_model;
-with et_device_name;			use et_device_name;
-
-with et_design_rules;			use et_design_rules;
-with et_meta;
 with et_generic_module;			use et_generic_module;
 with et_module_names;			use et_module_names;
 with et_logging;				use et_logging;
