@@ -61,8 +61,6 @@ package et_text is
 -- CONTENT
 	
 	-- A text may have up to 200 characters which seems sufficient for now.
-	keyword_content : constant string := "content";
-	
 	text_length_max : constant natural := 200;
 	package pac_text_content is new generic_bounded_length (text_length_max);
 
@@ -98,10 +96,7 @@ package et_text is
 	-- Tests if the content is not longer than allowed.
 
 
-	keyword_line_width	: constant string := "line_width";	
-	keyword_size		: constant string := "size";
-
-	keyword_meaning		: constant string := "meaning";	-- for placeholders
+	
 
 
 	type type_rotation_documentation is (HORIZONTAL, VERTICAL);

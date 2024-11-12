@@ -202,16 +202,13 @@ package et_meta is
 
 	keyword_company			: constant string := "company";
 	keyword_customer		: constant string := "customer";
-	keyword_partcode		: constant string := "partcode";
 	keyword_drawing_number	: constant string := "drawing_number";
-	keyword_revision		: constant string := "revision";
 	keyword_drawn_by		: constant string := "drawn_by";
 	keyword_drawn_date		: constant string := "drawn_date";	
 	keyword_checked_by		: constant string := "checked_by";
 	keyword_checked_date	: constant string := "checked_date";	
 	keyword_approved_by		: constant string := "approved_by";
 	keyword_approved_date	: constant string := "approved_date";	
-	keyword_path			: constant string := "path";
 	
 end et_meta;
 

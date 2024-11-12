@@ -84,6 +84,8 @@ with et_exceptions;						use et_exceptions;
 with et_undo_redo;
 with et_commit;
 with et_object_status;
+with et_keywords;						use et_keywords;
+
 
 
 package body et_canvas_board_texts is

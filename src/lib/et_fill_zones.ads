@@ -74,11 +74,7 @@ package et_fill_zones is
 
 	no_stripes : constant pac_stripes.list := pac_stripes.empty_list;
 
-	keyword_fill	: constant string := "fill";
-	keyword_style	: constant string := "style";
-	keyword_easing	: constant string := "easing";
 
-	
 	-- Fill zones contain islands of conducting area. Inside the islands
 	-- lots of lakes can exist. Both, islands and lakes have a shoreline
 	-- that consists of a centerline.
@@ -179,21 +175,11 @@ package et_fill_zones is
 -- A FILL ZONE IN GENERAL
 
 
-	-- CS separate package for this stuff:
-	keyword_hatching_line_width		: constant string := "hatching_line_width";
-	keyword_hatching_border_width	: constant string := "hatching_border_width";	
-	--keyword_hatching_line_spacing	: constant string := "hatching_line_spacing";		
-	keyword_spacing : constant string := "spacing";
-
 	hatching_line_width_default : constant et_pcb_coordinates_2.pac_geometry_2.type_distance_positive := 0.2;
 	hatching_spacing_default	: constant et_pcb_coordinates_2.pac_geometry_2.type_distance_positive := 1.0;
 
 
 
-	
-	-- CS separate package for this stuff:	
-	keyword_easing_style  : constant string := "easing_style";
-	keyword_easing_radius : constant string := "easing_radius";	
 
 	type type_easing_style is (NONE, CHAMFER, FILLET);
 
@@ -210,11 +196,6 @@ package et_fill_zones is
 	end record;
 
 
-
-
-	
-
-	keyword_isolation	: constant string := "isolation"; -- CS rename
 
 
 	

@@ -108,14 +108,9 @@ package et_rig is
 	rigs : pac_rigs.map;
 
 
-
-
-
-
+	
 -- KEYWORDS
 
-	keyword_generic_name			: constant string := "generic_name";
-	keyword_instance_name			: constant string := "instance_name";
 	keyword_instance_A				: constant string := "instance_A";
 	keyword_instance_B				: constant string := "instance_B";		
 	keyword_purpose_A				: constant string := "purpose_A";

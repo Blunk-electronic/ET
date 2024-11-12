@@ -59,8 +59,7 @@ package et_assembly_variants is
 	use pac_assembly_variant_name;
 
 	
-	
-	keyword_active	: constant string := "active";	
+
 	
 	-- An assembly variant should be described more or less detailled by the operator:
 	type type_description is new unbounded_string;

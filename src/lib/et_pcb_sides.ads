@@ -37,9 +37,7 @@
 --
 
 package et_pcb_sides is
-
-	
- 	keyword_face	: constant string := "face";	
+ 	
 	
 	type type_face is (TOP, BOTTOM);
 

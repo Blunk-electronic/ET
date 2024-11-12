@@ -895,11 +895,11 @@ package body et_pcb_rw.device_packages is
 				-- extract position of note starting at field 2
 				pac_text.position := to_position (line, 2);
 
-			elsif kw = et_text.keyword_size then -- size 1.000
+			elsif kw = keyword_size then -- size 1.000
 				expect_field_count (line, 2);
 				pac_text.size := to_distance (f (line, 2));
 
-			elsif kw = et_text.keyword_line_width then -- line_width 0.1
+			elsif kw = keyword_linewidth then -- linewidth 0.1
 				expect_field_count (line, 2);
 				pac_text.line_width := to_distance (f (line, 2));
 
@@ -930,11 +930,11 @@ package body et_pcb_rw.device_packages is
 				-- extract position of note starting at field 2
 				pac_text_placeholder.position := to_position (line, 2);
 
-			elsif kw = et_text.keyword_size then -- size 1.000
+			elsif kw = keyword_size then -- size 1.000
 				expect_field_count (line, 2);
 				pac_text_placeholder.size := to_distance (f (line, 2));
 
-			elsif kw = et_text.keyword_line_width then -- line_width 0.1
+			elsif kw = keyword_linewidth then -- linewidth 0.1
 				expect_field_count (line, 2);
 				pac_text_placeholder.line_width := to_distance (f (line, 2));
 

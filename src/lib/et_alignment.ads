@@ -44,10 +44,6 @@ with et_string_processing;		use et_string_processing;
 
 package et_alignment is
 	
-	keyword_alignment	: constant string := "alignment";
-	keyword_horizontal	: constant string := "horizontal";
-	keyword_vertical	: constant string := "vertical";		
-
 	
 	alignment_prefix	: constant string := ("ALIGN_");
 	

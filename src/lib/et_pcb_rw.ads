@@ -90,20 +90,6 @@ package et_pcb_rw is
 	--section_pcb_contours_plated	: constant string	:= "[PCB_CONTOURS_PLATED"; 
 	section_pac_3d_contours		: constant string	:= "[PACKAGE_3D_CONTOURS";
 
-	-- keyword_position			: constant string := "position";
-	keyword_description				: constant string := "description";	
-	--keyword_width 					: constant string := "width";	
-	keyword_clearance				: constant string := "clearance";
-	keyword_track_width_min			: constant string := "track_width_min";
-	keyword_via_drill_min			: constant string := "via_drill_min";
-	keyword_via_restring_min		: constant string := "via_restring_min";	
-	keyword_micro_via_drill_min		: constant string := "micro_via_drill_min";
-	keyword_micro_via_restring_min	: constant string := "micro_via_restring_min";	
-
-	keyword_dru					: constant string := "dru";
-	keyword_via_drill			: constant string := "drill";
-	keyword_via_restring_inner	: constant string := "restring_inner";
-	keyword_via_restring_outer	: constant string := "restring_outer";
 	
 
 	procedure write_text_properties (
@@ -118,7 +104,7 @@ package et_pcb_rw is
 	procedure write_text (cursor : in pac_texts_fab_with_content.cursor);
 	--procedure write_text (cursor : in pac_conductor_texts_package.cursor);
 	
-	keyword_locked : constant string := "locked"; -- layout related
+	
 
 	
 	procedure write_width (width : in type_track_width);

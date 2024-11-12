@@ -245,7 +245,7 @@ is
 			expect_field_count (line, 2);
 			meta_basic.customer := to_customer (f (line, 2));
 			
-		elsif kw = et_meta.keyword_partcode then
+		elsif kw = keyword_partcode then
 			expect_field_count (line, 2);
 			meta_basic.partcode := to_partcode (f (line, 2));
 			
@@ -818,7 +818,7 @@ is
 			expect_field_count (line, 2);
 			net_label_rotation := to_rotation (f (line, 2));
 
-		elsif kw = et_text.keyword_size then -- size 1.3
+		elsif kw = keyword_size then -- size 1.3
 			expect_field_count (line, 2);
 			net_label.size := to_distance (f (line, 2));
 
@@ -826,7 +826,7 @@ is
 -- 										expect_field_count (line, 2);
 -- 										net_label.style := et_symbols.to_text_style (f (line, 2));
 
-		elsif kw = et_text.keyword_line_width then -- line_width 0.1
+		elsif kw = keyword_linewidth then -- linewidth 0.1
 			expect_field_count (line, 2);
 			net_label.width := to_distance (f (line, 2));
 
@@ -834,7 +834,7 @@ is
 			expect_field_count (line, 2);
 			net_label_appearance := to_appearance (f (line, 2));
 
-		elsif kw = et_net_labels.keyword_direction then -- direction input/output
+		elsif kw = keyword_direction then -- direction input/output
 			expect_field_count (line, 2);
 			net_label_direction := to_direction (f (line, 2));
 			
@@ -1001,7 +1001,7 @@ is
 			expect_field_count (line, 2);
 			frame_template_board := to_template_name (f (line, 2));
 
-		elsif kw = et_frame_rw.keyword_position then -- position x 40 y 60
+		elsif kw = keyword_position then -- position x 40 y 60
 			expect_field_count (line, 5);
 			frame_board_position := et_frame_rw.to_position (line, 2);
 		else
@@ -1325,11 +1325,11 @@ is
 			-- extract position of placeholder starting at field 2
 			device_text_placeholder_position := to_position (line, 2);
 
-		elsif kw = et_text.keyword_size then -- size 5
+		elsif kw = keyword_size then -- size 5
 			expect_field_count (line, 2);
 			device_text_placeholder.size := to_distance (f (line, 2));
 
-		elsif kw = et_text.keyword_line_width then -- line_width 0.15
+		elsif kw = keyword_linewidth then -- linewidth 0.15
 			expect_field_count (line, 2);
 
 			device_text_placeholder.line_width := to_distance (f (line, 2));
@@ -1376,7 +1376,7 @@ is
 			-- extract position of placeholder starting at field 2
 			unit_placeholder_position := to_position (line, 2);
 
-		elsif kw = et_text.keyword_size then -- size 3.0
+		elsif kw = keyword_size then -- size 3.0
 			expect_field_count (line, 2);
 			unit_placeholder.size := to_distance (f (line, 2));
 
@@ -1422,11 +1422,11 @@ is
 			-- extract position of note starting at field 2
 			board_text_placeholder.position := to_position (line, 2);
 
-		elsif kw = et_text.keyword_size then -- size 1.000
+		elsif kw = keyword_size then -- size 1.000
 			expect_field_count (line, 2);
 			board_text_placeholder.size := to_distance (f (line, 2));
 
-		elsif kw = et_text.keyword_line_width then -- line_width 0.1
+		elsif kw = keyword_linewidth then -- linewidth 0.1
 			expect_field_count (line, 2);
 			board_text_placeholder.line_width := to_distance (f (line, 2));
 
@@ -1978,11 +1978,11 @@ is
 			-- extract position of note starting at field 2
 			board_text_conductor_placeholder.position := to_position (line, 2);
 
-		elsif kw = et_text.keyword_size then -- size 1.000
+		elsif kw = keyword_size then -- size 1.000
 			expect_field_count (line, 2);
 			board_text_conductor_placeholder.size := to_distance (f (line, 2));
 
-		elsif kw = et_text.keyword_line_width then -- line_width 0.1
+		elsif kw = keyword_linewidth then -- linewidth 0.1
 			expect_field_count (line, 2);
 			board_text_conductor_placeholder.line_width := to_distance (f (line, 2));
 
@@ -2029,7 +2029,7 @@ is
 			expect_field_count (line, 2); -- actual content in quotes !
 			schematic_text.content := et_text.to_content (f (line, 2));
 
-		elsif kw = et_text.keyword_size then -- size 1.4
+		elsif kw = keyword_size then -- size 1.4
 			expect_field_count (line, 2);
 			schematic_text.size := to_distance (f (line, 2));
 
@@ -2071,11 +2071,11 @@ is
 					-- extract position starting at field 2
 					board_text.position := to_position (line, 2);
 
-				elsif kw = et_text.keyword_size then -- size 1.000
+				elsif kw = keyword_size then -- size 1.000
 					expect_field_count (line, 2);
 					board_text.size := to_distance (f (line, 2));
 
-				elsif kw = et_text.keyword_line_width then -- line_width 0.1
+				elsif kw = keyword_linewidth then -- linewidth 0.1
 					expect_field_count (line, 2);
 					board_text.line_width := to_distance (f (line, 2));
 
@@ -2114,11 +2114,11 @@ is
 			-- extract position starting at field 2
 			board_text_conductor.position := to_position (line, 2);
 
-		elsif kw = et_text.keyword_size then -- size 1.000
+		elsif kw = keyword_size then -- size 1.000
 			expect_field_count (line, 2);
 			board_text_conductor.size := to_distance (f (line, 2));
 
-		elsif kw = et_text.keyword_line_width then -- line_width 0.1
+		elsif kw = keyword_linewidth then -- linewidth 0.1
 			expect_field_count (line, 2);
 			board_text_conductor.line_width := to_distance (f (line, 2));
 
@@ -2158,11 +2158,11 @@ is
 			-- extract position starting at field 2
 			board_text.position := to_position (line, 2);
 
-		elsif kw = et_text.keyword_size then -- size 1.000
+		elsif kw = keyword_size then -- size 1.000
 			expect_field_count (line, 2);
 			board_text.size := to_distance (f (line, 2));
 
-		elsif kw = et_text.keyword_line_width then -- line_width 0.1
+		elsif kw = keyword_linewidth then -- linewidth 0.1
 			expect_field_count (line, 2);
 			board_text.line_width := to_distance (f (line, 2));
 

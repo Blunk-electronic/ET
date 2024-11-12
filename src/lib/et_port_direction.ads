@@ -40,9 +40,6 @@
 package et_port_direction is
 
 	-- The port has an electrical direction:
-
-	keyword_direction : constant string := "direction";	
-	
 	type type_port_direction is (
 		PASSIVE,		-- almost all passive components like resistors, capacitors, .. have such ports
 

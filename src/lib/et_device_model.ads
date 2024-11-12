@@ -66,12 +66,7 @@ package et_device_model is
 
 	use pac_geometry_2;
 
-	-- To handle names of package models like libraries/packages/smd/SOT23.pac use this:
-	keyword_package_model : constant string := "package_model";
 
-	keyword_device : constant string := "device";	
-
-	
 	device_unit_separator : constant character := '.';
 
 	

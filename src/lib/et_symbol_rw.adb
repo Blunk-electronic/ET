@@ -216,7 +216,7 @@ package body et_symbol_rw is
 			write (keyword => keyword_center, parameters => to_string (element (cursor).center, FORMAT_2));
 			write (keyword => keyword_start , parameters => to_string (element (cursor).start_point, FORMAT_2));
 			write (keyword => keyword_end   , parameters => to_string (element (cursor).end_point, FORMAT_2));
-			write (keyword => et_primitive_objects.keyword_direction, parameters => to_string (element (cursor).direction));
+			write (keyword => keyword_direction, parameters => to_string (element (cursor).direction));
 			write (keyword => keyword_width , parameters => to_string (element (cursor).width));
 			section_mark (section_arc, FOOTER);
 		end write_arc;
@@ -898,7 +898,7 @@ package body et_symbol_rw is
 										-- extract the end position starting at field 2
 										symbol_arc.end_point := to_position (line,2);
 
-									elsif kw = et_primitive_objects.keyword_direction then -- direction ccw
+									elsif kw = keyword_direction then -- direction ccw
 										expect_field_count (line, 2);
 
 										symbol_arc.direction := to_direction (f (line, 2));
@@ -966,7 +966,7 @@ package body et_symbol_rw is
 										expect_field_count (line, 2);
 										symbol_text_content := et_text.to_content (f (line, 2));
 
-									elsif kw = et_text.keyword_size then -- size 5
+									elsif kw = keyword_size then -- size 5
 										expect_field_count (line, 2);
 										symbol_text_base.size := to_distance (f (line, 2));
 
@@ -1007,7 +1007,7 @@ package body et_symbol_rw is
 										expect_field_count (line, 2);
 										symbol_placeholder_meaning := to_meaning (f (line, 2));
 
-									elsif kw = et_text.keyword_size then -- size 5
+									elsif kw = keyword_size then -- size 5
 										expect_field_count (line, 2);
 										symbol_text_base.size := to_distance (f (line, 2));
 
@@ -1075,7 +1075,7 @@ package body et_symbol_rw is
 										expect_field_count (line, 2);
 										port.terminal_name_size := to_distance (f (line, 2));
 
-									elsif kw = et_port_direction.keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
+									elsif kw = keyword_direction then -- direction BIDIR, PASSIVE, NOT_CONNECTED, ...
 										expect_field_count (line, 2);
 										port_direction := et_port_direction.to_port_direction (f (line, 2));
 

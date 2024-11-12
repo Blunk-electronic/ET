@@ -40,31 +40,122 @@
 
 
 package et_keywords is
-
-
+	
+	
+	keyword_active					: constant string := "active";	
+	keyword_alignment				: constant string := "alignment";
 	keyword_assembly_variant		: constant string := "assembly_variant";
+	keyword_border_width			: constant string := "border_width";
 	keyword_not_mounted				: constant string := "not_mounted";
+	keyword_center					: constant string := "center";
 	keyword_class					: constant string := "class";
-	keyword_scope					: constant string := "scope";	
+	keyword_clearance				: constant string := "clearance";
+	keyword_columns					: constant string := "columns";	
+	keyword_content 				: constant string := "content";
+	keyword_default					: constant string := "default";
+	keyword_delta					: constant string := "delta";
+	keyword_description				: constant string := "description";	
+	keyword_device 					: constant string := "device";	
+	keyword_diameter				: constant string := "diameter";
+	keyword_direction 				: constant string := "direction";
+	keyword_domain					: constant string := "domain";				
+	keyword_dru						: constant string := "dru";
+	keyword_easing					: constant string := "easing";
+	keyword_easing_radius 			: constant string := "easing_radius";	
+	keyword_easing_style  			: constant string := "easing_style";
+	keyword_end						: constant string := "end";
+	keyword_face					: constant string := "face";	
+	keyword_fill					: constant string := "fill";
+	keyword_filled 					: constant string := "filled";
+	keyword_fill_style 				: constant string := "fill_style";	
 	keyword_flipped					: constant string := "flipped";
-	keyword_rotation_in_schematic	: constant string := "rotation_in_schematic";
-	keyword_junction				: constant string := "junction";
-	keyword_submodule				: constant string := "submodule";
-	keyword_netchanger				: constant string := "netchanger";		
+	keyword_generic_name			: constant string := "generic_name";
+
 	keyword_height					: constant string := "height";	
+	keyword_junction				: constant string := "junction";
+	keyword_layout					: constant string := "layout";	
 	keyword_linewidth				: constant string := "linewidth";
-	keyword_width					: constant string := "width";
-	-- keyword_template				: constant string := "template";
-	keyword_origin					: constant string := "origin";
-	keyword_model					: constant string := "model";				
-	keyword_variant					: constant string := "variant";
+	keyword_locked 					: constant string := "locked";
+	keyword_hatching_border_width	: constant string := "hatching_border_width";	
+	--keyword_hatching_line_spacing	: constant string := "hatching_line_spacing";		
+	keyword_hatching_line_width		: constant string := "hatching_line_width";
+	keyword_horizontal				: constant string := "horizontal";
+
+	keyword_inner					: constant string := "inner";
+	keyword_instance_name			: constant string := "instance_name";
+	keyword_isolation				: constant string := "isolation"; -- CS rename
+	keyword_meaning					: constant string := "meaning";
 	keyword_mirrored				: constant string := "mirrored";
-	keyword_sheet_number			: constant string := "number";
+	keyword_model					: constant string := "model";				
+	keyword_netchanger				: constant string := "netchanger";		
+	keyword_off						: constant string := "off";
+	keyword_on						: constant string := "on";
+	keyword_on_off					: constant string := "on_off";
+	keyword_orientation				: constant string := "orientation";
+	keyword_origin					: constant string := "origin";
+	keyword_outer					: constant string := "outer";
+
+	keyword_package_model 			: constant string := "package_model";
+	keyword_paper_size				: constant string := "paper_size";
+	keyword_partcode 				: constant string := "partcode";	
+	keyword_path					: constant string := "path";
+	keyword_position				: constant string := "position";
+	keyword_position_in_board		: constant string := "position_in_board";
+	keyword_position_in_schematic	: constant string := "position_in_schematic";	
+
+	
+	keyword_prefix					: constant string := "prefix";
+	keyword_radius					: constant string := "radius";	
+	keyword_revision				: constant string := "revision";
+	keyword_rotation 				: constant string := "rotation";
+	keyword_rotation_in_schematic	: constant string := "rotation_in_schematic";
+	keyword_route					: constant string := "route";
+	keyword_rows					: constant string := "rows";
+	keyword_scope					: constant string := "scope";	
+	keyword_sectors					: constant string := "sectors";
+	keyword_sheet					: constant string := "sheet";	
 	keyword_sheet_category			: constant string := "category";
 	keyword_sheet_description		: constant string := "text";
+	keyword_sheet_number			: constant string := "number";
+	keyword_size					: constant string := "size";
+	keyword_start					: constant string := "start";
+	keyword_style					: constant string := "style";
+	keyword_submodule				: constant string := "submodule";
+	keyword_symbol_file				: constant string := "symbol_model";
+	keyword_template				: constant string := "template";
+	keyword_track_width_min			: constant string := "track_width_min";
+	keyword_value					: constant string := "value";
+	keyword_variant					: constant string := "variant";
+	keyword_vertical				: constant string := "vertical";
+	keyword_version					: constant string := "version";		
+	keyword_via						: constant string := "via";
+	keyword_via_drill				: constant string := "drill";
+	keyword_view_mode				: constant string := "view_mode";
+	keyword_width					: constant string := "width";
+	keyword_x 						: constant string := "x";
+	keyword_y 						: constant string := "y";		
 
 
 
+
+	
+	keyword_spacing					: constant string := "spacing";
+
+	keyword_dots					: constant string := "dots";
+	keyword_lines					: constant string := "lines";
+
+
+
+	keyword_via_drill_min			: constant string := "via_drill_min";
+	keyword_via_restring_min		: constant string := "via_restring_min";	
+	keyword_micro_via_drill_min		: constant string := "micro_via_drill_min";
+	keyword_micro_via_restring_min	: constant string := "micro_via_restring_min";	
+
+	keyword_via_restring_inner	: constant string := "restring_inner";
+	keyword_via_restring_outer	: constant string := "restring_outer";
+
+
+	
 	
 end et_keywords;
 

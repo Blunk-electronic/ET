@@ -57,6 +57,7 @@ with et_string_processing;			use et_string_processing;
 with et_time;						use et_time;
 with et_general_rw;					use et_general_rw;
 with et_system_info;
+with et_keywords;					use et_keywords;
 
 
 package body et_frame_rw is
@@ -131,7 +132,7 @@ package body et_frame_rw is
 			write (keyword => keyword_position, parameters	=> to_string (ph.position)); -- position x 220 y 40
 
 			-- size
-			write (keyword => et_text.keyword_size, parameters => to_string (ph.size)); -- size 20
+			write (keyword => keyword_size, parameters => to_string (ph.size)); -- size 20
 		end;
 
 		
@@ -142,10 +143,10 @@ package body et_frame_rw is
 			write (keyword => keyword_position, parameters	=> to_string (text.position)); -- position x 220 y 40
 
 			-- size
-			write (keyword => et_text.keyword_size, parameters => to_string (text.size)); -- size 20
+			write (keyword => keyword_size, parameters => to_string (text.size)); -- size 20
 
 			-- content
-			write (keyword => et_text.keyword_content, wrap => true,
+			write (keyword => keyword_content, wrap => true,
 				   parameters => et_text.to_string (text.content)); -- content "motor driver"
 
 			section_mark (section_text, FOOTER);
@@ -157,10 +158,10 @@ package body et_frame_rw is
 			write (keyword => keyword_position, parameters	=> to_string (cm.position)); -- position x 220 y 40
 
 			-- size
-			write (keyword => et_text.keyword_size, parameters => to_string (cm.size)); -- size 20
+			write (keyword => keyword_size, parameters => to_string (cm.size)); -- size 20
 
 			-- content
-			write (keyword => et_text.keyword_content, wrap => true,
+			write (keyword => keyword_content, wrap => true,
 				   parameters => et_text.to_string (cm.content));
 		end;
 

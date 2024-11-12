@@ -53,6 +53,7 @@ with et_generic_module;				use et_generic_module;
 with et_project.configuration;
 with et_rig_name;
 with et_rig;
+with et_keywords;					use et_keywords;
 
 
 package body et_project is

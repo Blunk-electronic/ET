@@ -236,7 +236,7 @@ is
 		procedure write_basic (basic : in type_basic'class) is begin
 			write (keyword => keyword_company, parameters => to_string (basic.company), wrap => true);
 			write (keyword => keyword_customer, parameters => to_string (basic.customer), wrap => true);
-			write (keyword => et_meta.keyword_partcode, parameters => to_string (basic.partcode));
+			write (keyword => keyword_partcode, parameters => to_string (basic.partcode));
 			write (keyword => keyword_drawing_number, parameters => to_string (basic.drawing_number));
 			write (keyword => keyword_revision, parameters => to_string (basic.revision));
 			
@@ -529,14 +529,14 @@ is
 										to_string (element (label_cursor).rotation_tag));
 							end case;
 							
-							write (keyword => et_text.keyword_size, parameters => to_string (element (label_cursor).size));
+							write (keyword => keyword_size, parameters => to_string (element (label_cursor).size));
 
 							write (keyword => keyword_appearance, parameters =>
 								to_string (appearance => element (label_cursor).appearance));
 							
 							-- a tag label also indicates a signal direction
 							if element (label_cursor).appearance = TAG then
-								write (keyword => et_net_labels.keyword_direction, parameters => to_string (element (label_cursor).direction));
+								write (keyword => keyword_direction, parameters => to_string (element (label_cursor).direction));
 							end if;
 							
 							section_mark (section_label, FOOTER);
@@ -1307,7 +1307,7 @@ is
 			
 			-- Write the frame template like "template ../frames/dummy.frb":
 			write (
-				keyword		=> et_frame_rw.keyword_template, 
+				keyword		=> keyword_template, 
 				parameters	=> et_frames.to_string (element (module_cursor).board.frame.template));
 
 			
@@ -1315,7 +1315,7 @@ is
 			frame_pos := get_frame_position (module_cursor, log_threshold + 1); 
 			
 			write (
-				keyword		=> et_frame_rw.keyword_position,
+				keyword		=> keyword_position,
 				parameters	=> to_string (frame_pos, FORMAT_2));
 
 			section_mark (section_board, FOOTER);

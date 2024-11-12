@@ -149,20 +149,6 @@ package et_geometry_2a.grid is
 		notches : in type_grid_notches) 
 		return string;
 
-
-
-	
-	
-	keyword_on_off	: constant string := "on_off";
-	keyword_on		: constant string := "on";
-	keyword_off		: constant string := "off";
-	
-	keyword_spacing	: constant string := "spacing";
-
-	keyword_style	: constant string := "style";
-	keyword_dots	: constant string := "dots";
-	keyword_lines	: constant string := "lines";
-
 	
 end et_geometry_2a.grid;
 

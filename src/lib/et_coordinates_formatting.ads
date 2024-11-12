@@ -74,12 +74,6 @@ package et_coordinates_formatting is
 			& axis_separator
 			& "face)";
 
-
-	keyword_x 			: constant string := "x";
-	keyword_y 			: constant string := "y";		
-	keyword_position	: constant string := "position";
-	keyword_rotation 	: constant string := "rotation";
-	
 		
 end et_coordinates_formatting;
 

@@ -43,10 +43,8 @@ with ada.strings.bounded; 		use ada.strings.bounded;
 
 package et_device_value is
 
-	
-
 	-- The device value is something like 330R or 100n or 74LS00
-	keyword_value : constant string := "value";
+
 	
 	value_length_max : constant positive := 50;
 

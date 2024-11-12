@@ -40,6 +40,7 @@
 with ada.strings; 					use ada.strings;
 with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_sheets;						use et_sheets;
+with et_keywords;					use et_keywords;
 
 
 package body et_schematic_rw is

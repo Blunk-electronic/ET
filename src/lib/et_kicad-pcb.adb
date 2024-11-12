@@ -39,8 +39,8 @@
 --	- distinguish between through, blind and buried vias.
 
 with ada.directories;
-with ada.strings;				use ada.strings;
-with ada.strings.fixed; 		use ada.strings.fixed;
+with ada.strings;					use ada.strings;
+with ada.strings.fixed; 			use ada.strings.fixed;
 
 with ada.exceptions;
 
@@ -49,17 +49,17 @@ with et_vias;
 with et_pcb_stack;
 with et_nets;
 
-with et_device_appearance;		use et_device_appearance;
+with et_device_appearance;			use et_device_appearance;
 with et_device_prefix;
-with et_pcb_contour;			use et_pcb_contour;
-with et_axes;					use et_axes;
+with et_pcb_contour;				use et_pcb_contour;
+with et_axes;						use et_axes;
 with et_generic_stacks;
 with et_system_info;
-with et_alignment;				use et_alignment;
+with et_alignment;					use et_alignment;
 with et_package_appearance;
 with et_package_description;
 with et_package_variant;
-
+with et_keywords;					use et_keywords;
 
 
 package body et_kicad.pcb is

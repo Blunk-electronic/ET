@@ -49,9 +49,6 @@ with et_device_placeholders;			use et_device_placeholders;
 
 package et_device_rw is
 	
-	keyword_symbol_file			: constant string := "symbol_model";
-	keyword_prefix				: constant string := "prefix";		
-	
 	section_symbol				: constant string := "[SYMBOL";
 	section_variant				: constant string := "[VARIANT";
 	section_variants			: constant string := "[VARIANTS";

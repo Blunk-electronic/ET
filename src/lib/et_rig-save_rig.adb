@@ -40,6 +40,8 @@ with ada.exceptions;				use ada.exceptions;
 
 with et_general_rw;					use et_general_rw;
 with et_module_names;				use et_module_names;
+with et_keywords;					use et_keywords;
+
 
 separate (et_rig)
 

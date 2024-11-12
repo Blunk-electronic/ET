@@ -50,8 +50,6 @@ package et_export is
 	directory_bom 			: constant string := "BOM";	
 	directory_pick_and_place: constant string := "pick_and_place";
 	directory_netlists 		: constant string := "netlists";
-	
-
 
 	-- directory_cad			: constant string := "CAD";	
 	directory_statistics	: constant string := "statistics";

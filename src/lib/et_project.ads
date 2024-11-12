@@ -78,13 +78,6 @@ package et_project is
 
 
 
-	
-	
--- KEYWORDS:
-	
-	keyword_default			: constant string := "default";
-
-
 
 	
 -- PROJECTS ROOT DIRECTORY:

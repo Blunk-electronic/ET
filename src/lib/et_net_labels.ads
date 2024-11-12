@@ -74,7 +74,6 @@ package et_net_labels is
 	function to_string (direction : in type_net_label_direction) return string;
 	function to_direction (direction : in string) return type_net_label_direction;
 
-	keyword_direction : constant string := "direction";
 
 	
 	type type_net_label_base is tagged record

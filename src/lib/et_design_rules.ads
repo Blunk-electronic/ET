@@ -54,8 +54,7 @@ with et_drills;					use et_drills;
 
 
 package et_design_rules is
-
-	keyword_layout : constant string := "layout";
+	
 
  	file_name_length_max : constant natural := 100;
 	package pac_file_name is new generic_bounded_length (file_name_length_max); -- JLP_ML4_standard.dru
@@ -209,9 +208,6 @@ package et_design_rules is
 
 	keyword_tracks	: constant string := "tracks";
 	keyword_drills	: constant string := "drills";
-	keyword_inner	: constant string := "inner";
-	keyword_outer	: constant string := "outer";
-	keyword_delta	: constant string := "delta";
 
 	keyword_expansion_min	: constant string := "expansion_min";
 	

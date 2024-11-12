@@ -50,22 +50,6 @@ with et_frames;					use et_frames;
 
 
 package et_frame_rw is
-
--- KEYWORDS:
-
-	keyword_position		: constant string := "position";	
-	keyword_template		: constant string := "template";
-	keyword_domain			: constant string := "domain";				
-	keyword_paper_size		: constant string := "paper_size";
-	keyword_orientation		: constant string := "orientation";
-	keyword_border_width	: constant string := "border_width";
-	keyword_size			: constant string := "size";
-
-	keyword_sectors			: constant string := "sectors";
-	keyword_rows			: constant string := "rows";
-	keyword_columns			: constant string := "columns";	
-
-
 	
 -- GENERAL SECTIONS:
 	

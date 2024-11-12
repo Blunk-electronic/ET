@@ -36,10 +36,10 @@
 --   history of changes:
 --
 
-with ada.characters.handling;	use ada.characters.handling;
-with et_modes;					use et_modes;
-
-with et_exceptions;				use et_exceptions;
+with ada.characters.handling;		use ada.characters.handling;
+with et_modes;						use et_modes;
+with et_keywords;					use et_keywords;
+with et_exceptions;					use et_exceptions;
 
 
 
