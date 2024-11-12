@@ -487,7 +487,6 @@ is
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net) 
 		is
-			use et_symbol_rw;
 			use et_schematic;
 			use pac_strands;
 			use et_coordinates_2.pac_geometry_2;
