@@ -99,12 +99,6 @@ package et_terminals is
 	-- CS this variable should never be changed.
 	-- Find a way to make it a constant.
 
-	
-
-	
-	keyword_restring_outer : constant string := "restring_outer";
-	keyword_restring_inner : constant string := "restring_inner";
-
 
 
 	
@@ -180,10 +174,6 @@ package et_terminals is
 	-- A SMT pad has stop mask on one side only:
 	subtype type_stop_mask_smt is type_stop_mask;
 
-	keyword_stop_mask_status		: constant string := "stop_mask_status";
-	keyword_stop_mask_shape			: constant string := "stop_mask_shape";
-	keyword_stop_mask_shape_top		: constant string := "stop_mask_shape_top";
-	keyword_stop_mask_shape_bottom	: constant string := "stop_mask_shape_bottom";	
 
 
 	
@@ -219,17 +209,10 @@ package et_terminals is
 		end case;
 	end record;
 	
-	keyword_solder_paste_status			: constant string := "solder_paste_status";
-	keyword_solder_paste_shape			: constant string := "solder_paste_shape";
-	keyword_solder_paste_shrink_factor	: constant string := "solder_paste_shrink_factor";
-
 
 	
-	keyword_pad_shape			: constant string := "pad_shape";	
-	keyword_width_inner_layers	: constant string := "width_inner_layers";
-	keyword_assembly_technology	: constant string := "technology";
-	keyword_tht_hole			: constant string := "hole";	
-	keyword_drill_size			: constant string := "drill_size";
+	
+
 
 	
 	type type_assembly_technology is (

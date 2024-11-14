@@ -118,12 +118,6 @@ package et_scripting is
 
 
 
-
--- 	keyword_from			: constant string := "from";
-	keyword_to				: constant string := "to";
-	keyword_direction		: constant string := "direction";
--- 	keyword_length			: constant string := "length";
-
 	-- Executes a schematic command.
 	-- Assumes that the targeted module (like motor_driver) exists.
 	procedure schematic_cmd (

@@ -77,8 +77,7 @@ package et_submodules is
 	subtype type_submodule_edge_length is type_distance_positive
 		range 20.0 .. 1000.0; -- unit is mm
 
-	keyword_size	: constant string := "size";
-	keyword_file	: constant string := "file";
+
 	
 	type type_submodule_size is record
 		x : type_submodule_edge_length := 60.0; -- width of the box
@@ -121,7 +120,6 @@ package et_submodules is
 	
 	type type_netchanger_port_name is (MASTER, SLAVE);
 	
-	keyword_direction : constant string := "direction";
 	
 	function to_port_name (name : in string) return type_netchanger_port_name;
 	function to_string (name : in type_netchanger_port_name) return string;	

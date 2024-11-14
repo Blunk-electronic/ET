@@ -41,6 +41,7 @@ with et_schematic_ops;				use et_schematic_ops;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 
 with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
+with et_keywords;					use et_keywords;
 
 
 package body et_board_ops.vias is
@@ -260,7 +261,7 @@ package body et_board_ops.vias is
 
 				
 			when BURIED =>
-				log (text => et_vias.keyword_layers & space
+				log (text => keyword_layers & space
 					 & to_string (via.layers),
 					console => console,
 					level => log_threshold);

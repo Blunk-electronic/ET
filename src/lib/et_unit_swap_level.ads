@@ -40,7 +40,6 @@
 
 package et_unit_swap_level is
 
-	keyword_swap_level	: constant string := "swap_level";
 	
 	swap_level_max : constant natural := 10;
 

@@ -40,9 +40,6 @@
 
 package et_unit_add_level is
 
-	
-	keyword_add_level	: constant string := "add_level";
-
 
 	-- CS use prefix
 	

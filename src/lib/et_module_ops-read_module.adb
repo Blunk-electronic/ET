@@ -1821,6 +1821,7 @@ is
 	submodule_port 		: et_submodules.type_submodule_port;
 	submodule 			: et_submodules.type_submodule;
 
+
 	
 	-- Reads the parameters of a submodule:
 	procedure read_submodule is
@@ -1844,7 +1845,7 @@ is
 			-- extract position of submodule starting at field 2
 			submodule.position := to_position (line, 2);
 
-		elsif kw = et_submodules.keyword_size then -- size x 30 y 30
+		elsif kw = keyword_size then -- size x 30 y 30
 			expect_field_count (line, 5);
 
 			-- extract size of submodule starting at field 2
@@ -1866,6 +1867,7 @@ is
 	end read_submodule;
 
 	
+	
 	procedure read_submodule_port is
 		use et_symbol_rw;
 		kw : constant string := f (line, 1);
@@ -1881,7 +1883,7 @@ is
 			-- extract port position starting at field 2
 			submodule_port.position := to_position (line, 2);
 
-		elsif kw = et_submodules.keyword_direction then -- direction master/slave
+		elsif kw = keyword_direction then -- direction master/slave
 			expect_field_count (line, 2);
 
 			submodule_port.direction := et_submodules.to_port_name (f (line, 2));
@@ -2381,7 +2383,7 @@ is
 			via_restring_inner := to_distance (f (line, 2));
 			-- CS validate against dru settings
 						
-		elsif kw = et_vias.keyword_layers then -- layers 2 3 (for buried via only)
+		elsif kw = keyword_layers then -- layers 2 3 (for buried via only)
 			expect_field_count (line, 3);
 			via_layers_buried := to_buried_layers (
 						upper	=> f (line, 2),
@@ -2479,7 +2481,7 @@ is
 			end if;
 
 		-- inner restring
-		elsif kw = keyword_via_restring_inner then
+		elsif kw = keyword_restring_inner then
 			expect_field_count (line, 2);
 
 			if f (line, 2) = keyword_dru then -- restring_inner dru
@@ -2492,7 +2494,7 @@ is
 			end if;
 
 		-- outer restring
-		elsif kw = keyword_via_restring_outer then
+		elsif kw = keyword_restring_outer then
 			expect_field_count (line, 2);
 
 			if f (line, 2) = keyword_dru then -- restring_outer dru

@@ -72,16 +72,7 @@ package et_vias is
 	function to_micro_vias_allowed (allowed : in string) return type_micro_vias_allowed;
 	function to_string (allowed : in type_micro_vias_allowed) return string;
 	
-
-
 	
-	keyword_via_category 	: constant string := "category";
-
-	-- for buried vias:
-	keyword_layers			: constant string := "layers";
-
-	-- for blind vias:
-	keyword_destination		: constant string := "destination";
 
 	-- For blind or buried vias use this type. This is about inner layers only.
 	subtype type_via_layer is type_signal_layer range

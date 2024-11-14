@@ -54,9 +54,6 @@ package et_units is
 	use pac_unit_name;
 
 	use pac_geometry_2;
-
-	keyword_unit		: constant string := "unit";
-
 		
 	
 	-- In a schematic we handle only virtual devices (like GND symbols)

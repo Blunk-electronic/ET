@@ -43,6 +43,8 @@ with ada.numerics.generic_elementary_functions;
 
 with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_axes;							use et_axes;
+with et_keywords;						use et_keywords;
+
 
 package body et_coordinates_2 is
 -- 	pragma assertion_policy (check);
@@ -194,6 +196,27 @@ package body et_coordinates_2 is
 	end to_string;
 
 
+
+
+	function get_position (
+		pos : in et_coordinates_2.type_position) 
+		return string 
+	is
+		use et_sheets;
+		
+		function text return string is begin return 
+			space & keyword_x & to_string (get_x (pos.place)) 
+			& space & keyword_y & to_string (get_y (pos.place));
+		end text;
+		
+	begin
+		return keyword_sheet
+			& to_string (pos.sheet) 
+			& text;
+	end get_position;
+
+
+	
 	
 	function get_sheet (
 		position	: in type_position) 

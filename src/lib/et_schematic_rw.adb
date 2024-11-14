@@ -45,19 +45,8 @@ with et_keywords;					use et_keywords;
 
 package body et_schematic_rw is
 
-	function position (pos : in et_coordinates_2.type_position) return string is
-	-- Returns something like "sheet 3 x 12.34 y 45.0".
-
-		function text return string is begin return 
-			space & keyword_x & to_string (get_x (pos.place)) 
-			& space & keyword_y & to_string (get_y (pos.place));
-		end text;
-		
-	begin
-		return keyword_sheet
-			& to_string (get_sheet (pos)) 
-			& text;
-	end position;
+	procedure dummy is begin null; end;
+	
 
 	
 end et_schematic_rw;

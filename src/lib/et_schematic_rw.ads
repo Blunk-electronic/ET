@@ -41,9 +41,7 @@ use et_coordinates_2.pac_geometry_2;
 
 package et_schematic_rw is
 
-
-	function position (pos : in et_coordinates_2.type_position) return string;
-	-- Returns something like "sheet 3 x 12.34 y 45.0".
+	procedure dummy;
 	
 	
 end et_schematic_rw;

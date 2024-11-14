@@ -204,7 +204,13 @@ package et_coordinates_2 is
 
 	function to_string (position : in type_position) return string;
 
+	-- Returns something like "sheet 3 x 12.34 y 45.0".
+	function get_position (
+		pos : in et_coordinates_2.type_position) 
+		return string;
 
+
+	
 	-- Returns the sheet number of the given position:
 	function get_sheet (
 		position	: in type_position) 
