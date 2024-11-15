@@ -202,11 +202,15 @@ package et_coordinates_2 is
 	zero_position : constant type_position;
 
 
-	function to_string (position : in type_position) return string;
+	function to_string (
+		position : in type_position) 
+		return string;
 
 	-- Returns something like "sheet 3 x 12.34 y 45.0".
+	-- CS: merge this function with the to_string functin above
+	-- using an argument for the desired output format.
 	function get_position (
-		pos : in et_coordinates_2.type_position) 
+		pos : in type_position) 
 		return string;
 
 

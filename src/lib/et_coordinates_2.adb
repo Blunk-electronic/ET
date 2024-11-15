@@ -176,7 +176,10 @@ package body et_coordinates_2 is
 
 
 	
-	function to_string (position : in type_position) return string is
+	function to_string (
+		position : in type_position) 
+		return string
+	is
 		use et_sheets;
 		
 		coordinates_preamble_sheet : constant string := " pos "
@@ -199,7 +202,7 @@ package body et_coordinates_2 is
 
 
 	function get_position (
-		pos : in et_coordinates_2.type_position) 
+		pos : in type_position) 
 		return string 
 	is
 		use et_sheets;
