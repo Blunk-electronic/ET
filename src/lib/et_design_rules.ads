@@ -37,19 +37,17 @@
 --
 --   ToDo: 
 
-with et_design_rules_board;				use et_design_rules_board;
-with et_design_rules_schematic;			use et_design_rules_schematic;
+with et_design_rules_board;				--use et_design_rules_board;
+with et_design_rules_schematic;			--use et_design_rules_schematic;
 
 
 package et_design_rules is
 	
 	-- For the design rules we simply refer to the file where the rules are
 	-- written like JLP_ML4_standard.dru.
-	-- The content of the file itself will later be stored in
-	-- project wide collection of design rules et_design_rules.design_rules. ???
 	type type_rules is record
 		layout		: et_design_rules_board.pac_file_name.bounded_string; -- JLP_ML4_standard.dru
-		-- CS ERC rules ?
+		-- CS ERC rule file
 	end record;
 
 	

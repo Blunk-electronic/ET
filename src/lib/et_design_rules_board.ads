@@ -135,6 +135,7 @@ package et_design_rules_board is
 		delta_size	: in type_restring_delta_inner_outer := zero)
 		return type_restring_width;
 
+	
 	-- Checks whether the given restring width is in range of type_restring_width.
 	procedure validate_restring_width (
 		restring_width : in type_distance_model);
@@ -147,6 +148,7 @@ package et_design_rules_board is
 	subtype type_track_width is type_distance_positive 
 		range conductor_width_min .. track_width_max;
 
+	
 	-- Checks whether the given track width is in range of type_track_width.
 	procedure validate_track_width (
 		track_width : in type_distance_model);
@@ -174,20 +176,21 @@ package et_design_rules_board is
 
 
 	
-	type type_design_rules is record
+	type type_design_rules_board is record
 		clearances	: type_clearances;
 		sizes		: type_sizes;
 		stop_mask	: type_stop_mask;
 	end record;
 
-	design_rules_default : constant type_design_rules := (others => <>);
+	design_rules_default : constant type_design_rules_board := (others => <>);
+
 	
-	package pac_design_rules is new ordered_maps (
+	package pac_design_rules_board is new ordered_maps (
 		key_type		=> pac_file_name.bounded_string, -- JLP_ML4_standard.dru
-		element_type	=> type_design_rules);
+		element_type	=> type_design_rules_board);
 
 	-- Here we collect all sets of design rules of the project:
-	design_rules : pac_design_rules.map;
+	design_rules : pac_design_rules_board.map;
 
 	
 	-- Reads the design rulesspecified in the given file
@@ -220,15 +223,16 @@ package et_design_rules_board is
 		SEC_RESTRING
 		);
 
-	function to_string (section : in type_section_name) return string;
+	
 	-- Converts a section like SEC_CLEARANCES to a string "clearances".
+	function to_string (section : in type_section_name) return string;
 
 
 	-- Returns the design rule data set specified in given rules file.
 	-- If the given rules file does not exist (of if rules is empty)
 	-- returns default rules.
 	function get_rules (rules : in pac_file_name.bounded_string) -- JLP_ML4_standard.dru
-		return type_design_rules;
+		return type_design_rules_board;
 
 	
 end et_design_rules_board;

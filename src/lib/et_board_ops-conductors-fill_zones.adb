@@ -80,7 +80,7 @@ is
 
 	
 	-- Get the design rules:
-	design_rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
+	design_rules : constant type_design_rules_board := get_pcb_design_rules (module_cursor);
 
 	clearance_conductor_to_edge : type_distance_positive renames 
 		design_rules.clearances.conductor_to_board_edge;

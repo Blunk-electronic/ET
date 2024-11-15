@@ -920,7 +920,7 @@ package body et_board_ops is
 
 	function get_pcb_design_rules (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return type_design_rules -- JLP_ML4_standard.dru
+		return type_design_rules_board -- JLP_ML4_standard.dru
 	is begin
 		return get_rules (element (module).rules.layout); 
 	end get_pcb_design_rules;

@@ -1424,7 +1424,7 @@ is
 		end buried;
 
 		
-		rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
+		rules : constant type_design_rules_board := get_pcb_design_rules (module_cursor);
 
 		-- get the user specific settings of the board
 		settings : constant et_pcb.type_user_settings := get_user_settings (module_cursor);

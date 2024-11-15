@@ -340,7 +340,7 @@ package body et_canvas_board_vias is
 		use et_pcb;
 		use et_board_ops;
 
-		rules : constant type_design_rules := get_pcb_design_rules (active_module);
+		rules : constant type_design_rules_board := get_pcb_design_rules (active_module);
 
 		-- get the user specific settings of the board
 		settings : constant type_user_settings := get_user_settings (active_module);

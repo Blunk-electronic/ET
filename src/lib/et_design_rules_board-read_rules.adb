@@ -52,8 +52,8 @@ is
 	-- In order to test whether the given dru file exists, file name_name must be expanded
 	-- so that the environment variables are replaced by the real paths like:
 	-- dru-files/JLP_ML4_standard.dru:
-	use pac_design_rules;
-	design_rules_cursor : pac_design_rules.cursor;
+	use pac_design_rules_board;
+	design_rules_cursor : pac_design_rules_board.cursor;
 	rule_inserted : boolean;
 
 	use et_directory_and_file_ops;
@@ -77,7 +77,7 @@ is
 	sizes		: type_sizes;
 	restring	: type_restring;
 	stop_mask	: type_stop_mask;
-	rules		: type_design_rules;
+	rules		: type_design_rules_board;
 	
 	procedure read_clearances is
 		kw : constant string := f (line, 1);
