@@ -110,7 +110,7 @@ package body et_string_processing is
 	
 	function wildcard_match (
 		text_with_wildcards : in string; 
-		text_exact : in string) 
+		text_exact 			: in string) 
 		return boolean 
 	is
 		count_asterisk		: natural := ada.strings.fixed.count(text_with_wildcards, 1 * latin_1.asterisk);
@@ -169,8 +169,8 @@ package body et_string_processing is
 	
 
 	function remove_comment_from_line (
-		text_in : in string;					-- the input string
-		comment_mark : in string;				-- the comment mark (like "--" or "#"
+		text_in 		: in string;			-- the input string
+		comment_mark	: in string;			-- the comment mark (like "--" or "#"
 		test_whole_line : in boolean := true)	-- when false, cares for the comment mark at line begin only
 		return string							-- further comment marks are ignored
 	is

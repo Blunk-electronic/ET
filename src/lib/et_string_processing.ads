@@ -95,6 +95,11 @@ package et_string_processing is
 		
 
 	
+
+	subtype type_field_count is natural range 0 .. 20; -- CS increase if required
+
+	
+	
 	function get_field_count (
 		text_in : string) 
 		return natural;

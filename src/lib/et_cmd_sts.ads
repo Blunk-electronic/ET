@@ -91,8 +91,6 @@ package et_cmd_sts is
 	script_cmd_status : type_script_cmd_status;
 	
 
-	-- A command can have a certain number of fields:
-	subtype type_field_count is positive range 1 .. 20;
 
 	
 	-- Returns the number of fields of a command:
