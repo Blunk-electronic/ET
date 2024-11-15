@@ -42,15 +42,11 @@ with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
 with ada.containers.ordered_maps;
 
-with ada.text_io;				use ada.text_io;
-with ada.directories;			use ada.directories;
-
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 use et_pcb_coordinates_2.pac_geometry_2;
 
-with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
-with et_drills;					use et_drills;
+with et_logging;					use et_logging;
+with et_drills;						use et_drills;
 
 
 package et_design_rules_board is

@@ -37,16 +37,21 @@
 --
 --   ToDo: 
 
+
+with ada.text_io;					use ada.text_io;
 with ada.strings;					use ada.strings;
 with ada.characters.handling;		use ada.characters.handling;
+with ada.directories;				use ada.directories;
 with gnat.directory_operations;
 with et_general_rw;					use et_general_rw;
 with et_keywords;					use et_keywords;
+with et_string_processing;			use et_string_processing;
 with et_exceptions;					use et_exceptions;
 
 
 package body et_design_rules_board is
 
+	
 	function is_empty (rules : in pac_file_name.bounded_string) return boolean is begin
 		if pac_file_name.length (rules) = 0 then
 			return true;
@@ -54,15 +59,21 @@ package body et_design_rules_board is
 			return false;
 		end if;
 	end is_empty;
+
+
 	
 	function to_file_name (file : in string) return pac_file_name.bounded_string is begin
 		return pac_file_name.to_bounded_string (file);
 	end to_file_name;
 
+
+	
 	function to_string (file : in pac_file_name.bounded_string) return string is begin
 		return pac_file_name.to_string (file);
 	end to_string;
 
+
+	
 	procedure validate_track_clearance (clearance : in type_distance_model) is begin
 		if clearance not in type_track_clearance then
 			raise semantic_error_1 with
@@ -71,6 +82,8 @@ package body et_design_rules_board is
 				 & to_string (type_track_clearance'last);
 		end if;
 	end validate_track_clearance;
+
+
 	
 	function to_string (section : in type_section_name) return string is
 		len : positive := type_section_name'image (section)'length;
@@ -78,6 +91,8 @@ package body et_design_rules_board is
 		return to_lower (type_section_name'image (section) (5..len));
 	end to_string;
 
+
+	
 	function auto_set_restring (
 		category	: in type_restring_category;
 		drill_size	: in type_drill_size;
@@ -101,6 +116,8 @@ package body et_design_rules_board is
 		return result;
 	end auto_set_restring;
 
+
+	
 	procedure validate_restring_width (
 		restring_width : in type_distance_model) 
 	is begin
@@ -112,6 +129,8 @@ package body et_design_rules_board is
 		end if;
 	end validate_restring_width;
 
+
+	
 	procedure validate_track_width (
 		track_width : in type_distance_model) 
 	is begin
