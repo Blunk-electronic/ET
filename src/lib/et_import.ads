@@ -44,7 +44,6 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.directories;			use ada.directories;
 with ada.strings.bounded; 		use ada.strings.bounded;
 
-with et_schematic;				use et_schematic;
 with et_project_name;			use et_project_name;
 
 with et_string_processing;		use et_string_processing;

@@ -39,7 +39,6 @@
 with et_modes.schematic;				use et_modes.schematic;
 with et_device_library;					use et_device_library;
 with et_device_placeholders;			use et_device_placeholders;
-with et_schematic;
 with et_schematic_ops;					use et_schematic_ops;
 with et_schematic_ops.nets;				use et_schematic_ops.nets;
 with et_net_names;						use et_net_names;
@@ -368,9 +367,7 @@ is
 	end move;
 
 	
-	procedure place is 
-		use et_schematic;
-	begin
+	procedure place is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
 			when GDK_LC_l =>

@@ -38,7 +38,6 @@
 
 with ada.directories;
 
-with et_schematic;
 with et_project;
 with et_string_processing;
 
@@ -63,17 +62,23 @@ package body et_import is
 		end if;
 	end validate_cad_format;
 
+
+	
 	function to_cad_format (format : in string) return type_cad_format is
 	begin
 		return type_cad_format'value (format);
 	end to_cad_format;
 
+
+	
 	function to_string (format : in type_cad_format) return string is
 	-- Converts the given cad format to a string.
 	begin
 		return type_cad_format'image (format);
 	end to_string;
 
+
+	
 	function invalid_cad_format (format : in type_cad_format) return string is
 	-- Returns a message that the given format is not supported.
 	begin

@@ -47,7 +47,7 @@ with gtk.label;
 with gtk.gentry;
 
 with et_canvas_schematic_2;			use et_canvas_schematic_2;
-
+with et_schematic;					use et_schematic;
 with et_module_names;				use et_module_names;
 with et_modes.schematic;			use et_modes.schematic;
 with et_pcb;

@@ -39,7 +39,6 @@
 --   - command to define a global cutout area
 
 with et_module_instance;			use et_module_instance;
-with et_schematic;
 with et_pcb_sides;
 with et_pcb_coordinates_2;
 with et_board_shapes_and_text;
@@ -1224,7 +1223,6 @@ is
 
 		
 		use pac_generic_modules;
-		use et_schematic;
 
 		
 		procedure deactivate_drill (
@@ -1565,8 +1563,6 @@ is
 		kw_log			: constant string := "log";
 		
 		use pac_generic_modules;
-		use et_schematic;
-
 		use et_fill_zones;
 		
 		comma : constant character := ',';

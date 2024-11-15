@@ -44,6 +44,7 @@ with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_schematic_ops.submodules;
 with et_schematic_ops;				use et_schematic_ops;
 
+with et_schematic;					use et_schematic;
 with et_submodules;
 with et_numbering;
 with et_symbols;

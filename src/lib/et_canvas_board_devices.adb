@@ -39,6 +39,7 @@
 -- 
 
 
+with et_schematic;					use et_schematic;
 with et_generic_module;				use et_generic_module;
 with et_canvas_board_2;
 with et_board_ops.devices;			use et_board_ops.devices;

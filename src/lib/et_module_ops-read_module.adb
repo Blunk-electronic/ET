@@ -178,8 +178,6 @@ is
 	
 	-- Assigns to the module the active assembly variant.
 	procedure set_active_assembly_variant is
-		use et_schematic;
-		
 		kw : constant string := f (line, 1);
 
 		procedure set_variant (
@@ -204,7 +202,6 @@ is
 	
 	-- Assigns the collected meta data to the module:
 	procedure set_meta is
-		use et_schematic;
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
@@ -2757,7 +2754,6 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in out type_generic_module) 
 			is
-				use et_schematic;
 				inserted : boolean;
 				use et_submodules;
 				use et_submodules.pac_submodules;

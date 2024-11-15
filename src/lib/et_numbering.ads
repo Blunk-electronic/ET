@@ -80,7 +80,7 @@ package et_numbering is
 	function above (left, right : in type_index_range) return boolean;
 	-- Returns true if left index range is above right index range.		
 	
-	type type_module is record
+	type type_module is record -- CS rename to something more detailled ?
 		name				: pac_module_name.bounded_string; -- amplifier, $ET_TEMPLATES/motor_driver
 		instance			: pac_module_instance_name.bounded_string; -- AMP_2, DRV1
 		device_names_offset	: type_name_index := type_name_index'first;	-- R88 turns to R1088

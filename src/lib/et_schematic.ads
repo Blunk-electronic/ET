@@ -84,7 +84,7 @@ with et_device_name;			use et_device_name;
 with et_device_partcode;		use et_device_partcode;
 with et_package_variant;		use et_package_variant;
 with et_frames;
-with et_meta;
+-- with et_meta;
 with et_design_rules;
 with et_commit;
 with et_object_status;			use et_object_status;
