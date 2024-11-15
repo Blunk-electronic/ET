@@ -43,7 +43,7 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_sets;
 
 with et_primitive_objects;			use et_primitive_objects;
-with et_design_rules;				use et_design_rules;
+with et_design_rules_board;			use et_design_rules_board;
 with et_net_names;					use et_net_names;
 with et_vias;						use et_vias;
 with et_terminals;					use et_terminals;

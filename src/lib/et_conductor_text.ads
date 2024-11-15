@@ -46,7 +46,7 @@ with et_mirroring;				use et_mirroring;
 with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
-with et_design_rules;			use et_design_rules;
+with et_design_rules_board;		use et_design_rules_board;
 with et_text;					use et_text;
 with et_pcb_stack;				use et_pcb_stack;
 with et_logging;				use et_logging;

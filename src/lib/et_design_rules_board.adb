@@ -45,7 +45,7 @@ with et_keywords;					use et_keywords;
 with et_exceptions;					use et_exceptions;
 
 
-package body et_design_rules is
+package body et_design_rules_board is
 
 	function is_empty (rules : in pac_file_name.bounded_string) return boolean is begin
 		if pac_file_name.length (rules) = 0 then
@@ -148,7 +148,7 @@ package body et_design_rules is
 		end if;
 	end get_rules;
 	
-end et_design_rules;
+end et_design_rules_board;
 
 -- Soli Deo Gloria
 

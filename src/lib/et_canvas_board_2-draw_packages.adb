@@ -68,7 +68,7 @@ with et_canvas_tool;
 with et_display.board;				use et_display.board;
 with et_colors;						use et_colors;
 with et_colors.board;				use et_colors.board;
-with et_design_rules;				use et_design_rules;
+with et_design_rules_board;			use et_design_rules_board;
 with et_text;
 with et_alignment;
 

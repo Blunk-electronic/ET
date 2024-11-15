@@ -85,7 +85,7 @@ with et_device_partcode;		use et_device_partcode;
 with et_package_variant;		use et_package_variant;
 with et_frames;
 -- with et_meta;
-with et_design_rules;
+with et_design_rules_board;
 with et_commit;
 with et_object_status;			use et_object_status;
 with et_unit_name;				use et_unit_name;
@@ -329,7 +329,7 @@ package et_schematic is
 	-- The content of the file itself will later be stored in
 	-- project wide collection of design rules et_design_rules.design_rules.
 	type type_rules is record
-		layout		: et_design_rules.pac_file_name.bounded_string; -- JLP_ML4_standard.dru
+		layout		: et_design_rules_board.pac_file_name.bounded_string; -- JLP_ML4_standard.dru
 		-- CS ERC rules ?
 	end record;
 

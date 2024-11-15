@@ -51,7 +51,7 @@ with et_modes.board;
 with et_canvas_board_devices;
 with et_canvas_board_texts;
 with et_canvas_board_vias;
-with et_design_rules;				use et_design_rules;
+with et_design_rules_board;			use et_design_rules_board;
 with et_fill_zones;
 with et_fill_zones.boards;			use et_fill_zones.boards;
 with et_thermal_relief;				use et_thermal_relief;
@@ -1424,7 +1424,6 @@ is
 		end buried;
 
 		
-		use et_design_rules;
 		rules : constant type_design_rules := get_pcb_design_rules (module_cursor);
 
 		-- get the user specific settings of the board

@@ -49,7 +49,7 @@ with et_geometry_1.et_polygons.cropping;
 with et_geometry_1.et_polygons.union;
 with et_geometry_1.et_polygons.offsetting;
 
-with et_design_rules;			use et_design_rules;
+with et_design_rules_board;		use et_design_rules_board;
 with et_logging;				use et_logging;
 
 

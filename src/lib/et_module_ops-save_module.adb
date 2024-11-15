@@ -46,7 +46,7 @@ with et_pcb_coordinates_2;
 with et_assembly_variants;			use et_assembly_variants;
 with et_assembly_variant_name;		use et_assembly_variant_name;
 with et_coordinates_formatting;		use et_coordinates_formatting;
-with et_design_rules;				use et_design_rules;
+with et_design_rules_board;			use et_design_rules_board;
 with et_primitive_objects;			use et_primitive_objects;
 with et_nets;
 with et_net_names;
@@ -309,7 +309,6 @@ is
 
 	
 	procedure query_rules is
-		use et_design_rules;
 		use et_schematic;
 		use et_board_ops;
 		rules : constant type_rules := element (module_cursor).rules;

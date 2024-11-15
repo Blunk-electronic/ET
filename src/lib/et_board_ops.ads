@@ -66,7 +66,7 @@ with et_board_shapes_and_text;
 with et_assembly_variant_name;		use et_assembly_variant_name;
 with et_pick_and_place;
 with et_device_name;				use et_device_name;
-with et_design_rules;				use et_design_rules;
+with et_design_rules_board;			use et_design_rules_board;
 
 with et_exceptions;					use et_exceptions;
 with et_object_status;				use et_object_status;
@@ -194,7 +194,7 @@ package et_board_ops is
 	-- Returns the PCB design rules of the given module:
 	function get_pcb_design_rules (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return et_design_rules.type_design_rules; -- JLP_ML4_standard.dru
+		return type_design_rules; -- JLP_ML4_standard.dru
 
 	
 	function get_user_settings (

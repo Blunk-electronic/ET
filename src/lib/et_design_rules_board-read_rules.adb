@@ -40,7 +40,7 @@
 with et_directory_and_file_ops;
 
 
-separate (et_design_rules)
+separate (et_design_rules_board)
 
 procedure read_rules (
 	file_name		: in pac_file_name.bounded_string;

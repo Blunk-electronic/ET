@@ -53,7 +53,7 @@ with et_logging;				use et_logging;
 with et_drills;					use et_drills;
 
 
-package et_design_rules is
+package et_design_rules_board is
 	
 
  	file_name_length_max : constant natural := 100;
@@ -233,8 +233,9 @@ package et_design_rules is
 	-- returns default rules.
 	function get_rules (rules : in pac_file_name.bounded_string) -- JLP_ML4_standard.dru
 		return type_design_rules;
-		
-end et_design_rules;
+
+	
+end et_design_rules_board;
 
 -- Soli Deo Gloria
 

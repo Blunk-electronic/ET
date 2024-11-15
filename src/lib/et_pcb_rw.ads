@@ -51,7 +51,7 @@ with et_drills;					use et_drills;
 with et_pcb;
 with et_pcb_contour;
 with et_pcb_stack;
-with et_design_rules;			use et_design_rules;
+with et_design_rules_board;		use et_design_rules_board;
 with et_fill_zones;				use et_fill_zones;
 with et_fill_zones.boards;		use et_fill_zones.boards;
 with et_thermal_relief;			use et_thermal_relief;

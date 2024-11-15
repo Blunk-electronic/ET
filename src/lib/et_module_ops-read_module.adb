@@ -59,7 +59,7 @@ with et_net_labels;
 with et_port_names;
 with et_symbol_ports;
 with et_device_name;				use et_device_name;
-with et_design_rules;				use et_design_rules;
+with et_design_rules_board;			use et_design_rules_board;
 with et_device_model;
 with et_device_appearance;
 with et_device_purpose;
@@ -380,7 +380,6 @@ is
 	-- like JLP_ML4_standard.dru. The content of the DRU file itself
 	-- will later be stored in project wide container et_design_rules.design_rules.
 	procedure read_rules is
-		use et_design_rules;
 		kw : constant string := f (line, 1);
 	begin
 		if kw = keyword_layout then -- layout JLP_ML4_standard.dru
@@ -397,9 +396,7 @@ is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is
-			use et_design_rules;
-		begin
+		is begin
 			-- assign rules
 			module.rules := rules;
 

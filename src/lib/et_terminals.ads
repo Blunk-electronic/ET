@@ -56,7 +56,7 @@ with et_pcb_stack;				use et_pcb_stack;
 with et_drills;					use et_drills;
 with et_text;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
-with et_design_rules;			use et_design_rules;
+with et_design_rules_board;		use et_design_rules_board;
 with et_fonts;					use et_fonts;
 
 

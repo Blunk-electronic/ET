@@ -70,7 +70,7 @@ with et_package_names;					use et_package_names;
 with et_device_name;					use et_device_name;
 with et_pcb_stack;						use et_pcb_stack;
 with et_frames;
-with et_design_rules;					use et_design_rules;
+with et_design_rules_board;				use et_design_rules_board;
 
 with et_fill_zones;						use et_fill_zones;
 with et_fill_zones.boards;				use et_fill_zones.boards;

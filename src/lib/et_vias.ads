@@ -57,7 +57,7 @@ with et_contour_to_polygon;
 with et_terminals;				use et_terminals;
 with et_drills;					use et_drills;
 with et_pcb_stack;				use et_pcb_stack;
-with et_design_rules;			use et_design_rules;
+with et_design_rules_board;		use et_design_rules_board;
 with et_text;					use et_text;
 with et_fonts;					use et_fonts;
 

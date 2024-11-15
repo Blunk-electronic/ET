@@ -50,7 +50,7 @@ with et_nets;						use et_nets;
 
 with et_thermal_relief;				use et_thermal_relief;
 with et_pcb_stack;					use et_pcb_stack;
-with et_design_rules;				use et_design_rules;
+with et_design_rules_board;			use et_design_rules_board;
 with et_display.board;				use et_display.board;
 with et_colors;						use et_colors;
 

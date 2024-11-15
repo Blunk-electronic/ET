@@ -70,7 +70,7 @@ with et_device_value;					use et_device_value;
 with et_device_name;					use et_device_name;
 with et_packages;
 with et_frames;
-with et_design_rules;				use et_design_rules;
+with et_design_rules_board;			use et_design_rules_board;
 
 with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;			use et_fill_zones.boards;

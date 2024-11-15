@@ -907,7 +907,7 @@ package body et_board_ops is
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
 		return boolean is
 
-		use et_design_rules.pac_file_name;
+		use et_design_rules_board.pac_file_name;
 	begin
 		if length (pac_generic_modules.element (module).rules.layout) > 0 then
 			return true;
@@ -920,10 +920,8 @@ package body et_board_ops is
 
 	function get_pcb_design_rules (
 		module	: in pac_generic_modules.cursor) -- the module like motor_driver
-		return et_design_rules.type_design_rules -- JLP_ML4_standard.dru
-	is
-		use et_design_rules;
-	begin
+		return type_design_rules -- JLP_ML4_standard.dru
+	is begin
 		return get_rules (element (module).rules.layout); 
 	end get_pcb_design_rules;
 

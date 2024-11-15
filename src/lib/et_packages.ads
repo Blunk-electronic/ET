@@ -49,7 +49,7 @@ with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_drills;					use et_drills;
 with et_terminals;				use et_terminals;
 with et_text;
-with et_design_rules;					use et_design_rules;
+with et_design_rules_board;				use et_design_rules_board;
 with et_conductor_segment;				use et_conductor_segment;
 with et_conductor_text.packages;		use et_conductor_text.packages;
 with et_route_restrict.packages;		use et_route_restrict.packages;
