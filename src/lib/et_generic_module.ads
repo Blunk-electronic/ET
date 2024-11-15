@@ -54,6 +54,7 @@ with et_commit;
 with et_text;
 with et_frames;
 with et_numbering;
+with et_design_rules;
 
 
 package et_generic_module is
@@ -64,7 +65,7 @@ package et_generic_module is
 		
 		meta			: et_meta.type_meta; -- for both schematic and layout
 
-		rules			: et_schematic.type_rules; -- design rules, erc rules ...
+		rules			: et_design_rules.type_rules; -- design rules, erc rules ...
 		
 		description		: et_text.pac_text_content.bounded_string; -- a short description of the module
 

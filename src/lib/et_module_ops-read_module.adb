@@ -59,7 +59,10 @@ with et_net_labels;
 with et_port_names;
 with et_symbol_ports;
 with et_device_name;				use et_device_name;
+
+with et_design_rules;				use et_design_rules;
 with et_design_rules_board;			use et_design_rules_board;
+
 with et_device_model;
 with et_device_appearance;
 with et_device_purpose;
@@ -372,7 +375,7 @@ is
 	
 
 -- RULES
-	rules			: et_schematic.type_rules := (others => <>);
+	rules			: type_rules := (others => <>);
 -- 	rules_layout	: et_design_rules.pac_file_name.bounded_string;
 	-- CS ERC rules ?
 	
