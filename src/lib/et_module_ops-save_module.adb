@@ -312,9 +312,8 @@ is
 
 	
 	procedure query_rules is
-		use et_schematic;
 		use et_board_ops;
-		rules : constant type_rules := element (module_cursor).rules;
+		rules : constant type_design_rules := element (module_cursor).rules;
 	begin
 		log_indentation_up;
 		log (text => "rules ...", level => log_threshold + 1);

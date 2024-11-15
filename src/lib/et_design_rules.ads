@@ -45,7 +45,7 @@ package et_design_rules is
 	
 	-- For the design rules we simply refer to the file where the rules are
 	-- written like JLP_ML4_standard.dru.
-	type type_rules is record
+	type type_design_rules is record
 		layout		: et_design_rules_board.pac_file_name.bounded_string; -- JLP_ML4_standard.dru
 		-- CS ERC rule file
 	end record;

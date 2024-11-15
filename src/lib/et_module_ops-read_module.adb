@@ -375,7 +375,7 @@ is
 	
 
 -- RULES
-	rules			: type_rules := (others => <>);
+	rules			: type_design_rules := (others => <>);
 -- 	rules_layout	: et_design_rules.pac_file_name.bounded_string;
 	-- CS ERC rules ?
 	
