@@ -42,16 +42,13 @@
 --			- the cons: ordering subprograms required
 --		3. device accessories
 
-with ada.text_io;				use ada.text_io;
-with ada.strings.maps;			use ada.strings.maps;
+
+
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
-with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
 
 with et_nets;					use et_nets;
 with et_net_names;				use et_net_names;
@@ -59,19 +56,15 @@ with et_sheets;					use et_sheets;
 with et_coordinates_2;			use et_coordinates_2;
 with et_assembly_variants;		use et_assembly_variants;
 with et_assembly_variant_name;	use et_assembly_variant_name;
-with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
 
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_device_placeholders;	--use et_device_placeholders;
 with et_device_placeholders.packages;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
-with et_pcb;
 with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;
 with et_submodules;
-with et_numbering;
 with et_material;
 with et_netlists;
 with et_text;
@@ -83,7 +76,6 @@ with et_device_value;			use et_device_value;
 with et_device_name;			use et_device_name;
 with et_device_partcode;		use et_device_partcode;
 with et_package_variant;		use et_package_variant;
-with et_frames;
 with et_commit;
 with et_object_status;			use et_object_status;
 with et_unit_name;				use et_unit_name;
@@ -98,9 +90,7 @@ package et_schematic is
 	
 	use pac_geometry_2;
 
-	
-	-- TEXT FIELD
-	
+
 
 	-- GUI relevant only: The font of a text/note in the schematic:
 	text_font : constant type_font :=

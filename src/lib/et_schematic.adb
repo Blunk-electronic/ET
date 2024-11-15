@@ -36,8 +36,15 @@
 --   history of changes:
 --
 
+with ada.text_io;				use ada.text_io;
+with ada.strings.maps;			use ada.strings.maps;
+
 with ada.characters.handling;	use ada.characters.handling;
 with ada.exceptions;
+
+with et_string_processing;		use et_string_processing;
+with et_logging;				use et_logging;
+
 
 package body et_schematic is
 
