@@ -69,7 +69,7 @@ package body et_schematic_ops.nets is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is begin
 			result := type_net_count (length (module.nets));
 		end query_nets;
@@ -205,7 +205,7 @@ package body et_schematic_ops.nets is
 		-- Sets the flag new_net_created to true.
 		procedure create_net (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is begin
 			insert (
 				container	=> module.nets,
@@ -223,7 +223,7 @@ package body et_schematic_ops.nets is
 		
 		procedure rename_everywhere (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			-- backup the old net
 			net_old	: type_net := element (net_cursor_old);
@@ -255,7 +255,7 @@ package body et_schematic_ops.nets is
 		
 		procedure rename_on_sheet (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			-- Temporarily collection of affected strands on
 			-- the given sheet (of the net to be renamed):
@@ -331,7 +331,7 @@ package body et_schematic_ops.nets is
 		
 		procedure rename_strand (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			-- The affected strand:
 			strand_temp : type_strand;
@@ -484,7 +484,7 @@ package body et_schematic_ops.nets is
 		
 		procedure delete_everywhere (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is begin
 			delete (
 				container	=> module.nets,
@@ -493,7 +493,7 @@ package body et_schematic_ops.nets is
 
 		procedure delete_on_sheet (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			
 			procedure delete_strands_of_sheet (
@@ -541,7 +541,7 @@ package body et_schematic_ops.nets is
 
 		procedure delete_strand (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			strand_found : boolean := false;
 
@@ -655,7 +655,7 @@ package body et_schematic_ops.nets is
 
 		procedure query_net (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			
 			-- Searches the strands of the net for a segment that sits on given place.
@@ -1026,7 +1026,7 @@ package body et_schematic_ops.nets is
 		
 		procedure query_net (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is
 			
 			-- Searches the strands of the net for a segment that sits on given point_of_attack.
@@ -1419,7 +1419,7 @@ package body et_schematic_ops.nets is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is begin
 			result := key (module.nets.first);
 		end query_module;
@@ -1448,7 +1448,7 @@ package body et_schematic_ops.nets is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			procedure query_net (c : in pac_nets.cursor) is begin
 				result.append (key (c));
@@ -1526,7 +1526,7 @@ package body et_schematic_ops.nets is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 
 			procedure query_nets (net_cursor : in pac_nets.cursor) is
@@ -1665,7 +1665,7 @@ package body et_schematic_ops.nets is
 		
 		procedure create_net (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is
 			inserted : boolean;
 			strand : type_strand;
@@ -1765,7 +1765,7 @@ package body et_schematic_ops.nets is
 		
 		procedure extend_net (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			attach_to_strand : boolean := false;
 
@@ -2319,7 +2319,7 @@ package body et_schematic_ops.nets is
 		
 		procedure query_module (
 			name	: in pac_module_name.bounded_string;
-			module	: in out type_module)
+			module	: in out type_generic_module)
 		is
 			procedure set_class (
 				name	: in pac_net_name.bounded_string;
@@ -2384,7 +2384,7 @@ package body et_schematic_ops.nets is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 
 			procedure set (
@@ -2439,7 +2439,7 @@ package body et_schematic_ops.nets is
 		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			net_cursor : pac_nets.cursor := module.nets.first;
 
@@ -2873,7 +2873,7 @@ package body et_schematic_ops.nets is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			-- This flag goes true once the first segment of the targeted net at
 			-- the targeted sheet has been found.
@@ -3040,7 +3040,7 @@ package body et_schematic_ops.nets is
 		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			net_cursor : pac_nets.cursor := module.nets.first;
 

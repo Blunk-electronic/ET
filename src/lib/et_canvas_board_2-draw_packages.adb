@@ -1876,7 +1876,7 @@ is
 	-- Draws the packages of electrical devices:
 	procedure query_electrical_devices (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in type_module) 
+		module		: in type_generic_module) 
 	is
 		use et_modes.board;
 		use et_canvas_board_devices;
@@ -1994,7 +1994,7 @@ is
 	-- Draws the packages of non-electrical devices:
 	procedure query_non_electrical_devices (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in type_module) 
+		module		: in type_generic_module) 
 	is
 		use et_pcb;
 		use pac_devices_non_electric;

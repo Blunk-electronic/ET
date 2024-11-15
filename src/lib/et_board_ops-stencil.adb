@@ -51,7 +51,7 @@ package body et_board_ops.stencil is
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_stencil_lines;
 		begin
@@ -96,7 +96,7 @@ package body et_board_ops.stencil is
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_stencil_arcs;
 		begin
@@ -143,7 +143,7 @@ package body et_board_ops.stencil is
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_stencil_circles;
 		begin
@@ -191,7 +191,7 @@ package body et_board_ops.stencil is
 
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_stencil_lines;
 			use pac_stencil_arcs;

@@ -54,7 +54,7 @@ is
 	
 	procedure query_devices (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in out type_module) 
+		module		: in out type_generic_module) 
 	is
 		use et_symbols;
 		use et_device_appearance;
@@ -259,7 +259,7 @@ is
 
 			move_ports (ports, destination);
 			
-			-- Insert the new unit ports in the nets (type_module.nets):
+			-- Insert the new unit ports in the nets (type_generic_module.nets):
 			insert_ports (
 				module			=> module_cursor,
 				device			=> device_name,

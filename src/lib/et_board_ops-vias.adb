@@ -99,7 +99,7 @@ package body et_board_ops.vias is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			net_cursor : pac_nets.cursor := module.nets.first;
 
@@ -172,7 +172,7 @@ package body et_board_ops.vias is
 
 		procedure locate_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
 
@@ -290,7 +290,7 @@ package body et_board_ops.vias is
 	is
 		result : pac_net_name.bounded_string;
 
-		module : type_module renames element (module_cursor);
+		module : type_generic_module renames element (module_cursor);
 
 		proceed : aliased boolean := true;
 
@@ -328,7 +328,7 @@ package body et_board_ops.vias is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is
 			net_cursor : pac_nets.cursor := module.nets.find (via.net);
 			
@@ -386,7 +386,7 @@ package body et_board_ops.vias is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is
 			net_cursor : pac_nets.cursor := module.nets.find (via.net);
 			

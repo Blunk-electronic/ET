@@ -113,7 +113,7 @@ package body et_canvas_schematic_units is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor := module.devices.first;
@@ -234,7 +234,7 @@ package body et_canvas_schematic_units is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is			
 			-- temporarily storage of unit coordinates.
 			-- There will be only one unit in this container.
@@ -743,7 +743,7 @@ package body et_canvas_schematic_units is
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use et_symbol_ports;
 			use pac_devices_sch;
@@ -890,7 +890,7 @@ package body et_canvas_schematic_units is
 			
 			move_ports (ports_lib, position_of_unit);
 			
-			-- Insert the new unit ports in the nets (type_module.nets):
+			-- Insert the new unit ports in the nets (type_generic_module.nets):
 			insert_ports (
 				module			=> module_cursor,
 				device			=> key (unit.device),
@@ -1811,7 +1811,7 @@ package body et_canvas_schematic_units is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use et_device_appearance;
 			use pac_devices_sch;
@@ -1990,7 +1990,8 @@ package body et_canvas_schematic_units is
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_generic_module) 
+		is
 			device_cursor : pac_devices_sch.cursor;
 
 			procedure query_units (

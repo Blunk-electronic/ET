@@ -55,7 +55,7 @@ package body et_board_ops.text is
 		meaning 		: in et_pcb.type_text_meaning)
 		return et_text.pac_text_content.bounded_string 
 	is
-		m : type_module renames element (module_cursor);
+		m : type_generic_module renames element (module_cursor);
 		
 		use et_text;
 
@@ -104,7 +104,7 @@ package body et_board_ops.text is
 		
 		procedure place_text (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use et_text;
 			use pac_doc_texts;

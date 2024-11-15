@@ -59,7 +59,7 @@ with et_numbering;
 package et_generic_module is
 
 												 
-	type type_module is record
+	type type_generic_module is record
 		commit_index	: et_commit.type_commit_index_zero_based := 0;
 		
 		meta			: et_meta.type_meta; -- for both schematic and layout
@@ -139,8 +139,7 @@ package et_generic_module is
 	package pac_generic_modules is new ada.containers.ordered_maps (
 		key_type		=> pac_module_name.bounded_string, -- motor_driver (without extension *.mod)
 		"<"				=> pac_module_name."<",
-		element_type	=> type_module);
-		-- "="				=> et_schematic."=");
+		element_type	=> type_generic_module);
 
 
 	use pac_generic_modules;

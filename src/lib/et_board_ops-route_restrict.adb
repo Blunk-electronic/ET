@@ -53,7 +53,7 @@ package body et_board_ops.route_restrict is
 
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_generic_module) is
 		begin
 			append (
 				container	=> module.board.route_restrict.lines,
@@ -91,7 +91,7 @@ package body et_board_ops.route_restrict is
 
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_generic_module) is
 		begin
 			append (
 				container	=> module.board.route_restrict.arcs,
@@ -129,7 +129,7 @@ package body et_board_ops.route_restrict is
 
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_generic_module) is
 		begin
 			append (
 				container	=> module.board.route_restrict.circles,
@@ -166,7 +166,7 @@ package body et_board_ops.route_restrict is
 
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is
 			use pac_route_restrict_lines;
 			use pac_route_restrict_arcs;

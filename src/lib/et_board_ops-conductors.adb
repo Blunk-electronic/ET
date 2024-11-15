@@ -142,7 +142,7 @@ package body et_board_ops.conductors is
 	is
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			-- A track belonging to a net requires the net to be located in the given module:
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
@@ -198,7 +198,7 @@ package body et_board_ops.conductors is
 		
 		procedure add_freetrack (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is begin
 			append (
 				container	=> module.board.conductors.lines,
@@ -240,7 +240,7 @@ package body et_board_ops.conductors is
 
 		--procedure add_named_track (
 			--module_name	: in pac_module_name.bounded_string;
-			--module		: in out type_module) 
+			--module		: in out type_generic_module) 
 		--is
 			--use et_nets;
 			
@@ -550,7 +550,7 @@ package body et_board_ops.conductors is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			net_name : pac_net_name.bounded_string;
 			
@@ -614,7 +614,7 @@ package body et_board_ops.conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			proceed : boolean := true;
 			
@@ -705,7 +705,7 @@ package body et_board_ops.conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 
 			procedure query_net (
@@ -785,7 +785,7 @@ package body et_board_ops.conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 
 			procedure query_net (
@@ -850,7 +850,7 @@ package body et_board_ops.conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			proceed : boolean := true;
 			net_cursor : pac_nets.cursor := module.nets.first;
@@ -930,7 +930,7 @@ package body et_board_ops.conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module)
+			module		: in type_generic_module)
 		is
 			use et_nets;
 
@@ -1070,7 +1070,7 @@ package body et_board_ops.conductors is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			net_cursor : pac_nets.cursor;
 			proceed : aliased boolean := true;
@@ -1152,7 +1152,7 @@ package body et_board_ops.conductors is
 		
 		procedure add_freetrack (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is begin
 			append (
 				container	=> module.board.conductors.arcs,
@@ -1162,7 +1162,7 @@ package body et_board_ops.conductors is
 		
 		procedure add_named_track (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			-- A track belonging to a net requires the net to be located in the given module:
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
@@ -1244,7 +1244,7 @@ package body et_board_ops.conductors is
 		
 		procedure ripup_freetrack (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			line_cursor : pac_conductor_lines.cursor := module.board.conductors.lines.first;
 			arc_cursor  : pac_conductor_arcs.cursor := module.board.conductors.arcs.first;
@@ -1287,7 +1287,7 @@ package body et_board_ops.conductors is
 		
 		procedure ripup_named_track (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			-- Locate the given net in the given module:
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
@@ -1395,7 +1395,7 @@ package body et_board_ops.conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			-- Locate the given net in the given module::
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
@@ -1456,7 +1456,7 @@ package body et_board_ops.conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			-- Locate the given net in the given module::
 			net_cursor : pac_nets.cursor := find (module.nets, net_name);
@@ -1518,7 +1518,7 @@ package body et_board_ops.conductors is
 		
 		procedure floating_solid (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_floating_solid;
 
@@ -1535,7 +1535,7 @@ package body et_board_ops.conductors is
 		
 		procedure floating_hatched (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_floating_hatched;
 
@@ -1568,7 +1568,7 @@ package body et_board_ops.conductors is
 		
 		procedure route_solid (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_route_solid;
 
@@ -1597,7 +1597,7 @@ package body et_board_ops.conductors is
 		
 		procedure route_hatched (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_route_hatched;
 
@@ -1692,7 +1692,7 @@ package body et_board_ops.conductors is
 
 		procedure place_text (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_conductor_texts;
 			vectors : pac_character_lines.list;
@@ -1767,7 +1767,7 @@ package body et_board_ops.conductors is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			procedure query_text (c : in pac_conductor_texts.cursor) is
 				text : type_conductor_text renames element (c);
@@ -1826,7 +1826,7 @@ package body et_board_ops.conductors is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is
 			text_cursor : pac_conductor_texts.cursor;
 

@@ -248,7 +248,7 @@ package body et_schematic_ops is
 		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_generic_module) is
 
 			
 			procedure query_net (net_cursor : in pac_nets.cursor) is
@@ -389,7 +389,7 @@ package body et_schematic_ops is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
@@ -599,7 +599,7 @@ package body et_schematic_ops is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
@@ -708,7 +708,7 @@ package body et_schematic_ops is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_generic_module) is
 
 			
 			procedure query_net (net_cursor : in pac_nets.cursor) is
@@ -879,7 +879,7 @@ package body et_schematic_ops is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
@@ -1220,7 +1220,7 @@ package body et_schematic_ops is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
@@ -1311,7 +1311,7 @@ package body et_schematic_ops is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is begin
 			cursor := pac_nets.find (module.nets, net_name);
 		end query_nets;
@@ -1348,7 +1348,7 @@ package body et_schematic_ops is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;					   
-			module 		: in type_module)
+			module 		: in type_generic_module)
 		is begin
 			av := find (module.variants, variant);
 		end query_module;
@@ -1385,7 +1385,7 @@ package body et_schematic_ops is
 		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is 
 			proceed : aliased boolean := true;
 			
@@ -1459,7 +1459,7 @@ package body et_schematic_ops is
 		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_generic_module) is
 
 			use pac_nets;			
 			net_cursor : pac_nets.cursor := module.nets.first;
@@ -1548,7 +1548,7 @@ package body et_schematic_ops is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use pac_devices_sch;
 			use et_submodules.pac_netchangers;			
@@ -1780,7 +1780,7 @@ package body et_schematic_ops is
 	is
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			procedure query_net (net_cursor : in pac_nets.cursor) is
 				use pac_nets;
@@ -1898,7 +1898,7 @@ package body et_schematic_ops is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_devices_sch;
 
@@ -2003,7 +2003,7 @@ package body et_schematic_ops is
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_devices_sch;
 
@@ -2099,7 +2099,7 @@ package body et_schematic_ops is
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_devices_sch;
 
@@ -2175,7 +2175,7 @@ package body et_schematic_ops is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_generic_module) is
 			use pac_devices_sch;
 
 			device_cursor : pac_devices_sch.cursor;
@@ -2247,7 +2247,7 @@ package body et_schematic_ops is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_generic_module) is
 			use pac_devices_sch;
 		begin
 			if contains (module.devices, device) then
@@ -2275,7 +2275,7 @@ package body et_schematic_ops is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_generic_module) is
 			use pac_devices_sch;
 		begin
 			result := find (module.devices, device);
@@ -2408,7 +2408,7 @@ package body et_schematic_ops is
 		
 		procedure query_device (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 
 			procedure do_it (
@@ -2512,7 +2512,7 @@ package body et_schematic_ops is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module)
+			module		: in type_generic_module)
 		is
 			use pac_unit_name;
 			use pac_devices_sch;
@@ -2583,7 +2583,7 @@ package body et_schematic_ops is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_generic_module) is
 			use pac_unit_name;
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
@@ -2664,7 +2664,7 @@ package body et_schematic_ops is
 		-- for the lowest available resistor index.
 		procedure search_gap_electric (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor := module.devices.first;
@@ -2722,7 +2722,7 @@ package body et_schematic_ops is
 		-- for the lowest available mounting hole index.
 		procedure search_gap_non_electric (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use et_pcb;
 			use pac_devices_non_electric;
@@ -2878,7 +2878,7 @@ package body et_schematic_ops is
 		
 		procedure query_variants (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use pac_assembly_variants;
 			variant_cursor : pac_assembly_variants.cursor;
@@ -2944,7 +2944,7 @@ package body et_schematic_ops is
 		
 		procedure query_variants (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_generic_module) is
 			use pac_assembly_variants;
 			
 			variant_cursor : pac_assembly_variants.cursor;
@@ -3029,7 +3029,7 @@ package body et_schematic_ops is
 		
 		procedure get_device_model (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module)
+			module		: in type_generic_module)
 		is begin
 			-- locate the device in the schematic:
 			device_cursor_sch := find (module.devices, device_name);
@@ -3340,7 +3340,7 @@ package body et_schematic_ops is
 
 		procedure create (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_generic_module) is
 			inserted : boolean;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 		begin
@@ -3385,7 +3385,7 @@ package body et_schematic_ops is
 
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_generic_module) is
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 		begin
@@ -3431,7 +3431,7 @@ package body et_schematic_ops is
 
 		procedure describe (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_generic_module) is
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
@@ -3503,7 +3503,7 @@ package body et_schematic_ops is
 		
 		procedure mount (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
@@ -3600,7 +3600,7 @@ package body et_schematic_ops is
 
 		procedure unmount (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_generic_module) is
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
@@ -3683,7 +3683,7 @@ package body et_schematic_ops is
 
 		procedure remove (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_generic_module) is
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
@@ -3765,7 +3765,7 @@ package body et_schematic_ops is
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_devices_sch;
 
@@ -3850,7 +3850,7 @@ package body et_schematic_ops is
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in et_generic_module.type_module)
+			module		: in type_generic_module)
 		is
 
 			procedure query_units (device_cursor : in pac_devices_sch.cursor) is
@@ -4215,7 +4215,7 @@ package body et_schematic_ops is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use pac_devices_sch;
 			device_cursor_sch	: pac_devices_sch.cursor;
@@ -4360,7 +4360,7 @@ package body et_schematic_ops is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;

@@ -98,7 +98,7 @@ package body et_board_ops.ratsnest is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			net_cursor : pac_nets.cursor := module.nets.first;
 
@@ -197,7 +197,7 @@ package body et_board_ops.ratsnest is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			
 			procedure query_net (nc : in pac_nets.cursor) is

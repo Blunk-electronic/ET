@@ -52,7 +52,7 @@ package body et_board_ops.via_restrict is
 
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is begin
 			append (
 				container	=> module.board.via_restrict.lines,
@@ -90,7 +90,7 @@ package body et_board_ops.via_restrict is
 
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is begin
 			append (
 				container	=> module.board.via_restrict.arcs,
@@ -129,7 +129,7 @@ package body et_board_ops.via_restrict is
 
 		procedure draw (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is begin
 			append (
 				container	=> module.board.via_restrict.circles,
@@ -166,7 +166,7 @@ package body et_board_ops.via_restrict is
 
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_via_restrict_lines;
 			use pac_via_restrict_arcs;

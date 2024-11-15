@@ -79,7 +79,7 @@ package body et_board_ops.devices is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			device_cursor : pac_devices_sch.cursor := module.devices.first;			
 		begin
@@ -139,7 +139,7 @@ package body et_board_ops.devices is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			
 			procedure query_device (
@@ -208,7 +208,7 @@ package body et_board_ops.devices is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			procedure query_device (
 				device_name	: in type_device_name;
@@ -276,7 +276,7 @@ package body et_board_ops.devices is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			procedure query_device (
 				device_name	: in type_device_name;
@@ -333,7 +333,7 @@ package body et_board_ops.devices is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			device_cursor : pac_devices_sch.cursor := module.devices.first;
 		begin
@@ -384,7 +384,7 @@ package body et_board_ops.devices is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			dc : pac_devices_sch.cursor := device_cursor;
 
@@ -448,7 +448,7 @@ package body et_board_ops.devices is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			device_cursor : pac_devices_non_electric.cursor := module.devices_non_electric.first;			
 		begin
@@ -504,7 +504,7 @@ package body et_board_ops.devices is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			
 			procedure query_device (
@@ -571,7 +571,7 @@ package body et_board_ops.devices is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			procedure query_device (
 				device_name	: in type_device_name;
@@ -635,7 +635,7 @@ package body et_board_ops.devices is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			
 			procedure query_device (
@@ -693,7 +693,7 @@ package body et_board_ops.devices is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			device_cursor : pac_devices_non_electric.cursor := module.devices_non_electric.first;
 		begin
@@ -745,7 +745,7 @@ package body et_board_ops.devices is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			dc : pac_devices_non_electric.cursor := device_cursor;
 
@@ -834,7 +834,7 @@ package body et_board_ops.devices is
 		
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			device_cursor : pac_devices_non_electric.cursor;
 			inserted : boolean;
@@ -914,7 +914,7 @@ package body et_board_ops.devices is
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			device_electric		: pac_devices_sch.cursor;
 			device_non_electric	: pac_devices_non_electric.cursor;			
@@ -1027,7 +1027,7 @@ package body et_board_ops.devices is
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			device_electric		: pac_devices_sch.cursor;
 			device_non_electric	: pac_devices_non_electric.cursor;			
@@ -1129,7 +1129,7 @@ package body et_board_ops.devices is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is begin
 			-- Search the device among the non-electric devices.
 			if contains (module.devices_non_electric, device_name) then
@@ -1168,7 +1168,7 @@ package body et_board_ops.devices is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			device_before, device_after : pac_devices_non_electric.cursor;
 
@@ -1237,7 +1237,7 @@ package body et_board_ops.devices is
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			device_electric		: pac_devices_sch.cursor;
 			device_non_electric	: pac_devices_non_electric.cursor;			
@@ -1355,7 +1355,7 @@ package body et_board_ops.devices is
 
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use et_submodules.pac_submodules;
 			submod_cursor : et_submodules.pac_submodules.cursor;

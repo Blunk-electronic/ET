@@ -93,7 +93,7 @@ package body et_board_ops is
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use et_pcb_stack.package_layers;
 		begin
@@ -154,7 +154,7 @@ package body et_board_ops is
 		
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use package_layers;
 
@@ -219,7 +219,7 @@ package body et_board_ops is
 
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use et_submodules.pac_submodules;
 			submod_cursor : et_submodules.pac_submodules.cursor;
@@ -256,7 +256,7 @@ package body et_board_ops is
 		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use et_submodules.pac_submodules;
 			submod_cursor : et_submodules.pac_submodules.cursor;
@@ -370,7 +370,7 @@ package body et_board_ops is
 				
 				procedure query_devices (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in type_module) 
+					module		: in type_generic_module) 
 				is
 					device_name : type_device_name;
 					inserted : boolean;
@@ -837,7 +837,7 @@ package body et_board_ops is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module)
+			module		: in type_generic_module)
 		is
 			use pac_net_classes;
 			use pac_net_class_name;
@@ -870,7 +870,7 @@ package body et_board_ops is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module)
+			module		: in type_generic_module)
 		is
 			use pac_net_classes;
 			use pac_net_class_name;
@@ -936,7 +936,7 @@ package body et_board_ops is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module)
+			module		: in type_generic_module)
 		is begin
 			settings := module.board.user_settings;
 		end;

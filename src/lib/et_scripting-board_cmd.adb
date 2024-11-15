@@ -1229,7 +1229,7 @@ is
 		
 		procedure deactivate_drill (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.vias.drill.active := false;
 		end deactivate_drill;
@@ -1237,7 +1237,7 @@ is
 		
 		procedure activate_drill (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.vias.drill.active := true;
 			module.board.user_settings.vias.drill.size := to_distance (f (6));
@@ -1246,7 +1246,7 @@ is
 		
 		procedure deactivate_inner_restring (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.vias.restring_inner.active := false;
 		end deactivate_inner_restring;
@@ -1254,7 +1254,7 @@ is
 		
 		procedure activate_inner_restring (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.vias.restring_inner.active := true;
 			module.board.user_settings.vias.restring_inner.width := to_distance (f (7));
@@ -1263,7 +1263,7 @@ is
 		
 		procedure deactivate_outer_restring (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.vias.restring_outer.active := false;
 		end deactivate_outer_restring;
@@ -1271,7 +1271,7 @@ is
 		
 		procedure activate_outer_restring (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.vias.restring_outer.active := true;
 			module.board.user_settings.vias.restring_outer.width := to_distance (f (7));
@@ -1588,7 +1588,7 @@ is
 
 		procedure set_fill_style (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.polygons_conductor.fill_style := to_fill_style (f (6));
 		end set_fill_style;
@@ -1596,7 +1596,7 @@ is
 		
 		procedure set_linewidth (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.polygons_conductor.linewidth := to_distance (f (6));
 		end set_linewidth;
@@ -1604,7 +1604,7 @@ is
 		
 		procedure set_iso (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.polygons_conductor.isolation := to_distance (f (6));
 		end set_iso;
@@ -1612,7 +1612,7 @@ is
 		
 		procedure set_priority (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.polygons_conductor.priority_level := to_priority (f (6));
 		end set_priority;
@@ -1620,7 +1620,7 @@ is
 		
 		procedure set_easing_style (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.polygons_conductor.easing.style := to_easing_style (f (7));
 		end set_easing_style;
@@ -1628,7 +1628,7 @@ is
 		
 		procedure set_easing_radius (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.polygons_conductor.easing.radius := to_distance (f (7));
 		end set_easing_radius;	
@@ -1636,7 +1636,7 @@ is
 		
 		procedure set_connection (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.polygons_conductor.connection := to_pad_connection (f (6));
 		end set_connection;	
@@ -1644,7 +1644,7 @@ is
 		
 		procedure set_hatching_spacing (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.polygons_conductor.spacing := to_distance (f (6));
 		end set_hatching_spacing;	
@@ -1652,7 +1652,7 @@ is
 		
 		procedure set_thermal_width (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.polygons_conductor.thermal.width_min := to_distance (f (7));
 		end set_thermal_width;	
@@ -1660,7 +1660,7 @@ is
 		
 		procedure set_thermal_gap (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is begin
 			module.board.user_settings.polygons_conductor.thermal.gap_max := to_distance (f (7));
 		end set_thermal_gap;	

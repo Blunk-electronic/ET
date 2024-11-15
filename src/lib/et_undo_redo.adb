@@ -69,7 +69,7 @@ package body et_undo_redo is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is 
 			use pac_commit_message;
 
@@ -161,7 +161,7 @@ package body et_undo_redo is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is 
 			use pac_commit_message;
 
@@ -317,7 +317,7 @@ package body et_undo_redo is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is
 			-- After a successful redo-operation, this flag is set.
 			done : boolean := false;
@@ -561,7 +561,7 @@ package body et_undo_redo is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is 		
 			-- Contains the index of the latest commit:
 			commit_index : constant type_commit_index := module.commit_index + 2;

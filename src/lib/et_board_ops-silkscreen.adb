@@ -56,7 +56,7 @@ package body et_board_ops.silkscreen is
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is begin
 			case face is
 				when TOP =>
@@ -101,7 +101,7 @@ package body et_board_ops.silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 
 			procedure query_line (c : in pac_silk_lines.cursor) is
@@ -159,7 +159,7 @@ package body et_board_ops.silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			line_cursor : pac_silk_lines.cursor;
 
@@ -219,7 +219,7 @@ package body et_board_ops.silkscreen is
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is begin
 			case face is
 				when TOP =>
@@ -264,7 +264,7 @@ package body et_board_ops.silkscreen is
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is begin
 			case face is
 				when TOP =>
@@ -311,7 +311,7 @@ package body et_board_ops.silkscreen is
 		
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			line_cursor   : pac_silk_lines.cursor;
 			arc_cursor    : pac_silk_arcs.cursor;
@@ -419,7 +419,7 @@ package body et_board_ops.silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_silk_lines;
 			line_cursor : pac_silk_lines.cursor;
@@ -482,7 +482,7 @@ package body et_board_ops.silkscreen is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			procedure query_text (c : in pac_silk_texts.cursor) is
 				text : type_silk_text renames element (c);
@@ -549,7 +549,7 @@ package body et_board_ops.silkscreen is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is
 			text_cursor : pac_silk_texts.cursor;
 

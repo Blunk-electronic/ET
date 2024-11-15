@@ -111,7 +111,7 @@ package body et_schematic_ops.netlists is
 
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			submod_cursor : pac_submodules.cursor;
 
@@ -228,7 +228,7 @@ package body et_schematic_ops.netlists is
 				
 				procedure query_nets (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in et_generic_module.type_module) 
+					module		: in type_generic_module) 
 				is
 					use et_nets.pac_nets;
 					net_cursor_sch : et_nets.pac_nets.cursor := module.nets.first;
@@ -527,15 +527,16 @@ package body et_schematic_ops.netlists is
 			-- before updating the netlist of the module we keep the new netlist here temporarily:
 			netlist : et_netlists.pac_netlist.tree;
 
-			procedure update_netlist (
+			
 			-- Updates the netlist of the module. The netlist is indicated by the variant_name.
+			procedure update_netlist (
 				module_name		: in pac_module_name.bounded_string;
-				module			: in out et_generic_module.type_module) is
-
+				module			: in out type_generic_module) 
+			is
 				procedure assign_netlist (
 					variant		: in pac_assembly_variant_name.bounded_string;
-					netlist		: in out et_netlists.pac_netlist.tree) is
-				begin
+					netlist		: in out et_netlists.pac_netlist.tree) 
+				is begin
 					-- overwrite the current netlist by the new netlist:
 					netlist := make_for_variant.netlist;
 				end assign_netlist;

@@ -58,7 +58,7 @@ package body et_schematic_ops.units is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
@@ -207,7 +207,7 @@ package body et_schematic_ops.units is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
@@ -324,7 +324,7 @@ package body et_schematic_ops.units is
 				-- Calculate the new positions of the unit ports:
 				move_ports (ports, position_of_unit_new);
 
-				-- Insert the new unit ports in the nets (type_module.nets):
+				-- Insert the new unit ports in the nets (type_generic_module.nets):
 				insert_ports (
 					module			=> module_cursor,
 					device			=> device_name,
@@ -387,7 +387,7 @@ package body et_schematic_ops.units is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 
 			procedure query_net (net_cursor : in pac_nets.cursor) is
@@ -787,7 +787,7 @@ package body et_schematic_ops.units is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
@@ -921,7 +921,7 @@ package body et_schematic_ops.units is
 				move_ports (ports_new, position_of_unit_new);
 				-- ports_new now contains the absolute port positions in the schematic AFTER the move.
 				
-				-- Change net segments in the affected nets (type_module.nets):
+				-- Change net segments in the affected nets (type_generic_module.nets):
 				drag_net_segments (
 					module			=> module_cursor,
 					drag_list		=> make_drag_list (ports_old, ports_new),
@@ -930,7 +930,7 @@ package body et_schematic_ops.units is
 
 				-- The drag operation might result in new port-to-net connections.
 				-- So we must insert new ports in segments.
-				-- Insert possible new unit ports in the nets (type_module.nets):
+				-- Insert possible new unit ports in the nets (type_generic_module.nets):
 				log_indentation_up;
 				
 				insert_ports (
@@ -992,7 +992,7 @@ package body et_schematic_ops.units is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
@@ -1229,7 +1229,7 @@ package body et_schematic_ops.units is
 				
 				move_ports (ports_lib, position_of_unit);
 				
-				-- Insert the new unit ports in the nets (type_module.nets):
+				-- Insert the new unit ports in the nets (type_generic_module.nets):
 				insert_ports (
 					module			=> module_cursor,
 					device			=> device_name,

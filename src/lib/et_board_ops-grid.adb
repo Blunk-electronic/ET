@@ -52,7 +52,7 @@ package body et_board_ops.grid is
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is begin
 			-- Set the grid in the database:			
 			module.board.grid := grid;
@@ -84,7 +84,7 @@ package body et_board_ops.grid is
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is begin
 			-- Set the grid in the database:
 			module.board.grid := grid;
@@ -119,7 +119,7 @@ package body et_board_ops.grid is
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is begin
 			-- Get the grid from the database:
 			result := module.board.grid;

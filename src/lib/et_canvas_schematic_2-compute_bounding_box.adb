@@ -139,7 +139,7 @@ is
 
 			procedure query_nets (
 				module_name	: in pac_module_name.bounded_string;
-				module		: in type_module)
+				module		: in type_generic_module)
 			is
 				use et_nets;
 				use pac_nets;
@@ -227,7 +227,7 @@ is
 
 			procedure query_devices (
 				module_name	: in pac_module_name.bounded_string;
-				module		: in type_module)
+				module		: in type_generic_module)
 			is
 				use pac_devices_sch;
 				use pac_units;

@@ -61,7 +61,7 @@ package body et_board_ops.frame is
 		
 		procedure set_origin (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is 
 			p1 : et_frames.type_position;
 		begin
@@ -114,7 +114,7 @@ package body et_board_ops.frame is
 		
 		procedure get_origin (
 			module_name	: in pac_module_name.bounded_string;
-			module 		: in type_module) 
+			module 		: in type_generic_module) 
 		is begin
 			result := et_frames.get_position (module.board.frame.frame);
 		end get_origin;
@@ -146,7 +146,7 @@ package body et_board_ops.frame is
 		
 		procedure set_origin (
 			module_name	: in pac_module_name.bounded_string;
-			module 		: in out type_module) 
+			module 		: in out type_generic_module) 
 		is begin
 			set_position (module.board.frame.frame, position);
 		end set_origin;

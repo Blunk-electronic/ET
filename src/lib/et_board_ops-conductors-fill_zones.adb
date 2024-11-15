@@ -1116,7 +1116,7 @@ is
 
 		procedure floating_solid (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			zone_cursor : pac_floating_solid.cursor := module.board.conductors.fill_zones.solid.first;
 
@@ -1140,7 +1140,7 @@ is
 		
 		procedure floating_hatched (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			zone_cursor : pac_floating_hatched.cursor := module.board.conductors.fill_zones.hatched.first;
 
@@ -1180,7 +1180,7 @@ is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			net_cursor : pac_nets.cursor;
 			net_class : type_net_class;		

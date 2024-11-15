@@ -52,7 +52,7 @@ package body et_board_ops.stop_mask is
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_stop_lines;
 		begin
@@ -97,7 +97,7 @@ package body et_board_ops.stop_mask is
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_stop_arcs;
 		begin
@@ -144,7 +144,7 @@ package body et_board_ops.stop_mask is
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_stop_circles;
 		begin
@@ -191,7 +191,7 @@ package body et_board_ops.stop_mask is
 
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_stop_lines;
 			use pac_stop_arcs;
@@ -304,7 +304,7 @@ package body et_board_ops.stop_mask is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			procedure query_text (c : in pac_stop_texts.cursor) is
 				text : type_stop_text renames element (c);
@@ -355,6 +355,8 @@ package body et_board_ops.stop_mask is
 	end get_texts;
 
 
+	
+
 	procedure move_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -367,11 +369,10 @@ package body et_board_ops.stop_mask is
 		new_position : type_vector_model;
 		offset : type_distance_relative;
 
-
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is
 			text_cursor : pac_stop_texts.cursor;
 

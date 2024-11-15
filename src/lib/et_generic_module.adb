@@ -113,7 +113,7 @@ package body et_generic_module is
 
 		procedure query_variants (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is begin
 			result := contains (module.variants, variant);
 		end;

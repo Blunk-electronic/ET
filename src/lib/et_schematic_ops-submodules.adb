@@ -98,7 +98,7 @@ package body et_schematic_ops.submodules is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
@@ -288,7 +288,7 @@ package body et_schematic_ops.submodules is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use et_nets;
 			net_cursor : pac_nets.cursor;
@@ -361,7 +361,7 @@ package body et_schematic_ops.submodules is
 
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			submod_cursor : pac_submodules.cursor;
 
@@ -426,7 +426,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use et_submodules;			
 
@@ -536,7 +536,7 @@ package body et_schematic_ops.submodules is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			-- This flag goes true on the first match. It signals
 			-- all iterations to cancel prematurely.
@@ -691,7 +691,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_submodules;
 			submod_cursor : pac_submodules.cursor;
@@ -834,7 +834,7 @@ package body et_schematic_ops.submodules is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 
 			-- This flag goes true on the first match. It signals
@@ -981,7 +981,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			submod_cursor : pac_submodules.cursor;
 
@@ -1080,7 +1080,7 @@ package body et_schematic_ops.submodules is
 
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is
 			submod_cursor : pac_submodules.cursor;
 
@@ -1319,7 +1319,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_generic_module) is
 
 			use pac_nets;			
 			net_cursor : pac_nets.cursor := module.nets.first;
@@ -1507,7 +1507,7 @@ package body et_schematic_ops.submodules is
 	is
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is
 			use pac_nets;			
 			net_cursor : pac_nets.cursor := module.nets.first;
@@ -1684,7 +1684,7 @@ package body et_schematic_ops.submodules is
 	
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			submod_cursor : pac_submodules.cursor;
 
@@ -1870,7 +1870,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			procedure probe_port (
 				port : in type_vector_model; -- x/y
@@ -2030,7 +2030,7 @@ package body et_schematic_ops.submodules is
 		-- Searches for the lowest available index.
 		procedure search_gap (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module)
+			module		: in type_generic_module)
 		is
 			cursor : pac_netchangers.cursor := module.netchangers.first;
 
@@ -2081,7 +2081,7 @@ package body et_schematic_ops.submodules is
 
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_generic_module) is
 			use et_submodules.pac_netchangers;
 		begin -- query_netchangers
 			if contains (module.netchangers, index) then
@@ -2114,7 +2114,7 @@ package body et_schematic_ops.submodules is
 
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			nc_cursor : pac_netchangers.cursor;
 			nc_position : et_coordinates_2.type_position;
@@ -2194,7 +2194,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is
 			use et_submodules;
 			cursor : pac_netchangers.cursor;
@@ -2363,7 +2363,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			cursor : pac_netchangers.cursor;
 			location : et_coordinates_2.type_position;
@@ -2426,7 +2426,7 @@ package body et_schematic_ops.submodules is
 				-- the move operation according to location and rotation in schematic.
 				ports_new := netchanger_ports (cursor);
 
-				-- Change net segments in the affected nets (type_module.nets):
+				-- Change net segments in the affected nets (type_generic_module.nets):
 				drag_net_segments (
 					module			=> module_cursor,
 					ports_before	=> ports_old,
@@ -2436,7 +2436,7 @@ package body et_schematic_ops.submodules is
 
 				-- The drag operation might result in new port-to-net connections.
 				-- So we must insert new ports in segments.
-				-- Insert possible new netchanger ports in the nets (type_module.nets):
+				-- Insert possible new netchanger ports in the nets (type_generic_module.nets):
 				log_indentation_up;
 				
 				-- Inserts the netchanger ports in the net segments.
@@ -2492,7 +2492,7 @@ package body et_schematic_ops.submodules is
 
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
@@ -2641,7 +2641,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			cursor : pac_netchangers.cursor;
 			location : et_coordinates_2.type_position;
@@ -2780,7 +2780,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			cursor : pac_netchangers.cursor;
 			location : et_coordinates_2.type_position;
@@ -2907,7 +2907,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_netchangers (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module)
+			module		: in out type_generic_module)
 		is
 			cursor : pac_netchangers.cursor;
 			location : et_coordinates_2.type_position;
@@ -2996,7 +2996,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			submod_cursor : pac_submodules.cursor;
 			inserted : boolean;
@@ -3087,7 +3087,7 @@ package body et_schematic_ops.submodules is
 		-- Removes all references to the submodule instance from the net segments.
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
@@ -3208,7 +3208,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use pac_submodules;
 			submod_cursor : pac_submodules.cursor;
@@ -3274,7 +3274,7 @@ package body et_schematic_ops.submodules is
 
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			submod_cursor : pac_submodules.cursor;
 
@@ -3438,7 +3438,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			submod_cursor : pac_submodules.cursor;
 
@@ -3643,7 +3643,7 @@ package body et_schematic_ops.submodules is
 
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			submod_cursor : pac_submodules.cursor;
 			inserted : boolean;
@@ -3768,7 +3768,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			submod_cursor : pac_submodules.cursor;
 			submodule_old : et_submodules.type_submodule;
@@ -3890,7 +3890,7 @@ package body et_schematic_ops.submodules is
 		procedure query_variants (
 		-- Locates the targeted assembly variant of the parent module.
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
@@ -3990,7 +3990,7 @@ package body et_schematic_ops.submodules is
 		procedure query_variants (
 		-- Locates the targeted assembly variant of the parent module.
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_generic_module) is
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
@@ -4073,7 +4073,7 @@ package body et_schematic_ops.submodules is
 
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use et_submodules.pac_submodules;
 		begin
@@ -4107,7 +4107,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use et_submodules;
 			use et_submodules.pac_submodules;
@@ -4121,7 +4121,7 @@ package body et_schematic_ops.submodules is
 			-- Sets flag variant_found.
 			procedure query_variants (
 				submodule_name	: in pac_module_name.bounded_string;
-				submodule		: in type_module)
+				submodule		: in type_generic_module)
 			is
 				use et_assembly_variants;
 			begin
@@ -4177,7 +4177,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_variants (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use pac_assembly_variants;
 
@@ -4237,7 +4237,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) 
+			module		: in out type_generic_module) 
 		is
 			submod_cursor : pac_submodules.cursor;
 
@@ -4386,7 +4386,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use pac_nets;
 
@@ -4677,7 +4677,7 @@ package body et_schematic_ops.submodules is
 
 		procedure query_submodules (
    			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) is
+			module		: in type_generic_module) is
 			use et_numbering;
 
 			procedure query (cursor : in et_numbering.pac_modules.cursor) is
@@ -4725,7 +4725,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use et_submodules;
 			submod_cursor	: et_submodules.pac_submodules.cursor := module.submods.first;
@@ -4780,7 +4780,7 @@ package body et_schematic_ops.submodules is
 
 		procedure assign_tree (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_module) is
+			module		: in out type_generic_module) is
 		begin
 			module.submod_tree := submod_tree;
 
@@ -4855,7 +4855,7 @@ package body et_schematic_ops.submodules is
 				
 				procedure query_devices (
 					module_name	: in pac_module_name.bounded_string;
-					module		: in type_module) 
+					module		: in type_generic_module) 
 				is
 					device_name : type_device_name;
 					inserted : boolean;
@@ -5262,7 +5262,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_module) 
+			module		: in type_generic_module) 
 		is
 			use pac_devices_sch;
 
@@ -5458,7 +5458,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure replace_tree (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out et_generic_module.type_module) 
+			module		: in out type_generic_module) 
 		is begin
 			module.submod_tree := submod_tree;
 		end;

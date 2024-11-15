@@ -70,7 +70,7 @@ procedure draw_outline is
 	
 	procedure query_outline_segments (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in type_module)
+		module		: in type_generic_module)
 	is 
 	begin
 		if module.board.contours.outline.contour.circular then
@@ -88,7 +88,7 @@ procedure draw_outline is
 	
 	procedure query_holes (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in type_module) 
+		module		: in type_generic_module) 
 	is
 		use pac_holes;
 

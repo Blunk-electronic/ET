@@ -264,7 +264,7 @@ is
 	
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in type_module) 
+		module		: in type_generic_module) 
 	is begin
 		-- All silkscreen segments will be drawn with the same color:
 		set_color_silkscreen (face, NORMAL);
