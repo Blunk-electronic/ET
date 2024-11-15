@@ -266,7 +266,7 @@ is
 	
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in et_schematic.type_module) 
+		module		: in type_module) 
 	is begin
 		-- All assy_doc segments will be drawn with the same color:
 		set_color_assy_doc (face, NORMAL);

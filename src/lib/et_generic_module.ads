@@ -41,15 +41,95 @@
 with ada.containers;
 with ada.containers.ordered_maps;
 
-with et_schematic;
+with et_coordinates_2;			--use et_coordinates_2;
+with et_schematic;				use et_schematic;
+with et_nets;
+with et_submodules;
+with et_pcb;
 with et_assembly_variants;		use et_assembly_variants;
 with et_assembly_variant_name;	use et_assembly_variant_name;
 with et_module_names;			use et_module_names;
 with et_meta;
+with et_commit;
+with et_text;
+with et_frames;
+with et_numbering;
 
 
 package et_generic_module is
 
+												 
+	type type_module is record
+		commit_index	: et_commit.type_commit_index_zero_based := 0;
+		
+		meta			: et_meta.type_meta; -- for both schematic and layout
+
+		rules			: et_schematic.type_rules; -- design rules, erc rules ...
+		
+		description		: et_text.pac_text_content.bounded_string; -- a short description of the module
+
+		-- schematic frame template and descriptions of individual schematic frames:
+		frames			: et_frames.type_frames_schematic;
+		
+		grid			: et_coordinates_2.pac_grid.type_grid; -- the drawing grid of the schematic
+
+		board_available	: type_board_available := FALSE;
+
+		-- ALL devices of the module independent of the assembly variant:
+		devices			: pac_devices_sch.map;
+		device_commits	: type_devices_undo_redo_stack;
+		
+		net_classes		: et_pcb.pac_net_classes.map;		-- the net classes
+		submods			: et_submodules.pac_submodules.map;	-- instances of submodules (boxes)
+		netchangers		: et_submodules.pac_netchangers.map;-- netchangers
+		
+		texts       	: pac_texts.list; -- general notes in schematic, not related to drawing frames !
+
+		-- The nets of the module (incl. routing information for the board)
+		-- containing:
+		-- - strands
+		-- - net segments
+		-- - ports of devices, netchangers and submodules
+		-- On adding, moving or deleting units the structure in 
+		-- selector "net" must be updated:
+		nets 	    	: et_nets.pac_nets.map;
+		net_commits		: et_nets.type_nets_undo_redo_stack;
+		
+		-- The assembly variants of the module.
+		-- (means which device is mounted or not or which device can have a different
+		-- value, partcode or purpose):
+		variants		: pac_assembly_variants.map;
+
+		-- The active assembly variant:
+		active_variant	: pac_assembly_variant_name.bounded_string; -- "premium"
+		-- If active_variant is an empty string, then the default variant is active.
+
+		
+		-- Non-electrical stuff (board contours, silkscreen, documentation, ...):
+		board			: et_pcb.type_board;
+		board_commits	: et_pcb.type_board_undo_redo_stack;
+		
+		-- The tree of submodules is stored here. 
+		-- NOTE: This container is exclusively used if the module is a top module.
+		-- In submodules it is not used (should always be empty):
+		submod_tree		: et_numbering.pac_modules.tree;
+
+		-- The netlists containing nets of top module and submodule instances:
+		-- Provide information on primary nets and their subordinated secondary nets per 
+		-- assembly variant.
+		netlists		: pac_netlists.map; -- variant name and netlist
+
+		-- Devices which do not have a counterpart in the schematic:
+		devices_non_electric : et_pcb.pac_devices_non_electric.map; -- fiducials, mounting holes, ...
+		devices_non_electric_commits : et_pcb.type_non_electrical_devices_undo_redo_stack;
+		
+		-- CS: images
+		-- CS: latest view: sheet number, displayed objects, zoom, cursor position, ...
+	end record;
+
+
+
+	
 		
 	-- Generic modules and submodules (which contain schematic and layout stuff)
 	-- are collected here.
@@ -59,8 +139,8 @@ package et_generic_module is
 	package pac_generic_modules is new ada.containers.ordered_maps (
 		key_type		=> pac_module_name.bounded_string, -- motor_driver (without extension *.mod)
 		"<"				=> pac_module_name."<",
-		element_type	=> et_schematic.type_module,
-		"="				=> et_schematic."=");
+		element_type	=> type_module);
+		-- "="				=> et_schematic."=");
 
 
 	use pac_generic_modules;

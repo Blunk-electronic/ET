@@ -2878,7 +2878,7 @@ package body et_schematic_ops is
 		
 		procedure query_variants (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in et_schematic.type_module) 
+			module		: in type_module) 
 		is
 			use pac_assembly_variants;
 			variant_cursor : pac_assembly_variants.cursor;
@@ -2944,7 +2944,7 @@ package body et_schematic_ops is
 		
 		procedure query_variants (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in et_schematic.type_module) is
+			module		: in type_module) is
 			use pac_assembly_variants;
 			
 			variant_cursor : pac_assembly_variants.cursor;
@@ -3850,7 +3850,7 @@ package body et_schematic_ops is
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in et_schematic.type_module)
+			module		: in et_generic_module.type_module)
 		is
 
 			procedure query_units (device_cursor : in pac_devices_sch.cursor) is

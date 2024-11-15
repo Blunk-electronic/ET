@@ -2428,7 +2428,7 @@ package body et_kicad_to_native is
 		module_cursor_kicad : et_kicad.pcb.type_modules.cursor := et_kicad.pcb.type_modules.first (et_kicad.pcb.modules);
 
 		-- This is a single native target module used as scratch.
-		module : et_schematic.type_module; 
+		module : type_module; 
 
 		
 		-- Converts kicad texts to native texts:

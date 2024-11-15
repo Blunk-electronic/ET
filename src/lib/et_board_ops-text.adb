@@ -55,7 +55,7 @@ package body et_board_ops.text is
 		meaning 		: in et_pcb.type_text_meaning)
 		return et_text.pac_text_content.bounded_string 
 	is
-		m : et_schematic.type_module renames element (module_cursor);
+		m : type_module renames element (module_cursor);
 		
 		use et_text;
 

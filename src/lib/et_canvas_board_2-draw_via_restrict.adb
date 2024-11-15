@@ -145,7 +145,7 @@ procedure draw_via_restrict is
 	
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;
-		module		: in et_schematic.type_module) 
+		module		: in type_module) 
 	is
 		use et_colors.board;
 	begin

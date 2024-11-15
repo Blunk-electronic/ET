@@ -837,7 +837,7 @@ package body et_board_ops is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in et_schematic.type_module)
+			module		: in type_module)
 		is
 			use pac_net_classes;
 			use pac_net_class_name;
@@ -870,7 +870,7 @@ package body et_board_ops is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in et_schematic.type_module)
+			module		: in type_module)
 		is
 			use pac_net_classes;
 			use pac_net_class_name;
@@ -936,7 +936,7 @@ package body et_board_ops is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in et_schematic.type_module)
+			module		: in type_module)
 		is begin
 			settings := module.board.user_settings;
 		end;

@@ -105,7 +105,7 @@ package body et_routing is
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in et_schematic.type_module) 
+			module		: in type_module) 
 		is
 			use et_pcb_contour;
 			use pac_holes;

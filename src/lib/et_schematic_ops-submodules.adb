@@ -48,6 +48,7 @@ with et_generic_stacks;
 with et_device_appearance;
 with et_package_names;
 with et_module_ops;
+with et_generic_module;				use et_generic_module;
 
 
 package body et_schematic_ops.submodules is
@@ -4072,7 +4073,7 @@ package body et_schematic_ops.submodules is
 
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in et_schematic.type_module) 
+			module		: in type_module) 
 		is
 			use et_submodules.pac_submodules;
 		begin
@@ -4106,7 +4107,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in et_schematic.type_module) 
+			module		: in type_module) 
 		is
 			use et_submodules;
 			use et_submodules.pac_submodules;
@@ -4120,7 +4121,7 @@ package body et_schematic_ops.submodules is
 			-- Sets flag variant_found.
 			procedure query_variants (
 				submodule_name	: in pac_module_name.bounded_string;
-				submodule		: in et_schematic.type_module)
+				submodule		: in type_module)
 			is
 				use et_assembly_variants;
 			begin
@@ -4176,7 +4177,7 @@ package body et_schematic_ops.submodules is
 		
 		procedure query_variants (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in et_schematic.type_module) 
+			module		: in type_module) 
 		is
 			use pac_assembly_variants;
 
@@ -5457,8 +5458,8 @@ package body et_schematic_ops.submodules is
 		
 		procedure replace_tree (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in out et_schematic.type_module) is
-		begin
+			module		: in out et_generic_module.type_module) 
+		is begin
 			module.submod_tree := submod_tree;
 		end;
 		
