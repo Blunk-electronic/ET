@@ -54,39 +54,60 @@ package et_string_processing is
 	row_separator_single	: constant string (1..row_separator_length)	:= row_separator_length * "-";	
 	row_separator_double	: constant string (1..row_separator_length)	:= row_separator_length * "=";
 -- 	item_not_specified		: constant string (1..7) := "missing";
+
 	
 -- WARNING AND ERROR MESSAGES
 	function metric_system return string;
 	-- Returns a message about the metric system used.
 
-	function angles_in_degrees return string;
+	
 	-- Returns a message about the degrees used.
+	function angles_in_degrees return string;
 	
 
-	function strip_directory_separator (text : in string) return string;
 	-- Removes a possible trailing directory separtor.
+	-- Removes the trailing directory separtor (if preset).
+	function strip_directory_separator (text : in string) return string;
+
 	
 	function ht_to_space (c : in character) return character;
 
-	function tilde_to_space (c : in character) return character;
-	-- Replaces a tilde by space. Other characters are returned unchanged.
 	
-	function wildcard_match (text_with_wildcards : in string; text_exact : in string) return boolean;
+	-- Replaces a tilde by space. Other characters are returned unchanged.
+	function tilde_to_space (c : in character) return character;
+
+
+	
 	-- Returns true if text_with_wildcards matches text_exact.
 	-- text_with_wildcards is something like R41* , text_exact is something like R415
+	function wildcard_match (
+		text_with_wildcards	: in string; 
+		text_exact 			: in string) 
+		return boolean;
+
+
 	
-	function remove_comment_from_line(
-		text_in : in string;					-- the input string
-		comment_mark : in string;				-- the comment mark (like "--" or "#"
-		test_whole_line : in boolean := true	-- when false, cares for the comment mark at line begin only
-		)										-- further comment marks are ignored
+	function remove_comment_from_line (
+		text_in 		: in string;			-- the input string
+		comment_mark	: in string;			-- the comment mark (like "--" or "#"
+		test_whole_line	: in boolean := true)	-- when false, cares for the comment mark at line begin only
+		return string;							-- further comment marks are ignored
+		
+
+	
+	function get_field_count (
+		text_in : string) 
+		return natural;
+
+
+	
+	-- removes heading and trailing quotation from given string
+	function strip_quotes (
+		text_in : in string) 
 		return string;
 
-	function get_field_count (text_in : string) return natural;
 
-	function strip_quotes (text_in : in string) return string;
-	-- removes heading and trailing quotation from given string
-
+	
 	-- Adds heading and trailing quotate to given string. 
 	-- NOTE: apostrophe is ', quotation is "
 	function enclose_in_quotes (
@@ -94,6 +115,8 @@ package et_string_processing is
 		quote	: in character := latin_1.apostrophe) 
 		return string;
 
+
+	
 	-- Adds heading and trailing quotate to given character.
 	-- NOTE: apostrophe is ', quotation is "
 	function enclose_in_quotes (
@@ -102,38 +125,56 @@ package et_string_processing is
 		return string;
 
 
-	function trim_space_in_string (text_in : in string) return string;
 	-- shrinks successive space characters to a single one in given string
+	function trim_space_in_string (
+		text_in : in string) 
+		return string;
 
-	function remove_trailing_directory_separator (path_in : string) return string;
+	
 	-- removes a trailing directory separator.
+	function remove_trailing_directory_separator (
+		path_in : string) 
+		return string;
 	
 
-	function is_number (text : in string) return boolean;
-	-- Returns true if given string is a number. 
 	
-	function get_field_from_line (
+	-- Returns true if given string is a number. 
+	function is_number (
+		text : in string) 
+		return boolean;
+
+
+
+	
+	
 	-- Extracts a field separated by ifs at position. If trailer is true, the 
 	-- trailing content until trailer_to is also returned.
+	function get_field_from_line (
 		text_in 	: in string;
 		position 	: in positive;
 		ifs 		: in character := latin_1.space;
 		trailer 	: in boolean := false;
-		trailer_to 	: in character := latin_1.semicolon
-		) return string;
+		trailer_to 	: in character := latin_1.semicolon)
+		return string;
 
+	
+	
 	-- This type serves to collect strings. It MUST be a vector, because
 	-- this allows do pick out arbitrary strings by their indexes:
-	package type_list_of_strings is new indefinite_vectors (
+	package pac_list_of_strings is new indefinite_vectors (
 		index_type		=> positive, 
 		element_type	=> string);
 
+
+	
 	-- This type is required when reading lines from files. It is a composite type
 	-- whose components are hidden. The can only be accessed by special functions and procedures. See below.
 	type type_fields_of_line is private;
 
-	function read_line (
+
+	
 	-- Breaks down a given string and returns a type_fields_of_line.
+	function read_line (
 		line			: in string; 									-- the line to be broken down
 		number			: in positive_count := positive_count'first;	-- the line number	
 		comment_mark	: in string; 						-- the comment mark like "--" or "#"
@@ -141,13 +182,17 @@ package et_string_processing is
 															-- further comment marks are ignored
 		ifs				: in character := latin_1.space;	-- field separator
 		delimiter_wrap	: in boolean := false; 				-- true if text in delimiters is to be wrapped into a single field
-		delimiter		: in character := latin_1.quotation	-- the text delimiter sign (mostly ")
-		) return type_fields_of_line;
+		delimiter		: in character := latin_1.quotation)	-- the text delimiter sign (mostly ")
+		return type_fields_of_line;
 
+
+	
 	-- Appends a field to a line:
 	procedure append (
 		line	: in out type_fields_of_line;
 		field	: in string);
+
+
 	
 	-- Append right fields to left fields:
 	function append (
@@ -155,17 +200,23 @@ package et_string_processing is
 		right	: in type_fields_of_line) 
 		return type_fields_of_line;
 
+
+	
 	-- Remove fields from line:
 	function remove (
 		line	: in type_fields_of_line;
 		first	: in positive;
 		last	: in positive)
 		return type_fields_of_line;
-					 
+
+
+	
 	procedure set_field (
 		line		: in out type_fields_of_line;
 		position	: in positive;
 		content		: in string);
+
+
 	
 	-- Returns the field at the given position. Raises constraint error if there is no 
 	-- field at given position.
@@ -174,17 +225,23 @@ package et_string_processing is
 		position	: in count_type) 
 		return string;
 
+
+	
 	function to_string (line : in type_fields_of_line) return string;
 
-	function line_number (line : in type_fields_of_line) return positive;
-	-- Returns the line number of the given line.
 	
-	function affected_line (line : in type_fields_of_line) return string;
+	-- Returns the line number of the given line.
+	function line_number (line : in type_fields_of_line) return positive;
+
+	
 	-- Returns the line number of the given line in a string like "line x:"
+	function affected_line (line : in type_fields_of_line) return string;
 
-	function field_count (line : in type_fields_of_line) return count_type;
+	
 	-- Returns the number of fields in the given line.
+	function field_count (line : in type_fields_of_line) return count_type;
 
+	
 	function lines_equally (left, right : in type_fields_of_line) return boolean;
 
 	
@@ -192,7 +249,7 @@ private
 	
 	
 	type type_fields_of_line is record
-		fields		: type_list_of_strings.vector;
+		fields		: pac_list_of_strings.vector;
 		field_count	: count_type := count_type'first; -- number of fields in line
 		number		: positive_count := positive_count'first; -- line numer
 	end record;

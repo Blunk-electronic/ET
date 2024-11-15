@@ -46,13 +46,13 @@ package body et_string_processing is
 
 
 	function metric_system return string is
-	-- Returns a message about the metric system used.
 	begin
 		return "CAUTION: Measurement system is METRIC. All dimensions given in millimeters !";
 	end metric_system;
 
+
+	
 	function angles_in_degrees return string is
-	-- Returns a message about the degrees used.
 	begin
 		return "CAUTION: All angles are given in degrees (1/360) !";
 	end angles_in_degrees;	
@@ -78,7 +78,6 @@ package body et_string_processing is
 
 
 	function strip_directory_separator (text : in string) return string is
-	-- Removes the trailing directory separtor (if preset).
 	begin
 		if text (text'last) = '/' then -- CS: does not work with DOS/Windows
 			return text (text'first .. text'last-1);
@@ -86,6 +85,7 @@ package body et_string_processing is
 			return text;
 		end if;
 	end strip_directory_separator;
+
 
 	
 	function ht_to_space (c : in character) return character is
@@ -96,9 +96,9 @@ package body et_string_processing is
 		end case;
 	end ht_to_space;		
 
+
 	
 	function tilde_to_space (c : in character) return character is
-	-- Replaces a tilde by space. Other characters are returned unchanged.
 	begin
 		case c is
 			when '~' => return latin_1.space;
@@ -106,10 +106,13 @@ package body et_string_processing is
 		end case;
 	end tilde_to_space;						
 	
+
 	
-	function wildcard_match (text_with_wildcards : in string; text_exact : in string) return boolean is
-	-- Returns true if text_with_wildcards matches text_exact.
-	-- text_with_wildcards is something like R41* , text_exact is something like R415
+	function wildcard_match (
+		text_with_wildcards : in string; 
+		text_exact : in string) 
+		return boolean 
+	is
 		count_asterisk		: natural := ada.strings.fixed.count(text_with_wildcards, 1 * latin_1.asterisk);
 		count_question_mark	: natural := ada.strings.fixed.count(text_with_wildcards, 1 * latin_1.question);
 		pos_asterisk		: natural := ada.strings.fixed.index(text_with_wildcards, 1 * latin_1.asterisk); -- first asterisk
@@ -162,14 +165,15 @@ package body et_string_processing is
 		
 		return match;
 	end wildcard_match;
+
 	
 
 	function remove_comment_from_line (
 		text_in : in string;					-- the input string
 		comment_mark : in string;				-- the comment mark (like "--" or "#"
-		test_whole_line : in boolean := true	-- when false, cares for the comment mark at line begin only
-												-- further comment marks are ignored
-		) return string is
+		test_whole_line : in boolean := true)	-- when false, cares for the comment mark at line begin only
+		return string							-- further comment marks are ignored
+	is
 		position_of_comment : natural;
 		-- NOTE: tabulators will be left unchanged. no substituion with whitespace is done !
 	begin
@@ -191,8 +195,12 @@ package body et_string_processing is
 		return "";
 	end remove_comment_from_line;
 
+
 	
-	function get_field_count (text_in : string) return natural is
+	function get_field_count (
+		text_in : string) 
+		return natural 
+	is
 		line_length	:	Natural := text_in'last;	-- length of given text
 		char_pt		:	Natural := 1;				-- charcter pointer (points to character being processed inside the given line)
 		IFS1		: 	constant Character := ' '; 				-- field separator space
@@ -229,8 +237,11 @@ package body et_string_processing is
 
 
 
-	function strip_quotes (text_in : in string) return string is
-	-- removes heading and trailing quotation from given string
+	
+	function strip_quotes (
+		text_in : in string) 
+		return string 
+	is
 		quote : constant character := latin_1.quotation;
 	begin
 		-- if quote is first and last character
@@ -250,6 +261,7 @@ package body et_string_processing is
 		end if;
 	end strip_quotes;
 
+
 	
 	function enclose_in_quotes (
 		text_in	: in string;
@@ -258,6 +270,7 @@ package body et_string_processing is
 	begin
 		return quote & text_in & quote;
 	end enclose_in_quotes;
+
 
 	
 	function enclose_in_quotes (
@@ -269,8 +282,11 @@ package body et_string_processing is
 	end enclose_in_quotes;
 
 	
-	function trim_space_in_string (text_in : in string) return string is
-	-- shrinks successive space characters to a single one in given string		
+	
+	function trim_space_in_string (
+		text_in : in string) 
+		return string 
+	is
 		text_scratch : string (1..text_in'length) := text_in;
 
 		universal_string_length_max	: constant natural := 1000;
@@ -297,10 +313,13 @@ package body et_string_processing is
 		return to_string(s);
 	end trim_space_in_string;
 
+
 	
-	function remove_trailing_directory_separator (path_in : string) return string is
-	-- removes a trailing directory separator.
-	begin
+	
+	function remove_trailing_directory_separator (
+		path_in : string) 
+		return string 
+	is begin
 		if 	path_in (path_in'last) = '/' or -- on linux
 			path_in (path_in'last) = '\' then -- on windows
 
@@ -312,9 +331,11 @@ package body et_string_processing is
 
 		
 
-	function is_number (text : in string) return boolean is
-	-- Returns true if given string is a number. 
-	-- CS: This test is very crude currently as it tests only the first character.
+	function is_number (
+		text : in string) 
+		return boolean 
+	is
+		-- CS: This test is very crude currently as it tests only the first character.
 		first_character : constant character := text(text'first);
 	begin
 		if is_digit (first_character) then
@@ -324,28 +345,30 @@ package body et_string_processing is
 		end if;
 	end;
 
+
 	
-	function get_field_from_line( 
-	-- Extracts a field separated by ifs at position. If trailer is true, the trailing content until trailer_to is also returned.
+	function get_field_from_line ( 
 		text_in 	: in string;
 		position 	: in positive;
 		ifs 		: in character := latin_1.space;
 		trailer 	: in boolean := false;
-		trailer_to 	: in character := latin_1.semicolon
-		) return string is
-
+		trailer_to 	: in character := latin_1.semicolon) 
+		return string 
+	is
 		extended_string_length_max : constant natural := 1000; -- CS: increase if nessecary
 		package type_extended_string is new generic_bounded_length (extended_string_length_max);
 		use type_extended_string;
 		
 		field			: type_extended_string.bounded_string;	-- field content to return (NOTE: gets converted to string on return) 
 		character_count	: natural := text_in'length;	-- number of characters in given string
+		
 		subtype type_character_pointer is natural range 0..character_count;
 		char_pt			: type_character_pointer;		-- points to character being processed inside the given string
 		field_ct		: natural := 0;					-- field counter (the first field found gets number 1 assigned)
 		inside_field	: boolean := true;				-- true if char_pt points inside a field
 		char_current	: character;					-- holds current character being processed
 		char_last		: character := ifs;				-- holds character processed previous to char_current
+		
 	begin -- get_field
 		--log ("get field from line " & text_in);
 	
@@ -431,9 +454,10 @@ package body et_string_processing is
 		return to_string(field);
 	end get_field_from_line;
 
+
+	
 	
 	function read_line ( 
-	-- Breaks down a given string and returns a type_fields_of_line.
 		line			: in string; -- the line to be broken down
 		number			: in positive_count := positive_count'first; -- the line number
 		comment_mark	: in string; -- the comment mark like "--" or "#"
@@ -441,14 +465,15 @@ package body et_string_processing is
 												 -- further comment marks are ignored
 		ifs				: in character := latin_1.space; -- field separator
 		delimiter_wrap	: in boolean := false; -- true if text in delimiters is to be wrapped into a single field
-		delimiter		: in character := latin_1.quotation -- the text delimiter sign (mostly ")
-		) return type_fields_of_line is
-
+		delimiter		: in character := latin_1.quotation) -- the text delimiter sign (mostly ")
+		return type_fields_of_line 
+	is
 		-- The list where we collect the fields contents.
 		-- It MUST be a vector, because this allows do pick out arbitrary fields
 		-- by their indexes.
-		list : type_list_of_strings.vector;
+		list : pac_list_of_strings.vector;
 
+		
 		procedure read_fields (line : in string) is
 		-- Breaks down the given line into smaller strings separated by ifs.
 		-- Adds those smaller strings in container "list".
@@ -479,7 +504,7 @@ package body et_string_processing is
 			-- Then append the new string to the list of strings.
 				text_b : string (1..text_a'length) := text_a;
 			begin
-				type_list_of_strings.append (list, text_b);
+				pac_list_of_strings.append (list, text_b);
 			end append;
 
 			function ifs_found return boolean is
@@ -501,6 +526,7 @@ package body et_string_processing is
 					end if;
 				end if;
 			end ifs_found;
+
 			
 		begin -- read_fields
 			-- If the given string "line" does not contain anything, there is nothing to do.
@@ -626,6 +652,7 @@ package body et_string_processing is
 			end if;
 		end read_fields;
 
+		
 	begin -- read_line
 		-- If comment_mark is an empty string ("") no comments are to be removed (line remains unchanged).
 		-- Otherwise the comment as specified by comment_mark is to be removed.
@@ -640,10 +667,12 @@ package body et_string_processing is
 
 		return (
 			fields => list,
-			field_count => type_list_of_strings.length (list),
+			field_count => pac_list_of_strings.length (list),
 			number => number);
 	end read_line;
 
+
+	
 	procedure append (
 		line	: in out type_fields_of_line;
 		field	: in string)
@@ -651,6 +680,8 @@ package body et_string_processing is
 		line.fields.append (field);
 		line.field_count := line.field_count + 1;
 	end append;
+
+
 	
 	function append (
 		left	: in type_fields_of_line;
@@ -658,7 +689,7 @@ package body et_string_processing is
 		return type_fields_of_line 
 	is		
 		line : type_fields_of_line;
-		use type_list_of_strings;
+		use pac_list_of_strings;
 	begin
 --		line.fields := fields);
 --		line.field_count := 0;
@@ -671,6 +702,8 @@ package body et_string_processing is
 		return line;
 	end append;
 
+
+	
 	-- Remove fields from line:
 	function remove (
 		line	: in type_fields_of_line;
@@ -678,7 +711,7 @@ package body et_string_processing is
 		last	: in positive) 
 		return type_fields_of_line
 	is
-		use type_list_of_strings;
+		use pac_list_of_strings;
 		result : type_fields_of_line;
 	begin
 		-- Iterate all fields of given line:
@@ -693,6 +726,8 @@ package body et_string_processing is
 		
 		return result;
 	end remove;
+
+
 	
 	procedure set_field (
 		line		: in out type_fields_of_line;
@@ -701,13 +736,15 @@ package body et_string_processing is
 	is begin
 		null; -- CS
 	end set_field;
+
+
 	
 	function get_field (
 		line		: in type_fields_of_line;
 		position	: in count_type)
 		return string 
 	is
-		use type_list_of_strings;
+		use pac_list_of_strings;
 	begin
 		if position > line.field_count then
 			raise constraint_error;
@@ -716,6 +753,8 @@ package body et_string_processing is
 		end if;
 	end get_field;
 
+
+	
 	-- CS: comments	
 	function to_string (line : in type_fields_of_line) return string is
 		s : unbounded_string;
@@ -734,11 +773,15 @@ package body et_string_processing is
 		return to_string (s);
 	end to_string;
 
+
+	
 	function line_number (line : in type_fields_of_line) return positive is
 	-- Returns the line number of the given line.
 	begin
 		return positive (line.number);
 	end line_number;
+
+
 	
 	function affected_line (line : in type_fields_of_line ) return string is
 	-- Returns the line number of the given line in a string like "line x:"
@@ -746,6 +789,8 @@ package body et_string_processing is
 		return ("line" & positive_count'image (line.number) & ": ");
 	end affected_line;
 
+
+	
 	function field_count (line : in type_fields_of_line) return count_type is
 	-- Returns the number of fields in the given line.
 	begin
@@ -753,8 +798,9 @@ package body et_string_processing is
 	end field_count;
 
 	
+	
 	function lines_equally (left, right : in type_fields_of_line) return boolean is
-		use type_list_of_strings;
+		use pac_list_of_strings;
 	begin
 		-- compare field counts
 		if left.field_count /= right.field_count then
