@@ -99,10 +99,12 @@ package et_string_processing is
 	subtype type_field_count is natural range 0 .. 20; -- CS increase if required
 
 	
-	
+	-- Returns the number of fields in a given string.
+	-- Example: For the given string "This is a dummy text"
+	-- the field count is 5:
 	function get_field_count (
 		text_in : string) 
-		return natural;
+		return type_field_count;
 
 
 	

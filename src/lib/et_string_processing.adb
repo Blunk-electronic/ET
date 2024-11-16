@@ -199,17 +199,17 @@ package body et_string_processing is
 	
 	function get_field_count (
 		text_in : string) 
-		return natural 
+		return type_field_count 
 	is
-		line_length	:	Natural := text_in'last;	-- length of given text
-		char_pt		:	Natural := 1;				-- charcter pointer (points to character being processed inside the given line)
-		IFS1		: 	constant Character := ' '; 				-- field separator space
-		IFS2		: 	constant Character := Character'Val(9); -- field separator tabulator
-		field_ct	:	Natural := 0;				-- field counter (the first field found gets number 1 assigned)
-		field_pt	:	Natural := 1;				-- field pointer (points to the charcter being processed inside the current field)
-		inside_field:	Boolean := true;			-- true if char_pt points inside a field
-		char_current:	Character;					-- holds current character being processed
-		char_last	:	Character := ' ';			-- holds character processed previous to char_current
+		line_length	: natural := text_in'last;	-- length of given text
+		char_pt		: natural := 1;				-- charcter pointer (points to character being processed inside the given line)
+		IFS1		: constant character := ' '; 				-- field separator space
+		IFS2		: constant character := character'val(9); -- field separator tabulator
+		field_ct	: type_field_count := 0; -- field counter (the first field found gets number 1 assigned)
+		field_pt	: natural := 1;			 -- field pointer (points to the charcter being processed inside the current field)
+		inside_field: boolean := true;		 -- true if char_pt points inside a field
+		char_current: character;			 -- holds current character being processed
+		char_last	: character := ' ';		 -- holds character processed previous to char_current
 	begin
 		while char_pt <= line_length
 			loop
@@ -228,6 +228,7 @@ package body et_string_processing is
 
 				-- save last character
 				char_last:=char_current;
+
 				-- advance character pointer by one
 				char_pt:=char_pt+1; 
 				--put (char_current); put (" --"); new_line;
