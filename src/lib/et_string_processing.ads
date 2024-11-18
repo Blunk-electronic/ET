@@ -184,8 +184,10 @@ package et_string_processing is
 
 
 	
-	-- This type is required when reading lines from files. It is a composite type
-	-- whose components are hidden. The can only be accessed by special functions and procedures. See below.
+	-- This type is required when reading lines from files. 
+	-- It is a composite type whose components are hidden. 
+	-- They can only be accessed by special functions 
+	-- and procedures. See below.
 	type type_fields_of_line is private;
 
 
@@ -194,11 +196,11 @@ package et_string_processing is
 	
 	-- Breaks down a given string and returns a type_fields_of_line.
 	function read_line (
-		-- The line to be broken down:
+		-- The line to be processed and broken down in fields:
 		line			: in string; 
 						   
 		-- The line number				   
-		number			: in positive_count := positive_count'first;	
+		number			: in positive := positive'first;	
 
 		-- The comment mark like "--" or "#":
 		comment_mark	: in string;
@@ -223,14 +225,14 @@ package et_string_processing is
 	
 	
 	-- Appends a field to a line:
-	procedure append (
+	procedure append ( -- CS rename to append_field
 		line	: in out type_fields_of_line;
 		field	: in string);
 
 
 	
 	-- Append right fields to left fields:
-	function append (
+	function append ( -- CS rename to append_field
 		left	: in type_fields_of_line;
 		right	: in type_fields_of_line) 
 		return type_fields_of_line;
@@ -238,14 +240,15 @@ package et_string_processing is
 
 	
 	-- Remove fields from line:
-	function remove (
+	function remove ( -- CS rename to remove_field
 		line	: in type_fields_of_line;
 		first	: in positive;
 		last	: in positive)
 		return type_fields_of_line;
 
 
-	
+
+	-- Sets the content of a given field in a line:
 	procedure set_field (
 		line		: in out type_fields_of_line;
 		position	: in positive;
@@ -270,7 +273,9 @@ package et_string_processing is
 
 	
 	-- Returns the line number of the given line in a string like "line x:"
-	function affected_line (line : in type_fields_of_line) return string;
+	function affected_line (
+		line : in type_fields_of_line) 
+		return string;
 
 	
 	-- Returns the number of fields in the given line.
@@ -286,7 +291,7 @@ private
 	type type_fields_of_line is record
 		fields		: pac_list_of_strings.vector;
 		field_count	: count_type := count_type'first; -- number of fields in line
-		number		: positive_count := positive_count'first; -- line numer
+		number		: positive := positive'first; -- line numer
 	end record;
 
 

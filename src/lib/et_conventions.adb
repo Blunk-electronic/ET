@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
@@ -2931,7 +2932,7 @@ package body et_conventions is
 				-- Store line in variable "line" (see ads)
 				line := read_line (
 					line			=> get_line,
-					number			=> ada.text_io.line (current_input),
+					number			=> positive (ada.text_io.line (current_input)),
 					comment_mark	=> comment_mark,
 					delimiter_wrap	=> true, -- if connector purpose is given in quotations
 					ifs 			=> latin_1.space); -- fields are separated by space

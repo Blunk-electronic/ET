@@ -44,7 +44,6 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.ordered_sets;
 
-with ada.text_io;				use ada.text_io;
 with ada.directories;			use ada.directories;
 
 with et_coordinates_2;

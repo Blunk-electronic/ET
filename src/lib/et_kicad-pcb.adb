@@ -5509,7 +5509,7 @@ package body et_kicad.pcb is
 					line 			=> get_line,
 					comment_mark	=> comment_mark,
 					test_whole_line	=> false, -- comment marks at begin of line matter
-					number 			=> ada.text_io.line (current_input),
+					number 			=> positive (ada.text_io.line (current_input)),
 					ifs 			=> latin_1.space); -- fields are separated by space
 
 				-- insert line in container "lines"

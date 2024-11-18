@@ -2987,10 +2987,10 @@ package body et_kicad_libraries is
 				-- The schematic library files use comments (#). But only the comments at the begin
 				-- of a line are relevant. Others are to be ignored. Thus test_whole_line is false.
 				line := read_line(
-							line => get_line,
-							comment_mark => "#",
-							test_whole_line => false,
-							number => ada.text_io.line (current_input));
+					line			=> get_line,
+					comment_mark	=> "#",
+					test_whole_line	=> false,
+					number 			=> positive (ada.text_io.line (current_input)));
 				
 				case field_count (line) is
 					when 0 => null; -- we skip empty lines

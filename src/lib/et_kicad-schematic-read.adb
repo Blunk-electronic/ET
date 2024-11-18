@@ -3217,7 +3217,7 @@ begin -- read
 			-- Store line in variable "line"
 			line := read_line (
 						line 			=> get_line,
-						number 			=> ada.text_io.line (current_input),
+						number 			=> positive (ada.text_io.line (current_input)),
 						comment_mark 	=> "", -- there are no comment marks in the schematic file
 						delimiter_wrap 	=> true, -- there are fields wrapped in delimiters
 						ifs 			=> latin_1.space); -- fields are separated by space

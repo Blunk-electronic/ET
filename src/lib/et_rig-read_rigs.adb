@@ -463,7 +463,7 @@ is
 		while not end_of_file loop
 			line := read_line (
 				line 			=> get_line,
-				number			=> ada.text_io.line (current_input),
+				number			=> positive (ada.text_io.line (current_input)),
 				comment_mark 	=> comment_mark, -- comments start with "--"
 				delimiter_wrap	=> true, -- strings are enclosed in quotations
 				ifs 			=> space); -- fields are separated by space

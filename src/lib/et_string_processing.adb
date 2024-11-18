@@ -478,7 +478,7 @@ package body et_string_processing is
 	
 	function read_line ( 
 		line			: in string;
-		number			: in positive_count := positive_count'first;
+		number			: in positive := positive'first;
 		comment_mark	: in string;
 		test_whole_line	: in boolean := true;
 		ifs				: in character := latin_1.space;
@@ -673,8 +673,9 @@ package body et_string_processing is
 		end read_fields;
 
 		
-	begin -- read_line
-		-- If comment_mark is an empty string ("") no comments are to be removed (line remains unchanged).
+	begin
+		-- If comment_mark is an empty string ("") no comments 
+		-- are to be removed (line remains unchanged).
 		-- Otherwise the comment as specified by comment_mark is to be removed.
 		if comment_mark'length = 0 then
 			read_fields (line); -- no comment specified, leave line as it is
@@ -805,10 +806,11 @@ package body et_string_processing is
 
 
 	
-	function affected_line (line : in type_fields_of_line ) return string is
-	-- Returns the line number of the given line in a string like "line x:"
+	function affected_line (
+		line : in type_fields_of_line ) 
+		return string is
 	begin
-		return ("line" & positive_count'image (line.number) & ": ");
+		return ("line" & positive'image (line.number) & ": ");
 	end affected_line;
 
 

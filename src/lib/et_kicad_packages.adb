@@ -2647,7 +2647,7 @@ package body et_kicad_packages is
 					line := read_line (
 						line 			=> get_line,
 						comment_mark	=> comment_mark,
-						number 			=> ada.text_io.line (current_input),
+						number 			=> positive (ada.text_io.line (current_input)),
 						ifs 			=> space); -- fields are separated by space
 
 					-- insert line in container "lines"

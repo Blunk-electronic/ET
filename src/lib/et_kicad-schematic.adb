@@ -2205,7 +2205,7 @@ package body et_kicad.schematic is
 					line := read_line(
 								line => get_line,
 								comment_mark => "#", -- use constant comment_mark
-								number => ada.text_io.line (current_input),
+								number => positive (ada.text_io.line (current_input)),
 								ifs => latin_1.equals_sign); -- fields are separated by equals sign (=)
 
 					case field_count (line) is
@@ -2799,7 +2799,7 @@ package body et_kicad.schematic is
 						line := read_line (
 								line 			=> get_line,
 								test_whole_line	=> false, -- comment marks at begin of line matter
-								number 			=> ada.text_io.line (current_input),
+								number 			=> positive (ada.text_io.line (current_input)),
 								comment_mark	=> comment_mark,
 								ifs 			=> latin_1.space); -- fields are separated by space
 
