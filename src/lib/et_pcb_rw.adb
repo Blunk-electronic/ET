@@ -466,7 +466,7 @@ package body et_pcb_rw is
 		--" Objects in this layer will be ignored !");
 		
 		raise semantic_error_1 with
-			"ERROR: " & affected_line (line) 
+			"ERROR: " & get_affected_line (line) 
 			& "Signal layer " & to_string (signal_layer) 
 			& " is deeper than the deepest signal layer " 
 			& to_string (check_layers.deepest_layer) & " !";
@@ -539,7 +539,7 @@ package body et_pcb_rw is
 					--& " specified multiple times !");
 					
 					raise semantic_error_1 with
-						"ERROR: " & affected_line (line) 
+						"ERROR: " & get_affected_line (line) 
 						& "Signal layer " & to_string (layer) 
 						& " specified multiple times !";
 				end if;

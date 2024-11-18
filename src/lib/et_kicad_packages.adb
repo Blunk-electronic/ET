@@ -854,7 +854,7 @@ package body et_kicad_packages is
 				when event:
 					others =>
 						log (ERROR, "in " & path_and_file_name, console => true);
-						log (ERROR, affected_line (element (line_cursor)) 
+						log (ERROR, get_affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 
 						log (ERROR, "section '" & slice (current_line, character_cursor, end_of_kw) 
@@ -958,7 +958,7 @@ package body et_kicad_packages is
 
 				-- if no trailing quotation found -> error
 				if end_of_arg = -1 then
-					log (ERROR, affected_line (element (line_cursor))
+					log (ERROR, get_affected_line (element (line_cursor))
 						& space & latin_1.quotation & " expected");
 						raise constraint_error;
 				end if;
@@ -1646,7 +1646,7 @@ package body et_kicad_packages is
 				when event:
 					others =>
 						log (ERROR, "in " & path_and_file_name, console => true);
-						log (ERROR, affected_line (element (line_cursor)) 
+						log (ERROR, get_affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 						log (text => ada.exceptions.exception_message (event));
 						raise;
@@ -2284,7 +2284,7 @@ package body et_kicad_packages is
 				when event:
 					others =>
 						log (ERROR, "in " & path_and_file_name, console => true);
-						log (ERROR, affected_line (element (line_cursor)) 
+						log (ERROR, get_affected_line (element (line_cursor)) 
 							& to_string (element (line_cursor)), console => true);
 						log (text => ada.exceptions.exception_message (event));
 						raise;

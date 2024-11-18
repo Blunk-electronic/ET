@@ -493,7 +493,7 @@ package body et_kicad.schematic is
 
 	
 	procedure invalid_field (line : in type_fields_of_line) is begin
-		log (ERROR, affected_line (line) & "invalid field !", console => true);
+		log (ERROR, get_affected_line (line) & "invalid field !", console => true);
 
 		log (text => to_string (line), console => true);
 
@@ -827,7 +827,7 @@ package body et_kicad.schematic is
 
 		procedure invalid_appearance is
 		begin
-			log (ERROR, affected_line (line) 
+			log (ERROR, get_affected_line (line) 
 				 & "invalid visibility flag !", console => true);
 			raise constraint_error;
 		end invalid_appearance;	
@@ -2591,7 +2591,7 @@ package body et_kicad.schematic is
 							when event:
 								others =>
 									log (ERROR, "in " & to_string (lib_table_path), console => true);
-									log (ERROR, affected_line (element (line_cursor)) 
+									log (ERROR, get_affected_line (element (line_cursor)) 
 										& to_string (element (line_cursor)), console => true);
 
 									log (ERROR, "section '" & slice (current_line, character_cursor, end_of_kw) 
@@ -2636,7 +2636,7 @@ package body et_kicad.schematic is
 
 							-- if no trailing quotation found -> error
 							if end_of_arg = -1 then
-								log (ERROR, affected_line (element (line_cursor))
+								log (ERROR, get_affected_line (element (line_cursor))
 									& latin_1.space & latin_1.quotation & " expected");
 									raise constraint_error;
 							end if;
@@ -2727,7 +2727,7 @@ package body et_kicad.schematic is
 							when event:
 								others =>
 									log (ERROR, "in " & to_string (lib_table_path), console => true);
-									log (ERROR, affected_line (element (line_cursor)) 
+									log (ERROR, get_affected_line (element (line_cursor)) 
 										& to_string (element (line_cursor)), console => true);
 									log (text => ada.exceptions.exception_message (event));
 									raise;
@@ -2778,7 +2778,7 @@ package body et_kicad.schematic is
 							when event:
 								others =>
 									log (ERROR, "in " & to_string (lib_table_path), console => true);
-									log (ERROR, affected_line (element (line_cursor)) 
+									log (ERROR, get_affected_line (element (line_cursor)) 
 										& to_string (element (line_cursor)), console => true);
 									log (text => ada.exceptions.exception_message (event));
 									raise;

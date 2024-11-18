@@ -66,7 +66,7 @@ package body et_general_rw is
 			
 		elsif count_found > count_expected then -- more fields than expeced
 			if warn then
-				log (WARNING, affected_line (line) & "excessive parameters after '" &
+				log (WARNING, get_affected_line (line) & "excessive parameters after '" &
 					f (line, count_expected) & "' ignored !");
 			end if;
 		end if;

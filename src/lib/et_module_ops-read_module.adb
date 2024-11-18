@@ -714,7 +714,8 @@ is
 				net.class := et_pcb.to_net_class_name (f (line,2));
 			else
 				net.class := et_pcb.net_class_name_default;
-				log (text => message_warning & affected_line (line) & "No net class specified ! Assume default class !");
+				log (text => message_warning & get_affected_line (line) 
+					 & "No net class specified ! Assume default class !");
 			end if;
 		elsif kw = keyword_scope then
 			expect_field_count (line, 2);
@@ -5270,7 +5271,7 @@ is
 								-- Issue warning about this mismatch:
 								if strand.position.place /= position_found_in_module_file then
 									
-									log (WARNING, affected_line (line) 
+									log (WARNING, get_affected_line (line) 
 										 & "Sheet" & to_string (get_sheet (strand.position))
 										 & " net " 
 										 & to_string (net_name) & ": Lowest x/y position of strand invalid !");
@@ -6830,7 +6831,7 @@ is
 
 		exception when event: others =>
 			log (text => "file " & file_name & space 
-				& affected_line (line) & to_string (line), console => true);
+				& get_affected_line (line) & to_string (line), console => true);
 			raise;
 		
 	end process_line;

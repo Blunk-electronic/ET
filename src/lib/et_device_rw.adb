@@ -1512,7 +1512,7 @@ package body et_device_rw is
 
 			exception when event: others =>
 				log (text => "file " & to_string (file_name) & space 
-					 & affected_line (line) & to_string (line), console => true);
+					 & get_affected_line (line) & to_string (line), console => true);
 				raise;
 			
 		end process_line;

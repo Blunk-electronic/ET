@@ -193,7 +193,8 @@ is
 			end if;
 
 			exception when event: others =>
-				log (text => "file " & enclose_in_quotes (file_name) & space & affected_line (line) 
+				log (text => "file " & enclose_in_quotes (file_name) 
+					 & space & get_affected_line (line) 
 						& to_string (line), console => true);
 				raise;
 			

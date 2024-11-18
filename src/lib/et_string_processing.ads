@@ -269,13 +269,13 @@ package et_string_processing is
 
 	
 	-- Returns the line number of the given line.
-	function line_number ( -- CS rename to get_line_number
+	function get_line_number (
 		line : in type_fields_of_line) 
 		return positive;
 
 	
 	-- Returns the line number of the given line in a string like "line x:"
-	function affected_line (
+	function get_affected_line (
 		line : in type_fields_of_line) 
 		return string;
 

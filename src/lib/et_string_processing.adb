@@ -800,21 +800,21 @@ package body et_string_processing is
 
 
 	
-	function line_number (
+	function get_line_number (
 		line : in type_fields_of_line) 
-		return positive is
-	begin
+		return positive 
+	is begin
 		return positive (line.number);
-	end line_number;
+	end get_line_number;
 
 
 	
-	function affected_line (
+	function get_affected_line (
 		line : in type_fields_of_line ) 
-		return string is
-	begin
+		return string 
+	is begin
 		return ("line" & positive'image (line.number) & ": ");
-	end affected_line;
+	end get_affected_line;
 
 
 	

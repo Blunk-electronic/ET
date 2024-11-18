@@ -429,7 +429,7 @@ package body et_kicad_libraries is
 	end check_datasheet_characters;
 
 	procedure invalid_field (line : in type_fields_of_line) is begin
-		log (ERROR, affected_line (line) & "invalid field !", console => true);
+		log (ERROR, get_affected_line (line) & "invalid field !", console => true);
 
 		log (text => to_string (line), console => true);
 
@@ -763,7 +763,7 @@ package body et_kicad_libraries is
 		lca			: type_library_component_appearance;
 
 		procedure invalid_appearance is begin
-			log (ERROR, affected_line (line) 
+			log (ERROR, get_affected_line (line) 
 				 & "invalid visibility flag !", console => true);
 			raise constraint_error;
 		end invalid_appearance;	
@@ -2243,7 +2243,7 @@ package body et_kicad_libraries is
 				if comp_inserted then
 					null;
 				else
-					log (ERROR, "line" & affected_line (line) & " : component already in library !",
+					log (ERROR, "line" & get_affected_line (line) & " : component already in library !",
 						 console => true);
 					raise constraint_error;
 				end if;
@@ -2420,7 +2420,7 @@ package body et_kicad_libraries is
 -- 									log (
 -- 										text => ERROR, "file '" 
 -- 											& et_libraries.to_string (lib_file_name) & "' "
--- 											& affected_line (line) 
+-- 											& get_affected_line (line) 
 -- 											& "port name '" & to_string (tmp_draw_port_name)
 -- 											& "' already used !",
 -- 										console => true);
@@ -2845,7 +2845,7 @@ package body et_kicad_libraries is
 						if strip_quotes (f (line,2)) = pac_device_prefix.to_string (tmp_prefix) then
 							null; -- fine
 						else
-							log (WARNING, affected_line (line) & ": prefix vs. reference mismatch !");
+							log (WARNING, get_affected_line (line) & ": prefix vs. reference mismatch !");
 							-- CS: better raise constraint_error
 						end if;
 
@@ -3226,7 +3226,7 @@ package body et_kicad_libraries is
 			exception
 				when event:
 					others =>
-						log (ERROR, affected_line (line) & to_string (line), console => true);
+						log (ERROR, get_affected_line (line) & to_string (line), console => true);
 						log (text => ada.exceptions.exception_message (event));
 						raise;
 		end read_library;

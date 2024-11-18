@@ -2674,7 +2674,7 @@ package body et_conventions is
 			
 			procedure test_multiple_occurences is begin
 				if not inserted then
-					log (WARNING, affected_line (element (line_cursor)) & "multiple occurence of assignment ! Entry ignored !");
+					log (WARNING, get_affected_line (element (line_cursor)) & "multiple occurence of assignment ! Entry ignored !");
 				end if;
 			end test_multiple_occurences;
 
@@ -2904,7 +2904,8 @@ package body et_conventions is
 
 			exception
 				when others =>
-					log (ERROR, affected_line (element (line_cursor)) & latin_1.space & to_string (element (line_cursor)),
+					log (ERROR, get_affected_line (element (line_cursor)) 
+						 & latin_1.space & to_string (element (line_cursor)),
 						 console => true);
 
 					-- CS: provide information on what is wrong with the line (depending on section_entered)

@@ -91,7 +91,7 @@ is
 	begin
 		log (ERROR, "in schematic file '" 
 			& to_string (current_schematic.sheet.file) & "' " 
-			& affected_line (line)
+			& get_affected_line (line)
 			& to_string (line),
 			console => true);
 	end error_in_schematic_file;
@@ -1615,7 +1615,7 @@ is
 			
 			type_wild_segments.append (wild_segments, segment);
 		else -- segment has zero length
-			log (WARNING, affected_line (line) & "Net segment with zero length found -> ignored !");
+			log (WARNING, get_affected_line (line) & "Net segment with zero length found -> ignored !");
 		end if; -- length
 
 		--log_indentation_down;

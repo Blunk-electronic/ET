@@ -295,7 +295,7 @@ is
 
 		exception when event: others =>
 			log (text => "file " & enclose_in_quotes (to_string (file_name)) & space 
-					& affected_line (line) & to_string (line), console => true);
+					& get_affected_line (line) & to_string (line), console => true);
 			raise;
 		
 	end process_line;
