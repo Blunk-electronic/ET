@@ -2651,7 +2651,7 @@ package body et_kicad_packages is
 						ifs 			=> space); -- fields are separated by space
 
 					-- insert line in container "lines"
-					if field_count (line) > 0 then -- we skip empty or commented lines
+					if get_field_count (line) > 0 then -- we skip empty or commented lines
 						append (lines, line);
 					end if;
 						

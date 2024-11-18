@@ -332,7 +332,7 @@ begin -- read_rules
 					ifs 			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
-				if field_count (line) > 0 then
+				if get_field_count (line) > 0 then
 					process_line;
 				end if;
 			end loop;

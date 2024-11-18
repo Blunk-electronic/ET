@@ -385,7 +385,7 @@ package body et_device_rw is
 			-- CS: warn about wrong misplaced keywords
 			-- CS: test if terminal, unit and port exist
 		begin
-			while place <= field_count (line) loop
+			while place <= get_field_count (line) loop
 			
 				-- We expect the terminal name after the keyword "terminal"
 				if f (line, place) = keyword_terminal then
@@ -1566,7 +1566,7 @@ package body et_device_rw is
 					ifs 			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
-				if field_count (line) > 0 then
+				if get_field_count (line) > 0 then
 					process_line;
 				end if;
 			end loop;

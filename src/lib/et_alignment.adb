@@ -99,7 +99,7 @@ package body et_alignment is
 
 		-- CS: flags to detect missing sheet, x or y
 	begin
-		while place <= field_count (line) loop
+		while place <= get_field_count (line) loop
 
 			-- We expect after the "horizontal" the horizontal alignment
 			if f (line, place) = keyword_horizontal then

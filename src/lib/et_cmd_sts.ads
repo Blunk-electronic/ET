@@ -92,19 +92,8 @@ package et_cmd_sts is
 	
 
 
-	
-	-- Returns the number of fields of a command:
-	function get_field_count (
-		cmd 	: in type_fields_of_line)
-		return type_field_count;
+	procedure dummy;
 
-
-	-- -- This function returns a field
-	-- -- from the given command:
-	-- function get_field (
-	-- 	cmd 	: in type_fields_of_line;
-	-- 	place	: in type_field_count_positive)
-	-- 	return string;
 	
 end et_cmd_sts;
 

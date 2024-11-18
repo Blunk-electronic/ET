@@ -449,7 +449,7 @@ is
 
 		-- CS: flags to detect missing sheet, x or y
 	begin
-		while place <= field_count (line) loop
+		while place <= get_field_count (line) loop
 
 			-- We expect after "sheet" the sheet number
 			if f (line, place) = keyword_sheet then
@@ -489,7 +489,7 @@ is
 
 		-- CS: flags to detect missing x or y
 	begin
-		while place <= field_count (line) loop
+		while place <= get_field_count (line) loop
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
@@ -528,7 +528,7 @@ is
 
 		-- CS: flags to detect missing sheet, x or y
 	begin
-		while place <= field_count (line) loop
+		while place <= get_field_count (line) loop
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
@@ -710,7 +710,7 @@ is
 			-- expect_field_count (line, 2);
 			-- net.class := et_pcb.to_net_class_name (f (line,2));
 			
-			if field_count (line) = 2 then
+			if get_field_count (line) = 2 then
 				net.class := et_pcb.to_net_class_name (f (line,2));
 			else
 				net.class := et_pcb.net_class_name_default;
@@ -1185,7 +1185,7 @@ is
 				end if;
 
 				-- read optional purpose
-				if field_count (line) > 6 then
+				if get_field_count (line) > 6 then
 					expect_field_count (line, 8);
 
 					if f (line, 7) = keyword_purpose then
@@ -7034,7 +7034,7 @@ begin -- read_module
 					ifs 			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
-				if field_count (line) > 0 then
+				if get_field_count (line) > 0 then
 					process_line;
 				end if;
 			end loop;

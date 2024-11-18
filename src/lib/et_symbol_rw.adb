@@ -77,7 +77,7 @@ package body et_symbol_rw is
 		use et_string_processing;
 		place : type_field_count_positive := from; -- the field being read from given line
 	begin
-		while place <= field_count (line) loop
+		while place <= get_field_count (line) loop
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
@@ -112,7 +112,7 @@ package body et_symbol_rw is
 
 		-- CS: flags to detect missing x or y
 	begin
-		while place <= field_count (line) loop
+		while place <= get_field_count (line) loop
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
@@ -1157,7 +1157,7 @@ package body et_symbol_rw is
 					ifs 			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
-				if field_count (line) > 0 then
+				if get_field_count (line) > 0 then
 					process_line;
 				end if;
 			end loop;

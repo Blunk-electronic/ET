@@ -54,7 +54,7 @@ package body et_general_rw is
 		count_expected	: in type_field_count;		-- the min. number of fields to expect
 		warn			: in boolean := true) 		-- warn if too many fields
 	is 
-		count_found : constant type_field_count := field_count (line);
+		count_found : constant type_field_count := get_field_count (line);
 
 		f1 : string := f (line, 1); -- CS: line must have at least one field otherwise exception occurs here
 	begin

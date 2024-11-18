@@ -458,7 +458,7 @@ package body et_geometry_2a.contours is
 		
 	begin
 		-- Iterate all fields of given list of arguments:
-		while p <= field_count (arguments) loop
+		while p <= get_field_count (arguments) loop
 
 			-- If a keyword like "line", "arc" or "circle" occurs,
 			-- then set shape accordingly:

@@ -281,7 +281,7 @@ package et_string_processing is
 
 	
 	-- Returns the number of fields in the given line.
-	function field_count ( -- CS rename to get_field_count
+	function get_field_count (
 		line : in type_fields_of_line) 
 		return type_field_count;
 

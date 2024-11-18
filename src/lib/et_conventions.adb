@@ -2937,7 +2937,7 @@ package body et_conventions is
 					delimiter_wrap	=> true, -- if connector purpose is given in quotations
 					ifs 			=> latin_1.space); -- fields are separated by space
 
-				case field_count (line) is
+				case get_field_count (line) is
 					when 0 => null; -- we skip empty lines
 					when others =>
 

@@ -41,23 +41,7 @@ with ada.containers;
 
 package body et_cmd_sts is
 
-	function get_field_count (
-		cmd : in type_fields_of_line)
-		return type_field_count
-	is begin
-		return type_field_count (field_count (cmd));
-	end get_field_count;
-
-
-	-- function get_field (
-	-- 	cmd 	: in type_fields_of_line;
-	-- 	place	: in type_field_count_positive)
-	-- 	return string
-	-- is 
-	-- 	use ada.containers;
-	-- begin
-	-- 	return get_field (cmd, count_type (place));
-	-- end get_field;
+	procedure dummy is begin null; end;
 
 	
 end et_cmd_sts;

@@ -2208,7 +2208,7 @@ package body et_kicad.schematic is
 								number => positive (ada.text_io.line (current_input)),
 								ifs => latin_1.equals_sign); -- fields are separated by equals sign (=)
 
-					case field_count (line) is
+					case get_field_count (line) is
 						when 0 => null; -- we skip empty lines
 						when 1 => -- we have a line with just one field. those lines contain headers like "[eeschema]"
 
@@ -2804,7 +2804,7 @@ package body et_kicad.schematic is
 								ifs 			=> latin_1.space); -- fields are separated by space
 
 						-- insert line in container "lines"
-						if field_count (line) > 0 then -- we skip empty or commented lines
+						if get_field_count (line) > 0 then -- we skip empty or commented lines
 							lines.append (line);
 						end if;
 							

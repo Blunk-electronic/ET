@@ -818,12 +818,12 @@ package body et_string_processing is
 
 
 	
-	function field_count (
+	function get_field_count (
 		line : in type_fields_of_line) 
-		return type_field_count is
-	begin
+		return type_field_count 
+	is begin
 		return line.field_count;
-	end field_count;
+	end get_field_count;
 
 	
 	

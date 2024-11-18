@@ -732,14 +732,14 @@ package body et_geometry_1.et_polygons is
 
 	begin
 		-- Check number of given vertices:
-		if field_count (v_fields) < 3 then
+		if get_field_count (v_fields) < 3 then
 			put_line (error_message_too_few_vertices);
 			raise semantic_error_1;
 		end if;	
 		
 		
 		-- Iterate all fields of given list of arguments:
-		while place <= field_count (v_fields) loop
+		while place <= get_field_count (v_fields) loop
 
 			v.position.x := type_float'value (f (place));
 			v.position.y := type_float'value (f (place + 1));

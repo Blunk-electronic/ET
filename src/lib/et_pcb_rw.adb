@@ -325,7 +325,7 @@ package body et_pcb_rw is
 
 		-- CS: flags to detect missing sheet, x or y
 	begin
-		while place <= field_count (line) loop
+		while place <= get_field_count (line) loop
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
@@ -366,7 +366,7 @@ package body et_pcb_rw is
 
 		-- CS: flags to detect missing sheet, x or y
 	begin
-		while place <= field_count (line) loop
+		while place <= get_field_count (line) loop
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = keyword_x then
@@ -429,7 +429,7 @@ package body et_pcb_rw is
 		use et_string_processing;
 		place : type_field_count_positive := from; -- the field being read from given line
 	begin
-		while place <= field_count (line) loop
+		while place <= get_field_count (line) loop
 
 			-- We expect after the x the corresponding value for x
 			if f (line, place) = "x" then
@@ -515,7 +515,7 @@ package body et_pcb_rw is
 			layers.iterate (validate_layer'access);
 			
 		else -- discrete layer ids like "1 4 10"
-			while place <= field_count (line) loop
+			while place <= get_field_count (line) loop
 
 				-- get the layer number from current place
 				layer := to_signal_layer (f (line, place));

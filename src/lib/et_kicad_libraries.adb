@@ -1504,7 +1504,7 @@ package body et_kicad_libraries is
 				pos 		: type_field_count_positive := 2; 
 
 				-- the x position of the last point of the line is here (field #10 in example above)
-				end_point	: type_field_count := field_count (line) - 2;
+				end_point	: constant type_field_count := get_field_count (line) - 2;
 
 				-- temporarily we store coordinates of a point here
 				point		: type_vector_model;
@@ -1951,7 +1951,7 @@ package body et_kicad_libraries is
 				port.direction := to_direction (f (line,12));
 
 				-- port style (optional, to be composed if field #13 present)
-				if field_count (line) = 13 then
+				if get_field_count (line) = 13 then
 					port.style := to_style (f (line,13));
 				end if;
 
@@ -2995,7 +2995,7 @@ package body et_kicad_libraries is
 					test_whole_line	=> false,
 					number 			=> positive (ada.text_io.line (current_input)));
 				
-				case field_count (line) is
+				case get_field_count (line) is
 					when 0 => null; -- we skip empty lines
 					when others =>
 

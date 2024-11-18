@@ -1626,7 +1626,7 @@ is
 	-- Returns true if given line is a net junction "Connection ~ 4650 4600"
 		result : boolean := false;
 	begin
-		if field_count (line) = 4 then
+		if get_field_count (line) = 4 then
 			if f (line,1) = schematic_keyword_connection then
 				if f (line,2) = schematic_tilde then
 					result := true;
@@ -1689,7 +1689,7 @@ is
 	-- "Text Label 2350 3250 0 60 ~ 0"
 		result : boolean := false;
 	begin
-		if field_count (line) = 8 then
+		if get_field_count (line) = 8 then
 			if 	f (line,1) = schematic_keyword_text and 
 				f (line,2) = schematic_keyword_label_simple then
 					result := true;
@@ -1759,7 +1759,7 @@ is
 	-- "Text GLabel 4700 3200 1 60 UnSpc ~ 0"
 		result : boolean := false;
 	begin
-		if field_count (line) = 9 then
+		if get_field_count (line) = 9 then
 			if f (line,1) = schematic_keyword_text and 
 				(f (line,2) = schematic_keyword_label_hierarchic or
 				f (line,2) = schematic_keyword_label_global) then
@@ -1840,7 +1840,7 @@ is
 	-- ET Test Circuit
 		result : boolean := false;
 	begin
-		if field_count (line) = 8 then
+		if get_field_count (line) = 8 then
 			if f (line,1) = schematic_keyword_text and 
 				f (line,2) = schematic_keyword_note then
 					result := true;
@@ -1929,7 +1929,7 @@ is
 	-- Returns true if given line is a header of a component.
 	-- The header is "$Comp"	
 	begin
-		if field_count (line) = 1 then
+		if get_field_count (line) = 1 then
 			if f (line,1) = schematic_component_header then
 				return true;
 			else 
@@ -1945,7 +1945,7 @@ is
 	-- Returns true if given line is a footer of a component.
 	-- The footer is "$EndComp"
 	begin
-		if field_count (line) = 1 then
+		if get_field_count (line) = 1 then
 			if f (line,1) = schematic_component_footer then
 				return true;
 			else 
@@ -2861,7 +2861,7 @@ is
 			-- Transfer the path segments to alt_ref_path.
 			-- "path" contains a list of strings.
 			-- alt_ref_path is a list of timestamps
-			for place in 1 .. field_count (path) loop
+			for place in 1 .. get_field_count (path) loop
 
 				-- convert the segment from string to timestamp
 				path_segment := type_timestamp (f (path, place));
@@ -3097,7 +3097,7 @@ is
 				-- followed by the unit mirror style and the unit orientation in a line like
 				-- "1    0    0    -1"
 
-				case field_count (element (line_cursor)) is
+				case get_field_count (element (line_cursor)) is
 					when 3 => -- we have the unit name and its x/y position.
 						-- We verify if unit name and position match the values read earlier:
 						verify_unit_name_and_position (element (line_cursor));
@@ -3216,15 +3216,15 @@ begin -- read
 
 			-- Store line in variable "line"
 			line := read_line (
-						line 			=> get_line,
-						number 			=> positive (ada.text_io.line (current_input)),
-						comment_mark 	=> "", -- there are no comment marks in the schematic file
-						delimiter_wrap 	=> true, -- there are fields wrapped in delimiters
-						ifs 			=> latin_1.space); -- fields are separated by space
+				line 			=> get_line,
+				number 			=> positive (ada.text_io.line (current_input)),
+				comment_mark 	=> "", -- there are no comment marks in the schematic file
+				delimiter_wrap 	=> true, -- there are fields wrapped in delimiters
+				ifs 			=> latin_1.space); -- fields are separated by space
 			-- CS: If read_line exits with an exception, the exception handler of read_schematic
 			-- outputs the line BEFORE the faulty line. Thus misleading the operator.
 			
-			case field_count (line) is
+			case get_field_count (line) is
 				when 0 => null; -- we skip empty lines
 				when others =>
 
@@ -3260,7 +3260,7 @@ begin -- read
 							lines.append (line);
 						end if;
 					else -- we are inside the sheet header and wait for the footer
-						if field_count (line) = 2 then
+						if get_field_count (line) = 2 then
 							if f (line,1) = schematic_eelayer 
 								and f (line,2) = schematic_eelayer_end then
 									sheet_header_entered := false;

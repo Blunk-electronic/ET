@@ -266,7 +266,7 @@ package body et_scripting is
 					ifs 			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
-				if field_count (cmd) > 0 then
+				if get_field_count (cmd) > 0 then
 
 					-- Backup the command to be executed in the script command status
 					-- in case the command fails:
@@ -611,7 +611,7 @@ package body et_scripting is
 					ifs 			=> space); -- fields are separated by space
 
 				-- we are interested in lines that contain something. emtpy lines are skipped:
-				if field_count (line) > 0 then
+				if get_field_count (line) > 0 then
 
 					-- execute the line as command
 					execute_command (file_name, line, log_threshold + 1);
