@@ -95,9 +95,16 @@ package et_string_processing is
 		
 
 	
+	-- Field numbers:
+	subtype type_field_count is natural 
+		range 0 .. 20; -- CS increase if required
 
-	subtype type_field_count is natural range 0 .. 20; -- CS increase if required
+	
+	-- Field positions start with 1:
+	subtype type_field_count_positive is type_field_count 
+		range 1 .. type_field_count'last;
 
+	
 	
 	-- Returns the number of fields in a given string.
 	-- Example: For the given string "This is a dummy text"

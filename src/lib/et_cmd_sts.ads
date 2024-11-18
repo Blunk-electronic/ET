@@ -103,7 +103,7 @@ package et_cmd_sts is
 	-- from the given command:
 	function get_field (
 		cmd 	: in type_fields_of_line;
-		place	: in type_field_count)
+		place	: in type_field_count_positive)
 		return string;
 	
 end et_cmd_sts;

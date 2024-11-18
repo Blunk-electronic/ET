@@ -51,7 +51,7 @@ package body et_cmd_sts is
 
 	function get_field (
 		cmd 	: in type_fields_of_line;
-		place	: in type_field_count)
+		place	: in type_field_count_positive)
 		return string
 	is 
 		use ada.containers;
