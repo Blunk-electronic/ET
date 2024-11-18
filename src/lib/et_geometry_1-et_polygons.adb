@@ -714,14 +714,20 @@ package body et_geometry_1.et_polygons is
 		v_fields : constant type_fields_of_line := 
 			read_line (line => vertices, comment_mark => "#");
 
-		function f (p : in count_type) return string is begin
+		function f (
+			p : in type_field_count_positive)
+			return string 
+		is begin
 			return to_lower (get_field (v_fields, p));
 		end;
+
 		
 		-- The place in vertices which we fetch a field from:
-		place : count_type := 1;
+		place : type_field_count_positive := 1;
 
-		v : type_vertex := (category => REGULAR, location => OUTSIDE, position => null_vector);
+		v : type_vertex := (
+			category => REGULAR, location => OUTSIDE, position => null_vector);
+		
 		v_list : pac_vertices.list;
 
 	begin

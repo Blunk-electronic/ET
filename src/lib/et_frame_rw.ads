@@ -163,7 +163,7 @@ package et_frame_rw is
 
 	function to_position (
 		line : in et_string_processing.type_fields_of_line; -- position x -100 y -150
-		from : in count_type)
+		from : in et_string_processing.type_field_count_positive)
 		return type_position;
 
 	

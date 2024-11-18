@@ -70,10 +70,15 @@ package body et_frame_rw is
 	is
 		position : type_position;
 
-		procedure error (p : count_type) is begin invalid_keyword (f (line, p)); end;
+		procedure error (
+			p : type_field_count_positive)
+		is begin 
+			invalid_keyword (f (line, p)); 
+		end;
+
 	
 	begin
-		for place in count_type (2) .. count_type (5) loop
+		for place in type_field_count_positive (2) .. type_field_count_positive (5) loop
 			case place is
 				when 2 => if f (line, place) /= keyword_x then error (place); end if; -- expect an x
 				when 3 => position.x := to_distance (f (line, place)); -- expect x value
@@ -1382,14 +1387,14 @@ package body et_frame_rw is
 
 	function to_position (
 		line : in et_string_processing.type_fields_of_line; -- position x -100 y -150
-		from : in count_type)
+		from : in et_string_processing.type_field_count_positive)
 		return type_position
 	is
 		use et_string_processing;
 
 		result : type_position;
 
-		place : count_type := from; -- the field being read from given line
+		place : type_field_count_positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing x or y
 	begin

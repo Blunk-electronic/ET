@@ -314,15 +314,14 @@ package body et_pcb_rw is
 
 	
 	function to_position ( -- CS combine with next function to_position using the tag test ?
-	-- Returns a type_point_2d in the the layout.
 		line : in type_fields_of_line; -- "start x 44.5 y 53.5"
-		from : in count_type)
+		from : in type_field_count_positive)
 		return type_vector_model 
 	is
 		use et_string_processing;
 
 		point : type_vector_model; -- to be returned
-		place : count_type := from; -- the field being read from given line
+		place : type_field_count_positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing sheet, x or y
 	begin
@@ -352,17 +351,18 @@ package body et_pcb_rw is
 		return point;
 	end to_position;
 
+
+
 	
 	function to_position (
-	-- Returns a type_position in the layout.
 		line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
-		from : in count_type)
+		from : in type_field_count_positive)
 		return type_position 
 	is
 		use et_string_processing;
 		
 		point : type_position; -- to be returned
-		place : count_type := from; -- the field being read from given line
+		place : type_field_count_positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing sheet, x or y
 	begin
@@ -421,13 +421,13 @@ package body et_pcb_rw is
 	
 	function to_grid_spacing (
 		line : in type_fields_of_line;
-		from : in count_type)
+		from : in type_field_count_positive)
 		return type_vector_model
 	is
 		spacing : type_vector_model; -- to be returned
 		
 		use et_string_processing;
-		place : count_type := from; -- the field being read from given line
+		place : type_field_count_positive := from; -- the field being read from given line
 	begin
 		while place <= field_count (line) loop
 
@@ -449,6 +449,8 @@ package body et_pcb_rw is
 		return spacing;
 	end to_grid_spacing;
 
+
+
 	
 	procedure signal_layer_invalid (
 		line			: in type_fields_of_line;
@@ -469,6 +471,7 @@ package body et_pcb_rw is
 			& " is deeper than the deepest signal layer " 
 			& to_string (check_layers.deepest_layer) & " !";
 	end signal_layer_invalid;
+
 	
 	
 	function to_layers (
@@ -485,7 +488,7 @@ package body et_pcb_rw is
 		cursor 		: type_signal_layers.cursor;
 		inserted	: boolean;
 		layer 		: type_signal_layer;
-		place 		: count_type := 2; -- we start reading the layer numbers with field 2
+		place 		: type_field_count_positive := 2; -- we start reading the layer numbers with field 2
 
 		field_2			: constant string := f (line, 2);
 		field_2_first	: constant positive := field_2'first;

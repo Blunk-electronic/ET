@@ -68,11 +68,13 @@ package et_alignment is
 	end record;
 
 	text_alignment_default : constant type_text_alignment := (ALIGN_LEFT, ALIGN_BOTTOM);
+
 	
 	function to_alignment (
 		line : in type_fields_of_line; -- "alignment horizontal center vertical center"
-		from : in count_type)
+		from : in type_field_count_positive)
 		return type_text_alignment;
+
 	
 	function to_string (alignment : in type_text_alignment) return string;
 

@@ -80,8 +80,10 @@ with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 package et_kicad_libraries is
 
-	function f (line : in type_fields_of_line; position : in count_type) return string
-		renames get_field;
+	function f (
+		line		: in type_fields_of_line; 
+		position	: in type_field_count_positive) 
+		return string renames get_field;
 
 
 	

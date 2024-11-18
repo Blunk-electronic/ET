@@ -147,16 +147,17 @@ package et_pcb_rw is
 
 	
 	
-	function to_position ( -- CS combine with next function to_position using the tag test ?
 	-- Returns a type_point_2d in the the layout.
+	function to_position ( -- CS combine with next function to_position using the tag test ?
 		line : in type_fields_of_line; -- "start x 44.5 y 53.5"
-		from : in count_type)
+		from : in type_field_count_positive)
 		return type_vector_model;
-		
-	function to_position (
+
+	
 	-- Returns a type_position in the layout.
+	function to_position (
 		line : in type_fields_of_line; -- "x 23 y 0.2 rotation 90.0"
-		from : in count_type)
+		from : in type_field_count_positive)
 		return type_position;
 
 	
@@ -170,7 +171,7 @@ package et_pcb_rw is
 	-- this function, it is placed in this package:
 	function to_grid_spacing (
 		line : in type_fields_of_line; -- spacing x 1 y 1
-		from : in count_type)
+		from : in type_field_count_positive)
 		return type_vector_model;
 
 	
@@ -180,13 +181,15 @@ package et_pcb_rw is
 		line			: in type_fields_of_line;
 		signal_layer	: in et_pcb_stack.type_signal_layer;
 		check_layers	: in et_pcb_stack.type_layer_check);
+
+
 	
-	function to_layers (
 	-- Converts a line like "layers 1 4 17" or "layers [1,3,4-9]" to 
 	-- a set of signal layers.
 	-- Issues warning if a layer number occurs more than once.
 	-- If layer check requested, issues warning if a layer id is greater than the 
 	-- deepest layer used (given in argument check_layer).
+	function to_layers (
 		line 			: in type_fields_of_line; -- layers 1 3 17
 		check_layers	: in et_pcb_stack.type_layer_check)
 		return et_pcb_stack.type_signal_layers.set;	

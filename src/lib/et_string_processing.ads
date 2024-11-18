@@ -242,8 +242,8 @@ package et_string_processing is
 	-- Remove fields from line:
 	function remove ( -- CS rename to remove_field
 		line	: in type_fields_of_line;
-		first	: in positive;
-		last	: in positive)
+		first	: in type_field_count_positive;
+		last	: in type_field_count_positive)
 		return type_fields_of_line;
 
 
@@ -251,7 +251,7 @@ package et_string_processing is
 	-- Sets the content of a given field in a line:
 	procedure set_field (
 		line		: in out type_fields_of_line;
-		position	: in positive;
+		position	: in type_field_count_positive;
 		content		: in string);
 
 
@@ -260,7 +260,7 @@ package et_string_processing is
 	-- field at given position.
 	function get_field (
 		line		: in type_fields_of_line;
-		position	: in count_type) 
+		position	: in type_field_count_positive) 
 		return string;
 
 
@@ -269,7 +269,9 @@ package et_string_processing is
 
 	
 	-- Returns the line number of the given line.
-	function line_number (line : in type_fields_of_line) return positive;
+	function line_number ( -- CS rename to get_line_number
+		line : in type_fields_of_line) 
+		return positive;
 
 	
 	-- Returns the line number of the given line in a string like "line x:"
@@ -279,7 +281,9 @@ package et_string_processing is
 
 	
 	-- Returns the number of fields in the given line.
-	function field_count (line : in type_fields_of_line) return count_type;
+	function field_count ( -- CS rename to get_field_count
+		line : in type_fields_of_line) 
+		return type_field_count;
 
 	
 	function lines_equally (left, right : in type_fields_of_line) return boolean;
@@ -290,7 +294,7 @@ private
 	
 	type type_fields_of_line is record
 		fields		: pac_list_of_strings.vector;
-		field_count	: count_type := count_type'first; -- number of fields in line
+		field_count	: type_field_count := type_field_count'first; -- number of fields in line
 		number		: positive := positive'first; -- line numer
 	end record;
 

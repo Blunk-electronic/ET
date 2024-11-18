@@ -379,7 +379,7 @@ package body et_device_rw is
 			unit		: pac_unit_name.bounded_string; -- PWR, IO_BANK_2
 			port		: pac_port_name.bounded_string; -- VCC
 
-			place : count_type := 1; -- the field being read from given line
+			place : type_field_count_positive := 1; -- the field being read from given line
 
 			-- CS: detect missing parameters
 			-- CS: warn about wrong misplaced keywords

@@ -82,18 +82,20 @@ package body et_alignment is
 	
 	function to_alignment (
 		line : in type_fields_of_line; -- "alignment horizontal center vertical center"
-		from : in count_type)
+		from : in type_field_count_positive)
 		return type_text_alignment 
 	is
 		use et_logging;
-
 		
-		function f (line : in type_fields_of_line; position : in count_type) 
+		function f (
+			line		: in type_fields_of_line;
+			position	: in type_field_count_positive) 
 			return string renames get_field;
+		
 		
 		alignment : type_text_alignment; -- to be returned
 
-		place : count_type := from; -- the field being read from given line
+		place : type_field_count_positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing sheet, x or y
 	begin

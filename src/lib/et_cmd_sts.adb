@@ -49,15 +49,15 @@ package body et_cmd_sts is
 	end get_field_count;
 
 
-	function get_field (
-		cmd 	: in type_fields_of_line;
-		place	: in type_field_count_positive)
-		return string
-	is 
-		use ada.containers;
-	begin
-		return get_field (cmd, count_type (place));
-	end get_field;
+	-- function get_field (
+	-- 	cmd 	: in type_fields_of_line;
+	-- 	place	: in type_field_count_positive)
+	-- 	return string
+	-- is 
+	-- 	use ada.containers;
+	-- begin
+	-- 	return get_field (cmd, count_type (place));
+	-- end get_field;
 
 	
 end et_cmd_sts;

@@ -422,7 +422,10 @@ package body et_geometry_2a.contours is
 		-- If a circle is to be added to the contour then the discriminant
 		-- changes accordingly.
 
-		function f (place : in count_type) return string is begin
+		function f (
+			place : in type_field_count_positive) 
+			return string 
+		is begin
 			return to_lower (get_field (arguments, place));
 		end;
 		
@@ -434,7 +437,7 @@ package body et_geometry_2a.contours is
 		shape : type_shape;
 
 		-- The place in arguments at which we fetch a field from:
-		p : count_type := 1;
+		p : type_field_count_positive := 1;
 
 		start_point_set : boolean := false;
 		contour_start_point : type_vector_model; -- start point of contour
@@ -451,6 +454,7 @@ package body et_geometry_2a.contours is
 					s.segment_arc.end_point := end_point_previous;
 			end case;
 		end update_end_point;
+		
 		
 	begin
 		-- Iterate all fields of given list of arguments:

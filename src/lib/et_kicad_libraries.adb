@@ -1482,7 +1482,10 @@ package body et_kicad_libraries is
 
 			
 			-- Returns from the given fields of a line a type_polyline.
-			function to_polyline (line : in type_fields_of_line) return type_symbol_polyline is
+			function to_polyline (
+				line : in type_fields_of_line) 
+				return type_symbol_polyline 
+			is
 				polyline	: type_symbol_polyline;
 				total		: positive; -- for cross checking 
 
@@ -1498,10 +1501,10 @@ package body et_kicad_libraries is
 				-- last field : fill style N/F/f no fill/foreground/background
 			
 				-- we start processing the fields from here (where the total number of points is)
-				pos 		: count_type := 2; 
+				pos 		: type_field_count_positive := 2; 
 
 				-- the x position of the last point of the line is here (field #10 in example above)
-				end_point	: count_type := field_count (line) - 2;
+				end_point	: type_field_count := field_count (line) - 2;
 
 				-- temporarily we store coordinates of a point here
 				point		: type_vector_model;

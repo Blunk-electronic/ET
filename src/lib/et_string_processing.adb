@@ -688,7 +688,7 @@ package body et_string_processing is
 
 		return (
 			fields => list,
-			field_count => pac_list_of_strings.length (list),
+			field_count => type_field_count (pac_list_of_strings.length (list)),
 			number => number);
 	end read_line;
 
@@ -730,8 +730,8 @@ package body et_string_processing is
 	-- Remove fields from line:
 	function remove (
 		line	: in type_fields_of_line;
-		first	: in positive;
-		last	: in positive) 
+		first	: in type_field_count_positive;
+		last	: in type_field_count_positive)
 		return type_fields_of_line
 	is
 		use pac_list_of_strings;
@@ -754,7 +754,7 @@ package body et_string_processing is
 	
 	procedure set_field (
 		line		: in out type_fields_of_line;
-		position	: in positive;
+		position	: in type_field_count_positive;
 		content		: in string)
 	is begin
 		null; -- CS
@@ -762,9 +762,10 @@ package body et_string_processing is
 
 
 	
+	
 	function get_field (
 		line		: in type_fields_of_line;
-		position	: in count_type)
+		position	: in type_field_count_positive)
 		return string 
 	is
 		use pac_list_of_strings;
@@ -777,6 +778,7 @@ package body et_string_processing is
 	end get_field;
 
 
+	
 	
 	-- CS: comments	
 	function to_string (line : in type_fields_of_line) return string is
@@ -798,8 +800,9 @@ package body et_string_processing is
 
 
 	
-	function line_number (line : in type_fields_of_line) return positive is
-	-- Returns the line number of the given line.
+	function line_number (
+		line : in type_fields_of_line) 
+		return positive is
 	begin
 		return positive (line.number);
 	end line_number;
@@ -815,8 +818,9 @@ package body et_string_processing is
 
 
 	
-	function field_count (line : in type_fields_of_line) return count_type is
-	-- Returns the number of fields in the given line.
+	function field_count (
+		line : in type_fields_of_line) 
+		return type_field_count is
 	begin
 		return line.field_count;
 	end field_count;

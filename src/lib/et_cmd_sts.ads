@@ -99,12 +99,12 @@ package et_cmd_sts is
 		return type_field_count;
 
 
-	-- This function returns a field
-	-- from the given command:
-	function get_field (
-		cmd 	: in type_fields_of_line;
-		place	: in type_field_count_positive)
-		return string;
+	-- -- This function returns a field
+	-- -- from the given command:
+	-- function get_field (
+	-- 	cmd 	: in type_fields_of_line;
+	-- 	place	: in type_field_count_positive)
+	-- 	return string;
 	
 end et_cmd_sts;
 

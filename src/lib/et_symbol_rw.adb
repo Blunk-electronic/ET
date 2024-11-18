@@ -69,13 +69,13 @@ package body et_symbol_rw is
 	
 	function to_grid_spacing (
 		line : in type_fields_of_line;
-		from : in count_type)
+		from : in type_field_count_positive)
 		return type_vector_model 
 	is
 		spacing : type_vector_model; -- to be returned
 
 		use et_string_processing;
-		place : count_type := from; -- the field being read from given line
+		place : type_field_count_positive := from; -- the field being read from given line
 	begin
 		while place <= field_count (line) loop
 
@@ -102,13 +102,13 @@ package body et_symbol_rw is
 
 	function to_position (
 		line : in type_fields_of_line; -- "keyword x 3 y 4" or "position x 44.5 y 53.5"
-		from : in count_type)
+		from : in type_field_count_positive)
 		return type_vector_model 
 	is
 		use et_string_processing;
 		
 		point : type_vector_model; -- to be returned
-		place : count_type := from; -- the field being read from given line
+		place : type_field_count_positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing x or y
 	begin

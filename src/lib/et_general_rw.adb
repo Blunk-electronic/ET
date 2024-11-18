@@ -51,10 +51,10 @@ package body et_general_rw is
 	
 	procedure expect_field_count (
 		line			: in type_fields_of_line;	-- the list of fields of the line
-		count_expected	: in count_type;			-- the min. number of fields to expect
+		count_expected	: in type_field_count;		-- the min. number of fields to expect
 		warn			: in boolean := true) 		-- warn if too many fields
 	is 
-		count_found : constant count_type := field_count (line);
+		count_found : constant type_field_count := field_count (line);
 
 		f1 : string := f (line, 1); -- CS: line must have at least one field otherwise exception occurs here
 	begin

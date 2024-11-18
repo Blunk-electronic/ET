@@ -435,7 +435,7 @@ is
 	
 	function to_position (
 		line : in type_fields_of_line; -- "position sheet 3 x 44.5 y 53.5"
-		from : in ada.containers.count_type) -- CS use a dedicated type instead
+		from : in type_field_count_positive)
 		return et_coordinates_2.type_position
 	is		
 		use et_coordinates_2;
@@ -445,7 +445,7 @@ is
 		use et_schematic_rw;
 		
 		point : et_coordinates_2.type_position; -- to be returned
-		place : count_type := from; -- the field being read from given line
+		place : type_field_count_positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing sheet, x or y
 	begin
@@ -478,14 +478,14 @@ is
 	
 	function to_size (
 		line : in type_fields_of_line; -- "size x 30 y 40"
-		from : in ada.containers.count_type) -- CS use a dedicated type instead
+		from : in type_field_count_positive)
 		return et_submodules.type_submodule_size 
 	is
 		use et_coordinates_2.pac_geometry_2;
 		use ada.containers;
 		
 		size : et_submodules.type_submodule_size; -- to be returned
-		place : count_type := from; -- the field being read from given line
+		place : type_field_count_positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing x or y
 	begin
@@ -515,7 +515,7 @@ is
 	-- Returns a type_package_position in the layout.
 	function to_position (
 		line : in type_fields_of_line; -- "position x 23 y 0.2 rotation 90.0 face top"
-		from : in ada.containers.count_type) -- CS use a dedicated type instead
+		from : in type_field_count_positive)
 		return et_pcb_coordinates_2.type_package_position
 	is
 		use ada.containers;
@@ -524,7 +524,7 @@ is
 		use et_pcb_coordinates_2.pac_geometry_2;
 		
 		point : type_package_position; -- to be returned
-		place : count_type := from; -- the field being read from given line
+		place : type_field_count_positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing sheet, x or y
 	begin
