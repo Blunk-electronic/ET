@@ -318,7 +318,7 @@ package body et_string_processing is
 	
 	
 	function remove_trailing_directory_separator (
-		path_in : string) 
+		path_in : in string) 
 		return string 
 	is begin
 		if 	path_in (path_in'last) = '/' or -- on linux

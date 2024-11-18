@@ -117,7 +117,7 @@ package et_string_processing is
 	
 	-- Adds heading and trailing quotate to given string. 
 	-- NOTE: apostrophe is ', quotation is "
-	function enclose_in_quotes (
+	function enclose_in_quotes ( -- CS rename to quote
 		text_in	: in string;
 		quote	: in character := latin_1.apostrophe) 
 		return string;
@@ -126,26 +126,29 @@ package et_string_processing is
 	
 	-- Adds heading and trailing quotate to given character.
 	-- NOTE: apostrophe is ', quotation is "
-	function enclose_in_quotes (
+	function enclose_in_quotes ( -- CS rename to quote
 		charcter_in	: in character;
 		quote		: in character := latin_1.apostrophe) 
 		return string;
 
 
-	-- shrinks successive space characters to a single one in given string
-	function trim_space_in_string (
+	-- Reduces successive space characters 
+	-- to a single one:
+	function trim_space_in_string ( -- CS rename to trim_spaces
 		text_in : in string) 
 		return string;
 
 	
-	-- removes a trailing directory separator.
+	-- Removes a trailing directory separator.
+	-- Handles both Windows and Linux separators (\ and /):
 	function remove_trailing_directory_separator (
-		path_in : string) 
+		path_in : in string) 
 		return string;
 	
 
 	
 	-- Returns true if given string is a number. 
+	-- CS: See body for things to do:
 	function is_number (
 		text : in string) 
 		return boolean;
