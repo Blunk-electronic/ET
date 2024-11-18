@@ -110,7 +110,7 @@ package et_string_processing is
 	-- Example: For the given string "This is a dummy text"
 	-- the field count is 5:
 	function get_field_count (
-		text_in : string) 
+		text_in : in string) 
 		return type_field_count;
 
 
@@ -168,7 +168,7 @@ package et_string_processing is
 	-- trailing content until trailer_to is also returned.
 	function get_field_from_line (
 		text_in 	: in string;
-		position 	: in positive;
+		position 	: in type_field_count_positive;
 		ifs 		: in character := latin_1.space;
 		trailer 	: in boolean := false;
 		trailer_to 	: in character := latin_1.semicolon)
@@ -189,20 +189,38 @@ package et_string_processing is
 	type type_fields_of_line is private;
 
 
+
+
 	
 	-- Breaks down a given string and returns a type_fields_of_line.
 	function read_line (
-		line			: in string; 									-- the line to be broken down
-		number			: in positive_count := positive_count'first;	-- the line number	
-		comment_mark	: in string; 						-- the comment mark like "--" or "#"
-		test_whole_line	: in boolean := true; 				-- when false, cares for the comment mark at line begin only
-															-- further comment marks are ignored
-		ifs				: in character := latin_1.space;	-- field separator
-		delimiter_wrap	: in boolean := false; 				-- true if text in delimiters is to be wrapped into a single field
-		delimiter		: in character := latin_1.quotation)	-- the text delimiter sign (mostly ")
+		-- The line to be broken down:
+		line			: in string; 
+						   
+		-- The line number				   
+		number			: in positive_count := positive_count'first;	
+
+		-- The comment mark like "--" or "#":
+		comment_mark	: in string;
+
+		-- When false, cares for the comment mark at line begin only
+		-- further comment marks are ignored:
+		test_whole_line	: in boolean := true;
+
+		-- The field separator:
+		ifs				: in character := latin_1.space;
+
+		-- True if text in delimiters is to be wrapped into a single field:
+		delimiter_wrap	: in boolean := false;
+
+		-- The text delimiter sign (mostly "):
+		delimiter		: in character := latin_1.quotation)
 		return type_fields_of_line;
 
 
+
+
+	
 	
 	-- Appends a field to a line:
 	procedure append (

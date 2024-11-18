@@ -350,33 +350,49 @@ package body et_string_processing is
 	
 	function get_field_from_line ( 
 		text_in 	: in string;
-		position 	: in positive;
+		position 	: in type_field_count_positive;
 		ifs 		: in character := latin_1.space;
 		trailer 	: in boolean := false;
 		trailer_to 	: in character := latin_1.semicolon) 
 		return string 
 	is
-		extended_string_length_max : constant natural := 1000; -- CS: increase if nessecary
-		package type_extended_string is new generic_bounded_length (extended_string_length_max);
-		use type_extended_string;
+		length_max : constant natural := 1000; -- CS: increase if nessecary
 		
-		field			: type_extended_string.bounded_string;	-- field content to return (NOTE: gets converted to string on return) 
-		character_count	: natural := text_in'length;	-- number of characters in given string
+		package pac_extended_string is new 
+			generic_bounded_length (length_max);
 		
-		subtype type_character_pointer is natural range 0..character_count;
-		char_pt			: type_character_pointer;		-- points to character being processed inside the given string
-		field_ct		: natural := 0;					-- field counter (the first field found gets number 1 assigned)
-		inside_field	: boolean := true;				-- true if char_pt points inside a field
-		char_current	: character;					-- holds current character being processed
-		char_last		: character := ifs;				-- holds character processed previous to char_current
+		use pac_extended_string;
+
+		-- The field content to be returned.
+		-- (NOTE: gets converted to string on return):
+		field			: pac_extended_string.bounded_string;
+
+		-- The number of characters in given string
+		character_count	: constant natural := text_in'length;
 		
-	begin -- get_field
+		subtype type_character_pointer is natural range 0 .. character_count;
+
+		-- Points to character being processed inside the given string:
+		char_pt			: type_character_pointer;		
+
+		-- Field counter (the first field found gets number 1 assigned)
+		field_ct		: type_field_count := 0;	
+
+		-- True if char_pt points inside a field:
+		inside_field	: boolean := true;
+
+		-- Holds current character being processed:
+		char_current	: character;
+
+		-- Holds character processed previous to char_current:
+		char_last		: character := ifs;
+		
+	begin
 		--log ("get field from line " & text_in);
 	
 		if character_count > 0 then
 			char_pt := 1;
 			for char_pt in 1..character_count loop
-			--while char_pt <= character_count loop
 				char_current := text_in(char_pt); 
 				
 -- 				if char_current = ifs then
@@ -398,7 +414,8 @@ package body et_string_processing is
 					end if;
 
 					-- count fields if ifs is followed by a non-ifs character
-					if (char_last = ifs or char_last = latin_1.ht) and (char_current /= ifs and char_current /= latin_1.ht) then
+					if (char_last = ifs or char_last = latin_1.ht) 
+					and (char_current /= ifs and char_current /= latin_1.ht) then
 						field_ct := field_ct + 1;
 					end if;
 				else
@@ -452,21 +469,21 @@ package body et_string_processing is
 		else
 			null;
 		end if;
-		return to_string(field);
+		
+		return to_string (field);
 	end get_field_from_line;
 
 
 	
 	
 	function read_line ( 
-		line			: in string; -- the line to be broken down
-		number			: in positive_count := positive_count'first; -- the line number
-		comment_mark	: in string; -- the comment mark like "--" or "#"
-		test_whole_line	: in boolean := true; -- when false, cares for the comment mark at line begin only
-												 -- further comment marks are ignored
-		ifs				: in character := latin_1.space; -- field separator
-		delimiter_wrap	: in boolean := false; -- true if text in delimiters is to be wrapped into a single field
-		delimiter		: in character := latin_1.quotation) -- the text delimiter sign (mostly ")
+		line			: in string;
+		number			: in positive_count := positive_count'first;
+		comment_mark	: in string;
+		test_whole_line	: in boolean := true;
+		ifs				: in character := latin_1.space;
+		delimiter_wrap	: in boolean := false;
+		delimiter		: in character := latin_1.quotation)
 		return type_fields_of_line 
 	is
 		-- The list where we collect the fields contents.
@@ -475,9 +492,11 @@ package body et_string_processing is
 		list : pac_list_of_strings.vector;
 
 		
-		procedure read_fields (line : in string) is
 		-- Breaks down the given line into smaller strings separated by ifs.
 		-- Adds those smaller strings in container "list".
+		procedure read_fields (
+			line : in string) 
+		is
 			field_start : positive := 1; -- temporarily storage of the position where a field starts
 			field_entered : boolean := false; -- goes true once the first character of a field was found
 			length : natural := line'length; -- the length of the given line
@@ -673,6 +692,8 @@ package body et_string_processing is
 	end read_line;
 
 
+
+	
 	
 	procedure append (
 		line	: in out type_fields_of_line;
