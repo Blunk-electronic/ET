@@ -52,9 +52,11 @@ package et_string_processing is
 -- 	item_not_specified		: constant string (1..7) := "missing";
 
 	
--- WARNING AND ERROR MESSAGES
-	function metric_system return string;
+-- WARNING AND ERROR MESSAGES:
+
+	
 	-- Returns a message about the metric system used.
+	function metric_system return string;
 
 	
 	-- Returns a message about the degrees used.
@@ -65,7 +67,9 @@ package et_string_processing is
 	-- Removes the trailing directory separtor (if preset).
 	function strip_directory_separator (text : in string) return string;
 
-	
+
+	-- Converts a horizontal tabulator 
+	-- to a space charachter:
 	function ht_to_space (c : in character) return character;
 
 	
@@ -82,7 +86,8 @@ package et_string_processing is
 		return boolean;
 
 
-	
+
+	-- Removes a comment from a line:
 	function remove_comment_from_line (
 		text_in 		: in string;			-- the input string
 		comment_mark	: in string;			-- the comment mark (like "--" or "#"
@@ -111,7 +116,7 @@ package et_string_processing is
 
 
 	
-	-- removes heading and trailing quotation from given string
+	-- Removes heading and trailing quotation from given string
 	function strip_quotes (
 		text_in : in string) 
 		return string;
