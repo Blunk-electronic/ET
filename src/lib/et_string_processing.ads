@@ -35,14 +35,10 @@
 --
 --   history of changes:
 
-with ada.directories;			use ada.directories;
-with ada.strings.bounded; 		use ada.strings.bounded;
+
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.text_io;				use ada.text_io;
 with ada.containers;            use ada.containers;
 with ada.containers.indefinite_vectors;
 
@@ -141,7 +137,7 @@ package et_string_processing is
 
 	-- Reduces successive space characters 
 	-- to a single one:
-	function trim_space_in_string ( -- CS rename to trim_spaces
+	function trim_spaces (
 		text_in : in string) 
 		return string;
 
@@ -225,14 +221,14 @@ package et_string_processing is
 	
 	
 	-- Appends a field to a line:
-	procedure append ( -- CS rename to append_field
+	procedure append_field (
 		line	: in out type_fields_of_line;
 		field	: in string);
 
 
 	
 	-- Append right fields to left fields:
-	function append ( -- CS rename to append_field
+	function append_field (
 		left	: in type_fields_of_line;
 		right	: in type_fields_of_line) 
 		return type_fields_of_line;
@@ -240,7 +236,7 @@ package et_string_processing is
 
 	
 	-- Remove fields from line:
-	function remove ( -- CS rename to remove_field
+	function remove_field (
 		line	: in type_fields_of_line;
 		first	: in type_field_count_positive;
 		last	: in type_field_count_positive)

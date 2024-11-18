@@ -35,11 +35,15 @@
 --
 --   history of changes:
 
+with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
 with ada.strings.unbounded; 	use ada.strings.unbounded;
 
+with ada.strings.bounded; 		use ada.strings.bounded;
+with ada.characters.handling;	use ada.characters.handling;
+
 --with ada.exceptions;
-with gnat.source_info;
+-- with gnat.source_info;
 
 
 package body et_string_processing is
@@ -284,7 +288,7 @@ package body et_string_processing is
 
 	
 	
-	function trim_space_in_string (
+	function trim_spaces (
 		text_in : in string) 
 		return string 
 	is
@@ -312,7 +316,7 @@ package body et_string_processing is
 			end case;
 		end loop;
 		return to_string(s);
-	end trim_space_in_string;
+	end trim_spaces;
 
 
 	
@@ -696,17 +700,17 @@ package body et_string_processing is
 
 	
 	
-	procedure append (
+	procedure append_field (
 		line	: in out type_fields_of_line;
 		field	: in string)
 	is begin
 		line.fields.append (field);
 		line.field_count := line.field_count + 1;
-	end append;
+	end append_field;
 
 
 	
-	function append (
+	function append_field (
 		left	: in type_fields_of_line;
 		right	: in type_fields_of_line)
 		return type_fields_of_line 
@@ -723,12 +727,11 @@ package body et_string_processing is
 -- 			null;
 -- 		end if;
 		return line;
-	end append;
+	end append_field;
 
 
 	
-	-- Remove fields from line:
-	function remove (
+	function remove_field (
 		line	: in type_fields_of_line;
 		first	: in type_field_count_positive;
 		last	: in type_field_count_positive)
@@ -748,7 +751,7 @@ package body et_string_processing is
 		end loop;
 		
 		return result;
-	end remove;
+	end remove_field;
 
 
 	

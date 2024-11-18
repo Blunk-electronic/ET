@@ -513,7 +513,8 @@ is
 		
 		-- Extract from the given command the polygon arguments (everything after "outline"):
 		-- example command: board demo draw outline line 0 0 line 50 0 line 50 50 line 0 50
-		arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 4);
+		arguments : constant type_fields_of_line := 
+			remove_field (single_cmd_status.cmd, 1, 4);
 
 		-- Build a basic contour from the arguments:
 		c : constant type_contour := type_contour (to_contour (arguments));
@@ -530,7 +531,8 @@ is
 		
 		-- Extract from the given command the polygon arguments (everything after "hole"):
 		-- example command: board demo draw hole line 2 9 line 2 1 line 8 9
-		arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 4);
+		arguments : constant type_fields_of_line := 
+			remove_field (single_cmd_status.cmd, 1, 4);
 
 		-- Build a basic contour from the arguments:
 		c : constant type_contour := type_contour (to_contour (arguments));
@@ -545,7 +547,8 @@ is
 	procedure draw_keepout_zone is
 		-- Extract from the given command the zone arguments (everything after "keepout"):
 		-- example command: board demo draw keepout line 0 0 line 10 0 line 10 10 line 0 10
-		arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 4);
+		arguments : constant type_fields_of_line := 
+			remove_field (single_cmd_status.cmd, 1, 4);
 
 		-- Build a basic contour from the arguments:
 		c : constant type_contour := type_contour (to_contour (arguments));
@@ -1765,7 +1768,8 @@ is
 		procedure make_polygon is
 			use et_fill_zones;
 			
-			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 6);
+			arguments : constant type_fields_of_line := 
+				remove_field (single_cmd_status.cmd, 1, 6);
 			
 			ps : type_floating_solid;
 			ph : type_floating_hatched;
@@ -1889,7 +1893,8 @@ is
 			use et_fill_zones;
 			
 			-- Extract from the given command the polygon arguments (everything after "zone"):
-			arguments : constant type_fields_of_line := remove (single_cmd_status.cmd, 1, 7);
+			arguments : constant type_fields_of_line := 
+				remove_field (single_cmd_status.cmd, 1, 7);
 
 			-- Build a basic polygon from the arguments:
 			p0 : constant type_contour := type_contour (to_contour (arguments));
