@@ -70,6 +70,21 @@ is
 	point : type_vector_model renames get_cursor_position;
 	
 
+
+	procedure clear is begin
+		case key is
+			when GDK_LC_z =>
+				noun := NOUN_ZONE;
+				clear_zones (active_module, log_threshold + 1);
+
+				set_status ("conductor zones cleared");
+				
+			when others => status_noun_invalid;
+		end case;
+	end clear;
+
+	
+	
 	procedure delete is begin
 		case key is
 			when GDK_LC_a =>
@@ -157,7 +172,7 @@ is
 				noun := NOUN_ZONE;
 				fill_zones (active_module, NORMAL, log_threshold + 1);
 
-				-- CS set_status ("zones filled");
+				set_status ("conductor zones filled");
 				
 			when others => status_noun_invalid;
 		end case;
@@ -624,6 +639,10 @@ begin -- key_pressed
 						noun := noun_default;
 						
 						case key is
+							when GDK_LC_c =>
+								verb := VERB_CLEAR;
+								status_enter_noun;
+
 							when GDK_Delete =>
 								verb := VERB_DELETE;
 								status_enter_noun;
@@ -683,6 +702,7 @@ begin -- key_pressed
 						--put_line ("NOUN entered");
 
 						case verb is
+							when VERB_CLEAR		=> clear;
 							when VERB_DELETE	=> delete;
 							when VERB_DRAW		=> draw;
 							when VERB_FILL		=> fill;

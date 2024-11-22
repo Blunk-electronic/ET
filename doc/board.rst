@@ -452,7 +452,7 @@ Fill Zones in Conductor Layers
 
 		clear zone [net name] [net name] [net name] ... 
 
-.. 	|VNS| f z
+	|VNS| c z
 
 	
 
