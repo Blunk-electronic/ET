@@ -38,9 +38,6 @@
 
 with ada.strings;					use ada.strings;
 with ada.exceptions;
-with ada.containers; 				use ada.containers;
-with ada.containers.doubly_linked_lists;
-
 
 with et_exceptions;					use et_exceptions;
 
@@ -54,6 +51,7 @@ with et_thermal_relief;				use et_thermal_relief;
 with et_device_query_board;			use et_device_query_board;
 
 with et_device_query_schematic;		use et_device_query_schematic;
+
 
 separate (et_board_ops.conductors)
 
@@ -956,7 +954,7 @@ is
 		--end if;
 
 		
-		-- Remove the old fill (incl. islands, lakes and thermal reliefes):
+		-- Remove the old fill (incl. islands, lakes):
 		zone.islands := no_islands;
 
 		

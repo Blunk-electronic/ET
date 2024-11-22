@@ -1689,25 +1689,7 @@ package body et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;	
 		log_threshold	: in type_log_level;
 		nets 			: in pac_net_names.list := no_net_names)
-	is 
-
-	begin
-
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " clearing fill zones ",
-			level => log_threshold);
-
-		log_indentation_up;
-		
-		-- generic_modules.update_element (
-		-- 	position	=> module_cursor,
-		-- 	process		=> query_module'access);
-
-		log_indentation_down;
-
-	end clear_zones;
-
+	is separate;
 	
 	
 	

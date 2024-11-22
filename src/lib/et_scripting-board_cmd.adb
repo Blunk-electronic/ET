@@ -2544,7 +2544,7 @@ is
 			when 4 => -- clear all zones
 				
 				-- command: board demo clear zone
-				null;
+				clear_zones (module_cursor, log_threshold + 1);
 
 				
 			when others => 
@@ -2555,7 +2555,7 @@ is
 					nets.append (to_net_name (f (place)));
 				end loop;
 
-				null;
+				clear_zones (module_cursor, log_threshold + 1, nets);
 		end case;
 					
 		if runmode /= MODE_HEADLESS then
