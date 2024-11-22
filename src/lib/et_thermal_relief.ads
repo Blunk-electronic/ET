@@ -86,8 +86,7 @@ package et_thermal_relief is
 	
 	-- Polygons which are connected with a net
 	-- can be connected with pads by thermals or solid:
-	keyword_connection : constant string := "connection";
-	
+		
 	type type_pad_connection is (THERMAL, SOLID);
 	pad_connection_default : constant type_pad_connection := THERMAL;
 

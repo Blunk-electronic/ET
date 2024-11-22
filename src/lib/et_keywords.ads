@@ -56,6 +56,7 @@ package et_keywords is
 	keyword_clearance				: constant string := "clearance";
 	keyword_columns					: constant string := "columns";	
 	keyword_conductor				: constant string := "conductor";
+	keyword_connection				: constant string := "connection";
 	keyword_content 				: constant string := "content";
 
 	keyword_default					: constant string := "default";

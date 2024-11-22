@@ -1765,7 +1765,7 @@ is
 		
 
 		-- Extract from the given command the polygon arguments (everything after "zone"):
-		procedure make_polygon is
+		procedure make_fill_zone is
 			use et_fill_zones;
 			
 			arguments : constant type_fields_of_line := 
@@ -1813,7 +1813,7 @@ is
 					place_fill_zone (module_cursor, ph, log_threshold + 1);
 					
 			end case;
-		end make_polygon;
+		end make_fill_zone;
 
 		
 	begin -- route_freetrack
@@ -1871,7 +1871,7 @@ is
 			when ZONE =>
 				case cmd_field_count is
 					when 5 .. type_field_count'last =>
-						make_polygon;
+						make_fill_zone;
 
 					when others =>
 						command_incomplete;
@@ -1889,7 +1889,7 @@ is
 		settings : constant et_pcb.type_user_settings := get_user_settings (module_cursor);
 
 		
-		procedure make_polygon is
+		procedure make_fill_zone is
 			use et_fill_zones;
 			
 			-- Extract from the given command the polygon arguments (everything after "zone"):
@@ -1899,6 +1899,7 @@ is
 			-- Build a basic polygon from the arguments:
 			p0 : constant type_contour := type_contour (to_contour (arguments));
 
+			
 			procedure make_solid_thermal is
 				p1 : type_zone_solid;
 				p2 : type_route_solid (connection => THERMAL);
@@ -2017,7 +2018,7 @@ is
 			end make_hatched_solid;
 
 			
-		begin -- make_polygon
+		begin -- make_fill_zone
 			case settings.polygons_conductor.fill_style is
 				when SOLID =>
 					case settings.polygons_conductor.connection is
@@ -2032,7 +2033,7 @@ is
 					end case;
 					
 			end case;
-		end make_polygon;
+		end make_fill_zone;
 
 
 		-- use et_devices;
@@ -2247,7 +2248,7 @@ is
 					--  arc 50 100 100 100 0 100 ccw / 
 					--  line 0 100 0 0
 					when 6 .. type_field_count'last =>
-						make_polygon;
+						make_fill_zone;
 
 					when others =>
 						command_incomplete;
