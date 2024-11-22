@@ -314,6 +314,17 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level;
 		nets 			: in pac_net_names.list := no_net_names); -- GND, GNDA, P3V3, ...
 
+
+
+	-- Clears fill zones. If nets is empty, then all
+	-- zones will be cleared (even those who are floating).
+	-- If nets contains net names then only the zones of these
+	-- nets will be filled:
+	procedure clear_zones (
+		module_cursor	: in pac_generic_modules.cursor;	
+		log_threshold	: in type_log_level;
+		nets 			: in pac_net_names.list := no_net_names); -- GND, GNDA, P3V3, ...
+
 	
 	
 -- TEXTS:

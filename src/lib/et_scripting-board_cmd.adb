@@ -2536,6 +2536,34 @@ is
 	end fill_zones;
 	
 
+	
+	procedure clear_fill_zone is
+		nets : pac_net_names.list;
+	begin
+		case cmd_field_count is
+			when 4 => -- clear all zones
+				
+				-- command: board demo clear zone
+				null;
+
+				
+			when others => 
+				-- like: board demo clear zone GND P3V3 AGND
+
+				-- collect the optional net names in list "nets":
+				for place in 5 .. cmd_field_count loop
+					nets.append (to_net_name (f (place)));
+				end loop;
+
+				null;
+		end case;
+					
+		if runmode /= MODE_HEADLESS then
+			set_status ("conductor zones cleared");
+		end if;
+	end clear_fill_zone;
+
+	
 
 	procedure update_ratsnest is
 		use et_board_ops.ratsnest;
@@ -2704,7 +2732,17 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-				
+
+			when VERB_CLEAR =>
+				case noun is
+					when NOUN_ZONE =>
+						clear_fill_zone;
+
+					when others => invalid_noun (to_string (noun));
+				end case;
+
+
+						
 			when VERB_DELETE =>
 				case noun is
 					when NOUN_DEVICE =>

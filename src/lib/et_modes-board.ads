@@ -43,6 +43,7 @@ package et_modes.board is
 		VERB_NONE, -- means no verb entered
 
 		VERB_ADD,
+		VERB_CLEAR,
 		VERB_DELETE,
 		VERB_DISPLAY,
 		--DRAG,

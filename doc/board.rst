@@ -445,6 +445,16 @@ Fill Zones in Conductor Layers
 	|VNS| f z
 
 
+	
+#. Clear Fill Zone
+
+	.. code-block::
+
+		clear zone [net name] [net name] [net name] ... 
+
+.. 	|VNS| f z
+
+	
 
 ++++++++++++++++++++++
 Route Restrict Objects
