@@ -47,15 +47,17 @@ package et_keywords is
 	keyword_alignment				: constant string := "alignment";
 	keyword_assembly_technology		: constant string := "technology";
 	keyword_assembly_variant		: constant string := "assembly_variant";
+
 	keyword_border_width			: constant string := "border_width";
 	keyword_bottom					: constant string := "bottom";
-	keyword_not_mounted				: constant string := "not_mounted";
+
 	keyword_center					: constant string := "center";
 	keyword_class					: constant string := "class";
 	keyword_clearance				: constant string := "clearance";
 	keyword_columns					: constant string := "columns";	
 	keyword_conductor				: constant string := "conductor";
 	keyword_content 				: constant string := "content";
+
 	keyword_default					: constant string := "default";
 	keyword_delta					: constant string := "delta";
 	keyword_description				: constant string := "description";	
@@ -68,10 +70,12 @@ package et_keywords is
 	keyword_dots					: constant string := "dots";
 	keyword_drill_size				: constant string := "drill_size";
 	keyword_dru						: constant string := "dru";
+
 	keyword_easing					: constant string := "easing";
 	keyword_easing_radius 			: constant string := "easing_radius";	
 	keyword_easing_style  			: constant string := "easing_style";
 	keyword_end						: constant string := "end";
+
 	keyword_face					: constant string := "face";	
 	keyword_file					: constant string := "file";
 	keyword_fill					: constant string := "fill";
@@ -79,28 +83,37 @@ package et_keywords is
 	keyword_fill_style 				: constant string := "fill_style";	
 	keyword_flipped					: constant string := "flipped";
 	keyword_from					: constant string := "from";
+
 	keyword_generic_name			: constant string := "generic_name";
 
+	keyword_hatching_border_width	: constant string := "hatching_border_width";	
+	--keyword_hatching_line_spacing	: constant string := "hatching_line_spacing";		
+	keyword_hatching_line_width		: constant string := "hatching_line_width";
 	keyword_height					: constant string := "height";	
+	keyword_horizontal				: constant string := "horizontal";
+
+	keyword_inner					: constant string := "inner";
+	keyword_instance_name			: constant string := "instance_name";
+	keyword_isolation				: constant string := "isolation"; -- CS rename
+	
 	keyword_junction				: constant string := "junction";
+
 	keyword_layer					: constant string := "layer";	
 	keyword_layers					: constant string := "layers";
 	keyword_layout					: constant string := "layout";	
 	keyword_lines					: constant string := "lines";
 	keyword_linewidth				: constant string := "linewidth";
 	keyword_locked 					: constant string := "locked";
-	keyword_hatching_border_width	: constant string := "hatching_border_width";	
-	--keyword_hatching_line_spacing	: constant string := "hatching_line_spacing";		
-	keyword_hatching_line_width		: constant string := "hatching_line_width";
-	keyword_horizontal				: constant string := "horizontal";
 
-	keyword_inner					: constant string := "inner";
-	keyword_instance_name			: constant string := "instance_name";
-	keyword_isolation				: constant string := "isolation"; -- CS rename
 	keyword_meaning					: constant string := "meaning";
+	keyword_micro_via_drill_min		: constant string := "micro_via_drill_min";
+	keyword_micro_via_restring_min	: constant string := "micro_via_restring_min";	
 	keyword_mirrored				: constant string := "mirrored";
 	keyword_model					: constant string := "model";				
+
 	keyword_netchanger				: constant string := "netchanger";		
+	keyword_not_mounted				: constant string := "not_mounted";
+	
 	keyword_off						: constant string := "off";
 	keyword_on						: constant string := "on";
 	keyword_on_off					: constant string := "on_off";
@@ -109,25 +122,25 @@ package et_keywords is
 	keyword_outer					: constant string := "outer";
 
 	keyword_package_model 			: constant string := "package_model";
-
 	keyword_pad_shape				: constant string := "pad_shape";	
-
-	
 	keyword_paper_size				: constant string := "paper_size";
 	keyword_partcode 				: constant string := "partcode";	
 	keyword_path					: constant string := "path";
 	keyword_position				: constant string := "position";
 	keyword_position_in_board		: constant string := "position_in_board";
 	keyword_position_in_schematic	: constant string := "position_in_schematic";	
-
-	
 	keyword_prefix					: constant string := "prefix";
+	keyword_priority				: constant string := "priority";
+
 	keyword_radius					: constant string := "radius";	
+	keyword_restring_inner 			: constant string := "restring_inner";
+	keyword_restring_outer 			: constant string := "restring_outer";
 	keyword_revision				: constant string := "revision";
 	keyword_rotation 				: constant string := "rotation";
 	keyword_rotation_in_schematic	: constant string := "rotation_in_schematic";
 	keyword_route					: constant string := "route";
 	keyword_rows					: constant string := "rows";
+
 	keyword_scope					: constant string := "scope";	
 	keyword_sectors					: constant string := "sectors";
 	keyword_sheet					: constant string := "sheet";	
@@ -135,29 +148,27 @@ package et_keywords is
 	keyword_sheet_description		: constant string := "text";
 	keyword_sheet_number			: constant string := "number";
 	keyword_size					: constant string := "size";
-
 	keyword_solder_paste_shape			: constant string := "solder_paste_shape";
 	keyword_solder_paste_shrink_factor	: constant string := "solder_paste_shrink_factor";
 	keyword_solder_paste_status			: constant string := "solder_paste_status";
-
-	
 	keyword_spacing					: constant string := "spacing";
 	keyword_start					: constant string := "start";
-
 	keyword_stop_mask_shape			: constant string := "stop_mask_shape";
 	keyword_stop_mask_shape_bottom	: constant string := "stop_mask_shape_bottom";	
 	keyword_stop_mask_shape_top		: constant string := "stop_mask_shape_top";
-
 	keyword_stop_mask_status		: constant string := "stop_mask_status";
 	keyword_style					: constant string := "style";
 	keyword_submodule				: constant string := "submodule";
 	keyword_swap_level				: constant string := "swap_level";
 	keyword_symbol_file				: constant string := "symbol_model";
+
 	keyword_template				: constant string := "template";
 	keyword_tht_hole				: constant string := "hole";	
 	keyword_to						: constant string := "to";
 	keyword_track_width_min			: constant string := "track_width_min";
+
 	keyword_unit					: constant string := "unit";
+
 	keyword_value					: constant string := "value";
 	keyword_variant					: constant string := "variant";
 	keyword_vertical				: constant string := "vertical";
@@ -165,22 +176,19 @@ package et_keywords is
 	keyword_via						: constant string := "via";
 	keyword_via_category 			: constant string := "category";
 	keyword_via_drill				: constant string := "drill";
+	keyword_via_drill_min			: constant string := "via_drill_min";
+	keyword_via_restring_min		: constant string := "via_restring_min";	
 	keyword_view_mode				: constant string := "view_mode";
+
 	keyword_width					: constant string := "width";
 	keyword_width_inner_layers		: constant string := "width_inner_layers";
 	keyword_x 						: constant string := "x";
 	keyword_y 						: constant string := "y";		
 	
-	keyword_via_drill_min			: constant string := "via_drill_min";
-	keyword_via_restring_min		: constant string := "via_restring_min";	
-	keyword_micro_via_drill_min		: constant string := "micro_via_drill_min";
-	keyword_micro_via_restring_min	: constant string := "micro_via_restring_min";	
 
 	-- keyword_via_restring_inner	: constant string := "restring_inner";
 	-- keyword_via_restring_outer	: constant string := "restring_outer";
 
-	keyword_restring_outer : constant string := "restring_outer";
-	keyword_restring_inner : constant string := "restring_inner";
 
 	
 	

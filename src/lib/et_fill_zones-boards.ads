@@ -46,9 +46,6 @@ package et_fill_zones.boards is
 	
 	
 	-- priority: 0 is weakest
-	keyword_priority : constant string := "priority";
-
-	
 	zone_priority_max : constant natural := 100;
 
 	subtype type_priority is natural range natural'first .. zone_priority_max;
@@ -57,12 +54,6 @@ package et_fill_zones.boards is
 	function to_priority (priority_level : in string) return type_priority;
 
 	
-
-
-
-	
-	text_width_min 		: constant string := "minimum_width";	
-	text_signal_layer 	: constant string := "signal_layer";
 	
 
 	type type_user_settings is record

@@ -141,8 +141,8 @@ package et_kicad.pcb is
 
 	keyword_fp_text_mirrored	: constant string := "mirror";
 	
-
-
+	text_width_min 				: constant string := "minimum_width";	
+	text_signal_layer 			: constant string := "signal_layer";
 	
 
 	
