@@ -2508,18 +2508,18 @@ is
 	
 	
 
-	procedure fill_polygons is 
+	procedure fill_zones is 
 		nets : pac_net_names.list;
 	begin
 		case cmd_field_count is
-			when 4 => -- fill all polygons
+			when 4 => -- fill all zones
 				
-				-- command: board demo fill polygon
+				-- command: board demo fill zone
 				fill_zones (module_cursor, polygon_log_category, log_threshold + 1);
 
 				
 			when others => 
-				-- like: board demo fill polygon GND P3V3 AGND
+				-- like: board demo fill zone GND P3V3 AGND
 
 				-- collect the optional net names in list "nets":
 				for place in 5 .. cmd_field_count loop
@@ -2530,9 +2530,9 @@ is
 		end case;
 				
 		if runmode /= MODE_HEADLESS then
-			set_status ("conductor polygons filled");
+			set_status ("conductor zones filled");
 		end if;
-	end fill_polygons;
+	end fill_zones;
 	
 
 
@@ -2935,7 +2935,7 @@ is
 			when VERB_FILL =>
 				case noun is
 					when NOUN_ZONE =>
-						fill_polygons;
+						fill_zones;
 						
 					when others => 
 						invalid_noun (to_string (noun));
