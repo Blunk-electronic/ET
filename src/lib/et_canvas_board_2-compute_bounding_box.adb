@@ -48,6 +48,7 @@ with et_frames;
 
 -- with et_pcb_stack;
 -- with et_design_rules;
+with et_pcb_contour;
 
 with et_text;
 
@@ -123,81 +124,130 @@ is
 	end parse_drawing_frame;
 
 
-	procedure parse_database is
 	
--- 		-- This procedure is called each time an object of the database
--- 		-- is processed:
--- 		procedure query_object (oc : in pac_objects.cursor) is
--- 			-- This is the complex candidate object being handled:
--- 			object : type_complex_object renames element (oc);
--- 
--- 			
--- 			-- This procedure computes the bounding-box of a line:
--- 			procedure query_line (lc : in pac_lines.cursor) is
--- 				-- The candidate line being handled:
--- 				line : type_line renames element (lc);
--- 
--- 				-- Compute the preliminary bounding-box of the line:
--- 				b : type_area := get_bounding_box (line);
--- 			begin
--- 				-- Move the box by the position of the
--- 				-- complex object to get the final bounding-box
--- 				-- of the line candidate:
--- 				move_by (b.position, object.position);
--- 
--- 				-- If this is the first primitive object,
--- 				-- then use its bounding-box as seed to start from:
--- 				if first_object then
--- 					bbox_new := b;
--- 					first_object := false;
--- 				else
--- 				-- Otherwise, merge the box b with the box being built:
--- 					merge_areas (bbox_new, b);
--- 				end if;
--- 			end query_line;
--- 
--- 
--- 			-- This procedure computes the bounding-box of a circle:
--- 			procedure query_circle (cc : in pac_circles.cursor) is
--- 				-- The candidate circle being handled:
--- 				circle : type_circle renames element (cc);
--- 
--- 				-- Compute the preliminary bounding-box of the circle:
--- 				b : type_area := get_bounding_box (circle);
--- 			begin				
--- 				-- Move the box by the position of the
--- 				-- complex object to get the final bounding-box
--- 				-- of the circle candidate:
--- 				move_by (b.position, object.position);
--- 
--- 				-- If this is the first primitive object,
--- 				-- then use its bounding-box as seed to start from:
--- 				if first_object then
--- 					bbox_new := b;
--- 					first_object := false;
--- 				else
--- 				-- Otherwise, merge the box b with the box being built:
--- 					merge_areas (bbox_new, b);
--- 				end if;
--- 			end query_circle;
--- 
--- 			
--- 		begin
--- 			-- Iterate the lines, circles and other primitive
--- 			-- components of the current object:
--- 			object.lines.iterate (query_line'access);
--- 			object.circles.iterate (query_circle'access);
--- 			-- CS arcs
--- 		end query_object;
--- 
-		-- 
+
+	-- This procedure parses all objects of the board database (or layout drawing).
+	-- All objects are processed regardless whether they are displayed or not:
+	procedure parse_board is
+
+
+		-- This procedure parses the outer contour of the board
+		-- and the holes (which can be regarded as inner contour):
+		procedure process_board_outline is
+			use et_pcb_contour;
+
+			-- Outer contour:
+			procedure process_outline is
+				
+				procedure query_outline_segments (
+					module_name	: in pac_module_name.bounded_string;
+					module		: in type_generic_module)
+				is 
+					use pac_contours; -- instance of generic package
+					use pac_segments;
+
+					-- The bounding box of a single segment:
+					b : type_area;
+					
+					procedure query_segment (c : in pac_segments.cursor) is 
+						s : type_segment renames element (c);
+					begin
+						case s.shape is
+							when LINE =>
+								-- Compute bounding box of line segment:
+								b := get_bounding_box (s.segment_line, pcb_contour_line_width);
+
+							when ARC =>
+								-- Compute bounding box of arc segment:
+								b := get_bounding_box (s.segment_arc, pcb_contour_line_width);
+						end case;
+						merge_areas (bbox_new, b);
+					end query_segment;
+					
+				begin
+					-- If the outer contour is just a circle:
+					if module.board.contours.outline.contour.circular then
+						-- Compute bounding box of the single circle segment:
+						b := get_bounding_box (
+							module.board.contours.outline.contour.circle,
+							pcb_contour_line_width);
+
+						merge_areas (bbox_new, b);
+					else
+						-- If the outer contour is composed of lines and arcs:
+						iterate (
+							module.board.contours.outline.contour.segments,
+							query_segment'access);
+					end if;
+				end query_outline_segments;
+
+				
+			begin
+				if debug then
+					put_line ("processing board outline ...");
+				end if;
+
+				query_element (active_module, query_outline_segments'access);
+			end process_outline;
+
+
+
+			
+
+			-- Inner contour:
+			procedure process_holes is
+
+				procedure query_holes (
+					module_name	: in pac_module_name.bounded_string;
+					module		: in type_generic_module) 
+				is
+					use pac_holes;
+
+		
+					procedure query_hole (c : in pac_holes.cursor) is 
+						h : type_hole renames element (c);
+					begin
+						if h.contour.circular then
+							null;
+
+							-- draw_circle (
+							-- 	circle	=> element (c).contour.circle,
+							-- 	filled	=> NO, -- holes are never filled
+							-- 	width	=> 0.0); -- don't care
+							
+						else
+							null;
+							-- iterate (element (c).contour.segments, query_segment'access);
+						end if;
+					end query_hole;
+					
+				begin
+					iterate (module.board.contours.holes, query_hole'access);
+				end query_holes;
+
+				
+			begin
+				if debug then
+					put_line ("processing board holes ...");
+				end if;
+
+				query_element (active_module, query_holes'access);				
+			end process_holes;
+
+
+			
+		begin
+			process_outline;
+			process_holes;
+		end process_board_outline;
+
+		
 	begin
-		null;
+		process_board_outline;
 
 		-- CS
-		
-		-- objects_database_model.iterate (query_object'access);
-	end parse_database;
+
+	end parse_board;
 
 		
 	-- This procedure updates the bounding-box and
@@ -251,11 +301,9 @@ begin
 	-- The drawing frame is regarded as part of the model:
 	parse_drawing_frame;
 	
-	-- The database that contains all objects of the model
-	-- must be parsed. This is the call of an iteration through
-	-- all objects of the database:
-	parse_database;
+	parse_board;
 
+	
 	
 	-- The temporary bounding-box bbox_new in its current
 	-- state is the so called "inner bounding-box" (IB).
