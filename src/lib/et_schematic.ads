@@ -168,7 +168,7 @@ package et_schematic is
 	end record;
 
 
-
+	
 	
 	
 	-- Returns a cursor to the strand that is
@@ -246,6 +246,9 @@ package et_schematic is
  		element_type	=> type_device_sch);
 
 
+
+
+	
 	-- Returns the name of the device indicated by
 	-- the given cursor:
 	function to_string (
@@ -254,8 +257,39 @@ package et_schematic is
 	
 	
 	use pac_devices_sch;
-	
 
+	
+	-- Returns true if given device is real (means if it has a physical 
+	-- counterpart in the PCB layout). For a resistor it returns true.
+	-- For a GND symbol it returns false:
+	function is_real (
+		device : in pac_devices_sch.cursor) 
+		return boolean;
+
+
+	
+	-- Returns the value of the given device.
+	-- The device must be real. Otherwise constraint error is raised.
+	function get_value (
+		device : in pac_devices_sch.cursor)
+		return pac_device_value.bounded_string;
+
+	
+	-- Returns the purpose of the given device.
+	-- The device must be real. Otherwise constraint error is raised.
+	function get_purpose (
+		device : in pac_devices_sch.cursor)
+		return pac_device_purpose.bounded_string;
+
+
+	-- Returns the partcode of the given device.
+	-- The device must be real. Otherwise constraint error is raised.
+	function get_partcode (
+		device : in pac_devices_sch.cursor)
+		return pac_device_partcode.bounded_string;
+
+
+	
 
 	
 	

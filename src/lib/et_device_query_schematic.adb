@@ -42,21 +42,6 @@ with et_device_model;					use et_device_model;
 
 
 package body et_device_query_schematic is
-
-
-	function is_real (
-		device : in pac_devices_sch.cursor)
-		return boolean 
-	is 
-		use et_device_appearance;
-	begin
-		case pac_devices_sch.element (device).appearance is
-			when APPEARANCE_PCB		=> return true;
-			when APPEARANCE_VIRTUAL	=> return false;
-		end case;
-	end is_real;
-
-
 	
 	function get_device_model (
 		device : in pac_devices_sch.cursor)

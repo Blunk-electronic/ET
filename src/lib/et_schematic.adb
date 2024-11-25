@@ -47,7 +47,7 @@ with et_logging;				use et_logging;
 
 
 package body et_schematic is
-
+	
 				
 	function get_first_strand_on_sheet (
 		sheet		: in type_sheet;
@@ -250,6 +250,7 @@ package body et_schematic is
 	end get_ports;
 
 
+
 	
 
 	function to_string (
@@ -260,6 +261,48 @@ package body et_schematic is
 	begin
 		return to_string (key (device_cursor));
 	end to_string;
+
+
+
+
+	function is_real (
+		device : in pac_devices_sch.cursor)
+		return boolean 
+	is 
+		use pac_devices_sch;
+	begin
+		case element (device).appearance is
+			when APPEARANCE_PCB		=> return true;
+			when APPEARANCE_VIRTUAL	=> return false;
+		end case;
+	end is_real;
+
+		
+
+	function get_value (
+		device : in pac_devices_sch.cursor)
+		return pac_device_value.bounded_string 
+	is begin
+		return pac_devices_sch.element (device).value;
+	end get_value;
+
+	
+
+	function get_purpose (
+		device : in pac_devices_sch.cursor)
+		return pac_device_purpose.bounded_string
+	is begin
+		return pac_devices_sch.element (device).purpose;
+	end get_purpose;
+
+	
+	
+	function get_partcode (
+		device : in pac_devices_sch.cursor)
+		return pac_device_partcode.bounded_string
+	is begin
+		return pac_devices_sch.element (device).partcode;
+	end get_partcode;
 
 
 	
