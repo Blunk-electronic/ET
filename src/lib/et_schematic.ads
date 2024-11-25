@@ -68,19 +68,22 @@ with et_submodules;
 with et_material;
 with et_netlists;
 with et_text;
-with et_symbols;				use et_symbols;
-with et_device_appearance;		use et_device_appearance;
-with et_device_purpose;			use et_device_purpose;
-with et_device_model_names;		use et_device_model_names;
-with et_device_value;			use et_device_value;
-with et_device_name;			use et_device_name;
-with et_device_partcode;		use et_device_partcode;
-with et_package_variant;		use et_package_variant;
+with et_symbols;						use et_symbols;
+with et_device_appearance;				use et_device_appearance;
+with et_device_purpose;					use et_device_purpose;
+with et_device_model_names;				use et_device_model_names;
+with et_device_value;					use et_device_value;
+with et_device_name;					use et_device_name;
+with et_device_partcode;				use et_device_partcode;
+with et_device_library;					use et_device_library;
+with et_package_names;					use et_package_names;
+with et_package_variant;				use et_package_variant;
+with et_packages;						use et_packages;
 with et_commit;
-with et_object_status;			use et_object_status;
-with et_unit_name;				use et_unit_name;
-with et_units;					use et_units;
-with et_fonts;					use et_fonts;
+with et_object_status;					use et_object_status;
+with et_unit_name;						use et_unit_name;
+with et_units;							use et_units;
+with et_fonts;							use et_fonts;
 
 
 package et_schematic is
@@ -258,6 +261,28 @@ package et_schematic is
 	
 	use pac_devices_sch;
 
+
+	-- Maps from schematic device to device model (in library):
+	function get_device_model (
+		device : in pac_devices_sch.cursor)
+		return pac_devices_lib.cursor;
+
+
+	-- Returns the name of the package model of the given device
+	-- according to the current package variant of the device.
+	-- The given device must be real. Otherwise constraint error arises here.	
+	function get_package_model ( -- CS rename to get_package_model_name
+		device : in pac_devices_sch.cursor)
+		return pac_package_model_file_name.bounded_string; -- libraries/packages/smd/SOT23.pac
+	
+
+	-- Returns the cursor to the package model of the given device
+	-- according to the current package variant of the device.
+	-- The given device must be real. Otherwise constraint error arises here.	
+	function get_package_model (
+		device : in pac_devices_sch.cursor)
+		return pac_package_models.cursor;
+
 	
 	-- Returns true if given device is real (means if it has a physical 
 	-- counterpart in the PCB layout). For a resistor it returns true.
@@ -267,6 +292,14 @@ package et_schematic is
 		return boolean;
 
 
+	-- Returns true if the given device has a real package.
+	-- The given device must have appearance SCH_PCB. 
+	-- Otherwise a constraint error is raised.
+	function has_real_package (
+		device : in pac_devices_sch.cursor)
+		return boolean;
+
+	
 	
 	-- Returns the value of the given device.
 	-- The device must be real. Otherwise constraint error is raised.

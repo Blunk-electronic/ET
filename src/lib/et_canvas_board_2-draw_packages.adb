@@ -1815,6 +1815,7 @@ is
 
 			use et_pcb;
 			use pac_devices_non_electric;
+			use et_schematic;
 		begin
 			-- locate the package model in the package library:
 			if electric then
