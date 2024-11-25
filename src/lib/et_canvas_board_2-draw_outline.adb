@@ -52,6 +52,7 @@ procedure draw_outline is
 
 	
 	procedure query_segment (c : in pac_segments.cursor) is 
+		-- CS s : type_segment renames element (c);
 	begin
 		case element (c).shape is
 			when LINE =>
@@ -71,8 +72,7 @@ procedure draw_outline is
 	procedure query_outline_segments (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module)
-	is 
-	begin
+	is begin
 		if module.board.contours.outline.contour.circular then
 
 			draw_circle (
@@ -91,9 +91,9 @@ procedure draw_outline is
 		module		: in type_generic_module) 
 	is
 		use pac_holes;
-
 		
 		procedure query_hole (c : in pac_holes.cursor) is 
+			-- CS h : type_hole renames element (c);
 		begin
 			if element (c).contour.circular then
 
