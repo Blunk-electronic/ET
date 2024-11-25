@@ -54,7 +54,6 @@ with et_packages;
 with et_package_names;
 with et_device_appearance;
 with et_device_rw;
-with et_device_query_schematic;		use et_device_query_schematic;
 with et_device_model;				use et_device_model;
 with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 

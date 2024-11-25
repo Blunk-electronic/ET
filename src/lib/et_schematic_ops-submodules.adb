@@ -43,7 +43,6 @@ with et_directory_and_file_ops;
 
 with et_mirroring;					use et_mirroring;
 with et_pcb_coordinates_2;
-with et_device_query_schematic;
 with et_generic_stacks;
 with et_device_appearance;
 with et_package_names;
@@ -4884,7 +4883,6 @@ package body et_schematic_ops.submodules is
 						use pac_devices_sch;
 						use et_assembly_variants.pac_device_variants;
 						use et_symbols;
-						use et_device_query_schematic;
 					begin
 						-- the device must be real
 						--if element (cursor_schematic).appearance = PCB then -- skip virtual devices
@@ -4927,7 +4925,6 @@ package body et_schematic_ops.submodules is
 						alt_dev_cursor : et_assembly_variants.pac_device_variants.cursor;
 						use et_assembly_variants.pac_device_variants;
 						use et_symbols;
-						use et_device_query_schematic;
 						use et_device_appearance;
 						use et_package_names;
 					begin

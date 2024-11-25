@@ -72,7 +72,6 @@ with et_device_partcode;			use et_device_partcode;
 with et_device_model_names;			use et_device_model_names;
 with et_device_value;				use et_device_value;
 with et_schematic;					use et_schematic;
-with et_device_query_schematic;		use et_device_query_schematic;
 with et_board_ops.ratsnest;
 
 with et_material;

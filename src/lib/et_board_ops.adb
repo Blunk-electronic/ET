@@ -39,7 +39,6 @@
 with et_assembly_variants;
 with et_meta;
 with et_netlists;
-with et_device_query_schematic;		use et_device_query_schematic;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_schematic_ops.submodules;
 with et_schematic_ops;				use et_schematic_ops;

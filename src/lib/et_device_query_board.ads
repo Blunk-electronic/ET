@@ -58,7 +58,6 @@ with et_assy_doc.packages;
 
 with et_symbols;	
 with et_schematic;						use et_schematic;
-with et_device_query_schematic;			use et_device_query_schematic;
 with et_pcb;							use et_pcb;
 with et_pcb_stack;						use et_pcb_stack;
 with et_packages;						use et_packages;

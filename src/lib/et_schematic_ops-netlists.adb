@@ -37,7 +37,6 @@
 --
 
 with ada.exceptions;				use ada.exceptions;
-with et_device_query_schematic;		use et_device_query_schematic;
 with et_schematic_ops.Submodules;
 with et_generic_stacks;
 
