@@ -69,6 +69,7 @@ with et_material;
 with et_netlists;
 with et_text;
 with et_symbols;						use et_symbols;
+with et_port_names;						use et_port_names;
 with et_device_appearance;				use et_device_appearance;
 with et_device_purpose;					use et_device_purpose;
 with et_device_model_names;				use et_device_model_names;
@@ -78,6 +79,7 @@ with et_device_partcode;				use et_device_partcode;
 with et_device_library;					use et_device_library;
 with et_package_names;					use et_package_names;
 with et_package_variant;				use et_package_variant;
+with et_terminals;						use et_terminals;
 with et_packages;						use et_packages;
 with et_commit;
 with et_object_status;					use et_object_status;
@@ -248,18 +250,20 @@ package et_schematic is
 		key_type		=> type_device_name, -- something like "IC43"
  		element_type	=> type_device_sch);
 
+	use pac_devices_sch;
 
 
+	
 
+-- DEVICE QUERY OPERATIONS:
+	
 	
 	-- Returns the name of the device indicated by
 	-- the given cursor:
 	function to_string (
 		device_cursor : in pac_devices_sch.cursor)
 		return string;
-	
-	
-	use pac_devices_sch;
+		
 
 
 	-- Maps from schematic device to device model (in library):
@@ -329,6 +333,26 @@ package et_schematic is
 		device : in pac_devices_sch.cursor)
 		return pac_package_variant_name.bounded_string;
 
+
+
+	-- Maps from the given terminal to the linked port and unit.
+	-- The given device must be real. Otherwise a constraint error
+	-- will be raised:
+	function get_port (
+		device		: in pac_devices_sch.cursor;
+		terminal	: in et_terminals.pac_terminal_name.bounded_string) -- H7, 1, 14
+		return type_get_port_result;
+
+
+	-- Maps from the given device cursor, unit and port name 
+	-- to a cursor of the linked terminal.
+	-- A port is always linked with a terminal.
+	-- The given device must be real. Otherwise a constraint error will be raised:
+	function get_terminal (
+		device	: in pac_devices_sch.cursor;
+		unit	: in pac_unit_name.bounded_string;
+		port	: in pac_port_name.bounded_string)
+		return et_terminals.pac_terminals.cursor;
 
 	
 

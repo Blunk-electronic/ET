@@ -58,25 +58,9 @@ package et_device_query_schematic is
 	use pac_devices_sch;
 
 
-
-	-- Maps from the given terminal to the linked port and unit.
-	-- The given device must be real. Otherwise a constraint error
-	-- will be raised:
-	function get_port (
-		device		: in pac_devices_sch.cursor;
-		terminal	: in et_terminals.pac_terminal_name.bounded_string) -- H7, 1, 14
-		return type_get_port_result;
+	procedure dummy;
 
 
-	-- Maps from the given device cursor, unit and port name 
-	-- to a cursor of the linked terminal.
-	-- A port is always linked with a terminal.
-	-- The given device must be real. Otherwise a constraint error will be raised:
-	function get_terminal (
-		device	: in pac_devices_sch.cursor;
-		unit	: in pac_unit_name.bounded_string;
-		port	: in pac_port_name.bounded_string)
-		return et_terminals.pac_terminals.cursor;
 
 
 			
