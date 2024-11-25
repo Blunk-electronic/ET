@@ -261,6 +261,22 @@ package body et_schematic is
 
 
 
+
+	procedure iterate (
+		devices	: in pac_devices_sch.map;
+		process	: not null access procedure (position : in pac_devices_sch.cursor);
+		proceed	: not null access boolean)
+	is 
+		use pac_devices_sch;
+		c : pac_devices_sch.cursor := devices.first;
+	begin
+		while c /= no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+	
+
 	
 
 	function to_string (
@@ -286,6 +302,7 @@ package body et_schematic is
 	end get_device_model;
 
 
+	
 
 	function get_package_model (
 		device : in pac_devices_sch.cursor)
@@ -313,6 +330,7 @@ package body et_schematic is
 
 
 	
+	
 	function get_package_model (
 		device : in pac_devices_sch.cursor)
 		return pac_package_models.cursor
@@ -324,6 +342,7 @@ package body et_schematic is
 	end get_package_model;
 
 
+	
 	
 	function is_real (
 		device : in pac_devices_sch.cursor)
@@ -503,33 +522,6 @@ package body et_schematic is
 		-- Get the cursor to the actual terminal:
 		return get_terminal (package_cursor, terminal_name);
 	end get_terminal;
-
-
-	
-	
-	
-	procedure iterate (
-		devices	: in pac_devices_sch.map;
-		process	: not null access procedure (position : in pac_devices_sch.cursor);
-		proceed	: not null access boolean)
-	is 
-		use pac_devices_sch;
-		c : pac_devices_sch.cursor := devices.first;
-	begin
-		while c /= no_element and proceed.all = TRUE loop
-			process (c);
-			next (c);
-		end loop;
-	end iterate;
-
-	
-	
-
-	
-
-	
-
-
 
 
 	

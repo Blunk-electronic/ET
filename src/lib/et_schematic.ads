@@ -253,6 +253,13 @@ package et_schematic is
 	use pac_devices_sch;
 
 
+
+	-- Iterates the devices. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		devices	: in pac_devices_sch.map;
+		process	: not null access procedure (position : in pac_devices_sch.cursor);
+		proceed	: not null access boolean);
+
 	
 
 -- DEVICE QUERY OPERATIONS:
@@ -373,13 +380,6 @@ package et_schematic is
 	end record;
 
 	
-	
-	-- Iterates the devices. Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		devices	: in pac_devices_sch.map;
-		process	: not null access procedure (position : in pac_devices_sch.cursor);
-		proceed	: not null access boolean);
-
 	
 		
 	
