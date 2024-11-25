@@ -45,7 +45,8 @@ with ada.exceptions;				use ada.exceptions;
 with ada.containers;
 
 with et_frames;
-
+with et_schematic;
+with et_pcb;
 -- with et_pcb_stack;
 -- with et_design_rules;
 with et_pcb_contour;
@@ -238,11 +239,96 @@ is
 			process_holes;
 		end process_board_outline;
 
+
+		
+		-- This procedure parses the packages of devices:
+		procedure process_devices is
+
+			procedure process_electrical_devices is
+
+				procedure query_module (
+					module_name	: in pac_module_name.bounded_string;
+					module		: in type_generic_module) 
+				is
+					use et_schematic;
+					use pac_devices_sch;
+
+					procedure query_device (
+						device_cursor : in pac_devices_sch.cursor) 
+					is
+						device : type_device_sch renames element (device_cursor);
+					begin
+						-- if is_real (device_cursor) then
+							null;
+						-- end if;
+					end query_device;
+
+					
+				begin
+					null;
+					module.devices.iterate (query_device'access);
+				end query_module;
+				
+
+				
+			begin
+				if debug then
+					put_line ("processing electrical devices ...");
+				end if;
+
+				query_element (active_module, query_module'access);
+			end process_electrical_devices;
+			
+
+
+
+			
+			procedure process_non_electrical_devices is
+
+				procedure query_module (
+					module_name	: in pac_module_name.bounded_string;
+					module		: in type_generic_module) 
+				is
+					use et_pcb;
+					use pac_devices_non_electric;
+				begin
+					null;
+				end query_module;
+
+			begin
+				if debug then
+					put_line ("processing non-electrical devices ...");
+				end if;
+
+				query_element (active_module, query_module'access);
+			end process_non_electrical_devices;
+
+
+
+			
+		begin
+			if debug then
+				put_line ("processing device packages ...");
+			end if;
+
+			process_electrical_devices;
+			process_non_electrical_devices;
+		end process_devices;
+			
+
 		
 	begin
 		process_board_outline;
 
+		process_devices;
+		
 		-- CS
+		-- process_silkscreen
+		-- process_assembly_doc
+		-- process_keepout
+		-- process_stopmask
+		-- process_conductors (tracks, vias, zones)
+		-- process_stencil
 
 	end parse_board;
 
