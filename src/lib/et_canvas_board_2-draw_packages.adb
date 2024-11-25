@@ -2005,7 +2005,6 @@ is
 		is 
 			device : type_device_non_electric renames element (device_cursor);
 
-			-- use et_devices;
 			use et_modes.board;
 			use et_canvas_board_devices;
 			
@@ -2014,7 +2013,6 @@ is
 			
 			-- Draws the device package at the position as it is in the board:
 			procedure draw_fixed is 
-				-- use et_devices;
 			begin
 				-- put_line (to_string (key (device_cursor)));
 				
