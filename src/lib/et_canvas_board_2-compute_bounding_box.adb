@@ -47,9 +47,13 @@ with ada.containers;
 with et_frames;
 with et_schematic;
 with et_pcb;
--- with et_pcb_stack;
--- with et_design_rules;
+with et_packages;
+with et_pcb_stack;
+with et_conductor_segment;
+with et_conductor_text.packages;
+
 with et_pcb_contour;
+with et_device_query_board;
 
 with et_text;
 
@@ -264,9 +268,96 @@ is
 			is
 				package_position : type_package_position;  -- incl. rotation and face
 
-				 --b : type_area;
+				use et_packages;
+				use et_device_query_board;
+
+				b : type_area;
+
+				procedure process_conductors is
+					objects : type_conductor_objects;
+					use et_pcb_stack;
+
+					procedure process_objects is
+						use et_conductor_segment;
+						use pac_conductor_lines;
+						use pac_conductor_arcs;
+						use pac_conductor_circles;
+
+						use et_conductor_text.packages;
+						use pac_conductor_texts;
+
+
+						procedure query_line (c : in pac_conductor_lines.cursor) is
+							line : type_conductor_line renames element (c);
+						begin
+							-- The line has already been moved, flipped and rotated
+							-- to the final position.
+							b := get_bounding_box (line, line.width);
+							merge_areas (bbox_new, b);
+						end query_line;
+
+						
+						procedure query_arc (c : in pac_conductor_arcs.cursor) is
+							arc : type_conductor_arc renames element (c);
+						begin
+							-- See comments in procedure query_line.
+							b := get_bounding_box (arc, arc.width);
+							merge_areas (bbox_new, b);
+						end query_arc;
+
+						
+						procedure query_circle (c : in pac_conductor_circles.cursor) is
+							circle : type_conductor_circle renames element (c);
+						begin
+							-- See comments in procedure query_line.
+							b := get_bounding_box (circle, circle.width);
+							merge_areas (bbox_new, b);
+						end query_circle;
+
+						
+						procedure query_text (c : in pac_conductor_texts.cursor) is
+							text : et_conductor_text.type_conductor_text renames element (c);
+							use pac_draw_text;
+						begin
+							null; -- CS 
+							-- parse segments of text
+							-- include origin of text ?
+							-- merge_areas (bbox_new, b);
+						end query_text;
+
+						
+					begin
+						objects.lines.iterate (query_line'access);
+						objects.arcs.iterate (query_arc'access);
+						objects.circles.iterate (query_circle'access);
+						objects.texts.iterate (query_text'access);
+					end process_objects;
+
+						
+				begin
+					if electric then
+						objects := get_conductor_objects (device_electric, OUTER_TOP);
+						process_objects;
+						objects := get_conductor_objects (device_electric, OUTER_BOTTOM);
+						process_objects;
+					else
+						objects := get_conductor_objects (device_non_electric, OUTER_TOP);
+						process_objects;
+						objects := get_conductor_objects (device_non_electric, OUTER_BOTTOM);
+						process_objects;
+					end if;
+				end process_conductors;
+
+				
 			begin
-				null;
+				if electric then
+					package_position := get_position (device_electric);
+				else
+					package_position := get_position (device_non_electric);
+				end if;
+
+				process_conductors;
+				
 			end process_package;
 
 			
