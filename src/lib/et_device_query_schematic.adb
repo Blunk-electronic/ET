@@ -57,40 +57,6 @@ package body et_device_query_schematic is
 	end get_device_model;
 
 	
-
-	function get_value (
-		device : in pac_devices_sch.cursor)
-		return pac_device_value.bounded_string 
-	is begin
-		return pac_devices_sch.element (device).value;
-	end get_value;
-
-	
-
-	function get_purpose (
-		device : in pac_devices_sch.cursor)
-		return pac_device_purpose.bounded_string
-	is begin
-		return pac_devices_sch.element (device).purpose;
-	end get_purpose;
-
-	
-	
-	function get_partcode (
-		device : in pac_devices_sch.cursor)
-		return pac_device_partcode.bounded_string
-	is begin
-		return pac_devices_sch.element (device).partcode;
-	end get_partcode;
-
-	
-	function get_package_variant (
-		device : in pac_devices_sch.cursor)
-		return pac_package_variant_name.bounded_string
-	is begin
-		return pac_devices_sch.element (device).variant;
-	end get_package_variant;
-
 	
 	
 	function get_package_model (

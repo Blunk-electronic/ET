@@ -289,6 +289,14 @@ package et_schematic is
 		return pac_device_partcode.bounded_string;
 
 
+
+	-- Returns the package variant of the given device.
+	-- The device must be real. Otherwise constraint error is raised.
+	function get_package_variant (
+		device : in pac_devices_sch.cursor)
+		return pac_package_variant_name.bounded_string;
+
+
 	
 
 	

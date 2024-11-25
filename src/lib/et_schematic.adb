@@ -306,7 +306,16 @@ package body et_schematic is
 
 
 	
+	function get_package_variant (
+		device : in pac_devices_sch.cursor)
+		return pac_package_variant_name.bounded_string
+	is begin
+		return pac_devices_sch.element (device).variant;
+	end get_package_variant;
 
+
+
+	
 	
 	procedure iterate (
 		devices	: in pac_devices_sch.map;
