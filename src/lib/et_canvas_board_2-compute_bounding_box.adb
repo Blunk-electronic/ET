@@ -136,51 +136,52 @@ is
 		procedure process_board_outline is
 			use et_pcb_contour;
 
+			use pac_contours; -- instance of generic package
+			use pac_segments;
+
+			-- The bounding box of a single segment:
+			b : type_area;
+			
+			procedure query_segment (c : in pac_segments.cursor) is 
+				s : type_segment renames element (c);
+			begin
+				case s.shape is
+					when LINE =>
+						-- Compute bounding box of line segment:
+						b := get_bounding_box (s.segment_line, pcb_contour_line_width);
+
+					when ARC =>
+						-- Compute bounding box of arc segment:
+						b := get_bounding_box (s.segment_arc, pcb_contour_line_width);
+				end case;
+				merge_areas (bbox_new, b);
+			end query_segment;
+
+			
 			-- Outer contour:
 			procedure process_outline is
 				
 				procedure query_outline_segments (
 					module_name	: in pac_module_name.bounded_string;
 					module		: in type_generic_module)
-				is 
-					use pac_contours; -- instance of generic package
-					use pac_segments;
-
-					-- The bounding box of a single segment:
-					b : type_area;
-					
-					procedure query_segment (c : in pac_segments.cursor) is 
-						s : type_segment renames element (c);
-					begin
-						case s.shape is
-							when LINE =>
-								-- Compute bounding box of line segment:
-								b := get_bounding_box (s.segment_line, pcb_contour_line_width);
-
-							when ARC =>
-								-- Compute bounding box of arc segment:
-								b := get_bounding_box (s.segment_arc, pcb_contour_line_width);
-						end case;
-						merge_areas (bbox_new, b);
-					end query_segment;
-					
-				begin
-					-- If the outer contour is just a circle:
+				is begin
+					-- If the outer contour is just a circle, then we
+					-- compute the bounding box of this single segment:
 					if module.board.contours.outline.contour.circular then
-						-- Compute bounding box of the single circle segment:
+						
 						b := get_bounding_box (
 							module.board.contours.outline.contour.circle,
 							pcb_contour_line_width);
 
 						merge_areas (bbox_new, b);
 					else
-						-- If the outer contour is composed of lines and arcs:
+					-- If the outer contour is composed of lines and arcs,
+					-- then for each segment a bounding box must be computed:	
 						iterate (
 							module.board.contours.outline.contour.segments,
 							query_segment'access);
 					end if;
 				end query_outline_segments;
-
 				
 			begin
 				if debug then
@@ -202,29 +203,26 @@ is
 					module		: in type_generic_module) 
 				is
 					use pac_holes;
-
-		
+					
 					procedure query_hole (c : in pac_holes.cursor) is 
 						h : type_hole renames element (c);
 					begin
+						-- If the candiate hole is just a circle,
+						-- then we compute the bounding box of this single
+						-- segment:
 						if h.contour.circular then
-							null;
-
-							-- draw_circle (
-							-- 	circle	=> element (c).contour.circle,
-							-- 	filled	=> NO, -- holes are never filled
-							-- 	width	=> 0.0); -- don't care
-							
+							b := get_bounding_box (h.contour.circle, pcb_contour_line_width);
+							merge_areas (bbox_new, b);
 						else
-							null;
-							-- iterate (element (c).contour.segments, query_segment'access);
+						-- If the candiate hole is a list of lines and arcs,
+						-- then we must compute the bounding box of each segment:
+							iterate (h.contour.segments, query_segment'access);
 						end if;
 					end query_hole;
 					
 				begin
 					iterate (module.board.contours.holes, query_hole'access);
 				end query_holes;
-
 				
 			begin
 				if debug then
@@ -233,7 +231,6 @@ is
 
 				query_element (active_module, query_holes'access);				
 			end process_holes;
-
 
 			
 		begin
@@ -249,6 +246,7 @@ is
 
 	end parse_board;
 
+	
 		
 	-- This procedure updates the bounding-box and
 	-- sets the bounding_box_changed flag
