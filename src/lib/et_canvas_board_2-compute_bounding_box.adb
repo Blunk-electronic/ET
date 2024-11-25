@@ -125,6 +125,10 @@ is
 	end parse_drawing_frame;
 
 
+
+---------------------------------------------------------------------------------------
+-- BOARD:
+
 	
 
 	-- This procedure parses all objects of the board database (or layout drawing).
@@ -240,17 +244,39 @@ is
 		end process_board_outline;
 
 
+
+		
+---------------------------------------------------------------------------------------
+-- PACKAGES OF DEVICES:
+		
 		
 		-- This procedure parses the packages of devices:
 		procedure process_devices is
+			use et_schematic;
+			use et_pcb;
 
+			
+			procedure process_package (
+				electric			: in boolean;
+				device_electric		: in pac_devices_sch.cursor;
+				device_non_electric	: in pac_devices_non_electric.cursor;					   
+				flip				: in type_flipped)
+			is
+				package_position : type_package_position;  -- incl. rotation and face
+
+				 --b : type_area;
+			begin
+				null;
+			end process_package;
+
+			
+			
 			procedure process_electrical_devices is
 
 				procedure query_module (
 					module_name	: in pac_module_name.bounded_string;
 					module		: in type_generic_module) 
 				is
-					use et_schematic;
 					use pac_devices_sch;
 
 					procedure query_device (
@@ -258,17 +284,19 @@ is
 					is
 						device : type_device_sch renames element (device_cursor);
 					begin
-						-- if is_real (device_cursor) then
-							null;
-						-- end if;
+						if is_real (device_cursor) then
+							process_package (
+								electric			=> true,
+								device_electric		=> device_cursor,
+								device_non_electric	=> pac_devices_non_electric.no_element,
+								flip				=> device.flipped);
+							
+						end if;
 					end query_device;
-
 					
 				begin
-					null;
 					module.devices.iterate (query_device'access);
 				end query_module;
-				
 
 				
 			begin
@@ -291,8 +319,21 @@ is
 				is
 					use et_pcb;
 					use pac_devices_non_electric;
+
+					procedure query_device (
+						device_cursor : in pac_devices_non_electric.cursor) 
+					is 
+						device : type_device_non_electric renames element (device_cursor);
+					begin
+						process_package (
+							electric			=> false,
+							device_electric		=> pac_devices_sch.no_element,
+							device_non_electric	=> device_cursor,
+							flip				=> device.flipped);
+					end query_device;
+					
 				begin
-					null;
+					module.devices_non_electric.iterate (query_device'access);
 				end query_module;
 
 			begin
