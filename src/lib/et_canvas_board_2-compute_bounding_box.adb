@@ -450,29 +450,51 @@ is
 								-- inner restring should be processed also.
 								
 								if t.pad_shape_tht.top.contour.circular then
-									b := get_bounding_box (
-										circle		=> t.pad_shape_tht.top.contour.circle,
-										width		=> 0.0,
-										offset_1	=> t.position.place,
-										offset_2	=> get_position (package_position).place);
-
+									if flipped then
+										b := get_bounding_box (
+											circle		=> t.pad_shape_tht.top.contour.circle,
+											width		=> 0.0,
+											offset_1	=> t.position.place,
+											offset_2	=> get_position (package_position).place,
+											rotation	=> get_rotation (package_position),
+											mirror		=> MIRROR_ALONG_Y_AXIS);
+									else
+										b := get_bounding_box (
+											circle		=> t.pad_shape_tht.top.contour.circle,
+											width		=> 0.0,
+											offset_1	=> t.position.place,
+											offset_2	=> get_position (package_position).place,
+											rotation	=> get_rotation (package_position));
+									end if;
+									
 									merge_areas (bbox_new, b);
 								else
 									t.pad_shape_tht.top.contour.segments.iterate (query_segment'access);
 								end if;
 
 								if t.pad_shape_tht.bottom.contour.circular then
-									b := get_bounding_box (
-										circle		=> t.pad_shape_tht.bottom.contour.circle,
-										width		=> 0.0,
-										offset_1	=> t.position.place,
-										offset_2	=> get_position (package_position).place);
-
+									if flipped then
+										b := get_bounding_box (
+											circle		=> t.pad_shape_tht.bottom.contour.circle,
+											width		=> 0.0,
+											offset_1	=> t.position.place,
+											offset_2	=> get_position (package_position).place,
+											rotation	=> get_rotation (package_position),
+											mirror		=> MIRROR_ALONG_Y_AXIS);
+									else
+										b := get_bounding_box (
+											circle		=> t.pad_shape_tht.bottom.contour.circle,
+											width		=> 0.0,
+											offset_1	=> t.position.place,
+											offset_2	=> get_position (package_position).place,
+											rotation	=> get_rotation (package_position));
+									end if;
 									merge_areas (bbox_new, b);
 								else
 									t.pad_shape_tht.bottom.contour.segments.iterate (query_segment'access);
 								end if;
 
+								
 								
 							when SMT =>
 								-- CS: Currently we process only the pad shape
@@ -480,12 +502,23 @@ is
 								-- stop mask expansion, stencil opening should be processed also.
 								
 								if t.pad_shape_smt.contour.circular then
-									b := get_bounding_box (
-										circle		=> t.pad_shape_smt.contour.circle,
-										width		=> 0.0,
-										offset_1	=> t.position.place,
-										offset_2	=> get_position (package_position).place);
-
+									if flipped then
+										b := get_bounding_box (
+											circle		=> t.pad_shape_smt.contour.circle,
+											width		=> 0.0,
+											offset_1	=> t.position.place,
+											offset_2	=> get_position (package_position).place,
+											rotation	=> get_rotation (package_position),
+											mirror		=> MIRROR_ALONG_Y_AXIS);
+									else
+										b := get_bounding_box (
+											circle		=> t.pad_shape_smt.contour.circle,
+											width		=> 0.0,
+											offset_1	=> t.position.place,
+											offset_2	=> get_position (package_position).place,
+											rotation	=> get_rotation (package_position));
+									end if;
+										
 									merge_areas (bbox_new, b);
 								else
 									t.pad_shape_smt.contour.segments.iterate (query_segment'access);
