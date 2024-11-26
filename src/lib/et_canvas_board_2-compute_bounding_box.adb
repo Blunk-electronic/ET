@@ -70,7 +70,7 @@ with et_conductor_text.packages;
 
 with et_pcb_contour;
 with et_device_query_board;
-
+with et_mirroring;					use et_mirroring;
 with et_text;
 
 
@@ -284,6 +284,15 @@ is
 			is
 				package_position : type_package_position;  -- incl. rotation and face
 
+				function flipped return boolean is 
+					use et_pcb;
+				begin
+					if flip = NO then return false;
+					else return true;
+					end if;
+				end flipped;
+
+				
 				use et_packages;
 				use et_device_query_board;
 
@@ -378,10 +387,113 @@ is
 					
 					procedure query_terminal (
 						c : in pac_terminals.cursor)
-					is begin
-						null;
+					is 
+						t : type_terminal renames element (c);
+
+						use pac_contours;
+						
+						procedure query_segment (c : in pac_segments.cursor) is
+							use pac_segments;
+							s : type_segment renames element (c);
+						begin
+							put_line ("segment");
+							
+							case s.shape is
+								when LINE =>
+									if flipped then
+										b := get_bounding_box (
+											line		=> s.segment_line,
+											width		=> 0.0,
+											offset_1	=> t.position.place,
+											offset_2	=> get_position (package_position).place,
+											rotation	=> get_rotation (package_position));
+									else
+										b := get_bounding_box (
+											line		=> s.segment_line,
+											width		=> 0.0,
+											offset_1	=> t.position.place,
+											offset_2	=> get_position (package_position).place,
+											rotation	=> get_rotation (package_position),
+											mirror		=> MIRROR_ALONG_Y_AXIS);
+									end if;
+									
+								when ARC =>
+									if flipped then
+										b := get_bounding_box (
+											arc			=> s.segment_arc,
+											width		=> 0.0,
+											offset_1	=> t.position.place,
+											offset_2	=> get_position (package_position).place,
+											rotation	=> get_rotation (package_position));
+									else
+										b := get_bounding_box (
+											arc			=> s.segment_arc,
+											width		=> 0.0,
+											offset_1	=> t.position.place,
+											offset_2	=> get_position (package_position).place,
+											rotation	=> get_rotation (package_position),
+											mirror		=> MIRROR_ALONG_Y_AXIS);
+									end if;
+
+							end case;
+
+							merge_areas (bbox_new, b);
+						end query_segment;
+
+						
+					begin
+						case t.technology is
+							when THT =>
+								-- CS: Currently we process only the pad shape on top
+								-- and bottom side. In the future other things like
+								-- stop mask expansion and
+								-- inner restring should be processed also.
+								
+								if t.pad_shape_tht.top.contour.circular then
+									b := get_bounding_box (
+										circle		=> t.pad_shape_tht.top.contour.circle,
+										width		=> 0.0,
+										offset_1	=> t.position.place,
+										offset_2	=> get_position (package_position).place);
+
+									merge_areas (bbox_new, b);
+								else
+									t.pad_shape_tht.top.contour.segments.iterate (query_segment'access);
+								end if;
+
+								if t.pad_shape_tht.bottom.contour.circular then
+									b := get_bounding_box (
+										circle		=> t.pad_shape_tht.bottom.contour.circle,
+										width		=> 0.0,
+										offset_1	=> t.position.place,
+										offset_2	=> get_position (package_position).place);
+
+									merge_areas (bbox_new, b);
+								else
+									t.pad_shape_tht.bottom.contour.segments.iterate (query_segment'access);
+								end if;
+
+								
+							when SMT =>
+								-- CS: Currently we process only the pad shape
+								-- In the future other things like
+								-- stop mask expansion, stencil opening should be processed also.
+								
+								if t.pad_shape_smt.contour.circular then
+									b := get_bounding_box (
+										circle		=> t.pad_shape_smt.contour.circle,
+										width		=> 0.0,
+										offset_1	=> t.position.place,
+										offset_2	=> get_position (package_position).place);
+
+									merge_areas (bbox_new, b);
+								else
+									t.pad_shape_smt.contour.segments.iterate (query_segment'access);
+								end if;
+						end case;								
 					end query_terminal;
 
+					
 					use et_schematic;
 					use et_device_query_board;
 					use et_pcb;
@@ -414,6 +526,8 @@ is
 				process_terminals;
 				
 			end process_package;
+
+
 
 			
 			
