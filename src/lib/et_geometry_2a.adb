@@ -3313,10 +3313,30 @@ package body et_geometry_2a is
 		mirror		: in type_mirror := MIRROR_NO)	
 		return type_area
 	is
-		result : type_area;
-	begin
+		-- Make a copy of the given line:
+		l : type_line'class := line;
 
-		return result;
+		b : type_area;
+	begin
+		rotate_by (l, rotation);
+
+		case mirror is
+			when MIRROR_NO => null;
+			when MIRROR_ALONG_X_AXIS => et_geometry_2a.mirror (l, MIRROR_ALONG_X_AXIS);
+			when MIRROR_ALONG_Y_AXIS => et_geometry_2a.mirror (l, MIRROR_ALONG_Y_AXIS);
+		end case;
+		
+		-- Move the line by offset_1:
+		move_by (l, to_distance_relative (offset_1));
+		
+		-- Move the line by offset_2:
+		move_by (l, to_distance_relative (offset_2));
+
+		-- Get the bounding-box of line:
+		b := get_bounding_box (l, width);
+		-- put_line ("b " & to_string (b));
+		
+		return b;
 	end get_bounding_box;
 
 
