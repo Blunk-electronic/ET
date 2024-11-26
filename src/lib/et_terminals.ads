@@ -233,7 +233,10 @@ package et_terminals is
 		tht_hole	: type_terminal_tht_hole)
 	is tagged record
 
-			position : type_position; -- position (x/y) and rotation
+			-- The terminal position (x/y) relative to the package position.
+			-- The rotation is the rotation of the terminal about itself:
+			position : type_position;
+		
 			-- For SMT pads this should be the geometical center of the pad.
 			-- The rotation has no meaning for THT pads with round shape.
 			-- The rotation is useful for exotic pad contours. The operator 
