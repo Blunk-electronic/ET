@@ -3350,10 +3350,31 @@ package body et_geometry_2a is
 		mirror		: in type_mirror := MIRROR_NO)	
 		return type_area
 	is
-		result : type_area;
-	begin
+		-- Make a copy of the given arc:
+		c : type_arc'class := arc;
 
-		return result;
+		b : type_area;
+	begin
+		rotate_by (c, rotation);
+
+		-- Mirror the arc:
+		case mirror is
+			when MIRROR_NO => null;
+			when MIRROR_ALONG_X_AXIS  => et_geometry_2a.mirror (c, MIRROR_ALONG_X_AXIS);
+			when MIRROR_ALONG_Y_AXIS  => et_geometry_2a.mirror (c, MIRROR_ALONG_Y_AXIS);
+		end case;
+
+		-- Move the arc by offset_1:
+		move_by (c, to_distance_relative (offset_1));
+				 
+		-- Move the arc by offset_2:
+		move_by (c, to_distance_relative (offset_2));
+
+		-- Get the bounding-box of arc:
+		b := get_bounding_box (c, width);
+		-- put_line ("b " & to_string (b));
+		
+		return b;
 	end get_bounding_box;
 
 
@@ -3362,13 +3383,37 @@ package body et_geometry_2a is
 		circle		: in type_circle'class;
 		width		: in type_distance_positive;
 		offset_1	: in type_vector_model;
-		offset_2	: in type_vector_model)
+		offset_2	: in type_vector_model;
+		rotation	: in type_rotation;
+		mirror		: in type_mirror := MIRROR_NO)	
 		return type_area
 	is
-		result : type_area;
-	begin
+		-- Make a copy of the given circle:
+		c : type_circle'class := circle;
 
-		return result;
+		b, result : type_area;
+	begin
+		-- Rotate the center of the circle:
+		rotate_by (c, rotation);
+
+		-- Mirror the circle:
+		case mirror is
+			when MIRROR_NO => null;
+			when MIRROR_ALONG_X_AXIS  => et_geometry_2a.mirror (c, MIRROR_ALONG_X_AXIS);
+			when MIRROR_ALONG_Y_AXIS  => et_geometry_2a.mirror (c, MIRROR_ALONG_Y_AXIS);
+		end case;
+		
+		-- Move the circle by offset_1:
+		move_by (c, to_distance_relative (offset_1));
+				 
+		-- Move the arc by offset_2:
+		move_by (c, to_distance_relative (offset_2));
+
+		-- Get the bounding-box of arc:
+		b := get_bounding_box (c, width);
+		-- put_line ("b " & to_string (b));
+		
+		return b;
 	end get_bounding_box;
 
 	
