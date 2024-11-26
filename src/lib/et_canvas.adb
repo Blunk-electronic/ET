@@ -3723,7 +3723,7 @@ package body et_canvas is
 		-- Rotate the arc by pos.rotation:
 		rotate_by (c, pos.rotation);
 
-		-- Mirror the circle:
+		-- Mirror the arc:
 		case mirror is
 			when MIRROR_NO => null;
 			when MIRROR_ALONG_X_AXIS  => pac_geometry.mirror (c, MIRROR_ALONG_X_AXIS);
