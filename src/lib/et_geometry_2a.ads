@@ -851,7 +851,7 @@ package et_geometry_2a is
 		width	: in type_distance_positive)
 		return type_area;
 
-
+	
 
 	-- Tests whether the given line_vector intersects the given 
 	-- candidate line.
@@ -1408,6 +1408,42 @@ package et_geometry_2a is
 
 
 
+-- EXTENDED BOUNDING BOX COMPUTATIONS:
+
+	-- Computes the bounding-box of a given line
+	-- taking into account the given offsets, rotation
+	-- and mirror style:
+	function get_bounding_box (
+		line		: in type_line'class;
+		width		: in type_distance_positive;
+		offset_1	: in type_vector_model;
+		offset_2	: in type_vector_model;
+		rotation	: in type_rotation;
+		mirror		: in type_mirror := MIRROR_NO)	
+		return type_area;
+
+
+	-- Computes the bounding-box of a given arc
+	-- taking into account the given offsets, rotation
+	-- and mirror style:
+	function get_bounding_box (
+		arc			: in type_arc'class;
+		width		: in type_distance_positive;
+		offset_1	: in type_vector_model;
+		offset_2	: in type_vector_model;
+		rotation	: in type_rotation;
+		mirror		: in type_mirror := MIRROR_NO)	
+		return type_area;
+
+	
+	-- Computes the bounding-box of a given circle
+	-- taking into account the given offsets:
+	function get_bounding_box (
+		circle		: in type_circle'class;
+		width		: in type_distance_positive;
+		offset_1	: in type_vector_model;
+		offset_2	: in type_vector_model)
+		return type_area;
 
 	
 

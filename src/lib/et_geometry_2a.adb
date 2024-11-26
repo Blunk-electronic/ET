@@ -3303,6 +3303,54 @@ package body et_geometry_2a is
 
 
 
+
+	function get_bounding_box (
+		line		: in type_line'class;
+		width		: in type_distance_positive;
+		offset_1	: in type_vector_model;
+		offset_2	: in type_vector_model;
+		rotation	: in type_rotation;
+		mirror		: in type_mirror := MIRROR_NO)	
+		return type_area
+	is
+		result : type_area;
+	begin
+
+		return result;
+	end get_bounding_box;
+
+
+
+	function get_bounding_box (
+		arc			: in type_arc'class;
+		width		: in type_distance_positive;
+		offset_1	: in type_vector_model;
+		offset_2	: in type_vector_model;
+		rotation	: in type_rotation;
+		mirror		: in type_mirror := MIRROR_NO)	
+		return type_area
+	is
+		result : type_area;
+	begin
+
+		return result;
+	end get_bounding_box;
+
+
+
+	function get_bounding_box (
+		circle		: in type_circle'class;
+		width		: in type_distance_positive;
+		offset_1	: in type_vector_model;
+		offset_2	: in type_vector_model)
+		return type_area
+	is
+		result : type_area;
+	begin
+
+		return result;
+	end get_bounding_box;
+
 	
 	
 end et_geometry_2a;
