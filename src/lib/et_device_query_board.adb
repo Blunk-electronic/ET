@@ -119,6 +119,15 @@ package body et_device_query_board is
 
 
 
+	function get_package_model (
+		device_cursor	: in pac_devices_non_electric.cursor)
+		return pac_package_models.cursor
+	is 
+		result : pac_package_models.cursor;
+	begin
+		result := get_package_model (element (device_cursor).package_model);
+		return result;
+	end get_package_model;
 
 	
 	

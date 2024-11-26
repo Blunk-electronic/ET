@@ -100,6 +100,13 @@ package et_device_query_board is
 		return boolean;
 
 
+
+	-- Maps from a given cursor of a non-electrical device
+	-- to a cursor to the package model:
+	function get_package_model (
+		device_cursor	: in pac_devices_non_electric.cursor)
+		return pac_package_models.cursor;
+
 	
 	
 	-- Returns the current position (x/y/rotation/face) of the 
