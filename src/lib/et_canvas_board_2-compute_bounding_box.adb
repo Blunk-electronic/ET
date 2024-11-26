@@ -36,6 +36,21 @@
 --
 --   history of changes:
 --
+-- To Do:
+--
+-- 1. The calls of functions like get_conductor_objects or
+--    get_assy_doc_objects, get_silkscreen_objects ... should
+--    no longer be used. In the past they where intended to move, rotate and
+--    mirror the objects in a comfortable way.
+--    Reason: All These functions call the function
+--    get_package_model in order to map from the schematic device cursor
+--    to the package model cursor. This is a waste of time.
+--    Instead a single mapping operation from device cursor to
+--    package cursor should be used. 
+--    In the next step bounding-boxes of individual primitive objects 
+--    like lines, arcs, circle should be computed taking their position,
+--    rotation and mirror style into account.
+
 
 with ada.text_io;					use ada.text_io;
 with ada.characters.handling;		use ada.characters.handling;
@@ -48,6 +63,7 @@ with et_frames;
 with et_schematic;
 with et_pcb;
 with et_packages;
+with et_terminals;
 with et_pcb_stack;
 with et_conductor_segment;
 with et_conductor_text.packages;
@@ -348,6 +364,44 @@ is
 					end if;
 				end process_conductors;
 
+
+
+				
+				procedure process_terminals is
+
+					package_cursor : et_packages.pac_package_models.cursor;
+
+					use et_terminals;
+					use pac_terminals;
+
+
+					
+					procedure query_terminal (
+						c : in pac_terminals.cursor)
+					is begin
+						null;
+					end query_terminal;
+
+					use et_schematic;
+					use et_device_query_board;
+					use et_pcb;
+					use pac_devices_non_electric;
+					use et_packages;
+					use pac_package_models;
+					
+				begin
+					-- locate the package model in the package library:
+					if electric then
+						package_cursor := get_package_model (device_electric);
+					else
+						package_cursor := get_package_model (device_non_electric);
+					end if;
+					
+					element (package_cursor).terminals.iterate (query_terminal'access);
+
+				end process_terminals;
+
+					
 				
 			begin
 				if electric then
@@ -357,6 +411,7 @@ is
 				end if;
 
 				process_conductors;
+				process_terminals;
 				
 			end process_package;
 

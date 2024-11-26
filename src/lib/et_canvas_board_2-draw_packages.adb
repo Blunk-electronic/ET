@@ -35,6 +35,20 @@
 --
 --   history of changes:
 --
+-- To Do:
+--
+-- 1. The calls of functions like get_conductor_objects or
+--    get_assy_doc_objects, get_silkscreen_objects ... should
+--    no longer be used. In the past they where intended to move, rotate and
+--    mirror the objects in a comfortable way.
+--    Reason: All These functions call the function
+--    get_package_model in order to map from the schematic device cursor
+--    to the package model cursor. This is a waste of time.
+--    Instead a single mapping operation from device cursor to
+--    package cursor should be used. 
+--    In the next step individual primitive objects like lines, arcs, circle
+--    should be passed in their original form to primitive draw operations draw_line, draw_arc,
+--    draw_circle.
 
 with ada.text_io;				use ada.text_io;
 
@@ -1820,7 +1834,7 @@ is
 			if electric then
 				package_cursor := get_package_model (device_electric);
 			else
-				package_cursor := get_package_model (element (device_non_electric).package_model);
+				package_cursor := get_package_model (device_non_electric);
 			end if;
 			
 			element (package_cursor).terminals.iterate (query_terminal'access);
