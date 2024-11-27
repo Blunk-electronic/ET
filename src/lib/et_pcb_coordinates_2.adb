@@ -51,15 +51,19 @@ package body et_pcb_coordinates_2 is
 		p : in type_package_position) 
 		return string 
 	is begin
-		return position_preamble
-				& to_string (get_x (p))
-				& axis_separator
-				& to_string (get_y (p))
-				& axis_separator
-				& to_string (get_rotation (p))
-				& axis_separator
-				& to_string (p.face);
+		-- return position_preamble
+		-- 		& to_string (get_x (p))
+		-- 		& axis_separator
+		-- 		& to_string (get_y (p))
+		-- 		& axis_separator
+		-- 		& to_string (get_rotation (p))
+		-- 		& axis_separator
+		-- 		& to_string (p.face);
 
+		return (" position" & to_string (p.place)
+			& " angle" & to_string (get_rotation (p))
+			& " face" & to_string (get_face (p)));
+		
 	end to_string;
 
 	

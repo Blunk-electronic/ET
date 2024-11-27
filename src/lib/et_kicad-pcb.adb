@@ -3166,7 +3166,7 @@ package body et_kicad.pcb is
 
 					-- log package coordinates
 					log (text => "package " & to_string (package_reference)
-						 & et_pcb.package_position (package_position), -- this is a function that returns package coordinates !
+						 & to_string (package_position), -- this is a function that returns package coordinates !
 						 level => log_threshold + 1);
 					
 					-- CS log package properties (at least reference, value, ...) ?
@@ -3228,7 +3228,7 @@ package body et_kicad.pcb is
 
 				else
 					log (ERROR, "package " & to_string (package_reference) 
-						& et_pcb.package_position (package_position)
+						& to_string (package_position)
 						& " already used !",
 						 console => true);
 					raise constraint_error;
@@ -5418,7 +5418,7 @@ package body et_kicad.pcb is
 								package_position := element (package_cursor).position;
 
 								log (text => "package " & to_string (package_reference) &
-									et_pcb.package_position (package_position), level => log_threshold + 2);
+									to_string (package_position), level => log_threshold + 2);
 
 								-- Extract the text placeholders for reference and value from the 
 								-- current package (indicated by package_cursor) and store them

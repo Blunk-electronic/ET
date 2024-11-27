@@ -109,20 +109,6 @@ package body et_pcb is
 
 
 	
-	function package_position (
-		position : in type_package_position) 
-		return string 
-	is
-		use et_pcb_sides;
-	begin
-		return (" position" & to_string (position.place)
-			& " angle" & to_string (get_rotation (position))
-			& " face" & to_string (get_face (position)));
-	end package_position;
-
-	
-
-
 
 	function to_mirror_along_y_axis (
 		flipped : in type_flipped)

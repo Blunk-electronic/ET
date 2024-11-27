@@ -127,7 +127,9 @@ package et_pcb_coordinates_2 is
  
 
 	
-	overriding function to_string (p : in type_package_position) return string;
+	overriding function to_string (
+		p : in type_package_position) 
+		return string;
 
 	
 	function to_package_position (

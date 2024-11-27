@@ -330,14 +330,6 @@ package et_pcb is
 
 
 
-	-- Returns the coordinates of a package (in a board) as string.
-	-- CS rename to to_string or to get_package_position
-	function package_position (
-		position : in type_package_position) 
-		return string;
-
-
-
 	-- In this world, if a package is flipped, then it is
 	-- mirrored along the Y-axis.
 	-- This function maps from flip status to mirror along y-axis.
