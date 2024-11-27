@@ -714,11 +714,76 @@ package body et_geometry_2a.contours is
 		mirror		: in type_mirror := MIRROR_NO)
 		return type_area
 	is
-		result : type_area;
+		-- This is the temporary bounding-box we are going to build
+		-- in the course of this procedure:
+		bbox_new : type_area;
+
+		-- The first segment encountered will be the
+		-- seed for bbox_new. All other segments cause 
+		-- this bbox_new to expand. After the first segment,
+		-- this flag is cleared:
+		first_object : boolean := true;
+
+		
+		
+		procedure query_segment (c : in pac_segments.cursor) is
+			s : type_segment renames element (c);
+
+			-- This is a temporary bounding-box that encloses
+			-- a single segment:
+			b : type_area;
+
+		begin
+			case s.shape is
+				when LINE =>
+					b := get_bounding_box (
+						line		=> s.segment_line,
+						width		=> width,
+						offset_1	=> offset_1,
+						offset_2	=> offset_2,
+						rotation	=> rotation,
+						mirror		=> mirror);
+					
+					
+				when ARC =>
+					b := get_bounding_box (
+						arc			=> s.segment_arc,
+						width		=> width,
+						offset_1	=> offset_1,
+						offset_2	=> offset_2,
+						rotation	=> rotation,
+						mirror		=> mirror);
+
+			end case;
+
+			-- If this is the first primitive object,
+			-- then use its bounding-box as seed to start from:
+			if first_object then
+				bbox_new := b;
+				first_object := false;
+			else
+			-- Otherwise, merge the box b with the box being built:
+				merge_areas (bbox_new, b);
+			end if;
+		end query_segment;
+
+		
 	begin
+		if contour.contour.circular then
 
+			bbox_new := get_bounding_box (
+				circle		=> contour.contour.circle,
+				width		=> width,
+				offset_1	=> offset_1,
+				offset_2	=> offset_2,
+				rotation	=> rotation,
+				mirror		=> mirror);
 
-		return result;
+		else
+			contour.contour.segments.iterate (query_segment'access);
+		end if;
+						
+		return bbox_new;
 	end get_bounding_box;
 
 
