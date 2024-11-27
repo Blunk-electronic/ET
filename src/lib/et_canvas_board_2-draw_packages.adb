@@ -49,6 +49,8 @@
 --    In the next step individual primitive objects like lines, arcs, circle
 --    should be passed in their original form to primitive draw operations draw_line, draw_arc,
 --    draw_circle.
+--    See approach in et_canvas_board_2.compute_bounding_box for
+--    possible solutions.
 
 with ada.text_io;				use ada.text_io;
 

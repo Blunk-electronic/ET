@@ -38,19 +38,6 @@
 --
 -- To Do:
 --
--- 1. The calls of functions like get_conductor_objects or
---    get_assy_doc_objects, get_silkscreen_objects ... should
---    no longer be used. In the past they where intended to move, rotate and
---    mirror the objects in a comfortable way.
---    Reason: All These functions call the function
---    get_package_model in order to map from the schematic device cursor
---    to the package model cursor. This is a waste of time.
---    Instead a single mapping operation from device cursor to
---    package cursor should be used. 
---    In the next step bounding-boxes of individual primitive objects 
---    like lines, arcs, circle should be computed taking their position,
---    rotation and mirror style into account.
-
 
 with ada.text_io;					use ada.text_io;
 with ada.characters.handling;		use ada.characters.handling;
@@ -282,6 +269,7 @@ is
 				device_non_electric	: in pac_devices_non_electric.cursor;					   
 				flip				: in type_flipped)
 			is
+				use et_device_query_board;
 				use et_packages;
 				use pac_package_models;
 
@@ -303,7 +291,6 @@ is
 
 				
 			
-				use et_device_query_board;
 
 
 				procedure process_conductors is
