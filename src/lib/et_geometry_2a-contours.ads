@@ -227,11 +227,29 @@ package et_geometry_2a.contours is
 	-- 	contour		: in type_contour;
 	-- 	line_width	: in type_distance_positive)
 	-- 	return type_boundaries;
-	
+
+	-- Computes the bounding-box of a countour
+	-- with the given border-wdith:
 	function get_bounding_box (
 		contour	: in type_contour;
 		width	: in type_distance_positive)
 		return type_area;
+
+
+	-- Computes the bounding-box of a countour
+	-- with the given border-wdith
+	-- taking into account the given offsets,
+	-- rotation and mirror style:
+	function get_bounding_box (
+		contour		: in type_contour;
+		width		: in type_distance_positive;
+		offset_1	: in type_vector_model;
+		offset_2	: in type_vector_model := origin;
+		rotation	: in type_rotation;
+		mirror		: in type_mirror := MIRROR_NO)
+		return type_area;
+
+
 
 	
 	-- A contour must have a properly closed outline.

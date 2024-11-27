@@ -1437,7 +1437,8 @@ package et_geometry_2a is
 
 	
 	-- Computes the bounding-box of a given circle
-	-- taking into account the given offsets:
+	-- taking into account the given offsets, rotation
+	-- and mirror style:
 	function get_bounding_box (
 		circle		: in type_circle'class;
 		width		: in type_distance_positive;
