@@ -707,7 +707,7 @@ package body et_geometry_2a.contours is
 
 	function get_bounding_box (
 		contour		: in type_contour;
-		width		: in type_distance_positive;
+		width		: in type_distance_positive := 0.0;
 		offset_1	: in type_vector_model;
 		offset_2	: in type_vector_model := origin;
 		rotation	: in type_rotation;

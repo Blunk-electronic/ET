@@ -3308,7 +3308,7 @@ package body et_geometry_2a is
 		line		: in type_line'class;
 		width		: in type_distance_positive;
 		offset_1	: in type_vector_model;
-		offset_2	: in type_vector_model;
+		offset_2	: in type_vector_model := origin;
 		rotation	: in type_rotation;
 		mirror		: in type_mirror := MIRROR_NO)	
 		return type_area
@@ -3345,7 +3345,7 @@ package body et_geometry_2a is
 		arc			: in type_arc'class;
 		width		: in type_distance_positive;
 		offset_1	: in type_vector_model;
-		offset_2	: in type_vector_model;
+		offset_2	: in type_vector_model := origin;
 		rotation	: in type_rotation;
 		mirror		: in type_mirror := MIRROR_NO)	
 		return type_area
@@ -3383,7 +3383,7 @@ package body et_geometry_2a is
 		circle		: in type_circle'class;
 		width		: in type_distance_positive;
 		offset_1	: in type_vector_model;
-		offset_2	: in type_vector_model;
+		offset_2	: in type_vector_model := origin;
 		rotation	: in type_rotation;
 		mirror		: in type_mirror := MIRROR_NO)	
 		return type_area
