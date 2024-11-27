@@ -122,19 +122,17 @@ package body et_pcb is
 
 	
 
-	
-	function to_mirror (
+
+
+	function to_mirror_along_y_axis (
 		flipped : in type_flipped)
-		return et_text.type_vector_text_mirrored 
-	is
-		use et_text;
-	begin
+		return type_mirror
+	is begin
 		case flipped is
 			when YES => return MIRROR_ALONG_Y_AXIS;
 			when NO =>  return MIRROR_NO;
 		end case;
-	end to_mirror;
-
+	end to_mirror_along_y_axis;
 
 	
 

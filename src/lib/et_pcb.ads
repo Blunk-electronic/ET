@@ -88,6 +88,8 @@ with et_pcb_contour;					use et_pcb_contour;
 with et_ratsnest;
 with et_commit;
 with et_object_status;					use et_object_status;
+with et_mirroring;						use et_mirroring;
+
 
 package et_pcb is
 	
@@ -336,13 +338,16 @@ package et_pcb is
 
 
 
-	-- Maps from flip status to mirror status of a 
-	-- vector text:
-	function to_mirror (
-		flipped : in type_flipped) 
-		return et_text.type_vector_text_mirrored;
+	-- In this world, if a package is flipped, then it is
+	-- mirrored along the Y-axis.
+	-- This function maps from flip status to mirror along y-axis.
+	-- If flipped is false, then the return is MIRRROR_NO.
+	-- If flipped is true, then the return is MIRROR_ALONG_Y_AXIS:
+	function to_mirror_along_y_axis (
+		flipped : in type_flipped)
+		return type_mirror;
 
-	
+		
 	
 -- LOGGING PROPERTIES OF OBJECTS
 
