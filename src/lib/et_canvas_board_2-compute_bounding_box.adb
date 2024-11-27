@@ -59,6 +59,7 @@ with et_pcb_contour;
 with et_device_query_board;
 with et_mirroring;					use et_mirroring;
 with et_text;
+with et_silkscreen;
 
 
 with et_undo_redo;
@@ -294,8 +295,6 @@ is
 
 
 				procedure process_conductors is
-					use et_pcb_stack;
-
 					use et_conductor_segment;
 					use pac_conductor_lines;
 					use pac_conductor_arcs;
@@ -353,7 +352,6 @@ is
 					
 					procedure query_text (c : in pac_conductor_texts.cursor) is
 						text : et_conductor_text.type_conductor_text renames element (c);
-						use pac_draw_text;
 					begin
 						null; -- CS 
 						-- parse segments of text
@@ -379,7 +377,100 @@ is
 				end process_conductors;
 
 
+				
 
+				procedure process_silkscreen is
+					use et_silkscreen;			
+					use pac_silk_lines;
+					use pac_silk_arcs;
+					use pac_silk_circles;
+					use pac_silk_contours;
+					use pac_silk_texts;
+
+					procedure query_line (c : in pac_silk_lines.cursor) is
+						line : type_silk_line renames element (c);
+					begin
+						b := get_bounding_box (
+							line		=> line,
+							width		=> line.width,
+							offset_1	=> package_position,
+							offset_2	=> origin,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+						
+						merge_areas (bbox_new, b);
+					end query_line;
+
+
+					procedure query_arc (c : in pac_silk_arcs.cursor) is
+						arc : type_silk_arc renames element (c);
+					begin
+						b := get_bounding_box (
+							arc 		=> arc,
+							width		=> arc.width,
+							offset_1	=> package_position,
+							offset_2	=> origin,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_arc;
+
+					
+					procedure query_circle (c : in pac_silk_circles.cursor) is
+						circle : type_silk_circle renames element (c);
+					begin
+						b := get_bounding_box (
+							circle		=> circle,
+							width		=> circle.width,
+							offset_1	=> package_position,
+							offset_2	=> origin,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_circle;
+
+
+					procedure query_contour (c : in pac_silk_contours.cursor) is 
+						contour : type_silk_contour renames element (c);
+					begin
+						null; 
+						-- CS
+					end query_contour;
+
+					
+					procedure query_text (c : in pac_silk_texts.cursor) is
+						text : type_silk_text renames element (c);
+					begin
+						null; -- CS 
+						-- parse segments of text
+						-- include origin of text ?
+						-- merge_areas (bbox_new, b);
+					end query_text;
+
+
+					packge : type_package_model renames element (package_cursor);
+					
+				begin
+					packge.silkscreen.top.lines.iterate (query_line'access);
+					packge.silkscreen.bottom.lines.iterate (query_line'access);
+
+					packge.silkscreen.top.arcs.iterate (query_arc'access);
+					packge.silkscreen.bottom.arcs.iterate (query_arc'access);
+
+					packge.silkscreen.top.circles.iterate (query_circle'access);
+					packge.silkscreen.bottom.circles.iterate (query_circle'access);
+
+					packge.silkscreen.top.contours.iterate (query_contour'access);
+					packge.silkscreen.bottom.contours.iterate (query_contour'access);
+					
+					packge.silkscreen.top.texts.iterate (query_text'access);
+					packge.silkscreen.bottom.texts.iterate (query_text'access);
+				end process_silkscreen;
+				
+
+				
 				
 				procedure process_terminals is
 					use et_terminals;
@@ -524,6 +615,7 @@ is
 
 				process_conductors;
 				process_terminals;
+				process_silkscreen;
 				
 			end process_package;
 
