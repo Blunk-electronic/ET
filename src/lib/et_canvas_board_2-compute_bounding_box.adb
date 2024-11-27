@@ -290,99 +290,105 @@ is
 				package_cursor : pac_package_models.cursor;
 
 				-- This is the position of the package
-				-- on the board (x/y/rotation/face)
-				package_position : type_package_position;
+				-- on the board (x/y)
+				package_position : type_vector_model;
 
+				-- This is the rotation of the package
+				-- on the board)
+				package_rotation : type_rotation;
+				
 				-- For each primitive object we will
 				-- compute a temporary bounding-box:
 				b : type_area;
 
 				
-				function flipped return boolean is 
-					use et_pcb;
-				begin
-					if flip = NO then return false;
-					else return true;
-					end if;
-				end flipped;
-
-				
+			
 				use et_device_query_board;
 
 
 				procedure process_conductors is
-					objects : type_conductor_objects;
 					use et_pcb_stack;
 
-					procedure process_objects is
-						use et_conductor_segment;
-						use pac_conductor_lines;
-						use pac_conductor_arcs;
-						use pac_conductor_circles;
+					use et_conductor_segment;
+					use pac_conductor_lines;
+					use pac_conductor_arcs;
+					use pac_conductor_circles;
 
-						use et_conductor_text.packages;
-						use pac_conductor_texts;
+					use et_conductor_text.packages;
+					use pac_conductor_texts;
 
-
-						procedure query_line (c : in pac_conductor_lines.cursor) is
-							line : type_conductor_line renames element (c);
-						begin
-							-- The line has already been moved, flipped and rotated
-							-- to the final position.
-							b := get_bounding_box (line, line.width);
-							merge_areas (bbox_new, b);
-						end query_line;
-
-						
-						procedure query_arc (c : in pac_conductor_arcs.cursor) is
-							arc : type_conductor_arc renames element (c);
-						begin
-							-- See comments in procedure query_line.
-							b := get_bounding_box (arc, arc.width);
-							merge_areas (bbox_new, b);
-						end query_arc;
-
-						
-						procedure query_circle (c : in pac_conductor_circles.cursor) is
-							circle : type_conductor_circle renames element (c);
-						begin
-							-- See comments in procedure query_line.
-							b := get_bounding_box (circle, circle.width);
-							merge_areas (bbox_new, b);
-						end query_circle;
-
-						
-						procedure query_text (c : in pac_conductor_texts.cursor) is
-							text : et_conductor_text.type_conductor_text renames element (c);
-							use pac_draw_text;
-						begin
-							null; -- CS 
-							-- parse segments of text
-							-- include origin of text ?
-							-- merge_areas (bbox_new, b);
-						end query_text;
-
-						
+					
+					
+					procedure query_line (c : in pac_conductor_lines.cursor) is
+						line : type_conductor_line renames element (c);
 					begin
-						objects.lines.iterate (query_line'access);
-						objects.arcs.iterate (query_arc'access);
-						objects.circles.iterate (query_circle'access);
-						objects.texts.iterate (query_text'access);
-					end process_objects;
-
+						b := get_bounding_box (
+							line		=> line,
+							width		=> line.width,
+							offset_1	=> package_position,
+							offset_2	=> origin,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
 						
+						merge_areas (bbox_new, b);
+					end query_line;
+
+
+					procedure query_arc (c : in pac_conductor_arcs.cursor) is
+						arc : type_conductor_arc renames element (c);
+					begin
+						b := get_bounding_box (
+							arc 		=> arc,
+							width		=> arc.width,
+							offset_1	=> package_position,
+							offset_2	=> origin,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_arc;
+
+					
+					procedure query_circle (c : in pac_conductor_circles.cursor) is
+						circle : type_conductor_circle renames element (c);
+					begin
+						b := get_bounding_box (
+							circle		=> circle,
+							width		=> circle.width,
+							offset_1	=> package_position,
+							offset_2	=> origin,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_circle;
+
+					
+					procedure query_text (c : in pac_conductor_texts.cursor) is
+						text : et_conductor_text.type_conductor_text renames element (c);
+						use pac_draw_text;
+					begin
+						null; -- CS 
+						-- parse segments of text
+						-- include origin of text ?
+						-- merge_areas (bbox_new, b);
+					end query_text;
+					
+					
+					packge : type_package_model renames element (package_cursor);
+					
 				begin
-					if electric then
-						objects := get_conductor_objects (device_electric, OUTER_TOP);
-						process_objects;
-						objects := get_conductor_objects (device_electric, OUTER_BOTTOM);
-						process_objects;
-					else
-						objects := get_conductor_objects (device_non_electric, OUTER_TOP);
-						process_objects;
-						objects := get_conductor_objects (device_non_electric, OUTER_BOTTOM);
-						process_objects;
-					end if;
+					packge.conductors.top.lines.iterate (query_line'access);
+					packge.conductors.bottom.lines.iterate (query_line'access);
+
+					packge.conductors.top.arcs.iterate (query_arc'access);
+					packge.conductors.bottom.arcs.iterate (query_arc'access);
+
+					packge.conductors.top.circles.iterate (query_circle'access);
+					packge.conductors.bottom.circles.iterate (query_circle'access);
+
+					packge.conductors.top.texts.iterate (query_text'access);
+					packge.conductors.bottom.texts.iterate (query_text'access);					
 				end process_conductors;
 
 
@@ -404,45 +410,25 @@ is
 							use pac_segments;
 							s : type_segment renames element (c);
 						begin
-							-- put_line ("segment");
-							
+							-- put_line ("segment");							
 							case s.shape is
 								when LINE =>
-									if flipped then
-										b := get_bounding_box (
-											line		=> s.segment_line,
-											width		=> 0.0,
-											offset_1	=> t.position.place,
-											offset_2	=> get_position (package_position).place,
-											rotation	=> get_rotation (package_position));
-									else
-										b := get_bounding_box (
-											line		=> s.segment_line,
-											width		=> 0.0,
-											offset_1	=> t.position.place,
-											offset_2	=> get_position (package_position).place,
-											rotation	=> get_rotation (package_position),
-											mirror		=> MIRROR_ALONG_Y_AXIS);
-									end if;
+									b := get_bounding_box (
+										line		=> s.segment_line,
+										width		=> 0.0,
+										offset_1	=> t.position.place,
+										offset_2	=> package_position,
+										rotation	=> package_rotation,
+										mirror		=> to_mirror_along_y_axis (flip));
 									
 								when ARC =>
-									if flipped then
-										b := get_bounding_box (
-											arc			=> s.segment_arc,
-											width		=> 0.0,
-											offset_1	=> t.position.place,
-											offset_2	=> get_position (package_position).place,
-											rotation	=> get_rotation (package_position));
-									else
-										b := get_bounding_box (
-											arc			=> s.segment_arc,
-											width		=> 0.0,
-											offset_1	=> t.position.place,
-											offset_2	=> get_position (package_position).place,
-											rotation	=> get_rotation (package_position),
-											mirror		=> MIRROR_ALONG_Y_AXIS);
-									end if;
-
+									b := get_bounding_box (
+										arc			=> s.segment_arc,
+										width		=> 0.0,
+										offset_1	=> t.position.place,
+										offset_2	=> package_position,
+										rotation	=> package_rotation,
+										mirror		=> to_mirror_along_y_axis (flip));
 							end case;
 
 							merge_areas (bbox_new, b);
@@ -458,22 +444,13 @@ is
 								-- inner restring should be processed also.
 								
 								if t.pad_shape_tht.top.contour.circular then
-									if flipped then
-										b := get_bounding_box (
-											circle		=> t.pad_shape_tht.top.contour.circle,
-											width		=> 0.0,
-											offset_1	=> t.position.place,
-											offset_2	=> get_position (package_position).place,
-											rotation	=> get_rotation (package_position),
-											mirror		=> MIRROR_ALONG_Y_AXIS);
-									else
-										b := get_bounding_box (
-											circle		=> t.pad_shape_tht.top.contour.circle,
-											width		=> 0.0,
-											offset_1	=> t.position.place,
-											offset_2	=> get_position (package_position).place,
-											rotation	=> get_rotation (package_position));
-									end if;
+									b := get_bounding_box (
+										circle		=> t.pad_shape_tht.top.contour.circle,
+										width		=> 0.0,
+										offset_1	=> t.position.place,
+										offset_2	=> package_position,
+										rotation	=> package_rotation,
+										mirror		=> to_mirror_along_y_axis (flip));
 									
 									merge_areas (bbox_new, b);
 								else
@@ -481,22 +458,14 @@ is
 								end if;
 
 								if t.pad_shape_tht.bottom.contour.circular then
-									if flipped then
-										b := get_bounding_box (
-											circle		=> t.pad_shape_tht.bottom.contour.circle,
-											width		=> 0.0,
-											offset_1	=> t.position.place,
-											offset_2	=> get_position (package_position).place,
-											rotation	=> get_rotation (package_position),
-											mirror		=> MIRROR_ALONG_Y_AXIS);
-									else
-										b := get_bounding_box (
-											circle		=> t.pad_shape_tht.bottom.contour.circle,
-											width		=> 0.0,
-											offset_1	=> t.position.place,
-											offset_2	=> get_position (package_position).place,
-											rotation	=> get_rotation (package_position));
-									end if;
+									b := get_bounding_box (
+										circle		=> t.pad_shape_tht.bottom.contour.circle,
+										width		=> 0.0,
+										offset_1	=> t.position.place,
+										offset_2	=> package_position,
+										rotation	=> package_rotation,
+										mirror		=> to_mirror_along_y_axis (flip));
+
 									merge_areas (bbox_new, b);
 								else
 									t.pad_shape_tht.bottom.contour.segments.iterate (query_segment'access);
@@ -510,22 +479,13 @@ is
 								-- stop mask expansion, stencil opening should be processed also.
 								
 								if t.pad_shape_smt.contour.circular then
-									if flipped then
-										b := get_bounding_box (
-											circle		=> t.pad_shape_smt.contour.circle,
-											width		=> 0.0,
-											offset_1	=> t.position.place,
-											offset_2	=> get_position (package_position).place,
-											rotation	=> get_rotation (package_position),
-											mirror		=> MIRROR_ALONG_Y_AXIS);
-									else
-										b := get_bounding_box (
-											circle		=> t.pad_shape_smt.contour.circle,
-											width		=> 0.0,
-											offset_1	=> t.position.place,
-											offset_2	=> get_position (package_position).place,
-											rotation	=> get_rotation (package_position));
-									end if;
+									b := get_bounding_box (
+										circle		=> t.pad_shape_smt.contour.circle,
+										width		=> 0.0,
+										offset_1	=> t.position.place,
+										offset_2	=> package_position,
+										rotation	=> package_rotation,
+										mirror		=> to_mirror_along_y_axis (flip));
 										
 									merge_areas (bbox_new, b);
 								else
@@ -539,7 +499,6 @@ is
 					-- Iterate though the terminals of the package:
 					element (package_cursor).terminals.iterate (query_terminal'access);
 				end process_terminals;
-
 					
 				
 			begin
@@ -550,14 +509,30 @@ is
 					-- Locate the package model in the package library:
 					package_cursor := get_package_model (device_electric);
 
-					-- Fetch the position of the package on the board:
-					package_position := get_position (device_electric);
+					declare
+						-- Fetch the position of the package on the board:
+						pos : type_package_position := get_position (device_electric);
+					begin
+						-- Extract x/y coordinates of the package:
+						package_position := pos.place;
+
+						-- Extract rotation of the package:
+						package_rotation := get_rotation (pos);
+					end;
 				else
 					-- Locate the package model in the package library:
 					package_cursor := get_package_model (device_non_electric);
-					
-					-- Fetch the position of the package on the board:
-					package_position := get_position (device_non_electric);
+
+					declare
+						-- Fetch the position of the package on the board:
+						pos : type_package_position := get_position (device_non_electric);
+					begin
+						-- Extract x/y coordinates of the package:
+						package_position := pos.place;
+
+						-- Extract rotation of the package:
+						package_rotation := get_rotation (pos);
+					end;
 				end if;
 
 				process_conductors;
