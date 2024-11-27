@@ -282,8 +282,22 @@ is
 				device_non_electric	: in pac_devices_non_electric.cursor;					   
 				flip				: in type_flipped)
 			is
-				package_position : type_package_position;  -- incl. rotation and face
+				use et_packages;
+				use pac_package_models;
 
+				-- This cursor points to the package model
+				-- in the package library:
+				package_cursor : pac_package_models.cursor;
+
+				-- This is the position of the package
+				-- on the board (x/y/rotation/face)
+				package_position : type_package_position;
+
+				-- For each primitive object we will
+				-- compute a temporary bounding-box:
+				b : type_area;
+
+				
 				function flipped return boolean is 
 					use et_pcb;
 				begin
@@ -293,10 +307,8 @@ is
 				end flipped;
 
 				
-				use et_packages;
 				use et_device_query_board;
 
-				b : type_area;
 
 				procedure process_conductors is
 					objects : type_conductor_objects;
@@ -377,13 +389,9 @@ is
 
 				
 				procedure process_terminals is
-
-					package_cursor : et_packages.pac_package_models.cursor;
-
 					use et_terminals;
 					use pac_terminals;
-
-
+					
 					
 					procedure query_terminal (
 						c : in pac_terminals.cursor)
@@ -396,7 +404,7 @@ is
 							use pac_segments;
 							s : type_segment renames element (c);
 						begin
-							put_line ("segment");
+							-- put_line ("segment");
 							
 							case s.shape is
 								when LINE =>
@@ -441,7 +449,7 @@ is
 						end query_segment;
 
 						
-					begin
+					begin -- query_terminal
 						case t.technology is
 							when THT =>
 								-- CS: Currently we process only the pad shape on top
@@ -527,31 +535,28 @@ is
 					end query_terminal;
 
 					
-					use et_schematic;
-					use et_device_query_board;
-					use et_pcb;
-					use pac_devices_non_electric;
-					use et_packages;
-					use pac_package_models;
-					
 				begin
-					-- locate the package model in the package library:
-					if electric then
-						package_cursor := get_package_model (device_electric);
-					else
-						package_cursor := get_package_model (device_non_electric);
-					end if;
-					
+					-- Iterate though the terminals of the package:
 					element (package_cursor).terminals.iterate (query_terminal'access);
-
 				end process_terminals;
 
 					
 				
 			begin
+				-- Depening on the nature of the device, we fetch
+				-- the package model and the position on the board:
+				
 				if electric then
+					-- Locate the package model in the package library:
+					package_cursor := get_package_model (device_electric);
+
+					-- Fetch the position of the package on the board:
 					package_position := get_position (device_electric);
 				else
+					-- Locate the package model in the package library:
+					package_cursor := get_package_model (device_non_electric);
+					
+					-- Fetch the position of the package on the board:
 					package_position := get_position (device_non_electric);
 				end if;
 
