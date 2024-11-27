@@ -394,7 +394,6 @@ is
 							line		=> line,
 							width		=> line.width,
 							offset_1	=> package_position,
-							offset_2	=> origin,
 							rotation	=> package_rotation,
 							mirror		=> to_mirror_along_y_axis (flip));
 						
@@ -409,7 +408,6 @@ is
 							arc 		=> arc,
 							width		=> arc.width,
 							offset_1	=> package_position,
-							offset_2	=> origin,
 							rotation	=> package_rotation,
 							mirror		=> to_mirror_along_y_axis (flip));
 
@@ -424,7 +422,6 @@ is
 							circle		=> circle,
 							width		=> circle.width,
 							offset_1	=> package_position,
-							offset_2	=> origin,
 							rotation	=> package_rotation,
 							mirror		=> to_mirror_along_y_axis (flip));
 
@@ -435,8 +432,13 @@ is
 					procedure query_contour (c : in pac_silk_contours.cursor) is 
 						contour : type_silk_contour renames element (c);
 					begin
-						null; 
-						-- CS
+						b := get_bounding_box (
+							contour		=> contour,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
 					end query_contour;
 
 					
