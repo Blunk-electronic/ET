@@ -483,94 +483,48 @@ is
 						c : in pac_terminals.cursor)
 					is 
 						t : type_terminal renames element (c);
-
-						use pac_contours;
-						
-						procedure query_segment (c : in pac_segments.cursor) is
-							use pac_segments;
-							s : type_segment renames element (c);
-						begin
-							-- put_line ("segment");							
-							case s.shape is
-								when LINE =>
-									b := get_bounding_box (
-										line		=> s.segment_line,
-										width		=> 0.0,
-										offset_1	=> t.position.place,
-										offset_2	=> package_position,
-										rotation	=> package_rotation,
-										mirror		=> to_mirror_along_y_axis (flip));
-									
-								when ARC =>
-									b := get_bounding_box (
-										arc			=> s.segment_arc,
-										width		=> 0.0,
-										offset_1	=> t.position.place,
-										offset_2	=> package_position,
-										rotation	=> package_rotation,
-										mirror		=> to_mirror_along_y_axis (flip));
-							end case;
-
-							merge_areas (bbox_new, b);
-						end query_segment;
-
-						
-					begin -- query_terminal
+						use pac_contours;						
+					begin
 						case t.technology is
 							when THT =>
 								-- CS: Currently we process only the pad shape on top
 								-- and bottom side. In the future other things like
 								-- stop mask expansion and
 								-- inner restring should be processed also.
+
+								b := get_bounding_box (
+									contour		=> t.pad_shape_tht.top,
+									offset_1	=> t.position.place,
+									offset_2	=> package_position,
+									rotation	=> package_rotation,
+									mirror		=> to_mirror_along_y_axis (flip));
+			  
+								merge_areas (bbox_new, b);
 								
-								if t.pad_shape_tht.top.contour.circular then
-									b := get_bounding_box (
-										circle		=> t.pad_shape_tht.top.contour.circle,
-										width		=> 0.0,
-										offset_1	=> t.position.place,
-										offset_2	=> package_position,
-										rotation	=> package_rotation,
-										mirror		=> to_mirror_along_y_axis (flip));
-									
-									merge_areas (bbox_new, b);
-								else
-									t.pad_shape_tht.top.contour.segments.iterate (query_segment'access);
-								end if;
-
-								if t.pad_shape_tht.bottom.contour.circular then
-									b := get_bounding_box (
-										circle		=> t.pad_shape_tht.bottom.contour.circle,
-										width		=> 0.0,
-										offset_1	=> t.position.place,
-										offset_2	=> package_position,
-										rotation	=> package_rotation,
-										mirror		=> to_mirror_along_y_axis (flip));
-
-									merge_areas (bbox_new, b);
-								else
-									t.pad_shape_tht.bottom.contour.segments.iterate (query_segment'access);
-								end if;
-
+								b := get_bounding_box (
+									contour		=> t.pad_shape_tht.bottom,
+									offset_1	=> t.position.place,
+									offset_2	=> package_position,
+									rotation	=> package_rotation,
+									mirror		=> to_mirror_along_y_axis (flip));
+			  
+								merge_areas (bbox_new, b);
 								
 								
 							when SMT =>
 								-- CS: Currently we process only the pad shape
 								-- In the future other things like
 								-- stop mask expansion, stencil opening should be processed also.
-								
-								if t.pad_shape_smt.contour.circular then
-									b := get_bounding_box (
-										circle		=> t.pad_shape_smt.contour.circle,
-										width		=> 0.0,
-										offset_1	=> t.position.place,
-										offset_2	=> package_position,
-										rotation	=> package_rotation,
-										mirror		=> to_mirror_along_y_axis (flip));
+
+								b := get_bounding_box (
+									contour		=> t.pad_shape_smt,
+									offset_1	=> t.position.place,
+									offset_2	=> package_position,
+									rotation	=> package_rotation,
+									mirror		=> to_mirror_along_y_axis (flip));
 										
-									merge_areas (bbox_new, b);
-								else
-									t.pad_shape_smt.contour.segments.iterate (query_segment'access);
-								end if;
+								merge_areas (bbox_new, b);
+
 						end case;								
 					end query_terminal;
 
