@@ -60,6 +60,7 @@ with et_device_query_board;
 with et_mirroring;					use et_mirroring;
 with et_text;
 with et_silkscreen;
+with et_assy_doc;
 
 
 with et_undo_redo;
@@ -472,6 +473,102 @@ is
 				end process_silkscreen;
 				
 
+
+
+				procedure process_assembly_doc is
+					use et_assy_doc;			
+					use pac_doc_lines;
+					use pac_doc_arcs;
+					use pac_doc_circles;
+					use pac_doc_contours;
+					use pac_doc_texts;
+
+					procedure query_line (c : in pac_doc_lines.cursor) is
+						line : type_doc_line renames element (c);
+					begin
+						b := get_bounding_box (
+							line		=> line,
+							width		=> line.width,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+						
+						merge_areas (bbox_new, b);
+					end query_line;
+
+
+					procedure query_arc (c : in pac_doc_arcs.cursor) is
+						arc : type_doc_arc renames element (c);
+					begin
+						b := get_bounding_box (
+							arc 		=> arc,
+							width		=> arc.width,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_arc;
+
+					
+					procedure query_circle (c : in pac_doc_circles.cursor) is
+						circle : type_doc_circle renames element (c);
+					begin
+						b := get_bounding_box (
+							circle		=> circle,
+							width		=> circle.width,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_circle;
+
+
+					procedure query_contour (c : in pac_doc_contours.cursor) is 
+						contour : type_doc_contour renames element (c);
+					begin
+						b := get_bounding_box (
+							contour		=> contour,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_contour;
+
+					
+					procedure query_text (c : in pac_doc_texts.cursor) is
+						text : type_doc_text renames element (c);
+					begin
+						null; -- CS 
+						-- parse segments of text
+						-- include origin of text ?
+						-- merge_areas (bbox_new, b);
+					end query_text;
+
+
+					packge : type_package_model renames element (package_cursor);
+					
+				begin
+					packge.assy_doc.top.lines.iterate (query_line'access);
+					packge.assy_doc.bottom.lines.iterate (query_line'access);
+
+					packge.assy_doc.top.arcs.iterate (query_arc'access);
+					packge.assy_doc.bottom.arcs.iterate (query_arc'access);
+
+					packge.assy_doc.top.circles.iterate (query_circle'access);
+					packge.assy_doc.bottom.circles.iterate (query_circle'access);
+
+					packge.assy_doc.top.contours.iterate (query_contour'access);
+					packge.assy_doc.bottom.contours.iterate (query_contour'access);
+					
+					packge.assy_doc.top.texts.iterate (query_text'access);
+					packge.assy_doc.bottom.texts.iterate (query_text'access);
+				end process_assembly_doc;
+
+
+
 				
 				
 				procedure process_terminals is
@@ -572,6 +669,7 @@ is
 				process_conductors;
 				process_terminals;
 				process_silkscreen;
+				process_assembly_doc;
 				
 			end process_package;
 
