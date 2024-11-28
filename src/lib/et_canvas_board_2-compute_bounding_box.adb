@@ -61,6 +61,7 @@ with et_mirroring;					use et_mirroring;
 with et_text;
 with et_silkscreen;
 with et_assy_doc;
+with et_keepout;
 
 
 with et_undo_redo;
@@ -568,6 +569,39 @@ is
 				end process_assembly_doc;
 
 
+				
+
+
+				procedure process_keepout is
+					use et_keepout;
+					use pac_keepout_zones;
+
+					procedure query_zone (c : in pac_keepout_zones.cursor) is 
+						zone : type_keepout_zone renames element (c);
+					begin
+						b := get_bounding_box (
+							contour		=> zone,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_zone;
+
+
+					packge : type_package_model renames element (package_cursor);
+					
+				begin
+					packge.keepout.top.zones.iterate (query_zone'access);
+					packge.keepout.bottom.zones.iterate (query_zone'access);
+
+					-- CS iterate cutouts ?
+					-- The cutout areas are always inside zone if the package
+					-- model is correct.
+					-- packge.keepout.top.cutouts.iterate (query_cutout'access);
+				end process_keepout;
+
+				
 
 				
 				
@@ -666,7 +700,10 @@ is
 					end;
 				end if;
 
+				
 				process_conductors;
+				process_keepout;
+				
 				process_terminals;
 				process_silkscreen;
 				process_assembly_doc;
