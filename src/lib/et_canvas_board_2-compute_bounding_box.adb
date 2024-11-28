@@ -981,6 +981,29 @@ is
 
 
 
+				procedure process_holes is
+					use et_pcb_contour;
+					use pac_holes;
+
+					procedure query_hole (
+						c : pac_holes.cursor) 
+					is begin
+						b := get_bounding_box (
+							contour		=> element (c),
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_hole;
+
+					packge : type_package_model renames element (package_cursor);
+				begin
+					packge.holes.iterate (query_hole'access);
+				end process_holes;
+
+
+
 				
 				
 				procedure process_terminals is
@@ -1085,11 +1108,11 @@ is
 				process_stencil;
 				process_route_restrict;
 				process_via_restrict;
+				process_holes;
 				
 				process_terminals;
 				process_silkscreen;
-				process_assembly_doc;
-				
+				process_assembly_doc;				
 			end process_package;
 
 
