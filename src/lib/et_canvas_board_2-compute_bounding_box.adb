@@ -64,6 +64,11 @@ with et_assy_doc;
 with et_keepout;
 with et_stop_mask;
 with et_stop_mask.packages;
+with et_stencil;
+with et_route_restrict;
+with et_route_restrict.packages;
+with et_via_restrict;
+with et_via_restrict.packages;
 
 
 with et_undo_redo;
@@ -705,7 +710,277 @@ is
 
 				
 
+
+
+
+
+				procedure process_stencil is
+					use et_stencil;			
+					use pac_stencil_lines;
+					use pac_stencil_arcs;
+					use pac_stencil_circles;
+					use pac_stencil_contours;
+
+					procedure query_line (c : in pac_stencil_lines.cursor) is
+						line : type_stencil_line renames element (c);
+					begin
+						b := get_bounding_box (
+							line		=> line,
+							width		=> line.width,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+						
+						merge_areas (bbox_new, b);
+					end query_line;
+
+
+					procedure query_arc (c : in pac_stencil_arcs.cursor) is
+						arc : type_stencil_arc renames element (c);
+					begin
+						b := get_bounding_box (
+							arc 		=> arc,
+							width		=> arc.width,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_arc;
+
+					
+					procedure query_circle (c : in pac_stencil_circles.cursor) is
+						circle : type_stencil_circle renames element (c);
+					begin
+						b := get_bounding_box (
+							circle		=> circle,
+							width		=> circle.width,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_circle;
+
+
+					procedure query_contour (c : in pac_stencil_contours.cursor) is 
+						contour : type_stencil_contour renames element (c);
+					begin
+						b := get_bounding_box (
+							contour		=> contour,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_contour;
+
+
+					packge : type_package_model renames element (package_cursor);
+					
+				begin
+					packge.stencil.top.lines.iterate (query_line'access);
+					packge.stencil.bottom.lines.iterate (query_line'access);
+
+					packge.stencil.top.arcs.iterate (query_arc'access);
+					packge.stencil.bottom.arcs.iterate (query_arc'access);
+
+					packge.stencil.top.circles.iterate (query_circle'access);
+					packge.stencil.bottom.circles.iterate (query_circle'access);
+
+					packge.stencil.top.contours.iterate (query_contour'access);
+					packge.stencil.bottom.contours.iterate (query_contour'access);
+				end process_stencil;
 				
+
+
+
+
+				procedure process_route_restrict is
+					use et_route_restrict;
+					use et_route_restrict.packages;
+					
+					use pac_route_restrict_lines;
+					use pac_route_restrict_arcs;
+					use pac_route_restrict_circles;
+					use pac_route_restrict_zones;
+					use pac_route_restrict_cutouts;
+
+					
+					procedure query_line (c : in pac_route_restrict_lines.cursor) is
+						line : type_route_restrict_line renames element (c);
+					begin
+						b := get_bounding_box (
+							line		=> line,
+							width		=> line.width,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+						
+						merge_areas (bbox_new, b);
+					end query_line;
+
+
+					procedure query_arc (c : in pac_route_restrict_arcs.cursor) is
+						arc : type_route_restrict_arc renames element (c);
+					begin
+						b := get_bounding_box (
+							arc 		=> arc,
+							width		=> arc.width,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_arc;
+
+					
+					procedure query_circle (c : in pac_route_restrict_circles.cursor) is
+						circle : type_route_restrict_circle renames element (c);
+					begin
+						b := get_bounding_box (
+							circle		=> circle,
+							width		=> circle.width,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_circle;
+
+
+					procedure query_zone (c : in pac_route_restrict_zones.cursor) is 
+						zone : type_route_restrict_zone renames element (c);
+					begin
+						b := get_bounding_box (
+							contour		=> zone,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_zone;
+
+					
+					packge : type_package_model renames element (package_cursor);
+				
+				begin
+					packge.route_restrict.top.lines.iterate (query_line'access);
+					packge.route_restrict.bottom.lines.iterate (query_line'access);
+
+					packge.route_restrict.top.arcs.iterate (query_arc'access);
+					packge.route_restrict.bottom.arcs.iterate (query_arc'access);
+
+					packge.route_restrict.top.circles.iterate (query_circle'access);
+					packge.route_restrict.bottom.circles.iterate (query_circle'access);
+
+					packge.route_restrict.top.zones.iterate (query_zone'access);
+					packge.route_restrict.bottom.zones.iterate (query_zone'access);
+
+					-- CS: If the package model is correct, then there is
+					-- no need to parse the cutout areas like:
+					-- packge.route_restrict.top.cutouts.iterate (query_cutout'access);
+					-- packge.route_restrict.bottom.cutouts.iterate (query_cutout'access);					
+				end process_route_restrict;
+				
+				
+
+
+
+
+
+				procedure process_via_restrict is
+					use et_via_restrict;
+					use et_via_restrict.packages;
+					
+					use pac_via_restrict_lines;
+					use pac_via_restrict_arcs;
+					use pac_via_restrict_circles;
+					use pac_via_restrict_zones;
+					use pac_via_restrict_cutouts;
+
+					
+					procedure query_line (c : in pac_via_restrict_lines.cursor) is
+						line : type_via_restrict_line renames element (c);
+					begin
+						b := get_bounding_box (
+							line		=> line,
+							width		=> line.width,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+						
+						merge_areas (bbox_new, b);
+					end query_line;
+
+
+					procedure query_arc (c : in pac_via_restrict_arcs.cursor) is
+						arc : type_via_restrict_arc renames element (c);
+					begin
+						b := get_bounding_box (
+							arc 		=> arc,
+							width		=> arc.width,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_arc;
+
+					
+					procedure query_circle (c : in pac_via_restrict_circles.cursor) is
+						circle : type_via_restrict_circle renames element (c);
+					begin
+						b := get_bounding_box (
+							circle		=> circle,
+							width		=> circle.width,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_circle;
+
+
+					procedure query_zone (c : in pac_via_restrict_zones.cursor) is 
+						zone : type_via_restrict_zone renames element (c);
+					begin
+						b := get_bounding_box (
+							contour		=> zone,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_zone;
+
+					
+					packge : type_package_model renames element (package_cursor);
+				
+				begin
+					packge.via_restrict.top.lines.iterate (query_line'access);
+					packge.via_restrict.bottom.lines.iterate (query_line'access);
+
+					packge.via_restrict.top.arcs.iterate (query_arc'access);
+					packge.via_restrict.bottom.arcs.iterate (query_arc'access);
+
+					packge.via_restrict.top.circles.iterate (query_circle'access);
+					packge.via_restrict.bottom.circles.iterate (query_circle'access);
+
+					packge.via_restrict.top.zones.iterate (query_zone'access);
+					packge.via_restrict.bottom.zones.iterate (query_zone'access);
+
+					-- CS: If the package model is correct, then there is
+					-- no need to parse the cutout areas like:
+					-- packge.via_restrict.top.cutouts.iterate (query_cutout'access);
+					-- packge.via_restrict.bottom.cutouts.iterate (query_cutout'access);					
+				end process_via_restrict;
+
+
+
+
+
+
 				
 				
 				procedure process_terminals is
@@ -807,6 +1082,9 @@ is
 				process_conductors;
 				process_keepout;
 				process_stopmask;
+				process_stencil;
+				process_route_restrict;
+				process_via_restrict;
 				
 				process_terminals;
 				process_silkscreen;
