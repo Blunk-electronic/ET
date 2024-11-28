@@ -150,9 +150,10 @@ package et_stencil is
 -- CONTOURS
 	
 	type type_stencil_contour is new type_contour with null record;
+	-- CS rename to type_stencil_zone
 	
 	package pac_stencil_contours is new doubly_linked_lists (type_stencil_contour);
-	use pac_stencil_contours;
+	use pac_stencil_contours; -- CS rename to pac_stencil_zones
 
 	
 	-- Mirrors a list of contours along the given axis:
@@ -177,7 +178,7 @@ package et_stencil is
 		lines 		: pac_stencil_lines.list;
 		arcs		: pac_stencil_arcs.list;
 		circles		: pac_stencil_circles.list;
-		contours	: pac_stencil_contours.list;
+		contours	: pac_stencil_contours.list; -- CS rename to zones
 	end record;
 
 

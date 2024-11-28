@@ -143,9 +143,9 @@ package et_silkscreen is
 	
 -- CONTOURS:
 	
-	type type_silk_contour is new type_contour with null record;
+	type type_silk_contour is new type_contour with null record; -- CS rename to type_silk_zone
 	package pac_silk_contours is new doubly_linked_lists (type_silk_contour);
-	use pac_silk_contours;
+	use pac_silk_contours; -- CS rename to pac_silk_zones
 	
 
 	-- Mirrors a list of contours along the given axis:
@@ -199,7 +199,7 @@ package et_silkscreen is
 		lines 		: pac_silk_lines.list;
 		arcs		: pac_silk_arcs.list;
 		circles		: pac_silk_circles.list;
-		contours	: pac_silk_contours.list;
+		contours	: pac_silk_contours.list; -- CS rename to zones
 		texts		: pac_silk_texts.list;
 	end record;
 

@@ -157,27 +157,230 @@ is
 
 		procedure process_silkscreen is
 
+			procedure query_silkscreen (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in type_generic_module)
+			is 
+				use et_pcb;
+				use et_silkscreen;
+				use pac_silk_lines;
+				use pac_silk_arcs;
+				use pac_silk_circles;
+				use pac_silk_contours;
+				-- use pac_silk_texts;
+				
+				-- The bounding box of a single segment:
+				b : type_area;
+				
+				silk : type_silkscreen_both_sides renames module.board.silk_screen;
+
+				
+				procedure query_line (c : in pac_silk_lines.cursor) is
+					line : type_silk_line renames element (c);
+				begin
+					b := get_bounding_box (line, line.width);
+					merge_areas (bbox_new, b);
+				end query_line;
+
+				
+				procedure query_arc (c : in pac_silk_arcs.cursor) is
+					arc : type_silk_arc renames element (c);
+				begin
+					b := get_bounding_box (arc, arc.width);
+					merge_areas (bbox_new, b);
+				end query_arc;
+
+
+				procedure query_circle (c : in pac_silk_circles.cursor) is
+					circle : type_silk_circle renames element (c);
+				begin
+					b := get_bounding_box (circle, circle.width);
+					merge_areas (bbox_new, b);
+				end query_circle;
+
+
+				procedure query_zone (c : in pac_silk_contours.cursor) is
+					zone : type_silk_contour renames element (c);
+				begin
+					b := get_bounding_box (zone, 0.0);
+					merge_areas (bbox_new, b);
+				end query_zone;
+
+				
+			begin
+				silk.top.lines.iterate (query_line'access);
+				silk.bottom.lines.iterate (query_line'access);
+
+				silk.top.arcs.iterate (query_arc'access);
+				silk.bottom.arcs.iterate (query_arc'access);
+
+				silk.top.circles.iterate (query_circle'access);
+				silk.bottom.circles.iterate (query_circle'access);
+
+				silk.top.contours.iterate (query_zone'access);
+				silk.bottom.contours.iterate (query_zone'access);
+				
+				-- CS
+				-- placeholders
+				-- texts
+			end query_silkscreen;
+
+			
 		begin
-			null;
+			query_element (active_module, query_silkscreen'access);
 		end process_silkscreen;
 		
 
 
+		
+
 		procedure process_assembly_doc is
 
+			procedure query_assy_doc (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in type_generic_module)
+			is 
+				use et_pcb;
+				use et_assy_doc;
+				use pac_doc_lines;
+				use pac_doc_arcs;
+				use pac_doc_circles;
+				use pac_doc_contours;
+				-- use pac_doc_texts;
+				
+				-- The bounding box of a single segment:
+				b : type_area;
+				
+				doc : type_assy_doc_both_sides renames module.board.assy_doc;
+
+				
+				procedure query_line (c : in pac_doc_lines.cursor) is
+					line : type_doc_line renames element (c);
+				begin
+					b := get_bounding_box (line, line.width);
+					merge_areas (bbox_new, b);
+				end query_line;
+
+				
+				procedure query_arc (c : in pac_doc_arcs.cursor) is
+					arc : type_doc_arc renames element (c);
+				begin
+					b := get_bounding_box (arc, arc.width);
+					merge_areas (bbox_new, b);
+				end query_arc;
+
+
+				procedure query_circle (c : in pac_doc_circles.cursor) is
+					circle : type_doc_circle renames element (c);
+				begin
+					b := get_bounding_box (circle, circle.width);
+					merge_areas (bbox_new, b);
+				end query_circle;
+
+
+				procedure query_zone (c : in pac_doc_contours.cursor) is
+					zone : type_doc_contour renames element (c);
+				begin
+					b := get_bounding_box (zone, 0.0);
+					merge_areas (bbox_new, b);
+				end query_zone;
+
+				
+			begin
+				doc.top.lines.iterate (query_line'access);
+				doc.bottom.lines.iterate (query_line'access);
+
+				doc.top.arcs.iterate (query_arc'access);
+				doc.bottom.arcs.iterate (query_arc'access);
+
+				doc.top.circles.iterate (query_circle'access);
+				doc.bottom.circles.iterate (query_circle'access);
+
+				doc.top.contours.iterate (query_zone'access);
+				doc.bottom.contours.iterate (query_zone'access);
+				
+				-- CS
+				-- placeholders
+				-- texts
+			end query_assy_doc;
+			
 		begin
-			null;
+			query_element (active_module, query_assy_doc'access);
 		end process_assembly_doc;
 
 
 
+		
 		procedure process_stencil is
 
+			procedure query_stencil (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in type_generic_module)
+			is 
+				use et_stencil;
+				use pac_stencil_lines;
+				use pac_stencil_arcs;
+				use pac_stencil_circles;
+				use pac_stencil_contours;
+				
+				-- The bounding box of a single segment:
+				b : type_area;
+				
+				stencil : type_stencil_both_sides renames module.board.stencil;
+
+
+				procedure query_line (c : in pac_stencil_lines.cursor) is
+					line : type_stencil_line renames element (c);
+				begin
+					b := get_bounding_box (line, line.width);
+					merge_areas (bbox_new, b);
+				end query_line;
+
+				
+				procedure query_arc (c : in pac_stencil_arcs.cursor) is
+					arc : type_stencil_arc renames element (c);
+				begin
+					b := get_bounding_box (arc, arc.width);
+					merge_areas (bbox_new, b);
+				end query_arc;
+
+
+				procedure query_circle (c : in pac_stencil_circles.cursor) is
+					circle : type_stencil_circle renames element (c);
+				begin
+					b := get_bounding_box (circle, circle.width);
+					merge_areas (bbox_new, b);
+				end query_circle;
+
+
+				procedure query_zone (c : in pac_stencil_contours.cursor) is
+					zone : type_stencil_contour renames element (c);
+				begin
+					b := get_bounding_box (zone, 0.0);
+					merge_areas (bbox_new, b);
+				end query_zone;
+				
+				
+			begin
+				stencil.top.lines.iterate (query_line'access);
+				stencil.bottom.lines.iterate (query_line'access);
+
+				stencil.top.arcs.iterate (query_arc'access);
+				stencil.bottom.arcs.iterate (query_arc'access);
+
+				stencil.top.circles.iterate (query_circle'access);
+				stencil.bottom.circles.iterate (query_circle'access);
+
+				stencil.top.contours.iterate (query_zone'access);
+				stencil.bottom.contours.iterate (query_zone'access);
+			end query_stencil;
+			
 		begin
-			null;
+			query_element (active_module, query_stencil'access);
 		end process_stencil;
 
 
+		
 
 		procedure process_stopmask is
 
