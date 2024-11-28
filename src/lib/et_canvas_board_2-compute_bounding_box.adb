@@ -153,6 +153,78 @@ is
 	procedure parse_board is
 
 
+		procedure process_silkscreen is
+
+		begin
+			null;
+		end process_silkscreen;
+		
+
+
+		procedure process_assembly_doc is
+
+		begin
+			null;
+		end process_assembly_doc;
+
+
+
+		procedure process_stencil is
+
+		begin
+			null;
+		end process_stencil;
+
+
+
+		procedure process_stopmask is
+
+		begin
+			null;
+		end process_stopmask;
+
+
+
+
+		procedure process_keepout is
+
+		begin
+			null;
+		end process_keepout;
+
+
+
+
+		procedure process_route_restrict is
+
+		begin
+			null;
+		end process_route_restrict;
+
+
+
+
+		procedure process_via_restrict is
+
+		begin
+			null;
+		end process_via_restrict;
+
+
+
+
+		procedure process_conductors is
+
+		begin
+			null;
+		end process_conductors;
+
+
+
+		
+		
+		
+		
 		-- This procedure parses the outer contour of the board
 		-- and the holes (which can be regarded as inner contour):
 		procedure process_board_outline is
@@ -1207,17 +1279,17 @@ is
 
 		
 	begin
-		process_board_outline;
-
 		process_devices;
 		
-		-- CS
-		-- process_silkscreen
-		-- process_assembly_doc
-		-- process_keepout
-		-- process_stopmask
-		-- process_conductors (tracks, vias, zones)
-		-- process_stencil
+		process_silkscreen;
+		process_assembly_doc;
+		process_stencil;
+		process_stopmask;
+		process_keepout;
+		process_route_restrict;
+		process_via_restrict;
+		process_conductors; -- tracks, vias, zones
+		process_board_outline;
 
 	end parse_board;
 
