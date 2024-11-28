@@ -72,14 +72,14 @@ package et_via_restrict.boards is
 	package pac_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
 
 	
-	type type_via_restrict_contour is new
+	type type_via_restrict_contour is new -- CS rename to type_via_restrict_zone
 		et_via_restrict.type_via_restrict_zone with
 	record
 		layers 	: type_signal_layers.set;
 	end record;
 	
 	package pac_via_restrict_contours is new doubly_linked_lists (type_via_restrict_contour);
-
+	-- CS rename to pac_via_restrict_zones
 
 	type type_via_restrict_cutout is new
 		et_via_restrict.type_via_restrict_cutout with
@@ -94,7 +94,7 @@ package et_via_restrict.boards is
 		lines 		: pac_via_restrict_lines.list;
 		arcs		: pac_via_restrict_arcs.list;
 		circles		: pac_via_restrict_circles.list;
-		contours	: pac_via_restrict_contours.list;
+		contours	: pac_via_restrict_contours.list; -- CS rename contours to zone
 		cutouts		: pac_via_restrict_cutouts.list;
 
 		-- CS texts : 

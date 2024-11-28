@@ -67,8 +67,10 @@ with et_stop_mask.packages;
 with et_stencil;
 with et_route_restrict;
 with et_route_restrict.packages;
+with et_route_restrict.boards;
 with et_via_restrict;
 with et_via_restrict.packages;
+with et_via_restrict.boards;
 with et_fill_zones.boards;
 
 with et_undo_redo;
@@ -179,8 +181,74 @@ is
 
 		procedure process_stopmask is
 
+			procedure query_stopmask (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in type_generic_module)
+			is 
+				use et_pcb;
+				use et_stop_mask;
+				use pac_stop_lines;
+				use pac_stop_arcs;
+				use pac_stop_circles;
+				use pac_stop_contours;
+				-- use pac_stop_texts;
+
+				-- The bounding box of a single segment:
+				b : type_area;
+				
+				stop : type_stop_mask_both_sides renames module.board.stop_mask;
+
+				
+				procedure query_line (c : in pac_stop_lines.cursor) is
+					line : type_stop_line renames element (c);
+				begin
+					b := get_bounding_box (line, line.width);
+					merge_areas (bbox_new, b);
+				end query_line;
+
+				
+				procedure query_arc (c : in pac_stop_arcs.cursor) is
+					arc : type_stop_arc renames element (c);
+				begin
+					b := get_bounding_box (arc, arc.width);
+					merge_areas (bbox_new, b);
+				end query_arc;
+
+
+				procedure query_circle (c : in pac_stop_circles.cursor) is
+					circle : type_stop_circle renames element (c);
+				begin
+					b := get_bounding_box (circle, circle.width);
+					merge_areas (bbox_new, b);
+				end query_circle;
+
+
+				procedure query_contour (c : in pac_stop_contours.cursor) is
+					zone : type_stop_contour renames element (c);
+				begin
+					b := get_bounding_box (zone, 0.0);
+					merge_areas (bbox_new, b);
+				end query_contour;
+
+				
+			begin
+				stop.top.lines.iterate (query_line'access);
+				stop.bottom.lines.iterate (query_line'access);
+
+				stop.top.arcs.iterate (query_arc'access);
+				stop.bottom.arcs.iterate (query_arc'access);
+
+				stop.top.circles.iterate (query_circle'access);
+				stop.bottom.circles.iterate (query_circle'access);
+
+				stop.top.contours.iterate (query_contour'access);
+				stop.bottom.contours.iterate (query_contour'access);
+
+				-- CS texts
+			end query_stopmask;
+			
 		begin
-			null;
+			query_element (active_module, query_stopmask'access);
 		end process_stopmask;
 
 
@@ -188,8 +256,46 @@ is
 
 		procedure process_keepout is
 
+			procedure query_keepout (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in type_generic_module)
+			is 
+				use et_keepout;
+				use pac_keepout_zones;
+				use pac_keepout_cutouts;
+				
+				-- The bounding box of a single segment:
+				b : type_area;
+				
+				keepout : type_keepout_both_sides renames module.board.keepout;
+
+				
+				procedure query_zone (c : in pac_keepout_zones.cursor) is
+					zone : type_keepout_zone renames element (c);
+				begin
+					b := get_bounding_box (zone, 0.0);
+					merge_areas (bbox_new, b);
+				end query_zone;
+
+
+				procedure query_cutout (c : in pac_keepout_cutouts.cursor) is
+					cutout : type_keepout_cutout renames element (c);
+				begin
+					b := get_bounding_box (cutout, 0.0);
+					merge_areas (bbox_new, b);
+				end query_cutout;
+
+				
+			begin
+				keepout.top.zones.iterate (query_zone'access);
+				keepout.bottom.zones.iterate (query_zone'access);
+
+				keepout.top.cutouts.iterate (query_cutout'access);
+				keepout.bottom.cutouts.iterate (query_cutout'access);
+			end query_keepout;
+			
 		begin
-			null;
+			query_element (active_module, query_keepout'access);
 		end process_keepout;
 
 
@@ -197,8 +303,74 @@ is
 
 		procedure process_route_restrict is
 
+			procedure query_route_restrict (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in type_generic_module)
+			is 
+				use et_route_restrict.boards;
+				use pac_route_restrict_lines;
+				use pac_route_restrict_arcs;
+				use pac_route_restrict_circles;
+				use pac_route_restrict_contours;
+				use pac_route_restrict_cutouts;
+				
+				-- The bounding box of a single segment:
+				b : type_area;
+				
+				restrict : type_route_restrict renames module.board.route_restrict;
+
+
+				procedure query_line (c : in pac_route_restrict_lines.cursor) is
+					line : type_route_restrict_line renames element (c);
+				begin
+					b := get_bounding_box (line, line.width);
+					merge_areas (bbox_new, b);
+				end query_line;
+
+				
+				procedure query_arc (c : in pac_route_restrict_arcs.cursor) is
+					arc : type_route_restrict_arc renames element (c);
+				begin
+					b := get_bounding_box (arc, arc.width);
+					merge_areas (bbox_new, b);
+				end query_arc;
+
+
+				procedure query_circle (c : in pac_route_restrict_circles.cursor) is
+					circle : type_route_restrict_circle renames element (c);
+				begin
+					b := get_bounding_box (circle, circle.width);
+					merge_areas (bbox_new, b);
+				end query_circle;
+
+
+				procedure query_zone (c : in pac_route_restrict_contours.cursor) is
+					zone : type_route_restrict_contour renames element (c);
+				begin
+					b := get_bounding_box (zone, 0.0);
+					merge_areas (bbox_new, b);
+				end query_zone;
+
+
+				procedure query_cutout (c : in pac_route_restrict_cutouts.cursor) is
+					cutout : type_route_restrict_cutout renames element (c);
+				begin
+					b := get_bounding_box (cutout, 0.0);
+					merge_areas (bbox_new, b);
+				end query_cutout;
+
+				
+			begin
+				restrict.lines.iterate (query_line'access);
+				restrict.arcs.iterate (query_arc'access);
+				restrict.circles.iterate (query_circle'access);
+				restrict.contours.iterate (query_zone'access);
+				restrict.cutouts.iterate (query_cutout'access);
+			end query_route_restrict;
+
+			
 		begin
-			null;
+			query_element (active_module, query_route_restrict'access);
 		end process_route_restrict;
 
 
@@ -206,8 +378,74 @@ is
 
 		procedure process_via_restrict is
 
+			procedure query_via_restrict (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in type_generic_module)
+			is 
+				use et_via_restrict.boards;
+				use pac_via_restrict_lines;
+				use pac_via_restrict_arcs;
+				use pac_via_restrict_circles;
+				use pac_via_restrict_contours;
+				use pac_via_restrict_cutouts;
+				
+				-- The bounding box of a single segment:
+				b : type_area;
+				
+				restrict : type_via_restrict renames module.board.via_restrict;
+
+
+				procedure query_line (c : in pac_via_restrict_lines.cursor) is
+					line : type_via_restrict_line renames element (c);
+				begin
+					b := get_bounding_box (line, line.width);
+					merge_areas (bbox_new, b);
+				end query_line;
+
+				
+				procedure query_arc (c : in pac_via_restrict_arcs.cursor) is
+					arc : type_via_restrict_arc renames element (c);
+				begin
+					b := get_bounding_box (arc, arc.width);
+					merge_areas (bbox_new, b);
+				end query_arc;
+
+
+				procedure query_circle (c : in pac_via_restrict_circles.cursor) is
+					circle : type_via_restrict_circle renames element (c);
+				begin
+					b := get_bounding_box (circle, circle.width);
+					merge_areas (bbox_new, b);
+				end query_circle;
+
+
+				procedure query_zone (c : in pac_via_restrict_contours.cursor) is
+					zone : type_via_restrict_contour renames element (c);
+				begin
+					b := get_bounding_box (zone, 0.0);
+					merge_areas (bbox_new, b);
+				end query_zone;
+
+
+				procedure query_cutout (c : in pac_via_restrict_cutouts.cursor) is
+					cutout : type_via_restrict_cutout renames element (c);
+				begin
+					b := get_bounding_box (cutout, 0.0);
+					merge_areas (bbox_new, b);
+				end query_cutout;
+
+				
+			begin
+				restrict.lines.iterate (query_line'access);
+				restrict.arcs.iterate (query_arc'access);
+				restrict.circles.iterate (query_circle'access);
+				restrict.contours.iterate (query_zone'access);
+				restrict.cutouts.iterate (query_cutout'access);
+			end query_via_restrict;
+
+			
 		begin
-			null;
+			query_element (active_module, query_via_restrict'access);
 		end process_via_restrict;
 
 
