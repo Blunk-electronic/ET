@@ -211,7 +211,7 @@ package et_packages is
 		description		: pac_package_description.bounded_string;
 		conductors		: type_conductor_objects_both_sides; -- non-electric objects
 		keepout 		: type_keepout_both_sides;
-		stop_mask		: type_stopmask_both_sides; -- not terminal related
+		stop_mask		: type_stopmask_both_sides; -- not terminal related -- CS rename to stopmask
 		stencil			: type_stencil_both_sides; -- not terminal related
 		route_restrict 	: type_route_restrict;
 		via_restrict 	: type_via_restrict;

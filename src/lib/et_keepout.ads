@@ -54,10 +54,6 @@ package et_keepout is
 	use pac_contours;
 
 
-	
-	-- GUI relevant only: The line width of keepout:
-	keepout_line_width : constant type_general_line_width := linewidth_fab_min;
-	-- CS remove
 
 	type type_keepout_zone is new type_contour with null record;
 

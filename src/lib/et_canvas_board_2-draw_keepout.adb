@@ -63,7 +63,7 @@ is
 	brightness : type_brightness := NORMAL;
 
 	
-	procedure query_polygon (c : in pac_keepout_zones.cursor) is -- CS rename to query_contour
+	procedure query_polygon (c : in pac_keepout_zones.cursor) is -- CS rename to query_zone
 		-- CS use rename
 		use pac_draw_contours;
 	begin
@@ -95,8 +95,6 @@ is
 	is begin
 		-- All keepout segments will be drawn with the same color:
 		set_color_keepout (face, brightness);
-
-		set_linewidth (keepout_line_width);
 		
 		case face is
 			when TOP =>
