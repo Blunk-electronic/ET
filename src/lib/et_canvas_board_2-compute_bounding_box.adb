@@ -53,8 +53,8 @@ with et_packages;
 with et_terminals;
 with et_pcb_stack;
 with et_conductor_segment;
+with et_conductor_segment.boards;
 with et_conductor_text.packages;
-
 with et_pcb_contour;
 with et_device_query_board;
 with et_mirroring;					use et_mirroring;
@@ -69,7 +69,7 @@ with et_route_restrict;
 with et_route_restrict.packages;
 with et_via_restrict;
 with et_via_restrict.packages;
-
+with et_fill_zones.boards;
 
 with et_undo_redo;
 
@@ -215,8 +215,91 @@ is
 
 		procedure process_conductors is
 
+			procedure query_conductors (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in type_generic_module)
+			is 
+				use et_pcb;
+				-- use et_conductor_text.packages;
+				-- use pac_conductor_texts;
+				-- use et_conductor_segment;
+				use et_conductor_segment.boards;
+				use pac_conductor_lines;
+				use pac_conductor_arcs;
+				use pac_conductor_circles;
+
+				-- The bounding box of a single segment:
+				b : type_area;
+				
+				conductors : type_conductors_non_electric renames module.board.conductors;
+
+				
+				procedure query_line (c : in pac_conductor_lines.cursor) is
+					line : type_conductor_line renames element (c);
+				begin
+					b := get_bounding_box (line, line.width);
+					merge_areas (bbox_new, b);
+				end query_line;
+
+				
+				procedure query_arc (c : in pac_conductor_arcs.cursor) is
+					arc : type_conductor_arc renames element (c);
+				begin
+					b := get_bounding_box (arc, arc.width);
+					merge_areas (bbox_new, b);
+				end query_arc;
+
+
+				procedure query_circle (c : in pac_conductor_circles.cursor) is
+					circle : type_conductor_circle renames element (c);
+				begin
+					b := get_bounding_box (circle, circle.width);
+					merge_areas (bbox_new, b);
+				end query_circle;
+
+				
+
+				use et_fill_zones.boards;
+				use pac_floating_solid;
+				use pac_floating_hatched;
+				
+				procedure query_fill_zone_solid (c : in pac_floating_solid.cursor) is
+					zone : type_floating_solid renames element (c);
+				begin
+					b := get_bounding_box (zone, zone.linewidth);
+					merge_areas (bbox_new, b);
+				end query_fill_zone_solid;
+
+		
+				procedure query_fill_zone_hatched (c : in pac_floating_hatched.cursor) is 
+					zone : type_floating_hatched renames element (c);
+				begin
+					b := get_bounding_box (zone, zone.linewidth);
+					merge_areas (bbox_new, b);
+				end query_fill_zone_hatched;
+				
+				
+			begin
+				conductors.lines.iterate (query_line'access);
+				conductors.arcs.iterate (query_arc'access);
+				conductors.circles.iterate (query_circle'access);
+
+				conductors.fill_zones.solid.iterate (query_fill_zone_solid'access);
+				conductors.fill_zones.hatched.iterate (query_fill_zone_hatched'access);
+
+				-- CS
+				-- conductors.cutouts, query_cutout'access);
+				-- The may be not entirely inside a zone !
+
+				-- CS texts
+				-- conductors.placeholders, query_placeholder'access);
+				-- conductors.texts, query_text'access);
+				
+			end query_conductors;
+
+			
 		begin
-			null;
+			query_element (active_module, query_conductors'access);
 		end process_conductors;
 
 
@@ -1280,6 +1363,7 @@ is
 		
 	begin
 		process_devices;
+		-- CS tracks, vias, fill zones
 		
 		process_silkscreen;
 		process_assembly_doc;
@@ -1288,7 +1372,7 @@ is
 		process_keepout;
 		process_route_restrict;
 		process_via_restrict;
-		process_conductors; -- tracks, vias, zones
+		process_conductors;
 		process_board_outline;
 
 	end parse_board;
