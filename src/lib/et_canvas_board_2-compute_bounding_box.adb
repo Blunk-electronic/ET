@@ -62,6 +62,8 @@ with et_text;
 with et_silkscreen;
 with et_assy_doc;
 with et_keepout;
+with et_stop_mask;
+with et_stop_mask.packages;
 
 
 with et_undo_redo;
@@ -603,6 +605,107 @@ is
 
 				
 
+
+
+
+				procedure process_stopmask is
+					use et_stop_mask;			
+					use et_stop_mask.packages;
+					
+					use pac_stop_lines;
+					use pac_stop_arcs;
+					use pac_stop_circles;
+					use pac_stop_contours;
+					use pac_stop_texts;
+
+
+					procedure query_line (c : in pac_stop_lines.cursor) is
+						line : type_stop_line renames element (c);
+					begin
+						b := get_bounding_box (
+							line		=> line,
+							width		=> line.width,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+						
+						merge_areas (bbox_new, b);
+					end query_line;
+
+
+					procedure query_arc (c : in pac_stop_arcs.cursor) is
+						arc : type_stop_arc renames element (c);
+					begin
+						b := get_bounding_box (
+							arc 		=> arc,
+							width		=> arc.width,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_arc;
+
+					
+					procedure query_circle (c : in pac_stop_circles.cursor) is
+						circle : type_stop_circle renames element (c);
+					begin
+						b := get_bounding_box (
+							circle		=> circle,
+							width		=> circle.width,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_circle;
+
+
+					procedure query_contour (c : in pac_stop_contours.cursor) is 
+						contour : type_stop_contour renames element (c);
+					begin
+						b := get_bounding_box (
+							contour		=> contour,
+							offset_1	=> package_position,
+							rotation	=> package_rotation,
+							mirror		=> to_mirror_along_y_axis (flip));
+
+						merge_areas (bbox_new, b);
+					end query_contour;
+
+					
+					procedure query_text (c : in pac_stop_texts.cursor) is
+						text : type_stop_text renames element (c);
+					begin
+						null; -- CS 
+						-- parse segments of text
+						-- include origin of text ?
+						-- merge_areas (bbox_new, b);
+					end query_text;
+
+
+					packge : type_package_model renames element (package_cursor);
+					
+				begin
+					packge.stop_mask.top.lines.iterate (query_line'access);
+					packge.stop_mask.bottom.lines.iterate (query_line'access);
+
+					packge.stop_mask.top.arcs.iterate (query_arc'access);
+					packge.stop_mask.bottom.arcs.iterate (query_arc'access);
+
+					packge.stop_mask.top.circles.iterate (query_circle'access);
+					packge.stop_mask.bottom.circles.iterate (query_circle'access);
+
+					packge.stop_mask.top.contours.iterate (query_contour'access);
+					packge.stop_mask.bottom.contours.iterate (query_contour'access);
+					
+					packge.stop_mask.top.texts.iterate (query_text'access);
+					packge.stop_mask.bottom.texts.iterate (query_text'access);
+				end process_stopmask;
+
+				
+
+				
 				
 				
 				procedure process_terminals is
@@ -661,7 +764,7 @@ is
 
 					
 				begin
-					-- Iterate though the terminals of the package:
+					-- Iterate through the terminals of the package:
 					element (package_cursor).terminals.iterate (query_terminal'access);
 				end process_terminals;
 					
@@ -703,6 +806,7 @@ is
 				
 				process_conductors;
 				process_keepout;
+				process_stopmask;
 				
 				process_terminals;
 				process_silkscreen;
