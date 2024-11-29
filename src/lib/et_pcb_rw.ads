@@ -82,7 +82,7 @@ package et_pcb_rw is
 	section_silkscreen			: constant string	:= "[SILKSCREEN";
 	section_assembly_doc		: constant string	:= "[ASSEMBLY_DOCUMENTATION";
 	section_stencil				: constant string	:= "[STENCIL";
-	section_stop_mask			: constant string	:= "[STOP_MASK";
+	section_stopmask			: constant string	:= "[STOPMASK";
 	section_keepout				: constant string	:= "[KEEPOUT";
 	section_conductor			: constant string	:= "[CONDUCTOR";
 	section_pcb_contours		: constant string	:= "[PCB_CONTOURS_NON_PLATED";

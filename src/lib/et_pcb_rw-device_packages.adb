@@ -546,7 +546,7 @@ package body et_pcb_rw.device_packages is
 				-- If user specified contours in either top or bottom required, write the header
 				-- for stop mask contours:
 				if user_specific_contours then
-					section_mark (section_stop_mask_contours_tht, HEADER);
+					section_mark (section_stopmask_contours_tht, HEADER);
 				end if;
 
 				-- If user specified contours in top, write them:
@@ -576,7 +576,7 @@ package body et_pcb_rw.device_packages is
 				-- If user specified contours in either top or bottom required, write the footer
 				-- for stop mask contours:
 				if user_specific_contours then
-					section_mark (section_stop_mask_contours_tht, FOOTER);
+					section_mark (section_stopmask_contours_tht, FOOTER);
 				end if;
 				
 			end write_stop_mask_tht;
@@ -601,7 +601,7 @@ package body et_pcb_rw.device_packages is
 
 				-- If user specified contours required, write the header for stop mask contours:
 				if user_specific_contours then
-					section_mark (section_stop_mask_contours_smt, HEADER);
+					section_mark (section_stopmask_contours_smt, HEADER);
 				end if;
 
 				-- If user specified contours, write them:
@@ -616,7 +616,7 @@ package body et_pcb_rw.device_packages is
 
 				-- If user specified contours required, write the footer for stop mask contours:
 				if user_specific_contours then
-					section_mark (section_stop_mask_contours_smt, FOOTER);
+					section_mark (section_stopmask_contours_smt, FOOTER);
 				end if;
 				
 			end write_stop_mask_smt;
@@ -1229,7 +1229,7 @@ package body et_pcb_rw.device_packages is
 										alignment	=> pac_text.alignment)));
 
 							
-						when SEC_STOP_MASK =>
+						when SEC_STOPMASK =>
 
 							pac_stop_texts.append (
 								container	=> packge.stop_mask.top.texts,
@@ -1293,7 +1293,7 @@ package body et_pcb_rw.device_packages is
 										alignment	=> pac_text.alignment)));
 
 							
-						when SEC_STOP_MASK =>
+						when SEC_STOPMASK =>
 
 							pac_stop_texts.append (
 								container	=> packge.stop_mask.bottom.texts,
@@ -1560,7 +1560,7 @@ package body et_pcb_rw.device_packages is
 			begin -- execute_section
 				case stack.current is
 
-					when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
+					when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOPMASK | SEC_STENCIL | 
 						SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 						SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT | SEC_PCB_CONTOURS_NON_PLATED | 
 						SEC_TERMINALS | SEC_PACKAGE_3D_CONTOURS =>
@@ -1572,7 +1572,7 @@ package body et_pcb_rw.device_packages is
 							
 					when SEC_TOP =>
 						case stack.parent is
-							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
+							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOPMASK | SEC_STENCIL | 
 								SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 								SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => null;
 
@@ -1581,7 +1581,7 @@ package body et_pcb_rw.device_packages is
 								tht_pad_shape.top := contour;
 								board_reset_contour;
 
-							when SEC_STOP_MASK_CONTOURS_THT =>
+							when SEC_STOPMASK_CONTOURS_THT =>
 								check_outline (contour, log_threshold + 1);
 								tht_stop_mask_contours_top := (contour with null record);
 								board_reset_contour;
@@ -1591,7 +1591,7 @@ package body et_pcb_rw.device_packages is
 						
 					when SEC_BOTTOM =>
 						case stack.parent is
-							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
+							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOPMASK | SEC_STENCIL | 
 								SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 								SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => null;
 
@@ -1600,7 +1600,7 @@ package body et_pcb_rw.device_packages is
 								tht_pad_shape.bottom := contour;
 								board_reset_contour;
 
-							when SEC_STOP_MASK_CONTOURS_THT =>
+							when SEC_STOPMASK_CONTOURS_THT =>
 								check_outline (contour, log_threshold + 1);
 								tht_stop_mask_contours_bottom := (contour with null record);
 								board_reset_contour;
@@ -1649,7 +1649,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line;
 										board_reset_line_width;
 
-									when SEC_STOP_MASK =>
+									when SEC_STOPMASK =>
 										pac_stop_lines.append (
 											container	=> packge.stop_mask.top.lines, 
 											new_item	=> (type_line (board_line) with board_line_width));
@@ -1680,7 +1680,7 @@ package body et_pcb_rw.device_packages is
 										
 									when SEC_PAD_CONTOURS_THT => add_polygon_line (board_line);
 
-									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_line (board_line);
+									when SEC_STOPMASK_CONTOURS_THT => add_polygon_line (board_line);
 									
 									when others => invalid_section;
 								end case;
@@ -1725,7 +1725,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line;
 										board_reset_line_width;
 										
-									when SEC_STOP_MASK =>
+									when SEC_STOPMASK =>
 										pac_stop_lines.append (
 											container	=> packge.stop_mask.bottom.lines, 
 											new_item	=> (type_line (board_line) with board_line_width));
@@ -1755,7 +1755,7 @@ package body et_pcb_rw.device_packages is
 										
 									when SEC_PAD_CONTOURS_THT => add_polygon_line (board_line);
 
-									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_line (board_line);
+									when SEC_STOPMASK_CONTOURS_THT => add_polygon_line (board_line);
 									
 									when others => invalid_section;
 								end case;
@@ -1763,7 +1763,7 @@ package body et_pcb_rw.device_packages is
 							when SEC_HOLE => add_polygon_line (board_line);								
 							when SEC_PAD_CONTOURS_SMT => add_polygon_line (board_line);
 							when SEC_STENCIL_CONTOURS => add_polygon_line (board_line);							
-							when SEC_STOP_MASK_CONTOURS_SMT => add_polygon_line (board_line);							
+							when SEC_STOPMASK_CONTOURS_SMT => add_polygon_line (board_line);							
 							when SEC_MILLINGS => add_polygon_line (board_line);
 							when SEC_CONTOURS => add_polygon_line (board_line);								
 							when others => invalid_section;
@@ -1813,7 +1813,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_arc;
 										board_reset_line_width;
 
-									when SEC_STOP_MASK =>
+									when SEC_STOPMASK =>
 										pac_stop_arcs.append (
 											container	=> packge.stop_mask.top.arcs, 
 											new_item	=> (type_arc (board_arc) with board_line_width));
@@ -1841,7 +1841,7 @@ package body et_pcb_rw.device_packages is
 
 										
 									when SEC_PAD_CONTOURS_THT => add_polygon_arc (board_arc);
-									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_arc (board_arc);										
+									when SEC_STOPMASK_CONTOURS_THT => add_polygon_arc (board_arc);										
 									when others => invalid_section;
 								end case;
 
@@ -1885,7 +1885,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_arc;
 										board_reset_line_width;
 										
-									when SEC_STOP_MASK =>
+									when SEC_STOPMASK =>
 										pac_stop_arcs.append (
 											container	=> packge.stop_mask.bottom.arcs, 
 											new_item	=> (type_arc (board_arc) with board_line_width));
@@ -1913,14 +1913,14 @@ package body et_pcb_rw.device_packages is
 
 										
 									when SEC_PAD_CONTOURS_THT => add_polygon_arc (board_arc);
-									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_arc (board_arc);									
+									when SEC_STOPMASK_CONTOURS_THT => add_polygon_arc (board_arc);									
 									when others => invalid_section;
 								end case;
 
 							when SEC_HOLE => add_polygon_arc (board_arc);
 							when SEC_PAD_CONTOURS_SMT => add_polygon_arc (board_arc);
 							when SEC_STENCIL_CONTOURS => add_polygon_arc (board_arc);							
-							when SEC_STOP_MASK_CONTOURS_SMT => add_polygon_arc (board_arc);							
+							when SEC_STOPMASK_CONTOURS_SMT => add_polygon_arc (board_arc);							
 							when SEC_MILLINGS => add_polygon_arc (board_arc);
 							when SEC_CONTOURS => add_polygon_arc (board_arc);								
 							when others => invalid_section;
@@ -1957,7 +1957,7 @@ package body et_pcb_rw.device_packages is
 
 										board_reset_circle; -- clean up for next circle
 										
-									when SEC_STOP_MASK =>
+									when SEC_STOPMASK =>
 										pac_stop_circles.append (
 											container	=> packge.stop_mask.top.circles, 
 											new_item	=> (type_circle (board_circle) with board_line_width));
@@ -1981,7 +1981,7 @@ package body et_pcb_rw.device_packages is
 
 								
 									when SEC_PAD_CONTOURS_THT => add_polygon_circle (board_circle);
-									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_circle (board_circle);									
+									when SEC_STOPMASK_CONTOURS_THT => add_polygon_circle (board_circle);									
 									when others => invalid_section;
 								end case;
 
@@ -2015,7 +2015,7 @@ package body et_pcb_rw.device_packages is
 
 										board_reset_circle; -- clean up for next circle
 
-									when SEC_STOP_MASK =>
+									when SEC_STOPMASK =>
 										pac_stop_circles.append (
 											container	=> packge.stop_mask.bottom.circles, 
 											new_item	=> (type_circle (board_circle) with board_line_width));
@@ -2039,7 +2039,7 @@ package body et_pcb_rw.device_packages is
 
 										
 									when SEC_PAD_CONTOURS_THT => add_polygon_circle (board_circle);
-									when SEC_STOP_MASK_CONTOURS_THT => add_polygon_circle (board_circle);									
+									when SEC_STOPMASK_CONTOURS_THT => add_polygon_circle (board_circle);									
 									when others => invalid_section;
 								end case;
 
@@ -2048,7 +2048,7 @@ package body et_pcb_rw.device_packages is
 								
 							when SEC_PAD_CONTOURS_SMT => add_polygon_circle (board_circle);
 							when SEC_STENCIL_CONTOURS => add_polygon_circle (board_circle);							
-							when SEC_STOP_MASK_CONTOURS_SMT => add_polygon_circle (board_circle);							
+							when SEC_STOPMASK_CONTOURS_SMT => add_polygon_circle (board_circle);							
 							when SEC_MILLINGS => add_polygon_circle (board_circle);
 							when SEC_CONTOURS => add_polygon_circle (board_circle);								
 							when others => invalid_section;
@@ -2067,7 +2067,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_STENCIL =>
 										append_stencil_polygon_top;
 										
-									when SEC_STOP_MASK =>
+									when SEC_STOPMASK =>
 										append_stop_polygon_top;
 										
 									when SEC_KEEPOUT =>
@@ -2093,7 +2093,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_STENCIL =>
 										append_stencil_polygon_bottom;
 										
-									when SEC_STOP_MASK =>
+									when SEC_STOPMASK =>
 										append_stop_polygon_bottom;
 										
 									when SEC_KEEPOUT =>
@@ -2115,7 +2115,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP => 
 								case stack.parent (degree => 2) is
-									when SEC_STOP_MASK =>
+									when SEC_STOPMASK =>
 										append_stop_cutout_top;
 										
 									when SEC_KEEPOUT =>
@@ -2132,7 +2132,7 @@ package body et_pcb_rw.device_packages is
 
 							when SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_STOP_MASK =>
+									when SEC_STOPMASK =>
 										append_stop_cutout_bottom;
 										
 									when SEC_KEEPOUT =>
@@ -2243,7 +2243,7 @@ package body et_pcb_rw.device_packages is
 							when others => invalid_section;
 						end case;
 
-					when SEC_STOP_MASK_CONTOURS_SMT =>
+					when SEC_STOPMASK_CONTOURS_SMT =>
 						case stack.parent is
 							when SEC_TERMINAL =>
 								check_outline (contour, log_threshold + 1);
@@ -2253,7 +2253,7 @@ package body et_pcb_rw.device_packages is
 							when others => invalid_section;
 						end case;
 
-					when SEC_STOP_MASK_CONTOURS_THT =>
+					when SEC_STOPMASK_CONTOURS_THT =>
 						case stack.parent is
 							when SEC_TERMINAL => null;
 							when others => invalid_section;
@@ -2341,7 +2341,7 @@ package body et_pcb_rw.device_packages is
 			elsif set (section_assembly_doc, SEC_ASSEMBLY_DOCUMENTATION) then null;
 			elsif set (section_keepout, SEC_KEEPOUT) then null;			
 			elsif set (section_conductor, SEC_CONDUCTOR) then null;
-			elsif set (section_stop_mask, SEC_STOP_MASK) then null;			
+			elsif set (section_stop_mask, SEC_STOPMASK) then null;			
 			elsif set (section_stencil, SEC_STENCIL) then null;			
 			elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;			
 			elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;
@@ -2350,8 +2350,8 @@ package body et_pcb_rw.device_packages is
 			elsif set (section_pad_contours_smt, SEC_PAD_CONTOURS_SMT) then null;
 			elsif set (section_pad_contours_tht, SEC_PAD_CONTOURS_THT) then null;
 			elsif set (section_stencil_contours, SEC_STENCIL_CONTOURS) then null;
-			elsif set (section_stop_mask_contours_smt, SEC_STOP_MASK_CONTOURS_SMT) then null;
-			elsif set (section_stop_mask_contours_tht, SEC_STOP_MASK_CONTOURS_THT) then null;
+			elsif set (section_stopmask_contours_smt, SEC_STOPMASK_CONTOURS_SMT) then null;
+			elsif set (section_stopmask_contours_tht, SEC_STOPMASK_CONTOURS_THT) then null;
 			elsif set (section_pad_millings, SEC_MILLINGS) then null;			
 			elsif set (section_text, SEC_TEXT) then null;
 			elsif set (section_placeholder, SEC_PLACEHOLDER) then null;
@@ -2404,7 +2404,7 @@ package body et_pcb_rw.device_packages is
 							end if;
 						end;
 
-					when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
+					when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOPMASK | SEC_STENCIL | 
 						SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 						SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT | SEC_PCB_CONTOURS_NON_PLATED | 
 						SEC_TERMINALS | SEC_PACKAGE_3D_CONTOURS =>
@@ -2414,7 +2414,7 @@ package body et_pcb_rw.device_packages is
 							when others => invalid_section;
 						end case;
 
-					when SEC_STOP_MASK_CONTOURS_THT | SEC_STOP_MASK_CONTOURS_SMT =>
+					when SEC_STOPMASK_CONTOURS_THT | SEC_STOPMASK_CONTOURS_SMT =>
 						case stack.parent is
 							when SEC_TERMINAL => null;
 							when others => invalid_section;
@@ -2422,12 +2422,12 @@ package body et_pcb_rw.device_packages is
 						
 					when SEC_TOP | SEC_BOTTOM =>
 						case stack.parent is
-							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
+							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOPMASK | SEC_STENCIL | 
 								SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 								SEC_PAD_CONTOURS_THT | 
 								SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => null;
 
-							when SEC_STOP_MASK_CONTOURS_THT => null;								
+							when SEC_STOPMASK_CONTOURS_THT => null;								
 							when others => invalid_section;
 						end case;
 						
@@ -2436,7 +2436,7 @@ package body et_pcb_rw.device_packages is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR | SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+										SEC_STENCIL | SEC_STOPMASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 
 										if not read_board_line (line) then
 											declare
@@ -2454,7 +2454,7 @@ package body et_pcb_rw.device_packages is
 										end if;
 										
 									when SEC_PAD_CONTOURS_THT => read_board_line (line);
-									when SEC_STOP_MASK_CONTOURS_THT => read_board_line (line);
+									when SEC_STOPMASK_CONTOURS_THT => read_board_line (line);
 									--when SEC_VIA_RESTRICT => read_board_line (line);
 									when others => invalid_section;
 								end case;
@@ -2462,7 +2462,7 @@ package body et_pcb_rw.device_packages is
 							when SEC_HOLE => read_board_line (line);								
 							when SEC_PAD_CONTOURS_SMT => read_board_line (line);							
 							when SEC_STENCIL_CONTOURS => read_board_line (line);							
-							when SEC_STOP_MASK_CONTOURS_SMT => read_board_line (line);							
+							when SEC_STOPMASK_CONTOURS_SMT => read_board_line (line);							
 							when SEC_MILLINGS => read_board_line (line);
 							when SEC_CONTOURS => read_board_line (line);								
 							when others => invalid_section;
@@ -2473,7 +2473,7 @@ package body et_pcb_rw.device_packages is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR | SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+										SEC_STENCIL | SEC_STOPMASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 
 										if not read_board_arc (line) then
 											declare
@@ -2491,14 +2491,14 @@ package body et_pcb_rw.device_packages is
 										end if;
 										
 									when SEC_PAD_CONTOURS_THT => read_board_arc (line);
-									when SEC_STOP_MASK_CONTOURS_THT => read_board_arc (line);
+									when SEC_STOPMASK_CONTOURS_THT => read_board_arc (line);
 									when others => invalid_section;
 								end case;
 
 							when SEC_HOLE => read_board_arc (line);
 							when SEC_PAD_CONTOURS_SMT => read_board_arc (line);
 							when SEC_STENCIL_CONTOURS => read_board_arc (line);
-							when SEC_STOP_MASK_CONTOURS_SMT => read_board_arc (line);
+							when SEC_STOPMASK_CONTOURS_SMT => read_board_arc (line);
 							when SEC_MILLINGS => read_board_arc (line);
 							when SEC_CONTOURS => read_board_arc (line);								
 							when others => invalid_section;
@@ -2509,7 +2509,7 @@ package body et_pcb_rw.device_packages is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
+										SEC_STENCIL | SEC_STOPMASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 										
 										if not read_board_circle (line) then
 											declare
@@ -2551,14 +2551,14 @@ package body et_pcb_rw.device_packages is
 										end if;
 										
 									when SEC_PAD_CONTOURS_THT => read_board_circle (line);
-									when SEC_STOP_MASK_CONTOURS_THT => read_board_circle (line);									
+									when SEC_STOPMASK_CONTOURS_THT => read_board_circle (line);									
 									when others => invalid_section;
 								end case;
 
 							when SEC_HOLE => read_board_circle (line);
 							when SEC_PAD_CONTOURS_SMT => read_board_circle (line);
 							when SEC_STENCIL_CONTOURS => read_board_circle (line);
-							when SEC_STOP_MASK_CONTOURS_SMT => read_board_circle (line);
+							when SEC_STOPMASK_CONTOURS_SMT => read_board_circle (line);
 							when SEC_MILLINGS => read_board_circle (line);
 							when SEC_CONTOURS => read_board_circle (line);
 							when others => invalid_section;
@@ -2569,7 +2569,7 @@ package body et_pcb_rw.device_packages is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK =>
+										SEC_STENCIL | SEC_STOPMASK =>
 										declare
 											kw : string := f (line, 1);
 										begin
@@ -2624,7 +2624,7 @@ package body et_pcb_rw.device_packages is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
 									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STENCIL | SEC_STOP_MASK =>
+										SEC_STENCIL | SEC_STOPMASK =>
 										null;
 
 									when SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
@@ -2683,7 +2683,7 @@ package body et_pcb_rw.device_packages is
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR |
 										SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
-										SEC_STOP_MASK =>
+										SEC_STOPMASK =>
 
 										read_text;
 										

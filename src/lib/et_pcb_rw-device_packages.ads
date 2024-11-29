@@ -56,8 +56,8 @@ package et_pcb_rw.device_packages is
 	
 	section_stencil_contours	: constant string	:= "[STENCIL_CONTOURS";
 
-	section_stop_mask_contours_tht	: constant string	:= "[STOP_MASK_CONTOURS_THT";
-	section_stop_mask_contours_smt	: constant string	:= "[STOP_MASK_CONTOURS_SMT";
+	section_stopmask_contours_tht	: constant string	:= "[STOPMASK_CONTOURS_THT";
+	section_stopmask_contours_smt	: constant string	:= "[STOPMASK_CONTOURS_SMT";
 	
 	section_pad_millings		: constant string	:= "[MILLINGS";
 
@@ -80,7 +80,7 @@ package et_pcb_rw.device_packages is
 		SEC_SILKSCREEN,
 		SEC_ASSEMBLY_DOCUMENTATION,
 		SEC_KEEPOUT,
-		SEC_STOP_MASK,
+		SEC_STOPMASK,
 		SEC_STENCIL,
 		SEC_ROUTE_RESTRICT,
 		SEC_VIA_RESTRICT,
@@ -90,8 +90,8 @@ package et_pcb_rw.device_packages is
 		SEC_PAD_CONTOURS_SMT,
 		SEC_PAD_CONTOURS_THT,
 		SEC_STENCIL_CONTOURS,
-		SEC_STOP_MASK_CONTOURS_SMT,
-		SEC_STOP_MASK_CONTOURS_THT,
+		SEC_STOPMASK_CONTOURS_SMT,
+		SEC_STOPMASK_CONTOURS_THT,
 		SEC_MILLINGS,
 		SEC_TEXT,
 		SEC_PLACEHOLDER,
