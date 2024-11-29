@@ -253,7 +253,7 @@ is
 		if set (section_clearances, SEC_CLEARANCES) then null;
 		elsif set (section_sizes, SEC_SIZES) then null;
 		elsif set (section_restring, SEC_RESTRING) then null;
-		elsif set (section_stop_mask, SEC_STOPMASK) then null;
+		elsif set (section_stopmask, SEC_STOPMASK) then null;
 
 		else
 			-- The line contains something else -> the payload data. 

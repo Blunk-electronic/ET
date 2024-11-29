@@ -42,57 +42,6 @@
 package et_module_rw is
 
 	
--- SECTION NAMES
-
-	section_net_classes			: constant string := "[NET_CLASSES";
-	section_net_class			: constant string := "[NET_CLASS";
-	
-	section_nets				: constant string := "[NETS";
-	section_net					: constant string := "[NET";
-
-	section_strands				: constant string := "[STRANDS";
-	section_strand				: constant string := "[STRAND";
-
-	section_segments			: constant string := "[SEGMENTS";
-	section_segment				: constant string := "[SEGMENT";
-
-	section_labels				: constant string := "[LABELS";
-	section_label				: constant string := "[LABEL";
-	
-	section_submodules			: constant string := "[SUBMODULES";
-	section_submodule			: constant string := "[SUBMODULE";
-	section_ports				: constant string := "[PORTS";
-	section_port				: constant string := "[PORT";
-
-	section_drawing_frames		: constant string := "[DRAWING_FRAMES";
-	section_sheet_descriptions	: constant string := "[SHEET_DESCRIPTIONS";
-	section_sheet				: constant string := "[SHEET";
-	
-	section_schematic			: constant string := "[SCHEMATIC";
-
-	section_devices				: constant string := "[DEVICES";
-	section_device				: constant string := "[DEVICE";
-	section_devices_non_electric: constant string := "[DEVICES_NON_ELECTRIC";
-
-	section_assembly_variants	: constant string := "[ASSEMBLY_VARIANTS";
-	section_assembly_variant	: constant string := "[VARIANT";	
-	
-	section_netchangers			: constant string := "[NETCHANGERS";
-	section_netchanger			: constant string := "[NETCHANGER";
-
-	section_meta				: constant string := "[META";
-	section_rules				: constant string := "[RULES";
-	
-	section_units				: constant string := "[UNITS";
-
-	section_port_begin			: constant string := "[PORT";
-
-	section_preferred_libraries	: constant string := "[PREFERRED_LIBRARIES";
-
-	section_user_settings		: constant string := "[USER_SETTINGS";
-
-	section_outline				: constant string	:= "[OUTLINE";
-	
 	type type_section is ( -- CS: sort aphabetically
 		SEC_DEVICES_NON_ELECTRIC,
 		SEC_BOARD_LAYER_STACK,

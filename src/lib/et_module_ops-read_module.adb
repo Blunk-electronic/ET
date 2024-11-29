@@ -42,6 +42,7 @@ with ada.containers;
 
 with et_coordinates_2;
 
+with et_section_headers;			use et_section_headers;
 with et_keywords;					use et_keywords;
 with et_module_rw;					use et_module_rw;
 with et_pcb_sides;

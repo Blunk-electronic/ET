@@ -210,10 +210,6 @@ package et_design_rules_board is
 
 	keyword_expansion_min	: constant string := "expansion_min";
 	
-	section_clearances		: constant string := "[CLEARANCES";
-	section_sizes			: constant string := "[SIZES";
-	section_restring		: constant string := "[RESTRING";
-	section_stop_mask		: constant string := "[STOPMASK";
 	
 	type type_section_name is (
 		SEC_INIT,

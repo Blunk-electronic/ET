@@ -38,6 +38,7 @@ with ada.text_io;					use ada.text_io;
 
 with et_coordinates_2;
 
+with et_section_headers;			use et_section_headers;
 with et_keywords;					use et_keywords;
 with et_module_rw;					use et_module_rw;
 with et_pcb_sides;
@@ -633,11 +634,11 @@ is
 						is_empty (element (segment_cursor).ports.netchangers) then
 						null;
 					else
-						section_mark (et_module_rw.section_ports, HEADER);
+						section_mark (section_ports, HEADER);
 						query_element (segment_cursor, query_device_ports'access);
 						query_element (segment_cursor, query_submodule_ports'access);
 						query_element (segment_cursor, query_netchanger_ports'access);
-						section_mark (et_module_rw.section_ports, FOOTER);
+						section_mark (section_ports, FOOTER);
 					end if;
 						
 					section_mark (section_segment, FOOTER);
@@ -1348,14 +1349,14 @@ is
 		procedure query_ports (port_cursor : in et_submodules.pac_submodule_ports.cursor) is
 			use et_submodules.pac_submodule_ports;
 		begin
-			section_mark (et_module_rw.section_port, HEADER);
+			section_mark (section_port, HEADER);
 			write (keyword => keyword_name, parameters => to_string (key (port_cursor))); -- name clk_out
 
 			write (keyword => keyword_position, 
 				   parameters => to_string (element (port_cursor).position, FORMAT_2)); -- position x 0 y 10
 			
 			write (keyword => keyword_direction, parameters => to_string (element (port_cursor).direction)); -- direction master/slave
-			section_mark (et_module_rw.section_port, FOOTER);
+			section_mark (section_port, FOOTER);
 		end;
 
 		
@@ -1378,9 +1379,9 @@ is
 
 			write (keyword => keyword_view_mode, parameters => to_string (element (submodule_cursor).view_mode));
 
-			section_mark (et_module_rw.section_ports, HEADER);
+			section_mark (section_ports, HEADER);
 			et_submodules.pac_submodule_ports.iterate (element (submodule_cursor).ports, query_ports'access);
-			section_mark (et_module_rw.section_ports, FOOTER);
+			section_mark (section_ports, FOOTER);
 			
 			section_mark (section_submodule, FOOTER);				
 		end write;

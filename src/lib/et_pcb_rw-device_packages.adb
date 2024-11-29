@@ -54,6 +54,7 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 with et_system_info;
 with et_package_description;		use et_package_description;
 with et_keywords;					use et_keywords;
+with et_section_headers;			use et_section_headers;
 
 
 package body et_pcb_rw.device_packages is
@@ -2341,7 +2342,7 @@ package body et_pcb_rw.device_packages is
 			elsif set (section_assembly_doc, SEC_ASSEMBLY_DOCUMENTATION) then null;
 			elsif set (section_keepout, SEC_KEEPOUT) then null;			
 			elsif set (section_conductor, SEC_CONDUCTOR) then null;
-			elsif set (section_stop_mask, SEC_STOPMASK) then null;			
+			elsif set (section_stopmask, SEC_STOPMASK) then null;			
 			elsif set (section_stencil, SEC_STENCIL) then null;			
 			elsif set (section_route_restrict, SEC_ROUTE_RESTRICT) then null;			
 			elsif set (section_via_restrict, SEC_VIA_RESTRICT) then null;

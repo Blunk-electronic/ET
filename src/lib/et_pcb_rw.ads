@@ -70,27 +70,7 @@ package et_pcb_rw is
 	use pac_contours;
 	use pac_text_board;
 	
-	section_board				: constant string	:= "[BOARD";
-	section_top					: constant string	:= "[TOP";
-	section_bottom				: constant string	:= "[BOTTOM";
-	section_board_layer_stack	: constant string 	:= "[BOARD_LAYER_STACK";
-	section_via					: constant string	:= "[VIA";
-	section_vias				: constant string	:= "[VIAS";
-	section_fill_zones_conductor: constant string	:= "[FILL_ZONES_CONDUCTOR";
-	
-	section_route				: constant string 	:= "[ROUTE";	
-	section_silkscreen			: constant string	:= "[SILKSCREEN";
-	section_assembly_doc		: constant string	:= "[ASSEMBLY_DOCUMENTATION";
-	section_stencil				: constant string	:= "[STENCIL";
-	section_stopmask			: constant string	:= "[STOPMASK";
-	section_keepout				: constant string	:= "[KEEPOUT";
-	section_conductor			: constant string	:= "[CONDUCTOR";
-	section_pcb_contours		: constant string	:= "[PCB_CONTOURS_NON_PLATED";
-	section_hole				: constant string	:= "[HOLE";
-	--section_pcb_contours_plated	: constant string	:= "[PCB_CONTOURS_PLATED"; 
-	section_pac_3d_contours		: constant string	:= "[PACKAGE_3D_CONTOURS";
 
-	
 
 	procedure write_text_properties (
 		t : in 	type_text_fab'class);

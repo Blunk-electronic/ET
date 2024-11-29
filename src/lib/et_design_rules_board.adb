@@ -44,6 +44,7 @@ with ada.characters.handling;		use ada.characters.handling;
 with ada.directories;				use ada.directories;
 with gnat.directory_operations;
 with et_general_rw;					use et_general_rw;
+with et_section_headers;			use et_section_headers;
 with et_keywords;					use et_keywords;
 with et_string_processing;			use et_string_processing;
 with et_exceptions;					use et_exceptions;

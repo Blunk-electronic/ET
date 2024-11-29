@@ -51,21 +51,6 @@ with et_package_names;					use et_package_names;
 
 package et_pcb_rw.device_packages is
 
-	section_pad_contours_smt	: constant string	:= "[PAD_CONTOURS_SMT";
-	section_pad_contours_tht	: constant string	:= "[PAD_CONTOURS_THT";	
-	
-	section_stencil_contours	: constant string	:= "[STENCIL_CONTOURS";
-
-	section_stopmask				: constant string := "[STOPMASK";
-	section_stopmask_contours_tht	: constant string := "[STOPMASK_CONTOURS_THT";
-	section_stopmask_contours_smt	: constant string := "[STOPMASK_CONTOURS_SMT";
-	
-	section_pad_millings		: constant string	:= "[MILLINGS";
-
-	section_terminals			: constant string	:= "[TERMINALS";
-	section_terminal			: constant string	:= "[TERMINAL";
-
-	
 	
 	type type_section is (
 		SEC_CONDUCTOR,
