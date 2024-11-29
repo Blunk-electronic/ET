@@ -48,6 +48,7 @@ with ada.containers;
 
 with et_frames;
 with et_schematic;
+with et_nets;
 with et_pcb;
 with et_packages;
 with et_terminals;
@@ -72,6 +73,8 @@ with et_via_restrict;
 with et_via_restrict.packages;
 with et_via_restrict.boards;
 with et_fill_zones.boards;
+with et_vias;
+
 
 with et_undo_redo;
 
@@ -1744,11 +1747,103 @@ is
 		end process_devices;
 			
 
+
+
+		
+		procedure process_nets is
+
+			procedure query_module (
+				module_name	: in pac_module_name.bounded_string;
+				module		: in type_generic_module) 
+			is
+				use et_nets;
+				use pac_nets;
+				nets : pac_nets.map renames module.nets;
+
+				
+				procedure query_net (c : in pac_nets.cursor) is
+					route : et_pcb.type_route renames element (c).route;
+
+					-------------------------------
+					use et_conductor_segment.boards;
+					use pac_conductor_lines;
+					use pac_conductor_arcs;
+					
+					procedure query_line (c : in pac_conductor_lines.cursor) is
+						line : type_conductor_line renames element (c);
+					begin
+						b := get_bounding_box (line, line.width);
+						merge_areas (bbox_new, b);
+					end query_line;
+
+					procedure query_arc (c : in pac_conductor_arcs.cursor) is
+						arc : type_conductor_arc renames element (c);
+					begin
+						b := get_bounding_box (arc, arc.width);
+						merge_areas (bbox_new, b);
+					end query_arc;
+
+					-------------------------------
+					use et_vias;
+					use pac_vias;
+					
+					procedure query_via (c : in pac_vias.cursor) is
+						via : type_via renames element (c);
+					begin
+						null;
+						-- CS
+					end query_via;
+					
+					-------------------------------
+					use et_fill_zones.boards;
+					use pac_route_solid;
+					use pac_route_hatched;
+
+					procedure query_fill_zone_solid (c : in pac_route_solid.cursor) is
+						zone : type_route_solid renames element (c);
+					begin
+						b := get_bounding_box (zone, zone.linewidth);
+						merge_areas (bbox_new, b);
+					end query_fill_zone_solid;
+					
+					procedure query_fill_zone_hatched (c : in pac_route_hatched.cursor) is
+						zone : type_route_hatched renames element (c);
+					begin
+						b := get_bounding_box (zone, zone.linewidth);
+						merge_areas (bbox_new, b);
+					end query_fill_zone_hatched;
+
+
+				begin
+					if debug then
+						put_line (" " & to_string (c));
+					end if;
+
+					route.lines.iterate (query_line'access);
+					route.arcs.iterate (query_arc'access);
+					route.vias.iterate (query_via'access);
+					route.fill_zones.solid.iterate (query_fill_zone_solid'access);
+					route.fill_zones.hatched.iterate (query_fill_zone_hatched'access);
+				end query_net;
+
+				
+			begin
+				nets.iterate (query_net'access);
+			end query_module;
+
+			
+		begin
+			if debug then
+				put_line ("processing nets ...");
+			end if;
+
+			query_element (active_module, query_module'access);
+		end process_nets;
+
+
+		
 		
 	begin
-		process_devices;
-		-- CS tracks, vias, fill zones
-		
 		process_silkscreen;
 		process_assembly_doc;
 		process_stencil;
@@ -1759,6 +1854,8 @@ is
 		process_conductors;
 		process_board_outline;
 
+		process_devices;
+		process_nets;
 	end parse_board;
 
 	
