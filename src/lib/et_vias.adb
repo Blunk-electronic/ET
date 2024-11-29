@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -114,9 +114,13 @@ package body et_vias is
 	end blind_via_uses_layer;
 
 
-	function get_position (via : in pac_vias.cursor) return string is begin
+	
+	function to_string (
+		via : in pac_vias.cursor) 
+		return string
+	is begin
 		return to_string (element (via).position);
-	end get_position;
+	end to_string;
 		
 	
 
