@@ -193,7 +193,7 @@ package et_design_rules_board is
 	design_rules : pac_design_rules_board.map;
 
 	
-	-- Reads the design rulesspecified in the given file
+	-- Reads the design rules specified in the given file
 	-- and inserts the data set in list "design_rules" (see above):
 	procedure read_rules (
 		file_name		: in pac_file_name.bounded_string;
@@ -213,13 +213,13 @@ package et_design_rules_board is
 	section_clearances		: constant string := "[CLEARANCES";
 	section_sizes			: constant string := "[SIZES";
 	section_restring		: constant string := "[RESTRING";
-	section_stop_mask		: constant string := "[STOP_MASK";
+	section_stop_mask		: constant string := "[STOPMASK";
 	
 	type type_section_name is (
 		SEC_INIT,
 		SEC_CLEARANCES,
 		SEC_SIZES,
-		SEC_STOP_MASK,
+		SEC_STOPMASK,
 		SEC_RESTRING
 		);
 

@@ -191,7 +191,7 @@ is
 						when others		=> invalid_section;
 					end case;
 
-				when SEC_STOP_MASK =>
+				when SEC_STOPMASK =>
 					case stack.parent is
 						when SEC_INIT	=> rules.stop_mask := stop_mask;
 						when others		=> invalid_section;
@@ -253,7 +253,7 @@ is
 		if set (section_clearances, SEC_CLEARANCES) then null;
 		elsif set (section_sizes, SEC_SIZES) then null;
 		elsif set (section_restring, SEC_RESTRING) then null;
-		elsif set (section_stop_mask, SEC_STOP_MASK) then null;
+		elsif set (section_stop_mask, SEC_STOPMASK) then null;
 
 		else
 			-- The line contains something else -> the payload data. 
@@ -281,7 +281,7 @@ is
 						when others		=> invalid_section;
 					end case;
 
-				when SEC_STOP_MASK =>
+				when SEC_STOPMASK =>
 					case stack.parent is
 						when SEC_INIT	=> read_stop_mask;
 						when others		=> invalid_section;

@@ -2061,7 +2061,7 @@ is
 		kw : constant  string := f (line, 1);
 	begin
 		case stack.parent (degree => 2) is
-			when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOPMASK 
+			when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STOPMASK 
 				| SEC_KEEPOUT | SEC_STENCIL =>
 
 				-- CS: In the following: set a corresponding parameter-found-flag
@@ -4589,7 +4589,7 @@ is
 				use et_board_shapes_and_text;
 			begin
 				case stack.parent (degree => 2) is
-					when SEC_SILK_SCREEN =>
+					when SEC_SILKSCREEN =>
 						insert_line (
 							layer_cat	=> LAYER_CAT_SILKSCREEN,
 							face		=> face);
@@ -4629,7 +4629,7 @@ is
 				board_check_arc (log_threshold + 1);
 				
 				case stack.parent (degree => 2) is
-					when SEC_SILK_SCREEN =>
+					when SEC_SILKSCREEN =>
 						insert_arc (
 							layer_cat	=> LAYER_CAT_SILKSCREEN,
 							face		=> face);
@@ -4666,7 +4666,7 @@ is
 				use et_board_shapes_and_text;
 			begin
 				case stack.parent (degree => 2) is
-					when SEC_SILK_SCREEN =>
+					when SEC_SILKSCREEN =>
 						insert_circle (
 							layer_cat	=> LAYER_CAT_SILKSCREEN,
 							face		=> face);
@@ -4916,7 +4916,7 @@ is
 				use et_board_shapes_and_text;
 			begin
 				case stack.parent (degree => 2) is
-					when SEC_SILK_SCREEN =>
+					when SEC_SILKSCREEN =>
 						insert_cutout (
 							layer_cat	=> LAYER_CAT_SILKSCREEN,
 							face		=> face);
@@ -4953,7 +4953,7 @@ is
 				use et_board_shapes_and_text;
 			begin
 				case stack.parent (degree => 2) is
-					when SEC_SILK_SCREEN =>
+					when SEC_SILKSCREEN =>
 						insert_polygon (
 							layer_cat	=> LAYER_CAT_SILKSCREEN,
 							face		=> face);
@@ -5087,7 +5087,7 @@ is
 				
 			begin -- build_non_conductor_text
 				case stack.parent (degree => 2) is
-					when SEC_SILK_SCREEN =>
+					when SEC_SILKSCREEN =>
 						insert_text (LAYER_CAT_SILKSCREEN);
 
 					when SEC_ASSEMBLY_DOCUMENTATION =>
@@ -5727,7 +5727,7 @@ is
 
 						when SEC_TOP =>
 							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN =>
+								when SEC_SILKSCREEN =>
 									insert_placeholder (
 										layer_cat	=> et_board_shapes_and_text.LAYER_CAT_SILKSCREEN,
 										face		=> et_pcb_sides.TOP);
@@ -5747,7 +5747,7 @@ is
 							
 						when SEC_BOTTOM =>
 							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN =>
+								when SEC_SILKSCREEN =>
 									insert_placeholder (
 										layer_cat	=> et_board_shapes_and_text.LAYER_CAT_SILKSCREEN,
 										face		=> et_pcb_sides.BOTTOM);
@@ -5939,7 +5939,7 @@ is
 						when others => invalid_section;
 					end case;
 					
-				when SEC_DEVICES_NON_ELECTRIC | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
+				when SEC_DEVICES_NON_ELECTRIC | SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 					SEC_STOPMASK | SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
 					SEC_CONDUCTOR | SEC_PCB_CONTOURS_NON_PLATED =>
 					case stack.parent is
@@ -5949,7 +5949,7 @@ is
 
 				when SEC_TOP | SEC_BOTTOM =>
 					case stack.parent is
-						when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
+						when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 							SEC_STOPMASK | SEC_KEEPOUT => null;
 
 						when others => invalid_section;
@@ -6100,7 +6100,7 @@ is
 		elsif set (section_package, SEC_PACKAGE) then null;
 		elsif set (section_texts, SEC_TEXTS) then null;
 		elsif set (section_text, SEC_TEXT) then null;
-		elsif set (section_silkscreen, SEC_SILK_SCREEN) then null;
+		elsif set (section_silkscreen, SEC_SILKSCREEN) then null;
 		elsif set (section_top, SEC_TOP) then null;
 		elsif set (section_bottom, SEC_BOTTOM) then null;
 		elsif set (section_circle, SEC_CIRCLE) then null;
@@ -6309,7 +6309,7 @@ is
 							
 						when SEC_TOP | SEC_BOTTOM => 
 							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+								when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 									SEC_STENCIL | SEC_STOPMASK =>
 
 									if not read_board_line (line) then
@@ -6407,7 +6407,7 @@ is
 								
 						when SEC_TOP | SEC_BOTTOM => 
 							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+								when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 									SEC_STENCIL | SEC_STOPMASK =>
 
 									if not read_board_arc (line) then
@@ -6489,7 +6489,7 @@ is
 						
 						when SEC_TOP | SEC_BOTTOM => 
 							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+								when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 									SEC_STENCIL | SEC_STOPMASK =>
 
 									if not read_board_circle (line) then
@@ -6592,7 +6592,7 @@ is
 						when SEC_ROUTE => read_cutout_route;
 						when SEC_TOP | SEC_BOTTOM => 
 							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+								when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 									SEC_STENCIL | SEC_STOPMASK => read_cutout_non_conductor;
 
 								when SEC_KEEPOUT =>
@@ -6617,7 +6617,7 @@ is
 
 						when SEC_TOP | SEC_BOTTOM => 
 							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+								when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 									SEC_STENCIL | SEC_STOPMASK => read_fill_zone_non_conductor;
 
 								when SEC_KEEPOUT => read_fill_zone_keepout;
@@ -6722,7 +6722,7 @@ is
 
 						when SEC_TOP | SEC_BOTTOM =>
 							case stack.parent (degree => 2) is
-								when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION 
+								when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION 
 									| SEC_STOPMASK => -- CS SEC_KEEPOUT
 									read_board_text_placeholder;
 						
@@ -6773,7 +6773,7 @@ is
 						when others => invalid_section;
 					end case;
 					
-				when SEC_DEVICES_NON_ELECTRIC | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
+				when SEC_DEVICES_NON_ELECTRIC | SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 					SEC_STOPMASK | SEC_KEEPOUT | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT |
 					SEC_CONDUCTOR | SEC_PCB_CONTOURS_NON_PLATED =>
 					case stack.parent is
@@ -6783,7 +6783,7 @@ is
 
 				when SEC_TOP | SEC_BOTTOM =>
 					case stack.parent is
-						when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
+						when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION | SEC_STENCIL |
 							SEC_STOPMASK | SEC_KEEPOUT => null;
 
 						when others => invalid_section;

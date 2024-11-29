@@ -293,7 +293,7 @@ package body et_pcb_rw.device_packages is
 			use pac_stop_circles;
 			use pac_stop_contours;
 		begin
-			section_mark (section_stop_mask, HEADER);
+			section_mark (section_stopmask, HEADER);
 
 			-- top
 			section_mark (section_top, HEADER);
@@ -311,7 +311,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.stop_mask.bottom.contours, write_polygon'access);			
 			section_mark (section_bottom, FOOTER);
 
-			section_mark (section_stop_mask, FOOTER);			
+			section_mark (section_stopmask, FOOTER);			
 		end write_stop_mask;
 
 		

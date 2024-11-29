@@ -56,8 +56,9 @@ package et_pcb_rw.device_packages is
 	
 	section_stencil_contours	: constant string	:= "[STENCIL_CONTOURS";
 
-	section_stopmask_contours_tht	: constant string	:= "[STOPMASK_CONTOURS_THT";
-	section_stopmask_contours_smt	: constant string	:= "[STOPMASK_CONTOURS_SMT";
+	section_stopmask				: constant string := "[STOPMASK";
+	section_stopmask_contours_tht	: constant string := "[STOPMASK_CONTOURS_THT";
+	section_stopmask_contours_smt	: constant string := "[STOPMASK_CONTOURS_SMT";
 	
 	section_pad_millings		: constant string	:= "[MILLINGS";
 
