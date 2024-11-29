@@ -154,6 +154,11 @@ is
 	-- All objects are processed regardless whether they are displayed or not:
 	procedure parse_board is
 
+		-- This is a temporary bounding-box of a single segment
+		-- or a single contour or a single zone. Once it has been set,
+		-- it will be merged with the global bounding-box bbox_new:
+		b : type_area;
+		
 
 		procedure process_silkscreen is
 
@@ -167,10 +172,7 @@ is
 				use pac_silk_arcs;
 				use pac_silk_circles;
 				use pac_silk_contours;
-				-- use pac_silk_texts;
-				
-				-- The bounding box of a single segment:
-				b : type_area;
+				-- use pac_silk_texts;				
 				
 				silk : type_silkscreen_both_sides renames module.board.silk_screen;
 
@@ -248,9 +250,6 @@ is
 				use pac_doc_contours;
 				-- use pac_doc_texts;
 				
-				-- The bounding box of a single segment:
-				b : type_area;
-				
 				doc : type_assy_doc_both_sides renames module.board.assy_doc;
 
 				
@@ -323,9 +322,6 @@ is
 				use pac_stencil_circles;
 				use pac_stencil_contours;
 				
-				-- The bounding box of a single segment:
-				b : type_area;
-				
 				stencil : type_stencil_both_sides renames module.board.stencil;
 
 
@@ -396,9 +392,6 @@ is
 				use pac_stop_contours;
 				-- use pac_stop_texts;
 
-				-- The bounding box of a single segment:
-				b : type_area;
-				
 				stop : type_stop_mask_both_sides renames module.board.stop_mask;
 
 				
@@ -467,9 +460,6 @@ is
 				use pac_keepout_zones;
 				use pac_keepout_cutouts;
 				
-				-- The bounding box of a single segment:
-				b : type_area;
-				
 				keepout : type_keepout_both_sides renames module.board.keepout;
 
 				
@@ -516,9 +506,6 @@ is
 				use pac_route_restrict_circles;
 				use pac_route_restrict_contours;
 				use pac_route_restrict_cutouts;
-				
-				-- The bounding box of a single segment:
-				b : type_area;
 				
 				restrict : type_route_restrict renames module.board.route_restrict;
 
@@ -591,9 +578,6 @@ is
 				use pac_via_restrict_circles;
 				use pac_via_restrict_contours;
 				use pac_via_restrict_cutouts;
-				
-				-- The bounding box of a single segment:
-				b : type_area;
 				
 				restrict : type_via_restrict renames module.board.via_restrict;
 
@@ -669,9 +653,6 @@ is
 				use pac_conductor_arcs;
 				use pac_conductor_circles;
 
-				-- The bounding box of a single segment:
-				b : type_area;
-				
 				conductors : type_conductors_non_electric renames module.board.conductors;
 
 				
@@ -756,19 +737,14 @@ is
 			use pac_contours; -- instance of generic package
 			use pac_segments;
 
-			-- The bounding box of a single segment:
-			b : type_area;
-			
-			
+
 			-- Outer contour:
 			procedure process_outline is
 				
 				procedure query_outline (
 					module_name	: in pac_module_name.bounded_string;
 					module		: in type_generic_module)
-				is 
-					b : type_area;
-				begin
+				is begin
 					b := get_bounding_box (
 						contour	=> module.board.contours.outline,
 						width	=> pcb_contour_line_width);
@@ -798,8 +774,6 @@ is
 				is
 					use et_pcb;
 					use pac_holes;
-
-					b : type_area;
 
 					contours : type_pcb_contours renames module.board.contours;
 					
@@ -864,10 +838,6 @@ is
 				-- on the board)
 				package_rotation : type_rotation;
 				
-				-- For each primitive object we will
-				-- compute a temporary bounding-box:
-				b : type_area;
-
 				
 			
 
