@@ -46,21 +46,57 @@ package body et_vias is
 	function to_micro_vias_allowed (allowed : in string) return type_micro_vias_allowed is begin
 		return type_micro_vias_allowed'value (allowed);
 	end to_micro_vias_allowed;
+
 	
 	function to_string (allowed : in type_micro_vias_allowed) return string is begin
 		return " micro vias allowed " & type_micro_vias_allowed'image (allowed);
 	end to_string;
 
 
+	
 	function to_string (category : in type_via_category) return string is begin
 		return type_via_category'image (category);
 	end to_string;
 
+	
 	function to_via_category (category : in string) return type_via_category is begin
 		return type_via_category'value (category);
 	end to_via_category;
 
+	
 
+	function get_bounding_box (
+		via : in type_via)
+		return type_area
+	is
+		b : type_area;
+		circle : type_circle;
+		restring : type_distance_positive;
+	begin
+		case via.category is
+			when THROUGH =>
+				restring := get_greatest (via.restring_inner, via.restring_outer);
+
+			when BLIND_DRILLED_FROM_TOP =>
+				restring := get_greatest (via.restring_inner, via.restring_top);
+
+			when BLIND_DRILLED_FROM_BOTTOM =>
+				restring := get_greatest (via.restring_inner, via.restring_bottom);
+
+			when BURIED =>
+				restring := via.restring_inner;
+		end case;
+				
+		circle.center := via.position;
+		circle.radius := 0.5 * via.diameter + restring;
+		
+		b := get_bounding_box (circle => circle, width => 0.0);
+		return b;
+	end get_bounding_box;
+
+
+
+	
 	function buried_via_uses_layer (
 		via		: in type_via;
 		layer	: in type_signal_layer)
@@ -78,6 +114,7 @@ package body et_vias is
 	end buried_via_uses_layer;
 
 
+	
 	function blind_via_uses_layer (
 		via		: in type_via;
 		layer	: in type_signal_layer;
@@ -124,6 +161,8 @@ package body et_vias is
 		
 	
 
+
+	
 	procedure iterate (
 		vias	: in pac_vias.list;
 		process	: not null access procedure (position : in pac_vias.cursor);

@@ -1790,8 +1790,8 @@ is
 					procedure query_via (c : in pac_vias.cursor) is
 						via : type_via renames element (c);
 					begin
-						null;
-						-- CS
+						b := get_bounding_box (via);
+						merge_areas (bbox_new, b);
 					end query_via;
 					
 					-------------------------------

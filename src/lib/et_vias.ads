@@ -159,9 +159,20 @@ package et_vias is
 		end case;
 	end record;
 
+
+	
 	-- returns the properties of the given via as string:
 	function to_string (via : in type_via) return string;
 
+
+
+	-- Computes the bounding-box of a via:
+	function get_bounding_box (
+		via : in type_via)
+		return type_area;
+
+
+	
 
 	-- Returns true if the given buried via uses the given layer.
 	-- The given via must be of category BURIED. Otherwise an exception
@@ -196,6 +207,7 @@ package et_vias is
 		via : in pac_vias.cursor) 
 		return string;
 
+	
 	
 	-- Iterates the vias. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
