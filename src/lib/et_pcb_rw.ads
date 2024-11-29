@@ -79,7 +79,7 @@ package et_pcb_rw is
 	section_fill_zones_conductor: constant string	:= "[FILL_ZONES_CONDUCTOR";
 	
 	section_route				: constant string 	:= "[ROUTE";	
-	section_silk_screen			: constant string	:= "[SILK_SCREEN";
+	section_silkscreen			: constant string	:= "[SILKSCREEN";
 	section_assembly_doc		: constant string	:= "[ASSEMBLY_DOCUMENTATION";
 	section_stencil				: constant string	:= "[STENCIL";
 	section_stop_mask			: constant string	:= "[STOP_MASK";

@@ -6100,7 +6100,7 @@ is
 		elsif set (section_package, SEC_PACKAGE) then null;
 		elsif set (section_texts, SEC_TEXTS) then null;
 		elsif set (section_text, SEC_TEXT) then null;
-		elsif set (section_silk_screen, SEC_SILK_SCREEN) then null;
+		elsif set (section_silkscreen, SEC_SILK_SCREEN) then null;
 		elsif set (section_top, SEC_TOP) then null;
 		elsif set (section_bottom, SEC_BOTTOM) then null;
 		elsif set (section_circle, SEC_CIRCLE) then null;

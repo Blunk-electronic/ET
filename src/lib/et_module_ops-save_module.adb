@@ -1807,7 +1807,7 @@ is
 			end write_text;
 
 		begin
-			section_mark (section_silk_screen, HEADER);
+			section_mark (section_silkscreen, HEADER);
 
 			section_mark (section_top, HEADER);
 			iterate (element (module_cursor).board.silk_screen.top.lines, write_line'access);
@@ -1827,7 +1827,7 @@ is
 			iterate (element (module_cursor).board.silk_screen.bottom.placeholders, write_placeholder'access);
 			section_mark (section_bottom, FOOTER);
 			
-			section_mark (section_silk_screen, FOOTER);
+			section_mark (section_silkscreen, FOOTER);
 		end write_silkscreen;
 
 

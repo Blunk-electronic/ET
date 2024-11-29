@@ -77,7 +77,7 @@ package et_pcb_rw.device_packages is
 		SEC_LINE,
 		SEC_ARC,
 		SEC_CIRCLE,
-		SEC_SILK_SCREEN,
+		SEC_SILKSCREEN,
 		SEC_ASSEMBLY_DOCUMENTATION,
 		SEC_KEEPOUT,
 		SEC_STOP_MASK,

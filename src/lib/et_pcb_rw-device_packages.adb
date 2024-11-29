@@ -195,7 +195,7 @@ package body et_pcb_rw.device_packages is
 			end write_text;
 
 		begin
-			section_mark (section_silk_screen, HEADER);
+			section_mark (section_silkscreen, HEADER);
 
 			-- top
 			section_mark (section_top, HEADER);
@@ -217,7 +217,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.silkscreen.bottom.placeholders, write_placeholder'access);
 			section_mark (section_bottom, FOOTER);
 
-			section_mark (section_silk_screen, FOOTER);			
+			section_mark (section_silkscreen, FOOTER);			
 		end write_silk_screen;
 
 		
@@ -1203,7 +1203,7 @@ package body et_pcb_rw.device_packages is
 										make_border	=> true)));
 
 							
-						when SEC_SILK_SCREEN =>
+						when SEC_SILKSCREEN =>
 
 							pac_silk_texts.append (
 								container	=> packge.silkscreen.top.texts,
@@ -1266,7 +1266,7 @@ package body et_pcb_rw.device_packages is
 										make_border	=> true)));
 
 
-						when SEC_SILK_SCREEN =>
+						when SEC_SILKSCREEN =>
 
 							pac_silk_texts.append (
 								container	=> packge.silkscreen.bottom.texts,
@@ -1561,7 +1561,7 @@ package body et_pcb_rw.device_packages is
 				case stack.current is
 
 					when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
-						SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+						SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 						SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT | SEC_PCB_CONTOURS_NON_PLATED | 
 						SEC_TERMINALS | SEC_PACKAGE_3D_CONTOURS =>
 
@@ -1573,7 +1573,7 @@ package body et_pcb_rw.device_packages is
 					when SEC_TOP =>
 						case stack.parent is
 							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
-								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+								SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 								SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => null;
 
 							when SEC_PAD_CONTOURS_THT => 
@@ -1592,7 +1592,7 @@ package body et_pcb_rw.device_packages is
 					when SEC_BOTTOM =>
 						case stack.parent is
 							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
-								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+								SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 								SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => null;
 
 							when SEC_PAD_CONTOURS_THT =>
@@ -1622,7 +1622,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line;
 										board_reset_line_width;
 
-									when SEC_SILK_SCREEN => 
+									when SEC_SILKSCREEN => 
 										pac_silk_lines.append (
 											container	=> packge.silkscreen.top.lines, 
 											new_item	=> (type_line (board_line) with board_line_width));
@@ -1698,7 +1698,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_line;
 										board_reset_line_width;
 
-									when SEC_SILK_SCREEN => 
+									when SEC_SILKSCREEN => 
 										pac_silk_lines.append (
 											container	=> packge.silkscreen.bottom.lines, 
 											new_item	=> (type_line (board_line) with board_line_width));
@@ -1786,7 +1786,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_arc;
 										board_reset_line_width;
 
-									when SEC_SILK_SCREEN => 
+									when SEC_SILKSCREEN => 
 										pac_silk_arcs.append (
 											container	=> packge.silkscreen.top.arcs, 
 											new_item	=> (type_arc (board_arc) with board_line_width));
@@ -1858,7 +1858,7 @@ package body et_pcb_rw.device_packages is
 										board_reset_arc;
 										board_reset_line_width;
 
-									when SEC_SILK_SCREEN => 
+									when SEC_SILKSCREEN => 
 										pac_silk_arcs.append (
 											container	=> packge.silkscreen.bottom.arcs, 
 											new_item	=> (type_arc (board_arc) with board_line_width));
@@ -1936,7 +1936,7 @@ package body et_pcb_rw.device_packages is
 											container	=> packge.conductors.top.circles, 
 											new_item	=> (type_circle (board_circle) with board_line_width));
 										
-									when SEC_SILK_SCREEN => 
+									when SEC_SILKSCREEN => 
 										pac_silk_circles.append (
 											container	=> packge.silkscreen.top.circles, 
 											new_item	=> (type_circle (board_circle) with board_line_width));
@@ -1994,7 +1994,7 @@ package body et_pcb_rw.device_packages is
 											container	=> packge.conductors.bottom.circles, 
 											new_item	=> (type_circle (board_circle) with board_line_width));
 
-									when SEC_SILK_SCREEN => 
+									when SEC_SILKSCREEN => 
 										pac_silk_circles.append (
 											container	=> packge.silkscreen.bottom.circles, 
 											new_item	=> (type_circle (board_circle) with board_line_width));
@@ -2058,7 +2058,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP => 
 								case stack.parent (degree => 2) is
-									when SEC_SILK_SCREEN =>
+									when SEC_SILKSCREEN =>
 										append_silk_polygon_top;
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
@@ -2084,7 +2084,7 @@ package body et_pcb_rw.device_packages is
 
 							when SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_SILK_SCREEN =>
+									when SEC_SILKSCREEN =>
 										append_silk_polygon_bottom;
 										
 									when SEC_ASSEMBLY_DOCUMENTATION =>
@@ -2164,7 +2164,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP =>
 								case stack.parent (degree => 2) is
-									when SEC_SILK_SCREEN =>
+									when SEC_SILKSCREEN =>
 										
 										pac_placeholders.append (
 											container	=> packge.silkscreen.top.placeholders,
@@ -2185,7 +2185,7 @@ package body et_pcb_rw.device_packages is
 								
 							when SEC_BOTTOM =>
 								case stack.parent (degree => 2) is
-									when SEC_SILK_SCREEN =>
+									when SEC_SILKSCREEN =>
 										
 										pac_placeholders.append (
 											container	=> packge.silkscreen.bottom.placeholders,
@@ -2284,12 +2284,12 @@ package body et_pcb_rw.device_packages is
 			end execute_section;
 
 			
-			function set (
 			-- Tests if the current line is a section header or footer. Returns true in both cases.
 			-- Returns false if the current line is neither a section header or footer.
 			-- If it is a header, the section name is pushed onto the sections stack.
 			-- If it is a footer, the latest section name is popped from the stack.
-				section_keyword	: in string; -- [POLYGON
+			function set (
+				section_keyword	: in string; -- [SILKSCREEN
 				section			: in type_section) -- SEC_ZONE
 				return boolean is 
 			begin -- set
@@ -2337,7 +2337,7 @@ package body et_pcb_rw.device_packages is
 			elsif set (section_line, SEC_LINE) then null;
 			elsif set (section_arc, SEC_ARC) then null;
 			elsif set (section_circle, SEC_CIRCLE) then null;
-			elsif set (section_silk_screen, SEC_SILK_SCREEN) then null;
+			elsif set (section_silkscreen, SEC_SILKSCREEN) then null;
 			elsif set (section_assembly_doc, SEC_ASSEMBLY_DOCUMENTATION) then null;
 			elsif set (section_keepout, SEC_KEEPOUT) then null;			
 			elsif set (section_conductor, SEC_CONDUCTOR) then null;
@@ -2405,7 +2405,7 @@ package body et_pcb_rw.device_packages is
 						end;
 
 					when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
-						SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+						SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 						SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT | SEC_PCB_CONTOURS_NON_PLATED | 
 						SEC_TERMINALS | SEC_PACKAGE_3D_CONTOURS =>
 
@@ -2423,7 +2423,7 @@ package body et_pcb_rw.device_packages is
 					when SEC_TOP | SEC_BOTTOM =>
 						case stack.parent is
 							when SEC_CONDUCTOR | SEC_KEEPOUT | SEC_STOP_MASK | SEC_STENCIL | 
-								SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+								SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 								SEC_PAD_CONTOURS_THT | 
 								SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT => null;
 
@@ -2435,7 +2435,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_CONDUCTOR | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+									when SEC_CONDUCTOR | SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 
 										if not read_board_line (line) then
@@ -2472,7 +2472,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_CONDUCTOR | SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+									when SEC_CONDUCTOR | SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 
 										if not read_board_arc (line) then
@@ -2508,7 +2508,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK | SEC_ROUTE_RESTRICT | SEC_VIA_RESTRICT =>
 										
 										if not read_board_circle (line) then
@@ -2568,7 +2568,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK =>
 										declare
 											kw : string := f (line, 1);
@@ -2623,7 +2623,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM => 
 								case stack.parent (degree => 2) is
-									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STENCIL | SEC_STOP_MASK =>
 										null;
 
@@ -2682,7 +2682,7 @@ package body et_pcb_rw.device_packages is
 							when SEC_TOP | SEC_BOTTOM =>
 								case stack.parent (degree => 2) is
 									when SEC_CONDUCTOR |
-										SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION |
+										SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION |
 										SEC_STOP_MASK =>
 
 										read_text;
@@ -2698,7 +2698,7 @@ package body et_pcb_rw.device_packages is
 						case stack.parent is
 							when SEC_TOP | SEC_BOTTOM =>
 								case stack.parent (degree => 2) is
-									when SEC_SILK_SCREEN | SEC_ASSEMBLY_DOCUMENTATION =>
+									when SEC_SILKSCREEN | SEC_ASSEMBLY_DOCUMENTATION =>
 
 										read_placeholder;
 
