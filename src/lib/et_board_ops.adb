@@ -122,7 +122,7 @@ package body et_board_ops is
 	
 	function get_layer_count (
 		module_cursor	: in pac_generic_modules.cursor) 
-		return et_pcb_stack.type_signal_layer 
+		return type_signal_layer 
 	is
 		use package_layers;
 	begin
