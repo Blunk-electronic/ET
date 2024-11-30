@@ -191,7 +191,7 @@ Routing, laying out Tracks and Traces
 		
 
 	
-#. Ripping-up routed segments
+#. Ripping-up Routed Segments
 
 	.. code-block::
 
