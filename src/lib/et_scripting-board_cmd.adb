@@ -2471,7 +2471,6 @@ is
 	-- This procedure parses a command to 
 	-- delete an object of the silkscreen:
 	procedure delete_silkscreen_object is
-
 		
 		procedure do_it is
 			use et_board_ops.silkscreen;
@@ -2489,22 +2488,46 @@ is
 				log_threshold	=> log_threshold + 1);
 			
 		end do_it;
-		
-		
+				
 	begin
 		case cmd_field_count is
-			when 8 =>
-				do_it;
-				-- example: board led_driver delete silkscreen top 40 50 1
-
-			when 9 .. type_field_count'last =>
-				too_long;
-				
-			when others =>
-				command_incomplete;
+			-- example: board led_driver delete silkscreen top 40 50 1
+			when 8 => do_it;
+			when 9 .. type_field_count'last => too_long;				
+			when others => command_incomplete;
 		end case;
 	end delete_silkscreen_object;
 
+	
+
+	
+	-- This procedure parses a command to 
+	-- delete an object of the assembly documentation:
+	procedure delete_assy_doc_object is
+
+		procedure do_it is
+			use et_board_ops.assy_doc;
+		begin
+			delete (
+				module_name 	=> module,
+				face			=> to_face (f (5)),
+				point			=> type_vector_model (set (
+						x => to_distance (dd => f (6)),
+						y => to_distance (dd => f (7)))),
+				accuracy		=> to_accuracy (f (8)),
+				
+				log_threshold	=> log_threshold + 1);
+
+		end do_it;
+
+	begin
+		case cmd_field_count is
+			-- example: board led_driver delete assy top 40 50 1
+			when 8 => do_it;
+			when 9 .. type_field_count'last => too_long;				
+			when others => command_incomplete;
+		end case;		
+	end delete_assy_doc_object;
 	
 	
 	
@@ -2741,7 +2764,6 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-
 						
 			when VERB_DELETE =>
 				case noun is
@@ -2761,26 +2783,8 @@ is
 						delete_silkscreen_object;
 
 					when NOUN_ASSY =>
-						-- board led_driver delete assy top 40 50 1
-						case cmd_field_count is
-							when 8 =>
-								-- delete a segment of assembly documentation
-								et_board_ops.assy_doc.delete (
-									module_name 	=> module,
-									face			=> to_face (f (5)),
-									point			=> type_vector_model (set (
-											x => to_distance (dd => f (6)),
-											y => to_distance (dd => f (7)))),
-									accuracy		=> to_accuracy (f (8)),
-									
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
-
+						delete_assy_doc_object;
+						
 					when NOUN_KEEPOUT =>
 						-- board led_driver delete keepout top 40 50 1
 						null; -- CS
