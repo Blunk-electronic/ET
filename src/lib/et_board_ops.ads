@@ -106,8 +106,9 @@ package et_board_ops is
 
 	
 	-- Returns the total number of signal layers used by the given module.
-	function layer_count (module_cursor	: in pac_generic_modules.cursor) 
-		return et_pcb_stack.type_signal_layer; -- CS rename to get_layer_count
+	function get_layer_count (
+		module_cursor	: in pac_generic_modules.cursor) 
+		return et_pcb_stack.type_signal_layer;
 
 	
 	-- Tests whether the given layer is allowed according to current layer stack

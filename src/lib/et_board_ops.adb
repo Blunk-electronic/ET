@@ -120,7 +120,8 @@ package body et_board_ops is
 
 	
 	
-	function layer_count (module_cursor	: in pac_generic_modules.cursor) 
+	function get_layer_count (
+		module_cursor	: in pac_generic_modules.cursor) 
 		return et_pcb_stack.type_signal_layer 
 	is
 		use package_layers;
@@ -133,7 +134,7 @@ package body et_board_ops is
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer) 
 	is
-		layers_used : et_pcb_stack.type_signal_layer := layer_count (module_cursor);
+		layers_used : et_pcb_stack.type_signal_layer := get_layer_count (module_cursor);
 	begin
 		if layer > layers_used then
 			log (ERROR, "Layer " & to_string (layer) & " invalid !" &
@@ -159,7 +160,7 @@ package body et_board_ops is
 			use package_layers;
 
 			-- get the total number of layers used by the module
-			layers_used : type_signal_layer := layer_count (module_cursor);
+			layers_used : type_signal_layer := get_layer_count (module_cursor);
 
 			old_stack : package_layers.vector := element (module_cursor).board.stack.layers;
 			new_stack : package_layers.vector;

@@ -124,7 +124,7 @@ package body et_board_ops.conductors is
 				end if;
 
 			else -- terminal.face is bottom
-				if layer /= layer_count (module_cursor) then
+				if layer /= get_layer_count (module_cursor) then
 					warning;
 				end if;
 			end if;
