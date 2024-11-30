@@ -506,6 +506,13 @@ Route Restrict Objects
 		board demo draw route_restrict [1] 0.2 circle 60 40  5
 
 	
+#. Deleting
+
+	.. code-block::
+	
+		delete route_restrict 50 30 10
+		
+		
 	
 ++++++++++++++++++++
 Via Restrict Objects
@@ -635,7 +642,37 @@ Stopmask
 #. Deleting Objects
 		
 	.. code-block::
+	
 		delete stop top 50 100 10
+		
+
+		
++++++++
+Stencil
++++++++
+
+#. Drawing Objects
+
+	.. code-block::
+		
+		draw stencil top line 1 70 55  60 66
+	
+	.. code-block::
+	
+		draw stencil top arc 2 100 100  50 100  150 100 ccw
+
+	.. code-block::
+		
+		draw stencil top circle 2 100 100  20
+		
+
+#. Deleting Objects
+		
+	.. code-block::
+	
+		delete stencil top 50 100 10
+
+		
 		
 		
 +++++++++++++
