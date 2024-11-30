@@ -608,6 +608,36 @@ Silkscreen
 		delete silkscreen top 40 50 1
 		
 	
+	
+++++++++
+Stopmask
+++++++++
+
+#. Drawing Objects
+
+	.. code-block::
+		
+		draw stop top line 1 70 55  60 66
+	
+	.. code-block::
+	
+		draw stop top arc 2 100 100  50 100  150 100 ccw
+
+	.. code-block::
+	
+		place text stop top 0.1 3 33 43 0 "STOP 1"
+
+	.. code-block::
+		
+		draw stop top circle 2 100 100  20
+		
+
+#. Deleting Objects
+		
+	.. code-block::
+		delete stop top 50 100 10
+		
+		
 +++++++++++++
 Drawing Frame
 +++++++++++++
