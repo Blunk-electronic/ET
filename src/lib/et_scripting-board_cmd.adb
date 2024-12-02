@@ -2662,6 +2662,7 @@ is
 	end delete_via_restrict_object;
 
 
+	
 
 	
 	-- This procedure parses a command to 
@@ -2753,6 +2754,7 @@ is
 	end fill_zones;
 	
 
+
 	
 	procedure clear_fill_zone is
 		nets : pac_net_names.list;
@@ -2780,6 +2782,7 @@ is
 		end if;
 	end clear_fill_zone;
 
+
 	
 
 	procedure update_ratsnest is
@@ -2799,6 +2802,7 @@ is
 	end update_ratsnest;
 
 
+	
 	
 	procedure move_drawing_frame is 
 		use et_board_ops.frame;
@@ -2831,6 +2835,7 @@ is
 	end move_drawing_frame;
 
 
+	
 
 	-- Actions to save a module:
 	procedure save_module is 
@@ -2923,6 +2928,7 @@ is
 		
 	end show_module;
 
+
 	
 	
 	-- Parses the single_cmd_status.cmd:
@@ -3000,7 +3006,7 @@ is
 					when NOUN_FREETRACK =>
 						delete_freetrack_segment;
 
-					when NOUN_NET =>
+					when NOUN_TRACK =>
 						delete_net_segment;
 						
 					when others => invalid_noun (to_string (noun));
@@ -3407,6 +3413,7 @@ is
 		
 	end propose_arguments;
 
+	
 	
 begin -- board_cmd
 	log (text => "given command: " 

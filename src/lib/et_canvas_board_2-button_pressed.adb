@@ -155,7 +155,7 @@ is
 					when NOUN_VIA =>
 						et_canvas_board_vias.delete_via (MOUSE, event.point);
 
-					when NOUN_NET =>
+					when NOUN_TRACK =>
 						et_canvas_board_tracks.ripup (event.point);
 						
 					when others => null;
@@ -238,8 +238,7 @@ is
 
 				
 			when VERB_FLIP =>
-				case noun is
-					
+				case noun is					
 					when NOUN_DEVICE =>
 						if clarification_pending then
 							et_canvas_board_devices.select_electrical_device;
@@ -276,7 +275,7 @@ is
 							et_canvas_board_vias.select_via;
 						end if;
 
-					when NOUN_NET =>
+					when NOUN_TRACK =>
 						-- As long as a clarification of the 
 						-- segment is pending, a right click
 						-- advances to the next segment.

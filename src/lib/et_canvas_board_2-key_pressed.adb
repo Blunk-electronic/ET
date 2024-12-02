@@ -110,13 +110,13 @@ is
 
 
 			when GDK_LC_t =>
-				noun := NOUN_NET;
+				noun := NOUN_TRACK;
 
 
 			-- If "m" pressed, then a ripup mode is being selected.
 			when GDK_LC_m =>
 				case noun is
-					when NOUN_NET =>
+					when NOUN_TRACK =>
 						et_canvas_board_tracks.next_ripup_mode;
 						
 					when others => null;
@@ -129,7 +129,7 @@ is
 				null;
 				-- CS
 				case noun is
-					when NOUN_NET =>
+					when NOUN_TRACK =>
 						et_canvas_board_tracks.ripup (point);
 
 -- 					when NOUN_ASSY =>
@@ -174,7 +174,7 @@ is
 -- 							select_via;
 -- 						end if;
 
-					when NOUN_NET =>
+					when NOUN_TRACK =>
 						if clarification_pending then
 							et_canvas_board_tracks.select_track;
 						end if;
@@ -556,6 +556,7 @@ is
 		end case;
 	end route;
 
+	
 	
 	procedure update is 
 		use et_board_ops.ratsnest;

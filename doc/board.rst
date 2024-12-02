@@ -187,19 +187,32 @@ Routing, laying out Tracks and Traces
 	.. code-block::
 
 		route net GND 1 line 2  20 20  50 20
-
+	
 		
 
 	
-#. Ripping-up Routed Segments
+#. Deleting Track Segments
 
 	.. code-block::
 
-		ripup net
+		delete track
 
-	|VNS| i n
+	|VNS| del t
 
-Select the ripup mode by pressing key m (single segment or all segments of the net).
+	
+	.. code-block::
+
+		delete track gnd 1 10 15 2
+		
+
+	.. code-block::
+
+		delete freetrack 2 10 15 2
+
+		
+		
+
+Select the delete mode by pressing key m (single segment or all segments of the net).
 
 
 
