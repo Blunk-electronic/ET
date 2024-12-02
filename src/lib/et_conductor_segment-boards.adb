@@ -6,20 +6,21 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -44,7 +45,7 @@ package body et_conductor_segment.boards is
 
 	function to_string (
 		line	: in type_conductor_line;
-		width	: in boolean := false)
+		width	: in boolean)
 		return string
 	is 
 		l : type_conductor_line renames line;
@@ -163,6 +164,26 @@ package body et_conductor_segment.boards is
 	end on_segment;
 
 
+
+	function to_string (
+		arc		: in type_conductor_arc;
+		width	: in boolean)
+		return string
+	is 
+		a : type_conductor_arc renames arc;
+
+		text : string := to_string (pac_geometry_2.type_arc (a))
+				& "/ ly " & to_string (a.layer);
+	begin
+		if width then
+			return text & "/ width " & to_string (a.width);
+		else
+			return text;
+		end if;
+	end to_string;
+
+
+	
 	function get_arcs_by_layer (
 		arcs	: in pac_conductor_arcs.list;
 		layer	: in type_signal_layer)
@@ -222,6 +243,25 @@ package body et_conductor_segment.boards is
 
 		return result;
 	end on_segment;
+
+
+
+	function to_string (
+		circle	: in type_conductor_circle;
+		width	: in boolean)
+		return string
+	is 
+		c : type_conductor_circle renames circle;
+
+		text : string := to_string (pac_geometry_2.type_circle (c))
+				& "/ ly " & to_string (c.layer);
+	begin
+		if width then
+			return text & "/ width " & to_string (c.width);
+		else
+			return text;
+		end if;
+	end to_string;
 
 	
 end et_conductor_segment.boards;

@@ -63,7 +63,7 @@ package et_conductor_segment.boards is
 	-- If "width" is true, then the segment width is also output:
 	function to_string (
 		line	: in type_conductor_line;
-		width	: in boolean := false)				   
+		width	: in boolean)				   
 		return string;
 	
 	
@@ -115,6 +115,15 @@ package et_conductor_segment.boards is
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 
+
+	-- Returns the start/end point, center and layer as string.
+	-- If "width" is true, then the segment width is also output:
+	function to_string (
+		arc		: in type_conductor_arc;
+		width	: in boolean)				   
+		return string;
+
+	
 	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
 	use pac_conductor_arcs;
 
@@ -147,6 +156,16 @@ package et_conductor_segment.boards is
 		layer	: type_signal_layer := type_signal_layer'first;
 	end record;
 
+	
+	-- Returns the center, radius and layer as string.
+	-- If "width" is true, then the segment width is also output:
+	function to_string (
+		circle	: in type_conductor_circle;
+		width	: in boolean)				   
+		return string;
+
+
+	
 	package pac_conductor_circles is new indefinite_doubly_linked_lists (type_conductor_circle);
 	
 
