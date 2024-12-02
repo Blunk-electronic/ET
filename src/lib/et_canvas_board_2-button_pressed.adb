@@ -157,6 +157,11 @@ is
 
 					when NOUN_TRACK =>
 						et_canvas_board_tracks.ripup (event.point);
+
+					when NOUN_FREETRACK =>
+						et_canvas_board_freetracks.delete_object (event.point);
+
+
 						
 					when others => null;
 				end case;
@@ -286,6 +291,11 @@ is
 						else
 							-- select ripup mode
 							et_canvas_board_tracks.next_ripup_mode;
+						end if;
+
+					when NOUN_FREETRACK =>
+						if clarification_pending then
+							et_canvas_board_freetracks.select_object;
 						end if;
 						
 					when others => null;							

@@ -41,6 +41,7 @@ with et_canvas_tool;					use et_canvas_tool;
 with et_board_ops.conductors;			use et_board_ops.conductors;
 with et_board_ops.ratsnest;
 with et_canvas_board_tracks;
+with et_canvas_board_freetracks;
 with et_canvas_board_vias;
 with et_canvas_board_lines;
 
@@ -112,7 +113,12 @@ is
 			when GDK_LC_t =>
 				noun := NOUN_TRACK;
 
+				
+			when GDK_LC_f =>
+				noun := NOUN_FREETRACK;
 
+
+				
 			-- If "m" pressed, then a ripup mode is being selected.
 			when GDK_LC_m =>
 				case noun is
@@ -132,6 +138,11 @@ is
 					when NOUN_TRACK =>
 						et_canvas_board_tracks.ripup (point);
 
+					when NOUN_FREETRACK =>
+						et_canvas_board_freetracks.delete_object (point);
+
+
+						
 -- 					when NOUN_ASSY =>
 -- 						et_canvas_board_assy_doc.delete_object (point);
 -- 
@@ -179,6 +190,12 @@ is
 							et_canvas_board_tracks.select_track;
 						end if;
 
+					when NOUN_FREETRACK =>
+						if clarification_pending then
+							et_canvas_board_freetracks.select_object;
+						end if;
+
+						
 					when others => null;							
 				end case;
 
