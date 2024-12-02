@@ -204,15 +204,17 @@ Routing, laying out Tracks and Traces
 
 		delete track gnd 1 10 15 2
 		
+Select the delete mode by pressing key m (single segment or all segments of the net).
+
+
 
 	.. code-block::
 
 		delete freetrack 2 10 15 2
 
-		
+	|VNS| del f		
 		
 
-Select the delete mode by pressing key m (single segment or all segments of the net).
 
 
 
@@ -556,7 +558,7 @@ Texts
 
 		place text
 
-	|VNS| p t
+	|VNS| p x
 
 	
 	This command places a text in conductor layer 3.

@@ -432,7 +432,7 @@ is
 	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
-			when GDK_LC_t =>
+			when GDK_LC_x =>
 				noun := NOUN_TEXT;
 				show_text_properties;
 				set_status (status_place_text);
