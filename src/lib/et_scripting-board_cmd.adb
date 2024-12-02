@@ -2530,6 +2530,141 @@ is
 	end delete_assy_doc_object;
 	
 	
+
+	-- This procedure parses a command to 
+	-- delete an object in a keepout layer:
+	procedure delete_keepout_object is
+	begin
+		-- board led_driver delete keepout top 40 50 1
+		null; -- CS
+	end delete_keepout_object;
+
+
+
+	
+	-- This procedure parses a command to 
+	-- delete an object in a stencil layer:
+	procedure delete_stencil_object is
+
+		procedure do_it is
+			use et_board_ops.stencil;
+		begin
+			delete_stencil (
+				module_name 	=> module,
+				face			=> to_face (f (5)),
+				point			=> type_vector_model (set (
+						x => to_distance (dd => f (6)),
+						y => to_distance (dd => f (7)))),
+				accuracy		=> to_accuracy (f (8)),
+				
+				log_threshold	=> log_threshold + 1);
+
+		end do_it;
+		
+	begin
+		-- board led_driver delete stencil top 40 50 1
+		case cmd_field_count is
+			when 8 => do_it;
+			when 9 .. type_field_count'last => too_long;
+			when others => command_incomplete;
+		end case;
+	end delete_stencil_object;
+	
+
+
+
+	-- This procedure parses a command to 
+	-- delete an object in a stopmask layer:
+	procedure delete_stopmask_object is
+
+		procedure do_it is
+			use et_board_ops.stop_mask;
+		begin
+			delete_stop (
+				module_name 	=> module,
+				face			=> to_face (f (5)),
+				point			=> type_vector_model (set (
+						x => to_distance (dd => f (6)),
+						y => to_distance (dd => f (7)))),
+				accuracy		=> to_accuracy (f (8)),
+				
+				log_threshold	=> log_threshold + 1);
+
+		end do_it;
+		
+	begin
+		-- board led_driver delete stop top 40 50 1
+		case cmd_field_count is
+			when 8 => do_it;
+			when 9 .. type_field_count'last => too_long;				
+			when others => command_incomplete;
+		end case;
+	end delete_stopmask_object;
+	
+
+
+
+	-- This procedure parses a command to 
+	-- delete an object in a route restrict layer:
+	procedure delete_route_restrict_object is
+
+		procedure do_it is
+			use et_board_ops.route_restrict;
+		begin
+			delete_route_restrict (
+				module_name 	=> module,
+				point			=> type_vector_model (set (
+						x => to_distance (dd => f (5)),
+						y => to_distance (dd => f (6)))),
+				accuracy		=> to_accuracy (f (7)),
+				
+				log_threshold	=> log_threshold + 1);
+
+		end do_it;
+		
+	begin
+		-- board led_driver delete route_restrict 40 50 1
+		case cmd_field_count is
+			when 7 => do_it;
+			when 8 .. type_field_count'last => too_long;								
+			when others => command_incomplete;
+		end case;
+	end delete_route_restrict_object;
+	
+
+	
+
+
+	-- This procedure parses a command to 
+	-- delete an object in a via restrict layer:
+	procedure delete_via_restrict_object is
+
+		procedure do_it is
+			use et_board_ops.via_restrict;
+		begin
+			delete_via_restrict (
+				module_name 	=> module,
+				point			=> type_vector_model (set (
+						x => to_distance (dd => f (5)),
+						y => to_distance (dd => f (6)))),
+				accuracy		=> to_accuracy (f (7)),
+				
+				log_threshold	=> log_threshold + 1);
+		end do_it;
+		
+	begin
+		-- board led_driver delete via_restrict 40 50 1
+		case cmd_field_count is
+			when 7 => do_it;
+			when 8 .. type_field_count'last => too_long;				
+			when others => command_incomplete;
+		end case;
+	end delete_via_restrict_object;
+
+
+
+	
+	
 	
 
 	procedure fill_zones is 
@@ -2786,93 +2921,22 @@ is
 						delete_assy_doc_object;
 						
 					when NOUN_KEEPOUT =>
-						-- board led_driver delete keepout top 40 50 1
-						null; -- CS
+						delete_keepout_object;
 						
 					when NOUN_STENCIL =>
-						-- board led_driver delete stencil top 40 50 1
-						case cmd_field_count is
-							when 8 =>
-								-- delete a segment of stencil
-								et_board_ops.stencil.delete_stencil (
-									module_name 	=> module,
-									face			=> to_face (f (5)),
-									point			=> type_vector_model (set (
-											x => to_distance (dd => f (6)),
-											y => to_distance (dd => f (7)))),
-									accuracy		=> to_accuracy (f (8)),
-									
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						delete_stencil_object;
 						
 					when NOUN_STOP =>
-						-- board led_driver delete stop top 40 50 1
-						case cmd_field_count is
-							when 8 =>
-								-- delete a segment of stop mask
-								et_board_ops.stop_mask.delete_stop (
-									module_name 	=> module,
-									face			=> to_face (f (5)),
-									point			=> type_vector_model (set (
-											x => to_distance (dd => f (6)),
-											y => to_distance (dd => f (7)))),
-									accuracy		=> to_accuracy (f (8)),
-									
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						delete_stopmask_object;
 
 					when NOUN_VIA =>
 						delete_via;
 						
 					when NOUN_ROUTE_RESTRICT =>
-						-- board led_driver delete route_restrict 40 50 1
-						case cmd_field_count is
-							when 7 =>
-								-- delete a segment of route restrict
-								et_board_ops.route_restrict.delete_route_restrict (
-									module_name 	=> module,
-									point			=> type_vector_model (set (
-											x => to_distance (dd => f (5)),
-											y => to_distance (dd => f (6)))),
-									accuracy		=> to_accuracy (f (7)),
-									
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 8 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						delete_route_restrict_object;						
 
 					when NOUN_VIA_RESTRICT =>
-						-- board led_driver delete via_restrict 40 50 1
-						case cmd_field_count is
-							when 7 =>
-								-- delete a segment of via restrict
-								et_board_ops.via_restrict.delete_via_restrict (
-									module_name 	=> module,
-									point			=> type_vector_model (set (
-											x => to_distance (dd => f (5)),
-											y => to_distance (dd => f (6)))),
-									accuracy		=> to_accuracy (f (7)),
-									
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 8 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						delete_via_restrict_object;
 						
 					when others => invalid_noun (to_string (noun));
 
