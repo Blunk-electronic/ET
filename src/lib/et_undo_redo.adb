@@ -233,7 +233,7 @@ package body et_undo_redo is
 			case noun is
 				when NOUN_NET =>
 					case verb is
-						when VERB_ROUTE | VERB_RIPUP =>
+						when VERB_ROUTE | VERB_DELETE =>
 							commit_nets;
 			
 						when others =>

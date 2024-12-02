@@ -56,7 +56,6 @@ package et_modes.board is
 		VERB_MOVE,
 		VERB_PLACE,
 		VERB_QUIT,
-		VERB_RIPUP,
 		VERB_RENAME,
 		VERB_ROTATE,
 		VERB_ROUTE,

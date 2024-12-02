@@ -2996,6 +2996,12 @@ is
 
 					when NOUN_VIA_RESTRICT =>
 						delete_via_restrict_object;
+
+					when NOUN_FREETRACK =>
+						delete_freetrack_segment;
+
+					when NOUN_NET =>
+						delete_net_segment;
 						
 					when others => invalid_noun (to_string (noun));
 
@@ -3233,20 +3239,7 @@ is
 					when others => invalid_noun (to_string (noun));
 				end case;
 
-				
-			when VERB_RIPUP =>
-				case noun is
-					when NOUN_FREETRACK =>
-						delete_freetrack_segment;
-
-					when NOUN_NET =>
-						delete_net_segment;
-						
-					when others => invalid_noun (to_string (noun));
-
-				end case;
-
-				
+			
 			when VERB_ROTATE =>
 				case noun is
 					when NOUN_DEVICE =>

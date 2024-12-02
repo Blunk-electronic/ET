@@ -140,15 +140,6 @@ is
 					when others => null;
 				end case;
 								
-
-			when VERB_RIPUP =>
-				case noun is
-					when NOUN_NET =>
-						et_canvas_board_tracks.ripup (event.point);
-
-					when others => null;
-				end case;
-
 				
 			when VERB_DELETE =>
 				case noun is
@@ -163,6 +154,9 @@ is
 
 					when NOUN_VIA =>
 						et_canvas_board_vias.delete_via (MOUSE, event.point);
+
+					when NOUN_NET =>
+						et_canvas_board_tracks.ripup (event.point);
 						
 					when others => null;
 				end case;
@@ -281,6 +275,19 @@ is
 						if clarification_pending then
 							et_canvas_board_vias.select_via;
 						end if;
+
+					when NOUN_NET =>
+						-- As long as a clarification of the 
+						-- segment is pending, a right click
+						-- advances to the next segment.
+						-- If no clarification is requested, then
+						-- a right click changes the ripup mode:
+						if clarification_pending then
+							et_canvas_board_tracks.select_track;
+						else
+							-- select ripup mode
+							et_canvas_board_tracks.next_ripup_mode;
+						end if;
 						
 					when others => null;							
 				end case;
@@ -303,26 +310,6 @@ is
 						
 					when others => null;							
 				end case;
-
-
-			when VERB_RIPUP =>
-				case noun is
-					when NOUN_NET =>
-						-- As long as a clarification of the 
-						-- segment is pending, a right click
-						-- advances to the next segment.
-						-- If no clarification is requested, then
-						-- a right click changes the ripup mode:
-						if clarification_pending then
-							et_canvas_board_tracks.select_track;
-						else
-							-- select ripup mode
-							et_canvas_board_tracks.next_ripup_mode;
-						end if;
-						
-					when others => null;							
-				end case;
-
 				
 			when others => null;
 		end case;

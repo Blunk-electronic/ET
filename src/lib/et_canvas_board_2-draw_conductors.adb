@@ -254,7 +254,7 @@ procedure draw_conductors is
 						end if;
 
 						
-					when VERB_RIPUP =>
+					when VERB_DELETE =>
 						if preliminary_segment.ready then
 							draw_line (line => line, width => line.width, do_stroke => true);
 						else
