@@ -53,7 +53,8 @@ with et_canvas_messages;				use et_canvas_messages;
 
 with et_board_shapes_and_text;			use et_board_shapes_and_text;
 
--- with et_silkscreen;						use et_silkscreen;
+with et_pcb_stack;						use et_pcb_stack;
+with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_canvas_board_lines;				use et_canvas_board_lines;
 
 
@@ -73,13 +74,13 @@ package et_canvas_board_freetracks is
 
 		point_of_attack : type_vector_model;
 		
-		-- face	: type_face := face_default;
-  -- 
-		-- shape	: type_shape;
-  -- 
-		-- line	: type_silk_line;
-		-- arc		: type_silk_arc;
-		-- circle	: type_silk_circle;
+		-- layer	: type_signal_layer;
+  
+		shape	: type_shape;
+  
+		line	: type_conductor_line;
+		arc		: type_conductor_arc;
+		circle	: type_conductor_circle;
 
 		-- CS zone
 	end record;
@@ -89,73 +90,74 @@ package et_canvas_board_freetracks is
 	preliminary_object : type_preliminary_object;
 
 
+	-- Clears the proposed_objects.
+	-- Resets selected_object:
+	procedure clear_proposed_objects;
+
+
+	
 	-- Clears preliminary_object.ready.
 	-- Clears the proposed objects.
-	-- procedure reset_preliminary_object;
+	procedure reset_preliminary_object;
 
 	
 	-- When objects are proposed, we classify them by
 	-- their shape and face:
--- 	type type_proposed_object (shape : type_shape) is record
--- 		case shape is
--- 			when LINE =>
--- 				line_face	: type_face;
--- 				line		: type_silk_line; -- the line candidate itself
--- 	
--- 			when ARC =>
--- 				arc_face	: type_face;
--- 				arc			: type_silk_arc;  -- the arc candidate itself
--- 
--- 			when CIRCLE =>
--- 				circle_face	: type_face;
--- 				circle		: type_silk_circle;  -- the circle candidate itself
--- 
--- 		end case;
--- 	end record;
+	type type_proposed_object (shape : type_shape) is record
+		case shape is
+			when LINE =>
+				line		: type_conductor_line; -- the line candidate itself
+	
+			when ARC =>
+				arc			: type_conductor_arc;  -- the arc candidate itself
+
+			when CIRCLE =>
+				circle		: type_conductor_circle;  -- the circle candidate itself
+
+		end case;
+	end record;
 
 
 	-- All the proposed objects are collected via a list:
-	-- package pac_proposed_objects is new indefinite_doubly_linked_lists (type_proposed_object);
-	-- use pac_proposed_objects;
+	package pac_proposed_objects is new 
+		indefinite_doubly_linked_lists (type_proposed_object);
+	
+	use pac_proposed_objects;
 
 	-- Here we store the proposed objects:
-	-- proposed_objects : pac_proposed_objects.list;
+	proposed_objects : pac_proposed_objects.list;
 
 	-- A selected object among the proposed objects is held here.
 	-- After clarification (among the proposed objects),
 	-- this cursor points to the selected object candidate:
-	-- selected_object : pac_proposed_objects.cursor;
+	selected_object : pac_proposed_objects.cursor;
 	
 	
 	
 	-- Returns true if the given object matches the object indicated
 	-- by cursor selected_object (see above):
--- 	function is_selected (
--- 		line_cursor	: in pac_silk_lines.cursor;
--- 		face		: in type_face)
--- 		return boolean;
--- 
--- 	function is_selected (
--- 		arc_cursor	: in pac_silk_arcs.cursor;
--- 		face		: in type_face)
--- 		return boolean;
--- 
--- 	function is_selected (
--- 		circle_cursor	: in pac_silk_circles.cursor;
--- 		face			: in type_face)
--- 		return boolean;
--- 	
--- 	
--- 	-- Clears the proposed_objects.
--- 	-- Resets selected_object:
--- 	procedure clear_proposed_objects;
--- 
--- 
--- 	-- Returns the positions of (start, end, center) of the given proposed 
--- 	-- object as string:
--- 	function get_position (
--- 		object_cursor : in pac_proposed_objects.cursor)
--- 		return string;
+	function is_selected (
+		line_cursor	: in pac_conductor_lines.cursor)
+		return boolean;
+
+	
+	function is_selected (
+		arc_cursor	: in pac_conductor_arcs.cursor)
+		return boolean;
+
+	
+	function is_selected (
+		circle_cursor	: in pac_conductor_circles.cursor)
+		return boolean;
+	
+
+
+
+	-- Returns the positions of (start, end, center) of the given proposed 
+	-- object as string:
+	function get_position ( -- CS rename to to_string
+		object_cursor : in pac_proposed_objects.cursor)
+		return string;
 
 	
 
@@ -171,8 +173,8 @@ package et_canvas_board_freetracks is
 	--   the flag preliminary_object.ready will be set.
 	-- - If more than one object found, then clarification is requested.
 	--   The first object of them is selected.
-	-- procedure find_objects (
-	-- 	point : in type_vector_model);
+	procedure find_objects (
+		point : in type_vector_model);
 
 	
 	
@@ -185,29 +187,29 @@ package et_canvas_board_freetracks is
 
 -- MOVE:
 
--- 	status_move_object : constant string := 
--- 		status_click_left 
--- 		& "or "
--- 		& status_press_space
--- 		& "to move object in silkscreen." 
--- 		& status_hint_for_abort;
--- 
--- 	
--- 	procedure move_object (
--- 		tool	: in type_tool;
--- 		point	: in type_vector_model);				   
+	status_move_object : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to move freetrack object." 
+		& status_hint_for_abort;
+
+	
+	procedure move_object (
+		tool	: in type_tool;
+		point	: in type_vector_model);				   
 
 
 
 -- DELETE:
 
-	-- status_delete_object : constant string := 
-	-- 	status_click_left 
-	-- 	& "or "
-	-- 	& status_press_space
-	-- 	& "to delete object in silkscreen." 
-	-- 	& status_hint_for_abort;
- -- 
+	status_delete_object : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to delete object in silkscreen." 
+		& status_hint_for_abort;
+ 
 	
 	procedure delete_object (
 		point	: in type_vector_model);				   
