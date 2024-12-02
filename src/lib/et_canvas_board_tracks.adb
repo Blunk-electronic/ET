@@ -960,7 +960,7 @@ package body et_canvas_board_tracks is
 			use et_nets;
 			use pac_nets;
 		begin
-			log (text => "finalizing ripup ...", level => log_threshold);
+			log (text => "finalizing delete ...", level => log_threshold);
 			log_indentation_up;
 
 			selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
@@ -974,14 +974,14 @@ package body et_canvas_board_tracks is
 				-- 		when LINE =>
 							case ripup_mode is
 								when SINGLE_SEGMENT =>
-									ripup_line_segment (
+									delete_line_segment (
 										module_cursor	=> active_module,
 										net_name		=> key (selected_line.net_cursor),
 										line			=> element (selected_line.line_cursor),
 										log_threshold	=> log_threshold);
 
 								when WHOLE_NET =>
-									ripup_all_segments (
+									delete_all_segments (
 										module_cursor	=> active_module,
 										net_name		=> key (selected_line.net_cursor),
 										log_threshold	=> log_threshold);

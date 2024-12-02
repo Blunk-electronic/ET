@@ -1226,7 +1226,7 @@ package body et_board_ops.conductors is
 
 		
 	
-	procedure ripup_track_segment (
+	procedure delete_track_segment (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -1351,10 +1351,10 @@ package body et_board_ops.conductors is
 		end ripup_named_track;
 
 		
-	begin -- ripup_track_segment
+	begin -- delete_track_segment
 		log (text => "module " & to_string (module_name) &
 			freetrack (net_name) &
-			" ripping up segment" &
+			" deleting segment" &
 			" in layer " & to_string (layer) &
 			" at" & to_string (point) &
 			" accuracy" & accuracy_to_string (accuracy),
@@ -1381,11 +1381,11 @@ package body et_board_ops.conductors is
 
 			update_ratsnest (module_cursor, log_threshold + 1);
 		end if;		
-	end ripup_track_segment;
+	end delete_track_segment;
 
 
 
-	procedure ripup_line_segment (
+	procedure delete_line_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		line			: in type_conductor_line;
@@ -1435,7 +1435,7 @@ package body et_board_ops.conductors is
 	begin
 		log (text => "module " & to_string (key (module_cursor)) &
 			" net " & to_string (net_name) &
-			" ripping up segment" & to_string (line, true), -- log linewidth
+			" deleting up segment" & to_string (line, true), -- log linewidth
 			level => log_threshold);
 
 		update_element (
@@ -1444,11 +1444,11 @@ package body et_board_ops.conductors is
 			process		=> query_module'access);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
-	end ripup_line_segment;
+	end delete_line_segment;
 
 
 
-	procedure ripup_all_segments (
+	procedure delete_all_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		log_threshold	: in type_log_level)
@@ -1493,7 +1493,7 @@ package body et_board_ops.conductors is
 	begin
 		log (text => "module " & to_string (key (module_cursor)) &
 			" net " & to_string (net_name) &
-			" ripping all segments",
+			" deleting all segments",
 			level => log_threshold);
 
 		update_element (
@@ -1502,7 +1502,7 @@ package body et_board_ops.conductors is
 			process		=> query_module'access);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
-	end ripup_all_segments;
+	end delete_all_segments;
 
 	
 

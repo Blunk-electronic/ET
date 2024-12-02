@@ -2664,7 +2664,66 @@ is
 
 
 	
+	-- This procedure parses a command to 
+	-- delete an freetrack segment in a conductor layer:
+	procedure delete_freetrack_segment is
+
+		procedure do_it is
+		begin
+			delete_track_segment (
+				module_name 	=> module,
+				net_name		=> to_net_name (""),
+				layer			=> to_signal_layer (f (5)),
+				point			=> type_vector_model (set (
+						x => to_distance (dd => f (6)),
+						y => to_distance (dd => f (7)))),
+				accuracy		=> to_accuracy (f (8)),
+				
+				log_threshold	=> log_threshold + 1);
+
+		end do_it;
+		
+	begin
+		case cmd_field_count is
+			when 8 => do_it;
+			when 9 .. type_field_count'last => too_long;
+			when others => command_incomplete;
+		end case;
+	end delete_freetrack_segment;
+
 	
+
+	
+
+	-- This procedure parses a command to
+	-- delete a segment of a net in a conductor layer:
+	procedure delete_net_segment is
+
+		procedure do_it is 
+
+		begin
+			delete_track_segment (
+				module_name 	=> module,
+				net_name		=> to_net_name (f (5)),
+				layer			=> to_signal_layer (f (6)),
+				point			=> type_vector_model (set (
+						x => to_distance (dd => f (7)),
+						y => to_distance (dd => f (8)))),
+				accuracy		=> to_accuracy (f (9)),
+				
+				log_threshold	=> log_threshold + 1);
+
+		end do_it;
+
+	begin
+		case cmd_field_count is
+			when 9 => do_it;
+			when 10 .. type_field_count'last => too_long;
+			when others => command_incomplete;
+		end case;
+	end delete_net_segment;
+	
+
 	
 
 	procedure fill_zones is 
@@ -3178,50 +3237,10 @@ is
 			when VERB_RIPUP =>
 				case noun is
 					when NOUN_FREETRACK =>
-						case cmd_field_count is
-							when 8 =>
-								-- ripup a segment of a freetrack
-								ripup_track_segment (
-									module_name 	=> module,
-									net_name		=> to_net_name (""),
-									layer			=> to_signal_layer (f (5)),
-									point			=> type_vector_model (set (
-											x => to_distance (dd => f (6)),
-											y => to_distance (dd => f (7)))),
-									accuracy		=> to_accuracy (f (8)),
-									
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. type_field_count'last =>
-								too_long;
-								
-							when others =>
-								command_incomplete;
-						end case;
+						delete_freetrack_segment;
 
 					when NOUN_NET =>
-						case cmd_field_count is
-							when 9 =>
-								-- ripup a segment of a named track
-								ripup_track_segment (
-									module_name 	=> module,
-									net_name		=> to_net_name (f (5)),
-									layer			=> to_signal_layer (f (6)),
-									point			=> type_vector_model (set (
-											x => to_distance (dd => f (7)),
-											y => to_distance (dd => f (8)))),
-									accuracy		=> to_accuracy (f (9)),
-									
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. type_field_count'last =>
-								too_long;
-								
-							when others =>
-								command_incomplete;
-						end case;
+						delete_net_segment;
 						
 					when others => invalid_noun (to_string (noun));
 
