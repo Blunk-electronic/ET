@@ -243,7 +243,7 @@ package body et_canvas_board_freetracks is
 		-- Collect all objects in the vicinity of the given point
 		-- and transfer them to the list proposed_objects:
 		-- CS should depend on enabled signal layers.
-		for l in 1 .. get_layer_count (active_module) loop
+		for l in 1 .. get_deepest_conductor_layer (active_module) loop
 			collect (l);
 		end loop;
 		

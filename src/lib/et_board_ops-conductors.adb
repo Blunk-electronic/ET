@@ -537,7 +537,9 @@ package body et_board_ops.conductors is
 	end draw_track_line;
 
 
-	function get_lines (
+	
+
+	function get_net_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in type_vector_model;
@@ -570,6 +572,7 @@ package body et_board_ops.conductors is
 				end if;
 			end query_line;
 
+			
 			procedure query_net (c : in pac_nets.cursor) is
 				use et_nets;
 				net : type_net renames element (c);
@@ -577,6 +580,7 @@ package body et_board_ops.conductors is
 				net_name := key (c);
 				net.route.lines.iterate (query_line'access);
 			end query_net;
+
 			
 		begin
 			module.nets.iterate (query_net'access);
@@ -584,7 +588,9 @@ package body et_board_ops.conductors is
 
 		
 	begin
-		log (text => "looking up segments at" & to_string (point)
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " looking up line segments of nets at" & to_string (point)
 			 & " in signal layer " & to_string (layer)
 			 & " zone" & accuracy_to_string (zone),
 			 level => log_threshold);
@@ -600,7 +606,7 @@ package body et_board_ops.conductors is
 		
 		log_indentation_down;
 		return result;
-	end get_lines;
+	end get_net_segments;
 
 
 

@@ -159,8 +159,8 @@ package et_board_ops.conductors is
 	
 
 	
-	-- If segment lines are connected in a certain area, then
-	-- they can be identified by their parent net:
+	-- If line segments of a net are collected in a certain area, then
+	-- they must be identified by their parent net:
 	type type_get_lines_result is record
 		net		: pac_net_name.bounded_string;
 		line	: type_conductor_line;
@@ -168,9 +168,10 @@ package et_board_ops.conductors is
 
 	package pac_get_lines_result is new doubly_linked_lists (type_get_lines_result);
 	
-	-- Returns all lines in the given signal layer
-	-- in the vicinity of the given point:
-	function get_lines (
+	-- Returns all line segments in the given signal layer
+	-- in the vicinity of the given point.
+	-- NOTE: This is about line segments connected with nets:
+	function get_net_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in type_vector_model;
