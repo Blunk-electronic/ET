@@ -301,6 +301,18 @@ package et_canvas_board_tracks is
 	procedure find_segments (
 	   point : in type_vector_model);
 	
+
+
+
+-- MOVE:
+	
+	status_move_object : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to move track." 
+		& status_hint_for_abort;
+
 	
 	procedure move_track (
 		tool	: in type_tool;
@@ -318,8 +330,20 @@ package et_canvas_board_tracks is
 	
 	procedure next_ripup_mode;
 	
+
+
 	
-	procedure ripup (
+-- DELETE:
+
+	status_delete_object : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to delete track." 
+		& status_hint_for_abort;
+
+
+	procedure ripup ( -- CS rename to delete_track ?
 		point	: in type_vector_model);
 
 

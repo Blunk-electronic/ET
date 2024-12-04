@@ -90,16 +90,16 @@ is
 		case key is
 			when GDK_LC_a =>
 				noun := NOUN_ASSY;
-				-- CS -- CS set_status (et_canvas_board_assy_doc.status_delete_object);
+				set_status (et_canvas_board_assy_doc.status_delete_object);
 
 			when GDK_LC_s =>
 				noun := NOUN_SILKSCREEN;
-				-- CS -- CS set_status (et_canvas_board_silkscreen.status_delete_object);
+				set_status (et_canvas_board_silkscreen.status_delete_object);
 
 			
 			when GDK_LC_n =>
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
-				-- CS -- CS set_status (status_delete_device);
+				set_status (et_canvas_board_devices.status_delete_device);
 
 			-- NOTE: Electrical devices can be deleted in
 			-- schematic only !
@@ -107,15 +107,17 @@ is
 
 			when GDK_LC_v =>
 				noun := NOUN_VIA;
-				-- CS -- CS set_status (status_delete_via);
+				set_status (et_canvas_board_vias.status_delete_via);
 
 
 			when GDK_LC_t =>
 				noun := NOUN_TRACK;
-
+				set_status (et_canvas_board_tracks.status_delete_object);
+				
 				
 			when GDK_LC_f =>
 				noun := NOUN_FREETRACK;
+				set_status (et_canvas_board_freetracks.status_delete_object);
 
 
 				
@@ -204,6 +206,7 @@ is
 		end case;
 	end delete;
 
+	
 	
 	procedure fill is begin
 		case key is

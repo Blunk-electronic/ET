@@ -207,7 +207,7 @@ package et_canvas_board_freetracks is
 		status_click_left 
 		& "or "
 		& status_press_space
-		& "to delete object in silkscreen." 
+		& "to delete freetrack." 
 		& status_hint_for_abort;
  
 	
