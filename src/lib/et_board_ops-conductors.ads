@@ -208,16 +208,18 @@ package et_board_ops.conductors is
 
 	
 	-- Sets the proposed-flag of all lines which are
-	-- in the given zone around the given place.
+	-- in the given zone around the given place
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		layer			: in et_pcb_stack.type_signal_layer;
 		zone			: in type_accuracy; -- the circular area around the place
 		count			: in out natural; -- the number of affected lines
+		freetracks		: in boolean;
 		log_threshold	: in type_log_level);
 
 
+	
 	-- Clears the proposed-flag and the selected-flag of all lines:
 	procedure reset_proposed_lines (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -225,7 +227,10 @@ package et_board_ops.conductors is
 
 
 
-	
+	-- If line segments are searched, then they can be
+	-- identified additionally by the associated net.
+	-- If the net_cursor is no_element then it is a segment
+	-- of a freetrack:
 	type type_line_segment is record
 		net_cursor	: pac_nets.cursor;
 		line_cursor	: pac_conductor_lines.cursor;
@@ -233,11 +238,17 @@ package et_board_ops.conductors is
 	
 	-- Returns the first line according to the given flag.
 	-- If no line has been found,
-	-- then the selector "line" in the return is no_element
-	-- and the selector "net" is empty:
+	-- then the selector line_cursor in the return is no_element
+	-- and the selector net_cursor is no_element.
+	-- If freetracks is true:
+	--  then only freetrack segments are adressed.
+	--  The selector net_cursor in the return will be no_element in any case.
+	-- If freetracks is false:
+	--  then only net segments are adressed.
 	function get_first_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
+		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
 		return type_line_segment;
 

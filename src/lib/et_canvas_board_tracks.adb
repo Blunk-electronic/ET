@@ -717,7 +717,11 @@ package body et_canvas_board_tracks is
 		-- On every call of this procedure we advance from one
 		-- proposed segment to the next in a circular manner.
 
-		selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
+		selected_line := get_first_line (
+			module_cursor	=> active_module, 
+			flag			=> SELECTED, 
+			freetracks		=> false,
+			log_threshold	=> log_threshold + 1);
 		
 		-- deselect_line (active_module, selected_line.line, log_threshold + 1);
 		modify_status (
@@ -753,9 +757,14 @@ package body et_canvas_board_tracks is
 		procedure collect (layer : in type_signal_layer) is 
 			count : natural := 0;
 		begin
-			propose_lines (active_module, point, layer, 
-				get_catch_zone (et_canvas_board_2.catch_zone),
-				count, log_threshold + 1);
+			propose_lines (
+				module_cursor	=> active_module, 
+				point			=> point, 
+				layer			=> layer, 
+				zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
+				count			=> count,
+				freetracks		=> false, 
+				log_threshold	=> log_threshold + 1);
 			
 			-- CS arcs, circles
 			count_total := count_total + count;
@@ -766,15 +775,18 @@ package body et_canvas_board_tracks is
 			proposed_line : type_line_segment;
 			use et_object_status;
 		begin
-			proposed_line := get_first_line (active_module, PROPOSED, log_threshold + 1);
+			proposed_line := get_first_line (
+				module_cursor	=> active_module,
+				flag			=> PROPOSED, 
+				freetracks		=> false,
+				log_threshold	=> log_threshold + 1);
 
 			modify_status (
 				module_cursor	=> active_module, 
 				line_cursor		=> proposed_line.line_cursor, 
 				operation		=> (SET, SELECTED),
 				log_threshold	=> log_threshold + 1);
-			
-			
+					
 			-- If only one line found, then show it in the status bar:
 			if count_total = 1 then
 				show_selected_line (proposed_line);		
@@ -839,7 +851,12 @@ package body et_canvas_board_tracks is
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
-			selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
+			selected_line := get_first_line (
+				module_cursor	=> active_module,
+				flag			=> SELECTED, 
+				freetracks		=> false,
+				log_threshold	=> log_threshold + 1);
+
 			
 			if selected_line.line_cursor /= pac_conductor_lines.no_element then
 
@@ -963,7 +980,12 @@ package body et_canvas_board_tracks is
 			log (text => "finalizing delete ...", level => log_threshold);
 			log_indentation_up;
 
-			selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
+			selected_line := get_first_line (
+				module_cursor	=> active_module,
+				flag			=> SELECTED, 
+				freetracks		=> false,
+				log_threshold	=> log_threshold + 1);
+			
 			
 			if selected_line.line_cursor /= pac_conductor_lines.no_element then
 

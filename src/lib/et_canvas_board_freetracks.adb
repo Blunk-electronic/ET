@@ -47,6 +47,7 @@ with et_modes.board;
 with et_undo_redo;
 with et_commit;
 with et_keywords;						use et_keywords;
+with et_object_status;
 
 
 package body et_canvas_board_freetracks is
@@ -73,9 +74,27 @@ package body et_canvas_board_freetracks is
 	
 	use pac_conductor_lines;
 	use pac_conductor_arcs;
+
 	use pac_conductor_circles;
 
 
+	-- Outputs the selected line in the status bar:
+	procedure show_selected_line (
+		selected		: in et_board_ops.conductors.type_line_segment;
+		clarification	: in boolean := false)
+	is 
+	begin
+		if clarification then
+			set_status (
+				to_string (element (selected.line_cursor), true) -- start/end point/width/layer
+				& ". " & status_next_object_clarification);
+		else
+			set_status (to_string (element (selected.line_cursor), true)); -- start/end point/width/layer
+		end if;		
+	end show_selected_line;
+
+
+	
 
 	-- Returns true if the given object matches the object indicated
 	-- by cursor selected_object (see above):
@@ -203,37 +222,57 @@ package body et_canvas_board_freetracks is
 	end select_object;
 
 
-
+	
 
 	procedure find_objects (
 	   point : in type_vector_model)
 	is 
 		use et_board_ops;
-		
-		lines	: pac_conductor_lines.list;
-		arcs	: pac_conductor_arcs.list;
-		circles	: pac_conductor_circles.list;
+		use et_board_ops.conductors;
 
-		procedure query_line (c : in pac_conductor_lines.cursor) is begin
-			proposed_objects.append ((
-				shape		=> LINE,
-				line		=> element (c)));
-		end query_line;
-
+		count_total : natural := 0;
 		
-		procedure collect (
-			layer : in type_signal_layer)
-		is 
-			use et_board_ops.conductors;
+		
+		procedure collect (layer : in type_signal_layer) is 
+			count : natural := 0;
 		begin
-			lines := get_freetrack_segments (active_module, layer, point, 
-				get_catch_zone (et_canvas_board_2.catch_zone), 
-				log_threshold + 1);
+			propose_lines (
+				module_cursor	=> active_module, 
+				point			=> point, 
+				layer			=> layer, 
+				zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
+				count			=> count,
+				freetracks		=> true, 
+				log_threshold	=> log_threshold + 1);
 			
-			lines.iterate (query_line'access);
-
 			-- CS arcs, circles
+			count_total := count_total + count;
 		end collect;
+
+
+		procedure select_first_proposed is 
+			proposed_line : type_line_segment;
+			use et_object_status;
+		begin
+			proposed_line := get_first_line (
+				module_cursor	=> active_module,
+				flag			=> PROPOSED, 
+				freetracks		=> true,
+				log_threshold	=> log_threshold + 1);
+
+			modify_status (
+				module_cursor	=> active_module, 
+				line_cursor		=> proposed_line.line_cursor, 
+				operation		=> (SET, SELECTED),
+				log_threshold	=> log_threshold + 1);
+			
+			
+			-- If only one line found, then show it in the status bar:
+			if count_total = 1 then
+				show_selected_line (proposed_line);		
+			end if;
+		end select_first_proposed;
+		
 	
 	begin
 		log (text => "locating objects ...", level => log_threshold);
@@ -247,15 +286,15 @@ package body et_canvas_board_freetracks is
 		end loop;
 		
 		
-		-- evaluate the number of objects found here:
-		case proposed_objects.length is
+		-- Evaluate the number of objects found here:
+		case count_total is
 			when 0 =>
 				reset_request_clarification;
 				reset_preliminary_object;
 				
 			when 1 =>
 				preliminary_object.ready := true;
-				selected_object := proposed_objects.first;
+				select_first_proposed;
 				reset_request_clarification;
 				
 			when others =>
