@@ -167,6 +167,7 @@ package et_board_ops.conductors is
 	end record;
 
 	package pac_get_lines_result is new doubly_linked_lists (type_get_lines_result);
+
 	
 	-- Returns all line segments in the given signal layer
 	-- in the vicinity of the given point.
@@ -179,8 +180,24 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level)
 		return pac_get_lines_result.list;
 
+	-- CS do the same for arcs
+	
+	-- Returns all line segments of freetracks 
+	-- in the given signal layer
+	-- in the vicinity of the given point.
+	function get_freetrack_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		layer			: in et_pcb_stack.type_signal_layer;
+		point			: in type_vector_model;
+		zone			: in type_accuracy; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_conductor_lines.list;
 
+	-- CS do the same for arcs and circles
 
+	
+
+	
 	-- Modifies that status flag of a line (see package et_object_status):
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -263,7 +280,10 @@ package et_board_ops.conductors is
 
 	
 	
-	-- Deletes the track segment of a net that crosses the given point in given layer.
+	-- Deletes the track segment that crosses the given point in given layer.
+	-- If a net name is given, then net segments are affected.
+	-- If the given name is empty, then only freetrack segments
+	-- are targeted.
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 	procedure delete_track_segment (
@@ -275,6 +295,7 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level);
 
 
+	
 	-- Deletes the given line segment in the given net.
 	-- If the net or the segment does not exist then
 	-- nothing happens and an error message is logged:

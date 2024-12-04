@@ -88,6 +88,16 @@ package et_conductor_segment.boards is
 	use pac_conductor_lines;
 
 	
+	-- Returns the length of a list
+	-- of conductor lines:
+	function get_length (
+		lines	: in pac_conductor_lines.list)
+		return string;
+
+	-- CS do the same for arcs and circles
+
+	
+	
 	
 	-- Extracts those lines which are in the given layer:
 	function get_lines_by_layer (

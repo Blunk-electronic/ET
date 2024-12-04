@@ -226,10 +226,9 @@ package body et_canvas_board_freetracks is
 		is 
 			use et_board_ops.conductors;
 		begin
-			-- CS
-			-- lines := get_lines (active_module, layer, point, 
-			-- 	get_catch_zone (et_canvas_board_2.catch_zone), 
-			-- 	log_threshold + 1);
+			lines := get_freetrack_segments (active_module, layer, point, 
+				get_catch_zone (et_canvas_board_2.catch_zone), 
+				log_threshold + 1);
 			
 			lines.iterate (query_line'access);
 

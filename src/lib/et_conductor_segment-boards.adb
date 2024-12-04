@@ -100,6 +100,20 @@ package body et_conductor_segment.boards is
 		return result;
 	end are_connected;
 
+
+	
+	function get_length (
+		lines	: in pac_conductor_lines.list)
+		return string
+	is
+		l : count_type;
+	begin
+		l := lines.length;
+		return count_type'image (l);
+	end get_length;
+
+
+	
 	
 	function get_lines_by_layer (
 		lines	: in pac_conductor_lines.list;

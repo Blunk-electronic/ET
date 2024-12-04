@@ -610,6 +610,71 @@ package body et_board_ops.conductors is
 
 
 
+	function get_freetrack_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		layer			: in et_pcb_stack.type_signal_layer;
+		point			: in type_vector_model;
+		zone			: in type_accuracy; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_conductor_lines.list
+	is
+		result : pac_conductor_lines.list;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			net_name : pac_net_name.bounded_string;
+
+			
+			procedure query_line (c : in pac_conductor_lines.cursor) is
+				use pac_conductor_lines;
+				line : type_conductor_line renames element (c);
+			begin
+				if line.layer = layer then
+					if within_accuracy (
+						line	=> line,
+						width	=> line.width,
+						point	=> point,
+						zone	=> zone)
+					then
+						result.append (line);
+					end if;
+				end if;
+			end query_line;
+		
+			
+		begin
+			module.board.conductors.lines.iterate (query_line'access);
+		end query_module;
+
+
+	begin
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " looking up line segments of nets at" & to_string (point)
+			 & " in signal layer " & to_string (layer)
+			 & " zone" & accuracy_to_string (zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log (text => "found" & get_length (result),
+			level => log_threshold + 1);
+		
+		log_indentation_down;
+		
+		return result;
+	end get_freetrack_segments;
+
+
+	
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		line_cursor		: in pac_conductor_lines.cursor;
@@ -1342,6 +1407,7 @@ package body et_board_ops.conductors is
 
 			end ripup;
 
+			
 		begin -- ripup_named_track
 			if net_exists (net_cursor) then
 
@@ -1390,6 +1456,8 @@ package body et_board_ops.conductors is
 	end delete_track_segment;
 
 
+
+	
 
 	procedure delete_line_segment (
 		module_cursor	: in pac_generic_modules.cursor;
