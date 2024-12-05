@@ -74,8 +74,6 @@ package et_canvas_board_freetracks is
 
 		point_of_attack : type_vector_model;
 		
-		-- layer	: type_signal_layer;
-  
 		shape	: type_shape;
   
 		line	: type_conductor_line;

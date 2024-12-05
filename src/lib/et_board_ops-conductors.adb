@@ -1350,6 +1350,23 @@ package body et_board_ops.conductors is
 	end move_line;
 
 
+
+
+	procedure move_freetrack_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_conductor_line;
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+	begin
+
+		null;
+	end move_freetrack_line;
+
+
+	
 	
 	
 	procedure draw_track_arc (

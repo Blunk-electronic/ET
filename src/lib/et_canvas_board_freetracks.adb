@@ -75,8 +75,7 @@ package body et_canvas_board_freetracks is
 	procedure show_selected_line (
 		selected		: in et_board_ops.conductors.type_line_segment;
 		clarification	: in boolean := false)
-	is 
-	begin
+	is begin
 		if clarification then
 			set_status (
 				to_string (element (selected.line_cursor), true) -- start/end point/width/layer
@@ -255,8 +254,13 @@ package body et_canvas_board_freetracks is
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 
-				null;
-
+				move_freetrack_line (
+					module_cursor	=> active_module,
+					line			=> element (selected_line.line_cursor),
+					point_of_attack	=> preliminary_object.point_of_attack,
+					destination		=> point,
+					log_threshold	=> log_threshold);
+				
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
 			else
