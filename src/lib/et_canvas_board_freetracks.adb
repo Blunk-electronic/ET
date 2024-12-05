@@ -208,17 +208,53 @@ package body et_canvas_board_freetracks is
 	
 	
 	procedure select_object is
+		use et_object_status;
+		use et_board_ops.conductors;
+		selected_line : type_line_segment;
+
 	begin
-		if next (selected_object) /= pac_proposed_objects.no_element then
-			next (selected_object);
-		else
-			selected_object := proposed_objects.first;
-		end if;
+		null;
+		-- if next (selected_object) /= pac_proposed_objects.no_element then
+		-- 	next (selected_object);
+		-- else
+		-- 	selected_object := proposed_objects.first;
+		-- end if;
+  -- 
+		-- -- show the position of the selected object in the status bar
+		-- set_status ("selected object: " & get_position (selected_object)
+		-- 	& ". " & status_next_object_clarification);
 
-		-- show the position of the selected object in the status bar
-		set_status ("selected object: " & get_position (selected_object)
-			& ". " & status_next_object_clarification);
+		-- On every call of this procedure we advance from one
+		-- proposed segment to the next in a circular manner.
 
+		selected_line := get_first_line (
+			module_cursor	=> active_module, 
+			flag			=> SELECTED, 
+			freetracks		=> true,
+			log_threshold	=> log_threshold + 1);
+		
+		modify_status (
+			module_cursor	=> active_module, 
+			operation		=> (CLEAR, SELECTED),
+			line_cursor		=> selected_line.line_cursor, 
+			freetracks		=> true,
+			log_threshold	=> log_threshold + 1);
+		
+		next_proposed_line (
+			module_cursor	=> active_module, 
+			line			=> selected_line, 
+			freetracks		=> true,
+			log_threshold	=> log_threshold + 1);
+		
+		modify_status (
+			module_cursor	=> active_module, 
+			operation		=> (SET, SELECTED),
+			line_cursor		=> selected_line.line_cursor, 
+			freetracks		=> true,
+			log_threshold	=> log_threshold + 1);
+		
+		show_selected_line (selected_line, clarification => true);
+		
 	end select_object;
 
 
@@ -233,7 +269,7 @@ package body et_canvas_board_freetracks is
 		count_total : natural := 0;
 		
 		
-		procedure collect (layer : in type_signal_layer) is 
+		procedure propose_lines (layer : in type_signal_layer) is 
 			count : natural := 0;
 		begin
 			propose_lines (
@@ -245,9 +281,8 @@ package body et_canvas_board_freetracks is
 				freetracks		=> true, 
 				log_threshold	=> log_threshold + 1);
 			
-			-- CS arcs, circles
 			count_total := count_total + count;
-		end collect;
+		end propose_lines;
 
 
 		procedure select_first_proposed is 
@@ -265,8 +300,7 @@ package body et_canvas_board_freetracks is
 				line_cursor		=> proposed_line.line_cursor, 
 				operation		=> (SET, SELECTED),
 				freetracks		=> true,
-				log_threshold	=> log_threshold + 1);
-			
+				log_threshold	=> log_threshold + 1);			
 			
 			-- If only one line found, then show it in the status bar:
 			if count_total = 1 then
@@ -279,13 +313,13 @@ package body et_canvas_board_freetracks is
 		log (text => "locating objects ...", level => log_threshold);
 		log_indentation_up;
 
-		-- Collect all objects in the vicinity of the given point
-		-- and transfer them to the list proposed_objects:
+		-- Propose all objects in the vicinity of the given point.
 		-- CS should depend on enabled signal layers.
 		for l in 1 .. get_deepest_conductor_layer (active_module) loop
-			collect (l);
+			propose_lines (l);
 		end loop;
 		
+		-- CS arcs, circles
 		
 		-- Evaluate the number of objects found here:
 		case count_total is
@@ -303,7 +337,8 @@ package body et_canvas_board_freetracks is
 				set_request_clarification;
 				
 				-- preselect the object
-				selected_object := proposed_objects.first;
+				-- selected_object := proposed_objects.first;
+				select_first_proposed;
 		end case;
 		
 		log_indentation_down;
