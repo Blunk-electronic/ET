@@ -728,7 +728,11 @@ package body et_canvas_board_tracks is
 			freetracks		=> false,
 			log_threshold	=> log_threshold + 1);
 		
-		next_proposed_line (active_module, selected_line, log_threshold + 1);
+		next_proposed_line (
+			module_cursor	=> active_module, 
+			line			=> selected_line, 
+			freetracks		=> false,
+			log_threshold	=> log_threshold + 1);
 		
 		modify_status (
 			module_cursor	=> active_module, 
