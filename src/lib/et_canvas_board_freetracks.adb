@@ -458,43 +458,41 @@ package body et_canvas_board_freetracks is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+
 			use et_board_ops.conductors;
+			selected_line : type_line_segment;
+
+			use pac_conductor_lines;
+			use et_object_status;
+
 		begin
 			log (text => "finalizing delete ...", level => log_threshold);
 			log_indentation_up;
 
-			if selected_object /= pac_proposed_objects.no_element then
+			selected_line := get_first_line (
+				module_cursor	=> active_module,
+				flag			=> SELECTED, 
+				freetracks		=> true,
+				log_threshold	=> log_threshold + 1);
+			
+			if selected_line.line_cursor /= pac_conductor_lines.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
+
+				delete_freetrack_line (
+					module_cursor	=> active_module,
+					line			=> element (selected_line.line_cursor),
+					log_threshold	=> log_threshold);
 				
-				declare
-					object : type_proposed_object renames element (selected_object);
-				begin
-					case object.shape is
-						when LINE =>
-							-- CS
-							null;
-							-- delete (
-							-- 	module_cursor	=> active_module,
-							-- 	face			=> object.line_face,
-							-- 	line			=> object.line,
-							-- 	log_threshold	=> log_threshold);
-
-						when ARC =>
-							null; -- CS
-
-						when CIRCLE =>
-							null; -- CS
-					end case;
-				end;
-
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-				
+
+			-- CS arcs, circles
+			
 			log_indentation_down;			
 			set_status (status_delete_object);
 			reset_preliminary_object;

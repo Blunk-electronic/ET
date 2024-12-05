@@ -1599,6 +1599,44 @@ package body et_board_ops.conductors is
 
 
 
+
+	procedure delete_freetrack_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_conductor_line;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			conductors : type_conductors_non_electric renames module.board.conductors;
+			use pac_conductor_lines;
+			l : pac_conductor_lines.cursor;
+		begin
+			-- Locate the line:
+			l := find (conductors.lines, line);
+
+			-- If the line exists, then delete it:
+			if l /= pac_conductor_lines.no_element then
+				delete (conductors.lines, l);
+			end if;
+		end query_module;
+		
+	begin
+		log (text => "module " & to_string (key (module_cursor)) &
+			" deleting segment" & to_string (line, true), -- log linewidth
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+	end delete_freetrack_line;
+		
+	
+
 	
 
 	procedure delete_line_segment (
@@ -1651,7 +1689,7 @@ package body et_board_ops.conductors is
 	begin
 		log (text => "module " & to_string (key (module_cursor)) &
 			" net " & to_string (net_name) &
-			" deleting up segment" & to_string (line, true), -- log linewidth
+			" deleting segment" & to_string (line, true), -- log linewidth
 			level => log_threshold);
 
 		update_element (

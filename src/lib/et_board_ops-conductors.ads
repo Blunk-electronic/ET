@@ -310,6 +310,15 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level);
 
 
+	-- Deletes the given freetrack line.
+	-- If the line does not exist then
+	-- nothing happens:
+	procedure delete_freetrack_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_conductor_line;
+		log_threshold	: in type_log_level);
+
+
 	
 	-- Deletes the given line segment in the given net.
 	-- If the net or the segment does not exist then
