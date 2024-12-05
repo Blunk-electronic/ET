@@ -264,6 +264,7 @@ package body et_canvas_board_freetracks is
 				module_cursor	=> active_module, 
 				line_cursor		=> proposed_line.line_cursor, 
 				operation		=> (SET, SELECTED),
+				freetracks		=> true,
 				log_threshold	=> log_threshold + 1);
 			
 			

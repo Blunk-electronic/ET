@@ -728,6 +728,7 @@ package body et_canvas_board_tracks is
 			module_cursor	=> active_module, 
 			operation		=> (CLEAR, SELECTED),
 			line_cursor		=> selected_line.line_cursor, 
+			freetracks		=> false,
 			log_threshold	=> log_threshold + 1);
 		
 		next_proposed_line (active_module, selected_line, log_threshold + 1);
@@ -737,6 +738,7 @@ package body et_canvas_board_tracks is
 			module_cursor	=> active_module, 
 			operation		=> (SET, SELECTED),
 			line_cursor		=> selected_line.line_cursor, 
+			freetracks		=> false,
 			log_threshold	=> log_threshold + 1);
 		
 		show_selected_line (selected_line, clarification => true);
@@ -785,6 +787,7 @@ package body et_canvas_board_tracks is
 				module_cursor	=> active_module, 
 				line_cursor		=> proposed_line.line_cursor, 
 				operation		=> (SET, SELECTED),
+				freetracks		=> false,
 				log_threshold	=> log_threshold + 1);
 					
 			-- If only one line found, then show it in the status bar:

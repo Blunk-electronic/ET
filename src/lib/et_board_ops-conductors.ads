@@ -198,11 +198,14 @@ package et_board_ops.conductors is
 	
 
 	
-	-- Modifies that status flag of a line (see package et_object_status):
+	-- Modifies that status flag of a line (see package et_object_status).
+	-- If freetracks is false, then only net segments are adressed.
+	-- If freetracks is true, then only freetracks are adressed:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		line_cursor		: in pac_conductor_lines.cursor;
 		operation		: in type_status_operation;
+		freetracks		: in boolean;
 		log_threshold	: in type_log_level);
 
 

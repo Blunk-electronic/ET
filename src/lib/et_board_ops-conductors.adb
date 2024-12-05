@@ -679,6 +679,7 @@ package body et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		line_cursor		: in pac_conductor_lines.cursor;
 		operation		: in type_status_operation;
+		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
 	is
 		use pac_conductor_lines;
@@ -687,61 +688,90 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			proceed : boolean := true;
+			proceed : aliased boolean := true;
+
+
+			procedure query_line (
+				line : in out type_conductor_line)
+			is begin
+				case operation.flag is
+					when SELECTED =>
+						case operation.action is
+							when SET =>
+								line.status.selected := true;
+
+							when CLEAR =>
+								line.status.selected := false;
+						end case;
+
+					when PROPOSED =>
+						case operation.action is
+							when SET =>
+								line.status.proposed := true;
+
+							when CLEAR =>
+								line.status.proposed := false;
+						end case;
+
+					when others =>
+						null; -- CS
+				end case;							
+			end query_line;
+
 			
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net)
-			is
-				lc : pac_conductor_lines.cursor := net.route.lines.first;
-				
-				procedure query_line (
-					line : in out type_conductor_line)
-				is begin
-					case operation.flag is
-						when SELECTED =>
-							case operation.action is
-								when SET =>
-									line.status.selected := true;
-
-								when CLEAR =>
-									line.status.selected := false;
-							end case;
-
-						when PROPOSED =>
-							case operation.action is
-								when SET =>
-									line.status.proposed := true;
-
-								when CLEAR =>
-									line.status.proposed := false;
-							end case;
-
-						when others =>
-							null; -- CS
-					end case;							
-				end query_line;
-
+			procedure process_freetracks is
+				conductors : type_conductors_non_electric renames module.board.conductors;
+				l : pac_conductor_lines.cursor;
 			begin
-				log (text => "net " & to_string (net_name), level => log_threshold + 1);
-				
-				while lc /= pac_conductor_lines.no_element loop
-					if lc = line_cursor then
-						net.route.lines.update_element (lc, query_line'access);
-						proceed := false; -- aborts the net iterator. see below.
+				l := conductors.lines.first;
+				while l /= pac_conductor_lines.no_element and proceed loop
+					if l = line_cursor then
+						conductors.lines.update_element (l, query_line'access);
+						proceed := false; -- abort iterator
 					end if;
-
-					next (lc);
+					
+					next (l);
 				end loop;
-			end query_net;
-				
+			end process_freetracks;
+			
 
-			net_cursor : pac_nets.cursor := module.nets.first;			
+			
+			procedure process_nets is
+				
+				procedure query_net (
+					net_name	: in pac_net_name.bounded_string;
+					net			: in out type_net)
+				is
+					l : pac_conductor_lines.cursor := net.route.lines.first;
+				begin
+					log (text => "net " & to_string (net_name), level => log_threshold + 1);
+					
+					while l /= pac_conductor_lines.no_element and proceed loop
+						if l = line_cursor then
+							net.route.lines.update_element (l, query_line'access);
+							proceed := false; -- aborts the net iterator. see below.
+						end if;
+
+						next (l);
+					end loop;
+				end query_net;
+
+				
+				net_cursor : pac_nets.cursor := module.nets.first;			
+			begin
+				while net_cursor /= pac_nets.no_element and proceed loop
+					module.nets.update_element (net_cursor, query_net'access);
+					next (net_cursor);
+				end loop;
+			end process_nets;
+
+			
 		begin
-			while net_cursor /= pac_nets.no_element and proceed loop
-				module.nets.update_element (net_cursor, query_net'access);
-				next (net_cursor);
-			end loop;
+			if freetracks then
+				process_freetracks;
+			else
+				process_nets;
+			end if;
 		end query_module;
 
 		
