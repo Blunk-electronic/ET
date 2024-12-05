@@ -265,6 +265,7 @@ package et_board_ops.conductors is
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in out type_line_segment;
+		freetracks		: in boolean;
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level);
 
