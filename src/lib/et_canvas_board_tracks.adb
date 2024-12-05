@@ -710,8 +710,6 @@ package body et_canvas_board_tracks is
 	
 	procedure select_track is
 		use et_object_status;
-		use pac_net_name;
-		use et_board_ops.conductors;
 		selected_line : type_line_segment;
 	begin
 		-- On every call of this procedure we advance from one
@@ -723,7 +721,6 @@ package body et_canvas_board_tracks is
 			freetracks		=> false,
 			log_threshold	=> log_threshold + 1);
 		
-		-- deselect_line (active_module, selected_line.line, log_threshold + 1);
 		modify_status (
 			module_cursor	=> active_module, 
 			operation		=> (CLEAR, SELECTED),
@@ -733,7 +730,6 @@ package body et_canvas_board_tracks is
 		
 		next_proposed_line (active_module, selected_line, log_threshold + 1);
 		
-		-- select_line (active_module, selected_line.line, log_threshold + 1);
 		modify_status (
 			module_cursor	=> active_module, 
 			operation		=> (SET, SELECTED),
@@ -751,12 +747,11 @@ package body et_canvas_board_tracks is
 	is 
 		count_total : natural := 0;
 		
-		-- use pac_conductor_arcs;
-		
+		use et_board_ops;
 		use et_board_ops.conductors;
 
 		
-		procedure collect (layer : in type_signal_layer) is 
+		procedure propose_lines (layer : in type_signal_layer) is 
 			count : natural := 0;
 		begin
 			propose_lines (
@@ -770,7 +765,7 @@ package body et_canvas_board_tracks is
 			
 			-- CS arcs, circles
 			count_total := count_total + count;
-		end collect;
+		end propose_lines;
 
 
 		procedure select_first_proposed is 
@@ -797,17 +792,17 @@ package body et_canvas_board_tracks is
 		end select_first_proposed;
 
 		
-		use et_board_ops;	
-		
 	begin
 		log (text => "locating segments ...", level => log_threshold);
 		log_indentation_up;
 
-		-- Collect all segments in the vicinity of the given point:
+		-- Propose  all segments in the vicinity of the given point:
 		-- CS should depend on enabled signal layer
 		for ly in 1 .. get_deepest_conductor_layer (active_module) loop
-			collect (ly);
+			propose_lines (ly);
 		end loop;
+
+		-- CS arcs
 		
 		-- evaluate the number of segments found here:
 		case count_total is
