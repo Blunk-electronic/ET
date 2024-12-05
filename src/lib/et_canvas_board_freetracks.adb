@@ -56,28 +56,21 @@ package body et_canvas_board_freetracks is
 	use et_canvas_board_2.pac_canvas;
 	
 
-	-- Clears the proposed_objects.
-	-- Resets selected_object:
-	procedure clear_proposed_objects is begin
-		proposed_objects.clear;
-		selected_object := pac_proposed_objects.no_element;
-	end clear_proposed_objects;
-
 
 	
 	procedure reset_preliminary_object is begin
 		preliminary_object.ready := false;
 		preliminary_object.tool := MOUSE;
-		clear_proposed_objects;
 	end reset_preliminary_object;
+
 
 	
 	use pac_conductor_lines;
 	use pac_conductor_arcs;
-
 	use pac_conductor_circles;
 
 
+	
 	-- Outputs the selected line in the status bar:
 	procedure show_selected_line (
 		selected		: in et_board_ops.conductors.type_line_segment;
@@ -96,134 +89,13 @@ package body et_canvas_board_freetracks is
 
 	
 
-	-- Returns true if the given object matches the object indicated
-	-- by cursor selected_object (see above):
-	function is_selected (
-		line_cursor	: in pac_conductor_lines.cursor)
-		return boolean
-	is begin
-		if proposed_objects.is_empty then
-			return false;
-		else
-			if selected_object /= pac_proposed_objects.no_element then
-				declare
-					candidate : type_conductor_line renames element (line_cursor);
-					selected : type_proposed_object renames element (selected_object);
-				begin
-					-- CS test selected.shape
-					if candidate = selected.line then
-						return true;
-					else
-						return false;
-					end if;
-				end;
-			else
-				return false;
-			end if;
-		end if;
-	end is_selected;
-
-
-	
-
-	function is_selected (
-		arc_cursor	: in pac_conductor_arcs.cursor)
-		return boolean
-	is begin
-		if proposed_objects.is_empty then
-			return false;
-		else
-			if selected_object /= pac_proposed_objects.no_element then
-				declare
-					candidate : type_conductor_arc renames element (arc_cursor);
-					selected : type_proposed_object renames element (selected_object);
-				begin
-					-- CS test selected.shape
-					if candidate = selected.arc then
-						return true;
-					else
-						return false;
-					end if;
-				end;
-			else
-				return false;
-			end if;
-		end if;
-	end is_selected;
-
-
-	
-
-	function is_selected (
-		circle_cursor	: in pac_conductor_circles.cursor)
-		return boolean
-	is begin
-		if proposed_objects.is_empty then
-			return false;
-		else
-			if selected_object /= pac_proposed_objects.no_element then
-				declare
-					candidate : type_conductor_circle renames element (circle_cursor);
-					selected : type_proposed_object renames element (selected_object);
-				begin
-					-- CS test selected.shape
-					if candidate = selected.circle then
-						return true;
-					else
-						return false;
-					end if;
-				end;
-			else
-				return false;
-			end if;
-		end if;
-	end is_selected;
-
-
-
-
-	function get_position (
-		object_cursor : in pac_proposed_objects.cursor)
-		return string
-	is
-		object : type_proposed_object renames element (object_cursor);
-		separator : constant string := ", ";
-	begin
-		case object.shape is
-			when LINE =>
-				return keyword_layer & to_string (object.line.layer) & separator
-					& to_string (object.line);
-
-			when ARC =>
-				return keyword_layer & to_string (object.arc.layer) & separator
-					& to_string (object.arc);
-				
-			when CIRCLE =>
-				return keyword_layer & to_string (object.circle.layer) & separator
-					& to_string (object.circle);
-		end case;
-	end get_position;
-	
-
 	
 	
 	procedure select_object is
 		use et_object_status;
 		use et_board_ops.conductors;
 		selected_line : type_line_segment;
-
 	begin
-		null;
-		-- if next (selected_object) /= pac_proposed_objects.no_element then
-		-- 	next (selected_object);
-		-- else
-		-- 	selected_object := proposed_objects.first;
-		-- end if;
-  -- 
-		-- -- show the position of the selected object in the status bar
-		-- set_status ("selected object: " & get_position (selected_object)
-		-- 	& ". " & status_next_object_clarification);
-
 		-- On every call of this procedure we advance from one
 		-- proposed segment to the next in a circular manner.
 
@@ -362,36 +234,28 @@ package body et_canvas_board_freetracks is
 			use et_undo_redo;
 			use et_commit;
 			use et_board_ops.conductors;
+
+			selected_line : type_line_segment;
+
+			use et_object_status;
+
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
-			if selected_object /= pac_proposed_objects.no_element then
+			selected_line := get_first_line (
+				module_cursor	=> active_module,
+				flag			=> SELECTED, 
+				freetracks		=> true,
+				log_threshold	=> log_threshold + 1);
+
+			
+			if selected_line.line_cursor /= pac_conductor_lines.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 
-				declare
-					object : type_proposed_object renames element (selected_object);
-				begin
-					case object.shape is
-						when LINE =>
-							null;
-							-- move_line (
-							-- 	module_cursor	=> active_module,
-							-- 	face			=> object.line_face,
-							-- 	line			=> object.line,
-							-- 	point_of_attack	=> preliminary_object.point_of_attack,
-							-- 	destination		=> point,
-							-- 	log_threshold	=> log_threshold);
-
-						when ARC =>
-							null; -- CS
-
-						when CIRCLE =>
-							null; -- CS
-					end case;
-				end;
+				null;
 
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);

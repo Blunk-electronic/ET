@@ -90,74 +90,10 @@ package et_canvas_board_freetracks is
 	preliminary_object : type_preliminary_object;
 
 
-	-- Clears the proposed_objects.
-	-- Resets selected_object:
-	procedure clear_proposed_objects;
-
-
 	
 	-- Clears preliminary_object.ready.
-	-- Clears the proposed objects.
 	procedure reset_preliminary_object;
 
-	
-	-- When objects are proposed, we classify them by
-	-- their shape and face:
-	type type_proposed_object (shape : type_shape) is record
-		case shape is
-			when LINE =>
-				line		: type_conductor_line; -- the line candidate itself
-	
-			when ARC =>
-				arc			: type_conductor_arc;  -- the arc candidate itself
-
-			when CIRCLE =>
-				circle		: type_conductor_circle;  -- the circle candidate itself
-
-		end case;
-	end record;
-
-
-	-- All the proposed objects are collected via a list:
-	package pac_proposed_objects is new 
-		indefinite_doubly_linked_lists (type_proposed_object);
-	
-	use pac_proposed_objects;
-
-	-- Here we store the proposed objects:
-	proposed_objects : pac_proposed_objects.list;
-
-	-- A selected object among the proposed objects is held here.
-	-- After clarification (among the proposed objects),
-	-- this cursor points to the selected object candidate:
-	selected_object : pac_proposed_objects.cursor;
-	
-	
-	
-	-- Returns true if the given object matches the object indicated
-	-- by cursor selected_object (see above):
-	function is_selected (
-		line_cursor	: in pac_conductor_lines.cursor)
-		return boolean;
-
-	
-	function is_selected (
-		arc_cursor	: in pac_conductor_arcs.cursor)
-		return boolean;
-
-	
-	function is_selected (
-		circle_cursor	: in pac_conductor_circles.cursor)
-		return boolean;
-	
-
-
-
-	-- Returns the positions of (start, end, center) of the given proposed 
-	-- object as string:
-	function get_position ( -- CS rename to to_string
-		object_cursor : in pac_proposed_objects.cursor)
-		return string;
 
 	
 
