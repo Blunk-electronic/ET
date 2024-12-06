@@ -54,8 +54,6 @@ with et_design_rules_board;			use et_design_rules_board;
 with et_display.board;				use et_display.board;
 with et_colors;						use et_colors;
 
-with et_canvas_board_tracks;		--use et_canvas_board_tracks;
--- with et_canvas_board_freetracks;	use et_canvas_board_freetracks;
 with et_board_ops.text;
 
 with et_modes.board;				use et_modes.board;
@@ -277,7 +275,7 @@ procedure draw_conductors is
 
 		
 		
-		use et_canvas_board_tracks;
+		-- use et_canvas_board_tracks;
 		
 	begin
 		-- Draw the line if it is in the current layer:
