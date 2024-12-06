@@ -1360,9 +1360,46 @@ package body et_board_ops.conductors is
 		log_threshold	: in type_log_level)
 	is
 
-	begin
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			conductors : type_conductors_non_electric renames module.board.conductors;
 
-		null;
+			use pac_conductor_lines;
+			line_cursor : pac_conductor_lines.cursor;
+
+			procedure move (line : in out type_conductor_line) is begin
+				move_line_to (line, point_of_attack, destination);
+			end;
+	
+		begin
+			-- Locate the given line among the conductor lines
+			-- of the board:
+			line_cursor := find (conductors.lines, line);
+
+			-- If the line exists, then move it:
+			if line_cursor /= pac_conductor_lines.no_element then
+				conductors.lines.update_element (line_cursor, move'access);
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " moving " & to_string (line, true)  -- log incl. width
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
 	end move_freetrack_line;
 
 
