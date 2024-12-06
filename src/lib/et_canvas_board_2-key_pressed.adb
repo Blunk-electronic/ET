@@ -280,7 +280,7 @@ is
 				noun := NOUN_SILKSCREEN;
 				set_status (et_canvas_board_silkscreen.status_move_object);
 
-			when GDK_LC_r =>
+			when GDK_LC_t =>
 				noun := NOUN_TRACK;
 				set_status (et_canvas_board_tracks.status_move_track);
 
@@ -300,7 +300,7 @@ is
 				noun := NOUN_VIA;
 				set_status (et_canvas_board_vias.status_move_via);
 		
-			when GDK_LC_t =>
+			when GDK_LC_x =>
 				noun := NOUN_TEXT;
 				set_status (et_canvas_board_texts.status_move_text);
 

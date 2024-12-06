@@ -208,6 +208,9 @@ Select the delete mode by pressing key m (single segment or all segments of the 
 
 
 
+
+#. Deleting Freetrack Segments
+
 	.. code-block::
 
 		delete freetrack 2 10 15 2
@@ -216,8 +219,15 @@ Select the delete mode by pressing key m (single segment or all segments of the 
 		
 
 
+#. Moving Track Segments
+
+	|VNS| m t
 
 
+#. Moving Freetrack Segments
+	
+	|VNS| m f
+	
 
 
 ++++
@@ -552,7 +562,7 @@ Texts
 +++++
 
 
-#. Place text
+#. Place Text
 
 	.. code-block::
 
@@ -570,6 +580,10 @@ Texts
 		place text conductor 3 0.15 1 20 5 0 "Dummy Text"
 	
 	
+#. Move Text
+
+	|VNS| m x
+
 	
 	
 ++++++++++++++++++++++
