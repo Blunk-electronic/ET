@@ -675,6 +675,7 @@ package body et_board_ops.conductors is
 
 	
 
+	
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		line_cursor		: in pac_conductor_lines.cursor;
@@ -684,6 +685,7 @@ package body et_board_ops.conductors is
 	is
 		use pac_conductor_lines;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -1009,6 +1011,7 @@ package body et_board_ops.conductors is
 					end case;
 				end query_line;
 
+				
 			begin
 				iterate (conductors.lines, query_line'access, proceed'access);
 				-- CS arcs, circles
@@ -1019,37 +1022,49 @@ package body et_board_ops.conductors is
 			procedure process_nets is
 
 				procedure query_net (net_cursor : in pac_nets.cursor) is
-					net : type_net renames element (net_cursor);
 
-					procedure query_line (l : in pac_conductor_lines.cursor) is
-						line : type_conductor_line renames element (l);
+					procedure query_lines (
+						net_name	: in pac_net_name.bounded_string;
+						net 		: in type_net)
+					is 
+
+						procedure query_line (l : in pac_conductor_lines.cursor) is
+							line : type_conductor_line renames element (l);
+						begin
+							case flag is
+								when PROPOSED =>
+									if is_proposed (line) then
+										result.net_cursor := net_cursor;
+										result.line_cursor := l;
+										proceed := false;  -- no further probing required
+										--log (text => to_string (line, true), level => log_threshold + 2);
+									end if;
+
+								when SELECTED =>
+									if is_selected (line) then
+										result.net_cursor := net_cursor;
+										result.line_cursor := l;
+										proceed := false;  -- no further probing required
+										--log (text => to_string (line, true), level => log_threshold + 2);
+									end if;
+
+								when others =>
+									null; -- CS
+							end case;
+						end query_line;
+
+
 					begin
-						case flag is
-							when PROPOSED =>
-								if is_proposed (line) then
-									result.net_cursor := net_cursor;
-									result.line_cursor := l;
-									proceed := false;  -- no further probing required
-								end if;
-
-							when SELECTED =>
-								if is_selected (line) then
-									result.net_cursor := net_cursor;
-									result.line_cursor := l;
-									proceed := false;  -- no further probing required
-								end if;
-
-							when others =>
-								null; -- CS
-						end case;
-					end query_line;
+						iterate (net.route.lines, query_line'access, proceed'access);
+					end;
 					
 				begin
 					log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 					log_indentation_up;
-					iterate (net.route.lines, query_line'access, proceed'access);
+					query_element (net_cursor, query_lines'access);
 					log_indentation_down;
 				end query_net;
+				
 
 			begin
 				iterate (module.nets, query_net'access, proceed'access);
@@ -1067,8 +1082,8 @@ package body et_board_ops.conductors is
 
 
 	begin		
-		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
-			"looking up the first line / " & to_string (flag),
+		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
+			& " looking up the first line / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1077,9 +1092,11 @@ package body et_board_ops.conductors is
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		log_indentation_down;
+		
+		log (text => "found: " & to_string (element (result.line_cursor), true), level => log_threshold + 2);
 
-		--log (text => "C " & to_string (element (result.cursor), true), level => log_threshold + 2);
+		log_indentation_down;
+		
 		return result;
 	end get_first_line;
 
