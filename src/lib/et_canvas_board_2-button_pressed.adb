@@ -81,6 +81,9 @@ is
 
 					when NOUN_TRACK =>
 						et_canvas_board_tracks.move_track (MOUSE, snap_point);
+
+					when NOUN_FREETRACK =>
+						et_canvas_board_freetracks.move_object (MOUSE, snap_point);
 						
 					when NOUN_DEVICE =>
 						et_canvas_board_devices.move_electrical_device (MOUSE, snap_point);
