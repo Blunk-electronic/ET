@@ -59,10 +59,18 @@ package body et_canvas_board_freetracks is
 
 	
 	procedure reset_preliminary_object is begin
+
 		preliminary_object.ready := false;
 		preliminary_object.tool := MOUSE;
+
+		reset_proposed_lines (
+			module_cursor	=> active_module, 
+			freetracks		=> true,
+			log_threshold	=> log_threshold + 1);
+
 	end reset_preliminary_object;
 
+	
 
 	
 	use pac_conductor_lines;

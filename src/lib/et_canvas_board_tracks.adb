@@ -675,9 +675,15 @@ package body et_canvas_board_tracks is
 
 	
 	procedure reset_preliminary_segment is begin
+
 		preliminary_segment.ready := false;
 		preliminary_segment.tool := MOUSE;
-		reset_proposed_lines (active_module, log_threshold + 1);
+		
+		reset_proposed_lines (
+			module_cursor	=> active_module, 
+			freetracks		=> false,
+			log_threshold	=> log_threshold + 1);
+
 	end reset_preliminary_segment;
 
 
