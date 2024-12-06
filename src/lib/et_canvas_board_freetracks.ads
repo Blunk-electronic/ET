@@ -73,14 +73,6 @@ package et_canvas_board_freetracks is
 		tool	: type_tool := MOUSE;
 
 		point_of_attack : type_vector_model;
-		
-		shape	: type_shape;
-  
-		line	: type_conductor_line;
-		arc		: type_conductor_arc;
-		circle	: type_conductor_circle;
-
-		-- CS zone
 	end record;
 
 	-- The place where preliminary information of
