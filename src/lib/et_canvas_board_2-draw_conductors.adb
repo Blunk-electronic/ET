@@ -54,7 +54,8 @@ with et_design_rules_board;			use et_design_rules_board;
 with et_display.board;				use et_display.board;
 with et_colors;						use et_colors;
 
-with et_canvas_board_tracks;		use et_canvas_board_tracks;
+with et_canvas_board_tracks;		--use et_canvas_board_tracks;
+-- with et_canvas_board_freetracks;	use et_canvas_board_freetracks;
 with et_board_ops.text;
 
 with et_modes.board;				use et_modes.board;
@@ -210,6 +211,8 @@ procedure draw_conductors is
 	end set_highlight_brightness;
 	
 
+
+	
 	
 -- LINES, ARCS, CIRCLES
 	
@@ -222,6 +225,60 @@ procedure draw_conductors is
 			draw_line (line => line, width => line.width, do_stroke => true);
 		end draw_unchanged;
 
+
+		
+		procedure draw_track_being_moved is 
+			use et_canvas_board_tracks;
+		begin
+			if preliminary_segment.ready then
+				declare
+					line_tmp : type_conductor_line := line;
+					POA : type_vector_model renames preliminary_segment.point_of_attack;
+				begin
+					case preliminary_segment.tool is
+						when MOUSE =>
+							move_line_to (line_tmp, POA, snap_to_grid (get_mouse_position));
+
+						when KEYBOARD =>
+							move_line_to (line_tmp, POA, get_cursor_position);
+					end case;
+
+					draw_line (line => line_tmp, width => line.width, do_stroke => true);
+				end;
+			else
+				draw_unchanged;
+			end if;
+		end draw_track_being_moved;
+
+
+		
+		procedure draw_freetrack_being_moved is
+			use et_canvas_board_freetracks;
+		begin
+			if preliminary_object.ready then
+				declare
+					line_tmp : type_conductor_line := line;
+					POA : type_vector_model renames preliminary_object.point_of_attack;
+				begin
+					case preliminary_object.tool is
+						when MOUSE =>
+							move_line_to (line_tmp, POA, snap_to_grid (get_mouse_position));
+
+						when KEYBOARD =>
+							move_line_to (line_tmp, POA, get_cursor_position);
+					end case;
+
+					draw_line (line => line_tmp, width => line.width, do_stroke => true);
+				end;
+			else
+				draw_unchanged;
+			end if;
+		end draw_freetrack_being_moved;
+
+		
+		
+		use et_canvas_board_tracks;
+		
 	begin
 		-- Draw the line if it is in the current layer:
 		if line.layer = current_layer then
@@ -234,25 +291,11 @@ procedure draw_conductors is
 					-- If the segment is being moved, then a temporarily
 					-- segment must be drawn instead of the original one:
 					when VERB_MOVE =>
-						if preliminary_segment.ready then
-							declare
-								line_tmp : type_conductor_line := line;
-								POA : type_vector_model renames preliminary_segment.point_of_attack;
-							begin
-								case preliminary_segment.tool is
-									when MOUSE =>
-										move_line_to (line_tmp, POA, snap_to_grid (get_mouse_position));
-
-									when KEYBOARD =>
-										move_line_to (line_tmp, POA, get_cursor_position);
-								end case;
-
-								draw_line (line => line_tmp, width => line.width, do_stroke => true);
-							end;
-						else
-							draw_unchanged;
-						end if;
-
+						case noun is
+							when NOUN_TRACK => draw_track_being_moved;
+							when NOUN_FREETRACK => draw_freetrack_being_moved;
+							when others => null;
+						end case;
 						
 					when VERB_DELETE =>
 						if preliminary_segment.ready then
@@ -273,6 +316,9 @@ procedure draw_conductors is
 
 		end if;
 	end query_line;
+
+
+
 
 	
 	
@@ -1061,6 +1107,7 @@ procedure draw_conductors is
 				use pac_airwires;
 				
 				procedure query_airwire (c : in pac_airwires.cursor) is 
+					use et_canvas_board_tracks;
 					airwire : type_airwire renames element (c);
 					restore_brightness : boolean := false;
 					skip : boolean := false;
@@ -1240,6 +1287,8 @@ procedure draw_conductors is
 	-- Computes the bend point (if required) and sets it accordingly
 	-- in preliminary_track.
 	procedure draw_track is
+		use et_canvas_board_tracks;
+		
 		PT : type_preliminary_track renames preliminary_track;	
 
 
