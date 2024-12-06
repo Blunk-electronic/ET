@@ -731,6 +731,8 @@ package body et_canvas_board_2 is
 		reset_preliminary_segment; -- after moving, ripping-up a conductor segment
 		reset_airwires;
 		reset_ripup_mode;
+
+		et_canvas_board_freetracks.reset_preliminary_object;
 		
 		reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
 		reset_preliminary_non_electrical_device;
