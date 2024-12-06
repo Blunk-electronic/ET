@@ -283,6 +283,10 @@ is
 			when GDK_LC_r =>
 				noun := NOUN_TRACK;
 				set_status (et_canvas_board_tracks.status_move_track);
+
+			when GDK_LC_f =>
+				noun := NOUN_FREETRACK;
+				set_status (et_canvas_board_freetracks.status_move_object);
 				
 			when GDK_LC_d =>
 				noun := NOUN_DEVICE;
@@ -313,6 +317,9 @@ is
 						
 					when NOUN_TRACK =>
 						et_canvas_board_tracks.move_track (KEYBOARD, point);
+
+					when NOUN_FREETRACK =>
+						et_canvas_board_freetracks.move_object (KEYBOARD, point);
 
 					when NOUN_DEVICE =>		
 						et_canvas_board_devices.move_electrical_device (KEYBOARD, point);
@@ -356,6 +363,11 @@ is
 					when NOUN_TRACK =>
 						if clarification_pending then
 							et_canvas_board_tracks.select_track;
+						end if;
+
+					when NOUN_FREETRACK =>
+						if clarification_pending then
+							et_canvas_board_freetracks.select_object;
 						end if;
 						
 					when NOUN_DEVICE =>
