@@ -297,12 +297,12 @@ procedure draw_conductors is
 							when others => null;
 						end case;
 						
-					when VERB_DELETE =>
-						if preliminary_segment.ready then
-							draw_line (line => line, width => line.width, do_stroke => true);
-						else
-							draw_unchanged;
-						end if;
+					-- when VERB_DELETE =>
+					-- 	if preliminary_segment.ready then
+					-- 		draw_line (line => line, width => line.width, do_stroke => true);
+					-- 	else
+					-- 		draw_unchanged;
+					-- 	end if;
 						
 					when others =>
 						draw_unchanged;
