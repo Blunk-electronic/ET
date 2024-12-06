@@ -911,6 +911,7 @@ package body et_board_ops.conductors is
 
 	procedure reset_proposed_lines (
 		module_cursor	: in pac_generic_modules.cursor;
+		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
 	is
 
@@ -918,39 +919,64 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			use pac_conductor_lines;
 
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net)
-			is
-				use et_nets;
+			
+			procedure query_line (
+				line : in out type_conductor_line)
+			is 
+				use et_object_status;
+			begin
+				line.status.proposed := false;
+				line.status.selected := false;
+			end query_line;
 
-				procedure query_line (
-					line : in out type_conductor_line)
-				is 
-					use et_object_status;
+
+			
+			procedure process_nets is
+				
+				procedure query_net (
+					net_name	: in pac_net_name.bounded_string;
+					net			: in out type_net)
+				is
+					use et_nets;					
+					line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
 				begin
-					line.status.proposed := false;
-					line.status.selected := false;
-				end query_line;
+					while line_cursor /= pac_conductor_lines.no_element loop
+						net.route.lines.update_element (line_cursor, query_line'access);
+						next (line_cursor);
+					end loop;
+				end query_net;				
 
-				use pac_conductor_lines;
-				line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
+				net_cursor : pac_nets.cursor := module.nets.first;
+			begin			
+				while net_cursor /= pac_nets.no_element loop
+					module.nets.update_element (net_cursor, query_net'access);
+					next (net_cursor);
+				end loop;
+			end process_nets;
+
+
+
+			procedure process_freetracks is
+				line_cursor : pac_conductor_lines.cursor := module.board.conductors.lines.first;
 			begin
 				while line_cursor /= pac_conductor_lines.no_element loop
-					net.route.lines.update_element (line_cursor, query_line'access);
+					module.board.conductors.lines.update_element (line_cursor, query_line'access);
 					next (line_cursor);
 				end loop;
-			end query_net;
-			
+			end process_freetracks;
 
-			net_cursor : pac_nets.cursor := module.nets.first;
+			
+			
 		begin
-			while net_cursor /= pac_nets.no_element loop
-				module.nets.update_element (net_cursor, query_net'access);
-				next (net_cursor);
-			end loop;
+			if freetracks then
+				process_freetracks;
+			else
+				process_nets;
+			end if;
 		end query_module;
+	
 
 		
 	begin
@@ -966,6 +992,7 @@ package body et_board_ops.conductors is
 		log_indentation_down;
 	end reset_proposed_lines;
 	
+
 
 	
 	function get_first_line (
@@ -1381,23 +1408,25 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			conductors : type_conductors_non_electric renames module.board.conductors;
+			-- conductors : type_conductors_non_electric renames module.board.conductors;
 
 			use pac_conductor_lines;
 			line_cursor : pac_conductor_lines.cursor;
 
 			procedure move (line : in out type_conductor_line) is begin
 				move_line_to (line, point_of_attack, destination);
+				log (text => (to_string (line, true)), level => log_threshold + 1);
 			end;
 	
 		begin
 			-- Locate the given line among the conductor lines
 			-- of the board:
-			line_cursor := find (conductors.lines, line);
+			line_cursor := find (module.board.conductors.lines, line);
 
 			-- If the line exists, then move it:
 			if line_cursor /= pac_conductor_lines.no_element then
-				conductors.lines.update_element (line_cursor, move'access);
+				log (text => "line found", level => log_threshold + 1);
+				module.board.conductors.lines.update_element (line_cursor, move'access);
 			end if;
 		end query_module;
 
@@ -1405,7 +1434,7 @@ package body et_board_ops.conductors is
 	begin
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " moving " & to_string (line, true)  -- log incl. width
+			& " moving freetrack " & to_string (line, true)  -- log incl. width
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
