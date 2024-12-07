@@ -89,7 +89,7 @@ is
 	begin
 		-- put_line ("query_line");
 		
-		if is_selected (c, face) then
+		if is_selected (line) then
 			set_highlight_brightness;
 
 			case verb is
