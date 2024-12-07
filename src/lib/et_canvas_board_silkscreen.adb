@@ -95,9 +95,6 @@ package body et_canvas_board_silkscreen is
 		use et_object_status;
 		selected_line : type_line_segment;
 	begin
-		-- On every call of this procedure we advance from one
-		-- proposed segment to the next in a circular manner.
-
 		selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
 
 		modify_status (

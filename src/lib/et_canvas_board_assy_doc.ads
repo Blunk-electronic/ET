@@ -79,19 +79,19 @@ package et_canvas_board_assy_doc is
 	preliminary_object : type_preliminary_object;
 
 
-	-- Clears preliminary_object.ready.
-	-- Clears the proposed objects.
+	-- Resets the preliminary_object.
+	-- Resets the proposed objects.
 	procedure reset_preliminary_object;
 
 	
 
-	-- Advances the cursors in variable selected_object 
-	-- on each call of this procedure.
+	-- On every call of this procedure we advance from one
+	-- proposed segment to the next in a circular manner.
 	procedure select_object;
 
 
 	-- Locates objects in the vicinity of the given point
-	-- and stores them in proposed_objects.
+	-- and sets their proposed-flag.
 	-- Depending on how many objects have been found, the behaviour is:
 	-- - If only one object found, then it is selected and 
 	--   the flag preliminary_object.ready will be set.

@@ -103,9 +103,6 @@ package body et_canvas_board_freetracks is
 		use et_board_ops.conductors;
 		selected_line : type_line_segment;
 	begin
-		-- On every call of this procedure we advance from one
-		-- proposed segment to the next in a circular manner.
-
 		selected_line := get_first_line (
 			module_cursor	=> active_module, 
 			flag			=> SELECTED, 

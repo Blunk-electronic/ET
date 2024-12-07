@@ -92,9 +92,6 @@ package body et_canvas_board_assy_doc is
 		use et_object_status;
 		selected_line : type_line_segment;
 	begin
-		-- On every call of this procedure we advance from one
-		-- proposed segment to the next in a circular manner.
-
 		selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
 
 		modify_status (
@@ -105,7 +102,6 @@ package body et_canvas_board_assy_doc is
 		
 		next_proposed_line (active_module, selected_line, log_threshold + 1);
 		
-		-- select_line (active_module, selected_line.line, log_threshold + 1);
 		modify_status (
 			module_cursor	=> active_module, 
 			operation		=> (SET, SELECTED),
@@ -116,6 +112,8 @@ package body et_canvas_board_assy_doc is
 	end select_object;
 
 
+
+	
 	procedure find_objects (
 	   point : in type_vector_model)
 	is 
