@@ -2,9 +2,9 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                       BOARD SHAPES AND TEXT                              --
+--                       BOARD LAYER CATEGORY                               --
 --                                                                          --
---                              B o d y                                     --
+--                              S p e c                                     --
 --                                                                          --
 -- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -37,41 +37,59 @@
 --
 --   to do:
 
-with ada.characters.handling;	use ada.characters.handling;
-with ada.characters;			use ada.characters;
-with ada.characters.latin_1;	use ada.characters.latin_1;
-with et_mirroring;				use et_mirroring;
 
 
-package body et_board_shapes_and_text is
+
+package et_board_layer_category is
+
+
+	-- Prefixes before enumeration types prevent clashes with gnat keywords
+	-- and package names:	
+	layer_category_prefix : constant string := "LAYER_CAT_";
+
+	type type_layer_category is (
+									
+		-- CONDUCTOR LAYERS.
+		-- These layers are numbered:
+		LAYER_CAT_CONDUCTOR,
+		
+		-- NON CONDUCTOR LAYERS.
+		-- These layers are paired. Means there is a TOP and a BOTTOM:
+		LAYER_CAT_SILKSCREEN,
+		LAYER_CAT_ASSY,
+		LAYER_CAT_STOP,
+		
+		LAYER_CAT_KEEPOUT,
+		LAYER_CAT_STENCIL,
+
+		
+		-- NOTE: Restrict layers do not contain any conducting
+		-- objects. They are irrelevant for manufacturing.
+		-- Since they are of mere supportive nature for routing
+		-- we regarded them as conductor layers.
+		-- These layers are numbered:
+		LAYER_CAT_ROUTE_RESTRICT,
+		LAYER_CAT_VIA_RESTRICT);
+
 	
-	procedure validate_general_line_width (
-		width : in et_pcb_coordinates_2.type_distance_model) 
-	is begin
-		if width not in type_general_line_width then
-			log (ERROR, "line width invalid ! Allowed range is" 
-				 & to_string (type_general_line_width'first) & " .."
-				 & to_string (type_general_line_width'last),
-				 console => true);
-			raise constraint_error;
-		end if;
-	end validate_general_line_width;
+	subtype type_layer_category_non_conductor is type_layer_category
+		range LAYER_CAT_SILKSCREEN .. LAYER_CAT_STENCIL; -- CS .. LAYER_CAT_VIA_RESTRICT ?
+
+	subtype type_text_layer is type_layer_category
+		range LAYER_CAT_CONDUCTOR .. LAYER_CAT_STOP;
+
+	subtype type_text_layer_non_conductor is type_text_layer
+		range LAYER_CAT_SILKSCREEN .. LAYER_CAT_STOP;
 
 	
+	function to_layer_category (cat : in string) return type_layer_category;
+	
+	function to_string (cat : in type_layer_category) return string;
 
-	function face_to_mirror (f : in type_face) 
-		return et_text.type_vector_text_mirrored 
-	is 
-		use et_text;
-	begin
-		case f is
-			when TOP	=> return MIRROR_NO;
-			when BOTTOM	=> return MIRROR_ALONG_Y_AXIS;
-		end case;
-	end face_to_mirror;
 
 	
-end et_board_shapes_and_text;
+	
+end et_board_layer_category;
 
 -- Soli Deo Gloria
 

@@ -1396,7 +1396,7 @@ begin -- draw_conductors
 
 	-- Draw a freetrack being drawn. If no freetrack is being drawn,
 	-- nothing happens:
-    draw_path (et_board_shapes_and_text.LAYER_CAT_CONDUCTOR);
+    draw_path (LAYER_CAT_CONDUCTOR);
 
 
 	-- This is about a track that is connected to a net:

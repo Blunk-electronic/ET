@@ -67,7 +67,8 @@ with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
 -- use et_pcb_coordinates.pac_geometry_brd;
 -- use et_pcb_coordinates.pac_geometry_2;
 
-with et_board_shapes_and_text;	
+with et_board_shapes_and_text;
+with et_board_layer_category;			use et_board_layer_category;
 -- with et_vias;						use et_vias;
 -- with et_terminals;					use et_terminals;
 -- with et_conductor_segment;
@@ -226,7 +227,7 @@ package et_canvas_board_2 is
 	-- nothing happens here:
 	procedure draw_text_being_placed (
 		face		: in type_face;
-		category	: in et_board_shapes_and_text.type_layer_category_non_conductor);
+		category	: in type_layer_category_non_conductor);
 
 
 
@@ -237,7 +238,7 @@ package et_canvas_board_2 is
 	-- Use it also for drawing freetracks in conductor layers.
 	-- NOTE: This is NOT for tracks of nets ! See procedure draw_conductors.
 	procedure draw_path (
-		cat : in et_board_shapes_and_text.type_text_layer);
+		cat : in type_text_layer);
 	
 
 	

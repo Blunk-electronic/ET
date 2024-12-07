@@ -62,6 +62,7 @@ with et_text;							use et_text;
 with et_alignment;						use et_alignment;
 with et_board_shapes_and_text;			use et_board_shapes_and_text;
 use et_board_shapes_and_text.pac_text_board;
+with et_board_layer_category;			use et_board_layer_category;
 
 with et_pcb_stack;						use et_pcb_stack;
 

@@ -100,6 +100,7 @@ with et_board_ops;
 
 with et_schematic_shapes_and_text;
 with et_board_shapes_and_text;
+with et_board_layer_category;			use et_board_layer_category;
 
 with et_device_placeholders;
 with et_device_placeholders.packages;
@@ -3273,7 +3274,7 @@ is
 			
 
 			procedure insert_line (
-				layer_cat	: in et_board_shapes_and_text.type_layer_category_non_conductor;
+				layer_cat	: in type_layer_category_non_conductor;
 				face		: in et_pcb_sides.type_face) -- TOP, BOTTOM
 			is
 			-- The board_line and its board_line_width have been general things until now.
@@ -3367,7 +3368,7 @@ is
 			
 			
 			procedure insert_arc (
-				layer_cat	: in et_board_shapes_and_text.type_layer_category_non_conductor;
+				layer_cat	: in type_layer_category_non_conductor;
 				face		: in et_pcb_sides.type_face) -- TOP, BOTTOM
 			is
 			-- The board_arc and its board_line_width have been general things until now. 
@@ -3461,7 +3462,7 @@ is
 
 			
 			procedure insert_circle (
-				layer_cat	: in et_board_shapes_and_text.type_layer_category_non_conductor;
+				layer_cat	: in type_layer_category_non_conductor;
 				face		: in et_pcb_sides.type_face) -- TOP, BOTTOM
 			is
 			-- The board_circle has been a general thing until now. 
@@ -3555,7 +3556,7 @@ is
 
 			
 			procedure insert_polygon (
-				layer_cat	: in et_board_shapes_and_text.type_layer_category_non_conductor;
+				layer_cat	: in type_layer_category_non_conductor;
 				face		: in et_pcb_sides.type_face) -- TOP, BOTTOM
 			is
 			-- The polygon has been a general thing until now. 
@@ -3708,7 +3709,7 @@ is
 			
 			
 			procedure insert_cutout (
-				layer_cat	: in et_board_shapes_and_text.type_layer_category_non_conductor; -- CS no need anymore ?
+				layer_cat	: in type_layer_category_non_conductor; -- CS no need anymore ?
 				face		: in et_pcb_sides.type_face) -- TOP, BOTTOM
 			is
 			-- The polygon has been a general thing until now. 
@@ -3875,7 +3876,7 @@ is
 
 				
 			procedure insert_placeholder (
-				layer_cat	: in et_board_shapes_and_text.type_layer_category;
+				layer_cat	: in type_layer_category;
 				face		: in et_pcb_sides.type_face)  -- TOP, BOTTOM
 			is
 			-- The board_text_placeholder has been a general thing until now. 
@@ -5730,17 +5731,17 @@ is
 							case stack.parent (degree => 2) is
 								when SEC_SILKSCREEN =>
 									insert_placeholder (
-										layer_cat	=> et_board_shapes_and_text.LAYER_CAT_SILKSCREEN,
+										layer_cat	=> LAYER_CAT_SILKSCREEN,
 										face		=> et_pcb_sides.TOP);
 
 								when SEC_ASSEMBLY_DOCUMENTATION =>
 									insert_placeholder (
-										layer_cat	=> et_board_shapes_and_text.LAYER_CAT_ASSY,
+										layer_cat	=> LAYER_CAT_ASSY,
 										face		=> et_pcb_sides.TOP);
 
 								when SEC_STOPMASK =>
 									insert_placeholder (
-										layer_cat	=> et_board_shapes_and_text.LAYER_CAT_STOP,
+										layer_cat	=> LAYER_CAT_STOP,
 										face		=> et_pcb_sides.TOP);
 
 								when others => invalid_section;
@@ -5750,17 +5751,17 @@ is
 							case stack.parent (degree => 2) is
 								when SEC_SILKSCREEN =>
 									insert_placeholder (
-										layer_cat	=> et_board_shapes_and_text.LAYER_CAT_SILKSCREEN,
+										layer_cat	=> LAYER_CAT_SILKSCREEN,
 										face		=> et_pcb_sides.BOTTOM);
 
 								when SEC_ASSEMBLY_DOCUMENTATION =>
 									insert_placeholder (
-										layer_cat	=> et_board_shapes_and_text.LAYER_CAT_ASSY,
+										layer_cat	=> LAYER_CAT_ASSY,
 										face		=> et_pcb_sides.BOTTOM);
 
 								when SEC_STOPMASK =>
 									insert_placeholder (
-										layer_cat	=> et_board_shapes_and_text.LAYER_CAT_STOP,
+										layer_cat	=> LAYER_CAT_STOP,
 										face		=> et_pcb_sides.BOTTOM);
 
 								when others => invalid_section;

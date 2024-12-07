@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                       BOARD SHAPES AND TEXT                              --
+--                       BOARD LAYER CATEGORY                               --
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
@@ -40,38 +40,27 @@
 with ada.characters.handling;	use ada.characters.handling;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;	use ada.characters.latin_1;
-with et_mirroring;				use et_mirroring;
 
 
-package body et_board_shapes_and_text is
-	
-	procedure validate_general_line_width (
-		width : in et_pcb_coordinates_2.type_distance_model) 
-	is begin
-		if width not in type_general_line_width then
-			log (ERROR, "line width invalid ! Allowed range is" 
-				 & to_string (type_general_line_width'first) & " .."
-				 & to_string (type_general_line_width'last),
-				 console => true);
-			raise constraint_error;
-		end if;
-	end validate_general_line_width;
+
+package body et_board_layer_category is
+
+
+	function to_layer_category (cat : in string) return type_layer_category is begin
+		return type_layer_category'value (layer_category_prefix & cat);
+	end to_layer_category;
+
 
 	
-
-	function face_to_mirror (f : in type_face) 
-		return et_text.type_vector_text_mirrored 
-	is 
-		use et_text;
+	function to_string (cat : in type_layer_category) return string is
+		s : string := type_layer_category'image (cat);
 	begin
-		case f is
-			when TOP	=> return MIRROR_NO;
-			when BOTTOM	=> return MIRROR_ALONG_Y_AXIS;
-		end case;
-	end face_to_mirror;
+		return s (layer_category_prefix'length + 1 .. s'last);
+	end to_string;
 
 	
-end et_board_shapes_and_text;
+	
+end et_board_layer_category;
 
 -- Soli Deo Gloria
 

@@ -37,6 +37,8 @@
 --
 --   ToDo: 
 
+with et_board_layer_category;			use et_board_layer_category;
+
 with et_stop_mask;
 with et_silkscreen;
 with et_silkscreen.boards;

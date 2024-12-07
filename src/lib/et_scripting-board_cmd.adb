@@ -42,6 +42,7 @@ with et_module_instance;			use et_module_instance;
 with et_pcb_sides;
 with et_pcb_coordinates_2;
 with et_board_shapes_and_text;
+with et_board_layer_category;		use et_board_layer_category;
 with et_board_ops.conductors;
 with et_board_ops.vias;
 with et_board_ops.frame;
