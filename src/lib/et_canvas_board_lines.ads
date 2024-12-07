@@ -55,7 +55,6 @@ with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
 use et_pcb_coordinates_2.pac_geometry_2;
 use et_pcb_coordinates_2.pac_path_and_bend;
 
--- with et_board_shapes_and_text;			use et_board_shapes_and_text;
 with et_board_layer_category;			use et_board_layer_category;
 
 with et_pcb_stack;						use et_pcb_stack;

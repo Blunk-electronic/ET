@@ -100,7 +100,7 @@ with et_board_ops;
 
 with et_schematic_shapes_and_text;
 with et_board_shapes_and_text;
-with et_board_layer_category;			use et_board_layer_category;
+with et_board_layer_category;
 
 with et_device_placeholders;
 with et_device_placeholders.packages;
@@ -3271,6 +3271,9 @@ is
 				log_indentation_down;
 			end insert_device_non_electric;
 
+
+
+			use et_board_layer_category;
 			
 
 			procedure insert_line (
