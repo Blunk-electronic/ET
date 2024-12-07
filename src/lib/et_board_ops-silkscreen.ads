@@ -69,6 +69,59 @@ package et_board_ops.silkscreen is
 		return pac_silk_lines.list;
 
 
+	-- Modifies that status flag of a line (see package et_object_status):
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		line_cursor		: in pac_silk_lines.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+
+	-- Sets the proposed-flag of all lines which are
+	-- in the given zone around the given place.
+	procedure propose_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		face			: in type_face;
+		zone			: in type_accuracy; -- the circular area around the place
+		count			: in out natural; -- the number of affected lines
+		log_threshold	: in type_log_level);
+
+
+	-- Clears the proposed-flag and the selected-flag of all lines:
+	procedure reset_proposed_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+	type type_line_segment is record
+		face	: type_face;
+		cursor	: pac_silk_lines.cursor;
+	end record;
+	
+	-- Returns the first line according to the given flag.
+	-- If no line has been found, then the return is no_element:
+	function get_first_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_line_segment;
+
+
+	-- Advances to the next proposed line, starting at
+	-- the given line. Traverses through the lines
+	-- in a circular manner. If there are no
+	-- proposed lines, then line assumes default value (no_element).
+	-- If there is only one proposed line, then line is unchanged.
+	-- CS last_item indicates that the last line has been reached:
+	procedure next_proposed_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in out type_line_segment;
+		-- CS last_item		: in out boolean;
+		log_threshold	: in type_log_level);
+
+
+	
 	procedure move_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;

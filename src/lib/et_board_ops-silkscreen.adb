@@ -89,6 +89,8 @@ package body et_board_ops.silkscreen is
 	end draw_line;
 
 
+
+	
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -147,6 +149,464 @@ package body et_board_ops.silkscreen is
 	end get_lines;
 
 	
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		line_cursor		: in pac_silk_lines.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			top 	: pac_silk_lines.list renames module.board.silk_screen.top.lines;
+			bottom	: pac_silk_lines.list renames module.board.silk_screen.bottom.lines;
+
+			
+			procedure query_line (
+				line	: in out type_silk_line)
+			is begin
+				case operation.flag is
+					when SELECTED =>
+						case operation.action is
+							when SET =>
+								line.status.selected := true;
+
+							when CLEAR =>
+								line.status.selected := false;
+						end case;
+
+					when PROPOSED =>
+						case operation.action is
+							when SET =>
+								line.status.proposed := true;
+
+							when CLEAR =>
+								line.status.proposed := false;
+						end case;
+
+					when others =>
+						null; -- CS
+				end case;							
+			end query_line;
+
+			
+			lc : pac_silk_lines.cursor;
+			
+			procedure query_top is begin
+				if not top.is_empty then
+					lc := top.first;
+					while lc /= pac_silk_lines.no_element loop
+						if lc = line_cursor then
+							top.update_element (lc, query_line'access);
+							exit;					
+						end if;
+						next (lc);
+					end loop;
+				end if;
+			end query_top;
+
+			procedure query_bottom is begin
+				if not bottom.is_empty then
+					lc := bottom.first;
+					while lc /= pac_silk_lines.no_element loop
+						if lc = line_cursor then
+							bottom.update_element (lc, query_line'access);
+							exit;					
+						end if;
+						next (lc);
+					end loop;
+				end if;
+			end query_bottom;
+
+			
+		begin
+			query_top;
+
+			if lc = pac_silk_lines.no_element then
+				query_bottom;
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " modifying status of "
+			& to_string (element (line_cursor))
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+	
+
+
+	procedure propose_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		face			: in type_face;
+		zone			: in type_accuracy; -- the circular area around the place
+		count			: in out natural; -- the number of affected lines
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			lc : pac_silk_lines.cursor;
+
+			procedure query_line (
+				line	: in out type_silk_line)
+			is 
+				use et_object_status;
+			begin
+				if within_accuracy (
+					line	=> line,
+					width	=> line.width,
+					point	=> point,
+					zone	=> zone)
+				then
+					line.status.proposed := true;
+					count := count + 1;
+					log (text => to_string (line), level => log_threshold + 1);
+				end if;
+			end query_line;
+
+			
+			procedure query_top is 
+				top : pac_silk_lines.list renames module.board.silk_screen.top.lines;
+			begin
+				if not top.is_empty then
+					lc := top.first;
+					while lc /= pac_silk_lines.no_element loop
+						top.update_element (lc, query_line'access);
+						next (lc);
+					end loop;
+				end if;
+			end query_top;
+
+			procedure query_bottom is 
+				bottom : pac_silk_lines.list renames module.board.silk_screen.bottom.lines;
+			begin
+				if not bottom.is_empty then
+					lc := bottom.first;
+					while lc /= pac_silk_lines.no_element loop
+						bottom.update_element (lc, query_line'access);
+						next (lc);
+					end loop;
+				end if;
+			end query_bottom;
+
+			
+		begin
+			case face is
+				when TOP	=> query_top;
+				when BOTTOM	=> query_bottom;
+			end case;
+		end query_module;
+		
+		
+	begin
+		log (text => "proposing lines at " & to_string (point)
+			 & " face " & to_string (face)
+			 & " zone " & accuracy_to_string (zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		count := 0;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_lines;
+
+
+
+	
+
+	procedure reset_proposed_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			top 	: pac_silk_lines.list renames module.board.silk_screen.top.lines;
+			bottom	: pac_silk_lines.list renames module.board.silk_screen.bottom.lines;
+
+			
+			procedure query_line (
+				line	: in out type_silk_line)
+			is 
+				use et_object_status;
+			begin
+				line.status.selected := false;
+				line.status.proposed := false;
+			end query_line;
+
+			
+			lc : pac_silk_lines.cursor;
+			
+			procedure query_top is begin
+				if not top.is_empty then
+					lc := top.first;
+					while lc /= pac_silk_lines.no_element loop
+						top.update_element (lc, query_line'access);
+						next (lc);
+					end loop;
+				end if;
+			end query_top;
+
+			procedure query_bottom is begin
+				if not bottom.is_empty then
+					lc := bottom.first;
+					while lc /= pac_silk_lines.no_element loop
+						bottom.update_element (lc, query_line'access);
+						next (lc);
+					end loop;
+				end if;
+			end query_bottom;
+
+			
+		begin
+			query_top;
+
+			if lc = pac_silk_lines.no_element then
+				query_bottom;
+			end if;
+		end query_module;
+
+
+		
+	begin
+		log (text => "resetting proposed lines",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_lines;
+
+
+	
+	
+
+	function get_first_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_line_segment
+	is
+		result : type_line_segment;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			proceed : aliased boolean := true;
+
+			top_items 		: pac_silk_lines.list renames module.board.silk_screen.top.lines;
+			bottom_items	: pac_silk_lines.list renames module.board.silk_screen.bottom.lines;
+
+			
+			procedure query_line (c : in pac_silk_lines.cursor) is
+				line : type_silk_line renames element (c);
+				use et_object_status;
+			begin
+				case flag is
+					when PROPOSED =>
+						if line.status.proposed then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when SELECTED =>
+						if line.status.selected then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when others =>
+						null; -- CS
+				end case;
+			end query_line;
+			
+
+			
+		begin
+			-- Query the objects in the top layer first:
+			iterate (top_items, query_line'access, proceed'access);
+			result.face := top;
+
+			-- If nothing found, then query the bottom layer:
+			if proceed then
+				iterate (bottom_items, query_line'access, proceed'access);
+				result.face := bottom;
+			end if;
+
+			-- If still nothing found, error:
+			if proceed then
+				raise constraint_error; -- CS
+			end if;
+		end query_module;
+
+			
+	begin
+		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
+			"looking up the first line / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+
+		return result;
+	end get_first_line;
+
+
+
+	
+
+	procedure next_proposed_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in out type_line_segment;
+		-- CS last_item		: in out boolean;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is
+			top_items 		: pac_silk_lines.list renames module.board.silk_screen.top.lines;
+			bottom_items	: pac_silk_lines.list renames module.board.silk_screen.bottom.lines;
+			
+			proceed : boolean := true;
+		
+			
+			procedure query_items (
+				items			: in pac_silk_lines.list;
+				start_at_first	: in boolean := false) 
+			is 
+				c : pac_silk_lines.cursor;
+				do_iterate : boolean := false;
+			begin
+				-- If there are no items, then nothing to do.
+				if not items.is_empty then
+					
+					-- Preset the cursor:
+					if start_at_first then
+						c := items.first; -- begin of list
+						do_iterate := true;
+					else
+						c := line.cursor; -- forward to the position given by caller
+						
+						-- Advance to the next item after the given item:
+						if c /= items.last then
+							next (c);
+							do_iterate := true;
+						end if;
+					end if;
+
+
+					if do_iterate then
+						while c /= pac_silk_lines.no_element loop
+							if is_proposed (c) then
+								line.cursor := c;
+								proceed := false;
+								exit; -- no further probing required
+							end if;
+							
+							next (c);						
+						end loop;
+					end if;
+				end if;
+			end query_items;
+
+			
+		begin
+			case line.face is
+				when TOP =>
+					query_items (top_items);
+
+					-- If nothing found, start searching the bottom items:
+					if proceed then
+						query_items (bottom_items, start_at_first => true);
+					end if;
+
+					-- If still nothing found, search the top items from the begining:
+					if proceed then
+						query_items (top_items, start_at_first => true);
+					end if;
+
+					
+				when BOTTOM =>
+					query_items (bottom_items);
+
+					-- If nothing found, start searching the top items:
+					if proceed then
+						query_items (top_items, start_at_first => true);
+					end if;
+
+					-- If still nothing found, search the bottom items from the begining:
+					if proceed then
+						query_items (bottom_items, start_at_first => true);
+					end if;
+				
+			end case;
+
+
+			-- If still nothing found, error:
+			if proceed then
+				raise constraint_error; -- CS
+			end if;
+		end query_module;
+		
+		
+	begin
+		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
+			"advancing to next proposed line",
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end next_proposed_line;
+
+
+	
+
 	
 	procedure move_line (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -191,7 +651,7 @@ package body et_board_ops.silkscreen is
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
 			& " face" & to_string (face) 
-			& " moving assy doc " & to_string (line)
+			& " moving silkscreen " & to_string (line)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
