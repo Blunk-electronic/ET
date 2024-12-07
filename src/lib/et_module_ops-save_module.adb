@@ -55,6 +55,7 @@ with et_primitive_objects;			use et_primitive_objects;
 with et_nets;
 with et_net_names;
 with et_net_labels;
+with et_net_class;
 with et_port_names;
 with et_symbol_ports;
 with et_symbols;
@@ -334,8 +335,8 @@ is
 
 	
 	procedure query_net_classes is
-		use et_pcb;
-		use et_pcb.pac_net_classes;
+		use et_net_class;
+		use pac_net_classes;
 		use et_pcb_coordinates_2.pac_geometry_2;
 		use et_pcb_rw;
 
@@ -344,7 +345,7 @@ is
 			section_mark (section_net_class, HEADER);
 
 			write (keyword => keyword_name, parameters => to_string (key (class_cursor)));
-			write (keyword => keyword_description, parameters => et_pcb.to_string (element (class_cursor).description), wrap => true);
+			write (keyword => keyword_description, parameters => to_string (element (class_cursor).description), wrap => true);
 			write (keyword => keyword_clearance, parameters => to_string (element (class_cursor).clearance));
 			write (keyword => keyword_track_width_min, parameters => to_string (element (class_cursor).track_width_min));
 			write (keyword => keyword_via_drill_min, parameters => to_string (element (class_cursor).via_drill_min));
@@ -856,7 +857,9 @@ is
 		end query_route;
 
 		
-		procedure write (net_cursor : in pac_nets.cursor) is begin
+		procedure write (net_cursor : in pac_nets.cursor) is 
+			use et_net_class;
+		begin
 			log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
 			section_mark (section_net, HEADER);
 

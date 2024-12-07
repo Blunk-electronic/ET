@@ -57,6 +57,7 @@ with et_module_instance;			use et_module_instance;
 with et_nets;
 with et_net_names;					use et_net_names;
 with et_net_labels;
+with et_net_class;
 with et_port_names;
 with et_symbol_ports;
 with et_device_name;				use et_device_name;
@@ -617,12 +618,12 @@ is
 
 	
 	-- net class
-	net_class 		: et_pcb.type_net_class;
-	net_class_name	: et_pcb.pac_net_class_name.bounded_string;
+	net_class 		: et_net_class.type_net_class;
+	net_class_name	: et_net_class.pac_net_class_name.bounded_string;
 
 	
 	procedure reset_net_class is 
-		use et_pcb;
+		use et_net_class;
 	begin
 		net_class_name := net_class_name_default;
 		net_class := (others => <>);
@@ -634,7 +635,7 @@ is
 	procedure read_net_class is 
 		use et_terminals;
 		use et_drills;
-		use et_pcb;
+		use et_net_class;
 		use et_pcb_rw;
 		kw : constant string := f (line, 1);
 	begin
@@ -696,6 +697,7 @@ is
 	procedure read_net is
 		kw : constant string := f (line, 1);
 		use ada.containers;
+		use et_net_class;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_name then
@@ -713,12 +715,13 @@ is
 			-- net.class := et_pcb.to_net_class_name (f (line,2));
 			
 			if get_field_count (line) = 2 then
-				net.class := et_pcb.to_net_class_name (f (line,2));
+				net.class := to_net_class_name (f (line,2));
 			else
-				net.class := et_pcb.net_class_name_default;
+				net.class := net_class_name_default;
 				log (text => message_warning & get_affected_line (line) 
 					 & "No net class specified ! Assume default class !");
 			end if;
+			
 		elsif kw = keyword_scope then
 			expect_field_count (line, 2);
 			net.scope := et_netlists.to_net_scope (f (line,2));
@@ -2599,7 +2602,7 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in out type_generic_module) 
 			is
-				use et_pcb;
+				use et_net_class;
 				inserted : boolean;
 				cursor : pac_net_classes.cursor;
 			begin -- insert_net_class
@@ -2616,7 +2619,7 @@ is
 					position	=> cursor);
 
 				if not inserted then
-					log (ERROR, "net class '" & et_pcb.to_string (net_class_name) 
+					log (ERROR, "net class '" & to_string (net_class_name) 
 							& "' already exists !", console => true);
 					raise constraint_error;
 				end if;

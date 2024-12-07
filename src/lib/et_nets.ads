@@ -58,6 +58,7 @@ with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_net_names;				use et_net_names;
 with et_net_labels;				use et_net_labels;
+with et_net_class;				use et_net_class;
 with et_netlists;
 with et_pcb;
 with et_commit;
@@ -96,7 +97,7 @@ package et_nets is
 		route	: et_pcb.type_route; -- routing information -> pcb related
 
 		-- The net class of the net: default, High_Voltage, EM/SI-critical, ...
-		class 	: et_pcb.pac_net_class_name.bounded_string := et_pcb.net_class_name_default;
+		class 	: pac_net_class_name.bounded_string := net_class_name_default;
 	end record;
 
 

@@ -5238,12 +5238,12 @@ package body et_kicad.pcb is
 					-- Copy the net class settings from kicad-board to the schematic module:
 					net_class_cursor_board := board.net_classes.first;
 					while net_class_cursor_board /= type_net_classes.no_element loop -- loop in net classes of board
-						log (text => "net class " & et_pcb.to_string (key (net_class_cursor_board)), level => log_threshold + 2);
+						log (text => "net class " & to_string (key (net_class_cursor_board)), level => log_threshold + 2);
 
 						-- copy net class name and its basic properties
 						module.net_classes.insert (
 							key 		=> key (net_class_cursor_board), -- class name
-							new_item	=> et_pcb.type_net_class (element (net_class_cursor_board))); -- properties
+							new_item	=> et_net_class.type_net_class (element (net_class_cursor_board))); -- properties
 
 						-- From the board, get the net names of the current class:
 						nets_of_class := element (net_class_cursor_board).net_names;

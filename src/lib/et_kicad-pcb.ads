@@ -53,6 +53,7 @@ with ada.containers.ordered_sets;
 with et_primitive_objects;		use et_primitive_objects;
 with et_schematic;				use et_schematic;
 with et_net_names;				use et_net_names;
+with et_net_class;				use et_net_class;
 with et_terminals;				use et_terminals;
 with et_package_names;			use et_package_names;
 with et_pcb;
@@ -454,15 +455,15 @@ package et_kicad.pcb is
 
 	-- The net class type used here extends the basic net class by the list
 	-- of net names:
-	type type_net_class is new et_pcb.type_net_class with record
+	type type_net_class is new et_net_class.type_net_class with record
 		net_names : type_nets_of_class.list;
 	end record;
 
 	-- Since there are lots of net classes, they are stored in a map:
 	package type_net_classes is new ordered_maps (
-		key_type		=> et_pcb.pac_net_class_name.bounded_string,
+		key_type		=> pac_net_class_name.bounded_string,
 		element_type	=> type_net_class,
-		"<"				=> et_pcb.pac_net_class_name."<"
+		"<"				=> pac_net_class_name."<"
 		);
 
 
@@ -771,7 +772,7 @@ package et_kicad.pcb is
 		junctions			: et_kicad.schematic.type_junctions.list;				-- net junctions (for ERC, statistics, ...)
 
 		components			: et_kicad.schematic.type_components_schematic.map;	-- the components of the module
-		net_classes			: et_pcb.pac_net_classes.map;		-- the net classes
+		net_classes			: pac_net_classes.map;		-- the net classes
 		no_connections		: et_kicad.schematic.type_no_connection_flags.list;	-- the list of no-connection-flags
 		portlists			: et_kicad.schematic.type_portlists.map;				-- the portlists of the module (components with their ports)
 		netlist				: et_kicad.schematic.type_netlist.map;					-- net names and connected component ports (incl. position of port)

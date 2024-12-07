@@ -2311,7 +2311,7 @@ package body et_schematic_ops.nets is
 	procedure set_net_class (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		net_class		: in et_pcb.pac_net_class_name.bounded_string; -- pwr
+		net_class		: in pac_net_class_name.bounded_string; -- pwr
 		log_threshold	: in type_log_level)
 	is
 		net_cursor : pac_nets.cursor; -- points to the net
@@ -2325,16 +2325,16 @@ package body et_schematic_ops.nets is
 				name	: in pac_net_name.bounded_string;
 				net		: in out type_net)
 			is 
-				use et_pcb.pac_net_class_name;
+				use pac_net_class_name;
 			begin
 				if net.class = net_class then
 					log (text => "Net already in class " 
-							& enclose_in_quotes (to_string (net_class)),
+							& enclose_in_quotes (et_net_class.to_string (net_class)),
 						level => log_threshold + 1);
 				else
 					log (text => "Changing net class from "
-						 & enclose_in_quotes (to_string (net.class)) 
-						 & " to " & enclose_in_quotes (to_string (net_class)),
+						 & enclose_in_quotes (et_net_class.to_string (net.class)) 
+						 & " to " & enclose_in_quotes (et_net_class.to_string (net_class)),
 						level => log_threshold + 1);
 
 					net.class := net_class;
@@ -2352,7 +2352,7 @@ package body et_schematic_ops.nets is
 	begin
 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) 
 			& " setting class of net " & enclose_in_quotes (to_string (net_name)) 
-			& " to " & enclose_in_quotes (et_pcb.to_string (net_class)),
+			& " to " & enclose_in_quotes (to_string (net_class)),
 			level => log_threshold);
 		
 

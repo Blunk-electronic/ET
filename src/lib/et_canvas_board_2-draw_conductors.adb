@@ -59,6 +59,7 @@ with et_modes.board;				use et_modes.board;
 
 with et_schematic;
 with et_net_names;
+with et_net_class;
 
 with et_ratsnest;
 with et_alignment;
@@ -137,6 +138,7 @@ procedure draw_conductors is
 	
 	use et_schematic;
 	use et_net_names;
+	use et_net_class;
 	
 	use pac_nets;
 

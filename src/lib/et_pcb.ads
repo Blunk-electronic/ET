@@ -39,9 +39,9 @@
 --		- separate in two packages things related to board and device package.
 
 
-with ada.strings.bounded; 			use ada.strings.bounded;
+with ada.strings.bounded; 				use ada.strings.bounded;
 
-with ada.containers; 				use ada.containers;
+with ada.containers; 					use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
@@ -96,40 +96,6 @@ package et_pcb is
 
 	
 
--- NET CLASSES
-	net_class_name_length_max : constant positive := 50;
-	package pac_net_class_name is new generic_bounded_length (net_class_name_length_max); -- hi-voltage, si-critical, ...
-	use pac_net_class_name;
-	
-	net_class_name_default : constant pac_net_class_name.bounded_string := pac_net_class_name.to_bounded_string ("default");
-	
-	function to_string (net_class_name : in pac_net_class_name.bounded_string) return string;
-	function to_net_class_name (net_class_name : in string) return pac_net_class_name.bounded_string;
-	
-	net_class_description_length_max : constant positive := 100;
-	package pac_net_class_description is new generic_bounded_length (net_class_description_length_max);
-
-	function to_string (class_description : in pac_net_class_description.bounded_string) return string;
-	function to_net_class_description (class_description : in string) return pac_net_class_description.bounded_string;
-	
-	type type_net_class is tagged record
-		description				: pac_net_class_description.bounded_string;
-
-		-- The net class parameters assume default values 
-		-- that cause minimal manufacturing costs even if 
-		-- no net classes have been defined by the operator:
-		clearance				: type_track_clearance := 0.3;
-		track_width_min			: type_track_width := 0.3;
-		via_drill_min			: type_drill_size := 0.3;
-		via_restring_min		: type_restring_width := 0.3;
-		micro_via_drill_min		: type_drill_size := type_drill_size'last; -- CS use reasonable default
-		micro_via_restring_min	: type_restring_width := type_restring_width'last;  -- CS use reasonable default
-	end record;
-
-	package pac_net_classes is new ordered_maps (
-		key_type		=> pac_net_class_name.bounded_string,
-		element_type	=> type_net_class);
-	
 
 
 	-- Maps from signal layer to mirror status of a vectorized text.
@@ -370,7 +336,7 @@ package et_pcb is
 	-- corner of the drawing frame.
 	-- Unless specified by operator the board origin default is:
 	origin_default : constant type_vector_model := (20.0, 65.0);
-
+	-- CS remove
 
 	
 	type type_user_settings is record

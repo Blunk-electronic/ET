@@ -48,6 +48,7 @@ with gnat.source_info;
 
 with et_nets;
 with et_net_labels;
+with et_net_class;
 with et_units;
 with et_schematic;
 
@@ -3113,10 +3114,12 @@ package body et_kicad_to_native is
 			procedure copy_layout_stuff (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out et_nets.type_net) 
-			is begin
+			is 
+				use et_net_class;
+			begin
 				log_indentation_up;
 
-				log (text => "class" & et_pcb.to_string (element (kicad_net_cursor).class), level => log_threshold + 3);
+				log (text => "class" & to_string (element (kicad_net_cursor).class), level => log_threshold + 3);
 				net.class := element (kicad_net_cursor).class;	
 				
 				log (text => "tracks, vias, polygons ...", level => log_threshold + 3);

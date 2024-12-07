@@ -67,26 +67,6 @@ package body et_pcb is
 
 	
 
-	-- NET CLASSES
-	function to_string (net_class_name : in pac_net_class_name.bounded_string) return string is
-	begin
-		return pac_net_class_name.to_string (net_class_name);
-	end to_string;
-
-	function to_net_class_name (net_class_name : in string) return pac_net_class_name.bounded_string is
-	begin
-		return pac_net_class_name.to_bounded_string (net_class_name);
-	end to_net_class_name;
-	
-	function to_string (class_description : in pac_net_class_description.bounded_string) return string is
-	begin
-		return pac_net_class_description.to_string (class_description);
-	end to_string;
-
-	function to_net_class_description (class_description : in string) return pac_net_class_description.bounded_string is
-	begin
-		return pac_net_class_description.to_bounded_string (class_description);
-	end to_net_class_description;
 
 	
 	function signal_layer_to_mirror (

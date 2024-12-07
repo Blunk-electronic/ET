@@ -829,8 +829,8 @@ package body et_board_ops is
 
 	function get_net_class (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		class	: in et_pcb.pac_net_class_name.bounded_string) -- hi-voltage, si-critical
-		return et_pcb.type_net_class
+		class	: in pac_net_class_name.bounded_string) -- hi-voltage, si-critical
+		return type_net_class
 	is
 		use et_pcb;
 		
@@ -864,7 +864,7 @@ package body et_board_ops is
 	function get_net_class (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		net		: in et_nets.pac_nets.cursor) -- GND, RESET_N, ...
-		return et_pcb.type_net_class
+		return type_net_class
 	is
 		use et_pcb;
 		result : type_net_class;

@@ -39,6 +39,7 @@
 
 
 with et_net_labels;					use et_net_labels;
+with et_net_class;					use et_net_class;
 with et_net_count;
 with et_pcb;
 
@@ -246,7 +247,7 @@ package et_schematic_ops.nets is
 	procedure set_net_class (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		net_class		: in et_pcb.pac_net_class_name.bounded_string; -- pwr
+		net_class		: in pac_net_class_name.bounded_string; -- pwr
 		log_threshold	: in type_log_level);
 
 	

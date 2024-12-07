@@ -55,6 +55,7 @@ with et_text;
 with et_frames;
 with et_numbering;
 with et_design_rules;
+with et_net_class;				use et_net_class;
 
 
 package et_generic_module is
@@ -80,7 +81,7 @@ package et_generic_module is
 		devices			: pac_devices_sch.map;
 		device_commits	: type_devices_undo_redo_stack;
 		
-		net_classes		: et_pcb.pac_net_classes.map;		-- the net classes
+		net_classes		: pac_net_classes.map;		-- the net classes
 		submods			: et_submodules.pac_submodules.map;	-- instances of submodules (boxes)
 		netchangers		: et_submodules.pac_netchangers.map;-- netchangers
 		

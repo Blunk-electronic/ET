@@ -55,6 +55,7 @@ with et_schematic;
 with et_sheets;
 with et_net_labels;						use et_net_labels;
 with et_nets;							use et_nets;
+with et_net_class;						use et_net_class;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_schematic_ops.nets;
 with et_schematic_ops.units;
@@ -2318,7 +2319,7 @@ is
 								set_net_class (
 									module_cursor	=> active_module,
 									net_name		=> to_net_name (f (5)),
-									net_class		=> et_pcb.to_net_class_name (f (6)),
+									net_class		=> to_net_class_name (f (6)),
 									log_threshold	=> log_threshold + 1);
 								
 							when 7 .. type_field_count'last => too_long;

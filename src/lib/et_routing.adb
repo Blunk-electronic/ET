@@ -42,7 +42,7 @@ with ada.text_io;					use ada.text_io;
 with et_contour_to_polygon;			use et_contour_to_polygon;
 with et_module_names;				use et_module_names;
 with et_board_ops;
-
+with et_net_class;					use et_net_class;
 
 package body et_routing is
 	

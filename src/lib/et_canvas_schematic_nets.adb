@@ -52,6 +52,7 @@ with et_module_names;				use et_module_names;
 with et_modes.schematic;			use et_modes.schematic;
 with et_pcb;
 with et_netlists;
+with et_net_class;
 with et_board_ops.ratsnest;
 
 with et_undo_redo;
@@ -1826,7 +1827,7 @@ package body et_canvas_schematic_nets is
 	
 	procedure show_properties_of_selected_net is
 		ss	: constant type_selected_segment := element (selected_segment);
-		use et_pcb;
+		use et_net_class;
 		use et_netlists;
 	begin
 		reset_request_clarification;

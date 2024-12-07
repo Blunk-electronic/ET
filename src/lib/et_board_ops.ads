@@ -46,6 +46,7 @@ with ada.exceptions;			use ada.exceptions;
 with et_meta;
 with et_nets;						use et_nets;
 with et_net_names;					use et_net_names;
+with et_net_class;					use et_net_class;
 with et_module_names;				use et_module_names;
 with et_module_instance;			use et_module_instance;
 with et_primitive_objects;			use et_primitive_objects;
@@ -168,8 +169,8 @@ package et_board_ops is
 	-- Otherwise constraint error is raised.
 	function get_net_class (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
-		class	: in et_pcb.pac_net_class_name.bounded_string) -- hi-voltage, si-critical
-		return et_pcb.type_net_class;
+		class	: in pac_net_class_name.bounded_string) -- hi-voltage, si-critical
+		return type_net_class;
 
 
 
@@ -179,7 +180,7 @@ package et_board_ops is
 	function get_net_class (
 		module	: in pac_generic_modules.cursor; -- the module like motor_driver
 		net		: in et_nets.pac_nets.cursor)  -- GND, RESET_N, ...
-		return et_pcb.type_net_class;
+		return type_net_class;
 
 	
 
