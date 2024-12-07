@@ -72,16 +72,6 @@ package et_canvas_board_assy_doc is
 		tool	: type_tool := MOUSE;
 
 		point_of_attack : type_vector_model;
-		
-		face	: type_face := face_default;
-
-		shape	: type_shape;
-
-		line	: type_doc_line;
-		arc		: type_doc_arc;
-		circle	: type_doc_circle;
-
-		-- CS zone
 	end record;
 
 	-- The place where preliminary information of
