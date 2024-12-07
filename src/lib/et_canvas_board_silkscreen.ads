@@ -72,16 +72,6 @@ package et_canvas_board_silkscreen is
 		tool	: type_tool := MOUSE;
 
 		point_of_attack : type_vector_model;
-		
-		face	: type_face := face_default;
-
-		shape	: type_shape;
-
-		line	: type_silk_line;
-		arc		: type_silk_arc;
-		circle	: type_silk_circle;
-
-		-- CS zone
 	end record;
 
 	-- The place where preliminary information of
