@@ -485,6 +485,10 @@ Fill Zones in Conductor Layers
 Route Restrict Objects
 ++++++++++++++++++++++
 
+Route restrict objects can be used to define areas where
+no tracks are allowed or where tracks are not allowed to 
+pass through.
+
 
 #. Drawing lines
 
