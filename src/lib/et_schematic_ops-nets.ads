@@ -41,7 +41,6 @@
 with et_net_labels;					use et_net_labels;
 with et_net_class;					use et_net_class;
 with et_net_count;
-with et_pcb;
 
 
 package et_schematic_ops.nets is

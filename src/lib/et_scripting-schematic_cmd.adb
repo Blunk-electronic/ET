@@ -45,7 +45,6 @@ with et_schematic_ops.netlists;
 with et_schematic_ops.grid;
 with et_schematic_ops.submodules;
 with et_board_ops.grid;
-with et_pcb;
 
 with et_coordinates_2;
 with et_module_instance;				use et_module_instance;
