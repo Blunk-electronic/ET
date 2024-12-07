@@ -41,6 +41,48 @@ with ada.strings;	 			use ada.strings;
 
 package body et_silkscreen is
 
+
+	procedure iterate (
+		lines	: in pac_silk_lines.list;
+		process	: not null access procedure (position : in pac_silk_lines.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_silk_lines.cursor := lines.first;
+	begin
+		while c /= pac_silk_lines.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+	
+
+	function is_proposed (
+		line_cursor	: in pac_silk_lines.cursor)
+		return boolean
+	is begin
+		if element (line_cursor).status.proposed then
+			return true;
+		else
+			return false;
+		end if;
+	end is_proposed;
+
+	
+
+	function is_selected (
+		line_cursor	: in pac_silk_lines.cursor)
+		return boolean
+	is begin
+		if element (line_cursor).status.selected then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+
+
+	
 	procedure mirror_lines (
 		lines	: in out pac_silk_lines.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
