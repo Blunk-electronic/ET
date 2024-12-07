@@ -1382,7 +1382,6 @@ package body et_kicad_packages is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									--validate_general_line_width (to_distance (to_string (arg)));
 									line.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
@@ -1391,7 +1390,6 @@ package body et_kicad_packages is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									--validate_general_line_width (to_distance (to_string (arg)));
 									arc.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
@@ -1400,7 +1398,6 @@ package body et_kicad_packages is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									--validate_general_line_width (to_distance (to_string (arg)));
 									circle.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
