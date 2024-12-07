@@ -45,19 +45,6 @@ with et_mirroring;				use et_mirroring;
 
 package body et_board_shapes_and_text is
 	
-	procedure validate_general_line_width (
-		width : in et_pcb_coordinates_2.type_distance_model) 
-	is begin
-		if width not in type_general_line_width then
-			log (ERROR, "line width invalid ! Allowed range is" 
-				 & to_string (type_general_line_width'first) & " .."
-				 & to_string (type_general_line_width'last),
-				 console => true);
-			raise constraint_error;
-		end if;
-	end validate_general_line_width;
-
-	
 
 	function face_to_mirror (f : in type_face) 
 		return et_text.type_vector_text_mirrored 

@@ -98,11 +98,6 @@ package et_board_shapes_and_text is
 	subtype type_general_line_width is type_distance_positive
 		range linewidth_fab_min .. linewidth_fab_max;
 	
-	-- Checks whether given line width is in range 
-	-- of type_general_line_width:
-	procedure validate_general_line_width (
-		width : in et_pcb_coordinates_2.type_distance_model);
-
 
 	-- Maps from face to mirror status of a vectorized text.
 	-- Use it for non-device related texts and placeholders.

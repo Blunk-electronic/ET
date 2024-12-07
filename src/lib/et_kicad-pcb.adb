@@ -1700,7 +1700,7 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									validate_general_line_width (to_distance (to_string (arg)));
+									-- validate_general_line_width (to_distance (to_string (arg)));
 									package_line.width := to_distance (to_string (arg));
 									
 								when others => too_many_arguments;
@@ -1776,7 +1776,7 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									validate_general_line_width (to_distance (to_string (arg)));
+									-- validate_general_line_width (to_distance (to_string (arg)));
 									package_circle.width := to_distance (to_string (arg));
 									
 								when others => too_many_arguments;
@@ -1859,7 +1859,7 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									validate_general_line_width (to_distance (to_string (arg)));
+									-- validate_general_line_width (to_distance (to_string (arg)));
 									package_arc.width := to_distance (to_string (arg));
 									
 								when others => too_many_arguments;
@@ -2537,7 +2537,7 @@ package body et_kicad.pcb is
 									-- NOTE: The width of the contour does not matter for the manufacturer.
 									-- But for the sake of completeness we check the line width anyway.
 									-- The line width will be discarded later anyway.
-									validate_general_line_width (to_distance (to_string (arg)));
+									-- validate_general_line_width (to_distance (to_string (arg)));
 									board_arc.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
@@ -2612,7 +2612,7 @@ package body et_kicad.pcb is
 									-- NOTE: The width of the contour does not matter for the manufacturer.
 									-- But for the sake of completeness we check the line width anyway.
 									-- The line width will be discarded later anyway.
-									validate_general_line_width (to_distance (to_string (arg)));
+									-- validate_general_line_width (to_distance (to_string (arg)));
 									board_circle.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
@@ -2694,7 +2694,7 @@ package body et_kicad.pcb is
 									-- NOTE: The width of the contour does not matter for the manufacturer.
 									-- But for the sake of completeness we check the line width anyway.
 									-- The line width will be discarded later anyway.
-									validate_general_line_width (to_distance (to_string (arg)));
+									-- validate_general_line_width (to_distance (to_string (arg)));
 									board_line.width := to_distance (to_string (arg));
 								when others => too_many_arguments;
 							end case;
