@@ -59,16 +59,11 @@ package et_via_restrict is
 	use pac_text_board;
 	
 
-	-- GUI relevant only: The line width of via restrict:
-	via_restrict_line_width : constant type_general_line_width := linewidth_fab_min;
-
 	
 -- LINES:
 	
 	type type_via_restrict_line is new 
 		et_conductor_segment.type_conductor_line with null record;
-	-- CS inherits a linewidth of type_track_width. Use a dedicated type
-	-- for linewidth if requried.
 
 	
 	-- Converts a line with a given width to a polygon
@@ -111,9 +106,8 @@ package et_via_restrict is
 	
 	type type_via_restrict_arc is new 
 		et_conductor_segment.type_conductor_arc with null record;
-	-- CS inherits a linewidth of type_track_width. Use a dedicated type
-	-- for linewidth if requried.
 
+		
 	-- Converts an arce with a given width to a polygon
 	-- with round caps on the line ends:
 	function to_polygon (
@@ -153,8 +147,6 @@ package et_via_restrict is
 	
 	type type_via_restrict_circle is new 
 		et_conductor_segment.type_conductor_circle with null record;
-	-- CS inherits a linewidth of type_track_width. Use a dedicated type
-	-- for linewidth if requried.
 
 
 	-- Converts the outer edge of a circle to a polygon:	

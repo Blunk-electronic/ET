@@ -258,7 +258,7 @@ package et_kicad.pcb is
 		layer_selection			: type_plot_layer_selection_string.bounded_string;
 		user_gerber_extensions	: type_plot_user_gerber_extensions;
 		exclude_edge_layer		: type_plot_exclude_edge_layer;
-		line_width				: type_general_line_width;	-- for lines without given width
+		line_width				: type_distance_positive; -- for lines without given width
 		frame_ref				: type_plot_frame_ref;
 		vias_on_mask			: type_plot_vias_on_mask;
 		fill_mode				: type_plot_fill_mode;
@@ -341,7 +341,7 @@ package et_kicad.pcb is
 		pcb_text_width		: pac_text_board.type_text_line_width;	-- all kinds of texts (no matter what layer)
 		pcb_text_size_x		: pac_text_board.type_text_size;
 		pcb_text_size_y		: pac_text_board.type_text_size;		
-		module_edge_width	: type_general_line_width;
+		module_edge_width	: type_distance_positive;
 		module_text_size_x	: pac_text_board.type_text_size;
 		module_text_size_y	: pac_text_board.type_text_size;
 		module_text_width	: pac_text_board.type_text_line_width; -- line width

@@ -95,10 +95,6 @@ package et_board_shapes_and_text is
 		line_width_default	=> 0.005);
 
 	
-	subtype type_general_line_width is type_distance_positive
-		range linewidth_fab_min .. linewidth_fab_max;
-	
-
 	-- Maps from face to mirror status of a vectorized text.
 	-- Use it for non-device related texts and placeholders.
 	function face_to_mirror (f : in type_face) 

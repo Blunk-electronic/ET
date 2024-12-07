@@ -810,7 +810,7 @@ package body et_pcb_rw is
 	
 	procedure board_reset_line_width is 
 	begin 
-		board_line_width := type_general_line_width'first; 
+		board_line_width := linewidth_fab_min;
 	end;
 
 

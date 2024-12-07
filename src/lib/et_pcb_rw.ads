@@ -249,12 +249,16 @@ package et_pcb_rw is
 	signal_layer		: et_pcb_stack.type_signal_layer := et_pcb_stack.type_signal_layer'first;
 
 	procedure board_reset_signal_layer;
+
+
 	
-	board_lock_status		: et_pcb.type_locked := et_pcb.NO;
+	board_lock_status : et_pcb.type_locked := et_pcb.NO;
 
 	procedure board_reset_lock_status;
+
 	
-	board_line_width : type_general_line_width := type_general_line_width'first;
+	
+	board_line_width : type_distance_positive := linewidth_fab_min;
 
 	procedure board_reset_line_width;
 

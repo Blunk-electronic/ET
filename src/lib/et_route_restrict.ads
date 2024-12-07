@@ -58,19 +58,12 @@ package et_route_restrict is
 	use pac_geometry_brd;
 	use pac_polygons;
 	use pac_text_board;
-
-	
-	-- GUI relevant only: The line width of route restrict:
-	route_restrict_line_width : constant type_general_line_width := linewidth_fab_min;
-	-- CS remove
 	
 	
 -- LINES:
 
 	type type_route_restrict_line is new 
 		et_conductor_segment.type_conductor_line with null record;
-	-- CS inherits a linewidth of type_track_width. Use a dedicated type
-	-- for linewidth if requried.
 
 	
 	-- Converts a line with a given width to a polygon
@@ -111,8 +104,6 @@ package et_route_restrict is
 
 	type type_route_restrict_arc is new 
 		et_conductor_segment.type_conductor_arc with null record;
-	-- CS inherits a linewidth of type_track_width. Use a dedicated type
-	-- for linewidth if requried.
 
 
 	-- Converts an arce with a given width to a polygon
@@ -154,8 +145,6 @@ package et_route_restrict is
 	
 	type type_route_restrict_circle is new 
 		et_conductor_segment.type_conductor_circle with null record;
-	-- CS inherits a linewidth of type_track_width. Use a dedicated type
-	-- for linewidth if requried.
 
 
 	-- Converts the outer edge of a circle to a polygon:	
