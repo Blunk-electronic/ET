@@ -455,14 +455,14 @@ package et_kicad.pcb is
 
 	-- The net class type used here extends the basic net class by the list
 	-- of net names:
-	type type_net_class is new et_net_class.type_net_class with record
+	type type_net_class_kicad is new et_net_class.type_net_class with record
 		net_names : type_nets_of_class.list;
 	end record;
 
 	-- Since there are lots of net classes, they are stored in a map:
 	package type_net_classes is new ordered_maps (
 		key_type		=> pac_net_class_name.bounded_string,
-		element_type	=> type_net_class,
+		element_type	=> type_net_class_kicad,
 		"<"				=> pac_net_class_name."<"
 		);
 

@@ -491,7 +491,7 @@ package body et_kicad.pcb is
 		net_class_via_restring			: type_distance_positive;
 		
 		net_class_name 	: pac_net_class_name.bounded_string;	-- PWR, HIGH_CURRENT, ...
-		net_class 		: type_net_class;
+		net_class 		: type_net_class_kicad;
 
 		-- SEGMENTS, VIAS, POLYGONS
 		segment			: type_segment;
@@ -5243,7 +5243,7 @@ package body et_kicad.pcb is
 						-- copy net class name and its basic properties
 						module.net_classes.insert (
 							key 		=> key (net_class_cursor_board), -- class name
-							new_item	=> et_net_class.type_net_class (element (net_class_cursor_board))); -- properties
+							new_item	=> type_net_class (element (net_class_cursor_board))); -- properties
 
 						-- From the board, get the net names of the current class:
 						nets_of_class := element (net_class_cursor_board).net_names;
