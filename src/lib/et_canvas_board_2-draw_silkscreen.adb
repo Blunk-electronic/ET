@@ -45,7 +45,6 @@ with et_modes.board;
 with et_board_ops.text;			use et_board_ops.text;
 with et_canvas_tool;
 with et_schematic;
-with et_pcb;
 
 
 separate (et_canvas_board_2)
@@ -165,6 +164,7 @@ is
 		use pac_text;
 		v_text : type_vector_text;
 
+		use et_pcb;
 		use pac_draw_text;
 	begin
 		draw_origin (element (c).position);

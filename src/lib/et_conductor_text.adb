@@ -44,19 +44,6 @@ with et_mirroring;				use et_mirroring;
 
 package body et_conductor_text is
 
-
-	function face_to_mirror (
-		f : in type_face)
-		return type_vector_text_mirrored 
-	is begin
-		case f is
-			when TOP	=> return MIRROR_NO;
-			when BOTTOM	=> return MIRROR_ALONG_Y_AXIS;
-		end case;
-	end face_to_mirror;
-
-
-
 	procedure mirror_text (
 		text	: in out type_conductor_text;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)

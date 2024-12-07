@@ -38,30 +38,19 @@
 --   to do:
 --		- separate in two packages things related to board and device package.
 
-with ada.text_io;					use ada.text_io;
-with ada.characters;				use ada.characters;
-with ada.characters.latin_1;
-with ada.characters.handling;		use ada.characters.handling;
 
-with ada.strings;					use ada.strings;
-with ada.strings.fixed;				use ada.strings.fixed;
-with ada.strings.maps;				use ada.strings.maps;
 with ada.strings.bounded; 			use ada.strings.bounded;
+
 with ada.containers; 				use ada.containers;
-
 with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-with ada.containers.ordered_sets;
 
-with et_string_processing;				use et_string_processing;
 with et_logging;						use et_logging;
 
 with et_pcb_sides;						use et_pcb_sides;
 with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
 with et_board_shapes_and_text;			use et_board_shapes_and_text;
-with et_text;
+with et_text;							use et_text;
 with et_drills;							use et_drills;
 with et_vias;							use et_vias;
 with et_device_placeholders.packages; -- use et_device_placeholders.packages;
@@ -97,6 +86,14 @@ package et_pcb is
 	use pac_contours;
 	use pac_polygons;
 	use pac_text_board;
+
+
+	-- Maps from face to mirror status of a vectorized text.
+	-- Use it for non-device related texts and placeholders.
+	function face_to_mirror (
+		f : in type_face)
+		return type_vector_text_mirrored;
+
 	
 
 -- NET CLASSES

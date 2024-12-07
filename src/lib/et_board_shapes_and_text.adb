@@ -46,16 +46,7 @@ with et_mirroring;				use et_mirroring;
 package body et_board_shapes_and_text is
 	
 
-	function face_to_mirror (f : in type_face) 
-		return et_text.type_vector_text_mirrored 
-	is 
-		use et_text;
-	begin
-		case f is
-			when TOP	=> return MIRROR_NO;
-			when BOTTOM	=> return MIRROR_ALONG_Y_AXIS;
-		end case;
-	end face_to_mirror;
+	procedure dummy is begin null; end;
 
 	
 end et_board_shapes_and_text;

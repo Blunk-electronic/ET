@@ -43,8 +43,6 @@ with et_colors;					use et_colors;
 with et_modes.board;
 with et_canvas_tool;
 with et_schematic;
-with et_pcb;
-
 
 
 separate (et_canvas_board_2)

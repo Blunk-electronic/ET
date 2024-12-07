@@ -57,16 +57,12 @@ with et_modes.board;
 with et_modes.schematic;
 with et_module_names;				use et_module_names;
 
--- with et_assembly_variants;			use et_assembly_variants;
-with et_canvas_schematic_2;			--use et_canvas_schematic;
+with et_canvas_schematic_2;
 with et_canvas_tool;
 with et_display.board;
--- with et_colors;
 with et_colors.board;
--- with et_modes.board;
 with et_board_ops.grid;
--- with et_pcb_stack;
--- with et_design_rules;
+with et_pcb;
 
 with et_text;
 with et_canvas_board_lines;
@@ -352,6 +348,7 @@ package body et_canvas_board_2 is
 		use et_canvas_board_texts;
 		use et_modes.board;
 		use et_board_shapes_and_text;
+		use et_pcb;
 		use pac_text;
 
 		v_text : type_vector_text;

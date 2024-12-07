@@ -68,7 +68,6 @@ with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_packages;					use et_packages;
 with et_terminals;
 
-with et_pcb;
 with et_pcb_contour;
 with et_pcb_stack;					use et_pcb_stack;
 

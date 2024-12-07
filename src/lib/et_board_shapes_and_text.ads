@@ -95,11 +95,8 @@ package et_board_shapes_and_text is
 		line_width_default	=> 0.005);
 
 	
-	-- Maps from face to mirror status of a vectorized text.
-	-- Use it for non-device related texts and placeholders.
-	function face_to_mirror (f : in type_face) 
-		return et_text.type_vector_text_mirrored;
 
+	procedure dummy;
 	
 	
 end et_board_shapes_and_text;

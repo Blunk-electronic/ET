@@ -46,7 +46,6 @@ with et_modes.board;
 with et_board_ops.text;			use et_board_ops.text;
 with et_canvas_tool;
 with et_schematic;
-with et_pcb;
 
 
 separate (et_canvas_board_2)
@@ -166,6 +165,7 @@ is
 	
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
 		-- CS use rename
+		use et_pcb;
 		use pac_text;
 		v_text : type_vector_text;
 

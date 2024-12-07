@@ -64,9 +64,6 @@ package et_conductor_text is
 	use et_board_shapes_and_text.pac_text_board;
 
 
-	function face_to_mirror (
-		f : in type_face)
-		return type_vector_text_mirrored;
 
 
 	type type_conductor_text 

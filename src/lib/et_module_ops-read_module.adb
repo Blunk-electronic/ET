@@ -4995,8 +4995,6 @@ is
 			-- The board_text has been a general thing until now. 
 			-- Depending on the layer category and the side of the board (face) the board_text
 			-- is now assigned to the board where it belongs to.
-
-				use et_board_shapes_and_text;
 				
 				procedure insert_text (
 					layer_cat	: in type_layer_category_non_conductor)

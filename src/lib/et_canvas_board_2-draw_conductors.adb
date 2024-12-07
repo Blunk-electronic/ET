@@ -38,7 +38,6 @@
 
 --with ada.text_io;					use ada.text_io;
 
-with et_pcb;						use et_pcb;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
 with et_fill_zones;					use et_fill_zones;
 with et_fill_zones.boards;			use et_fill_zones.boards;
@@ -71,6 +70,8 @@ separate (et_canvas_board_2)
 
 procedure draw_conductors is
 
+	use et_pcb;
+	
 	-- This procedure draws the text that is being placed in a
 	-- conductor layer.
 	-- The properties are taken from variable et_canvas_board_texts.preliminary_text.

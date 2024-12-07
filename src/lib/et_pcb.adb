@@ -36,18 +36,36 @@
 --   history of changes:
 --
 
+with ada.text_io;					use ada.text_io;
+with ada.characters;				use ada.characters;
+with ada.characters.latin_1;
+with ada.characters.handling;		use ada.characters.handling;
+
+with ada.strings;					use ada.strings;
+with ada.strings.fixed;				use ada.strings.fixed;
+with ada.strings.maps;				use ada.strings.maps;
+
 with ada.strings.unbounded;
 with ada.exceptions;
-with ada.tags;
 
-with et_mirroring;					use et_mirroring;
-with et_text;						use et_text;
-with et_route_restrict.packages;
+with et_string_processing;				use et_string_processing;
+
 
 
 package body et_pcb is
 
 
+	function face_to_mirror (
+		f : in type_face)
+		return type_vector_text_mirrored 
+	is begin
+		case f is
+			when TOP	=> return MIRROR_NO;
+			when BOTTOM	=> return MIRROR_ALONG_Y_AXIS;
+		end case;
+	end face_to_mirror;
+
+	
 
 	-- NET CLASSES
 	function to_string (net_class_name : in pac_net_class_name.bounded_string) return string is
