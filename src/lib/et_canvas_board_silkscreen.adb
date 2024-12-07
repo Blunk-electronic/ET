@@ -47,7 +47,7 @@ with et_logging;						use et_logging;
 with et_modes.board;
 with et_undo_redo;
 with et_commit;
-with et_keywords;						use et_keywords;
+with et_object_status;
 
 
 package body et_canvas_board_silkscreen is
@@ -58,7 +58,7 @@ package body et_canvas_board_silkscreen is
 	procedure reset_preliminary_object is begin
 		preliminary_object.ready := false;
 		preliminary_object.tool := MOUSE;
-		clear_proposed_objects;
+		reset_proposed_lines (active_module, log_threshold + 1);
 	end reset_preliminary_object;
 
 
@@ -66,207 +66,120 @@ package body et_canvas_board_silkscreen is
 	use pac_silk_arcs;
 	use pac_silk_circles;
 
-	
-	-- Returns true if the given object matches the object indicated
-	-- by cursor selected_object (see above):
-	function is_selected (
-		line_cursor	: in pac_silk_lines.cursor;
-		face		: in type_face)
-		return boolean
-	is begin
-		if proposed_objects.is_empty then
-			return false;
-		else
-			if selected_object /= pac_proposed_objects.no_element then
-				declare
-					candidate : type_silk_line renames element (line_cursor);
-					selected : type_proposed_object renames element (selected_object);
-				begin
-					if selected.line_face = face then
-						-- CS test selected.shape
-						if candidate = selected.line then
-							return true;
-						else
-							return false;
-						end if;
-					else
-						return false;
-					end if;
-				end;
-			else
-				return false;
-			end if;
-		end if;
-	end is_selected;
-	
-
-	function is_selected (
-		arc_cursor	: in pac_silk_arcs.cursor;
-		face		: in type_face)
-		return boolean
-	is begin
-		if proposed_objects.is_empty then
-			return false;
-		else
-			if selected_object /= pac_proposed_objects.no_element then
-				declare
-					candidate : type_silk_arc renames element (arc_cursor);
-					selected : type_proposed_object renames element (selected_object);
-				begin
-					if selected.arc_face = face then
-						-- CS test selected.shape
-						if candidate = selected.arc then
-							return true;
-						else
-							return false;
-						end if;
-					else
-						return false;
-					end if;
-				end;
-			else
-				return false;
-			end if;
-		end if;
-	end is_selected;
 
 
-	function is_selected (
-		circle_cursor	: in pac_silk_circles.cursor;
-		face			: in type_face)
-		return boolean
-	is begin
-		if proposed_objects.is_empty then
-			return false;
-		else
-			if selected_object /= pac_proposed_objects.no_element then
-				declare
-					candidate : type_silk_circle renames element (circle_cursor);
-					selected : type_proposed_object renames element (selected_object);
-				begin
-					if selected.circle_face = face then
-						-- CS test selected.shape
-						if candidate = selected.circle then
-							return true;
-						else
-							return false;
-						end if;
-					else
-						return false;
-					end if;
-				end;
-			else
-				return false;
-			end if;
-		end if;
-	end is_selected;
-
-	
-	
-	-- Clears the proposed_objects.
-	-- Resets selected_object:
-	procedure clear_proposed_objects is begin
-		proposed_objects.clear;
-		selected_object := pac_proposed_objects.no_element;
-	end clear_proposed_objects;
 
 
-	function get_position (
-		object_cursor : in pac_proposed_objects.cursor)
-		return string
-	is
-		object : type_proposed_object renames element (object_cursor);
-		separator : constant string := ", ";
+	-- Outputs the selected line in the status bar:
+	procedure show_selected_line (
+		selected		: in type_line_segment;
+		clarification	: in boolean := false)
+	is 
+		praeamble : constant string := "selected: ";
 	begin
-		case object.shape is
-			when LINE =>
-				return keyword_face & to_string (object.line_face) & separator
-					& to_string (object.line);
-
-			when ARC =>
-				return keyword_face & to_string (object.arc_face) & separator
-					& to_string (object.arc);
-				
-			when CIRCLE =>
-				return keyword_face & to_string (object.circle_face) & separator
-					& to_string (object.circle);
-		end case;
-	end get_position;
+		if clarification then
+			set_status (praeamble & to_string (element (selected.cursor))
+				& ". " & status_next_object_clarification);
+			-- CS face
+		else
+			set_status (praeamble & to_string (element (selected.cursor)));
+			-- CS face
+		end if;		
+	end show_selected_line;
 
 	
 
-	procedure select_object is begin
-		if next (selected_object) /= pac_proposed_objects.no_element then
-			next (selected_object);
-		else
-			selected_object := proposed_objects.first;
-		end if;
 
-		-- show the position of the selected object in the status bar
-		set_status ("selected object: " & get_position (selected_object)
-			& ". " & status_next_object_clarification);
+	
+	procedure select_object is 
+		use et_object_status;
+		selected_line : type_line_segment;
+	begin
+		-- On every call of this procedure we advance from one
+		-- proposed segment to the next in a circular manner.
 
+		selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
+
+		modify_status (
+			module_cursor	=> active_module, 
+			operation		=> (CLEAR, SELECTED),
+			line_cursor		=> selected_line.cursor, 
+			log_threshold	=> log_threshold + 1);
+		
+		next_proposed_line (active_module, selected_line, log_threshold + 1);
+		
+		modify_status (
+			module_cursor	=> active_module, 
+			operation		=> (SET, SELECTED),
+			line_cursor		=> selected_line.cursor, 
+			log_threshold	=> log_threshold + 1);
+		
+		show_selected_line (selected_line, clarification => true);
 	end select_object;
+
+	
+
+
 
 
 	procedure find_objects (
 	   point : in type_vector_model)
 	is 
 		face : type_face := TOP;
-		
-		lines : pac_silk_lines.list;
-		arcs : pac_silk_arcs.list;
-		circles : pac_silk_circles.list;
 
-		procedure query_line (c : in pac_silk_lines.cursor) is begin
-			proposed_objects.append ((
-				shape		=> LINE,
-				line_face	=> face,
-				line		=> element (c)));
-		end query_line;
-
+		count : natural := 0;
+		count_total : natural := 0;
 		
-		procedure collect is 
-			use et_board_ops.silkscreen;
+		procedure select_first_proposed is
+			proposed_line : type_line_segment;
+			use et_object_status;
 		begin
-			lines := get_lines (active_module, face, point, 
-				get_catch_zone (et_canvas_board_2.catch_zone), 
-				log_threshold + 1);
-			
-			lines.iterate (query_line'access);
+			proposed_line := get_first_line (active_module, PROPOSED, log_threshold + 1);
 
-			-- CS arcs, circles
-		end collect;
+			modify_status (active_module, proposed_line.cursor, (SET, SELECTED), log_threshold + 1);
+
+			-- If only one line found, then show it in the status bar:
+			if count = 1 then
+				show_selected_line (proposed_line);
+			end if;
+		end select_first_proposed;
+
 	
 	begin
 		log (text => "locating objects ...", level => log_threshold);
 		log_indentation_up;
 
-		-- Collect all objects in the vicinity of the given point
-		-- and transfer them to the list proposed_objects:
+		-- Propose lines in the vicinity of the given point:
 		-- CS should depend on enabled top/bottom side
-		face := TOP;
-		collect;
-		face := BOTTOM;
-		collect;
+		propose_lines (active_module, point, TOP, 
+			get_catch_zone (et_canvas_board_2.catch_zone), 
+			count, log_threshold + 1);
+		
+		count_total := count;
+		
+		propose_lines (active_module, point, BOTTOM, 
+			get_catch_zone (et_canvas_board_2.catch_zone), 
+			count, log_threshold + 1);
+		
+		count_total := count_total + count;
+		
+		-- CS arcs, circles
 		
 		-- evaluate the number of objects found here:
-		case proposed_objects.length is
+		case count_total is
 			when 0 =>
 				reset_request_clarification;
 				reset_preliminary_object;
 				
 			when 1 =>
 				preliminary_object.ready := true;
-				selected_object := proposed_objects.first;
+				select_first_proposed;
 				reset_request_clarification;
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
 				set_request_clarification;
-				
-				-- preselect the object
-				selected_object := proposed_objects.first;
+				select_first_proposed;
 		end case;
 		
 		log_indentation_down;
@@ -286,40 +199,43 @@ package body et_canvas_board_silkscreen is
 
 		-- Assigns the final position after the move to the selected object.
 		-- Resets variable preliminary_object:
-		procedure finalize is 
+		procedure finalize is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
 			use et_board_ops.silkscreen;
+			use et_object_status;
+
+			selected_line : type_line_segment;
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
-			if selected_object /= pac_proposed_objects.no_element then
+			selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
+
+			if selected_line.cursor /= pac_silk_lines.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
+				
+				-- case object.shape is
+				-- 	when LINE =>
+						move_line (
+							module_cursor	=> active_module,
+							face			=> selected_line.face,
+							line			=> element (selected_line.cursor),
+							point_of_attack	=> preliminary_object.point_of_attack,
+							-- coordinates		=> ABSOLUTE,
+							destination		=> point,
+							log_threshold	=> log_threshold);
 
-				declare
-					object : type_proposed_object renames element (selected_object);
-				begin
-					case object.shape is
-						when LINE =>
-							move_line (
-								module_cursor	=> active_module,
-								face			=> object.line_face,
-								line			=> object.line,
-								point_of_attack	=> preliminary_object.point_of_attack,
-								destination		=> point,
-								log_threshold	=> log_threshold);
+				-- 	when ARC =>
+				-- 		null; -- CS
+				-- 
+				-- 	when CIRCLE =>
+				-- 		null; -- CS
+				-- end case;
 
-						when ARC =>
-							null; -- CS
-
-						when CIRCLE =>
-							null; -- CS
-					end case;
-				end;
 
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
@@ -354,8 +270,7 @@ package body et_canvas_board_silkscreen is
 
 			else
 				-- Here the clarification procedure ends.
-				-- A object has been selected (indicated by selected_object)
-				-- via procedure select_object.
+				-- An object has been selected via procedure select_object.
 				-- By setting preliminary_object.ready, the selected
 				-- object will be drawn at the tool position
 				-- when objects are drawn on the canvas.
@@ -364,7 +279,6 @@ package body et_canvas_board_silkscreen is
 				preliminary_object.ready := true;
 				reset_request_clarification;
 			end if;
-
 			
 		else
 			finalize;
@@ -382,37 +296,38 @@ package body et_canvas_board_silkscreen is
 		-- Deletes the selected object.
 		-- Resets variable preliminary_object:
 		procedure finalize is 
+			use et_board_ops.silkscreen;
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
-			use et_board_ops.silkscreen;
+			use et_object_status;
+
+			selected_line : type_line_segment;
 		begin
 			log (text => "finalizing delete ...", level => log_threshold);
 			log_indentation_up;
 
-			if selected_object /= pac_proposed_objects.no_element then
+			selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
+
+			if selected_line.cursor /= pac_silk_lines.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
-				
-				declare
-					object : type_proposed_object renames element (selected_object);
-				begin
-					case object.shape is
-						when LINE =>
+
+					-- case object.shape is
+						-- when LINE =>
 							delete (
 								module_cursor	=> active_module,
-								face			=> object.line_face,
-								line			=> object.line,
+								face			=> selected_line.face,
+								line			=> element (selected_line.cursor),
 								log_threshold	=> log_threshold);
 
-						when ARC =>
-							null; -- CS
-
-						when CIRCLE =>
-							null; -- CS
-					end case;
-				end;
+					-- 	when ARC =>
+					-- 		null; -- CS
+     -- 
+					-- 	when CIRCLE =>
+					-- 		null; -- CS
+					-- end case;
 
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
@@ -443,14 +358,14 @@ package body et_canvas_board_silkscreen is
 			end if;
 		else
 			-- Here the clarification procedure ends.
-			-- An object has been selected (indicated by selected_object)
+			-- An object has been selected
 			-- via procedure selected_object.
 
 			finalize;
 			reset_request_clarification;
 		end if;
 	end delete_object;
-
+	
 	
 end et_canvas_board_silkscreen;
 

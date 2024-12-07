@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -84,74 +84,11 @@ package et_canvas_board_silkscreen is
 	procedure reset_preliminary_object;
 
 	
-	-- When objects are proposed, we classify them by
-	-- their shape and face:
-	type type_proposed_object (shape : type_shape) is record
-		case shape is
-			when LINE =>
-				line_face	: type_face;
-				line		: type_silk_line; -- the line candidate itself
-	
-			when ARC =>
-				arc_face	: type_face;
-				arc			: type_silk_arc;  -- the arc candidate itself
-
-			when CIRCLE =>
-				circle_face	: type_face;
-				circle		: type_silk_circle;  -- the circle candidate itself
-
-		end case;
-	end record;
-
-
-	-- All the proposed objects are collected via a list:
-	package pac_proposed_objects is new indefinite_doubly_linked_lists (type_proposed_object);
-	use pac_proposed_objects;
-
-	-- Here we store the proposed objects:
-	proposed_objects : pac_proposed_objects.list;
-
-	-- A selected object among the proposed objects is held here.
-	-- After clarification (among the proposed objects),
-	-- this cursor points to the selected object candidate:
-	selected_object : pac_proposed_objects.cursor;
-	
-	
-	
-	-- Returns true if the given object matches the object indicated
-	-- by cursor selected_object (see above):
-	function is_selected (
-		line_cursor	: in pac_silk_lines.cursor;
-		face		: in type_face)
-		return boolean;
-
-	function is_selected (
-		arc_cursor	: in pac_silk_arcs.cursor;
-		face		: in type_face)
-		return boolean;
-
-	function is_selected (
-		circle_cursor	: in pac_silk_circles.cursor;
-		face			: in type_face)
-		return boolean;
-	
-	
-	-- Clears the proposed_objects.
-	-- Resets selected_object:
-	procedure clear_proposed_objects;
-
-
-	-- Returns the positions of (start, end, center) of the given proposed 
-	-- object as string:
-	function get_position (
-		object_cursor : in pac_proposed_objects.cursor)
-		return string;
-
-	
 
 	-- Advances the cursors in variable selected_object 
 	-- on each call of this procedure.
 	procedure select_object;
+
 
 
 	-- Locates objects in the vicinity of the given point
