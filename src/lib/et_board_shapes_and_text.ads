@@ -36,10 +36,10 @@
 --   history of changes:
 --
 --   to do:
+--   1. find a more suitable name for this package
 
 
 with et_text;
-with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_geometry_2a;
 with et_geometry_2a.contours;
@@ -48,9 +48,6 @@ with et_geometry_1.et_polygons.clipping;
 with et_geometry_1.et_polygons.cropping;
 with et_geometry_1.et_polygons.union;
 with et_geometry_1.et_polygons.offsetting;
-
-with et_design_rules_board;		use et_design_rules_board;
-with et_logging;				use et_logging;
 
 
 package et_board_shapes_and_text is
@@ -94,10 +91,6 @@ package et_board_shapes_and_text is
 		line_width_max		=> linewidth_fab_max,
 		line_width_default	=> 0.005);
 
-	
-
-	procedure dummy;
-	
 	
 end et_board_shapes_and_text;
 
