@@ -266,12 +266,6 @@ package et_canvas_board_tracks is
 		tool			: type_tool := MOUSE;
 		
 		point_of_attack : type_vector_model;
-		
-		-- net_name		: pac_net_name.bounded_string := no_name;
-		shape			: type_shape := LINE;
-		signal_layer	: type_signal_layer := signal_layer_default;
-		line			: type_conductor_line;
-		arc				: type_conductor_arc;
 	end record;
 
 	-- The place where preliminary information of
