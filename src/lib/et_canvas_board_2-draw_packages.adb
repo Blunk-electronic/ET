@@ -881,15 +881,14 @@ is
 		end draw_route_restrict;
 
 
+
 		
 	-- VIA RESTRICT
+
 		procedure draw_via_restrict is 
 			use et_via_restrict;
 			use et_via_restrict.packages;
 
-			use pac_via_restrict_lines;			
-			use pac_via_restrict_arcs;
-			use pac_via_restrict_circles;
 			use pac_via_restrict_zones;
 			use pac_via_restrict_cutouts;
 			
@@ -898,43 +897,6 @@ is
 
 			
 			procedure draw is
-
-				procedure query_line (c : in pac_via_restrict_lines.cursor) is
-					line : type_via_restrict_line renames element (c);
-				begin
-					-- The line has already been moved, flipped and rotated
-					-- to the final position. So we do not pass the 
-					-- position and rotation of the package.
-					-- Likewise there is no need to mirror anything here:
-					draw_line (
-						line		=> line,
-						width		=> line.width,
-						do_stroke	=> true);
-				end query_line;
-
-				
-				procedure query_arc (c : in pac_via_restrict_arcs.cursor) is
-					arc : type_via_restrict_arc renames element (c);
-				begin
-					-- See comments in procedure query_line.
-					draw_arc (
-						arc			=> arc,
-						width		=> arc.width,
-						do_stroke	=> true);
-				end query_arc;
-				
-
-				procedure query_circle (c : in pac_via_restrict_circles.cursor) is
-					circle : type_via_restrict_circle renames element (c);
-				begin
-					-- See comments in procedure query_line.
-					draw_circle (
-						circle		=> circle,
-						filled		=> NO,
-						width		=> circle.width,
-						do_stroke	=> true);
-				end query_circle;
-				
 
 				procedure query_zone (c : in pac_via_restrict_zones.cursor) is
 					zone : type_via_restrict_zone renames element (c);
@@ -956,10 +918,6 @@ is
 				end query_cutout;
 				
 			begin
-				objects.lines.iterate (query_line'access);
-				objects.arcs.iterate (query_arc'access);
-				objects.circles.iterate (query_circle'access);
-
 				objects.zones.iterate (query_zone'access);
 				objects.cutouts.iterate (query_cutout'access);				
 			end draw;

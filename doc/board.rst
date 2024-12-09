@@ -547,14 +547,13 @@ Via Restrict Objects
 ++++++++++++++++++++
 
 
-Objects in via restrict layers are to be drawn the same
-way as route restrict objects (see above). The only difference
-is to use the noun via_restrict instead as shown in this example:
+In the via restrict layers areas can be specified
+where no vias a allowed.
 
 
 	.. code-block::
 
-		draw via_restrict [1] 0.2 line 50 30 70 30
+		draw via_restrict [1] zone line 0 0 line 100 0 line 100 100 line 0 100
 		
 		
 

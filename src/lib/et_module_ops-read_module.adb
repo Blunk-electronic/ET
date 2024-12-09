@@ -4082,7 +4082,7 @@ is
 						new_item	=> (contour with signal_layers));
 				end do_it;
 									
-			begin -- insert_polygon_route_restrict
+			begin
 				update_element (
 					container	=> generic_modules,
 					position	=> module_cursor,
@@ -4094,106 +4094,9 @@ is
 				clear (signal_layers);
 			end insert_polygon_route_restrict;
 
-			
-			procedure insert_line_via_restrict is
-				use et_pcb_coordinates_2;
-				use pac_geometry_2;
-				use et_via_restrict.boards;
-				use et_pcb_stack;
-				use type_signal_layers;
-				use et_pcb_rw;
-				
-				procedure do_it (
-					module_name	: in pac_module_name.bounded_string;
-					module		: in out type_generic_module) is
-				begin
-					pac_via_restrict_lines.append (
-						container	=> module.board.via_restrict.lines,
-						new_item	=> (type_line (board_line) with 
-										board_line_width, signal_layers));
-					
-				end do_it;
-									
-			begin -- insert_line_via_restrict
-				update_element (
-					container	=> generic_modules,
-					position	=> module_cursor,
-					process		=> do_it'access);
-
-				-- clean up for next board line
-				board_reset_line;
-
-				clear (signal_layers);
-			end insert_line_via_restrict;
 
 			
-			procedure insert_arc_via_restrict is
-				use et_pcb_coordinates_2;
-				use pac_geometry_2;
-				use et_via_restrict.boards;
-				use et_pcb_stack;
-				use type_signal_layers;
-				use et_pcb_rw;
-				
-				
-				procedure do_it (
-					module_name	: in pac_module_name.bounded_string;
-					module		: in out type_generic_module) is
-				begin
-					pac_via_restrict_arcs.append (
-						container	=> module.board.via_restrict.arcs,
-						new_item	=> (type_arc (board_arc) with 
-										board_line_width, signal_layers));
-					
-				end do_it;
-									
-			begin -- insert_arc_via_restrict
-				update_element (
-					container	=> generic_modules,
-					position	=> module_cursor,
-					process		=> do_it'access);
-
-				-- clean up for next board line
-				board_reset_arc;
-
-				clear (signal_layers);
-			end insert_arc_via_restrict;
-
-			
-			procedure insert_circle_via_restrict is
-				use et_pcb_coordinates_2;
-				use pac_geometry_2;
-				use et_via_restrict.boards;
-				use et_pcb_stack;
-				use type_signal_layers;
-				use et_pcb_rw;
-				
-				
-				procedure do_it (
-					module_name	: in pac_module_name.bounded_string;
-					module		: in out type_generic_module) is
-				begin
-					pac_via_restrict_circles.append (
-						container	=> module.board.via_restrict.circles,
-						new_item	=> (type_circle (board_circle) with 
-										board_line_width, signal_layers));
-					
-				end do_it;
-									
-			begin -- insert_circle_via_restrict
-				update_element (
-					container	=> generic_modules,
-					position	=> module_cursor,
-					process		=> do_it'access);
-
-				-- clean up for next board line
-				board_reset_circle;
-
-				clear (signal_layers);
-			end insert_circle_via_restrict;
-
-			
-			procedure insert_polygon_via_restrict is
+			procedure insert_zone_via_restrict is
 				use et_pcb_coordinates_2;
 				use pac_geometry_2;
 				use et_board_shapes_and_text.pac_contours;
@@ -4213,7 +4116,7 @@ is
 						new_item	=> (contour with signal_layers));
 				end do_it;
 									
-			begin -- insert_polygon_via_restrict
+			begin
 				update_element (
 					container	=> generic_modules,
 					position	=> module_cursor,
@@ -4223,7 +4126,7 @@ is
 				board_reset_contour;
 
 				clear (signal_layers);
-			end insert_polygon_via_restrict;
+			end insert_zone_via_restrict;
 
 
 			
@@ -5411,9 +5314,6 @@ is
 						when SEC_ROUTE_RESTRICT =>
 							insert_line_route_restrict;
 
-						when SEC_VIA_RESTRICT =>
-							insert_line_via_restrict;
-
 						when SEC_CONDUCTOR =>
 							insert_line_track;
 
@@ -5457,10 +5357,6 @@ is
 							board_check_arc (log_threshold + 1);
 							insert_arc_route_restrict;
 
-						when SEC_VIA_RESTRICT =>
-							board_check_arc (log_threshold + 1);
-							insert_arc_via_restrict;
-
 						when SEC_CONDUCTOR =>
 							board_check_arc (log_threshold + 1);
 							insert_arc_track;
@@ -5488,9 +5384,6 @@ is
 
 						when SEC_ROUTE_RESTRICT =>
 							insert_circle_route_restrict;
-
-						when SEC_VIA_RESTRICT =>
-							insert_circle_via_restrict;
 
 						when SEC_CONDUCTOR =>
 							insert_circle_track;
@@ -5553,7 +5446,7 @@ is
 							insert_polygon_route_restrict;
 
 						when SEC_VIA_RESTRICT =>
-							insert_polygon_via_restrict;
+							insert_zone_via_restrict;
 
 						when SEC_CONDUCTOR =>
 							insert_polygon_conductor;

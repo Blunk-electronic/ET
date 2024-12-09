@@ -41,8 +41,6 @@ with ada.text_io;				use ada.text_io;
 with et_display.board;			use et_display.board;
 with et_colors;					use et_colors;
 -- with et_conductor_text.boards;	use et_conductor_text.boards;
--- with et_route_restrict;			use et_route_restrict;
--- with et_via_restrict;
 with et_via_restrict.boards;	use et_via_restrict.boards;
 with et_schematic;
 with et_pcb_stack;
@@ -53,10 +51,7 @@ separate (et_canvas_board_2)
 
 
 procedure draw_via_restrict is
-	
-	use pac_via_restrict_lines;
-	use pac_via_restrict_arcs;
-	use pac_via_restrict_circles;
+
 	use pac_via_restrict_contours;
 	use pac_via_restrict_cutouts;
 
@@ -64,48 +59,6 @@ procedure draw_via_restrict is
 	-- CS must be overwritten according to select status:
 	brightness : type_brightness := NORMAL;
 
-	
-	
-	procedure query_line (c : in pac_via_restrict_lines.cursor) is 
-		line : type_via_restrict_line renames element (c);
-	begin
-		-- Draw the line if restrict layer is enabled:
-		if via_restrict_layer_enabled (line.layers) then
-		
-			draw_line (line => line, width => line.width, do_stroke => true);
-		end if;
-	end query_line;
-
-	
-	procedure query_arc (c : in pac_via_restrict_arcs.cursor) is 
-		arc : type_via_restrict_arc renames element (c);
-	begin
-		-- Draw the arc if restrict layer is enabled:
-		if via_restrict_layer_enabled (arc.layers) then
-			
-			draw_arc (
-				arc			=> arc,
-				width		=> arc.width,
-				do_stroke	=> true);
-
-		end if;
-	end query_arc;
-
-	
-	procedure query_circle (c : in pac_via_restrict_circles.cursor) is 
-		circle : type_via_restrict_circle renames element (c);
-	begin
-		-- Draw the circle if restrict layer is enabled:
-		if via_restrict_layer_enabled (circle.layers) then
-			
-			draw_circle (
-				circle		=> circle,
-				filled		=> NO,
-				width		=> circle.width,
-				do_stroke	=> true);
-
-		end if;
-	end query_circle;
 
 	
 	procedure query_polygon (c : in pac_via_restrict_contours.cursor) is -- rename to query_contour
@@ -151,9 +104,6 @@ procedure draw_via_restrict is
 	begin
 		set_color_via_restrict (brightness);
 		
-		iterate (module.board.via_restrict.lines, query_line'access);
-		iterate (module.board.via_restrict.arcs, query_arc'access);
-		iterate (module.board.via_restrict.circles, query_circle'access);
 		iterate (module.board.via_restrict.contours, query_polygon'access);
 		iterate (module.board.via_restrict.cutouts, query_cutout'access);
 	end query_items;

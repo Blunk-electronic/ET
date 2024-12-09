@@ -579,38 +579,10 @@ is
 				module		: in type_generic_module)
 			is 
 				use et_via_restrict.boards;
-				use pac_via_restrict_lines;
-				use pac_via_restrict_arcs;
-				use pac_via_restrict_circles;
 				use pac_via_restrict_contours;
 				use pac_via_restrict_cutouts;
 				
 				restrict : type_via_restrict renames module.board.via_restrict;
-
-
-				procedure query_line (c : in pac_via_restrict_lines.cursor) is
-					line : type_via_restrict_line renames element (c);
-				begin
-					b := get_bounding_box (line, line.width);
-					merge_areas (bbox_new, b);
-				end query_line;
-
-				
-				procedure query_arc (c : in pac_via_restrict_arcs.cursor) is
-					arc : type_via_restrict_arc renames element (c);
-				begin
-					b := get_bounding_box (arc, arc.width);
-					merge_areas (bbox_new, b);
-				end query_arc;
-
-
-				procedure query_circle (c : in pac_via_restrict_circles.cursor) is
-					circle : type_via_restrict_circle renames element (c);
-				begin
-					b := get_bounding_box (circle, circle.width);
-					merge_areas (bbox_new, b);
-				end query_circle;
-
 
 				procedure query_zone (c : in pac_via_restrict_contours.cursor) is
 					zone : type_via_restrict_contour renames element (c);
@@ -629,9 +601,6 @@ is
 
 				
 			begin
-				restrict.lines.iterate (query_line'access);
-				restrict.arcs.iterate (query_arc'access);
-				restrict.circles.iterate (query_circle'access);
 				restrict.contours.iterate (query_zone'access);
 				restrict.cutouts.iterate (query_cutout'access);
 			end query_via_restrict;
@@ -1438,53 +1407,8 @@ is
 					use et_via_restrict;
 					use et_via_restrict.packages;
 					
-					use pac_via_restrict_lines;
-					use pac_via_restrict_arcs;
-					use pac_via_restrict_circles;
 					use pac_via_restrict_zones;
 					use pac_via_restrict_cutouts;
-
-					
-					procedure query_line (c : in pac_via_restrict_lines.cursor) is
-						line : type_via_restrict_line renames element (c);
-					begin
-						b := get_bounding_box (
-							line		=> line,
-							width		=> line.width,
-							offset_1	=> package_position,
-							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
-						
-						merge_areas (bbox_new, b);
-					end query_line;
-
-
-					procedure query_arc (c : in pac_via_restrict_arcs.cursor) is
-						arc : type_via_restrict_arc renames element (c);
-					begin
-						b := get_bounding_box (
-							arc 		=> arc,
-							width		=> arc.width,
-							offset_1	=> package_position,
-							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
-
-						merge_areas (bbox_new, b);
-					end query_arc;
-
-					
-					procedure query_circle (c : in pac_via_restrict_circles.cursor) is
-						circle : type_via_restrict_circle renames element (c);
-					begin
-						b := get_bounding_box (
-							circle		=> circle,
-							width		=> circle.width,
-							offset_1	=> package_position,
-							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
-
-						merge_areas (bbox_new, b);
-					end query_circle;
 
 
 					procedure query_zone (c : in pac_via_restrict_zones.cursor) is 
@@ -1503,15 +1427,6 @@ is
 					packge : type_package_model renames element (package_cursor);
 				
 				begin
-					packge.via_restrict.top.lines.iterate (query_line'access);
-					packge.via_restrict.bottom.lines.iterate (query_line'access);
-
-					packge.via_restrict.top.arcs.iterate (query_arc'access);
-					packge.via_restrict.bottom.arcs.iterate (query_arc'access);
-
-					packge.via_restrict.top.circles.iterate (query_circle'access);
-					packge.via_restrict.bottom.circles.iterate (query_circle'access);
-
 					packge.via_restrict.top.zones.iterate (query_zone'access);
 					packge.via_restrict.bottom.zones.iterate (query_zone'access);
 

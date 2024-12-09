@@ -1494,9 +1494,6 @@ is
 		use et_pcb_rw.restrict;
 		
 		use et_via_restrict.boards;
-		use pac_via_restrict_lines;
-		use pac_via_restrict_arcs;
-		use pac_via_restrict_circles;
 		use pac_via_restrict_contours;
 
 		use et_conductor_text;
@@ -1965,9 +1962,6 @@ is
 
 		procedure write_via_restrict is begin
 			section_mark (section_via_restrict, HEADER);
-			iterate (element (module_cursor).board.via_restrict.lines, write_line'access);
-			iterate (element (module_cursor).board.via_restrict.arcs, write_arc'access);
-			iterate (element (module_cursor).board.via_restrict.circles, write_circle'access);
 			iterate (element (module_cursor).board.via_restrict.contours, write_contour'access);
 			iterate (element (module_cursor).board.via_restrict.cutouts, write_cutout'access);
 			section_mark (section_via_restrict, FOOTER);

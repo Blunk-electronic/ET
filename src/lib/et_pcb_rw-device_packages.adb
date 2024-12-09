@@ -416,34 +416,9 @@ package body et_pcb_rw.device_packages is
 
 		
 		procedure write_via_restrict is 
-			use pac_via_restrict_lines;
-			use pac_via_restrict_arcs;
-			use pac_via_restrict_circles;
 			use pac_via_restrict_zones;
 			use pac_via_restrict_cutouts;
 
-			procedure write_line (cursor : in pac_via_restrict_lines.cursor) is 
-			begin
-				line_begin;
-				write_line (element (cursor));
-				line_end;
-			end write_line;
-
-			procedure write_arc (cursor : in pac_via_restrict_arcs.cursor) is 
-			begin
-				arc_begin;
-				write_arc (element (cursor));		
-				arc_end;
-			end write_arc;
-
-			procedure write_circle (cursor : in pac_via_restrict_circles.cursor) is 
-			begin
-				circle_begin;
-				write_circle (element (cursor));
-				write_width (element (cursor).width);
-				circle_end;
-			end write_circle;
-			
 			procedure write_zone (cursor : in pac_via_restrict_zones.cursor) is 
 			begin
 				fill_zone_begin;
@@ -467,18 +442,12 @@ package body et_pcb_rw.device_packages is
 
 			-- top
 			section_mark (section_top, HEADER);
-			iterate (packge.via_restrict.top.lines, write_line'access);
-			iterate (packge.via_restrict.top.arcs, write_arc'access);
-			iterate (packge.via_restrict.top.circles, write_circle'access);
 			iterate (packge.via_restrict.top.zones, write_zone'access);			
 			iterate (packge.via_restrict.top.cutouts, write_cutout'access);
 			section_mark (section_top, FOOTER);
 
 			-- bottom
 			section_mark (section_bottom, HEADER);
-			iterate (packge.via_restrict.bottom.lines, write_line'access);
-			iterate (packge.via_restrict.bottom.arcs, write_arc'access);
-			iterate (packge.via_restrict.bottom.circles, write_circle'access);
 			iterate (packge.via_restrict.bottom.zones, write_zone'access);			
 			iterate (packge.via_restrict.bottom.cutouts, write_cutout'access);
 			section_mark (section_bottom, FOOTER);
@@ -1666,16 +1635,6 @@ package body et_pcb_rw.device_packages is
 										board_reset_line;
 
 										
-									when SEC_VIA_RESTRICT =>
-										
-										pac_via_restrict_lines.append (
-											container	=> packge.via_restrict.top.lines,
-											new_item	=> (type_line (board_line) with board_line_width));
-
-										-- clean up for next line
-										board_reset_line;
-
-										
 									when SEC_PAD_CONTOURS_THT => add_polygon_line (board_line);
 
 									when SEC_STOPMASK_CONTOURS_THT => add_polygon_line (board_line);
@@ -1737,15 +1696,6 @@ package body et_pcb_rw.device_packages is
 										pac_route_restrict_lines.append (
 											container	=> packge.route_restrict.bottom.lines,
 											new_item	=> (type_line (board_line) with null record));
-
-										-- clean up for next line
-										board_reset_line;
-
-									when SEC_VIA_RESTRICT =>
-										
-										pac_via_restrict_lines.append (
-											container	=> packge.via_restrict.bottom.lines,
-											new_item	=> (type_line (board_line) with board_line_width));
 
 										-- clean up for next line
 										board_reset_line;
@@ -1829,14 +1779,6 @@ package body et_pcb_rw.device_packages is
 										-- clean up for next arc
 										board_reset_arc;
 
-									when SEC_VIA_RESTRICT =>										
-										pac_via_restrict_arcs.append (
-											container	=> packge.via_restrict.top.arcs,
-											new_item	=> (type_arc (board_arc) with board_line_width));
-
-										-- clean up for next arc
-										board_reset_arc;
-
 										
 									when SEC_PAD_CONTOURS_THT => add_polygon_arc (board_arc);
 									when SEC_STOPMASK_CONTOURS_THT => add_polygon_arc (board_arc);										
@@ -1901,15 +1843,7 @@ package body et_pcb_rw.device_packages is
 										-- clean up for next arc
 										board_reset_arc;
 
-									when SEC_VIA_RESTRICT =>										
-										pac_via_restrict_arcs.append (
-											container	=> packge.via_restrict.bottom.arcs,
-											new_item	=> (type_arc (board_arc) with board_line_width));
-
-										-- clean up for next arc
-										board_reset_arc;
-
-										
+									
 									when SEC_PAD_CONTOURS_THT => add_polygon_arc (board_arc);
 									when SEC_STOPMASK_CONTOURS_THT => add_polygon_arc (board_arc);									
 									when others => invalid_section;
@@ -1971,13 +1905,6 @@ package body et_pcb_rw.device_packages is
 
 										board_reset_circle; -- clean up for next circle
 
-									when SEC_VIA_RESTRICT =>										
-										pac_via_restrict_circles.append (
-											container	=> packge.via_restrict.top.circles,
-											new_item	=> (type_circle (board_circle) with board_line_width));
-
-										board_reset_circle; -- clean up for next circle
-
 								
 									when SEC_PAD_CONTOURS_THT => add_polygon_circle (board_circle);
 									when SEC_STOPMASK_CONTOURS_THT => add_polygon_circle (board_circle);									
@@ -2029,13 +1956,6 @@ package body et_pcb_rw.device_packages is
 
 										board_reset_circle; -- clean up for next circle
 
-									when SEC_VIA_RESTRICT =>										
-										pac_via_restrict_circles.append (
-											container	=> packge.via_restrict.bottom.circles,
-											new_item	=> (type_circle (board_circle) with board_line_width));
-
-										board_reset_circle; -- clean up for next circle
-
 										
 									when SEC_PAD_CONTOURS_THT => add_polygon_circle (board_circle);
 									when SEC_STOPMASK_CONTOURS_THT => add_polygon_circle (board_circle);									
@@ -2053,6 +1973,7 @@ package body et_pcb_rw.device_packages is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_ZONE =>
 						case stack.parent is
 							when SEC_TOP => 

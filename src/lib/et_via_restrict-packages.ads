@@ -42,9 +42,6 @@ with et_conductor_text.packages;
 package et_via_restrict.packages is
 	
 	type type_one_side is record
-		lines 		: pac_via_restrict_lines.list;
-		arcs		: pac_via_restrict_arcs.list;
-		circles		: pac_via_restrict_circles.list;
 		zones		: pac_via_restrict_zones.list;
 		cutouts		: pac_via_restrict_cutouts.list;
 		-- CS not sure whether this is really required.

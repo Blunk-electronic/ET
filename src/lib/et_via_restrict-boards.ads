@@ -42,34 +42,9 @@ with et_pcb_stack;				use et_pcb_stack;
 package et_via_restrict.boards is
 
 	use pac_geometry_2;
-	use pac_text_board;
 
+	procedure dummy;
 	
-	type type_via_restrict_line is new 
-		et_via_restrict.type_via_restrict_line with
-	record
-		layers	: type_signal_layers.set;
-	end record;
-	
-	package pac_via_restrict_lines is new doubly_linked_lists (type_via_restrict_line);
-
-	
-	type type_via_restrict_arc is new
-		et_via_restrict.type_via_restrict_arc with 
-	record
-		layers	: type_signal_layers.set;
-	end record;
-	
-	package pac_via_restrict_arcs is new doubly_linked_lists (type_via_restrict_arc);
-
-	
-	type type_via_restrict_circle is new
-		et_via_restrict.type_via_restrict_circle with
-	record
-		layers	: type_signal_layers.set;
-	end record;
-	
-	package pac_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
 
 	
 	type type_via_restrict_contour is new -- CS rename to type_via_restrict_zone
@@ -91,9 +66,6 @@ package et_via_restrict.boards is
 	
 	
 	type type_via_restrict is record
-		lines 		: pac_via_restrict_lines.list;
-		arcs		: pac_via_restrict_arcs.list;
-		circles		: pac_via_restrict_circles.list;
 		contours	: pac_via_restrict_contours.list; -- CS rename contours to zone
 		cutouts		: pac_via_restrict_cutouts.list;
 
@@ -102,22 +74,6 @@ package et_via_restrict.boards is
 		-- it is not fabrication relevant.
 		-- It should contain notes of the designer exclusively.
 	end record;
-
-
-	-- Logs the properties of the given line of via restrict
-	procedure line_via_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_via_restrict_lines.cursor;
-		log_threshold 	: in type_log_level);
-
-	-- Logs the properties of the given arc of via restrict
-	procedure arc_via_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_via_restrict_arcs.cursor;
-		log_threshold 	: in type_log_level);
-
-	-- CS procedure circle_via_restrict_properties
-
 
 	
 end et_via_restrict.boards;

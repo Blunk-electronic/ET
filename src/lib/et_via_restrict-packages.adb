@@ -45,9 +45,7 @@ package body et_via_restrict.packages is
 		restrict	: in out type_one_side;
 		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is begin
-		mirror_lines (restrict.lines);
-		mirror_arcs (restrict.arcs);
-		mirror_circles (restrict.circles);
+		null;
 		-- CS zones
 	end mirror_via_restrict_objects;
 	
@@ -56,9 +54,7 @@ package body et_via_restrict.packages is
 		restrict	: in out type_one_side;
 		angle		: in type_rotation_model)
 	is begin
-		rotate_lines (restrict.lines, angle);
-		rotate_arcs (restrict.arcs, angle);
-		rotate_circles (restrict.circles, angle);
+		null;
 		-- CS zones
 	end rotate_via_restrict_objects;
 
@@ -67,9 +63,7 @@ package body et_via_restrict.packages is
 		restrict	: in out type_one_side;
 		offset		: in type_distance_relative)
 	is begin
-		move_lines (restrict.lines, offset);
-		move_arcs (restrict.arcs, offset);
-		move_circles (restrict.circles, offset);
+		null;
 		-- CS zones
 	end move_via_restrict_objects;
 
@@ -82,19 +76,14 @@ package body et_via_restrict.packages is
 		scratch, result : pac_polygon_list.list;
 		
 	begin
-		-- lines:
-		result := to_polygons (restrict.lines, tolerance);
-
-		-- arcs:
-		scratch := to_polygons (restrict.arcs, tolerance);
-		result.splice (before => pac_polygon_list.no_element, source => scratch);
-
-		-- circles:
-		scratch := to_polygons_outside (restrict.circles, tolerance);
-		result.splice (before => pac_polygon_list.no_element, source => scratch);
+		-- -- circles:
+		-- scratch := to_polygons_outside (restrict.circles, tolerance);
+		-- result.splice (before => pac_polygon_list.no_element, source => scratch);
 
 		-- zones:
 		-- CS
+		null;
+		
 		return result;
 	end to_polygons;
 

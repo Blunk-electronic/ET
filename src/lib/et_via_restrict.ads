@@ -37,17 +37,16 @@
 --
 --   to do:
 
-with ada.strings;	 			use ada.strings;
+-- with ada.strings;	 			use ada.strings;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 
-with et_pcb_sides;				use et_pcb_sides;
+-- with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_mirroring;				use et_mirroring;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
-with et_contour_to_polygon;		use et_contour_to_polygon;
-with et_conductor_segment;
-with et_logging;				use et_logging;
+-- with et_contour_to_polygon;		use et_contour_to_polygon;
+-- with et_logging;				use et_logging;
 
 
 package et_via_restrict is
@@ -56,149 +55,12 @@ package et_via_restrict is
 	use pac_contours;
 	use pac_geometry_brd;
 	use pac_polygons;
-	use pac_text_board;
+
+
+
+	procedure dummy;
 	
 
-	
--- LINES:
-	
-	type type_via_restrict_line is new 
-		et_conductor_segment.type_conductor_line with null record;
-
-	
-	-- Converts a line with a given width to a polygon
-	-- with round caps on the line ends:
-	function to_polygon (
-		line 		: in type_via_restrict_line;
-		tolerance	: in type_distance_positive)
-		return type_polygon;
-
-	
-	package pac_via_restrict_lines is new doubly_linked_lists (type_via_restrict_line);
-	use pac_via_restrict_lines;
-
-
-	-- Mirrors a list of lines along the given axis:
-	procedure mirror_lines (
-		lines	: in out pac_via_restrict_lines.list;
-		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
-	
-	-- Rotates a list of lines by the given angle about the origin:
-	procedure rotate_lines (
-		lines	: in out pac_via_restrict_lines.list;
-		angle	: in type_rotation_model);
-
-	-- Moves a list of lines by the given offset:
-	procedure move_lines (
-		lines	: in out pac_via_restrict_lines.list;
-		offset	: in type_distance_relative);
-
-
-	-- Converts a list of lines to a list of polygons:
-	function to_polygons (
-		lines		: in pac_via_restrict_lines.list;
-		tolerance	: in type_distance_positive)
-		return pac_polygon_list.list;
-
-	
--- ARCS:	
-
-	
-	type type_via_restrict_arc is new 
-		et_conductor_segment.type_conductor_arc with null record;
-
-		
-	-- Converts an arce with a given width to a polygon
-	-- with round caps on the line ends:
-	function to_polygon (
-		arc 		: in type_via_restrict_arc;
-		tolerance	: in type_distance_positive)							
-		return type_polygon;
-
-	
-	package pac_via_restrict_arcs is new doubly_linked_lists (type_via_restrict_arc);
-	use pac_via_restrict_arcs;
-
-
-	-- Mirrors a list of arcs along the given axis:
-	procedure mirror_arcs (
-		arcs	: in out pac_via_restrict_arcs.list;
-		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
-	
-	-- Rotates a list of arcs by the given angle about the origin:
-	procedure rotate_arcs (
-		arcs	: in out pac_via_restrict_arcs.list;
-		angle	: in type_rotation_model);
-
-	-- Moves a list of arcs by the given offset:
-	procedure move_arcs (
-		arcs	: in out pac_via_restrict_arcs.list;
-		offset	: in type_distance_relative);
-
-
-	-- Converts a list of arcs to a list of polygons:
-	function to_polygons (
-		arcs		: in pac_via_restrict_arcs.list;
-		tolerance	: in type_distance_positive)
-		return pac_polygon_list.list;
-
-	
--- CIRCLES:
-	
-	type type_via_restrict_circle is new 
-		et_conductor_segment.type_conductor_circle with null record;
-
-
-	-- Converts the outer edge of a circle to a polygon:	
-	function to_polygon_outside (
-		circle 		: in type_via_restrict_circle;
-		tolerance	: in type_distance_positive)							
-		return type_polygon;
-
-	
-	-- Converts the inner edge of a circle to a polygon:	
-	function to_polygon_inside (
-		circle 		: in type_via_restrict_circle;
-		tolerance	: in type_distance_positive)							
-		return type_polygon;
-
-	
-	package pac_via_restrict_circles is new doubly_linked_lists (type_via_restrict_circle);
-	use pac_via_restrict_circles;
-
-
-	-- Mirrors a list of circles along the given axis:
-	procedure mirror_circles (
-		circles	: in out pac_via_restrict_circles.list;
-		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
-	
-	-- Rotates a list of circles by the given angle about the origin:
-	procedure rotate_circles (
-		circles	: in out pac_via_restrict_circles.list;
-		angle	: in type_rotation_model);
-
-	-- Moves a list of circles by the given offset:
-	procedure move_circles (
-		circles	: in out pac_via_restrict_circles.list;
-		offset	: in type_distance_relative);
-
-
-	-- Converts the outer edges of circles to a list of polygons:
-	function to_polygons_outside (
-		circles		: in pac_via_restrict_circles.list;
-		tolerance	: in type_distance_positive)
-		return pac_polygon_list.list;
-
-
-	-- Converts the inner edges of circles to a list of polygons:
-	function to_polygons_inside (
-		circles		: in pac_via_restrict_circles.list;
-		tolerance	: in type_distance_positive)
-		return pac_polygon_list.list;
-
-
-	
--- ZONES:
 	type type_via_restrict_zone is new type_contour with null record;
 	
 	package pac_via_restrict_zones is new doubly_linked_lists (type_via_restrict_zone);
@@ -210,23 +72,6 @@ package et_via_restrict is
 	package pac_via_restrict_cutouts is new doubly_linked_lists (type_via_restrict_cutout);
 	-- CS not sure whether this is really required.
 	
-	
-
-
-	-- Logs the properties of the given line of via restrict
-	procedure line_via_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_via_restrict_lines.cursor;
-		log_threshold 	: in type_log_level);
-
-	-- Logs the properties of the given arc of via restrict
-	procedure arc_via_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_via_restrict_arcs.cursor;
-		log_threshold 	: in type_log_level);
-
-	-- CS procedure circle_via_restrict_properties
-
 
 	
 end et_via_restrict;

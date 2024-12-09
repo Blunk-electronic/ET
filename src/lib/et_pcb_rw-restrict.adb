@@ -102,39 +102,6 @@ package body et_pcb_rw.restrict is
 
 -- VIA RESTRICT
 
-	procedure write_line (cursor : in pac_via_restrict_lines.cursor) is 
-		use et_pcb_stack;
-		use pac_via_restrict_lines;
-	begin
-		line_begin;
-		write_line (element (cursor));		
-		write_signal_layers (element (cursor).layers);
-		line_end;
-	end write_line;
-
-	
-	procedure write_arc (cursor : in pac_via_restrict_arcs.cursor) is 
-		use et_pcb_stack;
-		use pac_via_restrict_arcs;
-	begin
-		arc_begin;
-		write_arc (element (cursor));
-		write_signal_layers (element (cursor).layers);
-		arc_end;
-	end write_arc;
-
-	
-	procedure write_circle (cursor : in pac_via_restrict_circles.cursor) is 
-		use et_pcb_stack;		
-		use pac_via_restrict_circles;
-	begin
-		circle_begin;
-		write_circle (element (cursor));
-		write_width (element (cursor).width);
-		write_signal_layers (element (cursor).layers);
-		circle_end;
-	end write_circle;
-
 	
 	procedure write_contour (cursor : in pac_via_restrict_contours.cursor) is 
 		use et_pcb_stack;

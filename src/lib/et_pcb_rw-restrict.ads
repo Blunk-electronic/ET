@@ -46,6 +46,7 @@ package et_pcb_rw.restrict is
 	
 	
 -- ROUTE RESTRICT
+
 	use pac_route_restrict_lines;
 	use pac_route_restrict_arcs;
 	use pac_route_restrict_circles;
@@ -60,15 +61,10 @@ package et_pcb_rw.restrict is
 
 	
 -- VIA RESTRICT
-	use pac_via_restrict_lines;
-	use pac_via_restrict_arcs;
-	use pac_via_restrict_circles;
+
 	use pac_via_restrict_contours;
 	use pac_via_restrict_cutouts;
 
-	procedure write_line (cursor : in pac_via_restrict_lines.cursor);
-	procedure write_arc (cursor : in pac_via_restrict_arcs.cursor);
-	procedure write_circle (cursor : in pac_via_restrict_circles.cursor);	
 	procedure write_contour (cursor : in pac_via_restrict_contours.cursor);
 	procedure write_cutout (cursor : in pac_via_restrict_cutouts.cursor);
 

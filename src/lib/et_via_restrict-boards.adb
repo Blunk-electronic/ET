@@ -41,36 +41,8 @@
 
 package body et_via_restrict.boards is
 
-	procedure line_via_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_via_restrict_lines.cursor;
-		log_threshold 	: in type_log_level) 
-	is
-		use pac_via_restrict_lines;
-		line : type_via_restrict_line;
-	begin
-		line := element (cursor);
-		log (text => "via restrict line layers" & to_string (line.layers) & space
-			 & to_string (line), level => log_threshold);
-	end line_via_restrict_properties;
-
+	procedure dummy is begin null; end;
 	
-	procedure arc_via_restrict_properties (
-		face			: in type_face;
-		cursor			: in pac_via_restrict_arcs.cursor;
-		log_threshold 	: in type_log_level)
-	is
-		use pac_via_restrict_arcs;
-		arc : type_via_restrict_arc;
-	begin
-		arc := element (cursor);
-		log (text => "via restrict arc layers" & to_string (arc.layers) & space 
-			 & to_string (arc), level => log_threshold);
-	end arc_via_restrict_properties;
-
-
-	--CS procedure circle_via_restrict_properties
-
 	
 end et_via_restrict.boards;
 

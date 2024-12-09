@@ -43,40 +43,23 @@ with et_via_restrict.boards;				use et_via_restrict.boards;
 package et_board_ops.via_restrict is
 
 
+	-- CS draw_zone
+	-- CS delete_segment of zone contour
 
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
-
-	-- Draws a via restrict line.
-	procedure draw_via_restrict_line (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		line			: in type_via_restrict_line;
-		log_threshold	: in type_log_level);
-
-	
-	-- Draws a via restrict arc.
-	procedure draw_via_restrict_arc (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		arc				: in type_via_restrict_arc;
-		log_threshold	: in type_log_level);
-
-	
-	-- Draws a via restrict circle.
-	procedure draw_via_restrict_circle (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		circle			: in type_via_restrict_circle;
-		log_threshold	: in type_log_level);
 
 	
 	-- Deletes the segment of via restrict that crosses the given point.
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-	procedure delete_via_restrict (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		point			: in type_vector_model; -- x/y
-		accuracy		: in type_accuracy;
-		log_threshold	: in type_log_level);
+	-- procedure delete_via_restrict (
+	-- 	module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+	-- 	point			: in type_vector_model; -- x/y
+	-- 	accuracy		: in type_accuracy;
+	-- 	log_threshold	: in type_log_level);
 
+	procedure dummy;
 	
 end et_board_ops.via_restrict;
 
