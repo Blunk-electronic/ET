@@ -3982,7 +3982,7 @@ is
 					pac_route_restrict_lines.append (
 						container	=> module.board.route_restrict.lines,
 						new_item	=> (type_line (board_line) with 
-										board_line_width, signal_layers));
+										signal_layers));
 				end do_it;
 
 				
@@ -4014,7 +4014,7 @@ is
 					pac_route_restrict_arcs.append (
 						container	=> module.board.route_restrict.arcs,
 						new_item	=> (type_arc (board_arc) with
-										board_line_width, signal_layers));
+										signal_layers));
 				end do_it;
 
 				
@@ -4046,7 +4046,7 @@ is
 					pac_route_restrict_circles.append (
 						container	=> module.board.route_restrict.circles,
 						new_item	=> (type_circle (board_circle) with 
-										board_line_width, signal_layers));
+										signal_layers));
 				end do_it;
 									
 			begin -- insert_circle_route_restrict

@@ -47,7 +47,7 @@ with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_mirroring;				use et_mirroring;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_contour_to_polygon;		use et_contour_to_polygon;
-with et_conductor_segment;
+with et_pcb_stack;				use et_pcb_stack;
 with et_logging;				use et_logging;
 
 
@@ -59,19 +59,13 @@ package et_route_restrict is
 	use pac_polygons;
 	use pac_text_board;
 	
+
 	
 -- LINES:
 
-	type type_route_restrict_line is new 
-		et_conductor_segment.type_conductor_line with null record;
-
+	type type_route_restrict_line is new
+		pac_geometry_2.type_line with null record;
 	
-	-- Converts a line with a given width to a polygon
-	-- with round caps on the line ends:
-	function to_polygon (
-		line 		: in type_route_restrict_line;
-		tolerance	: in type_distance_positive)
-		return type_polygon;
 
 	
 	package pac_route_restrict_lines is new doubly_linked_lists (type_route_restrict_line);
@@ -93,25 +87,13 @@ package et_route_restrict is
 		offset	: in type_distance_relative);
 
 
-	-- Converts a list of lines to a list of polygons:
-	function to_polygons (
-		lines		: in pac_route_restrict_lines.list;
-		tolerance	: in type_distance_positive)
-		return pac_polygon_list.list;
 
 	
 -- ARCS:	
 
-	type type_route_restrict_arc is new 
-		et_conductor_segment.type_conductor_arc with null record;
-
-
-	-- Converts an arce with a given width to a polygon
-	-- with round caps on the line ends:
-	function to_polygon (
-		arc 		: in type_route_restrict_arc;
-		tolerance	: in type_distance_positive)							
-		return type_polygon;
+	type type_route_restrict_arc is new
+		pac_geometry_2.type_arc with null record;
+	
 
 	
 	package pac_route_restrict_arcs is new doubly_linked_lists (type_route_restrict_arc);
@@ -133,20 +115,14 @@ package et_route_restrict is
 		offset	: in type_distance_relative);
 
 
-	-- Converts a list of arcs to a list of polygons:
-	function to_polygons (
-		arcs		: in pac_route_restrict_arcs.list;
-		tolerance	: in type_distance_positive)
-		return pac_polygon_list.list;
-
 	
 
 -- CIRCLES:	
+
+	type type_route_restrict_circle is new
+		pac_geometry_2.type_circle with null record;
+
 	
-	type type_route_restrict_circle is new 
-		et_conductor_segment.type_conductor_circle with null record;
-
-
 	-- Converts the outer edge of a circle to a polygon:	
 	function to_polygon_outside (
 		circle 		: in type_route_restrict_circle;
@@ -192,6 +168,8 @@ package et_route_restrict is
 		circles		: in pac_route_restrict_circles.list;
 		tolerance	: in type_distance_positive)
 		return pac_polygon_list.list;
+
+
 	
 	
 -- ZONES:

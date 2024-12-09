@@ -519,7 +519,7 @@ is
 				procedure query_line (c : in pac_route_restrict_lines.cursor) is
 					line : type_route_restrict_line renames element (c);
 				begin
-					b := get_bounding_box (line, line.width);
+					b := get_bounding_box (line, 0.0);
 					merge_areas (bbox_new, b);
 				end query_line;
 
@@ -527,7 +527,7 @@ is
 				procedure query_arc (c : in pac_route_restrict_arcs.cursor) is
 					arc : type_route_restrict_arc renames element (c);
 				begin
-					b := get_bounding_box (arc, arc.width);
+					b := get_bounding_box (arc, 0.0);
 					merge_areas (bbox_new, b);
 				end query_arc;
 
@@ -535,7 +535,7 @@ is
 				procedure query_circle (c : in pac_route_restrict_circles.cursor) is
 					circle : type_route_restrict_circle renames element (c);
 				begin
-					b := get_bounding_box (circle, circle.width);
+					b := get_bounding_box (circle, 0.0);
 					merge_areas (bbox_new, b);
 				end query_circle;
 
@@ -1357,7 +1357,7 @@ is
 					begin
 						b := get_bounding_box (
 							line		=> line,
-							width		=> line.width,
+							width		=> zero,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
 							mirror		=> to_mirror_along_y_axis (flip));
@@ -1371,7 +1371,7 @@ is
 					begin
 						b := get_bounding_box (
 							arc 		=> arc,
-							width		=> arc.width,
+							width		=> zero,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
 							mirror		=> to_mirror_along_y_axis (flip));
@@ -1385,7 +1385,7 @@ is
 					begin
 						b := get_bounding_box (
 							circle		=> circle,
-							width		=> circle.width,
+							width		=> zero,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
 							mirror		=> to_mirror_along_y_axis (flip));

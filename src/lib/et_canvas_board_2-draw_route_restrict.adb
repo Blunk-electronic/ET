@@ -67,7 +67,7 @@ procedure draw_route_restrict is
 		-- Draw the line if restrict layer is enabled:
 		if route_restrict_layer_enabled (line.layers) then
 
-			draw_line (line => line, width => line.width, do_stroke => true);
+			draw_line (line => line, width => zero, do_stroke => true);
 		end if;
 	end query_line;
 
@@ -80,7 +80,7 @@ procedure draw_route_restrict is
 			
 			draw_arc (
 				arc			=> arc,
-				width		=> arc.width,
+				width		=> zero,
 				do_stroke	=> true);
 
 		end if;
@@ -96,7 +96,7 @@ procedure draw_route_restrict is
 			draw_circle (
 				circle		=> circle,
 				filled		=> NO,
-				width		=> circle.width,
+				width		=> zero,
 				do_stroke	=> true);
 
 		end if;
@@ -107,7 +107,6 @@ procedure draw_route_restrict is
 		-- CS use rename ?
 		use pac_draw_contours;
 	begin
-
 		-- Draw the polygon if restrict layer is enabled:
 		if route_restrict_layer_enabled (element (c).layers) then
 			
@@ -147,7 +146,7 @@ procedure draw_route_restrict is
 		use et_colors.board;
 	begin
 		set_color_route_restrict (brightness);
-		
+
 		iterate (module.board.route_restrict.lines, query_line'access);
 		iterate (module.board.route_restrict.arcs, query_arc'access);
 		iterate (module.board.route_restrict.circles, query_circle'access);

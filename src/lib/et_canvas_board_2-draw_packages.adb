@@ -790,7 +790,7 @@ is
 					-- Likewise there is no need to mirror anything here:
 					draw_line (
 						line		=> line,
-						width		=> line.width,
+						width		=> zero,
 						do_stroke	=> true);
 				end query_line;
 
@@ -801,7 +801,7 @@ is
 					-- See comments in procedure query_line.
 					draw_arc (
 						arc			=> arc,
-						width		=> arc.width,
+						width		=> zero,
 						do_stroke	=> true);
 				end query_arc;
 
@@ -813,7 +813,7 @@ is
 					draw_circle (
 						circle		=> circle,
 						filled		=> NO,
-						width		=> circle.width,
+						width		=> zero,
 						do_stroke	=> true);
 				end query_circle;
 

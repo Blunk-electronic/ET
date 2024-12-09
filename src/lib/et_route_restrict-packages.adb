@@ -81,18 +81,11 @@ package body et_route_restrict.packages is
 		return pac_polygon_list.list
 	is
 		scratch, result : pac_polygon_list.list;
-		
 	begin
-		-- lines:
-		result := to_polygons (restrict.lines, tolerance);
-
-		-- arcs:
-		scratch := to_polygons (restrict.arcs, tolerance);
-		result.splice (before => pac_polygon_list.no_element, source => scratch);
-
 		-- circles:
-		scratch := to_polygons_outside (restrict.circles, tolerance);
-		result.splice (before => pac_polygon_list.no_element, source => scratch);
+		-- scratch := to_polygons_outside (restrict.circles, tolerance);
+		-- result.splice (before => pac_polygon_list.no_element, source => scratch);
+		result := to_polygons_outside (restrict.circles, tolerance);
 
 		-- zones:
 		-- CS

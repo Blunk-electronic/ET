@@ -487,18 +487,18 @@ Route Restrict Objects
 
 Route restrict objects can be used to define areas where
 no tracks are allowed or where tracks are not allowed to 
-pass through.
+pass through. These objects do not have a linewidth because
+they represent a barrier.
 
 
-#. Drawing lines
+#. Drawing Lines
 
-	This command draws a line in layer 1 with a
-	linewidth of 0.2mm starting at (50;30) and
+	This command draws a line in layer 1 starting at (50;30) and
 	ending at (70;30):
 
 	.. code-block::
 
-		draw route_restrict [1] 0.2 line 50 30 70 30
+		draw route_restrict [1] line 50 30 70 30
 		
 		
 	As restrictions can be applied to many layers
@@ -507,32 +507,31 @@ pass through.
 
 	.. code-block::
 
-		draw route_restrict [1,3,5-9] 0.2 line 50 30 70 30
+		draw route_restrict [1,3,5-9] line 50 30 70 30
 		
 
 
-#. Drawing arcs
+#. Drawing Arcs
 
-	This command draws an arc in layer 1 with a
-	linewidth of 0.2mm having its center at (60;40),
+	This command draws an arc in layer 1 having its center at (60;40),
 	starting at (50;40), ending at (70;40) in 
 	counter-clockwise direction:
 
 	.. code-block::
 
-		board demo draw route_restrict [1] 0.2 arc 60 40  50 40  70 40 ccw
+		board demo draw route_restrict [1] arc 60 40  50 40  70 40 ccw
 
 
 		
-#. Drawing lines
+#. Drawing Circles
 
-	This command draws a circle in layer 1 with a
-	linewidth of 0.2mm having its center at (60;40)
+	This command draws a circle in layer 1
+	having its center at (60;40)
 	with a radius of 5mm:
 
 	.. code-block::
 
-		board demo draw route_restrict [1] 0.2 circle 60 40  5
+		board demo draw route_restrict [1] circle 60 40  5
 
 	
 #. Deleting

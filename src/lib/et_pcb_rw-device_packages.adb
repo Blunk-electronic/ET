@@ -355,7 +355,6 @@ package body et_pcb_rw.device_packages is
 			begin
 				line_begin;
 				write_line (element (cursor));
-				write_width (element (cursor).width);
 				line_end;
 			end write_line;
 
@@ -363,7 +362,6 @@ package body et_pcb_rw.device_packages is
 			begin
 				arc_begin;
 				write_arc (element (cursor));
-				write_width (element (cursor).width);
 				arc_end;
 			end write_arc;
 
@@ -371,7 +369,6 @@ package body et_pcb_rw.device_packages is
 			begin
 				circle_begin;
 				write_circle (element (cursor));
-				write_width (element (cursor).width);
 				circle_end;
 			end write_circle;
 			
@@ -1663,7 +1660,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_ROUTE_RESTRICT =>
 										pac_route_restrict_lines.append (
 											container	=> packge.route_restrict.top.lines,
-											new_item	=> (type_line (board_line) with board_line_width));
+											new_item	=> (type_line (board_line) with null record));
 
 										-- clean up for next line
 										board_reset_line;
@@ -1739,7 +1736,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_ROUTE_RESTRICT =>
 										pac_route_restrict_lines.append (
 											container	=> packge.route_restrict.bottom.lines,
-											new_item	=> (type_line (board_line) with board_line_width));
+											new_item	=> (type_line (board_line) with null record));
 
 										-- clean up for next line
 										board_reset_line;
@@ -1827,7 +1824,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_ROUTE_RESTRICT =>										
 										pac_route_restrict_arcs.append (
 											container	=> packge.route_restrict.top.arcs,
-											new_item	=> (type_arc (board_arc) with board_line_width));
+											new_item	=> (type_arc (board_arc) with null record));
 
 										-- clean up for next arc
 										board_reset_arc;
@@ -1899,7 +1896,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_ROUTE_RESTRICT =>										
 										pac_route_restrict_arcs.append (
 											container	=> packge.route_restrict.bottom.arcs,
-											new_item	=> (type_arc (board_arc) with board_line_width));
+											new_item	=> (type_arc (board_arc) with null record));
 
 										-- clean up for next arc
 										board_reset_arc;
@@ -1927,6 +1924,7 @@ package body et_pcb_rw.device_packages is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_CIRCLE =>
 						case stack.parent is
 							when SEC_TOP => 
@@ -1969,7 +1967,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_ROUTE_RESTRICT =>										
 										pac_route_restrict_circles.append (
 											container	=> packge.route_restrict.top.circles,
-											new_item	=> (type_circle (board_circle) with board_line_width));
+											new_item	=> (type_circle (board_circle) with null record));
 
 										board_reset_circle; -- clean up for next circle
 
@@ -2027,7 +2025,7 @@ package body et_pcb_rw.device_packages is
 									when SEC_ROUTE_RESTRICT =>										
 										pac_route_restrict_circles.append (
 											container	=> packge.route_restrict.bottom.circles,
-											new_item	=> (type_circle (board_circle) with board_line_width));
+											new_item	=> (type_circle (board_circle) with null record));
 
 										board_reset_circle; -- clean up for next circle
 

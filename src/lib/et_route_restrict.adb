@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2024                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -43,20 +43,6 @@ package body et_route_restrict is
 
 -- LINES
 
-	function to_polygon (
-		line 		: in type_route_restrict_line;
-		tolerance	: in type_distance_positive)
-		return type_polygon
-	is begin
-		return to_polygon (
-			line		=> to_line_fine (line),
-			linewidth	=> type_float_positive (line.width),
-			tolerance	=> type_float_positive (tolerance),
-			mode		=> EXPAND);
-
-	end to_polygon;
-
-	
 	procedure mirror_lines (
 		lines	: in out pac_route_restrict_lines.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -117,42 +103,8 @@ package body et_route_restrict is
 
 
 	
-	function to_polygons (
-		lines		: in pac_route_restrict_lines.list;
-		tolerance	: in type_distance_positive)
-		return pac_polygon_list.list
-	is
-		result : pac_polygon_list.list;
-
-		procedure query_line (c : in pac_route_restrict_lines.cursor) is begin
-			result.append (to_polygon (element (c), tolerance));
-		end query_line;
-		
-	begin
-		lines.iterate (query_line'access);
-		return result;
-	end to_polygons;
-
-
-	
-	
 	
 -- ARCS
-
-	function to_polygon (
-		arc 		: in type_route_restrict_arc;
-		tolerance	: in type_distance_positive)							
-		return type_polygon
-	is begin
-		return to_polygon (
-			arc			=> to_arc_fine (arc),
-			linewidth	=> type_float_positive (arc.width),
-			tolerance	=> type_float_positive (tolerance),
-			mode		=> EXPAND);
-
-	end to_polygon;
-
-
 	
 	procedure mirror_arcs (
 		arcs	: in out pac_route_restrict_arcs.list;
@@ -212,24 +164,7 @@ package body et_route_restrict is
 		arcs := result;
 	end move_arcs;
 
-
 	
-
-	function to_polygons (
-		arcs		: in pac_route_restrict_arcs.list;
-		tolerance	: in type_distance_positive)
-		return pac_polygon_list.list
-	is
-		result : pac_polygon_list.list;
-
-		procedure query_arc (c : in pac_route_restrict_arcs.cursor) is begin
-			result.append (to_polygon (element (c), tolerance));
-		end query_arc;
-		
-	begin
-		arcs.iterate (query_arc'access);
-		return result;
-	end to_polygons;
 
 
 	
@@ -243,16 +178,10 @@ package body et_route_restrict is
 	is 
 		use et_contour_to_polygon;
 		result : type_polygon;
-		
-		-- outer_radius : constant type_float_positive := 
-		-- 	circle.radius + 0.5 * type_float_positive (circle.width);
-
-		outer_radius : constant type_distance_positive := 
-			circle.radius + 0.5 * circle.width;
 
 	begin
 		result.edges := to_edges (
-			circle		=> (circle.center, outer_radius, others => <>),
+			circle		=> (circle.center, circle.radius, others => <>),
 			tolerance	=> tolerance,
 			mode		=> EXPAND);
 
@@ -269,16 +198,10 @@ package body et_route_restrict is
 	is 
 		use et_contour_to_polygon;
 		result : type_polygon;
-		
-		-- inner_radius : constant type_float_positive :=
-		-- 	circle.radius - 0.5 * type_float_positive (circle.width);
-
-		inner_radius : constant type_distance_positive :=
-			circle.radius - 0.5 * circle.width;
 
 	begin
 		result.edges := to_edges (
-			circle		=> (circle.center, inner_radius, others => <>),
+			circle		=> (circle.center, circle.radius, others => <>),
 			tolerance	=> tolerance,
 			mode		=> SHRINK);
 
