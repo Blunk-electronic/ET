@@ -247,6 +247,10 @@ package body et_board_ops.route_restrict is
 		log_threshold	: in type_log_level)
 	is 
 	begin
+
+
+
+		
 		null;
 	end draw_zone;
 

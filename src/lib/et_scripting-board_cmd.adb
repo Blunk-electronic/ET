@@ -916,21 +916,26 @@ is
 			
 			-- Build the basic contour from zone:
 			c : constant type_contour := type_contour (to_contour (arguments));
+
+			l : type_signal_layers.set;
 		begin
-			null;
+			l := to_layers (f (5));
+			
+			draw_zone (
+				module_cursor	=> module_cursor,
+				zone			=> (c with l),
+				log_threshold	=> log_threshold + 1);
+
 		end build_zone;
 
 		
 	begin
-		-- CS draw_zone
-		null;
-
 		if f (6) = keyword_zone then
 			build_zone;
 		else
 			null;
+			-- CS error. only zone allowed here
 		end if;
-
 		
 	end draw_via_restrict;
 
