@@ -147,6 +147,14 @@ package et_generic_module is
 	use pac_generic_modules;
 
 
+	-- Returns the name of the module indicated by module_cursor:
+	function to_string (
+		module_cursor	: in pac_generic_modules.cursor;
+		quote			: in boolean := true)				   
+		return string;
+
+	
+
 	function get_count (
 		modules : in pac_generic_modules.map)
 		return natural;
@@ -177,6 +185,7 @@ package et_generic_module is
 	-- Locates the given module in the global container "modules".
 	function locate_module (name : in pac_module_name.bounded_string) -- motor_driver (without extension *.mod)
 		return pac_generic_modules.cursor;
+	-- CS rename to get_module_cursor
 
 
 	-- Fetches the meta information for the whole 

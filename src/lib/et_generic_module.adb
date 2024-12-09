@@ -46,6 +46,24 @@ with et_exceptions;				use et_exceptions;
 package body et_generic_module is
 
 
+	function to_string (
+		module_cursor	: in pac_generic_modules.cursor;
+		quote			: in boolean := true)				   
+		return string
+	is
+		name : pac_module_name.bounded_string;
+	begin
+		name := key (module_cursor);
+
+		if quote then
+			return enclose_in_quotes (to_string (name));
+		else
+			return to_string (name);
+		end if;
+	end to_string;
+
+	
+
 	function get_count (
 		modules : in pac_generic_modules.map)
 		return natural

@@ -763,7 +763,8 @@ is
 	
 
 
-	
+	-- This procedure parses a command that draws
+	-- a line, arc, circle or a zone in route restrict:
 	procedure draw_route_restrict is
 		use et_board_ops.route_restrict;
 
@@ -904,7 +905,8 @@ is
 
 
 
-	
+	-- This procedure parses a command that draws
+	-- a line, arc, circle or a zone in via restrict:
 	procedure draw_via_restrict is
 		use et_board_ops.via_restrict;
 

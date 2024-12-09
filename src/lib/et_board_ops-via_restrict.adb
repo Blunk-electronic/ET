@@ -140,8 +140,24 @@ package body et_board_ops.via_restrict is
 		zone			: in type_via_restrict_contour;
 		log_threshold	: in type_log_level)
 	is 
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is begin
+			module.board.via_restrict.contours.append (zone);
+		end;
+
 	begin
-		null;
+		log (text => "module " & to_string (module_cursor) 
+			& "drawing via restrict zone",
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
 	end draw_zone;
 	
 	

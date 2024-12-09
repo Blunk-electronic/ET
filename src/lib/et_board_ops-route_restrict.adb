@@ -246,12 +246,24 @@ package body et_board_ops.route_restrict is
 		zone			: in type_route_restrict_contour;
 		log_threshold	: in type_log_level)
 	is 
-	begin
-
-
-
 		
-		null;
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is begin
+			module.board.route_restrict.contours.append (zone);
+		end;
+
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& "drawing route restrict zone",
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
 	end draw_zone;
 
 
