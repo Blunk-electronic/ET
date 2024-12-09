@@ -185,7 +185,8 @@ package et_keywords is
 	keyword_width_inner_layers		: constant string := "width_inner_layers";
 	keyword_x 						: constant string := "x";
 	keyword_y 						: constant string := "y";		
-	
+
+	keyword_zone					: constant string := "zone";
 
 	-- keyword_via_restring_inner	: constant string := "restring_inner";
 	-- keyword_via_restring_outer	: constant string := "restring_outer";

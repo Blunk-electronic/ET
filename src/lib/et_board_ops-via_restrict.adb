@@ -133,6 +133,17 @@ package body et_board_ops.via_restrict is
 
 
 	procedure dummy is begin null; end;
+
+	
+	procedure draw_zone (
+		module_cursor	: in pac_generic_modules.cursor;
+		zone			: in type_via_restrict_contour;
+		log_threshold	: in type_log_level)
+	is 
+	begin
+		null;
+	end draw_zone;
+	
 	
 end et_board_ops.via_restrict;
 	

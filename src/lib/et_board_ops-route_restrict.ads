@@ -78,7 +78,15 @@ package et_board_ops.route_restrict is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level);
 	
-											
+
+	-- Draws a route restrict zone:
+	procedure draw_zone (
+		module_cursor	: in pac_generic_modules.cursor;
+		zone			: in type_route_restrict_contour;
+		log_threshold	: in type_log_level);
+
+
+	
 end et_board_ops.route_restrict;
 
 -- Soli Deo Gloria

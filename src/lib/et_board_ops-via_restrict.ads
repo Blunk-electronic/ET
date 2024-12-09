@@ -60,6 +60,14 @@ package et_board_ops.via_restrict is
 	-- 	log_threshold	: in type_log_level);
 
 	procedure dummy;
+
+	-- Draws a via restrict zone:
+	procedure draw_zone (
+		module_cursor	: in pac_generic_modules.cursor;
+		zone			: in type_via_restrict_contour;
+		log_threshold	: in type_log_level);
+
+	
 	
 end et_board_ops.via_restrict;
 

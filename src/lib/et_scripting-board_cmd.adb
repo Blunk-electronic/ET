@@ -767,114 +767,138 @@ is
 	procedure draw_route_restrict is
 		use et_board_ops.route_restrict;
 
-		-- CS draw zone
+		-- Extract from the given command the zone arguments (everything after "zone"):
+		-- example command: board demo draw route_restrict [1] zone line 0 0 line 50 0 line 50 50 line 0 50
+		procedure build_zone is
+			arguments : constant type_fields_of_line := 
+				remove_field (single_cmd_status.cmd, 1, 6);
+			
+			-- Build the basic contour from zone:
+			c : constant type_contour := type_contour (to_contour (arguments));
+
+			l : type_signal_layers.set;
+		begin
+			l := to_layers (f (5));
+			
+			draw_zone (
+				module_cursor	=> module_cursor,
+				zone			=> (c with l),
+				log_threshold	=> log_threshold + 1);
+
+		end build_zone;
+		
 		
 		shape : type_shape;
 	begin
 		-- put_line ("draw_route_restrict");
-		shape := to_shape (f (6));
-		-- CS apply assigment to shape to all similar procedures !
-		
 
-		
-		case shape is
-			when LINE =>
-				case cmd_field_count is
-					when 10 =>
-						-- board led_driver draw route_restrict [1,3,5-9] line 10 10 60 10
-						-- CS board led_driver draw route_restrict 3 line 10 10 60 10
-						
-						-- CS test whether field 5 is a single layer id. If yes then
-						-- call function et_pcb_stack.to_signal_layer to get the id-type.
-						-- Then validate signal layer.
-						-- Then add the single signal layer to a set.
-						-- Do so with all objects in route and via restrict.
-						
-						draw_route_restrict_line (
-							module_name 	=> module,
-							line			=> (
-									layers		=> to_layers (f (5)), -- [1,3,5-9]
-									start_point	=> type_vector_model (to_point (f (7), f  (8))),
-									end_point	=> type_vector_model (to_point (f (9), f (10))),
-									others		=> <>),
+		if f (6) = keyword_zone then
+			build_zone;
+		else
+			shape := to_shape (f (6));
+			-- CS apply assigment to shape to all similar procedures !			
 
-							log_threshold	=> log_threshold + 1);
-
-					when 11 .. type_field_count'last => too_long;
-						
-					when others => command_incomplete;
-				end case;
-
-				
-			when ARC =>
-				case cmd_field_count is
-					when 13 =>
-						-- board led_driver draw route_restrict [1,3,5-9] arc 50 50 0 50 100 0 cw
-						draw_route_restrict_arc (
-							module_name 	=> module,
-							arc				=> (
-									layers		=> to_layers (f (5)), -- [1,3,5-9]
-									center		=> type_vector_model (to_point (f  (7), f  (8))),
-									start_point	=> type_vector_model (to_point (f  (9), f (10))),
-									end_point	=> type_vector_model (to_point (f (11), f (12))),
-									direction	=> to_direction (f (13)),
-									others		=> <>),
-
-							log_threshold	=> log_threshold + 1);
-
-					when 14 .. type_field_count'last => too_long;
-						
-					when others => command_incomplete;
-				end case;
-
-				
-			when CIRCLE =>
-				case cmd_field_count is
-					when 9 =>
-						-- board led_driver draw route_restrict [1,3,5-9] circle 20 50 40
-						-- if is_number (f (7)) then -- 20
-
-							-- Circle is not filled.
-							draw_route_restrict_circle (
+			
+			case shape is
+				when LINE =>
+					case cmd_field_count is
+						when 10 =>
+							-- board led_driver draw route_restrict [1,3,5-9] line 10 10 60 10
+							-- CS board led_driver draw route_restrict 3 line 10 10 60 10
+							
+							-- CS test whether field 5 is a single layer id. If yes then
+							-- call function et_pcb_stack.to_signal_layer to get the id-type.
+							-- Then validate signal layer.
+							-- Then add the single signal layer to a set.
+							-- Do so with all objects in route and via restrict.
+							
+							draw_route_restrict_line (
 								module_name 	=> module,
-								circle			=> (
-									layers	=> to_layers (f (5)), -- [1,3,5-9]
-									center	=> type_vector_model (to_point (f (7), f (8))),
-									radius	=> to_radius (f (9)), -- 40
-									others	=> <>),
+								line			=> (
+										layers		=> to_layers (f (5)), -- [1,3,5-9]
+										start_point	=> type_vector_model (to_point (f (7), f  (8))),
+										end_point	=> type_vector_model (to_point (f (9), f (10))),
+										others		=> <>),
+
 								log_threshold	=> log_threshold + 1);
-						-- else
-							-- expect_value_center_x (7);
-						-- end if;
 
-					--when 10 =>
-						---- Circle is filled.
-						---- board led_driver draw route_restrict [1,3,5-9] circle filled 20 50 40
-						--if f (7) = keyword_filled then
+						when 11 .. type_field_count'last => too_long;
+							
+						when others => command_incomplete;
+					end case;
 
-							---- Circle is filled.
-							--draw_route_restrict_circle (
-								--module_name 	=> module,
-								--circle			=> 
-											--(
-											--layers		=> to_layers (f (5)), -- [1,3,5-9]
-											--filled		=> YES,
-											--center	=> type_vector_model (to_point (f (8), f (9))),
-											--radius	=> to_radius (f (10)) -- 40
-											--),
-											
-								--log_threshold	=> log_threshold + 1);
-						--else
-							--expect_keyword_filled (7);
-						--end if;
-
-					when 10 .. type_field_count'last => too_long;
 					
-					when others => command_incomplete;
-				end case;
+				when ARC =>
+					case cmd_field_count is
+						when 13 =>
+							-- board led_driver draw route_restrict [1,3,5-9] arc 50 50 0 50 100 0 cw
+							draw_route_restrict_arc (
+								module_name 	=> module,
+								arc				=> (
+										layers		=> to_layers (f (5)), -- [1,3,5-9]
+										center		=> type_vector_model (to_point (f  (7), f  (8))),
+										start_point	=> type_vector_model (to_point (f  (9), f (10))),
+										end_point	=> type_vector_model (to_point (f (11), f (12))),
+										direction	=> to_direction (f (13)),
+										others		=> <>),
+
+								log_threshold	=> log_threshold + 1);
+
+						when 14 .. type_field_count'last => too_long;
+							
+						when others => command_incomplete;
+					end case;
+
+					
+				when CIRCLE =>
+					case cmd_field_count is
+						when 9 =>
+							-- board led_driver draw route_restrict [1,3,5-9] circle 20 50 40
+							-- if is_number (f (7)) then -- 20
+
+								-- Circle is not filled.
+								draw_route_restrict_circle (
+									module_name 	=> module,
+									circle			=> (
+										layers	=> to_layers (f (5)), -- [1,3,5-9]
+										center	=> type_vector_model (to_point (f (7), f (8))),
+										radius	=> to_radius (f (9)), -- 40
+										others	=> <>),
+									log_threshold	=> log_threshold + 1);
+							-- else
+								-- expect_value_center_x (7);
+							-- end if;
+
+						--when 10 =>
+							---- Circle is filled.
+							---- board led_driver draw route_restrict [1,3,5-9] circle filled 20 50 40
+							--if f (7) = keyword_filled then
+
+								---- Circle is filled.
+								--draw_route_restrict_circle (
+									--module_name 	=> module,
+									--circle			=> 
+												--(
+												--layers		=> to_layers (f (5)), -- [1,3,5-9]
+												--filled		=> YES,
+												--center	=> type_vector_model (to_point (f (8), f (9))),
+												--radius	=> to_radius (f (10)) -- 40
+												--),
+												
+									--log_threshold	=> log_threshold + 1);
+							--else
+								--expect_keyword_filled (7);
+							--end if;
+
+						when 10 .. type_field_count'last => too_long;
 						
-			when others => null;
-		end case;
+						when others => command_incomplete;
+					end case;
+							
+				when others => null;
+			end case;
+		end if;
+			
 	end draw_route_restrict;
 
 
@@ -883,11 +907,31 @@ is
 	
 	procedure draw_via_restrict is
 		use et_board_ops.via_restrict;
-		-- shape : type_shape := to_shape (f (7));
+
+		-- Extract from the given command the zone arguments (everything after "zone"):
+		-- example command: board demo draw via_restrict [1] zone line 0 0 line 50 0 line 50 50 line 0 50
+		procedure build_zone is
+			arguments : constant type_fields_of_line := 
+				remove_field (single_cmd_status.cmd, 1, 6);
+			
+			-- Build the basic contour from zone:
+			c : constant type_contour := type_contour (to_contour (arguments));
+		begin
+			null;
+		end build_zone;
+
+		
 	begin
 		-- CS draw_zone
 		null;
-	
+
+		if f (6) = keyword_zone then
+			build_zone;
+		else
+			null;
+		end if;
+
+		
 	end draw_via_restrict;
 
 

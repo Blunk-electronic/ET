@@ -239,6 +239,18 @@ package body et_board_ops.route_restrict is
 		
 	end delete_route_restrict;
 
+
+
+	procedure draw_zone (
+		module_cursor	: in pac_generic_modules.cursor;
+		zone			: in type_route_restrict_contour;
+		log_threshold	: in type_log_level)
+	is 
+	begin
+		null;
+	end draw_zone;
+
+
 	
 end et_board_ops.route_restrict;
 	
