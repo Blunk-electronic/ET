@@ -89,6 +89,7 @@ package et_section_headers is
 	
 	section_restring				: constant string := "[RESTRING";
 	section_route					: constant string := "[ROUTE";	
+	section_route_restrict			: constant string := "[ROUTE_RESTRICT";
 	section_rules					: constant string := "[RULES";
 	
 	section_schematic				: constant string := "[SCHEMATIC";
@@ -117,5 +118,6 @@ package et_section_headers is
 	
 	section_via						: constant string := "[VIA";
 	section_vias					: constant string := "[VIAS";
+	section_via_restrict			: constant string := "[VIA_RESTRICT";
 	
 end et_section_headers;
