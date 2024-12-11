@@ -67,6 +67,7 @@ with et_board_ops.silkscreen;
 with et_board_ops.assy_doc;
 with et_board_ops.stop_mask;
 with et_board_ops.stencil;
+with et_board_ops.keepout;
 with et_board_ops.route_restrict;
 with et_board_ops.via_restrict;
 with et_board_ops.board_contour;
@@ -544,22 +545,48 @@ is
 	end draw_hole;
 
 
-	
-	procedure draw_keepout_zone is
-		-- Extract from the given command the zone arguments (everything after "keepout"):
-		-- example command: board demo draw keepout line 0 0 line 10 0 line 10 10 line 0 10
-		arguments : constant type_fields_of_line := 
-			remove_field (single_cmd_status.cmd, 1, 4);
 
-		-- Build a basic contour from the arguments:
-		c : constant type_contour := type_contour (to_contour (arguments));
+
+	
+
+	-- This procedure parses a command that draws
+	-- a keepout zone:
+	procedure draw_keepout is
+		use et_board_ops.keepout;
+
+		-- Extract from the given command the zone arguments (everything after "keepout"):
+		-- example command: 
+		-- board demo draw keepout top zone line 0 0 line 10 0 line 10 10 line 0 10
+		procedure build_zone is
+			arguments : constant type_fields_of_line := 
+				remove_field (single_cmd_status.cmd, 1, 6);
+			
+			-- Build the basic contour from zone:
+			c : constant type_contour := type_contour (to_contour (arguments));
+
+			face : type_face;
+		begin
+			face := to_face (f (5));
+			
+			draw_zone (
+				module_cursor	=> module_cursor,
+				zone			=> (c with null record),
+				face			=> face,
+				log_threshold	=> log_threshold + 1);
+
+		end build_zone;
+		
 	begin
 		-- Convert the contour to a keepout zone
 		-- and assign it to the module:
-		
-		-- CS 
-		null;
-	end draw_keepout_zone;
+
+		if f (6) = keyword_zone then
+			build_zone;
+		else
+			null;
+			-- CS error. only zone allowed here
+		end if;
+	end draw_keepout;
 
 	
 	
@@ -3033,7 +3060,7 @@ is
 						draw_assy_doc;
 
 					when NOUN_KEEPOUT =>
-						draw_keepout_zone;
+						draw_keepout;
 						
 					when NOUN_ROUTE_RESTRICT =>
 						draw_route_restrict;

@@ -533,7 +533,16 @@ they represent a barrier.
 
 		board demo draw route_restrict [1] circle 60 40  5
 
-	
+		
+		
+#. Drawing Zones
+
+	.. code-block::
+
+		draw route_restrict [1] zone line 0 0 line 100 0 line 100 100 line 0 100
+
+		
+		
 #. Deleting
 
 	.. code-block::
@@ -744,6 +753,18 @@ Stencil
 	
 		delete stencil top 50 100 10
 
+
+		
++++++++
+Keepout
++++++++
+
+In the keepout layers zones can be defined where no placement
+of devices is allowed.
+		
+	.. code-block::
+	
+		draw keepout top zone line 0 70 line 10 70 line 10 80 line 0 80
 		
 		
 		
