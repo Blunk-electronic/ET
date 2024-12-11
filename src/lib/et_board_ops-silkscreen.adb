@@ -713,6 +713,8 @@ package body et_board_ops.silkscreen is
 
 	end draw_arc;
 
+
+
 	
 	procedure draw_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -757,6 +759,46 @@ package body et_board_ops.silkscreen is
 
 	end draw_circle;
 
+
+
+
+
+	procedure draw_zone (
+		module_cursor	: in pac_generic_modules.cursor;
+		zone			: in type_silk_contour;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is begin
+			case face is
+				when TOP =>
+					module.board.silk_screen.top.contours.append (zone);
+					
+				when BOTTOM =>
+					module.board.silk_screen.bottom.contours.append (zone);
+			end case;
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& "drawing silkscreen zone", -- CS output top/bottom
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+	end draw_zone;
+
+	
+	
 
 	
 	procedure delete (

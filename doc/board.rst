@@ -666,6 +666,9 @@ Silkscreen
 	
 		draw silkscreen top circle 1  100 100  20
 	
+	.. code-block::
+	
+		board demo draw silkscreen top zone line 26 25 line 28 25 line 28 33 line 26 33
 	
 
 	

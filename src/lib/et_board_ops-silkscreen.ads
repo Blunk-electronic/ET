@@ -146,6 +146,15 @@ package et_board_ops.silkscreen is
 		circle			: in type_silk_circle;
 		log_threshold	: in type_log_level);
 
+
+	-- Draws a zone in the silkscreen layer:
+	procedure draw_zone (
+		module_cursor	: in pac_generic_modules.cursor;
+		zone			: in type_silk_contour;
+		face			: in type_face;
+		log_threshold	: in type_log_level);
+
+
 	
 	-- Deletes the segment of the silkscreen in the zone
 	-- around the given point.
