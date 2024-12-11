@@ -41,8 +41,6 @@
 with ada.text_io;					use ada.text_io;
 with ada.strings;					use ada.strings;
 with ada.strings.fixed; 			use ada.strings.fixed;
---with ada.characters;				use ada.characters;
---with ada.characters.handling;		use ada.characters.handling;
 
 with glib.values;
 
@@ -60,7 +58,6 @@ with gtk.tree_model;
 with gtk.gentry;						use gtk.gentry;
 with gtk.container;						use gtk.container;
 
--- with et_project.modules;				use et_project.modules;
 with et_generic_module;					use et_generic_module;
 with et_canvas_board_2;
 

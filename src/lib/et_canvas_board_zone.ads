@@ -38,6 +38,10 @@
 --
 -- DESCRIPTION:
 -- 
+-- IMPORTANT:
+-- This is about drawing zones in layers like assy doc, silkscreen, stopmask,
+-- stencil, keepout.
+-- This is not about zones in conductor layers.
 
 with glib;								use glib;
 
@@ -56,12 +60,7 @@ use et_pcb_coordinates_2.pac_geometry_2;
 use et_pcb_coordinates_2.pac_path_and_bend;
 
 with et_board_layer_category;			use et_board_layer_category;
-
 with et_pcb_stack;						use et_pcb_stack;
-
-with et_silkscreen;						use et_silkscreen;
-with et_assy_doc;						use et_assy_doc;
-with et_stop_mask;						use et_stop_mask;
 
 
 package et_canvas_board_zone is
@@ -85,27 +84,14 @@ package et_canvas_board_zone is
 
 
 
-	box_layer_category, box_face, 
-	box_signal_layer, --box_button,
-	box_line_width : gtk_vbox;
+	box_layer_category, box_face, box_signal_layer : gtk_vbox;
 	
-	label_layer_category, label_face, 
-	label_signal_layer, label_line_width : gtk_label;
+	label_layer_category, label_face, label_signal_layer : gtk_label;
 	
 	cbox_category, cbox_face, cbox_signal_layer : gtk_combo_box;
 	-- Operator can choose between fixed menu entries.
 	
-	cbox_line_width : gtk_combo_box_text;
-	-- Operator may enter an additional value in the menu.
-	
-	-- button_apply : gtk_button;
 
-	-- These constants define the minimum and maximum of
-	-- characters that can be entered in the fields for linewidth:
-	line_width_length_min : constant gint := 1;
-	line_width_length_max : constant gint := 5;
-	-- CS: adjust if necessary. see parameters
-	-- of et_board_shapes_and_text.pac_text_fab.
 	
 	-- The spacing between the boxes:
 	spacing : constant natural := 5;
@@ -127,9 +113,9 @@ package et_canvas_board_zone is
 		face			: type_face := face_default;
 
 		path			: type_path_live;
-		width			: type_distance_positive := 0.15;
 	end record;
 
+	
 	-- The place where preliminary information of the zone is stored:
 	preliminary_zone : type_preliminary_zone;
 

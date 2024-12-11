@@ -38,6 +38,10 @@
 --
 -- DESCRIPTION:
 -- 
+-- IMPORTANT:
+-- This is about drawing lines in assy doc, silkscreen, stop mask, stencil
+-- and freetracks in conductor layers.
+-- Conductor segments connected with a net are handled in et_canvas_board_tracks.
 
 with glib;								use glib;
 
@@ -56,17 +60,9 @@ use et_pcb_coordinates_2.pac_geometry_2;
 use et_pcb_coordinates_2.pac_path_and_bend;
 
 with et_board_layer_category;			use et_board_layer_category;
-
 with et_pcb_stack;						use et_pcb_stack;
 
-with et_silkscreen;						use et_silkscreen;
-with et_assy_doc;						use et_assy_doc;
-with et_stop_mask;						use et_stop_mask;
 
--- IMPORTANT:
--- This is about drawing lines in assy doc, silkscreen, stop mask, stencil
--- and freetracks in conductor layers.
--- Conductor segments connected with a net are handled in et_canvas_board_tracks.
 
 package et_canvas_board_lines is
 
@@ -146,6 +142,7 @@ package et_canvas_board_lines is
 		width			: type_distance_positive := 0.15;
 	end record;
 
+	
 	-- The place where preliminary information of the line is stored:
 	preliminary_line : type_preliminary_line;
 

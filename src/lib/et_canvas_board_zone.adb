@@ -41,8 +41,6 @@
 with ada.text_io;					use ada.text_io;
 with ada.strings;					use ada.strings;
 with ada.strings.fixed; 			use ada.strings.fixed;
---with ada.characters;				use ada.characters;
---with ada.characters.handling;		use ada.characters.handling;
 
 with glib.values;
 
@@ -60,7 +58,6 @@ with gtk.tree_model;
 with gtk.gentry;						use gtk.gentry;
 with gtk.container;						use gtk.container;
 
--- with et_project.modules;				use et_project.modules;
 with et_generic_module;					use et_generic_module;
 with et_canvas_board_2;
 
@@ -69,6 +66,10 @@ with et_board_ops.assy_doc;
 with et_board_ops.silkscreen;
 with et_board_ops.stop_mask;
 with et_board_ops.conductors;
+with et_board_ops.keepout;
+with et_board_ops.stencil;
+with et_board_ops.route_restrict;
+with et_board_ops.via_restrict;
 with et_modes.board;
 
 with et_display;						use et_display;
@@ -97,7 +98,6 @@ package body et_canvas_board_zone is
 			remove (box_v4, box_layer_category);
 			remove (box_v4, box_face);
 			remove (box_v4, box_signal_layer);
-			remove (box_v4, box_line_width);
 
 			-- CS use an iterator to remove widgets like
 			-- container.foreach ((element) => container.remove (element));
@@ -192,58 +192,6 @@ package body et_canvas_board_zone is
 
 	
 
-
-
-	
-	
-	procedure apply_line_width (text : in string) is
-		width : type_distance_positive;
-	begin
-		width := to_distance (text);
-
-		-- CS validate. output error in status bar
-		preliminary_zone.width := width;
-
-		et_canvas_board_2.redraw_board;
-	end apply_line_width;
-
-	
-	
-	function line_width_key_pressed (
-		combo_entry	: access gtk_widget_record'class;
-		event		: gdk_event_key) 
-		return boolean 
-	is
-		event_handled : boolean := false;
-		
-		use gdk.types;
-		key : gdk_key_type := event.keyval;
-
-		gentry : gtk_gentry := gtk_gentry (combo_entry);
-		text : constant string := get_text (gentry);
-	begin
-		case key is
-			when GDK_ESCAPE =>
-				reset_preliminary_zone;
-
-			when GDK_TAB => 
-				--put_line ("line width via tab " & text);
-				apply_line_width (text);
-
-			when others => nulL;
-		end case;
-		
-		return event_handled;
-	end line_width_key_pressed;
-
-
-	
-	procedure line_width_entered (combo_entry : access gtk_entry_record'class) is 
-		text : constant string := get_text (combo_entry);
-	begin
-		--put_line ("line width " & text);
-		apply_line_width (text);
-	end line_width_entered;
 
 
 
@@ -415,36 +363,6 @@ package body et_canvas_board_zone is
 
 		end make_combo_for_signal_layer;
 
-
-		procedure make_combo_for_line_width is begin
-			gtk_new_vbox (box_line_width, homogeneous => false);
-			pack_start (box_v4, box_line_width, padding => guint (spacing));
-
-			gtk_new (label_line_width, "LINE WIDTH");
-			pack_start (box_line_width, label_line_width, padding => guint (spacing));
-
-			gtk_new_with_entry (cbox_line_width);
-			pack_start (box_line_width, cbox_line_width, padding => guint (spacing));
-			gtk_entry (cbox_line_width.get_child).set_max_length (line_width_length_max);
-			gtk_entry (cbox_line_width.get_child).set_width_chars (line_width_length_min);
-
-			-- Set the line width according to the value used last:
-			gtk_entry (cbox_line_width.get_child).set_text (trim (to_string (preliminary_zone.width), left));
-			
-			-- The width is to be accepted by either pressing TAB or by pressing ENTER:
-			gtk_entry (cbox_line_width.get_child).on_key_press_event (line_width_key_pressed'access);
-			gtk_entry (cbox_line_width.get_child).on_activate (line_width_entered'access);
-		end make_combo_for_line_width;
-
-
-		-- procedure make_apply_button is begin
-		-- 	gtk_new_vbox (box_button, homogeneous => false);
-		-- 	pack_start (box_v4, box_button, padding => guint (spacing));
-  -- 
-		-- 	gtk_new (button_apply, "Apply");
-		-- 	pack_start (box_button, button_apply, padding => guint (spacing));
-		-- 	button_apply.on_clicked (button_apply_clicked'access);
-		-- end make_apply_button;
 		
 	begin -- show_line_properties
 		
@@ -459,8 +377,6 @@ package body et_canvas_board_zone is
 			make_combo_category;
 			make_combo_for_face;
 			make_combo_for_signal_layer;
-			make_combo_for_line_width;
-			-- make_apply_button;
 
 			-- Redraw the right box of the window:
 			box_v0.show_all; -- CS box_v4 ?
