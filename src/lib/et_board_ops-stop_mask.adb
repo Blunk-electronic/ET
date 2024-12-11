@@ -86,6 +86,8 @@ package body et_board_ops.stop_mask is
 
 	end draw_stop_line;
 
+
+	
 	
 	procedure draw_stop_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -134,6 +136,8 @@ package body et_board_ops.stop_mask is
 	end draw_stop_arc;
 	
 
+
+	
 	procedure draw_stop_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
@@ -179,6 +183,46 @@ package body et_board_ops.stop_mask is
 
 	end draw_stop_circle;
 
+
+
+
+
+	procedure draw_zone (
+		module_cursor	: in pac_generic_modules.cursor;
+		zone			: in type_stop_contour;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is begin
+			case face is
+				when TOP =>
+					module.board.stop_mask.top.contours.append (zone);
+					
+				when BOTTOM =>
+					module.board.stop_mask.bottom.contours.append (zone);
+			end case;
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& "drawing stopmask zone", -- CS output top/bottom
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+	end draw_zone;
+	
+
+
+	
 	
 	procedure delete_stop (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)

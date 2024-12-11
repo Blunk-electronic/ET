@@ -719,7 +719,12 @@ Stopmask
 		
 		draw stop top circle 2 100 100  20
 		
-
+	.. code-block::
+		
+		draw stop top zone line 52 0 line 60 0 line 60 4 line 52 4
+		
+		
+		
 #. Deleting Objects
 		
 	.. code-block::

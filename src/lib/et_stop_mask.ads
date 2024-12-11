@@ -144,9 +144,9 @@ package et_stop_mask is
 	
 -- CONTOURS:
 	
-	type type_stop_contour is new type_contour with null record;
+	type type_stop_contour is new type_contour with null record; -- CS rename to type_stop_zone
 	package pac_stop_contours is new doubly_linked_lists (type_stop_contour);
-	use pac_stop_contours;
+	use pac_stop_contours; -- CS rename to pac_stop_zones
 
 	-- Mirrors a list of contours along the given axis:
 	procedure mirror_contours (
@@ -201,7 +201,7 @@ package et_stop_mask is
 		lines 		: pac_stop_lines.list;
 		arcs		: pac_stop_arcs.list;
 		circles		: pac_stop_circles.list;
-		contours	: pac_stop_contours.list;
+		contours	: pac_stop_contours.list; -- CS rename to zones
 		texts		: pac_stop_texts.list;
 	end record;
 

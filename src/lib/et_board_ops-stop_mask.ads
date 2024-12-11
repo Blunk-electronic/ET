@@ -73,6 +73,16 @@ package et_board_ops.stop_mask is
 		circle			: in type_stop_circle;
 		log_threshold	: in type_log_level);
 
+
+	-- Draws a zone in the stopmask layer:
+	procedure draw_zone (
+		module_cursor	: in pac_generic_modules.cursor;
+		zone			: in type_stop_contour;
+		face			: in type_face;
+		log_threshold	: in type_log_level);
+
+
+	
 	
 	-- Deletes the segment of the stop mask that crosses the given point.
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
