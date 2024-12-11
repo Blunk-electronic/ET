@@ -40,10 +40,6 @@ with et_canvas_tool;					use et_canvas_tool;
 
 with et_board_ops.conductors;			use et_board_ops.conductors;
 with et_board_ops.ratsnest;
-with et_canvas_board_tracks;
-with et_canvas_board_freetracks;
-with et_canvas_board_vias;
-with et_canvas_board_lines;
 with et_board_verb_noun_keys;			use et_board_verb_noun_keys;
 
 with et_ratsnest;
@@ -407,6 +403,7 @@ is
 	procedure draw is 
 		use pac_path_and_bend;
 		use et_canvas_board_lines;
+		use et_canvas_board_zone;
 	begin
 		case key is
 			when GDK_LC_l =>
@@ -418,18 +415,20 @@ is
 				
 			when key_noun_zone =>
 				noun := NOUN_ZONE;
-				-- CS
-				-- reset_preliminary_zone;				
-				-- show_zone_properties;
-				-- set_status (status_draw_zone);
-
+				reset_preliminary_zone;				
+				show_zone_properties;
+				set_status (status_draw_zone);
 				
 
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when GDK_Space =>
 				case noun is
 					when NOUN_LINE =>
-						make_path (KEYBOARD, point);
+						et_canvas_board_lines.make_path (KEYBOARD, point);
+
+					when NOUN_ZONE =>
+						et_canvas_board_zone.make_path (KEYBOARD, point);
+
 						
 					when others => null;
 				end case;

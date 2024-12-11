@@ -66,6 +66,7 @@ with et_pcb;
 
 with et_text;
 with et_canvas_board_lines;
+with et_canvas_board_zone;
 with et_canvas_board_texts;
 with et_canvas_board_vias;
 with et_canvas_board_devices;
@@ -705,6 +706,7 @@ package body et_canvas_board_2 is
 		use et_modes.board;
 
 		use et_canvas_board_lines;
+		use et_canvas_board_zone;
 		use et_canvas_board_texts;
 		use et_canvas_board_devices;
 		use et_canvas_board_vias;
@@ -721,6 +723,7 @@ package body et_canvas_board_2 is
 		status_enter_verb;
 
 		reset_preliminary_line;
+		reset_preliminary_zone;
 		reset_preliminary_text; -- after placing a text
 		reset_preliminary_via; -- after placing a via
 		

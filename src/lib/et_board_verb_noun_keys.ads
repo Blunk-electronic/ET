@@ -52,6 +52,7 @@ package et_board_verb_noun_keys is
 	-- CS add others
 	
 
+	-- CS ? key_noun_contour		: constant gdk_key_type := GDK_LC_c;
 	key_noun_text		: constant gdk_key_type := GDK_LC_x;
 	key_noun_zone		: constant gdk_key_type := GDK_LC_z;
 	-- CS add others
