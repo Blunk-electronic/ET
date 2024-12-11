@@ -85,6 +85,9 @@ package body et_board_ops.stencil is
 
 	end draw_stencil_line;
 
+
+
+
 	
 	procedure draw_stencil_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -131,6 +134,9 @@ package body et_board_ops.stencil is
 			process		=> add'access);
 
 	end draw_stencil_arc;
+
+
+
 
 	
 	procedure draw_stencil_circle (
@@ -180,6 +186,46 @@ package body et_board_ops.stencil is
 	end draw_stencil_circle;
 	
 
+	
+
+
+	procedure draw_zone (
+		module_cursor	: in pac_generic_modules.cursor;
+		zone			: in type_stencil_contour;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is begin
+			case face is
+				when TOP =>
+					module.board.stencil.top.contours.append (zone);
+					
+				when BOTTOM =>
+					module.board.stencil.bottom.contours.append (zone);
+			end case;
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& "drawing stencil zone", -- CS output top/bottom
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+	end draw_zone;
+
+	
+
+
+	
 	procedure delete_stencil (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;

@@ -53,6 +53,7 @@ package et_board_ops.stencil is
 		line			: in type_stencil_line;
 		log_threshold	: in type_log_level);
 
+	
 	-- Draws an arc in the stencil layer.
 	procedure draw_stencil_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -60,6 +61,7 @@ package et_board_ops.stencil is
 		arc				: in type_stencil_arc;		
 		log_threshold	: in type_log_level);
 
+	
 	-- Draws an circle in the stencil layer.
 	procedure draw_stencil_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -67,6 +69,16 @@ package et_board_ops.stencil is
 		circle			: in type_stencil_circle;
 		log_threshold	: in type_log_level);
 
+
+	-- Draws a stencil zone:
+	procedure draw_zone (
+		module_cursor	: in pac_generic_modules.cursor;
+		zone			: in type_stencil_contour;
+		face			: in type_face;
+		log_threshold	: in type_log_level);
+
+
+	
 	-- Deletes the segment of the stencil that crosses the given point.
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.

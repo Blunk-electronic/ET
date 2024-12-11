@@ -746,7 +746,12 @@ Stencil
 		
 		draw stencil top circle 2 100 100  20
 		
+	.. code-block::
+	
+		draw stencil top zone line 0 70 line 10 70 line 10 80 line 0 80
 
+		
+		
 #. Deleting Objects
 		
 	.. code-block::
