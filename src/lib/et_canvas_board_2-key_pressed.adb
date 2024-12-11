@@ -44,7 +44,7 @@ with et_canvas_board_tracks;
 with et_canvas_board_freetracks;
 with et_canvas_board_vias;
 with et_canvas_board_lines;
-
+with et_board_verb_noun_keys;			use et_board_verb_noun_keys;
 
 with et_ratsnest;
 
@@ -74,7 +74,7 @@ is
 
 	procedure clear is begin
 		case key is
-			when GDK_LC_z =>
+			when key_noun_zone =>
 				noun := NOUN_ZONE;
 				clear_zones (active_module, log_threshold + 1);
 
@@ -210,7 +210,7 @@ is
 	
 	procedure fill is begin
 		case key is
-			when GDK_LC_z =>
+			when key_noun_zone =>
 				noun := NOUN_ZONE;
 				fill_zones (active_module, NORMAL, log_threshold + 1);
 
@@ -300,7 +300,7 @@ is
 				noun := NOUN_VIA;
 				set_status (et_canvas_board_vias.status_move_via);
 		
-			when GDK_LC_x =>
+			when key_noun_text =>
 				noun := NOUN_TEXT;
 				set_status (et_canvas_board_texts.status_move_text);
 
@@ -415,6 +415,15 @@ is
 				show_line_properties;
 				set_status (status_draw_line);
 
+				
+			when key_noun_zone =>
+				noun := NOUN_ZONE;
+				-- CS
+				-- reset_preliminary_zone;				
+				-- show_zone_properties;
+				-- set_status (status_draw_zone);
+
+				
 
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when GDK_Space =>
@@ -446,8 +455,7 @@ is
 		use et_canvas_board_vias;
 	begin
 		case key is
-			-- EVALUATE KEY FOR NOUN:
-			when GDK_LC_x =>
+			when key_noun_text =>
 				noun := NOUN_TEXT;
 				show_text_properties;
 				set_status (status_place_text);
@@ -655,7 +663,7 @@ begin -- key_pressed
 								verb := VERB_DELETE;
 								status_enter_noun;
 
-							when GDK_LC_d =>
+							when key_verb_draw =>
 								verb := VERB_DRAW;
 								status_enter_noun;
 
@@ -667,15 +675,15 @@ begin -- key_pressed
 								verb := VERB_FLIP;
 								status_enter_noun;
 								
-							when GDK_LC_m =>
+							when key_verb_move =>
 								verb := VERB_MOVE;
 								status_enter_noun;
 								
-							when GDK_LC_p =>
+							when key_verb_place =>
 								verb := VERB_PLACE;
 								status_enter_noun;
 
-							when GDK_LC_o =>
+							when key_verb_rotate =>
 								verb := VERB_ROTATE;
 								status_enter_noun;
 								
