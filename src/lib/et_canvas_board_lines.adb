@@ -79,8 +79,23 @@ with et_undo_redo;
 with et_commit;
 
 
+
 package body et_canvas_board_lines is
 
+
+	procedure make_affected_layer_categories is
+		use pac_affected_layer_categories;
+	begin
+		affected_layer_categories.clear;
+		affected_layer_categories.insert (LAYER_CAT_CONDUCTOR);
+		affected_layer_categories.insert (LAYER_CAT_SILKSCREEN);
+		affected_layer_categories.insert (LAYER_CAT_ASSY);
+		affected_layer_categories.insert (LAYER_CAT_STOP);
+		affected_layer_categories.insert (LAYER_CAT_STENCIL);
+		affected_layer_categories.insert (LAYER_CAT_ROUTE_RESTRICT);
+	end make_affected_layer_categories;
+	
+	
 
 	procedure reset_preliminary_line is begin
 		preliminary_line.ready := false;
@@ -124,7 +139,7 @@ package body et_canvas_board_lines is
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
 		preliminary_line.category := to_layer_category (glib.values.get_string (item_text));
-		--put_line ("cat " & to_string (preliminary_line.category));
+		put_line ("cat " & to_string (preliminary_line.category));
 
 		-- display the objects in the selected layer category:
 		case preliminary_line.category is
@@ -268,23 +283,42 @@ package body et_canvas_board_lines is
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
-		begin
+
+			
+
+			-- Collects layer categories and inserts them
+			-- in the storage model:
+			procedure collect_layer_cats is
+
+				procedure query_category (
+					c : in pac_affected_layer_categories.cursor) 
+				is 
+					use pac_affected_layer_categories;
+				begin
+					storage_model.append (iter);
+					gtk.list_store.set (storage_model, iter, column_0,
+						to_string (element (c)));
+
+				end query_category;
+				
+			begin
+				make_affected_layer_categories;				
+				affected_layer_categories.iterate (query_category'access);
+			end collect_layer_cats;
+			
+	
+		begin			
 			gtk_new_vbox (box_layer_category, homogeneous => false);
 			pack_start (box_v4, box_layer_category, padding => guint (spacing));
 
 			gtk_new (label_layer_category, "LAYER CAT");
 			pack_start (box_layer_category, label_layer_category, padding => guint (spacing));
-
 			
 			-- Create the storage model:
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
 			-- Insert the layer categories in the storage model:
-			for choice in 0 .. type_text_layer'pos (type_text_layer'last) loop
-				storage_model.append (iter);
-				gtk.list_store.set (storage_model, iter, column_0,
-					to_string (type_layer_category'val (choice)));
-			end loop;
+			collect_layer_cats;			
 
 			-- Create the combo box:
 			gtk.combo_box.gtk_new_with_model (
@@ -293,7 +327,6 @@ package body et_canvas_board_lines is
 
 			-- Set the category used last:
 			cbox_category.set_active (type_layer_category'pos (preliminary_line.category));
-
 
 			pack_start (box_layer_category, cbox_category, padding => guint (spacing));
 			cbox_category.on_changed (layer_category_changed'access);
@@ -520,7 +553,9 @@ package body et_canvas_board_lines is
 						line		=> (line with PL.width, PL.signal_layer),
 						log_threshold	=> log_threshold);
 
-					
+
+				when others =>
+					null; -- CS
 			end case;
 
 			-- Commit the new state of the design:

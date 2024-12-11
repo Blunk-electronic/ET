@@ -51,6 +51,9 @@ with gtk.combo_box;						use gtk.combo_box;
 with gtk.combo_box_text;				use gtk.combo_box_text;
 with gtk.button;						use gtk.button;
 
+with ada.containers;					use ada.containers;
+with ada.containers.ordered_sets;
+
 with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;
 with et_canvas_board_2;
@@ -64,9 +67,23 @@ with et_pcb_stack;						use et_pcb_stack;
 
 
 
+
 package et_canvas_board_lines is
 
 	use et_canvas_board_2.pac_canvas;
+
+
+	-- Lines can be drawn in various layer categories.
+	-- For the combo_box that offers the categories, the
+	-- affected layers must be put together in a set:
+	package pac_affected_layer_categories is new ordered_sets (type_layer_category);
+
+	-- Here the categories will be stored:
+	affected_layer_categories : pac_affected_layer_categories.set;
+	
+	-- This procedure creates a set of categories:
+	procedure make_affected_layer_categories;
+
 	
 
 	-- The text properties bar:
@@ -134,7 +151,7 @@ package et_canvas_board_lines is
 		-- cursor position is to be used when drawing the line:
 		tool		: type_tool := MOUSE;
 		
-		category		: type_text_layer := LAYER_CAT_ASSY;
+		category		: type_layer_category := LAYER_CAT_ASSY;
 		signal_layer	: type_signal_layer := signal_layer_default;
 		face			: type_face := face_default;
 
