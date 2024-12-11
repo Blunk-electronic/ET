@@ -622,7 +622,11 @@ Assembly Documentation
 	
 		draw assy top circle 1  100 100  20
 
+	.. code-block::
+	
+		draw assy top zone line 26 25 line 28 25 line 28 33 line 26 33
 
+		
 		
 #. Moving Objects
 

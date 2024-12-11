@@ -89,6 +89,7 @@ package body et_board_ops.assy_doc is
 
 	end draw_line;
 
+	
 
 
 	function get_lines (
@@ -158,6 +159,8 @@ package body et_board_ops.assy_doc is
 
 
 
+
+	
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		line_cursor		: in pac_doc_lines.cursor;
@@ -259,6 +262,8 @@ package body et_board_ops.assy_doc is
 
 
 
+	
+
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
@@ -344,6 +349,8 @@ package body et_board_ops.assy_doc is
 
 
 
+
+	
 	procedure reset_proposed_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -415,6 +422,8 @@ package body et_board_ops.assy_doc is
 
 	
 
+
+	
 	function get_first_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
@@ -494,6 +503,8 @@ package body et_board_ops.assy_doc is
 
 
 
+
+	
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in out type_line_segment;
@@ -605,6 +616,8 @@ package body et_board_ops.assy_doc is
 	end next_proposed_line;
 
 	
+
+
 	
 	procedure move_line (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -666,6 +679,8 @@ package body et_board_ops.assy_doc is
 	end move_line;
 
 
+
+	
 	
 	procedure draw_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -711,6 +726,8 @@ package body et_board_ops.assy_doc is
 
 	end draw_arc;
 
+
+
 	
 	procedure draw_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -754,6 +771,52 @@ package body et_board_ops.assy_doc is
 			process		=> add'access);
 
 	end draw_circle;
+
+
+
+
+
+	procedure draw_zone (
+		module_cursor	: in pac_generic_modules.cursor;
+		zone			: in type_doc_contour;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is begin
+			case face is
+				when TOP =>
+					module.board.assy_doc.top.contours.append (zone);
+					
+				when BOTTOM =>
+					module.board.assy_doc.bottom.contours.append (zone);
+			end case;
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& "drawing assembly documentation zone", -- CS output top/bottom
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+	end draw_zone;
+
+
+
+
+
+
+
+
 
 	
 	procedure delete (

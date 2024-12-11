@@ -192,10 +192,10 @@ package et_assy_doc is
 
 	
 -- CONTOURS:
-	
-	type type_doc_contour is new type_contour with null record;
+
+	type type_doc_contour is new type_contour with null record; -- CS rename to type_doc_zone
 	package pac_doc_contours is new doubly_linked_lists (type_doc_contour);
-	use pac_doc_contours;
+	use pac_doc_contours; -- CS rename to pac_doc_zones
 	
 
 	-- Mirrors a list of contours along the given axis:

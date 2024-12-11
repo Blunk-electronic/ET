@@ -630,9 +630,11 @@ is
 		end case;
 	end delete_hole_segment;
 
-
-
 	
+
+
+	-- This procedure parses a command that draws
+	-- a line, arc, circle or a zone in silkscreen:
 	procedure draw_silkscreen is
 		use et_board_ops.silkscreen;
 
@@ -746,80 +748,120 @@ is
 	end draw_silkscreen;
 
 
-
 	
+
+	-- This procedure parses a command that draws
+	-- a line, arc, circle or a zone in assembly documentation:
 	procedure draw_assy_doc is
 		use et_board_ops.assy_doc;
-		shape : type_shape := to_shape (f (6));
-	begin
-		case shape is
-			when LINE =>
-				case cmd_field_count is
-					when 11 =>
-						draw_line (
-							module_name 	=> module,
-							face			=> to_face (f (5)),
-							line			=> (
-									width		=> to_distance (f (7)),
-									start_point	=> type_vector_model (to_point (f (8), f (9))),
-									end_point	=> type_vector_model (to_point (f (10), f (11))),
+		
+		-- Extract from the given command the zone arguments (everything after "zone"):
+		-- example command: board demo draw assy top zone line 0 0 line 50 0 line 50 50 line 0 50
+		procedure build_zone is
+			arguments : constant type_fields_of_line := 
+				remove_field (single_cmd_status.cmd, 1, 6);
+			
+			-- Build the basic contour from zone:
+			c : constant type_contour := type_contour (to_contour (arguments));
+
+			face : type_face;
+		begin
+			face := to_face (f (5));
+			
+			draw_zone (
+				module_cursor	=> module_cursor,
+				zone			=> (c with null record),
+				face			=> face,
+				log_threshold	=> log_threshold + 1);
+
+		end build_zone;
+
+		
+		shape : type_shape;
+
+		-- Draws a line, arc or circle:
+		procedure draw_shape is begin
+			case shape is
+				when LINE =>
+					case cmd_field_count is
+						when 11 =>
+							draw_line (
+								module_name 	=> module,
+								face			=> to_face (f (5)),
+								line			=> (
+										width		=> to_distance (f (7)),
+										start_point	=> type_vector_model (to_point (f (8), f (9))),
+										end_point	=> type_vector_model (to_point (f (10), f (11))),
+										others		=> <>),
+
+								log_threshold	=> log_threshold + 1
+								);
+
+						when 12 .. type_field_count'last =>
+							too_long;
+							
+						when others =>
+							command_incomplete;
+					end case;
+
+					
+				when ARC =>
+					case cmd_field_count is
+						when 14 =>
+							draw_arc (
+								module_name 	=> module,
+								face			=> to_face (f (5)),
+								arc				=> (
+									width	=> to_distance (f (7)),
+									center	=> type_vector_model (to_point (f (8), f (9))),
+									start_point	=> type_vector_model (to_point (f (10), f (11))),
+									end_point	=> type_vector_model (to_point (f (12), f (13))),
+									direction	=> to_direction (f (14)),
 									others		=> <>),
-							log_threshold	=> log_threshold + 1);
-						
-					when 12 .. type_field_count'last =>
-						too_long;
-						
-					when others =>
-						command_incomplete;
-				end case;
 
-				
-			when ARC =>
-				case cmd_field_count is
-					when 14 =>
-						draw_arc (
-							module_name 	=> module,
-							face			=> to_face (f (5)),
-							arc				=> (
-								width		=> to_distance (f (7)),
-								center		=> type_vector_model (to_point (f (8), f (9))),
-								start_point	=> type_vector_model (to_point (f (10), f (11))),
-								end_point	=> type_vector_model (to_point (f (12), f (13))),
-								direction	=> to_direction (f (14)),
-								others		=> <>),
-							log_threshold	=> log_threshold + 1);
+								log_threshold	=> log_threshold + 1
+								);
 
-					when 15 .. type_field_count'last =>
-						too_long;
-						
-					when others =>
-						command_incomplete;
-				end case;
+						when 15 .. type_field_count'last =>
+							too_long;
+							
+						when others =>
+							command_incomplete;
+					end case;
 
-				
-			when CIRCLE =>
-				case cmd_field_count is
-					when 10 =>
-						draw_circle (
-							module_name 	=> module,
-							face			=> to_face (f (5)),
-							circle			=> (
-								width	=> to_distance (f (7)),
-								center	=> type_vector_model (to_point (f (8), f (9))),
-								radius	=> to_radius (f (10)),
-								others	=> <>),
-							log_threshold	=> log_threshold + 1);
-						
-					when 11 .. type_field_count'last =>
-						too_long;
-						
-					when others =>
-						command_incomplete;
-				end case;
+					
+				when CIRCLE =>
+					case cmd_field_count is
+						when 10 =>
+							draw_circle (
+								module_name 	=> module,
+								face			=> to_face (f (5)),
+								circle			=> (
+										width		=> to_distance (f (7)),
+										center		=> type_vector_model (to_point (f (8), f (9))),
+										radius		=> to_radius (f (10)),
+										others		=> <>),
+								log_threshold	=> log_threshold + 1);
+							
+						when 11 .. type_field_count'last =>
+							too_long;
+							
+						when others =>
+							command_incomplete;
+					end case;
+							
+				when others => null;
+			end case;
+		end draw_shape;
+		
 
-						
-			when others => null;
-		end case;
+	begin
+		if f (6) = keyword_zone then
+			build_zone;
+		else
+			shape := to_shape (f (6));
+			draw_shape;
+		end if;		
 	end draw_assy_doc;
 
 	

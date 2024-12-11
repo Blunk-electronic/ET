@@ -149,6 +149,16 @@ package et_board_ops.assy_doc is
 		circle			: in type_doc_circle;
 		log_threshold	: in type_log_level);
 
+
+	-- Draws a zone in the assembly documentation layer:
+	procedure draw_zone (
+		module_cursor	: in pac_generic_modules.cursor;
+		zone			: in type_doc_contour;
+		face			: in type_face;
+		log_threshold	: in type_log_level);
+
+
+
 	
 	-- Deletes the segment of the assembly documentation that crosses the given point.
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
