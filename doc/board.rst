@@ -541,6 +541,7 @@ they represent a barrier.
 
 		draw route_restrict [1] zone line 0 0 line 100 0 line 100 100 line 0 100
 
+	|VNS| d z
 		
 		
 #. Deleting
@@ -564,7 +565,7 @@ where no vias a allowed.
 
 		draw via_restrict [1] zone line 0 0 line 100 0 line 100 100 line 0 100
 		
-		
+	|VNS| d z
 
 	
 
@@ -626,7 +627,8 @@ Assembly Documentation
 	
 		draw assy top zone line 26 25 line 28 25 line 28 33 line 26 33
 
-		
+	|VNS| d z
+	
 		
 #. Moving Objects
 
@@ -674,7 +676,8 @@ Silkscreen
 	
 		board demo draw silkscreen top zone line 26 25 line 28 25 line 28 33 line 26 33
 	
-
+	|VNS| d z
+	
 	
 #. Texts
 
@@ -730,6 +733,7 @@ Stopmask
 		
 		draw stop top zone line 52 0 line 60 0 line 60 4 line 52 4
 		
+	|VNS| d z
 		
 		
 #. Deleting Objects
