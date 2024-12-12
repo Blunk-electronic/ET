@@ -125,7 +125,7 @@ package et_canvas_board_zone is
 		-- cursor position is to be used when drawing the zone:
 		tool		: type_tool := MOUSE;
 		
-		category		: type_text_layer := LAYER_CAT_ASSY;
+		category		: type_layer_category := LAYER_CAT_ASSY;
 		signal_layer	: type_signal_layer := signal_layer_default;
 		face			: type_face := face_default;
 
