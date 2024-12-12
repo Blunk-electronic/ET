@@ -90,12 +90,12 @@ package body et_canvas_board_zone is
 		use pac_affected_layer_categories;
 	begin
 		affected_layer_categories.clear;
-		affected_layer_categories.insert (LAYER_CAT_ASSY);
-		affected_layer_categories.insert (LAYER_CAT_KEEPOUT);
-		affected_layer_categories.insert (LAYER_CAT_SILKSCREEN);
-		affected_layer_categories.insert (LAYER_CAT_STOP);
-		affected_layer_categories.insert (LAYER_CAT_STENCIL);
-		affected_layer_categories.insert (LAYER_CAT_VIA_RESTRICT);
+		affected_layer_categories.append (LAYER_CAT_ASSY);
+		affected_layer_categories.append (LAYER_CAT_KEEPOUT);
+		affected_layer_categories.append (LAYER_CAT_SILKSCREEN);
+		affected_layer_categories.append (LAYER_CAT_STOP);
+		affected_layer_categories.append (LAYER_CAT_STENCIL);
+		affected_layer_categories.append (LAYER_CAT_VIA_RESTRICT);
 	end make_affected_layer_categories;
 
 	
@@ -143,14 +143,14 @@ package body et_canvas_board_zone is
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
 		preliminary_zone.category := to_layer_category (glib.values.get_string (item_text));
-		--put_line ("cat " & to_string (preliminary_zone.category));
+		put_line ("cat " & to_string (preliminary_zone.category));
 
 		-- display the objects in the selected layer category:
 		case preliminary_zone.category is
 			when LAYER_CAT_CONDUCTOR =>
 				-- display the affected conductor layer:
 				enable_conductor (preliminary_zone.signal_layer);
-
+  
 			when others =>
 				null;
 		end case;
@@ -238,7 +238,7 @@ package body et_canvas_board_zone is
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
-
+		
 
 			-- Collects layer categories and inserts them
 			-- in the storage model:
@@ -260,6 +260,17 @@ package body et_canvas_board_zone is
 				affected_layer_categories.iterate (query_category'access);
 			end collect_layer_cats;
 
+
+			
+			procedure set_category_used_last is
+				c : pac_affected_layer_categories.cursor;
+				use pac_affected_layer_categories;
+			begin
+				-- Map from preliminary_zone.category to index:
+				c := find (affected_layer_categories, preliminary_zone.category);
+				cbox_category.set_active (gint (to_index (c)));
+			end set_category_used_last;
+			
 			
 		begin
 			gtk_new_vbox (box_layer_category, homogeneous => false);
@@ -279,9 +290,7 @@ package body et_canvas_board_zone is
 				combo_box	=> cbox_category,
 				model		=> +storage_model); -- ?
 
-			-- Set the category used last:
-			cbox_category.set_active (type_layer_category'pos (preliminary_zone.category));
-
+			set_category_used_last;
 
 			pack_start (box_layer_category, cbox_category, padding => guint (spacing));
 			cbox_category.on_changed (layer_category_changed'access);
