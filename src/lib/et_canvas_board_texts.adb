@@ -90,6 +90,21 @@ with et_keywords;						use et_keywords;
 
 package body et_canvas_board_texts is
 
+
+	procedure make_affected_layer_categories is
+		use pac_affected_layer_categories;
+	begin
+		affected_layer_categories.clear;
+		affected_layer_categories.append (LAYER_CAT_ASSY);
+		affected_layer_categories.append (LAYER_CAT_CONDUCTOR);
+		affected_layer_categories.append (LAYER_CAT_SILKSCREEN);
+		affected_layer_categories.append (LAYER_CAT_STOP);
+	end make_affected_layer_categories;
+
+	
+
+
+	
 	procedure layer_category_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
 		use gtk.tree_model;
@@ -111,6 +126,7 @@ package body et_canvas_board_texts is
 		
 		-- CS display layer ?
 	end layer_category_changed;
+
 
 	
 	
@@ -138,6 +154,7 @@ package body et_canvas_board_texts is
 
 
 	
+	
 	procedure signal_layer_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
 		use gtk.tree_model;
@@ -161,6 +178,7 @@ package body et_canvas_board_texts is
 	end signal_layer_changed;
 
 
+
 	
 	procedure apply_size (text : in string) is
 		size : type_text_size;
@@ -174,6 +192,7 @@ package body et_canvas_board_texts is
 	end apply_size;
 
 
+	
 	
 	function size_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
@@ -202,6 +221,7 @@ package body et_canvas_board_texts is
 		return event_handled;
 	end size_key_pressed;
 
+	
 
 	
 	procedure size_entered (combo_entry : access gtk_entry_record'class) is 
@@ -211,6 +231,7 @@ package body et_canvas_board_texts is
 		apply_size (text);
 	end size_entered;
 
+	
 
 	
 	procedure apply_line_width (text : in string) is
@@ -225,6 +246,7 @@ package body et_canvas_board_texts is
 	end apply_line_width;
 
 
+	
 	
 	function line_width_key_pressed (
 		combo_entry	: access gtk_widget_record'class;
@@ -253,6 +275,7 @@ package body et_canvas_board_texts is
 		return event_handled;
 	end line_width_key_pressed;
 
+	
 
 	
 	procedure line_width_entered (combo_entry : access gtk_entry_record'class) is 
@@ -276,6 +299,7 @@ package body et_canvas_board_texts is
 		et_canvas_board_2.redraw_board;
 	end apply_rotation;
 
+	
 
 	
 	function rotation_key_pressed (
@@ -305,6 +329,7 @@ package body et_canvas_board_texts is
 		return event_handled;
 	end rotation_key_pressed;
 
+
 	
 	
 	procedure rotation_entered (combo_entry : access gtk_entry_record'class) is 
@@ -313,6 +338,7 @@ package body et_canvas_board_texts is
 		--put_line ("rotation " & text);
 		apply_rotation (text);
 	end rotation_entered;
+
 
 	
 	
@@ -340,6 +366,7 @@ package body et_canvas_board_texts is
 	end button_apply_clicked;
 
 
+	
 
 	procedure reset_preliminary_text is begin
 		preliminary_text.ready := false;
@@ -404,6 +431,42 @@ package body et_canvas_board_texts is
 
 			iter : gtk_tree_iter;			
 			render : gtk_cell_renderer_text;
+
+
+			-- Collects layer categories and inserts them
+			-- in the storage model:
+			procedure collect_layer_cats is
+
+				procedure query_category (
+					c : in pac_affected_layer_categories.cursor) 
+				is 
+					use pac_affected_layer_categories;
+				begin
+					storage_model.append (iter);
+					gtk.list_store.set (storage_model, iter, column_0,
+						to_string (element (c)));
+
+				end query_category;
+				
+			begin
+				make_affected_layer_categories;				
+				affected_layer_categories.iterate (query_category'access);
+			end collect_layer_cats;
+
+
+			
+			procedure set_category_used_last is
+				c : pac_affected_layer_categories.cursor;
+				use pac_affected_layer_categories;
+			begin
+				-- Map from preliminary_zone.category to index:
+				c := find (affected_layer_categories, preliminary_text.category);
+				cbox_category.set_active (gint (to_index (c)));
+			end set_category_used_last;
+
+
+			
+			
 		begin
 			gtk_new_vbox (box_layer_category, homogeneous => false);
 			pack_start (box_v4, box_layer_category, padding => guint (spacing));
@@ -416,20 +479,14 @@ package body et_canvas_board_texts is
 			gtk_new (list_store => storage_model, types => (entry_structure));
 
 			-- Insert the layer categories in the storage model:
-			for choice in 0 .. type_text_layer'pos (type_text_layer'last) loop
-				storage_model.append (iter);
-				gtk.list_store.set (storage_model, iter, column_0,
-					to_string (type_layer_category'val (choice)));
-			end loop;
+			collect_layer_cats;			
 
 			-- Create the combo box:
 			gtk.combo_box.gtk_new_with_model (
 				combo_box	=> cbox_category,
 				model		=> +storage_model); -- ?
 
-			-- Set the category used last:
-			cbox_category.set_active (type_layer_category'pos (preliminary_text.category));
-
+			set_category_used_last;
 
 			pack_start (box_layer_category, cbox_category, padding => guint (spacing));
 			cbox_category.on_changed (layer_category_changed'access);

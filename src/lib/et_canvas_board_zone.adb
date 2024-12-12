@@ -143,7 +143,7 @@ package body et_canvas_board_zone is
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
 		preliminary_zone.category := to_layer_category (glib.values.get_string (item_text));
-		put_line ("cat " & to_string (preliminary_zone.category));
+		--put_line ("cat " & to_string (preliminary_zone.category));
 
 		-- display the objects in the selected layer category:
 		case preliminary_zone.category is
@@ -271,6 +271,7 @@ package body et_canvas_board_zone is
 				cbox_category.set_active (gint (to_index (c)));
 			end set_category_used_last;
 			
+
 			
 		begin
 			gtk_new_vbox (box_layer_category, homogeneous => false);
