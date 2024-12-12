@@ -41,7 +41,8 @@
 -- IMPORTANT:
 -- This is about drawing zones in layers like assy doc, silkscreen, stopmask,
 -- stencil, keepout.
--- This is not about zones in conductor layers.
+-- This is NOT about zones in conductor layers. 
+-- See package et_canvas_board_zone_conductor.
 
 with glib;								use glib;
 
@@ -49,7 +50,9 @@ with gtk.box;							use gtk.box;
 with gtk.label;							use gtk.label;
 with gtk.combo_box;						use gtk.combo_box;
 with gtk.combo_box_text;				use gtk.combo_box_text;
-with gtk.button;						use gtk.button;
+
+with ada.containers;					use ada.containers;
+with ada.containers.ordered_sets;
 
 with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;
@@ -68,6 +71,20 @@ package et_canvas_board_zone is
 	use et_canvas_board_2.pac_canvas;
 	
 
+	-- Lines can be drawn in various layer categories.
+	-- For the combo_box that offers the categories, the
+	-- affected layers must be put together in a set:
+	package pac_affected_layer_categories is new ordered_sets (type_layer_category);
+
+	-- Here the categories will be stored:
+	affected_layer_categories : pac_affected_layer_categories.set;
+	
+	-- This procedure creates a set of categories:
+	procedure make_affected_layer_categories;
+
+
+
+	
 	-- The text properties bar:
 	type type_box_properties is record
 		

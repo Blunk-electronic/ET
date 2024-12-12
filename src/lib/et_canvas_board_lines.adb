@@ -87,12 +87,12 @@ package body et_canvas_board_lines is
 		use pac_affected_layer_categories;
 	begin
 		affected_layer_categories.clear;
+		affected_layer_categories.insert (LAYER_CAT_ASSY);
 		affected_layer_categories.insert (LAYER_CAT_CONDUCTOR);
 		affected_layer_categories.insert (LAYER_CAT_SILKSCREEN);
-		affected_layer_categories.insert (LAYER_CAT_ASSY);
-		affected_layer_categories.insert (LAYER_CAT_STOP);
-		affected_layer_categories.insert (LAYER_CAT_STENCIL);
 		affected_layer_categories.insert (LAYER_CAT_ROUTE_RESTRICT);
+		affected_layer_categories.insert (LAYER_CAT_STENCIL);
+		affected_layer_categories.insert (LAYER_CAT_STOP);
 	end make_affected_layer_categories;
 	
 	
@@ -219,6 +219,8 @@ package body et_canvas_board_lines is
 		et_canvas_board_2.redraw_board;
 	end apply_line_width;
 
+
+
 	
 	
 	function line_width_key_pressed (
@@ -249,6 +251,7 @@ package body et_canvas_board_lines is
 	end line_width_key_pressed;
 
 
+	
 	
 	procedure line_width_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
@@ -338,6 +341,7 @@ package body et_canvas_board_lines is
 			add_attribute (cbox_category, render, "markup", column_0);
 		end make_combo_category;
 
+
 		
 		procedure make_combo_for_face is
 			storage_model : gtk_list_store;
@@ -387,6 +391,7 @@ package body et_canvas_board_lines is
 			add_attribute (cbox_face, render, "markup", column_0);
 
 		end make_combo_for_face;
+
 
 		
 		procedure make_combo_for_signal_layer is
@@ -476,8 +481,7 @@ package body et_canvas_board_lines is
 		-- 	button_apply.on_clicked (button_apply_clicked'access);
 		-- end make_apply_button;
 		
-	begin -- show_line_properties
-		
+	begin		
 		-- If the properties are already displayed, do nothing.
 		-- Otherwise show them:
 		if not box_properties.displayed then
@@ -494,8 +498,7 @@ package body et_canvas_board_lines is
 
 			-- Redraw the right box of the window:
 			box_v0.show_all; -- CS box_v4 ?
-		end if;
-		
+		end if;		
 	end show_line_properties;
 
 
