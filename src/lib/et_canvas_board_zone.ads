@@ -71,7 +71,7 @@ package et_canvas_board_zone is
 	use et_canvas_board_2.pac_canvas;
 	
 
-	-- Lines can be drawn in various layer categories.
+	-- Zones can be drawn in various layer categories.
 	-- For the combo_box that offers the categories, the
 	-- affected layers must be put together in a so called vector.
 	-- This is a list with an index and an associated layer category:
