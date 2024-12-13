@@ -126,22 +126,19 @@ is
 				iterate (module.board.stencil.bottom.circles, query_circle'access);
 				iterate (module.board.stencil.bottom.contours, query_polygon'access);
 		end case;
-
 	end query_items;
+
 	
-begin -- draw_stencil
+begin
 -- 	put_line ("draw stencil / solder paste mask ...");
 	
 	pac_generic_modules.query_element (
 		position	=> active_module,
 		process		=> query_items'access);
 
-	
-	draw_text_being_placed (face, LAYER_CAT_STENCIL);
 
 	-- Draw the lines of a path that is being drawn:
 	draw_path (LAYER_CAT_STENCIL);
-
 	
 end draw_stencil;
 
