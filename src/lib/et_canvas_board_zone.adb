@@ -61,6 +61,8 @@ with gtk.container;						use gtk.container;
 with et_generic_module;					use et_generic_module;
 with et_canvas_board_2;
 
+with et_board_shapes_and_text;
+
 with et_board_ops;						use et_board_ops;
 with et_board_ops.assy_doc;
 with et_board_ops.silkscreen;
@@ -446,7 +448,17 @@ package body et_canvas_board_zone is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+			
+			use et_board_shapes_and_text;
+			use et_board_shapes_and_text.pac_contours;
+
+			-- A temporary contour consisting of a single 
+			-- segment:
+			c : type_contour;
 		begin
+			-- Add the line to the temporary contour:
+			append_segment (c, to_segment (line));
+							
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold + 1);
 
@@ -480,7 +492,13 @@ package body et_canvas_board_zone is
 
 
 				when LAYER_CAT_STENCIL =>
-					null;
+
+					-- Add the temporary contour to the board:
+					et_board_ops.stencil.draw_zone (
+						module_cursor	=> active_module,
+						zone			=> (c with null record),
+						face			=> PZ.face,
+						log_threshold	=> log_threshold);
 
 					
 				when LAYER_CAT_KEEPOUT =>
