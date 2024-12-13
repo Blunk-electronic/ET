@@ -80,6 +80,7 @@ package et_pcb_stack is
 	function to_signal_layer (layer : in string) return type_signal_layer;
 
 	package type_signal_layers is new ordered_sets (type_signal_layer);
+	-- CS rename to pac_signal_layers
 
 	layer_term_start : constant character := '[';
 	layer_term_end   : constant character := ']';	
@@ -89,10 +90,19 @@ package et_pcb_stack is
 	-- Returns a string like "[1,3,5-9]"
 	function to_string (layers : in type_signal_layers.set) return string;
 
+	
 	-- Converts a string like [1,3,5-9] to a set 
 	-- of signal layers.
 	function to_layers (layers : in string) 
 		return type_signal_layers.set;
+
+	
+	-- Converts a given single signal layer to a set
+	-- that contains just this single layer:
+	function to_layers (
+		layer	: in type_signal_layer)
+		return type_signal_layers.set;
+
 	
 	--use pac_geometry_brd;
 -- 	subtype type_prepreg_thickness is type_distance_positive range 0.05 .. 0.5; -- CS reasonable ?
@@ -107,27 +117,32 @@ package et_pcb_stack is
 	conductor_thickness_outer_default : constant type_conductor_thickness := 0.035;
 	conductor_thickness_inner_default : constant type_conductor_thickness := 0.018;	
 
+	
 	type type_conductor is record
 		thickness	: type_conductor_thickness := conductor_thickness_outer_default;
 		-- CS material specific values
 	end record;
 
+	
 	type type_dielectric is record
 		thickness	: type_dielectric_thickness := dielectric_thickness_default;
 		-- CS material specific values
 	end record;
 
+	
 	-- A layer is a compound of a conductor and a dielectric:
 	type type_layer is record
 		conductor	: type_conductor;
 		dielectric	: type_dielectric;
 	end record;
 
+	
 	-- The layers are collected in vectors:
 	package package_layers is new vectors (
 		index_type		=> type_signal_layer,
 		element_type	=> type_layer);
 
+	
 	-- The final layer stack always has at least the top layer (index 1) 
 	-- and the bottom layer. The bottom layer does not have a dielectric.
 	type type_stack is record
@@ -135,8 +150,11 @@ package et_pcb_stack is
 		bottom	: type_conductor;
 	end record;
 
+	
 	-- Returns the index of the deepest conductor layer:
 	function deepest_layer (stack : in type_stack) return type_signal_layer;
+	-- CS rename to get_deepest_layer
+	
 
 	-- If conductor layers must be checked against the deepest layer of the pcb, use
 	-- this type:
@@ -148,6 +166,7 @@ package et_pcb_stack is
 		end case;
 	end record;
 
+	
 	-- If layer check required, this function returns true if the given layer id
 	-- is less or equal the deepest layer used (given by argument check_layers).
 	-- Returns false otherwise. 
@@ -157,11 +176,12 @@ package et_pcb_stack is
 		check_layers	: in et_pcb_stack.type_layer_check)
 		return boolean;
 
+	
 	-- Mirrors the given layers based on the deepest layer used. The deepest layer is the bottom layer.
 	-- Example: signal_layers is a set: 1, 2, 4. The bottom layer id is 4 (an 4-layer board).
 	-- The result is: 4, 3, 1. 
 	-- The general computation is: 1 + deepest_layer - given_layer = mirrored_layer
-	procedure mirror (
+	procedure mirror ( -- CS rename
 		signal_layers	: in out type_signal_layers.set;
 		deepest_layer	: in type_signal_layer);
 

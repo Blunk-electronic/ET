@@ -6,20 +6,21 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -59,16 +60,20 @@ package body et_pcb_stack is
 		return result;
 	end invert_category;
 
+
 	
 	function to_string (layer : in type_signal_layer) return string is begin
 		return trim (type_signal_layer'image (layer), left);
 	end to_string;
 
 	
+	
 	function to_signal_layer (layer : in string) return type_signal_layer is begin
 		return type_signal_layer'value (layer);
 	end to_signal_layer;
 
+
+	
 	
 	function to_string (layers : in type_signal_layers.set) return string is
 	-- Returns a string like '[1,3,5-9]'.
@@ -110,6 +115,8 @@ package body et_pcb_stack is
 		
 		return to_string (layer_string);
 	end;
+
+
 
 	
 	function to_layers (layers : in string) 
@@ -224,12 +231,28 @@ package body et_pcb_stack is
 		return layer_set;
 	end to_layers;
 
+
+	
+
+	function to_layers (
+		layer	: in type_signal_layer)
+		return type_signal_layers.set
+	is
+		result : type_signal_layers.set;
+	begin
+		result.insert (layer);
+		return result;
+	end to_layers;
+
+
+	
 	
 	function deepest_layer (stack : in type_stack) return type_signal_layer is begin
 		-- Because the bottom layer is always there, we add 1:
 		return stack.layers.last_index + 1;
 	end deepest_layer;
 
+	
 	
 	function signal_layer_valid (
 		signal_layer 	: in et_pcb_stack.type_signal_layer;
@@ -251,6 +274,8 @@ package body et_pcb_stack is
 		return result;
 	end signal_layer_valid;	
 
+
+	
 	
 	procedure mirror (
 		signal_layers	: in out type_signal_layers.set;
