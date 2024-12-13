@@ -243,9 +243,12 @@ package et_canvas_board_2 is
 	--    Exception: For route restrict the linewidth zero is used.
 	-- 3. Use it also for drawing freetracks in conductor layers.
 	-- 4. NOTE: This is NOT for tracks of nets ! See procedure draw_conductors.
-	procedure draw_path (
+	procedure draw_path ( -- CS rename to draw_live_path
 		cat : in type_layer_category);
 	
+
+	procedure draw_live_zone ( 
+		cat : in type_layer_category);
 
 	
 	

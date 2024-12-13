@@ -438,129 +438,133 @@ package body et_canvas_board_zone is
 		tool	: in type_tool;
 		point	: in type_vector_model)
 	is
--- 		PL : type_preliminary_zone renames preliminary_zone;
--- 		line : type_line;
--- 
--- 		
--- 		procedure add_by_category is 
--- 			use et_modes.board;
--- 			use et_undo_redo;
--- 			use et_commit;
--- 		begin
--- 			-- Commit the current state of the design:
--- 			commit (PRE, verb, noun, log_threshold + 1);
--- 
--- 			case PL.category is
--- 				when LAYER_CAT_ASSY =>
--- 					
--- 					et_board_ops.assy_doc.draw_line (
--- 						module_name	=> pac_generic_modules.key (active_module),
--- 						face		=> PL.face,
--- 						line		=> (line with PL.width),
--- 						log_threshold	=> log_threshold);
--- 
--- 					
--- 				when LAYER_CAT_SILKSCREEN =>
--- 					
--- 					et_board_ops.silkscreen.draw_line (
--- 						module_name	=> pac_generic_modules.key (active_module),
--- 						face		=> PL.face,
--- 						line		=> (line with PL.width),
--- 						log_threshold	=> log_threshold);
--- 
--- 
--- 				when LAYER_CAT_STOP =>
--- 					
--- 					et_board_ops.stop_mask.draw_stop_line (
--- 						module_name	=> pac_generic_modules.key (active_module),
--- 						face		=> PL.face,
--- 						line		=> (line with PL.width),
--- 						log_threshold	=> log_threshold);
--- 
--- 					
--- 				when LAYER_CAT_CONDUCTOR =>
--- 
--- 					-- Because we do not pass a net name, this is going
--- 					-- to be a freetrack:
--- 					et_board_ops.conductors.draw_track_line (
--- 						module_name	=> pac_generic_modules.key (active_module),
--- 						line		=> (line with PL.width, PL.signal_layer),
--- 						log_threshold	=> log_threshold);
--- 
--- 					
--- 			end case;
--- 
--- 			-- Commit the new state of the design:
--- 			commit (POST, verb, noun, log_threshold + 1);			
--- 		end add_by_category;
--- 
--- 		
+		PZ : type_preliminary_zone renames preliminary_zone;
+		line : type_line;
+
+		
+		procedure add_by_category is 
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
+		begin
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold + 1);
+
+			case PZ.category is
+				when LAYER_CAT_ASSY =>
+					null;
+					
+					-- et_board_ops.assy_doc.draw_line (
+					-- 	module_name	=> pac_generic_modules.key (active_module),
+					-- 	face		=> PL.face,
+					-- 	line		=> (line with PL.width),
+					-- 	log_threshold	=> log_threshold);
+
+					
+				when LAYER_CAT_SILKSCREEN =>
+					null;
+					-- et_board_ops.silkscreen.draw_line (
+					-- 	module_name	=> pac_generic_modules.key (active_module),
+					-- 	face		=> PL.face,
+					-- 	line		=> (line with PL.width),
+					-- 	log_threshold	=> log_threshold);
+
+
+				when LAYER_CAT_STOP =>
+					null;
+					-- et_board_ops.stop_mask.draw_stop_line (
+					-- 	module_name	=> pac_generic_modules.key (active_module),
+					-- 	face		=> PL.face,
+					-- 	line		=> (line with PL.width),
+					-- 	log_threshold	=> log_threshold);
+
+
+				when LAYER_CAT_STENCIL =>
+					null;
+
+					
+				when LAYER_CAT_KEEPOUT =>
+					null;
+
+					
+					
+				when LAYER_CAT_VIA_RESTRICT =>
+					null;
+
+
+				when others => null; -- CS
+			end case;
+
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold + 1);			
+		end add_by_category;
+
+		
 	begin -- make_path
 		-- put_line ("make_path");
 		
--- 		-- Set the tool being used for this path so that procedure
--- 		-- draw_path (for example in et_canvas_board_2-draw_nets-draw_assy_doc)
--- 		-- knows where to get the end point from.
--- 		PL.tool := tool;
--- 
--- 		-- Initally the preliminary_zone is NOT ready. Nothing will be drawn.
--- 		-- Upon the first calling of this procedure the start point of the
--- 		-- path will be set.
--- 		
--- 		if not PL.ready then
--- 			-- set start point:
--- 			PL.path.start_point := point;
--- 
--- 			-- Allow drawing of the path:
--- 			preliminary_zone.ready := true;
--- 
--- 			set_status (status_start_point & to_string (PL.path.start_point) & ". " &
--- 				status_press_space & status_set_end_point & status_hint_for_abort);
--- 
--- 		else -- preliminary_zone IS ready
--- 
--- 			-- Start a new path only if the given point differs from 
--- 			-- the start point of the current path:
--- 			if point /= PL.path.start_point then
--- 
--- 				-- Complete the path by setting its end point.
--- 				-- The the current bend point (if there is one) into account:
--- 				
--- 				if PL.path.bended = NO then
--- 					PL.path.end_point := point;
--- 
--- 					-- insert a single line:
--- 					line.start_point := PL.path.start_point;
--- 					line.end_point   := PL.path.end_point;
--- 					add_by_category;
--- 					
--- 				else
--- 					-- The path is bended. The bend point has been computed
--- 					-- interactively while moving the mouse or the cursor.
--- 					-- See for example procedure draw_path in et_canvas_board_2-draw_assy_doc.
--- 
--- 					-- insert first line of the path:
--- 					line.start_point := PL.path.start_point;
--- 					line.end_point   := PL.path.bend_point;
--- 					add_by_category;
--- 
--- 					
--- 					-- insert second line of the path:
--- 					PL.path.end_point := point;
--- 					line.start_point := PL.path.bend_point;
--- 					line.end_point   := PL.path.end_point;
--- 					add_by_category;
--- 				end if;
--- 
--- 				-- Set start point of path so that a new
--- 				-- path can be drawn:
--- 				PL.path.start_point := point;
--- 				
--- 			else
--- 				reset_preliminary_zone;
--- 			end if;
--- 		end if;			
-		null;
+		-- Set the tool being used for this path so that procedure
+		-- draw_path_live (for example in et_canvas_board_2-draw_assy_doc)
+		-- knows where to get the end point from.
+		PZ.tool := tool;
+
+		-- Initally the preliminary_zone is NOT ready. Nothing will be drawn.
+		-- Upon the first calling of this procedure the start point of the
+		-- path will be set.
+		
+		if not PZ.ready then
+			-- set start point:
+			PZ.path.start_point := point;
+
+			-- Allow drawing of the path:
+			preliminary_zone.ready := true;
+
+			set_status (status_start_point & to_string (PZ.path.start_point) & ". " &
+				status_press_space & status_set_end_point & status_hint_for_abort);
+
+		else -- preliminary_zone IS ready
+
+			-- Start a new path only if the given point differs from 
+			-- the start point of the current path:
+			if point /= PZ.path.start_point then
+
+				-- Complete the path by setting its end point.
+				-- The the current bend point (if there is one) into account:
+				
+				if PZ.path.bended = NO then
+					PZ.path.end_point := point;
+
+					-- insert a single line:
+					line.start_point := PZ.path.start_point;
+					line.end_point   := PZ.path.end_point;
+					add_by_category;
+					
+				else
+					-- The path is bended. The bend point has been computed
+					-- interactively while moving the mouse or the cursor.
+					-- See for example procedure draw_path in et_canvas_board_2-draw_assy_doc.
+
+					-- insert first line of the path:
+					line.start_point := PZ.path.start_point;
+					line.end_point   := PZ.path.bend_point;
+					add_by_category;
+
+					
+					-- insert second line of the path:
+					PZ.path.end_point := point;
+					line.start_point := PZ.path.bend_point;
+					line.end_point   := PZ.path.end_point;
+					add_by_category;
+				end if;
+
+				-- Set start point of path so that a new
+				-- path can be drawn:
+				PZ.path.start_point := point;
+				
+			else
+				reset_preliminary_zone;
+			end if;
+		end if;			
 	end make_path;
 		
 

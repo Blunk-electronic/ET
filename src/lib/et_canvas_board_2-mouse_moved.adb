@@ -55,6 +55,11 @@ begin
 					if et_canvas_board_lines.preliminary_line.ready then
 						redraw_board;
 					end if;
+
+				when NOUN_ZONE =>
+					if et_canvas_board_zone.preliminary_zone.ready then
+						redraw_board;
+					end if;
 					
 				when others => null;
 			end case;

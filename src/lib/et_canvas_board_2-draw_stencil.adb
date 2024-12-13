@@ -139,6 +139,10 @@ begin
 
 	-- Draw the lines of a path that is being drawn:
 	draw_path (LAYER_CAT_STENCIL);
+
+	-- Draw the zone begin drawn:
+	draw_live_zone (LAYER_CAT_STENCIL);
+	
 	
 end draw_stencil;
 

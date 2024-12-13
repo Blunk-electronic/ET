@@ -107,6 +107,10 @@ is
 						-- put_line ("draw line");
 						et_canvas_board_lines.make_path (MOUSE, snap_point);
 
+					when NOUN_ZONE =>
+						et_canvas_board_zone.make_path (MOUSE, snap_point);
+
+						
 					when others => null;						
 				end case;
 
@@ -240,6 +244,10 @@ is
 					when NOUN_LINE =>
 						pac_path_and_bend.next_bend_style (
 							et_canvas_board_lines.preliminary_line.path);
+
+					when NOUN_ZONE =>
+						pac_path_and_bend.next_bend_style (
+							et_canvas_board_zone.preliminary_zone.path);
 						
 					when others => null;							
 				end case;

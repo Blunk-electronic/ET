@@ -65,6 +65,9 @@ use et_pcb_coordinates_2.pac_path_and_bend;
 with et_board_layer_category;			use et_board_layer_category;
 with et_pcb_stack;						use et_pcb_stack;
 
+-- with et_board_shapes_and_text;
+
+
 
 package et_canvas_board_zone is
 
@@ -134,6 +137,7 @@ package et_canvas_board_zone is
 		face			: type_face := face_default;
 
 		path			: type_path_live;
+		-- contour			: et_board_shapes_and_text.pac_contours.type_contour;
 	end record;
 
 	

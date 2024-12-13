@@ -500,6 +500,100 @@ package body et_canvas_board_2 is
 	
 
 
+
+
+
+	procedure draw_live_zone (
+		cat : in type_layer_category) 
+	is
+		use et_board_shapes_and_text;
+		use et_canvas_board_zone;
+		use pac_path_and_bend;
+		use et_modes.board;
+		use et_canvas_tool;
+		
+		PZ : type_preliminary_zone renames preliminary_zone;
+
+
+		-- Computes the path from given start to given end point.
+		-- Takes the bend style given in preliminary_zone into account.
+		-- Draws the path.
+		procedure compute_and_draw (
+			start_point, end_point : in type_vector_model) 
+		is
+			-- use et_colors;
+			
+			line : type_line;
+
+			-- Do the actual path calculation.
+			path : constant type_path := to_path (start_point, end_point, PZ.path.bend_style);
+
+			-- Draws the line:
+			procedure draw is begin
+				-- Lines in of contours have zero width:
+				draw_line (line => line, width => zero, do_stroke => true);
+			end draw;
+			
+			
+		begin
+			-- The calculated path may require a bend point.
+			-- Set/clear the "bended" flag of the line being drawn.
+			PZ.path.bended := path.bended;
+
+			
+			-- If the path does not require a bend point, draw a single line
+			-- from start to end point:
+			if path.bended = NO then
+				
+				line.start_point := path.start_point;
+				line.end_point := path.end_point;
+
+				draw;
+
+			-- If the path DOES require a bend point, then draw first a line
+			-- from start point to bend point. Then draw a second line from
+			-- bend point end point:
+			else
+				PZ.path.bend_point := path.bend_point;
+
+				line.start_point := path.start_point;
+				line.end_point := path.bend_point;
+				
+				draw;
+
+				line.start_point := path.bend_point;
+				line.end_point := path.end_point;
+				
+				draw;
+				
+			end if;
+		end compute_and_draw;
+
+		
+	begin
+		-- put_line ("draw_live_zone");		
+		
+		if verb = VERB_DRAW and noun = NOUN_ZONE and PZ.ready
+		and PZ.category = cat then
+			case PZ.tool is
+				when MOUSE => 
+					compute_and_draw (
+						start_point	=> PZ.path.start_point,	-- start of path
+						end_point	=> snap_to_grid (get_mouse_position));	-- end of route
+					
+				when KEYBOARD =>
+					compute_and_draw (
+						start_point	=> PZ.path.start_point,	 -- start of path
+						end_point	=> get_cursor_position); -- end of path
+
+			end case;
+		end if;
+	end draw_live_zone;
+
+
+
+
+	
 	
 
 	procedure draw_drawing_frame is separate;

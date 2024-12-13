@@ -439,6 +439,9 @@ is
 				case noun is
 					when NOUN_LINE =>
 						next_bend_style (preliminary_line.path);
+
+					when NOUN_ZONE =>
+						next_bend_style (preliminary_zone.path);
 						
 					when others => null;
 				end case;
