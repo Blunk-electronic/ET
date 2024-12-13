@@ -66,6 +66,12 @@ package et_geometry_2a.contours is
 		return string;
 
 
+	-- Converts a single line to a line segment:
+	function to_segment (
+		line : in type_line)
+		return type_segment;
+
+	
 
 	-- CS: There should not be a regulation on the winding of a contour path.
 	-- It can be CW or CCW.
@@ -113,6 +119,7 @@ package et_geometry_2a.contours is
 		segments : in string)
 		return type_contour'class;
 
+	
 	
 	
 	-- Returns the segments of a contour in human readable form.

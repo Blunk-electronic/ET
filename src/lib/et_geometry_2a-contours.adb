@@ -62,6 +62,18 @@ package body et_geometry_2a.contours is
 	end to_string;
 
 
+
+	function to_segment (
+		line : in type_line)
+		return type_segment
+	is
+		s : type_segment := (shape => contours.LINE, segment_line => line);
+	begin
+		return s;
+	end to_segment;
+	
+
+	
 	procedure iterate (
 		segments	: in pac_segments.list;
 		process		: not null access procedure (position : in pac_segments.cursor);
