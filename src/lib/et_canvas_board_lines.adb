@@ -65,6 +65,7 @@ with et_board_ops;						use et_board_ops;
 with et_board_ops.assy_doc;
 with et_board_ops.silkscreen;
 with et_board_ops.stop_mask;
+with et_board_ops.stencil;
 with et_board_ops.conductors;
 with et_board_ops.route_restrict;
 with et_modes.board;
@@ -577,6 +578,16 @@ package body et_canvas_board_lines is
 					-- to the line. Multi-layer assignment is possible via
 					-- commandline only.
 
+
+				when LAYER_CAT_STENCIL =>
+					
+					et_board_ops.stencil.draw_stencil_line (
+						module_name	=> pac_generic_modules.key (active_module),
+						face		=> PL.face,
+						line		=> (line with PL.width),
+						log_threshold	=> log_threshold);
+
+					
 					
 				when LAYER_CAT_STOP =>
 					

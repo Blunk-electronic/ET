@@ -138,6 +138,10 @@ begin -- draw_stencil
 
 	
 	draw_text_being_placed (face, LAYER_CAT_STENCIL);
+
+	-- Draw the lines of a path that is being drawn:
+	draw_path (LAYER_CAT_STENCIL);
+
 	
 end draw_stencil;
 
