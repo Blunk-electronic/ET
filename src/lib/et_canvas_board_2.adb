@@ -395,7 +395,7 @@ package body et_canvas_board_2 is
 
 
 	procedure draw_path (
-		cat : in type_text_layer) 
+		cat : in type_layer_category) 
 	is
 		use et_board_shapes_and_text;
 		use et_canvas_board_lines;
@@ -422,9 +422,16 @@ package body et_canvas_board_2 is
 
 			-- Draws the line:
 			procedure draw is begin
-				draw_line (line => line, width => PL.width, do_stroke => true);
-			end draw;
+				case cat is
+					when LAYER_CAT_ROUTE_RESTRICT =>
+						-- Lines in route restrict have zero width:
+						draw_line (line => line, width => zero, do_stroke => true);
 
+					when others =>
+						draw_line (line => line, width => PL.width, do_stroke => true);
+				end case;
+			end draw;
+			
 			
 		begin
 			-- The calculated path may require a bend point.
