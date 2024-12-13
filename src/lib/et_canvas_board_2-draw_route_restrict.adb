@@ -175,7 +175,10 @@ begin -- route_restrict
 		position	=> active_module,
 		process		=> query_items'access);
 
-		
+	
+	-- Draw the lines of a path that is being drawn:
+	draw_path (LAYER_CAT_ROUTE_RESTRICT);
+	
 end draw_route_restrict;
 
 
