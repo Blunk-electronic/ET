@@ -66,6 +66,7 @@ with et_board_ops.assy_doc;
 with et_board_ops.silkscreen;
 with et_board_ops.stop_mask;
 with et_board_ops.conductors;
+with et_board_ops.route_restrict;
 with et_modes.board;
 
 with et_display;						use et_display;
@@ -515,6 +516,8 @@ package body et_canvas_board_lines is
 
 
 
+	
+
 	procedure make_path (
 		tool	: in type_tool;
 		point	: in type_vector_model)
@@ -540,6 +543,18 @@ package body et_canvas_board_lines is
 						line		=> (line with PL.width),
 						log_threshold	=> log_threshold);
 
+
+					
+				when LAYER_CAT_CONDUCTOR =>
+
+					-- Because we do not pass a net name, this is going
+					-- to be a freetrack:
+					et_board_ops.conductors.draw_track_line (
+						module_name	=> pac_generic_modules.key (active_module),
+						line		=> (line with PL.width, PL.signal_layer),
+						log_threshold	=> log_threshold);
+
+					
 					
 				when LAYER_CAT_SILKSCREEN =>
 					
@@ -550,22 +565,25 @@ package body et_canvas_board_lines is
 						log_threshold	=> log_threshold);
 
 
+					
+				when LAYER_CAT_ROUTE_RESTRICT =>
+
+					et_board_ops.route_restrict.draw_route_restrict_line (
+						module_name	=> pac_generic_modules.key (active_module),
+						line		=> (line with to_layers (PL.signal_layer)),
+						log_threshold	=> log_threshold);
+
+					-- CS: Currently only a single signal layer can be assigned
+					-- to the line. Multi-layer assignment is possible via
+					-- commandline only.
+
+					
 				when LAYER_CAT_STOP =>
 					
 					et_board_ops.stop_mask.draw_stop_line (
 						module_name	=> pac_generic_modules.key (active_module),
 						face		=> PL.face,
 						line		=> (line with PL.width),
-						log_threshold	=> log_threshold);
-
-					
-				when LAYER_CAT_CONDUCTOR =>
-
-					-- Because we do not pass a net name, this is going
-					-- to be a freetrack:
-					et_board_ops.conductors.draw_track_line (
-						module_name	=> pac_generic_modules.key (active_module),
-						line		=> (line with PL.width, PL.signal_layer),
 						log_threshold	=> log_threshold);
 
 
