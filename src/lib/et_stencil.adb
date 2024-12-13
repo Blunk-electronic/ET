@@ -234,6 +234,70 @@ package body et_stencil is
 	
 	
 -- CONTOURS
+
+
+	procedure iterate (
+		zones	: in pac_stencil_contours.list;
+		process	: not null access procedure (position : in pac_stencil_contours.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_stencil_contours.cursor := zones.first;
+	begin
+		while c /= pac_stencil_contours.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+	
+
+
+	function get_first_open (
+		zones : in out pac_stencil_contours.list)
+		return pac_stencil_contours.cursor
+	is
+		result : pac_stencil_contours.cursor;
+		proceed : aliased boolean := true;
+
+		procedure query_contour (c : in pac_stencil_contours.cursor) is
+			status : type_contour_status := is_closed (element (c));
+		begin
+			if not status.closed then
+				proceed := false;
+				result := c;
+			end if;
+		end query_contour;
+			
+	begin		
+		iterate (zones, query_contour'access, proceed'access);
+		return result;
+	end get_first_open;
+
+	
+
+
+	function get_open_zones (
+		zones : in out pac_stencil_contours.list)
+		return pac_stencil_zone_cursors.list
+	is
+		result : pac_stencil_zone_cursors.list;
+
+		procedure query_zone (c : in pac_stencil_contours.cursor) is
+			status : type_contour_status := is_closed (element (c));
+		begin
+			if not status.closed then
+				result.append (c);
+			end if;			
+		end query_zone;
+		
+	begin
+		zones.iterate (query_zone'access);
+		return result;
+	end get_open_zones;
+
+
+	
+	
 	
 	procedure mirror_contours (
 		contours	: in out pac_stencil_contours.list;

@@ -155,6 +155,32 @@ package et_stencil is
 	package pac_stencil_contours is new doubly_linked_lists (type_stencil_contour);
 	use pac_stencil_contours; -- CS rename to pac_stencil_zones
 
+
+	-- Iterates the contours. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		zones	: in pac_stencil_contours.list;
+		process	: not null access procedure (position : in pac_stencil_contours.cursor);
+		proceed	: not null access boolean);
+
+
+	-- Returns the first zone which has an open contour among the
+	-- given list of zones:
+	function get_first_open (
+		zones : in out pac_stencil_contours.list)
+		return pac_stencil_contours.cursor;
+
+
+	
+	package pac_stencil_zone_cursors is 
+		new doubly_linked_lists (pac_stencil_contours.cursor);
+
+	-- Returns the cursors to all zones which have an open contour:
+	function get_open_zones (
+		zones : in out pac_stencil_contours.list)
+		return pac_stencil_zone_cursors.list;
+
+
+	
 	
 	-- Mirrors a list of contours along the given axis:
 	procedure mirror_contours (
