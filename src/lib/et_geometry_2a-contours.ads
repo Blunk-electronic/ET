@@ -100,6 +100,11 @@ package et_geometry_2a.contours is
 	end record;
 
 
+
+
+
+
+	
 	-- Reads the segments provided in a row of
 	-- arguments in a form like:
 	-- "line 0 0 line 160 0 line 160 80 line 0 80"
@@ -181,6 +186,7 @@ package et_geometry_2a.contours is
 		segment	: in type_segment);
 	
 
+	
 	procedure set_circle (
 		contour	: in out type_contour;
 		circle	: in type_circle'class);
@@ -199,6 +205,23 @@ package et_geometry_2a.contours is
 		return count_type;
 
 
+
+	type type_merge_result is record
+		appended	: boolean := false;
+		prepended	: boolean := false;
+		failed		: boolean := false;
+	end record;
+	
+	-- Merges two contours to a single one.
+	-- Tries to append or prepend source to target
+	-- if matching verices exist.
+	procedure merge_contours (
+		target	: in out type_contour;
+		source	: in type_contour;
+		status	: type_merge_result);
+
+	
+	
 
 	-- Transposes a contour in Y direction.
 	-- Each point of each segment gets shifted by
@@ -450,8 +473,16 @@ package et_geometry_2a.contours is
 
 	
 	package pac_contour_list is new doubly_linked_lists (type_contour);
-	use pac_contour_list;
+	use pac_contour_list; -- CS rename to pac_contours
 
+
+	-- Iterates the contours. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		contours	: in pac_contour_list.list;
+		process		: not null access procedure (position : in pac_contour_list.cursor);
+		proceed		: not null access boolean);
+
+	
 
 	-- Moves a list of contours by the given offset:
 	procedure move_contours (
@@ -469,6 +500,17 @@ package et_geometry_2a.contours is
 	procedure rotate_contours (
 		contours	: in out pac_contour_list.list;
 		rotation	: in type_rotation);
+
+
+	-- Returns the first open contour among the
+	-- given list of contours:
+	function get_first_open (
+		contours	: in out pac_contour_list.list)
+		return pac_contour_list.cursor;
+	
+
+
+
 
 	
 end et_geometry_2a.contours;

@@ -88,6 +88,8 @@ package body et_geometry_2a.contours is
 	end iterate;
 
 
+
+	
 	function to_contour (
 		segments : in string)
 		return type_contour'class
@@ -361,6 +363,36 @@ package body et_geometry_2a.contours is
 
 
 
+
+	procedure merge_contours (
+		target	: in out type_contour;
+		source	: in type_contour;
+		status	: type_merge_result)
+	is
+		target_first, target_last : pac_segments.cursor;
+		target_length, source_length : count_type;
+	begin
+		target_length := get_segments_total (target);
+		source_length := get_segments_total (source);
+		
+		case target_length is
+			when 0 => target := source;
+			
+			-- when 1 => target_first := target.segments.first;
+
+			when others =>
+				null;
+		end case;
+		
+		-- iterate (target
+		null;
+	end merge_contours;
+
+
+
+
+
+	
 	procedure transpose_contour (
 		contour	: in out type_contour'class;
 		offset	: in type_distance)
@@ -1684,6 +1716,22 @@ package body et_geometry_2a.contours is
 
 
 
+	procedure iterate (
+		contours	: in pac_contour_list.list;
+		process		: not null access procedure (position : in pac_contour_list.cursor);
+		proceed		: not null access boolean)
+	is
+		c : pac_contour_list.cursor := contours.first;
+	begin
+		while c /= pac_contour_list.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+	
+	
+
 	procedure move_contours (
 		contours	: in out pac_contour_list.list;
 		offset		: in type_distance_relative)
@@ -1701,6 +1749,8 @@ package body et_geometry_2a.contours is
 		contours.iterate (query_contour'access);
 		contours := result;
 	end move_contours;
+
+
 
 	
 	procedure mirror_contours (
@@ -1720,6 +1770,8 @@ package body et_geometry_2a.contours is
 		contours.iterate (query_contour'access);
 		contours := result;
 	end mirror_contours;
+
+
 
 	
 	procedure rotate_contours (
@@ -1741,6 +1793,28 @@ package body et_geometry_2a.contours is
 	end rotate_contours;
 
 		
+
+	function get_first_open (
+		contours	: in out pac_contour_list.list)
+		return pac_contour_list.cursor
+	is
+		result : pac_contour_list.cursor;
+		proceed : aliased boolean := true;
+
+		procedure query_contour (c : in pac_contour_list.cursor) is
+			status : type_contour_status := is_closed (element (c));
+		begin
+			if not status.closed then
+				proceed := false;
+				result := c;
+			end if;
+		end query_contour;
+			
+	begin		
+		iterate (contours, query_contour'access, proceed'access);
+		return result;
+	end get_first_open;
+
 	
 	
 end et_geometry_2a.contours;
