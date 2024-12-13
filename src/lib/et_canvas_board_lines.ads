@@ -184,7 +184,7 @@ package et_canvas_board_lines is
 
 
 
-	-- Builds a live path. This procedure requires to be called twice:
+	-- Builds the final path. This procedure requires to be called twice:
 	-- first time for the start and the second time for the end point of the path.
 	-- The current bend style in preliminary_line.path is taken into account.
 	-- The path may be started and finished with different tools. For example start

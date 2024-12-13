@@ -231,7 +231,7 @@ package et_canvas_board_2 is
 
 
 
-	-- Draws a path being drawn in a given layer category.
+	-- Draws a live path being drawn in a given layer category.
 	-- Uses the parameters in variable preliminary_line.
 	-- Computes the bend point (if required) and sets it accordingly
 	-- in preliminary_line.
