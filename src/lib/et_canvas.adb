@@ -3500,7 +3500,8 @@ package body et_canvas is
 		mirror		: in type_mirror := MIRROR_NO;
 		style		: in type_line_style := CONTINUOUS;
 		do_stroke	: in boolean := false;
-		polyline	: in boolean := false)
+		polyline	: in boolean := false;
+		force		: in boolean := false)
 	is
 		use cairo;
 		

@@ -1277,10 +1277,12 @@ package et_canvas is
 	--  the line drawn and finally a stroke command executed.
 	--  If the given linewidth is zero, then a minimum linewidth is
 	--  ensured internally that is independed of the zoom-factor.
+	-- 3. If force is true, then the line will be drawn independed
+	--  of its bounding-box. CS: not implemented yet, likewise for circle and arc
 	--
 	-- NOTE: The polyline argument is a makeshift as long as there
 	-- in no procedure to draw a polyline. If polyline is true, then
-	-- the start point of the given line is drawn via a move_to cairo-operation.
+	-- the start point of the given line is drawn via a line_to cairo-operation.
 	--
 	-- NOTE: CS: The line style is currently ignored.
 	procedure draw_line (
@@ -1290,8 +1292,8 @@ package et_canvas is
 		mirror		: in type_mirror := MIRROR_NO;
 		style		: in type_line_style := CONTINUOUS;
 		do_stroke	: in boolean := false;
-		polyline	: in boolean := false
-		);
+		polyline	: in boolean := false;
+		force		: in boolean := false);
 
 
 	-- This is a primitive draw operation that draws a circle.
