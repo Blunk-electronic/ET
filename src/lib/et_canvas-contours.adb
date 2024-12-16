@@ -82,10 +82,8 @@ package body et_canvas.contours is
 			c : in pac_segments.cursor) 
 		is 
 			segment : type_segment renames element (c);
-		begin
-			
-			case segment.shape is
-				
+		begin			
+			case segment.shape is				
 				when LINE =>
 					-- put_line ("draw_segment (line)");
 					-- put_line (" line" & to_string (type_line (segment.segment_line)));
@@ -115,7 +113,6 @@ package body et_canvas.contours is
 
 					
 				when ARC =>
-
 					draw_arc (
 						arc		=> segment.segment_arc,
 						pos		=> pos_end,		 
@@ -223,7 +220,6 @@ package body et_canvas.contours is
 		if style /= CONTINUOUS then
 			set_dash (context, no_dashes, 0.0);
 		end if;
-
 		
 	end draw_contour;
 
