@@ -50,7 +50,7 @@ package et_geometry_2a.contours is
 	-- segments are allowed.
 	-- On the other hand, a contour may consist of lines and arcs. In that
 	-- case no circle is allowed:
-	type type_segment_shape is (LINE, ARC);
+	type type_segment_shape is (LINE, ARC); -- CS rename to segment_shape_line, segment_shape_arc
 
 	
 	type type_segment (shape : type_segment_shape) is record
@@ -408,9 +408,7 @@ package et_geometry_2a.contours is
 		return boolean;
 
 
-
 	
---private
 					   
 	function get_shortest_distance (
 		contour	: in type_contour;
