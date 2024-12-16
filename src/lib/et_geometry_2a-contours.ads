@@ -103,8 +103,6 @@ package et_geometry_2a.contours is
 
 
 
-
-	
 	-- Reads the segments provided in a row of
 	-- arguments in a form like:
 	-- "line 0 0 line 160 0 line 160 80 line 0 80"
@@ -113,6 +111,10 @@ package et_geometry_2a.contours is
 	-- and builds a contour.
 	-- 1. The end point of a segment must not be specified.
 	--    It is deduced from the start point of the successor segment.
+	-- 2. If the contour consists of lines and/or arcs then 
+	--    the end point of the last segment is where the contour
+	--    has started. This implies that this procedure ALWAYS creates
+	--    a CLOSED contour !
 	-- 2. A circle can only be read if it is the only shape.
 	--    Mixing a circle with lines and arcs is not allowed.
 	--    There must be only one circle.
@@ -120,6 +122,22 @@ package et_geometry_2a.contours is
 	--     - valid  : circle 9 4 10
 	--     - invalid: circle 34 45 30 circle 9 4 10
 	--     - invalid: line 0 0 circle 9 4 10
+	function to_contour (
+		arguments : in type_fields_of_line)
+		return type_contour'class;
+
+
+	
+
+	
+	-- Reads the segments provided in a row of
+	-- arguments in a form like:
+	-- "line 0 0 line 160 0 line 160 80 line 0 80"
+	-- or:
+	-- arc 50 50 0 50 ccw (50/50 center, 0/50 start, counter-clock-wise)
+	-- and builds a contour.
+	-- All characters after a comment character '#' will be ignored.
+	-- See more details in function to_contour (see above).
 	function to_contour (
 		segments : in string)
 		return type_contour'class;
@@ -205,11 +223,13 @@ package et_geometry_2a.contours is
 		return count_type;
 
 
-
+	-- When contours are to be merged, then this
+	-- type shall be used to express the result of 
+	-- the merge operation:
 	type type_merge_result is record
 		appended	: boolean := false;
 		prepended	: boolean := false;
-		failed		: boolean := false;
+		successful	: boolean := false;
 	end record;
 	
 	-- Merges two contours to a single one.
@@ -229,26 +249,6 @@ package et_geometry_2a.contours is
 	procedure transpose_contour (
 		contour	: in out type_contour'class;
 		offset	: in type_distance);
-
-
-	-- Reads the segments provided in a row of
-	-- arguments in a form like:
-	-- "line 0 0 line 160 0 line 160 80 line 0 80"
-	-- or:
-	-- arc 50 50 0 50 ccw (50/50 center, 0/50 start, counter-clock-wise)
-	-- and builds a contour.
-	-- 1. The end point of a segment must not be specified.
-	--    It is deduced from the start point of the successor segment.
-	-- 2. A circle can only be read if it is the only shape.
-	--    Mixing a circle with lines and arcs is not allowed.
-	--    There must be only one circle.
-	--    Examples:
-	--     - valid  : circle 9 4 10
-	--     - invalid: circle 34 45 30 circle 9 4 10
-	--     - invalid: line 0 0 circle 9 4 10
-	function to_contour (
-		arguments : in type_fields_of_line)
-		return type_contour'class;
 
 	
 
@@ -315,6 +315,14 @@ package et_geometry_2a.contours is
 		contour	: in type_contour)
 		return type_contour_status;
 
+
+	-- Returns true if the given contour is 
+	-- open (means: if it is not closed).
+	-- Bases on function is_closed (see above):
+	function is_open (
+		contour	: in type_contour)
+		return boolean;
+	
 
 
 	-- Moves a contour by the given offset. 

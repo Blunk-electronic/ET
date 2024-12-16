@@ -89,369 +89,8 @@ package body et_geometry_2a.contours is
 
 
 
-	
-	function to_contour (
-		segments : in string)
-		return type_contour'class
-	is
-		s_fields : constant type_fields_of_line := 
-			read_line (line => segments, comment_mark => "#");
-
-	begin
-		return to_contour (s_fields);
-	end to_contour;
 
 
-	
-	function to_string (
-		contour	: in type_contour)
-		return string
-	is
-		use ada.strings.unbounded;
-		
-		result : unbounded_string := to_unbounded_string ("contour:");
-
-		procedure query_segment (c : in pac_segments.cursor) is begin
-
-			-- We output the start points only (for arcs in addition the center).
-			-- Because: The end point of a segment is always the start point of the
-			-- next segment.
-			
-			case element (c).shape is
-				when LINE =>
-					--result := result & space & to_unbounded_string (to_string (element (c).segment_line));
-					result := result & space
-						& to_unbounded_string ("line start:" & to_string (element (c).segment_line.start_point));
-					
-				when ARC =>
-					--result := result & space & to_unbounded_string (to_string (element (c).segment_arc));
-					result := result & space 
-						& to_unbounded_string ("arc center:" & to_string (element (c).segment_arc.center))
-						& to_unbounded_string ("start:" & to_string (element (c).segment_arc.start_point));
-					
-			end case;
-		end query_segment;
-		
-	begin
-		if contour.contour.circular then
-			result := result & space & to_unbounded_string (to_string (contour.contour.circle));
-		else
-			contour.contour.segments.iterate (query_segment'access);
-		end if;
-		
-		return to_string (result);
-	end to_string;
-
-
-
-	function get_segment (
-		contour	: in type_contour;
-		point	: in type_vector_model)
-		return pac_segments.cursor
-	is
-		result : pac_segments.cursor;
-		proceed : aliased boolean := true;
-
-		procedure query_segment (c : in pac_segments.cursor) is begin
-			case element (c).shape is
-				when LINE => 
-					if element (c).segment_line.on_line (point) then
-						result := c;
-						proceed := false; -- abort iteration
-					end if;
-					
-				when ARC => null; -- CS
-			end case;
-		end query_segment;
-
-		
-	begin
-		-- Make sure the given point is NOT a vertex:
-		-- CS: Maybe no need if caller cares for this check.
-		if is_vertex (contour, point) then
-			raise constraint_error with "Point is a vertex !";
-		else
-			iterate (contour.contour.segments, query_segment'access, proceed'access);					 
-		end if;
-
-		-- CS exception message if contour consists of just a circle.
-		return result;
-	end get_segment;
-
-
-
-	function get_neigboring_segments (
-		contour	: in type_contour;
-		vertex	: in type_vector_model)
-		return type_neigboring_segments
-	is
-		result : type_neigboring_segments;
-		proceed : aliased boolean := true;
-
-		end_found, start_found : boolean := false;
-
-		
-		procedure query_segment (c : in pac_segments.cursor) is begin
-			--put_line ("test: " & to_string (element (c)));
-			
-			case element (c).shape is
-			
-				when LINE => 
-					if element (c).segment_line.end_point = vertex then
-						--put_line ("end");
-						result.segment_1 := c;
-						end_found := true;
-					end if;
-
-					if element (c).segment_line.start_point = vertex then
-						--put_line ("start");
-						result.segment_2 := c;
-						start_found := true;
-					end if;
-					
-				when ARC => null; -- CS
-			end case;
-
-			-- Abort iteration once start and end point have been found
-			-- ("proceed" is low-active):
-			proceed := not (end_found and start_found);
-			
-		end query_segment;
-
-		
-	begin
-		-- Make sure the given point IS a vertex:
-		if is_vertex (contour, vertex) then
-			iterate (contour.contour.segments, query_segment'access, proceed'access);					 
-		else
-			raise constraint_error with "Point is a vertex !";
-		end if;
-
-		-- Safety check:
-		-- Two edges must have been found. Otherwise raise exception:
-		if result.segment_1 = pac_segments.no_element 
-		or result.segment_2 = pac_segments.no_element
-		then
-			raise constraint_error with "Search for neigboring edges incomplete !";
-		end if;
-
-		-- CS exception message if contour consists of just a circle.
-		return result;
-	end get_neigboring_segments;
-
-
-
-	function get_shortest_distance (
-		contour	: in type_contour;
-		point	: in type_vector_model)
-		return type_float_positive
-	is
-		--result : type_distance_polar := to_polar (type_float'last, 0.0);
-		result : type_float_positive := type_float'last;
-		
-		--procedure update (d : in type_distance_polar) is begin
-			----put_line (to_string (d));
-			--if get_absolute (d) < get_absolute (result) then
-				--result := d;
-			--end if;
-		--end update;
-
-		procedure update (d : in type_float_positive) is begin
-			--put_line (to_string (d));
-			if d < result then
-				result := d;
-			end if;
-		end update;
-
-		
-		procedure query_segment (c : in pac_segments.cursor) is
-			s : constant type_segment := element (c);
-		begin
-			case s.shape is
-				when LINE =>
-					--put_line (to_string (s.segment_line));
-					--update (get_shortest_distance (point, s.segment_line));
-					update (s.segment_line.get_shortest_distance (point));
-
-				when ARC =>
-					--put_line (to_string (s.segment_arc));
-					--update (get_shortest_distance (point, s.segment_arc));
-					update (get_absolute (s.segment_arc.get_shortest_distance (point)));
-					
-			end case;
-		end query_segment;
-
-		
-	begin -- get_shortest_distance
-		if contour.contour.circular then
-			--result := get_shortest_distance (point, contour.contour.circle);
-			result := get_absolute (contour.contour.circle.get_shortest_distance (point));
-		else
-			contour.contour.segments.iterate (query_segment'access);				
-		end if;			
-
-		--set_absolute (result, type_distance (round (get_absolute (result))));
-		
-		return result;
-	end get_shortest_distance;
-
-
-
-
-	procedure load_segments (
-		contour		: in out type_contour;
-		segments	: in type_segments)
-	is begin
-		contour.contour := segments;
-	end load_segments;
-
-	
-	procedure delete_segments (
-		contour : in out type_contour)
-	is begin
-		contour.contour := (others => <>);
-	end delete_segments;			
-
-	
-	procedure append_segment (
-		contour	: in out type_contour;
-		segment	: in type_segment)
-	is begin
-		-- CS check discriminant and issue helpful error message ?
-
-		-- CS length check for line:
-		--if get_length (line) > type_distance'small then
-			--return line;
-		--else
-			--raise constraint_error with "Line has zero length !";
-		--end if;
-
-		-- CS length check for arc:		
-		
-		contour.contour.segments.append (segment);			
-	end append_segment;
-
-	
-	procedure set_circle (
-		contour	: in out type_contour;
-		circle	: in type_circle'class)
-	is begin
-		-- CS check discriminant and issue helpful error message ?
-		
-		contour.contour.circle := type_circle (circle);
-	end set_circle;
-				
-	
-	function get_segments (
-		contour	: in type_contour)
-		return type_segments
-	is begin
-		return contour.contour;
-	end get_segments;
-
-
-	function get_segments_total (
-		contour : in type_contour)
-		return count_type
-	is begin
-		if contour.contour.circular then
-			return 1;
-		else
-			return length (contour.contour.segments);
-		end if;
-	end get_segments_total;
-
-
-
-
-	procedure merge_contours (
-		target	: in out type_contour;
-		source	: in type_contour;
-		status	: type_merge_result)
-	is
-		target_first, target_last : pac_segments.cursor;
-		target_length, source_length : count_type;
-	begin
-		target_length := get_segments_total (target);
-		source_length := get_segments_total (source);
-		
-		case target_length is
-			when 0 => target := source;
-			
-			-- when 1 => target_first := target.segments.first;
-
-			when others =>
-				null;
-		end case;
-		
-		-- iterate (target
-		null;
-	end merge_contours;
-
-
-
-
-
-	
-	procedure transpose_contour (
-		contour	: in out type_contour'class;
-		offset	: in type_distance)
-	is 
-		procedure move (point : in out type_vector_model) is
-			new_y : type_distance;
-		begin
-			new_y := offset - get_y (point);
-			--point.set (Y, new_y);
-			set (point, AXIS_Y, new_y);
-		end move;
-
-		
-		procedure move_segment (c : in pac_segments.cursor) is
-
-			procedure do_line (s : in out type_segment) is begin 
-				move (s.segment_line.start_point);
-				move (s.segment_arc.end_point);
-			end;
-			
-			procedure do_arc (s : in out type_segment) is begin
-				move (s.segment_arc.start_point);
-				move (s.segment_arc.end_point); 
-				move (s.segment_arc.center); 
-			end;
-
-		begin -- move_segment
-			case element (c).shape is
-				
-				when LINE =>
-					update_element (
-						container	=> contour.contour.segments,
-						position	=> c,
-						process		=> do_line'access);
-
-				when ARC =>
-					update_element (
-						container	=> contour.contour.segments,
-						position	=> c,
-						process		=> do_arc'access);
-
-			end case;
-		end move_segment;
-
-		
-	begin
-		if contour.contour.circular then
-
-			-- move the single circle that forms the contour:
-			move (contour.contour.circle.center);
-		else
-			-- move lines and arcs:
-			contour.contour.segments.iterate (move_segment'access);
-		end if;
-		
-	end transpose_contour;
-
-	
-	
 	function to_contour (
 		arguments : in type_fields_of_line) -- line 0 0 line 160 0 line 160 80 line 0 80
 		return type_contour'class
@@ -644,7 +283,8 @@ package body et_geometry_2a.contours is
 		
 		-- If the contour consists of lines and/or arcs then 
 		-- the end point of the last segment is where the contour
-		-- has started:
+		-- has started. This implies that this procedure ALWAYS creates
+		-- CLOSED contour !
 		if shape /= CIRCLE then
 			
 			end_point_previous := contour_start_point;
@@ -666,6 +306,400 @@ package body et_geometry_2a.contours is
 			--return p;
 	
 	end to_contour;
+
+
+	
+
+	
+	function to_contour (
+		segments : in string)
+		return type_contour'class
+	is
+		s_fields : constant type_fields_of_line := 
+			read_line (line => segments, comment_mark => "#");
+
+	begin
+		return to_contour (s_fields);
+	end to_contour;
+
+
+
+	
+	
+	function to_string (
+		contour	: in type_contour)
+		return string
+	is
+		use ada.strings.unbounded;
+		
+		result : unbounded_string := to_unbounded_string ("contour:");
+
+		procedure query_segment (c : in pac_segments.cursor) is begin
+
+			-- We output the start points only (for arcs in addition the center).
+			-- Because: The end point of a segment is always the start point of the
+			-- next segment.
+			
+			case element (c).shape is
+				when LINE =>
+					--result := result & space & to_unbounded_string (to_string (element (c).segment_line));
+					result := result & space
+						& to_unbounded_string ("line start:" & to_string (element (c).segment_line.start_point));
+					
+				when ARC =>
+					--result := result & space & to_unbounded_string (to_string (element (c).segment_arc));
+					result := result & space 
+						& to_unbounded_string ("arc center:" & to_string (element (c).segment_arc.center))
+						& to_unbounded_string ("start:" & to_string (element (c).segment_arc.start_point));
+					
+			end case;
+		end query_segment;
+		
+	begin
+		if contour.contour.circular then
+			result := result & space & to_unbounded_string (to_string (contour.contour.circle));
+		else
+			contour.contour.segments.iterate (query_segment'access);
+		end if;
+		
+		return to_string (result);
+	end to_string;
+
+
+
+
+	
+	function get_segment (
+		contour	: in type_contour;
+		point	: in type_vector_model)
+		return pac_segments.cursor
+	is
+		result : pac_segments.cursor;
+		proceed : aliased boolean := true;
+
+		procedure query_segment (c : in pac_segments.cursor) is begin
+			case element (c).shape is
+				when LINE => 
+					if element (c).segment_line.on_line (point) then
+						result := c;
+						proceed := false; -- abort iteration
+					end if;
+					
+				when ARC => null; -- CS
+			end case;
+		end query_segment;
+
+		
+	begin
+		-- Make sure the given point is NOT a vertex:
+		-- CS: Maybe no need if caller cares for this check.
+		if is_vertex (contour, point) then
+			raise constraint_error with "Point is a vertex !";
+		else
+			iterate (contour.contour.segments, query_segment'access, proceed'access);					 
+		end if;
+
+		-- CS exception message if contour consists of just a circle.
+		return result;
+	end get_segment;
+
+
+
+
+	
+
+	function get_neigboring_segments (
+		contour	: in type_contour;
+		vertex	: in type_vector_model)
+		return type_neigboring_segments
+	is
+		result : type_neigboring_segments;
+		proceed : aliased boolean := true;
+
+		end_found, start_found : boolean := false;
+
+		
+		procedure query_segment (c : in pac_segments.cursor) is begin
+			--put_line ("test: " & to_string (element (c)));
+			
+			case element (c).shape is
+			
+				when LINE => 
+					if element (c).segment_line.end_point = vertex then
+						--put_line ("end");
+						result.segment_1 := c;
+						end_found := true;
+					end if;
+
+					if element (c).segment_line.start_point = vertex then
+						--put_line ("start");
+						result.segment_2 := c;
+						start_found := true;
+					end if;
+					
+				when ARC => null; -- CS
+			end case;
+
+			-- Abort iteration once start and end point have been found
+			-- ("proceed" is low-active):
+			proceed := not (end_found and start_found);
+			
+		end query_segment;
+
+		
+	begin
+		-- Make sure the given point IS a vertex:
+		if is_vertex (contour, vertex) then
+			iterate (contour.contour.segments, query_segment'access, proceed'access);					 
+		else
+			raise constraint_error with "Point is a vertex !";
+		end if;
+
+		-- Safety check:
+		-- Two edges must have been found. Otherwise raise exception:
+		if result.segment_1 = pac_segments.no_element 
+		or result.segment_2 = pac_segments.no_element
+		then
+			raise constraint_error with "Search for neigboring edges incomplete !";
+		end if;
+
+		-- CS exception message if contour consists of just a circle.
+		return result;
+	end get_neigboring_segments;
+
+
+
+
+	
+
+	function get_shortest_distance (
+		contour	: in type_contour;
+		point	: in type_vector_model)
+		return type_float_positive
+	is
+		--result : type_distance_polar := to_polar (type_float'last, 0.0);
+		result : type_float_positive := type_float'last;
+		
+		--procedure update (d : in type_distance_polar) is begin
+			----put_line (to_string (d));
+			--if get_absolute (d) < get_absolute (result) then
+				--result := d;
+			--end if;
+		--end update;
+
+		procedure update (d : in type_float_positive) is begin
+			--put_line (to_string (d));
+			if d < result then
+				result := d;
+			end if;
+		end update;
+
+		
+		procedure query_segment (c : in pac_segments.cursor) is
+			s : constant type_segment := element (c);
+		begin
+			case s.shape is
+				when LINE =>
+					--put_line (to_string (s.segment_line));
+					--update (get_shortest_distance (point, s.segment_line));
+					update (s.segment_line.get_shortest_distance (point));
+
+				when ARC =>
+					--put_line (to_string (s.segment_arc));
+					--update (get_shortest_distance (point, s.segment_arc));
+					update (get_absolute (s.segment_arc.get_shortest_distance (point)));
+					
+			end case;
+		end query_segment;
+
+		
+	begin -- get_shortest_distance
+		if contour.contour.circular then
+			--result := get_shortest_distance (point, contour.contour.circle);
+			result := get_absolute (contour.contour.circle.get_shortest_distance (point));
+		else
+			contour.contour.segments.iterate (query_segment'access);				
+		end if;			
+
+		--set_absolute (result, type_distance (round (get_absolute (result))));
+		
+		return result;
+	end get_shortest_distance;
+
+
+	
+
+
+	procedure load_segments (
+		contour		: in out type_contour;
+		segments	: in type_segments)
+	is begin
+		contour.contour := segments;
+	end load_segments;
+
+
+
+	
+	
+	procedure delete_segments (
+		contour : in out type_contour)
+	is begin
+		contour.contour := (others => <>);
+	end delete_segments;			
+
+
+
+
+	
+	procedure append_segment (
+		contour	: in out type_contour;
+		segment	: in type_segment)
+	is begin
+		-- CS check discriminant and issue helpful error message ?
+
+		-- CS length check for line:
+		--if get_length (line) > type_distance'small then
+			--return line;
+		--else
+			--raise constraint_error with "Line has zero length !";
+		--end if;
+
+		-- CS length check for arc:		
+		
+		contour.contour.segments.append (segment);			
+	end append_segment;
+
+
+
+	
+	
+	procedure set_circle (
+		contour	: in out type_contour;
+		circle	: in type_circle'class)
+	is begin
+		-- CS check discriminant and issue helpful error message ?
+		
+		contour.contour.circle := type_circle (circle);
+	end set_circle;
+				
+
+
+	
+	function get_segments (
+		contour	: in type_contour)
+		return type_segments
+	is begin
+		return contour.contour;
+	end get_segments;
+
+
+
+	
+
+	function get_segments_total (
+		contour : in type_contour)
+		return count_type
+	is begin
+		if contour.contour.circular then
+			return 1;
+		else
+			return length (contour.contour.segments);
+		end if;
+	end get_segments_total;
+
+
+
+
+	procedure merge_contours (
+		target	: in out type_contour;
+		source	: in type_contour;
+		status	: type_merge_result)
+	is
+		target_first, target_last : pac_segments.cursor;
+		target_length, source_length : count_type;
+	begin
+		target_length := get_segments_total (target);
+		source_length := get_segments_total (source);
+		
+		case target_length is
+			when 0 => 
+				--target := source;
+				null;
+			
+			-- when 1 => target_first := target.segments.first;
+
+			when others =>
+				null;
+		end case;
+		
+		-- iterate (target
+		null;
+	end merge_contours;
+
+
+
+
+
+	
+	procedure transpose_contour (
+		contour	: in out type_contour'class;
+		offset	: in type_distance)
+	is 
+		procedure move (point : in out type_vector_model) is
+			new_y : type_distance;
+		begin
+			new_y := offset - get_y (point);
+			--point.set (Y, new_y);
+			set (point, AXIS_Y, new_y);
+		end move;
+
+		
+		procedure move_segment (c : in pac_segments.cursor) is
+
+			procedure do_line (s : in out type_segment) is begin 
+				move (s.segment_line.start_point);
+				move (s.segment_arc.end_point);
+			end;
+			
+			procedure do_arc (s : in out type_segment) is begin
+				move (s.segment_arc.start_point);
+				move (s.segment_arc.end_point); 
+				move (s.segment_arc.center); 
+			end;
+
+		begin -- move_segment
+			case element (c).shape is
+				
+				when LINE =>
+					update_element (
+						container	=> contour.contour.segments,
+						position	=> c,
+						process		=> do_line'access);
+
+				when ARC =>
+					update_element (
+						container	=> contour.contour.segments,
+						position	=> c,
+						process		=> do_arc'access);
+
+			end case;
+		end move_segment;
+
+		
+	begin
+		if contour.contour.circular then
+
+			-- move the single circle that forms the contour:
+			move (contour.contour.circle.center);
+		else
+			-- move lines and arcs:
+			contour.contour.segments.iterate (move_segment'access);
+		end if;
+		
+	end transpose_contour;
+
+	
+	
 	
 
 
@@ -905,6 +939,7 @@ package body et_geometry_2a.contours is
 
 		end set_start_point;
 
+		
 		procedure query_segment (c : in pac_segments.cursor) is begin
 			case element (c).shape is
 				when LINE =>
@@ -917,6 +952,7 @@ package body et_geometry_2a.contours is
 					
 			end case;
 		end query_segment;
+
 		
 	begin -- is_closed
 		
@@ -943,6 +979,19 @@ package body et_geometry_2a.contours is
 	end is_closed;
 
 
+
+	function is_open (
+		contour	: in type_contour)
+		return boolean
+	is
+		sts : type_contour_status := is_closed (contour);
+	begin
+		return not sts.closed;
+	end is_open;
+
+	
+
+	
 
 	procedure move_by (
 		contour	: in out type_contour;
@@ -990,6 +1039,8 @@ package body et_geometry_2a.contours is
 	end move_by;
 
 
+
+	
 	
 	procedure mirror (
 		contour	: in out type_contour;
@@ -1023,6 +1074,7 @@ package body et_geometry_2a.contours is
 
 			end case;
 		end mirror_segment;
+
 		
 	begin -- mirror
 		if contour.contour.circular then
@@ -1085,6 +1137,8 @@ package body et_geometry_2a.contours is
 
 
 
+	
+
 	function get_lower_left_corner (
 		contour	: in type_contour)
 		return type_lower_left_corner
@@ -1111,6 +1165,8 @@ package body et_geometry_2a.contours is
 		
 		return result;
 	end get_lower_left_corner;
+
+
 
 
 	
@@ -1150,6 +1206,7 @@ package body et_geometry_2a.contours is
 
 
 	
+	
 	function is_vertex (
 		contour	: in type_contour;
 		point	: in type_vector_model)
@@ -1171,6 +1228,7 @@ package body et_geometry_2a.contours is
 			
 			end case;
 		end query_segment;
+
 		
 	begin
 		-- CS do something in case the contour is just a circle
@@ -1185,7 +1243,8 @@ package body et_geometry_2a.contours is
 
 	
 
--- private
+
+	
 
 	function get_shortest_distance (
 		contour	: in type_contour;
@@ -1234,6 +1293,7 @@ package body et_geometry_2a.contours is
 	
 
 	
+	
 	function to_string (status : in type_location) return string is begin
 		return type_location'image (status);
 	end to_string;
@@ -1257,6 +1317,7 @@ package body et_geometry_2a.contours is
 	end "<";
 
 
+	
 
 	function to_string (
 		i : in type_point_to_contour_status)
@@ -1272,6 +1333,7 @@ package body et_geometry_2a.contours is
 						& "/" & trim (to_string (element (c).angle), left);
 		end query_intersection;
 
+		
 	begin
 		--case i.status is
 			--when OUTSIDE =>
@@ -1303,6 +1365,8 @@ package body et_geometry_2a.contours is
 		
 		return to_string (result);
 	end to_string;
+
+
 
 	
 	
@@ -1551,6 +1615,7 @@ package body et_geometry_2a.contours is
 			end case;
 		end query_segment;
 
+		
 		
 		procedure query_circle (c : in type_circle) is
 			-- Find out whether there is an intersection of the probe line
