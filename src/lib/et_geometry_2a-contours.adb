@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 -2024                                                 --
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -88,6 +88,78 @@ package body et_geometry_2a.contours is
 	end iterate;
 
 
+
+
+	function get_start_point (
+		contour : in type_contour)
+		return type_non_circular_vertex
+	is
+		circular : boolean;
+		point : type_vector_model;
+
+		s : pac_segments.cursor;
+	begin
+		if contour.contour.circular then
+			circular := true;
+		else
+			-- Get the first segment of the contour:
+			s := contour.contour.segments.first;
+			
+			case element (s).shape is
+				when LINE =>
+					point := element (s).segment_line.start_point;
+
+				when ARC =>
+					point := element (s).segment_arc.start_point;
+			end case;
+		end if;
+
+		
+		if circular then
+			return (circular => true);
+		else
+			return (circular => false, vertex => point);
+		end if;
+	end get_start_point;
+	
+
+
+	
+	
+	function get_end_point (
+		contour : in type_contour)
+		return type_non_circular_vertex
+	is
+		circular : boolean;
+		point : type_vector_model;
+
+		s : pac_segments.cursor;
+	begin
+		if contour.contour.circular then
+			circular := true;
+		else
+			-- Get the last segment of the contour:
+			s := contour.contour.segments.last;
+			
+			case element (s).shape is
+				when LINE =>
+					point := element (s).segment_line.end_point;
+
+				when ARC =>
+					point := element (s).segment_arc.end_point;
+			end case;
+		end if;
+
+		
+		if circular then
+			return (circular => true);
+		else
+			return (circular => false, vertex => point);
+		end if;
+	end get_end_point;
+
+
+	
 
 
 
@@ -903,7 +975,8 @@ package body et_geometry_2a.contours is
 
 			result := result & scratch;
 		end query_gap;
-	
+
+		
 	begin
 		iterate (gaps, query_gap'access);
 
