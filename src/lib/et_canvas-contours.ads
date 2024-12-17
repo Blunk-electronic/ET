@@ -55,8 +55,12 @@ package et_canvas.contours is
 	-- the contour.
 	procedure draw_contour (
 		contour	: in type_contour'class;
-		pos 	: in type_position := origin_zero_rotation; -- includes x,y, rotation
 
+		-- This is the position of the parent object (incl. rotation)					   
+		pos 	: in type_position := origin_zero_rotation;
+
+		-- This is the offset by which the contour is moved
+		-- in addition to pos:
 		offset	: in type_position := origin_zero_rotation;
 		-- CS currently the rotation of the contour about itself is ignored.
 		
