@@ -105,7 +105,7 @@ package et_geometry_2a.contours is
 
 	
 	-- In order to detect start and end points
-	-- of an open contour we need this type:
+	-- of a non-circular contour we need this type:
 	type type_non_circular_vertex (circular : boolean) is record
 		case circular is
 			when FALSE	=> vertex : type_vector_model;
@@ -115,14 +115,24 @@ package et_geometry_2a.contours is
 
 	
 	-- Returns the first vertext (the start point) of
-	-- a non-circular contour:
+	-- a non-circular contour.
+	-- If the given contour is circular then the result
+	-- contains no vertex because a circle has no corners.
+	-- This function does not care whether the contour is
+	-- closed or not. It just returns the place where the contour
+	-- begins:
 	function get_start_point (
 		contour : in type_contour)
 		return type_non_circular_vertex;
 
 	
 	-- Returns the last vertext (the end point) of
-	-- a non-circular contour:
+	-- a non-circular contour.
+	-- If the given contour is circular then the result
+	-- contains no vertex because a circle has no corners.
+	-- This function does not care whether the contour is
+	-- closed or not. It just returns the place where the contour
+	-- ends:
 	function get_end_point (
 		contour : in type_contour)
 		return type_non_circular_vertex;
