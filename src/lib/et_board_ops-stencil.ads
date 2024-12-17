@@ -70,7 +70,17 @@ package et_board_ops.stencil is
 		log_threshold	: in type_log_level);
 
 
-	-- Draws a stencil zone:
+	-- Draws a stencil zone.
+	-- The given zone can consist of a single segment or a
+	-- fragment of a zone contour.
+	-- 1. If the given zone is a single segment or a fragment
+	--    then the procedure serches for already existing zones
+	--    which are incomplete (or open) and tries to append or prepend
+	--    the given zone to one of the existing open zones.
+	-- 2. If this attempt fails, then the given zone is regarded as 
+	--    a new zone.
+	-- 3. If all existing zones are already closed, then the given zone
+	--    is regarded a a new zone and added to the existing zones.
 	procedure draw_zone (
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_stencil_contour;

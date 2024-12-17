@@ -195,31 +195,88 @@ package body et_board_ops.stencil is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
+		-- When searching among already existing zones then
+		-- this flag is used to abort the iteration prematurely:
+		proceed : boolean := true;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is 
+			use pac_stencil_contours;
+			c : pac_stencil_contours.cursor;
+
+			
+			procedure query_zone (z : in out type_stencil_contour) is
+				use et_board_shapes_and_text;
+				use pac_contours;
+				mr : type_merge_result;
+			begin
+				if is_open (zone) then
+					merge_contours (z, zone, mr);
+					if mr.successful then
+						-- No more searching needed -> abort iterator
+						proceed := false;
+					end if;
+				end if;
+			end query_zone;
+
+			
+		begin
 			case face is
 				when TOP =>
-					module.board.stencil.top.contours.append (zone);
+					-- Iterate through the already existing zones:
+					c := module.board.stencil.top.contours.first;
+
+					while c /= pac_stencil_contours.no_element and proceed loop
+						module.board.stencil.top.contours.update_element (c, query_zone'access);
+						next (c);
+					end loop;
+
+					-- If no open zone found, then add the given zone
+					-- as a new zone:
+					if proceed then
+						log (text => "added as new zone", level => log_threshold + 1);
+						module.board.stencil.top.contours.append (zone);
+					end if;
+
 					
 				when BOTTOM =>
-					module.board.stencil.bottom.contours.append (zone);
+					-- Iterate through the already existing zones:
+					c := module.board.stencil.bottom.contours.first;
+
+					while c /= pac_stencil_contours.no_element and proceed loop
+						module.board.stencil.bottom.contours.update_element (c, query_zone'access);
+						next (c);
+					end loop;
+
+					-- If no open zone found, then add the given zone
+					-- as a new zone:
+					if proceed then
+						log (text => "added as new zone", level => log_threshold + 1);
+						module.board.stencil.bottom.contours.append (zone);
+					end if;
+
 			end case;
 		end query_module;
 
 
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& "drawing stencil zone", -- CS output top/bottom
+			 & " drawing stencil zone" 
+			 & to_string (face)
+			 & " " & to_string (contour => zone, full => true),
 			level => log_threshold);
 
+		log_indentation_up;
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+		log_indentation_down;
 	end draw_zone;
 
 	
