@@ -76,6 +76,11 @@ package body et_canvas.contours is
 		use pac_segments;
 
 		start_point_set : boolean := false;
+
+		-- In order to detect whether the contour is
+		-- closed we need this stuff:
+		start_point : type_vector_model;
+		contour_is_closed : boolean := false;
 		
 		
 		procedure query_segment (
@@ -94,6 +99,11 @@ package body et_canvas.contours is
 					
 					if not start_point_set then
 						start_point_set := true;
+
+						-- Store the start point of the contour
+						-- in order to detect later whether the contour
+						-- is closed or not:
+						start_point := segment.segment_line.start_point;
 					
 						draw_line (
 							line	=> segment.segment_line,
@@ -102,6 +112,15 @@ package body et_canvas.contours is
 							mirror	=> mirror,
 							style	=> style);
 					else
+						-- Compare the end point of the segment with the
+						-- start point of the contour. If they match then
+						-- we assume that the coutour is closed.
+						-- CS: This ignores the possibility that further
+						-- segments may follow:
+						if segment.segment_line.end_point = start_point then
+							contour_is_closed := true;
+						end if;
+						
 						draw_line (
 							line		=> segment.segment_line,
 							pos			=> pos_end,		  
@@ -113,6 +132,8 @@ package body et_canvas.contours is
 
 					
 				when ARC =>
+					-- CS detect open/closed status of contour
+					
 					draw_arc (
 						arc		=> segment.segment_arc,
 						pos		=> pos_end,		 
@@ -183,14 +204,17 @@ package body et_canvas.contours is
 				-- there is a final stroke in this procedure.
 				style		=> style);
 			
+			-- The contour is closed because it is a circle:
+			contour_is_closed := true;
 		else
 			new_sub_path (context); -- required to suppress an initial line
 			contour.contour.segments.iterate (query_segment'access);
 		end if;
 
 		
-		-- Fill the contour if requested by the caller:
-		if filled = YES then
+		-- Fill the contour if requested by the caller
+		-- AND if it is closed:
+		if filled = YES and contour_is_closed then
 			cairo.fill (context);
 		end if;
 

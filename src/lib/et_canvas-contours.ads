@@ -65,7 +65,13 @@ package et_canvas.contours is
 		-- CS currently the rotation of the contour about itself is ignored.
 		
 		style	: in type_line_style := CONTINUOUS;
+		
 		filled	: in type_filled;
+		-- NOTE: If the given contour is not closed, then
+		-- it will not be filled, regardless of this argument.
+		-- In that case the contour will be drawn with a minimal
+		-- linewidth.
+		
 		width	: in type_distance_positive;
 		mirror	: in type_mirror := MIRROR_NO);
 		-- CS fill style
