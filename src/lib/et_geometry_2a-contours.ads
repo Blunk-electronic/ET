@@ -147,9 +147,15 @@ package et_geometry_2a.contours is
 	
 	-- Returns the segments of a contour in human readable form.
 	-- The segments are output in the same order as the contour
-	-- has been defined by the operator:
+	-- has been defined by the operator.
+	-- By default outputs the start points 
+	-- only (for arcs in addition the center).
+	-- Because the end point of a segment is usually the start point of the
+	-- next segment.
+	-- If full is true, then end points of segments are output also:
 	function to_string (
-		contour	: in type_contour)
+		contour	: in type_contour;
+		full	: in boolean := false)
 		return string;
 
 	

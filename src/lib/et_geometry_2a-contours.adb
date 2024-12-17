@@ -327,7 +327,8 @@ package body et_geometry_2a.contours is
 	
 	
 	function to_string (
-		contour	: in type_contour)
+		contour	: in type_contour;
+		full	: in boolean := false)
 		return string
 	is
 		use ada.strings.unbounded;
@@ -335,22 +336,34 @@ package body et_geometry_2a.contours is
 		result : unbounded_string := to_unbounded_string ("contour:");
 
 		procedure query_segment (c : in pac_segments.cursor) is begin
-
-			-- We output the start points only (for arcs in addition the center).
-			-- Because: The end point of a segment is always the start point of the
-			-- next segment.
+			-- CS use renames
 			
 			case element (c).shape is
 				when LINE =>
 					--result := result & space & to_unbounded_string (to_string (element (c).segment_line));
 					result := result & space
-						& to_unbounded_string ("line start:" & to_string (element (c).segment_line.start_point));
+							& to_unbounded_string ("line start:" 
+							& to_string (element (c).segment_line.start_point));
+
+					if full then
+						result := result & space
+							& to_unbounded_string ("end:" 
+							& to_string (element (c).segment_line.end_point));
+					end if;
+					
 					
 				when ARC =>
 					--result := result & space & to_unbounded_string (to_string (element (c).segment_arc));
 					result := result & space 
 						& to_unbounded_string ("arc center:" & to_string (element (c).segment_arc.center))
 						& to_unbounded_string ("start:" & to_string (element (c).segment_arc.start_point));
+
+					if full then
+						result := result & space
+							& to_unbounded_string ("end:" 
+							& to_string (element (c).segment_arc.end_point));
+					end if;
+
 					
 			end case;
 		end query_segment;
