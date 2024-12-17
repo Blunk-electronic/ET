@@ -55,7 +55,7 @@ package et_geometry_2a.contours is
 	
 	type type_segment (shape : type_segment_shape) is record
 		case shape is
-			when LINE	=> segment_line : type_line;
+			when LINE	=> segment_line : type_line; -- CS rename segment_line to line
 			when ARC	=> segment_arc  : type_arc;
 		end case;
 	end record;
@@ -158,7 +158,10 @@ package et_geometry_2a.contours is
 		full	: in boolean := false)
 		return string;
 
-	
+
+	-- Returns the cursor to the segment
+	-- where the given point sits on.
+	-- Returns the first matching segment only:
 	function get_segment (
 		contour	: in type_contour;
 		point	: in type_vector_model)
@@ -289,7 +292,8 @@ package et_geometry_2a.contours is
 
 	
 	-- A contour must have a properly closed outline.
-	-- The outline check returns a list of points (where the gaps are):
+	-- The outline check returns a list of points.
+	-- Each point represents the start of a gap:
 	package pac_contour_gaps is new doubly_linked_lists (type_vector_model); 
 
 	
