@@ -207,15 +207,21 @@ package body et_board_ops.stencil is
 			use pac_stencil_contours;
 			c : pac_stencil_contours.cursor;
 
-			
+			-- This procedure tests whether the candidate
+			-- zone z is open. If z is open, then it tries
+			-- to merge the given zone into z. If the merge operation
+			-- succeedes then no more zones are iterated (flag proceed):
 			procedure query_zone (z : in out type_stencil_contour) is
 				use et_board_shapes_and_text;
 				use pac_contours;
 				mr : type_merge_result;
 			begin
+				-- put_line ("query_zone");
 				if is_open (zone) then
+					--put_line (" is open");
 					merge_contours (z, zone, mr);
 					if mr.successful then
+						--put_line ("  successful");
 						-- No more searching needed -> abort iterator
 						proceed := false;
 					end if;
@@ -237,6 +243,7 @@ package body et_board_ops.stencil is
 					-- If no open zone found, then add the given zone
 					-- as a new zone:
 					if proceed then
+						-- put_line ("added as new zone");
 						log (text => "added as new zone", level => log_threshold + 1);
 						module.board.stencil.top.contours.append (zone);
 					end if;
