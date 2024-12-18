@@ -722,7 +722,7 @@ package body et_geometry_2a.contours is
 		-- Merging is possible if both target and source
 		-- are open contours:
 		if is_open (target) and is_open (source) then
-			if debug
+			if debug then
 				put_line ("do merge");
 			end if;
 			
