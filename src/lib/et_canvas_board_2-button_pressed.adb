@@ -349,12 +349,12 @@ begin -- button_pressed
 	-- redraw;
 	-- CS use redraw_board if only board affected
 
-	
-	exception when event: others =>
-		set_status (exception_message (event));
 
-		-- CS reset_selections;
-		-- redraw;
+	-- CS
+	-- exception when event: others =>
+	-- 	set_status (exception_message (event));
+	-- CS reset_selections;
+	-- redraw;
 	
 end button_pressed;
 

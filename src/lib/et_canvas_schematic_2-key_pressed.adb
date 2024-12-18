@@ -915,14 +915,13 @@ begin -- key_pressed
 	
 	update_mode_display;
 
-	
-	exception when event: others =>
-		set_status (exception_message (event));
 
-		reset_selections;
-	
-		redraw;
-		update_mode_display;
+	-- CS
+	-- exception when event: others =>
+	-- 	set_status (exception_message (event));
+	-- 	reset_selections;
+	-- 	redraw;
+	-- 	update_mode_display;
 	
 end key_pressed;
 

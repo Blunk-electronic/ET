@@ -513,12 +513,12 @@ begin -- button_pressed
 	-- redraw;
 	-- CS use redraw_schematic if only schematic affected
 
-	
-	exception when event: others =>
-		set_status (exception_message (event));
 
-		reset_selections;
-		redraw;
+	-- CS
+	-- exception when event: others =>
+	-- 	set_status (exception_message (event));
+	--  reset_selections;
+	--  redraw;
 	
 end button_pressed;
 
