@@ -782,25 +782,84 @@ package body et_board_ops.assy_doc is
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
+		-- When searching among already existing zones then
+		-- this flag is used to abort the iteration prematurely:
+		proceed : boolean := true;
 
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is 
+			use pac_doc_contours;
+			c : pac_doc_contours.cursor;
+
+			-- This procedure tests whether the candidate
+			-- zone z is open. If z is open, then it tries
+			-- to merge the given zone into z. If the merge operation
+			-- succeedes then no more zones are iterated (flag proceed):
+			procedure query_zone (z : in out type_doc_contour) is
+				use et_board_shapes_and_text;
+				use pac_contours;
+				mr : type_merge_result;
+			begin
+				-- put_line ("query_zone");
+				if is_open (zone) then
+					--put_line (" is open");
+					merge_contours (z, zone, mr);
+					if mr.successful then
+						--put_line ("  successful");
+						-- No more searching needed -> abort iterator
+						proceed := false;
+					end if;
+				end if;
+			end query_zone;
+
+
+		begin
 			case face is
 				when TOP =>
-					module.board.assy_doc.top.contours.append (zone);
+					-- Iterate through the already existing zones:
+					c := module.board.assy_doc.top.contours.first;
+
+					while c /= pac_doc_contours.no_element and proceed loop
+						module.board.assy_doc.top.contours.update_element (c, query_zone'access);
+						next (c);
+					end loop;
+
+					-- If no open zone found, then add the given zone
+					-- as a new zone:
+					if proceed then
+						-- put_line ("added as new zone");
+						log (text => "added as new zone", level => log_threshold + 1);
+						module.board.assy_doc.top.contours.append (zone);
+					end if;
+
 					
 				when BOTTOM =>
-					module.board.assy_doc.bottom.contours.append (zone);
+					-- Iterate through the already existing zones:
+					c := module.board.assy_doc.bottom.contours.first;
+
+					while c /= pac_doc_contours.no_element and proceed loop
+						module.board.assy_doc.bottom.contours.update_element (c, query_zone'access);
+						next (c);
+					end loop;
+
+					-- If no open zone found, then add the given zone
+					-- as a new zone:
+					if proceed then
+						log (text => "added as new zone", level => log_threshold + 1);
+						module.board.assy_doc.bottom.contours.append (zone);
+					end if;
 			end case;
 		end query_module;
 
 
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& "drawing assembly documentation zone", -- CS output top/bottom
+			 & "drawing assembly documentation zone"			 
+			 & to_string (face)
+			 & " " & to_string (contour => zone, full => true),
 			level => log_threshold);
 
 		update_element (
@@ -809,9 +868,6 @@ package body et_board_ops.assy_doc is
 			process		=> query_module'access);
 
 	end draw_zone;
-
-
-
 
 
 

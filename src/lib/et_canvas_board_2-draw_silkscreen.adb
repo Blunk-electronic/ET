@@ -306,6 +306,9 @@ begin -- draw_silkscreen
 	-- Draw the lines of a path that is being drawn:
 	draw_path (LAYER_CAT_SILKSCREEN);
 	
+	-- Draw the zone begin drawn:
+	draw_live_zone (LAYER_CAT_SILKSCREEN);
+	
 end draw_silkscreen;
 
 

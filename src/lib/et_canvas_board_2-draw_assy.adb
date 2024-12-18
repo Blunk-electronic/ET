@@ -305,6 +305,9 @@ begin -- draw_assy
 
 	-- Draw the lines of a path that is being drawn:
 	draw_path (LAYER_CAT_ASSY);
+
+	-- Draw the zone begin drawn:
+	draw_live_zone (LAYER_CAT_ASSY);
 	
 end draw_assy;
 

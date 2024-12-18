@@ -464,31 +464,33 @@ package body et_canvas_board_zone is
 
 			case PZ.category is
 				when LAYER_CAT_ASSY =>
-					null;
-					
-					-- et_board_ops.assy_doc.draw_line (
-					-- 	module_name	=> pac_generic_modules.key (active_module),
-					-- 	face		=> PL.face,
-					-- 	line		=> (line with PL.width),
-					-- 	log_threshold	=> log_threshold);
+
+					-- Add the temporary contour to the board:
+					et_board_ops.assy_doc.draw_zone (
+						module_cursor	=> active_module,
+						zone			=> (c with null record),
+						face			=> PZ.face,
+						log_threshold	=> log_threshold);
 
 					
 				when LAYER_CAT_SILKSCREEN =>
-					null;
-					-- et_board_ops.silkscreen.draw_line (
-					-- 	module_name	=> pac_generic_modules.key (active_module),
-					-- 	face		=> PL.face,
-					-- 	line		=> (line with PL.width),
-					-- 	log_threshold	=> log_threshold);
+					
+					-- Add the temporary contour to the board:					
+					et_board_ops.silkscreen.draw_zone (
+						module_cursor	=> active_module,
+						zone			=> (c with null record),
+						face			=> PZ.face,
+						log_threshold	=> log_threshold);
 
 
 				when LAYER_CAT_STOP =>
-					null;
-					-- et_board_ops.stop_mask.draw_stop_line (
-					-- 	module_name	=> pac_generic_modules.key (active_module),
-					-- 	face		=> PL.face,
-					-- 	line		=> (line with PL.width),
-					-- 	log_threshold	=> log_threshold);
+
+					-- Add the temporary contour to the board:
+					et_board_ops.stop_mask.draw_zone (
+						module_cursor	=> active_module,
+						zone			=> (c with null record),
+						face			=> PZ.face,
+						log_threshold	=> log_threshold);
 
 
 				when LAYER_CAT_STENCIL =>
