@@ -265,8 +265,9 @@ package body et_canvas_schematic_2 is
 	begin
 		-- Output the the gdk_key_type (which is
 		-- just a number (see gdk.types und gdk.types.keysyms)):
-		put_line ("cb_window_key_pressed (schematic)"
-			& " key " & gdk_key_type'image (event.keyval));
+		
+		-- put_line ("cb_window_key_pressed (schematic)"
+		-- 	& " key " & gdk_key_type'image (event.keyval));
 
 		if key_ctrl = control_mask then 
 			case key is
@@ -364,7 +365,7 @@ package body et_canvas_schematic_2 is
 	
 	begin
 		-- new_line;
-		put_line ("cb_draw (schematic) " & image (clock));
+		-- put_line ("cb_draw (schematic) " & image (clock));
 
 		-- Update the global context:
 		context := context_in;
@@ -547,8 +548,9 @@ package body et_canvas_schematic_2 is
 	begin
 		-- Output the the gdk_key_type (which is
 		-- just a number (see gdk.types und gdk.types.keysyms)):
-		put_line ("cb_canvas_key_pressed (schematic)"
-			& " key " & gdk_key_type'image (event.keyval));
+
+		-- put_line ("cb_canvas_key_pressed (schematic)"
+		-- 	& " key " & gdk_key_type'image (event.keyval));
 
 		if key_ctrl = control_mask then 
 			case key is
@@ -652,7 +654,7 @@ package body et_canvas_schematic_2 is
 
 		mouse_event : type_mouse_event;
 	begin
-		put_line ("cb_canvas_button_pressed (schematic)");
+		-- put_line ("cb_canvas_button_pressed (schematic)");
 
 		mouse_event := get_mouse_button_pressed_event (event);
 
@@ -682,7 +684,7 @@ package body et_canvas_schematic_2 is
 		
 		debug : boolean := false;
 	begin
-		put_line ("cb_canvas_button_released (schematic)");
+		-- put_line ("cb_canvas_button_released (schematic)");
 		
 		mouse_event := get_mouse_button_released_event (event);
 
@@ -710,7 +712,7 @@ package body et_canvas_schematic_2 is
 
 		mp : type_vector_model;
 	begin
-		put_line ("cb_canvas_mouse_moved (schematic)");
+		-- put_line ("cb_canvas_mouse_moved (schematic)");
 
 		-- Get from the mouse event the model point:
 		mp := get_mouse_moved_event (event);

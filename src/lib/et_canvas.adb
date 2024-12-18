@@ -2280,7 +2280,7 @@ package body et_canvas is
 		update_distances_display;
 		
 		-- Output the cursor position on the terminal:
-		put_line ("position " & to_string (cursor.position));
+		-- put_line ("position " & to_string (cursor.position));
 	end move_cursor;
 
 
@@ -2289,7 +2289,7 @@ package body et_canvas is
 		direction : type_direction)
 	is begin
 		-- Move the cursor by the grid spacing into the given direction:
-		put_line ("move cursor " & type_direction'image (direction));
+		-- put_line ("move cursor " & type_direction'image (direction));
 		
 		case direction is
 			when DIR_RIGHT =>
@@ -2354,7 +2354,7 @@ package body et_canvas is
 		update_distances_display;
 
 		-- Output the cursor position on the terminal:
-		put_line ("cursor at " & to_string (cursor.position));
+		--put_line ("cursor at " & to_string (cursor.position));
 
 		backup_visible_area (get_visible_area (canvas));
 	end move_cursor;
@@ -3925,7 +3925,8 @@ package body et_canvas is
 		event	: gdk_event_button)
 		return type_mouse_event
 	is
-		debug : boolean := true;
+		--debug : boolean := true;
+		debug : boolean := false;
 		
 		-- Get the affected mouse button:
 		button : constant type_mouse_button := type_mouse_button (event.button);
@@ -3993,7 +3994,8 @@ package body et_canvas is
 		event	: gdk_event_button)
 		return type_mouse_event
 	is
-		debug : boolean := true;
+		-- debug : boolean := true;
+		debug : boolean := false;
 		
 		-- Get the affected mouse button:
 		button : constant type_mouse_button := type_mouse_button (event.button);
@@ -4118,7 +4120,8 @@ package body et_canvas is
 		event	: gdk_event_motion)
 		return type_vector_model
 	is
-		debug : boolean := true;
+		-- debug : boolean := true;
+		debug : boolean := false;
 
 		-- Get the canvas point in logical pixels:
 		cp : constant type_logical_pixels_vector := 
@@ -4196,8 +4199,8 @@ package body et_canvas is
 		event	: gdk_event_scroll)
 		return boolean
 	is
-		--debug : boolean := false;
-		debug : boolean := true;
+		debug : boolean := false;
+		--debug : boolean := true;
 		
 		use gdk.types;
 		use gtk.accel_group;
