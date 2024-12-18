@@ -271,6 +271,11 @@ package et_geometry_2a.contours is
 		return count_type;
 
 
+	
+
+
+-- MERGING:
+
 	-- When contours are to be merged, then this
 	-- type shall be used to express the result of 
 	-- the merge operation:
@@ -283,10 +288,17 @@ package et_geometry_2a.contours is
 	-- Merges two contours to a single one.
 	-- Tries to append or prepend source to target
 	-- if matching verices exist.
+	-- Modifies the status according to the result
+	-- of the operation.
+	-- Merges only if both target and source are 
+	-- open contours:
 	procedure merge_contours (
 		target	: in out type_contour;
 		source	: in type_contour;
-		status	: type_merge_result);
+		status	: in out type_merge_result);
+
+
+
 
 	
 	

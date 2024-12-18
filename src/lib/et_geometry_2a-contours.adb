@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with ada.text_io;				use ada.text_io;
 with ada.strings;				use ada.strings;
 with ada.strings.fixed;			use ada.strings.fixed;
 with ada.strings.unbounded;
@@ -94,7 +95,7 @@ package body et_geometry_2a.contours is
 		contour : in type_contour)
 		return type_non_circular_vertex
 	is
-		circular : boolean;
+		circular : boolean := false;
 		point : type_vector_model;
 
 		s : pac_segments.cursor;
@@ -130,7 +131,7 @@ package body et_geometry_2a.contours is
 		contour : in type_contour)
 		return type_non_circular_vertex
 	is
-		circular : boolean;
+		circular : boolean := false;
 		point : type_vector_model;
 
 		s : pac_segments.cursor;
@@ -698,27 +699,67 @@ package body et_geometry_2a.contours is
 	procedure merge_contours (
 		target	: in out type_contour;
 		source	: in type_contour;
-		status	: type_merge_result)
+		status	: in out type_merge_result)
 	is
-		target_first, target_last : pac_segments.cursor;
-		target_length, source_length : count_type;
-	begin
-		target_length := get_segments_total (target);
-		source_length := get_segments_total (source);
+		debug : boolean := false;
 		
-		case target_length is
-			when 0 => 
-				--target := source;
-				null;
-			
-			-- when 1 => target_first := target.segments.first;
+		target_start, target_end : type_vector_model;
+		source_start, source_end : type_vector_model;
 
-			when others =>
-				null;
-		end case;
-		
-		-- iterate (target
-		null;
+		-- Later we'll need a copy of the given source,
+		-- because a splice operation will be carried out.
+		-- The splice operation clears the source copy:
+		source_copy : type_contour;
+
+		c : pac_segments.cursor;
+	begin
+		if debug then
+			put_line ("merge_contours");
+			put_line (" target: " & to_string (contour => target, full => true));
+			put_line (" source: " & to_string (contour => source, full => true));
+		end if;
+
+		-- Merging is possible if both target and source
+		-- are open contours:
+		if is_open (target) and is_open (source) then
+			if debug
+				put_line ("do merge");
+			end if;
+			
+			-- Extract start and end points:
+			target_start := get_start_point (target).vertex;
+			target_end   := get_end_point (target).vertex;
+   
+			source_start := get_start_point (source).vertex;
+			source_end   := get_end_point (source).vertex;
+
+			-- Take a copy of the given source:
+			source_copy := source;
+
+			-- Now we decide whether to append or to prepend
+			-- the source copy to the target:
+			if target_end = source_start then
+				-- append source to target
+				target.contour.segments.splice (c, source_copy.contour.segments);
+
+				status.appended := true;
+				status.successful := true;
+				
+			elsif target_start = source_end then
+				-- prepend source to target
+				c := target.contour.segments.first;
+				target.contour.segments.splice (c, source_copy.contour.segments);
+
+				status.prepended := true;
+				status.successful := true;
+			end if;			
+		end if;
+
+		if debug then
+			put_line ("status: appended " & boolean'image (status.appended)
+				& " prepended " & boolean'image (status.prepended)
+				& " successful " & boolean'image (status.successful));
+		end if;
 	end merge_contours;
 
 
