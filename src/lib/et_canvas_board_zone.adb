@@ -502,7 +502,14 @@ package body et_canvas_board_zone is
 
 					
 				when LAYER_CAT_KEEPOUT =>
-					null;
+
+					-- Add the temporary contour to the board:
+					et_board_ops.keepout.draw_zone (
+						module_cursor	=> active_module,
+						zone			=> (c with null record),
+						face			=> PZ.face,
+						log_threshold	=> log_threshold);
+
 
 					
 					
