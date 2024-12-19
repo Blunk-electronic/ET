@@ -118,6 +118,21 @@ package body et_pcb_stack is
 
 
 
+	function layer_stacks_equally (
+		right, left : in type_signal_layers.set)
+		return boolean
+	is
+		use type_signal_layers;
+	begin
+		if right = left then
+			return true;
+		else
+			return false;
+		end if;
+	end layer_stacks_equally;
+
+
+	
 
 	function layer_stack_contains (
 		stack		: type_signal_layers.set;

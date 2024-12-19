@@ -91,6 +91,13 @@ package et_pcb_stack is
 	function to_string (layers : in type_signal_layers.set) return string;
 
 
+	-- Returns true if the given two layer stacks
+	-- are equally:
+	function layer_stacks_equally (
+		right, left : in type_signal_layers.set)
+		return boolean;
+	
+	
 	-- Returns true if the given layer stack contains
 	-- the given signal layer.
 	-- If exclusively is true, then the return is true
