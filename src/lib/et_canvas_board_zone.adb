@@ -205,8 +205,9 @@ package body et_canvas_board_zone is
 		preliminary_zone.signal_layer := to_signal_layer (glib.values.get_string (item_text));
 		--put_line ("signal layer " & to_string (preliminary_zone.signal_layer));
 
-		-- display the affected conductor layer:
+		-- Display the affected conductor layers:
 		enable_conductor (preliminary_zone.signal_layer);
+		enable_via_restrict (preliminary_zone.signal_layer);
 		
 		et_canvas_board_2.redraw_board;		
 	end signal_layer_changed;
