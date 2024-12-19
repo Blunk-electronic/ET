@@ -128,6 +128,11 @@ begin -- draw_via_restrict
 	pac_generic_modules.query_element (
 		position	=> active_module,
 		process		=> query_items'access);
+
+
+	-- Draw the zone begin drawn:
+	draw_live_zone (LAYER_CAT_VIA_RESTRICT);
+
 	
 end draw_via_restrict;
 

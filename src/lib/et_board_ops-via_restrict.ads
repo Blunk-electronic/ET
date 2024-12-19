@@ -61,7 +61,17 @@ package et_board_ops.via_restrict is
 
 	procedure dummy;
 
-	-- Draws a via restrict zone:
+	-- Draws a via restrict zone.
+	-- The given zone can consist of a single segment or a
+	-- fragment of a zone contour.
+	-- 1. If the given zone is a single segment or a fragment
+	--    then the procedure serches for already existing zones
+	--    which are incomplete (or open) and tries to append or prepend
+	--    the given zone to one of the existing open zones.
+	-- 2. If this attempt fails, then the given zone is regarded as 
+	--    a new zone.
+	-- 3. If all existing zones are already closed, then the given zone
+	--    is regarded a a new zone and added to the existing zones.
 	procedure draw_zone (
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_via_restrict_contour;

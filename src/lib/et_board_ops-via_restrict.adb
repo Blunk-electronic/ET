@@ -140,17 +140,66 @@ package body et_board_ops.via_restrict is
 		zone			: in type_via_restrict_contour;
 		log_threshold	: in type_log_level)
 	is 
+		-- When searching among already existing zones then
+		-- this flag is used to abort the iteration prematurely:
+		proceed : boolean := true;
+
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is begin
+		is 
+			use pac_via_restrict_contours;
+			c : pac_via_restrict_contours.cursor;
+
+			-- This procedure tests whether the candidate
+			-- zone z is open. If z is open, then it tries
+			-- to merge the given zone into z. If the merge operation
+			-- succeedes then no more zones are iterated (flag proceed):
+			procedure query_zone (z : in out type_via_restrict_contour) is
+				use et_board_shapes_and_text;
+				use pac_contours;
+				mr : type_merge_result;
+			begin
+				-- put_line ("query_zone");
+				-- CS query signal layer
+				
+				if is_open (zone) then
+					--put_line (" is open");
+					merge_contours (z, zone, mr);
+					if mr.successful then
+						--put_line ("  successful");
+						-- No more searching needed -> abort iterator
+						proceed := false;
+					end if;
+				end if;
+			end query_zone;
+
+			
+		begin
 			module.board.via_restrict.contours.append (zone);
+
+			-- Iterate through the already existing zones:
+			c := module.board.via_restrict.contours.first;
+
+			while c /= pac_via_restrict_contours.no_element and proceed loop
+				module.board.via_restrict.contours.update_element (c, query_zone'access);
+				next (c);
+			end loop;
+
+			-- If no open zone found, then add the given zone
+			-- as a new zone:
+			if proceed then
+				-- put_line ("added as new zone");
+				log (text => "added as new zone", level => log_threshold + 1);
+				module.board.via_restrict.contours.append (zone);
+			end if;			
 		end;
 
+		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& "drawing via restrict zone",
+			& "drawing via restrict zone", -- CS layers ?
 			level => log_threshold);
 
 		update_element (

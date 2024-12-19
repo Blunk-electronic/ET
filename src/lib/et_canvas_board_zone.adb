@@ -511,12 +511,15 @@ package body et_canvas_board_zone is
 						zone			=> (c with null record),
 						face			=> PZ.face,
 						log_threshold	=> log_threshold);
-
-
 					
 					
 				when LAYER_CAT_VIA_RESTRICT =>
-					null;
+
+					-- Add the temporary contour to the board:
+					et_board_ops.via_restrict.draw_zone (
+						module_cursor	=> active_module,
+						zone			=> (c with to_layers (PZ.signal_layer)),
+						log_threshold	=> log_threshold);
 
 
 				when others => null; -- CS
