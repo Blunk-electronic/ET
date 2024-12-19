@@ -274,6 +274,15 @@ package body et_display.board is
 		end if;
 	end via_restrict_layer_enabled;
 
+
+	
+	procedure enable_via_restrict (
+		layer : in type_signal_layer)
+	is begin
+		layers.via_restrict (layer) := ON;
+	end enable_via_restrict;
+
+
 	
 	function via_restrict_layer_enabled (layers : in type_signal_layers.set)
 		return boolean is
