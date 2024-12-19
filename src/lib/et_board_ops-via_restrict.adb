@@ -153,7 +153,8 @@ package body et_board_ops.via_restrict is
 			c : pac_via_restrict_contours.cursor;
 
 			-- This procedure tests whether the candidate
-			-- zone z is open. If z is open, then it tries
+			-- zone z is in the same signal layers as the given zone.
+			-- It tests whether the candidate zone is open. If z is open, then it tries
 			-- to merge the given zone into z. If the merge operation
 			-- succeedes then no more zones are iterated (flag proceed):
 			procedure query_zone (z : in out type_via_restrict_contour) is
@@ -162,15 +163,17 @@ package body et_board_ops.via_restrict is
 				mr : type_merge_result;
 			begin
 				-- put_line ("query_zone");
-				-- CS query signal layer
+				-- Compare the layer stacks:
+				if layer_stacks_equally (z.layers, zone.layers) then
 				
-				if is_open (zone) then
-					--put_line (" is open");
-					merge_contours (z, zone, mr);
-					if mr.successful then
-						--put_line ("  successful");
-						-- No more searching needed -> abort iterator
-						proceed := false;
+					if is_open (zone) then
+						--put_line (" is open");
+						merge_contours (z, zone, mr);
+						if mr.successful then
+							--put_line ("  successful");
+							-- No more searching needed -> abort iterator
+							proceed := false;
+						end if;
 					end if;
 				end if;
 			end query_zone;
@@ -199,7 +202,8 @@ package body et_board_ops.via_restrict is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& "drawing via restrict zone", -- CS layers ?
+			 & "drawing via restrict zone"
+			 & " layers " & to_string (zone.layers),
 			level => log_threshold);
 
 		update_element (

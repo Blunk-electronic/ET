@@ -67,7 +67,8 @@ package et_board_ops.via_restrict is
 	-- 1. If the given zone is a single segment or a fragment
 	--    then the procedure serches for already existing zones
 	--    which are incomplete (or open) and tries to append or prepend
-	--    the given zone to one of the existing open zones.
+	--    the given zone to one of the existing open zones having
+	--    the same layer stack.
 	-- 2. If this attempt fails, then the given zone is regarded as 
 	--    a new zone.
 	-- 3. If all existing zones are already closed, then the given zone
