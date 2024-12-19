@@ -266,7 +266,7 @@ begin -- draw_stop
 
 	
 	-- Draw the zone begin drawn:
-	draw_live_zone (LAYER_CAT_STENCIL);
+	draw_live_zone (LAYER_CAT_STOP);
 	
 end draw_stop;
 
