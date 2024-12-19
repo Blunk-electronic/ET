@@ -118,6 +118,33 @@ package body et_pcb_stack is
 
 
 
+
+	function layer_stack_contains (
+		stack		: type_signal_layers.set;
+		layer		: type_signal_layer;
+		exclusively	: in boolean := false)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		case exclusively is
+			when FALSE =>
+				if stack.contains (layer) then
+					result := true;
+				end if;
+
+			when TRUE =>
+				if stack.length = 1 and stack.contains (layer) then
+					result := true;
+				end if;
+		end case;
+
+		return result;
+	end layer_stack_contains;
+	
+
+
+	
 	
 	function to_layers (layers : in string) 
 		return type_signal_layers.set 

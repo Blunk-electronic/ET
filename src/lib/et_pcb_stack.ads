@@ -90,7 +90,18 @@ package et_pcb_stack is
 	-- Returns a string like "[1,3,5-9]"
 	function to_string (layers : in type_signal_layers.set) return string;
 
+
+	-- Returns true if the given layer stack contains
+	-- the given signal layer.
+	-- If exclusively is true, then the return is true
+	-- if the layer stack contains only the given signal layer:
+	function layer_stack_contains (
+		stack		: type_signal_layers.set;
+		layer		: type_signal_layer;
+		exclusively	: in boolean := false)
+		return boolean;
 	
+		
 	-- Converts a string like [1,3,5-9] to a set 
 	-- of signal layers.
 	function to_layers (layers : in string) 
