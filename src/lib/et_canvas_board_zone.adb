@@ -149,15 +149,26 @@ package body et_canvas_board_zone is
 
 		-- Auto-enable the selected layer category:
 		case preliminary_zone.category is
-			when LAYER_CAT_CONDUCTOR =>
-				enable_conductor (preliminary_zone.signal_layer);
 
+			when LAYER_CAT_ASSY =>
+				enable_assy_doc (preliminary_zone.face);
+			
+			when LAYER_CAT_KEEPOUT =>
+				enable_keepout (preliminary_zone.face);
+			
 			when LAYER_CAT_SILKSCREEN =>
 				enable_silkscreen (preliminary_zone.face);
 
-			-- CS
-			when others =>
-				null;
+			when LAYER_CAT_STOP =>
+				enable_stopmask (preliminary_zone.face);
+
+			when LAYER_CAT_STENCIL =>
+				enable_stencil (preliminary_zone.face);
+
+			when LAYER_CAT_VIA_RESTRICT =>
+				enable_via_restrict (preliminary_zone.signal_layer);
+
+			when others => null;
 		end case;
 		
 		et_canvas_board_2.redraw_board;
@@ -185,12 +196,22 @@ package body et_canvas_board_zone is
 
 		-- Auto-enable the selected layer category:
 		case preliminary_zone.category is
+			when LAYER_CAT_ASSY =>
+				enable_assy_doc (preliminary_zone.face);
+			
+			when LAYER_CAT_KEEPOUT =>
+				enable_keepout (preliminary_zone.face);
+			
 			when LAYER_CAT_SILKSCREEN =>
 				enable_silkscreen (preliminary_zone.face);
 
-			-- CS
-			when others =>
-				null;
+			when LAYER_CAT_STOP =>
+				enable_stopmask (preliminary_zone.face);
+
+			when LAYER_CAT_STENCIL =>
+				enable_stencil (preliminary_zone.face);
+
+			when others => null;
 		end case;
 		
 		et_canvas_board_2.redraw_board;
