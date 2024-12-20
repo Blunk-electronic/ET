@@ -102,12 +102,8 @@ package body et_canvas_board_zone is
 
 	
 
-	
-	
-	procedure reset_preliminary_zone is begin
-		preliminary_zone.ready := false;
-		preliminary_zone.tool := MOUSE;
 
+	procedure remove_properties_bar is begin
 		-- Clear the content of the properties bar:
 		if box_properties.displayed then
 			-- put_line ("clear track properties box");
@@ -125,6 +121,14 @@ package body et_canvas_board_zone is
 			
 			box_properties.displayed := false;
 		end if;
+	end remove_properties_bar;
+
+	
+	
+	
+	procedure reset_preliminary_zone is begin
+		preliminary_zone.ready := false;
+		preliminary_zone.tool := MOUSE;
 	end reset_preliminary_zone;
 
 

@@ -120,7 +120,9 @@ package et_canvas_board_zone is
 
 
 
+	procedure remove_properties_bar;
 
+	
 
 	type type_preliminary_zone is record
 		-- This flag tells the draw operations to draw the preliminary zone:
