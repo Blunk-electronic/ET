@@ -513,7 +513,7 @@ package body et_canvas_board_2 is
 		use et_modes.board;
 		use et_canvas_tool;
 		
-		PZ : type_preliminary_zone renames preliminary_zone;
+		PZ : type_preliminary_object renames preliminary_object;
 
 
 		-- Computes the path from given start to given end point.
@@ -827,7 +827,7 @@ package body et_canvas_board_2 is
 		et_canvas_board_lines.reset_preliminary_object;
 		et_canvas_board_lines.remove_properties_bar;
 		
-		et_canvas_board_zone.reset_preliminary_zone;
+		et_canvas_board_zone.reset_preliminary_object;
 		et_canvas_board_zone.remove_properties_bar;
 		
 		reset_preliminary_text; -- after placing a text

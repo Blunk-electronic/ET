@@ -124,7 +124,7 @@ package et_canvas_board_zone is
 
 	
 
-	type type_preliminary_zone is record
+	type type_preliminary_object is record
 		-- This flag tells the draw operations to draw the preliminary zone:
 		ready		: boolean := false;
 
@@ -141,10 +141,10 @@ package et_canvas_board_zone is
 
 	
 	-- The place where preliminary information of the zone is stored:
-	preliminary_zone : type_preliminary_zone;
+	preliminary_object : type_preliminary_object;
 
 
-	procedure reset_preliminary_zone;
+	procedure reset_preliminary_object;
 	
 
 	procedure show_zone_properties;

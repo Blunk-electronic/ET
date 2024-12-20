@@ -247,7 +247,7 @@ is
 
 					when NOUN_ZONE =>
 						pac_path_and_bend.next_bend_style (
-							et_canvas_board_zone.preliminary_zone.path);
+							et_canvas_board_zone.preliminary_object.path);
 						
 					when others => null;							
 				end case;

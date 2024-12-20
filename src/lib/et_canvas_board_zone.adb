@@ -126,10 +126,10 @@ package body et_canvas_board_zone is
 	
 	
 	
-	procedure reset_preliminary_zone is begin
-		preliminary_zone.ready := false;
-		preliminary_zone.tool := MOUSE;
-	end reset_preliminary_zone;
+	procedure reset_preliminary_object is begin
+		preliminary_object.ready := false;
+		preliminary_object.tool := MOUSE;
+	end reset_preliminary_object;
 
 
 
@@ -148,29 +148,29 @@ package body et_canvas_board_zone is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_zone.category := to_layer_category (values.get_string (item_text));
-		--put_line ("cat " & to_string (preliminary_zone.category));
+		preliminary_object.category := to_layer_category (values.get_string (item_text));
+		--put_line ("cat " & to_string (preliminary_object.category));
 
 		-- Auto-enable the selected layer category:
-		case preliminary_zone.category is
+		case preliminary_object.category is
 
 			when LAYER_CAT_ASSY =>
-				enable_assy_doc (preliminary_zone.face);
+				enable_assy_doc (preliminary_object.face);
 			
 			when LAYER_CAT_KEEPOUT =>
-				enable_keepout (preliminary_zone.face);
+				enable_keepout (preliminary_object.face);
 			
 			when LAYER_CAT_SILKSCREEN =>
-				enable_silkscreen (preliminary_zone.face);
+				enable_silkscreen (preliminary_object.face);
 
 			when LAYER_CAT_STOP =>
-				enable_stopmask (preliminary_zone.face);
+				enable_stopmask (preliminary_object.face);
 
 			when LAYER_CAT_STENCIL =>
-				enable_stencil (preliminary_zone.face);
+				enable_stencil (preliminary_object.face);
 
 			when LAYER_CAT_VIA_RESTRICT =>
-				enable_via_restrict (preliminary_zone.signal_layer);
+				enable_via_restrict (preliminary_object.signal_layer);
 
 			when others => null;
 		end case;
@@ -195,25 +195,25 @@ package body et_canvas_board_zone is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_zone.face := to_face (values.get_string (item_text));
-		--put_line ("face " & to_string (preliminary_zone.face));
+		preliminary_object.face := to_face (values.get_string (item_text));
+		--put_line ("face " & to_string (preliminary_object.face));
 
 		-- Auto-enable the selected layer category:
-		case preliminary_zone.category is
+		case preliminary_object.category is
 			when LAYER_CAT_ASSY =>
-				enable_assy_doc (preliminary_zone.face);
+				enable_assy_doc (preliminary_object.face);
 			
 			when LAYER_CAT_KEEPOUT =>
-				enable_keepout (preliminary_zone.face);
+				enable_keepout (preliminary_object.face);
 			
 			when LAYER_CAT_SILKSCREEN =>
-				enable_silkscreen (preliminary_zone.face);
+				enable_silkscreen (preliminary_object.face);
 
 			when LAYER_CAT_STOP =>
-				enable_stopmask (preliminary_zone.face);
+				enable_stopmask (preliminary_object.face);
 
 			when LAYER_CAT_STENCIL =>
-				enable_stencil (preliminary_zone.face);
+				enable_stencil (preliminary_object.face);
 
 			when others => null;
 		end case;
@@ -238,12 +238,12 @@ package body et_canvas_board_zone is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_zone.signal_layer := to_signal_layer (values.get_string (item_text));
-		--put_line ("signal layer " & to_string (preliminary_zone.signal_layer));
+		preliminary_object.signal_layer := to_signal_layer (values.get_string (item_text));
+		--put_line ("signal layer " & to_string (preliminary_object.signal_layer));
 
 		-- Auto-enable the affected conductor and restrict layers:
-		enable_conductor (preliminary_zone.signal_layer);
-		enable_via_restrict (preliminary_zone.signal_layer);
+		enable_conductor (preliminary_object.signal_layer);
+		enable_via_restrict (preliminary_object.signal_layer);
 		
 		et_canvas_board_2.redraw_board;		
 	end signal_layer_changed;
@@ -305,8 +305,8 @@ package body et_canvas_board_zone is
 				c : pac_affected_layer_categories.cursor;
 				use pac_affected_layer_categories;
 			begin
-				-- Map from preliminary_zone.category to index:
-				c := find (affected_layer_categories, preliminary_zone.category);
+				-- Map from preliminary_object.category to index:
+				c := find (affected_layer_categories, preliminary_object.category);
 				cbox_category.set_active (gint (to_index (c)));
 			end set_category_used_last;
 			
@@ -379,7 +379,7 @@ package body et_canvas_board_zone is
 				model		=> +storage_model); -- ?
 
 			-- Set the face used last:
-			cbox_face.set_active (type_face'pos (preliminary_zone.face));
+			cbox_face.set_active (type_face'pos (preliminary_object.face));
 
 
 			pack_start (box_face, cbox_face, padding => guint (spacing));
@@ -436,7 +436,7 @@ package body et_canvas_board_zone is
 				model		=> +storage_model); -- ?
 
 			-- Set the signal layer used last:
-			cbox_signal_layer.set_active (gint (preliminary_zone.signal_layer) - 1);
+			cbox_signal_layer.set_active (gint (preliminary_object.signal_layer) - 1);
 			-- NOTE: The entries are numbered from 0 .. N.
 
 
@@ -477,7 +477,7 @@ package body et_canvas_board_zone is
 		tool	: in type_tool;
 		point	: in type_vector_model)
 	is
-		PZ : type_preliminary_zone renames preliminary_zone;
+		PZ : type_preliminary_object renames preliminary_object;
 		line : type_line;
 
 		
@@ -575,7 +575,7 @@ package body et_canvas_board_zone is
 		-- knows where to get the end point from.
 		PZ.tool := tool;
 
-		-- Initally the preliminary_zone is NOT ready. Nothing will be drawn.
+		-- Initally the preliminary_object is NOT ready. Nothing will be drawn.
 		-- Upon the first calling of this procedure the start point of the
 		-- path will be set.
 		
@@ -584,7 +584,7 @@ package body et_canvas_board_zone is
 			PZ.path.start_point := point;
 
 			-- Allow drawing of the path:
-			preliminary_zone.ready := true;
+			preliminary_object.ready := true;
 
 			set_status (status_start_point & to_string (PZ.path.start_point) & ". " &
 				status_press_space & status_set_end_point & status_hint_for_abort);
@@ -629,7 +629,7 @@ package body et_canvas_board_zone is
 				PZ.path.start_point := point;
 				
 			else
-				reset_preliminary_zone;
+				reset_preliminary_object;
 			end if;
 		end if;			
 	end make_path;

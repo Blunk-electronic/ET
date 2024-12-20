@@ -57,7 +57,7 @@ begin
 					end if;
 
 				when NOUN_ZONE =>
-					if et_canvas_board_zone.preliminary_zone.ready then
+					if et_canvas_board_zone.preliminary_object.ready then
 						redraw_board;
 					end if;
 					

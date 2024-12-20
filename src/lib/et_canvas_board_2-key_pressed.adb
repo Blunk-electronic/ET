@@ -408,14 +408,14 @@ is
 		case key is
 			when GDK_LC_l =>
 				noun := NOUN_LINE;
-				reset_preliminary_object;				
+				et_canvas_board_lines.reset_preliminary_object;				
 				show_line_properties;
 				set_status (status_draw_line);
 
 				
 			when key_noun_zone =>
 				noun := NOUN_ZONE;
-				reset_preliminary_zone;
+				et_canvas_board_zone.reset_preliminary_object;
 				show_zone_properties;
 				set_status (status_draw_zone);
 				
@@ -438,10 +438,10 @@ is
 			when GDK_LC_b =>
 				case noun is
 					when NOUN_LINE =>
-						next_bend_style (preliminary_object.path);
+						next_bend_style (et_canvas_board_lines.preliminary_object.path);
 
 					when NOUN_ZONE =>
-						next_bend_style (preliminary_zone.path);
+						next_bend_style (et_canvas_board_zone.preliminary_object.path);
 						
 					when others => null;
 				end case;
