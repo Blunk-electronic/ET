@@ -60,31 +60,6 @@ with et_canvas_board_lines;				use et_canvas_board_lines;
 package et_canvas_board_assy_doc is
 	
 
-	-- Before placing, moving, deleting or other operations we
-	-- collect preliminary information using this type:
-	type type_preliminary_object is record
-		-- This flag indicates that the object has been
-		-- clarified among the proposed objects:
-		ready	: boolean := false;
-
-		-- This tells the GUI whether the mouse or the
-		-- cursor position is to be used when drawing the object:
-		tool	: type_tool := MOUSE;
-
-		point_of_attack : type_vector_model;
-	end record;
-
-	-- The place where preliminary information of
-	-- an object is stored:
-	preliminary_object : type_preliminary_object;
-
-
-	-- Resets the preliminary_object.
-	-- Resets the proposed objects.
-	procedure reset_preliminary_object;
-
-	
-
 	-- On every call of this procedure we advance from one
 	-- proposed segment to the next in a circular manner.
 	procedure select_object;

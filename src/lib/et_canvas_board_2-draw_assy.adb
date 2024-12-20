@@ -65,6 +65,8 @@ is
 	use pac_doc_texts;
 	use et_pcb.pac_text_placeholders;
 
+	use et_canvas_board_preliminary_object;
+
 
 
 	procedure set_default_brightness is begin

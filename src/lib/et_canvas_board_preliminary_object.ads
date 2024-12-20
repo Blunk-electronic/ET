@@ -56,9 +56,12 @@ with et_pcb_stack;						use et_pcb_stack;
 package et_canvas_board_preliminary_object is
 
 	
-
+	-- Before placing, moving, deleting or other operations we
+	-- collect preliminary information using this type:
 	type type_preliminary_object is record
-		-- This flag tells the draw operations to draw the preliminary object:
+		-- This flag tells the draw operations to draw the preliminary object.
+		-- This flag indicates that the object has been
+		-- clarified among the proposed objects:
 		ready		: boolean := false;
 
 		-- This tells the GUI whether the mouse or the
@@ -71,6 +74,8 @@ package et_canvas_board_preliminary_object is
 
 		path			: type_path_live;
 		width			: type_distance_positive := 0.15;
+
+		point_of_attack : type_vector_model;
 	end record;
 
 	

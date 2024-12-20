@@ -70,7 +70,7 @@ begin
 		when VERB_MOVE =>
 			case noun is
 				when NOUN_ASSY =>
-					if et_canvas_board_assy_doc.preliminary_object.ready then
+					if preliminary_object.ready then
 						redraw_board;
 					end if;
 

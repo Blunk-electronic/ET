@@ -62,6 +62,7 @@ with et_canvas_tool;
 with et_display.board;
 with et_colors.board;
 with et_board_ops.grid;
+with et_board_ops.assy_doc;
 with et_pcb;
 
 with et_text;
@@ -848,7 +849,7 @@ package body et_canvas_board_2 is
 		reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
 		reset_preliminary_non_electrical_device;
 
-		et_canvas_board_assy_doc.reset_preliminary_object;
+		et_board_ops.assy_doc.reset_proposed_lines (active_module, log_threshold + 1);
 		et_canvas_board_silkscreen.reset_preliminary_object;
 
 		redraw_board;
