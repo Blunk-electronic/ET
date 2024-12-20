@@ -230,7 +230,11 @@ package et_display.board is
 		return boolean;
 
 
+	-- Enables the given route restrict layer:
+	procedure enable_route_restrict (
+		layer : in type_signal_layer);
 
+	
 	
 
 -- VIA RESTRICT

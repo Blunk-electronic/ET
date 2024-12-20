@@ -243,6 +243,11 @@ package body et_display.board is
 			return false;
 		end if;
 	end vias_enabled;
+
+
+
+
+
 	
 
 	function conductors_enabled return boolean is begin
@@ -291,7 +296,12 @@ package body et_display.board is
 	
 
 	
-	function route_restrict_enabled return boolean is begin
+
+	
+	
+	function route_restrict_enabled 
+		return boolean 
+	is begin
 		for r in type_route_restrict'first .. type_route_restrict'last loop
 			if layers.route_restrict (r) = ON then
 				return true;
@@ -314,8 +324,11 @@ package body et_display.board is
 	end route_restrict_layer_enabled;
 
 	
-	function route_restrict_layer_enabled (layers : in type_signal_layers.set)
-		return boolean is
+	
+	function route_restrict_layer_enabled (
+		layers : in type_signal_layers.set)
+		return boolean 
+	is
 		result : boolean := false;
 	begin
 		for r in type_route_restrict'first .. type_route_restrict'last loop
@@ -333,6 +346,7 @@ package body et_display.board is
 	end route_restrict_layer_enabled;
 
 
+	
 	function route_restrict_enabled (
 		face 			: in type_face;
 		deepest_layer	: in type_signal_layer)
@@ -346,6 +360,17 @@ package body et_display.board is
 		end case;
 		return false;
 	end route_restrict_enabled;
+
+
+	
+	procedure enable_route_restrict (
+		layer : in type_signal_layer)
+	is begin
+		layers.route_restrict (layer) := ON;
+	end enable_route_restrict;
+
+
+
 
 
 	
