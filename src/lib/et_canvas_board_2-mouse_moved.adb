@@ -52,7 +52,7 @@ begin
 		when VERB_DRAW =>
 			case noun is
 				when NOUN_LINE =>
-					if et_canvas_board_lines.preliminary_line.ready then
+					if et_canvas_board_lines.preliminary_object.ready then
 						redraw_board;
 					end if;
 

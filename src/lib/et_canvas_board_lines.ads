@@ -144,10 +144,12 @@ package et_canvas_board_lines is
 
 
 
+	procedure remove_properties_bar;
+	
 
 	
 
-	type type_preliminary_line is record
+	type type_preliminary_object is record
 		-- This flag tells the draw operations to draw the preliminary line:
 		ready		: boolean := false;
 
@@ -165,10 +167,10 @@ package et_canvas_board_lines is
 
 	
 	-- The place where preliminary information of the line is stored:
-	preliminary_line : type_preliminary_line;
+	preliminary_object : type_preliminary_object;
 
 
-	procedure reset_preliminary_line;
+	procedure reset_preliminary_object;
 	
 
 	procedure show_line_properties;

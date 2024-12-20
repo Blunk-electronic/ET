@@ -405,11 +405,11 @@ package body et_canvas_board_2 is
 		use et_modes.board;
 		use et_canvas_tool;
 		
-		PL : type_preliminary_line renames preliminary_line;	
+		PL : type_preliminary_object renames preliminary_object;	
 
 
 		-- Computes the path from given start to given end point.
-		-- Takes the bend style given in preliminary_line into account.
+		-- Takes the bend style given in preliminary_object into account.
 		-- Draws the path.
 		procedure compute_and_draw (
 			start_point, end_point : in type_vector_model) 
@@ -824,7 +824,9 @@ package body et_canvas_board_2 is
 		reset_request_clarification;
 		status_enter_verb;
 
-		reset_preliminary_line;
+		et_canvas_board_lines.reset_preliminary_object;
+		et_canvas_board_lines.remove_properties_bar;
+		
 		reset_preliminary_zone;
 		reset_preliminary_text; -- after placing a text
 		reset_preliminary_via; -- after placing a via

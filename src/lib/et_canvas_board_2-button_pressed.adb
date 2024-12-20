@@ -243,7 +243,7 @@ is
 				case noun is
 					when NOUN_LINE =>
 						pac_path_and_bend.next_bend_style (
-							et_canvas_board_lines.preliminary_line.path);
+							et_canvas_board_lines.preliminary_object.path);
 
 					when NOUN_ZONE =>
 						pac_path_and_bend.next_bend_style (

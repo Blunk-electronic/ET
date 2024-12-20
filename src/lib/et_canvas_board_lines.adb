@@ -97,12 +97,9 @@ package body et_canvas_board_lines is
 		affected_layer_categories.append (LAYER_CAT_STOP);
 	end make_affected_layer_categories;
 	
+
 	
-
-	procedure reset_preliminary_line is begin
-		preliminary_line.ready := false;
-		preliminary_line.tool := MOUSE;
-
+	procedure remove_properties_bar is begin
 		-- Clear the content of the properties bar:
 		if box_properties.displayed then
 			-- put_line ("clear track properties box");
@@ -121,7 +118,14 @@ package body et_canvas_board_lines is
 			
 			box_properties.displayed := false;
 		end if;
-	end reset_preliminary_line;
+	end remove_properties_bar;
+	
+
+	
+	procedure reset_preliminary_object is begin
+		preliminary_object.ready := false;
+		preliminary_object.tool := MOUSE;
+	end reset_preliminary_object;
 
 
 
@@ -140,28 +144,28 @@ package body et_canvas_board_lines is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_line.category := to_layer_category (values.get_string (item_text));
-		--put_line ("cat " & to_string (preliminary_line.category));
+		preliminary_object.category := to_layer_category (values.get_string (item_text));
+		--put_line ("cat " & to_string (preliminary_object.category));
 
 		-- Auto-enable the selected layer category:
-		case preliminary_line.category is
+		case preliminary_object.category is
 			when LAYER_CAT_ASSY =>
-				enable_assy_doc (preliminary_line.face);
+				enable_assy_doc (preliminary_object.face);
 
 			when LAYER_CAT_CONDUCTOR =>
-				enable_conductor (preliminary_line.signal_layer);
+				enable_conductor (preliminary_object.signal_layer);
 
 			when LAYER_CAT_SILKSCREEN =>
-				enable_silkscreen (preliminary_line.face);
+				enable_silkscreen (preliminary_object.face);
 
 			when LAYER_CAT_ROUTE_RESTRICT =>
-				enable_route_restrict (preliminary_line.signal_layer);
+				enable_route_restrict (preliminary_object.signal_layer);
 
 			when LAYER_CAT_STENCIL =>
-				enable_stencil (preliminary_line.face);
+				enable_stencil (preliminary_object.face);
 
 			when LAYER_CAT_STOP =>
-				enable_stopmask (preliminary_line.face);
+				enable_stopmask (preliminary_object.face);
 				
 			when others => null;
 		end case;
@@ -186,22 +190,22 @@ package body et_canvas_board_lines is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_line.face := to_face (values.get_string (item_text));
-		--put_line ("face " & to_string (preliminary_line.face));
+		preliminary_object.face := to_face (values.get_string (item_text));
+		--put_line ("face " & to_string (preliminary_object.face));
 
 		-- Auto-enable the selected layer category:
-		case preliminary_line.category is
+		case preliminary_object.category is
 			when LAYER_CAT_ASSY =>
-				enable_assy_doc (preliminary_line.face);
+				enable_assy_doc (preliminary_object.face);
 
 			when LAYER_CAT_SILKSCREEN =>
-				enable_silkscreen (preliminary_line.face);
+				enable_silkscreen (preliminary_object.face);
 
 			when LAYER_CAT_STENCIL =>
-				enable_stencil (preliminary_line.face);
+				enable_stencil (preliminary_object.face);
 
 			when LAYER_CAT_STOP =>
-				enable_stopmask (preliminary_line.face);
+				enable_stopmask (preliminary_object.face);
 				
 			when others => null;
 		end case;
@@ -226,12 +230,12 @@ package body et_canvas_board_lines is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_line.signal_layer := to_signal_layer (values.get_string (item_text));
-		--put_line ("signal layer " & to_string (preliminary_line.signal_layer));
+		preliminary_object.signal_layer := to_signal_layer (values.get_string (item_text));
+		--put_line ("signal layer " & to_string (preliminary_object.signal_layer));
 
 		-- Auto-enable the affected conductor and restrict layers:
-		enable_conductor (preliminary_line.signal_layer);
-		enable_via_restrict (preliminary_line.signal_layer);
+		enable_conductor (preliminary_object.signal_layer);
+		enable_via_restrict (preliminary_object.signal_layer);
 		
 		et_canvas_board_2.redraw_board;		
 	end signal_layer_changed;
@@ -248,7 +252,7 @@ package body et_canvas_board_lines is
 		width := to_distance (text);
 
 		-- CS validate. output error in status bar
-		preliminary_line.width := width;
+		preliminary_object.width := width;
 
 		et_canvas_board_2.redraw_board;
 	end apply_line_width;
@@ -272,7 +276,8 @@ package body et_canvas_board_lines is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_preliminary_line;
+				reset_preliminary_object;
+				remove_properties_bar;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -349,7 +354,7 @@ package body et_canvas_board_lines is
 				use pac_affected_layer_categories;
 			begin
 				-- Map from preliminary_zone.category to index:
-				c := find (affected_layer_categories, preliminary_line.category);
+				c := find (affected_layer_categories, preliminary_object.category);
 				cbox_category.set_active (gint (to_index (c)));
 			end set_category_used_last;
 
@@ -422,7 +427,7 @@ package body et_canvas_board_lines is
 				model		=> +storage_model); -- ?
 
 			-- Set the face used last:
-			cbox_face.set_active (type_face'pos (preliminary_line.face));
+			cbox_face.set_active (type_face'pos (preliminary_object.face));
 
 
 			pack_start (box_face, cbox_face, padding => guint (spacing));
@@ -479,7 +484,7 @@ package body et_canvas_board_lines is
 				model		=> +storage_model); -- ?
 
 			-- Set the signal layer used last:
-			cbox_signal_layer.set_active (gint (preliminary_line.signal_layer) - 1);
+			cbox_signal_layer.set_active (gint (preliminary_object.signal_layer) - 1);
 			-- NOTE: The entries are numbered from 0 .. N.
 
 
@@ -508,7 +513,7 @@ package body et_canvas_board_lines is
 			gtk_entry (cbox_line_width.get_child).set_width_chars (line_width_length_min);
 
 			-- Set the line width according to the value used last:
-			gtk_entry (cbox_line_width.get_child).set_text (trim (to_string (preliminary_line.width), left));
+			gtk_entry (cbox_line_width.get_child).set_text (trim (to_string (preliminary_object.width), left));
 			
 			-- The width is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_line_width.get_child).on_key_press_event (line_width_key_pressed'access);
@@ -553,7 +558,7 @@ package body et_canvas_board_lines is
 		tool	: in type_tool;
 		point	: in type_vector_model)
 	is
-		PL : type_preliminary_line renames preliminary_line;
+		PL : type_preliminary_object renames preliminary_object;
 		line : type_line;
 
 		
@@ -645,7 +650,7 @@ package body et_canvas_board_lines is
 		-- knows where to get the end point from.
 		PL.tool := tool;
 
-		-- Initally the preliminary_line is NOT ready. Nothing will be drawn.
+		-- Initally the preliminary_object is NOT ready. Nothing will be drawn.
 		-- Upon the first calling of this procedure the start point of the
 		-- path will be set.
 		
@@ -654,12 +659,12 @@ package body et_canvas_board_lines is
 			PL.path.start_point := point;
 
 			-- Allow drawing of the path:
-			preliminary_line.ready := true;
+			preliminary_object.ready := true;
 
 			set_status (status_start_point & to_string (PL.path.start_point) & ". " &
 				status_press_space & status_set_end_point & status_hint_for_abort);
 
-		else -- preliminary_line IS ready
+		else -- preliminary_object IS ready
 
 			-- Start a new path only if the given point differs from 
 			-- the start point of the current path:
@@ -699,7 +704,7 @@ package body et_canvas_board_lines is
 				PL.path.start_point := point;
 				
 			else
-				reset_preliminary_line;
+				reset_preliminary_object;
 			end if;
 		end if;			
 	end make_path;
