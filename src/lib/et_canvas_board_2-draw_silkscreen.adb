@@ -64,7 +64,8 @@ is
 	use pac_silk_texts;
 	use et_pcb.pac_text_placeholders;
 
-
+	use et_canvas_board_preliminary_object;
+	
 
 	procedure set_default_brightness is begin
 		set_color_silkscreen (face, NORMAL);

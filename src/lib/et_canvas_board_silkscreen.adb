@@ -49,18 +49,12 @@ with et_undo_redo;
 with et_commit;
 with et_object_status;
 
+with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
+
 
 package body et_canvas_board_silkscreen is
 
 	use et_canvas_board_2.pac_canvas;
-	
-
-	procedure reset_preliminary_object is begin
-		preliminary_object.ready := false;
-		preliminary_object.tool := MOUSE;
-		reset_proposed_lines (active_module, log_threshold + 1);
-	end reset_preliminary_object;
-
 
 	use pac_silk_lines;
 	use pac_silk_arcs;
@@ -167,6 +161,7 @@ package body et_canvas_board_silkscreen is
 			when 0 =>
 				reset_request_clarification;
 				reset_preliminary_object;
+				reset_proposed_lines (active_module, log_threshold + 1);
 				
 			when 1 =>
 				preliminary_object.ready := true;
@@ -242,7 +237,9 @@ package body et_canvas_board_silkscreen is
 				
 			log_indentation_down;			
 			set_status (status_move_object);
+			
 			reset_preliminary_object;
+			reset_proposed_lines (active_module, log_threshold + 1);
 		end finalize;
 			
 		
@@ -334,7 +331,9 @@ package body et_canvas_board_silkscreen is
 				
 			log_indentation_down;			
 			set_status (status_delete_object);
+			
 			reset_preliminary_object;
+			reset_proposed_lines (active_module, log_threshold + 1);
 		end finalize;
 
 

@@ -75,7 +75,7 @@ begin
 					end if;
 
 				when NOUN_SILKSCREEN =>
-					if et_canvas_board_silkscreen.preliminary_object.ready then
+					if preliminary_object.ready then
 						redraw_board;
 					end if;
 
