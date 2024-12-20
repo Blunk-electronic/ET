@@ -91,9 +91,14 @@ package body et_display.board is
 
 
 
+
+
 	
 	
-	function assy_doc_enabled (face : in type_face) return boolean is begin
+	function assy_doc_enabled (
+		face : in type_face) 
+		return boolean 
+	is begin
 		case face is
 			when TOP =>
 				if layers.assy_doc.top = ON then return true; end if;
@@ -103,8 +108,26 @@ package body et_display.board is
 		return false;
 	end assy_doc_enabled;
 
+
 	
-	function keepout_enabled (face : in type_face) return boolean is begin
+	procedure enable_assy_doc (
+		face : in type_face)
+	is begin
+		case face is
+			when TOP => layers.assy_doc.top := ON;
+			when BOTTOM => layers.assy_doc.bottom := ON;
+		end case;
+	end enable_assy_doc;
+
+
+
+
+	
+	
+	function keepout_enabled (
+		face : in type_face) 
+		return boolean 
+	is begin
 		case face is
 			when TOP =>
 				if layers.keepout.top = ON then return true; end if;
@@ -115,7 +138,28 @@ package body et_display.board is
 	end keepout_enabled;
 
 	
-	function stop_mask_enabled (face : in type_face) return boolean is begin
+
+	procedure enable_keepout (
+		face : in type_face)
+	is begin
+		case face is
+			when TOP => layers.keepout.top := ON;
+			when BOTTOM => layers.keepout.bottom := ON;
+		end case;
+	end enable_keepout;
+
+
+
+
+	
+
+
+
+	
+	function stop_mask_enabled (
+		face : in type_face) 
+		return boolean 
+	is begin
 		case face is
 			when TOP =>
 				if layers.stop_mask.top = ON then return true; end if;
@@ -125,8 +169,27 @@ package body et_display.board is
 		return false;
 	end stop_mask_enabled;
 
+	
+	
+	procedure enable_stopmask (
+		face : in type_face)
+	is begin
+		case face is
+			when TOP => layers.stop_mask.top := ON;
+			when BOTTOM => layers.stop_mask.bottom := ON;
+		end case;
+	end enable_stopmask;
 
-	function stencil_enabled (face : in type_face) return boolean is begin
+
+
+	
+
+
+	
+	function stencil_enabled (
+		face : in type_face) 
+		return boolean 
+	is begin
 		case face is
 			when TOP =>
 				if layers.stencil.top = ON then return true; end if;
@@ -136,6 +199,22 @@ package body et_display.board is
 		return false;
 	end stencil_enabled;
 
+
+	
+	procedure enable_stencil (
+		face : in type_face)
+	is begin
+		case face is
+			when TOP => layers.stencil.top := ON;
+			when BOTTOM => layers.stencil.bottom := ON;
+		end case;
+	end enable_stencil;
+
+
+
+
+
+	
 	
 	function device_origins_enabled (face : in type_face) return boolean is begin
 		case face is

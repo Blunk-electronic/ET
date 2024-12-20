@@ -68,7 +68,7 @@ package et_display.board is
 		silkscreen		: type_paired := (top => ON, bottom => OFF);
 		assy_doc		: type_paired := (top => ON, bottom => OFF);
 		keepout			: type_paired := (others => OFF);
-		stop_mask		: type_paired := (others => OFF);
+		stop_mask		: type_paired := (others => OFF); -- CS rename to stopmask
 		stencil			: type_paired := (others => OFF);
 		device_origins	: type_paired := (others => ON);
 		-- CS text_origins (for texts and placeholders) ?
@@ -98,6 +98,8 @@ package et_display.board is
 
 
 	
+
+	
 -- SILKSCREEN:
 	
 	function silkscreen_enabled (
@@ -108,22 +110,69 @@ package et_display.board is
 		face : in type_face);
 
 
+
 	
+-- ASSEMBLY DOCUMENTATION:
 		
-	function assy_doc_enabled (face : in type_face) return boolean;	
+	function assy_doc_enabled (
+		face : in type_face) 
+		return boolean;	
 
-	function keepout_enabled (face : in type_face) return boolean;
 
-	function stop_mask_enabled (face : in type_face) return boolean;
+	procedure enable_assy_doc (
+		face : in type_face);
 
-	function stencil_enabled (face : in type_face) return boolean;
+	
 
+-- KEEPOUT:
+	
+	function keepout_enabled (
+		face : in type_face)
+		return boolean;
+
+	
+	procedure enable_keepout (
+		face : in type_face);	
+
+	
+
+
+-- STOPMASK:
+	
+	function stop_mask_enabled (
+		face : in type_face) 
+		return boolean;
+
+
+	procedure enable_stopmask (
+		face : in type_face);	
+
+
+	
+
+
+-- STENCIL:
+	
+	function stencil_enabled (
+		face : in type_face) 
+		return boolean;
+
+
+	procedure enable_stencil (
+		face : in type_face);	
+
+	
+
+
+	
 	function device_origins_enabled (face : in type_face) return boolean;
 
 	function ratsnest_enabled return boolean;
 
 
 
+
+	
 -- CONDUCTOR LAYERS
 	
 	-- Returns true if any conductor layer is enabled:
@@ -159,17 +208,20 @@ package et_display.board is
 
 	-- Returns true if any route restrict layer is enabled:
 	function route_restrict_enabled return boolean;
+
 	
 	-- Returns true if the given route restrict layer is enabled:
 	function route_restrict_layer_enabled (
 		layer : in type_signal_layer) 
 		return boolean;
+
 	
 	-- Returns true if at least one of the given route restrict layers is enabled.
 	function route_restrict_layer_enabled (
 		layers : in type_signal_layers.set)
 		return boolean;
 
+	
 	-- Returns true if the route restrict layer 
 	-- on TOP/BOTTOM is enabled:
 	function route_restrict_enabled (
