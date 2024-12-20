@@ -146,31 +146,6 @@ package et_canvas_board_lines is
 
 	procedure remove_properties_bar;
 	
-
-	
-
-	type type_preliminary_object is record
-		-- This flag tells the draw operations to draw the preliminary line:
-		ready		: boolean := false;
-
-		-- This tells the GUI whether the mouse or the
-		-- cursor position is to be used when drawing the line:
-		tool		: type_tool := MOUSE;
-		
-		category		: type_layer_category := LAYER_CAT_ASSY;
-		signal_layer	: type_signal_layer := signal_layer_default;
-		face			: type_face := face_default;
-
-		path			: type_path_live;
-		width			: type_distance_positive := 0.15;
-	end record;
-
-	
-	-- The place where preliminary information of the line is stored:
-	preliminary_object : type_preliminary_object;
-
-
-	procedure reset_preliminary_object;
 	
 
 	procedure show_line_properties;

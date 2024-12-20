@@ -58,7 +58,7 @@ package et_canvas_board_preliminary_object is
 	
 
 	type type_preliminary_object is record
-		-- This flag tells the draw operations to draw the preliminary line:
+		-- This flag tells the draw operations to draw the preliminary object:
 		ready		: boolean := false;
 
 		-- This tells the GUI whether the mouse or the

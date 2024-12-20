@@ -80,6 +80,7 @@ with et_exceptions;						use et_exceptions;
 with et_undo_redo;
 with et_commit;
 
+with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 
 
 package body et_canvas_board_lines is
@@ -122,12 +123,6 @@ package body et_canvas_board_lines is
 	
 
 	
-	procedure reset_preliminary_object is begin
-		preliminary_object.ready := false;
-		preliminary_object.tool := MOUSE;
-	end reset_preliminary_object;
-
-
 
 	
 	procedure layer_category_changed (combo : access gtk_combo_box_record'class) is
@@ -220,7 +215,7 @@ package body et_canvas_board_lines is
 		use glib;
 		use gtk.tree_model;
 		use gtk.list_store;
-
+		
 		-- Get the model and active iter from the combo box:
 		model : constant gtk_tree_model := combo.get_model;
 		iter : constant gtk_tree_iter := combo.get_active_iter;
@@ -311,8 +306,6 @@ package body et_canvas_board_lines is
 		use gtk.cell_layout;
 		use gtk.list_store;
 		use gtk.tree_model;
-
-
 		
 		procedure make_combo_category is
 			storage_model : gtk_list_store;
@@ -351,7 +344,7 @@ package body et_canvas_board_lines is
 			
 			procedure set_category_used_last is
 				c : pac_affected_layer_categories.cursor;
-				use pac_affected_layer_categories;
+				use pac_affected_layer_categories;				
 			begin
 				-- Map from preliminary_zone.category to index:
 				c := find (affected_layer_categories, preliminary_object.category);

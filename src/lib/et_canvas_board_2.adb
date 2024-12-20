@@ -75,6 +75,8 @@ with et_canvas_board_silkscreen;
 with et_canvas_board_tracks;
 with et_canvas_board_freetracks;
 
+with et_canvas_board_preliminary_object;
+
 with et_undo_redo;
 
 with et_project_name;
@@ -404,6 +406,7 @@ package body et_canvas_board_2 is
 		use pac_path_and_bend;
 		use et_modes.board;
 		use et_canvas_tool;
+		use et_canvas_board_preliminary_object;
 		
 		PL : type_preliminary_object renames preliminary_object;	
 
@@ -512,6 +515,7 @@ package body et_canvas_board_2 is
 		use pac_path_and_bend;
 		use et_modes.board;
 		use et_canvas_tool;
+		use et_canvas_board_preliminary_object;
 		
 		PZ : type_preliminary_object renames preliminary_object;
 
@@ -813,8 +817,10 @@ package body et_canvas_board_2 is
 		use et_canvas_board_devices;
 		use et_canvas_board_vias;
 		use et_canvas_board_tracks;
+
+		use et_canvas_board_preliminary_object;
 	begin
-		put_line ("reset");
+		-- put_line ("reset");
 
 		expect_entry := expect_entry_default; -- expect a verb
 		
@@ -824,10 +830,9 @@ package body et_canvas_board_2 is
 		reset_request_clarification;
 		status_enter_verb;
 
-		et_canvas_board_lines.reset_preliminary_object;
-		et_canvas_board_lines.remove_properties_bar;
+		reset_preliminary_object;
 		
-		et_canvas_board_zone.reset_preliminary_object;
+		et_canvas_board_lines.remove_properties_bar;		
 		et_canvas_board_zone.remove_properties_bar;
 		
 		reset_preliminary_text; -- after placing a text

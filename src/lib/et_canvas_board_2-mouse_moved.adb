@@ -39,6 +39,8 @@
 
 with et_canvas_board_tracks;
 with et_canvas_board_freetracks;
+with et_canvas_board_preliminary_object;		use et_canvas_board_preliminary_object;
+
 
 separate (et_canvas_board_2)
 
@@ -52,12 +54,12 @@ begin
 		when VERB_DRAW =>
 			case noun is
 				when NOUN_LINE =>
-					if et_canvas_board_lines.preliminary_object.ready then
+					if preliminary_object.ready then
 						redraw_board;
 					end if;
 
 				when NOUN_ZONE =>
-					if et_canvas_board_zone.preliminary_object.ready then
+					if preliminary_object.ready then
 						redraw_board;
 					end if;
 					

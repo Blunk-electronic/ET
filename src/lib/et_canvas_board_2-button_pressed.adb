@@ -37,7 +37,8 @@
 --
 
 
-with et_canvas_tool;				use et_canvas_tool;
+with et_canvas_tool;						use et_canvas_tool;
+with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 
 with et_board_ops.conductors;
 
@@ -243,11 +244,11 @@ is
 				case noun is
 					when NOUN_LINE =>
 						pac_path_and_bend.next_bend_style (
-							et_canvas_board_lines.preliminary_object.path);
+							preliminary_object.path);
 
 					when NOUN_ZONE =>
 						pac_path_and_bend.next_bend_style (
-							et_canvas_board_zone.preliminary_object.path);
+							preliminary_object.path);
 						
 					when others => null;							
 				end case;

@@ -44,6 +44,8 @@ with et_board_verb_noun_keys;			use et_board_verb_noun_keys;
 
 with et_ratsnest;
 
+with et_canvas_board_preliminary_object;
+
 -- with et_canvas_board_assy_doc;			use et_canvas_board_assy_doc;
 -- with et_canvas_board_silkscreen;		use et_canvas_board_silkscreen;
 
@@ -404,18 +406,19 @@ is
 		use pac_path_and_bend;
 		use et_canvas_board_lines;
 		use et_canvas_board_zone;
+		use et_canvas_board_preliminary_object;
 	begin
 		case key is
 			when GDK_LC_l =>
 				noun := NOUN_LINE;
-				et_canvas_board_lines.reset_preliminary_object;				
+				reset_preliminary_object;				
 				show_line_properties;
 				set_status (status_draw_line);
 
 				
 			when key_noun_zone =>
 				noun := NOUN_ZONE;
-				et_canvas_board_zone.reset_preliminary_object;
+				reset_preliminary_object;
 				show_zone_properties;
 				set_status (status_draw_zone);
 				
@@ -438,10 +441,10 @@ is
 			when GDK_LC_b =>
 				case noun is
 					when NOUN_LINE =>
-						next_bend_style (et_canvas_board_lines.preliminary_object.path);
+						next_bend_style (preliminary_object.path);
 
 					when NOUN_ZONE =>
-						next_bend_style (et_canvas_board_zone.preliminary_object.path);
+						next_bend_style (preliminary_object.path);
 						
 					when others => null;
 				end case;

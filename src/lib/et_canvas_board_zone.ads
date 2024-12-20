@@ -124,29 +124,6 @@ package et_canvas_board_zone is
 
 	
 
-	type type_preliminary_object is record
-		-- This flag tells the draw operations to draw the preliminary zone:
-		ready		: boolean := false;
-
-		-- This tells the GUI whether the mouse or the
-		-- cursor position is to be used when drawing the zone:
-		tool		: type_tool := MOUSE;
-		
-		category		: type_layer_category := LAYER_CAT_ASSY;
-		signal_layer	: type_signal_layer := signal_layer_default;
-		face			: type_face := face_default;
-
-		path			: type_path_live;
-	end record;
-
-	
-	-- The place where preliminary information of the zone is stored:
-	preliminary_object : type_preliminary_object;
-
-
-	procedure reset_preliminary_object;
-	
-
 	procedure show_zone_properties;
 
 

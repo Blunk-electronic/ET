@@ -84,6 +84,9 @@ with et_exceptions;						use et_exceptions;
 with et_undo_redo;
 with et_commit;
 
+with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
+
+
 
 package body et_canvas_board_zone is
 
@@ -126,11 +129,6 @@ package body et_canvas_board_zone is
 	
 	
 	
-	procedure reset_preliminary_object is begin
-		preliminary_object.ready := false;
-		preliminary_object.tool := MOUSE;
-	end reset_preliminary_object;
-
 
 
 	
