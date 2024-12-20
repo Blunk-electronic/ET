@@ -202,10 +202,10 @@ package body et_canvas_board_zone is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_zone.signal_layer := to_signal_layer (glib.values.get_string (item_text));
+		preliminary_zone.signal_layer := to_signal_layer (values.get_string (item_text));
 		--put_line ("signal layer " & to_string (preliminary_zone.signal_layer));
 
-		-- Display the affected conductor layers:
+		-- Auto-enable the affected conductor and restrict layers:
 		enable_conductor (preliminary_zone.signal_layer);
 		enable_via_restrict (preliminary_zone.signal_layer);
 		

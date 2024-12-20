@@ -197,11 +197,12 @@ package body et_canvas_board_lines is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_line.signal_layer := to_signal_layer (glib.values.get_string (item_text));
+		preliminary_line.signal_layer := to_signal_layer (values.get_string (item_text));
 		--put_line ("signal layer " & to_string (preliminary_line.signal_layer));
 
-		-- display the affected conductor layer:
+		-- Auto-enable the affected conductor and restrict layers:
 		enable_conductor (preliminary_line.signal_layer);
+		enable_via_restrict (preliminary_line.signal_layer);
 		
 		et_canvas_board_2.redraw_board;		
 	end signal_layer_changed;
