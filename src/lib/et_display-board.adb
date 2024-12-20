@@ -61,8 +61,14 @@ package body et_display.board is
 		end if;
 	end plated_millings_enabled;
 
+
+
 	
-	function silkscreen_enabled (face : in type_face) return boolean is begin
+	
+	function silkscreen_enabled (
+		face : in type_face) 
+		return boolean 
+	is begin
 		case face is
 			when TOP =>
 				if layers.silkscreen.top = ON then return true; end if;
@@ -72,6 +78,20 @@ package body et_display.board is
 		return false;
 	end silkscreen_enabled;
 
+
+	
+	procedure enable_silkscreen (
+		face : in type_face)
+	is begin
+		case face is
+			when TOP => layers.silkscreen.top := ON;
+			when BOTTOM => layers.silkscreen.bottom := ON;
+		end case;
+	end enable_silkscreen;
+
+
+
+	
 	
 	function assy_doc_enabled (face : in type_face) return boolean is begin
 		case face is

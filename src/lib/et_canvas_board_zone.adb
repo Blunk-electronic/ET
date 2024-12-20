@@ -144,15 +144,18 @@ package body et_canvas_board_zone is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_zone.category := to_layer_category (glib.values.get_string (item_text));
+		preliminary_zone.category := to_layer_category (values.get_string (item_text));
 		--put_line ("cat " & to_string (preliminary_zone.category));
 
-		-- display the objects in the selected layer category:
+		-- Auto-enable the selected layer category:
 		case preliminary_zone.category is
 			when LAYER_CAT_CONDUCTOR =>
-				-- display the affected conductor layer:
 				enable_conductor (preliminary_zone.signal_layer);
-  
+
+			when LAYER_CAT_SILKSCREEN =>
+				enable_silkscreen (preliminary_zone.face);
+
+			-- CS
 			when others =>
 				null;
 		end case;
@@ -177,12 +180,20 @@ package body et_canvas_board_zone is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_zone.face := to_face (glib.values.get_string (item_text));
+		preliminary_zone.face := to_face (values.get_string (item_text));
 		--put_line ("face " & to_string (preliminary_zone.face));
 
-		et_canvas_board_2.redraw_board;
+		-- Auto-enable the selected layer category:
+		case preliminary_zone.category is
+			when LAYER_CAT_SILKSCREEN =>
+				enable_silkscreen (preliminary_zone.face);
+
+			-- CS
+			when others =>
+				null;
+		end case;
 		
-		-- CS display layer ?
+		et_canvas_board_2.redraw_board;
 	end face_changed;
 
 	

@@ -95,12 +95,29 @@ package et_display.board is
 
 	function outline_enabled return boolean;
 	function plated_millings_enabled return boolean;
+
+
 	
-	function silkscreen_enabled (face : in type_face) return boolean;
+-- SILKSCREEN:
+	
+	function silkscreen_enabled (
+		face : in type_face) 
+		return boolean;
+
+	procedure enable_silkscreen (
+		face : in type_face);
+
+
+	
+		
 	function assy_doc_enabled (face : in type_face) return boolean;	
+
 	function keepout_enabled (face : in type_face) return boolean;
+
 	function stop_mask_enabled (face : in type_face) return boolean;
+
 	function stencil_enabled (face : in type_face) return boolean;
+
 	function device_origins_enabled (face : in type_face) return boolean;
 
 	function ratsnest_enabled return boolean;
