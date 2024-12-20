@@ -85,7 +85,7 @@ begin
 					end if;
 
 				when NOUN_FREETRACK =>
-					if et_canvas_board_freetracks.preliminary_object.ready then
+					if preliminary_object.ready then
 						redraw_board;
 					end if;
 					

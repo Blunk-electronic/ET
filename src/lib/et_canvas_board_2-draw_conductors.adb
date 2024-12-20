@@ -66,12 +66,12 @@ with et_alignment;
 with et_canvas_tool;
 
 
-
 separate (et_canvas_board_2)
 
 procedure draw_conductors is
 
 	use et_pcb;
+	use et_canvas_board_preliminary_object;
 	
 	-- This procedure draws the text that is being placed in a
 	-- conductor layer.

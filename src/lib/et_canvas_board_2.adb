@@ -64,6 +64,7 @@ with et_colors.board;
 with et_board_ops.grid;
 with et_board_ops.assy_doc;
 with et_board_ops.silkscreen;
+with et_board_ops.conductors;
 with et_pcb;
 
 with et_text;
@@ -845,14 +846,17 @@ package body et_canvas_board_2 is
 		reset_airwires;
 		reset_ripup_mode;
 
-		et_canvas_board_freetracks.reset_preliminary_object;
-		
 		reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
 		reset_preliminary_non_electrical_device;
 
 		et_board_ops.assy_doc.reset_proposed_lines (active_module, log_threshold + 1);
 		et_board_ops.silkscreen.reset_proposed_lines (active_module, log_threshold + 1);
 
+		et_board_ops.conductors.reset_proposed_lines (
+			module_cursor	=> active_module, 
+			freetracks		=> true,
+			log_threshold	=> log_threshold + 1);
+		
 		redraw_board;
 	end reset;
 	

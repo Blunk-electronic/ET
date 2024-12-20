@@ -210,6 +210,11 @@ is
 						if clarification_pending then
 							et_canvas_board_tracks.select_track;
 						end if;
+
+					when NOUN_FREETRACK =>
+						if clarification_pending then
+							et_canvas_board_freetracks.select_object;
+						end if;
 						
 					when NOUN_DEVICE =>
 						if clarification_pending then
