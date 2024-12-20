@@ -336,6 +336,8 @@ is
 					& space & to_string (ls),
 					level => log_threshold + 1);
 
+			-- CS: use commands like enable_silkscreen (top) ? (see et_display.board)
+
 			case fc is
 				when TOP =>
 					case layer is
