@@ -145,15 +145,25 @@ package body et_canvas_board_lines is
 
 		-- Auto-enable the selected layer category:
 		case preliminary_line.category is
+			when LAYER_CAT_ASSY =>
+				enable_assy_doc (preliminary_line.face);
+
 			when LAYER_CAT_CONDUCTOR =>
 				enable_conductor (preliminary_line.signal_layer);
 
 			when LAYER_CAT_SILKSCREEN =>
 				enable_silkscreen (preliminary_line.face);
 
-			-- CS
-			when others =>
-				null;
+			when LAYER_CAT_ROUTE_RESTRICT =>
+				enable_route_restrict (preliminary_line.signal_layer);
+
+			when LAYER_CAT_STENCIL =>
+				enable_stencil (preliminary_line.face);
+
+			when LAYER_CAT_STOP =>
+				enable_stopmask (preliminary_line.face);
+				
+			when others => null;
 		end case;
 		
 		et_canvas_board_2.redraw_board;
@@ -181,12 +191,19 @@ package body et_canvas_board_lines is
 
 		-- Auto-enable the selected layer category:
 		case preliminary_line.category is
+			when LAYER_CAT_ASSY =>
+				enable_assy_doc (preliminary_line.face);
+
 			when LAYER_CAT_SILKSCREEN =>
 				enable_silkscreen (preliminary_line.face);
 
-			-- CS
-			when others =>
-				null;
+			when LAYER_CAT_STENCIL =>
+				enable_stencil (preliminary_line.face);
+
+			when LAYER_CAT_STOP =>
+				enable_stopmask (preliminary_line.face);
+				
+			when others => null;
 		end case;
 		
 		et_canvas_board_2.redraw_board;
