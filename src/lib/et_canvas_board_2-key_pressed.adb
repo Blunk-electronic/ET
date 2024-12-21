@@ -131,7 +131,7 @@ is
 				
 				
 			-- If space pressed then the operator wishes to operate by keyboard:
-			when GDK_Space =>		
+			when key_space =>		
 				null;
 				-- CS
 				case noun is
@@ -234,7 +234,7 @@ is
 
 				
 			-- If space pressed then the operator wishes to operate by keyboard:
-			when GDK_Space =>		
+			when key_space =>		
 				case noun is
 					when NOUN_DEVICE =>				
 						flip_electrical_device (KEYBOARD, point);
@@ -305,7 +305,7 @@ is
 
 				
 			-- If space pressed then the operator wishes to operate by keyboard:
-			when GDK_Space =>	
+			when key_space =>	
 				case noun is
 					when NOUN_ASSY =>
 						et_canvas_board_assy_doc.move_object (KEYBOARD, point);
@@ -424,7 +424,7 @@ is
 				
 
 			-- If space pressed, then the operator wishes to operate via keyboard:	
-			when GDK_Space =>
+			when key_space =>
 				case noun is
 					when NOUN_LINE =>
 						et_canvas_board_lines.make_path (KEYBOARD, point);
@@ -472,7 +472,7 @@ is
 
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
-			when GDK_Space =>
+			when key_space =>
 				case noun is
 					when NOUN_TEXT =>
 						place_text (point);
@@ -502,7 +502,7 @@ is
 				
 			-- If space pressed then the operator wishes to operate
 			-- by keyboard:
-			when GDK_Space =>		
+			when key_space =>		
 				null;
 				-- CS
 -- 				case noun is
@@ -555,7 +555,7 @@ is
 
 
 			-- If space pressed, then the operator wishes to operate via keyboard.
-			when GDK_Space =>
+			when key_space =>
 				case noun is
 					when NOUN_NET =>
 						et_canvas_board_tracks.make_path (KEYBOARD, point);
@@ -660,11 +660,11 @@ begin -- key_pressed
 						noun := noun_default;
 						
 						case key is
-							when GDK_LC_c =>
+							when key_verb_clear =>
 								verb := VERB_CLEAR;
 								status_enter_noun;
 
-							when GDK_Delete =>
+							when key_verb_delete =>
 								verb := VERB_DELETE;
 								status_enter_noun;
 
@@ -672,11 +672,11 @@ begin -- key_pressed
 								verb := VERB_DRAW;
 								status_enter_noun;
 
-							when GDK_LC_f =>
+							when key_verb_fill =>
 								verb := VERB_FILL;
 								status_enter_noun;
 
-							when GDK_LC_l =>
+							when key_verb_flip =>
 								verb := VERB_FLIP;
 								status_enter_noun;
 								
@@ -692,11 +692,11 @@ begin -- key_pressed
 								verb := VERB_ROTATE;
 								status_enter_noun;
 								
-							when GDK_LC_r =>
+							when key_verb_route =>
 								verb := VERB_ROUTE;
 								status_enter_noun;
 
-							when GDK_LC_u =>
+							when key_verb_update =>
 								verb := VERB_UPDATE;
 								status_enter_noun;
 

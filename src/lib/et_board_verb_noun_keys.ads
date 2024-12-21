@@ -44,13 +44,23 @@ with gdk.types.keysyms;				use gdk.types.keysyms;
 
 package et_board_verb_noun_keys is
 
-
+-- VERBS:
+	
+	key_verb_clear		: constant gdk_key_type := GDK_LC_c;
+	key_verb_delete		: constant gdk_key_type := GDK_Delete;
 	key_verb_draw		: constant gdk_key_type := GDK_LC_d;
+	key_verb_fill		: constant gdk_key_type := GDK_LC_f;
+	key_verb_flip		: constant gdk_key_type := GDK_LC_l;
 	key_verb_move		: constant gdk_key_type := GDK_LC_m;
 	key_verb_rotate		: constant gdk_key_type := GDK_LC_o;
+	key_verb_route		: constant gdk_key_type := GDK_LC_r;
 	key_verb_place		: constant gdk_key_type := GDK_LC_p;
-	-- CS add others
+	key_verb_update		: constant gdk_key_type := GDK_LC_u;
+
+
+
 	
+-- NOUNS:	
 
 	key_noun_assy		: constant gdk_key_type := GDK_LC_a;
 	key_noun_device		: constant gdk_key_type := GDK_LC_d;
@@ -68,8 +78,13 @@ package et_board_verb_noun_keys is
 	key_noun_track		: constant gdk_key_type := GDK_LC_t;
 	key_noun_via		: constant gdk_key_type := GDK_LC_v;
 	key_noun_zone		: constant gdk_key_type := GDK_LC_z;
-	-- CS add others
 
+
+
+	
+-- MISCELLANEOUS:
+	
+	key_space			: constant gdk_key_type := GDK_Space;
 	key_mode			: constant gdk_key_type := GDK_LC_m;
 	key_bend_style		: constant gdk_key_type := GDK_LC_b;
 	key_clarify			: constant gdk_key_type := GDK_page_down;
