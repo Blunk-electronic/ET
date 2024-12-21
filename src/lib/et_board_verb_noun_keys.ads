@@ -52,11 +52,28 @@ package et_board_verb_noun_keys is
 	-- CS add others
 	
 
+	key_noun_assy		: constant gdk_key_type := GDK_LC_a;
+	key_noun_device		: constant gdk_key_type := GDK_LC_d;
+	key_noun_freetrack	: constant gdk_key_type := GDK_LC_f;
+	key_noun_line		: constant gdk_key_type := GDK_LC_l;
+
+	key_noun_non_electrical_device	: constant gdk_key_type := GDK_LC_n;
+	-- CS key_noun_net : constant gdk_key_type := GDK_LC_n;
+	
 	-- CS ? key_noun_contour		: constant gdk_key_type := GDK_LC_c;
+
+	key_noun_ratsnest	: constant gdk_key_type := GDK_LC_r;
+	key_noun_silkscreen	: constant gdk_key_type := GDK_LC_s;
 	key_noun_text		: constant gdk_key_type := GDK_LC_x;
+	key_noun_track		: constant gdk_key_type := GDK_LC_t;
+	key_noun_via		: constant gdk_key_type := GDK_LC_v;
 	key_noun_zone		: constant gdk_key_type := GDK_LC_z;
 	-- CS add others
-	
+
+	key_mode			: constant gdk_key_type := GDK_LC_m;
+	key_bend_style		: constant gdk_key_type := GDK_LC_b;
+	key_clarify			: constant gdk_key_type := GDK_page_down;
+
 end et_board_verb_noun_keys;
 
 -- Soli Deo Gloria

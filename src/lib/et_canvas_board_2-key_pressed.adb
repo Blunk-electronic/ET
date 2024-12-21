@@ -86,16 +86,16 @@ is
 	
 	procedure delete is begin
 		case key is
-			when GDK_LC_a =>
+			when key_noun_assy =>
 				noun := NOUN_ASSY;
 				set_status (et_canvas_board_assy_doc.status_delete_object);
 
-			when GDK_LC_s =>
+			when key_noun_silkscreen =>
 				noun := NOUN_SILKSCREEN;
 				set_status (et_canvas_board_silkscreen.status_delete_object);
 
 			
-			when GDK_LC_n =>
+			when key_noun_non_electrical_device =>
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
 				set_status (et_canvas_board_devices.status_delete_device);
 
@@ -103,24 +103,24 @@ is
 			-- schematic only !
 
 
-			when GDK_LC_v =>
+			when key_noun_via =>
 				noun := NOUN_VIA;
 				set_status (et_canvas_board_vias.status_delete_via);
 
 
-			when GDK_LC_t =>
+			when key_noun_track =>
 				noun := NOUN_TRACK;
 				set_status (et_canvas_board_tracks.status_delete_object);
 				
 				
-			when GDK_LC_f =>
+			when key_noun_freetrack =>
 				noun := NOUN_FREETRACK;
 				set_status (et_canvas_board_freetracks.status_delete_object);
 
 
 				
 			-- If "m" pressed, then a ripup mode is being selected.
-			when GDK_LC_m =>
+			when key_mode =>
 				case noun is
 					when NOUN_TRACK =>
 						et_canvas_board_tracks.next_ripup_mode;
@@ -161,7 +161,7 @@ is
 
 
 			-- If page down pressed, then the operator is clarifying:
-			when GDK_page_down =>
+			when key_clarify =>
 
 				-- CS
 				case noun is
@@ -224,11 +224,11 @@ is
 		use et_canvas_board_devices;
 	begin
 		case key is
-			when GDK_LC_d =>
+			when key_noun_device =>
 				noun := NOUN_DEVICE;
 				set_status (status_flip_device);
 
-			when GDK_LC_n =>
+			when key_noun_non_electrical_device =>
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
 				set_status (status_flip_device);
 
@@ -247,7 +247,7 @@ is
 
 
 			-- If page down pressed, then the operator is clarifying:
-			when GDK_page_down =>
+			when key_clarify =>
 				case noun is
 					when NOUN_DEVICE =>
 						if clarification_pending then
@@ -270,31 +270,31 @@ is
 	
 	procedure move is begin
 		case key is
-			when GDK_LC_a =>
+			when key_noun_assy =>
 				noun := NOUN_ASSY;
 				set_status (et_canvas_board_assy_doc.status_move_object);
 
-			when GDK_LC_s =>
+			when key_noun_silkscreen =>
 				noun := NOUN_SILKSCREEN;
 				set_status (et_canvas_board_silkscreen.status_move_object);
 
-			when GDK_LC_t =>
+			when key_noun_track =>
 				noun := NOUN_TRACK;
 				set_status (et_canvas_board_tracks.status_move_track);
 
-			when GDK_LC_f =>
+			when key_noun_freetrack =>
 				noun := NOUN_FREETRACK;
 				set_status (et_canvas_board_freetracks.status_move_object);
 				
-			when GDK_LC_d =>
+			when key_noun_device =>
 				noun := NOUN_DEVICE;
 				set_status (et_canvas_board_devices.status_move_device);
 
-			when GDK_LC_n =>
+			when key_noun_non_electrical_device =>
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
 				set_status (et_canvas_board_devices.status_move_device);
 
-			when GDK_LC_v =>
+			when key_noun_via =>
 				noun := NOUN_VIA;
 				set_status (et_canvas_board_vias.status_move_via);
 		
@@ -336,7 +336,7 @@ is
 
 
 			-- If page down pressed, then the operator is clarifying:
-			when GDK_page_down =>
+			when key_clarify =>
 				case noun is
 					-- when NOUN_NAME => 
 					-- 	if clarification_pending then
@@ -409,7 +409,7 @@ is
 		use et_canvas_board_preliminary_object;
 	begin
 		case key is
-			when GDK_LC_l =>
+			when key_noun_line =>
 				noun := NOUN_LINE;
 				reset_preliminary_object;				
 				show_line_properties;
@@ -438,7 +438,7 @@ is
 
 			-- If B pressed, then a bend style is being selected.
 			-- this affects only certain modes and is ignored otherwise:
-			when GDK_LC_b =>
+			when key_bend_style =>
 				case noun is
 					when NOUN_LINE =>
 						next_bend_style (preliminary_object.path);
@@ -466,7 +466,7 @@ is
 				set_status (status_place_text);
 
 				
-			when GDK_LC_v =>
+			when key_noun_via =>
 				noun := NOUN_VIA;
 				show_via_properties;				
 
@@ -491,11 +491,11 @@ is
 	
 	procedure rotate is begin
 		case key is
-			when GDK_LC_d =>
+			when key_noun_device =>
 				noun := NOUN_DEVICE;
 				-- CS set_status (status_rotate_device);
 
-			when GDK_LC_n =>
+			when key_noun_non_electrical_device =>
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
 				-- CS set_status (status_rotate_device);
 
@@ -517,7 +517,7 @@ is
 
 
 			-- If page down pressed, then the operator is clarifying:
-			when GDK_page_down =>
+			when key_clarify =>
 				null;
 				-- CS
 -- 				case noun is
@@ -565,7 +565,7 @@ is
 
 				
 			-- If "m" pressed, then a snap mode is being selected.
-			when GDK_LC_m =>
+			when key_mode =>
 				case noun is
 					when NOUN_NET =>
 						null;
@@ -576,7 +576,7 @@ is
 
 				
 			-- If "b" pressed, then a bend style is being selected.
-			when GDK_LC_b =>
+			when key_bend_style =>
 				case noun is
 					when NOUN_NET =>
 						next_bend_style (preliminary_track.path);
@@ -586,7 +586,7 @@ is
 
 				
 			-- If page down pressed, then the operator is clarifying:
-			when GDK_page_down =>
+			when key_clarify =>
 				case noun is
 					when NOUN_NET =>
 						if clarification_pending then
@@ -608,7 +608,7 @@ is
 		use et_ratsnest;
 	begin
 		case key is
-			when GDK_LC_r =>
+			when key_noun_ratsnest =>
 				noun := NOUN_RATSNEST;
 				update_ratsnest (active_module, log_threshold + 1);
 
