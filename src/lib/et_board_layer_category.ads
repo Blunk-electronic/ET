@@ -39,7 +39,6 @@
 
 
 
-
 package et_board_layer_category is
 
 
@@ -47,6 +46,7 @@ package et_board_layer_category is
 	-- and package names:	
 	layer_category_prefix : constant string := "LAYER_CAT_";
 
+	
 	type type_layer_category is (
 									
 		-- CONDUCTOR LAYERS.
@@ -72,14 +72,15 @@ package et_board_layer_category is
 		LAYER_CAT_VIA_RESTRICT);
 
 	
-	-- subtype type_layer_category_non_conductor is type_layer_category
-	-- 	range LAYER_CAT_SILKSCREEN .. LAYER_CAT_STENCIL; -- CS .. LAYER_CAT_VIA_RESTRICT ?
-
+	
+	function to_layer_category (
+		cat : in string) 
+		return type_layer_category;
 
 	
-	function to_layer_category (cat : in string) return type_layer_category;
-	
-	function to_string (cat : in type_layer_category) return string;
+	function to_string (
+		cat : in type_layer_category) 
+		return string;
 
 
 	

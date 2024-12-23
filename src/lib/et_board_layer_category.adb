@@ -46,13 +46,19 @@ with ada.characters.latin_1;	use ada.characters.latin_1;
 package body et_board_layer_category is
 
 
-	function to_layer_category (cat : in string) return type_layer_category is begin
+	function to_layer_category (
+		cat : in string) 
+		return type_layer_category 
+	is begin
 		return type_layer_category'value (layer_category_prefix & cat);
 	end to_layer_category;
 
 
 	
-	function to_string (cat : in type_layer_category) return string is
+	function to_string (
+		cat : in type_layer_category) 
+		return string 
+	is
 		s : string := type_layer_category'image (cat);
 	begin
 		return s (layer_category_prefix'length + 1 .. s'last);
