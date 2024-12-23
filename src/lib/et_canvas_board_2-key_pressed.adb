@@ -545,7 +545,7 @@ is
 		use et_canvas_board_tracks;
 	begin
 		case key is
-			when GDK_LC_n =>
+			when key_noun_net =>
 				noun := NOUN_NET;
 
 				reset_preliminary_track;
