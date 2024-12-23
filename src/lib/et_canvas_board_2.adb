@@ -350,7 +350,7 @@ package body et_canvas_board_2 is
 
 	procedure draw_text_being_placed (
 		face		: in type_face;
-		category	: in type_layer_category_non_conductor)
+		category	: in type_layer_category)
 	is 
 		use et_canvas_board_texts;
 		use et_modes.board;

@@ -3280,7 +3280,7 @@ is
 			
 
 			procedure insert_line (
-				layer_cat	: in type_layer_category_non_conductor;
+				layer_cat	: in type_layer_category;
 				face		: in et_pcb_sides.type_face) -- TOP, BOTTOM
 			is
 			-- The board_line and its board_line_width have been general things until now.
@@ -3328,7 +3328,7 @@ is
 										container	=> module.board.stop_mask.top.lines,
 										new_item	=> (type_line (board_line) with board_line_width));
 
-								when others => null;								
+								when others => null; -- CS raise exception ?								
 							end case;
 							
 						when BOTTOM => null;
@@ -3353,7 +3353,7 @@ is
 										container	=> module.board.stop_mask.bottom.lines,
 										new_item	=> (type_line (board_line) with board_line_width));
 
-								when others => null;
+								when others => null; -- CS raise exception ?
 							end case;
 							
 					end case;
@@ -3374,7 +3374,7 @@ is
 			
 			
 			procedure insert_arc (
-				layer_cat	: in type_layer_category_non_conductor;
+				layer_cat	: in type_layer_category;
 				face		: in et_pcb_sides.type_face) -- TOP, BOTTOM
 			is
 			-- The board_arc and its board_line_width have been general things until now. 
@@ -3422,8 +3422,9 @@ is
 										container	=> module.board.stop_mask.top.arcs,
 										new_item	=> (type_arc (board_arc) with board_line_width));
 
-								when others => null;
+								when others => null;  -- CS raise exception ?
 							end case;
+
 							
 						when BOTTOM => null;
 							case layer_cat is
@@ -3447,7 +3448,7 @@ is
 										container	=> module.board.stop_mask.bottom.arcs,
 										new_item	=> (type_arc (board_arc) with board_line_width));
 
-								when others => null;
+								when others => null;  -- CS raise exception ?
 							end case;
 							
 					end case;
@@ -3468,7 +3469,7 @@ is
 
 			
 			procedure insert_circle (
-				layer_cat	: in type_layer_category_non_conductor;
+				layer_cat	: in type_layer_category;
 				face		: in et_pcb_sides.type_face) -- TOP, BOTTOM
 			is
 			-- The board_circle has been a general thing until now. 
@@ -3516,7 +3517,7 @@ is
 										container	=> module.board.stop_mask.top.circles,
 										new_item	=> (type_circle (board_circle) with board_line_width));
 
-								when others => null;
+								when others => null;  -- CS raise exception ?
 							end case;
 							
 						when BOTTOM =>
@@ -3541,7 +3542,7 @@ is
 										container	=> module.board.stop_mask.bottom.circles,
 										new_item	=> (type_circle (board_circle) with board_line_width));
 
-								when others => null;
+								when others => null;  -- CS raise exception ?
 							end case;
 							
 					end case;
@@ -3561,8 +3562,8 @@ is
 
 
 			
-			procedure insert_polygon (
-				layer_cat	: in type_layer_category_non_conductor;
+			procedure insert_polygon ( -- CS rename to insert_contour
+				layer_cat	: in type_layer_category;
 				face		: in et_pcb_sides.type_face) -- TOP, BOTTOM
 			is
 			-- The polygon has been a general thing until now. 
@@ -3676,7 +3677,8 @@ is
 									
 								when LAYER_CAT_KEEPOUT =>
 									append_keepout_polygon_top;
-									
+
+								when others => null; -- CS raise exception ?
 							end case;
 							
 						when BOTTOM =>
@@ -3695,14 +3697,15 @@ is
 									
 								when LAYER_CAT_KEEPOUT =>
 									append_keepout_polygon_bottom;
-									
+
+								when others => null; -- CS raise exception ?
 							end case;
 							
 					end case;
 				end do_it;
 
 				
-			begin -- insert_polygon
+			begin
 				update_element (
 					container	=> generic_modules,
 					position	=> module_cursor,
@@ -3715,7 +3718,7 @@ is
 			
 			
 			procedure insert_cutout (
-				layer_cat	: in type_layer_category_non_conductor; -- CS no need anymore ?
+				layer_cat	: in type_layer_category; -- CS no need anymore ?
 				face		: in et_pcb_sides.type_face) -- TOP, BOTTOM
 			is
 			-- The polygon has been a general thing until now. 
@@ -3757,7 +3760,7 @@ is
 								when LAYER_CAT_KEEPOUT =>
 									append_keepout_cutout_top;
 
-								when others => null;
+								when others => null; -- CS raise exception ?
 							end case;
 							
 						when BOTTOM => null;
@@ -3765,7 +3768,7 @@ is
 								when LAYER_CAT_KEEPOUT =>
 									append_keepout_cutout_bottom;
 
-								when others => null;									
+								when others => null; -- CS raise exception ?									
 							end case;							
 					end case;
 				end do_it;
@@ -4903,7 +4906,7 @@ is
 			-- is now assigned to the board where it belongs to.
 				
 				procedure insert_text (
-					layer_cat	: in type_layer_category_non_conductor)
+					layer_cat	: in type_layer_category)
 				is					
 					procedure do_it (
 						module_name	: in pac_module_name.bounded_string;
@@ -4983,7 +4986,7 @@ is
 					end do_it;
 
 					
-				begin -- insert_text
+				begin
 					update_element (
 						container	=> generic_modules,
 						position	=> module_cursor,

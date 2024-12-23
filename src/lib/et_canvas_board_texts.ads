@@ -180,6 +180,7 @@ package et_canvas_board_texts is
 		entry_content	: gtk.text_view.gtk_text_view;
 	end record;
 
+	
 	-- The place where preliminary information of
 	-- a text is stored:
 	preliminary_text : type_preliminary_text;
