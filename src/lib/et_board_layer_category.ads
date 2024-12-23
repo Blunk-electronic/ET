@@ -78,8 +78,6 @@ package et_board_layer_category is
 	subtype type_text_layer is type_layer_category
 		range LAYER_CAT_CONDUCTOR .. LAYER_CAT_STOP;
 
-	subtype type_text_layer_non_conductor is type_text_layer
-		range LAYER_CAT_SILKSCREEN .. LAYER_CAT_STOP;
 
 	
 	function to_layer_category (cat : in string) return type_layer_category;

@@ -1278,7 +1278,7 @@ is
 		pos_xy			: type_vector_model;
 		rotation		: type_rotation_model;
 		content			: pac_text_content.bounded_string;
-		layer_category	: type_text_layer;
+		layer_category	: type_layer_category;
 		signal_layer	: type_signal_layer;
 		face			: type_face;
 	begin
@@ -1307,7 +1307,7 @@ is
 				if characters_valid (content) then
 
 					case layer_category is
-						when LAYER_CAT_SILKSCREEN .. LAYER_CAT_STOP =>
+						when LAYER_CAT_SILKSCREEN | LAYER_CAT_ASSY | LAYER_CAT_STOP =>
 
 							face := to_face (f (6)); -- top/bottom
 							
@@ -1330,6 +1330,7 @@ is
 								text			=> (text with content),
 								log_threshold	=> log_threshold + 1);
 
+						when others => null; -- CS message invalid layer category ?
 					end case;
 
 				else
