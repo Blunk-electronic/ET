@@ -901,6 +901,10 @@ package body et_canvas_board_texts is
 				return "signal layer " & to_string (text.conductor_text.layer) & separator &
 					to_string (get_position (text.conductor_text));
 
+			when others => 
+				return ""; 
+				-- CS raise exception ?
+				
 		end case;
 	end get_position;
 
@@ -1043,7 +1047,7 @@ package body et_canvas_board_texts is
 			move_to (preliminary_text.text.position.place, point);
 			
 			case preliminary_text.category is
-				when LAYER_CAT_SILKSCREEN .. LAYER_CAT_STOP =>
+				when LAYER_CAT_SILKSCREEN | LAYER_CAT_ASSY | LAYER_CAT_STOP =>
 
 					place_text_in_non_conductor_layer (
 						module_cursor 	=> active_module,
@@ -1061,6 +1065,7 @@ package body et_canvas_board_texts is
 						text			=> preliminary_text.text,
 						log_threshold	=> log_threshold + 1);
 
+				when others => null; -- CS rais exception ?
 			end case;
 		end if;	
 	end place_text;
@@ -1108,7 +1113,8 @@ package body et_canvas_board_texts is
 								coordinates		=> ABSOLUTE,
 								point			=> point,
 								log_threshold	=> log_threshold);
-	
+
+							
 						when LAYER_CAT_SILKSCREEN =>
 	
 							move_text (
@@ -1139,7 +1145,9 @@ package body et_canvas_board_texts is
 								coordinates		=> ABSOLUTE,
 								point			=> point,
 								log_threshold	=> log_threshold);
-	
+
+							
+						when others => null; -- CS raise exception ?
 					end case;
 				end;
 

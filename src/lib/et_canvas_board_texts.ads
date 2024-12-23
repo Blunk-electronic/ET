@@ -165,7 +165,7 @@ package et_canvas_board_texts is
 		-- cursor position is to be used when drawing the text:
 		tool		: type_tool := MOUSE;
 		
-		category		: type_text_layer := type_text_layer'first;
+		category		: type_layer_category := LAYER_CAT_SILKSCREEN;
 		signal_layer	: type_signal_layer := signal_layer_default;
 		face			: type_face := face_default;
 
@@ -205,7 +205,7 @@ package et_canvas_board_texts is
 
 	-- When texts are proposed, we classify them by
 	-- their layer category and face:
-	type type_proposed_text (cat : type_text_layer) is record
+	type type_proposed_text (cat : type_layer_category) is record
 		case cat is
 			when LAYER_CAT_ASSY =>
 				doc_face	: type_face;
@@ -221,13 +221,17 @@ package et_canvas_board_texts is
 
 			when LAYER_CAT_CONDUCTOR =>
 				conductor_text	: type_conductor_text;  -- the text candidate itself
+
+			when others => null;
 		end case;
 	end record;
 
+	
 	-- All the proposed texts are collected via a list:
 	package pac_proposed_texts is new indefinite_doubly_linked_lists (type_proposed_text);
 	use pac_proposed_texts;
 
+	
 	-- Here we store the proposed texts:
 	proposed_texts	: pac_proposed_texts.list;
 
