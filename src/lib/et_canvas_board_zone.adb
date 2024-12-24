@@ -92,15 +92,15 @@ package body et_canvas_board_zone is
 
 
 	procedure make_affected_layer_categories is
-		use pac_affected_layer_categories;
+		use pac_layer_categories;
 	begin
-		affected_layer_categories.clear;
-		affected_layer_categories.append (LAYER_CAT_ASSY);
-		affected_layer_categories.append (LAYER_CAT_KEEPOUT);
-		affected_layer_categories.append (LAYER_CAT_SILKSCREEN);
-		affected_layer_categories.append (LAYER_CAT_STOP);
-		affected_layer_categories.append (LAYER_CAT_STENCIL);
-		affected_layer_categories.append (LAYER_CAT_VIA_RESTRICT);
+		layer_categories.clear;
+		layer_categories.append (LAYER_CAT_ASSY);
+		layer_categories.append (LAYER_CAT_KEEPOUT);
+		layer_categories.append (LAYER_CAT_SILKSCREEN);
+		layer_categories.append (LAYER_CAT_STOP);
+		layer_categories.append (LAYER_CAT_STENCIL);
+		layer_categories.append (LAYER_CAT_VIA_RESTRICT);
 	end make_affected_layer_categories;
 
 	
@@ -282,9 +282,9 @@ package body et_canvas_board_zone is
 			procedure collect_layer_cats is
 
 				procedure query_category (
-					c : in pac_affected_layer_categories.cursor) 
+					c : in pac_layer_categories.cursor) 
 				is 
-					use pac_affected_layer_categories;
+					use pac_layer_categories;
 				begin
 					storage_model.append (iter);
 					gtk.list_store.set (storage_model, iter, column_0,
@@ -294,17 +294,17 @@ package body et_canvas_board_zone is
 				
 			begin
 				make_affected_layer_categories;				
-				affected_layer_categories.iterate (query_category'access);
+				layer_categories.iterate (query_category'access);
 			end collect_layer_cats;
 
 
 			
 			procedure set_category_used_last is
-				c : pac_affected_layer_categories.cursor;
-				use pac_affected_layer_categories;
+				c : pac_layer_categories.cursor;
+				use pac_layer_categories;
 			begin
 				-- Map from preliminary_object.category to index:
-				c := find (affected_layer_categories, preliminary_object.category);
+				c := find (layer_categories, preliminary_object.category);
 				cbox_category.set_active (gint (to_index (c)));
 			end set_category_used_last;
 			

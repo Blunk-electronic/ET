@@ -88,7 +88,7 @@ package et_board_layer_category is
 
 
 	-- For collecting layer categories we use a so called vector:
-	package pac_affected_layer_categories is new vectors (
+	package pac_layer_categories is new vectors (
 		index_type		=> natural,
 		element_type	=> type_layer_category);
 
@@ -97,7 +97,7 @@ package et_board_layer_category is
 	-- For the combo_box that offers the categories, the
 	-- affected layers must be put together in a so called vector.
 	-- This is a list with an index and an associated layer category:
-	affected_layer_categories : pac_affected_layer_categories.vector;
+	layer_categories : pac_layer_categories.vector;
 
 	
 	
