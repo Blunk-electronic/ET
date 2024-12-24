@@ -99,24 +99,6 @@ package body et_canvas_board_lines is
 	end make_affected_layer_categories;
 	
 
-	-- procedure delete_item (
-	-- 	widget : not null access Gtk.Widget.Gtk_Widget_Record'Class) 
-	-- is begin
-	-- 	box_v4.remove (widget);
-	-- end delete_item;
-
-		
-	procedure remove_properties_bar is begin
-		-- Clear the content of the properties bar:
-		if box_properties.displayed then
-			-- put_line ("clear track properties box");
-			
-			clear_out_properties_box;
-			box_properties.displayed := false;
-		end if;
-	end remove_properties_bar;
-	
-
 	
 
 	
@@ -267,7 +249,7 @@ package body et_canvas_board_lines is
 		case key is
 			when GDK_ESCAPE =>
 				reset_preliminary_object;
-				remove_properties_bar;
+				clear_out_properties_box;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -518,24 +500,22 @@ package body et_canvas_board_lines is
 		-- 	button_apply.on_clicked (button_apply_clicked'access);
 		-- end make_apply_button;
 		
-	begin		
-		-- If the properties are already displayed, do nothing.
-		-- Otherwise show them:
-		if not box_properties.displayed then
-			--put_line ("build line properties");
-			
-			box_properties.displayed := true;
-		
-			-- Build the elements of the properties bar:
-			make_combo_category;
-			make_combo_for_face;
-			make_combo_for_signal_layer;
-			make_combo_for_line_width;
-			-- make_apply_button;
+	begin
+		--put_line ("build line properties");
 
-			-- Redraw the right box of the window:
-			box_v0.show_all; -- CS box_v4 ?
-		end if;		
+		-- Before inserting any widgets, the properties box
+		-- must be cleared:
+		clear_out_properties_box;
+		
+		-- Build the elements of the properties bar:
+		make_combo_category;
+		make_combo_for_face;
+		make_combo_for_signal_layer;
+		make_combo_for_line_width;
+		-- make_apply_button;
+
+		-- Redraw the right box of the window:
+		box_v0.show_all; -- CS box_v4 ?
 	end show_line_properties;
 
 

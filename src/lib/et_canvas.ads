@@ -1184,10 +1184,12 @@ package et_canvas is
 	
 -- PROPERTIES BOX:
 
+	
 	-- This procedure clears out the prperties box.
 	-- It iterates all children of the box and calls
 	-- procedure cb_delete_box_properties_child:
 	procedure clear_out_properties_box;
+
 
 	
 

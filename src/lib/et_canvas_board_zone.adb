@@ -106,21 +106,6 @@ package body et_canvas_board_zone is
 	
 
 
-	procedure remove_properties_bar is begin
-		-- Clear the content of the properties bar:
-		if box_properties.displayed then
-			-- put_line ("clear track properties box");
-			
-			clear_out_properties_box;
-			box_properties.displayed := false;
-		end if;
-	end remove_properties_bar;
-
-	
-	
-	
-
-
 	
 	procedure layer_category_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
@@ -441,21 +426,20 @@ package body et_canvas_board_zone is
 
 		
 	begin		
-		-- If the properties are already displayed, do nothing.
-		-- Otherwise show them:
-		if not box_properties.displayed then
-			--put_line ("build line properties");
-			
-			box_properties.displayed := true;
+		--put_line ("build line properties");
 		
-			-- Build the elements of the properties bar:
-			make_combo_category;
-			make_combo_for_face;
-			make_combo_for_signal_layer;
+		-- Before inserting any widgets, the properties box
+		-- must be cleared:
+		clear_out_properties_box;
+		
 
-			-- Redraw the right box of the window:
-			box_v0.show_all; -- CS box_v4 ?
-		end if;		
+		-- Build the elements of the properties bar:
+		make_combo_category;
+		make_combo_for_face;
+		make_combo_for_signal_layer;
+
+		-- Redraw the right box of the window:
+		box_v0.show_all; -- CS box_v4 ?
 	end show_zone_properties;
 
 

@@ -835,8 +835,9 @@ package body et_canvas_board_2 is
 
 		reset_preliminary_object;
 		
-		et_canvas_board_lines.remove_properties_bar;		
-		et_canvas_board_zone.remove_properties_bar;
+		-- et_canvas_board_lines.remove_properties_bar;		
+		-- et_canvas_board_zone.remove_properties_bar;
+		clear_out_properties_box;
 		
 		reset_preliminary_text; -- after placing a text
 		reset_preliminary_via; -- after placing a via

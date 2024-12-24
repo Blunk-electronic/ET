@@ -78,20 +78,6 @@ package et_canvas_board_lines is
 
 	
 
-	-- The text properties bar:
-	type type_box_properties is record
-		
-		-- This flag indicates that the
-		-- box is being displayed. 
-		-- The purpose of this flag is
-		-- to prevent the box from being drawn
-		-- multiple times:
-		displayed	: boolean := false;
-	end record;
-
-	box_properties : type_box_properties;
-
-
 
 
 	box_layer_category, box_face, 
@@ -131,9 +117,6 @@ package et_canvas_board_lines is
 
 
 
-
-	procedure remove_properties_bar;
-	
 	
 
 	procedure show_line_properties;
