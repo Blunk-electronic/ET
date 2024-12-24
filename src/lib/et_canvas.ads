@@ -43,6 +43,7 @@ with glib;
 with gdk.event;					use gdk.event;
 
 with gtk.widget;				use gtk.widget;
+with gtk.container;				use gtk.container;
 with gtk.window;				use gtk.window;
 with gtk.separator;				use gtk.separator;
 with gtk.box;					use gtk.box;
@@ -1180,8 +1181,17 @@ package et_canvas is
 
 
 
+	
+-- PROPERTIES BOX:
 
+	-- This procedure clears out the prperties box.
+	-- It iterates all children of the box and calls
+	-- procedure cb_delete_box_properties_child:
+	procedure clear_out_properties_box;
 
+	
+
+	
 -- PROPERTIES WINDOW:
 
 	type type_properties_window is record
@@ -1608,6 +1618,16 @@ private
 
 	access_cb_mouse_wheel_rolled : constant
 		cb_gtk_widget_gdk_event_scroll_boolean := cb_mouse_wheel_rolled'access;
+
+
+
+	
+	-- This procedure deletes a child of the prperties box:
+	procedure cb_delete_box_properties_child (
+		child : not null access gtk_widget_record'class);	
+
+	access_cb_delete_box_properties_child : constant 
+		gtk_callback := cb_delete_box_properties_child'access;
 
 	
 end et_canvas;

@@ -3409,6 +3409,19 @@ package body et_canvas is
 	
 
 
+
+-- PROPERTIES BOX:
+
+	procedure clear_out_properties_box is 
+	begin
+		box_v4.foreach (access_cb_delete_box_properties_child);
+	end clear_out_properties_box;
+
+
+
+
+	
+	
 -- PROPERTIES WINDOW:
 
 
@@ -4383,6 +4396,17 @@ package body et_canvas is
 		return event_handled;
 	end cb_mouse_wheel_rolled;
 
+
+
+
+	procedure cb_delete_box_properties_child (
+		child : not null access gtk_widget_record'class) 
+	is begin
+		box_v4.remove (child);
+	end cb_delete_box_properties_child;
+
+
+	
 	
 end et_canvas;
 
