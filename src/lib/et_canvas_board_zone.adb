@@ -111,17 +111,7 @@ package body et_canvas_board_zone is
 		if box_properties.displayed then
 			-- put_line ("clear track properties box");
 			
-			-- Clear out the properties box:
-			remove (box_v4, box_layer_category);
-			remove (box_v4, box_face);
-			remove (box_v4, box_signal_layer);
-
-			-- CS use an iterator to remove widgets like
-			-- container.foreach ((element) => container.remove (element));
-			--
-			-- See <https://stackoverflow.com/questions/36215425/vala-how-do-you-delete-all-the-children-of-a-gtk-container>
-			-- See package gtk.container
-			
+			clear_out_properties_box;
 			box_properties.displayed := false;
 		end if;
 	end remove_properties_bar;
