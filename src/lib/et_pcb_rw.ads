@@ -58,7 +58,7 @@ with et_thermal_relief;			use et_thermal_relief;
 --with et_conductor_segment;
 with et_conductor_segment.boards;	--use et_conductor_segment.boards;
 with et_conductor_text;			use et_conductor_text;
-with et_stop_mask;				use et_stop_mask;
+with et_stopmask;				use et_stopmask;
 with et_stencil;				use et_stencil;
 with et_silkscreen;				use et_silkscreen;
 with et_assy_doc;				use et_assy_doc;

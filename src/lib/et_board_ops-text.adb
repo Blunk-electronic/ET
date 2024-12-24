@@ -99,7 +99,7 @@ package body et_board_ops.text is
 		use et_assy_doc;
 		use et_assy_doc.boards;
 
-		use et_stop_mask;
+		use et_stopmask;
 
 		
 		procedure place_text (

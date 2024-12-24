@@ -118,7 +118,7 @@ with et_thermal_relief;
 with et_conductor_text.boards;
 with et_route_restrict.boards;
 with et_via_restrict.boards;
-with et_stop_mask;
+with et_stopmask;
 with et_stencil;
 with et_silkscreen;
 with et_assy_doc.boards;
@@ -3292,7 +3292,7 @@ is
 				use et_pcb_coordinates_2;
 				use pac_geometry_2;
 				
-				use et_stop_mask;
+				use et_stopmask;
 				use et_stencil;
 				use et_silkscreen;
 				use et_assy_doc;
@@ -3386,7 +3386,7 @@ is
 				use et_pcb_coordinates_2;
 				use pac_geometry_2;
 				
-				use et_stop_mask;
+				use et_stopmask;
 				use et_stencil;
 				use et_silkscreen;
 				use et_assy_doc;
@@ -3480,7 +3480,7 @@ is
 				use et_pcb_coordinates_2;
 				use pac_geometry_2;
 				
-				use et_stop_mask;
+				use et_stopmask;
 				use et_stencil;
 				use et_silkscreen;
 				use et_assy_doc;
@@ -3573,7 +3573,7 @@ is
 				use et_pcb_coordinates_2;
 				use pac_geometry_2;
 				
-				use et_stop_mask;
+				use et_stopmask;
 				use et_stencil;
 				use et_silkscreen;
 				use et_assy_doc;
@@ -3736,7 +3736,7 @@ is
 					use et_pcb_coordinates_2;
 					use et_board_shapes_and_text;
 					use pac_contours;
-					use et_stop_mask;
+					use et_stopmask;
 					use et_keepout;
 					
 					
@@ -4919,7 +4919,7 @@ is
 
 						use et_silkscreen;
 						use et_assy_doc;
-						use et_stop_mask;
+						use et_stopmask;
 						
 						v_text : type_vector_text;
 						mirror : type_vector_text_mirrored;

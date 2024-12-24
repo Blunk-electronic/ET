@@ -37,47 +37,33 @@
 --
 --   to do:
 
-
-
-package body et_stop_mask.packages is
-
-	procedure mirror_stopmask_objects (
-		stopmask	: in out type_stopmask;
-		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)
-	is begin
-		mirror_lines (stopmask.lines, axis);
-		mirror_arcs (stopmask.arcs, axis);
-		mirror_circles (stopmask.circles, axis);
-		mirror_contours (stopmask.contours, axis);
-		mirror_texts (stopmask.texts, axis);
-	end mirror_stopmask_objects;
-
-
-	procedure rotate_stopmask_objects (
-		stopmask	: in out type_stopmask;
-		angle		: in type_rotation_model)
-	is begin
-		rotate_lines (stopmask.lines, angle);
-		rotate_arcs (stopmask.arcs, angle);
-		rotate_circles (stopmask.circles, angle);
-		rotate_contours (stopmask.contours, angle);
-		rotate_texts (stopmask.texts, angle);
-	end rotate_stopmask_objects;
-
-
-	procedure move_stopmask_objects (
-		stopmask	: in out type_stopmask;
-		offset		: in type_distance_relative)
-	is begin
-		move_lines (stopmask.lines, offset);
-		move_arcs (stopmask.arcs, offset);
-		move_circles (stopmask.circles, offset);
-		move_contours (stopmask.contours, offset);
-		move_texts (stopmask.texts, offset);
-	end move_stopmask_objects;
+package et_stopmask.packages is
 
 	
-end et_stop_mask.packages;
+	type type_stopmask_both_sides is record
+		top		: type_stopmask;
+		bottom	: type_stopmask;
+	end record;
+
+
+	-- Mirrors a list of stopmask objects along the given axis:
+	procedure mirror_stopmask_objects (
+		stopmask	: in out type_stopmask;
+		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS);
+
+	-- Rotates a list of stopmask objects by the given angle:
+	procedure rotate_stopmask_objects (
+		stopmask	: in out type_stopmask;
+		angle		: in type_rotation_model);
+
+	-- Moves a list of stopmask objects by the given offset:
+	procedure move_stopmask_objects (
+		stopmask	: in out type_stopmask;
+		offset		: in type_distance_relative);
+
+
+	
+end et_stopmask.packages;
 
 -- Soli Deo Gloria
 

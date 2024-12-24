@@ -51,7 +51,7 @@ with et_text;
 with et_logging;				use et_logging;
 
 
-package et_stop_mask is
+package et_stopmask is
 
 	use pac_geometry_2;
 	use pac_contours;
@@ -232,7 +232,7 @@ package et_stop_mask is
 		log_threshold 	: in type_log_level);
 
 	
-end et_stop_mask;
+end et_stopmask;
 
 -- Soli Deo Gloria
 

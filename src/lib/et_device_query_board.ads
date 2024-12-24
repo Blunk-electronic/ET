@@ -41,8 +41,8 @@ with et_terminals;						use et_terminals;
 with et_route_restrict.packages;
 with et_via_restrict.packages;
 with et_keepout;						use et_keepout;
-with et_stop_mask;						use et_stop_mask;
-with et_stop_mask.packages;
+with et_stopmask;						use et_stopmask;
+with et_stopmask.packages;
 with et_stencil;						use et_stencil;
 
 

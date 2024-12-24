@@ -533,7 +533,7 @@ package body et_kicad.pcb is
 		package_arc			: et_kicad_packages.type_arc;
 		package_circle 		: et_kicad_packages.type_circle;
 
-		package_stop_mask		: et_stop_mask.packages.type_stopmask_both_sides;
+		package_stop_mask		: et_stopmask.packages.type_stopmask_both_sides;
 		-- CS: mind objects explicitely drawn and such auto generated
 		
 		package_stencil			: et_stencil.type_stencil_both_sides;
@@ -3322,7 +3322,7 @@ package body et_kicad.pcb is
 				use et_silkscreen;
 				use et_assy_doc;
 				use et_stencil;
-				use et_stop_mask;
+				use et_stopmask;
 				use et_keepout;
 			begin
 				-- Compute the arc end point from its center, start point and angle.
@@ -3383,7 +3383,7 @@ package body et_kicad.pcb is
 				use et_silkscreen;
 				use et_assy_doc;
 				use et_stencil;
-				use et_stop_mask;
+				use et_stopmask;
 				use et_keepout;
 			begin
 				-- Compute the circle radius from its center and point at circle.
@@ -3465,7 +3465,7 @@ package body et_kicad.pcb is
 				use et_silkscreen;
 				use et_assy_doc;
 				use et_stencil;
-				use et_stop_mask;
+				use et_stopmask;
 				use et_keepout;
 			begin
 				-- The board_line is converted back to its anchestor, and
@@ -3592,7 +3592,7 @@ package body et_kicad.pcb is
 				use et_silkscreen;
 				use et_assy_doc;
 				use et_stencil;
-				use et_stop_mask;
+				use et_stopmask;
 				use et_keepout;
 				use et_conductor_segment;
 			begin
@@ -3661,7 +3661,7 @@ package body et_kicad.pcb is
 				use et_silkscreen;
 				use et_assy_doc;
 				use et_stencil;
-				use et_stop_mask;
+				use et_stopmask;
 				use et_keepout;
 				use et_conductor_segment;
 			begin
@@ -3752,7 +3752,7 @@ package body et_kicad.pcb is
 				use et_silkscreen;
 				use et_assy_doc;
 				use et_stencil;
-				use et_stop_mask;
+				use et_stopmask;
 				use et_keepout;
 				use et_conductor_segment;
 			begin

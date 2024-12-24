@@ -71,7 +71,7 @@ with et_pcb_stack;						use et_pcb_stack;
 
 with et_silkscreen;						use et_silkscreen;
 with et_assy_doc;						use et_assy_doc;
-with et_stop_mask;						use et_stop_mask;
+with et_stopmask;						use et_stopmask;
 with et_conductor_text.boards;			use et_conductor_text.boards;
 
 

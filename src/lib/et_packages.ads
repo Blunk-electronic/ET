@@ -54,7 +54,7 @@ with et_conductor_segment;				use et_conductor_segment;
 with et_conductor_text.packages;		use et_conductor_text.packages;
 with et_route_restrict.packages;		use et_route_restrict.packages;
 with et_via_restrict.packages;			use et_via_restrict.packages;
-with et_stop_mask.packages;				use et_stop_mask.packages;
+with et_stopmask.packages;				use et_stopmask.packages;
 with et_stencil;						use et_stencil;
 with et_silkscreen;						use et_silkscreen;
 with et_silkscreen.packages;			use et_silkscreen.packages;
@@ -354,7 +354,7 @@ package et_packages is
 	function get_stopmask_objects (
 		package_cursor	: in pac_package_models.cursor;
 		face			: in type_face)
-		return et_stop_mask.type_stopmask;
+		return et_stopmask.type_stopmask;
 
 
 	-- Returns the contours of silkscreen objects (incl. plaaceholders) 

@@ -100,7 +100,7 @@ with et_fill_zones.boards;
 with et_conductor_text;				use et_conductor_text;
 with et_conductor_text.boards;
 with et_conductor_segment.boards;	use et_conductor_segment.boards;
-with et_stop_mask;					use et_stop_mask;
+with et_stopmask;					use et_stopmask;
 with et_stencil;					use et_stencil;
 with et_silkscreen;					use et_silkscreen;
 with et_silkscreen.boards;
@@ -1459,7 +1459,7 @@ package body et_kicad_to_native is
 
 
 			procedure move_stop_mask is
-				use et_stop_mask;
+				use et_stopmask;
 				use pac_stop_lines;
 				lines_cursor : pac_stop_lines.cursor;
 

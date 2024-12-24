@@ -38,7 +38,7 @@
 --   ToDo: 
 
 with et_text;
-with et_stop_mask;				use et_stop_mask;
+with et_stopmask;				use et_stopmask;
 
 
 package et_board_ops.stop_mask is

@@ -1077,7 +1077,7 @@ package body et_device_query_board is
 		packge : pac_package_models.cursor;
 		rotation : type_rotation_model;
 
-		use et_stop_mask.packages;
+		use et_stopmask.packages;
 	begin
 		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
@@ -1124,7 +1124,7 @@ package body et_device_query_board is
 
 		rotation : type_rotation_model renames device.position.rotation;
 
-		use et_stop_mask.packages;
+		use et_stopmask.packages;
 	begin
 		case face is
 			when TOP =>

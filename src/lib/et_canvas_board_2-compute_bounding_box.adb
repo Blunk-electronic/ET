@@ -66,8 +66,8 @@ with et_text;
 with et_silkscreen;
 with et_assy_doc;
 with et_keepout;
-with et_stop_mask;
-with et_stop_mask.packages;
+with et_stopmask;
+with et_stopmask.packages;
 with et_stencil;
 with et_route_restrict;
 with et_route_restrict.packages;
@@ -391,7 +391,7 @@ is
 				module		: in type_generic_module)
 			is 
 				use et_pcb;
-				use et_stop_mask;
+				use et_stopmask;
 				use pac_stop_lines;
 				use pac_stop_arcs;
 				use pac_stop_circles;
@@ -1128,8 +1128,8 @@ is
 
 
 				procedure process_stopmask is
-					use et_stop_mask;			
-					use et_stop_mask.packages;
+					use et_stopmask;			
+					use et_stopmask.packages;
 					
 					use pac_stop_lines;
 					use pac_stop_arcs;

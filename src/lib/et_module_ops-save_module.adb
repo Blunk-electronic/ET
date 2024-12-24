@@ -111,7 +111,7 @@ with et_thermal_relief;
 with et_conductor_text.boards;
 with et_route_restrict.boards;
 with et_via_restrict.boards;
-with et_stop_mask;
+with et_stopmask;
 with et_stencil;
 with et_silkscreen;
 with et_assy_doc.boards;
@@ -1477,7 +1477,7 @@ is
 		use pac_stencil_circles;
 		use pac_stencil_contours;
 
-		use et_stop_mask;
+		use et_stopmask;
 		use pac_stop_lines;
 		use pac_stop_arcs;
 		use pac_stop_circles;
@@ -1896,7 +1896,7 @@ is
 
 		
 		procedure write_stop_mask is
-			use et_stop_mask;
+			use et_stopmask;
 			use pac_stop_texts;
 			
 			procedure write_text (cursor : in pac_stop_texts.cursor) is begin

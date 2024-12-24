@@ -90,8 +90,8 @@ with et_assy_doc;				use et_assy_doc;
 with et_assy_doc.packages;
 
 with et_keepout;				use et_keepout;
-with et_stop_mask;				use et_stop_mask;
-with et_stop_mask.packages;
+with et_stopmask;				use et_stopmask;
+with et_stopmask.packages;
 
 
 with et_kicad.schematic;

@@ -425,7 +425,7 @@ package body et_packages is
 	function get_stopmask_objects (
 		package_cursor	: in pac_package_models.cursor;
 		face			: in type_face)
-		return et_stop_mask.type_stopmask
+		return et_stopmask.type_stopmask
 	is
 		packge : type_package_model renames element (package_cursor);
 	begin

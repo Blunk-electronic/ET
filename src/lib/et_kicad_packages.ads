@@ -51,8 +51,8 @@ use et_board_shapes_and_text.pac_contours;
 use et_board_shapes_and_text.pac_text_board;
 
 
-with et_stop_mask;				use et_stop_mask;
-with et_stop_mask.packages;		use et_stop_mask.packages;
+with et_stopmask;				use et_stopmask;
+with et_stopmask.packages;		use et_stopmask.packages;
 with et_stencil;				use et_stencil;
 
 with et_silkscreen;				use et_silkscreen;

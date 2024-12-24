@@ -37,7 +37,7 @@
 --
 --   to do:
 
-package body et_stop_mask is
+package body et_stopmask is
 	
 
 	procedure mirror_lines (
@@ -415,7 +415,7 @@ package body et_stop_mask is
 	end text_stop_mask_properties;
 
 	
-end et_stop_mask;
+end et_stopmask;
 
 -- Soli Deo Gloria
 

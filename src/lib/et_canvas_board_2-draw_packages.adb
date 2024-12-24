@@ -98,8 +98,8 @@ with et_route_restrict.packages;
 with et_via_restrict;
 with et_via_restrict.packages;
 
-with et_stop_mask;
-with et_stop_mask.packages;
+with et_stopmask;
+with et_stopmask.packages;
 
 with et_stencil;
 with et_silkscreen;
@@ -525,8 +525,8 @@ is
 	-- STOPMASK
 		
 		procedure draw_stop_mask is 
-			use et_stop_mask;
-			use et_stop_mask.packages;
+			use et_stopmask;
+			use et_stopmask.packages;
 			
 			use pac_stop_lines;
 			use pac_stop_arcs;
