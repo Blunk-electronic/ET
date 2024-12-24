@@ -78,37 +78,12 @@ with et_conductor_text.boards;			use et_conductor_text.boards;
 
 package et_canvas_board_texts is
 
-
-	-- Zones can be drawn in various layer categories.
-	-- For the combo_box that offers the categories, the
-	-- affected layers must be put together in a so called vector.
-	-- This is a list with an index and an associated layer category:
-	package pac_affected_layer_categories is new vectors (
-		index_type		=> natural,
-		element_type	=> type_layer_category);
-	
-	
-	-- Here the categories will be stored:
-	affected_layer_categories : pac_affected_layer_categories.vector;
 	
 	-- This procedure creates a set of categories:
 	procedure make_affected_layer_categories;
 
 
 	
-	
-	-- The text properties bar:
-	type type_box_properties is record
-		
-		-- This flag indicates that the
-		-- box is being displayed. 
-		-- The purpose of this flag is
-		-- to prevent the box from being drawn
-		-- multiple times:
-		displayed	: boolean := false;
-	end record;
-
-	box_properties : type_box_properties;
 
 
 
@@ -186,8 +161,8 @@ package et_canvas_board_texts is
 	preliminary_text : type_preliminary_text;
 
 
-	-- Clears preliminary_text.ready and box_properties.displayed.
-	-- Removes the text properties bar.
+	-- Clears preliminary_text.ready.
+	-- Clears out he text properties bar.
 	-- Clears the proposed texts.
 	procedure reset_preliminary_text;
 

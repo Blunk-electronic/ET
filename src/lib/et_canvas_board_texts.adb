@@ -92,13 +92,13 @@ package body et_canvas_board_texts is
 
 
 	procedure make_affected_layer_categories is
-		use pac_affected_layer_categories;
+		use pac_layer_categories;
 	begin
-		affected_layer_categories.clear;
-		affected_layer_categories.append (LAYER_CAT_ASSY);
-		affected_layer_categories.append (LAYER_CAT_CONDUCTOR);
-		affected_layer_categories.append (LAYER_CAT_SILKSCREEN);
-		affected_layer_categories.append (LAYER_CAT_STOP);
+		layer_categories.clear;
+		layer_categories.append (LAYER_CAT_ASSY);
+		layer_categories.append (LAYER_CAT_CONDUCTOR);
+		layer_categories.append (LAYER_CAT_SILKSCREEN);
+		layer_categories.append (LAYER_CAT_STOP);
 	end make_affected_layer_categories;
 
 	
@@ -373,28 +373,7 @@ package body et_canvas_board_texts is
 		preliminary_text.tool := MOUSE;
 		clear_proposed_texts;
 
-		-- Clear the content of the properties bar:
-		if box_properties.displayed then
-			-- put_line ("clear text properties box");
-
-			-- Clear out the properties box:
-			remove (box_v4, box_layer_category);
-			remove (box_v4, box_face);
-			remove (box_v4, box_signal_layer);
-			remove (box_v4, box_content);
-			remove (box_v4, box_button);
-			remove (box_v4, box_size);
-			remove (box_v4, box_line_width);
-			remove (box_v4, box_rotation);
-
-			-- CS use an iterator to remove widgets like
-			-- container.foreach ((element) => container.remove (element));
-			--
-			-- See <https://stackoverflow.com/questions/36215425/vala-how-do-you-delete-all-the-children-of-a-gtk-container>
-			-- See package gtk.container
-			
-			box_properties.displayed := false;
-		end if;
+		clear_out_properties_box;
 	end reset_preliminary_text;
 
 	
@@ -438,9 +417,9 @@ package body et_canvas_board_texts is
 			procedure collect_layer_cats is
 
 				procedure query_category (
-					c : in pac_affected_layer_categories.cursor) 
+					c : in pac_layer_categories.cursor) 
 				is 
-					use pac_affected_layer_categories;
+					use pac_layer_categories;
 				begin
 					storage_model.append (iter);
 					gtk.list_store.set (storage_model, iter, column_0,
@@ -450,17 +429,17 @@ package body et_canvas_board_texts is
 				
 			begin
 				make_affected_layer_categories;				
-				affected_layer_categories.iterate (query_category'access);
+				layer_categories.iterate (query_category'access);
 			end collect_layer_cats;
 
 
 			
 			procedure set_category_used_last is
-				c : pac_affected_layer_categories.cursor;
-				use pac_affected_layer_categories;
+				c : pac_layer_categories.cursor;
+				use pac_layer_categories;
 			begin
 				-- Map from preliminary_zone.category to index:
-				c := find (affected_layer_categories, preliminary_text.category);
+				c := find (layer_categories, preliminary_text.category);
 				cbox_category.set_active (gint (to_index (c)));
 			end set_category_used_last;
 
@@ -701,29 +680,25 @@ package body et_canvas_board_texts is
 
 		
 	begin -- show_text_properties
-		put_line ("show_text_properties");
+		-- put_line ("show_text_properties");
 
-		-- If the properties are already displayed, do nothing.
-		-- Otherwise show them:
-		if not box_properties.displayed then
-			--put_line ("build text properties");
-			
-			box_properties.displayed := true;
+		-- Before inserting any widgets, the properties box
+		-- must be cleared:
+		clear_out_properties_box;
 
-			-- Build the elements of the properties bar:
-			make_combo_category;
-			make_combo_for_face;
-			make_combo_for_signal_layer;
-			make_combo_for_size;
-			make_combo_for_line_width;
-			make_combo_for_rotation;
-			make_view_for_content;
-			make_apply_button;
-
-			-- Redraw the right box of the window:
-			box_v0.show_all;  -- CS box_v4 ?
-		end if;
 		
+		-- Build the elements of the properties bar:
+		make_combo_category;
+		make_combo_for_face;
+		make_combo_for_signal_layer;
+		make_combo_for_size;
+		make_combo_for_line_width;
+		make_combo_for_rotation;
+		make_view_for_content;
+		make_apply_button;
+
+		-- Redraw the right box of the window:
+		box_v0.show_all;  -- CS box_v4 ?
 	end show_text_properties;
 
 
