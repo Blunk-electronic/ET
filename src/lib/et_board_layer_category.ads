@@ -37,6 +37,9 @@
 --
 --   to do:
 
+with ada.containers;					use ada.containers;
+with ada.containers.vectors;
+
 
 
 package et_board_layer_category is
@@ -82,6 +85,12 @@ package et_board_layer_category is
 		cat : in type_layer_category) 
 		return string;
 
+
+
+	-- For collecting layer categories we use a so called vector:
+	package pac_affected_layer_categories is new vectors (
+		index_type		=> natural,
+		element_type	=> type_layer_category);
 
 	
 	

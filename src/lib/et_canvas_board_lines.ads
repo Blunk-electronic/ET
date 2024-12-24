@@ -51,9 +51,6 @@ with gtk.combo_box;						use gtk.combo_box;
 with gtk.combo_box_text;				use gtk.combo_box_text;
 with gtk.button;						use gtk.button;
 
-with ada.containers;					use ada.containers;
-with ada.containers.vectors;
-
 with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;
 with et_canvas_board_2;
@@ -77,12 +74,6 @@ package et_canvas_board_lines is
 	-- For the combo_box that offers the categories, the
 	-- affected layers must be put together in a so called vector.
 	-- This is a list with an index and an associated layer category:
-	package pac_affected_layer_categories is new vectors (
-		index_type		=> natural,
-		element_type	=> type_layer_category);
-	
-	
-	-- Here the categories will be stored:
 	affected_layer_categories : pac_affected_layer_categories.vector;
 	
 	-- This procedure creates a set of categories:
