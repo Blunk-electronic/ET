@@ -92,6 +92,13 @@ package et_board_layer_category is
 		index_type		=> natural,
 		element_type	=> type_layer_category);
 
+
+	-- Lines can be drawn in various layer categories.
+	-- For the combo_box that offers the categories, the
+	-- affected layers must be put together in a so called vector.
+	-- This is a list with an index and an associated layer category:
+	affected_layer_categories : pac_affected_layer_categories.vector;
+
 	
 	
 end et_board_layer_category;

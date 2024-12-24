@@ -72,10 +72,7 @@ package et_canvas_board_lines is
 
 	-- Lines can be drawn in various layer categories.
 	-- For the combo_box that offers the categories, the
-	-- affected layers must be put together in a so called vector.
-	-- This is a list with an index and an associated layer category:
-	affected_layer_categories : pac_affected_layer_categories.vector;
-	
+	-- affected layers must be put together.
 	-- This procedure creates a set of categories:
 	procedure make_affected_layer_categories;
 
