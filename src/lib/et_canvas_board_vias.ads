@@ -70,21 +70,6 @@ package et_canvas_board_vias is
 
 	use pac_net_name;
 
-	-- The via properties bar:
-	type type_box_properties is record
-		
-		-- This flag indicates that the
-		-- box is being displayed. 
-		-- The purpose of this flag is
-		-- to prevent the box from being drawn
-		-- multiple times:
-		displayed	: boolean := false;
-	end record;
-
-	box_properties : type_box_properties;
-
-
-
 
 	box_net_name,
 	box_category, box_destination_blind, 
@@ -119,11 +104,6 @@ package et_canvas_board_vias is
 	
 	-- The spacing between the boxes:
 	spacing : constant natural := 5;
-
-
-
-
-
 
 
 
@@ -169,7 +149,7 @@ package et_canvas_board_vias is
 	-- This procedure initializes the preliminary_via
 	-- so that the via properties bar shows the user specific settings
 	-- or the values as defined in the DRU data set.
-	-- procedure init_preliminary_via;
+	procedure init_preliminary_via;
 
 
 	-- Builds the box for the via properties and
@@ -178,8 +158,8 @@ package et_canvas_board_vias is
 	procedure show_via_properties;
 	
 
-	-- Clears preliminary_via.being_moved and box_properties.displayed.
-	-- Removes the via properties bar.
+	-- Clears preliminary_via.being_moved and
+	-- clears out the via properties bar:
 	procedure reset_preliminary_via;
 
 	

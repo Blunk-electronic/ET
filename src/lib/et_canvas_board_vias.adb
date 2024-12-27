@@ -741,32 +741,29 @@ package body et_canvas_board_vias is
 			
 			-- Output adivse in status bar:
 			set_status (status_place_via);
-			
-			-- If the properties are already displayed, do nothing.
-			-- Otherwise show them:
-			if not box_properties.displayed then
-				init_preliminary_via;
-				
-				--put_line ("build via properties");
-				
-				box_properties.displayed := true;
 
-				-- Build the elements of the properties bar:
-				make_combo_category;
-				make_combo_net;
-				make_combo_destination;
-				make_combo_buried_upper;
-				make_combo_buried_lower;			
-				make_combo_drill;
-				make_combo_restring_inner;
-				make_combo_restring_outer;
+			-- Before inserting any widgets, the properties box
+			-- must be cleared:
+			clear_out_properties_box;
 
-				-- Signal the GUI to draw the via:
-				preliminary_via.ready := true;
+			init_preliminary_via;
 				
-				-- Redraw the right box of the window:
-				box_v0.show_all;  -- CS box_v4 ?
-			end if;
+
+			-- Build the elements of the properties bar:
+			make_combo_category;
+			make_combo_net;
+			make_combo_destination;
+			make_combo_buried_upper;
+			make_combo_buried_lower;			
+			make_combo_drill;
+			make_combo_restring_inner;
+			make_combo_restring_outer;
+
+			-- Signal the GUI to draw the via:
+			preliminary_via.ready := true;
+				
+			-- Redraw the right box of the window:
+			box_v0.show_all;  -- CS box_v4 ?
 
 		else
 			-- Output error message in status bar:
@@ -782,28 +779,7 @@ package body et_canvas_board_vias is
 		preliminary_via.tool := MOUSE;
 		clear_proposed_vias;
 
-		-- Clear the content of the properties bar:
-		if box_properties.displayed then
-			-- put_line ("clear via properties box");
-			
-			-- Clear out the properties box:
-			remove (box_v4, box_net_name);
-			remove (box_v4, box_category);
-			remove (box_v4, box_destination_blind);
-			remove (box_v4, box_buried_upper);
-			remove (box_v4, box_buried_lower);
-			remove (box_v4, box_drill);
-			remove (box_v4, box_restring_inner);
-			remove (box_v4, box_restring_outer);
-
-			-- CS use an iterator to remove widgets like
-			-- container.foreach ((element) => container.remove (element));
-			--
-			-- See <https://stackoverflow.com/questions/36215425/vala-how-do-you-delete-all-the-children-of-a-gtk-container>
-			-- See package gtk.container
-			
-			box_properties.displayed := false;
-		end if;
+		clear_out_properties_box;
 	end reset_preliminary_via;
 
 
