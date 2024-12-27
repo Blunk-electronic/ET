@@ -47,7 +47,7 @@ package et_board_ops.board_contour is
 	use et_board_shapes_and_text;
 	use pac_contours;
 	
--- BOARD OUTLINE / HOLES / CONTOUR / EDGE CUTS
+
 
 	-- Assigns the given module a PCB outer edge.
 	-- Overwrites the already existing outline as there can

@@ -108,11 +108,6 @@ package et_pcb_contour is
 		debug		: in boolean := false);
 
 	
-		
-	-- GUI relevant only: The line width of contours:
-	pcb_contour_line_width : constant type_distance_positive := 0.1;
-
-	
 end et_pcb_contour;
 
 -- Soli Deo Gloria

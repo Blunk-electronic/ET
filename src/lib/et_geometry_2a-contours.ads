@@ -321,7 +321,7 @@ package et_geometry_2a.contours is
 	-- 	line_width	: in type_distance_positive)
 	-- 	return type_boundaries;
 
-	-- Computes the bounding-box of a countour
+	-- Computes the bounding-box of a contour
 	-- with the given border-wdith:
 	function get_bounding_box (
 		contour	: in type_contour;

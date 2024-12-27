@@ -50,38 +50,18 @@ procedure draw_outline is
 	use pac_contours;
 	use pac_segments;
 
+	use pac_draw_contours;
 	
-	procedure query_segment (c : in pac_segments.cursor) is 
-		-- CS s : type_segment renames element (c);
-	begin
-		case element (c).shape is
-			when LINE =>
-				draw_line (
-					line	=> element (c).segment_line,
-					width	=> 0.0); -- don't care
-
-			when ARC =>
-				draw_arc (
-					arc		=> element (c).segment_arc,
-					width	=> 0.0); -- don't care
-		end case;
-	end query_segment;
-
 	
 	
 	procedure query_outline_segments (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module)
 	is begin
-		if module.board.contours.outline.contour.circular then
-
-			draw_circle (
-				circle	=> module.board.contours.outline.contour.circle,
-				filled	=> NO, -- circles in outline are never filled
-				width	=> 0.0); -- don't care
-		else
-			iterate (module.board.contours.outline.contour.segments, query_segment'access);
-		end if;
+		draw_contour (
+			contour	=> module.board.contours.outline,
+			filled	=> NO,
+			width	=> zero);
 	end query_outline_segments;
 
 	
@@ -95,16 +75,11 @@ procedure draw_outline is
 		procedure query_hole (c : in pac_holes.cursor) is 
 			-- CS h : type_hole renames element (c);
 		begin
-			if element (c).contour.circular then
+			draw_contour (
+				contour	=> element (c),
+				filled	=> NO,
+				width	=> zero);
 
-				draw_circle (
-					circle	=> element (c).contour.circle,
-					filled	=> NO, -- holes are never filled
-					width	=> 0.0); -- don't care
-				
-			else
-				iterate (element (c).contour.segments, query_segment'access);
-			end if;
 		end query_hole;
 
 		
@@ -113,19 +88,13 @@ procedure draw_outline is
 	end query_holes;
 
 	
-begin -- draw_outline
+begin
 	-- put_line ("draw board outline ...");
 
 	-- All outline segments, holes and texts will be 
 	-- drawn with the same color:
 	set_color_outline;
 
-	-- All outline segments and holes be 
-	-- drawn with the same linewidth:
-	set_linewidth (pcb_contour_line_width);
-
-	-- The line width of texts is a property of a particular text and is
-	-- NOT set here.
 	
 	pac_generic_modules.query_element (
 		position	=> active_module,
@@ -140,8 +109,6 @@ begin -- draw_outline
 	-- Draw the contour that is being drawn:
     draw_live_zone (LAYER_CAT_OUTLINE);
 
-
-	stroke;
 	
 end draw_outline;
 

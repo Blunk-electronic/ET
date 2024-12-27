@@ -722,7 +722,7 @@ is
 				is begin
 					b := get_bounding_box (
 						contour	=> module.board.contours.outline,
-						width	=> pcb_contour_line_width);
+						width	=> zero);
 
 					merge_areas (bbox_new, b);
 				end query_outline;
@@ -755,7 +755,7 @@ is
 					procedure query_hole (c : in pac_holes.cursor) is 
 						h : type_hole renames element (c);
 					begin
-						b := get_bounding_box (h, pcb_contour_line_width);
+						b := get_bounding_box (h, zero);
 						merge_areas (bbox_new, b);
 					end query_hole;
 					
