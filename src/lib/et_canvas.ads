@@ -1213,12 +1213,6 @@ package et_canvas is
 	-- False if the window is not open.
 	function window_properties_is_open return boolean;
 
-	-- This procedure must be called when the operator closes
-	-- the properties window. This is a null procedure, means
-	-- in schematic, layout and other canvas are different things to do
-	-- in order to reset variables related to any properties.
--- CS procedure reset_properties_selection (
-	-- 	self : not null access type_view) is null;
 	
 	-- Here we display the property in its old state before changing it:
 	label_property_old	: gtk.label.gtk_label;
