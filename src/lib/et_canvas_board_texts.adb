@@ -77,6 +77,10 @@ with et_board_ops.stop_mask;
 with et_board_ops.conductors;
 with et_board_ops.text;
 with et_modes.board;
+
+with et_display;						use et_display;
+with et_display.board;					use et_display.board;
+
 with et_logging;						use et_logging;
 with et_string_processing;				use et_string_processing;
 with et_exceptions;						use et_exceptions;
@@ -144,12 +148,26 @@ package body et_canvas_board_texts is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_text.face := to_face (glib.values.get_string (item_text));
+		preliminary_text.face := to_face (values.get_string (item_text));
 		--put_line ("face " & to_string (preliminary_text.face));
 
-		et_canvas_board_2.redraw_board;
 		
-		-- CS display layer ?
+		-- Auto-enable the selected layer category:
+		case preliminary_text.category is
+			when LAYER_CAT_ASSY =>
+				enable_assy_doc (preliminary_text.face);
+			
+			when LAYER_CAT_SILKSCREEN =>
+				enable_silkscreen (preliminary_text.face);
+
+			when LAYER_CAT_STOP =>
+				enable_stopmask (preliminary_text.face);
+
+			when others => null;
+		end case;
+
+		
+		et_canvas_board_2.redraw_board;		
 	end face_changed;
 
 
@@ -169,12 +187,13 @@ package body et_canvas_board_texts is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_text.signal_layer := to_signal_layer (glib.values.get_string (item_text));
+		preliminary_text.signal_layer := to_signal_layer (values.get_string (item_text));
 		--put_line ("signal layer " & to_string (preliminary_text.signal_layer));
 
-		et_canvas_board_2.redraw_board;
+		-- Auto-enable the affected conductor layer:
+		enable_conductor (preliminary_text.signal_layer);
 		
-		-- CS display layer ?
+		et_canvas_board_2.redraw_board;
 	end signal_layer_changed;
 
 
