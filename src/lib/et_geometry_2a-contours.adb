@@ -684,12 +684,12 @@ package body et_geometry_2a.contours is
 
 	function get_segments_total (
 		contour : in type_contour)
-		return count_type
+		return natural
 	is begin
 		if contour.contour.circular then
 			return 1;
 		else
-			return length (contour.contour.segments);
+			return natural (length (contour.contour.segments));
 		end if;
 	end get_segments_total;
 
@@ -1084,10 +1084,14 @@ package body et_geometry_2a.contours is
 	begin -- is_closed
 		
 		if contour.contour.circular then
-			closed := true; -- because this is a single circle
+			return (closed => true);
 		else
-			-- Iterate lines and arcs:
-			contour.contour.segments.iterate (query_segment'access);
+			if get_segments_total (contour) > 0 then
+				-- Iterate lines and arcs:
+				contour.contour.segments.iterate (query_segment'access);
+			else
+				return (closed => false, gaps => pac_contour_gaps.empty_list);
+			end if;
 		end if;
 
 		

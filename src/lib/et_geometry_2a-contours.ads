@@ -268,7 +268,7 @@ package et_geometry_2a.contours is
 	-- and/or arcs:
 	function get_segments_total (
 		contour : in type_contour)
-		return count_type;
+		return natural;
 
 
 	
@@ -366,12 +366,10 @@ package et_geometry_2a.contours is
 	-- If there are gaps, a list of points is returned where the gaps are.
 	-- The test iterates the segments of the contour and tests whether
 	-- the end point of a segment matches the start point of the next segment.
-	-- CS: Special threatment for circle segments: Since a circle does not have 
-	-- start and end point, only the center point of the circle must be in 
-	-- the chain of segments. 
-	-- CS: Improvement required: It is sufficient if the circle
-	-- touches one of the other segments (lines and arcs) to regard it as connected
-	-- with the contour.
+	-- If the contour consists of a single circle segment
+	-- then the result is true and no gaps are returned.
+	-- If the given contour is empty, means if it has no segments at all,
+	-- then the result is false and no gaps are returned:
 	function is_closed (
 		contour	: in type_contour)
 		return type_contour_status;
@@ -379,6 +377,7 @@ package et_geometry_2a.contours is
 
 	-- Returns true if the given contour is 
 	-- open (means: if it is not closed).
+	-- Returns true if the given contour has no segments at all.
 	-- Bases on function is_closed (see above):
 	function is_open (
 		contour	: in type_contour)
