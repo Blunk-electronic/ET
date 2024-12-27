@@ -286,12 +286,15 @@ package et_geometry_2a.contours is
 	end record;
 	
 	-- Merges two contours to a single one.
-	-- Tries to append or prepend source to target
-	-- if matching vertices exist.
-	-- Modifies the status according to the result
-	-- of the operation.
-	-- Merges only if both target and source are 
-	-- open contours:
+	-- 1. Tries to append or prepend source to target
+	--    if matching vertices exist.
+	-- 2. Modifies the status according to the result
+	--    of the operation.
+	-- 3. Merges only if both target and source are 
+	--    open contours.
+	-- 4. If target has no segments (empty) and the source does have
+	--    segments, then it just copies the source to the target.
+	--    The result has then the flags "successful" and "appended" set true.
 	procedure merge_contours (
 		target	: in out type_contour;
 		source	: in type_contour;

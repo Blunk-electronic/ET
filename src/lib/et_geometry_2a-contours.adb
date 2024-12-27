@@ -702,6 +702,9 @@ package body et_geometry_2a.contours is
 		status	: in out type_merge_result)
 	is
 		debug : boolean := false;
+
+		target_length : constant natural := get_segments_total (target);
+		source_length : constant natural := get_segments_total (source);
 		
 		target_start, target_end : type_vector_model;
 		source_start, source_end : type_vector_model;
@@ -719,42 +722,52 @@ package body et_geometry_2a.contours is
 			put_line (" source: " & to_string (contour => source, full => true));
 		end if;
 
-		-- Merging is possible if both target and source
-		-- are open contours:
-		if is_open (target) and is_open (source) then
-			if debug then
-				put_line ("do merge");
-			end if;
-			
-			-- Extract start and end points:
-			target_start := get_start_point (target).vertex;
-			target_end   := get_end_point (target).vertex;
-   
-			source_start := get_start_point (source).vertex;
-			source_end   := get_end_point (source).vertex;
-
-			-- Take a copy of the given source:
-			source_copy := source;
-
-			-- Now we decide whether to append or to prepend
-			-- the source copy to the target:
-			if target_end = source_start then
-				-- append source to target
-				target.contour.segments.splice (c, source_copy.contour.segments);
-
-				status.appended := true;
-				status.successful := true;
+		-- If target has no segments and the source does have
+		-- segments, then just copy the source to the target:
+		if target_length = 0 and source_length > 0 then
+			target := source;
+			status.successful := true;
+			status.appended := true;
+		else
+		
+			-- Merging is possible if both target and source
+			-- are open contours:
+			if is_open (target) and is_open (source) then
+				if debug then
+					put_line ("do merge");
+				end if;
 				
-			elsif target_start = source_end then
-				-- prepend source to target
-				c := target.contour.segments.first;
-				target.contour.segments.splice (c, source_copy.contour.segments);
+				-- Extract start and end points:
+				target_start := get_start_point (target).vertex;
+				target_end   := get_end_point (target).vertex;
+	
+				source_start := get_start_point (source).vertex;
+				source_end   := get_end_point (source).vertex;
 
-				status.prepended := true;
-				status.successful := true;
-			end if;			
+				-- Take a copy of the given source:
+				source_copy := source;
+
+				-- Now we decide whether to append or to prepend
+				-- the source copy to the target:
+				if target_end = source_start then
+					-- append source to target
+					target.contour.segments.splice (c, source_copy.contour.segments);
+
+					status.appended := true;
+					status.successful := true;
+					
+				elsif target_start = source_end then
+					-- prepend source to target
+					c := target.contour.segments.first;
+					target.contour.segments.splice (c, source_copy.contour.segments);
+
+					status.prepended := true;
+					status.successful := true;
+				end if;			
+			end if;
 		end if;
-
+		
+			
 		if debug then
 			put_line ("status: appended " & boolean'image (status.appended)
 				& " prepended " & boolean'image (status.prepended)
