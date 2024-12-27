@@ -66,6 +66,9 @@ with et_generic_module;				use et_generic_module;
 with et_schematic_ops.nets;
 with et_canvas_board_2;
 
+with et_display;					use et_display;
+with et_display.board;				use et_display.board;
+
 with et_exceptions;					use et_exceptions;
 
 
@@ -73,6 +76,7 @@ package body et_canvas_board_vias is
 
 	use et_canvas_board_2.pac_canvas;
 	
+
 	
 -- CATEGORY
 	
@@ -89,12 +93,13 @@ package body et_canvas_board_vias is
 		preliminary_via.category := to_via_category (glib.values.get_string (item_text));
 		--put_line ("cat " & to_string (text_place.category));
 
-		-- CS et_canvas_board_2.redraw_board;
+		et_canvas_board_2.redraw_board;
 		
-		-- CS display layer ?
 	end category_changed;
 
 
+
+	
 	
 -- DESTINATION LAYER (FOR BLIND VIAS ONLY)
 
@@ -111,12 +116,14 @@ package body et_canvas_board_vias is
 		preliminary_via.destination_blind := to_signal_layer (glib.values.get_string (item_text));
 		--put_line ("signal layer " & to_string (preliminary_via.destination_blind));
 
-		-- CS et_canvas_board_2.redraw_board;
+		-- Auto-enable the affected conductor layer:
+		enable_conductor (preliminary_via.destination_blind);
 		
-		-- CS display layer ?
+		et_canvas_board_2.redraw_board;
 	end destination_changed;
 
 
+	
 
 	
 -- BURIED VIA
@@ -134,9 +141,9 @@ package body et_canvas_board_vias is
 		preliminary_via.layers_buried.upper := to_signal_layer (glib.values.get_string (item_text));
 		--put_line ("signal layer " & to_string (preliminary_via.destination_blind));
 
-		-- CS et_canvas_board_2.redraw_board;
+		-- CS Auto-enable the affected conductor layer
 		
-		-- CS display layer ?
+		et_canvas_board_2.redraw_board;		
 	end upper_layer_changed;
 	
 
@@ -155,9 +162,9 @@ package body et_canvas_board_vias is
 		preliminary_via.layers_buried.lower := to_signal_layer (glib.values.get_string (item_text));
 		--put_line ("signal layer " & to_string (preliminary_via.destination_blind));
 
-		-- CS et_canvas_board_2.redraw_board;
+		-- CS Auto-enable the affected conductor layer
 		
-		-- CS display layer ?
+		et_canvas_board_2.redraw_board;		
 	end lower_layer_changed;
 
 	
@@ -173,7 +180,7 @@ package body et_canvas_board_vias is
 		-- CS validate. output error in status bar
 		preliminary_via.drill.diameter := size;
 
-		-- CS et_canvas_board_2.redraw_board;
+		et_canvas_board_2.redraw_board;
 	end apply_drill_size;
 	
 
@@ -225,7 +232,7 @@ package body et_canvas_board_vias is
 		-- CS validate. output error in status bar
 		preliminary_via.restring_inner := width;
 
-		-- CS et_canvas_board_2.redraw_board;
+		et_canvas_board_2.redraw_board;
 	end apply_restring_inner;
 	
 
@@ -278,7 +285,7 @@ package body et_canvas_board_vias is
 		-- CS validate. output error in status bar
 		preliminary_via.restring_outer := width;
 
-		-- CS et_canvas_board_2.redraw_board;
+		et_canvas_board_2.redraw_board;
 	end apply_restring_outer;
 
 	
@@ -318,6 +325,7 @@ package body et_canvas_board_vias is
 
 
 	
+	
 -- NET NAME
 
 	procedure net_name_changed (combo : access gtk_combo_box_record'class) is
@@ -331,10 +339,11 @@ package body et_canvas_board_vias is
 		gtk.tree_model.get_value (model, iter, 0, name);
 		preliminary_via.net_name := to_net_name (glib.values.get_string (name));
 		
-		-- CS display layer ?
+		-- CS Auto-enable the affected conductor layer ?
 	end net_name_changed;
 
 
+	
 
 	procedure init_preliminary_via is
 		use et_pcb;
@@ -373,6 +382,7 @@ package body et_canvas_board_vias is
 		end if;
 		
 	end init_preliminary_via;
+
 
 	
 
@@ -812,10 +822,12 @@ package body et_canvas_board_vias is
 
 	
 
+	
 	procedure clear_proposed_vias is begin
 		proposed_vias.clear;
 		selected_via := pac_proposed_vias.no_element;
 	end;
+
 
 	
 	
