@@ -58,6 +58,11 @@ begin
 						redraw_board;
 					end if;
 
+				when NOUN_OUTLINE =>
+					if preliminary_object.ready then
+						redraw_board;
+					end if;
+					
 				when NOUN_ZONE =>
 					if preliminary_object.ready then
 						redraw_board;

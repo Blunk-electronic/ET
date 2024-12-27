@@ -1,10 +1,10 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                       BOARD LAYER CATEGORY                               --
+--                         CANVAS BOARD OUTLINE                             --
 --                                                                          --
---                              S p e c                                     --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -21,9 +21,10 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
+--                                                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your edtior to 4.
+--   For correct displaying set tab width in your editor to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,76 +36,62 @@
 --
 --   history of changes:
 --
---   to do:
+-- DESCRIPTION:
+-- 
+-- IMPORTANT:
+-- This is about drawing zones in layers like assy doc, silkscreen, stopmask,
+-- stencil, keepout.
+-- This is NOT about zones in conductor layers. 
+-- See package et_canvas_board_zone_conductor.
 
-with ada.containers;					use ada.containers;
-with ada.containers.vectors;
+with glib;								use glib;
+
+with gtk.box;							use gtk.box;
+with gtk.label;							use gtk.label;
+with gtk.combo_box;						use gtk.combo_box;
+with gtk.combo_box_text;				use gtk.combo_box_text;
+
+with et_canvas_tool;					use et_canvas_tool;
+with et_canvas_messages;				use et_canvas_messages;
+with et_canvas_board_2;
+with et_pcb_sides;						use et_pcb_sides;
+with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
+use et_pcb_coordinates_2.pac_geometry_2;
+use et_pcb_coordinates_2.pac_path_and_bend;
+
+with et_board_layer_category;			use et_board_layer_category;
 
 
 
-package et_board_layer_category is
+package et_canvas_board_outline is
+
+	use et_canvas_board_2.pac_canvas;
+	
 
 
-	-- Prefixes before enumeration types prevent clashes with gnat keywords
-	-- and package names:	
-	layer_category_prefix : constant string := "LAYER_CAT_";
+
+	-- to be output in the status bar:
+	status_draw_outline : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to draw board outline." 
+		& status_hint_for_abort;
+
+
+
+	-- Builds the final path. This procedure requires to be called twice:
+	-- first time for the start and the second time for the end point of the path.
+	-- The current bend style in preliminary_object.path is taken into account.
+	-- The path may be started and finished with different tools. For example start
+	-- with MOUSE and finish with KEYBOARD or vice versa.
+	procedure make_path (
+		tool	: in type_tool;
+		point	: in type_vector_model);
+	
 
 	
-	type type_layer_category is (
-
-		LAYER_CAT_OUTLINE,
-		-- CS LAYER_CAT_HOLE,							
-									
-		-- CONDUCTOR LAYERS.
-		-- These layers are numbered:
-		LAYER_CAT_CONDUCTOR,
-		
-		-- NON CONDUCTOR LAYERS.
-		-- These layers are paired. Means there is a TOP and a BOTTOM:
-		LAYER_CAT_SILKSCREEN,
-		LAYER_CAT_ASSY,
-		LAYER_CAT_STOP,
-		
-		LAYER_CAT_KEEPOUT,
-		LAYER_CAT_STENCIL,
-
-		
-		-- NOTE: Restrict layers do not contain any conducting
-		-- objects. They are irrelevant for manufacturing.
-		-- Since they are of mere supportive nature for routing
-		-- we regarded them as conductor layers.
-		-- These layers are numbered:
-		LAYER_CAT_ROUTE_RESTRICT,
-		LAYER_CAT_VIA_RESTRICT);
-
-	
-	
-	function to_layer_category (
-		cat : in string) 
-		return type_layer_category;
-
-	
-	function to_string (
-		cat : in type_layer_category) 
-		return string;
-
-
-
-	-- For collecting layer categories we use a so called vector:
-	package pac_layer_categories is new vectors (
-		index_type		=> natural,
-		element_type	=> type_layer_category);
-
-
-	-- Lines can be drawn in various layer categories.
-	-- For the combo_box that offers the categories, the
-	-- affected layers must be put together in a so called vector.
-	-- This is a list with an index and an associated layer category:
-	layer_categories : pac_layer_categories.vector;
-
-	
-	
-end et_board_layer_category;
+end et_canvas_board_outline;
 
 -- Soli Deo Gloria
 

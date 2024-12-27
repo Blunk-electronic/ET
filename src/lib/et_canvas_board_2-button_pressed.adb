@@ -108,6 +108,9 @@ is
 						-- put_line ("draw line");
 						et_canvas_board_lines.make_path (MOUSE, snap_point);
 
+					when NOUN_OUTLINE =>
+						et_canvas_board_outline.make_path (MOUSE, snap_point);
+						
 					when NOUN_ZONE =>
 						et_canvas_board_zone.make_path (MOUSE, snap_point);
 

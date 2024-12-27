@@ -287,7 +287,7 @@ package et_geometry_2a.contours is
 	
 	-- Merges two contours to a single one.
 	-- Tries to append or prepend source to target
-	-- if matching verices exist.
+	-- if matching vertices exist.
 	-- Modifies the status according to the result
 	-- of the operation.
 	-- Merges only if both target and source are 

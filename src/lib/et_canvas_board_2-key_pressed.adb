@@ -405,6 +405,7 @@ is
 	procedure draw is 
 		use pac_path_and_bend;
 		use et_canvas_board_lines;
+		use et_canvas_board_outline;
 		use et_canvas_board_zone;
 		use et_canvas_board_preliminary_object;
 	begin
@@ -414,6 +415,11 @@ is
 				reset_preliminary_object;				
 				show_line_properties;
 				set_status (status_draw_line);
+
+			when key_noun_outline =>
+				noun := NOUN_OUTLINE;
+				reset_preliminary_object;				
+				set_status (status_draw_outline);
 
 				
 			when key_noun_zone =>
@@ -429,6 +435,9 @@ is
 					when NOUN_LINE =>
 						et_canvas_board_lines.make_path (KEYBOARD, point);
 
+					when NOUN_OUTLINE =>
+						et_canvas_board_outline.make_path (KEYBOARD, point);
+						
 					when NOUN_ZONE =>
 						et_canvas_board_zone.make_path (KEYBOARD, point);
 
@@ -443,6 +452,9 @@ is
 					when NOUN_LINE =>
 						next_bend_style (preliminary_object.path);
 
+					when NOUN_OUTLINE =>
+						next_bend_style (preliminary_object.path);
+						
 					when NOUN_ZONE =>
 						next_bend_style (preliminary_object.path);
 						

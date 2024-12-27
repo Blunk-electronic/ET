@@ -40,6 +40,9 @@
 package body et_board_ops.board_contour is
 
 	use pac_generic_modules;
+
+
+
 	
 	procedure set_outline (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -71,6 +74,52 @@ package body et_board_ops.board_contour is
 
 
 
+
+
+	procedure draw_outline (
+		module_cursor	: in pac_generic_modules.cursor;
+		outline			: in type_outer_contour;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is 
+			mr : type_merge_result;
+		begin
+			if is_open (outline) then
+				merge_contours (
+					target	=> module.board.contours.outline,
+					source	=> outline,
+					status	=> mr);
+
+				-- CS log result
+				-- if mr.successful then
+				-- 	log (text => "
+				
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & "drawing board outline "			 
+			 & to_string (contour => outline, full => true),
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+	end draw_outline;
+
+	
+	
+
+	
+
 	function get_outline (
 		module_cursor	: in pac_generic_modules.cursor)
 		return type_outer_contour
@@ -79,6 +128,9 @@ package body et_board_ops.board_contour is
 	end get_outline;
 
 
+
+
+	
 	
 	function get_outline (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)

@@ -69,6 +69,7 @@ with et_pcb;
 
 with et_text;
 with et_canvas_board_lines;
+with et_canvas_board_outline;
 with et_canvas_board_zone;
 with et_canvas_board_texts;
 with et_canvas_board_vias;
@@ -581,8 +582,12 @@ package body et_canvas_board_2 is
 	begin
 		-- put_line ("draw_live_zone");		
 		
-		if verb = VERB_DRAW and noun = NOUN_ZONE and PZ.ready
-		and PZ.category = cat then
+		if verb = VERB_DRAW and PZ.ready
+		and PZ.category = cat 
+			
+		and (noun = NOUN_ZONE or noun = NOUN_OUTLINE) 
+		
+		then
 			case PZ.tool is
 				when MOUSE => 
 					compute_and_draw (

@@ -58,6 +58,23 @@ package et_board_ops.board_contour is
 		log_threshold	: in type_log_level);
 
 
+	-- Draws a contour.
+	-- The given contour can consist of a single segment or a
+	-- fragment of a contour.
+	-- 1. If the given contour is a single segment or a fragment
+	--    then the procedure searches for an already existing contour
+	--    which is incomplete (or open) and tries to append or prepend
+	--    the given contour fragment to the existing open contour.
+	-- 2. If this attempt fails, then the given contour is regarded as 
+	--    a new fragment.
+	-- 3. If the existing contour are already closed, then the given fragment
+	--    is rejected.
+	procedure draw_outline (
+		module_cursor	: in pac_generic_modules.cursor;
+		outline			: in type_outer_contour;
+		log_threshold	: in type_log_level);
+
+	
 	-- Returns the outer edge of the PCB:
 	function get_outline (
 		module_cursor	: in pac_generic_modules.cursor)

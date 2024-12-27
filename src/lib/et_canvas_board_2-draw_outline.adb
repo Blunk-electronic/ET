@@ -121,7 +121,7 @@ begin -- draw_outline
 	set_color_outline;
 
 	-- All outline segments and holes be 
-	-- drawn with the same line width:
+	-- drawn with the same linewidth:
 	set_linewidth (pcb_contour_line_width);
 
 	-- The line width of texts is a property of a particular text and is
@@ -135,6 +135,11 @@ begin -- draw_outline
 	pac_generic_modules.query_element (
 		position	=> active_module,
 		process		=> query_holes'access);
+
+
+	-- Draw the contour that is being drawn:
+    draw_live_zone (LAYER_CAT_OUTLINE);
+
 
 	stroke;
 	
