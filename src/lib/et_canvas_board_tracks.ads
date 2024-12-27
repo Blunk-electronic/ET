@@ -79,21 +79,6 @@ package et_canvas_board_tracks is
 
 	use et_canvas_board_2.pac_canvas;
 	use pac_path_and_bend;
-	
-
-	-- The text properties bar:
-	type type_box_properties is record
-		
-		-- This flag indicates that the
-		-- box is being displayed. 
-		-- The purpose of this flag is
-		-- to prevent the box from being drawn
-		-- multiple times:
-		displayed	: boolean := false;
-	end record;
-
-	box_properties : type_box_properties;
-
 
 	
 
@@ -160,12 +145,14 @@ package et_canvas_board_tracks is
 		snap_mode		: type_snap_mode := NEAREST_AIRWIRE;
 	end record;
 
+	
 	-- The place where preliminary information of the line is stored:
 	preliminary_track : type_preliminary_track;
 
+	
 
 	-- Sets the default tool to MOUSE, clears the "ready"-flag
-	-- and removes the track property box from the GUI:
+	-- and clears out the properties bar:
 	procedure reset_preliminary_track;
 	
 

@@ -98,23 +98,7 @@ package body et_canvas_board_tracks is
 		preliminary_track.ready := false;
 		preliminary_track.tool := MOUSE;
 
-		-- Clear the content of the properties bar:
-		if box_properties.displayed then
-			-- put_line ("clear track properties box");
-			
-			-- Clear out the properties box:
-			remove (box_v4, box_net_name);
-			remove (box_v4, box_signal_layer);
-			remove (box_v4, box_line_width);
-
-			-- CS use an iterator to remove widgets like
-			-- container.foreach ((element) => container.remove (element));
-			--
-			-- See <https://stackoverflow.com/questions/36215425/vala-how-do-you-delete-all-the-children-of-a-gtk-container>
-			-- See package gtk.container
-			
-			box_properties.displayed := false;
-		end if;
+		clear_out_properties_box;
 	end reset_preliminary_track;
 
 
@@ -403,25 +387,21 @@ package body et_canvas_board_tracks is
 
 		
 	begin -- show_track_properties
-		
-		-- If the properties are already displayed, do nothing.
-		-- Otherwise show them:
-		if not box_properties.displayed then
-			--put_line ("build track properties");
-			
-			box_properties.displayed := true;
 
-			-- Build the elements of the properties bar:
-			make_combo_for_net_name;
-			make_combo_for_signal_layer;
-			make_combo_for_line_width;
+		-- Before inserting any widgets, the properties box
+		-- must be cleared:
+		clear_out_properties_box;
 
-			-- Redraw the right box of the window:
-			box_v0.show_all;  -- CS box_v4 ?
-		end if;
-		
+		-- Build the elements of the properties bar:
+		make_combo_for_net_name;
+		make_combo_for_signal_layer;
+		make_combo_for_line_width;
+
+		-- Redraw the right box of the window:
+		box_v0.show_all;  -- CS box_v4 ?
 	end show_track_properties;
 
+	
 
 
 	procedure next_snap_mode is 
