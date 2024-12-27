@@ -20,6 +20,9 @@ Board Outline
 		draw outline line 0 0 line 160 0 line 160 80 line 0 80
 
 
+	|VNS| d o
+	
+		
 +++++++++++++
 Signal Layers
 +++++++++++++

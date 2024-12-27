@@ -65,9 +65,8 @@ package et_board_ops.board_contour is
 	--    then the procedure searches for an already existing contour
 	--    which is incomplete (or open) and tries to append or prepend
 	--    the given contour fragment to the existing open contour.
-	-- 2. If this attempt fails, then the given contour is regarded as 
-	--    a new fragment.
-	-- 3. If the existing contour are already closed, then the given fragment
+	-- 2. If this attempt fails, then the given contour is rejected.
+	-- 3. If the existing contour is already closed, then the given fragment
 	--    is rejected.
 	procedure draw_outline (
 		module_cursor	: in pac_generic_modules.cursor;

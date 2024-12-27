@@ -94,9 +94,11 @@ package body et_board_ops.board_contour is
 					source	=> outline,
 					status	=> mr);
 
-				-- CS log result
-				-- if mr.successful then
-				-- 	log (text => "
+				if not mr.successful then
+					log_indentation_up;
+					log (text => "outline rejected", level => log_threshold + 1);
+					log_indentation_down;
+				end if;
 				
 			end if;
 		end query_module;
