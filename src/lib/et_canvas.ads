@@ -1196,6 +1196,9 @@ package et_canvas is
 	
 -- PROPERTIES WINDOW:
 
+	-- CS: This stuff should be removed and
+	-- the properties bar (box_v4) used instead:
+	
 	type type_properties_window is record
 		window	: gtk.window.gtk_window;
 
