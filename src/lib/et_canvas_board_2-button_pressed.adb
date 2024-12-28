@@ -92,6 +92,9 @@ is
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						et_canvas_board_devices.move_non_electrical_device (MOUSE, snap_point);
 
+					when NOUN_OUTLINE =>
+						et_canvas_board_outline.move_object (MOUSE, snap_point);
+
 					when NOUN_TEXT =>
 						et_canvas_board_texts.move_text (MOUSE, snap_point);
 						
@@ -163,6 +166,9 @@ is
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						et_canvas_board_devices.delete_non_electrical_device (MOUSE, event.point);
 
+					when NOUN_OUTLINE =>
+						et_canvas_board_outline.delete_object (event.point);
+						
 					when NOUN_VIA =>
 						et_canvas_board_vias.delete_via (MOUSE, event.point);
 
@@ -229,6 +235,11 @@ is
 							et_canvas_board_devices.select_non_electrical_device;
 						end if;
 
+					when NOUN_OUTLINE =>
+						if clarification_pending then
+							et_canvas_board_outline.select_object;
+						end if;
+						
 					when NOUN_TEXT =>
 						if clarification_pending then
 							et_canvas_board_texts.select_text;
@@ -254,6 +265,10 @@ is
 						pac_path_and_bend.next_bend_style (
 							preliminary_object.path);
 
+					when NOUN_OUTLINE =>
+						pac_path_and_bend.next_bend_style (
+							preliminary_object.path);
+						
 					when NOUN_ZONE =>
 						pac_path_and_bend.next_bend_style (
 							preliminary_object.path);
@@ -295,6 +310,11 @@ is
 							et_canvas_board_devices.select_non_electrical_device;
 						end if;
 
+					when NOUN_OUTLINE =>
+						if clarification_pending then
+							et_canvas_board_outline.select_object;
+						end if;
+						
 					when NOUN_VIA =>
 						if clarification_pending then
 							et_canvas_board_vias.select_via;

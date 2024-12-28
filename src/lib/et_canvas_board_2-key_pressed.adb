@@ -103,6 +103,11 @@ is
 			-- schematic only !
 
 
+			when key_noun_outline =>
+				noun := NOUN_OUTLINE;
+				set_status (et_canvas_board_outline.status_delete_object);
+				
+
 			when key_noun_via =>
 				noun := NOUN_VIA;
 				set_status (et_canvas_board_vias.status_delete_via);
@@ -119,7 +124,7 @@ is
 
 
 				
-			-- If "m" pressed, then a ripup mode is being selected.
+			-- If "m" pressed, then a mode is being selected.
 			when key_mode =>
 				case noun is
 					when NOUN_TRACK =>
@@ -141,6 +146,8 @@ is
 					when NOUN_FREETRACK =>
 						et_canvas_board_freetracks.delete_object (point);
 
+					when NOUN_OUTLINE =>
+						et_canvas_board_outline.delete_object (point);
 
 						
 -- 					when NOUN_ASSY =>
@@ -185,6 +192,11 @@ is
 -- 							select_via;
 -- 						end if;
 
+					when NOUN_OUTLINE =>
+						if clarification_pending then
+							et_canvas_board_outline.select_object;
+						end if;
+					
 					when NOUN_TRACK =>
 						if clarification_pending then
 							et_canvas_board_tracks.select_track;
@@ -294,6 +306,10 @@ is
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
 				set_status (et_canvas_board_devices.status_move_device);
 
+			when key_noun_outline =>
+				noun := NOUN_OUTLINE;
+				set_status (et_canvas_board_outline.status_move_object);
+				
 			when key_noun_via =>
 				noun := NOUN_VIA;
 				set_status (et_canvas_board_vias.status_move_via);
@@ -325,6 +341,9 @@ is
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						et_canvas_board_devices.move_non_electrical_device (KEYBOARD, point);
 
+					when NOUN_OUTLINE =>
+						et_canvas_board_outline.move_object (KEYBOARD, point);
+						
 					when NOUN_TEXT =>
 						et_canvas_board_texts.move_text (KEYBOARD, point);
 						
@@ -378,6 +397,11 @@ is
 							et_canvas_board_devices.select_non_electrical_device;
 						end if;
 
+					when NOUN_OUTLINE =>
+						if clarification_pending then
+							et_canvas_board_outline.select_object;
+						end if;
+						
 					when NOUN_TEXT =>
 						if clarification_pending then
 							et_canvas_board_texts.select_text;

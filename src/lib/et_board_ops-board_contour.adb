@@ -118,8 +118,198 @@ package body et_board_ops.board_contour is
 	end draw_outline;
 
 	
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		line_cursor		: in pac_segments.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+	end modify_status;
+
+
+
 	
 
+	procedure propose_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		zone			: in type_accuracy; -- the circular area around the place
+		count			: in out natural; -- the number of affected lines
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			-- lc : pac_doc_lines.cursor;
+
+			-- procedure query_line (
+			-- 	line	: in out type_doc_line)
+			-- is 
+			-- 	use et_object_status;
+			-- begin
+			-- 	if within_accuracy (
+			-- 		line	=> line,
+			-- 		width	=> line.width,
+			-- 		point	=> point,
+			-- 		zone	=> zone)
+			-- 	then
+			-- 		line.status.proposed := true;
+			-- 		count := count + 1;
+			-- 		log (text => to_string (line), level => log_threshold + 1);
+			-- 	end if;
+			-- end query_line;
+
+			
+			-- procedure query_top is 
+			-- 	top : pac_doc_lines.list renames module.board.assy_doc.top.lines;
+			-- begin
+			-- 	if not top.is_empty then
+			-- 		lc := top.first;
+			-- 		while lc /= pac_doc_lines.no_element loop
+			-- 			top.update_element (lc, query_line'access);
+			-- 			next (lc);
+			-- 		end loop;
+			-- 	end if;
+			-- end query_top;
+		begin
+			null;	
+		end query_module;
+		
+		
+	begin
+		log (text => "proposing lines at " & to_string (point)
+			 & " zone " & accuracy_to_string (zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		count := 0;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_lines;
+
+	
+
+
+
+	procedure reset_proposed_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+-- 			top 	: pac_doc_lines.list renames module.board.assy_doc.top.lines;
+-- 			bottom	: pac_doc_lines.list renames module.board.assy_doc.bottom.lines;
+-- 
+-- 			
+-- 			procedure query_line (
+-- 				line	: in out type_doc_line)
+-- 			is 
+-- 				use et_object_status;
+-- 			begin
+-- 				line.status.selected := false;
+-- 				line.status.proposed := false;
+-- 			end query_line;
+-- 
+-- 			
+-- 			lc : pac_doc_lines.cursor;
+-- 			
+-- 			procedure query_top is begin
+-- 				if not top.is_empty then
+-- 					lc := top.first;
+-- 					while lc /= pac_doc_lines.no_element loop
+-- 						top.update_element (lc, query_line'access);
+-- 						next (lc);
+-- 					end loop;
+-- 				end if;
+-- 			end query_top;
+
+			
+		begin
+			null;
+			-- query_top;
+
+			-- if lc = pac_doc_lines.no_element then
+			-- 	query_bottom;
+			-- end if;
+		end query_module;
+
+
+		
+	begin
+		log (text => "resetting proposed lines",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_lines;
+
+
+
+	
+	function get_first_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return pac_segments.cursor
+	is
+		result : pac_segments.cursor;
+	begin
+		-- CS
+
+		return result;
+	end get_first_line;
+	
+
+
+	procedure next_proposed_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in out pac_segments.cursor;
+		-- CS last_item		: in out boolean;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+	end next_proposed_line;
+
+
+	
+
+
+	procedure move_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_line;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+	end move_line;
+
+
+	
+	
 	
 
 	function get_outline (
@@ -245,6 +435,21 @@ package body et_board_ops.board_contour is
 			process		=> delete'access);
 		
 	end delete_outline;
+
+
+
+	
+
+	procedure delete_outline (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_line;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+	end delete_outline;
+
+
 
 	
 

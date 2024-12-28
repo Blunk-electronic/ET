@@ -73,6 +73,66 @@ package et_board_ops.board_contour is
 		outline			: in type_outer_contour;
 		log_threshold	: in type_log_level);
 
+
+
+	-- Modifies that status flag of a line (see package et_object_status):
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		line_cursor		: in pac_segments.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+
+	
+	-- Sets the proposed-flag of all lines which are
+	-- in the given zone around the given place.
+	procedure propose_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		zone			: in type_accuracy; -- the circular area around the place
+		count			: in out natural; -- the number of affected lines
+		log_threshold	: in type_log_level);
+
+
+	-- Clears the proposed-flag and the selected-flag of all lines:
+	procedure reset_proposed_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+	-- Returns the first line according to the given flag.
+	-- If no line has been found, then the return is no_element:
+	function get_first_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return pac_segments.cursor;
+
+
+
+	-- Advances to the next proposed line, starting at
+	-- the given line. Traverses through the lines
+	-- in a circular manner. If there are no
+	-- proposed lines, then line assumes default value (no_element).
+	-- If there is only one proposed line, then line is unchanged.
+	-- CS last_item indicates that the last line has been reached:
+	procedure next_proposed_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in out pac_segments.cursor;
+		-- CS last_item		: in out boolean;
+		log_threshold	: in type_log_level);
+
+	
+
+	procedure move_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_line;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+	
 	
 	-- Returns the outer edge of the PCB:
 	function get_outline (
@@ -93,6 +153,13 @@ package et_board_ops.board_contour is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_vector_model; -- x/y
 		accuracy		: in type_accuracy;
+		log_threshold	: in type_log_level);
+
+
+	-- Deletes the given line in the given module:
+	procedure delete_outline (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_line;
 		log_threshold	: in type_log_level);
 
 	

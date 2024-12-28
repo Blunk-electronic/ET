@@ -90,6 +90,57 @@ package et_canvas_board_outline is
 		point	: in type_vector_model);
 	
 
+
+	-- On every call of this procedure we advance from one
+	-- proposed segment to the next in a circular manner.
+	procedure select_object;
+
+
+	-- Locates objects in the vicinity of the given point
+	-- and sets their proposed-flag.
+	-- Depending on how many objects have been found, the behaviour is:
+	-- - If only one object found, then it is selected and 
+	--   the flag preliminary_object.ready will be set.
+	-- - If more than one object found, then clarification is requested.
+	--   The first object of them is selected.
+	procedure find_objects (
+		point : in type_vector_model);
+
+
+
+	
+
+-- MOVE:
+
+	status_move_object : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to move object in board outline." 
+		& status_hint_for_abort;
+
+	
+	procedure move_object (
+		tool	: in type_tool;
+		point	: in type_vector_model);				   
+
+
+
+-- DELETE:
+
+	status_delete_object : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to delete object in board outline." 
+		& status_hint_for_abort;
+
+	
+	procedure delete_object (
+		point	: in type_vector_model);				   
+
+
+	
 	
 end et_canvas_board_outline;
 

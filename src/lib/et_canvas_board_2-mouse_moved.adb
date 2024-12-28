@@ -104,6 +104,11 @@ begin
 						redraw_board;
 					end if;
 
+				when NOUN_OUTLINE =>
+					if preliminary_object.ready then
+						redraw_board;
+					end if;
+					
 				when NOUN_TEXT =>
 					if et_canvas_board_texts.preliminary_text.ready then
 						redraw_board;

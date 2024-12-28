@@ -77,13 +77,16 @@ with et_exceptions;						use et_exceptions;
 with et_undo_redo;
 with et_commit;
 
+with et_object_status;
+
+
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 
 
 
 package body et_canvas_board_outline is
-	
 
+	
 	procedure make_path (
 		tool	: in type_tool;
 		point	: in type_vector_model)
@@ -193,6 +196,307 @@ package body et_canvas_board_outline is
 	end make_path;
 		
 
+
+
+	-- Outputs the selected line in the status bar:
+	procedure show_selected_line (
+		selected		: in pac_contours.pac_segments.cursor;
+		clarification	: in boolean := false)
+	is 
+		use pac_contours;
+		use pac_segments;
+		praeamble : constant string := "selected: ";
+	begin
+		
+		if clarification then
+			set_status (praeamble & to_string (element (selected))
+				& ". " & status_next_object_clarification);
+			-- CS face
+		else
+			set_status (praeamble & to_string (element (selected)));
+			-- CS face
+		end if;		
+	end show_selected_line;
+
+
+	
+
+	procedure select_object is 
+		use pac_contours;
+		use et_object_status;
+		-- selected_line : type_line_segment;
+	begin
+		null;
+
+-- CS		
+-- 		selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
+-- 
+-- 		modify_status (
+-- 			module_cursor	=> active_module, 
+-- 			operation		=> (CLEAR, SELECTED),
+-- 			line_cursor		=> selected_line.cursor, 
+-- 			log_threshold	=> log_threshold + 1);
+-- 		
+-- 		next_proposed_line (active_module, selected_line, log_threshold + 1);
+-- 		
+-- 		modify_status (
+-- 			module_cursor	=> active_module, 
+-- 			operation		=> (SET, SELECTED),
+-- 			line_cursor		=> selected_line.cursor, 
+-- 			log_threshold	=> log_threshold + 1);
+-- 		
+-- 		show_selected_line (selected_line, clarification => true);
+	end select_object;
+
+
+
+
+
+	procedure find_objects (
+	   point : in type_vector_model)
+	is 
+		face : type_face := TOP;
+
+		count : natural := 0;
+		count_total : natural := 0;
+		
+		procedure select_first_proposed is
+			use et_object_status;
+			use pac_contours;
+			proposed_line : pac_segments.cursor;
+		begin
+			proposed_line := get_first_line (active_module, PROPOSED, log_threshold + 1);
+  
+			modify_status (active_module, proposed_line, (SET, SELECTED), log_threshold + 1);
+  
+			-- If only one line found, then show it in the status bar:
+			if count = 1 then
+				show_selected_line (proposed_line);
+			end if;
+		end select_first_proposed;
+
+	
+	begin
+		log (text => "locating objects ...", level => log_threshold);
+		log_indentation_up;
+
+		-- Propose lines in the vicinity of the given point:
+		propose_lines (active_module, point,
+			get_catch_zone (et_canvas_board_2.catch_zone), 
+			count, log_threshold + 1);
+		
+		count_total := count;
+		
+		-- CS arcs, circles
+		
+		-- evaluate the number of objects found here:
+		case count_total is
+			when 0 =>
+				reset_request_clarification;
+				reset_preliminary_object;
+				reset_proposed_lines (active_module, log_threshold + 1);
+				
+			when 1 =>
+				preliminary_object.ready := true;
+				select_first_proposed;
+				reset_request_clarification;
+				
+			when others =>
+				--log (text => "many objects", level => log_threshold + 2);
+				set_request_clarification;
+				select_first_proposed;
+		end case;
+		
+		log_indentation_down;
+	end find_objects;
+
+
+
+
+	
+
+	procedure move_object (
+		tool	: in type_tool;
+		point	: in type_vector_model)
+	is
+
+		-- Assigns the final position after the move to the selected object.
+		-- Resets variable preliminary_object:
+		procedure finalize is
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
+			use et_board_ops.board_contour;
+			use et_object_status;
+
+			use pac_contours;
+			use pac_segments;
+			selected_segment : pac_segments.cursor;
+		begin
+			log (text => "finalizing move ...", level => log_threshold);
+			log_indentation_up;
+
+			selected_segment := get_first_line (active_module, SELECTED, log_threshold + 1);
+
+			if selected_segment /= pac_segments.no_element then
+
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+				
+				case element (selected_segment).shape is
+					when LINE =>
+						move_line (
+							module_cursor	=> active_module,
+							line			=> element (selected_segment).segment_line,
+							point_of_attack	=> preliminary_object.point_of_attack,
+							-- coordinates		=> ABSOLUTE,
+							destination		=> point,
+							log_threshold	=> log_threshold);
+
+					when ARC =>
+						null; -- CS
+				
+					-- when CIRCLE =>
+						-- null; -- CS
+				end case;
+
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			set_status (status_move_object);
+			
+			reset_preliminary_object;
+			reset_proposed_lines (active_module, log_threshold + 1);
+		end finalize;
+			
+		
+	begin
+		-- Initially the preliminary_object is not ready.
+		if not preliminary_object.ready then
+
+			-- Set the tool being used:
+			preliminary_object.tool := tool;
+
+			preliminary_object.point_of_attack := point;
+			
+			if not clarification_pending then
+				-- Locate all objects in the vicinity of the given point:
+				find_objects (point);
+				
+				-- NOTE: If many objects have been found, then
+				-- clarification is now pending.
+
+				-- If find_objects has found only one object
+				-- then the flag preliminary_object.ready is set true.
+
+			else
+				-- Here the clarification procedure ends.
+				-- An object has been selected via procedure select_object.
+				-- By setting preliminary_object.ready, the selected
+				-- object will be drawn at the tool position
+				-- when objects are drawn on the canvas.
+				-- Furtheron, on the next call of this procedure
+				-- the selected object will be assigned its final position.
+				preliminary_object.ready := true;
+				reset_request_clarification;
+			end if;
+			
+		else
+			finalize;
+		end if;
+	end move_object;
+
+	
+	
+
+-- DELETE:
+	
+	procedure delete_object (
+		point	: in type_vector_model)
+	is
+		-- Deletes the selected object.
+		-- Resets variable preliminary_object:
+		procedure finalize is 
+			use et_board_ops.board_contour;
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
+			use et_object_status;
+
+			use pac_contours;
+			use pac_segments;
+			selected_segment : pac_segments.cursor;
+		begin
+			log (text => "finalizing delete ...", level => log_threshold);
+			log_indentation_up;
+
+			selected_segment := get_first_line (active_module, SELECTED, log_threshold + 1);
+
+			if selected_segment /= pac_segments.no_element then
+
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+
+				case element (selected_segment).shape is
+					when LINE =>
+						delete_outline (
+							module_cursor	=> active_module,
+							line			=> element (selected_segment).segment_line,
+							log_threshold	=> log_threshold);
+
+						when ARC =>
+							null; -- CS
+     -- 
+					-- 	when CIRCLE =>
+					-- 		null; -- CS
+					end case;
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			set_status (status_delete_object);
+			
+			reset_preliminary_object;
+			reset_proposed_lines (active_module, log_threshold + 1);
+		end finalize;
+
+
+		
+	begin
+		if not clarification_pending then
+			-- Locate all objects in the vicinity of the given point:
+			find_objects (point);
+			
+			-- NOTE: If many segments have been found, then
+			-- clarification is now pending.
+
+			-- If find_objects has found only one object
+			-- then the flag preliminary_object.ready is set true.
+
+			if preliminary_object.ready then
+				finalize;
+			end if;
+		else
+			-- Here the clarification procedure ends.
+			-- An object has been selected
+			-- via procedure selected_object.
+
+			finalize;
+			reset_request_clarification;
+		end if;
+	end delete_object;
+
+	
+	
 	
 end et_canvas_board_outline;
 
