@@ -6,20 +6,21 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2024                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -46,15 +47,18 @@ package body et_thermal_relief is
 		return to_lower (type_pad_connection'image (connection));
 	end;
 
+	
 	function to_pad_connection (connection : in string) return type_pad_connection is begin
 		return type_pad_connection'value (connection);
 	end;
 
 	
+	
 	function to_string (technology : in type_pad_technology) return string is begin
 		return to_lower (type_pad_technology'image (technology));
 	end;
 
+	
 	function to_pad_technology (technology : in string) return type_pad_technology is begin
 		return type_pad_technology'value (technology);
 	end to_pad_technology;
@@ -105,10 +109,12 @@ package body et_thermal_relief is
 				& " linewidth " & to_string (relief.width));
 		end if;
 
-		
+		-- Since we have to generate 4 spokes, separated by 90 degrees
+		-- from each other, we need a loop construct here:
 		for i in 1 .. 4 loop
 			if debug then
-				put_line (" direction " & to_string (angle));
+				put_line (" spoke " & positive'image (i));
+				put_line ("  direction " & to_string (angle));
 			end if;
 				
 			declare
@@ -139,12 +145,12 @@ package body et_thermal_relief is
 				if D2CA.centerline_exists then
 
 					if debug then
-						put_line (" distance to conducting area:");
+						put_line ("  distance to conducting area:");
 						
-						put_line ("  to edge       " 
+						put_line ("   to edge       " 
 							& to_string (D2CA.distance_to_edge));
 
-						put_line ("  to centerline " 
+						put_line ("   to centerline " 
 							& to_string (D2CA.distance_to_centerline));
 						
 					end if;
@@ -155,18 +161,18 @@ package body et_thermal_relief is
 					-- is less than the gap_max of the relief_properties, then
 					-- append the spoke to the relief:
 					border_to_centerline := D2CA.distance_to_centerline - D2CA.distance_to_edge;
-					
+
 					gap := D2CA.distance_to_centerline - border_to_centerline
 						   - get_distance_to_border (outline, center, angle);
 
 					if debug then
-						put_line (" gap between pad and conducting area " & to_string (gap));						
+						put_line ("  gap between pad and conducting area " & to_string (gap));						
 					end if;
 
 					
 					if gap <= type_float_positive (relief_properties.gap_max) then
 						if debug then
-							put_line ("  generate relief spoke");
+							put_line ("   generate relief spoke");
 						end if;
 						
 						relief.spokes.append ((
@@ -175,12 +181,17 @@ package body et_thermal_relief is
 					end if;
 				end if;
 
-				angle := angle + 90.0;
+				
+				-- Prepare the next spoke:
+				add (angle, 90.0);
 			end;
 		end loop;
 
 		return relief;
 	end make_relief;
+
+
+	
 
 	
 	function make_reliefes (
@@ -194,7 +205,7 @@ package body et_thermal_relief is
 		result : pac_reliefes.list;
 
 		debug : boolean := false;
-		--debug : boolean := true;
+		-- debug : boolean := true;
 		
 		use pac_terminals_with_relief;
 
