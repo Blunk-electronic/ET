@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -283,12 +283,23 @@ package et_geometry_1 is
 	
 	
 	-- Adds two angles.
-	-- If result greater 360 degree then 360 degree is subtracted from result.
-	-- If result less than 360 degree then 360 degree is added to the result.
+	-- If the result of adding right to left is greater or equal
+	-- 360 degrees then 360 degrees are subtracted from result.
+	-- If the result of adding is less or equal -360 degrees then
+	-- 360 degrees are added to the result.
+	-- So the return of this function is always between -360 
+	-- and +360 degrees: 
 	function add (
 		left, right : in type_angle) 
 		return type_angle;
 
+
+	-- Similar to function add (see above) but 
+	-- modifies left. Adds right to left:
+	procedure add (
+		left	: in out type_angle;
+		right	: in type_angle);
+	
 
 	-- Converts an angle like -90.0 degrees to 270 degrees.
 	-- Converts an angle like -1.0 degrees to 359 degrees.

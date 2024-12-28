@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab with in your edtior to 4.
@@ -535,8 +535,22 @@ package body et_geometry_1 is
 
 		--result := to_rotation (scratch); -- CS
 		return scratch;
-	end;
+	end add;
 
+
+
+
+	procedure add (
+		left	: in out type_angle;
+		right	: in type_angle)
+	is begin
+		left := add (left, right);
+	end add;
+	
+
+
+
+	
 
 	function to_angle_positive (
 		rotation : in type_angle)
