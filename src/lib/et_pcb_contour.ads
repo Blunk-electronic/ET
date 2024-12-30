@@ -36,6 +36,8 @@
 --   history of changes:
 --
 --   to do:
+--   1. rename this package to et_pcb_outline
+
 
 with ada.containers; 				use ada.containers;
 with ada.containers.doubly_linked_lists;

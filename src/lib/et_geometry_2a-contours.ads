@@ -79,6 +79,22 @@ package et_geometry_2a.contours is
 	package pac_segments is new indefinite_doubly_linked_lists (type_segment);
 	use pac_segments;
 	
+
+	function to_string (
+		segment	: in pac_segments.cursor)
+		return string;
+
+
+	function is_proposed (
+		segment	: in pac_segments.cursor)
+		return boolean;
+
+
+	function get_shape (
+		segment	: in pac_segments.cursor)
+		return type_segment_shape;
+
+	
 	
 	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
 	procedure iterate (

@@ -75,6 +75,51 @@ package body et_geometry_2a.contours is
 	
 
 	
+
+	function to_string (
+		segment	: in pac_segments.cursor)
+		return string
+	is begin
+		return to_string (element (segment));
+	end to_string;
+
+
+
+	function is_proposed (
+		segment	: in pac_segments.cursor)
+		return boolean
+	is 
+		s : type_segment := element (segment);
+		result : boolean := false;
+	begin
+		case s.shape is
+			when LINE =>
+				if s.segment_line.status.proposed then
+					result := true;
+				end if;
+
+			when ARC =>
+				if s.segment_arc.status.proposed then
+					result := true;
+				end if;
+		end case;
+
+		return result;
+	end is_proposed;
+
+
+
+
+	function get_shape (
+		segment	: in pac_segments.cursor)
+		return type_segment_shape
+	is begin
+		return element (segment).shape;
+	end get_shape;
+
+	
+	
+	
 	procedure iterate (
 		segments	: in pac_segments.list;
 		process		: not null access procedure (position : in pac_segments.cursor);

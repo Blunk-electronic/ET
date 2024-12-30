@@ -209,11 +209,11 @@ package body et_canvas_board_outline is
 	begin
 		
 		if clarification then
-			set_status (praeamble & to_string (element (selected))
+			set_status (praeamble & to_string (selected)
 				& ". " & status_next_object_clarification);
 			-- CS face
 		else
-			set_status (praeamble & to_string (element (selected)));
+			set_status (praeamble & to_string (selected));
 			-- CS face
 		end if;		
 	end show_selected_line;
@@ -224,28 +224,25 @@ package body et_canvas_board_outline is
 	procedure select_object is 
 		use pac_contours;
 		use et_object_status;
-		-- selected_line : type_line_segment;
+		selected_line : pac_segments.cursor;
 	begin
-		null;
+		selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
 
--- CS		
--- 		selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
--- 
--- 		modify_status (
--- 			module_cursor	=> active_module, 
--- 			operation		=> (CLEAR, SELECTED),
--- 			line_cursor		=> selected_line.cursor, 
--- 			log_threshold	=> log_threshold + 1);
--- 		
--- 		next_proposed_line (active_module, selected_line, log_threshold + 1);
--- 		
--- 		modify_status (
--- 			module_cursor	=> active_module, 
--- 			operation		=> (SET, SELECTED),
--- 			line_cursor		=> selected_line.cursor, 
--- 			log_threshold	=> log_threshold + 1);
--- 		
--- 		show_selected_line (selected_line, clarification => true);
+		modify_status (
+			module_cursor	=> active_module, 
+			operation		=> (CLEAR, SELECTED),
+			line_cursor		=> selected_line, 
+			log_threshold	=> log_threshold + 1);
+		
+		next_proposed_line (active_module, selected_line, log_threshold + 1);
+		
+		modify_status (
+			module_cursor	=> active_module, 
+			operation		=> (SET, SELECTED),
+			line_cursor		=> selected_line, 
+			log_threshold	=> log_threshold + 1);
+		
+		show_selected_line (selected_line, clarification => true);
 	end select_object;
 
 

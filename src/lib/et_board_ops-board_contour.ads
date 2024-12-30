@@ -35,6 +35,8 @@
 --   history of changes:
 --
 --   ToDo: 
+--   1. rename this package to et_board_ops.outline
+
 
 with et_pcb_contour;				use et_pcb_contour;
 

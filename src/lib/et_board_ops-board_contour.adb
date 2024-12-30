@@ -127,8 +127,61 @@ package body et_board_ops.board_contour is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			procedure query_segment (
+				segment	: in out type_segment)
+			is begin
+				case operation.flag is
+					when SELECTED =>
+						case operation.action is
+							when SET =>
+								segment.segment_line.status.selected := true;
+
+							when CLEAR =>
+								segment.segment_line.status.selected := false;
+						end case;
+
+					when PROPOSED =>
+						case operation.action is
+							when SET =>
+								segment.segment_line.status.proposed := true;
+
+							when CLEAR =>
+								segment.segment_line.status.proposed := false;
+						end case;
+
+					when others =>
+						null; -- CS
+				end case;							
+			end query_segment;
+	
+		begin
+			pac_segments.update_element (
+				container	=> module.board.contours.outline.contour.segments, 
+				position	=> line_cursor, 
+				process		=> query_segment'access);
+		end query_module;
+		
+		
 	begin
-		null;
+		log (text => "module " 
+			& to_string (module_cursor)
+			& " modifying status of "
+			& to_string (line_cursor)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
 	end modify_status;
 
 
@@ -147,39 +200,37 @@ package body et_board_ops.board_contour is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			-- lc : pac_doc_lines.cursor;
-
-			-- procedure query_line (
-			-- 	line	: in out type_doc_line)
-			-- is 
-			-- 	use et_object_status;
-			-- begin
-			-- 	if within_accuracy (
-			-- 		line	=> line,
-			-- 		width	=> line.width,
-			-- 		point	=> point,
-			-- 		zone	=> zone)
-			-- 	then
-			-- 		line.status.proposed := true;
-			-- 		count := count + 1;
-			-- 		log (text => to_string (line), level => log_threshold + 1);
-			-- 	end if;
-			-- end query_line;
+			use pac_segments;
+			lc : pac_segments.cursor := module.board.contours.outline.contour.segments.first;
 
 			
-			-- procedure query_top is 
-			-- 	top : pac_doc_lines.list renames module.board.assy_doc.top.lines;
-			-- begin
-			-- 	if not top.is_empty then
-			-- 		lc := top.first;
-			-- 		while lc /= pac_doc_lines.no_element loop
-			-- 			top.update_element (lc, query_line'access);
-			-- 			next (lc);
-			-- 		end loop;
-			-- 	end if;
-			-- end query_top;
+			procedure query_segment (
+				segment	: in out type_segment)
+			is 
+				use et_object_status;
+			begin
+				if within_accuracy (
+					line	=> segment.segment_line,
+					width	=> zero,
+					point	=> point,
+					zone	=> zone)
+				then
+					segment.segment_line.status.proposed := true;
+					count := count + 1;
+					log (text => to_string (segment), level => log_threshold + 1);
+				end if;
+			end query_segment;
+
+			
 		begin
-			null;	
+			while lc /= pac_segments.no_element loop
+				pac_segments.update_element (
+					container	=> module.board.contours.outline.contour.segments, 
+					position	=> lc, 
+					process		=> query_segment'access);
+
+				next (lc);
+			end loop;
 		end query_module;
 		
 		
@@ -212,42 +263,30 @@ package body et_board_ops.board_contour is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
--- 			top 	: pac_doc_lines.list renames module.board.assy_doc.top.lines;
--- 			bottom	: pac_doc_lines.list renames module.board.assy_doc.bottom.lines;
--- 
--- 			
--- 			procedure query_line (
--- 				line	: in out type_doc_line)
--- 			is 
--- 				use et_object_status;
--- 			begin
--- 				line.status.selected := false;
--- 				line.status.proposed := false;
--- 			end query_line;
--- 
--- 			
--- 			lc : pac_doc_lines.cursor;
--- 			
--- 			procedure query_top is begin
--- 				if not top.is_empty then
--- 					lc := top.first;
--- 					while lc /= pac_doc_lines.no_element loop
--- 						top.update_element (lc, query_line'access);
--- 						next (lc);
--- 					end loop;
--- 				end if;
--- 			end query_top;
+			use pac_segments;
+			lc : pac_segments.cursor := module.board.contours.outline.contour.segments.first;
+
+			
+			procedure query_segment (
+				segment	: in out type_segment)
+			is 
+				use et_object_status;
+			begin
+				segment.segment_line.status.selected := false;
+				segment.segment_line.status.proposed := false;
+			end query_segment;
 
 			
 		begin
-			null;
-			-- query_top;
+			while lc /= pac_segments.no_element loop
+				pac_segments.update_element (
+					container	=> module.board.contours.outline.contour.segments, 
+					position	=> lc, 
+					process		=> query_segment'access);
 
-			-- if lc = pac_doc_lines.no_element then
-			-- 	query_bottom;
-			-- end if;
+				next (lc);
+			end loop;
 		end query_module;
-
 
 		
 	begin
@@ -266,6 +305,8 @@ package body et_board_ops.board_contour is
 
 
 	
+
+	
 	function get_first_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
@@ -273,13 +314,65 @@ package body et_board_ops.board_contour is
 		return pac_segments.cursor
 	is
 		result : pac_segments.cursor;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_segments;
+			proceed : aliased boolean := true;
+
+			
+			procedure query_segment (c : in pac_segments.cursor) is
+				line : type_line renames element (c).segment_line;
+				use et_object_status;
+			begin
+				case flag is
+					when PROPOSED =>
+						if line.status.proposed then
+							result := c;
+							proceed := false;
+						end if;
+
+					when SELECTED =>
+						if line.status.selected then
+							result := c;
+							proceed := false;
+						end if;
+
+					when others =>
+						null; -- CS
+				end case;
+			end query_segment;
+			
+		begin
+			iterate (
+				segments	=> module.board.contours.outline.contour.segments,
+				process		=> query_segment'access, 
+				proceed		=> proceed'access);
+		end query_module;
+		
+		
 	begin
-		-- CS
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first line / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
 
 		return result;
 	end get_first_line;
 	
 
+
+	
 
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -287,8 +380,55 @@ package body et_board_ops.board_contour is
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level)
 	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is
+			use pac_segments;
+			c : pac_segments.cursor := next (line);
+		begin
+			-- Start the search after the given line:
+			while c /= pac_segments.no_element loop
+				if get_shape (c) = pac_contours.LINE then
+					if is_proposed (c) then
+						line := c;
+						exit;
+					end if;
+				end if;
+				next (c);
+			end loop;
+
+			-- If nothing found, then restart the search
+			-- at the begin of the list:
+			if c = pac_segments.no_element then
+				c := module.board.contours.outline.contour.segments.first;
+
+				while c /= pac_segments.no_element loop
+					if get_shape (c) = pac_contours.LINE then
+						if is_proposed (c) then
+							line := c;
+							exit;
+						end if;
+					end if;
+					next (c);
+				end loop;				
+			end if;
+		end query_module;
+
+		
 	begin
-		null;
+		log (text => "module " & to_string (module_cursor)
+			& "advancing to next proposed line",
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
 	end next_proposed_line;
 
 
