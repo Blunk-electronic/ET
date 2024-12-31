@@ -462,6 +462,9 @@ package body et_board_ops.board_contour is
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
+
+		log (text => "new outline:" & to_string (get_outline (module_cursor), true),
+			 level => log_threshold + 1);
 		
 		log_indentation_down;
 	end move_segment;
@@ -623,11 +626,17 @@ package body et_board_ops.board_contour is
 			& " deleting outline segment " & to_string (segment),
 			level => log_threshold);
 
+		log_indentation_up;
+		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+		log (text => "new outline:" & to_string (get_outline (module_cursor), true),
+			 level => log_threshold + 1);
+		
+		log_indentation_down;
 	end delete_segment;
 
 
