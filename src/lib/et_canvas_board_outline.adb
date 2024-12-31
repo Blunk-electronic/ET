@@ -334,30 +334,22 @@ package body et_canvas_board_outline is
 			log_indentation_up;
 
 			selected_segment := get_first_line (active_module, SELECTED, log_threshold + 1);
-
+			-- CS arcs
+			
 			if selected_segment /= pac_segments.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
-				case element (selected_segment).shape is
-					when LINE =>
-						move_line (
-							module_cursor	=> active_module,
-							line			=> element (selected_segment).segment_line,
-							point_of_attack	=> preliminary_object.point_of_attack,
-							-- coordinates		=> ABSOLUTE,
-							destination		=> point,
-							log_threshold	=> log_threshold);
+				move_segment (
+					module_cursor	=> active_module,
+					segment			=> selected_segment,
+					point_of_attack	=> preliminary_object.point_of_attack,
+					-- coordinates		=> ABSOLUTE,
+					destination		=> point,
+					log_threshold	=> log_threshold);
 
-					when ARC =>
-						null; -- CS
 				
-					-- when CIRCLE =>
-						-- null; -- CS
-				end case;
-
-
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
 			else
@@ -433,26 +425,19 @@ package body et_canvas_board_outline is
 			log_indentation_up;
 
 			selected_segment := get_first_line (active_module, SELECTED, log_threshold + 1);
+			-- CS arcs
 
 			if selected_segment /= pac_segments.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 
-				case element (selected_segment).shape is
-					when LINE =>
-						delete_outline (
-							module_cursor	=> active_module,
-							line			=> element (selected_segment).segment_line,
-							log_threshold	=> log_threshold);
+				delete_segment (
+					module_cursor	=> active_module,
+					segment			=> selected_segment,
+					log_threshold	=> log_threshold);
 
-						when ARC =>
-							null; -- CS
-     -- 
-					-- 	when CIRCLE =>
-					-- 		null; -- CS
-					end case;
-
+				
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
 			else

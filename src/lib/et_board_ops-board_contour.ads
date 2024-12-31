@@ -77,7 +77,7 @@ package et_board_ops.board_contour is
 
 
 
-	-- Modifies that status flag of a line (see package et_object_status):
+	-- Modifies the status flag of a line (see package et_object_status):
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		line_cursor		: in pac_segments.cursor;
@@ -126,9 +126,12 @@ package et_board_ops.board_contour is
 
 	
 
-	procedure move_line (
+	-- Moves a line or arc segment:
+	-- CS currently it moves only a single segment.
+	-- CS provide parameter for move mode (move attached segments, move whole contour)
+	procedure move_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_line;
+		segment			: in pac_segments.cursor;
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
@@ -149,7 +152,7 @@ package et_board_ops.board_contour is
 	
 
 	-- Deletes the segment of the outline that crosses the given point.
-	-- CS currently rips up the first segment found. Leaves other segments untouched.
+	-- CS currently deletes the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 	procedure delete_outline (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -158,10 +161,12 @@ package et_board_ops.board_contour is
 		log_threshold	: in type_log_level);
 
 
-	-- Deletes the given line in the given module:
-	procedure delete_outline (
+	-- Deletes the given arc or line segment in the given module:
+	-- CS currently deletes the first segment found. Leaves other segments untouched.
+	-- CS a parameter like "all" to delete all segments in the vicinity of point.
+	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_line;
+		segment			: in pac_segments.cursor;
 		log_threshold	: in type_log_level);
 
 	

@@ -435,17 +435,54 @@ package body et_board_ops.board_contour is
 	
 
 
-	procedure move_line (
+	procedure move_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_line;
+		segment			: in pac_segments.cursor;
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_segments;
+
+			procedure do_it (s : in out type_segment) is
+			begin
+				case s.shape is
+					when LINE =>
+						move_line_to (s.segment_line, point_of_attack, destination);
+
+					when ARC =>
+						null;
+						-- CS
+				end case;
+			end do_it;
+			
+		begin
+			module.board.contours.outline.contour.segments.update_element (
+				segment, do_it'access);
+		end query_module;
+
+		
 	begin
-		null;
-	end move_line;
+		log (text => "module " & to_string (module_cursor)
+			& " moving outline segment " & to_string (segment)
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end move_segment;
 
 
 	
@@ -482,6 +519,8 @@ package body et_board_ops.board_contour is
 
 
 
+	
+
 	procedure delete_outline (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		point			: in type_vector_model; -- x/y
@@ -490,6 +529,7 @@ package body et_board_ops.board_contour is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -580,14 +620,33 @@ package body et_board_ops.board_contour is
 
 	
 
-	procedure delete_outline (
+	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_line;
+		segment			: in pac_segments.cursor;
 		log_threshold	: in type_log_level)
 	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is			
+			c : pac_segments.cursor := segment;
+		begin
+			module.board.contours.outline.contour.segments.delete (c);
+		end query_module;
+
+		
 	begin
-		null;
-	end delete_outline;
+		log (text => "module " & to_string (module_cursor)
+			& " deleting outline segment " & to_string (segment),
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+	end delete_segment;
 
 
 
