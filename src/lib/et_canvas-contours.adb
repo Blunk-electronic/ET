@@ -120,14 +120,32 @@ package body et_canvas.contours is
 						if segment.segment_line.end_point = start_point then
 							contour_is_closed := true;
 						end if;
-						
-						draw_line (
-							line		=> segment.segment_line,
-							pos			=> pos_end,		  
-							width		=> zero,  -- don't care. see specs of draw_line.
-							mirror		=> mirror,
-							style		=> style,
-							polyline	=> true);
+
+						-- If the contour is to be filled, then
+						-- it is required to draw the lines as segments
+						-- of a polyline:
+						if filled = YES then
+							draw_line (
+								line		=> segment.segment_line,
+								pos			=> pos_end,		  
+								width		=> zero,  -- don't care. see specs of draw_line.
+								mirror		=> mirror,
+								style		=> style,
+								polyline	=> true);
+
+						-- If the contour is not to be filled, then
+						-- each lines is drawn as a single existing
+						-- segment. This measure allows to display a contour
+						-- that is not properly closed:	
+						else
+							draw_line (
+								line		=> segment.segment_line,
+								pos			=> pos_end,		  
+								width		=> zero,  -- don't care. see specs of draw_line.
+								mirror		=> mirror,
+								style		=> style,
+								polyline	=> false);
+						end if;
 					end if;
 
 					
