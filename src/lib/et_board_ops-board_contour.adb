@@ -123,7 +123,7 @@ package body et_board_ops.board_contour is
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		line_cursor		: in pac_segments.cursor;
+		segment_cursor	: in pac_segments.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
@@ -132,46 +132,26 @@ package body et_board_ops.board_contour is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
-				case operation.flag is
-					when SELECTED =>
-						case operation.action is
-							when SET =>
-								segment.segment_line.status.selected := true;
-
-							when CLEAR =>
-								segment.segment_line.status.selected := false;
-						end case;
-
-					when PROPOSED =>
-						case operation.action is
-							when SET =>
-								segment.segment_line.status.proposed := true;
-
-							when CLEAR =>
-								segment.segment_line.status.proposed := false;
-						end case;
-
-					when others =>
-						null; -- CS
-				end case;							
+				modify_status (segment, operation);
 			end query_segment;
-	
+
+			
 		begin
 			pac_segments.update_element (
 				container	=> module.board.contours.outline.contour.segments, 
-				position	=> line_cursor, 
+				position	=> segment_cursor, 
 				process		=> query_segment'access);
 		end query_module;
 		
 		
 	begin
-		log (text => "module " 
-			& to_string (module_cursor)
+		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
-			& to_string (line_cursor)
+			& to_string (segment_cursor)
 			& " / " & to_string (operation),
 			level => log_threshold);
 
@@ -188,11 +168,11 @@ package body et_board_ops.board_contour is
 
 	
 
-	procedure propose_lines (
+	procedure propose_segments (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
-		zone			: in type_accuracy; -- the circular area around the place
-		count			: in out natural; -- the number of affected lines
+		point			: in type_vector_model;
+		zone			: in type_accuracy;
+		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
 
@@ -209,16 +189,22 @@ package body et_board_ops.board_contour is
 			is 
 				use et_object_status;
 			begin
-				if within_accuracy (
-					line	=> segment.segment_line,
-					width	=> zero,
-					point	=> point,
-					zone	=> zone)
-				then
-					segment.segment_line.status.proposed := true;
-					count := count + 1;
-					log (text => to_string (segment), level => log_threshold + 1);
-				end if;
+				case segment.shape is
+					when LINE =>
+						if within_accuracy (
+							line	=> segment.segment_line,
+							width	=> zero,
+							point	=> point,
+							zone	=> zone)
+						then
+							set_proposed (segment);
+							count := count + 1;
+							log (text => to_string (segment), level => log_threshold + 1);
+						end if;
+
+					when ARC =>
+						null; -- CS
+				end case;
 			end query_segment;
 
 			
@@ -235,7 +221,7 @@ package body et_board_ops.board_contour is
 		
 		
 	begin
-		log (text => "proposing lines at " & to_string (point)
+		log (text => "proposing segments at " & to_string (point)
 			 & " zone " & accuracy_to_string (zone),
 			 level => log_threshold);
 
@@ -248,13 +234,13 @@ package body et_board_ops.board_contour is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end propose_lines;
+	end propose_segments;
 
 	
 
 
 
-	procedure reset_proposed_lines (
+	procedure reset_proposed_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -272,8 +258,8 @@ package body et_board_ops.board_contour is
 			is 
 				use et_object_status;
 			begin
-				segment.segment_line.status.selected := false;
-				segment.segment_line.status.proposed := false;
+				clear_selected (segment);
+				clear_proposed (segment);
 			end query_segment;
 
 			
@@ -300,14 +286,14 @@ package body et_board_ops.board_contour is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_proposed_lines;
+	end reset_proposed_segments;
 
 
 
 	
 
 	
-	function get_first_line (
+	function get_first_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
@@ -324,19 +310,18 @@ package body et_board_ops.board_contour is
 			proceed : aliased boolean := true;
 
 			
-			procedure query_segment (c : in pac_segments.cursor) is
-				line : type_line renames element (c).segment_line;
-				use et_object_status;
-			begin
+			procedure query_segment (
+				c : in pac_segments.cursor) 
+			is begin
 				case flag is
 					when PROPOSED =>
-						if line.status.proposed then
+						if is_proposed (c) then
 							result := c;
 							proceed := false;
 						end if;
 
 					when SELECTED =>
-						if line.status.selected then
+						if is_selected (c) then
 							result := c;
 							proceed := false;
 						end if;
@@ -345,6 +330,7 @@ package body et_board_ops.board_contour is
 						null; -- CS
 				end case;
 			end query_segment;
+
 			
 		begin
 			iterate (
@@ -356,7 +342,7 @@ package body et_board_ops.board_contour is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up the first line / " & to_string (flag),
+			& " looking up the first segment / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -368,15 +354,15 @@ package body et_board_ops.board_contour is
 		log_indentation_down;
 
 		return result;
-	end get_first_line;
+	end get_first_segment;
 	
 
 
 	
 
-	procedure next_proposed_line (
+	procedure next_proposed_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in out pac_segments.cursor;
+		segment			: in out pac_segments.cursor;
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level)
 	is
@@ -386,15 +372,13 @@ package body et_board_ops.board_contour is
 			module		: in type_generic_module)
 		is
 			use pac_segments;
-			c : pac_segments.cursor := next (line);
+			c : pac_segments.cursor := next (segment);
 		begin
-			-- Start the search after the given line:
+			-- Start the search after the given segment:
 			while c /= pac_segments.no_element loop
-				if get_shape (c) = pac_contours.LINE then
-					if is_proposed (c) then
-						line := c;
-						exit;
-					end if;
+				if is_proposed (c) then
+					segment := c;
+					exit;
 				end if;
 				next (c);
 			end loop;
@@ -405,11 +389,9 @@ package body et_board_ops.board_contour is
 				c := module.board.contours.outline.contour.segments.first;
 
 				while c /= pac_segments.no_element loop
-					if get_shape (c) = pac_contours.LINE then
-						if is_proposed (c) then
-							line := c;
-							exit;
-						end if;
+					if is_proposed (c) then
+						segment := c;
+						exit;
 					end if;
 					next (c);
 				end loop;				
@@ -419,7 +401,7 @@ package body et_board_ops.board_contour is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& "advancing to next proposed line",
+			& "advancing to next proposed segment",
 			level => log_threshold);
 
 		log_indentation_up;
@@ -429,7 +411,7 @@ package body et_board_ops.board_contour is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end next_proposed_line;
+	end next_proposed_segment;
 
 
 	
@@ -601,8 +583,8 @@ package body et_board_ops.board_contour is
 		end delete;
 
 		
-	begin -- delete_outline
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) 
+	begin
+		log (text => "module " & to_string (module_name)
 			& " deleting outline segment at" & to_string (point) 
 			& " accuracy" & accuracy_to_string (accuracy),
 			level => log_threshold);

@@ -80,31 +80,32 @@ package et_board_ops.board_contour is
 	-- Modifies the status flag of a line (see package et_object_status):
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		line_cursor		: in pac_segments.cursor;
+		segment_cursor	: in pac_segments.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
 
 	
-	-- Sets the proposed-flag of all lines which are
+	-- Sets the proposed-flag of all line and arc segments which are
 	-- in the given zone around the given place.
-	procedure propose_lines (
+	procedure propose_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		zone			: in type_accuracy; -- the circular area around the place
-		count			: in out natural; -- the number of affected lines
+		count			: in out natural; -- the number of affected segments
 		log_threshold	: in type_log_level);
 
 
-	-- Clears the proposed-flag and the selected-flag of all lines:
-	procedure reset_proposed_lines (
+	-- Clears the proposed-flag and the selected-flag 
+	-- of all line and arc segments:
+	procedure reset_proposed_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 
-	-- Returns the first line according to the given flag.
+	-- Returns the first line or arc according to the given flag.
 	-- If no line has been found, then the return is no_element:
-	function get_first_line (
+	function get_first_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
@@ -112,15 +113,15 @@ package et_board_ops.board_contour is
 
 
 
-	-- Advances to the next proposed line, starting at
-	-- the given line. Traverses through the lines
+	-- Advances to the next proposed line or arc segment, starting at
+	-- the given segment. Traverses through the segments
 	-- in a circular manner. If there are no
-	-- proposed lines, then line assumes default value (no_element).
-	-- If there is only one proposed line, then line is unchanged.
-	-- CS last_item indicates that the last line has been reached:
-	procedure next_proposed_line (
+	-- proposed segments, then segment assumes default value (no_element).
+	-- If there is only one proposed segment, then segment is unchanged.
+	-- CS last_item indicates that the last segment has been reached:
+	procedure next_proposed_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in out pac_segments.cursor;
+		segment			: in out pac_segments.cursor;
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level);
 

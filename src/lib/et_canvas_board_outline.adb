@@ -198,8 +198,8 @@ package body et_canvas_board_outline is
 
 
 
-	-- Outputs the selected line in the status bar:
-	procedure show_selected_line (
+
+	procedure show_selected_segment (
 		selected		: in pac_contours.pac_segments.cursor;
 		clarification	: in boolean := false)
 	is 
@@ -216,33 +216,34 @@ package body et_canvas_board_outline is
 			set_status (praeamble & to_string (selected));
 			-- CS face
 		end if;		
-	end show_selected_line;
+	end show_selected_segment;
 
 
+	
 	
 
 	procedure select_object is 
 		use pac_contours;
 		use et_object_status;
-		selected_line : pac_segments.cursor;
+		selected_object : pac_segments.cursor;
 	begin
-		selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
+		selected_object := get_first_segment (active_module, SELECTED, log_threshold + 1);
 
 		modify_status (
 			module_cursor	=> active_module, 
 			operation		=> (CLEAR, SELECTED),
-			line_cursor		=> selected_line, 
+			segment_cursor	=> selected_object, 
 			log_threshold	=> log_threshold + 1);
 		
-		next_proposed_line (active_module, selected_line, log_threshold + 1);
+		next_proposed_segment (active_module, selected_object, log_threshold + 1);
 		
 		modify_status (
 			module_cursor	=> active_module, 
 			operation		=> (SET, SELECTED),
-			line_cursor		=> selected_line, 
+			segment_cursor	=> selected_object, 
 			log_threshold	=> log_threshold + 1);
 		
-		show_selected_line (selected_line, clarification => true);
+		show_selected_segment (selected_object, clarification => true);
 	end select_object;
 
 
@@ -256,19 +257,20 @@ package body et_canvas_board_outline is
 
 		count : natural := 0;
 		count_total : natural := 0;
+
 		
 		procedure select_first_proposed is
 			use et_object_status;
 			use pac_contours;
-			proposed_line : pac_segments.cursor;
+			proposed_object : pac_segments.cursor;
 		begin
-			proposed_line := get_first_line (active_module, PROPOSED, log_threshold + 1);
+			proposed_object := get_first_segment (active_module, PROPOSED, log_threshold + 1);
   
-			modify_status (active_module, proposed_line, (SET, SELECTED), log_threshold + 1);
+			modify_status (active_module, proposed_object, (SET, SELECTED), log_threshold + 1);
   
 			-- If only one line found, then show it in the status bar:
 			if count = 1 then
-				show_selected_line (proposed_line);
+				show_selected_segment (proposed_object);
 			end if;
 		end select_first_proposed;
 
@@ -278,7 +280,7 @@ package body et_canvas_board_outline is
 		log_indentation_up;
 
 		-- Propose lines in the vicinity of the given point:
-		propose_lines (active_module, point,
+		propose_segments (active_module, point,
 			get_catch_zone (et_canvas_board_2.catch_zone), 
 			count, log_threshold + 1);
 		
@@ -291,7 +293,7 @@ package body et_canvas_board_outline is
 			when 0 =>
 				reset_request_clarification;
 				reset_preliminary_object;
-				reset_proposed_lines (active_module, log_threshold + 1);
+				reset_proposed_segments (active_module, log_threshold + 1);
 				
 			when 1 =>
 				preliminary_object.ready := true;
@@ -333,7 +335,7 @@ package body et_canvas_board_outline is
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
-			selected_segment := get_first_line (active_module, SELECTED, log_threshold + 1);
+			selected_segment := get_first_segment (active_module, SELECTED, log_threshold + 1);
 			-- CS arcs
 			
 			if selected_segment /= pac_segments.no_element then
@@ -360,7 +362,7 @@ package body et_canvas_board_outline is
 			set_status (status_move_object);
 			
 			reset_preliminary_object;
-			reset_proposed_lines (active_module, log_threshold + 1);
+			reset_proposed_segments (active_module, log_threshold + 1);
 		end finalize;
 			
 		
@@ -424,7 +426,7 @@ package body et_canvas_board_outline is
 			log (text => "finalizing delete ...", level => log_threshold);
 			log_indentation_up;
 
-			selected_segment := get_first_line (active_module, SELECTED, log_threshold + 1);
+			selected_segment := get_first_segment (active_module, SELECTED, log_threshold + 1);
 			-- CS arcs
 
 			if selected_segment /= pac_segments.no_element then
@@ -448,7 +450,7 @@ package body et_canvas_board_outline is
 			set_status (status_delete_object);
 			
 			reset_preliminary_object;
-			reset_proposed_lines (active_module, log_threshold + 1);
+			reset_proposed_segments (active_module, log_threshold + 1);
 		end finalize;
 
 

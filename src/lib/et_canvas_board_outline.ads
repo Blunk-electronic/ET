@@ -91,6 +91,13 @@ package et_canvas_board_outline is
 	
 
 
+	-- Outputs the selected line or arc segment in the status bar:
+	procedure show_selected_segment (
+		selected		: in pac_contours.pac_segments.cursor;
+		clarification	: in boolean := false);
+
+	
+
 	-- On every call of this procedure we advance from one
 	-- proposed segment to the next in a circular manner.
 	procedure select_object;
