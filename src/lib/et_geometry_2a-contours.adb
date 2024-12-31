@@ -109,6 +109,119 @@ package body et_geometry_2a.contours is
 
 
 
+	procedure set_proposed (
+		segment	: in out type_segment)
+	is begin
+		case segment.shape is
+			when LINE =>
+				segment.segment_line.status.proposed := true;
+
+			when ARC =>
+				segment.segment_arc.status.proposed := true;
+		end case;
+	end set_proposed;
+
+
+
+	procedure clear_proposed (
+		segment	: in out type_segment)
+	is begin
+		case segment.shape is
+			when LINE =>
+				segment.segment_line.status.proposed := false;
+
+			when ARC =>
+				segment.segment_arc.status.proposed := false;
+		end case;
+	end clear_proposed;
+
+	
+
+	
+	function is_selected (
+		segment	: in pac_segments.cursor)
+		return boolean
+	is 
+		s : type_segment renames element (segment);
+		result : boolean := false;
+	begin
+		case s.shape is
+			when LINE =>
+				if s.segment_line.status.selected then
+					result := true;
+				end if;
+
+			when ARC =>
+				if s.segment_arc.status.selected then
+					result := true;
+				end if;
+		end case;
+
+		return result;
+	end is_selected;
+
+	
+
+	procedure set_selected (
+		segment	: in out type_segment)
+	is begin
+		case segment.shape is
+			when LINE =>
+				segment.segment_line.status.selected := true;
+
+			when ARC =>
+				segment.segment_arc.status.selected := true;
+		end case;
+	end set_selected;
+
+	
+
+	procedure clear_selected (
+		segment	: in out type_segment)
+	is begin
+		case segment.shape is
+			when LINE =>
+				segment.segment_line.status.selected := false;
+
+			when ARC =>
+				segment.segment_arc.status.selected := false;
+		end case;
+	end clear_selected;
+
+
+
+
+	procedure modify_status (
+		segment 	: in out type_segment;
+		operation	: in type_status_operation)						
+	is begin
+		case operation.flag is
+			when SELECTED =>
+				case operation.action is
+					when SET =>
+						set_selected (segment);
+
+					when CLEAR =>
+						clear_selected (segment);
+				end case;
+
+				
+			when PROPOSED =>
+				case operation.action is
+					when SET =>
+						set_proposed (segment);
+
+					when CLEAR =>
+						clear_proposed (segment);
+				end case;
+
+			when others =>
+				null; -- CS
+		end case;
+	end modify_status;
+
+	
+	
 
 	function get_shape (
 		segment	: in pac_segments.cursor)

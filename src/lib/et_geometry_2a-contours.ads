@@ -90,6 +90,32 @@ package et_geometry_2a.contours is
 		return boolean;
 
 
+	procedure set_proposed (
+		segment : in out type_segment);
+	
+
+	procedure clear_proposed (
+		segment : in out type_segment);
+
+	
+	function is_selected (
+		segment	: in pac_segments.cursor)
+		return boolean;
+
+
+	procedure set_selected (
+		segment : in out type_segment);
+
+	
+	procedure clear_selected (
+		segment : in out type_segment);
+
+
+	procedure modify_status (
+		segment 	: in out type_segment;
+		operation	: in type_status_operation);
+	
+
 	function get_shape (
 		segment	: in pac_segments.cursor)
 		return type_segment_shape;
