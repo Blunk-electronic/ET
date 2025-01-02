@@ -260,6 +260,7 @@ package body et_board_ops.board_contour is
 			begin
 				clear_selected (segment);
 				clear_proposed (segment);
+				clear_moving (segment);
 			end query_segment;
 
 			
@@ -276,7 +277,7 @@ package body et_board_ops.board_contour is
 
 		
 	begin
-		log (text => "resetting proposed lines",
+		log (text => "resetting proposed lines of board outline",
 			 level => log_threshold);
 
 		log_indentation_up;
