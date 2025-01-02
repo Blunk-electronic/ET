@@ -3486,6 +3486,35 @@ package body et_canvas is
 
 	
 
+
+
+
+
+
+	function get_object_tool_position
+		return type_vector_model
+	is 
+		result : type_vector_model;
+	begin
+		case object_tool is
+			when MOUSE =>
+				result := snap_to_grid (get_mouse_position);
+
+			when KEYBOARD =>
+				result := get_cursor_position;
+		end case;
+
+		return result;
+	end get_object_tool_position;
+
+
+
+
+
+
+
+
+
 	
 
 -- PRIMITIVE DRAW OPERATIONS:
@@ -3495,6 +3524,8 @@ package body et_canvas is
 		cairo.stroke (context);
 	end stroke;
 
+
+	
 	
 
 	procedure set_linewidth (

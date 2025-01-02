@@ -1252,6 +1252,35 @@ package et_canvas is
 		return boolean;
 	
 
+
+
+
+
+
+	-- When an object is to be moved or dragged, then
+	-- this global variable should be used:
+	point_of_attack : type_vector_model;
+
+	-- When an object is being moved, then this can be done
+	-- via mouse or keyboard. This global variable should be used:
+	object_tool : type_tool := MOUSE;
+
+
+	-- This function returns the object tool position
+	-- according to the currently value of object_tool.
+	-- If the tool is MOUSE then the return is snapped
+	-- to the nearest grid point:
+	function get_object_tool_position
+		return type_vector_model;
+
+
+
+	
+
+	
+
+
+	
 	
 -- PRIMITIVE DRAW OPERATIONS:
 
@@ -1268,9 +1297,7 @@ package et_canvas is
 		w : in type_distance_positive);
 
 
-	point_of_attack : type_vector_model;
 
-	object_tool : type_tool := MOUSE;
 	
 	
 	-- This is a primitive draw operation that draws a line.

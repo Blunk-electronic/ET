@@ -82,13 +82,17 @@ package body et_canvas.contours is
 		start_point : type_vector_model;
 		contour_is_closed : boolean := false;
 		
-		
+
+		-- This procedure draws a segment of the given contour:
 		procedure query_segment (
 			c : in pac_segments.cursor) 
 		is 
-			--segment : type_segment renames element (c);
+			-- Take a copy of the given segment:
 			segment : type_segment := element (c);
 
+			-- In case the segment is being moved
+			-- by the operator, then we store the tool
+			-- position here:
 			pointer : type_vector_model;
 		begin			
 			case segment.shape is				
@@ -96,16 +100,13 @@ package body et_canvas.contours is
 					-- put_line ("draw_segment (line)");
 					-- put_line (" line" & to_string (type_line (segment.segment_line)));
 
+					-- If the segment set as "moving", then
+					-- its position will be modified according to the
+					-- point_of_attack and the current tool position.
+					-- Otherwise the segment remains unchanged and will be drawn
+					-- as it is:
 					if is_moving (c) then
-						-- put_line ("moving line");
-						case object_tool is
-							when MOUSE =>
-								pointer := snap_to_grid (get_mouse_position); 
-						      
-							when KEYBOARD =>
-								pointer := get_cursor_position; 
-						end case;
-						
+						pointer := get_object_tool_position;
 						move_line_to (segment.segment_line, point_of_attack, pointer);
 					end if;
 					
