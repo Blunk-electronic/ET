@@ -100,7 +100,7 @@ package et_canvas_board_outline is
 
 	-- On every call of this procedure we advance from one
 	-- proposed segment to the next in a circular manner.
-	procedure select_object;
+	procedure select_segment;
 
 
 	-- Locates objects in the vicinity of the given point

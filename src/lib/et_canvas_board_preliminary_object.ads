@@ -75,7 +75,7 @@ package et_canvas_board_preliminary_object is
 		path			: type_path_live;
 		width			: type_distance_positive := 0.15;
 
-		point_of_attack : type_vector_model;
+		-- point_of_attack : type_vector_model;
 	end record;
 
 	

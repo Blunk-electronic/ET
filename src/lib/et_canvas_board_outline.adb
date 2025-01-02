@@ -222,7 +222,7 @@ package body et_canvas_board_outline is
 	
 	
 
-	procedure select_object is 
+	procedure select_segment is 
 		use pac_contours;
 		use et_object_status;
 		selected_object : pac_segments.cursor;
@@ -244,11 +244,36 @@ package body et_canvas_board_outline is
 			log_threshold	=> log_threshold + 1);
 		
 		show_selected_segment (selected_object, clarification => true);
-	end select_object;
+	end select_segment;
 
 
 
 
+	-- This procedure searches for the first selected segment
+	-- and sets its status to "moving":
+	procedure set_first_selected_segment_moving is
+		use et_board_ops.board_contour;
+		use et_object_status;
+
+		use pac_contours;
+		use pac_segments;
+		selected_segment : pac_segments.cursor;
+	begin
+		-- log (text => "set_first_selected_segment_moving ...", level => log_threshold);
+
+		selected_segment := get_first_segment (active_module, SELECTED, log_threshold + 1);
+
+		modify_status (
+			module_cursor	=> active_module, 
+			operation		=> (SET, MOVING),
+			segment_cursor	=> selected_segment, 
+			log_threshold	=> log_threshold + 1);
+
+	end set_first_selected_segment_moving;
+
+
+
+	
 
 	procedure find_objects (
 	   point : in type_vector_model)
@@ -274,6 +299,8 @@ package body et_canvas_board_outline is
 			end if;
 		end select_first_proposed;
 
+
+		use et_modes.board;
 	
 	begin
 		log (text => "locating objects ...", level => log_threshold);
@@ -298,6 +325,11 @@ package body et_canvas_board_outline is
 			when 1 =>
 				preliminary_object.ready := true;
 				select_first_proposed;
+
+				if verb = VERB_MOVE then
+					set_first_selected_segment_moving;
+				end if;
+				
 				reset_request_clarification;
 				
 			when others =>
@@ -346,10 +378,17 @@ package body et_canvas_board_outline is
 				move_segment (
 					module_cursor	=> active_module,
 					segment			=> selected_segment,
-					point_of_attack	=> preliminary_object.point_of_attack,
+					point_of_attack	=> point_of_attack,
 					-- coordinates		=> ABSOLUTE,
 					destination		=> point,
 					log_threshold	=> log_threshold);
+
+
+				modify_status (
+					module_cursor	=> active_module, 
+					operation		=> (CLEAR, MOVING),
+					segment_cursor	=> selected_segment, 
+					log_threshold	=> log_threshold + 1);
 
 				
 				-- Commit the new state of the design:
@@ -365,6 +404,8 @@ package body et_canvas_board_outline is
 			reset_proposed_segments (active_module, log_threshold + 1);
 		end finalize;
 			
+			
+		
 		
 	begin
 		-- Initially the preliminary_object is not ready.
@@ -372,8 +413,9 @@ package body et_canvas_board_outline is
 
 			-- Set the tool being used:
 			preliminary_object.tool := tool;
+			object_tool := tool;
 
-			preliminary_object.point_of_attack := point;
+			point_of_attack := point;
 			
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
@@ -387,14 +429,18 @@ package body et_canvas_board_outline is
 
 			else
 				-- Here the clarification procedure ends.
-				-- An object has been selected via procedure select_object.
-				-- By setting preliminary_object.ready, the selected
-				-- object will be drawn at the tool position
-				-- when objects are drawn on the canvas.
+				-- A segment has been selected via procedure select_segment.
+				-- By setting the status of the selected segment 
+				-- as "moving", the selected segment
+				-- will be drawn according to point_of_attack and 
+				-- the tool position.
+				set_first_selected_segment_moving;
+				
 				-- Furtheron, on the next call of this procedure
-				-- the selected object will be assigned its final position.
-				preliminary_object.ready := true;
+				-- the selected segment will be assigned its final position.
+
 				reset_request_clarification;
+				preliminary_object.ready := true;
 			end if;
 			
 		else

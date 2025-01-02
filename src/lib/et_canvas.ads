@@ -1266,6 +1266,11 @@ package et_canvas is
 	-- current zoom-factor:
 	procedure set_linewidth (
 		w : in type_distance_positive);
+
+
+	point_of_attack : type_vector_model;
+
+	object_tool : type_tool := MOUSE;
 	
 	
 	-- This is a primitive draw operation that draws a line.

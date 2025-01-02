@@ -89,7 +89,7 @@ procedure draw_outline is
 
 	
 begin
-	-- put_line ("draw board outline ...");
+	--put_line ("draw board outline ...");
 
 	-- All outline segments, holes and texts will be 
 	-- drawn with the same color:

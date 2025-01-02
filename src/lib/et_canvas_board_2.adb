@@ -65,6 +65,7 @@ with et_board_ops.grid;
 with et_board_ops.assy_doc;
 with et_board_ops.silkscreen;
 with et_board_ops.conductors;
+with et_board_ops.board_contour;
 with et_pcb;
 
 with et_text;
@@ -862,6 +863,8 @@ package body et_canvas_board_2 is
 			module_cursor	=> active_module, 
 			freetracks		=> true,
 			log_threshold	=> log_threshold + 1);
+
+		et_board_ops.board_contour.reset_proposed_segments (active_module, log_threshold + 1);
 		
 		redraw_board;
 	end reset;

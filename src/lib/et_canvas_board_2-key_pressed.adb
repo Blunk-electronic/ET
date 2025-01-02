@@ -194,7 +194,7 @@ is
 
 					when NOUN_OUTLINE =>
 						if clarification_pending then
-							et_canvas_board_outline.select_object;
+							et_canvas_board_outline.select_segment;
 						end if;
 					
 					when NOUN_TRACK =>
@@ -399,7 +399,7 @@ is
 
 					when NOUN_OUTLINE =>
 						if clarification_pending then
-							et_canvas_board_outline.select_object;
+							et_canvas_board_outline.select_segment;
 						end if;
 						
 					when NOUN_TEXT =>

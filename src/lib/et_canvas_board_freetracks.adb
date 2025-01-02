@@ -251,7 +251,7 @@ package body et_canvas_board_freetracks is
 				move_freetrack_line (
 					module_cursor	=> active_module,
 					line			=> element (selected_line.line_cursor),
-					point_of_attack	=> preliminary_object.point_of_attack,
+					point_of_attack	=> point_of_attack,
 					destination		=> point,
 					log_threshold	=> log_threshold);
 				
@@ -281,7 +281,7 @@ package body et_canvas_board_freetracks is
 			-- Set the tool being used:
 			preliminary_object.tool := tool;
 
-			preliminary_object.point_of_attack := point;
+			point_of_attack := point;
 			
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:

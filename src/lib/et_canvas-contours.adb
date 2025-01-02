@@ -86,13 +86,29 @@ package body et_canvas.contours is
 		procedure query_segment (
 			c : in pac_segments.cursor) 
 		is 
-			segment : type_segment renames element (c);
+			--segment : type_segment renames element (c);
+			segment : type_segment := element (c);
+
+			pointer : type_vector_model;
 		begin			
 			case segment.shape is				
 				when LINE =>
 					-- put_line ("draw_segment (line)");
 					-- put_line (" line" & to_string (type_line (segment.segment_line)));
 
+					if is_moving (c) then
+						-- put_line ("moving line");
+						case object_tool is
+							when MOUSE =>
+								pointer := snap_to_grid (get_mouse_position); 
+						      
+							when KEYBOARD =>
+								pointer := get_cursor_position; 
+						end case;
+						
+						move_line_to (segment.segment_line, point_of_attack, pointer);
+					end if;
+					
 					-- CS: This is a makeshift as long as there is no
 					-- proper procedure to draw a polyline which is
 					-- mandatory to fill an area:

@@ -99,7 +99,7 @@ is
 					if preliminary_object.ready then
 						declare
 							line_tmp : type_doc_line := line;
-							POA : type_vector_model renames preliminary_object.point_of_attack;
+							POA : type_vector_model renames point_of_attack;
 						begin
 							case preliminary_object.tool is
 								when MOUSE =>
