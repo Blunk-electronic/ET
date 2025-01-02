@@ -3303,19 +3303,27 @@ package body et_canvas is
 	end clarification_pending;
 
 
--- 	procedure reset_activate_counter is begin
--- 		activate_counter := type_activate_counter'first;
--- 		put_line ("reset_activate_counter" & 
--- 			type_activate_counter'image (activate_counter));
--- 	end reset_activate_counter;
--- 
--- 	
--- 	procedure increment_activate_counter is begin
--- 		activate_counter := activate_counter + 1;
--- 		put_line ("activate_counter" & 
--- 			type_activate_counter'image (activate_counter));
--- 	end increment_activate_counter;
 
+	function get_object_tool_position
+		return type_vector_model
+	is 
+		result : type_vector_model;
+	begin
+		case object_tool is
+			when MOUSE =>
+				result := snap_to_grid (get_mouse_position);
+
+			when KEYBOARD =>
+				result := get_cursor_position;
+		end case;
+
+		return result;
+	end get_object_tool_position;
+
+
+
+	
+	
 
 
 -- COMMAND STATUS:
@@ -3485,29 +3493,6 @@ package body et_canvas is
 	end above_visibility_threshold;
 
 	
-
-
-
-
-
-
-	function get_object_tool_position
-		return type_vector_model
-	is 
-		result : type_vector_model;
-	begin
-		case object_tool is
-			when MOUSE =>
-				result := snap_to_grid (get_mouse_position);
-
-			when KEYBOARD =>
-				result := get_cursor_position;
-		end case;
-
-		return result;
-	end get_object_tool_position;
-
-
 
 
 

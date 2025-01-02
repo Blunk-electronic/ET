@@ -1120,16 +1120,25 @@ package et_canvas is
 	function clarification_pending return boolean;
 
 
-	-- CS For the moment, there is no need anymore for this stuff.
-	-- However, it will be left in comments for the future:
-	
-	-- In order to count a number of clicks or keys pressed:
--- 	subtype type_activate_counter is natural range 0 .. 2;
--- 	activate_counter : type_activate_counter := type_activate_counter'first;
--- 	
--- 	procedure reset_activate_counter;
--- 	procedure increment_activate_counter;
+	-- When an object is to be moved or dragged, then
+	-- this global variable should be used:
+	point_of_attack : type_vector_model;
 
+	-- When an object is being moved, then this can be done
+	-- via mouse or keyboard. This global variable should be used:
+	object_tool : type_tool := MOUSE;
+
+
+	-- This function returns the object tool position
+	-- according to the currently value of object_tool.
+	-- If the tool is MOUSE then the return is snapped
+	-- to the nearest grid point:
+	function get_object_tool_position
+		return type_vector_model;
+
+
+
+	
 
 
 -- COMMAND STATUS:
@@ -1253,25 +1262,6 @@ package et_canvas is
 	
 
 
-
-
-
-
-	-- When an object is to be moved or dragged, then
-	-- this global variable should be used:
-	point_of_attack : type_vector_model;
-
-	-- When an object is being moved, then this can be done
-	-- via mouse or keyboard. This global variable should be used:
-	object_tool : type_tool := MOUSE;
-
-
-	-- This function returns the object tool position
-	-- according to the currently value of object_tool.
-	-- If the tool is MOUSE then the return is snapped
-	-- to the nearest grid point:
-	function get_object_tool_position
-		return type_vector_model;
 
 
 
