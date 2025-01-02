@@ -191,6 +191,59 @@ package body et_geometry_2a.contours is
 
 
 
+	function is_moving (
+		segment	: in pac_segments.cursor)
+		return boolean
+	is 
+		s : type_segment renames element (segment);
+		result : boolean := false;
+	begin
+		case s.shape is
+			when LINE =>
+				if s.segment_line.status.moving then
+					result := true;
+				end if;
+
+			when ARC =>
+				if s.segment_arc.status.moving then
+					result := true;
+				end if;
+		end case;
+
+		return result;
+	end is_moving;
+
+	
+
+	procedure set_moving (
+		segment	: in out type_segment)
+	is begin
+		case segment.shape is
+			when LINE =>
+				segment.segment_line.status.moving := true;
+
+			when ARC =>
+				segment.segment_arc.status.moving := true;
+		end case;
+	end set_moving;
+
+	
+
+	procedure clear_moving (
+		segment	: in out type_segment)
+	is begin
+		case segment.shape is
+			when LINE =>
+				segment.segment_line.status.moving := false;
+
+			when ARC =>
+				segment.segment_arc.status.moving := false;
+		end case;
+	end clear_moving;
+
+	
+
+
 	procedure modify_status (
 		segment 	: in out type_segment;
 		operation	: in type_status_operation)						
@@ -215,6 +268,17 @@ package body et_geometry_2a.contours is
 						clear_proposed (segment);
 				end case;
 
+				
+			when MOVING =>
+				case operation.action is
+					when SET =>
+						set_moving (segment);
+
+					when CLEAR =>
+						clear_moving (segment);
+				end case;
+
+				
 			when others =>
 				null; -- CS
 		end case;

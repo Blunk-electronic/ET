@@ -111,6 +111,21 @@ package et_geometry_2a.contours is
 		segment : in out type_segment);
 
 
+
+	function is_moving (
+		segment	: in pac_segments.cursor)
+		return boolean;
+
+
+	procedure set_moving (
+		segment : in out type_segment);
+
+	
+	procedure clear_moving (
+		segment : in out type_segment);
+
+	
+
 	procedure modify_status (
 		segment 	: in out type_segment;
 		operation	: in type_status_operation);
