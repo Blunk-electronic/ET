@@ -131,7 +131,7 @@ package body et_canvas_board_outline is
 		-- Set the tool being used for this path so that procedure
 		-- draw_path_live (for example in et_canvas_board_2-draw_assy_doc)
 		-- knows where to get the end point from.
-		PC.tool := tool;
+		object_tool := tool;
 
 		PC.category := LAYER_CAT_OUTLINE;
 		

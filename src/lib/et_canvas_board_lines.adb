@@ -616,18 +616,18 @@ package body et_canvas_board_lines is
 		-- Set the tool being used for this path so that procedure
 		-- draw_path (for example in et_canvas_board_2-draw_nets-draw_assy_doc)
 		-- knows where to get the end point from.
-		PL.tool := tool;
+		object_tool := tool;
 
 		-- Initally the preliminary_object is NOT ready. Nothing will be drawn.
 		-- Upon the first calling of this procedure the start point of the
 		-- path will be set.
 		
-		if not PL.ready then
+		if not object_ready then
 			-- set start point:
 			PL.path.start_point := point;
 
 			-- Allow drawing of the path:
-			preliminary_object.ready := true;
+			object_ready := true;
 
 			set_status (status_start_point & to_string (PL.path.start_point) & ". " &
 				status_press_space & status_set_end_point & status_hint_for_abort);

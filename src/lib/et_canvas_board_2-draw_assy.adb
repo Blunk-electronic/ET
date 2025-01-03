@@ -96,12 +96,12 @@ is
 
 			case verb is
 				when VERB_MOVE =>
-					if preliminary_object.ready then
+					if object_ready then
 						declare
 							line_tmp : type_doc_line := line;
 							POA : type_vector_model renames point_of_attack;
 						begin
-							case preliminary_object.tool is
+							case object_tool is
 								when MOUSE =>
 									move_line_to (line_tmp, POA, snap_to_grid (get_mouse_position));
 

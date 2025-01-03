@@ -545,18 +545,18 @@ package body et_canvas_board_zone is
 		-- Set the tool being used for this path so that procedure
 		-- draw_path_live (for example in et_canvas_board_2-draw_assy_doc)
 		-- knows where to get the end point from.
-		PZ.tool := tool;
+		object_tool := tool;
 
 		-- Initally the preliminary_object is NOT ready. Nothing will be drawn.
 		-- Upon the first calling of this procedure the start point of the
 		-- path will be set.
 		
-		if not PZ.ready then
+		if not object_ready then
 			-- set start point:
 			PZ.path.start_point := point;
 
 			-- Allow drawing of the path:
-			preliminary_object.ready := true;
+			object_ready := true;
 
 			set_status (status_start_point & to_string (PZ.path.start_point) & ". " &
 				status_press_space & status_set_end_point & status_hint_for_abort);

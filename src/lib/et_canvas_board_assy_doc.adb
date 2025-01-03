@@ -159,7 +159,7 @@ package body et_canvas_board_assy_doc is
 				reset_proposed_lines (active_module, log_threshold + 1);
 				
 			when 1 =>
-				preliminary_object.ready := true;
+				object_ready := true;
 				select_first_proposed;
 				reset_request_clarification;
 				
@@ -240,10 +240,10 @@ package body et_canvas_board_assy_doc is
 		
 	begin
 		-- Initially the preliminary_object is not ready.
-		if not preliminary_object.ready then
+		if not object_ready then
 
 			-- Set the tool being used:
-			preliminary_object.tool := tool;
+			object_tool := tool;
 
 			point_of_attack := point;
 			
@@ -255,17 +255,17 @@ package body et_canvas_board_assy_doc is
 				-- clarification is now pending.
 
 				-- If find_objects has found only one object
-				-- then the flag preliminary_object.ready is set true.
+				-- then the flag object_ready is set true.
 
 			else
 				-- Here the clarification procedure ends.
 				-- An object has been selected via procedure select_object.
-				-- By setting preliminary_object.ready, the selected
+				-- By setting object_ready, the selected
 				-- object will be drawn at the tool position
 				-- when objects are drawn on the canvas.
 				-- Furtheron, on the next call of this procedure
 				-- the selected object will be assigned its final position.
-				preliminary_object.ready := true;
+				object_ready := true;
 				reset_request_clarification;
 			end if;
 			
@@ -342,9 +342,9 @@ package body et_canvas_board_assy_doc is
 			-- clarification is now pending.
 
 			-- If find_objects has found only one object
-			-- then the flag preliminary_object.ready is set true.
+			-- then the flag object_ready is set true.
 
-			if preliminary_object.ready then
+			if object_ready then
 				finalize;
 			end if;
 		else

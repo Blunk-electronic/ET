@@ -490,9 +490,9 @@ package body et_canvas_board_2 is
 		-- put_line ("draw_path");
 		
 		
-		if verb = VERB_DRAW and noun = NOUN_LINE and PL.ready
+		if verb = VERB_DRAW and noun = NOUN_LINE and object_ready
 		and PL.category = cat then
-			case PL.tool is
+			case object_tool is
 				when MOUSE => 
 					compute_and_draw (
 						start_point	=> PL.path.start_point,	-- start of path

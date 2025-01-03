@@ -256,12 +256,12 @@ procedure draw_conductors is
 		procedure draw_freetrack_being_moved is
 			use et_canvas_board_freetracks;
 		begin
-			if preliminary_object.ready then
+			if object_ready then
 				declare
 					line_tmp : type_conductor_line := line;
 					POA : type_vector_model renames point_of_attack;
 				begin
-					case preliminary_object.tool is
+					case object_tool is
 						when MOUSE =>
 							move_line_to (line_tmp, POA, snap_to_grid (get_mouse_position));
 

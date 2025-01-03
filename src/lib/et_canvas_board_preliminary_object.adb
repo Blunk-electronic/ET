@@ -44,8 +44,8 @@ package body et_canvas_board_preliminary_object is
 
 
 	procedure reset_preliminary_object is begin
-		preliminary_object.ready := false;
-		preliminary_object.tool := MOUSE;
+		null;
+		-- CS reset category, signal_layer, width, ...
 	end reset_preliminary_object;
 
 	

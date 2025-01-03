@@ -54,7 +54,7 @@ begin
 		when VERB_DRAW =>
 			case noun is
 				when NOUN_LINE =>
-					if preliminary_object.ready then
+					if object_ready then
 						redraw_board;
 					end if;
 
@@ -64,7 +64,7 @@ begin
 					end if;
 					
 				when NOUN_ZONE =>
-					if preliminary_object.ready then
+					if object_ready then
 						redraw_board;
 					end if;
 					
@@ -75,12 +75,12 @@ begin
 		when VERB_MOVE =>
 			case noun is
 				when NOUN_ASSY =>
-					if preliminary_object.ready then
+					if object_ready then
 						redraw_board;
 					end if;
 
 				when NOUN_SILKSCREEN =>
-					if preliminary_object.ready then
+					if object_ready then
 						redraw_board;
 					end if;
 
@@ -90,7 +90,7 @@ begin
 					end if;
 
 				when NOUN_FREETRACK =>
-					if preliminary_object.ready then
+					if object_ready then
 						redraw_board;
 					end if;
 					
