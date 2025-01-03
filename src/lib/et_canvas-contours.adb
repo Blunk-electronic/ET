@@ -97,15 +97,16 @@ package body et_canvas.contours is
 		begin			
 			case segment.shape is				
 				when LINE =>
-					-- put_line ("draw_segment (line)");
+					--put_line ("draw_segment (line)");
 					-- put_line (" line" & to_string (type_line (segment.segment_line)));
 
-					-- If the segment set as "moving", then
+					-- If the segment is set as "moving", then
 					-- its position will be modified according to the
 					-- point_of_attack and the current tool position.
 					-- Otherwise the segment remains unchanged and will be drawn
 					-- as it is:
 					if is_moving (c) then
+						--put_line ("moving");
 						pointer := get_object_tool_position;
 						move_line_to (segment.segment_line, point_of_attack, pointer);
 					end if;

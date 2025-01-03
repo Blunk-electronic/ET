@@ -442,7 +442,7 @@ is
 
 			when key_noun_outline =>
 				noun := NOUN_OUTLINE;
-				reset_preliminary_object;				
+				reset_object;				
 				set_status (status_draw_outline);
 
 				

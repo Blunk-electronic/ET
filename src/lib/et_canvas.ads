@@ -1128,7 +1128,10 @@ package et_canvas is
 	-- via mouse or keyboard. This global variable should be used:
 	object_tool : type_tool := MOUSE;
 
-
+	-- This flag indicates that the object has been
+	-- clarified among the proposed objects:
+	object_ready : boolean := false;
+	
 	-- This function returns the object tool position
 	-- according to the currently value of object_tool.
 	-- If the tool is MOUSE then the return is snapped
@@ -1137,7 +1140,9 @@ package et_canvas is
 		return type_vector_model;
 
 
-
+	-- Resets object_tool and object_ready;
+	procedure reset_object;
+	
 	
 
 

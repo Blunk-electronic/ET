@@ -3322,6 +3322,13 @@ package body et_canvas is
 
 
 
+	procedure reset_object is begin
+		object_ready := false;
+		object_tool := MOUSE;
+		-- CS reset point_of_atttack ?
+	end reset_object;
+
+
 	
 	
 

@@ -59,7 +59,7 @@ begin
 					end if;
 
 				when NOUN_OUTLINE =>
-					if preliminary_object.ready then
+					if object_ready then
 						redraw_board;
 					end if;
 					
@@ -105,7 +105,7 @@ begin
 					end if;
 
 				when NOUN_OUTLINE =>
-					if preliminary_object.ready then
+					if object_ready then
 						redraw_board;
 					end if;
 					

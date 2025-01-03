@@ -140,12 +140,12 @@ package body et_canvas_board_outline is
 		-- Upon the first calling of this procedure the start point of the
 		-- path will be set.
 		
-		if not PC.ready then
+		if not object_ready then
 			-- set start point:
 			PC.path.start_point := point;
 
 			-- Allow drawing of the path:
-			preliminary_object.ready := true;
+			object_ready := true;
 
 			set_status (status_start_point & to_string (PC.path.start_point) & ". " &
 				status_press_space & status_set_end_point & status_hint_for_abort);
@@ -190,7 +190,7 @@ package body et_canvas_board_outline is
 				PC.path.start_point := point;
 				
 			else
-				reset_preliminary_object;
+				reset_object;
 			end if;
 		end if;			
 	end make_path;
@@ -319,11 +319,11 @@ package body et_canvas_board_outline is
 		case count_total is
 			when 0 =>
 				reset_request_clarification;
-				reset_preliminary_object;
+				reset_object;
 				reset_proposed_segments (active_module, log_threshold + 1);
 				
 			when 1 =>
-				preliminary_object.ready := true;
+				object_ready := true;
 				select_first_proposed;
 
 				if verb = VERB_MOVE then
@@ -400,7 +400,7 @@ package body et_canvas_board_outline is
 			log_indentation_down;			
 			set_status (status_move_object);
 			
-			reset_preliminary_object;
+			reset_object;
 			reset_proposed_segments (active_module, log_threshold + 1);
 		end finalize;
 			
@@ -408,11 +408,10 @@ package body et_canvas_board_outline is
 		
 		
 	begin
-		-- Initially the preliminary_object is not ready.
-		if not preliminary_object.ready then
+		-- Initially the object is not ready.
+		if not object_ready then
 
 			-- Set the tool being used:
-			preliminary_object.tool := tool;
 			object_tool := tool;
 
 			point_of_attack := point;
@@ -425,7 +424,7 @@ package body et_canvas_board_outline is
 				-- clarification is now pending.
 
 				-- If find_objects has found only one object
-				-- then the flag preliminary_object.ready is set true.
+				-- then the flag object_ready is set true.
 
 			else
 				-- Here the clarification procedure ends.
@@ -440,7 +439,7 @@ package body et_canvas_board_outline is
 				-- the selected segment will be assigned its final position.
 
 				reset_request_clarification;
-				preliminary_object.ready := true;
+				object_ready := true;
 			end if;
 			
 		else
@@ -495,7 +494,7 @@ package body et_canvas_board_outline is
 			log_indentation_down;			
 			set_status (status_delete_object);
 			
-			reset_preliminary_object;
+			reset_object;
 			reset_proposed_segments (active_module, log_threshold + 1);
 		end finalize;
 
@@ -510,9 +509,9 @@ package body et_canvas_board_outline is
 			-- clarification is now pending.
 
 			-- If find_objects has found only one object
-			-- then the flag preliminary_object.ready is set true.
+			-- then the flag object_ready is set true.
 
-			if preliminary_object.ready then
+			if object_ready then
 				finalize;
 			end if;
 		else

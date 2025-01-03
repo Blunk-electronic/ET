@@ -583,13 +583,13 @@ package body et_canvas_board_2 is
 	begin
 		-- put_line ("draw_live_zone");		
 		
-		if verb = VERB_DRAW and PZ.ready
+		if verb = VERB_DRAW and object_ready
 		and PZ.category = cat 
 			
 		and (noun = NOUN_ZONE or noun = NOUN_OUTLINE) 
 		
 		then
-			case PZ.tool is
+			case object_tool is
 				when MOUSE => 
 					compute_and_draw (
 						start_point	=> PZ.path.start_point,	-- start of path
@@ -840,6 +840,7 @@ package body et_canvas_board_2 is
 		status_enter_verb;
 
 		reset_preliminary_object;
+		reset_object; -- see et_canvas specs
 		
 		-- et_canvas_board_lines.remove_properties_bar;		
 		-- et_canvas_board_zone.remove_properties_bar;
