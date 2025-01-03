@@ -43,8 +43,11 @@
 package body et_canvas_board_preliminary_object is
 
 
-	procedure reset_preliminary_object is begin
-		null;
+	procedure reset_preliminary_object is
+		use pac_canvas;
+	begin
+		reset_object; -- global stuff
+
 		-- CS reset category, signal_layer, width, ...
 	end reset_preliminary_object;
 

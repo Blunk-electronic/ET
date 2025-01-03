@@ -840,7 +840,6 @@ package body et_canvas_board_2 is
 		status_enter_verb;
 
 		reset_preliminary_object;
-		reset_object; -- see et_canvas specs
 		
 		-- et_canvas_board_lines.remove_properties_bar;		
 		-- et_canvas_board_zone.remove_properties_bar;

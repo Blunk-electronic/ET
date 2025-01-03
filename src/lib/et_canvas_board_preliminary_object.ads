@@ -39,13 +39,10 @@
 -- DESCRIPTION:
 -- 
 
-with et_canvas_tool;					use et_canvas_tool;
-with et_canvas_messages;				use et_canvas_messages;
-with et_canvas_board_2;
+with et_canvas_board_2;					use et_canvas_board_2;
 with et_pcb_sides;						use et_pcb_sides;
 with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
 use et_pcb_coordinates_2.pac_geometry_2;
-use et_pcb_coordinates_2.pac_path_and_bend;
 
 with et_board_layer_category;			use et_board_layer_category;
 with et_pcb_stack;						use et_pcb_stack;
@@ -71,7 +68,9 @@ package et_canvas_board_preliminary_object is
 
 
 	
-	-- Resets the preliminary object:
+	-- Resets the preliminary object
+	-- and global stuff like object_tool, object_ready, ...
+	-- (see et_canvas spec):
 	procedure reset_preliminary_object;
 	
 
