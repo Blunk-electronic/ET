@@ -553,29 +553,29 @@ package body et_canvas_board_zone is
 		
 		if not object_ready then
 			-- set start point:
-			PZ.path.start_point := point;
+			live_path.start_point := point;
 
 			-- Allow drawing of the path:
 			object_ready := true;
 
-			set_status (status_start_point & to_string (PZ.path.start_point) & ". " &
+			set_status (status_start_point & to_string (live_path.start_point) & ". " &
 				status_press_space & status_set_end_point & status_hint_for_abort);
 
 		else -- preliminary_zone IS ready
 
 			-- Start a new path only if the given point differs from 
 			-- the start point of the current path:
-			if point /= PZ.path.start_point then
+			if point /= live_path.start_point then
 
 				-- Complete the path by setting its end point.
 				-- The the current bend point (if there is one) into account:
 				
-				if PZ.path.bended = NO then
-					PZ.path.end_point := point;
+				if live_path.bended = NO then
+					live_path.end_point := point;
 
 					-- insert a single line:
-					line.start_point := PZ.path.start_point;
-					line.end_point   := PZ.path.end_point;
+					line.start_point := live_path.start_point;
+					line.end_point   := live_path.end_point;
 					add_by_category;
 					
 				else
@@ -584,21 +584,21 @@ package body et_canvas_board_zone is
 					-- See for example procedure draw_path in et_canvas_board_2-draw_assy_doc.
 
 					-- insert first line of the path:
-					line.start_point := PZ.path.start_point;
-					line.end_point   := PZ.path.bend_point;
+					line.start_point := live_path.start_point;
+					line.end_point   := live_path.bend_point;
 					add_by_category;
 
 					
 					-- insert second line of the path:
-					PZ.path.end_point := point;
-					line.start_point := PZ.path.bend_point;
-					line.end_point   := PZ.path.end_point;
+					live_path.end_point := point;
+					line.start_point := live_path.bend_point;
+					line.end_point   := live_path.end_point;
 					add_by_category;
 				end if;
 
 				-- Set start point of path so that a new
 				-- path can be drawn:
-				PZ.path.start_point := point;
+				live_path.start_point := point;
 				
 			else
 				reset_preliminary_object;

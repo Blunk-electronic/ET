@@ -263,15 +263,15 @@ is
 				case noun is
 					when NOUN_LINE =>
 						pac_path_and_bend.next_bend_style (
-							preliminary_object.path);
+							live_path);
 
 					when NOUN_OUTLINE =>
 						pac_path_and_bend.next_bend_style (
-							preliminary_object.path);
+							live_path);
 						
 					when NOUN_ZONE =>
 						pac_path_and_bend.next_bend_style (
-							preliminary_object.path);
+							live_path);
 						
 					when others => null;							
 				end case;

@@ -68,6 +68,7 @@ with et_primitive_objects;		use et_primitive_objects;
 with et_logical_pixels;			use et_logical_pixels;
 with et_geometry_2a;
 with et_geometry_2a.grid;
+with et_geometry_2a.path;
 with et_window_dimensions;		use et_window_dimensions;
 
 with et_canvas_messages;		use et_canvas_messages;
@@ -87,6 +88,7 @@ generic
 	
 	with package pac_geometry is new et_geometry_2a (<>);
 	with package pac_grid is new pac_geometry.grid;
+	with package pac_path is new pac_geometry.path;
 
 	with package pac_polygons is new pac_geometry.pac_geometry_1.et_polygons;
 	with package pac_offsetting is new pac_polygons.offsetting;
@@ -1103,8 +1105,9 @@ package et_canvas is
 
 
 
+
 	
--- CLARIFICATION:
+-- CLARIFICATION, PRELIMINARY OBJECT, PATH:
 	
 	-- Whenever the operator is required to clarify which object is meant,
 	-- we use this type:
@@ -1131,9 +1134,14 @@ package et_canvas is
 	-- This flag indicates that the object has been
 	-- clarified among the proposed objects:
 	object_ready : boolean := false;
+
+	-- When a path, consisting of one or two lines is drawn
+	-- then it is temprarily stored here:
+	live_path : pac_path.type_path_live;
+
 	
 	-- This function returns the object tool position
-	-- according to the currently value of object_tool.
+	-- according to the current value of object_tool.
 	-- If the tool is MOUSE then the return is snapped
 	-- to the nearest grid point:
 	function get_object_tool_position
@@ -1143,6 +1151,10 @@ package et_canvas is
 	-- Resets object_tool and object_ready;
 	procedure reset_object;
 	
+
+
+
+
 	
 
 

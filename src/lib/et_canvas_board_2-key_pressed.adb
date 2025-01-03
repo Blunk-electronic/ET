@@ -474,13 +474,13 @@ is
 			when key_bend_style =>
 				case noun is
 					when NOUN_LINE =>
-						next_bend_style (preliminary_object.path);
+						next_bend_style (live_path);
 
 					when NOUN_OUTLINE =>
-						next_bend_style (preliminary_object.path);
+						next_bend_style (live_path);
 						
 					when NOUN_ZONE =>
-						next_bend_style (preliminary_object.path);
+						next_bend_style (live_path);
 						
 					when others => null;
 				end case;
