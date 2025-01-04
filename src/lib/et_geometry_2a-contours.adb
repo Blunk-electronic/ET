@@ -94,7 +94,7 @@ package body et_geometry_2a.contours is
 	begin
 		case s.shape is
 			when LINE =>
-				if s.segment_line.status.proposed then
+				if is_proposed (s.segment_line) then
 					result := true;
 				end if;
 
@@ -114,7 +114,7 @@ package body et_geometry_2a.contours is
 	is begin
 		case segment.shape is
 			when LINE =>
-				segment.segment_line.status.proposed := true;
+				set_proposed (segment.segment_line);
 
 			when ARC =>
 				segment.segment_arc.status.proposed := true;
@@ -128,7 +128,7 @@ package body et_geometry_2a.contours is
 	is begin
 		case segment.shape is
 			when LINE =>
-				segment.segment_line.status.proposed := false;
+				clear_proposed (segment.segment_line);
 
 			when ARC =>
 				segment.segment_arc.status.proposed := false;
@@ -147,7 +147,7 @@ package body et_geometry_2a.contours is
 	begin
 		case s.shape is
 			when LINE =>
-				if s.segment_line.status.selected then
+				if is_selected (s.segment_line) then
 					result := true;
 				end if;
 
@@ -167,7 +167,7 @@ package body et_geometry_2a.contours is
 	is begin
 		case segment.shape is
 			when LINE =>
-				segment.segment_line.status.selected := true;
+				set_selected (segment.segment_line);
 
 			when ARC =>
 				segment.segment_arc.status.selected := true;
@@ -181,7 +181,7 @@ package body et_geometry_2a.contours is
 	is begin
 		case segment.shape is
 			when LINE =>
-				segment.segment_line.status.selected := false;
+				clear_selected (segment.segment_line);
 
 			when ARC =>
 				segment.segment_arc.status.selected := false;
@@ -200,7 +200,7 @@ package body et_geometry_2a.contours is
 	begin
 		case s.shape is
 			when LINE =>
-				if s.segment_line.status.moving then
+				if is_moving (s.segment_line) then
 					result := true;
 				end if;
 
@@ -220,7 +220,7 @@ package body et_geometry_2a.contours is
 	is begin
 		case segment.shape is
 			when LINE =>
-				segment.segment_line.status.moving := true;
+				set_moving (segment.segment_line);
 
 			when ARC =>
 				segment.segment_arc.status.moving := true;
@@ -234,7 +234,7 @@ package body et_geometry_2a.contours is
 	is begin
 		case segment.shape is
 			when LINE =>
-				segment.segment_line.status.moving := false;
+				clear_moving (segment.segment_line);
 
 			when ARC =>
 				segment.segment_arc.status.moving := false;
@@ -284,6 +284,15 @@ package body et_geometry_2a.contours is
 		end case;
 	end modify_status;
 
+	
+
+	procedure reset_status (
+		segment 	: in out type_segment)
+	is begin
+		clear_proposed (segment);
+		clear_selected (segment);
+		clear_moving (segment);
+	end reset_status;
 	
 	
 

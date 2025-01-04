@@ -131,6 +131,10 @@ package et_geometry_2a.contours is
 		operation	: in type_status_operation);
 	
 
+	procedure reset_status (
+		segment 	: in out type_segment);
+							   
+	
 	function get_shape (
 		segment	: in pac_segments.cursor)
 		return type_segment_shape;

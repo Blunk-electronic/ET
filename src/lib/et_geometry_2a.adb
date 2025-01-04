@@ -1317,6 +1317,8 @@ package body et_geometry_2a is
 	end;
 
 
+
+	
 	function is_selected (
 		line : in type_line)
 		return boolean
@@ -1327,7 +1329,20 @@ package body et_geometry_2a is
 			return false;
 		end if;
 	end is_selected;
-			
+	
+	procedure set_selected (
+		line : in out type_line)
+	is begin
+		line.status.selected := true;
+	end set_selected;
+
+	procedure clear_selected (
+		line : in out type_line)
+	is begin
+		line.status.selected := false;
+	end clear_selected;
+
+	
 	
 
 	function is_proposed (
@@ -1340,9 +1355,99 @@ package body et_geometry_2a is
 			return false;
 		end if;
 	end is_proposed;
+	
+	procedure set_proposed (
+		line : in out type_line)
+	is begin
+		line.status.proposed := true;
+	end set_proposed;
+
+	procedure clear_proposed (
+		line : in out type_line)
+	is begin
+		line.status.proposed := false;
+	end clear_proposed;
+
+
+	
+
+
+	function is_moving (
+		line : in type_line)
+		return boolean
+	is begin
+		if line.status.moving then
+			return true;
+		else 
+			return false;
+		end if;
+	end is_moving;
+
+	procedure set_moving (
+		line : in out type_line)
+	is begin
+		line.status.moving := true;
+	end set_moving;
+
+	procedure clear_moving (
+		line : in out type_line)
+	is begin
+		line.status.moving := false;
+	end clear_moving;
 
 
 
+	procedure modify_status (
+		line 		: in out type_line;
+		operation	: in type_status_operation)						
+	is begin
+		case operation.flag is
+			when SELECTED =>
+				case operation.action is
+					when SET =>
+						set_selected (line);
+
+					when CLEAR =>
+						clear_selected (line);
+				end case;
+
+				
+			when PROPOSED =>
+				case operation.action is
+					when SET =>
+						set_proposed (line);
+
+					when CLEAR =>
+						clear_proposed (line);
+				end case;
+
+				
+			when MOVING =>
+				case operation.action is
+					when SET =>
+						set_moving (line);
+
+					when CLEAR =>
+						clear_moving (line);
+				end case;
+
+				
+			when others =>
+				null; -- CS
+		end case;
+	end modify_status;
+
+	
+
+	procedure reset_status (
+		line 		: in out type_line)
+	is begin
+		clear_selected (line);
+		clear_proposed (line);
+		clear_moving (line);
+	end reset_status;
+
+	
 	
 	procedure move_by (
 		line	: in out type_line;

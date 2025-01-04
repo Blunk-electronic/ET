@@ -698,15 +698,50 @@ package et_geometry_2a is
 	function to_string (line : in type_line) return string;
 
 
+	
 	function is_selected (
 		line : in type_line)
 		return boolean;
 	
+	procedure set_selected (
+		line : in out type_line);
 
+	procedure clear_selected (
+		line : in out type_line);
+
+
+	
 	function is_proposed (
 		line : in type_line)
 		return boolean;
 
+	procedure set_proposed (
+		line : in out type_line);
+	
+	procedure clear_proposed (
+		line : in out type_line);
+
+
+	
+	function is_moving (
+		line : in type_line)
+		return boolean;
+
+	procedure set_moving (
+		line : in out type_line);
+
+	procedure clear_moving (
+		line : in out type_line);
+
+
+
+	procedure modify_status (
+		line 		: in out type_line;
+		operation	: in type_status_operation);
+
+
+	procedure reset_status (
+		line 		: in out type_line);
 	
 	
 	-- Moves a line by the given offset. 
