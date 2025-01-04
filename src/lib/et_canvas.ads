@@ -1327,7 +1327,10 @@ package et_canvas is
 	--  ensured internally that is independed of the zoom-factor.
 	-- 3. If force is true, then the line will be drawn independed
 	--  of its bounding-box. CS: not implemented yet, likewise for circle and arc
-	--
+	-- 4. If the line is being moved by the
+	--  operator then it gets drawn according to the current
+	--  point_of_attack and object_tool:
+	-- 	
 	-- NOTE: The polyline argument is a makeshift as long as there
 	-- in no procedure to draw a polyline. If polyline is true, then
 	-- the start point of the given line is drawn via a line_to cairo-operation.
