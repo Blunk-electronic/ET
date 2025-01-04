@@ -42,9 +42,7 @@ with et_assy_doc;				use et_assy_doc;
 with et_assy_doc.boards;		use et_assy_doc.boards;
 with ada.text_io;				use ada.text_io;
 with et_colors;					use et_colors;
-with et_modes.board;
 with et_board_ops.text;			use et_board_ops.text;
-with et_canvas_tool;
 with et_schematic;
 
 
@@ -82,48 +80,18 @@ is
 	procedure query_line (c : in pac_doc_lines.cursor) is 
 		line : type_doc_line renames element (c);
 
-		procedure draw_unchanged is begin
+		procedure draw is begin
 			draw_line (line => line, width => line.width, do_stroke => true);
-		end draw_unchanged;
-
-		use et_modes.board;
-		use et_canvas_tool;
+		end draw;
 		
 	begin
-		--if is_selected (c, face) then
 		if is_selected (c) then
 			set_highlight_brightness;
 
-			case verb is
-				when VERB_MOVE =>
-					if object_ready then
-						declare
-							line_tmp : type_doc_line := line;
-							POA : type_vector_model renames point_of_attack;
-						begin
-							case object_tool is
-								when MOUSE =>
-									move_line_to (line_tmp, POA, snap_to_grid (get_mouse_position));
-
-								when KEYBOARD =>
-									move_line_to (line_tmp, POA, get_cursor_position);
-							end case;
-
-							draw_line (line => line_tmp, width => line.width, do_stroke => true);
-						end;
-					else
-						draw_unchanged;
-					end if;
-
-				when others =>
-					draw_unchanged;
-					
-			end case;
-			
+			draw;			
 			set_default_brightness;
 		else
-			-- draw the line as it is:
-			draw_unchanged;
+			draw;
 		end if;
 	end query_line;
 
@@ -153,7 +121,7 @@ is
 	end query_circle;
 
 	
-	procedure query_polygon (c : in pac_doc_contours.cursor) is -- CS rename to query_contour
+	procedure query_zone (c : in pac_doc_contours.cursor) is
 		contour : type_doc_contour renames element (c);
 		use pac_draw_contours;
 	begin
@@ -161,7 +129,7 @@ is
 			contour	=> element (c),
 			filled	=> YES,
 			width	=> zero);
-	end query_polygon;
+	end query_zone;
 
 
 	
@@ -278,7 +246,7 @@ is
 				iterate (module.board.assy_doc.top.lines, query_line'access);
 				iterate (module.board.assy_doc.top.arcs, query_arc'access);
 				iterate (module.board.assy_doc.top.circles, query_circle'access);
-				iterate (module.board.assy_doc.top.contours, query_polygon'access);
+				iterate (module.board.assy_doc.top.contours, query_zone'access);
 				iterate (module.board.assy_doc.top.placeholders, query_placeholder'access);
 				iterate (module.board.assy_doc.top.texts, query_text'access);
 
@@ -286,7 +254,7 @@ is
 				iterate (module.board.assy_doc.bottom.lines, query_line'access);
 				iterate (module.board.assy_doc.bottom.arcs, query_arc'access);
 				iterate (module.board.assy_doc.bottom.circles, query_circle'access);
-				iterate (module.board.assy_doc.bottom.contours, query_polygon'access);
+				iterate (module.board.assy_doc.bottom.contours, query_zone'access);
 				iterate (module.board.assy_doc.bottom.placeholders, query_placeholder'access);
 				iterate (module.board.assy_doc.bottom.texts, query_text'access);
 
