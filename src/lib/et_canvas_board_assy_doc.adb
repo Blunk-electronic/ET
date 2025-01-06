@@ -319,6 +319,7 @@ package body et_canvas_board_assy_doc is
 	
 	
 
+	
 -- DELETE:
 	
 	procedure delete_object (
@@ -392,7 +393,7 @@ package body et_canvas_board_assy_doc is
 		else
 			-- Here the clarification procedure ends.
 			-- An object has been selected
-			-- via procedure selected_object.
+			-- via procedure select_object.
 
 			finalize;
 			reset_request_clarification;

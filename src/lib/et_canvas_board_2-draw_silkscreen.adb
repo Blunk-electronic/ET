@@ -41,9 +41,7 @@ with ada.text_io;				use ada.text_io;
 with et_silkscreen;				use et_silkscreen;
 with et_silkscreen.boards;		use et_silkscreen.boards;
 with et_colors;					use et_colors;
-with et_modes.board;
 with et_board_ops.text;			use et_board_ops.text;
-with et_canvas_tool;
 with et_schematic;
 
 
@@ -70,7 +68,8 @@ is
 	procedure set_default_brightness is begin
 		set_color_silkscreen (face, NORMAL);
 	end set_default_brightness;
-		
+
+	
 	procedure set_highlight_brightness is begin
 		set_color_silkscreen (face, BRIGHT);
 	end set_highlight_brightness;
@@ -80,48 +79,17 @@ is
 	procedure query_line (c : in pac_silk_lines.cursor) is 
 		line : type_silk_line renames element (c);
 
-		procedure draw_unchanged is begin
+		procedure draw is begin
 			draw_line (line => line, width => line.width, do_stroke => true);
-		end draw_unchanged;
+		end draw;
 
-		use et_modes.board;
-		use et_canvas_tool;
 	begin
-		-- put_line ("query_line");
-		
 		if is_selected (line) then
 			set_highlight_brightness;
-
-			case verb is
-				when VERB_MOVE =>
-					if object_ready then
-						declare
-							line_tmp : type_silk_line := line;
-							POA : type_vector_model renames point_of_attack;
-						begin
-							case object_tool is
-								when MOUSE =>
-									move_line_to (line_tmp, POA, snap_to_grid (get_mouse_position));
-
-								when KEYBOARD =>
-									move_line_to (line_tmp, POA, get_cursor_position);
-							end case;
-
-							draw_line (line => line_tmp, width => line.width, do_stroke => true);
-						end;
-					else
-						draw_unchanged;
-					end if;
-
-				when others =>
-					draw_unchanged;
-					
-			end case;
-			
+			draw;
 			set_default_brightness;
 		else
-			-- draw the line as it is:
-			draw_unchanged;
+			draw;
 		end if;
 	end query_line;
 
@@ -148,15 +116,15 @@ is
 	end query_circle;
 
 	
-	procedure query_contour (c : in pac_silk_contours.cursor) is 
-		-- CS use rename
+	procedure query_zone (c : in pac_silk_contours.cursor) is 
+		contour : type_silk_contour renames element (c);
 		use pac_draw_contours;
 	begin
 		draw_contour (
 			contour	=> element (c),
 			filled	=> YES,
 			width	=> zero);
-	end query_contour;
+	end query_zone;
 
 	
 	
@@ -267,7 +235,7 @@ is
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module) 
 	is begin
-		-- All silkscreen segments will be drawn with the same color:
+		-- All silkscreen objects will be drawn with the same color:
 		set_color_silkscreen (face, NORMAL);
 
 		case face is
@@ -275,7 +243,7 @@ is
 				iterate (module.board.silk_screen.top.lines, query_line'access);
 				iterate (module.board.silk_screen.top.arcs, query_arc'access);
 				iterate (module.board.silk_screen.top.circles, query_circle'access);
-				iterate (module.board.silk_screen.top.contours, query_contour'access);
+				iterate (module.board.silk_screen.top.contours, query_zone'access);
 				iterate (module.board.silk_screen.top.placeholders, query_placeholder'access);
 				iterate (module.board.silk_screen.top.texts, query_text'access);
 
@@ -283,7 +251,7 @@ is
 				iterate (module.board.silk_screen.bottom.lines, query_line'access);
 				iterate (module.board.silk_screen.bottom.arcs, query_arc'access);
 				iterate (module.board.silk_screen.bottom.circles, query_circle'access);
-				iterate (module.board.silk_screen.bottom.contours, query_contour'access);
+				iterate (module.board.silk_screen.bottom.contours, query_zone'access);
 				iterate (module.board.silk_screen.bottom.placeholders, query_placeholder'access);
 				iterate (module.board.silk_screen.bottom.texts, query_text'access);
 
@@ -293,8 +261,7 @@ is
 
 
 	
-begin -- draw_silkscreen
-
+begin
 	-- put_line ("draw silkscreen ...");
 	
 	pac_generic_modules.query_element (

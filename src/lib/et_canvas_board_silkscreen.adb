@@ -111,7 +111,36 @@ package body et_canvas_board_silkscreen is
 	
 
 
+	-- This procedure searches for the first selected object
+	-- and sets its status to "moving":
+	procedure set_first_selected_object_moving is
+		use et_board_ops.silkscreen;
+		use et_object_status;
 
+		-- use et_board_shapes_and_text.pac_contours;
+		-- use pac_segments;
+		-- selected_segment : pac_segments.cursor; -- of a contour
+
+		selected_line : type_line_segment;
+		-- selected_arc : type_arc_segment;
+	begin
+		-- log (text => "set_first_selected_object_moving ...", level => log_threshold);
+
+		selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
+
+		-- CS arcs, circles, zones
+		
+		modify_status (
+			module_cursor	=> active_module, 
+			operation		=> (SET, MOVING),
+			line_cursor		=> selected_line.cursor, 
+			log_threshold	=> log_threshold + 1);
+
+	end set_first_selected_object_moving;
+
+
+
+	
 
 	procedure find_objects (
 	   point : in type_vector_model)
@@ -135,7 +164,9 @@ package body et_canvas_board_silkscreen is
 			end if;
 		end select_first_proposed;
 
-	
+
+		use et_modes.board;
+		
 	begin
 		log (text => "locating objects ...", level => log_threshold);
 		log_indentation_up;
@@ -154,7 +185,7 @@ package body et_canvas_board_silkscreen is
 		
 		count_total := count_total + count;
 		
-		-- CS arcs, circles
+		-- CS arcs, circles, zones
 		
 		-- evaluate the number of objects found here:
 		case count_total is
@@ -166,6 +197,11 @@ package body et_canvas_board_silkscreen is
 			when 1 =>
 				object_ready := true;
 				select_first_proposed;
+
+				if verb = VERB_MOVE then
+					set_first_selected_object_moving;
+				end if;
+				
 				reset_request_clarification;
 				
 			when others =>
@@ -265,11 +301,15 @@ package body et_canvas_board_silkscreen is
 			else
 				-- Here the clarification procedure ends.
 				-- An object has been selected via procedure select_object.
-				-- By setting object_ready, the selected
-				-- object will be drawn at the tool position
-				-- when objects are drawn on the canvas.
+				-- By setting the status of the selected object
+				-- as "moving", the selected object
+				-- will be drawn according to point_of_attack and 
+				-- the tool position.
+				set_first_selected_object_moving;
+
 				-- Furtheron, on the next call of this procedure
-				-- the selected object will be assigned its final position.
+				-- the selected segment will be assigned its final position.
+				
 				object_ready := true;
 				reset_request_clarification;
 			end if;
@@ -281,6 +321,7 @@ package body et_canvas_board_silkscreen is
 
 
 
+	
 	
 -- DELETE:
 	
@@ -355,7 +396,7 @@ package body et_canvas_board_silkscreen is
 		else
 			-- Here the clarification procedure ends.
 			-- An object has been selected
-			-- via procedure selected_object.
+			-- via procedure select_object.
 
 			finalize;
 			reset_request_clarification;
