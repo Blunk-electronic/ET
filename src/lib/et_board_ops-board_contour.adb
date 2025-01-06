@@ -258,9 +258,7 @@ package body et_board_ops.board_contour is
 			is 
 				use et_object_status;
 			begin
-				clear_selected (segment);
-				clear_proposed (segment);
-				clear_moving (segment);
+				reset_status (segment);
 			end query_segment;
 
 			
