@@ -87,7 +87,6 @@ is
 	begin
 		if is_selected (c) then
 			set_highlight_brightness;
-
 			draw;			
 			set_default_brightness;
 		else
