@@ -94,10 +94,14 @@ package et_board_ops.silkscreen is
 		log_threshold	: in type_log_level);
 
 
+	
+	-- This composite type is required to distinguish
+	-- between top and bottom lines when lines are seached for:
 	type type_line_segment is record
 		face	: type_face;
 		cursor	: pac_silk_lines.cursor;
 	end record;
+
 	
 	-- Returns the first line according to the given flag.
 	-- If no line has been found, then the return is no_element:
