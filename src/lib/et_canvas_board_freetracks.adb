@@ -119,6 +119,42 @@ package body et_canvas_board_freetracks is
 
 	
 
+	-- This procedure searches for the first selected object
+	-- and sets its status to "moving":
+	procedure set_first_selected_object_moving is
+		use et_board_ops.conductors;
+		use et_object_status;
+
+		-- use et_board_shapes_and_text.pac_contours;
+		-- use pac_segments;
+		-- selected_segment : pac_segments.cursor; -- of a contour
+
+		selected_line : type_line_segment;
+		-- selected_arc : type_arc_segment;
+	begin
+		log (text => "set_first_selected_object_moving ...", level => log_threshold);
+
+		selected_line := get_first_line (
+			module_cursor	=> active_module,
+			flag			=> SELECTED, 
+			freetracks		=> true,
+			log_threshold	=> log_threshold + 1);
+		
+		-- CS arcs, circles, zones
+		
+		modify_status (
+			module_cursor	=> active_module, 
+			line_cursor		=> selected_line.line_cursor, 
+			operation		=> (SET, MOVING),
+			freetracks		=> true,
+			log_threshold	=> log_threshold + 1);
+
+	end set_first_selected_object_moving;
+
+
+
+	
+	
 	procedure find_objects (
 	   point : in type_vector_model)
 	is 
@@ -167,7 +203,9 @@ package body et_canvas_board_freetracks is
 			end if;
 		end select_first_proposed;
 		
-	
+
+		use et_modes.board;
+		
 	begin
 		log (text => "locating objects ...", level => log_threshold);
 		log_indentation_up;
@@ -178,7 +216,7 @@ package body et_canvas_board_freetracks is
 			propose_lines (l);
 		end loop;
 		
-		-- CS arcs, circles
+		-- CS arcs, circles, zones
 		
 		-- Evaluate the number of objects found here:
 		case count_total is
@@ -195,7 +233,13 @@ package body et_canvas_board_freetracks is
 			when 1 =>
 				object_ready := true;
 				select_first_proposed;
+
+				if verb = VERB_MOVE then
+					set_first_selected_object_moving;
+				end if;
+				
 				reset_request_clarification;
+
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
@@ -295,17 +339,19 @@ package body et_canvas_board_freetracks is
 
 			else
 				-- Here the clarification procedure ends.
-				-- A object has been selected (indicated by selected_object)
-				-- via procedure select_object.
-				-- By setting object_ready, the selected
-				-- object will be drawn at the tool position
-				-- when objects are drawn on the canvas.
+				-- An object has been selected via procedure select_object.
+				-- By setting the status of the selected object
+				-- as "moving", the selected object
+				-- will be drawn according to point_of_attack and 
+				-- the tool position.
+				set_first_selected_object_moving;
+
 				-- Furtheron, on the next call of this procedure
-				-- the selected object will be assigned its final position.
+				-- the selected segment will be assigned its final position.
+				
 				object_ready := true;
 				reset_request_clarification;
 			end if;
-
 			
 		else
 			finalize;

@@ -818,7 +818,7 @@ package body et_canvas_board_tracks is
 			propose_lines (ly);
 		end loop;
 
-		-- CS arcs
+		-- CS arcs, zones
 		
 		-- evaluate the number of segments found here:
 		case count_total is
@@ -841,6 +841,7 @@ package body et_canvas_board_tracks is
 				end if;
 				
 				reset_request_clarification;
+
 				
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
