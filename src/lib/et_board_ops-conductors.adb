@@ -185,6 +185,7 @@ package body et_board_ops.conductors is
 		update_ratsnest (module_cursor, log_threshold + 1);
 	end add_named_track;
 
+
 	
 	procedure draw_track_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -472,6 +473,8 @@ package body et_board_ops.conductors is
 		add_named_track (module_cursor, net_name, line, log_threshold + 1);
 	end draw_track_line;
 
+
+	
 	
 	procedure draw_track_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -696,28 +699,7 @@ package body et_board_ops.conductors is
 			procedure query_line (
 				line : in out type_conductor_line)
 			is begin
-				case operation.flag is
-					when SELECTED =>
-						case operation.action is
-							when SET =>
-								line.status.selected := true;
-
-							when CLEAR =>
-								line.status.selected := false;
-						end case;
-
-					when PROPOSED =>
-						case operation.action is
-							when SET =>
-								line.status.proposed := true;
-
-							when CLEAR =>
-								line.status.proposed := false;
-						end case;
-
-					when others =>
-						null; -- CS
-				end case;							
+				modify_status (line, operation);
 			end query_line;
 
 			
@@ -778,8 +760,7 @@ package body et_board_ops.conductors is
 
 		
 	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
+		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
 			& to_string (element (line_cursor), true) -- log width
 			& " / " & to_string (operation),
@@ -826,7 +807,7 @@ package body et_board_ops.conductors is
 						point	=> point,
 						zone	=> zone)
 					then
-						line.status.proposed := true;
+						set_proposed (line);
 						count := count + 1;
 						log (text => to_string (line, true), level => log_threshold + 2);
 					end if;
@@ -927,8 +908,7 @@ package body et_board_ops.conductors is
 			is 
 				use et_object_status;
 			begin
-				line.status.proposed := false;
-				line.status.selected := false;
+				reset_status (line);
 			end query_line;
 
 
@@ -1109,7 +1089,7 @@ package body et_board_ops.conductors is
 
 
 	begin		
-		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
+		log (text => "module " & to_string (module_cursor)
 			& " looking up the first line / " & to_string (flag),
 			level => log_threshold);
 
@@ -1130,6 +1110,7 @@ package body et_board_ops.conductors is
 
 
 
+	
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in out type_line_segment;
@@ -1296,8 +1277,8 @@ package body et_board_ops.conductors is
 		
 		
 	begin
-		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
-			"advancing to next proposed line",
+		log (text => "module " & to_string (module_cursor)
+			& " advancing to next proposed line",
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1359,6 +1340,7 @@ package body et_board_ops.conductors is
 				line_cursor := net.route.lines.find (line);
 				net.route.lines.update_element (line_cursor, move'access);
 			end update_net;
+
 			
 		begin
 			if net_name = no_name then
@@ -1375,8 +1357,7 @@ package body et_board_ops.conductors is
 
 		
 	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
+		log (text => "module " & to_string (module_cursor)
 			& " moving " & to_string (line, true)  -- log incl. width
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
