@@ -180,28 +180,7 @@ package body et_board_ops.assy_doc is
 			procedure query_line (
 				line	: in out type_doc_line)
 			is begin
-				case operation.flag is
-					when SELECTED =>
-						case operation.action is
-							when SET =>
-								line.status.selected := true;
-
-							when CLEAR =>
-								line.status.selected := false;
-						end case;
-
-					when PROPOSED =>
-						case operation.action is
-							when SET =>
-								line.status.proposed := true;
-
-							when CLEAR =>
-								line.status.proposed := false;
-						end case;
-
-					when others =>
-						null; -- CS
-				end case;							
+				modify_status (line, operation);
 			end query_line;
 
 			
@@ -245,7 +224,7 @@ package body et_board_ops.assy_doc is
 		
 	begin
 		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
+			& to_string (module_cursor)
 			& " modifying status of "
 			& to_string (element (line_cursor))
 			& " / " & to_string (operation),
@@ -369,8 +348,7 @@ package body et_board_ops.assy_doc is
 			is 
 				use et_object_status;
 			begin
-				line.status.selected := false;
-				line.status.proposed := false;
+				reset_status (line);
 			end query_line;
 
 			
