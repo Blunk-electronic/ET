@@ -277,7 +277,7 @@ package body et_canvas_board_assy_doc is
 			
 		
 	begin
-		-- Initially the preliminary_object is not ready.
+		-- Initially the preliminary object is not ready.
 		if not object_ready then
 
 			-- Set the tool being used:

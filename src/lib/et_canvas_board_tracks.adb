@@ -81,6 +81,8 @@ with et_undo_redo;
 with et_commit;
 with et_object_status;
 
+with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
+
 
 package body et_canvas_board_tracks is
 
@@ -653,20 +655,6 @@ package body et_canvas_board_tracks is
 		
 
 
-	
-	procedure reset_preliminary_segment is begin
-
-		preliminary_segment.ready := false;
-		preliminary_segment.tool := MOUSE;
-		
-		reset_proposed_lines (
-			module_cursor	=> active_module, 
-			freetracks		=> false,
-			log_threshold	=> log_threshold + 1);
-
-	end reset_preliminary_segment;
-
-
 
 
 	-- Outputs the selected line in the status bar:
@@ -732,6 +720,42 @@ package body et_canvas_board_tracks is
 	
 	
 
+	-- This procedure searches for the first selected object
+	-- and sets its status to "moving":
+	procedure set_first_selected_object_moving is
+		use et_board_ops.conductors;
+		use et_object_status;
+
+		-- use et_board_shapes_and_text.pac_contours;
+		-- use pac_segments;
+		-- selected_segment : pac_segments.cursor; -- of a contour
+
+		selected_line : type_line_segment;
+		-- selected_arc : type_arc_segment;
+	begin
+		log (text => "set_first_selected_object_moving ...", level => log_threshold);
+
+		selected_line := get_first_line (
+			module_cursor	=> active_module,
+			flag			=> SELECTED, 
+			freetracks		=> false,
+			log_threshold	=> log_threshold + 1);
+		
+		-- CS arcs, circles, zones
+		
+		modify_status (
+			module_cursor	=> active_module, 
+			line_cursor		=> selected_line.line_cursor, 
+			operation		=> (SET, MOVING),
+			freetracks		=> false,
+			log_threshold	=> log_threshold + 1);
+
+	end set_first_selected_object_moving;
+
+
+
+
+	
 	procedure find_segments (
 	   point : in type_vector_model)
 	is 
@@ -781,6 +805,8 @@ package body et_canvas_board_tracks is
 			end if;
 		end select_first_proposed;
 
+
+		use et_modes.board;
 		
 	begin
 		log (text => "locating segments ...", level => log_threshold);
@@ -798,11 +824,22 @@ package body et_canvas_board_tracks is
 		case count_total is
 			when 0 =>
 				reset_request_clarification;
-				reset_preliminary_segment;
+				reset_preliminary_object;
+
+				reset_proposed_lines (
+					module_cursor	=> active_module, 
+					freetracks		=> false,
+					log_threshold	=> log_threshold + 1);
+
 				
 			when 1 =>
-				preliminary_segment.ready := true;
+				object_ready := true;
 				select_first_proposed;
+
+				if verb = VERB_MOVE then
+					set_first_selected_object_moving;
+				end if;
+				
 				reset_request_clarification;
 				
 			when others =>
@@ -817,6 +854,9 @@ package body et_canvas_board_tracks is
 	end find_segments;
 
 
+	
+
+-- MOVE:
 	
 	procedure move_track (
 		tool	: in type_tool;
@@ -856,7 +896,7 @@ package body et_canvas_board_tracks is
 							move_line (
 								module_cursor	=> active_module,
 								line			=> element (selected_line.line_cursor),
-								point_of_attack	=> preliminary_segment.point_of_attack,
+								point_of_attack	=> point_of_attack,
 								destination		=> point,
 								log_threshold	=> log_threshold);
        
@@ -876,38 +916,49 @@ package body et_canvas_board_tracks is
 				
 			log_indentation_down;			
 			set_status (status_move_track);
-			reset_preliminary_segment;
+			
+			reset_preliminary_object;
+
+			reset_proposed_lines (
+				module_cursor	=> active_module, 
+				freetracks		=> false,
+				log_threshold	=> log_threshold + 1);
+			
 		end finalize;
 			
 		
 	begin
-		-- Initially the preliminary_segment is not ready.
-		if not preliminary_segment.ready then
+		-- Initially the preliminary object is not ready.
+		if not object_ready then
 
 			-- Set the tool being used:
-			preliminary_segment.tool := tool;
+			object_tool := tool;
 
-			preliminary_segment.point_of_attack := point;
+			point_of_attack := point;
 			
 			if not clarification_pending then
 				-- Locate all segments in the vicinity of the given point:
 				find_segments (point);
 				
-				-- NOTE: If many segments have been found, then
+				-- NOTE: If many objects have been found, then
 				-- clarification is now pending.
 
-				-- If find_segments has found only one segment
-				-- then the flag preliminary_segment.ready is set true.
+				-- If find_objects has found only one object
+				-- then the flag object_ready is set true.
 
 			else
 				-- Here the clarification procedure ends.
-				-- A segment has been selected via procedure select_segment.
-				-- By setting preliminary_segment.ready, the selected
-				-- segment will be drawn at the tool position
-				-- when segments are drawn on the canvas.
+				-- An object has been selected via procedure select_object.
+				-- By setting the status of the selected object
+				-- as "moving", the selected object
+				-- will be drawn according to point_of_attack and 
+				-- the tool position.
+				set_first_selected_object_moving;
+
 				-- Furtheron, on the next call of this procedure
 				-- the selected segment will be assigned its final position.
-				preliminary_segment.ready := true;
+				
+				object_ready := true;
 				reset_request_clarification;
 			end if;
 			
@@ -916,11 +967,15 @@ package body et_canvas_board_tracks is
 		end if;
 	end move_track;
 
+
+
 	
+-- RIPUP:
 
 	procedure reset_ripup_mode is begin
 		ripup_mode := SINGLE_SEGMENT;
 	end reset_ripup_mode;
+
 	
 
 	procedure next_ripup_mode is
@@ -965,7 +1020,7 @@ package body et_canvas_board_tracks is
 			use et_nets;
 			use pac_nets;
 		begin
-			log (text => "finalizing delete ...", level => log_threshold);
+			log (text => "finalizing ripup ...", level => log_threshold);
 			log_indentation_up;
 
 			selected_line := get_first_line (
@@ -1013,9 +1068,17 @@ package body et_canvas_board_tracks is
 				
 			log_indentation_down;			
 			set_status (status_ripup);
-			reset_preliminary_segment;
+			
+			reset_preliminary_object;
+
+			reset_proposed_lines (
+				module_cursor	=> active_module, 
+				freetracks		=> false,
+				log_threshold	=> log_threshold + 1);
+			
 			reset_ripup_mode;
 		end finalize;
+
 		
 	begin
 		if not clarification_pending then
@@ -1028,13 +1091,12 @@ package body et_canvas_board_tracks is
 			-- If find_segments has found only one segment
 			-- then the flag preliminary_segment.ready is set true.
 
-			if preliminary_segment.ready then
+			if object_ready then
 				finalize;
 			end if;
 		else
 			-- Here the clarification procedure ends.
 			-- A segment has been selected via procedure select_segment.
-			-- preliminary_segment.ready := true;
 
 			finalize;
 			reset_request_clarification;

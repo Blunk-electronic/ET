@@ -240,30 +240,6 @@ package et_canvas_board_tracks is
 
 
 
-	-- Before moving or ripping-up we
-	-- collect preliminary information using this type.
-	-- In case of a ripup operation, only the flag "ready" is relevant.
-	type type_preliminary_segment is record
-		-- This flag indicates that the segment has been
-		-- clarified among the proposed segments:
-		ready		: boolean := false;
-
-		-- This tells the GUI whether the mouse or the
-		-- cursor position is to be used when drawing the segment:
-		tool			: type_tool := MOUSE;
-		
-		point_of_attack : type_vector_model;
-	end record;
-
-	-- The place where preliminary information of
-	-- a segment is stored:
-	preliminary_segment : type_preliminary_segment;
-
-
-
-	-- Clears preliminary_segment.ready.
-	-- Clears the proposed segments.
-	procedure reset_preliminary_segment;
 
 	
 	-- Advances the cursor selected_segment 

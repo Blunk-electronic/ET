@@ -85,7 +85,7 @@ begin
 					end if;
 
 				when NOUN_TRACK =>
-					if et_canvas_board_tracks.preliminary_segment.ready then
+					if object_ready then
 						redraw_board;
 					end if;
 

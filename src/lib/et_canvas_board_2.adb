@@ -849,7 +849,6 @@ package body et_canvas_board_2 is
 		reset_preliminary_via; -- after placing a via
 		
 		reset_preliminary_track; -- after laying out a track
-		reset_preliminary_segment; -- after moving, ripping-up a conductor segment
 		reset_airwires;
 		reset_ripup_mode;
 
@@ -859,6 +858,11 @@ package body et_canvas_board_2 is
 		et_board_ops.assy_doc.reset_proposed_lines (active_module, log_threshold + 1);
 		et_board_ops.silkscreen.reset_proposed_lines (active_module, log_threshold + 1);
 
+		et_board_ops.conductors.reset_proposed_lines (
+			module_cursor	=> active_module, 
+			freetracks		=> false,
+			log_threshold	=> log_threshold + 1);
+		
 		et_board_ops.conductors.reset_proposed_lines (
 			module_cursor	=> active_module, 
 			freetracks		=> true,
