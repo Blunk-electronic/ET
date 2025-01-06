@@ -54,6 +54,7 @@ package body et_board_ops.silkscreen is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -70,7 +71,8 @@ package body et_board_ops.silkscreen is
 						new_item	=> line);
 			end case;
 		end;
-							   
+
+		
 	begin -- draw_silk_scree_line
 		log (text => "module " & to_string (module_name) &
 			" drawing silk screen line" &
@@ -118,6 +120,7 @@ package body et_board_ops.silkscreen is
 					result.append (line);
 				end if;
 			end query_line;
+
 			
 		begin
 			case face is
@@ -128,7 +131,8 @@ package body et_board_ops.silkscreen is
 					module.board.silk_screen.bottom.lines.iterate (query_line'access);
 			end case;
 		end query_module;
-			
+
+		
 	begin
 		log (text => "looking up lines at" & to_string (point) 
 			 & " zone" & accuracy_to_string (zone),
@@ -170,28 +174,7 @@ package body et_board_ops.silkscreen is
 			procedure query_line (
 				line	: in out type_silk_line)
 			is begin
-				case operation.flag is
-					when SELECTED =>
-						case operation.action is
-							when SET =>
-								line.status.selected := true;
-
-							when CLEAR =>
-								line.status.selected := false;
-						end case;
-
-					when PROPOSED =>
-						case operation.action is
-							when SET =>
-								line.status.proposed := true;
-
-							when CLEAR =>
-								line.status.proposed := false;
-						end case;
-
-					when others =>
-						null; -- CS
-				end case;							
+				modify_status (line, operation);
 			end query_line;
 
 			
@@ -234,8 +217,7 @@ package body et_board_ops.silkscreen is
 
 		
 	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
+		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
 			& to_string (element (line_cursor))
 			& " / " & to_string (operation),
@@ -249,6 +231,7 @@ package body et_board_ops.silkscreen is
 
 		log_indentation_down;
 	end modify_status;
+
 
 	
 
@@ -279,7 +262,7 @@ package body et_board_ops.silkscreen is
 					point	=> point,
 					zone	=> zone)
 				then
-					line.status.proposed := true;
+					set_proposed (line);
 					count := count + 1;
 					log (text => to_string (line), level => log_threshold + 1);
 				end if;
@@ -298,6 +281,7 @@ package body et_board_ops.silkscreen is
 				end if;
 			end query_top;
 
+			
 			procedure query_bottom is 
 				bottom : pac_silk_lines.list renames module.board.silk_screen.bottom.lines;
 			begin
@@ -358,8 +342,7 @@ package body et_board_ops.silkscreen is
 			is 
 				use et_object_status;
 			begin
-				line.status.selected := false;
-				line.status.proposed := false;
+				reset_status (line);
 			end query_line;
 
 			
@@ -375,6 +358,7 @@ package body et_board_ops.silkscreen is
 				end if;
 			end query_top;
 
+			
 			procedure query_bottom is begin
 				if not bottom.is_empty then
 					lc := bottom.first;
@@ -438,13 +422,13 @@ package body et_board_ops.silkscreen is
 			begin
 				case flag is
 					when PROPOSED =>
-						if line.status.proposed then
+						if is_proposed (line) then
 							result.cursor := c;
 							proceed := false;
 						end if;
 
 					when SELECTED =>
-						if line.status.selected then
+						if is_selected (line) then
 							result.cursor := c;
 							proceed := false;
 						end if;
@@ -475,8 +459,8 @@ package body et_board_ops.silkscreen is
 
 			
 	begin
-		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
-			"looking up the first line / " & to_string (flag),
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first line / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -591,8 +575,8 @@ package body et_board_ops.silkscreen is
 		
 		
 	begin
-		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
-			"advancing to next proposed line",
+		log (text => "module " & to_string (module_cursor)
+			& " advancing to next proposed line",
 			level => log_threshold);
 
 		log_indentation_up;
@@ -623,6 +607,7 @@ package body et_board_ops.silkscreen is
 		is
 			line_cursor : pac_silk_lines.cursor;
 
+			
 			procedure query_line (line : in out type_silk_line) is
 			begin
 				-- case coordinates is
@@ -634,6 +619,7 @@ package body et_board_ops.silkscreen is
 						-- CS
 				-- end case;
 			end query_line;
+
 			
 		begin
 			case face is
@@ -647,9 +633,9 @@ package body et_board_ops.silkscreen is
 			end case;
 		end query_module;
 
+		
 	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
+		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
 			& " moving silkscreen " & to_string (line)
 			& " point of attack " & to_string (point_of_attack)
@@ -661,7 +647,6 @@ package body et_board_ops.silkscreen is
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
-
 		
 		log_indentation_down;
 	end move_line;

@@ -269,7 +269,7 @@ package body et_board_ops.assy_doc is
 					point	=> point,
 					zone	=> zone)
 				then
-					line.status.proposed := true;
+					set_proposed (line);
 					count := count + 1;
 					log (text => to_string (line), level => log_threshold + 1);
 				end if;
@@ -288,6 +288,7 @@ package body et_board_ops.assy_doc is
 				end if;
 			end query_top;
 
+			
 			procedure query_bottom is 
 				bottom : pac_doc_lines.list renames module.board.assy_doc.bottom.lines;
 			begin
@@ -364,6 +365,7 @@ package body et_board_ops.assy_doc is
 				end if;
 			end query_top;
 
+			
 			procedure query_bottom is begin
 				if not bottom.is_empty then
 					lc := bottom.first;
@@ -427,13 +429,13 @@ package body et_board_ops.assy_doc is
 			begin
 				case flag is
 					when PROPOSED =>
-						if line.status.proposed then
+						if is_proposed (line) then
 							result.cursor := c;
 							proceed := false;
 						end if;
 
 					when SELECTED =>
-						if line.status.selected then
+						if is_selected (line) then
 							result.cursor := c;
 							proceed := false;
 						end if;
@@ -464,8 +466,8 @@ package body et_board_ops.assy_doc is
 
 			
 	begin
-		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
-			"looking up the first line / " & to_string (flag),
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first line / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -580,8 +582,8 @@ package body et_board_ops.assy_doc is
 		
 		
 	begin
-		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
-			"advancing to next proposed line",
+		log (text => "module " & to_string (module_cursor)
+			& " advancing to next proposed line",
 			level => log_threshold);
 
 		log_indentation_up;
@@ -613,6 +615,7 @@ package body et_board_ops.assy_doc is
 		is
 			line_cursor : pac_doc_lines.cursor;
 
+			
 			procedure query_line (line : in out type_doc_line) is
 			begin
 				-- case coordinates is
@@ -624,6 +627,7 @@ package body et_board_ops.assy_doc is
 						-- CS
 				-- end case;
 			end query_line;
+
 			
 		begin
 			case face is
@@ -637,9 +641,9 @@ package body et_board_ops.assy_doc is
 			end case;
 		end query_module;
 
+		
 	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
+		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
 			& " moving assy doc " & to_string (line)
 			& " point of attack " & to_string (point_of_attack)
@@ -651,7 +655,6 @@ package body et_board_ops.assy_doc is
 		generic_modules.update_element (						
 			position	=> module_cursor,
 			process		=> query_module'access);
-
 		
 		log_indentation_down;
 	end move_line;
