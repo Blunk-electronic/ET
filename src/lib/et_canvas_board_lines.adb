@@ -116,22 +116,22 @@ package body et_canvas_board_lines is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_object.category := to_layer_category (values.get_string (item_text));
-		--put_line ("cat " & to_string (preliminary_object.category));
+		object_layer_category := to_layer_category (values.get_string (item_text));
+		--put_line ("cat " & to_string (object_layer_category));
 
 		-- Auto-enable the selected layer category:
-		case preliminary_object.category is
+		case object_layer_category is
 			when LAYER_CAT_ASSY =>
 				enable_assy_doc (preliminary_object.face);
 
 			when LAYER_CAT_CONDUCTOR =>
-				enable_conductor (preliminary_object.signal_layer);
+				enable_conductor (object_signal_layer);
 
 			when LAYER_CAT_SILKSCREEN =>
 				enable_silkscreen (preliminary_object.face);
 
 			when LAYER_CAT_ROUTE_RESTRICT =>
-				enable_route_restrict (preliminary_object.signal_layer);
+				enable_route_restrict (object_signal_layer);
 
 			when LAYER_CAT_STENCIL =>
 				enable_stencil (preliminary_object.face);
@@ -166,7 +166,7 @@ package body et_canvas_board_lines is
 		--put_line ("face " & to_string (preliminary_object.face));
 
 		-- Auto-enable the selected layer category:
-		case preliminary_object.category is
+		case object_layer_category is
 			when LAYER_CAT_ASSY =>
 				enable_assy_doc (preliminary_object.face);
 
@@ -202,12 +202,12 @@ package body et_canvas_board_lines is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_object.signal_layer := to_signal_layer (values.get_string (item_text));
-		--put_line ("signal layer " & to_string (preliminary_object.signal_layer));
+		object_signal_layer := to_signal_layer (values.get_string (item_text));
+		--put_line ("signal layer " & to_string (object_signal_layer));
 
 		-- Auto-enable the affected conductor and restrict layers:
-		enable_conductor (preliminary_object.signal_layer);
-		enable_via_restrict (preliminary_object.signal_layer);
+		enable_conductor (object_signal_layer);
+		enable_via_restrict (object_signal_layer);
 		
 		et_canvas_board_2.redraw_board;		
 	end signal_layer_changed;
@@ -324,7 +324,7 @@ package body et_canvas_board_lines is
 				use pac_layer_categories;				
 			begin
 				-- Map from preliminary_zone.category to index:
-				c := find (layer_categories, preliminary_object.category);
+				c := find (layer_categories, object_layer_category);
 				cbox_category.set_active (gint (to_index (c)));
 			end set_category_used_last;
 
@@ -454,7 +454,7 @@ package body et_canvas_board_lines is
 				model		=> +storage_model); -- ?
 
 			-- Set the signal layer used last:
-			cbox_signal_layer.set_active (gint (preliminary_object.signal_layer) - 1);
+			cbox_signal_layer.set_active (gint (object_signal_layer) - 1);
 			-- NOTE: The entries are numbered from 0 .. N.
 
 
@@ -538,7 +538,7 @@ package body et_canvas_board_lines is
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold + 1);
 
-			case PL.category is
+			case object_layer_category is
 				when LAYER_CAT_ASSY =>
 					
 					et_board_ops.assy_doc.draw_line (
@@ -555,7 +555,7 @@ package body et_canvas_board_lines is
 					-- to be a freetrack:
 					et_board_ops.conductors.draw_track_line (
 						module_name	=> pac_generic_modules.key (active_module),
-						line		=> (line with object_linewidth, PL.signal_layer),
+						line		=> (line with object_linewidth, object_signal_layer),
 						log_threshold	=> log_threshold);
 
 					
@@ -574,7 +574,7 @@ package body et_canvas_board_lines is
 
 					et_board_ops.route_restrict.draw_route_restrict_line (
 						module_name	=> pac_generic_modules.key (active_module),
-						line		=> (line with to_layers (PL.signal_layer)),
+						line		=> (line with to_layers (object_signal_layer)),
 						log_threshold	=> log_threshold);
 
 					-- CS: Currently only a single signal layer can be assigned

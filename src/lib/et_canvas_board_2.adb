@@ -413,7 +413,7 @@ package body et_canvas_board_2 is
 		use et_canvas_tool;
 		use et_canvas_board_preliminary_object;
 		
-		PL : type_preliminary_object renames preliminary_object;	
+		-- PL : type_preliminary_object renames preliminary_object;	
 
 
 		-- Computes the path from given start to given end point.
@@ -452,8 +452,8 @@ package body et_canvas_board_2 is
 
 			-- If we are drawing a path in a conductor layer then
 			-- the color must be set according to the signal layer:
-			if PL.category = LAYER_CAT_CONDUCTOR then
-				set_color_conductor (PL.signal_layer, NORMAL);
+			if object_layer_category = LAYER_CAT_CONDUCTOR then
+				set_color_conductor (object_signal_layer, NORMAL);
 			end if;
 
 			
@@ -491,7 +491,7 @@ package body et_canvas_board_2 is
 		
 		
 		if verb = VERB_DRAW and noun = NOUN_LINE and object_ready
-		and PL.category = cat then
+		and object_layer_category = cat then
 			case object_tool is
 				when MOUSE => 
 					compute_and_draw (
@@ -584,7 +584,7 @@ package body et_canvas_board_2 is
 		-- put_line ("draw_live_zone");		
 		
 		if verb = VERB_DRAW and object_ready
-		and PZ.category = cat 
+		and object_layer_category = cat 
 			
 		and (noun = NOUN_ZONE or noun = NOUN_OUTLINE) 
 		

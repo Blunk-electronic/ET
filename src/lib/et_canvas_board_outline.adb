@@ -133,7 +133,7 @@ package body et_canvas_board_outline is
 		-- knows where to get the end point from.
 		object_tool := tool;
 
-		PC.category := LAYER_CAT_OUTLINE;
+		object_layer_category := LAYER_CAT_OUTLINE;
 		
 
 		-- Initally the preliminary_object is NOT ready. Nothing will be drawn.
