@@ -1123,7 +1123,7 @@ procedure draw_conductors is
 
 						-- If a path is being drawn, then the selected
 						-- airwire shall not be visible:
-						if preliminary_track.ready then
+						if object_ready then
 							skip := true;
 						end if;
 					end if;
@@ -1361,10 +1361,10 @@ procedure draw_conductors is
 
 		use et_canvas_tool;
 		
-	begin -- draw_track
+	begin
 		
-		if verb = VERB_ROUTE and noun = NOUN_NET and PT.ready then
-			case PT.tool is
+		if verb = VERB_ROUTE and noun = NOUN_NET and object_ready then
+			case object_tool is
 				when MOUSE => 
 					compute_and_draw (
 						start_point	=> PT.path.start_point,	-- start of path

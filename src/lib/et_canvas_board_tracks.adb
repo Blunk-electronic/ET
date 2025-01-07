@@ -97,8 +97,8 @@ package body et_canvas_board_tracks is
 
 	
 	procedure reset_preliminary_track is begin
-		preliminary_track.ready := false;
-		preliminary_track.tool := MOUSE;
+		object_ready := false;
+		object_tool := MOUSE;
 
 		clear_out_properties_box;
 	end reset_preliminary_track;
@@ -507,6 +507,7 @@ package body et_canvas_board_tracks is
 		PT : type_preliminary_track renames preliminary_track;
 		line : type_line;
 
+		
 		procedure set_start_point is
 			use et_pcb_coordinates_2.pac_geometry_brd;
 		begin
@@ -516,7 +517,7 @@ package body et_canvas_board_tracks is
 					PT.path.start_point := point;
 
 					-- Allow drawing of the path:
-					preliminary_track.ready := true;
+					object_ready := true;
 
 				when NEAREST_AIRWIRE =>
 					if not clarification_pending then
@@ -533,14 +534,14 @@ package body et_canvas_board_tracks is
 								PT.path.start_point := point;
 
 								-- Allow drawing of the path:
-								preliminary_track.ready := true;
+								object_ready := true;
 
 							when 1 =>
 								PT.path.start_point := get_nearest (proposed_airwires.first, point);
 								selected_airwire := proposed_airwires.first;
 								
 								-- Allow drawing of the path:
-								preliminary_track.ready := true;
+								object_ready := true;
 
 							when others =>
 								set_request_clarification;
@@ -552,7 +553,7 @@ package body et_canvas_board_tracks is
 						PT.path.start_point := get_nearest (selected_airwire, point);
 								
 						-- Allow drawing of the path:
-						preliminary_track.ready := true;
+						object_ready := true;
 
 						reset_request_clarification;
 					end if;
@@ -594,13 +595,13 @@ package body et_canvas_board_tracks is
 		-- Set the tool being used for this path so that procedure
 		-- draw_track (in et_canvas_board_2-draw_conductors)
 		-- knows where to get the end point from.
-		PT.tool := tool;
+		object_tool := tool;
 
 		-- Initally the preliminary_track is NOT ready. Nothing will be drawn.
 		-- Upon the first calling of this procedure the start point of the
 		-- path will be set.
 		
-		if not PT.ready then
+		if not object_ready then
 
 			set_start_point;
 
@@ -648,7 +649,7 @@ package body et_canvas_board_tracks is
 				PT.path.start_point := point;
 				
 			else -- CASE 2
-				PT.ready := false;
+				object_ready := false;
 			end if;
 		end if;			
 	end make_path;
@@ -1090,7 +1091,7 @@ package body et_canvas_board_tracks is
 			-- clarification is now pending.
 
 			-- If find_segments has found only one segment
-			-- then the flag preliminary_segment.ready is set true.
+			-- then the flag object_ready is set true.
 
 			if object_ready then
 				finalize;

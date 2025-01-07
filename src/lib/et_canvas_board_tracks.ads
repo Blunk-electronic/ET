@@ -129,13 +129,6 @@ package et_canvas_board_tracks is
 	
 
 	type type_preliminary_track is record
-		-- This flag tells the draw operations to draw the preliminary line:
-		ready		: boolean := false;
-
-		-- This tells the GUI whether the mouse or the
-		-- cursor position is to be used when drawing the line:
-		tool		: type_tool := MOUSE;
-
 		net_name		: pac_net_name.bounded_string := no_name;
 
 		signal_layer	: type_signal_layer := signal_layer_default;

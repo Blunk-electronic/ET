@@ -142,7 +142,7 @@ begin
 		when VERB_ROUTE =>
 			case noun is
 				when NOUN_NET =>
-					if et_canvas_board_tracks.preliminary_track.ready then
+					if object_ready then
 						redraw_board;
 					end if;
 
