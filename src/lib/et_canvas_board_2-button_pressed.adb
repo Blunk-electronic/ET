@@ -353,8 +353,7 @@ is
 						if clarification_pending then
 							et_canvas_board_tracks.select_airwire;
 						else
-							pac_path_and_bend.next_bend_style (
-								et_canvas_board_tracks.preliminary_track.path);
+							pac_path_and_bend.next_bend_style (live_path);
 						end if;
 						
 					when others => null;							

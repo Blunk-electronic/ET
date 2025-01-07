@@ -514,7 +514,7 @@ package body et_canvas_board_tracks is
 			case PT.snap_mode is
 				when NO_SNAP =>
 					-- set start point:
-					PT.path.start_point := point;
+					live_path.start_point := point;
 
 					-- Allow drawing of the path:
 					object_ready := true;
@@ -531,13 +531,13 @@ package body et_canvas_board_tracks is
 						case proposed_airwires.length is
 							when 0 =>
 								-- set start point:
-								PT.path.start_point := point;
+								live_path.start_point := point;
 
 								-- Allow drawing of the path:
 								object_ready := true;
 
 							when 1 =>
-								PT.path.start_point := get_nearest (proposed_airwires.first, point);
+								live_path.start_point := get_nearest (proposed_airwires.first, point);
 								selected_airwire := proposed_airwires.first;
 								
 								-- Allow drawing of the path:
@@ -550,7 +550,7 @@ package body et_canvas_board_tracks is
 						end case;
 
 					else
-						PT.path.start_point := get_nearest (selected_airwire, point);
+						live_path.start_point := get_nearest (selected_airwire, point);
 								
 						-- Allow drawing of the path:
 						object_ready := true;
@@ -563,7 +563,7 @@ package body et_canvas_board_tracks is
 					null; -- CS
 			end case;
 
-			set_status (status_start_point & to_string (PT.path.start_point) & ". " &
+			set_status (status_start_point & to_string (live_path.start_point) & ". " &
 				status_press_space & status_set_end_point & status_hint_for_abort);
 
 		end set_start_point;
@@ -613,17 +613,17 @@ package body et_canvas_board_tracks is
 			-- CASE 2:
 			--  If the given point is the same as the start point of the current path
 			--  then we assume the operator wants to terminate the routing operation.
-			if point /= PT.path.start_point then -- CASE 1
+			if point /= live_path.start_point then -- CASE 1
 
 				-- Complete the path by setting its end point.
 				-- The the current bend point (if there is one) into account:
 				
-				if PT.path.bended = NO then
-					PT.path.end_point := point;
+				if live_path.bended = NO then
+					live_path.end_point := point;
 
 					-- insert a single line:
-					line.start_point := PT.path.start_point;
-					line.end_point   := PT.path.end_point;
+					line.start_point := live_path.start_point;
+					line.end_point   := live_path.end_point;
 					add_to_net;
 					
 				else
@@ -632,21 +632,21 @@ package body et_canvas_board_tracks is
 					-- See for example procedure draw_path in et_canvas_board_2-draw_assy_doc.
 
 					-- insert first line of the path:
-					line.start_point := PT.path.start_point;
-					line.end_point   := PT.path.bend_point;
+					line.start_point := live_path.start_point;
+					line.end_point   := live_path.bend_point;
 					add_to_net;
 
 					
 					-- insert second line of the path:
-					PT.path.end_point := point;
-					line.start_point := PT.path.bend_point;
-					line.end_point   := PT.path.end_point;
+					live_path.end_point := point;
+					line.start_point := live_path.bend_point;
+					line.end_point   := live_path.end_point;
 					add_to_net;
 				end if;
 
 				-- Set start point of path so that a new
 				-- path can be drawn:
-				PT.path.start_point := point;
+				live_path.start_point := point;
 				
 			else -- CASE 2
 				object_ready := false;

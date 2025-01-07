@@ -615,7 +615,7 @@ is
 			when key_bend_style =>
 				case noun is
 					when NOUN_NET =>
-						next_bend_style (preliminary_track.path);
+						next_bend_style (live_path);
 						
 					when others => null;
 				end case;

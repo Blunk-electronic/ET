@@ -1307,7 +1307,7 @@ procedure draw_conductors is
 			line : type_line;
 
 			-- Do the actual path calculation.
-			path : constant type_path := to_path (start_point, end_point, PT.path.bend_style);
+			path : constant type_path := to_path (start_point, end_point, live_path.bend_style);
 
 			-- Draws the line:
 			procedure draw is begin
@@ -1320,7 +1320,7 @@ procedure draw_conductors is
 		begin
 			-- The calculated path may require a bend point.
 			-- Set/clear the "bended" flag of the line being drawn.
-			PT.path.bended := path.bended;
+			live_path.bended := path.bended;
 
 			-- set linewidth:			
 			set_linewidth (PT.width);
@@ -1342,7 +1342,7 @@ procedure draw_conductors is
 			-- from start point to bend point. Then draw a second line from
 			-- bend point end point:
 			else
-				PT.path.bend_point := path.bend_point;
+				live_path.bend_point := path.bend_point;
 
 				line.start_point := path.start_point;
 				line.end_point := path.bend_point;
@@ -1367,12 +1367,12 @@ procedure draw_conductors is
 			case object_tool is
 				when MOUSE => 
 					compute_and_draw (
-						start_point	=> PT.path.start_point,	-- start of path
+						start_point	=> live_path.start_point,	-- start of path
 						end_point	=> snap_to_grid (get_mouse_position));	-- end of route
 					
 				when KEYBOARD =>
 					compute_and_draw (
-						start_point	=> PT.path.start_point,	-- start of path
+						start_point	=> live_path.start_point,	-- start of path
 						end_point	=> get_cursor_position);	-- end of path
 
 			end case;
