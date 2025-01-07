@@ -1323,7 +1323,7 @@ procedure draw_conductors is
 			live_path.bended := path.bended;
 
 			-- set linewidth:			
-			set_linewidth (PT.width);
+			set_linewidth (object_linewidth);
 
 			-- Set the color according to the current signal layer:
 			set_color_conductor (PT.signal_layer, NORMAL);

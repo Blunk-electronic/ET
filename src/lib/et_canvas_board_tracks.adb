@@ -160,10 +160,11 @@ package body et_canvas_board_tracks is
 		width := to_distance (text);
 
 		-- CS validate. output error in status bar
-		preliminary_track.width := width;
+		object_linewidth := width;
 
 		et_canvas_board_2.redraw_board;
 	end apply_line_width;
+
 
 	
 	
@@ -196,6 +197,7 @@ package body et_canvas_board_tracks is
 
 
 	
+	
 	procedure line_width_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
 	begin
@@ -204,6 +206,7 @@ package body et_canvas_board_tracks is
 	end line_width_entered;
 
 
+	
 
 	procedure make_store_for_net_names (
 		store : in out gtk_list_store)
@@ -379,7 +382,7 @@ package body et_canvas_board_tracks is
 			gtk_entry (cbox_line_width.get_child).set_width_chars (line_width_length_min);
 
 			-- Set the line width according to the value used last:
-			gtk_entry (cbox_line_width.get_child).set_text (trim (to_string (preliminary_track.width), left));
+			gtk_entry (cbox_line_width.get_child).set_text (trim (to_string (object_linewidth), left));
 			
 			-- The width is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_line_width.get_child).on_key_press_event (line_width_key_pressed'access);
@@ -428,6 +431,7 @@ package body et_canvas_board_tracks is
 	end next_snap_mode;
 	
 
+
 	
 	function get_nearest (
 		airwire	: in pac_proposed_airwires.cursor;
@@ -441,6 +445,7 @@ package body et_canvas_board_tracks is
 		return to_point (get_nearest (wire, to_vector (point)));
 	end get_nearest;
 
+
 	
 
 	procedure reset_airwires is begin
@@ -449,6 +454,7 @@ package body et_canvas_board_tracks is
 	end reset_airwires;
 	
 
+	
 	
 	function airwire_is_selected (
 		airwire_cursor	: in pac_airwires.cursor;
@@ -476,6 +482,7 @@ package body et_canvas_board_tracks is
 		end if;
 	end airwire_is_selected;
 
+	
 
 	
 	procedure select_airwire is 
@@ -581,7 +588,7 @@ package body et_canvas_board_tracks is
 			add_named_track (
 				module_cursor	=> active_module, 
 				net_name		=> PT.net_name,
-				line			=> (line with PT.width, PT.signal_layer),
+				line			=> (line with object_linewidth, PT.signal_layer),
 				log_threshold	=> log_threshold + 1);
 			
 			-- Commit the new state of the design:

@@ -1139,6 +1139,10 @@ package et_canvas is
 	-- then it is temprarily stored here:
 	live_path : pac_path.type_path_live;
 
+	-- When a path is being drawn, then this
+	-- is the linewidth:
+	object_linewidth : type_distance_positive := 0.15;
+	
 	
 	-- This function returns the object tool position
 	-- according to the current value of object_tool.
