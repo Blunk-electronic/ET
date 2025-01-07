@@ -848,7 +848,6 @@ package body et_canvas_board_2 is
 		reset_preliminary_text; -- after placing a text
 		reset_preliminary_via; -- after placing a via
 		
-		reset_preliminary_track; -- after laying out a track
 		reset_airwires;
 		reset_ripup_mode;
 

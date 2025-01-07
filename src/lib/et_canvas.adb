@@ -3326,6 +3326,8 @@ package body et_canvas is
 		object_ready := false;
 		object_tool := MOUSE;
 		-- CS reset point_of_atttack ?
+		-- CS object_linewidth
+		-- CS live_path
 	end reset_object;
 
 

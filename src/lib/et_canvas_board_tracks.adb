@@ -95,14 +95,6 @@ package body et_canvas_board_tracks is
 	end to_string;
 
 
-	
-	procedure reset_preliminary_track is begin
-		object_ready := false;
-		object_tool := MOUSE;
-
-		clear_out_properties_box;
-	end reset_preliminary_track;
-
 
 
 
@@ -183,7 +175,8 @@ package body et_canvas_board_tracks is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_preliminary_track;
+				reset_object;
+				clear_out_properties_box;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);

@@ -142,10 +142,6 @@ package et_canvas_board_tracks is
 
 	
 
-	-- Sets the default tool to MOUSE, clears the "ready"-flag
-	-- and clears out the properties bar:
-	procedure reset_preliminary_track;
-	
 
 	procedure make_store_for_net_names (
 		store : in out gtk_list_store);

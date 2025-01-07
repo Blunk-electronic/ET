@@ -584,8 +584,6 @@ is
 			when key_noun_net =>
 				noun := NOUN_NET;
 
-				reset_preliminary_track;
-				
 				show_track_properties;
 				set_status (status_draw_track);
 
