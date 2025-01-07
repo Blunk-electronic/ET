@@ -403,9 +403,7 @@ package body et_canvas_board_tracks is
 
 
 	procedure next_snap_mode is 
-		PT : type_preliminary_track renames preliminary_track;
-
-		i : constant natural := type_snap_mode'pos (PT.snap_mode);
+		i : constant natural := type_snap_mode'pos (snap_mode);
 		-- i points now to the current snap mode
 
 		-- get the index of the last available snap mode:
@@ -413,10 +411,10 @@ package body et_canvas_board_tracks is
 	begin
 		if i < max then
 			-- jump to next snap mode
-			PT.snap_mode := type_snap_mode'succ (type_snap_mode'val (i));
+			snap_mode := type_snap_mode'succ (type_snap_mode'val (i));
 		else 
 			-- After the last snap mode, jump back to the first snap mode:
-			PT.snap_mode := type_snap_mode'first;
+			snap_mode := type_snap_mode'first;
 		end if;
 
 		-- put_line ("snap mode " & to_string (PT.snap_mode));
@@ -504,14 +502,13 @@ package body et_canvas_board_tracks is
 		tool	: in type_tool;
 		point	: in type_vector_model)
 	is
-		PT : type_preliminary_track renames preliminary_track;
 		line : type_line;
 
 		
 		procedure set_start_point is
 			use et_pcb_coordinates_2.pac_geometry_brd;
 		begin
-			case PT.snap_mode is
+			case snap_mode is
 				when NO_SNAP =>
 					-- set start point:
 					live_path.start_point := point;
@@ -568,6 +565,7 @@ package body et_canvas_board_tracks is
 
 		end set_start_point;
 		
+
 		
 		procedure add_to_net is
 			use et_board_ops.conductors;
@@ -981,8 +979,6 @@ package body et_canvas_board_tracks is
 	
 
 	procedure next_ripup_mode is
-		PT : type_preliminary_track renames preliminary_track;
-
 		i : constant natural := type_ripup_mode'pos (ripup_mode);
 		-- i points now to the current ripup mode
 

@@ -128,13 +128,10 @@ package et_canvas_board_tracks is
 		return string;
 	
 
-	type type_preliminary_track is record
-		snap_mode		: type_snap_mode := NEAREST_AIRWIRE;
-	end record;
+	snap_mode : type_snap_mode := NEAREST_AIRWIRE;
 
-	
-	-- The place where preliminary information of the line is stored:
-	preliminary_track : type_preliminary_track;
+
+
 
 	
 
