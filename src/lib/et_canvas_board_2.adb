@@ -437,7 +437,7 @@ package body et_canvas_board_2 is
 						draw_line (line => line, width => zero, do_stroke => true);
 
 					when others =>
-						draw_line (line => line, width => PL.width, do_stroke => true);
+						draw_line (line => line, width => object_linewidth, do_stroke => true);
 				end case;
 			end draw;
 			
@@ -448,7 +448,7 @@ package body et_canvas_board_2 is
 			live_path.bended := path.bended;
 
 			-- set linewidth:			
-			set_linewidth (PL.width);
+			set_linewidth (object_linewidth);
 
 			-- If we are drawing a path in a conductor layer then
 			-- the color must be set according to the signal layer:

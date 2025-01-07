@@ -224,7 +224,7 @@ package body et_canvas_board_lines is
 		width := to_distance (text);
 
 		-- CS validate. output error in status bar
-		preliminary_object.width := width;
+		object_linewidth := width;
 
 		et_canvas_board_2.redraw_board;
 	end apply_line_width;
@@ -483,7 +483,7 @@ package body et_canvas_board_lines is
 			gtk_entry (cbox_line_width.get_child).set_width_chars (line_width_length_min);
 
 			-- Set the line width according to the value used last:
-			gtk_entry (cbox_line_width.get_child).set_text (trim (to_string (preliminary_object.width), left));
+			gtk_entry (cbox_line_width.get_child).set_text (trim (to_string (object_linewidth), left));
 			
 			-- The width is to be accepted by either pressing TAB or by pressing ENTER:
 			gtk_entry (cbox_line_width.get_child).on_key_press_event (line_width_key_pressed'access);
@@ -544,7 +544,7 @@ package body et_canvas_board_lines is
 					et_board_ops.assy_doc.draw_line (
 						module_name	=> pac_generic_modules.key (active_module),
 						face		=> PL.face,
-						line		=> (line with PL.width),
+						line		=> (line with object_linewidth),
 						log_threshold	=> log_threshold);
 
 
@@ -555,7 +555,7 @@ package body et_canvas_board_lines is
 					-- to be a freetrack:
 					et_board_ops.conductors.draw_track_line (
 						module_name	=> pac_generic_modules.key (active_module),
-						line		=> (line with PL.width, PL.signal_layer),
+						line		=> (line with object_linewidth, PL.signal_layer),
 						log_threshold	=> log_threshold);
 
 					
@@ -565,7 +565,7 @@ package body et_canvas_board_lines is
 					et_board_ops.silkscreen.draw_line (
 						module_name	=> pac_generic_modules.key (active_module),
 						face		=> PL.face,
-						line		=> (line with PL.width),
+						line		=> (line with object_linewidth),
 						log_threshold	=> log_threshold);
 
 
@@ -587,7 +587,7 @@ package body et_canvas_board_lines is
 					et_board_ops.stencil.draw_stencil_line (
 						module_name	=> pac_generic_modules.key (active_module),
 						face		=> PL.face,
-						line		=> (line with PL.width),
+						line		=> (line with object_linewidth),
 						log_threshold	=> log_threshold);
 
 					
@@ -597,7 +597,7 @@ package body et_canvas_board_lines is
 					et_board_ops.stop_mask.draw_stop_line (
 						module_name	=> pac_generic_modules.key (active_module),
 						face		=> PL.face,
-						line		=> (line with PL.width),
+						line		=> (line with object_linewidth),
 						log_threshold	=> log_threshold);
 
 

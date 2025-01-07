@@ -59,7 +59,6 @@ package et_canvas_board_preliminary_object is
 		category		: type_layer_category := LAYER_CAT_ASSY;
 		signal_layer	: type_signal_layer := signal_layer_default;
 		face			: type_face := face_default;
-		width			: type_distance_positive := 0.15;
 	end record;
 
 	

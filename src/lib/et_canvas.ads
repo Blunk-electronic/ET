@@ -1125,7 +1125,7 @@ package et_canvas is
 
 	-- When an object is to be moved or dragged, then
 	-- this global variable should be used:
-	point_of_attack : type_vector_model;
+	point_of_attack : type_vector_model; -- CS rename to object_point_of_attack
 
 	-- When an object is being moved, then this can be done
 	-- via mouse or keyboard. This global variable should be used:
@@ -1139,7 +1139,7 @@ package et_canvas is
 	-- then it is temprarily stored here:
 	live_path : pac_path.type_path_live;
 
-	-- When a path is being drawn, then this
+	-- When a line or a path is being drawn, then this
 	-- is the linewidth:
 	object_linewidth : type_distance_positive := 0.15;
 	
