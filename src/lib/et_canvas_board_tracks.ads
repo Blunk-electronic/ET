@@ -129,8 +129,6 @@ package et_canvas_board_tracks is
 	
 
 	type type_preliminary_track is record
-		net_name		: pac_net_name.bounded_string := no_name;
-
 		signal_layer	: type_signal_layer := signal_layer_default;
 
 		snap_mode		: type_snap_mode := NEAREST_AIRWIRE;

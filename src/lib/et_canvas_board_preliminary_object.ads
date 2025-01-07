@@ -46,7 +46,7 @@ use et_pcb_coordinates_2.pac_geometry_2;
 
 with et_board_layer_category;			use et_board_layer_category;
 with et_pcb_stack;						use et_pcb_stack;
-
+with et_net_names;						use et_net_names;
 
 
 
@@ -61,6 +61,7 @@ package et_canvas_board_preliminary_object is
 
 	object_face				: type_face := face_default;
 
+	object_net_name			: pac_net_name.bounded_string := no_name;
 	
 	
 	-- Resets the preliminary object information
