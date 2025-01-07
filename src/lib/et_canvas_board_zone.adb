@@ -128,19 +128,19 @@ package body et_canvas_board_zone is
 		case object_layer_category is
 
 			when LAYER_CAT_ASSY =>
-				enable_assy_doc (preliminary_object.face);
+				enable_assy_doc (object_face);
 			
 			when LAYER_CAT_KEEPOUT =>
-				enable_keepout (preliminary_object.face);
+				enable_keepout (object_face);
 			
 			when LAYER_CAT_SILKSCREEN =>
-				enable_silkscreen (preliminary_object.face);
+				enable_silkscreen (object_face);
 
 			when LAYER_CAT_STOP =>
-				enable_stopmask (preliminary_object.face);
+				enable_stopmask (object_face);
 
 			when LAYER_CAT_STENCIL =>
-				enable_stencil (preliminary_object.face);
+				enable_stencil (object_face);
 
 			when LAYER_CAT_VIA_RESTRICT =>
 				enable_via_restrict (object_signal_layer);
@@ -168,25 +168,25 @@ package body et_canvas_board_zone is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_object.face := to_face (values.get_string (item_text));
-		--put_line ("face " & to_string (preliminary_object.face));
+		object_face := to_face (values.get_string (item_text));
+		--put_line ("face " & to_string (object_face));
 
 		-- Auto-enable the selected layer category:
 		case object_layer_category is
 			when LAYER_CAT_ASSY =>
-				enable_assy_doc (preliminary_object.face);
+				enable_assy_doc (object_face);
 			
 			when LAYER_CAT_KEEPOUT =>
-				enable_keepout (preliminary_object.face);
+				enable_keepout (object_face);
 			
 			when LAYER_CAT_SILKSCREEN =>
-				enable_silkscreen (preliminary_object.face);
+				enable_silkscreen (object_face);
 
 			when LAYER_CAT_STOP =>
-				enable_stopmask (preliminary_object.face);
+				enable_stopmask (object_face);
 
 			when LAYER_CAT_STENCIL =>
-				enable_stencil (preliminary_object.face);
+				enable_stencil (object_face);
 
 			when others => null;
 		end case;
@@ -352,7 +352,7 @@ package body et_canvas_board_zone is
 				model		=> +storage_model); -- ?
 
 			-- Set the face used last:
-			cbox_face.set_active (type_face'pos (preliminary_object.face));
+			cbox_face.set_active (type_face'pos (object_face));
 
 
 			pack_start (box_face, cbox_face, padding => guint (spacing));
@@ -449,7 +449,6 @@ package body et_canvas_board_zone is
 		tool	: in type_tool;
 		point	: in type_vector_model)
 	is
-		PZ : type_preliminary_object renames preliminary_object;
 		line : type_line;
 
 		
@@ -478,7 +477,7 @@ package body et_canvas_board_zone is
 					et_board_ops.assy_doc.draw_zone (
 						module_cursor	=> active_module,
 						zone			=> (c with null record),
-						face			=> PZ.face,
+						face			=> object_face,
 						log_threshold	=> log_threshold);
 
 					
@@ -488,7 +487,7 @@ package body et_canvas_board_zone is
 					et_board_ops.silkscreen.draw_zone (
 						module_cursor	=> active_module,
 						zone			=> (c with null record),
-						face			=> PZ.face,
+						face			=> object_face,
 						log_threshold	=> log_threshold);
 
 
@@ -498,7 +497,7 @@ package body et_canvas_board_zone is
 					et_board_ops.stop_mask.draw_zone (
 						module_cursor	=> active_module,
 						zone			=> (c with null record),
-						face			=> PZ.face,
+						face			=> object_face,
 						log_threshold	=> log_threshold);
 
 
@@ -508,7 +507,7 @@ package body et_canvas_board_zone is
 					et_board_ops.stencil.draw_zone (
 						module_cursor	=> active_module,
 						zone			=> (c with null record),
-						face			=> PZ.face,
+						face			=> object_face,
 						log_threshold	=> log_threshold);
 
 					
@@ -518,7 +517,7 @@ package body et_canvas_board_zone is
 					et_board_ops.keepout.draw_zone (
 						module_cursor	=> active_module,
 						zone			=> (c with null record),
-						face			=> PZ.face,
+						face			=> object_face,
 						log_threshold	=> log_threshold);
 					
 					

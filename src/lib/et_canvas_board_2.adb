@@ -521,8 +521,6 @@ package body et_canvas_board_2 is
 		use et_modes.board;
 		use et_canvas_tool;
 		use et_canvas_board_preliminary_object;
-		
-		PZ : type_preliminary_object renames preliminary_object;
 
 
 		-- Computes the path from given start to given end point.

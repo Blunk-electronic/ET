@@ -52,26 +52,18 @@ with et_pcb_stack;						use et_pcb_stack;
 
 package et_canvas_board_preliminary_object is
 
-
-	object_layer_category : type_layer_category := LAYER_CAT_ASSY;
-	
-	object_signal_layer	: type_signal_layer := signal_layer_default;
-
-	
 	-- Before placing, moving, deleting or other operations we
-	-- collect preliminary information using this type:
-	type type_preliminary_object is record
-		-- category		: type_layer_category := LAYER_CAT_ASSY;
-		face			: type_face := face_default;
-	end record;
+	-- collect preliminary information here:
+
+	object_layer_category 	: type_layer_category := LAYER_CAT_ASSY;
+	
+	object_signal_layer		: type_signal_layer := signal_layer_default;
+
+	object_face				: type_face := face_default;
 
 	
-	-- The place where preliminary information of the line is stored:
-	preliminary_object : type_preliminary_object;
-
-
 	
-	-- Resets the preliminary object
+	-- Resets the preliminary object information
 	-- and global stuff like object_tool, object_ready, ...
 	-- (see et_canvas spec):
 	procedure reset_preliminary_object;

@@ -48,7 +48,7 @@ package body et_canvas_board_preliminary_object is
 	begin
 		reset_object; -- global stuff
 
-		-- CS reset category, signal_layer, width, ...
+		-- CS reset category, signal_layer, face, ...
 	end reset_preliminary_object;
 
 	

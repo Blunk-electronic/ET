@@ -122,22 +122,22 @@ package body et_canvas_board_lines is
 		-- Auto-enable the selected layer category:
 		case object_layer_category is
 			when LAYER_CAT_ASSY =>
-				enable_assy_doc (preliminary_object.face);
+				enable_assy_doc (object_face);
 
 			when LAYER_CAT_CONDUCTOR =>
 				enable_conductor (object_signal_layer);
 
 			when LAYER_CAT_SILKSCREEN =>
-				enable_silkscreen (preliminary_object.face);
+				enable_silkscreen (object_face);
 
 			when LAYER_CAT_ROUTE_RESTRICT =>
 				enable_route_restrict (object_signal_layer);
 
 			when LAYER_CAT_STENCIL =>
-				enable_stencil (preliminary_object.face);
+				enable_stencil (object_face);
 
 			when LAYER_CAT_STOP =>
-				enable_stopmask (preliminary_object.face);
+				enable_stopmask (object_face);
 				
 			when others => null;
 		end case;
@@ -162,22 +162,22 @@ package body et_canvas_board_lines is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_object.face := to_face (values.get_string (item_text));
-		--put_line ("face " & to_string (preliminary_object.face));
+		object_face := to_face (values.get_string (item_text));
+		--put_line ("face " & to_string (object_face));
 
 		-- Auto-enable the selected layer category:
 		case object_layer_category is
 			when LAYER_CAT_ASSY =>
-				enable_assy_doc (preliminary_object.face);
+				enable_assy_doc (object_face);
 
 			when LAYER_CAT_SILKSCREEN =>
-				enable_silkscreen (preliminary_object.face);
+				enable_silkscreen (object_face);
 
 			when LAYER_CAT_STENCIL =>
-				enable_stencil (preliminary_object.face);
+				enable_stencil (object_face);
 
 			when LAYER_CAT_STOP =>
-				enable_stopmask (preliminary_object.face);
+				enable_stopmask (object_face);
 				
 			when others => null;
 		end case;
@@ -397,7 +397,7 @@ package body et_canvas_board_lines is
 				model		=> +storage_model); -- ?
 
 			-- Set the face used last:
-			cbox_face.set_active (type_face'pos (preliminary_object.face));
+			cbox_face.set_active (type_face'pos (object_face));
 
 
 			pack_start (box_face, cbox_face, padding => guint (spacing));
@@ -526,7 +526,6 @@ package body et_canvas_board_lines is
 		tool	: in type_tool;
 		point	: in type_vector_model)
 	is
-		PL : type_preliminary_object renames preliminary_object;
 		line : type_line;
 
 		
@@ -543,7 +542,7 @@ package body et_canvas_board_lines is
 					
 					et_board_ops.assy_doc.draw_line (
 						module_name	=> pac_generic_modules.key (active_module),
-						face		=> PL.face,
+						face		=> object_face,
 						line		=> (line with object_linewidth),
 						log_threshold	=> log_threshold);
 
@@ -564,7 +563,7 @@ package body et_canvas_board_lines is
 					
 					et_board_ops.silkscreen.draw_line (
 						module_name	=> pac_generic_modules.key (active_module),
-						face		=> PL.face,
+						face		=> object_face,
 						line		=> (line with object_linewidth),
 						log_threshold	=> log_threshold);
 
@@ -586,7 +585,7 @@ package body et_canvas_board_lines is
 					
 					et_board_ops.stencil.draw_stencil_line (
 						module_name	=> pac_generic_modules.key (active_module),
-						face		=> PL.face,
+						face		=> object_face,
 						line		=> (line with object_linewidth),
 						log_threshold	=> log_threshold);
 
@@ -596,7 +595,7 @@ package body et_canvas_board_lines is
 					
 					et_board_ops.stop_mask.draw_stop_line (
 						module_name	=> pac_generic_modules.key (active_module),
-						face		=> PL.face,
+						face		=> object_face,
 						line		=> (line with object_linewidth),
 						log_threshold	=> log_threshold);
 

@@ -91,7 +91,6 @@ package body et_canvas_board_outline is
 		tool	: in type_tool;
 		point	: in type_vector_model)
 	is
-		PC : type_preliminary_object renames preliminary_object;
 		line : type_line;
 
 		
