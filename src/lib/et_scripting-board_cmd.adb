@@ -88,6 +88,8 @@ with et_pcb;
 with et_pcb_stack;
 with et_keywords;					use et_keywords;
 
+with et_canvas_board_preliminary_object;
+
 -- to do:
 
 
@@ -3498,6 +3500,7 @@ is
 		use et_canvas_board_devices;
 		use et_canvas_board_texts;
 		use et_canvas_board_vias;
+		use et_canvas_board_preliminary_object;
 		
 		device_name : type_device_name;
 
@@ -3543,7 +3546,7 @@ is
 							when 5 => -- place via RESET_N
 								-- Preset the net name so that it is visible
 								-- in the via properties bar:
-								preliminary_via.net_name := to_net_name (f (5));
+								object_net_name := to_net_name (f (5));
 
 								show_via_properties;
 								single_cmd_status.finalization_pending := true;

@@ -71,6 +71,8 @@ with et_display.board;				use et_display.board;
 
 with et_exceptions;					use et_exceptions;
 
+with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
+
 
 package body et_canvas_board_vias is
 
@@ -337,7 +339,7 @@ package body et_canvas_board_vias is
 	begin
 		-- Get the net name of the entry column 0:
 		gtk.tree_model.get_value (model, iter, 0, name);
-		preliminary_via.net_name := to_net_name (glib.values.get_string (name));
+		object_net_name := to_net_name (glib.values.get_string (name));
 		
 		-- CS Auto-enable the affected conductor layer ?
 	end net_name_changed;
@@ -421,13 +423,13 @@ package body et_canvas_board_vias is
 			-- specified in preliminary_via. In this case the first net of the 
 			-- module is assumed and the net index set accordingly.
 			-- NOTE: The net index is numbered from 0 .. N.
-			if preliminary_via.net_name = no_name then
-				preliminary_via.net_name := get_first_net (active_module);
+			if object_net_name = no_name then
+				object_net_name := get_first_net (active_module);
 			end if;
 			
 			-- Set the acive net (in the box) via its index:
 			cbox_net_name.set_active (gint (
-				get_net_index (active_module, preliminary_via.net_name, log_threshold + 1)));
+				get_net_index (active_module, object_net_name, log_threshold + 1)));
 			
 
 			pack_start (box_net_name, cbox_net_name, padding => guint (spacing));
@@ -930,7 +932,7 @@ package body et_canvas_board_vias is
 
 			place_via (
 				module_cursor	=> active_module,
-				net_name		=> preliminary_via.net_name,
+				net_name		=> object_net_name,
 				via				=> via,
 				log_threshold	=> log_threshold + 1);
 

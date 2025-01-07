@@ -1231,7 +1231,7 @@ procedure draw_conductors is
 			position := get_primary_tool_position;
 
 			-- Get the name of the targeted net:
-			net_name := preliminary_via.net_name;
+			net_name := object_net_name;
 			
 			case preliminary_via.category is
 				when THROUGH =>
