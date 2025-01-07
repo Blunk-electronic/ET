@@ -132,11 +132,11 @@ package body et_canvas_board_tracks is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_track.signal_layer := to_signal_layer (glib.values.get_string (item_text));
-		--put_line ("signal layer " & to_string (preliminary_track.signal_layer));
+		object_signal_layer := to_signal_layer (glib.values.get_string (item_text));
+		--put_line ("signal layer " & to_string (object_signal_layer));
 
 		-- display the affected conductor layer:
-		enable_conductor (preliminary_track.signal_layer);
+		enable_conductor (object_signal_layer);
 		
 		et_canvas_board_2.redraw_board;		
 	end signal_layer_changed;
@@ -345,7 +345,7 @@ package body et_canvas_board_tracks is
 				model		=> +storage_model); -- ?
 
 			-- Set the signal layer used last:
-			cbox_signal_layer.set_active (gint (preliminary_track.signal_layer) - 1);
+			cbox_signal_layer.set_active (gint (object_signal_layer) - 1);
 			-- NOTE: The entries are numbered from 0 .. N.
 
 
@@ -581,7 +581,7 @@ package body et_canvas_board_tracks is
 			add_named_track (
 				module_cursor	=> active_module, 
 				net_name		=> object_net_name,
-				line			=> (line with object_linewidth, PT.signal_layer),
+				line			=> (line with object_linewidth, object_signal_layer),
 				log_threshold	=> log_threshold + 1);
 			
 			-- Commit the new state of the design:

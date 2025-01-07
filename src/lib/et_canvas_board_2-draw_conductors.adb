@@ -1291,9 +1291,6 @@ procedure draw_conductors is
 	-- in preliminary_track.
 	procedure draw_track is
 		use et_canvas_board_tracks;
-		
-		PT : type_preliminary_track renames preliminary_track;	
-
 
 		-- Computes the path from given start to given end point.
 		-- Takes the bend style given in preliminary_track into account.
@@ -1326,7 +1323,7 @@ procedure draw_conductors is
 			set_linewidth (object_linewidth);
 
 			-- Set the color according to the current signal layer:
-			set_color_conductor (PT.signal_layer, NORMAL);
+			set_color_conductor (object_signal_layer, NORMAL);
 
 			
 			-- If the path does not require a bend point, draw a single line
