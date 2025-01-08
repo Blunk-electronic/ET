@@ -56,42 +56,16 @@ with et_logging;					use et_logging;
 package et_canvas_board_devices is
 
 
-	-- Before placing, moving, deleting or other operations we
-	-- collect preliminary information using this type:
-	type type_preliminary_electrical_device is record
-		device	: type_device_name := (others => <>); -- IC45
-	end record;
-
-	-- The place where preliminary information of
-	-- an electrical device is stored:
-	preliminary_electrical_device : type_preliminary_electrical_device;
-
-
 	-- This procedure:
 	-- - Resets all proposed electrical devices.
-	-- - resets global variable preliminary_electrical_device 
-	--   to its default values
+	-- - flags object_ready, object_tool, object_device_name
 	procedure reset_preliminary_electrical_device;
 
 
 
-
-	
-	-- Before placing, moving, deleting or other operations we
-	-- collect preliminary information using this type:
-	type type_preliminary_non_electrical_device is record
-		device	: type_device_name := (others => <>); -- FD1 -- CS: use cursor instead ?
-	end record;
-
-	-- The place where preliminary information of
-	-- a non-electrical device is stored:
-	preliminary_non_electrical_device : type_preliminary_non_electrical_device;
-
-
 	-- This procedure:
 	-- - Resets all proposed non-electrical devices.
-	-- - resets global variable preliminary_non_electrical_device 
-	--   to its default values
+	-- - flags object_ready, object_tool, object_device_name
 	procedure reset_preliminary_non_electrical_device;
 
 	
@@ -116,7 +90,8 @@ package et_canvas_board_devices is
 	-- of them as "selected".
 	-- If more than one device found, then it requests for clarification.
 	procedure find_electrical_devices (
-		point : in type_vector_model);
+										  point : in type_vector_model);
+	
 
 	-- Locates all devices in the vicinity of given point.
 	-- Marks the affected devices as "proposed" and marks the the first
@@ -126,6 +101,7 @@ package et_canvas_board_devices is
 		point : in type_vector_model);
 
 
+	
 	
 -- MOVE:	
 
@@ -151,12 +127,14 @@ package et_canvas_board_devices is
 	procedure move_electrical_device (
 		tool	: in type_tool;
 		point	: in type_vector_model);
+	
 
 	-- Similar to procedure move_electrical_device but works 
 	-- on non-electrical devices:
 	procedure move_non_electrical_device (
 		tool	: in type_tool;
 		point	: in type_vector_model);
+
 
 
 	
@@ -182,6 +160,7 @@ package et_canvas_board_devices is
 	procedure rotate_electrical_device (
 		tool	: in type_tool;
 		point	: in type_vector_model);
+	
 
 	-- Similar to procedure rotate_electrical_device but works 
 	-- on non-electrical devices:
@@ -191,6 +170,7 @@ package et_canvas_board_devices is
 
 	
 
+	
 
 -- FLIP / MIRROR:
 
@@ -213,6 +193,7 @@ package et_canvas_board_devices is
 		tool	: in type_tool;
 		point	: in type_vector_model);
 	
+	
 	-- Similar to procedure flip_electrical_device but works 
 	-- on non-electrical devices:
 	procedure flip_non_electrical_device (
@@ -221,6 +202,8 @@ package et_canvas_board_devices is
 
 
 
+
+	
 -- DELETE:
 
 	status_delete_device : constant string :=

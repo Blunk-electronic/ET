@@ -47,7 +47,7 @@ use et_pcb_coordinates_2.pac_geometry_2;
 with et_board_layer_category;			use et_board_layer_category;
 with et_pcb_stack;						use et_pcb_stack;
 with et_net_names;						use et_net_names;
-
+with et_device_name;					use et_device_name;
 
 
 package et_canvas_board_preliminary_object is
@@ -59,9 +59,11 @@ package et_canvas_board_preliminary_object is
 	
 	object_signal_layer		: type_signal_layer := signal_layer_default;
 
-	object_face				: type_face := face_default;
+	object_face				: type_face := face_default; -- top, bottom
 
-	object_net_name			: pac_net_name.bounded_string := no_name;
+	object_net_name			: pac_net_name.bounded_string := et_net_names.no_name; -- GND, P3V3
+	
+	object_device_name		: type_device_name := et_device_name.no_name; -- IC45, FD2
 	
 	
 	-- Resets the preliminary object information

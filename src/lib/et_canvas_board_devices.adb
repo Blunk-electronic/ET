@@ -63,9 +63,9 @@ package body et_canvas_board_devices is
 	
 
 	procedure reset_preliminary_electrical_device is begin
-		preliminary_electrical_device := (others => <>);
 		object_ready := false;
 		object_tool := MOUSE;
+		object_device_name := no_name;
 
 		reset_proposed_devices (active_module, log_threshold + 1);
 	end reset_preliminary_electrical_device;
@@ -73,9 +73,9 @@ package body et_canvas_board_devices is
 
 
 	procedure reset_preliminary_non_electrical_device is begin
-		preliminary_non_electrical_device := (others => <>);
 		object_ready := false;
 		object_tool := MOUSE;
+		object_device_name := no_name;
 
 		reset_proposed_non_electrical_devices (active_module, log_threshold + 1);
 	end reset_preliminary_non_electrical_device;
