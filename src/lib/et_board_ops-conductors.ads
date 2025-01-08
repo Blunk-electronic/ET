@@ -46,6 +46,7 @@ with et_text;
 with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_fill_zones;						use et_fill_zones;
 with et_conductor_text.boards;			use et_conductor_text.boards;
+with et_device_name;					use et_device_name;
 
 
 package et_board_ops.conductors is
@@ -75,7 +76,7 @@ package et_board_ops.conductors is
 	-- then a freetrack will be drawn.
 	procedure draw_track_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in pac_net_name.bounded_string := no_name; -- reset_n
+		net_name		: in pac_net_name.bounded_string := et_net_names.no_name; -- reset_n
 		line			: in type_conductor_line;
 		log_threshold	: in type_log_level);
 
@@ -283,7 +284,7 @@ package et_board_ops.conductors is
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level;
-		net_name		: in pac_net_name.bounded_string := no_name); -- reset_n
+		net_name		: in pac_net_name.bounded_string := et_net_names.no_name); -- reset_n
 
 
 	-- Moves a freetrack line. If the given line
@@ -358,7 +359,7 @@ package et_board_ops.conductors is
 
 		-- Net name is relevant if filil zone is part of a route.
 		-- The type of the given fill zone is the cirteria:
-		net_name		: in pac_net_name.bounded_string := no_name);
+		net_name		: in pac_net_name.bounded_string := et_net_names.no_name);
 
 
 	-- Fills fill zones. If nets is empty, then all

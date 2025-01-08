@@ -48,6 +48,7 @@ with et_submodules;
 with et_numbering;
 with et_symbols;
 with et_device_appearance;
+with et_device_name;
 with et_conductor_segment.boards;
 with et_exceptions;					use et_exceptions;
 with et_generic_stacks;
@@ -338,6 +339,7 @@ package body et_board_ops is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
 
+		use et_device_name;
 		use et_assembly_variants;
 		use et_assembly_variants.pac_assembly_variants;
 		use pac_assembly_variant_name;

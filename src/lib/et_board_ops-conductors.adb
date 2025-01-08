@@ -189,7 +189,7 @@ package body et_board_ops.conductors is
 	
 	procedure draw_track_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		net_name		: in pac_net_name.bounded_string := no_name; -- reset_n
+		net_name		: in pac_net_name.bounded_string := et_net_names.no_name; -- reset_n
 		line			: in type_conductor_line;
 		log_threshold	: in type_log_level) 
 	is
@@ -1300,7 +1300,7 @@ package body et_board_ops.conductors is
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level;
-		net_name		: in pac_net_name.bounded_string := no_name) -- reset_n
+		net_name		: in pac_net_name.bounded_string := et_net_names.no_name) -- reset_n
 	is
 		use pac_conductor_lines;
 		use et_nets;
@@ -1343,7 +1343,7 @@ package body et_board_ops.conductors is
 
 			
 		begin
-			if net_name = no_name then
+			if net_name = et_net_names.no_name then
 				-- Find the net that contains the given line segment:
 				iterate (module.nets, query_net'access, proceed'access);
 				-- Now net_cursor points to the target net.
@@ -1845,7 +1845,7 @@ package body et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_zone'class;
 		log_threshold	: in type_log_level;
-		net_name		: in pac_net_name.bounded_string := no_name)
+		net_name		: in pac_net_name.bounded_string := et_net_names.no_name)
 	is
 		use ada.tags;
 		use et_nets;
