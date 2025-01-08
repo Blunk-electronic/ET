@@ -115,7 +115,7 @@ begin
 					end if;
 					
 				when NOUN_VIA =>
-					if et_canvas_board_vias.preliminary_via.ready then
+					if object_ready then
 						redraw_board;
 					end if;
 					
@@ -131,7 +131,7 @@ begin
 					end if;
 
 				when NOUN_VIA =>
-					if et_canvas_board_vias.preliminary_via.ready then
+					if object_ready then
 						redraw_board;
 					end if;
 					

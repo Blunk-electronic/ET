@@ -837,6 +837,8 @@ package body et_canvas_board_2 is
 		reset_request_clarification;
 		status_enter_verb;
 
+		-- Reset general and board specific
+		-- properties of the preliminary object:
 		reset_preliminary_object;
 		
 		-- et_canvas_board_lines.remove_properties_bar;		

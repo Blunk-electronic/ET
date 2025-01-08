@@ -115,14 +115,6 @@ package et_canvas_board_vias is
 	-- collect preliminary information using this type:
 
 	type type_preliminary_via is record
-		-- This flag indicates that the via has been
-		-- clarified among the proposed vias:
-		ready				: boolean := false;
-
-		-- This tells the GUI whether the mouse or the
-		-- cursor position is to be used when drawing the via:
-		tool				: type_tool := MOUSE;
-
 		category			: type_via_category := type_via_category'first;
 		drill				: type_drill;
 
@@ -154,8 +146,10 @@ package et_canvas_board_vias is
 	procedure show_via_properties;
 	
 
-	-- Clears preliminary_via.being_moved and
-	-- clears out the via properties bar:
+	-- Clears object_ready, object_tool and
+	-- clears out the via properties bar.
+	-- CS: Probably no longer useful. See comments
+	-- in body of this package:
 	procedure reset_preliminary_via;
 
 	

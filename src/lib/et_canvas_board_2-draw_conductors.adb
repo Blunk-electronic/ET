@@ -1035,9 +1035,9 @@ procedure draw_conductors is
 
 			case verb is
 				when VERB_MOVE =>
-					if preliminary_via.ready then
+					if object_ready then
 
-						case preliminary_via.tool is
+						case object_tool is
 							when MOUSE =>
 								circle.center := snap_to_grid (get_mouse_position);
 
@@ -1225,7 +1225,7 @@ procedure draw_conductors is
 		-- The place where the via shall be placed:
 		position : type_vector_model;
 	begin
-		if preliminary_via.ready then
+		if object_ready then
 
 			-- Set the point where the via is to be drawn:
 			position := get_primary_tool_position;

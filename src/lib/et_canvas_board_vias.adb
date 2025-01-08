@@ -200,7 +200,9 @@ package body et_canvas_board_vias is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_preliminary_via;
+				reset_preliminary_via; -- CS no need
+				-- instead this should be sufficient:
+				-- object_ready := false;
 			
 			when GDK_TAB => 
 				--put_line ("size via tab " & text);
@@ -252,7 +254,9 @@ package body et_canvas_board_vias is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_preliminary_via;
+				reset_preliminary_via; -- CS no need
+				-- instead this should be sufficient:
+				-- object_ready := false;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -304,7 +308,9 @@ package body et_canvas_board_vias is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_preliminary_via;
+				reset_preliminary_via; -- CS no need
+				-- instead this should be sufficient:
+				-- object_ready := false;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -772,7 +778,7 @@ package body et_canvas_board_vias is
 			make_combo_restring_outer;
 
 			-- Signal the GUI to draw the via:
-			preliminary_via.ready := true;
+			object_ready := true;
 				
 			-- Redraw the right box of the window:
 			box_v0.show_all;  -- CS box_v4 ?
@@ -787,8 +793,9 @@ package body et_canvas_board_vias is
 	
 	
 	procedure reset_preliminary_via is begin
-		preliminary_via.ready := false;
-		preliminary_via.tool := MOUSE;
+	-- CS: see comments where this procedure is called.
+		object_ready := false;
+		object_tool := MOUSE;
 		clear_proposed_vias;
 
 		clear_out_properties_box;
@@ -874,10 +881,13 @@ package body et_canvas_board_vias is
 		case length (proposed_vias) is
 			when 0 =>
 				reset_request_clarification;
-				reset_preliminary_via;
+				reset_preliminary_via; -- CS no need ?
+				-- instead this should be sufficient:
+				-- CS clear_proposed_vias
+				-- CS object_ready := false;
 				
 			when 1 =>
-				preliminary_via.ready := true;
+				object_ready := true;
 				selected_via := proposed_vias.first;
 				reset_request_clarification;
 				
@@ -904,7 +914,7 @@ package body et_canvas_board_vias is
 	is
 		via : type_via (category => preliminary_via.category);
 	begin
-		if preliminary_via.ready then
+		if object_ready then
 			
 			via.position := preliminary_via.drill.position;
 			via.diameter := preliminary_via.drill.diameter;
@@ -973,16 +983,20 @@ package body et_canvas_board_vias is
 				
 			log_indentation_down;			
 			set_status (status_move_via);			
-			reset_preliminary_via;
+			
+			reset_preliminary_via; -- CS no need. 
+			-- Instead this should be sufficient:
+			-- clear_proposed_vias, 
+			-- object_ready := false
 		end finalize;
 
 
 	begin
 		-- Initially the preliminary_via is not ready.
-		if not preliminary_via.ready then
+		if not object_ready then
 
 			-- Set the tool being used:
-			preliminary_via.tool := tool;
+			object_tool := tool;
 			
 			if not clarification_pending then
 				-- Locate all vias in the vicinity of the given point:
@@ -997,12 +1011,12 @@ package body et_canvas_board_vias is
 				-- Here the clarification procedure ends.
 				-- A via has been selected (indicated by cursor selected_via)
 				-- via procedure select_via.
-				-- By setting preliminary_via.ready, the selected
+				-- By setting object_ready, the selected
 				-- via will be drawn at the tool position
 				-- when conductor objects are drawn on the canvas.
 				-- Furtheron, on the next call of this procedure
 				-- the selected via will be assigned its final position.
-				preliminary_via.ready := true;
+				object_ready := true;
 				reset_request_clarification;
 			end if;
 			
@@ -1040,14 +1054,18 @@ package body et_canvas_board_vias is
 			end if;
 				
 			log_indentation_down;			
-			set_status (status_delete_via);			
-			reset_preliminary_via;
+			set_status (status_delete_via);
+			
+			reset_preliminary_via; -- CS no need
+			-- instead this should be sufficient:
+			-- clear_proposed_vias
+			-- object_ready := false
 		end finalize;
 		
 
 	begin
 		-- Set the tool being used:
-		preliminary_via.tool := tool;
+		object_tool := tool;
 
 		-- Initially there is no clarification pending:
 		if not clarification_pending then
@@ -1059,7 +1077,7 @@ package body et_canvas_board_vias is
 
 			-- If find_vias has found only one via
 			-- then delete that via immediately.
-			if preliminary_via.ready then
+			if object_ready then
 				finalize;
 			end if;
 			
