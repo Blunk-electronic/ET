@@ -173,7 +173,7 @@ is
 
 			case verb is
 				when VERB_MOVE =>
-					if preliminary_text.ready then
+					if object_ready then
 						-- Draw a temporarily copy of the original text at
 						-- the place where the tool is pointing at:
 						declare
@@ -181,7 +181,7 @@ is
 							destination	: type_vector_model;
 							offset		: type_distance_relative;
 						begin
-							case preliminary_text.tool is
+							case object_tool is
 								when MOUSE =>
 									destination := snap_to_grid (get_mouse_position);
 													  

@@ -103,10 +103,10 @@ procedure draw_conductors is
 		use pac_draw_text;
 		use et_board_ops;
 	begin
-		if verb = VERB_PLACE and noun = NOUN_TEXT and preliminary_text.ready then
+		if verb = VERB_PLACE and noun = NOUN_TEXT and object_ready then
 			
-			if preliminary_text.category = LAYER_CAT_CONDUCTOR 
-			and preliminary_text.signal_layer = layer then
+			if object_layer_category = LAYER_CAT_CONDUCTOR 
+			and object_signal_layer = layer then
 
 				-- Set the point where the text is to be drawn:
 				point := get_primary_tool_position;
@@ -637,7 +637,7 @@ procedure draw_conductors is
 
 				case verb is
 					when VERB_MOVE =>
-						if preliminary_text.ready then
+						if object_ready then
 							-- Draw a temporarily copy of the original text at
 							-- the place where the tool is pointing at:
 							declare
@@ -645,7 +645,7 @@ procedure draw_conductors is
 								destination	: type_vector_model;
 								offset		: type_distance_relative;
 							begin
-								case preliminary_text.tool is
+								case object_tool is
 									when MOUSE =>
 										destination := snap_to_grid (get_mouse_position);
 														

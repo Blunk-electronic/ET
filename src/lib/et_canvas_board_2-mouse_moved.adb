@@ -110,7 +110,7 @@ begin
 					end if;
 					
 				when NOUN_TEXT =>
-					if et_canvas_board_texts.preliminary_text.ready then
+					if object_ready then
 						redraw_board;
 					end if;
 					
@@ -126,7 +126,7 @@ begin
 		when VERB_PLACE =>
 			case noun is
 				when NOUN_TEXT =>
-					if et_canvas_board_texts.preliminary_text.ready then
+					if object_ready then
 						redraw_board;
 					end if;
 

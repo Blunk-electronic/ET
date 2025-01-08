@@ -354,6 +354,7 @@ package body et_canvas_board_2 is
 		face		: in type_face;
 		category	: in type_layer_category)
 	is 
+		use et_canvas_board_preliminary_object;
 		use et_canvas_board_texts;
 		use et_modes.board;
 		use et_board_shapes_and_text;
@@ -370,9 +371,9 @@ package body et_canvas_board_2 is
 	begin
 		-- put_line ("draw_text_being_placed");
 		
-		if verb = VERB_PLACE and noun = NOUN_TEXT and preliminary_text.ready then
+		if verb = VERB_PLACE and noun = NOUN_TEXT and object_ready then
 
-			if preliminary_text.category = category and preliminary_text.face = face then
+			if object_layer_category = category and object_face = face then
 
 				-- Set the point where the text is to be drawn:
 				point := get_primary_tool_position;

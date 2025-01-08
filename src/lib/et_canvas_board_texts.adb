@@ -90,6 +90,7 @@ with et_commit;
 with et_object_status;
 with et_keywords;						use et_keywords;
 
+with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 
 
 package body et_canvas_board_texts is
@@ -123,8 +124,8 @@ package body et_canvas_board_texts is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_text.category := to_layer_category (glib.values.get_string (item_text));
-		--put_line ("cat " & to_string (preliminary_text.category));
+		object_layer_category := to_layer_category (glib.values.get_string (item_text));
+		--put_line ("cat " & to_string (object_layer_category));
 
 		et_canvas_board_2.redraw_board;
 		
@@ -148,20 +149,20 @@ package body et_canvas_board_texts is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_text.face := to_face (values.get_string (item_text));
-		--put_line ("face " & to_string (preliminary_text.face));
+		object_face := to_face (values.get_string (item_text));
+		--put_line ("face " & to_string (object_face));
 
 		
 		-- Auto-enable the selected layer category:
-		case preliminary_text.category is
+		case object_layer_category is
 			when LAYER_CAT_ASSY =>
-				enable_assy_doc (preliminary_text.face);
+				enable_assy_doc (object_face);
 			
 			when LAYER_CAT_SILKSCREEN =>
-				enable_silkscreen (preliminary_text.face);
+				enable_silkscreen (object_face);
 
 			when LAYER_CAT_STOP =>
-				enable_stopmask (preliminary_text.face);
+				enable_stopmask (object_face);
 
 			when others => null;
 		end case;
@@ -187,11 +188,11 @@ package body et_canvas_board_texts is
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
 
-		preliminary_text.signal_layer := to_signal_layer (values.get_string (item_text));
-		--put_line ("signal layer " & to_string (preliminary_text.signal_layer));
+		object_signal_layer := to_signal_layer (values.get_string (item_text));
+		--put_line ("signal layer " & to_string (object_signal_layer));
 
 		-- Auto-enable the affected conductor layer:
-		enable_conductor (preliminary_text.signal_layer);
+		enable_conductor (object_signal_layer);
 		
 		et_canvas_board_2.redraw_board;
 	end signal_layer_changed;
@@ -379,7 +380,7 @@ package body et_canvas_board_texts is
 		
 		if not is_empty (preliminary_text.text.content) then
 			--put_line ("content: " & enclose_in_quotes (to_string (preliminary_text.text.content)));
-			preliminary_text.ready := true;
+			object_ready := true;
 		end if;
 		
 	end button_apply_clicked;
@@ -388,8 +389,8 @@ package body et_canvas_board_texts is
 	
 
 	procedure reset_preliminary_text is begin
-		preliminary_text.ready := false;
-		preliminary_text.tool := MOUSE;
+		object_ready := false;
+		object_tool := MOUSE;
 		clear_proposed_texts;
 
 		clear_out_properties_box;
@@ -458,7 +459,7 @@ package body et_canvas_board_texts is
 				use pac_layer_categories;
 			begin
 				-- Map from preliminary_zone.category to index:
-				c := find (layer_categories, preliminary_text.category);
+				c := find (layer_categories, object_layer_category);
 				cbox_category.set_active (gint (to_index (c)));
 			end set_category_used_last;
 
@@ -533,7 +534,7 @@ package body et_canvas_board_texts is
 				model		=> +storage_model); -- ?
 
 			-- Set the face used last:
-			cbox_face.set_active (type_face'pos (preliminary_text.face));
+			cbox_face.set_active (type_face'pos (object_face));
 
 
 			pack_start (box_face, cbox_face, padding => guint (spacing));
@@ -590,7 +591,7 @@ package body et_canvas_board_texts is
 				model		=> +storage_model); -- ?
 
 			-- Set the signal layer used last:
-			cbox_signal_layer.set_active (gint (preliminary_text.signal_layer) - 1);
+			cbox_signal_layer.set_active (gint (object_signal_layer) - 1);
 			-- NOTE: The entries are numbered from 0 .. N.
 
 
@@ -1011,7 +1012,7 @@ package body et_canvas_board_texts is
 				reset_preliminary_text;
 				
 			when 1 =>
-				preliminary_text.ready := true;
+				object_ready := true;
 				selected_text := proposed_texts.first;
 				reset_request_clarification;
 				
@@ -1037,16 +1038,16 @@ package body et_canvas_board_texts is
 		use et_board_ops.conductors;
 		use et_board_ops.text;
 	begin
-		if preliminary_text.ready then
+		if object_ready then
 			move_to (preliminary_text.text.position.place, point);
 			
-			case preliminary_text.category is
+			case object_layer_category is
 				when LAYER_CAT_SILKSCREEN | LAYER_CAT_ASSY | LAYER_CAT_STOP =>
 
 					place_text_in_non_conductor_layer (
 						module_cursor 	=> active_module,
-						layer_category	=> preliminary_text.category,
-						face			=> preliminary_text.face,
+						layer_category	=> object_layer_category,
+						face			=> object_face,
 						text			=> preliminary_text.text,
 						log_threshold	=> log_threshold + 1);
 
@@ -1055,7 +1056,7 @@ package body et_canvas_board_texts is
 				
 					place_text_in_conductor_layer (
 						module_cursor 	=> active_module,
-						signal_layer	=> preliminary_text.signal_layer,
+						signal_layer	=> object_signal_layer,
 						text			=> preliminary_text.text,
 						log_threshold	=> log_threshold + 1);
 
@@ -1160,10 +1161,10 @@ package body et_canvas_board_texts is
 
 	begin
 		-- Initially the preliminary_text is not ready.
-		if not preliminary_text.ready then
+		if not object_ready then
 
 			-- Set the tool being used:
-			preliminary_text.tool := tool;
+			object_tool := tool;
 			
 			if not clarification_pending then
 				-- Locate all texts in the vicinity of the given point:
@@ -1179,12 +1180,12 @@ package body et_canvas_board_texts is
 				-- Here the clarification procedure ends.
 				-- A text has been selected (indicated by select_text)
 				-- via procedure select_text.
-				-- By setting preliminary_text.ready, the selected
+				-- By setting object_ready, the selected
 				-- text will be drawn at the tool position
 				-- when texts are drawn on the canvas.
 				-- Furtheron, on the next call of this procedure
 				-- the selected text will be assigned its final position.
-				preliminary_text.ready := true;
+				object_ready := true;
 				reset_request_clarification;
 			end if;
 			

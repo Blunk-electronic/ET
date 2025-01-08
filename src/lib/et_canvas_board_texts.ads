@@ -105,25 +105,25 @@ package et_canvas_board_texts is
 
 
 
-		-- These constants define the minimum and maximum of
-		-- characters that can be entered in the fields for 
-		-- text size and line width:
-		text_size_length_min : constant gint := 1;
-		text_size_length_max : constant gint := 6; 
-		-- CS: adjust if necessary. see parameters 
-		-- of et_board_shapes_and_text.pac_text_fab.
-		
-		line_width_length_min : constant gint := 1;
-		line_width_length_max : constant gint := 5;
-		-- CS: adjust if necessary. see parameters
-		-- of et_board_shapes_and_text.pac_text_fab.
-		
-		rotation_length_min : constant gint := 1;
-		rotation_length_max : constant gint := 5;
-		-- CS: adjust if necessary. see et_pcb_coordinates type_rotation_model.
-		
-		-- The spacing between the boxes:
-		spacing : constant natural := 5;
+	-- These constants define the minimum and maximum of
+	-- characters that can be entered in the fields for 
+	-- text size and line width:
+	text_size_length_min : constant gint := 1;
+	text_size_length_max : constant gint := 6; 
+	-- CS: adjust if necessary. see parameters 
+	-- of et_board_shapes_and_text.pac_text_fab.
+	
+	line_width_length_min : constant gint := 1;
+	line_width_length_max : constant gint := 5;
+	-- CS: adjust if necessary. see parameters
+	-- of et_board_shapes_and_text.pac_text_fab.
+	
+	rotation_length_min : constant gint := 1;
+	rotation_length_max : constant gint := 5;
+	-- CS: adjust if necessary. see et_pcb_coordinates type_rotation_model.
+	
+	-- The spacing between the boxes:
+	spacing : constant natural := 5;
 
 	
 	
@@ -132,24 +132,12 @@ package et_canvas_board_texts is
 	-- Before placing, moving, deleting or other operations we
 	-- collect preliminary information using this type:
 	type type_preliminary_text is record
-		-- This flag indicates that the text has been
-		-- clarified among the proposed texts:
-		ready		: boolean := false;
-
-		-- This tells the GUI whether the mouse or the
-		-- cursor position is to be used when drawing the text:
-		tool		: type_tool := MOUSE;
-		
-		category		: type_layer_category := LAYER_CAT_SILKSCREEN;
-		signal_layer	: type_signal_layer := signal_layer_default;
-		face			: type_face := face_default;
-
-		text			: type_text_fab_with_content := (
-					size		=> 10.0,
-					line_width	=> 1.0,
-					position	=> origin_zero_rotation,
-					alignment	=> text_alignment_default,
-					content		=> empty_text_content);
+		text : type_text_fab_with_content := (
+			size		=> 10.0,
+			line_width	=> 1.0,
+			position	=> origin_zero_rotation,
+			alignment	=> text_alignment_default,
+			content		=> empty_text_content);
 		
 		-- NOTE: The content will be extracted from selector entry_content.
 		entry_content	: gtk.text_view.gtk_text_view;
