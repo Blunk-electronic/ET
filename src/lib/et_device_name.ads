@@ -72,6 +72,7 @@ package et_device_name is
 
 
 	
+	
 	-- Returns true if the prefixes of left and right are equal:
 	function same_prefix (left, right : in type_device_name) return boolean;
 
@@ -93,6 +94,10 @@ package et_device_name is
 	
 	-- Returns true if left equals right.
 	function "=" (left, right : in type_device_name) return boolean;
+
+
+	no_name : constant type_device_name := (others => <>);
+	
 
 	
 	-- Returns the given device name as string.
