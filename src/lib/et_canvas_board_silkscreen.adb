@@ -252,7 +252,7 @@ package body et_canvas_board_silkscreen is
 							module_cursor	=> active_module,
 							face			=> selected_line.face,
 							line			=> element (selected_line.cursor),
-							point_of_attack	=> point_of_attack,
+							point_of_attack	=> object_point_of_attack,
 							-- coordinates		=> ABSOLUTE,
 							destination		=> point,
 							log_threshold	=> log_threshold);
@@ -286,7 +286,7 @@ package body et_canvas_board_silkscreen is
 			-- Set the tool being used:
 			object_tool := tool;
 
-			point_of_attack := point;
+			object_point_of_attack := point;
 			
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
@@ -303,7 +303,7 @@ package body et_canvas_board_silkscreen is
 				-- An object has been selected via procedure select_object.
 				-- By setting the status of the selected object
 				-- as "moving", the selected object
-				-- will be drawn according to point_of_attack and 
+				-- will be drawn according to object_point_of_attack and 
 				-- the tool position.
 				set_first_selected_object_moving;
 

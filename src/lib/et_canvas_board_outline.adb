@@ -377,7 +377,7 @@ package body et_canvas_board_outline is
 				move_segment (
 					module_cursor	=> active_module,
 					segment			=> selected_segment,
-					point_of_attack	=> point_of_attack,
+					point_of_attack	=> object_point_of_attack,
 					-- coordinates		=> ABSOLUTE,
 					destination		=> point,
 					log_threshold	=> log_threshold);
@@ -413,7 +413,7 @@ package body et_canvas_board_outline is
 			-- Set the tool being used:
 			object_tool := tool;
 
-			point_of_attack := point;
+			object_point_of_attack := point;
 			
 			if not clarification_pending then
 				-- Locate all objects in the vicinity of the given point:
@@ -430,7 +430,7 @@ package body et_canvas_board_outline is
 				-- A segment has been selected via procedure select_segment.
 				-- By setting the status of the selected segment 
 				-- as "moving", the selected segment
-				-- will be drawn according to point_of_attack and 
+				-- will be drawn according to object_point_of_attack and 
 				-- the tool position.
 				set_first_selected_segment_moving;
 				

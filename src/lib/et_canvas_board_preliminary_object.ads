@@ -38,6 +38,11 @@
 --
 -- DESCRIPTION:
 -- 
+-- This is general stuff used for operations on the
+-- canvas of the board.
+-- This related to individual objects like vias, texts, ...
+-- are specified in their related package specifications.
+
 
 with et_canvas_board_2;					use et_canvas_board_2;
 with et_pcb_sides;						use et_pcb_sides;
@@ -53,7 +58,7 @@ with et_device_name;					use et_device_name;
 package et_canvas_board_preliminary_object is
 
 	-- Before placing, moving, deleting or other operations we
-	-- collect preliminary information here:
+	-- collect preliminary information here.
 
 	object_layer_category 	: type_layer_category := LAYER_CAT_ASSY;
 	
@@ -70,7 +75,12 @@ package et_canvas_board_preliminary_object is
 	-- and global stuff like object_tool, object_ready, ...
 	-- (see et_canvas spec):
 	procedure reset_preliminary_object;
-	
+
+	-- CS: It is probably not a good idea to reset all
+	-- properties of the preliminary object at once in a single procedure
+	-- like reset_preliminary_object. 
+	-- Instead individual small procedures could be useful
+	-- like reset_object_face or reset_object_layer_category.
 
 	
 end et_canvas_board_preliminary_object;

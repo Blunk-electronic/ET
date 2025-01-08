@@ -102,13 +102,13 @@ package body et_canvas.contours is
 
 					-- If the segment is set as "moving", then
 					-- its position will be modified according to the
-					-- point_of_attack and the current tool position.
+					-- object_point_of_attack and the current tool position.
 					-- Otherwise the segment remains unchanged and will be drawn
 					-- as it is:
 					if is_moving (c) then
 						--put_line ("moving");
 						pointer := get_object_tool_position;
-						move_line_to (segment.segment_line, point_of_attack, pointer);
+						move_line_to (segment.segment_line, object_point_of_attack, pointer);
 					end if;
 					
 					-- CS: This is a makeshift as long as there is no

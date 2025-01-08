@@ -1106,8 +1106,14 @@ package et_canvas is
 
 
 
+
 	
 -- CLARIFICATION, PRELIMINARY OBJECT, PATH:
+
+	-- This is general stuff used for operations on the canvas.
+	-- Things related to schematic, board, symbol, package, device
+	-- or other domains are defined in individual specs like
+	-- et_canvas_board_2 or et_canvas_schematic.
 	
 	-- Whenever the operator is required to clarify which object is meant,
 	-- we use this type:
@@ -1125,7 +1131,7 @@ package et_canvas is
 
 	-- When an object is to be moved or dragged, then
 	-- this global variable should be used:
-	point_of_attack : type_vector_model; -- CS rename to object_point_of_attack
+	object_point_of_attack : type_vector_model;
 
 	-- When an object is being moved, then this can be done
 	-- via mouse or keyboard. This global variable should be used:
@@ -1154,6 +1160,13 @@ package et_canvas is
 
 	-- Resets object_tool and object_ready;
 	procedure reset_object;
+
+	-- CS: It is probably not a good idea to reset all
+	-- properties of the preliminary object at once in a single procedure
+	-- like reset_object. 
+	-- Instead individual small procedures could be useful
+	-- like reset_object_linewidth or reset_object_ready.
+	
 	
 
 

@@ -3571,11 +3571,11 @@ package body et_canvas is
 
 		-- If the line is set as "moving", then
 		-- its position will be modified according to the
-		-- point_of_attack and the current tool position.
+		-- object_point_of_attack and the current tool position.
 		-- Otherwise the line remains unchanged and will be drawn
 		-- as it is:
 		if l.status.moving then
-			move_line_to (l, point_of_attack, get_object_tool_position);
+			move_line_to (l, object_point_of_attack, get_object_tool_position);
 		end if;
 
 		
