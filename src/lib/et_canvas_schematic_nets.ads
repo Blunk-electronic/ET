@@ -253,20 +253,20 @@ package et_canvas_schematic_nets is
 	-- Global information for the GUI when a segment is being
 	-- moved or dragged:
 	type type_preliminary_segment is record
-		-- This flag tells the draw operations to draw the preliminary segment:
-		ready					: boolean := false;
+		-- -- This flag tells the draw operations to draw the preliminary segment:
+		-- ready					: boolean := false;
 
 		-- This tells the GUI whether the mouse or the
 		-- cursor position is to be used when drawing the segment:
-		tool					: type_tool := MOUSE;
+		-- tool					: type_tool := MOUSE;
 
-		path					: type_path_live;
+		-- path					: type_path_live;
 		
-		net_name				: pac_net_name.bounded_string := no_name;
+		-- net_name				: pac_net_name.bounded_string := no_name;
 
 		-- The point along the segment where the operator
 		-- grabs the segment:
-		point_of_attack			: type_vector_model;
+		-- point_of_attack			: type_vector_model;
 		
 		finalizing_granted		: type_finalizing_granted := false;
 	end record;

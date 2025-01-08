@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                        CANVAS FOR SCHEMATIC                              --
+--                    CANVAS SCHEMATIC PRELIMINARY OBJECT                   --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -36,83 +36,24 @@
 --
 --   history of changes:
 --
+-- DESCRIPTION:
+-- 
 
 
-with et_device_library;					use et_device_library;
+package body et_canvas_schematic_preliminary_object is
 
 
-separate (et_canvas_schematic_2)
+	procedure reset_preliminary_object is
+		use pac_canvas;
+	begin
+		reset_object; -- global stuff
 
-procedure mouse_moved (
-	point	: in type_vector_model) 
-is
-	use et_modes.schematic;
-	use pac_devices_lib;
-begin
-	case verb is
-		when VERB_ADD =>
-			case noun is
-				when NOUN_DEVICE =>
-					if et_canvas_schematic_units.unit_add.device /= pac_devices_lib.no_element then
-						redraw;
-					end if;
+		-- CS reset category, signal_layer, face, ...
+	end reset_preliminary_object;
 
-				when others => null;
-			end case;
-
-			
-		when VERB_DRAW =>
-			case noun is
-				when NOUN_NET =>
-					if object_ready then
-						redraw;
-					end if;
-
-
-				when others => null;
-			end case;
-			
-			
-		when VERB_DRAG | VERB_MOVE | VERB_PLACE =>
-			case noun is
-				when NOUN_LABEL =>
-					if et_canvas_schematic_nets.label.ready then
-						redraw_schematic;
-					end if;
-					
-				when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE => 
-					if et_canvas_schematic_units.placeholder_move.being_moved then
-						redraw_schematic;
-					end if;
-
-				when NOUN_NET =>
-					if object_ready then
-						redraw_schematic;
-					end if;
-
-				when NOUN_UNIT =>
-					if et_canvas_schematic_units.unit_move.being_moved then
-						redraw_schematic;
-					end if;
-
-				when others => null;
-			end case;
-
-			
-		when VERB_FETCH =>
-			case noun is
-				when NOUN_UNIT =>
-					if et_canvas_schematic_units.unit_add.device /= pac_devices_lib.no_element then
-						redraw;
-					end if;
-
-				when others => null;
-			end case;
-			
-		when others => null;
-	end case;
-end mouse_moved;
-
+	
+	
+end et_canvas_schematic_preliminary_object;
 
 -- Soli Deo Gloria
 

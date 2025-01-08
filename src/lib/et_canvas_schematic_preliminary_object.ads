@@ -2,9 +2,9 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                        CANVAS FOR SCHEMATIC                              --
+--                    CANVAS SCHEMATIC PRELIMINARY OBJECT                   --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2024                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -36,83 +36,45 @@
 --
 --   history of changes:
 --
+-- DESCRIPTION:
+-- 
+-- This is general stuff used for operations on the
+-- canvas of the schematic.
+-- This related to individual objects like nets, texts, ...
+-- are specified in their related package specifications.
 
 
-with et_device_library;					use et_device_library;
+with et_canvas_schematic_2;				use et_canvas_schematic_2;
+-- with et_coordinates_2;					use et_coordinates_2;
+-- use et_coordinates_2.pac_geometry_2;
+
+with et_net_names;						use et_net_names;
+with et_device_name;					use et_device_name;
 
 
-separate (et_canvas_schematic_2)
+package et_canvas_schematic_preliminary_object is
 
-procedure mouse_moved (
-	point	: in type_vector_model) 
-is
-	use et_modes.schematic;
-	use pac_devices_lib;
-begin
-	case verb is
-		when VERB_ADD =>
-			case noun is
-				when NOUN_DEVICE =>
-					if et_canvas_schematic_units.unit_add.device /= pac_devices_lib.no_element then
-						redraw;
-					end if;
+	-- Before placing, moving, deleting or other operations we
+	-- collect preliminary information here.
 
-				when others => null;
-			end case;
+	object_net_name			: pac_net_name.bounded_string := et_net_names.no_name; -- GND, P3V3
+	
+	object_device_name		: type_device_name := et_device_name.no_name; -- IC45, FD2
+	
+	
+	-- Resets the preliminary object information
+	-- and global stuff like object_tool, object_ready, ...
+	-- (see et_canvas spec):
+	procedure reset_preliminary_object;
 
-			
-		when VERB_DRAW =>
-			case noun is
-				when NOUN_NET =>
-					if object_ready then
-						redraw;
-					end if;
+	-- CS: It is probably not a good idea to reset all
+	-- properties of the preliminary object at once in a single procedure
+	-- like reset_preliminary_object. 
+	-- Instead individual small procedures could be useful
+	-- like reset_object_face or reset_object_layer_category.
 
-
-				when others => null;
-			end case;
-			
-			
-		when VERB_DRAG | VERB_MOVE | VERB_PLACE =>
-			case noun is
-				when NOUN_LABEL =>
-					if et_canvas_schematic_nets.label.ready then
-						redraw_schematic;
-					end if;
-					
-				when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE => 
-					if et_canvas_schematic_units.placeholder_move.being_moved then
-						redraw_schematic;
-					end if;
-
-				when NOUN_NET =>
-					if object_ready then
-						redraw_schematic;
-					end if;
-
-				when NOUN_UNIT =>
-					if et_canvas_schematic_units.unit_move.being_moved then
-						redraw_schematic;
-					end if;
-
-				when others => null;
-			end case;
-
-			
-		when VERB_FETCH =>
-			case noun is
-				when NOUN_UNIT =>
-					if et_canvas_schematic_units.unit_add.device /= pac_devices_lib.no_element then
-						redraw;
-					end if;
-
-				when others => null;
-			end case;
-			
-		when others => null;
-	end case;
-end mouse_moved;
-
+	
+end et_canvas_schematic_preliminary_object;
 
 -- Soli Deo Gloria
 

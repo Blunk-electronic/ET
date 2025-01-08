@@ -690,7 +690,7 @@ procedure draw_nets is
 
 		-- Calculate the zone where the original segment is being attacked:
 		zone : constant type_line_zone := get_zone (
-				point	=> PS.point_of_attack,
+				point	=> object_point_of_attack,
 				line	=> element (original_segment));
 
 		destination : type_vector_model;
@@ -734,7 +734,7 @@ procedure draw_nets is
 			module_cursor	=> active_module,
 			segment			=> element (original_segment),
 			zone			=> zone,
-			point_of_attack	=> to_position (PS.point_of_attack, active_sheet),
+			point_of_attack	=> to_position (object_point_of_attack, active_sheet),
 			log_threshold	=> log_threshold + 10) -- CS: avoids excessive log information. find a more elegant way.
 		then
 			-- segment is movable
@@ -745,7 +745,7 @@ procedure draw_nets is
 			primary_segment := element (original_segment);
 
 			-- calculate the destination point according to the current drawing tool:
-			case PS.tool is
+			case object_tool is
 				when MOUSE =>
 					destination := snap_to_grid (get_mouse_position);
 
@@ -756,7 +756,7 @@ procedure draw_nets is
 		
 			case verb is
 				when VERB_DRAG =>
-					move_line_to (primary_segment, PS.point_of_attack, destination);
+					move_line_to (primary_segment, object_point_of_attack, destination);
 					move_labels_and_secondary_nets;
 
 				when others => null;
@@ -884,7 +884,7 @@ procedure draw_nets is
 						-- CS test verb and noun ?						
 						if is_selected (net_cursor, strand_cursor, segment_cursor) then
 						
-							if preliminary_segment.ready then
+							if object_ready then
 								-- Draw the net segments being moved or dragged.
 								-- If we are dragging a segment, then other attached segments
 								-- will be dragged along.
@@ -1076,15 +1076,13 @@ procedure draw_nets is
 		use et_colors.schematic;
 		use et_modes.schematic;
 		
-		PS : type_preliminary_segment renames preliminary_segment;
-		
 		line : pac_geometry_2.type_line;
 
 		
 		procedure compute_route (s, e : in type_vector_model) is 
 
 			-- Do the actual route calculation.
-			r : type_path := to_path (s, e, PS.path.bend_style);
+			r : type_path := to_path (s, e, live_path.bend_style);
 
 			procedure draw is begin
 				-- draw the net segment:
@@ -1100,7 +1098,7 @@ procedure draw_nets is
 
 			-- The calculated route may required a bend point.
 			-- Set/clear the "bended" flag of the net_segment being drawn.
-			PS.path.bended := r.bended;
+			live_path.bended := r.bended;
 
 			-- set color and line width for net segments:
 			set_color_nets;
@@ -1118,7 +1116,7 @@ procedure draw_nets is
 			-- from start point to bend point. Then draw a second line from
 			-- bend point end point:
 			else
-				PS.path.bend_point := r.bend_point;
+				live_path.bend_point := r.bend_point;
 
 				line.start_point := r.start_point;
 				line.end_point := r.bend_point;
@@ -1135,22 +1133,22 @@ procedure draw_nets is
 
 		
 	begin -- draw_path
-		if verb = VERB_DRAW and noun = NOUN_NET and PS.ready = true then
+		if verb = VERB_DRAW and noun = NOUN_NET and object_ready = true then
 
 			-- The route start point has been set eariler by procedures
 			-- key_pressed or button_pressed.
 			-- For drawing here, the route end point is to be taken from
 			-- either the mouse pointer or the cursor position:
 
-			case PS.tool is				
+			case object_tool is				
 				when MOUSE => 
 					compute_route (
-						s	=> PS.path.start_point,	-- start of route
+						s	=> live_path.start_point,	-- start of route
 						e	=> snap_to_grid (get_mouse_position));	-- end of route
 					
 				when KEYBOARD =>
 					compute_route (
-						s	=> PS.path.start_point,	-- start of route
+						s	=> live_path.start_point,	-- start of route
 						e	=> get_cursor_position);	-- end of route
 					
 			end case;			

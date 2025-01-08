@@ -72,6 +72,7 @@ with et_device_value;					use et_device_value;
 with et_package_variant;
 with et_canvas.cmd;
 
+with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
 
 
 separate (et_scripting)
@@ -2928,7 +2929,7 @@ is
 								-- explicit net name given
 								check_net_name_length (f (5));
 								check_net_name_characters (to_net_name (f (5)));
-								et_canvas_schematic_nets.preliminary_segment.net_name := to_net_name (f (5));
+								object_net_name := to_net_name (f (5));
 
 								set_status (et_canvas_schematic_nets.status_draw_net);
 								single_cmd_status.finalization_pending := true;

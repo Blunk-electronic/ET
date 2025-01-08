@@ -57,6 +57,8 @@ with et_board_ops.ratsnest;
 with et_undo_redo;
 with et_commit;
 
+with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
+
 
 package body et_canvas_schematic_nets is
 
@@ -461,23 +463,23 @@ package body et_canvas_schematic_nets is
 		-- Set the tool being used for this path so that procedure
 		-- draw_path (in et_canvas_schematic-draw_nets)
 		-- knows where to get the end point from.
-		PS.tool := tool;
+		object_tool := tool;
 
 		-- Initally the preliminary_segment is NOT ready. Nothing will be drawn.
 		-- Upon the first calling of this procedure the start point of the
 		-- path will be set.
 		
-		if not PS.ready then
+		if not object_ready then
 			-- Set start point:
-			PS.path.start_point := point;
+			live_path.start_point := point;
 					
 			-- Before processing the start point further, it must be validated:
-			if valid_for_net_segment (PS.path.start_point, log_threshold + 3) then
+			if valid_for_net_segment (live_path.start_point, log_threshold + 3) then
 
 				-- Allow drawing of the path:
-				PS.ready := true;
+				object_ready := true;
 				
-				set_status (status_start_point & to_string (PS.path.start_point) & ". " &
+				set_status (status_start_point & to_string (live_path.start_point) & ". " &
 					status_press_space & status_set_end_point & status_hint_for_abort);
 			end if;
 
@@ -485,25 +487,25 @@ package body et_canvas_schematic_nets is
 
 			-- Start a new path only if the given point differs from 
 			-- the start point of the current path:
-			if point /= PS.path.start_point then
+			if point /= live_path.start_point then
 				
 				-- Complete the path by setting its end point.
 				-- The the current bend point (if there is one) into account:
 
-				if PS.path.bended = NO then				
-					PS.path.end_point := point;
+				if live_path.bended = NO then				
+					live_path.end_point := point;
 
 					-- Before processing the end point further, it must be validated:
-					if valid_for_net_segment (PS.path.end_point, log_threshold + 3) then
+					if valid_for_net_segment (live_path.end_point, log_threshold + 3) then
 
 						-- Insert a single net segment:
 						insert_net_segment (
 							module			=> active_module,
 							sheet			=> active_sheet,
-							net_name_given	=> PS.net_name, -- RESET_N, or empty
+							net_name_given	=> object_net_name, -- RESET_N, or empty
 							segment			=> (
-									start_point	=> PS.path.start_point,
-									end_point	=> PS.path.end_point,
+									start_point	=> live_path.start_point,
+									end_point	=> live_path.end_point,
 									others		=> <>), -- no labels and no ports, just a bare segment
 							log_threshold	=>	log_threshold + 1);
 
@@ -515,35 +517,35 @@ package body et_canvas_schematic_nets is
 					-- See procedure draw_path in et_canvas_schematic-draw_nets.
 					
 					-- Before processing the BEND point further, it must be validated:
-					if valid_for_net_segment (PS.path.bend_point, log_threshold + 3) then
+					if valid_for_net_segment (live_path.bend_point, log_threshold + 3) then
 
 						-- Insert first segment of the path:
 						insert_net_segment (
 							module			=> active_module,
 							sheet			=> active_sheet,
-							net_name_given	=> PS.net_name, -- RESET_N, or empty
+							net_name_given	=> object_net_name, -- RESET_N, or empty
 							segment			=> (
-									start_point	=> PS.path.start_point,
-									end_point	=> PS.path.bend_point,
+									start_point	=> live_path.start_point,
+									end_point	=> live_path.bend_point,
 									others		=> <>), -- no labels and no ports, just a bare segment
 							log_threshold	=>	log_threshold + 1);
 
 
 						
 						-- END POINT:
-						PS.path.end_point := point;
+						live_path.end_point := point;
 						
 						-- Before processing the END point further, it must be validated:
-						if valid_for_net_segment (PS.path.end_point, log_threshold + 3) then
+						if valid_for_net_segment (live_path.end_point, log_threshold + 3) then
 
 							-- Insert second segment of the path:
 							insert_net_segment (
 								module			=> active_module,
 								sheet			=> active_sheet,
-								net_name_given	=> PS.net_name, -- RESET_N, or empty
+								net_name_given	=> object_net_name, -- RESET_N, or empty
 								segment			=> (
-										start_point	=> PS.path.bend_point,
-										end_point	=> PS.path.end_point,
+										start_point	=> live_path.bend_point,
+										end_point	=> live_path.end_point,
 										others		=> <>), -- no labels and no ports, just a bare segment
 								log_threshold	=>	log_threshold + 1);
 						
@@ -554,7 +556,7 @@ package body et_canvas_schematic_nets is
 
 				-- Set start point of path so that a new
 				-- path can be drawn:			
-				PS.path.start_point := point;
+				live_path.start_point := point;
 
 			else
 				reset_preliminary_segment;
@@ -782,13 +784,13 @@ package body et_canvas_schematic_nets is
 	procedure reset_preliminary_segment is 
 		PS : type_preliminary_segment renames preliminary_segment;
 	begin
-		PS.ready := false;
-		PS.tool := MOUSE;
-		-- PS.path := (bend_style => PS.path.bend_style, -- no change
+		object_ready := false;
+		object_tool := MOUSE;
+		-- live_path := (bend_style => live_path.bend_style, -- no change
 					-- others => <>);
 
-		PS.net_name := no_name;
-		PS.point_of_attack := origin;
+		object_net_name := no_name;
+		object_point_of_attack := origin;
 		PS.finalizing_granted := false;
 		
 		clear_proposed_segments;
@@ -948,7 +950,7 @@ package body et_canvas_schematic_nets is
 								reset_preliminary_segment;
 								
 							when 1 =>
-								preliminary_segment.ready := true;
+								object_ready := true;
 								selected_segment := proposed_segments.first;
 
 								reset_request_clarification;
@@ -1068,7 +1070,7 @@ package body et_canvas_schematic_nets is
 			net_name : pac_net_name.bounded_string;
 			
 			point_of_attack : et_coordinates_2.type_position := 
-				to_position (PS.point_of_attack, active_sheet);
+				to_position (object_point_of_attack, active_sheet);
 		begin
 			log (text => "finalizing drag ...", level => log_threshold + 1);
 			log_indentation_up;
@@ -1106,16 +1108,16 @@ package body et_canvas_schematic_nets is
 
 		
 	begin
-		if not PS.ready then
+		if not object_ready then
 			
 			-- Set the tool being used for dragging the net segment:
-			PS.tool := tool;
+			object_tool := tool;
 			
 			if not clarification_pending then
 				find_segments (position);
-				PS.point_of_attack := position;
+				object_point_of_attack := position;
 			else
-				PS.ready := true;
+				object_ready := true;
 				reset_request_clarification;
 			end if;
 

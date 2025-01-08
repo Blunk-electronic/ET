@@ -374,7 +374,7 @@ is
 			when VERB_DRAW =>
 				case noun is
 					when NOUN_NET =>
-						next_bend_style (preliminary_segment.path);
+						next_bend_style (live_path);
 						
 					when others => null;							
 				end case;
