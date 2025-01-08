@@ -1890,7 +1890,7 @@ is
 				is 
 					use et_canvas_tool;
 				begin
-					case preliminary_electrical_device.tool is
+					case object_tool is
 						when MOUSE =>
 							device.position.place := snap_to_grid (get_mouse_position);
 
@@ -1935,7 +1935,7 @@ is
 
 							-- If a move operation is in progress, then the mouse
 							-- or cursor position overwrites the device position:
-							if preliminary_electrical_device.ready then
+							if object_ready then
 								draw_being_moved;
 							else
 								draw_fixed;						
@@ -2013,7 +2013,7 @@ is
 				is 
 					use et_canvas_tool;
 				begin
-					case preliminary_non_electrical_device.tool is
+					case object_tool is
 						when MOUSE =>
 							device.position.place := snap_to_grid (get_mouse_position);
 
@@ -2060,7 +2060,7 @@ is
 
 						-- If a move operation is in progress, then the mouse
 						-- or cursor position overwrites the device position:
-						if preliminary_non_electrical_device.ready then
+						if object_ready then
 							draw_being_moved;
 						else
 							draw_fixed;						

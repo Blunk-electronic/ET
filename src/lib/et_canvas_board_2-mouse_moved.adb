@@ -95,12 +95,12 @@ begin
 					end if;
 					
 				when NOUN_DEVICE =>
-					if et_canvas_board_devices.preliminary_electrical_device.ready then
+					if object_ready then
 						redraw_board;
 					end if;
 
 				when NOUN_NON_ELECTRICAL_DEVICE =>
-					if et_canvas_board_devices.preliminary_non_electrical_device.ready then
+					if object_ready then
 						redraw_board;
 					end if;
 

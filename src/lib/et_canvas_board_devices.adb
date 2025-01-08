@@ -51,6 +51,8 @@ with et_undo_redo;
 with et_commit;
 with et_object_status;
 
+with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
+
 
 package body et_canvas_board_devices is
 
@@ -62,6 +64,9 @@ package body et_canvas_board_devices is
 
 	procedure reset_preliminary_electrical_device is begin
 		preliminary_electrical_device := (others => <>);
+		object_ready := false;
+		object_tool := MOUSE;
+
 		reset_proposed_devices (active_module, log_threshold + 1);
 	end reset_preliminary_electrical_device;
 
@@ -69,6 +74,9 @@ package body et_canvas_board_devices is
 
 	procedure reset_preliminary_non_electrical_device is begin
 		preliminary_non_electrical_device := (others => <>);
+		object_ready := false;
+		object_tool := MOUSE;
+
 		reset_proposed_non_electrical_devices (active_module, log_threshold + 1);
 	end reset_preliminary_non_electrical_device;
 	
@@ -182,7 +190,7 @@ package body et_canvas_board_devices is
 				reset_preliminary_electrical_device;
 				
 			when 1 =>
-				preliminary_electrical_device.ready := true;
+				object_ready := true;
 				select_first_proposed;
 				reset_request_clarification;
 				
@@ -239,7 +247,7 @@ package body et_canvas_board_devices is
 				reset_preliminary_non_electrical_device;
 				
 			when 1 =>
-				preliminary_non_electrical_device.ready := true;
+				object_ready := true;
 				select_first_proposed;
 				reset_request_clarification;
 				
@@ -306,10 +314,10 @@ package body et_canvas_board_devices is
 		
 	begin
 		-- Initially the preliminary_electrical_device is not ready.
-		if not preliminary_electrical_device.ready then
+		if not object_ready then
 
 			-- Set the tool being used:
-			preliminary_electrical_device.tool := tool;
+			object_tool := tool;
 			
 			if not clarification_pending then
 				-- Locate all devices in the vicinity of the given point:
@@ -324,12 +332,12 @@ package body et_canvas_board_devices is
 				-- Here the clarification procedure ends.
 				-- A device has been selected
 				-- via procedure select_electrical_device.
-				-- By setting preliminary_electrical_device.ready, the selected
+				-- By setting object_ready, the selected
 				-- device will be drawn at the tool position
 				-- when packages are drawn on the canvas.
 				-- Furtheron, on the next call of this procedure
 				-- the selected device will be assigned its final position.
-				preliminary_electrical_device.ready := true;
+				object_ready := true;
 				reset_request_clarification;
 			end if;
 			
@@ -388,10 +396,10 @@ package body et_canvas_board_devices is
 		
 	begin
 		-- Initially the preliminary_non_electrical_device is not ready.
-		if not preliminary_non_electrical_device.ready then
+		if not object_ready then
 
 			-- Set the tool being used:
-			preliminary_non_electrical_device.tool := tool;
+			object_tool := tool;
 			
 			if not clarification_pending then
 				-- Locate all devices in the vicinity of the given point:
@@ -400,17 +408,17 @@ package body et_canvas_board_devices is
 				-- clarification is now pending.
 
 				-- If find_non_electrical_devices has found only one device
-				-- then the flag preliminary_non_electrical_device.ready is set true.
+				-- then the flag object_ready is set true.
 			else
 				-- Here the clarification procedure ends.
 				-- A device has been selected
 				-- via procedure select_non_electrical_device.
-				-- By setting preliminary_non_electrical_device.ready, the selected
+				-- By setting object_ready, the selected
 				-- device will be drawn at the tool position
 				-- when packages are drawn on the canvas.
 				-- Furtheron, on the next call of this procedure
 				-- the selected device will be assigned its final position.
-				preliminary_non_electrical_device.ready := true;
+				object_ready := true;
 				reset_request_clarification;
 			end if;
 			
@@ -473,7 +481,7 @@ package body et_canvas_board_devices is
 
 	begin
 		-- Set the tool being used:
-		preliminary_electrical_device.tool := tool;
+		object_tool := tool;
 		
 		if not clarification_pending then
 			-- Locate all devices in the vicinity of the given point:
@@ -483,7 +491,7 @@ package body et_canvas_board_devices is
 
 			-- If find_electrical_devices has found only one device
 			-- then rotate that device immediately.
-			if preliminary_electrical_device.ready then
+			if object_ready then
 				finalize;
 			end if;
 
@@ -544,7 +552,7 @@ package body et_canvas_board_devices is
 		
 	begin
 		-- Set the tool being used:
-		preliminary_non_electrical_device.tool := tool;
+		object_tool := tool;
 		
 		if not clarification_pending then
 			-- Locate all devices in the vicinity of the given point:
@@ -554,7 +562,7 @@ package body et_canvas_board_devices is
 
 			-- If find_non_electrical_devices has found only one device
 			-- then rotate that device immediately.
-			if preliminary_non_electrical_device.ready then
+			if object_ready then
 				finalize;
 			end if;
 
@@ -625,7 +633,7 @@ package body et_canvas_board_devices is
 		
 	begin
 		-- Set the tool being used:
-		preliminary_electrical_device.tool := tool;
+		object_tool := tool;
 		
 		if not clarification_pending then
 			-- Locate all devices in the vicinity of the given point:
@@ -635,7 +643,7 @@ package body et_canvas_board_devices is
 
 			-- If find_electrical_devices has found only one device
 			-- then flip that device immediately.
-			if preliminary_electrical_device.ready then
+			if object_ready then
 				finalize;
 			end if;
 			
@@ -699,7 +707,7 @@ package body et_canvas_board_devices is
 		
 	begin
 		-- Set the tool being used:
-		preliminary_non_electrical_device.tool := tool;
+		object_tool := tool;
 		
 		if not clarification_pending then
 			-- Locate all devices in the vicinity of the given point:
@@ -709,7 +717,7 @@ package body et_canvas_board_devices is
 
 			-- If find_non_electrical_devices has found only one device
 			-- then flip that device immediately.
-			if preliminary_non_electrical_device.ready then
+			if object_ready then
 				finalize;
 			end if;
 			
@@ -721,6 +729,9 @@ package body et_canvas_board_devices is
 			finalize;
 		end if;
 	end flip_non_electrical_device;
+
+
+
 
 	
 
@@ -768,7 +779,7 @@ package body et_canvas_board_devices is
 
 	begin
 		-- Set the tool being used:
-		preliminary_non_electrical_device.tool := tool;
+		object_tool := tool;
 		
 		if not clarification_pending then
 			-- Locate all devices in the vicinity of the given point:
@@ -778,7 +789,7 @@ package body et_canvas_board_devices is
 
 			-- If find_non_electrical_devices has found only one device
 			-- then delete that device immediately.
-			if preliminary_non_electrical_device.ready then
+			if object_ready then
 				finalize;
 			end if;
 

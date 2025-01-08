@@ -59,14 +59,6 @@ package et_canvas_board_devices is
 	-- Before placing, moving, deleting or other operations we
 	-- collect preliminary information using this type:
 	type type_preliminary_electrical_device is record
-		-- This flag indicates that the device has been
-		-- clarified among the proposed devices:
-		ready	: boolean := false;
-
-		-- This tells the GUI whether the mouse or the
-		-- cursor position is to be used when drawing the device:
-		tool	: type_tool := MOUSE;
-
 		device	: type_device_name := (others => <>); -- IC45
 	end record;
 
@@ -88,14 +80,6 @@ package et_canvas_board_devices is
 	-- Before placing, moving, deleting or other operations we
 	-- collect preliminary information using this type:
 	type type_preliminary_non_electrical_device is record
-		-- This flag indicates that the device has been
-		-- clarified among the proposed device:
-		ready	: boolean := false;
-
-		-- This tells the GUI whether the mouse or the
-		-- cursor position is to be used when drawing the device:
-		tool	: type_tool := MOUSE;
-		
 		device	: type_device_name := (others => <>); -- FD1 -- CS: use cursor instead ?
 	end record;
 
