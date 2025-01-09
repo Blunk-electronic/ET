@@ -850,9 +850,128 @@ package body et_board_ops.assy_doc is
 
 	end draw_zone;
 
+	
 
 
 
+	procedure propose_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model;
+		zone			: in type_accuracy;
+		face			: in type_face;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_doc_contours;
+			zc : pac_doc_contours.cursor;
+
+			use pac_contours;
+			use pac_segments;
+
+			
+			procedure query_segment (
+				segment	: in out type_segment)
+			is 
+				use et_object_status;
+			begin
+				case segment.shape is
+					when LINE =>
+						if within_accuracy (
+							line	=> segment.segment_line,
+							width	=> zero,
+							point	=> point,
+							zone	=> zone)
+						then
+							set_proposed (segment);
+							count := count + 1;
+							log (text => to_string (segment), level => log_threshold + 1);
+						end if;
+   
+					when ARC =>
+						null; -- CS
+				end case;
+			end query_segment;
+
+
+			
+			procedure query_zone (
+				zone : in out type_doc_contour)
+			is
+				use pac_contours;
+				use pac_segments;
+				c : pac_segments.cursor;
+				
+			begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					c := zone.contour.segments.first;
+
+					while c /= pac_segments.no_element loop
+						update_element (
+							container	=> zone.contour.segments,
+							position	=> c,
+							process		=> query_segment'access);
+
+						next (c);
+					end loop;
+				end if;
+			end query_zone;
+			
+			
+		begin
+			case face is
+				when TOP =>
+					zc := module.board.assy_doc.top.contours.first;
+
+					while zc /= pac_doc_contours.no_element loop
+						update_element (
+							container	=> module.board.assy_doc.top.contours,
+							position	=> zc,
+							process		=> query_zone'access);
+						
+						next (zc);
+					end loop;
+
+					
+				when BOTTOM =>
+					zc := module.board.assy_doc.bottom.contours.first;
+
+					while zc /= pac_doc_contours.no_element loop
+						update_element (
+							container	=> module.board.assy_doc.bottom.contours,
+							position	=> zc,
+							process		=> query_zone'access);
+						
+						next (zc);
+					end loop;
+			end case;	
+		end query_module;
+		
+		
+	begin
+		log (text => "proposing segments at " & to_string (point)
+			 & " zone " & accuracy_to_string (zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		count := 0;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_segments;
+
+
+	
 
 
 	

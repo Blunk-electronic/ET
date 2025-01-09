@@ -173,6 +173,20 @@ package et_board_ops.assy_doc is
 
 
 
+	-- Sets the proposed-flag of all line and arc segments 
+	-- of a zone which are
+	-- in the given zone around the given place.
+	procedure propose_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		zone			: in type_accuracy; -- the circular area around the place
+		face			: in type_face;
+		count			: in out natural; -- the number of affected segments
+		log_threshold	: in type_log_level);
+
+
+
+	
 	
 	-- Deletes the segment of the assembly documentation that crosses the given point.
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
