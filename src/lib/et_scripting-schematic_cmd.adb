@@ -2883,9 +2883,9 @@ is
 									-- It will then be attached to the cursor or mouse pointer.
 									if deployed (active_module, object_device_name, unit_name) then
 
-										unit_move.unit := unit_name;
+										object_unit_name := unit_name;
 										
-										if get_sheet (active_module, object_device_name, unit_move.unit) = active_sheet then
+										if get_sheet (active_module, object_device_name, object_unit_name) = active_sheet then
 											select_unit_for_move;
 											
 											-- use the current primary tool for moving the unit:
@@ -2991,13 +2991,13 @@ is
 									-- attached to the cursor or mouse pointer.
 									if deployed (active_module, object_device_name, unit_name) then
 
-										unit_move.unit := unit_name;
+										object_unit_name := unit_name;
 										
 										-- If the unit is not on the active_sheet then notify the
 										-- GUI that the sheet changes. This way the unit is drawn
 										-- on the current visible sheet independed of its original sheet number.
 										-- See et_canvas_schematic.draw_units.
-										if get_sheet (active_module, object_device_name, unit_move.unit) /= active_sheet then
+										if get_sheet (active_module, object_device_name, object_unit_name) /= active_sheet then
 											unit_move.sheet_changes := true;
 
 											--set_status ("Moving unit from another sheet");
@@ -3130,9 +3130,9 @@ is
 									-- It will then be attached to the cursor or mouse pointer.
 									if deployed (active_module, object_device_name, unit_name) then
 
-										unit_move.unit := unit_name;
+										object_unit_name := unit_name;
 										
-										if get_sheet (active_module, object_device_name, unit_move.unit) = active_sheet then
+										if get_sheet (active_module, object_device_name, object_unit_name) = active_sheet then
 											finish_unit_move;
 										else
 											unit_not_on_this_sheet;

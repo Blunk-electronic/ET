@@ -322,7 +322,7 @@ package body et_scripting_interactive_schematic is
 		-- There will be only one single item in that list.
 		proposed_units.append (new_item => (
 			device	=> locate_device (active_module, object_device_name),
-			unit	=> locate_unit (active_module, object_device_name, unit_move.unit)));
+			unit	=> locate_unit (active_module, object_device_name, object_unit_name)));
 
 		-- Set the selected unit. This signals the GUI which unit is to be
 		-- drawn at the cursor or mouse position:
@@ -436,7 +436,7 @@ package body et_scripting_interactive_schematic is
 		-- Now we know the unit name:
 		case noun is
 			when NOUN_UNIT =>
-				unit_move.unit := to_unit_name (name);
+				object_unit_name := to_unit_name (name);
 
 				finish_unit_move;
 				
@@ -511,10 +511,10 @@ package body et_scripting_interactive_schematic is
 			when 1 => -- No menu required. We know the device and unit name:
 				case noun is
 					when NOUN_UNIT =>
-						unit_move.unit := element (units.first);
+						object_unit_name := element (units.first);
 
 						set_status ("selected single available unit " 
-							& to_string (unit_move.unit)
+							& to_string (object_unit_name)
 							& " of " & to_string (object_device_name));
 						
 						finish_unit_move;

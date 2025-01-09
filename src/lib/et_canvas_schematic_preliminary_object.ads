@@ -50,6 +50,7 @@ with et_canvas_schematic_2;				use et_canvas_schematic_2;
 
 with et_net_names;						use et_net_names;
 with et_device_name;					use et_device_name;
+with et_unit_name;						use et_unit_name;
 
 
 package et_canvas_schematic_preliminary_object is
@@ -57,9 +58,11 @@ package et_canvas_schematic_preliminary_object is
 	-- Before placing, moving, deleting or other operations we
 	-- collect preliminary information here.
 
-	object_net_name			: pac_net_name.bounded_string := et_net_names.no_name; -- GND, P3V3
+	object_net_name		: pac_net_name.bounded_string := et_net_names.no_name; -- GND, P3V3
 	
-	object_device_name		: type_device_name := et_device_name.no_name; -- IC45, FD2
+	object_device_name	: type_device_name := et_device_name.no_name; -- IC45, FD2
+
+	object_unit_name	: pac_unit_name.bounded_string; -- A, B, C
 	
 	
 	-- Resets the preliminary object information

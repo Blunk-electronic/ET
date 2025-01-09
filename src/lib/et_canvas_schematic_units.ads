@@ -155,8 +155,6 @@ package et_canvas_schematic_units is
 		-- Procedure draw_nets requires that in order
 		-- to calculate the displacement of attached net segments:
 		original_position	: type_vector_model := origin;
-		
-		unit				: pac_unit_name.bounded_string; -- A
 
 		-- In case a unit is being moved from one sheet to another.
 		-- This flag notifies the GUI that the unit is to be
