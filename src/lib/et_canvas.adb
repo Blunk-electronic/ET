@@ -412,7 +412,7 @@ package body et_canvas is
 
 
 	procedure reset_zoom_area is begin
-		put_line ("reset_zoom_area");
+		-- put_line ("reset_zoom_area");
 		zoom_area := (others => <>);
 	end reset_zoom_area;
 
@@ -428,18 +428,18 @@ package body et_canvas is
 		-- and after zooming:
 		C1, C2 : type_bounding_box_corners;
 	begin
-		put_line ("zoom_on_cursor " & type_zoom_direction'image (direction));
+		-- put_line ("zoom_on_cursor " & type_zoom_direction'image (direction));
 
 		C1 := get_bounding_box_corners;
 
 		case direction is
 			when ZOOM_IN =>
 				increase_zoom_factor;
-				put_line (" zoom in");
+				-- put_line (" zoom in");
 				
 			when ZOOM_OUT => 
 				decrease_zoom_factor;
-				put_line (" zoom out");
+				-- put_line (" zoom out");
 				
 			when others => null;
 		end case;
