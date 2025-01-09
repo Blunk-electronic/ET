@@ -1139,6 +1139,44 @@ package body et_canvas_schematic_2 is
 -- 	
 
 
+
+-- PROPERTIES WINDOW:
+
+
+	function window_properties_is_open return boolean is begin
+		return window_properties.open;
+	end window_properties_is_open;
+
+
+	procedure build_window_properties is begin
+		properties_confirmed := false;
+			
+		gtk_new (window_properties.window);
+
+		-- If the operator closes the properties window:
+	-- CS window_properties.window.on_destroy (access_on_window_properties_closed);
+
+		-- If the operator presses a key in the properties window:
+	-- CS window_properties.window.on_key_press_event (access_on_window_properties_key_event);
+		
+		-- Mark window as open. This prevents the window
+		-- from opening multiple times:
+		window_properties.open := true;
+		
+		window_properties.window.set_title ("Properties");
+	end build_window_properties;
+
+	
+	procedure set_status_properties (text : in string) is begin
+		label_properties_status.set_text (text);
+	end set_status_properties;
+
+	
+	procedure set_property_before (text : in string) is begin
+		entry_property_old.set_text (text);
+	end set_property_before;
+
+	
 	
 end et_canvas_schematic_2;
 
