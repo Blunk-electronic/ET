@@ -62,6 +62,8 @@ with et_canvas_schematic_units;		use et_canvas_schematic_units;
 
 with et_device_placeholders;			use et_device_placeholders;
 
+with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
+
 
 package body et_scripting_interactive_schematic is
 
@@ -319,8 +321,8 @@ package body et_scripting_interactive_schematic is
 		-- Append the cursors of the device and unit to the list of proposed units.
 		-- There will be only one single item in that list.
 		proposed_units.append (new_item => (
-			device	=> locate_device (active_module, unit_move.device),
-			unit	=> locate_unit (active_module, unit_move.device, unit_move.unit)));
+			device	=> locate_device (active_module, object_device_name),
+			unit	=> locate_unit (active_module, object_device_name, unit_move.unit)));
 
 		-- Set the selected unit. This signals the GUI which unit is to be
 		-- drawn at the cursor or mouse position:
@@ -482,7 +484,7 @@ package body et_scripting_interactive_schematic is
 	begin -- menu_propose_units_on_move
 		case noun is
 			when NOUN_UNIT =>
-				log (text => "proposing units of " & to_string (unit_move.device) & " ... ",
+				log (text => "proposing units of " & to_string (object_device_name) & " ... ",
 					level => log_threshold);
 
 			when NOUN_NAME =>
@@ -498,7 +500,7 @@ package body et_scripting_interactive_schematic is
 			when 0 => -- no menu required
 				case noun is
 					when NOUN_UNIT =>
-						set_status ("No units of " & to_string (unit_move.device) & " on this sheet !");
+						set_status ("No units of " & to_string (object_device_name) & " on this sheet !");
 
 					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
 						set_status ("No units of " & to_string (placeholder_move.device) & " on this sheet !");
@@ -513,7 +515,7 @@ package body et_scripting_interactive_schematic is
 
 						set_status ("selected single available unit " 
 							& to_string (unit_move.unit)
-							& " of " & to_string (unit_move.device));
+							& " of " & to_string (object_device_name));
 						
 						finish_unit_move;
 

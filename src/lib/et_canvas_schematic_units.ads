@@ -156,7 +156,6 @@ package et_canvas_schematic_units is
 		-- to calculate the displacement of attached net segments:
 		original_position	: type_vector_model := origin;
 		
-		device				: type_device_name := (others => <>); -- IC45
 		unit				: pac_unit_name.bounded_string; -- A
 
 		-- In case a unit is being moved from one sheet to another.

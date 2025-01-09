@@ -2854,7 +2854,7 @@ is
 								device_name := to_device_name (f (5));
 
 								if exists (active_module, device_name) then
-									unit_move.device := device_name;
+									object_device_name := device_name;
 
 									-- Propose units that are on the current active sheet:
 									menu_propose_units_on_move (
@@ -2874,18 +2874,18 @@ is
 								
 								if exists (active_module, device_name) then
 									
-									unit_move.device := device_name;
+									object_device_name := device_name;
 
 									unit_name := to_unit_name (f (6));
 
 									-- Test whether the unit is deployed on the current active sheet.
 									-- Dragging is possible if it is deployed and if it is on the current sheet.
 									-- It will then be attached to the cursor or mouse pointer.
-									if deployed (active_module, unit_move.device, unit_name) then
+									if deployed (active_module, object_device_name, unit_name) then
 
 										unit_move.unit := unit_name;
 										
-										if get_sheet (active_module, unit_move.device, unit_move.unit) = active_sheet then
+										if get_sheet (active_module, object_device_name, unit_move.unit) = active_sheet then
 											select_unit_for_move;
 											
 											-- use the current primary tool for moving the unit:
@@ -2962,7 +2962,7 @@ is
 								device_name := to_device_name (f (5));
 
 								if exists (active_module, device_name) then
-									unit_move.device := device_name;
+									object_device_name := device_name;
 
 									-- Propose units that are on the current active sheet:
 									menu_propose_units_on_move (
@@ -2982,14 +2982,14 @@ is
 								
 								if exists (active_module, device_name) then
 									
-									unit_move.device := device_name;
+									object_device_name := device_name;
 
 									unit_name := to_unit_name (f (6));
 
 									-- Test whether the unit is deployed.
 									-- If it is deployed somewhere (whatever sheet) then it will be 
 									-- attached to the cursor or mouse pointer.
-									if deployed (active_module, unit_move.device, unit_name) then
+									if deployed (active_module, object_device_name, unit_name) then
 
 										unit_move.unit := unit_name;
 										
@@ -2997,7 +2997,7 @@ is
 										-- GUI that the sheet changes. This way the unit is drawn
 										-- on the current visible sheet independed of its original sheet number.
 										-- See et_canvas_schematic.draw_units.
-										if get_sheet (active_module, unit_move.device, unit_move.unit) /= active_sheet then
+										if get_sheet (active_module, object_device_name, unit_move.unit) /= active_sheet then
 											unit_move.sheet_changes := true;
 
 											--set_status ("Moving unit from another sheet");
@@ -3101,7 +3101,7 @@ is
 								device_name := to_device_name (f (5));
 
 								if exists (active_module, device_name) then
-									unit_move.device := device_name;
+									object_device_name := device_name;
 
 									-- Propose units that are on the current active sheet:
 									menu_propose_units_on_move (
@@ -3121,18 +3121,18 @@ is
 								
 								if exists (active_module, device_name) then
 									
-									unit_move.device := device_name;
+									object_device_name := device_name;
 
 									unit_name := to_unit_name (f (6));
 
 									-- Test whether the unit is deployed on the current active sheet.
 									-- Rotating is possible if it is deployed and if it is on the current sheet.
 									-- It will then be attached to the cursor or mouse pointer.
-									if deployed (active_module, unit_move.device, unit_name) then
+									if deployed (active_module, object_device_name, unit_name) then
 
 										unit_move.unit := unit_name;
 										
-										if get_sheet (active_module, unit_move.device, unit_move.unit) = active_sheet then
+										if get_sheet (active_module, object_device_name, unit_move.unit) = active_sheet then
 											finish_unit_move;
 										else
 											unit_not_on_this_sheet;
