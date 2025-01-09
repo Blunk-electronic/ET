@@ -1148,6 +1148,11 @@ package et_canvas is
 	-- When a line or a path is being drawn, then this
 	-- is the linewidth:
 	object_linewidth : type_distance_positive := 0.15;
+
+
+	type type_finalizing_granted is new boolean;
+
+	finalizing_granted		: type_finalizing_granted := false;
 	
 	
 	-- This function returns the object tool position

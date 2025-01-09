@@ -42,6 +42,7 @@ with ada.containers;				use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 
+with et_canvas_schematic_2;
 with et_net_names;					use et_net_names;
 with et_canvas_messages;			use et_canvas_messages;
 with et_canvas_tool;				use et_canvas_tool;
@@ -62,7 +63,7 @@ with et_logging;					use et_logging;
 
 package et_canvas_schematic_nets is
 
-	-- use et_canvas_schematic.pac_canvas;
+	use et_canvas_schematic_2.pac_canvas;
 	
 	use pac_generic_modules;
 	
@@ -248,11 +249,11 @@ package et_canvas_schematic_nets is
 
 -- DRAG/MOVE NET SEGMENT
 
-	type type_finalizing_granted is new boolean;
+	-- type type_finalizing_granted is new boolean;
 
 	-- Global information for the GUI when a segment is being
 	-- moved or dragged:
-	type type_preliminary_segment is record
+	-- type type_preliminary_segment is record
 		-- -- This flag tells the draw operations to draw the preliminary segment:
 		-- ready					: boolean := false;
 
@@ -268,10 +269,10 @@ package et_canvas_schematic_nets is
 		-- grabs the segment:
 		-- point_of_attack			: type_vector_model;
 		
-		finalizing_granted		: type_finalizing_granted := false;
-	end record;
+		-- finalizing_granted		: type_finalizing_granted := false;
+	-- end record;
 
-	preliminary_segment : type_preliminary_segment;
+	-- preliminary_segment : type_preliminary_segment;
 
 
 	-- This procedure:

@@ -457,9 +457,7 @@ package body et_canvas_schematic_nets is
 	procedure make_path (
 		tool	: in type_tool;
 		point	: in type_vector_model)
-	is 
-		PS : type_preliminary_segment renames preliminary_segment;
-	begin
+	is begin
 		-- Set the tool being used for this path so that procedure
 		-- draw_path (in et_canvas_schematic-draw_nets)
 		-- knows where to get the end point from.
@@ -782,7 +780,6 @@ package body et_canvas_schematic_nets is
 	
 
 	procedure reset_preliminary_segment is 
-		PS : type_preliminary_segment renames preliminary_segment;
 	begin
 		object_ready := false;
 		object_tool := MOUSE;
@@ -791,7 +788,7 @@ package body et_canvas_schematic_nets is
 
 		object_net_name := no_name;
 		object_point_of_attack := origin;
-		PS.finalizing_granted := false;
+		finalizing_granted := false;
 		
 		clear_proposed_segments;
 	end reset_preliminary_segment;
@@ -1060,7 +1057,6 @@ package body et_canvas_schematic_nets is
 		tool		: in type_tool;
 		position	: in type_vector_model)
 	is 
-		PS : type_preliminary_segment renames preliminary_segment;
 		use et_undo_redo;
 		use et_commit;
 
@@ -1077,7 +1073,7 @@ package body et_canvas_schematic_nets is
 
 			-- Finalize only if procedure et_canvas_schematic.draw_nets has
 			-- granted permission:
-			if PS.finalizing_granted then
+			if finalizing_granted then
 		
 				if selected_segment /= pac_proposed_segments.no_element then
 

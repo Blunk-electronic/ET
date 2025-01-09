@@ -686,7 +686,6 @@ procedure draw_nets is
 		use et_modes.schematic;
 		use et_schematic_ops.nets;
 
-		PS : type_preliminary_segment renames preliminary_segment;
 
 		-- Calculate the zone where the original segment is being attacked:
 		zone : constant type_line_zone := get_zone (
@@ -719,7 +718,7 @@ procedure draw_nets is
 				primary_segment		=> primary_segment,
 				zone				=> zone);
 			
-			PS.finalizing_granted := true;
+			finalizing_granted := true;
 		end move_labels_and_secondary_nets;
 
 		
