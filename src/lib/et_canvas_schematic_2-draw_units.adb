@@ -63,6 +63,8 @@ with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 with et_schematic_ops;
 with et_display.schematic;				use et_display.schematic;
 
+with et_canvas_schematic_preliminary_object; 	use et_canvas_schematic_preliminary_object;
+
 
 separate (et_canvas_schematic_2)
 
@@ -952,7 +954,7 @@ procedure draw_units is
 
 			
 			-- CASE 2: The unit being moved changes the sheet:
-			if unit_move.sheet_changes then
+			if object_sheet_changes then
 				
 				-- CS test verb and noun ?
 				if unit_is_selected (device_cursor, unit_cursor) then

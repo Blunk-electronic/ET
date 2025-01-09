@@ -147,19 +147,6 @@ package et_canvas_schematic_units is
 
 -- MOVE/DRAG/ROTATE UNIT
 
-	-- Global information for the GUI when a unit is 
-	-- being moved, dragged or rotated:
-	type type_unit_being_moved is record
-
-		-- In case a unit is being moved from one sheet to another.
-		-- This flag notifies the GUI that the unit is to be
-		-- drawn on the current visible sheet. This way the
-		-- original sheet number is ignored. See et_canvas_schematic.draw_units.
-		sheet_changes		: boolean := false;
-	end record;
-
-	unit_move : type_unit_being_moved;
-
 	
 	-- to be output in the status bar:
 	status_move : constant string := 

@@ -2998,7 +2998,7 @@ is
 										-- on the current visible sheet independed of its original sheet number.
 										-- See et_canvas_schematic.draw_units.
 										if get_sheet (active_module, object_device_name, object_unit_name) /= active_sheet then
-											unit_move.sheet_changes := true;
+											object_sheet_changes := true;
 
 											--set_status ("Moving unit from another sheet");
 										end if;

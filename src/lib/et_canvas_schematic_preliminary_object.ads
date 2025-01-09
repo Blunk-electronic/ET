@@ -64,6 +64,12 @@ package et_canvas_schematic_preliminary_object is
 
 	object_unit_name	: pac_unit_name.bounded_string; -- A, B, C
 	
+	-- If an object is being moved from one sheet to another.
+	-- This flag notifies the GUI that the object is to be
+	-- drawn on the current visible sheet. This way the
+	-- original sheet number is ignored:
+	object_sheet_changes : boolean := false;
+
 	
 	-- Resets the preliminary object information
 	-- and global stuff like object_tool, object_ready, ...
