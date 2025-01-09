@@ -375,13 +375,13 @@ package body et_scripting_interactive_schematic is
 				find_attached_segments;
 
 				-- Allow drawing the unit:
-				unit_move.being_moved := true;
+				object_ready := true;
 
 				single_cmd_status.finalization_pending := true;
 				
 			when VERB_MOVE => 
 				-- Allow drawing the unit:
-				unit_move.being_moved := true;
+				object_ready := true;
 
 				single_cmd_status.finalization_pending := true;
 				

@@ -818,7 +818,7 @@ procedure draw_units is
 					brightness := BRIGHT;
 
 					-- overwrite position
-					if unit_move.being_moved then
+					if object_ready then
 					
 						-- In case the unit is being dragged, backup original position
 						-- in global variable "unit_move". Procedure draw_nets requires that
@@ -961,11 +961,10 @@ procedure draw_units is
 					brightness := BRIGHT;
 
 					-- overwrite position
-					if unit_move.being_moved then
+					if object_ready then
 					
 						case object_tool is
 							when MOUSE =>
-								null;
 								unit_position := snap_to_grid (get_mouse_position);
 								
 							when KEYBOARD =>

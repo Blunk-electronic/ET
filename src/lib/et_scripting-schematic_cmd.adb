@@ -2894,7 +2894,7 @@ is
 											find_attached_segments;
 											
 											-- Allow drawing the unit:
-											unit_move.being_moved := true;
+											object_ready := true;
 
 											single_cmd_status.finalization_pending := true;
 											-- CS redraw;
@@ -3009,7 +3009,7 @@ is
 										object_tool := primary_tool;
 									
 										-- Allow drawing the unit:
-										unit_move.being_moved := true;
+										object_ready := true;
 
 										single_cmd_status.finalization_pending := true;
 										-- CS redraw;

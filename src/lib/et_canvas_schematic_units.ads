@@ -150,8 +150,6 @@ package et_canvas_schematic_units is
 	-- Global information for the GUI when a unit is 
 	-- being moved, dragged or rotated:
 	type type_unit_being_moved is record
-		being_moved			: boolean := false;
-
 		-- In case the unit is being dragged, then we backup 
 		-- here the original position.
 		-- Procedure draw_nets requires that in order

@@ -91,7 +91,7 @@ begin
 					end if;
 
 				when NOUN_UNIT =>
-					if et_canvas_schematic_units.unit_move.being_moved then
+					if object_ready then
 						redraw_schematic;
 					end if;
 
