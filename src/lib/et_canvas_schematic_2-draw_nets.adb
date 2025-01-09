@@ -830,7 +830,7 @@ procedure draw_nets is
 			end case;
 
 			-- This is the displacement of the attached segments:
-			displacement := get_distance_relative (unit_move.original_position, tool_position);
+			displacement := get_distance_relative (object_original_position, tool_position);
 
 -- 			log (text => "original    " & to_string (unit.original_position), console => true);
 -- 			log (text => "displacement" & to_string (displacement), console => true);

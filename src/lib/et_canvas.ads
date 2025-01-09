@@ -1149,7 +1149,14 @@ package et_canvas is
 	-- is the linewidth:
 	object_linewidth : type_distance_positive := 0.15;
 
+	-- If an object being dragged, then we backup 
+	-- here its original position.
+	-- It is used in order to calculate 
+	-- the displacement of other attached objects:
+	object_original_position : type_vector_model := origin;
 
+
+	
 	type type_finalizing_granted is new boolean;
 
 	finalizing_granted		: type_finalizing_granted := false;

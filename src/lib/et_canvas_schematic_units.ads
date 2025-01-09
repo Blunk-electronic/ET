@@ -150,11 +150,6 @@ package et_canvas_schematic_units is
 	-- Global information for the GUI when a unit is 
 	-- being moved, dragged or rotated:
 	type type_unit_being_moved is record
-		-- In case the unit is being dragged, then we backup 
-		-- here the original position.
-		-- Procedure draw_nets requires that in order
-		-- to calculate the displacement of attached net segments:
-		original_position	: type_vector_model := origin;
 
 		-- In case a unit is being moved from one sheet to another.
 		-- This flag notifies the GUI that the unit is to be
