@@ -971,7 +971,98 @@ package body et_board_ops.assy_doc is
 	end propose_segments;
 
 
+
 	
+	
+	procedure reset_proposed_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_doc_contours;
+			zc : pac_doc_contours.cursor;
+
+			use pac_contours;
+			use pac_segments;
+
+			
+			procedure query_segment (
+				segment	: in out type_segment)
+			is begin
+				reset_status (segment);
+			end query_segment;
+
+
+			
+			procedure query_zone (
+				zone : in out type_doc_contour)
+			is
+				use pac_contours;
+				use pac_segments;
+				c : pac_segments.cursor;
+				
+			begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					c := zone.contour.segments.first;
+
+					while c /= pac_segments.no_element loop
+						update_element (
+							container	=> zone.contour.segments,
+							position	=> c,
+							process		=> query_segment'access);
+
+						next (c);
+					end loop;
+				end if;
+			end query_zone;
+			
+			
+		begin
+			zc := module.board.assy_doc.top.contours.first;
+
+			while zc /= pac_doc_contours.no_element loop
+				update_element (
+					container	=> module.board.assy_doc.top.contours,
+					position	=> zc,
+					process		=> query_zone'access);
+				
+				next (zc);
+			end loop;
+
+					
+			zc := module.board.assy_doc.bottom.contours.first;
+
+			while zc /= pac_doc_contours.no_element loop
+				update_element (
+					container	=> module.board.assy_doc.bottom.contours,
+					position	=> zc,
+					process		=> query_zone'access);
+				
+				next (zc);
+			end loop;
+		end query_module;
+
+
+		
+	begin
+		log (text => "resetting proposed lines of zones in assembly documentation",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_segments;
+
 
 
 	

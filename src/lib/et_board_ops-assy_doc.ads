@@ -185,6 +185,12 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
+	-- Clears the proposed-flag and the selected-flag 
+	-- of all line and arc segments:
+	procedure reset_proposed_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
 
 	
 	
