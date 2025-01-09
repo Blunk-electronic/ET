@@ -48,7 +48,7 @@ package body et_canvas_schematic_preliminary_object is
 	begin
 		reset_object; -- global stuff
 
-		-- CS reset category, signal_layer, face, ...
+		-- CS reset unit name, device name, ...
 	end reset_preliminary_object;
 
 	

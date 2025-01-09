@@ -87,6 +87,8 @@ with et_commit;
 with et_undo_redo;
 with et_directory_and_file_ops;
 
+with et_canvas_schematic_preliminary_object; 	use et_canvas_schematic_preliminary_object;
+
 
 package body et_canvas_schematic_units is
 
@@ -415,7 +417,7 @@ package body et_canvas_schematic_units is
 -- MOVE/DRAG/ROTATE UNIT
 
 	procedure reset_unit_move is begin
-		-- CS reset device, unit name, object_sheet_change ?
+		reset_preliminary_object;
 		clear_proposed_units;
 	end reset_unit_move;
 
