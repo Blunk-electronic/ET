@@ -366,7 +366,7 @@ package body et_scripting_interactive_schematic is
 		select_unit_for_move;
 		
 		-- use the current primary tool for moving the unit:
-		unit_move.tool := primary_tool;
+		object_tool := primary_tool;
 
 		case verb is
 			when VERB_DRAG => 

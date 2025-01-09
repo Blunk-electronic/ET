@@ -151,7 +151,6 @@ package et_canvas_schematic_units is
 	-- being moved, dragged or rotated:
 	type type_unit_being_moved is record
 		being_moved			: boolean := false;
-		tool				: type_tool := MOUSE;
 
 		-- In case the unit is being dragged, then we backup 
 		-- here the original position.

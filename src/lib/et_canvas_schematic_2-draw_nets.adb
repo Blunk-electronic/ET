@@ -821,7 +821,7 @@ procedure draw_nets is
 
 			-- Calculate the displacement of segments according to the
 			-- current drawing tool and the current displacement of the unit:
-			case unit_move.tool is
+			case object_tool is
 				when MOUSE =>
 					tool_position := snap_to_grid (get_mouse_position);
 

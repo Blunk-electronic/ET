@@ -475,7 +475,7 @@ package body et_canvas_schematic_units is
 		if not unit_move.being_moved then
 
 			-- Set the tool being used::
-			unit_move.tool := tool;
+			object_tool := tool;
 			
 			if not clarification_pending then
 				find_units_for_move (position);
@@ -556,7 +556,7 @@ package body et_canvas_schematic_units is
 		if not unit_move.being_moved then
 			
 			-- Set the tool being used:
-			unit_move.tool := tool;
+			object_tool := tool;
 			
 			if not clarification_pending then
 				find_units_for_move (position);

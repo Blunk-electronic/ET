@@ -2889,7 +2889,7 @@ is
 											select_unit_for_move;
 											
 											-- use the current primary tool for moving the unit:
-											unit_move.tool := primary_tool;
+											object_tool := primary_tool;
 
 											find_attached_segments;
 											
@@ -3006,7 +3006,7 @@ is
 										select_unit_for_move;
 										
 										-- use the current primary tool for moving the unit:
-										unit_move.tool := primary_tool;
+										object_tool := primary_tool;
 									
 										-- Allow drawing the unit:
 										unit_move.being_moved := true;

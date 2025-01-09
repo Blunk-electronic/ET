@@ -825,7 +825,7 @@ procedure draw_units is
 						-- to calculate the displacement of attached net segments:
 						unit_move.original_position := unit_position;
 
-						case unit_move.tool is
+						case object_tool is
 							when MOUSE =>
 								unit_position := snap_to_grid (get_mouse_position);
 								
@@ -963,7 +963,7 @@ procedure draw_units is
 					-- overwrite position
 					if unit_move.being_moved then
 					
-						case unit_move.tool is
+						case object_tool is
 							when MOUSE =>
 								null;
 								unit_position := snap_to_grid (get_mouse_position);
