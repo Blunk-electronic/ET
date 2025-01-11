@@ -196,8 +196,17 @@ package et_assy_doc is
 	type type_doc_contour is new type_contour with null record; -- CS rename to type_doc_zone
 	package pac_doc_contours is new doubly_linked_lists (type_doc_contour);
 	use pac_doc_contours; -- CS rename to pac_doc_zones
-	
 
+
+	-- Iterates the zones.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		zones	: in pac_doc_contours.list;
+		process	: not null access procedure (position : in pac_doc_contours.cursor);
+		proceed	: not null access boolean);
+
+
+	
 	-- Mirrors a list of contours along the given axis:
 	procedure mirror_contours (
 		contours	: in out pac_doc_contours.list;

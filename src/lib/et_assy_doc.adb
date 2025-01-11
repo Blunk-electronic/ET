@@ -324,6 +324,21 @@ package body et_assy_doc is
 
 
 
+	procedure iterate (
+		zones	: in pac_doc_contours.list;
+		process	: not null access procedure (position : in pac_doc_contours.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_doc_contours.cursor := zones.first;
+	begin
+		while c /= pac_doc_contours.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+	
+	
+
 	procedure mirror_contours (
 		contours	: in out pac_doc_contours.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
