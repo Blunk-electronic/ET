@@ -852,6 +852,99 @@ package body et_board_ops.assy_doc is
 
 	
 
+	
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment_cursor	: in pac_contours.pac_segments.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+		use pac_contours;
+		use pac_segments;
+		use pac_doc_contours;
+		
+		zc : pac_doc_contours.cursor;
+		proceed : boolean := true;
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_segment (
+				segment	: in out type_segment)
+			is begin
+				modify_status (segment, operation);
+			end query_segment;
+
+			
+			procedure query_zone (
+				zone : in out type_doc_contour)
+			is begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					if has_element (segment_cursor) then
+
+						update_element (
+							container	=> zone.contour.segments,
+							position	=> segment_cursor,
+							process		=> query_segment'access);
+
+						proceed := false; -- abort the zone iterator
+					end if;
+				end if;
+			end query_zone;
+	
+			
+		begin
+			-- Iterate the zones in top layer:
+			zc := module.board.assy_doc.top.contours.first;
+
+			while zc /= pac_doc_contours.no_element and proceed loop
+				update_element (
+					container	=> module.board.assy_doc.top.contours, 
+					position	=> zc, 
+					process		=> query_zone'access);
+
+				next (zc);
+			end loop;
+
+			
+			-- Iterate the zones in bottom layer if nothing found in top layer:
+			if proceed then
+				zc := module.board.assy_doc.bottom.contours.first;
+
+				while zc /= pac_doc_contours.no_element and proceed loop
+					update_element (
+						container	=> module.board.assy_doc.bottom.contours, 
+						position	=> zc, 
+						process		=> query_zone'access);
+
+					next (zc);
+				end loop;
+			end if;			
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of "
+			& to_string (segment_cursor)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+	
 
 
 	procedure propose_segments (

@@ -173,6 +173,14 @@ package et_board_ops.assy_doc is
 
 
 
+	-- Modifies the status flag of a line (see package et_object_status):
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment_cursor	: in pac_contours.pac_segments.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+	
+
 	-- Sets the proposed-flag of all line and arc segments 
 	-- of a zone which are
 	-- in the given zone around the given place.
