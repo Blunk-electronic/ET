@@ -200,6 +200,15 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
+	-- Returns the first line or arc according to the given flag.
+	-- If no line has been found, then the return is no_element:
+	function get_first_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return pac_contours.pac_segments.cursor;
+
+
 	
 	
 	-- Deletes the segment of the assembly documentation that crosses the given point.

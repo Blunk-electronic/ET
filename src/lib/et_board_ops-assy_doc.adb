@@ -1158,6 +1158,102 @@ package body et_board_ops.assy_doc is
 
 
 
+
+	function get_first_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return pac_contours.pac_segments.cursor
+	is
+		use pac_contours;
+		result : pac_segments.cursor;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_contours;
+			use pac_segments;
+			use pac_doc_contours;
+			
+			proceed : aliased boolean := true;
+
+			
+			procedure query_segment (
+				c : in pac_segments.cursor) 
+			is begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (c) then
+							result := c;
+							proceed := false;
+						end if;
+   
+					when SELECTED =>
+						if is_selected (c) then
+							result := c;
+							proceed := false;
+						end if;
+   
+					when others =>
+						null; -- CS
+				end case;
+			end query_segment;
+
+
+			procedure query_zone (
+				c : in pac_doc_contours.cursor)
+			is begin
+				if element (c).contour.circular then
+					null; -- CS
+				else
+					iterate (
+						segments	=> element (c).contour.segments,
+						process		=> query_segment'access,
+						proceed		=> proceed'access);
+				end if;
+			end query_zone;
+
+			
+		begin
+			-- Iterate the zones in top layer:
+			iterate (
+				zones	=> module.board.assy_doc.top.contours,
+				process	=> query_zone'access, 
+				proceed	=> proceed'access);
+
+			
+			-- If nothing found, iterate the bottom layer:
+			if proceed then
+				iterate (
+					zones	=> module.board.assy_doc.bottom.contours,
+					process	=> query_zone'access, 
+					proceed	=> proceed'access);
+
+			end if;
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first segment / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+
+		return result;
+	end get_first_segment;
+
+
+	
+	
 	
 	procedure delete (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
