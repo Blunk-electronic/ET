@@ -53,7 +53,7 @@ package et_geometry_2a.contours is
 	type type_segment_shape is (LINE, ARC); -- CS rename to segment_shape_line, segment_shape_arc
 
 	
-	type type_segment (shape : type_segment_shape) is record
+	type type_segment (shape : type_segment_shape) is record -- CS rename to type_contour_segment
 		case shape is
 			when LINE	=> segment_line : type_line; -- CS rename segment_line to line
 			when ARC	=> segment_arc  : type_arc;
