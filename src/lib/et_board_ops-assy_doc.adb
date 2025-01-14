@@ -36,6 +36,9 @@
 --   history of changes:
 --
 
+with ada.containers;
+with ada.containers.doubly_linked_lists;
+
 
 package body et_board_ops.assy_doc is
 
@@ -1141,7 +1144,6 @@ package body et_board_ops.assy_doc is
 			end loop;
 		end query_module;
 
-
 		
 	begin
 		log (text => "resetting proposed lines of zones in assembly documentation",
@@ -1251,6 +1253,106 @@ package body et_board_ops.assy_doc is
 		return result;
 	end get_first_segment;
 
+
+
+
+
+	procedure next_proposed_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in out pac_contours.pac_segments.cursor;
+		-- CS last_item		: in out boolean;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module)
+		is
+			use pac_contours;
+			use pac_segments;
+			use pac_proposed_segments;
+
+			-- Here we will store the proposed segments
+			-- of all zones:
+			proposed_segments : pac_proposed_segments.list;
+
+			
+			procedure query_zone (c : in pac_doc_contours.cursor) is 
+				use pac_doc_contours;
+
+				-- These are the proposed segments of 
+				-- the candidate zone:
+				ps : pac_proposed_segments.list;
+			begin
+				ps := get_proposed_segments (element (c));
+
+				-- Append the segments to the collection of
+				-- segments:
+				splice (
+					target	=> proposed_segments,  
+					before	=> pac_proposed_segments.no_element,
+					source	=> ps);
+				
+			end query_zone;
+
+			
+			c : pac_proposed_segments.cursor;
+			
+		begin
+			-- Get the proposed segments of top and bottom zones:
+			module.board.assy_doc.top.contours.iterate (query_zone'access);
+			module.board.assy_doc.bottom.contours.iterate (query_zone'access);
+
+			case proposed_segments.length is
+				when 0 =>
+					-- If no segments are proposed then
+					-- return no_element:
+					segment := pac_segments.no_element;
+
+				when 1 =>
+					-- If only one proposed segment found, then
+					-- the given segment remains as it is:
+					null;
+					
+					
+				when others =>
+					-- More than one proposed segment found.
+
+					-- Start the search with the given segment.
+					-- Locate the given segment among the proposed segments:
+					c := proposed_segments.find (segment);
+
+					-- Advance to the next proposed segment:
+					next (c);
+
+					-- If the end of the list has been reached,
+					-- then move to the begin of the list:
+					if c /= pac_proposed_segments.no_element then
+						c := proposed_segments.first;
+					end if;
+
+					-- Overwrite the given segment with the
+					-- segment that has just been found:
+					segment := element (c);
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& "advancing to next proposed segment",
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end next_proposed_segment;
+
+	
 
 	
 	
@@ -1362,6 +1464,7 @@ package body et_board_ops.assy_doc is
 		
 	end delete;
 
+	
 
 
 	procedure delete (
@@ -1421,6 +1524,8 @@ package body et_board_ops.assy_doc is
 	end delete;
 
 
+
+	
 	
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1487,6 +1592,8 @@ package body et_board_ops.assy_doc is
 	end get_texts;
 
 
+
+	
 	procedure move_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;

@@ -200,13 +200,27 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
-	-- Returns the first line or arc according to the given flag.
-	-- If no line has been found, then the return is no_element:
+	-- Returns the first line or arc segment according to the given flag.
+	-- If no segment has been found, then the return is no_element:
 	function get_first_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
 		return pac_contours.pac_segments.cursor;
+
+
+	-- Advances to the next proposed line or arc segment, starting at
+	-- the given segment. Traverses through the segments
+	-- in a circular manner. If there are no
+	-- proposed segments, then segment assumes default value (no_element).
+	-- If there is only one proposed segment, then segment is unchanged.
+	-- CS last_item indicates that the last segment has been reached:
+	procedure next_proposed_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in out pac_contours.pac_segments.cursor;
+		-- CS last_item		: in out boolean;
+		log_threshold	: in type_log_level);
+
 
 
 	
