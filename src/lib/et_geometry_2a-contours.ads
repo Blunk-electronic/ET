@@ -158,11 +158,21 @@ package et_geometry_2a.contours is
 
 	type type_contour is tagged record
 		contour : type_segments;
+		-- CS status: moving, selected, locked, proposed ?
 	end record;
 
 
 
+	package pac_proposed_segments is new doubly_linked_lists (pac_segments.cursor);
 
+
+	-- Returns the proposed segments of a contour:
+	function get_proposed_segments (
+		contour	: in type_contour)
+		return pac_proposed_segments.list;
+
+
+	
 
 	
 	-- In order to detect start and end points

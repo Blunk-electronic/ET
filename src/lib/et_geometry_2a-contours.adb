@@ -322,6 +322,29 @@ package body et_geometry_2a.contours is
 
 
 
+	function get_proposed_segments (
+		contour	: in type_contour)
+		return pac_proposed_segments.list
+	is
+		result : pac_proposed_segments.list;
+
+		procedure query_segment (c : in pac_segments.cursor) is begin
+			if is_proposed (c) then
+				result.append (c);
+			end if;
+		end query_segment;
+		
+	begin
+		if not contour.contour.circular then
+			contour.contour.segments.iterate (query_segment'access);
+		end if;
+		
+		return result;
+	end get_proposed_segments;
+
+	
+
+
 	function get_start_point (
 		contour : in type_contour)
 		return type_non_circular_vertex
