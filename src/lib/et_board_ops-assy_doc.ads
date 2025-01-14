@@ -99,13 +99,14 @@ package et_board_ops.assy_doc is
 	-- This composite type is required to distinguish
 	-- between top and bottom lines when lines are seached for:
 	type type_line_segment is record
-		face	: type_face;
-		cursor	: pac_doc_lines.cursor;
+		face	: type_face := TOP;
+		cursor	: pac_doc_lines.cursor := pac_doc_lines.no_element;
 	end record;
 
 	
 	-- Returns the first line according to the given flag.
-	-- If no line has been found, then the return is no_element:
+	-- If no line has been found, then the return is 
+	-- TOP and no_element:
 	function get_first_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 

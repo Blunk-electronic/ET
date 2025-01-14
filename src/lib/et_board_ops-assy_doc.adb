@@ -461,9 +461,9 @@ package body et_board_ops.assy_doc is
 				result.face := bottom;
 			end if;
 
-			-- If still nothing found, error:
+			-- If still nothing found, return TOP and no_element:
 			if proceed then
-				raise constraint_error; -- CS
+				result := (others => <>);	
 			end if;
 		end query_module;
 
