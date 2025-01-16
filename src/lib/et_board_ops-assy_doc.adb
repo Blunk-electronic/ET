@@ -858,7 +858,7 @@ package body et_board_ops.assy_doc is
 	
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		segment_cursor	: in pac_contours.pac_segments.cursor;
+		segment			: in type_zone_segment;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
@@ -866,8 +866,8 @@ package body et_board_ops.assy_doc is
 		use pac_segments;
 		use pac_doc_contours;
 		
-		zc : pac_doc_contours.cursor;
-		proceed : boolean := true;
+		-- zc : pac_doc_contours.cursor;
+		-- proceed : boolean := true;
 		
 		
 		procedure query_module (
@@ -888,53 +888,62 @@ package body et_board_ops.assy_doc is
 				if zone.contour.circular then
 					null; -- CS
 				else
-					if has_element (segment_cursor) then
+					-- if has_element (segment_cursor) then
+						-- CS use zone.contour.find (element (segment_cursor)
+						-- to figure out whether the segment is part
+						-- of the candidate zone.
+						-- But this still does not identify the zone exactly.
+						-- Pass a cursor of the affected zone to this procedure ?
 
 						update_element (
 							container	=> zone.contour.segments,
-							position	=> segment_cursor,
+							position	=> segment.segment,
 							process		=> query_segment'access);
 
-						proceed := false; -- abort the zone iterator
-					end if;
+						-- proceed := false; -- abort the zone iterator
+					-- end if;
 				end if;
 			end query_zone;
 	
 			
 		begin
-			-- Iterate the zones in top layer:
-			zc := module.board.assy_doc.top.contours.first;
+			case segment.face is
+				when TOP =>
+					-- Iterate the zones in top layer:
+					-- zc := module.board.assy_doc.top.contours.first;
 
-			while zc /= pac_doc_contours.no_element and proceed loop
-				update_element (
-					container	=> module.board.assy_doc.top.contours, 
-					position	=> zc, 
-					process		=> query_zone'access);
+					-- while zc /= pac_doc_contours.no_element and proceed loop
+						update_element (
+							container	=> module.board.assy_doc.top.contours, 
+							position	=> segment.zone, 
+							process		=> query_zone'access);
 
-				next (zc);
-			end loop;
+						-- next (zc);
+					-- end loop;
 
-			
-			-- Iterate the zones in bottom layer if nothing found in top layer:
-			if proceed then
-				zc := module.board.assy_doc.bottom.contours.first;
+				when BOTTOM =>
+					
+					-- Iterate the zones in bottom layer if nothing found in top layer:
+					-- if proceed then
+						-- zc := module.board.assy_doc.bottom.contours.first;
 
-				while zc /= pac_doc_contours.no_element and proceed loop
-					update_element (
-						container	=> module.board.assy_doc.bottom.contours, 
-						position	=> zc, 
-						process		=> query_zone'access);
+						-- while zc /= pac_doc_contours.no_element and proceed loop
+							update_element (
+								container	=> module.board.assy_doc.bottom.contours, 
+								position	=> segment.zone, 
+								process		=> query_zone'access);
 
-					next (zc);
-				end loop;
-			end if;			
+							-- next (zc);
+						-- end loop;
+							-- end if;
+				end case;
 		end query_module;
 		
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
-			& to_string (segment_cursor)
+			& to_string (segment.segment)
 			& " / " & to_string (operation),
 			level => log_threshold);
 
@@ -1165,10 +1174,12 @@ package body et_board_ops.assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
-		return pac_contours.pac_segments.cursor
+		--return pac_contours.pac_segments.cursor
+		return type_zone_segment
 	is
 		use pac_contours;
-		result : pac_segments.cursor;
+		-- result : pac_segments.cursor;
+		result : type_zone_segment;
 
 
 		procedure query_module (
@@ -1180,40 +1191,51 @@ package body et_board_ops.assy_doc is
 			use pac_doc_contours;
 			
 			proceed : aliased boolean := true;
-
 			
-			procedure query_segment (
-				c : in pac_segments.cursor) 
-			is begin
-				case flag is
-					when PROPOSED =>
-						if is_proposed (c) then
-							result := c;
-							proceed := false;
-						end if;
-   
-					when SELECTED =>
-						if is_selected (c) then
-							result := c;
-							proceed := false;
-						end if;
-   
-					when others =>
-						null; -- CS
-				end case;
-			end query_segment;
+			
+			procedure query_zone (z : in pac_doc_contours.cursor) is 
 
+				procedure query_segment (
+					c : in pac_segments.cursor) 
+				is begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (c) then
+								result.segment := c;
+								result.zone := z;
+								proceed := false;
 
-			procedure query_zone (
-				c : in pac_doc_contours.cursor)
-			is begin
-				if element (c).contour.circular then
+								log (text => to_string (c), level => log_threshold + 1);
+							end if;
+
+						when SELECTED =>
+							if is_selected (c) then
+								result.segment := c;
+								result.zone := z;
+								proceed := false;
+
+								log (text => to_string (c), level => log_threshold + 1);
+							end if;
+
+						when others =>
+							null; -- CS
+					end case;
+				end query_segment;
+				
+				
+				procedure query_segments (z : in type_doc_contour) is begin
+					iterate (
+						segments	=> z.contour.segments,
+						process		=> query_segment'access,
+						proceed		=> proceed'access);				
+				end query_segments;
+
+				
+			begin
+				if element (z).contour.circular then
 					null; -- CS
 				else
-					iterate (
-						segments	=> element (c).contour.segments,
-						process		=> query_segment'access,
-						proceed		=> proceed'access);
+					query_element (z, query_segments'access);
 				end if;
 			end query_zone;
 
@@ -1248,6 +1270,8 @@ package body et_board_ops.assy_doc is
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+		-- put_line ("found " & to_string (result));
+		
 		log_indentation_down;
 
 		return result;
@@ -1259,7 +1283,7 @@ package body et_board_ops.assy_doc is
 
 	procedure next_proposed_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in out pac_contours.pac_segments.cursor;
+		segment			: in out type_zone_segment;
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level)
 	is
@@ -1270,44 +1294,96 @@ package body et_board_ops.assy_doc is
 		is
 			use pac_contours;
 			use pac_segments;
-			use pac_proposed_segments;
 
-			-- Here we will store the proposed segments
-			-- of all zones:
+			package pac_proposed_segments is new doubly_linked_lists (type_zone_segment);
+			use pac_proposed_segments;
+			
+			-- Here we store the proposed segments of all zones:
 			proposed_segments : pac_proposed_segments.list;
 
+			-- This cursor points to a proposed segment:
+			ps : pac_proposed_segments.cursor;
+
 			
-			procedure query_zone (c : in pac_doc_contours.cursor) is 
-				use pac_doc_contours;
+			use pac_doc_contours;
 
-				-- These are the proposed segments of 
-				-- the candidate zone:
-				ps : pac_proposed_segments.list;
+			-- 1. In the course of this procedure we iterate through all
+			--    zones and all segments and collect the proposed segments
+			--    in list proposed_segments.
+			-- 2. After that we advance inside list proposed_segments 
+			--    from the given segment to the next.
+			
+			-- Whenever we encounter a proposed segment, then
+			-- the cursor of the zone, the segment itself and the face
+			-- is stored in list proposed_segments:
+			zone_cursor		: pac_doc_contours.cursor;
+			segment_cursor	: pac_segments.cursor;
+			face			: type_face := TOP;
+			
+			
+			procedure query_zone (
+				zone : in type_doc_contour)
+			is 
+
+				procedure query_segment (
+					segment : in type_segment)
+				is begin
+					if is_proposed (segment) then
+						proposed_segments.append ((zone_cursor, segment_cursor, face));
+					end if;
+				end query_segment;
+							
+
 			begin
-				ps := get_proposed_segments (element (c));
+				if zone.contour.circular then
+					null; -- CS
+				else
+					-- Iterate the segments of the candidate zone:
+					segment_cursor := zone.contour.segments.first;
 
-				-- Append the segments to the collection of
-				-- segments:
-				splice (
-					target	=> proposed_segments,  
-					before	=> pac_proposed_segments.no_element,
-					source	=> ps);
-				
+					while segment_cursor /= pac_segments.no_element loop
+						query_element (segment_cursor, query_segment'access);
+						next (segment_cursor);
+					end loop;					
+				end if;
 			end query_zone;
 
-			
-			c : pac_proposed_segments.cursor;
-			
-		begin
-			-- Get the proposed segments of top and bottom zones:
-			module.board.assy_doc.top.contours.iterate (query_zone'access);
-			module.board.assy_doc.bottom.contours.iterate (query_zone'access);
 
-			case proposed_segments.length is
+			-- For the number of proposed segments found:
+			ct : count_type;
+
+		begin
+			-- Step 1:
+			-- Get the proposed segments of top and bottom zones:
+			zone_cursor := module.board.assy_doc.top.contours.first;
+			while zone_cursor /= pac_doc_contours.no_element loop
+				query_element (zone_cursor, query_zone'access);
+				next (zone_cursor);
+			end loop;
+
+			face := BOTTOM;
+
+			zone_cursor := module.board.assy_doc.bottom.contours.first;
+			while zone_cursor /= pac_doc_contours.no_element loop
+				query_element (zone_cursor, query_zone'access);
+				next (zone_cursor);
+			end loop;
+
+			
+			-- Get the number of segments that have been found
+			-- during step 1:
+			ct := proposed_segments.length;
+			
+			log (text => "proposed segments total: " & count_type'image (ct),
+				 level => log_threshold + 1);
+
+			
+			-- Step 2:
+			case ct is
 				when 0 =>
 					-- If no segments are proposed then
 					-- return no_element:
-					segment := pac_segments.no_element;
+					segment.segment := pac_segments.no_element;
 
 				when 1 =>
 					-- If only one proposed segment found, then
@@ -1320,27 +1396,34 @@ package body et_board_ops.assy_doc is
 
 					-- Start the search with the given segment.
 					-- Locate the given segment among the proposed segments:
-					c := proposed_segments.find (segment);
+					ps := proposed_segments.find (segment);
+
+					-- log (text => "proposed segment A: " & to_string (segment.segment),
+					-- 	level => log_threshold + 1);
 
 					-- Advance to the next proposed segment:
-					next (c);
-
+					next (ps);
+					
 					-- If the end of the list has been reached,
 					-- then move to the begin of the list:
-					if c /= pac_proposed_segments.no_element then
-						c := proposed_segments.first;
+					if ps = pac_proposed_segments.no_element then
+						ps := proposed_segments.first;
 					end if;
-
+					
 					-- Overwrite the given segment with the
 					-- segment that has just been found:
-					segment := element (c);
+					segment := element (ps);
+
+					-- log (text => "proposed segment B: " & to_string (segment.segment),
+					-- 	level => log_threshold + 1);
+
 			end case;
 		end query_module;
 
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& "advancing to next proposed segment",
+			& " advancing to next proposed segment",
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1353,6 +1436,120 @@ package body et_board_ops.assy_doc is
 	end next_proposed_segment;
 
 	
+
+
+	procedure move_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_zone_segment;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+		use pac_contours;
+		use pac_segments;
+		use pac_doc_contours;
+		
+		-- zc : pac_doc_contours.cursor;
+		-- proceed : boolean := true;
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure do_it (s : in out type_segment) is
+			begin
+				case s.shape is
+					when LINE =>
+						move_line_to (s.segment_line, point_of_attack, destination);
+
+					when ARC =>
+						null;
+						-- CS
+				end case;
+			end do_it;
+
+			
+			procedure query_zone (
+				zone : in out type_doc_contour)
+			is 
+				c : pac_segments.cursor;
+			begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					-- c := zone.contour.segments.find (element (segment));
+					-- CS: This still does not identify the zone exactly.
+					-- Pass a cursor of the affected zone to this procedure ?
+					
+					-- if has_element (c) then
+
+						update_element (
+							container	=> zone.contour.segments,
+							position	=> segment.segment,
+							process		=> do_it'access);
+
+						-- proceed := false; -- abort the zone iterator
+					-- end if;
+				end if;
+			end query_zone;
+	
+			
+		begin
+			-- -- Iterate the zones in top layer:
+			-- zc := module.board.assy_doc.top.contours.first;
+   -- 
+			-- while zc /= pac_doc_contours.no_element and proceed loop
+			case segment.face is
+				when TOP =>
+					update_element (
+						container	=> module.board.assy_doc.top.contours, 
+						position	=> segment.zone, 
+						process		=> query_zone'access);
+
+			-- 	next (zc);
+			-- end loop;
+
+				when BOTTOM =>
+			-- Iterate the zones in bottom layer if nothing found in top layer:
+			-- if proceed then
+				-- zc := module.board.assy_doc.bottom.contours.first;
+
+				-- while zc /= pac_doc_contours.no_element and proceed loop
+					update_element (
+						container	=> module.board.assy_doc.bottom.contours, 
+						position	=> segment.zone, 
+						process		=> query_zone'access);
+
+					-- next (zc);
+				-- end loop;
+					-- end if;			
+			end case;
+		end query_module;
+		
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving assy documentation zone segment " & to_string (segment.segment)
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- log (text => "new outline:" & to_string (get_outline (module_cursor), true),
+		-- 	 level => log_threshold + 1);
+		
+		log_indentation_down;
+	end move_segment;
+
 
 	
 	

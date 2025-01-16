@@ -97,7 +97,7 @@ package et_board_ops.assy_doc is
 
 	
 	-- This composite type is required to distinguish
-	-- between top and bottom lines when lines are seached for:
+	-- between top and bottom lines when lines are searched for:
 	type type_line_segment is record
 		face	: type_face := TOP;
 		cursor	: pac_doc_lines.cursor := pac_doc_lines.no_element;
@@ -174,10 +174,19 @@ package et_board_ops.assy_doc is
 
 
 
-	-- Modifies the status flag of a line (see package et_object_status):
+
+	type type_zone_segment is record
+		zone	: pac_doc_contours.cursor;
+		segment	: pac_contours.pac_segments.cursor;
+		face	: type_face := TOP;
+	end record;
+
+	
+	-- Modifies the status flag of a zone segment (see package et_object_status):
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		segment_cursor	: in pac_contours.pac_segments.cursor;
+		segment			: in type_zone_segment;
+		-- CS pass a cursor of the affected zone ?
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 	
@@ -201,13 +210,17 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
+
+	
+	
 	-- Returns the first line or arc segment according to the given flag.
 	-- If no segment has been found, then the return is no_element:
 	function get_first_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
-		return pac_contours.pac_segments.cursor;
+		--return pac_contours.pac_segments.cursor;
+		return type_zone_segment;
 
 
 	-- Advances to the next proposed line or arc segment, starting at
@@ -218,12 +231,24 @@ package et_board_ops.assy_doc is
 	-- CS last_item indicates that the last segment has been reached:
 	procedure next_proposed_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in out pac_contours.pac_segments.cursor;
+		segment			: in out type_zone_segment;
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level);
 
 
+	-- Moves a line or arc segment of a zone:
+	-- CS currently it moves only a single segment.
+	-- CS provide parameter for move mode (move attached segments, move whole contour)
+	procedure move_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_zone_segment;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
 
+
+	
 	
 	
 	-- Deletes the segment of the assembly documentation that crosses the given point.
