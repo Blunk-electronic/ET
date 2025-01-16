@@ -856,6 +856,8 @@ package body et_canvas_board_2 is
 		reset_preliminary_non_electrical_device;
 
 		et_board_ops.assy_doc.reset_proposed_lines (active_module, log_threshold + 1);
+		et_board_ops.assy_doc.reset_proposed_segments (active_module, log_threshold + 1);
+		
 		et_board_ops.silkscreen.reset_proposed_lines (active_module, log_threshold + 1);
 
 		et_board_ops.conductors.reset_proposed_lines (
