@@ -38,6 +38,8 @@
 -- DESCRIPTION:
 -- 
 
+with ada.text_io;						use ada.text_io;
+
 -- with et_project.modules;				use et_project.modules;
 with et_generic_module;					use et_generic_module;
 with et_canvas_board_2;
@@ -88,17 +90,17 @@ package body et_canvas_board_assy_doc is
 	
 	-- Outputs the selected segment in the status bar:
 	procedure show_selected_segment (
-		selected		: in pac_segments.cursor;
+		selected		: in type_zone_segment;
 		clarification	: in boolean := false)
 	is 
 		praeamble : constant string := "selected: ";
 	begin
 		if clarification then
-			set_status (praeamble & to_string (selected)
+			set_status (praeamble & to_string (selected.segment)
 				& ". " & status_next_object_clarification);
 			-- CS face
 		else
-			set_status (praeamble & to_string (selected));
+			set_status (praeamble & to_string (selected.segment));
 			-- CS face
 		end if;		
 	end show_selected_segment;
@@ -111,10 +113,13 @@ package body et_canvas_board_assy_doc is
 		selected_line : type_line_segment;
 
 		use pac_segments;
-		selected_segment : pac_segments.cursor;
+		--selected_segment : pac_segments.cursor;
+		selected_segment : type_zone_segment;
 
 		-- CS simplify, optimize code below:
 	begin
+		log (text => "select_object", level => log_threshold + 1);
+		
 		selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
 
 		-- A
@@ -147,13 +152,13 @@ package body et_canvas_board_assy_doc is
 				selected_segment := get_first_segment (active_module, SELECTED, log_threshold + 1);
 
 				-- C
-				if selected_segment /= pac_segments.no_element then
+				if selected_segment.segment /= pac_segments.no_element then
 
 					-- C1
 					modify_status (
 						module_cursor	=> active_module, 
 						operation		=> (SET, SELECTED),
-						segment_cursor	=> selected_segment, 
+						segment			=> selected_segment, 
 						log_threshold	=> log_threshold + 1);
 					
 					show_selected_segment (selected_segment, clarification => true);
@@ -167,25 +172,25 @@ package body et_canvas_board_assy_doc is
 			selected_segment := get_first_segment (active_module, SELECTED, log_threshold + 1);
 
 			-- D
-			if selected_segment /= pac_segments.no_element then
+			if selected_segment.segment /= pac_segments.no_element then
 
 				-- D1
 				modify_status (
 					module_cursor	=> active_module, 
 					operation		=> (CLEAR, SELECTED),
-					segment_cursor	=> selected_segment, 
+					segment			=> selected_segment, 
 					log_threshold	=> log_threshold + 1);
 
 				next_proposed_segment (active_module, selected_segment, log_threshold + 1);
 
 				-- E
-				if selected_segment /= pac_segments.no_element then
+				if selected_segment.segment /= pac_segments.no_element then
 
 					-- E1
 					modify_status (
 						module_cursor	=> active_module, 
 						operation		=> (SET, SELECTED),
-						segment_cursor	=> selected_segment, 
+						segment			=> selected_segment, 
 						log_threshold	=> log_threshold + 1);
 
 					show_selected_segment (selected_segment, clarification => true);
@@ -206,7 +211,7 @@ package body et_canvas_board_assy_doc is
 		use et_object_status;
 
 		use pac_segments;
-		selected_segment : pac_segments.cursor; -- of a contour
+		selected_segment : type_zone_segment;
 
 		selected_line : type_line_segment;
 		-- selected_arc : type_arc_segment;
@@ -229,12 +234,12 @@ package body et_canvas_board_assy_doc is
 		-- If one has been found, then we set it as "moving":
 			selected_segment := get_first_segment (active_module, SELECTED, log_threshold + 1);
 
-			if selected_segment /= pac_segments.no_element then
+			if selected_segment.segment /= pac_segments.no_element then
 				
 				modify_status (
 					module_cursor	=> active_module, 
 					operation		=> (SET, MOVING),
-					segment_cursor	=> selected_segment, 
+					segment			=> selected_segment, 
 					log_threshold	=> log_threshold + 1);
 				
 			end if;
@@ -261,30 +266,39 @@ package body et_canvas_board_assy_doc is
 			proposed_line : type_line_segment;
 
 			use pac_segments;
-			proposed_segment : pac_segments.cursor;
+			proposed_segment : type_zone_segment;
 			
 			use et_object_status;
 		begin
 			-- First we look for a proposed line and set it as "selected":
 			proposed_line := get_first_line (active_module, PROPOSED, log_threshold + 1);
 
-			if proposed_line.cursor /= pac_doc_lines.no_element then				
+			
+			if proposed_line.cursor /= pac_doc_lines.no_element then
+				-- A proposed line has been found.
+				
 				modify_status (active_module, proposed_line.cursor,
 					(SET, SELECTED), log_threshold + 1);
 
 				-- If only one line found, then show it in the status bar:
-				if count = 1 then
+				if count_total = 1 then
 					show_selected_line (proposed_line);
 				end if;
 				
-			-- If no line found, then we look for a proposed segment  of a zone:
+			-- If no line found, then we look for a proposed segment of a zone:
 			else
 				proposed_segment := get_first_segment (
 					active_module, PROPOSED, log_threshold + 1);
 
-				-- If only one segment found, then show it in the status bar:
-				if count = 1 then
-					show_selected_segment (proposed_segment);
+				if proposed_segment.segment /= pac_segments.no_element then
+
+					modify_status (active_module, proposed_segment,
+						(SET, SELECTED), log_threshold + 1);
+					
+					-- If only one segment found, then show it in the status bar:
+					if count_total = 1 then
+						show_selected_segment (proposed_segment);
+					end if;
 				end if;
 			end if;						
 		end select_first_proposed;
@@ -310,7 +324,7 @@ package body et_canvas_board_assy_doc is
 		
 		count_total := count_total + count;
 		
-		-- CS arcs, circles, zones
+		-- CS arcs, circles
 
 		propose_segments (
 			module_cursor	=> active_module, 
@@ -383,12 +397,17 @@ package body et_canvas_board_assy_doc is
 			use et_object_status;
 
 			selected_line : type_line_segment;
+
+			use pac_segments;
+			selected_segment : type_zone_segment;
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
 			selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
+			selected_segment := get_first_segment (active_module, SELECTED, log_threshold + 1);
 
+			
 			if selected_line.cursor /= pac_doc_lines.no_element then
 
 				-- Commit the current state of the design:
@@ -415,6 +434,24 @@ package body et_canvas_board_assy_doc is
 
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
+
+				
+			elsif selected_segment.segment /= pac_segments.no_element then
+
+					-- Commit the current state of the design:
+					commit (PRE, verb, noun, log_threshold + 1);
+					
+					move_segment (
+						module_cursor	=> active_module,
+						segment			=> selected_segment,
+						point_of_attack	=> object_point_of_attack,
+						-- coordinates		=> ABSOLUTE,
+						destination		=> point,
+						log_threshold	=> log_threshold);
+
+					-- Commit the new state of the design:
+					commit (POST, verb, noun, log_threshold + 1);
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
@@ -424,6 +461,7 @@ package body et_canvas_board_assy_doc is
 			
 			reset_preliminary_object;
 			reset_proposed_lines (active_module, log_threshold + 1);
+			reset_proposed_segments (active_module, log_threshold + 1);
 		end finalize;
 			
 		
