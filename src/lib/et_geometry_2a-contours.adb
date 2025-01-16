@@ -109,6 +109,31 @@ package body et_geometry_2a.contours is
 
 
 
+	function is_proposed (
+		segment : in type_segment)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		case segment.shape is
+			when LINE =>
+				if is_proposed (segment.segment_line) then
+					result := true;
+				end if;
+
+			when ARC =>
+				if segment.segment_arc.status.proposed then
+					result := true;
+				end if;
+		end case;
+
+		return result;
+	end is_proposed;
+	
+
+	
+
+
 	procedure set_proposed (
 		segment	: in out type_segment)
 	is begin

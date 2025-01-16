@@ -90,6 +90,11 @@ package et_geometry_2a.contours is
 		return boolean;
 
 
+	function is_proposed (
+		segment : in type_segment)
+		return boolean;
+	
+		
 	procedure set_proposed (
 		segment : in out type_segment);
 	
