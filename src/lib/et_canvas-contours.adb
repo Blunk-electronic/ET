@@ -70,19 +70,29 @@ package body et_canvas.contours is
 		offset_tmp : type_vector_model := offset.place;
 		-- CS currently the rotation of the contour about itself
 		-- is ignored.
-		
+
+		-- This is the final position of the contour
+		-- due to the position of the parent object:
 		pos_end : type_position := pos;
 		
 		use pac_segments;
 
+
+		-- This flag indicates how to draw the
+		-- contour.
+		-- If the contour is closed, then it is allowed
+		-- to fill it. Otherwise filling is not allowed.
+		-- If the contour is closed, then the segments are
+		-- drawn as a polyline (except the first segment).
+		-- If the contour is not closed, then each segment
+		-- will be drawn as an independend object:
+		contour_is_closed : constant boolean := not is_open (contour);
+
+		-- In case the contour is closed, then this
+		-- flag is set when the first segment is drawn:
 		start_point_set : boolean := false;
 
-		-- In order to detect whether the contour is
-		-- closed we need this stuff:
-		start_point : type_vector_model;
-		contour_is_closed : boolean := false;
 		
-
 		-- This procedure draws a segment of the given contour:
 		procedure query_segment (
 			c : in pac_segments.cursor) 
@@ -100,49 +110,19 @@ package body et_canvas.contours is
 					--put_line ("draw_segment (line)");
 					-- put_line (" line" & to_string (type_line (segment.segment_line)));
 
-					-- If the segment is set as "moving", then
-					-- its position will be modified according to the
-					-- object_point_of_attack and the current tool position.
-					-- Otherwise the segment remains unchanged and will be drawn
-					-- as it is:
-					if is_moving (c) then
-						--put_line ("moving");
-						pointer := get_object_tool_position;
-						move_line_to (segment.segment_line, object_point_of_attack, pointer);
-					end if;
-					
-					-- CS: This is a makeshift as long as there is no
-					-- proper procedure to draw a polyline which is
-					-- mandatory to fill an area:
-					
-					if not start_point_set then
-						start_point_set := true;
+					if contour_is_closed then
 
-						-- Store the start point of the contour
-						-- in order to detect later whether the contour
-						-- is closed or not:
-						start_point := segment.segment_line.start_point;
-					
-						draw_line (
-							line	=> segment.segment_line,
-							pos		=> pos_end,		  
-							width	=> zero,  -- don't care. see specs of draw_line.
-							mirror	=> mirror,
-							style	=> style);
-					else
-						-- Compare the end point of the segment with the
-						-- start point of the contour. If they match then
-						-- we assume that the coutour is closed.
-						-- CS: This ignores the possibility that further
-						-- segments may follow:
-						if segment.segment_line.end_point = start_point then
-							contour_is_closed := true;
-						end if;
-
-						-- If the contour is to be filled, then
-						-- it is required to draw the lines as segments
-						-- of a polyline:
-						if filled = YES then
+						-- Draw a polyline:
+						if not start_point_set then
+							start_point_set := true;
+						
+							draw_line (
+								line	=> segment.segment_line,
+								pos		=> pos_end,		  
+								width	=> zero,  -- don't care. see specs of draw_line.
+								mirror	=> mirror,
+								style	=> style);
+						else
 							draw_line (
 								line		=> segment.segment_line,
 								pos			=> pos_end,		  
@@ -151,25 +131,24 @@ package body et_canvas.contours is
 								style		=> style,
 								polyline	=> true);
 
-						-- If the contour is not to be filled, then
-						-- each lines is drawn as a single existing
-						-- segment. This measure allows to display a contour
-						-- that is not properly closed:	
-						else
-							draw_line (
-								line		=> segment.segment_line,
-								pos			=> pos_end,		  
-								width		=> zero,  -- don't care. see specs of draw_line.
-								mirror		=> mirror,
-								style		=> style,
-								polyline	=> false);
 						end if;
+
+					else
+						-- If the contour is not closed, then it can not be filled.
+						-- Each line is drawn as a single independend segment:
+						draw_line (
+							line		=> segment.segment_line,
+							pos			=> pos_end,		  
+							width		=> zero,  -- don't care. see specs of draw_line.
+							mirror		=> mirror,
+							style		=> style,
+							polyline	=> false);
 					end if;
 
 					
 				when ARC =>
-					-- CS detect open/closed status of contour
-					
+
+					-- CS ?
 					draw_arc (
 						arc		=> segment.segment_arc,
 						pos		=> pos_end,		 
@@ -200,7 +179,6 @@ package body et_canvas.contours is
 		end case;
 		
 		add (pos_end.place, offset_tmp);
-
 
 
 
@@ -240,8 +218,6 @@ package body et_canvas.contours is
 				-- there is a final stroke in this procedure.
 				style		=> style);
 			
-			-- The contour is closed because it is a circle:
-			contour_is_closed := true;
 		else
 			new_sub_path (context); -- required to suppress an initial line
 			contour.contour.segments.iterate (query_segment'access);

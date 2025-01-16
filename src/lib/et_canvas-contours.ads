@@ -55,7 +55,8 @@ package et_canvas.contours is
 	-- the contour.
 	-- If a segment of the contour is being moved by the
 	-- operator then it gets drawn according to the current
-	-- point_of_attack and object_tool:
+	-- point_of_attack and object_tool (see procedure draw_line in
+	-- package et_canvas):
 	procedure draw_contour (
 		contour	: in type_contour'class;
 
