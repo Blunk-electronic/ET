@@ -866,9 +866,6 @@ package body et_board_ops.assy_doc is
 		use pac_segments;
 		use pac_doc_contours;
 		
-		-- zc : pac_doc_contours.cursor;
-		-- proceed : boolean := true;
-		
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -888,55 +885,34 @@ package body et_board_ops.assy_doc is
 				if zone.contour.circular then
 					null; -- CS
 				else
-					-- if has_element (segment_cursor) then
-						-- CS use zone.contour.find (element (segment_cursor)
-						-- to figure out whether the segment is part
-						-- of the candidate zone.
-						-- But this still does not identify the zone exactly.
-						-- Pass a cursor of the affected zone to this procedure ?
+					-- Locate the given segment in the
+					-- candidate zone:
+					update_element (
+						container	=> zone.contour.segments,
+						position	=> segment.segment,
+						process		=> query_segment'access);
 
-						update_element (
-							container	=> zone.contour.segments,
-							position	=> segment.segment,
-							process		=> query_segment'access);
-
-						-- proceed := false; -- abort the zone iterator
-					-- end if;
 				end if;
 			end query_zone;
 	
 			
 		begin
+			-- Search the given segment according to its
+			-- zone and face:
 			case segment.face is
 				when TOP =>
-					-- Iterate the zones in top layer:
-					-- zc := module.board.assy_doc.top.contours.first;
-
-					-- while zc /= pac_doc_contours.no_element and proceed loop
-						update_element (
-							container	=> module.board.assy_doc.top.contours, 
-							position	=> segment.zone, 
-							process		=> query_zone'access);
-
-						-- next (zc);
-					-- end loop;
+					update_element (
+						container	=> module.board.assy_doc.top.contours, 
+						position	=> segment.zone, 
+						process		=> query_zone'access);
 
 				when BOTTOM =>
-					
-					-- Iterate the zones in bottom layer if nothing found in top layer:
-					-- if proceed then
-						-- zc := module.board.assy_doc.bottom.contours.first;
+					update_element (
+						container	=> module.board.assy_doc.bottom.contours, 
+						position	=> segment.zone, 
+						process		=> query_zone'access);
 
-						-- while zc /= pac_doc_contours.no_element and proceed loop
-							update_element (
-								container	=> module.board.assy_doc.bottom.contours, 
-								position	=> segment.zone, 
-								process		=> query_zone'access);
-
-							-- next (zc);
-						-- end loop;
-							-- end if;
-				end case;
+			end case;
 		end query_module;
 		
 		
@@ -1174,11 +1150,9 @@ package body et_board_ops.assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
-		--return pac_contours.pac_segments.cursor
 		return type_zone_segment
 	is
 		use pac_contours;
-		-- result : pac_segments.cursor;
 		result : type_zone_segment;
 
 
@@ -1458,9 +1432,9 @@ package body et_board_ops.assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			
-			procedure do_it (s : in out type_segment) is
-			begin
+
+			-- Moves the candidate segment:
+			procedure do_it (s : in out type_segment) is begin
 				case s.shape is
 					when LINE =>
 						move_line_to (s.segment_line, point_of_attack, destination);
@@ -1480,28 +1454,20 @@ package body et_board_ops.assy_doc is
 				if zone.contour.circular then
 					null; -- CS
 				else
-					-- c := zone.contour.segments.find (element (segment));
-					-- CS: This still does not identify the zone exactly.
-					-- Pass a cursor of the affected zone to this procedure ?
-					
-					-- if has_element (c) then
+					-- Locate the given segment in 
+					-- the candidate zone:
+					update_element (
+						container	=> zone.contour.segments,
+						position	=> segment.segment,
+						process		=> do_it'access);
 
-						update_element (
-							container	=> zone.contour.segments,
-							position	=> segment.segment,
-							process		=> do_it'access);
-
-						-- proceed := false; -- abort the zone iterator
-					-- end if;
 				end if;
 			end query_zone;
 	
 			
 		begin
-			-- -- Iterate the zones in top layer:
-			-- zc := module.board.assy_doc.top.contours.first;
-   -- 
-			-- while zc /= pac_doc_contours.no_element and proceed loop
+			-- Search for the given segment according to the 
+			-- given zone and face:
 			case segment.face is
 				when TOP =>
 					update_element (
@@ -1509,28 +1475,16 @@ package body et_board_ops.assy_doc is
 						position	=> segment.zone, 
 						process		=> query_zone'access);
 
-			-- 	next (zc);
-			-- end loop;
-
 				when BOTTOM =>
-			-- Iterate the zones in bottom layer if nothing found in top layer:
-			-- if proceed then
-				-- zc := module.board.assy_doc.bottom.contours.first;
-
-				-- while zc /= pac_doc_contours.no_element and proceed loop
 					update_element (
 						container	=> module.board.assy_doc.bottom.contours, 
 						position	=> segment.zone, 
 						process		=> query_zone'access);
 
-					-- next (zc);
-				-- end loop;
-					-- end if;			
 			end case;
 		end query_module;
 		
-		
-		
+				
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " moving assy documentation zone segment " & to_string (segment.segment)

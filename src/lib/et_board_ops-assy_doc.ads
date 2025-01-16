@@ -174,7 +174,8 @@ package et_board_ops.assy_doc is
 
 
 
-
+	-- This composite type helps to identify a
+	-- contour segment by its zone and face:
 	type type_zone_segment is record
 		zone	: pac_doc_contours.cursor;
 		segment	: pac_contours.pac_segments.cursor;
@@ -186,7 +187,6 @@ package et_board_ops.assy_doc is
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_zone_segment;
-		-- CS pass a cursor of the affected zone ?
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 	
@@ -219,7 +219,6 @@ package et_board_ops.assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
-		--return pac_contours.pac_segments.cursor;
 		return type_zone_segment;
 
 
