@@ -1303,7 +1303,7 @@ package body et_board_ops.assy_doc is
 					segment : in type_segment)
 				is begin
 					if is_proposed (segment) then
-						proposed_segments.append ((zone_cursor, segment_cursor, face));
+						proposed_segments.append ((face, zone_cursor, segment_cursor));
 					end if;
 				end query_segment;
 							
@@ -1505,6 +1505,168 @@ package body et_board_ops.assy_doc is
 	end move_segment;
 
 
+
+
+	function get_first_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object
+	is
+		result_category : type_object_category;
+		result_segment  : type_zone_segment;
+		result_line		: type_line_segment;
+
+		use pac_contours;
+		use pac_segments;
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first object / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		
+		-- First we search for a line:
+		result_line := get_first_line (module_cursor, flag, log_threshold + 1);
+
+		if result_line.cursor /= pac_doc_lines.no_element then
+			-- A line has been found.
+			result_category := CAT_LINE;
+
+			-- CS arcs, circles ?
+		else
+			-- no line found -> search among zone segments:
+			result_segment := get_first_segment (module_cursor, flag, log_threshold + 1);
+
+			if result_segment.segment /= pac_segments.no_element then
+				-- A segment has been found.
+				result_category := CAT_ZONE_SEGMENT;
+			else
+				-- Nothing has been found:
+				result_category := CAT_VOID;
+			end if;
+		end if;
+
+		
+		log_indentation_down;
+
+		case result_category is
+			when CAT_VOID =>
+				return (cat => CAT_VOID);
+
+			when CAT_LINE =>
+				return (CAT_LINE, result_line);
+
+			when CAT_ZONE_SEGMENT =>
+				return (CAT_ZONE_SEGMENT, result_segment);
+		end case;
+	end get_first_object;
+
+
+
+	
+	function get_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return pac_objects.list
+	is
+		use pac_objects;
+		result : pac_objects.list;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_doc_contours;
+			zone_cursor : pac_doc_contours.cursor;
+			face : type_face := TOP;
+			
+			use pac_doc_lines;
+			line_cursor : pac_doc_lines.cursor;
+			
+			
+			procedure query_zone (zone : in type_doc_contour) is
+				use pac_contours;
+				use pac_segments;
+				segment_cursor : pac_segments.cursor := zone.contour.segments.first;
+
+				procedure query_segment (segment : in type_segment) is begin
+					if is_proposed (segment) then
+						result.append ((
+							cat		=> CAT_ZONE_SEGMENT,
+							segment	=> (face, zone_cursor, segment_cursor)));
+					end if;
+				end query_segment;
+				
+			begin
+				while segment_cursor /= pac_segments.no_element loop
+					query_element (segment_cursor, query_segment'access);
+					next (segment_cursor);
+				end loop;
+			end query_zone;
+			
+
+			procedure query_line (line : in type_doc_line) is begin
+				if is_proposed (line) then
+					result.append ((
+						cat		=> CAT_LINE,
+						line	=> (face, line_cursor)));
+				end if;
+			end query_line;
+				
+
+			
+		begin
+			zone_cursor := module.board.assy_doc.top.contours.first;
+			while zone_cursor /= pac_doc_contours.no_element loop
+				query_element (zone_cursor, query_zone'access);
+				next (zone_cursor);
+			end loop;
+
+			line_cursor := module.board.assy_doc.top.lines.first;
+			while line_cursor /= pac_doc_lines.no_element loop
+				query_element (line_cursor, query_line'access);
+				next (line_cursor);
+			end loop;
+
+			-- CS arcs, circles
+
+			face := BOTTOM;
+			zone_cursor := module.board.assy_doc.bottom.contours.first;
+			while zone_cursor /= pac_doc_contours.no_element loop
+				query_element (zone_cursor, query_zone'access);
+				next (zone_cursor);
+			end loop;
+
+			line_cursor := module.board.assy_doc.bottom.lines.first;
+			while line_cursor /= pac_doc_lines.no_element loop
+				query_element (line_cursor, query_line'access);
+				next (line_cursor);
+			end loop;
+
+			-- CS arcs, circles
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking objects / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+
+		return result;
+	end get_objects;
+	
 	
 	
 	

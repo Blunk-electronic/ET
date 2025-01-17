@@ -37,6 +37,10 @@
 --
 --   ToDo: 
 
+with ada.containers; 			use ada.containers;
+with ada.containers.indefinite_doubly_linked_lists;
+
+
 with et_text;
 with et_assy_doc;					use et_assy_doc;
 with et_assy_doc.boards;			use et_assy_doc.boards;
@@ -98,7 +102,7 @@ package et_board_ops.assy_doc is
 	
 	-- This composite type is required to distinguish
 	-- between top and bottom lines when lines are searched for:
-	type type_line_segment is record
+	type type_line_segment is record -- CS rename to type_line ?
 		face	: type_face := TOP;
 		cursor	: pac_doc_lines.cursor := pac_doc_lines.no_element;
 	end record;
@@ -177,9 +181,9 @@ package et_board_ops.assy_doc is
 	-- This composite type helps to identify a
 	-- contour segment by its zone and face:
 	type type_zone_segment is record
+		face	: type_face := TOP;
 		zone	: pac_doc_contours.cursor;
 		segment	: pac_contours.pac_segments.cursor;
-		face	: type_face := TOP;
 	end record;
 
 	
@@ -248,6 +252,37 @@ package et_board_ops.assy_doc is
 
 
 	
+	type type_object_category is (CAT_VOID, CAT_LINE, CAT_ZONE_SEGMENT);
+	-- CS CAT_ARC, CAT_CIRCLE
+
+	type type_object (cat : type_object_category) is record
+		case cat is
+			when CAT_VOID			=> null;
+			when CAT_ZONE_SEGMENT	=> segment	: type_zone_segment;
+			when CAT_LINE 			=> line 	: type_line_segment;
+		end case;
+	end record;
+
+	package pac_objects is new indefinite_doubly_linked_lists (type_object);
+	
+
+	-- Returns the first object (line, arc, circle, zone segment)
+	-- according to the given flag:
+	function get_first_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object;
+
+
+	-- Collects all objects (lines, arcs, circles, zone segments)
+	-- according to the given flag and returns them in a list:
+	function get_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return pac_objects.list;
+									  
 	
 	
 	-- Deletes the segment of the assembly documentation that crosses the given point.
