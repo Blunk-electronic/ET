@@ -1424,8 +1424,6 @@ package body et_board_ops.assy_doc is
 		use pac_segments;
 		use pac_doc_contours;
 		
-		-- zc : pac_doc_contours.cursor;
-		-- proceed : boolean := true;
 		
 		
 		procedure query_module (
@@ -1598,6 +1596,8 @@ package body et_board_ops.assy_doc is
 						result.append ((
 							cat		=> CAT_ZONE_SEGMENT,
 							segment	=> (face, zone_cursor, segment_cursor)));
+
+						log (text => to_string (segment), level => log_threshold + 2);
 					end if;
 				end query_segment;
 				
@@ -1614,46 +1614,71 @@ package body et_board_ops.assy_doc is
 					result.append ((
 						cat		=> CAT_LINE,
 						line	=> (face, line_cursor)));
+
+					log (text => to_string (line), level => log_threshold + 2);
 				end if;
 			end query_line;
 				
 
 			
 		begin
+			log (text => "top zones", level => log_threshold + 1);
+			log_indentation_up;
+			
 			zone_cursor := module.board.assy_doc.top.contours.first;
 			while zone_cursor /= pac_doc_contours.no_element loop
 				query_element (zone_cursor, query_zone'access);
 				next (zone_cursor);
 			end loop;
 
+			log_indentation_down;
+
+			
+			log (text => "top lines", level => log_threshold + 1);
+			log_indentation_up;
+			
 			line_cursor := module.board.assy_doc.top.lines.first;
 			while line_cursor /= pac_doc_lines.no_element loop
 				query_element (line_cursor, query_line'access);
 				next (line_cursor);
 			end loop;
 
+			log_indentation_down;
+			
 			-- CS arcs, circles
 
+			
 			face := BOTTOM;
+
+			log (text => "bottom zones", level => log_threshold + 1);
+			log_indentation_up;
+			
 			zone_cursor := module.board.assy_doc.bottom.contours.first;
 			while zone_cursor /= pac_doc_contours.no_element loop
 				query_element (zone_cursor, query_zone'access);
 				next (zone_cursor);
 			end loop;
 
+			log_indentation_down;
+
+			
+			log (text => "bottom lines", level => log_threshold + 1);
+			log_indentation_up;
+			
 			line_cursor := module.board.assy_doc.bottom.lines.first;
 			while line_cursor /= pac_doc_lines.no_element loop
 				query_element (line_cursor, query_line'access);
 				next (line_cursor);
 			end loop;
 
+			log_indentation_down;
 			-- CS arcs, circles
 		end query_module;
 
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking objects / " & to_string (flag),
+			& " looking up objects / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1667,6 +1692,40 @@ package body et_board_ops.assy_doc is
 		return result;
 	end get_objects;
 	
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_objects;
+		object : constant type_object := element (object_cursor);
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of object"
+			-- & to_string (segment.segment) CS output object category ?
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		case object.cat is
+			when CAT_LINE =>
+				modify_status (module_cursor, object.line.cursor, operation, log_threshold + 1);
+
+			when CAT_ZONE_SEGMENT =>
+				modify_status (module_cursor, object.segment, operation, log_threshold + 1);
+
+			when CAT_VOID =>
+				null; -- CS
+		end case;
+
+		log_indentation_down;
+	end modify_status;
+
 	
 	
 	

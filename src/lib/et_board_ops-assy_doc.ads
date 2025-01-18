@@ -76,7 +76,7 @@ package et_board_ops.assy_doc is
 	-- Modifies that status flag of a line (see package et_object_status):
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		line_cursor		: in pac_doc_lines.cursor;
+		line_cursor		: in pac_doc_lines.cursor; -- CS better use type_line_segment for clear identification
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
@@ -283,6 +283,14 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level)
 		return pac_objects.list;
 									  
+
+	-- Modifies the status flag of an object:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
 	
 	
 	-- Deletes the segment of the assembly documentation that crosses the given point.
