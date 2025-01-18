@@ -94,7 +94,7 @@ package body et_canvas_board_assy_doc is
 	
 	-- Outputs the selected segment in the status bar:
 	procedure show_selected_segment (
-		selected		: in type_zone_segment;
+		selected		: in type_object_segment;
 		clarification	: in boolean := false)
 	is 
 		praeamble : constant string := "selected: ";
@@ -386,7 +386,7 @@ package body et_canvas_board_assy_doc is
 			selected_line : type_object_line;
 
 			use pac_segments;
-			selected_segment : type_zone_segment;
+			selected_segment : type_object_segment;
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
