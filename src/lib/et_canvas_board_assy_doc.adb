@@ -213,43 +213,31 @@ package body et_canvas_board_assy_doc is
 		use et_board_ops.assy_doc;
 		use et_object_status;
 
-		use pac_segments;
-		selected_segment : type_zone_segment;
+		
+		procedure do_it is
+			-- Get the first selected object:
+			selected_object : constant type_object := 
+				get_first_object (active_module, SELECTED, log_threshold + 1);
 
-		selected_line : type_line_segment;
-		-- selected_arc : type_arc_segment;
-	begin
-		-- log (text => "set_first_selected_object_moving ...", level => log_threshold);
+			-- Gather all selected objects:
+			objects : constant pac_objects.list :=
+				get_objects (active_module, SELECTED, log_threshold + 1);
 
-		-- First we look for a selected line and set it as "moving":
-		selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
-
-		if selected_line.cursor /= pac_doc_lines.no_element then
+			c : pac_objects.cursor;
+		begin
+			-- Get a cursor to the candidate object
+			-- among all selected objects:
+			c := objects.find (selected_object);
 			
-			modify_status (
-				module_cursor	=> active_module, 
-				operation		=> (SET, MOVING),
-				line_cursor		=> selected_line.cursor, 
-				log_threshold	=> log_threshold + 1);
+			modify_status (active_module, c, (SET, MOVING), log_threshold + 1);
+		end do_it;
 		
-		else
-		-- If no line found, then we look for a selected segment of a zone.
-		-- If one has been found, then we set it as "moving":
-			selected_segment := get_first_segment (active_module, SELECTED, log_threshold + 1);
-
-			if selected_segment.segment /= pac_segments.no_element then
-				
-				modify_status (
-					module_cursor	=> active_module, 
-					operation		=> (SET, MOVING),
-					segment			=> selected_segment, 
-					log_threshold	=> log_threshold + 1);
-				
-			end if;
-		end if;
 		
-		-- CS arcs, circles
-
+	begin
+		log (text => "set_first_selected_object_moving ...", level => log_threshold);
+		log_indentation_up;
+		do_it;
+		log_indentation_down;
 	end set_first_selected_object_moving;
 
 
