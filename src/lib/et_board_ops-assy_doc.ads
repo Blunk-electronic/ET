@@ -77,7 +77,7 @@ package et_board_ops.assy_doc is
 
 	-- This composite type is required to distinguish
 	-- between top and bottom lines when lines are searched for:
-	type type_line_segment is record -- CS rename to type_line ?
+	type type_object_line is record
 		face	: type_face := TOP;
 		cursor	: pac_doc_lines.cursor := pac_doc_lines.no_element;
 	end record;
@@ -90,7 +90,7 @@ package et_board_ops.assy_doc is
 	-- Modifies the status flag of a line (see package et_object_status):
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_line_segment;
+		line			: in type_object_line;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
@@ -125,7 +125,7 @@ package et_board_ops.assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
-		return type_line_segment;
+		return type_object_line;
 
 
 	-- Advances to the next proposed line, starting at
@@ -136,7 +136,7 @@ package et_board_ops.assy_doc is
 	-- CS last_item indicates that the last line has been reached:
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in out type_line_segment;
+		line			: in out type_object_line;
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level);
 
@@ -269,7 +269,7 @@ package et_board_ops.assy_doc is
 		case cat is
 			when CAT_VOID			=> null;
 			when CAT_ZONE_SEGMENT	=> segment	: type_zone_segment;
-			when CAT_LINE 			=> line 	: type_line_segment;
+			when CAT_LINE 			=> line 	: type_object_line;
 		end case;
 	end record;
 

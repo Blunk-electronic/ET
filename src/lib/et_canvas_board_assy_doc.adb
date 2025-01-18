@@ -73,7 +73,7 @@ package body et_canvas_board_assy_doc is
 	
 	-- Outputs the selected line in the status bar:
 	procedure show_selected_line (
-		selected		: in type_line_segment;
+		selected		: in type_object_line;
 		clarification	: in boolean := false)
 	is 
 		praeamble : constant string := "selected: ";
@@ -383,7 +383,7 @@ package body et_canvas_board_assy_doc is
 			use et_board_ops.assy_doc;
 			use et_object_status;
 
-			selected_line : type_line_segment;
+			selected_line : type_object_line;
 
 			use pac_segments;
 			selected_segment : type_zone_segment;
@@ -510,7 +510,7 @@ package body et_canvas_board_assy_doc is
 			use et_commit;
 			use et_object_status;
 
-			selected_line : type_line_segment;
+			selected_line : type_object_line;
 		begin
 			log (text => "finalizing delete ...", level => log_threshold);
 			log_indentation_up;

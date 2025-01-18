@@ -166,7 +166,7 @@ package body et_board_ops.assy_doc is
 	
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_line_segment;
+		line			: in type_object_line;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
@@ -395,9 +395,9 @@ package body et_board_ops.assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
-		return type_line_segment
+		return type_object_line
 	is
-		result : type_line_segment;
+		result : type_object_line;
 
 		
 		procedure query_module (
@@ -474,7 +474,7 @@ package body et_board_ops.assy_doc is
 	
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in out type_line_segment;
+		line			: in out type_object_line;
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level)
 	is
@@ -1497,7 +1497,7 @@ package body et_board_ops.assy_doc is
 	is
 		result_category : type_object_category;
 		result_segment  : type_zone_segment;
-		result_line		: type_line_segment;
+		result_line		: type_object_line;
 
 		use pac_contours;
 		use pac_segments;
