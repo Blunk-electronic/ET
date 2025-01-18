@@ -106,99 +106,78 @@ package body et_canvas_board_assy_doc is
 	end show_selected_segment;
 
 
+
+
+	procedure show_selected_object (
+		selected		: in type_object;
+		clarification	: in boolean := false)
+	is begin
+		case selected.cat is
+			when CAT_LINE =>
+				show_selected_line (selected.line);
+
+			when CAT_ZONE_SEGMENT =>
+				show_selected_segment (selected.segment);
+
+			when CAT_VOID =>
+				null; -- CS
+		end case;	
+	end show_selected_object;
+
+	
 	
 	
 	procedure select_object is 
 		use et_object_status;
 		selected_line : type_line_segment;
 
-		use pac_segments;
-		--selected_segment : pac_segments.cursor;
-		selected_segment : type_zone_segment;
+		use pac_objects;
 
-		-- CS simplify, optimize code below:
+		-- Gather all proposed objects:
+		proposed_objects : constant pac_objects.list := 
+			get_objects (active_module, PROPOSED, log_threshold + 1);
+
+		proposed_object_cursor : pac_objects.cursor;
+
+		-- We start with the first object that is currently selected:
+		selected_object : type_object := 
+			get_first_object (active_module, SELECTED, log_threshold + 1);
+
+		ct : count_type := proposed_objects.length;
 	begin
-		log (text => "select_object", level => log_threshold + 1);
-		
-		selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
+		log (text => "select_object (object count) " & count_type'image (ct),
+			 level => log_threshold + 1);
 
-		-- A
-		if selected_line.cursor /= pac_doc_lines.no_element then
 
-			-- A1
-			modify_status (
-				module_cursor	=> active_module, 
-				operation		=> (CLEAR, SELECTED),
-				line_cursor		=> selected_line.cursor, 
-				log_threshold	=> log_threshold + 1);
-		
-			next_proposed_line (active_module, selected_line, log_threshold + 1);
+		-- Locate the selected object among the proposed objects:
+		proposed_object_cursor := proposed_objects.find (selected_object);
 
-			-- B
-			if selected_line.cursor /= pac_doc_lines.no_element then
+		-- Deselect the the proposed object:
+		modify_status (
+			module_cursor	=> active_module, 
+			operation		=> (CLEAR, SELECTED),
+			object_cursor	=> proposed_object_cursor, 
+			log_threshold	=> log_threshold + 1);
 
-				-- B1
-				modify_status (
-					module_cursor	=> active_module, 
-					operation		=> (SET, SELECTED),
-					line_cursor		=> selected_line.cursor, 
-					log_threshold	=> log_threshold + 1);
-				
-				show_selected_line (selected_line, clarification => true);
-				-- end
-				
-			else
-				-- B2
-				selected_segment := get_first_segment (active_module, SELECTED, log_threshold + 1);
+		-- Advance to the next proposed object:
+		next (proposed_object_cursor);
 
-				-- C
-				if selected_segment.segment /= pac_segments.no_element then
-
-					-- C1
-					modify_status (
-						module_cursor	=> active_module, 
-						operation		=> (SET, SELECTED),
-						segment			=> selected_segment, 
-						log_threshold	=> log_threshold + 1);
-					
-					show_selected_segment (selected_segment, clarification => true);
-					-- end
-				end if;
-			end if;
-			
-		else
-
-			-- A2
-			selected_segment := get_first_segment (active_module, SELECTED, log_threshold + 1);
-
-			-- D
-			if selected_segment.segment /= pac_segments.no_element then
-
-				-- D1
-				modify_status (
-					module_cursor	=> active_module, 
-					operation		=> (CLEAR, SELECTED),
-					segment			=> selected_segment, 
-					log_threshold	=> log_threshold + 1);
-
-				next_proposed_segment (active_module, selected_segment, log_threshold + 1);
-
-				-- E
-				if selected_segment.segment /= pac_segments.no_element then
-
-					-- E1
-					modify_status (
-						module_cursor	=> active_module, 
-						operation		=> (SET, SELECTED),
-						segment			=> selected_segment, 
-						log_threshold	=> log_threshold + 1);
-
-					show_selected_segment (selected_segment, clarification => true);
-				end if;
-				
-			end if;
-				
+		-- If end of list reached, then proceed at 
+		-- the begin of the list:
+		if proposed_object_cursor = pac_objects.no_element then
+			proposed_object_cursor := proposed_objects.first;
 		end if;
+		
+		-- Select the proposed object:
+		modify_status (
+			module_cursor	=> active_module, 
+			operation		=> (SET, SELECTED),
+			object_cursor	=> proposed_object_cursor, 
+			log_threshold	=> log_threshold + 1);
+
+		-- Display the object in the status bar:
+		show_selected_object (element (proposed_object_cursor));
+
 	end select_object;
 
 
@@ -263,44 +242,38 @@ package body et_canvas_board_assy_doc is
 
 		
 		procedure select_first_proposed is
-			proposed_line : type_line_segment;
-
-			use pac_segments;
-			proposed_segment : type_zone_segment;
-			
 			use et_object_status;
+
+			proposed_object : constant type_object := 
+				get_first_object (active_module, PROPOSED, log_threshold + 1);
 		begin
-			-- First we look for a proposed line and set it as "selected":
-			proposed_line := get_first_line (active_module, PROPOSED, log_threshold + 1);
-
+			case proposed_object.cat is
+				when CAT_LINE =>
 			
-			if proposed_line.cursor /= pac_doc_lines.no_element then
-				-- A proposed line has been found.
-				
-				modify_status (active_module, proposed_line.cursor,
-					(SET, SELECTED), log_threshold + 1);
+					-- If a proposed line has been found, then set it as "selected":
+					modify_status (active_module, proposed_object.line.cursor,
+						(SET, SELECTED), log_threshold + 1);
 
-				-- If only one line found, then show it in the status bar:
-				if count_total = 1 then
-					show_selected_line (proposed_line);
-				end if;
-				
-			-- If no line found, then we look for a proposed segment of a zone:
-			else
-				proposed_segment := get_first_segment (
-					active_module, PROPOSED, log_threshold + 1);
+					-- If only one line found, then show it in the status bar:
+					if count_total = 1 then
+						show_selected_line (proposed_object.line);
+					end if;
 
-				if proposed_segment.segment /= pac_segments.no_element then
+					
+				when CAT_ZONE_SEGMENT =>
 
-					modify_status (active_module, proposed_segment,
+					-- If a proposed zone segment has been found, then set it as "selected":
+					modify_status (active_module, proposed_object.segment,
 						(SET, SELECTED), log_threshold + 1);
 					
 					-- If only one segment found, then show it in the status bar:
 					if count_total = 1 then
-						show_selected_segment (proposed_segment);
+						show_selected_segment (proposed_object.segment);
 					end if;
-				end if;
-			end if;						
+
+				when CAT_VOID =>
+					null; -- CS
+			end case;						
 		end select_first_proposed;
 
 
