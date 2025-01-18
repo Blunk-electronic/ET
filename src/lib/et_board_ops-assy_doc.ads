@@ -316,6 +316,14 @@ package et_board_ops.assy_doc is
 	-- Modifies the status flag of an object:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+	
+	-- Modifies the status flag of an object indicated by a cursor:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
 		object_cursor	: in pac_objects.cursor;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);

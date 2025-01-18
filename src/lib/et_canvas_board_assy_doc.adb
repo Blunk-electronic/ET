@@ -252,40 +252,22 @@ package body et_canvas_board_assy_doc is
 		count : natural := 0;
 		count_total : natural := 0;
 
-		
+
+		-- This procedure searches for the first proposed
+		-- object and marks it as "selected":
 		procedure select_first_proposed is
 			use et_object_status;
 
-			proposed_object : constant type_object := 
-				get_first_object (active_module, PROPOSED, log_threshold + 1);
+			object : type_object := get_first_object (
+						active_module, PROPOSED, log_threshold + 1);
 		begin
-			case proposed_object.cat is
-				when CAT_LINE =>
-			
-					-- If a proposed line has been found, then set it as "selected":
-					modify_status (active_module, proposed_object.line,
-						(SET, SELECTED), log_threshold + 1);
+			modify_status (
+				active_module, object, (SET, SELECTED), log_threshold + 1);
 
-					-- If only one line found, then show it in the status bar:
-					if count_total = 1 then
-						show_selected_line (proposed_object.line);
-					end if;
-
-					
-				when CAT_ZONE_SEGMENT =>
-
-					-- If a proposed zone segment has been found, then set it as "selected":
-					modify_status (active_module, proposed_object.segment,
-						(SET, SELECTED), log_threshold + 1);
-					
-					-- If only one segment found, then show it in the status bar:
-					if count_total = 1 then
-						show_selected_segment (proposed_object.segment);
-					end if;
-
-				when CAT_VOID =>
-					null; -- CS
-			end case;						
+			-- If only one object found, then show it in the status bar:
+			if count_total = 1 then
+				show_selected_object (object);
+			end if;
 		end select_first_proposed;
 
 

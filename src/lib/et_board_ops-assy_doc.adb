@@ -1679,15 +1679,13 @@ package body et_board_ops.assy_doc is
 
 
 
+
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		object_cursor	: in pac_objects.cursor;
+		object			: in type_object;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
-	is 
-		use pac_objects;
-		object : constant type_object := element (object_cursor);
-	begin
+	is begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of object"
 			-- & to_string (segment.segment) CS output object category ?
@@ -1708,6 +1706,22 @@ package body et_board_ops.assy_doc is
 		end case;
 
 		log_indentation_down;
+	end modify_status;
+
+	
+
+	
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_objects;
+		object : constant type_object := element (object_cursor);
+	begin
+		modify_status (module_cursor, object, operation, log_threshold);
 	end modify_status;
 
 	
