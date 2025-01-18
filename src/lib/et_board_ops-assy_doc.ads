@@ -73,10 +73,24 @@ package et_board_ops.assy_doc is
 		return pac_doc_lines.list;
 						   
 
-	-- Modifies that status flag of a line (see package et_object_status):
+
+
+	-- This composite type is required to distinguish
+	-- between top and bottom lines when lines are searched for:
+	type type_line_segment is record -- CS rename to type_line ?
+		face	: type_face := TOP;
+		cursor	: pac_doc_lines.cursor := pac_doc_lines.no_element;
+	end record;
+
+	-- CS same for arcs and circles
+
+
+	
+	
+	-- Modifies the status flag of a line (see package et_object_status):
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		line_cursor		: in pac_doc_lines.cursor; -- CS better use type_line_segment for clear identification
+		line			: in type_line_segment;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
@@ -100,13 +114,9 @@ package et_board_ops.assy_doc is
 
 
 	
-	-- This composite type is required to distinguish
-	-- between top and bottom lines when lines are searched for:
-	type type_line_segment is record -- CS rename to type_line ?
-		face	: type_face := TOP;
-		cursor	: pac_doc_lines.cursor := pac_doc_lines.no_element;
-	end record;
 
+
+	
 	
 	-- Returns the first line according to the given flag.
 	-- If no line has been found, then the return is 

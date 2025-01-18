@@ -166,7 +166,7 @@ package body et_board_ops.assy_doc is
 	
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		line_cursor		: in pac_doc_lines.cursor;
+		line			: in type_line_segment;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
@@ -176,9 +176,6 @@ package body et_board_ops.assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			top 	: pac_doc_lines.list renames module.board.assy_doc.top.lines;
-			bottom	: pac_doc_lines.list renames module.board.assy_doc.bottom.lines;
-
 			
 			procedure query_line (
 				line	: in out type_doc_line)
@@ -187,41 +184,28 @@ package body et_board_ops.assy_doc is
 			end query_line;
 
 			
-			lc : pac_doc_lines.cursor;
-			
-			procedure query_top is begin
-				if not top.is_empty then
-					lc := top.first;
-					while lc /= pac_doc_lines.no_element loop
-						if lc = line_cursor then
-							top.update_element (lc, query_line'access);
-							exit;					
-						end if;
-						next (lc);
-					end loop;
-				end if;
+			procedure query_top is 
+				top : pac_doc_lines.list renames module.board.assy_doc.top.lines;
+			begin
+				top.update_element (line.cursor, query_line'access);
 			end query_top;
 
-			procedure query_bottom is begin
-				if not bottom.is_empty then
-					lc := bottom.first;
-					while lc /= pac_doc_lines.no_element loop
-						if lc = line_cursor then
-							bottom.update_element (lc, query_line'access);
-							exit;					
-						end if;
-						next (lc);
-					end loop;
-				end if;
+			
+			procedure query_bottom is 
+				bottom	: pac_doc_lines.list renames module.board.assy_doc.bottom.lines;
+			begin
+				bottom.update_element (line.cursor, query_line'access);
 			end query_bottom;
 
 			
 		begin
-			query_top;
+			case line.face is
+				when TOP =>
+					query_top;
 
-			if lc = pac_doc_lines.no_element then
-				query_bottom;
-			end if;
+				when BOTTOM =>
+					query_bottom;
+			end case;
 		end query_module;
 
 		
@@ -229,7 +213,7 @@ package body et_board_ops.assy_doc is
 		log (text => "module " 
 			& to_string (module_cursor)
 			& " modifying status of "
-			& to_string (element (line_cursor))
+			& to_string (element (line.cursor)) -- CS: log top/bottom			
 			& " / " & to_string (operation),
 			level => log_threshold);
 
@@ -1714,7 +1698,7 @@ package body et_board_ops.assy_doc is
 		
 		case object.cat is
 			when CAT_LINE =>
-				modify_status (module_cursor, object.line.cursor, operation, log_threshold + 1);
+				modify_status (module_cursor, object.line, operation, log_threshold + 1);
 
 			when CAT_ZONE_SEGMENT =>
 				modify_status (module_cursor, object.segment, operation, log_threshold + 1);

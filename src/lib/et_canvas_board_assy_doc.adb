@@ -265,7 +265,7 @@ package body et_canvas_board_assy_doc is
 				when CAT_LINE =>
 			
 					-- If a proposed line has been found, then set it as "selected":
-					modify_status (active_module, proposed_object.line.cursor,
+					modify_status (active_module, proposed_object.line,
 						(SET, SELECTED), log_threshold + 1);
 
 					-- If only one line found, then show it in the status bar:
