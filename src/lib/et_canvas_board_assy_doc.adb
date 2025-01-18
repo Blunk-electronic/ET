@@ -40,7 +40,6 @@
 
 with ada.text_io;						use ada.text_io;
 
--- with et_project.modules;				use et_project.modules;
 with et_generic_module;					use et_generic_module;
 with et_canvas_board_2;
 
@@ -66,7 +65,6 @@ package body et_canvas_board_assy_doc is
 	use pac_doc_circles;
 
 	use et_board_shapes_and_text.pac_contours;
-	-- use pac_contours;
 
 
 	

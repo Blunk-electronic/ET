@@ -75,6 +75,8 @@ package et_board_ops.assy_doc is
 
 
 
+	
+
 	-- This composite type is required to distinguish
 	-- between top and bottom lines when lines are searched for:
 	type type_object_line is record
@@ -83,6 +85,8 @@ package et_board_ops.assy_doc is
 	end record;
 
 	-- CS same for arcs and circles
+
+
 
 
 	
@@ -95,6 +99,7 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
+	
 	-- Sets the proposed-flag of all lines which are
 	-- in the given zone around the given place.
 	procedure propose_lines (
@@ -106,15 +111,11 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
+	
 	-- Clears the proposed-flag and the selected-flag of all lines:
 	procedure reset_proposed_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
-
-
-
-	
-
 
 	
 	
@@ -133,7 +134,8 @@ package et_board_ops.assy_doc is
 	-- in a circular manner. If there are no
 	-- proposed lines, then line assumes default value (no_element).
 	-- If there is only one proposed line, then line is unchanged.
-	-- CS last_item indicates that the last line has been reached:
+	-- CS last_item indicates that the last line has been reached.
+	-- CS Currently this procedure is not used.
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in out type_object_line;
@@ -141,6 +143,7 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 	
+
 	
 	procedure move_line (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -188,6 +191,8 @@ package et_board_ops.assy_doc is
 
 
 
+
+	
 	-- This composite type helps to identify a
 	-- contour segment by its zone and face:
 	type type_object_segment is record
@@ -195,6 +200,7 @@ package et_board_ops.assy_doc is
 		zone	: pac_doc_contours.cursor;
 		segment	: pac_contours.pac_segments.cursor;
 	end record;
+
 
 	
 	-- Modifies the status flag of a zone segment (see package et_object_status):
@@ -236,12 +242,15 @@ package et_board_ops.assy_doc is
 		return type_object_segment;
 
 
+	
+
 	-- Advances to the next proposed line or arc segment, starting at
 	-- the given segment. Traverses through the segments
 	-- in a circular manner. If there are no
 	-- proposed segments, then segment assumes default value (no_element).
 	-- If there is only one proposed segment, then segment is unchanged.
-	-- CS last_item indicates that the last segment has been reached:
+	-- CS last_item indicates that the last segment has been reached.
+	-- CS Currently this procedure is not used. 
 	procedure next_proposed_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in out type_object_segment;
@@ -249,6 +258,7 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
+	
 	-- Moves a line or arc segment of a zone:
 	-- CS currently it moves only a single segment.
 	-- CS provide parameter for move mode (move attached segments, move whole contour)
@@ -261,7 +271,12 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
+
+
 	
+
+	-- When objects are handled then we need these
+	-- categories in order to store them in indefinite_doubly_linked_lists:
 	type type_object_category is (CAT_VOID, CAT_LINE, CAT_ZONE_SEGMENT);
 	-- CS CAT_ARC, CAT_CIRCLE
 
@@ -274,6 +289,10 @@ package et_board_ops.assy_doc is
 	end record;
 
 	package pac_objects is new indefinite_doubly_linked_lists (type_object);
+
+
+
+
 	
 
 	-- Returns the first object (line, arc, circle, zone segment)
@@ -301,6 +320,11 @@ package et_board_ops.assy_doc is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
+
+
+
+
+
 	
 	
 	-- Deletes the segment of the assembly documentation that crosses the given point.
@@ -321,6 +345,10 @@ package et_board_ops.assy_doc is
 		line			: in type_doc_line;
 		log_threshold	: in type_log_level);
 
+
+
+
+	
 	
 	-- Returns all texts in the vicinity of the given point:
 	function get_texts (
