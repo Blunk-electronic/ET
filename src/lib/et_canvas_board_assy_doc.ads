@@ -61,7 +61,8 @@ package et_canvas_board_assy_doc is
 	
 
 	-- On every call of this procedure we advance from one
-	-- proposed segment to the next in a circular manner.
+	-- proposed segment to the next in a circular manner
+	-- and set it as "selected":
 	procedure select_object;
 
 

@@ -68,6 +68,8 @@ package body et_canvas_board_assy_doc is
 	use et_board_shapes_and_text.pac_contours;
 	-- use pac_contours;
 
+
+	
 	
 	-- Outputs the selected line in the status bar:
 	procedure show_selected_line (
@@ -88,6 +90,8 @@ package body et_canvas_board_assy_doc is
 
 
 	
+
+	
 	-- Outputs the selected segment in the status bar:
 	procedure show_selected_segment (
 		selected		: in type_zone_segment;
@@ -106,6 +110,8 @@ package body et_canvas_board_assy_doc is
 	end show_selected_segment;
 
 
+	
+	
 
 
 	procedure show_selected_object (
@@ -125,60 +131,78 @@ package body et_canvas_board_assy_doc is
 	end show_selected_object;
 
 	
+
+	
 	
 	
 	procedure select_object is 
 		use et_object_status;
-		selected_line : type_line_segment;
-
-		use pac_objects;
-
-		-- Gather all proposed objects:
-		proposed_objects : constant pac_objects.list := 
-			get_objects (active_module, PROPOSED, log_threshold + 1);
-
-		proposed_object_cursor : pac_objects.cursor;
-
-		-- We start with the first object that is currently selected:
-		selected_object : type_object := 
-			get_first_object (active_module, SELECTED, log_threshold + 1);
-
-		ct : count_type := proposed_objects.length;
-	begin
-		log (text => "select_object (object count) " & count_type'image (ct),
-			 level => log_threshold + 1);
 
 
-		-- Locate the selected object among the proposed objects:
-		proposed_object_cursor := proposed_objects.find (selected_object);
+		procedure do_it is
+			use pac_objects;
+			
+			-- Gather all proposed objects:
+			proposed_objects : constant pac_objects.list := 
+				get_objects (active_module, PROPOSED, log_threshold + 1);
 
-		-- Deselect the the proposed object:
-		modify_status (
-			module_cursor	=> active_module, 
-			operation		=> (CLEAR, SELECTED),
-			object_cursor	=> proposed_object_cursor, 
-			log_threshold	=> log_threshold + 1);
+			proposed_object : pac_objects.cursor;
 
-		-- Advance to the next proposed object:
-		next (proposed_object_cursor);
+			-- We start with the first object that is currently selected:
+			selected_object : type_object := 
+				get_first_object (active_module, SELECTED, log_threshold + 1);
 
-		-- If end of list reached, then proceed at 
-		-- the begin of the list:
-		if proposed_object_cursor = pac_objects.no_element then
-			proposed_object_cursor := proposed_objects.first;
-		end if;
+			-- The number of proposed objects:
+			ct : count_type := proposed_objects.length;
+
+		begin
+			log (text => "proposed objects total " & count_type'image (ct),
+				level => log_threshold + 2);
+
+			
+			-- Locate the selected object among the proposed objects:
+			proposed_object := proposed_objects.find (selected_object);
+
+			-- Deselect the the proposed object:
+			modify_status (
+				module_cursor	=> active_module, 
+				operation		=> (CLEAR, SELECTED),
+				object_cursor	=> proposed_object, 
+				log_threshold	=> log_threshold + 1);
+
+			-- Advance to the next proposed object:
+			next (proposed_object);
+
+			-- If end of list reached, then proceed at 
+			-- the begin of the list:
+			if proposed_object = pac_objects.no_element then
+				proposed_object := proposed_objects.first;
+			end if;
+			
+			-- Select the proposed object:
+			modify_status (
+				module_cursor	=> active_module, 
+				operation		=> (SET, SELECTED),
+				object_cursor	=> proposed_object, 
+				log_threshold	=> log_threshold + 1);
+
+			-- Display the object in the status bar:
+			show_selected_object (element (proposed_object));
+		end do_it;
 		
-		-- Select the proposed object:
-		modify_status (
-			module_cursor	=> active_module, 
-			operation		=> (SET, SELECTED),
-			object_cursor	=> proposed_object_cursor, 
-			log_threshold	=> log_threshold + 1);
 
-		-- Display the object in the status bar:
-		show_selected_object (element (proposed_object_cursor));
+		
+	begin
+		log (text => "select_object", level => log_threshold + 1);
 
+		log_indentation_up;
+		
+		do_it;
+		
+		log_indentation_down;
 	end select_object;
+
+
 
 
 	
@@ -228,6 +252,8 @@ package body et_canvas_board_assy_doc is
 
 	end set_first_selected_object_moving;
 
+
+	
 
 
 	
