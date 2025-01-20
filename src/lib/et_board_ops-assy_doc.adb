@@ -1788,6 +1788,7 @@ package body et_board_ops.assy_doc is
 	
 
 	
+
 	
 	procedure delete (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -1898,6 +1899,7 @@ package body et_board_ops.assy_doc is
 
 	
 
+	
 
 	procedure delete (
 		module_cursor	: in pac_generic_modules.cursor;

@@ -55,6 +55,11 @@ package et_board_ops.assy_doc is
 	use pac_text_board;
 
 
+
+	
+-- LINES:
+
+	
 	-- Draws a line in the assembly documentation.
 	procedure draw_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -71,8 +76,6 @@ package et_board_ops.assy_doc is
 		zone			: in type_accuracy; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_doc_lines.list;
-						   
-
 
 
 	
@@ -85,8 +88,6 @@ package et_board_ops.assy_doc is
 	end record;
 
 	-- CS same for arcs and circles
-
-
 
 
 	
@@ -141,7 +142,6 @@ package et_board_ops.assy_doc is
 		line			: in out type_object_line;
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level);
-
 	
 
 	
@@ -155,6 +155,10 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
+
+	
+-- ARCS:
+	
 	
 	-- Draws an arc in the assembly documentation.
 	procedure draw_arc (
@@ -163,6 +167,9 @@ package et_board_ops.assy_doc is
 		arc				: in type_doc_arc;
 		log_threshold	: in type_log_level);
 
+
+
+-- CIRCLES:
 	
 	-- Draws a circle in the assembly documentation.
 	procedure draw_circle (
@@ -172,6 +179,10 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
+	
+
+-- ZONES:
+	
 	-- Draws a zone in the assembly documentation layer.
 	-- The given zone can consist of a single segment or a
 	-- fragment of a zone contour.
@@ -190,11 +201,9 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
-
-
 	
 	-- This composite type helps to identify a
-	-- contour segment by its zone and face:
+	-- segment of a segment by its zone and face:
 	type type_object_segment is record
 		face	: type_face := TOP;
 		zone	: pac_doc_contours.cursor;
@@ -229,8 +238,6 @@ package et_board_ops.assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-
-
 	
 	
 	-- Returns the first line or arc segment according to the given flag.
@@ -240,7 +247,6 @@ package et_board_ops.assy_doc is
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
 		return type_object_segment;
-
 
 	
 
@@ -273,6 +279,9 @@ package et_board_ops.assy_doc is
 
 
 
+	
+
+-- OBJECTS:
 	
 
 	-- When objects are handled then we need these
@@ -344,6 +353,7 @@ package et_board_ops.assy_doc is
 
 
 	
+
 
 	
 	
