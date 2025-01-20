@@ -478,7 +478,6 @@ package body et_canvas_board_assy_doc is
 			reset_proposed_lines (active_module, log_threshold + 1);
 		end finalize;
 
-
 		
 	begin
 		if not clarification_pending then

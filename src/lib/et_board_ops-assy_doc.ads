@@ -369,7 +369,7 @@ package et_board_ops.assy_doc is
 
 
 	-- Deletes the given line in the given module:
-	procedure delete (
+	procedure delete_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		line			: in type_doc_line;

@@ -1900,7 +1900,7 @@ package body et_board_ops.assy_doc is
 
 	
 
-	procedure delete (
+	procedure delete_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
 		line			: in type_doc_line;
@@ -1943,7 +1943,7 @@ package body et_board_ops.assy_doc is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
-			& " deleting in assy doc." & to_string (line),
+			& " deleting line in assy doc." & to_string (line),
 			level => log_threshold);
 		
 		log_indentation_up;
@@ -1953,7 +1953,7 @@ package body et_board_ops.assy_doc is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end delete;
+	end delete_line;
 
 
 
@@ -1972,7 +1972,11 @@ package body et_board_ops.assy_doc is
 
 		case object.cat is
 			when CAT_LINE =>
-				null;
+				delete_line (
+					module_cursor	=> module_cursor, 
+					face			=> object.line.face,
+					line			=> element (object.line.cursor),
+					log_threshold	=> log_threshold + 1);					
 
 			when CAT_ZONE_SEGMENT =>
 				null;
