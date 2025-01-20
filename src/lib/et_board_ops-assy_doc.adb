@@ -904,6 +904,7 @@ package body et_board_ops.assy_doc is
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
 			& to_string (segment.segment)
+			& " face " & to_string (segment.face)
 			& " / " & to_string (operation),
 			level => log_threshold);
 
@@ -1021,6 +1022,7 @@ package body et_board_ops.assy_doc is
 		
 	begin
 		log (text => "proposing segments at " & to_string (point)
+			 & " face " & to_string (face)
 			 & " zone " & accuracy_to_string (zone),
 			 level => log_threshold);
 
@@ -1149,6 +1151,8 @@ package body et_board_ops.assy_doc is
 			use pac_doc_contours;
 			
 			proceed : aliased boolean := true;
+
+			face : type_face := TOP;
 			
 			
 			procedure query_zone (z : in pac_doc_contours.cursor) is 
@@ -1161,6 +1165,7 @@ package body et_board_ops.assy_doc is
 							if is_proposed (c) then
 								result.segment := c;
 								result.zone := z;
+								result.face := face;
 								proceed := false;
 
 								log (text => to_string (c), level => log_threshold + 1);
@@ -1170,6 +1175,7 @@ package body et_board_ops.assy_doc is
 							if is_selected (c) then
 								result.segment := c;
 								result.zone := z;
+								result.face := face;
 								proceed := false;
 
 								log (text => to_string (c), level => log_threshold + 1);
@@ -1208,6 +1214,8 @@ package body et_board_ops.assy_doc is
 			
 			-- If nothing found, iterate the bottom layer:
 			if proceed then
+				face := BOTTOM;
+				
 				iterate (
 					zones	=> module.board.assy_doc.bottom.contours,
 					process	=> query_zone'access, 
@@ -1501,6 +1509,8 @@ package body et_board_ops.assy_doc is
 
 		use pac_contours;
 		use pac_segments;
+
+		use pac_doc_lines;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first object / " & to_string (flag),
@@ -1514,6 +1524,10 @@ package body et_board_ops.assy_doc is
 
 		if result_line.cursor /= pac_doc_lines.no_element then
 			-- A line has been found.
+			log (text => to_string (element (result_line.cursor))
+				 & " face " & to_string (result_line.face),
+				 level => log_threshold + 1);
+			
 			result_category := CAT_LINE;
 
 			-- CS arcs, circles ?
@@ -1523,6 +1537,10 @@ package body et_board_ops.assy_doc is
 
 			if result_segment.segment /= pac_segments.no_element then
 				-- A segment has been found.
+				log (text => to_string (result_segment.segment)
+					 & " face " & to_string (result_segment.face),
+					 level => log_threshold + 1);
+				
 				result_category := CAT_ZONE_SEGMENT;
 			else
 				-- Nothing has been found:
