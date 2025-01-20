@@ -60,6 +60,8 @@ with et_canvas_board_lines;				use et_canvas_board_lines;
 package et_canvas_board_assy_doc is
 	
 
+	-- This procedure is required in order to clarify
+	-- which object among the proposed object is meant.
 	-- On every call of this procedure we advance from one
 	-- proposed segment to the next in a circular manner
 	-- and set it as "selected":
@@ -68,9 +70,9 @@ package et_canvas_board_assy_doc is
 
 	-- Locates objects in the vicinity of the given point
 	-- and sets their proposed-flag.
+	-- Only displayed layers are taken into account.
 	-- Depending on how many objects have been found, the behaviour is:
-	-- - If only one object found, then it is selected and 
-	--   the flag preliminary_object.ready will be set.
+	-- - If only one object found, then it is selected automatically.
 	-- - If more than one object found, then clarification is requested.
 	--   The first object of them is selected.
 	procedure find_objects (

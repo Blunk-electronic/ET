@@ -49,6 +49,7 @@ with et_board_ops.assy_doc;				use et_board_ops.assy_doc;
 
 with et_logging;						use et_logging;
 with et_modes.board;
+with et_display.board;
 with et_undo_redo;
 with et_commit;
 with et_object_status;
@@ -247,9 +248,9 @@ package body et_canvas_board_assy_doc is
 	procedure find_objects (
 	   point : in type_vector_model)
 	is 
-		face : type_face := TOP;
+		use et_modes.board;
 
-		count : natural := 0;
+		-- The number of proposed objects:
 		count_total : natural := 0;
 
 
@@ -271,48 +272,45 @@ package body et_canvas_board_assy_doc is
 		end select_first_proposed;
 
 
-		use et_modes.board;
+
+		-- This procedure proposes objects on the given 
+		-- face of the board:
+		procedure propose_objects (face : in type_face) is 
+			use et_display.board;
+		begin
+			if assy_doc_enabled (face) then
+				
+				propose_lines (
+					module_cursor	=> active_module, 
+					point			=> point,
+					zone			=> get_catch_zone (et_canvas_board_2.catch_zone), 
+					face			=> face,
+					count			=> count_total, 
+					log_threshold	=> log_threshold + 2);
+
+				-- CS arcs, circles
+
+				propose_segments (
+					module_cursor	=> active_module, 
+					point			=> point, 
+					zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
+					face			=> face,
+					count			=> count_total,
+					log_threshold	=> log_threshold + 2);
+			end if;
+		end propose_objects;
 		
+			
 	begin
 		log (text => "locating objects ...", level => log_threshold);
 		log_indentation_up;
 
-		-- Propose lines in the vicinity of the given point:
-		-- CS should depend on enabled top/bottom side
-		propose_lines (active_module, point, TOP, 
-			get_catch_zone (et_canvas_board_2.catch_zone), 
-			count, log_threshold + 1);
+		-- Propose objects in the vicinity of the given point:
+		propose_objects (TOP);
+		propose_objects (BOTTOM);
 		
-		count_total := count;
-		
-		propose_lines (active_module, point, BOTTOM, 
-			get_catch_zone (et_canvas_board_2.catch_zone), 
-			count, log_threshold + 1);
-		
-		count_total := count_total + count;
-		
-		-- CS arcs, circles
-
-		propose_segments (
-			module_cursor	=> active_module, 
-			point			=> point, 
-			zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
-			face			=> TOP,
-			count			=> count,
-			log_threshold	=> log_threshold + 1);
-		
-		count_total := count_total + count;
-			
-
-		propose_segments (
-			module_cursor	=> active_module, 
-			point			=> point, 
-			zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
-			face			=> BOTTOM,
-			count			=> count,
-			log_threshold	=> log_threshold + 1);
-		
-		count_total := count_total + count;
+		log (text => "proposed objects total" & natural'image (count_total),
+			 level => log_threshold + 1);
 
 		
 		-- evaluate the number of objects found here:

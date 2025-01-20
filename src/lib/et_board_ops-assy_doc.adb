@@ -298,14 +298,15 @@ package body et_board_ops.assy_doc is
 		
 		
 	begin
-		log (text => "proposing lines at " & to_string (point)
+		log (text => "module " & to_string (module_cursor)
+			 & " proposing lines at " & to_string (point)
 			 & " face " & to_string (face)
 			 & " zone " & accuracy_to_string (zone),
 			 level => log_threshold);
 
 		log_indentation_up;
 
-		count := 0;
+		-- count := 0;
 		
 		generic_modules.update_element (
 			position	=> module_cursor,
@@ -1021,14 +1022,15 @@ package body et_board_ops.assy_doc is
 		
 		
 	begin
-		log (text => "proposing segments at " & to_string (point)
+		log (text => "module " & to_string (module_cursor)
+			 & " proposing segments at " & to_string (point)
 			 & " face " & to_string (face)
 			 & " zone " & accuracy_to_string (zone),
 			 level => log_threshold);
 
 		log_indentation_up;
 
-		count := 0;
+		-- count := 0;
 		
 		generic_modules.update_element (
 			position	=> module_cursor,
