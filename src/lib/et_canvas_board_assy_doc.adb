@@ -52,8 +52,7 @@ with et_modes.board;
 with et_display.board;
 with et_undo_redo;
 with et_commit;
-with et_object_status;
-
+with et_object_status;						use et_object_status;
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 
 
@@ -135,8 +134,6 @@ package body et_canvas_board_assy_doc is
 	
 	
 	procedure select_object is 
-		use et_object_status;
-
 
 		procedure do_it is
 			use pac_objects;
@@ -189,7 +186,6 @@ package body et_canvas_board_assy_doc is
 			show_selected_object (element (proposed_object));
 		end do_it;
 		
-
 		
 	begin
 		log (text => "select_object", level => log_threshold + 1);
@@ -210,7 +206,6 @@ package body et_canvas_board_assy_doc is
 	-- and sets its status to "moving":
 	procedure set_first_selected_object_moving is
 		use et_board_ops.assy_doc;
-		use et_object_status;
 
 		
 		procedure do_it is
@@ -257,8 +252,6 @@ package body et_canvas_board_assy_doc is
 		-- This procedure searches for the first proposed
 		-- object and marks it as "selected":
 		procedure select_first_proposed is
-			use et_object_status;
-
 			object : type_object := get_first_object (
 						active_module, PROPOSED, log_threshold + 1);
 		begin
@@ -359,7 +352,6 @@ package body et_canvas_board_assy_doc is
 			use et_undo_redo;
 			use et_commit;
 			use et_board_ops.assy_doc;
-			use et_object_status;
 
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
@@ -367,23 +359,26 @@ package body et_canvas_board_assy_doc is
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
-			-- Commit the current state of the design:
-			commit (PRE, verb, noun, log_threshold + 1);
-			
-			move_object (
-				module_cursor	=> active_module, 
-				object			=> object, 
-				point_of_attack	=> object_point_of_attack,
-				destination		=> point,
-				log_threshold	=> log_threshold + 1);
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+				
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+				
+				move_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					point_of_attack	=> object_point_of_attack,
+					destination		=> point,
+					log_threshold	=> log_threshold + 1);
 
-			-- Commit the new state of the design:
-			commit (POST, verb, noun, log_threshold + 1);
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
 
--- CS case object.cat is CAT_VOID ?
--- 			else
--- 				log (text => "nothing to do", level => log_threshold);
--- 			end if;
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
 				
 			log_indentation_down;			
 			set_status (status_move_object);
@@ -450,7 +445,6 @@ package body et_canvas_board_assy_doc is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
-			use et_object_status;
 
 			selected_line : type_object_line;
 		begin

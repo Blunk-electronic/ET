@@ -298,7 +298,8 @@ package et_board_ops.assy_doc is
 	
 
 	-- Returns the first object (line, arc, circle, zone segment)
-	-- according to the given flag:
+	-- according to the given flag.
+	-- If nothing found, then the return is a void object (CAT_VOID):
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
