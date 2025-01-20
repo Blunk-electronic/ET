@@ -1745,6 +1745,7 @@ package body et_board_ops.assy_doc is
 	end modify_status;
 
 
+
 	
 
 	procedure move_object (
@@ -1754,9 +1755,7 @@ package body et_board_ops.assy_doc is
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level)
-	is
-
-	begin
+	is begin
 		log (text => "module " & to_string (module_cursor)
 			& " moving assy documentation object " 
 			-- CS & to_string (object)
@@ -1942,8 +1941,7 @@ package body et_board_ops.assy_doc is
 
 
 	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
+		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
 			& " deleting in assy doc." & to_string (line),
 			level => log_threshold);
@@ -1959,6 +1957,36 @@ package body et_board_ops.assy_doc is
 
 
 
+
+	procedure delete_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " deleting assy documentation object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_LINE =>
+				null;
+
+			when CAT_ZONE_SEGMENT =>
+				null;
+
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end delete_object;
+
+
+
+	
 	
 	
 	function get_texts (

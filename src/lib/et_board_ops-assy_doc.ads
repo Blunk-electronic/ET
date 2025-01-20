@@ -376,7 +376,10 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
-
+	procedure delete_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level);
 
 	
 	

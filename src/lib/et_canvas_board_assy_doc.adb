@@ -446,35 +446,27 @@ package body et_canvas_board_assy_doc is
 			use et_undo_redo;
 			use et_commit;
 
-			selected_line : type_object_line;
+			object : constant type_object := get_first_object (
+				active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalizing delete ...", level => log_threshold);
 			log_indentation_up;
 
-			selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
-
-			if selected_line.cursor /= pac_doc_lines.no_element then
-
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
-
-					-- case object.shape is
-						-- when LINE =>
-							delete (
-								module_cursor	=> active_module,
-								face			=> selected_line.face,
-								line			=> element (selected_line.cursor),
-								log_threshold	=> log_threshold);
-
-					-- 	when ARC =>
-					-- 		null; -- CS
-     -- 
-					-- 	when CIRCLE =>
-					-- 		null; -- CS
-					-- end case;
+				
+				delete_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					log_threshold	=> log_threshold + 1);
 
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
