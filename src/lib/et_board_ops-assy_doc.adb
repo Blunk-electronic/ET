@@ -650,6 +650,68 @@ package body et_board_ops.assy_doc is
 
 
 	
+
+	procedure delete_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		line			: in type_doc_line;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_doc_lines;
+			line_cursor : pac_doc_lines.cursor;
+		begin
+			case face is
+				when TOP =>
+					-- Locate the given line in the top documentation layer:
+					line_cursor := module.board.assy_doc.top.lines.find (line);
+
+					-- Delete the line if it exists:
+					if line_cursor /= pac_doc_lines.no_element then
+						module.board.assy_doc.top.lines.delete (line_cursor); 
+					else
+						null; -- CS message
+					end if;
+
+				when BOTTOM =>
+					-- Locate the given line in the bottom documentation layer:
+					line_cursor := module.board.assy_doc.bottom.lines.find (line);
+
+					-- Delete the line if it exists:
+					if line_cursor /= pac_doc_lines.no_element then
+						module.board.assy_doc.bottom.lines.delete (line_cursor); 
+					else
+						null; -- CS message
+					end if;
+			end case;
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " face" & to_string (face) 
+			& " deleting line in assy doc." & to_string (line),
+			level => log_threshold);
+		
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end delete_line;
+
+
+
+	
+
+
+	
 	
 	procedure draw_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -1498,6 +1560,77 @@ package body et_board_ops.assy_doc is
 
 
 
+	
+
+	procedure delete_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		log_threshold	: in type_log_level)
+	is
+		use pac_contours;
+		use pac_segments;
+		use pac_doc_contours;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			
+			procedure query_zone (
+				zone : in out type_doc_contour)
+			is 
+				c : pac_segments.cursor;
+			begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					-- Delete the given segment:
+					c := segment.segment;					
+					zone.contour.segments.delete (c);
+				end if;
+			end query_zone;
+	
+			
+		begin
+			-- Search for the given segment according to the 
+			-- given zone and face:
+			case segment.face is
+				when TOP =>
+					update_element (
+						container	=> module.board.assy_doc.top.contours, 
+						position	=> segment.zone, 
+						process		=> query_zone'access);
+
+				when BOTTOM =>
+					update_element (
+						container	=> module.board.assy_doc.bottom.contours, 
+						position	=> segment.zone, 
+						process		=> query_zone'access);
+
+			end case;
+		end query_module;
+
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " deleting assy documentation zone segment " 
+			& to_string (segment.segment),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end delete_segment;
+	
+
+	
 
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1789,7 +1922,7 @@ package body et_board_ops.assy_doc is
 	
 
 	
-	procedure delete (
+	procedure delete_object (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_vector_model; -- x/y
@@ -1798,6 +1931,7 @@ package body et_board_ops.assy_doc is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -1805,6 +1939,7 @@ package body et_board_ops.assy_doc is
 			line_cursor   : pac_doc_lines.cursor;
 			arc_cursor    : pac_doc_arcs.cursor;
 			circle_cursor : pac_doc_circles.cursor;
+			-- CS zones, text
 
 			deleted : boolean := false; -- goes true if at least one segment has been deleted
 		begin
@@ -1881,12 +2016,11 @@ package body et_board_ops.assy_doc is
 		
 	begin
 		log (text => "module " & to_string (module_name) &
-			" deleting assembly documentation segment face" & to_string (face) &
+			" deleting assembly documentation object. face" & to_string (face) &
 			" at" & to_string (point) &
 			" accuracy" & accuracy_to_string (accuracy),
 			level => log_threshold);
 
-		-- locate module
 		module_cursor := locate_module (module_name);
 
 		update_element (
@@ -1894,66 +2028,10 @@ package body et_board_ops.assy_doc is
 			position	=> module_cursor,
 			process		=> delete'access);
 		
-	end delete;
+	end delete_object;
 
 	
 
-	
-
-	procedure delete_line (
-		module_cursor	: in pac_generic_modules.cursor;
-		face			: in type_face;
-		line			: in type_doc_line;
-		log_threshold	: in type_log_level)
-	is
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			use pac_doc_lines;
-			line_cursor : pac_doc_lines.cursor;
-		begin
-			case face is
-				when TOP =>
-					-- Locate the given line in the top documentation layer:
-					line_cursor := module.board.assy_doc.top.lines.find (line);
-
-					-- Delete the line if it exists:
-					if line_cursor /= pac_doc_lines.no_element then
-						module.board.assy_doc.top.lines.delete (line_cursor); 
-					else
-						null; -- CS message
-					end if;
-
-				when BOTTOM =>
-					-- Locate the given line in the bottom documentation layer:
-					line_cursor := module.board.assy_doc.bottom.lines.find (line);
-
-					-- Delete the line if it exists:
-					if line_cursor /= pac_doc_lines.no_element then
-						module.board.assy_doc.bottom.lines.delete (line_cursor); 
-					else
-						null; -- CS message
-					end if;
-			end case;
-		end query_module;
-
-
-	begin
-		log (text => "module " & to_string (module_cursor)
-			& " face" & to_string (face) 
-			& " deleting line in assy doc." & to_string (line),
-			level => log_threshold);
-		
-		log_indentation_up;
-		
-		generic_modules.update_element (
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-		log_indentation_down;
-	end delete_line;
 
 
 
@@ -1978,9 +2056,14 @@ package body et_board_ops.assy_doc is
 					line			=> element (object.line.cursor),
 					log_threshold	=> log_threshold + 1);					
 
+			-- CS arcs, circles
+				
 			when CAT_ZONE_SEGMENT =>
-				null;
-
+				delete_segment (
+					module_cursor	=> module_cursor, 
+					segment			=> object.segment,
+					log_threshold	=> log_threshold + 1);
+								   
 			when CAT_VOID =>
 				null;
 		end case;		

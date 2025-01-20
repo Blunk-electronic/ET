@@ -155,7 +155,15 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
+	-- Deletes the given line in the given module:
+	procedure delete_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		line			: in type_doc_line;
+		log_threshold	: in type_log_level);
 
+
+	
 	
 -- ARCS:
 	
@@ -277,6 +285,12 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
+	-- Deletes a line or arc segment of a zone:
+	procedure delete_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		log_threshold	: in type_log_level);
+
 
 
 	
@@ -357,23 +371,16 @@ package et_board_ops.assy_doc is
 
 	
 	
-	-- Deletes the segment of the assembly documentation that crosses the given point.
-	-- CS currently deletes the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-	procedure delete (
+	-- Deletes the object that is in the vicinity of the given point.
+	-- CS currently deletes the object found. Leaves other objects untouched.
+	-- CS a parameter like "all" to delete all objects in the vicinity of point.
+	procedure delete_object (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_vector_model; -- x/y
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level);
 
-
-	-- Deletes the given line in the given module:
-	procedure delete_line (
-		module_cursor	: in pac_generic_modules.cursor;
-		face			: in type_face;
-		line			: in type_doc_line;
-		log_threshold	: in type_log_level);
 
 
 	procedure delete_object (
