@@ -361,65 +361,29 @@ package body et_canvas_board_assy_doc is
 			use et_board_ops.assy_doc;
 			use et_object_status;
 
-			selected_line : type_object_line;
-
-			use pac_segments;
-			selected_segment : type_object_segment;
+			object : constant type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
-			selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
-			selected_segment := get_first_segment (active_module, SELECTED, log_threshold + 1);
-
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold + 1);
 			
-			if selected_line.cursor /= pac_doc_lines.no_element then
+			move_object (
+				module_cursor	=> active_module, 
+				object			=> object, 
+				point_of_attack	=> object_point_of_attack,
+				destination		=> point,
+				log_threshold	=> log_threshold + 1);
 
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
-				-- case object.shape is
-				-- 	when LINE =>
-						move_line (
-							module_cursor	=> active_module,
-							face			=> selected_line.face,
-							line			=> element (selected_line.cursor),
-							point_of_attack	=> object_point_of_attack,
-							-- coordinates		=> ABSOLUTE,
-							destination		=> point,
-							log_threshold	=> log_threshold);
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold + 1);
 
-				-- 	when ARC =>
-				-- 		null; -- CS
-				-- 
-				-- 	when CIRCLE =>
-				-- 		null; -- CS
-				-- end case;
-
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
-
-				
-			elsif selected_segment.segment /= pac_segments.no_element then
-
-					-- Commit the current state of the design:
-					commit (PRE, verb, noun, log_threshold + 1);
-					
-					move_segment (
-						module_cursor	=> active_module,
-						segment			=> selected_segment,
-						point_of_attack	=> object_point_of_attack,
-						-- coordinates		=> ABSOLUTE,
-						destination		=> point,
-						log_threshold	=> log_threshold);
-
-					-- Commit the new state of the design:
-					commit (POST, verb, noun, log_threshold + 1);
-
-			else
-				log (text => "nothing to do", level => log_threshold);
-			end if;
+-- CS case object.cat is CAT_VOID ?
+-- 			else
+-- 				log (text => "nothing to do", level => log_threshold);
+-- 			end if;
 				
 			log_indentation_down;			
 			set_status (status_move_object);

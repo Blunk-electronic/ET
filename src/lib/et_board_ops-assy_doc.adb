@@ -1744,7 +1744,49 @@ package body et_board_ops.assy_doc is
 		modify_status (module_cursor, object, operation, log_threshold);
 	end modify_status;
 
+
 	
+
+	procedure move_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving assy documentation object " 
+			-- CS & to_string (object)
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_LINE =>
+				move_line (module_cursor, object.line.face, 
+					element (object.line.cursor),
+					point_of_attack, destination,
+					log_threshold + 1);
+
+			when CAT_ZONE_SEGMENT =>
+				move_segment (module_cursor,
+					object.segment,
+					point_of_attack, destination,
+					log_threshold + 1);
+
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end move_object;
+	
+
 	
 	
 	procedure delete (

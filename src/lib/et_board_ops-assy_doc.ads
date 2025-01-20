@@ -280,6 +280,8 @@ package et_board_ops.assy_doc is
 	type type_object_category is (CAT_VOID, CAT_LINE, CAT_ZONE_SEGMENT);
 	-- CS CAT_ARC, CAT_CIRCLE
 
+	-- This type wraps segments of zones, lines, arcs and circles
+	-- into a single type:
 	type type_object (cat : type_object_category) is record
 		case cat is
 			when CAT_VOID			=> null;
@@ -330,8 +332,17 @@ package et_board_ops.assy_doc is
 
 
 
+	procedure move_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
 
 
+
+	
 
 	
 	
