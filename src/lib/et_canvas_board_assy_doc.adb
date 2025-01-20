@@ -79,11 +79,11 @@ package body et_canvas_board_assy_doc is
 	begin
 		if clarification then
 			set_status (praeamble & to_string (element (selected.cursor))
-				& ". " & status_next_object_clarification);
-			-- CS face
+				& " face" & to_string (selected.face) & ". " 
+				& status_next_object_clarification);
 		else
-			set_status (praeamble & to_string (element (selected.cursor)));
-			-- CS face
+			set_status (praeamble & to_string (element (selected.cursor))
+				& " face" & to_string (selected.face) & ". ");
 		end if;		
 	end show_selected_line;
 
@@ -100,11 +100,11 @@ package body et_canvas_board_assy_doc is
 	begin
 		if clarification then
 			set_status (praeamble & to_string (selected.segment)
-				& ". " & status_next_object_clarification);
-			-- CS face
+				& " face" & to_string (selected.face) & ". " 
+				& status_next_object_clarification);
 		else
-			set_status (praeamble & to_string (selected.segment));
-			-- CS face
+			set_status (praeamble & to_string (selected.segment)
+				& " face" & to_string (selected.face) & ". ");
 		end if;		
 	end show_selected_segment;
 
