@@ -210,7 +210,7 @@ package et_board_ops.assy_doc is
 
 	
 	-- This composite type helps to identify a
-	-- segment of a segment by its zone and face:
+	-- segment of a zone by its zone and face:
 	type type_object_segment is record
 		face	: type_face := TOP;
 		zone	: pac_doc_contours.cursor;
@@ -292,6 +292,32 @@ package et_board_ops.assy_doc is
 
 
 
+	
+
+-- TEXTS:
+
+	-- Returns all texts in the vicinity of the given point:
+	function get_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		point			: in type_vector_model;		
+		zone			: in type_accuracy; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_doc_texts.list;
+
+
+	-- Moves a text:
+	procedure move_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		text			: in type_doc_text;
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+	
+
+	
 	
 
 -- OBJECTS:
@@ -387,26 +413,7 @@ package et_board_ops.assy_doc is
 		object			: in type_object;
 		log_threshold	: in type_log_level);
 
-	
-	
-	-- Returns all texts in the vicinity of the given point:
-	function get_texts (
-		module_cursor	: in pac_generic_modules.cursor;
-		face			: in type_face;
-		point			: in type_vector_model;		
-		zone			: in type_accuracy; -- the circular area around the place
-		log_threshold	: in type_log_level)
-		return pac_doc_texts.list;
 
-
-	-- Moves a text:
-	procedure move_text (
-		module_cursor	: in pac_generic_modules.cursor;
-		face			: in type_face;
-		text			: in type_doc_text;
-		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_vector_model;
-		log_threshold	: in type_log_level);
 	
 end et_board_ops.assy_doc;
 

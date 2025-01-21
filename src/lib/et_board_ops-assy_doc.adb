@@ -1630,6 +1630,146 @@ package body et_board_ops.assy_doc is
 	end delete_segment;
 	
 
+
+
+
+
+
+	function get_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		point			: in type_vector_model;
+		zone			: in type_accuracy; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_doc_texts.list
+	is
+		use et_text;
+		result : pac_doc_texts.list;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			procedure query_text (c : in pac_doc_texts.cursor) is
+				text : type_doc_text renames element (c);
+			begin
+				if within_accuracy (
+					point_1	=> point,
+					zone	=> zone,
+					point_2	=> text.position.place)
+				then
+					log (text => to_string (text.position.place) 
+						& " content " & enclose_in_quotes (to_string (text.content)),
+						level => log_threshold + 2);
+						
+					result.append (text);
+				end if;
+			end query_text;
+			
+		begin
+			case face is
+				when TOP =>
+					module.board.assy_doc.top.texts.iterate (query_text'access);
+
+				when BOTTOM =>
+					module.board.assy_doc.bottom.texts.iterate (query_text'access);
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " face" & to_string (face) 
+			& " looking up assembly documentation texts at" & to_string (point) 
+			& " zone" & accuracy_to_string (zone),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log (text => "found" & count_type'image (result.length),
+			 level => log_threshold + 1);
+		
+		log_indentation_down;
+		return result;
+	end get_texts;
+
+
+
+	
+
+	
+	procedure move_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		text			: in type_doc_text;
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+		old_position : constant type_vector_model := get_place (text);
+		new_position : type_vector_model;
+		offset : type_distance_relative;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			text_cursor : pac_doc_texts.cursor;
+
+			procedure query_text (text : in out type_doc_text) is begin
+				move_text (text, offset);
+				move_vector_text (text.vectors, offset);
+			end query_text;
+			
+		begin
+			case face is
+				when TOP =>
+					text_cursor := module.board.assy_doc.top.texts.find (text);
+					module.board.assy_doc.top.texts.update_element (text_cursor, query_text'access);
+
+				when BOTTOM =>
+					text_cursor := module.board.assy_doc.bottom.texts.find (text);
+					module.board.assy_doc.bottom.texts.update_element (text_cursor, query_text'access);
+			end case;
+		end query_module;
+
+		
+	begin
+		case coordinates is
+			when ABSOLUTE =>
+				new_position := point;
+				offset := get_distance_relative (old_position, new_position);
+
+			when RELATIVE =>
+				new_position := point;
+				offset := to_distance_relative (point);
+				move_by (new_position, offset);
+		end case;
+		
+		log (text => "module " & to_string (module_cursor)
+			& " face" & to_string (face) 
+			& " moving assembly documentation text from" & to_string (old_position)
+			& " to" & to_string (new_position), -- CS by offset
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+	end move_text;
+
+
+
+
+	
+
 	
 
 	function get_first_object (
@@ -1700,6 +1840,7 @@ package body et_board_ops.assy_doc is
 
 
 
+	
 	
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2070,141 +2211,7 @@ package body et_board_ops.assy_doc is
 		
 		log_indentation_down;
 	end delete_object;
-
-
-
 	
-	
-	
-	function get_texts (
-		module_cursor	: in pac_generic_modules.cursor;
-		face			: in type_face;
-		point			: in type_vector_model;
-		zone			: in type_accuracy; -- the circular area around the place
-		log_threshold	: in type_log_level)
-		return pac_doc_texts.list
-	is
-		use et_text;
-		result : pac_doc_texts.list;
-
-		
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is
-			procedure query_text (c : in pac_doc_texts.cursor) is
-				text : type_doc_text renames element (c);
-			begin
-				if within_accuracy (
-					point_1	=> point,
-					zone	=> zone,
-					point_2	=> text.position.place)
-				then
-					log (text => to_string (text.position.place) 
-						& " content " & enclose_in_quotes (to_string (text.content)),
-						level => log_threshold + 2);
-						
-					result.append (text);
-				end if;
-			end query_text;
-			
-		begin
-			case face is
-				when TOP =>
-					module.board.assy_doc.top.texts.iterate (query_text'access);
-
-				when BOTTOM =>
-					module.board.assy_doc.bottom.texts.iterate (query_text'access);
-			end case;
-		end query_module;
-
-		
-	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " face" & to_string (face) 
-			& " looking up assembly documentation texts at" & to_string (point) 
-			& " zone" & accuracy_to_string (zone),
-			level => log_threshold);
-
-		log_indentation_up;
-		
-		query_element (
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-		log (text => "found" & count_type'image (result.length),
-			 level => log_threshold + 1);
-		
-		log_indentation_down;
-		return result;
-	end get_texts;
-
-
-
-	
-	procedure move_text (
-		module_cursor	: in pac_generic_modules.cursor;
-		face			: in type_face;
-		text			: in type_doc_text;
-		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_vector_model;
-		log_threshold	: in type_log_level)
-	is
-		old_position : constant type_vector_model := get_place (text);
-		new_position : type_vector_model;
-		offset : type_distance_relative;
-
-		
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module)
-		is
-			text_cursor : pac_doc_texts.cursor;
-
-			procedure query_text (text : in out type_doc_text) is begin
-				move_text (text, offset);
-				move_vector_text (text.vectors, offset);
-			end query_text;
-			
-		begin
-			case face is
-				when TOP =>
-					text_cursor := module.board.assy_doc.top.texts.find (text);
-					module.board.assy_doc.top.texts.update_element (text_cursor, query_text'access);
-
-				when BOTTOM =>
-					text_cursor := module.board.assy_doc.bottom.texts.find (text);
-					module.board.assy_doc.bottom.texts.update_element (text_cursor, query_text'access);
-			end case;
-		end query_module;
-
-		
-	begin
-		case coordinates is
-			when ABSOLUTE =>
-				new_position := point;
-				offset := get_distance_relative (old_position, new_position);
-
-			when RELATIVE =>
-				new_position := point;
-				offset := to_distance_relative (point);
-				move_by (new_position, offset);
-		end case;
-		
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " face" & to_string (face) 
-			& " moving assembly documentation text from" & to_string (old_position)
-			& " to" & to_string (new_position), -- CS by offset
-			level => log_threshold);
-
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-	end move_text;
 
 	
 end et_board_ops.assy_doc;
