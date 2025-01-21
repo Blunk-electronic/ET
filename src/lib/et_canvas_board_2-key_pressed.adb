@@ -148,10 +148,9 @@ is
 
 					when NOUN_OUTLINE =>
 						et_canvas_board_outline.delete_object (point);
-
 						
--- 					when NOUN_ASSY =>
--- 						et_canvas_board_assy_doc.delete_object (point);
+					when NOUN_ASSY =>
+						et_canvas_board_assy_doc.delete_object (point);
 -- 
 -- 					when NOUN_SILKSCREEN =>
 -- 						et_canvas_board_silkscreen.delete_object (point);
@@ -172,10 +171,10 @@ is
 
 				-- CS
 				case noun is
--- 					when NOUN_ASSY =>
--- 						if clarification_pending then
--- 							et_canvas_board_assy_doc.select_object;
--- 						end if;
+					when NOUN_ASSY =>
+						if clarification_pending then
+							et_canvas_board_assy_doc.select_object;
+						end if;
 -- 
 -- 					when NOUN_SILKSCREEN =>
 -- 						if clarification_pending then
