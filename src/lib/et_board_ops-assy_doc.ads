@@ -43,7 +43,6 @@ with ada.containers.indefinite_doubly_linked_lists;
 
 with et_text;
 with et_assy_doc;					use et_assy_doc;
-with et_assy_doc.boards;			use et_assy_doc.boards;
 
 package et_board_ops.assy_doc is
 

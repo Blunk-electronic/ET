@@ -114,7 +114,7 @@ with et_via_restrict.boards;
 with et_stopmask;
 with et_stencil;
 with et_silkscreen;
-with et_assy_doc.boards;
+with et_assy_doc;
 with et_keepout;
 with et_pcb_contour;
 
@@ -1834,7 +1834,7 @@ is
 
 		
 		procedure write_assy_doc is
-			use et_assy_doc.boards;
+			use et_assy_doc;
 			use pac_doc_texts;
 
 			procedure write_text (cursor : in pac_doc_texts.cursor) is begin

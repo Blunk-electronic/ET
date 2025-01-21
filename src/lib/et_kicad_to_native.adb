@@ -105,7 +105,6 @@ with et_stencil;					use et_stencil;
 with et_silkscreen;					use et_silkscreen;
 with et_silkscreen.boards;
 with et_assy_doc;					use et_assy_doc;
-with et_assy_doc.boards;
 with et_keepout;					use et_keepout;
 with et_device_placeholders;		use et_device_placeholders;
 with et_schematic_shapes_and_text;
@@ -1072,7 +1071,7 @@ package body et_kicad_to_native is
 
 			
 			procedure move_assembly_documentation is
-				use et_assy_doc.boards;
+				use et_assy_doc;
 				use pac_doc_lines;
 				
 				lines_cursor : pac_doc_lines.cursor;

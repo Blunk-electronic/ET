@@ -44,7 +44,6 @@ with et_silkscreen;
 with et_silkscreen.boards;
 
 with et_assy_doc;
-with et_assy_doc.boards;
 
 with et_text;
 
