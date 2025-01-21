@@ -190,6 +190,49 @@ package et_text is
 			status		: et_object_status.type_object_status;
 		end record;
 
+
+		function is_proposed (
+			text : in type_text)
+			return boolean;
+
+		procedure set_proposed (
+			text : in out type_text);
+
+		procedure clear_proposed (
+			text : in out type_text);
+		
+
+		
+		function is_moving (
+			text : in type_text)
+			return boolean;
+
+		procedure set_moving (
+			text : in out type_text);
+
+		procedure clear_moving (
+			text : in out type_text);
+
+		
+
+		function is_selected (
+			text : in type_text)
+			return boolean;
+
+		procedure set_selected (
+			text : in out type_text);
+
+		procedure clear_selected (
+			text : in out type_text);
+
+		
+
+		procedure modify_status (
+			text 		: in out type_text;
+			operation	: in et_object_status.type_status_operation);
+
+
+		
 		
 		-- Returns the properties of the given text in a long single string.	
 		function text_properties (

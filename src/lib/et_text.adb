@@ -216,6 +216,8 @@ package body et_text is
 			end if;
 		end validate_text_size;
 
+
+		
 		procedure validate_text_line_width (width : in pac_geometry.type_distance) is
 		begin
 			if width not in type_text_line_width then
@@ -227,6 +229,149 @@ package body et_text is
 			end if;
 		end validate_text_line_width;
 
+
+
+
+		function is_proposed (
+			text : in type_text)
+			return boolean
+		is begin
+			if text.status.proposed then
+				return true;
+			else
+				return false;
+			end if;
+		end is_proposed;
+			
+
+		procedure set_proposed (
+			text : in out type_text)
+		is 
+			use et_object_status;
+		begin
+			text.status.proposed := TRUE;
+		end set_proposed;
+		
+
+		procedure clear_proposed (
+			text : in out type_text)
+		is 
+			use et_object_status;
+		begin
+			text.status.proposed := FALSE;
+		end clear_proposed;
+		
+
+		
+		function is_moving (
+			text : in type_text)
+			return boolean
+		is begin
+			if text.status.moving then
+				return true;
+			else
+				return false;
+			end if;
+		end is_moving;
+		
+
+		
+		procedure set_moving (
+			text : in out type_text)
+		is
+			use et_object_status;
+		begin
+			text.status.moving := TRUE;
+		end set_moving;
+
+		
+
+		procedure clear_moving (
+			text : in out type_text)
+		is
+			use et_object_status;
+		begin
+			text.status.moving := FALSE;
+		end clear_moving;
+		
+
+		function is_selected (
+			text : in type_text)
+			return boolean
+		is begin
+			if text.status.selected then
+				return TRUE;
+			else
+				return FALSE;
+			end if;
+		end is_selected;
+		
+
+		procedure set_selected (
+			text : in out type_text)
+		is
+			use et_object_status;
+		begin
+			text.status.selected := TRUE;
+		end set_selected;
+		
+
+		procedure clear_selected (
+			text : in out type_text)
+		is
+			use et_object_status;
+		begin
+			text.status.selected := FALSE;
+		end clear_selected;
+
+		
+
+		procedure modify_status (
+			text 		: in out type_text;
+			operation	: in et_object_status.type_status_operation)
+		is 
+			use et_object_status;
+		begin
+			case operation.flag is
+				when SELECTED =>
+					case operation.action is
+						when SET =>
+							set_selected (text);
+
+						when CLEAR =>
+							clear_selected (text);
+					end case;
+
+					
+				when PROPOSED =>
+					case operation.action is
+						when SET =>
+							set_proposed (text);
+
+						when CLEAR =>
+							clear_proposed (text);
+					end case;
+
+					
+				when MOVING =>
+					case operation.action is
+						when SET =>
+							set_moving (text);
+
+						when CLEAR =>
+							clear_moving (text);
+					end case;
+
+					
+				when others =>
+					null; -- CS
+			end case;
+		end modify_status;
+
+
+		
+
+		
 
 		
 		function text_properties (
