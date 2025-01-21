@@ -1768,8 +1768,74 @@ package body et_board_ops.assy_doc is
 
 
 
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+	begin
+
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of text"
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		-- CS
+		
+		log_indentation_down;
+	end modify_status;
+
 	
 
+	
+
+	procedure move_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+	begin
+
+		log (text => "module " & to_string (module_cursor)
+			& " face" & to_string (text.face) 
+			& " moving assembly documentation text to "
+			& to_string (destination),
+			level => log_threshold);
+
+		-- CS
+
+	end move_text;
+
+
+
+
+	procedure delete_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		log_threshold	: in type_log_level)
+	is
+
+	begin
+
+		log (text => "module " & to_string (module_cursor)
+			& " face" & to_string (text.face) 
+			& " deleting assembly documentation text",
+			level => log_threshold);
+
+		-- CS
+
+	end delete_text;
+
+
+
+	
 	
 
 	function get_first_object (
@@ -1781,11 +1847,13 @@ package body et_board_ops.assy_doc is
 		result_category : type_object_category;
 		result_segment  : type_object_segment;
 		result_line		: type_object_line;
+		result_text		: type_object_text;
 
 		use pac_contours;
 		use pac_segments;
 
 		use pac_doc_lines;
+		use pac_doc_texts;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first object / " & to_string (flag),
@@ -1805,7 +1873,7 @@ package body et_board_ops.assy_doc is
 			
 			result_category := CAT_LINE;
 
-			-- CS arcs, circles ?
+			-- CS arcs, circles, texts ?
 		else
 			-- no line found -> search among zone segments:
 			result_segment := get_first_segment (module_cursor, flag, log_threshold + 1);
@@ -1835,6 +1903,9 @@ package body et_board_ops.assy_doc is
 
 			when CAT_ZONE_SEGMENT =>
 				return (CAT_ZONE_SEGMENT, result_segment);
+
+			when CAT_TEXT =>
+				return (CAT_TEXT, result_text); -- CS
 		end case;
 	end get_first_object;
 
@@ -1995,6 +2066,9 @@ package body et_board_ops.assy_doc is
 			when CAT_ZONE_SEGMENT =>
 				modify_status (module_cursor, object.segment, operation, log_threshold + 1);
 
+			when CAT_TEXT =>
+				modify_status (module_cursor, object.text, operation, log_threshold + 1);
+				
 			when CAT_VOID =>
 				null; -- CS
 		end case;
@@ -2052,6 +2126,13 @@ package body et_board_ops.assy_doc is
 					point_of_attack, destination,
 					log_threshold + 1);
 
+			when CAT_TEXT =>
+				move_text (module_cursor,
+					object.text,
+					destination,
+					log_threshold + 1);
+
+				
 			when CAT_VOID =>
 				null;
 		end case;		
@@ -2204,7 +2285,15 @@ package body et_board_ops.assy_doc is
 					module_cursor	=> module_cursor, 
 					segment			=> object.segment,
 					log_threshold	=> log_threshold + 1);
-								   
+
+				
+			when CAT_TEXT =>
+				delete_text (
+					module_cursor	=> module_cursor, 
+					text			=> object.text,
+					log_threshold	=> log_threshold + 1);
+
+								
 			when CAT_VOID =>
 				null;
 		end case;		

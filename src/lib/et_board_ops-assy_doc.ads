@@ -315,9 +315,37 @@ package et_board_ops.assy_doc is
 		point			: in type_vector_model;
 		log_threshold	: in type_log_level);
 
-	
 
 	
+	-- This composite type helps to identify a
+	-- segment of a zone by its zone and face:
+	type type_object_text is record
+		face	: type_face := TOP;
+		cursor	: pac_doc_texts.cursor := pac_doc_texts.no_element;
+	end record;
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+
+
+	procedure move_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+	
+	procedure delete_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		log_threshold	: in type_log_level);
+
 	
 
 -- OBJECTS:
@@ -325,16 +353,22 @@ package et_board_ops.assy_doc is
 
 	-- When objects are handled then we need these
 	-- categories in order to store them in indefinite_doubly_linked_lists:
-	type type_object_category is (CAT_VOID, CAT_LINE, CAT_ZONE_SEGMENT);
+	type type_object_category is (
+		CAT_VOID,
+		CAT_LINE, 
+		CAT_ZONE_SEGMENT,
+		CAT_TEXT
+		);
 	-- CS CAT_ARC, CAT_CIRCLE
 
-	-- This type wraps segments of zones, lines, arcs and circles
+	-- This type wraps segments of zones, lines, arcs, circles, texts
 	-- into a single type:
 	type type_object (cat : type_object_category) is record
 		case cat is
 			when CAT_VOID			=> null;
 			when CAT_ZONE_SEGMENT	=> segment	: type_object_segment;
 			when CAT_LINE 			=> line 	: type_object_line;
+			when CAT_TEXT			=> text		: type_object_text;
 		end case;
 	end record;
 

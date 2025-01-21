@@ -108,6 +108,27 @@ package body et_canvas_board_assy_doc is
 	end show_selected_segment;
 
 
+
+
+	-- Outputs the selected text in the status bar:
+	procedure show_selected_text (
+		selected		: in type_object_text;
+		clarification	: in boolean := false)
+	is 
+		praeamble : constant string := "selected: ";
+	begin
+		if clarification then
+			null; -- CS show position, face
+			-- set_status (praeamble & to_string (selected.segment)
+			-- 	& " face" & to_string (selected.face) & ". " 
+			-- 	& status_next_object_clarification);
+		else
+			null; -- CS show position, face
+			-- set_status (praeamble & to_string (selected.segment)
+			-- 	& " face" & to_string (selected.face) & ". ");
+		end if;		
+	end show_selected_text;
+
 	
 	
 
@@ -123,6 +144,9 @@ package body et_canvas_board_assy_doc is
 			when CAT_ZONE_SEGMENT =>
 				show_selected_segment (selected.segment);
 
+			when CAT_TEXT =>
+				show_selected_text (selected.text);
+				
 			when CAT_VOID =>
 				null; -- CS
 		end case;	
