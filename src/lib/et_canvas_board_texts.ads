@@ -136,6 +136,7 @@ package et_canvas_board_texts is
 			size		=> 10.0,
 			line_width	=> 1.0,
 			position	=> origin_zero_rotation,
+			status		=> (others => <>),
 			alignment	=> text_alignment_default,
 			content		=> empty_text_content);
 		

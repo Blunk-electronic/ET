@@ -54,6 +54,8 @@ with et_logging;				use et_logging;
 with et_logical_pixels;			use et_logical_pixels;
 with et_mirroring;				use et_mirroring;
 with et_alignment;				use et_alignment;
+with et_object_status;
+
 
 package et_text is
 
@@ -180,10 +182,12 @@ package et_text is
 		-- Checks whether given line width is in range of type_text_line_width
 		procedure validate_text_line_width (width : in pac_geometry.type_distance);
 
-		
+
+		-- This is the root type of all text types:
 		type type_text is abstract tagged record
 			size		: type_text_size := size_default;
 			alignment	: type_text_alignment;
+			status		: et_object_status.type_object_status;
 		end record;
 
 		
@@ -192,7 +196,10 @@ package et_text is
 			text : in type_text)
 			return string;
 
-		
+
+		-- This basic text type is intended for all texts which are
+		-- somehow frabrication relevant. Such texts are so called
+		-- vector-texts. They consist of lines with a certain width.
 		type type_text_fab is new type_text with record
 			position	: pac_geometry.type_position; -- x/y/rotation
 			line_width	: type_text_line_width := type_text_line_width'first; -- CS rename to linewidth

@@ -2050,6 +2050,8 @@ is
 			size := mil_to_distance (f (element (line_cursor), 7));
 
 			return (
+				status		=> (others => <>),
+					   
 				-- read text field meaning
 				meaning 	=> to_text_meaning (line => element (line_cursor), schematic => true),
 
@@ -2596,6 +2598,7 @@ is
 
 							-- placeholders:
 							reference		=> (
+									status		=> (others => <>),
 									meaning		=> et_device_placeholders.NAME,
 									position	=> field_reference.position,
 									--style		=> field_reference.style,
@@ -2604,6 +2607,7 @@ is
 									alignment	=> field_reference.alignment),
 
 							value			=> (
+									status		=> (others => <>),
 									meaning		=> et_device_placeholders.VALUE,
 									position	=> field_value.position,
 									--style		=> field_value.style,
@@ -2633,20 +2637,22 @@ is
 							-- The kicad placeholders are now converted to ET native placeholders:
 						
 							reference		=> (
-									meaning		=> et_device_placeholders.NAME,
-									position	=> field_reference.position,
-									--style		=> field_reference.style,
-									rotation	=> snap (field_reference.rotation),
-									size		=> field_reference.size,
-									alignment	=> field_reference.alignment),
+								status		=> (others => <>),
+								meaning		=> et_device_placeholders.NAME,
+								position	=> field_reference.position,
+								--style		=> field_reference.style,
+								rotation	=> snap (field_reference.rotation),
+								size		=> field_reference.size,
+								alignment	=> field_reference.alignment),
 
 							value			=> (
-									meaning		=> et_device_placeholders.VALUE,
-									position	=> field_value.position,
-									--style		=> field_value.style,
-									rotation	=> snap (field_value.rotation),
-									size		=> field_value.size,
-									alignment	=> field_value.alignment)
+								status		=> (others => <>),
+								meaning		=> et_device_placeholders.VALUE,
+								position	=> field_value.position,
+								--style		=> field_value.style,
+								rotation	=> snap (field_value.rotation),
+								size		=> field_value.size,
+								alignment	=> field_value.alignment)
 							),
 						log_threshold => log_threshold + 2
 						);

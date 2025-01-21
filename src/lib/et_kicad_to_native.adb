@@ -103,7 +103,6 @@ with et_conductor_segment.boards;	use et_conductor_segment.boards;
 with et_stopmask;					use et_stopmask;
 with et_stencil;					use et_stencil;
 with et_silkscreen;					use et_silkscreen;
-with et_silkscreen.boards;
 with et_assy_doc;					use et_assy_doc;
 with et_keepout;					use et_keepout;
 with et_device_placeholders;		use et_device_placeholders;
@@ -858,7 +857,6 @@ package body et_kicad_to_native is
 			log_threshold_add : type_log_level := 2;
 			
 			procedure move_silk_screen is
-				use et_silkscreen.boards;
 				use pac_silk_lines;
 				
 				lines_cursor : pac_silk_lines.cursor;

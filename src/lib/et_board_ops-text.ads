@@ -41,8 +41,6 @@ with et_board_layer_category;			use et_board_layer_category;
 
 with et_stopmask;
 with et_silkscreen;
-with et_silkscreen.boards;
-
 with et_assy_doc;
 
 with et_text;

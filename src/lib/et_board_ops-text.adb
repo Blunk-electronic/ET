@@ -94,8 +94,6 @@ package body et_board_ops.text is
 		log_threshold	: in type_log_level)
 	is 
 		use et_silkscreen;
-		use et_silkscreen.boards;
-
 		use et_assy_doc;
 		use et_stopmask;
 

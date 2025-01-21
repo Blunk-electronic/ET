@@ -39,7 +39,6 @@
 with ada.text_io;				use ada.text_io;
 
 with et_silkscreen;				use et_silkscreen;
-with et_silkscreen.boards;		use et_silkscreen.boards;
 with et_colors;					use et_colors;
 with et_board_ops.text;			use et_board_ops.text;
 with et_schematic;
