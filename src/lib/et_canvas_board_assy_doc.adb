@@ -133,7 +133,7 @@ package body et_canvas_board_assy_doc is
 	
 	
 	
-	procedure select_object is 
+	procedure clarify_object is 
 
 		procedure do_it is
 			use pac_objects;
@@ -188,14 +188,14 @@ package body et_canvas_board_assy_doc is
 		
 		
 	begin
-		log (text => "select_object", level => log_threshold + 1);
+		log (text => "clarify_object", level => log_threshold + 1);
 
 		log_indentation_up;
 		
 		do_it;
 		
 		log_indentation_down;
-	end select_object;
+	end clarify_object;
 
 
 
@@ -410,7 +410,7 @@ package body et_canvas_board_assy_doc is
 
 			else
 				-- Here the clarification procedure ends.
-				-- An object has been selected via procedure select_object.
+				-- An object has been selected via procedure clarify_object.
 				-- By setting the status of the selected object
 				-- as "moving", the selected object
 				-- will be drawn according to object_point_of_attack and 
@@ -496,7 +496,7 @@ package body et_canvas_board_assy_doc is
 		else
 			-- Here the clarification procedure ends.
 			-- An object has been selected
-			-- via procedure select_object.
+			-- via procedure clarify_object.
 
 			finalize;
 			reset_request_clarification;

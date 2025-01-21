@@ -173,7 +173,7 @@ is
 				case noun is
 					when NOUN_ASSY =>
 						if clarification_pending then
-							et_canvas_board_assy_doc.select_object;
+							et_canvas_board_assy_doc.clarify_object;
 						end if;
 -- 
 -- 					when NOUN_SILKSCREEN =>
@@ -368,7 +368,7 @@ is
 
 					when NOUN_ASSY =>
 						if clarification_pending then
-							et_canvas_board_assy_doc.select_object;
+							et_canvas_board_assy_doc.clarify_object;
 						end if;
 
 					when NOUN_SILKSCREEN =>
