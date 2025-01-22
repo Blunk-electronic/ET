@@ -235,6 +235,22 @@ package et_assy_doc is
 	use pac_doc_texts;
 
 
+	-- Returns the position, linewidth and content
+	-- of the given text:
+	function to_string (
+		text : in pac_doc_texts.cursor)
+		return string;
+	
+
+	-- Iterates the texts.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		texts	: in pac_doc_texts.list;
+		process	: not null access procedure (position : in pac_doc_texts.cursor);
+		proceed	: not null access boolean);
+
+	
+
 	-- Mirrors a list of texts along the given axis:
 	procedure mirror_texts (
 		texts	: in out pac_doc_texts.list;

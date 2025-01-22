@@ -396,6 +396,33 @@ package body et_assy_doc is
 	end move_contours;
 
 
+
+
+	function to_string (
+		text : in pac_doc_texts.cursor)
+		return string
+	is begin
+		return to_string (element (text));
+	end to_string;
+	
+
+
+	
+
+	procedure iterate (
+		texts	: in pac_doc_texts.list;
+		process	: not null access procedure (position : in pac_doc_texts.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_doc_texts.cursor := texts.first;
+	begin
+		while c /= pac_doc_texts.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
 	
 
 	procedure mirror_texts (
