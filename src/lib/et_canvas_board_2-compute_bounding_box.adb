@@ -253,7 +253,7 @@ is
 				use pac_doc_lines;
 				use pac_doc_arcs;
 				use pac_doc_circles;
-				use pac_doc_contours;
+				use pac_doc_zones;
 				-- use pac_doc_texts;
 				
 				doc : type_assy_doc_both_sides renames module.board.assy_doc;
@@ -283,8 +283,8 @@ is
 				end query_circle;
 
 
-				procedure query_zone (c : in pac_doc_contours.cursor) is
-					zone : type_doc_contour renames element (c);
+				procedure query_zone (c : in pac_doc_zones.cursor) is
+					zone : type_doc_zone renames element (c);
 				begin
 					b := get_bounding_box (zone, 0.0);
 					merge_areas (bbox_new, b);
@@ -301,8 +301,8 @@ is
 				doc.top.circles.iterate (query_circle'access);
 				doc.bottom.circles.iterate (query_circle'access);
 
-				doc.top.contours.iterate (query_zone'access);
-				doc.bottom.contours.iterate (query_zone'access);
+				doc.top.zones.iterate (query_zone'access);
+				doc.bottom.zones.iterate (query_zone'access);
 				
 				-- CS
 				-- placeholders
@@ -1002,7 +1002,7 @@ is
 					use pac_doc_lines;
 					use pac_doc_arcs;
 					use pac_doc_circles;
-					use pac_doc_contours;
+					use pac_doc_zones;
 					use pac_doc_texts;
 
 					procedure query_line (c : in pac_doc_lines.cursor) is
@@ -1047,8 +1047,8 @@ is
 					end query_circle;
 
 
-					procedure query_contour (c : in pac_doc_contours.cursor) is 
-						contour : type_doc_contour renames element (c);
+					procedure query_contour (c : in pac_doc_zones.cursor) is 
+						contour : type_doc_zone renames element (c);
 					begin
 						b := get_bounding_box (
 							contour		=> contour,
@@ -1082,8 +1082,8 @@ is
 					packge.assy_doc.top.circles.iterate (query_circle'access);
 					packge.assy_doc.bottom.circles.iterate (query_circle'access);
 
-					packge.assy_doc.top.contours.iterate (query_contour'access);
-					packge.assy_doc.bottom.contours.iterate (query_contour'access);
+					packge.assy_doc.top.zones.iterate (query_contour'access);
+					packge.assy_doc.bottom.zones.iterate (query_contour'access);
 					
 					packge.assy_doc.top.texts.iterate (query_text'access);
 					packge.assy_doc.bottom.texts.iterate (query_text'access);

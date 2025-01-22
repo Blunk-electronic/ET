@@ -804,7 +804,7 @@ package body et_board_ops.assy_doc is
 
 	procedure draw_zone (
 		module_cursor	: in pac_generic_modules.cursor;
-		zone			: in type_doc_contour;
+		zone			: in type_doc_zone;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
@@ -817,14 +817,14 @@ package body et_board_ops.assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
-			use pac_doc_contours;
-			c : pac_doc_contours.cursor;
+			use pac_doc_zones;
+			c : pac_doc_zones.cursor;
 
 			-- This procedure tests whether the candidate
 			-- zone z is open. If z is open, then it tries
 			-- to merge the given zone into z. If the merge operation
 			-- succeedes then no more zones are iterated (flag proceed):
-			procedure query_zone (z : in out type_doc_contour) is
+			procedure query_zone (z : in out type_doc_zone) is
 				use et_board_shapes_and_text;
 				use pac_contours;
 				mr : type_merge_result;
@@ -846,10 +846,10 @@ package body et_board_ops.assy_doc is
 			case face is
 				when TOP =>
 					-- Iterate through the already existing zones:
-					c := module.board.assy_doc.top.contours.first;
+					c := module.board.assy_doc.top.zones.first;
 
-					while c /= pac_doc_contours.no_element and proceed loop
-						module.board.assy_doc.top.contours.update_element (c, query_zone'access);
+					while c /= pac_doc_zones.no_element and proceed loop
+						module.board.assy_doc.top.zones.update_element (c, query_zone'access);
 						next (c);
 					end loop;
 
@@ -858,16 +858,16 @@ package body et_board_ops.assy_doc is
 					if proceed then
 						-- put_line ("added as new zone");
 						log (text => "added as new zone", level => log_threshold + 1);
-						module.board.assy_doc.top.contours.append (zone);
+						module.board.assy_doc.top.zones.append (zone);
 					end if;
 
 					
 				when BOTTOM =>
 					-- Iterate through the already existing zones:
-					c := module.board.assy_doc.bottom.contours.first;
+					c := module.board.assy_doc.bottom.zones.first;
 
-					while c /= pac_doc_contours.no_element and proceed loop
-						module.board.assy_doc.bottom.contours.update_element (c, query_zone'access);
+					while c /= pac_doc_zones.no_element and proceed loop
+						module.board.assy_doc.bottom.zones.update_element (c, query_zone'access);
 						next (c);
 					end loop;
 
@@ -875,7 +875,7 @@ package body et_board_ops.assy_doc is
 					-- as a new zone:
 					if proceed then
 						log (text => "added as new zone", level => log_threshold + 1);
-						module.board.assy_doc.bottom.contours.append (zone);
+						module.board.assy_doc.bottom.zones.append (zone);
 					end if;
 			end case;
 		end query_module;
@@ -906,7 +906,7 @@ package body et_board_ops.assy_doc is
 	is
 		use pac_contours;
 		use pac_segments;
-		use pac_doc_contours;
+		use pac_doc_zones;
 		
 		
 		procedure query_module (
@@ -922,7 +922,7 @@ package body et_board_ops.assy_doc is
 
 			
 			procedure query_zone (
-				zone : in out type_doc_contour)
+				zone : in out type_doc_zone)
 			is begin
 				if zone.contour.circular then
 					null; -- CS
@@ -944,13 +944,13 @@ package body et_board_ops.assy_doc is
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.assy_doc.top.contours, 
+						container	=> module.board.assy_doc.top.zones, 
 						position	=> segment.zone, 
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.assy_doc.bottom.contours, 
+						container	=> module.board.assy_doc.bottom.zones, 
 						position	=> segment.zone, 
 						process		=> query_zone'access);
 
@@ -991,8 +991,8 @@ package body et_board_ops.assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			use pac_doc_contours;
-			zc : pac_doc_contours.cursor;
+			use pac_doc_zones;
+			zc : pac_doc_zones.cursor;
 
 			use pac_contours;
 			use pac_segments;
@@ -1024,7 +1024,7 @@ package body et_board_ops.assy_doc is
 
 			
 			procedure query_zone (
-				zone : in out type_doc_contour)
+				zone : in out type_doc_zone)
 			is
 				use pac_contours;
 				use pac_segments;
@@ -1051,11 +1051,11 @@ package body et_board_ops.assy_doc is
 		begin
 			case face is
 				when TOP =>
-					zc := module.board.assy_doc.top.contours.first;
+					zc := module.board.assy_doc.top.zones.first;
 
-					while zc /= pac_doc_contours.no_element loop
+					while zc /= pac_doc_zones.no_element loop
 						update_element (
-							container	=> module.board.assy_doc.top.contours,
+							container	=> module.board.assy_doc.top.zones,
 							position	=> zc,
 							process		=> query_zone'access);
 						
@@ -1064,11 +1064,11 @@ package body et_board_ops.assy_doc is
 
 					
 				when BOTTOM =>
-					zc := module.board.assy_doc.bottom.contours.first;
+					zc := module.board.assy_doc.bottom.zones.first;
 
-					while zc /= pac_doc_contours.no_element loop
+					while zc /= pac_doc_zones.no_element loop
 						update_element (
-							container	=> module.board.assy_doc.bottom.contours,
+							container	=> module.board.assy_doc.bottom.zones,
 							position	=> zc,
 							process		=> query_zone'access);
 						
@@ -1109,8 +1109,8 @@ package body et_board_ops.assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			use pac_doc_contours;
-			zc : pac_doc_contours.cursor;
+			use pac_doc_zones;
+			zc : pac_doc_zones.cursor;
 
 			use pac_contours;
 			use pac_segments;
@@ -1125,7 +1125,7 @@ package body et_board_ops.assy_doc is
 
 			
 			procedure query_zone (
-				zone : in out type_doc_contour)
+				zone : in out type_doc_zone)
 			is
 				use pac_contours;
 				use pac_segments;
@@ -1150,11 +1150,11 @@ package body et_board_ops.assy_doc is
 			
 			
 		begin
-			zc := module.board.assy_doc.top.contours.first;
+			zc := module.board.assy_doc.top.zones.first;
 
-			while zc /= pac_doc_contours.no_element loop
+			while zc /= pac_doc_zones.no_element loop
 				update_element (
-					container	=> module.board.assy_doc.top.contours,
+					container	=> module.board.assy_doc.top.zones,
 					position	=> zc,
 					process		=> query_zone'access);
 				
@@ -1162,11 +1162,11 @@ package body et_board_ops.assy_doc is
 			end loop;
 
 					
-			zc := module.board.assy_doc.bottom.contours.first;
+			zc := module.board.assy_doc.bottom.zones.first;
 
-			while zc /= pac_doc_contours.no_element loop
+			while zc /= pac_doc_zones.no_element loop
 				update_element (
-					container	=> module.board.assy_doc.bottom.contours,
+					container	=> module.board.assy_doc.bottom.zones,
 					position	=> zc,
 					process		=> query_zone'access);
 				
@@ -1207,14 +1207,14 @@ package body et_board_ops.assy_doc is
 		is
 			use pac_contours;
 			use pac_segments;
-			use pac_doc_contours;
+			use pac_doc_zones;
 			
 			proceed : aliased boolean := true;
 
 			face : type_face := TOP;
 			
 			
-			procedure query_zone (z : in pac_doc_contours.cursor) is 
+			procedure query_zone (z : in pac_doc_zones.cursor) is 
 
 				procedure query_segment (
 					c : in pac_segments.cursor) 
@@ -1246,7 +1246,7 @@ package body et_board_ops.assy_doc is
 				end query_segment;
 				
 				
-				procedure query_segments (z : in type_doc_contour) is begin
+				procedure query_segments (z : in type_doc_zone) is begin
 					iterate (
 						segments	=> z.contour.segments,
 						process		=> query_segment'access,
@@ -1266,7 +1266,7 @@ package body et_board_ops.assy_doc is
 		begin
 			-- Iterate the zones in top layer:
 			iterate (
-				zones	=> module.board.assy_doc.top.contours,
+				zones	=> module.board.assy_doc.top.zones,
 				process	=> query_zone'access, 
 				proceed	=> proceed'access);
 
@@ -1276,7 +1276,7 @@ package body et_board_ops.assy_doc is
 				face := BOTTOM;
 				
 				iterate (
-					zones	=> module.board.assy_doc.bottom.contours,
+					zones	=> module.board.assy_doc.bottom.zones,
 					process	=> query_zone'access, 
 					proceed	=> proceed'access);
 
@@ -1330,7 +1330,7 @@ package body et_board_ops.assy_doc is
 			ps : pac_proposed_segments.cursor;
 
 			
-			use pac_doc_contours;
+			use pac_doc_zones;
 
 			-- 1. In the course of this procedure we iterate through all
 			--    zones and all segments and collect the proposed segments
@@ -1341,13 +1341,13 @@ package body et_board_ops.assy_doc is
 			-- Whenever we encounter a proposed segment, then
 			-- the cursor of the zone, the segment itself and the face
 			-- is stored in list proposed_segments:
-			zone_cursor		: pac_doc_contours.cursor;
+			zone_cursor		: pac_doc_zones.cursor;
 			segment_cursor	: pac_segments.cursor;
 			face			: type_face := TOP;
 			
 			
 			procedure query_zone (
-				zone : in type_doc_contour)
+				zone : in type_doc_zone)
 			is 
 
 				procedure query_segment (
@@ -1380,16 +1380,16 @@ package body et_board_ops.assy_doc is
 		begin
 			-- Step 1:
 			-- Get the proposed segments of top and bottom zones:
-			zone_cursor := module.board.assy_doc.top.contours.first;
-			while zone_cursor /= pac_doc_contours.no_element loop
+			zone_cursor := module.board.assy_doc.top.zones.first;
+			while zone_cursor /= pac_doc_zones.no_element loop
 				query_element (zone_cursor, query_zone'access);
 				next (zone_cursor);
 			end loop;
 
 			face := BOTTOM;
 
-			zone_cursor := module.board.assy_doc.bottom.contours.first;
-			while zone_cursor /= pac_doc_contours.no_element loop
+			zone_cursor := module.board.assy_doc.bottom.zones.first;
+			while zone_cursor /= pac_doc_zones.no_element loop
 				query_element (zone_cursor, query_zone'access);
 				next (zone_cursor);
 			end loop;
@@ -1473,7 +1473,7 @@ package body et_board_ops.assy_doc is
 	is
 		use pac_contours;
 		use pac_segments;
-		use pac_doc_contours;
+		use pac_doc_zones;
 		
 		
 		
@@ -1496,7 +1496,7 @@ package body et_board_ops.assy_doc is
 
 			
 			procedure query_zone (
-				zone : in out type_doc_contour)
+				zone : in out type_doc_zone)
 			is 
 				c : pac_segments.cursor;
 			begin
@@ -1520,13 +1520,13 @@ package body et_board_ops.assy_doc is
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.assy_doc.top.contours, 
+						container	=> module.board.assy_doc.top.zones, 
 						position	=> segment.zone, 
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.assy_doc.bottom.contours, 
+						container	=> module.board.assy_doc.bottom.zones, 
 						position	=> segment.zone, 
 						process		=> query_zone'access);
 
@@ -1564,7 +1564,7 @@ package body et_board_ops.assy_doc is
 	is
 		use pac_contours;
 		use pac_segments;
-		use pac_doc_contours;
+		use pac_doc_zones;
 
 		
 		procedure query_module (
@@ -1573,7 +1573,7 @@ package body et_board_ops.assy_doc is
 		is
 			
 			procedure query_zone (
-				zone : in out type_doc_contour)
+				zone : in out type_doc_zone)
 			is 
 				c : pac_segments.cursor;
 			begin
@@ -1593,13 +1593,13 @@ package body et_board_ops.assy_doc is
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.assy_doc.top.contours, 
+						container	=> module.board.assy_doc.top.zones, 
 						position	=> segment.zone, 
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.assy_doc.bottom.contours, 
+						container	=> module.board.assy_doc.bottom.zones, 
 						position	=> segment.zone, 
 						process		=> query_zone'access);
 
@@ -2182,8 +2182,8 @@ package body et_board_ops.assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			use pac_doc_contours;
-			zone_cursor : pac_doc_contours.cursor;
+			use pac_doc_zones;
+			zone_cursor : pac_doc_zones.cursor;
 			face : type_face := TOP;
 			
 			use pac_doc_lines;
@@ -2196,7 +2196,7 @@ package body et_board_ops.assy_doc is
 
 
 			
-			procedure query_zone (zone : in type_doc_contour) is
+			procedure query_zone (zone : in type_doc_zone) is
 				use pac_contours;
 				use pac_segments;
 				segment_cursor : pac_segments.cursor := zone.contour.segments.first;
@@ -2246,8 +2246,8 @@ package body et_board_ops.assy_doc is
 			log (text => "top zones", level => log_threshold + 1);
 			log_indentation_up;
 			
-			zone_cursor := module.board.assy_doc.top.contours.first;
-			while zone_cursor /= pac_doc_contours.no_element loop
+			zone_cursor := module.board.assy_doc.top.zones.first;
+			while zone_cursor /= pac_doc_zones.no_element loop
 				query_element (zone_cursor, query_zone'access);
 				next (zone_cursor);
 			end loop;
@@ -2287,8 +2287,8 @@ package body et_board_ops.assy_doc is
 			log (text => "bottom zones", level => log_threshold + 1);
 			log_indentation_up;
 			
-			zone_cursor := module.board.assy_doc.bottom.contours.first;
-			while zone_cursor /= pac_doc_contours.no_element loop
+			zone_cursor := module.board.assy_doc.bottom.zones.first;
+			while zone_cursor /= pac_doc_zones.no_element loop
 				query_element (zone_cursor, query_zone'access);
 				next (zone_cursor);
 			end loop;

@@ -58,7 +58,7 @@ is
 	use pac_doc_lines;
 	use pac_doc_arcs;
 	use pac_doc_circles;
-	use pac_doc_contours;
+	use pac_doc_zones;
 	use pac_doc_texts;
 	use et_pcb.pac_text_placeholders;
 
@@ -119,8 +119,8 @@ is
 	end query_circle;
 
 	
-	procedure query_zone (c : in pac_doc_contours.cursor) is
-		contour : type_doc_contour renames element (c);
+	procedure query_zone (c : in pac_doc_zones.cursor) is
+		contour : type_doc_zone renames element (c);
 		use pac_draw_contours;
 	begin
 		draw_contour (
@@ -244,7 +244,7 @@ is
 				iterate (module.board.assy_doc.top.lines, query_line'access);
 				iterate (module.board.assy_doc.top.arcs, query_arc'access);
 				iterate (module.board.assy_doc.top.circles, query_circle'access);
-				iterate (module.board.assy_doc.top.contours, query_zone'access);
+				iterate (module.board.assy_doc.top.zones, query_zone'access);
 				iterate (module.board.assy_doc.top.placeholders, query_placeholder'access);
 				iterate (module.board.assy_doc.top.texts, query_text'access);
 
@@ -252,7 +252,7 @@ is
 				iterate (module.board.assy_doc.bottom.lines, query_line'access);
 				iterate (module.board.assy_doc.bottom.arcs, query_arc'access);
 				iterate (module.board.assy_doc.bottom.circles, query_circle'access);
-				iterate (module.board.assy_doc.bottom.contours, query_zone'access);
+				iterate (module.board.assy_doc.bottom.zones, query_zone'access);
 				iterate (module.board.assy_doc.bottom.placeholders, query_placeholder'access);
 				iterate (module.board.assy_doc.bottom.texts, query_text'access);
 

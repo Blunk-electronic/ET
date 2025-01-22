@@ -3604,15 +3604,15 @@ is
 
 					
 					procedure append_assy_doc_polygon_top is begin
-						pac_doc_contours.append (
-							container	=> module.board.assy_doc.top.contours,
-								new_item	=> (contour with null record));
+						pac_doc_zones.append (
+							container	=> module.board.assy_doc.top.zones,
+							new_item	=> (contour with null record));
 					end;
 
 					
 					procedure append_assy_doc_polygon_bottom is begin
-						pac_doc_contours.append (
-							container	=> module.board.assy_doc.bottom.contours,
+						pac_doc_zones.append (
+							container	=> module.board.assy_doc.bottom.zones,
 							new_item	=> (contour with null record));
 					end;
 

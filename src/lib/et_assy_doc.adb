@@ -323,79 +323,87 @@ package body et_assy_doc is
 	end move_circles;
 
 
+	
 
 	procedure iterate (
-		zones	: in pac_doc_contours.list;
-		process	: not null access procedure (position : in pac_doc_contours.cursor);
+		zones	: in pac_doc_zones.list;
+		process	: not null access procedure (position : in pac_doc_zones.cursor);
 		proceed	: not null access boolean)
 	is
-		c : pac_doc_contours.cursor := zones.first;
+		c : pac_doc_zones.cursor := zones.first;
 	begin
-		while c /= pac_doc_contours.no_element and proceed.all = TRUE loop
+		while c /= pac_doc_zones.no_element and proceed.all = TRUE loop
 			process (c);
 			next (c);
 		end loop;
 	end iterate;
 	
+
 	
 
-	procedure mirror_contours (
-		contours	: in out pac_doc_contours.list;
+	procedure mirror_zones (
+		zones	: in out pac_doc_zones.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
-		result : pac_doc_contours.list;
+		result : pac_doc_zones.list;
 
-		procedure query_contour (c : in pac_doc_contours.cursor) is
-			contour : type_doc_contour := element (c);
+		procedure query_contour (c : in pac_doc_zones.cursor) is
+			contour : type_doc_zone := element (c);
 		begin
 			mirror (contour, axis);
 			result.append (contour);
 		end query_contour;
 		
 	begin
-		contours.iterate (query_contour'access);
-		contours := result;
-	end mirror_contours;
+		zones.iterate (query_contour'access);
+		zones := result;
+	end mirror_zones;
 
 
-	procedure rotate_contours (
-		contours	: in out pac_doc_contours.list;
-		angle		: in type_rotation_model)		
+
+	
+	procedure rotate_zones (
+		zones	: in out pac_doc_zones.list;
+		angle	: in type_rotation_model)		
 	is
-		result : pac_doc_contours.list;
+		result : pac_doc_zones.list;
 
-		procedure query_contour (c : in pac_doc_contours.cursor) is
-			contour : type_doc_contour := element (c);
+		procedure query_contour (c : in pac_doc_zones.cursor) is
+			contour : type_doc_zone := element (c);
 		begin
 			rotate_by (contour, angle);
 			result.append (contour);
 		end query_contour;
 
 	begin
-		contours.iterate (query_contour'access);		
-		contours := result;
-	end rotate_contours;			
+		zones.iterate (query_contour'access);		
+		zones := result;
+	end rotate_zones;			
 
 
-	procedure move_contours (
-		contours	: in out pac_doc_contours.list;
-		offset		: in type_distance_relative)		
+
+
+	
+	procedure move_zones (
+		zones	: in out pac_doc_zones.list;
+		offset	: in type_distance_relative)		
 	is
-		result : pac_doc_contours.list;
+		result : pac_doc_zones.list;
 
-		procedure query_contour (c : in pac_doc_contours.cursor) is
-			contour : type_doc_contour := element (c);
+		procedure query_contour (c : in pac_doc_zones.cursor) is
+			contour : type_doc_zone := element (c);
 		begin
 			move_by (contour, offset);
 			result.append (contour);
 		end query_contour;
 
 	begin
-		contours.iterate (query_contour'access);
-		contours := result;
-	end move_contours;
+		zones.iterate (query_contour'access);
+		zones := result;
+	end move_zones;
 
 
+	
 
 
 	function to_string (
@@ -445,6 +453,8 @@ package body et_assy_doc is
 	end mirror_texts;
 
 
+	
+
 	procedure rotate_texts (
 		texts	: in out pac_doc_texts.list;
 		angle	: in type_rotation_model)
@@ -465,6 +475,9 @@ package body et_assy_doc is
 	end rotate_texts;
 
 
+
+
+	
 	procedure move_texts (
 		texts	: in out pac_doc_texts.list;
 		offset	: in type_distance_relative)
@@ -483,6 +496,7 @@ package body et_assy_doc is
 		texts.iterate (query_text'access);		
 		texts := result;
 	end move_texts;
+
 	
 
 
@@ -501,6 +515,7 @@ package body et_assy_doc is
 			 & " width" & to_string (line.width), level => log_threshold);
 	end line_assy_doc_properties;
 
+
 	
 	procedure arc_assy_doc_properties (
 		face			: in type_face;
@@ -516,6 +531,8 @@ package body et_assy_doc is
 			 & " width" & to_string (arc.width), level => log_threshold);
 	end arc_assy_doc_properties;
 
+
+	
 	
 	procedure circle_assy_doc_properties (
 		face			: in type_face;
@@ -529,6 +546,9 @@ package body et_assy_doc is
 			level => log_threshold);
 	end;
 
+
+
+	
 	procedure text_assy_doc_properties (
 		face			: in type_face;
 		cursor			: in pac_doc_texts.cursor;

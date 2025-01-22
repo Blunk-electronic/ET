@@ -191,36 +191,36 @@ package et_assy_doc is
 
 
 	
--- CONTOURS:
+-- ZONES:
 
-	type type_doc_contour is new type_contour with null record; -- CS rename to type_doc_zone
-	package pac_doc_contours is new doubly_linked_lists (type_doc_contour);
-	use pac_doc_contours; -- CS rename to pac_doc_zones
+	type type_doc_zone is new type_contour with null record;
+	package pac_doc_zones is new doubly_linked_lists (type_doc_zone);
+	use pac_doc_zones;
 
 
 	-- Iterates the zones.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
-		zones	: in pac_doc_contours.list;
-		process	: not null access procedure (position : in pac_doc_contours.cursor);
+		zones	: in pac_doc_zones.list;
+		process	: not null access procedure (position : in pac_doc_zones.cursor);
 		proceed	: not null access boolean);
 
 
 	
-	-- Mirrors a list of contours along the given axis:
-	procedure mirror_contours (
-		contours	: in out pac_doc_contours.list;
+	-- Mirrors a list of zones along the given axis:
+	procedure mirror_zones (
+		zones	: in out pac_doc_zones.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
-	-- Rotates a list of contours by the given angle:
-	procedure rotate_contours (
-		contours	: in out pac_doc_contours.list;
-		angle		: in type_rotation_model);					
+	-- Rotates a list of zones by the given angle:
+	procedure rotate_zones (
+		zones	: in out pac_doc_zones.list;
+		angle	: in type_rotation_model);					
 
-	-- Moves a list of contours by the given offset:
-	procedure move_contours (
-		contours	: in out pac_doc_contours.list;
-		offset		: in type_distance_relative);					
+	-- Moves a list of zones by the given offset:
+	procedure move_zones (
+		zones	: in out pac_doc_zones.list;
+		offset	: in type_distance_relative);					
 
 	
 	
@@ -270,11 +270,11 @@ package et_assy_doc is
 	
 	-- This is the base type for assy doc objects in general:
 	type type_assy_doc is tagged record
-		lines 		: pac_doc_lines.list;
-		arcs		: pac_doc_arcs.list;
-		circles		: pac_doc_circles.list;
-		contours	: pac_doc_contours.list;
-		texts		: pac_doc_texts.list;
+		lines 	: pac_doc_lines.list;
+		arcs	: pac_doc_arcs.list;
+		circles	: pac_doc_circles.list;
+		zones	: pac_doc_zones.list;
+		texts	: pac_doc_texts.list;
 	end record;
 
 

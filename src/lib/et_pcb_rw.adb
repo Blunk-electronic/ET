@@ -924,8 +924,8 @@ package body et_pcb_rw is
 	end write_circle;
 
 	
-	procedure write_polygon (cursor : in pac_doc_contours.cursor) is 
-		use pac_doc_contours;
+	procedure write_polygon (cursor : in pac_doc_zones.cursor) is 
+		use pac_doc_zones;
 	begin
 		fill_zone_begin;
 		contours_begin;		

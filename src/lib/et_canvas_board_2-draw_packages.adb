@@ -336,7 +336,7 @@ is
 			use pac_doc_lines;
 			use pac_doc_arcs;
 			use pac_doc_circles;
-			use pac_doc_contours;
+			use pac_doc_zones;
 			use pac_doc_texts;
 
 			face : type_face := TOP;
@@ -386,8 +386,8 @@ is
 				end query_circle;
 
 			
-				procedure query_contour (c : in pac_doc_contours.cursor) is 
-					contour : type_doc_contour renames element (c);
+				procedure query_contour (c : in pac_doc_zones.cursor) is 
+					contour : type_doc_zone renames element (c);
 				begin
 					-- See comments in procedure query_line.
 					draw_contour (
@@ -413,7 +413,7 @@ is
 				doc_top.lines.iterate (query_line'access);
 				doc_top.arcs.iterate (query_arc'access);
 				doc_top.circles.iterate (query_circle'access);
-				doc_top.contours.iterate (query_contour'access);
+				doc_top.zones.iterate (query_contour'access);
 				doc_top.texts.iterate (query_text'access);
 
 				face := BOTTOM;
@@ -421,7 +421,7 @@ is
 				doc_bottom.lines.iterate (query_line'access);
 				doc_bottom.arcs.iterate (query_arc'access);
 				doc_bottom.circles.iterate (query_circle'access);
-				doc_bottom.contours.iterate (query_contour'access);
+				doc_bottom.zones.iterate (query_contour'access);
 				doc_bottom.texts.iterate (query_text'access);
 			end draw;
 
@@ -470,7 +470,7 @@ is
 				procedure query_zone (
 					c : pac_keepout_zones.cursor) 
 				is begin
-					-- The contours have already been moved, flipped and rotated
+					-- The zones have already been moved, flipped and rotated
 					-- to the final position. So we do not pass the 
 					-- position and rotation of the package.
 					-- Likewise there is no need to mirror anything here:

@@ -203,7 +203,7 @@ package et_board_ops.assy_doc is
 	--    is regarded a a new zone and added to the existing zones.
 	procedure draw_zone (
 		module_cursor	: in pac_generic_modules.cursor;
-		zone			: in type_doc_contour;
+		zone			: in type_doc_zone;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
 
@@ -213,7 +213,7 @@ package et_board_ops.assy_doc is
 	-- segment of a zone by its zone and face:
 	type type_object_segment is record
 		face	: type_face := TOP;
-		zone	: pac_doc_contours.cursor;
+		zone	: pac_doc_zones.cursor;
 		segment	: pac_contours.pac_segments.cursor;
 	end record;
 

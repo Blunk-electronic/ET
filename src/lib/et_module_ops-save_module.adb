@@ -1469,7 +1469,7 @@ is
 		use pac_doc_lines;
 		use pac_doc_arcs;
 		use pac_doc_circles;
-		use pac_doc_contours;
+		use pac_doc_zones;
 
 		use et_stencil;
 		use pac_stencil_lines;
@@ -1852,7 +1852,7 @@ is
 			iterate (element (module_cursor).board.assy_doc.top.lines, write_line'access);
 			iterate (element (module_cursor).board.assy_doc.top.arcs, write_arc'access);
 			iterate (element (module_cursor).board.assy_doc.top.circles, write_circle'access);
-			iterate (element (module_cursor).board.assy_doc.top.contours, write_polygon'access);
+			iterate (element (module_cursor).board.assy_doc.top.zones, write_polygon'access);
 			iterate (element (module_cursor).board.assy_doc.top.texts, write_text'access);
 			iterate (element (module_cursor).board.assy_doc.top.placeholders, write_placeholder'access);
 			section_mark (section_top, FOOTER);
@@ -1861,7 +1861,7 @@ is
 			iterate (element (module_cursor).board.assy_doc.bottom.lines, write_line'access);
 			iterate (element (module_cursor).board.assy_doc.bottom.arcs, write_arc'access);
 			iterate (element (module_cursor).board.assy_doc.bottom.circles, write_circle'access);
-			iterate (element (module_cursor).board.assy_doc.bottom.contours, write_polygon'access);
+			iterate (element (module_cursor).board.assy_doc.bottom.zones, write_polygon'access);
 			iterate (element (module_cursor).board.assy_doc.bottom.texts, write_text'access);
 			iterate (element (module_cursor).board.assy_doc.bottom.placeholders, write_placeholder'access);
 			section_mark (section_bottom, FOOTER);

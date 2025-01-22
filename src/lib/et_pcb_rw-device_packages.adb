@@ -226,7 +226,7 @@ package body et_pcb_rw.device_packages is
 			use pac_doc_lines;
 			use pac_doc_arcs;
 			use pac_doc_circles;
-			use pac_doc_contours;
+			use pac_doc_zones;
 			use pac_doc_texts;
 
 			-- CS move this procedure to et_pcb_rw
@@ -247,7 +247,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.assy_doc.top.lines, write_line'access);
 			iterate (packge.assy_doc.top.arcs, write_arc'access);
 			iterate (packge.assy_doc.top.circles, write_circle'access);
-			iterate (packge.assy_doc.top.contours, write_polygon'access);
+			iterate (packge.assy_doc.top.zones, write_polygon'access);
 			iterate (packge.assy_doc.top.texts, write_text'access);
 			iterate (packge.assy_doc.top.placeholders, write_placeholder'access);
 			section_mark (section_top, FOOTER);
@@ -257,7 +257,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.assy_doc.bottom.lines, write_line'access);
 			iterate (packge.assy_doc.bottom.arcs, write_arc'access);
 			iterate (packge.assy_doc.bottom.circles, write_circle'access);
-			iterate (packge.assy_doc.bottom.contours, write_polygon'access);
+			iterate (packge.assy_doc.bottom.zones, write_polygon'access);
 			iterate (packge.assy_doc.bottom.texts, write_text'access);
 			iterate (packge.assy_doc.bottom.placeholders, write_placeholder'access);
 			section_mark (section_bottom, FOOTER);
@@ -1311,8 +1311,8 @@ package body et_pcb_rw.device_packages is
 
 				
 				procedure append_assy_doc_polygon_top is begin
-					pac_doc_contours.append (
-						container	=> packge.assy_doc.top.contours, 
+					pac_doc_zones.append (
+						container	=> packge.assy_doc.top.zones, 
 						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
@@ -1321,8 +1321,8 @@ package body et_pcb_rw.device_packages is
 
 				
 				procedure append_assy_doc_polygon_bottom is begin
-					pac_doc_contours.append (
-						container	=> packge.assy_doc.bottom.contours, 
+					pac_doc_zones.append (
+						container	=> packge.assy_doc.bottom.zones, 
 						new_item	=> (contour with null record));
 					
 					-- clean up for next polygon
