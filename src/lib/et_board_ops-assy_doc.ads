@@ -346,6 +346,13 @@ package et_board_ops.assy_doc is
 		text			: in type_object_text;
 		log_threshold	: in type_log_level);
 
+
+	function get_first_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_text;
+
 	
 
 -- OBJECTS:

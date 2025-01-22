@@ -436,7 +436,7 @@ package body et_board_ops.assy_doc is
 
 			
 		begin
-			-- Query the objects in the top layer first:
+			-- Query the lines in the top layer first:
 			iterate (top_items, query_line'access, proceed'access);
 			result.face := top;
 
@@ -1911,6 +1911,91 @@ package body et_board_ops.assy_doc is
 
 
 	
+
+	function get_first_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_text
+	is
+		result : type_object_text;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_doc_texts;
+			
+			proceed : aliased boolean := true;
+
+			top_items 		: pac_doc_texts.list renames module.board.assy_doc.top.texts;
+			bottom_items	: pac_doc_texts.list renames module.board.assy_doc.bottom.texts;
+
+			
+			procedure query_text (c : in pac_doc_texts.cursor) is
+				text : type_doc_text renames element (c);
+				use et_object_status;
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (text) then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when SELECTED =>
+						if is_selected (text) then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when others =>
+						null; -- CS
+				end case;
+			end query_text;
+			
+
+			
+		begin
+			-- Query the texts in the top layer first:
+			iterate (top_items, query_text'access, proceed'access);
+			result.face := top;
+
+			-- If nothing found, then query the bottom layer:
+			if proceed then
+				iterate (bottom_items, query_text'access, proceed'access);
+				result.face := bottom;
+			end if;
+
+			-- If still nothing found, return TOP and no_element:
+			if proceed then
+				result := (others => <>);	
+			end if;
+		end query_module;
+
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first text / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- put_line ("found " & to_string (result));
+		
+		log_indentation_down;
+
+		return result;
+	end get_first_text;
+
+
+	
 	
 
 	function get_first_object (
@@ -1919,7 +2004,7 @@ package body et_board_ops.assy_doc is
 		log_threshold	: in type_log_level)
 		return type_object
 	is
-		result_category : type_object_category;
+		result_category : type_object_category := CAT_VOID;
 		result_segment  : type_object_segment;
 		result_line		: type_object_line;
 		result_text		: type_object_text;
@@ -1937,7 +2022,8 @@ package body et_board_ops.assy_doc is
 		log_indentation_up;
 
 		
-		-- First we search for a line:
+		-- First we search for a line.
+		-- If a line has been found, then go to the end of this procedure:
 		result_line := get_first_line (module_cursor, flag, log_threshold + 1);
 
 		if result_line.cursor /= pac_doc_lines.no_element then
@@ -1947,25 +2033,58 @@ package body et_board_ops.assy_doc is
 				 level => log_threshold + 1);
 			
 			result_category := CAT_LINE;
-
-			-- CS arcs, circles, texts ?
-		else
-			-- no line found -> search among zone segments:
-			result_segment := get_first_segment (module_cursor, flag, log_threshold + 1);
-
-			if result_segment.segment /= pac_segments.no_element then
-				-- A segment has been found.
-				log (text => to_string (result_segment.segment)
-					 & " face " & to_string (result_segment.face),
-					 level => log_threshold + 1);
-				
-				result_category := CAT_ZONE_SEGMENT;
-			else
-				-- Nothing has been found:
-				result_category := CAT_VOID;
-			end if;
 		end if;
 
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
+		
+		-- Now we search for an arc.
+		-- If there is one, then go to the end of this procedure:
+		-- CS
+
+
+		-- Now we search for an circle.
+		-- If there is one, then go to the end of this procedure:
+		-- CS
+
+
+		-- Now search for a segment of a zone.
+		-- If there is one, then go to the end  of this procedure:
+		result_segment := get_first_segment (module_cursor, flag, log_threshold + 1);
+
+		if result_segment.segment /= pac_segments.no_element then
+			-- A segment has been found.
+			log (text => to_string (result_segment.segment)
+					& " face " & to_string (result_segment.face),
+					level => log_threshold + 1);
+			
+			result_category := CAT_ZONE_SEGMENT;
+		end if;
+
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
+
+		-- Now search for a text:
+		result_text := get_first_text (module_cursor, flag, log_threshold + 1);
+		
+		if result_text.cursor /= pac_doc_texts.no_element then
+			-- A text has been found.
+			log (text => to_string (result_text.cursor)
+					& " face " & to_string (result_text.face),
+					level => log_threshold + 1);
+			
+			result_category := CAT_TEXT;
+		end if;
+
+
+		-- If still nothing has been found then the category is CAT_VOID.
+		
+
+	<<end_of_search>>
 		
 		log_indentation_down;
 
@@ -1980,7 +2099,7 @@ package body et_board_ops.assy_doc is
 				return (CAT_ZONE_SEGMENT, result_segment);
 
 			when CAT_TEXT =>
-				return (CAT_TEXT, result_text); -- CS
+				return (CAT_TEXT, result_text);
 		end case;
 	end get_first_object;
 
