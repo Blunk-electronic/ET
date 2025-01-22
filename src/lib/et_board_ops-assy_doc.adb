@@ -1576,7 +1576,6 @@ package body et_board_ops.assy_doc is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-
 			
 			procedure query_zone (
 				zone : in out type_doc_contour)
@@ -1611,7 +1610,6 @@ package body et_board_ops.assy_doc is
 
 			end case;
 		end query_module;
-
 
 		
 	begin
@@ -1766,8 +1764,10 @@ package body et_board_ops.assy_doc is
 	end move_text;
 
 
+	
 
 
+	
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1776,22 +1776,47 @@ package body et_board_ops.assy_doc is
 		log_threshold	: in type_log_level)
 	is
 
-	begin
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
 
+			procedure query_text (text : in out type_doc_text) is begin
+				modify_status (text, operation);
+			end query_text;
+			
+		begin
+			case text.face is
+				when TOP =>
+					module.board.assy_doc.top.texts.update_element (
+						text.cursor, query_text'access);
+
+				when BOTTOM =>
+					module.board.assy_doc.bottom.texts.update_element (
+						text.cursor, query_text'access);
+			end case;
+		end query_module;
+
+		
+	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of text"
+			& " modifying status of text" -- CS log position and content ?
 			& " / " & to_string (operation),
 			level => log_threshold);
 
 		log_indentation_up;
 
-		-- CS
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
 		
 		log_indentation_down;
 	end modify_status;
 
 	
 
+	
 	
 
 	procedure move_text (
@@ -1801,19 +1826,48 @@ package body et_board_ops.assy_doc is
 		log_threshold	: in type_log_level)
 	is
 
-	begin
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
 
+			procedure query_text (text : in out type_doc_text) is begin
+				null; -- CS
+				-- text.position := destination;
+			end query_text;
+			
+		begin
+			case text.face is
+				when TOP =>
+					module.board.assy_doc.top.texts.update_element (
+						text.cursor, query_text'access);
+
+				when BOTTOM =>
+					module.board.assy_doc.bottom.texts.update_element (
+						text.cursor, query_text'access);
+			end case;
+		end query_module;
+		
+
+	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (text.face) 
 			& " moving assembly documentation text to "
 			& to_string (destination),
 			level => log_threshold);
 
-		-- CS
+		log_indentation_up;
 
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
 	end move_text;
 
 
+	
 
 
 	procedure delete_text (
@@ -1822,15 +1876,36 @@ package body et_board_ops.assy_doc is
 		log_threshold	: in type_log_level)
 	is
 
-	begin
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			c : pac_doc_texts.cursor := text.cursor;			
+		begin
+			case text.face is
+				when TOP =>
+					module.board.assy_doc.top.texts.delete (c);
 
+				when BOTTOM =>
+					module.board.assy_doc.bottom.texts.delete (c);
+			end case;
+		end query_module;
+
+		
+	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (text.face) 
 			& " deleting assembly documentation text",
 			level => log_threshold);
 
-		-- CS
+		log_indentation_up;
 
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
 	end delete_text;
 
 
