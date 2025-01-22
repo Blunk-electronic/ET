@@ -385,11 +385,13 @@ package body et_text is
 
 
 		
+		
 		function get_position (text : in type_text_fab)
 			return pac_geometry.type_position
 		is begin
 			return text.position;
 		end get_position;
+
 		
 		function get_place (text : in type_text_fab)
 			return type_vector_model
@@ -404,6 +406,15 @@ package body et_text is
 			return text.position.rotation;
 		end get_rotation;
 
+
+		function to_string (
+			text : in type_text_fab)
+			return string
+		is begin
+			return "position" & to_string (get_position (text))
+				& " linewidth" & to_string (text.line_width);
+		end to_string;
+		
 		
 		procedure mirror_text (
 			text	: in out type_text_fab;
@@ -566,7 +577,19 @@ package body et_text is
 			end if;
 		end "<";
 
-			
+
+
+		
+		function to_string (
+			text : in type_text_fab_with_content)
+			return string
+		is begin
+			return to_string (type_text_fab (text))
+				& " content " & enclose_in_quotes (to_string (text.content));
+		end to_string;
+
+
+		
 		
 		function vectorize_text (
 			content		: in pac_text_content.bounded_string; -- MUST CONTAIN SOMETHING !

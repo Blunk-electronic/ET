@@ -264,7 +264,12 @@ package et_text is
 			return type_rotation;
 
 
-		
+		-- Returns the position and linewidth of the given text:
+		function to_string (
+			text : in type_text_fab)
+			return string;
+
+
 		
 		-- Mirrors a text along the given axis:
 		procedure mirror_text (
@@ -1761,6 +1766,14 @@ package et_text is
 			content	: pac_text_content.bounded_string;
 		end record;
 
+
+		-- Returns the position, linewidth and content
+		-- of the given text:
+		function to_string (
+			text : in type_text_fab_with_content)
+			return string;
+		
+		
 		package pac_texts_fab_with_content is new
 			doubly_linked_lists (type_text_fab_with_content);
 		
