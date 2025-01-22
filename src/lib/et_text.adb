@@ -371,6 +371,15 @@ package body et_text is
 
 		
 
+		procedure reset_status (
+			text 		: in out type_text)
+		is begin
+			clear_selected (text);
+			clear_proposed (text);
+			clear_moving (text);
+		end reset_status;
+
+		
 		
 
 		

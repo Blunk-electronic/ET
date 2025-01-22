@@ -376,7 +376,8 @@ package body et_board_ops.assy_doc is
 
 		
 	begin
-		log (text => "resetting proposed lines",
+		log (text => "module " & to_string (module_cursor)
+			 & " resetting proposed lines",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -1954,8 +1955,7 @@ package body et_board_ops.assy_doc is
 						null; -- CS
 				end case;
 			end query_text;
-			
-
+	
 			
 		begin
 			-- Query the texts in the top layer first:
@@ -1973,7 +1973,6 @@ package body et_board_ops.assy_doc is
 				result := (others => <>);	
 			end if;
 		end query_module;
-
 
 		
 	begin
@@ -1993,6 +1992,74 @@ package body et_board_ops.assy_doc is
 
 		return result;
 	end get_first_text;
+
+
+
+
+	procedure reset_proposed_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			top 	: pac_doc_texts.list renames module.board.assy_doc.top.texts;
+			bottom	: pac_doc_texts.list renames module.board.assy_doc.bottom.texts;
+
+			
+			procedure query_text (
+				text	: in out type_doc_text)
+			is begin
+				reset_status (text);
+			end query_text;
+
+
+			c : pac_doc_texts.cursor;
+			
+			procedure query_top is begin
+				if not top.is_empty then
+					c := top.first;
+					while c /= pac_doc_texts.no_element loop
+						top.update_element (c, query_text'access);
+						next (c);
+					end loop;
+				end if;
+			end query_top;
+
+			
+			procedure query_bottom is begin
+				if not bottom.is_empty then
+					c := bottom.first;
+					while c /= pac_doc_texts.no_element loop
+						bottom.update_element (c, query_text'access);
+						next (c);
+					end loop;
+				end if;
+			end query_bottom;
+
+			
+		begin
+			query_top;
+			query_bottom;
+		end query_module;
+
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " resetting proposed texts",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_texts;
 
 
 	
@@ -2538,6 +2605,29 @@ package body et_board_ops.assy_doc is
 		log_indentation_down;
 	end delete_object;
 	
+
+
+	
+	procedure reset_proposed_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+	begin
+		log (text => "module " & to_string (module_cursor) &
+			" resetting proposed objects",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		reset_proposed_lines (module_cursor, log_threshold + 1);
+		-- CS arcs, circles
+		
+		reset_proposed_texts (module_cursor, log_threshold + 1);
+		reset_proposed_segments (module_cursor, log_threshold + 1);
+
+		log_indentation_down;
+	end reset_proposed_objects;
 
 	
 end et_board_ops.assy_doc;

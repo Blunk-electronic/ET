@@ -232,6 +232,9 @@ package et_text is
 			operation	: in et_object_status.type_status_operation);
 
 
+		-- Clears all status flags of the given text:
+		procedure reset_status (
+		   text 		: in out type_text);
 		
 		
 		-- Returns the properties of the given text in a long single string.	

@@ -353,6 +353,13 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level)
 		return type_object_text;
 
+
+	-- Clears the proposed-flag and the selected-flag 
+	-- of all texts:
+	procedure reset_proposed_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
 	
 
 -- OBJECTS:
@@ -455,7 +462,11 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
-	
+	procedure reset_proposed_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+										 
 end et_board_ops.assy_doc;
 
 -- Soli Deo Gloria
