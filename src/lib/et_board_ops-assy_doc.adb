@@ -368,7 +368,6 @@ package body et_board_ops.assy_doc is
 			query_bottom;
 		end query_module;
 
-
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -2040,7 +2039,6 @@ package body et_board_ops.assy_doc is
 			query_top;
 			query_bottom;
 		end query_module;
-
 
 		
 	begin
