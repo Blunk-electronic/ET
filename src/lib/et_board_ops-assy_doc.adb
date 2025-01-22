@@ -334,9 +334,7 @@ package body et_board_ops.assy_doc is
 			
 			procedure query_line (
 				line	: in out type_doc_line)
-			is 
-				use et_object_status;
-			begin
+			is begin
 				reset_status (line);
 			end query_line;
 
@@ -367,10 +365,7 @@ package body et_board_ops.assy_doc is
 			
 		begin
 			query_top;
-
-			if lc = pac_doc_lines.no_element then
-				query_bottom;
-			end if;
+			query_bottom;
 		end query_module;
 
 
@@ -1995,6 +1990,7 @@ package body et_board_ops.assy_doc is
 
 
 
+	
 
 	procedure reset_proposed_texts (
 		module_cursor	: in pac_generic_modules.cursor;
