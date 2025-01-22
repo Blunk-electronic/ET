@@ -2127,7 +2127,13 @@ package body et_board_ops.assy_doc is
 			
 			use pac_doc_lines;
 			line_cursor : pac_doc_lines.cursor;
+
+			-- CS arcs, circles
 			
+			use pac_doc_texts;
+			text_cursor : pac_doc_texts.cursor;
+
+
 			
 			procedure query_zone (zone : in type_doc_contour) is
 				use pac_contours;
@@ -2163,6 +2169,17 @@ package body et_board_ops.assy_doc is
 			end query_line;
 				
 
+			procedure query_text (text : in type_doc_text) is begin
+				if is_proposed (text) then
+					result.append ((
+						cat		=> CAT_TEXT,
+						text	=> (face, text_cursor)));
+
+					log (text => to_string (text), level => log_threshold + 2);
+				end if;
+			end query_text;
+
+			
 			
 		begin
 			log (text => "top zones", level => log_threshold + 1);
@@ -2190,6 +2207,19 @@ package body et_board_ops.assy_doc is
 			
 			-- CS arcs, circles
 
+
+			log (text => "top texts", level => log_threshold + 1);
+			log_indentation_up;
+			
+			text_cursor := module.board.assy_doc.top.texts.first;
+			while text_cursor /= pac_doc_texts.no_element loop
+				query_element (text_cursor, query_text'access);
+				next (text_cursor);
+			end loop;
+
+			log_indentation_down;
+
+			
 			
 			face := BOTTOM;
 
@@ -2216,6 +2246,19 @@ package body et_board_ops.assy_doc is
 
 			log_indentation_down;
 			-- CS arcs, circles
+
+			
+			log (text => "bottom texts", level => log_threshold + 1);
+			log_indentation_up;
+			
+			text_cursor := module.board.assy_doc.bottom.texts.first;
+			while text_cursor /= pac_doc_texts.no_element loop
+				query_element (text_cursor, query_text'access);
+				next (text_cursor);
+			end loop;
+
+			log_indentation_down;
+			
 		end query_module;
 
 		
