@@ -405,6 +405,33 @@ package body et_assy_doc is
 
 	
 
+	function is_proposed (
+		text_cursor	: in pac_doc_texts.cursor)
+		return boolean
+	is begin
+		if element (text_cursor).status.proposed then
+			return true;
+		else
+			return false;
+		end if;
+	end is_proposed;
+
+	
+
+	function is_selected (
+		text_cursor	: in pac_doc_texts.cursor)
+		return boolean
+	is begin
+		if element (text_cursor).status.selected then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+		
+
+
+	
 
 	function to_string (
 		text : in pac_doc_texts.cursor)
@@ -443,7 +470,6 @@ package body et_assy_doc is
 			text : type_doc_text := element (c);
 		begin
 			mirror_text (text, axis);
-			mirror_vector_text (text.vectors, axis);
 			result.append (text);
 		end query_text;
 		
@@ -465,7 +491,6 @@ package body et_assy_doc is
 			text : type_doc_text := element (c);
 		begin
 			rotate_text (text, angle);
-			rotate_vector_text (text.vectors, angle);
 			result.append (text);
 		end query_text;
 		
@@ -488,7 +513,6 @@ package body et_assy_doc is
 			text : type_doc_text := element (c);
 		begin
 			move_text (text, offset);
-			move_vector_text (text.vectors, offset);
 			result.append (text);
 		end query_text;
 		

@@ -226,15 +226,25 @@ package et_assy_doc is
 	
 	
 -- TEXTS:
-	
-	type type_doc_text is new type_text_fab_with_content with record
-		vectors	: type_vector_text;
-	end record;	
 
+	type type_doc_text is new type_text_fab_with_content with null record;	
+	
 	package pac_doc_texts is new doubly_linked_lists (type_doc_text);
 	use pac_doc_texts;
 
 
+	-- Returns true if the "proposed-flag" of the given text set:
+	function is_proposed (
+		text_cursor	: in pac_doc_texts.cursor)
+		return boolean;
+	
+	-- Returns true if the "selected-flag" of the given text is set:
+	function is_selected (
+		text_cursor	: in pac_doc_texts.cursor)
+		return boolean;
+
+
+	
 	-- Returns the position, linewidth and content
 	-- of the given text:
 	function to_string (
