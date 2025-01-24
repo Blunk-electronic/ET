@@ -133,6 +133,10 @@ package et_canvas.text is
 	procedure draw_vector_text (
 		text	: in pac_text.type_vector_text);
 
+
+	procedure draw_vector_text_2 (
+		text	: in pac_text.type_text_fab_with_content'class);
+	
 	
 	
 end et_canvas.text;

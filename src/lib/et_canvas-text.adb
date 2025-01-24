@@ -395,6 +395,75 @@ package body et_canvas.text is
 		stroke;
 	end draw_vector_text;
 
+
+
+	
+	procedure draw_vector_text_2 (
+		text	: in pac_text.type_text_fab_with_content'class) 
+	is
+		use pac_text;
+		use pac_character_lines;
+
+		-- Drawing a vector-text is just a matter of
+		-- drawing many lines. So we iterate the given
+		-- lines of the text and draw them one by one.
+		
+		procedure query_line (
+			c : in pac_character_lines.cursor)
+		is
+			-- The line of a character must now be
+			-- converted to a type_line:
+			lf : type_character_line renames element (c);
+			lc : type_line;
+		begin
+			lc.start_point := to_point (lf.start_point);
+			lc.end_point := to_point (lf.end_point);
+
+			draw_line (
+				line	=> lc,
+				width	=> 0.0); -- don't care
+
+		end query_line;
+		
+
+		vectors	: pac_text.type_vector_text;
+		pos_final : type_position := text.position;
+		
+	begin
+		if is_moving (text) then
+			pos_final.place := get_object_tool_position;
+		end if;
+		
+		--draw_origin (text.position);
+		draw_origin ((pos_final.place, zero_rotation));
+		-- CS draw the origin rotated by 45 degrees 
+		-- if the text is locked ?
+		
+		vectors := vectorize_text (
+			content		=> text.content,
+			size		=> text.size,
+			-- rotation	=> get_rotation (text.position),
+			rotation	=> get_rotation (pos_final),
+			--position	=> text.position.place,
+			position	=> pos_final.place,
+			mirror		=> text.mirror,
+			line_width	=> text.line_width,
+			alignment	=> text.alignment); -- right, bottom
+
+		
+		-- set_line_join (context.cr, cairo_line_join_miter); -- CS
+
+		-- The linewidth applies to all character lines:
+		set_linewidth (text.line_width);
+		
+		iterate (vectors, query_line'access);
+
+		-- Do a final stroke:
+		stroke;
+	end draw_vector_text_2;
+
+
+
 	
 end et_canvas.text;
 
