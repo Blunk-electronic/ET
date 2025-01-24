@@ -90,9 +90,11 @@ package et_pcb is
 
 	-- Maps from face to mirror status of a vectorized text.
 	-- Use it for non-device related texts and placeholders.
+	-- NOTE: Mirroring along X axis is not allowed for vector texts.
+	-- So this function returns either MIRROR_NO or MIRROR_ALONG_Y_AXIS:
 	function face_to_mirror (
 		f : in type_face)
-		return type_vector_text_mirrored;
+		return type_mirror;
 
 	
 
@@ -100,10 +102,11 @@ package et_pcb is
 
 	-- Maps from signal layer to mirror status of a vectorized text.
 	-- Use it for drawing non-device related texts and placeholders.
+	-- So this function returns either MIRROR_NO or MIRROR_ALONG_Y_AXIS:
 	function signal_layer_to_mirror (
 		current_layer	: in et_pcb_stack.type_signal_layer;
 		bottom_layer	: in et_pcb_stack.type_signal_layer)
-		return et_text.type_vector_text_mirrored;
+		return type_mirror;
 
 	
 

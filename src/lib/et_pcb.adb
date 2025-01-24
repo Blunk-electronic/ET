@@ -57,12 +57,12 @@ package body et_pcb is
 
 	function face_to_mirror (
 		f : in type_face)
-		return type_vector_text_mirrored 
+		return type_mirror
 	is begin
 		case f is
 			when TOP	=> return MIRROR_NO;
 			when BOTTOM	=> return MIRROR_ALONG_Y_AXIS;
-		end case;
+		end case;		
 	end face_to_mirror;
 
 	
@@ -72,7 +72,7 @@ package body et_pcb is
 	function signal_layer_to_mirror (
 		current_layer	: in et_pcb_stack.type_signal_layer;
 		bottom_layer	: in et_pcb_stack.type_signal_layer)
-		return et_text.type_vector_text_mirrored 
+		return type_mirror 
 	is
 		use et_text;
 	begin
