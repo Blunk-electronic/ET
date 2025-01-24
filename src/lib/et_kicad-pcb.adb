@@ -3539,12 +3539,12 @@ package body et_kicad.pcb is
 						
 					when layer_top_assy_doc_id =>
 						board.assy_doc.top.texts.append ((type_text_fab (board_text) with
-							content => board_text.content, vectors => <>));
+							content => board_text.content));
 						text_assy_doc_properties (TOP, board.assy_doc.top.texts.last, log_threshold + 1);
 						
 					when layer_bot_assy_doc_id =>
 						board.assy_doc.bottom.texts.append ((type_text_fab (board_text) with
-							content => board_text.content, vectors => <>));
+							content => board_text.content));
 						text_assy_doc_properties (BOTTOM, board.assy_doc.bottom.texts.last, log_threshold + 1);
 
 						
@@ -4205,12 +4205,12 @@ package body et_kicad.pcb is
 								
 							when TOP_ASSY => 
 								package_assy_doc.top.texts.append ((type_text_fab (package_text) with 
-									content => package_text.content, vectors => <>));  -- CS vectorize text
+									content => package_text.content));
 								text_assy_doc_properties (TOP, package_assy_doc.top.texts.last, log_threshold + 1);
 								
 							when BOT_ASSY => 
 								package_assy_doc.bottom.texts.append ((type_text_fab (package_text) with
-									content => package_text.content, vectors => <>));  -- CS vectorize text
+									content => package_text.content));
 								text_assy_doc_properties (BOTTOM, package_assy_doc.bottom.texts.last, log_threshold + 1);
 								
 							when others -- should never happen. kicad does not allow texts in signal layers 
