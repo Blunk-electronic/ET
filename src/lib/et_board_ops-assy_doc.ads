@@ -102,12 +102,13 @@ package et_board_ops.assy_doc is
 	
 	-- Sets the proposed-flag of all lines which are
 	-- in the given zone around the given place.
+	-- Adds to count the number of lines that have been found:
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		face			: in type_face;
 		zone			: in type_accuracy; -- the circular area around the place
-		count			: in out natural; -- the number of affected lines
+		count			: in out natural;
 		log_threshold	: in type_log_level);
 
 
@@ -230,12 +231,13 @@ package et_board_ops.assy_doc is
 	-- Sets the proposed-flag of all line and arc segments 
 	-- of a zone which are
 	-- in the given zone around the given place.
+	-- Adds to count the number of segments that have been found:
 	procedure propose_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		zone			: in type_accuracy; -- the circular area around the place
 		face			: in type_face;
-		count			: in out natural; -- the number of affected segments
+		count			: in out natural;
 		log_threshold	: in type_log_level);
 
 
@@ -333,6 +335,17 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
+	-- Sets the proposed-flag of all texts which have their
+	-- origin (or anchor point) in the given zone around the given place.
+	-- Adds to count the number of texts that have been found:
+	procedure propose_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		face			: in type_face;
+		zone			: in type_accuracy; -- the circular area around the place
+		count			: in out natural;
+		log_threshold	: in type_log_level);
+	
 
 	procedure move_text (
 		module_cursor	: in pac_generic_modules.cursor;

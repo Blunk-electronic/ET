@@ -118,14 +118,10 @@ package body et_canvas_board_assy_doc is
 		praeamble : constant string := "selected: ";
 	begin
 		if clarification then
-			null; -- CS show position, face
-			-- set_status (praeamble & to_string (selected.segment)
-			-- 	& " face" & to_string (selected.face) & ". " 
-			-- 	& status_next_object_clarification);
+			set_status (praeamble & to_string (selected.cursor)
+				& status_next_object_clarification);
 		else
-			null; -- CS show position, face
-			-- set_status (praeamble & to_string (selected.segment)
-			-- 	& " face" & to_string (selected.face) & ". ");
+			set_status (praeamble & to_string (selected.cursor));
 		end if;		
 	end show_selected_text;
 
@@ -314,6 +310,16 @@ package body et_canvas_board_assy_doc is
 					face			=> face,
 					count			=> count_total,
 					log_threshold	=> log_threshold + 2);
+
+
+				propose_texts (
+					module_cursor	=> active_module, 
+					point			=> point,
+					zone			=> get_catch_zone (et_canvas_board_2.catch_zone), 
+					face			=> face,
+					count			=> count_total, 
+					log_threshold	=> log_threshold + 2);
+
 			end if;
 		end propose_objects;
 		
@@ -408,8 +414,7 @@ package body et_canvas_board_assy_doc is
 			set_status (status_move_object);
 			
 			reset_preliminary_object;
-			reset_proposed_lines (active_module, log_threshold + 1);
-			reset_proposed_segments (active_module, log_threshold + 1);
+			reset_proposed_objects (active_module, log_threshold + 1);
 		end finalize;
 			
 		
@@ -499,7 +504,7 @@ package body et_canvas_board_assy_doc is
 			set_status (status_delete_object);
 			
 			reset_preliminary_object;
-			reset_proposed_lines (active_module, log_threshold + 1);
+			reset_proposed_objects (active_module, log_threshold + 1);
 		end finalize;
 
 		

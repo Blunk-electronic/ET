@@ -235,7 +235,7 @@ package body et_board_ops.assy_doc is
 		point			: in type_vector_model; -- x/y
 		face			: in type_face;
 		zone			: in type_accuracy; -- the circular area around the place
-		count			: in out natural; -- the number of affected lines
+		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
 
@@ -247,9 +247,7 @@ package body et_board_ops.assy_doc is
 
 			procedure query_line (
 				line	: in out type_doc_line)
-			is 
-				use et_object_status;
-			begin
+			is begin
 				if within_accuracy (
 					line	=> line,
 					width	=> line.width,
@@ -1000,9 +998,7 @@ package body et_board_ops.assy_doc is
 			
 			procedure query_segment (
 				segment	: in out type_segment)
-			is 
-				use et_object_status;
-			begin
+			is begin
 				case segment.shape is
 					when LINE =>
 						if within_accuracy (
@@ -1717,7 +1713,7 @@ package body et_board_ops.assy_doc is
 
 			procedure query_text (text : in out type_doc_text) is begin
 				move_text (text, offset);
-				move_vector_text (text.vectors, offset);
+				-- move_vector_text (text.vectors, offset);
 			end query_text;
 			
 		begin
@@ -1811,6 +1807,91 @@ package body et_board_ops.assy_doc is
 
 	
 
+
+	
+
+	procedure propose_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		face			: in type_face;
+		zone			: in type_accuracy;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			c : pac_doc_texts.cursor;
+
+			procedure query_text (
+				text	: in out type_doc_text)
+			is begin
+				if within_accuracy (
+					point_1	=> point,
+					zone	=> zone,
+					point_2	=> get_place (text))
+				then
+					set_proposed (text);
+					count := count + 1;
+					log (text => to_string (text), level => log_threshold + 1);
+				end if;
+			end query_text;
+
+			
+			procedure query_top is 
+				top : pac_doc_texts.list renames module.board.assy_doc.top.texts;
+			begin
+				if not top.is_empty then
+					c := top.first;
+					while c /= pac_doc_texts.no_element loop
+						top.update_element (c, query_text'access);
+						next (c);
+					end loop;
+				end if;
+			end query_top;
+
+			
+			procedure query_bottom is 
+				bottom : pac_doc_texts.list renames module.board.assy_doc.bottom.texts;
+			begin
+				if not bottom.is_empty then
+					c := bottom.first;
+					while c /= pac_doc_texts.no_element loop
+						bottom.update_element (c, query_text'access);
+						next (c);
+					end loop;
+				end if;
+			end query_bottom;
+
+			
+		begin
+			case face is
+				when TOP	=> query_top;
+				when BOTTOM	=> query_bottom;
+			end case;
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " proposing texts at " & to_string (point)
+			 & " face " & to_string (face)
+			 & " zone " & accuracy_to_string (zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_texts;
+
+
+
 	
 	
 
@@ -1827,8 +1908,7 @@ package body et_board_ops.assy_doc is
 		is
 
 			procedure query_text (text : in out type_doc_text) is begin
-				null; -- CS
-				-- text.position := destination;
+				move_text (text, destination);
 			end query_text;
 			
 		begin
