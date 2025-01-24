@@ -77,7 +77,7 @@ package body et_board_ops.text is
 			when PARTCODE			=> result := to_content (to_string (meta.partcode));
 			when DRAWING_NUMBER		=> result := to_content (to_string (meta.drawing_number));
 			when ASSEMBLY_VARIANT	=> result := to_content (to_string (variant));
-			when PROJECT			=> null; -- CS
+			when PROJECT			=> result := to_content ("not assigned"); -- CS
 			when MODULE				=> result := to_content (to_string (key (module_cursor)));
 			when REVISION			=> result := to_content (to_string (meta.revision));
 		end case;
