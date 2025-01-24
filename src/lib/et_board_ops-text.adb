@@ -39,6 +39,7 @@
 with et_meta;
 
 with et_assembly_variants;
+with et_mirroring;
 
 
 package body et_board_ops.text is
@@ -97,6 +98,8 @@ package body et_board_ops.text is
 		use et_assy_doc;
 		use et_stopmask;
 
+		text_tmp : type_text_fab_with_content := text;
+		
 		
 		procedure place_text (
 			module_name	: in pac_module_name.bounded_string;
@@ -106,9 +109,10 @@ package body et_board_ops.text is
 			use pac_doc_texts;
 			use pac_silk_texts;
 			use pac_stop_texts;
+			use et_mirroring;
 
 			v_text : type_vector_text;		
-			mirror : type_vector_text_mirrored;
+			mirror : type_mirror;
 		begin
 			mirror := face_to_mirror (face);
 			
@@ -126,9 +130,13 @@ package body et_board_ops.text is
 				when LAYER_CAT_ASSY =>
 					case face is
 						when TOP =>
-							append (module.board.assy_doc.top.texts, (text with v_text));
+							-- append (module.board.assy_doc.top.texts, (text with v_text));
+							text_tmp.mirror := MIRROR_NO;
+							append (module.board.assy_doc.top.texts, (text_tmp with null record));
 						when BOTTOM =>
-							append (module.board.assy_doc.bottom.texts, (text with v_text));
+							-- append (module.board.assy_doc.bottom.texts, (text with v_text));
+							text_tmp.mirror := MIRROR_ALONG_Y_AXIS;
+							append (module.board.assy_doc.bottom.texts, (text_tmp with null record));
 					end case;
 
 				when LAYER_CAT_SILKSCREEN =>

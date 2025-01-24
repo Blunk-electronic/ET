@@ -64,6 +64,7 @@ with et_net_class;
 with et_ratsnest;
 with et_alignment;
 with et_canvas_tool;
+with et_mirroring;
 
 
 separate (et_canvas_board_2)
@@ -92,7 +93,8 @@ procedure draw_conductors is
 		
 		v_text : type_vector_text;
 
-		mirror : type_vector_text_mirrored;
+		use et_mirroring;
+		mirror : type_mirror;
 		
 		-- The place where the text shall be placed:
 		point : type_vector_model;

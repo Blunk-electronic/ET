@@ -2042,7 +2042,7 @@ package body et_board_ops.conductors is
 			use pac_conductor_texts;
 			vectors : pac_character_lines.list;
 			use et_text;
-			mirror : type_vector_text_mirrored;
+			mirror : type_mirror;
 
 			v_text : type_vector_text;
 			c_text : type_conductor_text;

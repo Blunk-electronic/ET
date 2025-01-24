@@ -73,7 +73,7 @@ with et_silkscreen;						use et_silkscreen;
 with et_assy_doc;						use et_assy_doc;
 with et_stopmask;						use et_stopmask;
 with et_conductor_text.boards;			use et_conductor_text.boards;
-
+with et_mirroring;						use et_mirroring;
 
 
 package et_canvas_board_texts is
@@ -135,6 +135,7 @@ package et_canvas_board_texts is
 		text : type_text_fab_with_content := (
 			size		=> 10.0,
 			line_width	=> 1.0,
+			mirror		=> MIRROR_NO,
 			position	=> origin_zero_rotation,
 			status		=> (others => <>),
 			alignment	=> text_alignment_default,
