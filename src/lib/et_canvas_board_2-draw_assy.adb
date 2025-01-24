@@ -204,7 +204,7 @@ is
 
 	
 	
-begin -- draw_assy
+begin
 	
 -- 	put_line ("draw board assembly documentation ...");
 	
