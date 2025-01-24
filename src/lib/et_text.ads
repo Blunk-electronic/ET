@@ -117,12 +117,6 @@ package et_text is
 
 	vector_text_alignment_default : constant type_text_alignment := (ALIGN_LEFT, ALIGN_BOTTOM);
 
-	subtype type_vector_text_mirrored is type_mirror 
-		range MIRROR_NO .. MIRROR_ALONG_Y_AXIS;
-	
-	vector_text_mirror_default : constant type_vector_text_mirrored := MIRROR_NO;
-
-
 
 	-- The border around a character is a polygon with a limited
 	-- number of vertices:
@@ -249,6 +243,7 @@ package et_text is
 		type type_text_fab is new type_text with record
 			position	: pac_geometry.type_position; -- x/y/rotation
 			line_width	: type_text_line_width := type_text_line_width'first; -- CS rename to linewidth
+			mirror		: type_mirror := MIRROR_NO;
 		end record;
 
 
@@ -1796,7 +1791,7 @@ package et_text is
 			size		: in type_text_size;
 			rotation	: in pac_geometry.type_rotation;
 			position	: in pac_geometry.type_vector_model;
-			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
+			mirror		: in type_mirror := MIRROR_NO;
 			line_width	: in pac_geometry.type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default;
 			make_border	: in boolean := false)

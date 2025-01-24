@@ -605,7 +605,7 @@ package body et_text is
 			size		: in type_text_size;
 			rotation	: in type_rotation; 
 			position	: in pac_geometry.type_vector_model; -- the anchor point of the text (where the origin is)
-			mirror		: in type_vector_text_mirrored := vector_text_mirror_default;
+			mirror		: in type_mirror := MIRROR_NO;
 			line_width	: in pac_geometry.type_distance_positive;
 			alignment	: in type_text_alignment := vector_text_alignment_default;
 			make_border	: in boolean := false)
