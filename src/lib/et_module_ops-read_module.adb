@@ -4296,7 +4296,7 @@ is
 					use pac_conductor_texts;
 					use et_board_ops;
 
-					mirror : type_vector_text_mirrored;
+					mirror : type_mirror;
 					
 				begin
 					mirror := signal_layer_to_mirror (board_text_conductor.layer, get_deepest_conductor_layer (module_cursor));
@@ -4922,7 +4922,7 @@ is
 						use et_stopmask;
 						
 						v_text : type_vector_text;
-						mirror : type_vector_text_mirrored;
+						mirror : type_mirror;
 					begin
 						-- vectorize text:
 						if face = BOTTOM then
@@ -4952,7 +4952,8 @@ is
 									when LAYER_CAT_ASSY =>
 										pac_doc_texts.append (
 											container	=> module.board.assy_doc.top.texts,
-											new_item	=> (board_text with v_text));
+											--new_item	=> (board_text with v_text));
+											new_item	=> (board_text with null record));
 
 									when LAYER_CAT_STOP =>
 										pac_stop_texts.append (
@@ -4972,7 +4973,8 @@ is
 									when LAYER_CAT_ASSY =>
 										pac_doc_texts.append (
 											container	=> module.board.assy_doc.bottom.texts,
-											new_item	=> (board_text with v_text));
+											-- new_item	=> (board_text with v_text));
+											new_item	=> (board_text with null record));
 
 									when LAYER_CAT_STOP =>
 										pac_stop_texts.append (
