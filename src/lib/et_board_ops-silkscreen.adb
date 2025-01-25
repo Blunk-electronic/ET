@@ -793,10 +793,10 @@ package body et_board_ops.silkscreen is
 			case face is
 				when TOP =>
 					-- Iterate through the already existing zones:
-					c := module.board.silk_screen.top.contours.first;
+					c := module.board.silk_screen.top.zones.first;
 
 					while c /= pac_silk_contours.no_element and proceed loop
-						module.board.silk_screen.top.contours.update_element (c, query_zone'access);
+						module.board.silk_screen.top.zones.update_element (c, query_zone'access);
 						next (c);
 					end loop;
 
@@ -805,16 +805,16 @@ package body et_board_ops.silkscreen is
 					if proceed then
 						-- put_line ("added as new zone");
 						log (text => "added as new zone", level => log_threshold + 1);
-						module.board.silk_screen.top.contours.append (zone);
+						module.board.silk_screen.top.zones.append (zone);
 					end if;
 
 					
 				when BOTTOM =>
 					-- Iterate through the already existing zones:
-					c := module.board.silk_screen.bottom.contours.first;
+					c := module.board.silk_screen.bottom.zones.first;
 
 					while c /= pac_silk_contours.no_element and proceed loop
-						module.board.silk_screen.bottom.contours.update_element (c, query_zone'access);
+						module.board.silk_screen.bottom.zones.update_element (c, query_zone'access);
 						next (c);
 					end loop;
 
@@ -822,7 +822,7 @@ package body et_board_ops.silkscreen is
 					-- as a new zone:
 					if proceed then
 						log (text => "added as new zone", level => log_threshold + 1);
-						module.board.silk_screen.bottom.contours.append (zone);
+						module.board.silk_screen.bottom.zones.append (zone);
 					end if;
 			end case;
 		end query_module;

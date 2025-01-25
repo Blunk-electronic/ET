@@ -3609,14 +3609,14 @@ is
 					
 					procedure append_silk_polygon_top is begin
 						pac_silk_contours.append (
-							container	=> module.board.silk_screen.top.contours,
+							container	=> module.board.silk_screen.top.zones,
 							new_item	=> (contour with null record));
 					end;
 
 					
 					procedure append_silk_polygon_bottom is begin
 						pac_silk_contours.append (
-							container	=> module.board.silk_screen.bottom.contours,
+							container	=> module.board.silk_screen.bottom.zones,
 							new_item	=> (contour with null record));
 					end;
 

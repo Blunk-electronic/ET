@@ -1020,10 +1020,10 @@ package body et_kicad_to_native is
 
 				
 				-- POLYGONS TOP
-				polygons_cursor := module.board.silk_screen.top.contours.first;
+				polygons_cursor := module.board.silk_screen.top.zones.first;
 				while polygons_cursor /= pac_silk_contours.no_element loop
 					pac_silk_contours.update_element (
-						container	=> module.board.silk_screen.top.contours,
+						container	=> module.board.silk_screen.top.zones,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
 					
@@ -1032,10 +1032,10 @@ package body et_kicad_to_native is
 
 				
 				-- POLYGONS BOTTOM
-				polygons_cursor := module.board.silk_screen.bottom.contours.first;
+				polygons_cursor := module.board.silk_screen.bottom.zones.first;
 				while polygons_cursor /= pac_silk_contours.no_element loop
 					pac_silk_contours.update_element (
-						container	=> module.board.silk_screen.bottom.contours,
+						container	=> module.board.silk_screen.bottom.zones,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
 					

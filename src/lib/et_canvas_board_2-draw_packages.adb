@@ -289,7 +289,7 @@ is
 				silkscreen_top.lines.iterate (query_line'access);
 				silkscreen_top.arcs.iterate (query_arc'access);
 				silkscreen_top.circles.iterate (query_circle'access);
-				silkscreen_top.contours.iterate (query_zone'access);
+				silkscreen_top.zones.iterate (query_zone'access);
 				silkscreen_top.texts.iterate (query_text'access);
 
 				face := BOTTOM;
@@ -297,7 +297,7 @@ is
 				silkscreen_bottom.lines.iterate (query_line'access);
 				silkscreen_bottom.arcs.iterate (query_arc'access);
 				silkscreen_bottom.circles.iterate (query_circle'access);
-				silkscreen_bottom.contours.iterate (query_zone'access);
+				silkscreen_bottom.zones.iterate (query_zone'access);
 				silkscreen_bottom.texts.iterate (query_text'access);
 			end draw;
 			

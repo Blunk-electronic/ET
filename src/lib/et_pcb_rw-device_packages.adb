@@ -203,7 +203,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.silkscreen.top.lines, write_line'access);
 			iterate (packge.silkscreen.top.arcs, write_arc'access);
 			iterate (packge.silkscreen.top.circles, write_circle'access);
-			iterate (packge.silkscreen.top.contours, write_polygon'access);
+			iterate (packge.silkscreen.top.zones, write_polygon'access);
 			iterate (packge.silkscreen.top.texts, write_text'access);
 			iterate (packge.silkscreen.top.placeholders, write_placeholder'access);
 			section_mark (section_top, FOOTER);
@@ -213,7 +213,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.silkscreen.bottom.lines, write_line'access);
 			iterate (packge.silkscreen.bottom.arcs, write_arc'access);
 			iterate (packge.silkscreen.bottom.circles, write_circle'access);
-			iterate (packge.silkscreen.bottom.contours, write_polygon'access);
+			iterate (packge.silkscreen.bottom.zones, write_polygon'access);
 			iterate (packge.silkscreen.bottom.texts, write_text'access);
 			iterate (packge.silkscreen.bottom.placeholders, write_placeholder'access);
 			section_mark (section_bottom, FOOTER);
@@ -1294,7 +1294,7 @@ package body et_pcb_rw.device_packages is
 				-- fill zones
 				procedure append_silk_polygon_top is begin
 					pac_silk_contours.append (
-						container	=> packge.silkscreen.top.contours, 
+						container	=> packge.silkscreen.top.zones, 
 						new_item	=> (contour with null record));
 					
 					board_reset_contour;
@@ -1302,7 +1302,7 @@ package body et_pcb_rw.device_packages is
 				
 				procedure append_silk_polygon_bottom is begin
 					pac_silk_contours.append (
-						container	=> packge.silkscreen.bottom.contours, 
+						container	=> packge.silkscreen.bottom.zones, 
 						new_item	=> (contour with null record));
 					
 					-- clean up for next polygon

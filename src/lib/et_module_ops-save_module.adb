@@ -1816,7 +1816,7 @@ is
 			iterate (element (module_cursor).board.silk_screen.top.lines, write_line'access);
 			iterate (element (module_cursor).board.silk_screen.top.arcs, write_arc'access);
 			iterate (element (module_cursor).board.silk_screen.top.circles, write_circle'access);
-			iterate (element (module_cursor).board.silk_screen.top.contours, write_polygon'access);
+			iterate (element (module_cursor).board.silk_screen.top.zones, write_polygon'access);
 			iterate (element (module_cursor).board.silk_screen.top.texts, write_text'access);
 			iterate (element (module_cursor).board.silk_screen.top.placeholders, write_placeholder'access);
 			section_mark (section_top, FOOTER);
@@ -1825,7 +1825,7 @@ is
 			iterate (element (module_cursor).board.silk_screen.bottom.lines, write_line'access);
 			iterate (element (module_cursor).board.silk_screen.bottom.arcs, write_arc'access);
 			iterate (element (module_cursor).board.silk_screen.bottom.circles, write_circle'access);
-			iterate (element (module_cursor).board.silk_screen.bottom.contours, write_polygon'access);
+			iterate (element (module_cursor).board.silk_screen.bottom.zones, write_polygon'access);
 			iterate (element (module_cursor).board.silk_screen.bottom.texts, write_text'access);
 			iterate (element (module_cursor).board.silk_screen.bottom.placeholders, write_placeholder'access);
 			section_mark (section_bottom, FOOTER);

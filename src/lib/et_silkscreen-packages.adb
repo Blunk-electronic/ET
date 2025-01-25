@@ -49,7 +49,7 @@ package body et_silkscreen.packages is
 		mirror_arcs (silkscreen.arcs, axis);
 		mirror_circles (silkscreen.circles, axis);
 		mirror_texts (silkscreen.texts, axis);
-		mirror_contours (silkscreen.contours, axis);
+		mirror_contours (silkscreen.zones, axis);
 		mirror_placeholders (silkscreen.placeholders, axis);
 	end mirror_silkscreen_objects;
 
@@ -62,7 +62,7 @@ package body et_silkscreen.packages is
 		rotate_arcs (silkscreen.arcs, angle);
 		rotate_circles (silkscreen.circles, angle);
 		rotate_texts (silkscreen.texts, angle);
-		rotate_contours (silkscreen.contours, angle);
+		rotate_contours (silkscreen.zones, angle);
 		rotate_placeholders (silkscreen.placeholders, angle);
 	end rotate_silkscreen_objects;
 
@@ -76,7 +76,7 @@ package body et_silkscreen.packages is
 		move_arcs (silkscreen.arcs, offset);
 		move_circles (silkscreen.circles, offset);
 		move_texts (silkscreen.texts, offset);
-		move_contours (silkscreen.contours, offset);
+		move_contours (silkscreen.zones, offset);
 		move_placeholders (silkscreen.placeholders, offset);
 	end move_silkscreen_objects;
 

@@ -245,7 +245,7 @@ is
 				iterate (module.board.silk_screen.top.lines, query_line'access);
 				iterate (module.board.silk_screen.top.arcs, query_arc'access);
 				iterate (module.board.silk_screen.top.circles, query_circle'access);
-				iterate (module.board.silk_screen.top.contours, query_zone'access);
+				iterate (module.board.silk_screen.top.zones, query_zone'access);
 				iterate (module.board.silk_screen.top.placeholders, query_placeholder'access);
 				iterate (module.board.silk_screen.top.texts, query_text'access);
 
@@ -253,7 +253,7 @@ is
 				iterate (module.board.silk_screen.bottom.lines, query_line'access);
 				iterate (module.board.silk_screen.bottom.arcs, query_arc'access);
 				iterate (module.board.silk_screen.bottom.circles, query_circle'access);
-				iterate (module.board.silk_screen.bottom.contours, query_zone'access);
+				iterate (module.board.silk_screen.bottom.zones, query_zone'access);
 				iterate (module.board.silk_screen.bottom.placeholders, query_placeholder'access);
 				iterate (module.board.silk_screen.bottom.texts, query_text'access);
 

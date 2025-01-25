@@ -225,8 +225,8 @@ is
 				silk.top.circles.iterate (query_circle'access);
 				silk.bottom.circles.iterate (query_circle'access);
 
-				silk.top.contours.iterate (query_zone'access);
-				silk.bottom.contours.iterate (query_zone'access);
+				silk.top.zones.iterate (query_zone'access);
+				silk.bottom.zones.iterate (query_zone'access);
 				
 				-- CS
 				-- placeholders
@@ -987,8 +987,8 @@ is
 					packge.silkscreen.top.circles.iterate (query_circle'access);
 					packge.silkscreen.bottom.circles.iterate (query_circle'access);
 
-					packge.silkscreen.top.contours.iterate (query_contour'access);
-					packge.silkscreen.bottom.contours.iterate (query_contour'access);
+					packge.silkscreen.top.zones.iterate (query_contour'access);
+					packge.silkscreen.bottom.zones.iterate (query_contour'access);
 					
 					packge.silkscreen.top.texts.iterate (query_text'access);
 					packge.silkscreen.bottom.texts.iterate (query_text'access);
