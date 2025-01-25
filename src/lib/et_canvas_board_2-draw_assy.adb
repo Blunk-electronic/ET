@@ -132,29 +132,19 @@ is
 
 	
 	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
-		-- CS use rename
-		use et_pcb;
 		use pac_text;
-		v_text : type_vector_text;
-
 		use pac_draw_text;
+
+		use et_text;
+		content : pac_text_content.bounded_string;
+
+		t : type_text_fab_with_content;
 	begin
-		draw_origin (element (c).position);
+		content := to_placeholder_content (active_module, element (c).meaning);
+		-- put_line ("content " & to_string (content));
 
-		-- Vectorize the text:
-		v_text := vectorize_text (
-			content		=> to_placeholder_content (active_module, element (c).meaning),
-			size		=> element (c).size,
-			rotation	=> get_rotation (element (c).position),
-			position	=> element (c).position.place,
-			mirror		=> face_to_mirror (face),
-			line_width	=> element (c).line_width,
-			alignment	=> element (c).alignment -- right, bottom
-			);
-
-		-- Draw the text:
-		draw_vector_text (v_text);
-
+		t := (type_text_fab (element (c)) with content);
+		draw_vector_text_2 (t);
 	end query_placeholder;
 
 
