@@ -2209,6 +2209,8 @@ package body et_board_ops.assy_doc is
 		end if;
 
 
+		-- CS placeholder
+
 		-- Now search for a text:
 		result_text := get_first_text (module_cursor, flag, log_threshold + 1);
 		

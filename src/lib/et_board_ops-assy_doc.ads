@@ -320,7 +320,7 @@ package et_board_ops.assy_doc is
 
 	
 	-- This composite type helps to identify a
-	-- segment of a zone by its zone and face:
+	-- text by its face:
 	type type_object_text is record
 		face	: type_face := TOP;
 		cursor	: pac_doc_texts.cursor := pac_doc_texts.no_element;
@@ -373,8 +373,30 @@ package et_board_ops.assy_doc is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
 
+
+	
+-- PLACEHOLDERS:
+	
+	-- CS
+	-- move_placeholder via commandline
+	
+	-- This composite type helps to identify a
+	-- placeholder by its face:
+	-- type type_object_placeholder is record
+	-- 	face	: type_face := TOP;
+	-- 	cursor	: pac_text_placeholders.cursor := pac_text_placeholders.no_element;
+	-- end record;
+	
+	-- modify_status of placeholder
+	-- proposed_placeholders
+	-- move_placeholder
+	-- delete_placeholder
+	-- get_first_placeholder
+	-- reset_proposed_placeholders
+
+
+	
 -- OBJECTS:
 	
 
@@ -386,10 +408,10 @@ package et_board_ops.assy_doc is
 		CAT_ZONE_SEGMENT,
 		CAT_TEXT
 		);
-	-- CS CAT_ARC, CAT_CIRCLE
+	-- CS CAT_ARC, CAT_CIRCLE, CAT_PLACEHOLDER
 
-	-- This type wraps segments of zones, lines, arcs, circles, texts
-	-- into a single type:
+	-- This type wraps segments of zones, lines, arcs, circles, 
+	-- texts, placeholders into a single type:
 	type type_object (cat : type_object_category) is record
 		case cat is
 			when CAT_VOID			=> null;
@@ -406,8 +428,8 @@ package et_board_ops.assy_doc is
 
 	
 
-	-- Returns the first object (line, arc, circle, zone segment)
-	-- according to the given flag.
+	-- Returns the first object (line, arc, circle, zone segment, text,
+	-- placeholder) according to the given flag.
 	-- If nothing found, then the return is a void object (CAT_VOID):
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;

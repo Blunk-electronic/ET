@@ -3929,6 +3929,8 @@ is
 							end case;
 							
 						when BOTTOM =>
+							board_text_placeholder.mirror := MIRROR_ALONG_Y_AXIS;
+							
 							case layer_cat is
 								when LAYER_CAT_SILKSCREEN =>
 									pac_text_placeholders.append (

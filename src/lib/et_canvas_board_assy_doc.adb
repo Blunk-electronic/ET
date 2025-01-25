@@ -125,7 +125,8 @@ package body et_canvas_board_assy_doc is
 		end if;		
 	end show_selected_text;
 
-	
+
+	-- CS show_selected_placeholder
 	
 
 
