@@ -801,11 +801,6 @@ package body et_pcb_rw is
 	end;
 
 	
-	procedure board_reset_lock_status is
-		use et_pcb;
-	begin
-		board_lock_status := NO;
-	end;
 
 	
 	procedure board_reset_line_width is 

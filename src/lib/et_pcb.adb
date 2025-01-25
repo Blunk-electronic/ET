@@ -86,17 +86,7 @@ package body et_pcb is
 
 
 	
-
 	
-
-	function to_string (locked : in type_locked) return string is begin
-		return to_lower (type_locked'image (locked));
-	end;
-
-	function to_lock_status (locked : in string) return type_locked is begin
-		return type_locked'value (locked);
-	end;
-
 
 	
 

@@ -252,9 +252,6 @@ package et_pcb_rw is
 
 
 	
-	board_lock_status : et_pcb.type_locked := et_pcb.NO;
-
-	procedure board_reset_lock_status;
 
 	
 	

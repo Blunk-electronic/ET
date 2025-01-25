@@ -112,14 +112,6 @@ package et_pcb is
 	
 
 	
-	
--- LOCK STATUS OF AN OBJECT
-	type type_locked is (NO, YES);
-
-	lock_status_default : constant type_locked := NO;
-	function to_string (locked : in type_locked) return string;
-	function to_lock_status (locked : in string) return type_locked;
-	
 
 	
 -- CONTOUR / OUTLINE / HOLES / EDGE CUTS
