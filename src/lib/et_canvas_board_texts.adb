@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -407,6 +407,8 @@ package body et_canvas_board_texts is
 	end remove_text_properties;		
 
 
+
+	
 
 	procedure show_text_properties is
 		use gtk.cell_renderer_text;
@@ -987,6 +989,7 @@ package body et_canvas_board_texts is
 				cat				=> LAYER_CAT_CONDUCTOR,
 				conductor_text	=> element (text)));			   
 		end query_conductor_text;
+
 		
 	begin
 		log (text => "locating texts ...", level => log_threshold);
