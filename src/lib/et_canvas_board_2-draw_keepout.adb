@@ -61,15 +61,14 @@ is
 	brightness : type_brightness := NORMAL;
 
 	
-	procedure query_polygon (c : in pac_keepout_zones.cursor) is -- CS rename to query_zone
-		-- CS use rename
+	procedure query_zone (c : in pac_keepout_zones.cursor) is
 		use pac_draw_contours;
 	begin
 		draw_contour (
 			contour	=> element (c),
 			filled	=> NO, -- CS YES ?
 			width	=> zero);
-	end query_polygon;
+	end query_zone;
 
 	
 	procedure query_cutout (c : in pac_keepout_cutouts.cursor) is 
@@ -96,11 +95,11 @@ is
 		
 		case face is
 			when TOP =>
-				iterate (module.board.keepout.top.zones, query_polygon'access);
+				iterate (module.board.keepout.top.zones, query_zone'access);
 				iterate (module.board.keepout.top.cutouts, query_cutout'access);
 
 			when BOTTOM =>
-				iterate (module.board.keepout.bottom.zones, query_polygon'access);
+				iterate (module.board.keepout.bottom.zones, query_zone'access);
 				iterate (module.board.keepout.bottom.cutouts, query_cutout'access);
 		end case;
 	end query_items;

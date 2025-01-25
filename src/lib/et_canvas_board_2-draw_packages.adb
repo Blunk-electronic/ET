@@ -263,14 +263,14 @@ is
 				end query_circle;
 
 				
-				procedure query_contour (c : in pac_silk_contours.cursor) is 
-					contour : type_silk_contour renames element (c);
+				procedure query_zone (c : in pac_silk_contours.cursor) is 
+					zone : type_silk_contour renames element (c);
 				begin
 					draw_contour (
-						contour	=> contour,
+						contour	=> zone,
 						filled	=> YES,
 						width	=> zero);
-				end query_contour;
+				end query_zone;
 
 				
 				procedure query_text (c : in pac_silk_texts.cursor) is 
@@ -289,7 +289,7 @@ is
 				silkscreen_top.lines.iterate (query_line'access);
 				silkscreen_top.arcs.iterate (query_arc'access);
 				silkscreen_top.circles.iterate (query_circle'access);
-				silkscreen_top.contours.iterate (query_contour'access);
+				silkscreen_top.contours.iterate (query_zone'access);
 				silkscreen_top.texts.iterate (query_text'access);
 
 				face := BOTTOM;
@@ -297,7 +297,7 @@ is
 				silkscreen_bottom.lines.iterate (query_line'access);
 				silkscreen_bottom.arcs.iterate (query_arc'access);
 				silkscreen_bottom.circles.iterate (query_circle'access);
-				silkscreen_bottom.contours.iterate (query_contour'access);
+				silkscreen_bottom.contours.iterate (query_zone'access);
 				silkscreen_bottom.texts.iterate (query_text'access);
 			end draw;
 			
@@ -386,15 +386,15 @@ is
 				end query_circle;
 
 			
-				procedure query_contour (c : in pac_doc_zones.cursor) is 
-					contour : type_doc_zone renames element (c);
+				procedure query_zone (c : in pac_doc_zones.cursor) is 
+					zone : type_doc_zone renames element (c);
 				begin
 					-- See comments in procedure query_line.
 					draw_contour (
-						contour	=> contour,
+						contour	=> zone,
 						filled	=> YES,
 						width	=> zero);
-				end query_contour;
+				end query_zone;
 
 				
 				procedure query_text (c : in pac_doc_texts.cursor) is 
@@ -411,7 +411,7 @@ is
 				doc_top.lines.iterate (query_line'access);
 				doc_top.arcs.iterate (query_arc'access);
 				doc_top.circles.iterate (query_circle'access);
-				doc_top.zones.iterate (query_contour'access);
+				doc_top.zones.iterate (query_zone'access);
 				doc_top.texts.iterate (query_text'access);
 
 				face := BOTTOM;
@@ -419,7 +419,7 @@ is
 				doc_bottom.lines.iterate (query_line'access);
 				doc_bottom.arcs.iterate (query_arc'access);
 				doc_bottom.circles.iterate (query_circle'access);
-				doc_bottom.zones.iterate (query_contour'access);
+				doc_bottom.zones.iterate (query_zone'access);
 				doc_bottom.texts.iterate (query_text'access);
 			end draw;
 
@@ -576,14 +576,14 @@ is
 				end query_circle;
 				
 				
-				procedure query_contour (c : pac_stop_contours.cursor) is
-					contour : type_stop_contour renames element (c);
+				procedure query_zone (c : pac_stop_contours.cursor) is
+					zone : type_stop_contour renames element (c);
 				begin
 					draw_contour (
-						contour	=> contour,
+						contour	=> zone,
 						filled	=> YES,
 						width	=> zero);
-				end query_contour;
+				end query_zone;
 				
 
 				procedure query_text (c : pac_stop_texts.cursor) is
@@ -601,7 +601,7 @@ is
 				stopmask.top.lines.iterate (query_line'access);
 				stopmask.top.arcs.iterate (query_arc'access);
 				stopmask.top.circles.iterate (query_circle'access);
-				stopmask.top.contours.iterate (query_contour'access);
+				stopmask.top.contours.iterate (query_zone'access);
 				stopmask.top.texts.iterate (query_text'access);
 
 				-- bottom
@@ -609,7 +609,7 @@ is
 				stopmask.bottom.lines.iterate (query_line'access);
 				stopmask.bottom.arcs.iterate (query_arc'access);
 				stopmask.bottom.circles.iterate (query_circle'access);
-				stopmask.bottom.contours.iterate (query_contour'access);
+				stopmask.bottom.contours.iterate (query_zone'access);
 				stopmask.bottom.texts.iterate (query_text'access);
 			end draw;
 			
@@ -694,14 +694,14 @@ is
 				end query_circle;
 				
 				
-				procedure query_contour (c : pac_stencil_contours.cursor) is
-					contour : type_stencil_contour renames element (c);
+				procedure query_zone (c : pac_stencil_contours.cursor) is
+					zone : type_stencil_contour renames element (c);
 				begin
 					draw_contour (
-						contour	=> contour,
+						contour	=> zone,
 						filled	=> YES,
 						width	=> zero);					
-				end query_contour;
+				end query_zone;
 				
 				
 			begin
@@ -710,14 +710,14 @@ is
 				stencil.top.lines.iterate (query_line'access);
 				stencil.top.arcs.iterate (query_arc'access);
 				stencil.top.circles.iterate (query_circle'access);
-				stencil.top.contours.iterate (query_contour'access);
+				stencil.top.contours.iterate (query_zone'access);
 
 				-- bottom
 				set_color_stencil (BOTTOM, brightness);
 				stencil.bottom.lines.iterate (query_line'access);
 				stencil.bottom.arcs.iterate (query_arc'access);
 				stencil.bottom.circles.iterate (query_circle'access);
-				stencil.bottom.contours.iterate (query_contour'access);
+				stencil.bottom.contours.iterate (query_zone'access);
 			end draw;
 
 			
@@ -1841,6 +1841,8 @@ is
 
 
 	
+
+	
 	use et_schematic;
 
 
@@ -2074,6 +2076,7 @@ is
 				draw_fixed;
 			end if;		
 		end query_device;
+
 		
 	begin
 		module.devices_non_electric.iterate (query_device'access);

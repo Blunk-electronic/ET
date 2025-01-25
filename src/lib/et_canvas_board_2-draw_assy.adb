@@ -121,7 +121,6 @@ is
 
 	
 	procedure query_zone (c : in pac_doc_zones.cursor) is
-		contour : type_doc_zone renames element (c);
 		use pac_draw_contours;
 	begin
 		draw_contour (

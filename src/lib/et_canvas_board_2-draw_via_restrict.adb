@@ -61,7 +61,7 @@ procedure draw_via_restrict is
 
 
 	
-	procedure query_polygon (c : in pac_via_restrict_contours.cursor) is -- rename to query_contour
+	procedure query_zone (c : in pac_via_restrict_contours.cursor) is
 		-- CS use rename ?
 		use pac_draw_contours;
 	begin
@@ -74,7 +74,7 @@ procedure draw_via_restrict is
 				width	=> zero);
 
 		end if;
-	end query_polygon;
+	end query_zone;
 
 	
 	procedure query_cutout (c : in pac_via_restrict_cutouts.cursor) is 
@@ -104,7 +104,7 @@ procedure draw_via_restrict is
 	begin
 		set_color_via_restrict (brightness);
 		
-		iterate (module.board.via_restrict.contours, query_polygon'access);
+		iterate (module.board.via_restrict.contours, query_zone'access);
 		iterate (module.board.via_restrict.cutouts, query_cutout'access);
 	end query_items;
 

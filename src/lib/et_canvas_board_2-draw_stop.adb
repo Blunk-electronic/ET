@@ -107,7 +107,7 @@ is
 
 	
 	
-	procedure query_polygon (c : in pac_stop_contours.cursor) is -- CS rename to query_contour
+	procedure query_zone (c : in pac_stop_contours.cursor) is
 		-- CS use renames
 		use pac_draw_contours;
 	begin
@@ -115,7 +115,7 @@ is
 			contour	=> element (c),
 			filled	=> YES,
 			width	=> zero);
-	end query_polygon;
+	end query_zone;
 
 	
 	
@@ -237,7 +237,7 @@ is
 				iterate (module.board.stop_mask.top.lines, query_line'access);
 				iterate (module.board.stop_mask.top.arcs, query_arc'access);
 				iterate (module.board.stop_mask.top.circles, query_circle'access);
-				iterate (module.board.stop_mask.top.contours, query_polygon'access);
+				iterate (module.board.stop_mask.top.contours, query_zone'access);
 				iterate (module.board.stop_mask.top.placeholders, query_placeholder'access);
 				iterate (module.board.stop_mask.top.texts, query_text'access);
 
@@ -245,7 +245,7 @@ is
 				iterate (module.board.stop_mask.bottom.lines, query_line'access);
 				iterate (module.board.stop_mask.bottom.arcs, query_arc'access);
 				iterate (module.board.stop_mask.bottom.circles, query_circle'access);
-				iterate (module.board.stop_mask.bottom.contours, query_polygon'access);
+				iterate (module.board.stop_mask.bottom.contours, query_zone'access);
 				iterate (module.board.stop_mask.bottom.placeholders, query_placeholder'access);
 				iterate (module.board.stop_mask.bottom.texts, query_text'access);
 

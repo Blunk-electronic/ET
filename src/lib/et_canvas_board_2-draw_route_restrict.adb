@@ -103,7 +103,7 @@ procedure draw_route_restrict is
 	end query_circle;
 
 	
-	procedure query_polygon (c : in pac_route_restrict_contours.cursor) is -- CS rename to query_contour
+	procedure query_zone (c : in pac_route_restrict_contours.cursor) is
 		-- CS use rename ?
 		use pac_draw_contours;
 	begin
@@ -116,7 +116,7 @@ procedure draw_route_restrict is
 				width	=> zero);
 
 		end if;
-	end query_polygon;
+	end query_zone;
 
 	
 	procedure query_cutout (c : in pac_route_restrict_cutouts.cursor) is 
@@ -150,7 +150,7 @@ procedure draw_route_restrict is
 		iterate (module.board.route_restrict.lines, query_line'access);
 		iterate (module.board.route_restrict.arcs, query_arc'access);
 		iterate (module.board.route_restrict.circles, query_circle'access);
-		iterate (module.board.route_restrict.contours, query_polygon'access);
+		iterate (module.board.route_restrict.contours, query_zone'access);
 		iterate (module.board.route_restrict.cutouts, query_cutout'access);
 	end query_items;
 
