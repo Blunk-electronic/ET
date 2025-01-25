@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                      BOARD OPERATIONS / TEXT                             --
+--                          PLACEHOLDERS ON THE PCB                         --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your editor to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,48 +35,35 @@
 --
 --   history of changes:
 --
---   ToDo: 
-
-with et_board_layer_category;		use et_board_layer_category;
-
-with et_stopmask;
-with et_silkscreen;
-with et_assy_doc;
-
-with et_text;
-with et_pcb_placeholders;			use et_pcb_placeholders;
-
-with et_exceptions;					use et_exceptions;
+--   to do:
 
 
-package et_board_ops.text is
+with ada.characters.handling;		use ada.characters.handling;
 
-	-- CS rework procedures so that a module cursor
-	-- is used instead the module_name.
 
-	use et_board_shapes_and_text;
-	use pac_text_board;
+package body et_pcb_placeholders is
+	
+
+
+	function to_string (
+		meaning : in type_text_meaning_conductor) 
+		return string 
+	is begin
+		return to_lower (type_text_meaning_conductor'image (meaning));
+	end to_string;
+
 
 	
-	-- Maps from the meaning of a text placeholder
-	-- to its actutal content:
-	function to_placeholder_content (
-		module_cursor	: in pac_generic_modules.cursor;
-		meaning 		: in type_text_meaning)										
-		return et_text.pac_text_content.bounded_string;
+	function to_meaning (
+		meaning : in string) 
+		return type_text_meaning_conductor 
+	is begin
+		return type_text_meaning_conductor'value (meaning);
+	end to_meaning;
+
 
 	
-	-- Places a text in a non conductor layer like
-	-- silkscreen or assembly doc:
-	procedure place_text_in_non_conductor_layer (
-		module_cursor	: in pac_generic_modules.cursor;
-		layer_category	: in type_layer_category;
-		face			: in type_face; -- top/bottom
-		text			: in type_text_fab_with_content;
-		log_threshold	: in type_log_level);
-
-											
-end et_board_ops.text;
+end et_pcb_placeholders;
 
 -- Soli Deo Gloria
 

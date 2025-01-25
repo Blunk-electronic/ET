@@ -86,14 +86,6 @@ package body et_pcb is
 
 
 	
-	function to_string (meaning : in type_text_meaning_conductor) return string is begin
-		return to_lower (type_text_meaning_conductor'image (meaning));
-	end to_string;
-
-	function to_meaning (meaning : in string) return type_text_meaning_conductor is begin
-		return type_text_meaning_conductor'value (meaning);
-	end to_meaning;
-
 
 	
 

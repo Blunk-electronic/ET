@@ -75,6 +75,7 @@ with et_netlists;
 with et_text;
 with et_pcb_rw;
 with et_pcb_rw.device_packages;
+with et_pcb_placeholders;
 with et_device_rw;
 with et_power_sources;
 with et_logic;
@@ -1829,8 +1830,9 @@ package body et_kicad_to_native is
 				use pac_conductor_texts;
 				texts_cursor : pac_conductor_texts.cursor;
 
-				use et_pcb.pac_text_placeholders_conductors;
-				placeholders_cursor : et_pcb.pac_text_placeholders_conductors.cursor;
+				use et_pcb_placeholders;
+				use pac_text_placeholders_conductors;
+				placeholders_cursor : pac_text_placeholders_conductors.cursor;
 				
 				board_copper : constant string := "board copper ";
 
@@ -1913,7 +1915,7 @@ package body et_kicad_to_native is
 				end move_text;
 
 				
-				procedure move_placeholder (text : in out et_pcb.type_text_placeholder_conductors) is
+				procedure move_placeholder (text : in out type_text_placeholder_conductors) is
 					use et_pcb_coordinates_2;
 					use et_pcb_coordinates_2.pac_geometry_2;
 				begin
@@ -2007,8 +2009,8 @@ package body et_kicad_to_native is
 				
 				-- TEXT PLACEHOLDERS
 				placeholders_cursor := module.board.conductors.placeholders.first;
-				while placeholders_cursor /= et_pcb.pac_text_placeholders_conductors.no_element loop
-					et_pcb.pac_text_placeholders_conductors.update_element (
+				while placeholders_cursor /= pac_text_placeholders_conductors.no_element loop
+					pac_text_placeholders_conductors.update_element (
 						container	=> module.board.conductors.placeholders,
 						position	=> placeholders_cursor,
 						process		=> move_placeholder'access);
@@ -2028,6 +2030,7 @@ package body et_kicad_to_native is
 			move_contour;
 			move_copper; -- non-electric copper stuff !!! (like freetracks)
 		end move_general_board_stuff;
+
 
 		
 		procedure flatten_netlist (
@@ -2094,6 +2097,7 @@ package body et_kicad_to_native is
 				
 				log_indentation_down;
 			end query_ports;
+
 			
 		begin -- flatten_netlist
 			log (text => "netlist ...", level => log_threshold + 2);
@@ -2111,6 +2115,7 @@ package body et_kicad_to_native is
 			
 			log_indentation_down;
 		end flatten_netlist;
+
 		
 	begin -- transpose
 		log (text => "transposing coordinates of KiCad modules ...", level => log_threshold);
@@ -2177,6 +2182,8 @@ package body et_kicad_to_native is
 		log_indentation_down;
 	end transpose;
 
+
+	
 	
 	-- Converts kicad schematic coordinates to native schematic coordinates.
 	function to_native_coordinates (
@@ -2194,6 +2201,8 @@ package body et_kicad_to_native is
 		return point_out;
 	end;
 
+
+	
 	
 	-- Converts shapes of symbols to native shapes:
 	function convert_shapes (

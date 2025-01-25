@@ -43,6 +43,7 @@ with et_colors;					use et_colors;
 with et_board_ops.text;			use et_board_ops.text;
 with et_canvas_tool;
 with et_schematic;
+with et_pcb_placeholders;		use et_pcb_placeholders;
 
 
 separate (et_canvas_board_2)
@@ -58,7 +59,7 @@ is
 	use pac_stop_arcs;
 	use pac_stop_circles;
 	use pac_stop_contours;
-	use et_pcb.pac_text_placeholders;
+	use pac_text_placeholders;
 	use pac_stop_texts;
 
 
@@ -118,7 +119,9 @@ is
 
 	
 	
-	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
+	procedure query_placeholder (
+		c : in pac_text_placeholders.cursor)
+	is 
 		-- CS use renames
 		use et_pcb;
 		use pac_text;

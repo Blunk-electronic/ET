@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                      BOARD OPERATIONS / TEXT                             --
+--                          PLACEHOLDERS ON THE PCB                         --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2025                                                --
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -23,7 +23,7 @@
 -- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
---   For correct displaying set tab width in your editor to 4.
+--   For correct displaying set tab width in your edtior to 4.
 
 --   The two letters "CS" indicate a "construction site" where things are not
 --   finished yet or intended for the future.
@@ -35,48 +35,87 @@
 --
 --   history of changes:
 --
---   ToDo: 
-
-with et_board_layer_category;		use et_board_layer_category;
-
-with et_stopmask;
-with et_silkscreen;
-with et_assy_doc;
-
-with et_text;
-with et_pcb_placeholders;			use et_pcb_placeholders;
-
-with et_exceptions;					use et_exceptions;
+--   to do:
 
 
-package et_board_ops.text is
+with ada.containers; 					use ada.containers;
+with ada.containers.doubly_linked_lists;
+with et_board_shapes_and_text;			use et_board_shapes_and_text;
+with et_pcb_stack;						use et_pcb_stack;
 
-	-- CS rework procedures so that a module cursor
-	-- is used instead the module_name.
 
-	use et_board_shapes_and_text;
+
+package et_pcb_placeholders is
+	
 	use pac_text_board;
 
-	
-	-- Maps from the meaning of a text placeholder
-	-- to its actutal content:
-	function to_placeholder_content (
-		module_cursor	: in pac_generic_modules.cursor;
-		meaning 		: in type_text_meaning)										
-		return et_text.pac_text_content.bounded_string;
 
 	
-	-- Places a text in a non conductor layer like
-	-- silkscreen or assembly doc:
-	procedure place_text_in_non_conductor_layer (
-		module_cursor	: in pac_generic_modules.cursor;
-		layer_category	: in type_layer_category;
-		face			: in type_face; -- top/bottom
-		text			: in type_text_fab_with_content;
-		log_threshold	: in type_log_level);
+-- PLACEHOLDERS FOR TEXTS IN CONDUCTOR LAYERS:
+	
+	type type_text_meaning_conductor is (
+		COMPANY,
+		CUSTOMER,
+		PARTCODE,
+		DRAWING_NUMBER,
+		ASSEMBLY_VARIANT,
+		PROJECT, -- CS rename to PROJECT_NAME
+		MODULE, -- CS rename to MODULE_NAME
+		REVISION, -- CS rename to REVISION_NUMBER
+		SIGNAL_LAYER_ID,
+		SIGNAL_NAME
+		);
 
-											
-end et_board_ops.text;
+
+	
+	function to_string (
+		meaning : in type_text_meaning_conductor) 
+		return string;
+
+	
+	function to_meaning (
+		meaning : in string) 
+		return type_text_meaning_conductor;
+
+
+	
+	type type_text_placeholder_conductors is new 
+		type_text_fab with 
+	record
+		meaning : type_text_meaning_conductor := type_text_meaning_conductor'first;
+
+		-- the conductor layer the placeholder is placed in:
+		layer	: type_signal_layer := type_signal_layer'first; 
+	end record;
+
+	
+	-- There can be lots of placeholders of this kind. 
+	-- So they can be are stored in a list:
+	package pac_text_placeholders_conductors is new 
+		doubly_linked_lists (type_text_placeholder_conductors);
+
+
+
+		
+	
+-- PLACEHOLDERS FOR TEXTS IN NON-CONDUCTOR LAYERS:
+		
+	subtype type_text_meaning is type_text_meaning_conductor 
+		range COMPANY .. REVISION;
+
+	
+	type type_text_placeholder is new
+		type_text_fab with 
+	record
+		meaning : type_text_meaning := type_text_meaning'first;
+	end record;
+
+	
+	package pac_text_placeholders is new 
+		doubly_linked_lists (type_text_placeholder);
+
+	
+end et_pcb_placeholders;
 
 -- Soli Deo Gloria
 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -53,7 +53,7 @@ package body et_board_ops.text is
 	-- Maps from the meaning of a text to its actutal content.
 	function to_placeholder_content (
 		module_cursor	: in pac_generic_modules.cursor;
-		meaning 		: in et_pcb.type_text_meaning)
+		meaning 		: in type_text_meaning)
 		return et_text.pac_text_content.bounded_string 
 	is
 		m : type_generic_module renames element (module_cursor);

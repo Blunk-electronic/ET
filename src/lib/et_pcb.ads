@@ -78,6 +78,7 @@ with et_ratsnest;
 with et_commit;
 with et_object_status;					use et_object_status;
 with et_mirroring;						use et_mirroring;
+with et_pcb_placeholders;				use et_pcb_placeholders;
 
 
 package et_pcb is
@@ -109,57 +110,6 @@ package et_pcb is
 		return type_mirror;
 
 	
-
-	
--- PLACEHOLDERS FOR TEXTS IN CONDUCTOR LAYERS
-	
-	type type_text_meaning_conductor is (
-		COMPANY,
-		CUSTOMER,
-		PARTCODE,
-		DRAWING_NUMBER,
-		ASSEMBLY_VARIANT,
-		PROJECT, -- CS rename to PROJECT_NAME
-		MODULE, -- CS rename to MODULE_NAME
-		REVISION, -- CS rename to REVISION_NUMBER
-		SIGNAL_LAYER_ID,
-		SIGNAL_NAME
-		);
-
-	function to_string (meaning : in type_text_meaning_conductor) return string;
-	function to_meaning (meaning : in string) return type_text_meaning_conductor;
-
-	
-	type type_text_placeholder_conductors is new 
-		type_text_fab with 
-	record
-		meaning : type_text_meaning_conductor := type_text_meaning_conductor'first;
-
-		-- the conductor layer the placeholder is placed in:
-		layer	: type_signal_layer := type_signal_layer'first; 
-	end record;
-
-	-- There can be lots of placeholders of this kind. So they can be are stored in a list:
-	package pac_text_placeholders_conductors is new 
-		doubly_linked_lists (type_text_placeholder_conductors);
-
-
-	
-	
--- PLACEHOLDERS FOR TEXTS IN NON-CONDUCTOR LAYERS
-		
-	subtype type_text_meaning is type_text_meaning_conductor 
-		range COMPANY .. REVISION;
-
-	
-	type type_text_placeholder is new
-		type_text_fab with 
-	record
-		meaning : type_text_meaning := type_text_meaning'first;
-	end record;
-
-	
-	package pac_text_placeholders is new doubly_linked_lists (type_text_placeholder);
 
 	
 	

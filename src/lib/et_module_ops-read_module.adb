@@ -124,6 +124,7 @@ with et_silkscreen;
 with et_assy_doc;
 with et_keepout;
 with et_pcb_contour;
+with et_pcb_placeholders;
 with et_unit_name;
 with et_units;
 with et_mirroring;						use et_mirroring;
@@ -1410,12 +1411,13 @@ is
 	-- general board stuff
 	use et_board_shapes_and_text.pac_text_board;
 	board_text : type_text_fab_with_content;
-	board_text_placeholder : et_pcb.type_text_placeholder;
+	board_text_placeholder : et_pcb_placeholders.type_text_placeholder;
 
 	
 	procedure read_board_text_placeholder is
 		use et_pcb_coordinates_2.pac_geometry_2;
 		use et_pcb_rw;
+		use et_pcb_placeholders;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -1441,7 +1443,7 @@ is
 			
 		elsif kw = keyword_meaning then -- meaning project_name
 			expect_field_count (line, 2);
-			board_text_placeholder.meaning := et_pcb.to_meaning (f (line, 2));
+			board_text_placeholder.meaning := to_meaning (f (line, 2));
 			
 		else
 			invalid_keyword (kw);
@@ -1962,18 +1964,21 @@ is
 	end read_package;
 
 
+	
 	-- This variable is used for vector texts in conductor layers
 	-- and restrict layers:
 	board_text_conductor : et_conductor_text.boards.type_conductor_text;
 
 	-- This variable is used for text placeholders in conductor layers:
-	board_text_conductor_placeholder : et_pcb.type_text_placeholder_conductors;
+	board_text_conductor_placeholder : et_pcb_placeholders.type_text_placeholder_conductors;
+
 
 	
 	procedure read_board_text_conductor_placeholder is
 		use et_pcb_coordinates_2.pac_geometry_2;
 		use et_pcb_stack;
 		use et_pcb_rw;
+		use et_pcb_placeholders;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -1999,7 +2004,7 @@ is
 			
 		elsif kw = keyword_meaning then -- meaning revision/project_name/...
 			expect_field_count (line, 2);
-			board_text_conductor_placeholder.meaning := et_pcb.to_meaning (f (line, 2));
+			board_text_conductor_placeholder.meaning := to_meaning (f (line, 2));
 
 		elsif kw = keyword_layer then -- layer 15
 			expect_field_count (line, 2);
@@ -2010,6 +2015,7 @@ is
 			invalid_keyword (kw);
 		end if;
 	end read_board_text_conductor_placeholder;
+
 
 	
 	procedure read_schematic_text is
@@ -2629,6 +2635,7 @@ is
 			end insert_net_class;
 			
 
+			
 			procedure add_board_layer (
 				module_name	: in pac_module_name.bounded_string;
 				module		: in out type_generic_module) 
@@ -2793,6 +2800,7 @@ is
 			end insert_submodule;
 
 			
+			
 			procedure set_frame_schematic (
 				module_name	: in pac_module_name.bounded_string;
 				module		: in out type_generic_module) 
@@ -2819,6 +2827,7 @@ is
 				
 			end set_frame_schematic;
 
+
 			
 			procedure add_sheet_description is 
 				use et_coordinates_2;	
@@ -2842,6 +2851,7 @@ is
 				sheet_description_text := to_content("");
 			end add_sheet_description;
 
+
 			
 			procedure set_frame_board (
 				module_name	: in pac_module_name.bounded_string;
@@ -2864,6 +2874,8 @@ is
 				module.board.frame.frame.position := frame_board_position;
 			end set_frame_board;
 
+
+			
 			
 			procedure insert_schematic_text (
 				module_name	: in pac_module_name.bounded_string;
@@ -2875,6 +2887,7 @@ is
 				-- clean up for next note
 				schematic_text := (others => <>);
 			end insert_schematic_text;
+
 
 			
 			procedure insert_package_placeholder is
@@ -2920,6 +2933,7 @@ is
 				device_text_placeholder_position := placeholder_position_default;
 
 			end insert_package_placeholder;
+
 
 			
 			procedure insert_unit is 
@@ -3013,6 +3027,7 @@ is
 				unit_placeholder_position := pac_geometry_2.origin;
 				
 			end build_unit_placeholder;
+
 
 			
 			procedure insert_device (
@@ -3371,6 +3386,7 @@ is
 				board_reset_line_width;
 			end insert_line;
 
+
 			
 			
 			procedure insert_arc (
@@ -3467,6 +3483,7 @@ is
 			end insert_arc;
 
 
+
 			
 			procedure insert_circle (
 				layer_cat	: in type_layer_category;
@@ -3561,6 +3578,7 @@ is
 			end insert_circle;
 
 
+			
 			
 			procedure insert_polygon ( -- CS rename to insert_contour
 				layer_cat	: in type_layer_category;
@@ -3785,6 +3803,7 @@ is
 			end insert_cutout;
 
 
+
 			
 			procedure insert_cutout_via_restrict is
 				use et_board_shapes_and_text;
@@ -3851,6 +3870,7 @@ is
 			end insert_cutout_route_restrict;
 
 
+
 			
 			-- This is about cutout zones to trim floating contours in 
 			-- signal layers. No connection to any net.
@@ -3900,6 +3920,7 @@ is
 					use et_pcb_coordinates_2;
 					use et_pcb;
 					use et_board_shapes_and_text;
+					use et_pcb_placeholders;
 				begin
 					case face is
 						when TOP =>
@@ -3969,6 +3990,7 @@ is
 				-- clean up for next board placeholder
 				board_text_placeholder := (others => <>);
 			end insert_placeholder;
+
 
 			
 			procedure insert_line_route_restrict is
@@ -4065,6 +4087,7 @@ is
 				clear (signal_layers);
 			end insert_circle_route_restrict;
 
+			
 			
 			procedure insert_polygon_route_restrict is
 				use et_pcb_coordinates_2;
@@ -4186,6 +4209,7 @@ is
 			end insert_polygon_conductor;
 
 
+			
 			
 			procedure insert_line_track is -- about freetracks
 				use et_conductor_segment.boards;
@@ -4335,7 +4359,7 @@ is
 			
 			
 			procedure insert_board_text_placeholder is
-				use et_pcb;
+				use et_pcb_placeholders;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;

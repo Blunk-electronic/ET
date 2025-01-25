@@ -117,6 +117,7 @@ with et_silkscreen;
 with et_assy_doc;
 with et_keepout;
 with et_pcb_contour;
+with et_pcb_placeholders;
 
 with et_mirroring;					use et_mirroring;
 with et_unit_name;
@@ -1456,8 +1457,9 @@ is
 		use et_pcb_coordinates_2.pac_geometry_2;
 
 		use pac_texts_fab_with_content;
-		
-		use et_pcb.pac_text_placeholders;
+
+		use et_pcb_placeholders;		
+		use pac_text_placeholders;
 
 		use et_silkscreen;
 		use pac_silk_lines;
@@ -1507,7 +1509,7 @@ is
 		
 		-- general stuff
 		use pac_text_placeholders_conductors;
-		procedure write_placeholder (cursor : in et_pcb.pac_text_placeholders.cursor) is
+		procedure write_placeholder (cursor : in pac_text_placeholders.cursor) is
 		begin
 			placeholder_begin;
 			write (keyword => keyword_meaning, parameters => to_string (element (cursor).meaning));

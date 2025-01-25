@@ -65,6 +65,7 @@ with et_ratsnest;
 with et_alignment;
 with et_canvas_tool;
 with et_mirroring;
+with et_pcb_placeholders;			use et_pcb_placeholders;
 
 
 separate (et_canvas_board_2)
@@ -155,7 +156,7 @@ procedure draw_conductors is
 	use pac_route_solid;
 	use pac_route_hatched;
 	
-	use et_pcb.pac_text_placeholders_conductors;
+	use pac_text_placeholders_conductors;
 	use pac_conductor_texts;
 
 	-- CS must be overwritten according to select status:
@@ -576,7 +577,9 @@ procedure draw_conductors is
 
 -- TEXTS
 	
-	procedure query_placeholder (c : in et_pcb.pac_text_placeholders_conductors.cursor) is 
+	procedure query_placeholder (
+		c : in pac_text_placeholders_conductors.cursor) 
+	is 
 		use et_board_ops.text;
 		use pac_text;
 		v_text : type_vector_text;

@@ -42,6 +42,7 @@ with et_silkscreen;				use et_silkscreen;
 with et_colors;					use et_colors;
 with et_board_ops.text;			use et_board_ops.text;
 with et_schematic;
+with et_pcb_placeholders;		use et_pcb_placeholders;
 
 
 separate (et_canvas_board_2)
@@ -59,7 +60,7 @@ is
 	use pac_silk_circles;
 	use pac_silk_contours;
 	use pac_silk_texts;
-	use et_pcb.pac_text_placeholders;
+	use pac_text_placeholders;
 
 	use et_canvas_board_preliminary_object;
 	
@@ -127,7 +128,9 @@ is
 
 	
 	
-	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
+	procedure query_placeholder (
+		c : in pac_text_placeholders.cursor) 
+	is 
 		-- CS use rename
 		use pac_text;
 		v_text : type_vector_text;

@@ -43,6 +43,7 @@ with ada.text_io;				use ada.text_io;
 with et_colors;					use et_colors;
 with et_board_ops.text;			use et_board_ops.text;
 with et_schematic;
+with et_pcb_placeholders;		use et_pcb_placeholders;
 
 
 separate (et_canvas_board_2)
@@ -60,7 +61,7 @@ is
 	use pac_doc_circles;
 	use pac_doc_zones;
 	use pac_doc_texts;
-	use et_pcb.pac_text_placeholders;
+	use pac_text_placeholders;
 
 	use et_canvas_board_preliminary_object;
 
@@ -131,7 +132,9 @@ is
 
 
 	
-	procedure query_placeholder (c : in et_pcb.pac_text_placeholders.cursor) is 
+	procedure query_placeholder (
+		c : in pac_text_placeholders.cursor) 
+	is 
 		use pac_text;
 		use pac_draw_text;
 
