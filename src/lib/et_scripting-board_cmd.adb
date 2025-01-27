@@ -772,7 +772,7 @@ is
 		begin
 			face := to_face (f (5));
 			
-			draw_zone (
+			add_zone (
 				module_cursor	=> module_cursor,
 				zone			=> (c with null record),
 				face			=> face,
@@ -789,7 +789,7 @@ is
 				when LINE =>
 					case cmd_field_count is
 						when 11 =>
-							draw_line (
+							add_line (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
 								line			=> (
@@ -812,7 +812,7 @@ is
 				when ARC =>
 					case cmd_field_count is
 						when 14 =>
-							draw_arc (
+							add_arc (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
 								arc				=> (
@@ -837,7 +837,7 @@ is
 				when CIRCLE =>
 					case cmd_field_count is
 						when 10 =>
-							draw_circle (
+							add_circle (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
 								circle			=> (

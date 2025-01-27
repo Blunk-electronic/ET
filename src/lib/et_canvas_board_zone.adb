@@ -474,7 +474,7 @@ package body et_canvas_board_zone is
 				when LAYER_CAT_ASSY =>
 
 					-- Add the temporary contour to the board:
-					et_board_ops.assy_doc.draw_zone (
+					et_board_ops.assy_doc.add_zone (
 						module_cursor	=> active_module,
 						zone			=> (c with null record),
 						face			=> object_face,

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -50,7 +50,7 @@ package body et_board_ops.assy_doc is
 	use pac_doc_texts;
 
 	
-	procedure draw_line (
+	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_doc_line;
@@ -90,7 +90,7 @@ package body et_board_ops.assy_doc is
 			position	=> module_cursor,
 			process		=> add'access);
 
-	end draw_line;
+	end add_line;
 
 	
 
@@ -706,7 +706,7 @@ package body et_board_ops.assy_doc is
 
 	
 	
-	procedure draw_arc (
+	procedure add_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_doc_arc;		
@@ -748,12 +748,12 @@ package body et_board_ops.assy_doc is
 			position	=> module_cursor,
 			process		=> add'access);
 
-	end draw_arc;
+	end add_arc;
 
 
 
 	
-	procedure draw_circle (
+	procedure add_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_doc_circle;
@@ -794,13 +794,13 @@ package body et_board_ops.assy_doc is
 			position	=> module_cursor,
 			process		=> add'access);
 
-	end draw_circle;
+	end add_circle;
 
 
 
 
 
-	procedure draw_zone (
+	procedure add_zone (
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_doc_zone;
 		face			: in type_face;
@@ -891,7 +891,7 @@ package body et_board_ops.assy_doc is
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-	end draw_zone;
+	end add_zone;
 
 	
 

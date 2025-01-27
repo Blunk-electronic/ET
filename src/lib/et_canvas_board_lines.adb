@@ -540,7 +540,7 @@ package body et_canvas_board_lines is
 			case object_layer_category is
 				when LAYER_CAT_ASSY =>
 					
-					et_board_ops.assy_doc.draw_line (
+					et_board_ops.assy_doc.add_line (
 						module_name	=> pac_generic_modules.key (active_module),
 						face		=> object_face,
 						line		=> (line with object_linewidth),

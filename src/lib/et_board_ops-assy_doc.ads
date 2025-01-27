@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -59,8 +59,8 @@ package et_board_ops.assy_doc is
 -- LINES:
 
 	
-	-- Draws a line in the assembly documentation.
-	procedure draw_line (
+	-- Adds a line to the assembly documentation.
+	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_doc_line;
@@ -168,8 +168,8 @@ package et_board_ops.assy_doc is
 -- ARCS:
 	
 	
-	-- Draws an arc in the assembly documentation.
-	procedure draw_arc (
+	-- Adds an arc to the assembly documentation.
+	procedure add_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_doc_arc;
@@ -179,8 +179,8 @@ package et_board_ops.assy_doc is
 
 -- CIRCLES:
 	
-	-- Draws a circle in the assembly documentation.
-	procedure draw_circle (
+	-- Adds a circle to the assembly documentation.
+	procedure add_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;	
 		circle			: in type_doc_circle;
@@ -191,7 +191,7 @@ package et_board_ops.assy_doc is
 
 -- ZONES:
 	
-	-- Draws a zone in the assembly documentation layer.
+	-- Adds a zone to the assembly documentation layer.
 	-- The given zone can consist of a single segment or a
 	-- fragment of a zone contour.
 	-- 1. If the given zone is a single segment or a fragment
@@ -202,7 +202,7 @@ package et_board_ops.assy_doc is
 	--    a new zone.
 	-- 3. If all existing zones are already closed, then the given zone
 	--    is regarded a a new zone and added to the existing zones.
-	procedure draw_zone (
+	procedure add_zone (
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_doc_zone;
 		face			: in type_face;
