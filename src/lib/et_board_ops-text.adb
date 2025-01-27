@@ -39,7 +39,9 @@
 with et_meta;
 
 with et_assembly_variants;
+with et_conductor_text.boards;
 with et_mirroring;
+
 
 
 package body et_board_ops.text is
@@ -84,6 +86,8 @@ package body et_board_ops.text is
 		
 		return result;
 	end to_placeholder_content;
+
+
 
 	
 	
@@ -160,9 +164,8 @@ package body et_board_ops.text is
 		end place_text;
 		
 
-	begin -- place_text_in_non_conductor_layer
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
+	begin
+		log (text => "module " & to_string (module_cursor)
 			& " placing text in non-conductor layer at" -- CS output category
 			& to_string (text.position)
 			& " face" & to_string (face),
@@ -175,6 +178,82 @@ package body et_board_ops.text is
 
 	end place_text_in_non_conductor_layer;
 
+
+
+
+
+	procedure place_text_in_conductor_layer (
+		module_cursor	: in pac_generic_modules.cursor;
+		signal_layer	: in type_signal_layer;
+		text			: in type_text_fab_with_content;
+		log_threshold	: in type_log_level)
+	is
+		use et_conductor_text.boards;
+		use et_mirroring;
+		
+
+		procedure place_text (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_conductor_texts;
+			vectors : pac_character_lines.list;
+			use et_text;
+			mirror : type_mirror;
+
+			v_text : type_vector_text;
+			c_text : type_conductor_text;
+			
+		begin
+			mirror := signal_layer_to_mirror (signal_layer, get_deepest_conductor_layer (module_cursor));
+
+			if mirror = MIRROR_ALONG_Y_AXIS then
+				log (text => "text is in deepest signal layer -> will be mirrored", level => log_threshold + 1);
+			else
+				log (text => "text is not in deepest signal layer -> no mirroring", level => log_threshold + 1);
+			end if;
+
+			
+			v_text := vectorize_text (
+				content		=> text.content,
+				size		=> text.size,
+				rotation	=> get_rotation (text.position),
+				position	=> text.position.place,
+				mirror		=> mirror,
+				line_width	=> text.line_width,
+				make_border	=> true -- CS should be false for restrict layers
+				-- CS alignment
+				); 
+
+			-- assemble the conductor text:
+			c_text := (text with 
+				layer		=> signal_layer,
+				vectors		=> v_text -- CS call vectorize_text here directly
+				--segments	=> make_segments (v_text, text.line_width)
+				);
+			
+			append (module.board.conductors.texts, c_text);
+		end place_text;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " placing text in conductor layer at"
+			& to_string (text.position)
+			& " signal layer " & to_string (signal_layer),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> place_text'access);
+
+		log_indentation_down;
+	end place_text_in_conductor_layer;
+
+	
 
 end et_board_ops.text;
 	

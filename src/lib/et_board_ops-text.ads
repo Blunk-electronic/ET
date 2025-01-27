@@ -51,8 +51,6 @@ with et_exceptions;					use et_exceptions;
 
 package et_board_ops.text is
 
-	-- CS rework procedures so that a module cursor
-	-- is used instead the module_name.
 
 	use et_board_shapes_and_text;
 	use pac_text_board;
@@ -75,6 +73,15 @@ package et_board_ops.text is
 		text			: in type_text_fab_with_content;
 		log_threshold	: in type_log_level);
 
+
+	-- Places a text in a conductor layer.
+	procedure place_text_in_conductor_layer (
+		module_cursor	: in pac_generic_modules.cursor;
+		signal_layer	: in type_signal_layer;
+		text			: in type_text_fab_with_content;
+		log_threshold	: in type_log_level);
+
+	
 											
 end et_board_ops.text;
 
