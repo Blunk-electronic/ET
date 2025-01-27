@@ -1876,7 +1876,7 @@ package body et_board_ops.conductors is
 
 	
 
-	procedure place_fill_zone (
+	procedure add_zone (
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_zone'class;
 		log_threshold	: in type_log_level;
@@ -1993,7 +1993,7 @@ package body et_board_ops.conductors is
 		end route_hatched;
 
 		
-	begin -- place_fill_zone
+	begin -- add_zone
 		log (text => "module " 
 			& enclose_in_quotes (to_string (key (module_cursor)))
 			& " placing fill zone in conductor layer ...",
@@ -2041,7 +2041,7 @@ package body et_board_ops.conductors is
 		end if;
 		
 		log_indentation_down;
-	end place_fill_zone;
+	end add_zone;
 
 
 	

@@ -351,11 +351,13 @@ package et_board_ops.conductors is
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		log_threshold	: in type_log_level);
 
+
+
 	
 
 -- FILL ZONES
 	
-	procedure place_fill_zone (
+	procedure add_zone (
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_zone'class;
 		log_threshold	: in type_log_level;
@@ -364,6 +366,7 @@ package et_board_ops.conductors is
 		-- The type of the given fill zone is the cirteria:
 		net_name		: in pac_net_name.bounded_string := et_net_names.no_name);
 
+	
 
 	-- Fills fill zones. If nets is empty, then all
 	-- zones will be filled (even those who are floating).
@@ -385,6 +388,7 @@ package et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;	
 		log_threshold	: in type_log_level;
 		nets 			: in pac_net_names.list := no_net_names); -- GND, GNDA, P3V3, ...
+
 
 	
 	

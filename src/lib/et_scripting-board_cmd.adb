@@ -1938,7 +1938,7 @@ is
 						islands		=> no_islands,
 						easing		=> settings.polygons_conductor.easing);
 
-					place_fill_zone (module_cursor, ps, log_threshold + 1);
+					add_zone (module_cursor, ps, log_threshold + 1);
 
 					
 				when HATCHED =>
@@ -1956,7 +1956,7 @@ is
 						islands		=> no_islands,
 						easing		=> settings.polygons_conductor.easing);
 
-					place_fill_zone (module_cursor, ph, log_threshold + 1);
+					add_zone (module_cursor, ph, log_threshold + 1);
 					
 			end case;
 		end make_fill_zone;
@@ -2067,7 +2067,7 @@ is
 						others			=> <>),
 					others				=> <>);
 					   
-				place_fill_zone (
+				add_zone (
 					module_cursor	=> module_cursor,
 					zone			=> p2,
 					net_name		=> to_net_name (f (5)),
@@ -2096,7 +2096,7 @@ is
 						others			=> <>),
 					others				=> <>);
 					   
-				place_fill_zone (
+				add_zone (
 					module_cursor	=> module_cursor,
 					zone			=> p2,
 					net_name		=> to_net_name (f (5)),
@@ -2126,7 +2126,7 @@ is
 						others			=> <>),
 					others				=> <>);
 					   
-				place_fill_zone (
+				add_zone (
 					module_cursor	=> module_cursor,
 					zone			=> p2,
 					net_name		=> to_net_name (f (5)),
@@ -2156,7 +2156,7 @@ is
 						others			=> <>),
 					others				=> <>);
 					   
-				place_fill_zone (
+				add_zone (
 					module_cursor	=> module_cursor,
 					zone			=> p2,
 					net_name		=> to_net_name (f (5)),
