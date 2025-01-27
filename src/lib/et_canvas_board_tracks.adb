@@ -576,7 +576,7 @@ package body et_canvas_board_tracks is
 			-- Commit the current state of the design:
 			commit (PRE, verb, noun, log_threshold + 1);
 
-			add_named_track (
+			add_line (
 				module_cursor	=> active_module, 
 				net_name		=> object_net_name,
 				line			=> (line with object_linewidth, object_signal_layer),
@@ -1037,14 +1037,14 @@ package body et_canvas_board_tracks is
 				-- 		when LINE =>
 							case ripup_mode is
 								when SINGLE_SEGMENT =>
-									delete_line_segment (
+									delete_line (
 										module_cursor	=> active_module,
 										net_name		=> key (selected_line.net_cursor),
 										line			=> element (selected_line.line_cursor),
 										log_threshold	=> log_threshold);
 
 								when WHOLE_NET =>
-									delete_all_segments (
+									ripup_net (
 										module_cursor	=> active_module,
 										net_name		=> key (selected_line.net_cursor),
 										log_threshold	=> log_threshold);

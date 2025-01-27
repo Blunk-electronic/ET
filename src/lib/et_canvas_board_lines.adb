@@ -552,7 +552,7 @@ package body et_canvas_board_lines is
 
 					-- Because we do not pass a net name, this is going
 					-- to be a freetrack:
-					et_board_ops.conductors.draw_track_line (
+					et_board_ops.conductors.add_line (
 						module_name	=> pac_generic_modules.key (active_module),
 						line		=> (line with object_linewidth, object_signal_layer),
 						log_threshold	=> log_threshold);

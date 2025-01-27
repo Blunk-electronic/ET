@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -1968,7 +1968,7 @@ is
 				case cmd_field_count is
 					when 11 =>
 						-- draw a freetrack
-						draw_track_line (
+						add_line (
 							module_name 	=> module,
 							net_name		=> to_net_name (""),
 							line	=> (
@@ -1993,7 +1993,7 @@ is
 				case cmd_field_count is
 					when 14 =>
 						-- draw a freetrack
-						draw_track_arc (
+						add_arc (
 							module_name 	=> module,
 							arc			=> (
 								layer		=> to_signal_layer (f (5)),
@@ -2014,6 +2014,7 @@ is
 						command_incomplete;
 				end case;
 
+				
 			when ZONE =>
 				case cmd_field_count is
 					when 5 .. type_field_count'last =>
@@ -2182,7 +2183,6 @@ is
 		end make_fill_zone;
 
 
-		-- use et_devices;
 		use et_pcb_coordinates_2.pac_grid;
 
 		
@@ -2196,7 +2196,7 @@ is
 					-- board motor_driver route net NET_1 2 line 0.25 0 0 160 0
 					case cmd_field_count is
 						when 12 =>
-							draw_track_line (
+							add_line (
 								module_name 	=> module,
 								net_name		=> to_net_name (f (5)),
 								line	=> (
@@ -2231,7 +2231,7 @@ is
 							-- board motor_driver route net NET_1 1 line 0.25 R1 1 to 35 40
 							case cmd_field_count is
 								when 13 =>
-									draw_track_line (
+									add_line (
 										module_name => module,
 										net_name	=> to_net_name (f (5)),
 										layer		=> to_signal_layer (f (6)),
@@ -2259,7 +2259,7 @@ is
 							if f (12) = to_string (AXIS_X) or f (12) = to_string (AXIS_Y) then
 								case cmd_field_count is
 									when 13 =>
-										draw_track_line (
+										add_line (
 											module_name => module,
 											net_name	=> to_net_name (f (5)),
 											layer		=> to_signal_layer (f (6)),
@@ -2295,7 +2295,7 @@ is
 							
 							case cmd_field_count is
 								when 13 =>
-									draw_track_line (
+									add_line (
 										module_name => module,
 										net_name	=> to_net_name (f (5)),
 										layer		=> to_signal_layer (f (6)),
@@ -2323,7 +2323,7 @@ is
 								
 								case cmd_field_count is
 									when 14 =>
-										draw_track_line (
+										add_line (
 											module_name => module,
 											net_name	=> to_net_name (f (5)),
 											layer		=> to_signal_layer (f (6)),
@@ -2352,12 +2352,13 @@ is
 						invalid_keyword (11);
 					end if;
 				end if;
+
 				
 			when ARC =>
 				case cmd_field_count is
 					when 15 =>
 						-- draw a named track
-						draw_track_arc (
+						add_arc (
 							module_name 	=> module,
 							net_name		=> to_net_name (f (5)),
 							arc		=> (
@@ -2384,6 +2385,7 @@ is
 						command_incomplete;
 				end case;
 
+				
 			when ZONE =>
 				case cmd_field_count is
 					-- The polygon command is very long. The following example spreads across
@@ -2405,6 +2407,7 @@ is
 
 
 
+	
 	-- This procedure parses a command to
 	-- add a new signal layer:
 	procedure add_signal_layer is
@@ -2817,9 +2820,8 @@ is
 	-- delete an freetrack segment in a conductor layer:
 	procedure delete_freetrack_segment is
 
-		procedure do_it is
-		begin
-			delete_track_segment (
+		procedure do_it is begin
+			delete_track (
 				module_name 	=> module,
 				net_name		=> to_net_name (""),
 				layer			=> to_signal_layer (f (5)),
@@ -2848,10 +2850,8 @@ is
 	-- delete a segment of a net in a conductor layer:
 	procedure delete_net_segment is
 
-		procedure do_it is 
-
-		begin
-			delete_track_segment (
+		procedure do_it is begin
+			delete_track (
 				module_name 	=> module,
 				net_name		=> to_net_name (f (5)),
 				layer			=> to_signal_layer (f (6)),
@@ -2872,6 +2872,7 @@ is
 		end case;
 	end delete_net_segment;
 	
+
 
 	
 

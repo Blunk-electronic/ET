@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -64,7 +64,7 @@ package et_board_ops.conductors is
 	
 	-- Adds a line track segment to the given net in the given module.
 	-- The given net must exist:
-	procedure add_named_track (
+	procedure add_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		line			: in type_conductor_line;
@@ -74,7 +74,7 @@ package et_board_ops.conductors is
 	
 	-- Draws a track line. If net_name is empty (default) 
 	-- then a freetrack will be drawn.
-	procedure draw_track_line (
+	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string := et_net_names.no_name; -- reset_n
 		line			: in type_conductor_line;
@@ -83,7 +83,7 @@ package et_board_ops.conductors is
 	
 	-- Draws a named track line.
 	-- Assumes that module_cursor and net_cursor point to existing objects.
-	--procedure draw_track_line (
+	--procedure add_line (
 		--module_cursor	: in pac_generic_modules.cursor;
 		--net_cursor		: in et_schematic.pac_nets.cursor; -- reset_n
 		--line			: in type_conductor_line;
@@ -95,7 +95,7 @@ package et_board_ops.conductors is
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
-	procedure draw_track_line (
+	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -112,7 +112,7 @@ package et_board_ops.conductors is
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
-	procedure draw_track_line (
+	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -129,7 +129,7 @@ package et_board_ops.conductors is
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.								  
-	procedure draw_track_line (
+	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -145,7 +145,7 @@ package et_board_ops.conductors is
 	-- If the terminal is a THT type, then the track may start at any signal layer.
 	-- If the terminal is a SMT type, then the track may start at either the top or bottom
 	-- signal layer. If operator indeed whishes an inner layer a warning is issued.
-	procedure draw_track_line (
+	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -170,10 +170,10 @@ package et_board_ops.conductors is
 	package pac_get_lines_result is new doubly_linked_lists (type_get_lines_result);
 
 	
-	-- Returns all line segments in the given signal layer
+	-- Returns all lines in the given signal layer
 	-- in the vicinity of the given point.
-	-- NOTE: This is about line segments connected with nets:
-	function get_net_segments (
+	-- NOTE: This is about line connected with nets:
+	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in type_vector_model;
@@ -182,11 +182,13 @@ package et_board_ops.conductors is
 		return pac_get_lines_result.list;
 
 	-- CS do the same for arcs
+
+
 	
-	-- Returns all line segments of freetracks 
+	-- Returns all line of freetracks 
 	-- in the given signal layer
 	-- in the vicinity of the given point.
-	function get_freetrack_segments (
+	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in type_vector_model;
@@ -289,7 +291,7 @@ package et_board_ops.conductors is
 
 	-- Moves a freetrack line. If the given line
 	-- does not exist, then nothing happens:
-	procedure move_freetrack_line (
+	procedure move_line_freetrack (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_conductor_line;
 		point_of_attack	: in type_vector_model;
@@ -299,7 +301,7 @@ package et_board_ops.conductors is
 	
 	
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
-	procedure draw_track_arc (
+	procedure add_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		arc				: in type_conductor_arc;
@@ -313,7 +315,7 @@ package et_board_ops.conductors is
 	-- are targeted.
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-	procedure delete_track_segment (
+	procedure delete_track (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -322,10 +324,11 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level);
 
 
+	
 	-- Deletes the given freetrack line.
 	-- If the line does not exist then
 	-- nothing happens:
-	procedure delete_freetrack_line (
+	procedure delete_line_freetrack (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_conductor_line;
 		log_threshold	: in type_log_level);
@@ -335,7 +338,7 @@ package et_board_ops.conductors is
 	-- Deletes the given line segment in the given net.
 	-- If the net or the segment does not exist then
 	-- nothing happens and an error message is logged:
-	procedure delete_line_segment (
+	procedure delete_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		line			: in type_conductor_line;
@@ -343,7 +346,7 @@ package et_board_ops.conductors is
 
 
 	-- Deletes all segments of the given net:
-	procedure delete_all_segments (
+	procedure ripup_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		log_threshold	: in type_log_level);

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -58,6 +58,7 @@ package body et_board_ops.conductors is
 
 	use pac_generic_modules;
 	use pac_nets;
+
 	
 
 	function is_freetrack (
@@ -73,6 +74,8 @@ package body et_board_ops.conductors is
 		end if;
 	end is_freetrack;
 
+
+	
 	
 	function freetrack (
 		net_name : in pac_net_name.bounded_string) 
@@ -88,6 +91,8 @@ package body et_board_ops.conductors is
 	end freetrack;
 
 
+	
+
 	procedure no_net_segment_found (
 		layer		: in et_pcb_stack.type_signal_layer;
 		point		: in type_vector_model; 
@@ -99,6 +104,7 @@ package body et_board_ops.conductors is
 			 " in vicinity of" & accuracy_to_string (accuracy));
 	end no_net_segment_found;
 
+	
 	
 
 	-- If the terminal is a THT type, then the track may start at any signal layer.
@@ -132,14 +138,17 @@ package body et_board_ops.conductors is
 		end if;
 	end check_terminal_face_vs_layer;
 
+
+
 	
 	
-	procedure add_named_track (
+	procedure add_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		line			: in type_conductor_line;
 		log_threshold	: in type_log_level)
 	is
+		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -183,11 +192,13 @@ package body et_board_ops.conductors is
 			process		=> do_it'access);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
-	end add_named_track;
+	end add_line;
+	
 
 
 	
-	procedure draw_track_line (
+	
+	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string := et_net_names.no_name; -- reset_n
 		line			: in type_conductor_line;
@@ -226,13 +237,15 @@ package body et_board_ops.conductors is
 				process		=> add_freetrack'access);
 
 		else
-			add_named_track (module_cursor, net_name, line, log_threshold + 1);
+			add_line (module_cursor, net_name, line, log_threshold + 1);
 		end if;
 
-	end draw_track_line;
+	end add_line;
 
 	
-	--procedure draw_track_line (
+
+	
+	--procedure add_line (
 		--module_cursor	: in pac_generic_modules.cursor;
 		--net_cursor		: in pac_nets.cursor; -- reset_n
 		--line			: in type_conductor_line;
@@ -270,10 +283,11 @@ package body et_board_ops.conductors is
 			--position	=> module_cursor,
 			--process		=> add_named_track'access);
 
-	--end draw_track_line;
+	--end add_line;
+
 
 	
-	procedure draw_track_line (
+	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -321,7 +335,7 @@ package body et_board_ops.conductors is
 		end make_line;
 
 		
-	begin -- draw_track_line
+	begin
 		log (text => "module " & to_string (module_name) &
 			" " & to_string (net_name) &
 			" drawing line in layer" & to_string (layer) &
@@ -340,12 +354,14 @@ package body et_board_ops.conductors is
 		
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
-		add_named_track (module_cursor, net_name, line, log_threshold + 1);
-	end draw_track_line;
+		add_line (module_cursor, net_name, line, log_threshold + 1);
+	end add_line;
+
 
 
 	
-	procedure draw_track_line (
+	
+	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -387,7 +403,7 @@ package body et_board_ops.conductors is
 		end make_line;
 
 		
-	begin -- draw_track_line
+	begin
 		log (text => "module " & to_string (module_name) &
 			" " & to_string (net_name) &
 			" drawing line in layer" & to_string (layer) &
@@ -408,12 +424,14 @@ package body et_board_ops.conductors is
 		
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
-		add_named_track (module_cursor, net_name, line, log_threshold + 1);
-	end draw_track_line;
+		add_line (module_cursor, net_name, line, log_threshold + 1);
+	end add_line;
+
+
 
 	
 	
-	procedure draw_track_line (
+	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -451,7 +469,7 @@ package body et_board_ops.conductors is
 		end make_line;
 
 		
-	begin -- draw_track_line
+	begin
 		log (text => "module " & to_string (module_name) &
 			" " & to_string (net_name) &
 			" drawing line in layer" & to_string (layer) &
@@ -470,13 +488,14 @@ package body et_board_ops.conductors is
 		
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
-		add_named_track (module_cursor, net_name, line, log_threshold + 1);
-	end draw_track_line;
+		add_line (module_cursor, net_name, line, log_threshold + 1);
+	end add_line;
+
 
 
 	
 	
-	procedure draw_track_line (
+	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -516,7 +535,7 @@ package body et_board_ops.conductors is
 		end make_line;
 
 		
-	begin -- draw_track_line
+	begin
 		log (text => "module " & to_string (module_name) &
 			" " & to_string (net_name) &
 			" drawing line in layer" & to_string (layer) &
@@ -536,17 +555,19 @@ package body et_board_ops.conductors is
 		
 		make_line (get_terminal_position (module_cursor, device_cursor, terminal));
 
-		add_named_track (module_cursor, net_name, line, log_threshold + 1);
-	end draw_track_line;
+		add_line (module_cursor, net_name, line, log_threshold + 1);
+	end add_line;
+
 
 
 	
+	
 
-	function get_net_segments (
+	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in type_vector_model;
-		zone			: in type_accuracy; -- the circular area around the place
+		zone			: in type_accuracy;
 		log_threshold	: in type_log_level)
 		return pac_get_lines_result.list
 	is
@@ -591,8 +612,7 @@ package body et_board_ops.conductors is
 
 		
 	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
+		log (text => "module " & to_string (module_cursor)
 			& " looking up line segments of nets at" & to_string (point)
 			 & " in signal layer " & to_string (layer)
 			 & " zone" & accuracy_to_string (zone),
@@ -609,11 +629,13 @@ package body et_board_ops.conductors is
 		
 		log_indentation_down;
 		return result;
-	end get_net_segments;
+	end get_lines;
 
 
+	
 
-	function get_freetrack_segments (
+	
+	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
 		point			: in type_vector_model;
@@ -654,8 +676,7 @@ package body et_board_ops.conductors is
 
 
 	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
+		log (text => "module " & to_string (module_cursor)
 			& " looking up line segments of nets at" & to_string (point)
 			 & " in signal layer " & to_string (layer)
 			 & " zone" & accuracy_to_string (zone),
@@ -673,9 +694,10 @@ package body et_board_ops.conductors is
 		log_indentation_down;
 		
 		return result;
-	end get_freetrack_segments;
+	end get_lines;
 
 
+	
 	
 
 	
@@ -1377,7 +1399,9 @@ package body et_board_ops.conductors is
 
 
 
-	procedure move_freetrack_line (
+	
+
+	procedure move_line_freetrack (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_conductor_line;
 		point_of_attack	: in type_vector_model;
@@ -1413,8 +1437,7 @@ package body et_board_ops.conductors is
 
 		
 	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
+		log (text => "module " & to_string (module_cursor)
 			& " moving freetrack " & to_string (line, true)  -- log incl. width
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
@@ -1427,13 +1450,13 @@ package body et_board_ops.conductors is
 			process		=> query_module'access);
 		
 		log_indentation_down;
-	end move_freetrack_line;
+	end move_line_freetrack;
 
 
 	
 	
 	
-	procedure draw_track_arc (
+	procedure add_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		arc				: in type_conductor_arc;
@@ -1487,7 +1510,7 @@ package body et_board_ops.conductors is
 		end add_named_track;
 
 		
-	begin -- draw_track_arc
+	begin
 		log (text => "module " & to_string (module_name) &
 			 freetrack (net_name) &
 			" drawing arc" &
@@ -1516,11 +1539,14 @@ package body et_board_ops.conductors is
 
 			update_ratsnest (module_cursor, log_threshold + 1);
 		end if;
-	end draw_track_arc;
+	end add_arc;
+
+	
 
 		
+
 	
-	procedure delete_track_segment (
+	procedure delete_track (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -1578,6 +1604,7 @@ package body et_board_ops.conductors is
 			
 		end ripup_freetrack;
 
+		
 		
 		procedure ripup_named_track (
 			module_name	: in pac_module_name.bounded_string;
@@ -1646,7 +1673,7 @@ package body et_board_ops.conductors is
 		end ripup_named_track;
 
 		
-	begin -- delete_track_segment
+	begin -- delete_track
 		log (text => "module " & to_string (module_name) &
 			freetrack (net_name) &
 			" deleting segment" &
@@ -1676,12 +1703,14 @@ package body et_board_ops.conductors is
 
 			update_ratsnest (module_cursor, log_threshold + 1);
 		end if;		
-	end delete_track_segment;
+	end delete_track;
+
+	
 
 
 
 
-	procedure delete_freetrack_line (
+	procedure delete_line_freetrack (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_conductor_line;
 		log_threshold	: in type_log_level)
@@ -1714,13 +1743,14 @@ package body et_board_ops.conductors is
 			position	=> module_cursor,
 			process		=> query_module'access);
 		
-	end delete_freetrack_line;
+	end delete_line_freetrack;
 		
 	
 
+
 	
 
-	procedure delete_line_segment (
+	procedure delete_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		line			: in type_conductor_line;
@@ -1768,7 +1798,7 @@ package body et_board_ops.conductors is
 
 		
 	begin
-		log (text => "module " & to_string (key (module_cursor)) &
+		log (text => "module " & to_string (module_cursor) &
 			" net " & to_string (net_name) &
 			" deleting segment" & to_string (line, true), -- log linewidth
 			level => log_threshold);
@@ -1779,11 +1809,13 @@ package body et_board_ops.conductors is
 			process		=> query_module'access);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
-	end delete_line_segment;
+	end delete_line;
 
 
 
-	procedure delete_all_segments (
+	
+
+	procedure ripup_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		log_threshold	: in type_log_level)
@@ -1826,7 +1858,7 @@ package body et_board_ops.conductors is
 
 		
 	begin
-		log (text => "module " & to_string (key (module_cursor)) &
+		log (text => "module " & to_string (module_cursor) &
 			" net " & to_string (net_name) &
 			" deleting all segments",
 			level => log_threshold);
@@ -1837,7 +1869,10 @@ package body et_board_ops.conductors is
 			process		=> query_module'access);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
-	end delete_all_segments;
+	end ripup_net;
+
+
+
 
 	
 

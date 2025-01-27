@@ -292,7 +292,7 @@ package body et_canvas_board_freetracks is
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 
-				move_freetrack_line (
+				move_line_freetrack (
 					module_cursor	=> active_module,
 					line			=> element (selected_line.line_cursor),
 					point_of_attack	=> object_point_of_attack,
@@ -362,11 +362,13 @@ package body et_canvas_board_freetracks is
 
 	
 	
+	
 -- DELETE:
 	
 	procedure delete_object (
 		point	: in type_vector_model)
 	is
+		
 		-- Deletes the selected object.
 		-- Resets variable preliminary_object:
 		procedure finalize is 
@@ -395,7 +397,7 @@ package body et_canvas_board_freetracks is
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 
-				delete_freetrack_line (
+				delete_line_freetrack (
 					module_cursor	=> active_module,
 					line			=> element (selected_line.line_cursor),
 					log_threshold	=> log_threshold);
@@ -419,7 +421,6 @@ package body et_canvas_board_freetracks is
 				log_threshold	=> log_threshold + 1);
 			
 		end finalize;
-
 
 		
 	begin
