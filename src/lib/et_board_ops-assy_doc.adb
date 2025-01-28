@@ -1470,8 +1470,7 @@ package body et_board_ops.assy_doc is
 		use pac_contours;
 		use pac_segments;
 		use pac_doc_zones;
-		
-		
+				
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;

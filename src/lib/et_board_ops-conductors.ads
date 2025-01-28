@@ -45,6 +45,7 @@ with ada.containers.doubly_linked_lists;
 with et_text;
 with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_fill_zones;						use et_fill_zones;
+with et_fill_zones.boards;				use et_fill_zones.boards;
 with et_conductor_text.boards;			use et_conductor_text.boards;
 with et_device_name;					use et_device_name;
 
@@ -401,6 +402,85 @@ package et_board_ops.conductors is
 
 
 	
+	-- This composite type helps to identify a
+	-- segment of a zone by the net it is connected with
+	-- and the zone:
+	type type_object_segment (fill_style : type_fill_style) is record
+		segment	: pac_contours.pac_segments.cursor;
+		net		: pac_nets.cursor;
+		
+		case fill_style is
+			when SOLID =>
+				zone_solid : pac_route_solid.cursor;
+				
+			when HATCHED =>
+				zone_hatched : pac_route_hatched.cursor;
+		end case;
+	end record;
+
+
+
+	-- Modifies the status flag of a zone segment (see package et_object_status):
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+
+	
+	-- Sets the proposed-flag of all line and arc segments 
+	-- of a zone which are
+	-- in the given zone around the given place.
+	-- Adds to count the number of segments that have been found:
+	procedure propose_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		zone			: in type_accuracy; -- the circular area around the place
+		layer			: in type_signal_layer;
+		count			: in out natural;
+		log_threshold	: in type_log_level);
+
+	
+	
+	-- Clears the proposed-flag and the selected-flag 
+	-- of all line and arc segments:
+	procedure reset_proposed_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Returns the first line or arc segment according to the given flag.
+	-- If no segment has been found, then the return is no_element:
+	function get_first_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_segment;
+
+
+	-- Moves a line or arc segment of a zone:
+	-- CS currently it moves only a single segment.
+	-- CS provide parameter for move mode (move attached segments, move whole contour)
+	procedure move_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+	
+
+	-- Deletes a line or arc segment of a zone:
+	procedure delete_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		log_threshold	: in type_log_level);
+
+
+
 	
 	
 -- TEXTS:

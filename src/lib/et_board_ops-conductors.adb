@@ -2062,6 +2062,199 @@ package body et_board_ops.conductors is
 	end add_zone;
 
 
+
+
+	
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+		use pac_contours;
+		use pac_segments;
+		use pac_route_solid;
+		use pac_route_hatched;
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_segment (
+				segment	: in out type_segment)
+			is begin
+				modify_status (segment, operation);
+			end query_segment;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is 
+				
+				procedure query_zone_solid (zone : in out type_route_solid) is begin
+					if zone.contour.circular then
+						null; -- CS
+					else
+						-- Locate the given segment in the
+						-- candidate zone:
+						update_element (
+							container	=> zone.contour.segments,
+							position	=> segment.segment,
+							process		=> query_segment'access);
+					end if;
+				end query_zone_solid;
+
+				
+				procedure query_zone_hatched (zone : in out type_route_hatched) is begin
+					if zone.contour.circular then
+						null; -- CS
+					else
+						-- Locate the given segment in the
+						-- candidate zone:
+						update_element (
+							container	=> zone.contour.segments,
+							position	=> segment.segment,
+							process		=> query_segment'access);
+					end if;
+				end query_zone_hatched;
+
+				
+			begin
+				-- Locate the zone:
+				case segment.fill_style is
+					when SOLID =>
+						update_element (
+							container	=> net.route.fill_zones.solid,
+							position	=> segment.zone_solid,
+							process		=> query_zone_solid'access);
+
+					when HATCHED =>
+						update_element (
+							container	=> net.route.fill_zones.hatched,
+							position	=> segment.zone_hatched,
+							process		=> query_zone_hatched'access);
+				end case;
+			end query_net;
+	
+			
+		begin
+			-- Search the given segment according to its net:
+			update_element (
+				container	=> module.nets, 
+				position	=> segment.net, 
+				process		=> query_net'access);
+
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of "
+			& to_string (segment.segment)
+			& " net " & to_string (segment.net)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+
+	
+
+
+	procedure propose_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		zone			: in type_accuracy; -- the circular area around the place
+		layer			: in type_signal_layer;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+	begin
+		null;
+		-- CS
+	end propose_segments;
+
+
+
+
+	procedure reset_proposed_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		null;
+		-- CS
+	end reset_proposed_segments;
+	
+	
+
+
+	function get_first_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_segment
+	is
+		use pac_contours;
+		result : type_object_segment (SOLID);
+
+	begin
+		null;
+
+		-- CS
+
+		return result;
+	end get_first_segment;
+
+
+
+	
+
+	procedure move_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+		use pac_contours;
+		use pac_segments;
+	begin
+		null;
+		-- CS
+	end move_segment;
+
+
+
+
+	procedure delete_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		log_threshold	: in type_log_level)
+	is
+		use pac_contours;
+		use pac_segments;
+
+
+	begin
+		null;
+		-- CS
+	end delete_segment;
+
+	
 	
 
 	procedure fill_zones (
