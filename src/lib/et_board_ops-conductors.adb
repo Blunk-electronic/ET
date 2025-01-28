@@ -1002,9 +1002,9 @@ package body et_board_ops.conductors is
 		flag			: in type_flag;
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
-		return type_line_segment
+		return type_object_line
 	is
-		result : type_line_segment;
+		result : type_object_line;
 
 		use pac_conductor_lines;
 		
@@ -1135,7 +1135,7 @@ package body et_board_ops.conductors is
 	
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in out type_line_segment;
+		line			: in out type_object_line;
 		freetracks		: in boolean;
 		-- last_item		: in out boolean;
 		log_threshold	: in type_log_level)

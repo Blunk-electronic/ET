@@ -60,7 +60,7 @@ package et_board_ops.conductors is
 	use pac_grid;
 
 
--- TRACKS:
+-- LINES:
 	
 	-- Adds a line track segment to the given net in the given module.
 	-- The given net must exist:
@@ -238,7 +238,7 @@ package et_board_ops.conductors is
 	-- identified additionally by the associated net.
 	-- If the net_cursor is no_element then it is a segment
 	-- of a freetrack:
-	type type_line_segment is record
+	type type_object_line is record
 		net_cursor	: pac_nets.cursor;
 		line_cursor	: pac_conductor_lines.cursor;
 	end record;
@@ -257,7 +257,7 @@ package et_board_ops.conductors is
 		flag			: in type_flag;
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
-		return type_line_segment;
+		return type_object_line;
 
 
 	-- Advances to the next proposed line, starting at
@@ -268,7 +268,7 @@ package et_board_ops.conductors is
 	-- CS last_item indicates that the last line has been reached:
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in out type_line_segment;
+		line			: in out type_object_line;
 		freetracks		: in boolean;
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level);

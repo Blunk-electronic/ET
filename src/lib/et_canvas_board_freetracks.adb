@@ -64,7 +64,7 @@ package body et_canvas_board_freetracks is
 	
 	-- Outputs the selected line in the status bar:
 	procedure show_selected_line (
-		selected		: in et_board_ops.conductors.type_line_segment;
+		selected		: in et_board_ops.conductors.type_object_line;
 		clarification	: in boolean := false)
 	is begin
 		if clarification then
@@ -84,7 +84,7 @@ package body et_canvas_board_freetracks is
 	procedure select_object is
 		use et_object_status;
 		use et_board_ops.conductors;
-		selected_line : type_line_segment;
+		selected_line : type_object_line;
 	begin
 		selected_line := get_first_line (
 			module_cursor	=> active_module, 
@@ -129,7 +129,7 @@ package body et_canvas_board_freetracks is
 		-- use pac_segments;
 		-- selected_segment : pac_segments.cursor; -- of a contour
 
-		selected_line : type_line_segment;
+		selected_line : type_object_line;
 		-- selected_arc : type_arc_segment;
 	begin
 		log (text => "set_first_selected_object_moving ...", level => log_threshold);
@@ -181,7 +181,7 @@ package body et_canvas_board_freetracks is
 
 
 		procedure select_first_proposed is 
-			proposed_line : type_line_segment;
+			proposed_line : type_object_line;
 			use et_object_status;
 		begin
 			proposed_line := get_first_line (
@@ -272,7 +272,7 @@ package body et_canvas_board_freetracks is
 			use et_commit;
 			use et_board_ops.conductors;
 
-			selected_line : type_line_segment;
+			selected_line : type_object_line;
 
 			use et_object_status;
 
@@ -377,7 +377,7 @@ package body et_canvas_board_freetracks is
 			use et_commit;
 
 			use et_board_ops.conductors;
-			selected_line : type_line_segment;
+			selected_line : type_object_line;
 
 			use pac_conductor_lines;
 			use et_object_status;
