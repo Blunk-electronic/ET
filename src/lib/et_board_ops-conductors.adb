@@ -569,45 +569,49 @@ package body et_board_ops.conductors is
 		point			: in type_vector_model;
 		zone			: in type_accuracy;
 		log_threshold	: in type_log_level)
-		return pac_get_lines_result.list
+		return pac_object_lines.list
 	is
-		result : pac_get_lines_result.list;
+		result : pac_object_lines.list;
 		
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			net_name : pac_net_name.bounded_string;
-			
-			procedure query_line (c : in pac_conductor_lines.cursor) is
-				use pac_conductor_lines;
-				line : type_conductor_line renames element (c);
-			begin
-				if line.layer = layer then
-					if within_accuracy (
-						line	=> line,
-						width	=> line.width,
-						point	=> point,
-						zone	=> zone)
-					then
-						result.append ((net_name, line));
-					end if;
-				end if;
-			end query_line;
+			use pac_nets;
+			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
-			procedure query_net (c : in pac_nets.cursor) is
-				use et_nets;
-				net : type_net renames element (c);
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net 		: in type_net) 
+			is
+				use pac_conductor_lines;
+				lc : pac_conductor_lines.cursor := net.route.lines.first;
+
+				procedure query_line (line : in type_conductor_line) is begin
+					if line.layer = layer then
+						if within_accuracy (
+							line	=> line,
+							width	=> line.width,
+							point	=> point,
+							zone	=> zone)
+						then
+							result.append ((net_cursor, lc));
+						end if;
+					end if;
+				end query_line;				
+				
 			begin
-				net_name := key (c);
-				net.route.lines.iterate (query_line'access);
+				query_element (lc, query_line'access);
 			end query_net;
 
 			
 		begin
-			module.nets.iterate (query_net'access);
+			while net_cursor /= pac_nets.no_element loop
+				pac_nets.query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
 		end query_module;
 
 		

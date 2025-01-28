@@ -157,17 +157,21 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level);
 
 
-	
 
-	
-	-- If line segments of a net are collected in a certain area, then
-	-- they must be identified by their parent net:
-	type type_get_lines_result is record
-		net		: pac_net_name.bounded_string;
-		line	: type_conductor_line;
+	-- If line segments are searched, then they can be
+	-- identified additionally by the associated net.
+	-- If the net_cursor is no_element then it is a segment
+	-- of a freetrack:
+	type type_object_line is record
+		net_cursor	: pac_nets.cursor;
+		line_cursor	: pac_conductor_lines.cursor;
 	end record;
 
-	package pac_get_lines_result is new doubly_linked_lists (type_get_lines_result);
+	-- CS do the same for arcs
+	
+
+	
+	package pac_object_lines is new doubly_linked_lists (type_object_line);
 
 	
 	-- Returns all lines in the given signal layer
@@ -179,9 +183,8 @@ package et_board_ops.conductors is
 		point			: in type_vector_model;
 		zone			: in type_accuracy; -- the circular area around the place
 		log_threshold	: in type_log_level)
-		return pac_get_lines_result.list;
+		return pac_object_lines.list;
 
-	-- CS do the same for arcs
 
 
 	
@@ -234,14 +237,6 @@ package et_board_ops.conductors is
 
 
 
-	-- If line segments are searched, then they can be
-	-- identified additionally by the associated net.
-	-- If the net_cursor is no_element then it is a segment
-	-- of a freetrack:
-	type type_object_line is record
-		net_cursor	: pac_nets.cursor;
-		line_cursor	: pac_conductor_lines.cursor;
-	end record;
 	
 	-- Returns the first line according to the given flag.
 	-- If no line has been found,
