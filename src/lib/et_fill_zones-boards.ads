@@ -136,7 +136,7 @@ package et_fill_zones.boards is
 		indefinite_doubly_linked_lists (type_floating_hatched);
 
 		
-	type type_floating is record
+	type type_floating is record -- CS rename to type_fill_zone_floating ?
 		solid	: pac_floating_solid.list;
 		hatched	: pac_floating_hatched.list;
 	end record;
@@ -226,7 +226,7 @@ package et_fill_zones.boards is
 
 
 		
-	type type_route is record
+	type type_route is record -- CS rename to type_fill_zone_tied ?
 		solid	: pac_route_solid.list;
 		hatched	: pac_route_hatched.list;
 	end record;
