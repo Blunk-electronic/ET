@@ -802,6 +802,8 @@ package body et_board_ops.conductors is
 	end modify_status;
 
 
+
+
 	
 
 	procedure propose_lines (
@@ -916,6 +918,8 @@ package body et_board_ops.conductors is
 
 	
 
+
+	
 	procedure reset_proposed_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		freetracks		: in boolean;
@@ -1000,6 +1004,7 @@ package body et_board_ops.conductors is
 	
 
 
+	
 	
 	function get_first_line (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1135,6 +1140,7 @@ package body et_board_ops.conductors is
 
 
 
+	
 
 	
 	procedure next_proposed_line (
@@ -1320,6 +1326,7 @@ package body et_board_ops.conductors is
 
 
 	
+	
 	procedure move_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_conductor_line;
@@ -1403,6 +1410,7 @@ package body et_board_ops.conductors is
 
 
 
+
 	
 
 	procedure move_line_freetrack (
@@ -1457,7 +1465,115 @@ package body et_board_ops.conductors is
 	end move_line_freetrack;
 
 
+
 	
+	
+
+	procedure delete_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string; -- reset_n
+		line			: in type_conductor_line;
+		log_threshold	: in type_log_level)
+	is
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			-- Locate the given net in the given module::
+			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+
+			use et_nets;
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is
+				-- Locate the given segment in the given net:
+				use pac_conductor_lines;
+				line_cursor : pac_conductor_lines.cursor := net.route.lines.find (line);
+			begin
+				if line_cursor /= pac_conductor_lines.no_element then
+					delete (net.route.lines, line_cursor);
+				else
+					null; -- CS message "segment not found" ?
+				end if;
+			end query_net;
+			
+
+		begin			
+			if net_exists (net_cursor) then
+
+				pac_nets.update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> query_net'access);
+
+			else
+				net_not_found (net_name);
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) &
+			" net " & to_string (net_name) &
+			" deleting segment" & to_string (line, true), -- log linewidth
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		update_ratsnest (module_cursor, log_threshold + 1);
+	end delete_line;
+
+
+	
+
+
+
+	procedure delete_line_freetrack (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_conductor_line;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			conductors : type_conductors_non_electric renames module.board.conductors;
+			use pac_conductor_lines;
+			l : pac_conductor_lines.cursor;
+		begin
+			-- Locate the line:
+			l := find (conductors.lines, line);
+
+			-- If the line exists, then delete it:
+			if l /= pac_conductor_lines.no_element then
+				delete (conductors.lines, l);
+			end if;
+		end query_module;
+		
+	begin
+		log (text => "module " & to_string (module_cursor) &
+			" deleting segment" & to_string (line, true), -- log linewidth
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+	end delete_line_freetrack;
+
+
+
+	
+
 	
 	
 	procedure add_arc (
@@ -1711,109 +1827,7 @@ package body et_board_ops.conductors is
 
 	
 
-
-
-
-	procedure delete_line_freetrack (
-		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_conductor_line;
-		log_threshold	: in type_log_level)
-	is
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			conductors : type_conductors_non_electric renames module.board.conductors;
-			use pac_conductor_lines;
-			l : pac_conductor_lines.cursor;
-		begin
-			-- Locate the line:
-			l := find (conductors.lines, line);
-
-			-- If the line exists, then delete it:
-			if l /= pac_conductor_lines.no_element then
-				delete (conductors.lines, l);
-			end if;
-		end query_module;
-		
-	begin
-		log (text => "module " & to_string (key (module_cursor)) &
-			" deleting segment" & to_string (line, true), -- log linewidth
-			level => log_threshold);
-
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_module'access);
-		
-	end delete_line_freetrack;
-		
 	
-
-
-	
-
-	procedure delete_line (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
-		line			: in type_conductor_line;
-		log_threshold	: in type_log_level)
-	is
-
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			-- Locate the given net in the given module::
-			net_cursor : pac_nets.cursor := find (module.nets, net_name);
-
-			use et_nets;
-			
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is
-				-- Locate the given segment in the given net:
-				use pac_conductor_lines;
-				line_cursor : pac_conductor_lines.cursor := net.route.lines.find (line);
-			begin
-				if line_cursor /= pac_conductor_lines.no_element then
-					delete (net.route.lines, line_cursor);
-				else
-					null; -- CS message "segment not found" ?
-				end if;
-			end query_net;
-			
-
-		begin			
-			if net_exists (net_cursor) then
-
-				pac_nets.update_element (
-					container	=> module.nets,
-					position	=> net_cursor,
-					process		=> query_net'access);
-
-			else
-				net_not_found (net_name);
-			end if;
-		end query_module;
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor) &
-			" net " & to_string (net_name) &
-			" deleting segment" & to_string (line, true), -- log linewidth
-			level => log_threshold);
-
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-		update_ratsnest (module_cursor, log_threshold + 1);
-	end delete_line;
 
 
 

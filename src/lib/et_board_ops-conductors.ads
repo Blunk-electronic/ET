@@ -294,6 +294,31 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level);
 
 	
+	-- Deletes the given line segment in the given net.
+	-- If the net or the segment does not exist then
+	-- nothing happens and an error message is logged:
+	procedure delete_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string; -- reset_n
+		line			: in type_conductor_line;
+		log_threshold	: in type_log_level);
+
+
+
+
+	-- Deletes the given freetrack line.
+	-- If the line does not exist then
+	-- nothing happens:
+	procedure delete_line_freetrack (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_conductor_line;
+		log_threshold	: in type_log_level);
+
+
+	
+
+	
+-- ARCS:
 	
 	-- Draws a track arc. If net_name is empty a freetrack will be drawn.
 	procedure add_arc (
@@ -303,6 +328,12 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level);
 
 	
+
+
+
+	
+
+-- TRACKS:
 	
 	-- Deletes the track segment that crosses the given point in given layer.
 	-- If a net name is given, then net segments are affected.
@@ -318,26 +349,7 @@ package et_board_ops.conductors is
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level);
 
-
 	
-	-- Deletes the given freetrack line.
-	-- If the line does not exist then
-	-- nothing happens:
-	procedure delete_line_freetrack (
-		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_conductor_line;
-		log_threshold	: in type_log_level);
-
-
-	
-	-- Deletes the given line segment in the given net.
-	-- If the net or the segment does not exist then
-	-- nothing happens and an error message is logged:
-	procedure delete_line (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- reset_n
-		line			: in type_conductor_line;
-		log_threshold	: in type_log_level);
 
 
 	-- Deletes all segments of the given net:
@@ -348,6 +360,8 @@ package et_board_ops.conductors is
 
 
 
+
+	
 	
 
 -- FILL ZONES
@@ -385,6 +399,8 @@ package et_board_ops.conductors is
 		nets 			: in pac_net_names.list := no_net_names); -- GND, GNDA, P3V3, ...
 
 
+
+	
 	
 	
 -- TEXTS:
