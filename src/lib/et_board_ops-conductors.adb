@@ -2298,6 +2298,7 @@ package body et_board_ops.conductors is
 
 
 	
+	
 
 	procedure reset_proposed_segments (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2401,6 +2402,7 @@ package body et_board_ops.conductors is
 	
 	
 
+	
 
 	function get_first_segment (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2408,14 +2410,159 @@ package body et_board_ops.conductors is
 		log_threshold	: in type_log_level)
 		return type_object_segment
 	is
+
+		result : type_object_segment;
+		-- Note: By default the fill style of the result is SOLID.
+		-- However, in the end of this procedure it may mutate 
+		-- to HATCHED. See specification.
+
 		use pac_contours;
-		result : type_object_segment (SOLID);
+		use pac_segments;
+		use pac_route_solid;
+		use pac_route_hatched;
 
+		-- The segment cursor:
+		sc : pac_segments.cursor;
+
+		-- The net cursor:
+		net_cursor : pac_nets.cursor;
+
+		-- Then zone cursors (one for solid, another for hatched):
+		zcs : pac_route_solid.cursor;
+		zch : pac_route_hatched.cursor;
+
+		-- This flag is used to abort the iterators for nets, zones and segments
+		-- as soon as a segment has been found:
+		proceed : aliased boolean := true;
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is			
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net) 
+			is
+				
+				procedure query_segment (segment : in type_segment) is begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (segment) then
+								proceed := false;
+								log (text => to_string (segment), level => log_threshold + 1);
+							end if;
+
+						when SELECTED =>
+							if is_selected (segment) then
+								proceed := false;
+								log (text => to_string (segment), level => log_threshold + 1);
+							end if;
+
+						when others =>
+							null; -- CS
+					end case;
+				end query_segment;
+
+				
+				procedure query_zone_solid (zone : in type_route_solid) is begin
+					if zone.contour.circular then
+						null; -- CS
+					else
+						sc := zone.contour.segments.first;
+
+						while sc /= pac_segments.no_element and proceed loop
+							query_element (sc, query_segment'access);
+							next (sc);
+						end loop;
+					end if;
+				end query_zone_solid;
+
+				
+				procedure query_zone_hatched (zone : in type_route_hatched) is begin
+					if zone.contour.circular then
+						null; -- CS
+					else
+						sc := zone.contour.segments.first;
+
+						while sc /= pac_segments.no_element and proceed loop
+							query_element (sc, query_segment'access);
+							next (sc);
+						end loop;
+					end if;
+				end query_zone_hatched;
+
+				
+			begin
+				-- First search among solidly filled zones:
+				zcs := net.route.zones.solid.first;				
+				while zcs /= pac_route_solid.no_element and proceed loop
+					query_element (zcs, query_zone_solid'access);
+					next (zcs);
+				end loop;
+
+				-- If nothing found, search among hatched zones:
+				if proceed then
+					zch := net.route.zones.hatched.first;
+					while zch /= pac_route_hatched.no_element and proceed loop
+						query_element (zch, query_zone_hatched'access);
+						next (zch);
+					end loop;
+				end if;
+			end query_net;
+
+			
+		begin
+			net_cursor := module.nets.first;
+			while net_cursor /= pac_nets.no_element and proceed loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
 	begin
-		null;
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first segment / " & to_string (flag),
+			level => log_threshold);
 
-		-- CS
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
 
+		-- put_line ("found " & to_string (result));
+		
+		log_indentation_down;
+
+		if not proceed then -- a segment has been found.
+			-- The segment is either belonging to a solid
+			-- or a hatche zone:
+			if has_element (zcs) then
+				result := (
+					fill_style 		=> SOLID,
+					zone_solid		=> zcs,
+					segment			=> sc,
+					net				=> net_cursor);
+
+			elsif has_element (zch) then
+				result := (
+					fill_style 		=> HATCHED, -- mutates the result !
+					zone_hatched	=> zch,
+					segment			=> sc,
+					net				=> net_cursor);
+
+			else
+				return result; -- CS should never happen
+			end if;
+		else
+			-- If nothing found. Return default result. See specs:
+			return result;
+		end if;
+		
 		return result;
 	end get_first_segment;
 

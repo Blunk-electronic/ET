@@ -102,6 +102,11 @@ package et_geometry_2a.contours is
 	procedure clear_proposed (
 		segment : in out type_segment);
 
+
+	function is_selected (
+		segment	: in type_segment)
+		return boolean;
+
 	
 	function is_selected (
 		segment	: in pac_segments.cursor)

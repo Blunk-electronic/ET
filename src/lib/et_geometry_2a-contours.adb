@@ -162,6 +162,30 @@ package body et_geometry_2a.contours is
 
 	
 
+
+	function is_selected (
+		segment	: in type_segment)
+		return boolean
+	is 
+		result : boolean := false;
+	begin
+		case segment.shape is
+			when LINE =>
+				if is_selected (segment.segment_line) then
+					result := true;
+				end if;
+
+			when ARC =>
+				if segment.segment_arc.status.selected then
+					result := true;
+				end if;
+		end case;
+
+		return result;
+	end is_selected;
+
+
+	
 	
 	function is_selected (
 		segment	: in pac_segments.cursor)

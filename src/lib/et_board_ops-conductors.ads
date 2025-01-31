@@ -405,7 +405,7 @@ package et_board_ops.conductors is
 	-- This composite type helps to identify a
 	-- segment of a zone by the net it is connected with
 	-- and the zone:
-	type type_object_segment (fill_style : type_fill_style) is record
+	type type_object_segment (fill_style : type_fill_style := SOLID) is record
 		segment	: pac_contours.pac_segments.cursor;
 		net		: pac_nets.cursor;
 		
