@@ -2303,9 +2303,98 @@ package body et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_contours;
+			use pac_segments;
+			use pac_route_solid;
+			use pac_route_hatched;
+
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+
+				procedure query_segment (segment : in out type_segment) is begin
+					reset_status (segment);
+				end query_segment;
+
+				
+				procedure query_zone_solid (zone : in out type_route_solid) is
+					sc : pac_segments.cursor;
+				begin
+					if zone.contour.circular then
+						null; -- CS
+					else
+						sc := zone.contour.segments.first;
+
+						while sc /= pac_segments.no_element loop
+							update_element (zone.contour.segments, sc, query_segment'access);
+							next (sc);
+						end loop;
+					end if;
+				end query_zone_solid;
+
+				
+				procedure query_zone_hatched (zone : in out type_route_hatched) is
+					sc : pac_segments.cursor;
+				begin
+					if zone.contour.circular then
+						null; -- CS
+					else
+						sc := zone.contour.segments.first;
+
+						while sc /= pac_segments.no_element loop
+							update_element (zone.contour.segments, sc, query_segment'access);
+							next (sc);
+						end loop;
+					end if;
+				end query_zone_hatched;
+
+				
+				zcs : pac_route_solid.cursor := net.route.fill_zones.solid.first;
+				zch : pac_route_hatched.cursor := net.route.fill_zones.hatched.first;
+				
+			begin
+				while zcs /= pac_route_solid.no_element loop
+					update_element (net.route.fill_zones.solid, zcs, query_zone_solid'access);
+					next (zcs);
+				end loop;
+				
+				while zch /= pac_route_hatched.no_element loop
+					update_element (net.route.fill_zones.hatched, zch, query_zone_hatched'access);
+					next (zch);
+				end loop;
+			end query_net;
+			
+			
+			nc : pac_nets.cursor := module.nets.first;
+			
+		begin
+			while nc /= pac_nets.no_element loop
+				update_element (module.nets, nc, query_net'access);				
+				next (nc);
+			end loop;
+		end query_module;
+
+		
 	begin
-		null;
-		-- CS
+		log (text => "module " & to_string (module_cursor)
+			& " resetting proposed segments of zones in conductor layers",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;		
 	end reset_proposed_segments;
 	
 	

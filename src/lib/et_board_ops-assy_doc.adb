@@ -1172,7 +1172,8 @@ package body et_board_ops.assy_doc is
 
 		
 	begin
-		log (text => "resetting proposed lines of zones in assembly documentation",
+		log (text => "module " & to_string (module_cursor)
+			& " resetting proposed segments of zones in assembly documentation",
 			 level => log_threshold);
 
 		log_indentation_up;
