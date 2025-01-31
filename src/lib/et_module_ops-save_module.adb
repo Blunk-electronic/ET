@@ -696,8 +696,8 @@ is
 			use pac_route_hatched;
 			use boards.pac_cutouts;
 			
-			polygon_solid_cursor	: pac_route_solid.cursor := net.route.fill_zones.solid.first;
-			polygon_hatched_cursor	: pac_route_hatched.cursor := net.route.fill_zones.hatched.first;
+			polygon_solid_cursor	: pac_route_solid.cursor := net.route.zones.solid.first;
+			polygon_hatched_cursor	: pac_route_hatched.cursor := net.route.zones.hatched.first;
 			--cutout_zone_cursor		: pac_cutouts.cursor := net.route.cutouts.first;
 
 	

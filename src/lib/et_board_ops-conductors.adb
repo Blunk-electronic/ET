@@ -1968,7 +1968,7 @@ package body et_board_ops.conductors is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is begin
-				net.route.fill_zones.solid.append (p);
+				net.route.zones.solid.append (p);
 			end add_polygon;
 			
 		begin --route_solid
@@ -1996,7 +1996,7 @@ package body et_board_ops.conductors is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is begin
-				net.route.fill_zones.hatched.append (p);
+				net.route.zones.hatched.append (p);
 			end add_polygon;
 
 		begin -- route_hatched
@@ -2128,13 +2128,13 @@ package body et_board_ops.conductors is
 				case segment.fill_style is
 					when SOLID =>
 						update_element (
-							container	=> net.route.fill_zones.solid,
+							container	=> net.route.zones.solid,
 							position	=> segment.zone_solid,
 							process		=> query_zone_solid'access);
 
 					when HATCHED =>
 						update_element (
-							container	=> net.route.fill_zones.hatched,
+							container	=> net.route.zones.hatched,
 							position	=> segment.zone_hatched,
 							process		=> query_zone_hatched'access);
 				end case;
@@ -2252,17 +2252,17 @@ package body et_board_ops.conductors is
 				end query_zone_hatched;
 
 				
-				zcs : pac_route_solid.cursor := net.route.fill_zones.solid.first;
-				zch : pac_route_hatched.cursor := net.route.fill_zones.hatched.first;
+				zcs : pac_route_solid.cursor := net.route.zones.solid.first;
+				zch : pac_route_hatched.cursor := net.route.zones.hatched.first;
 				
 			begin
 				while zcs /= pac_route_solid.no_element loop
-					update_element (net.route.fill_zones.solid, zcs, query_zone_solid'access);
+					update_element (net.route.zones.solid, zcs, query_zone_solid'access);
 					next (zcs);
 				end loop;
 				
 				while zch /= pac_route_hatched.no_element loop
-					update_element (net.route.fill_zones.hatched, zch, query_zone_hatched'access);
+					update_element (net.route.zones.hatched, zch, query_zone_hatched'access);
 					next (zch);
 				end loop;
 			end query_net;
@@ -2357,17 +2357,17 @@ package body et_board_ops.conductors is
 				end query_zone_hatched;
 
 				
-				zcs : pac_route_solid.cursor := net.route.fill_zones.solid.first;
-				zch : pac_route_hatched.cursor := net.route.fill_zones.hatched.first;
+				zcs : pac_route_solid.cursor := net.route.zones.solid.first;
+				zch : pac_route_hatched.cursor := net.route.zones.hatched.first;
 				
 			begin
 				while zcs /= pac_route_solid.no_element loop
-					update_element (net.route.fill_zones.solid, zcs, query_zone_solid'access);
+					update_element (net.route.zones.solid, zcs, query_zone_solid'access);
 					next (zcs);
 				end loop;
 				
 				while zch /= pac_route_hatched.no_element loop
-					update_element (net.route.fill_zones.hatched, zch, query_zone_hatched'access);
+					update_element (net.route.zones.hatched, zch, query_zone_hatched'access);
 					next (zch);
 				end loop;
 			end query_net;
@@ -2396,6 +2396,8 @@ package body et_board_ops.conductors is
 
 		log_indentation_down;		
 	end reset_proposed_segments;
+
+
 	
 	
 
@@ -2419,6 +2421,8 @@ package body et_board_ops.conductors is
 
 
 
+
+
 	
 
 	procedure move_segment (
@@ -2437,6 +2441,8 @@ package body et_board_ops.conductors is
 	end move_segment;
 
 
+
+	
 
 
 	procedure delete_segment (

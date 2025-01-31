@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -143,7 +143,7 @@ is
 			is 
 				-- The cursor that points to the zone being filled:
 				use pac_route_solid;
-				zone_cursor : pac_route_solid.cursor := net.route.fill_zones.solid.first;
+				zone_cursor : pac_route_solid.cursor := net.route.zones.solid.first;
 
 
 				procedure do_it (
@@ -158,7 +158,7 @@ is
 				while zone_cursor /= pac_route_solid.no_element loop
 
 					-- do the clearing
-					net.route.fill_zones.solid.update_element (zone_cursor, do_it'access);
+					net.route.zones.solid.update_element (zone_cursor, do_it'access);
 				
 					next (zone_cursor);
 				end loop;
@@ -171,7 +171,7 @@ is
 				net			: in out type_net)
 			is 
 				use pac_route_hatched;
-				zone_cursor : pac_route_hatched.cursor := net.route.fill_zones.hatched.first;
+				zone_cursor : pac_route_hatched.cursor := net.route.zones.hatched.first;
 
 
 				procedure do_it (
@@ -186,7 +186,7 @@ is
 				while zone_cursor /= pac_route_hatched.no_element loop
 
 					-- do the clearing
-					net.route.fill_zones.hatched.update_element (zone_cursor, do_it'access);
+					net.route.zones.hatched.update_element (zone_cursor, do_it'access);
 
 					next (zone_cursor);
 				end loop;

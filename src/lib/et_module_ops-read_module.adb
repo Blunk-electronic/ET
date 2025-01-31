@@ -4737,7 +4737,7 @@ is
 						p.relief_properties			:= et_pcb_rw.relief_properties;
 
 						pac_route_solid.append (
-							container	=> route.fill_zones.solid,
+							container	=> route.zones.solid,
 							new_item	=> p);
 					end;
 
@@ -4757,7 +4757,7 @@ is
 						p.technology				:= et_pcb_rw.relief_properties.technology;
 
 						pac_route_solid.append (
-							container	=> route.fill_zones.solid,
+							container	=> route.zones.solid,
 							new_item	=> p);
 					end;
 
@@ -4790,7 +4790,7 @@ is
 						p.relief_properties			:= et_pcb_rw.relief_properties;
 						
 						pac_route_hatched.append (
-							container	=> route.fill_zones.hatched,
+							container	=> route.zones.hatched,
 							new_item	=> p);
 					end;
 
@@ -4811,7 +4811,7 @@ is
 						p.technology := et_pcb_rw.relief_properties.technology;
 						
 						pac_route_hatched.append (
-							container	=> route.fill_zones.hatched,
+							container	=> route.zones.hatched,
 							new_item	=> p);
 					end;
 

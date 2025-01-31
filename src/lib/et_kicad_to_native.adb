@@ -702,7 +702,7 @@ package body et_kicad_to_native is
 					line_cursor : pac_conductor_lines.cursor := net.route.lines.first;
 					arc_cursor	: pac_conductor_arcs.cursor := net.route.arcs.first;
 					via_cursor	: pac_vias.cursor := net.route.vias.first;
-					poly_cursor	: pac_route_solid.cursor := net.route.fill_zones.solid.first;
+					poly_cursor	: pac_route_solid.cursor := net.route.zones.solid.first;
 
 					board_track : constant string (1..12) := "board track ";
 
@@ -797,7 +797,7 @@ package body et_kicad_to_native is
 
 					while poly_cursor /= pac_route_solid.no_element loop
 						pac_route_solid.update_element (
-							container 	=> net.route.fill_zones.solid,
+							container 	=> net.route.zones.solid,
 							position	=> poly_cursor,
 							process		=> move_polygon'access);
 

@@ -4919,7 +4919,7 @@ package body et_kicad.pcb is
 						log (text => "no vias", level => log_threshold + 3);
 					end if;
 
-					-- Append fill zone to route.fill_zones
+					-- Append fill zone to route.zones
 					while polygon_cursor /= type_polygons.no_element loop
 						if element (polygon_cursor).net_id = net_id then
 						-- Transfer kicad polygon to native ET polygon.
@@ -4955,7 +4955,7 @@ package body et_kicad.pcb is
 											-- convert the polygon corner points to a list of lines:
 											segments => corners_to_lines (element (polygon_cursor).corners)));
 										
-										route.fill_zones.solid.append (p);																					  
+										route.zones.solid.append (p);																					  
 									end;
 
 									
@@ -4981,13 +4981,13 @@ package body et_kicad.pcb is
 											-- convert the polygon corner points to a list of lines:
 											segments => corners_to_lines (element (polygon_cursor).corners)));
 										
-										route.fill_zones.solid.append (p);																					  
+										route.zones.solid.append (p);																					  
 									end;
 
 								when NONE => null; -- floating polygon is ignored here. will be handled below
 							end case;
 
--- 							et_pcb.route_polygon_properties (route.fill_zones.solid.last, log_threshold + 3);
+-- 							et_pcb.route_polygon_properties (route.zones.solid.last, log_threshold + 3);
 
 						else
 							null;

@@ -487,14 +487,14 @@ package body et_nets is
 
 		-- fill zones:
 		splice (
-			target => net_1.route.fill_zones.solid, 
+			target => net_1.route.zones.solid, 
 			before => pac_route_solid.no_element,
-			source => net_2.route.fill_zones.solid);
+			source => net_2.route.zones.solid);
 		
 		splice (
-			target => net_1.route.fill_zones.hatched, 
+			target => net_1.route.zones.hatched, 
 			before => pac_route_hatched.no_element,
-			source => net_2.route.fill_zones.hatched);
+			source => net_2.route.zones.hatched);
 
 		-- cutout areas:
 		-- CS now net specific restrict stuff

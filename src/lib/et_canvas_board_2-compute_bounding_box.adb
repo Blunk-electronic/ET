@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -1740,8 +1740,8 @@ is
 					route.lines.iterate (query_line'access);
 					route.arcs.iterate (query_arc'access);
 					route.vias.iterate (query_via'access);
-					route.fill_zones.solid.iterate (query_fill_zone_solid'access);
-					route.fill_zones.hatched.iterate (query_fill_zone_hatched'access);
+					route.zones.solid.iterate (query_fill_zone_solid'access);
+					route.zones.hatched.iterate (query_fill_zone_hatched'access);
 				end query_net;
 
 				

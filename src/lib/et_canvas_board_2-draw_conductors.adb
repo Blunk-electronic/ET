@@ -701,8 +701,8 @@ procedure draw_conductors is
 		iterate (element (n).route.arcs, query_arc'access);
 		-- CS ? iterate (element (n).route.circles, query_circle'access);
 		
-		iterate (element (n).route.fill_zones.solid, query_fill_zone'access);
-		iterate (element (n).route.fill_zones.hatched, query_fill_zone'access);
+		iterate (element (n).route.zones.solid, query_fill_zone'access);
+		iterate (element (n).route.zones.hatched, query_fill_zone'access);
 
 		-- user defined cutout areas:
 		-- CS iterate (element (n).route.cutouts, query_cutout'access);
