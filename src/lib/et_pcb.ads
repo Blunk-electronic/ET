@@ -169,7 +169,7 @@ package et_pcb is
 		vias		: pac_vias.list;
 
 		-- fill zones:
-		fill_zones	: boards.type_route;
+		fill_zones	: boards.type_route; -- CS rename to zones
 
 		-- user defined restrictions. currently not supported. CS
 		restrict	: et_route_restrict.boards.type_route_restrict;
