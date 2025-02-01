@@ -40,6 +40,8 @@
 
 with ada.containers;   			       	use ada.containers;
 with ada.containers.doubly_linked_lists;
+with ada.containers.indefinite_doubly_linked_lists;
+
 
 
 with et_text;
@@ -503,6 +505,54 @@ package et_board_ops.conductors is
 		point			: in type_vector_model;
 		log_threshold	: in type_log_level);
 
+
+	-- This type helps to identify a text by its cursor:
+	type type_object_text is record
+		cursor	: pac_conductor_texts.cursor := pac_conductor_texts.no_element;
+	end record;
+
+	
+
+	
+
+-- OBJECTS:
+	
+
+	-- When objects are handled then we need these
+	-- categories in order to store them in indefinite_doubly_linked_lists:
+	type type_object_category is (
+		CAT_VOID,
+		CAT_LINE, 
+		CAT_ZONE_SEGMENT,
+		CAT_TEXT
+		);
+	-- CS CAT_ARC, CAT_CIRCLE, CAT_PLACEHOLDER
+
+	-- This type wraps segments of zones, lines, arcs, circles, 
+	-- texts, placeholders into a single type:
+	type type_object (cat : type_object_category) is record
+		case cat is
+			when CAT_VOID			=> null;
+			when CAT_ZONE_SEGMENT	=> segment	: type_object_segment;
+			when CAT_LINE 			=> line 	: type_object_line;
+			when CAT_TEXT			=> text		: type_object_text;
+		end case;
+	end record;
+
+	package pac_objects is new indefinite_doubly_linked_lists (type_object);
+
+
+
+	-- Returns the first object (line, arc, circle, zone segment, text,
+	-- placeholder) according to the given flag.
+	-- If nothing found, then the return is a void object (CAT_VOID):
+	function get_first_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object;
+
+	
 	
 end et_board_ops.conductors;
 

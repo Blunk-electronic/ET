@@ -2884,6 +2884,120 @@ package body et_board_ops.conductors is
 
 	end move_text;
 
+
+
+
+
+
+
+
+	function get_first_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object
+	is
+		result_category : type_object_category := CAT_VOID;
+		result_segment  : type_object_segment;
+		result_line		: type_object_line;
+		result_text		: type_object_text;
+
+		use pac_contours;
+		use pac_segments;
+
+		use pac_conductor_lines;
+		use pac_conductor_arcs;
+		use pac_conductor_texts;
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first object / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		
+		-- First we search for a line.
+		-- If a line has been found, then go to the end of this procedure:
+		result_line := get_first_line (module_cursor, flag, false, log_threshold + 1);
+
+		if result_line.line_cursor /= pac_conductor_lines.no_element then
+			-- A line has been found.
+			log (text => to_string (element (result_line.line_cursor)),
+				 level => log_threshold + 1);
+			
+			result_category := CAT_LINE;
+		end if;
+
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
+		
+		-- Now we search for an arc.
+		-- If there is one, then go to the end of this procedure:
+		-- CS
+
+
+		-- Now we search for an circle.
+		-- If there is one, then go to the end of this procedure:
+		-- CS
+
+
+		-- Now search for a segment of a zone.
+		-- If there is one, then go to the end  of this procedure:
+		result_segment := get_first_segment (module_cursor, flag, log_threshold + 1);
+
+		if result_segment.segment /= pac_segments.no_element then
+			-- A segment has been found.
+			log (text => to_string (result_segment.segment),
+				 -- CS face
+				 level => log_threshold + 1);
+			
+			result_category := CAT_ZONE_SEGMENT;
+		end if;
+
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
+
+		-- CS placeholder
+
+		-- Now search for a text:
+-- 		result_text := get_first_text (module_cursor, flag, log_threshold + 1);
+-- 		
+-- 		if result_text.cursor /= pac_doc_texts.no_element then
+-- 			-- A text has been found.
+-- 			log (text => to_string (result_text.cursor)
+-- 					& " face " & to_string (result_text.face),
+-- 					level => log_threshold + 1);
+-- 			
+-- 			result_category := CAT_TEXT;
+-- 		end if;
+
+
+		-- If still nothing has been found then the category is CAT_VOID.
+		
+
+	<<end_of_search>>
+		
+		log_indentation_down;
+
+		case result_category is
+			when CAT_VOID =>
+				return (cat => CAT_VOID);
+
+			when CAT_LINE =>
+				return (CAT_LINE, result_line);
+
+			when CAT_ZONE_SEGMENT =>
+				return (CAT_ZONE_SEGMENT, result_segment);
+
+			when CAT_TEXT =>
+				return (CAT_TEXT, result_text);
+		end case;
+	end get_first_object;
+
 	
 
 end et_board_ops.conductors;
