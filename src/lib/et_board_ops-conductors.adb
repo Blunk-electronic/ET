@@ -2675,12 +2675,77 @@ package body et_board_ops.conductors is
 	is
 		use pac_contours;
 		use pac_segments;
+		use pac_route_solid;
+		use pac_route_hatched;
 
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
 
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				
+				procedure query_zone_solid (zone : in out type_route_solid) is 
+					c : pac_segments.cursor := segment.segment;
+				begin
+					if zone.contour.circular then
+						null; -- CS
+					else
+						-- Delete the given segment:
+						delete (zone.contour.segments, c);
+					end if;
+				end query_zone_solid;
+
+				
+				procedure query_zone_hatched (zone : in out type_route_hatched) is 
+					c : pac_segments.cursor := segment.segment;
+				begin
+					if zone.contour.circular then
+						null; -- CS
+					else
+						-- Delete the given segment:
+						delete (zone.contour.segments, c);
+					end if;
+				end query_zone_hatched;
+
+				
+			begin
+				-- Locate the zone as given by the segment:
+				case segment.fill_style is
+					when SOLID =>
+						update_element (net.route.zones.solid, segment.zone_solid, query_zone_solid'access);
+
+					when HATCHED =>
+						update_element (net.route.zones.hatched, segment.zone_hatched, query_zone_hatched'access);
+				end case;
+			end query_net;
+
+				
+		begin
+			-- Locate the net given by the segment:
+			update_element (module.nets, segment.net, query_net'access);
+		end query_module;
+
+		
 	begin
-		null;
-		-- CS
+		log (text => "module " & to_string (module_cursor)
+			& " deleting zone segment " & to_string (segment.segment),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
 	end delete_segment;
+
+
 
 	
 	
