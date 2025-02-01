@@ -2582,9 +2582,85 @@ package body et_board_ops.conductors is
 	is
 		use pac_contours;
 		use pac_segments;
+		use pac_route_solid;
+		use pac_route_hatched;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+
+				-- Moves the candidate segment:
+				procedure query_segment (s : in out type_segment) is begin
+					case s.shape is
+						when LINE =>
+							move_line_to (s.segment_line, point_of_attack, destination);
+
+						when ARC =>
+							null;
+							-- CS
+					end case;
+				end query_segment;
+
+				
+				procedure query_zone_solid (zone : in out type_route_solid) is begin
+					if zone.contour.circular then
+						null; -- CS
+					else
+						-- Locate the given segment:
+						update_element (zone.contour.segments, segment.segment, query_segment'access);
+					end if;
+				end query_zone_solid;
+
+				
+				procedure query_zone_hatched (zone : in out type_route_hatched) is begin
+					if zone.contour.circular then
+						null; -- CS
+					else
+						-- Locate the given segment:
+						update_element (zone.contour.segments, segment.segment, query_segment'access);
+					end if;
+				end query_zone_hatched;
+
+				
+			begin
+				-- Locate the zone as given by the segment:
+				case segment.fill_style is
+					when SOLID =>
+						update_element (net.route.zones.solid, segment.zone_solid, query_zone_solid'access);
+
+					when HATCHED =>
+						update_element (net.route.zones.hatched, segment.zone_hatched, query_zone_hatched'access);
+				end case;
+			end query_net;
+
+				
+		begin
+			-- Locate the net given by the segment:
+			update_element (module.nets, segment.net, query_net'access);
+		end query_module;
+
+		
 	begin
-		null;
-		-- CS
+		log (text => "module " & to_string (module_cursor)
+			& " moving zone segment " & to_string (segment.segment)
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
 	end move_segment;
 
 
