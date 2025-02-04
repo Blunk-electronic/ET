@@ -87,6 +87,29 @@ package et_conductor_segment.boards is
 	package pac_conductor_lines is new doubly_linked_lists (type_conductor_line);
 	use pac_conductor_lines;
 
+
+	-- Returns the start/end point and layer as string.
+	-- If "width" is true, then the segment width is also output:
+	function to_string (
+		line	: in pac_conductor_lines.cursor;
+		width	: in boolean)
+		return string;
+
+		
+	-- Returns true if the status flag "proposed"
+	-- of a conductor line is set:
+	function is_proposed (
+		line : in pac_conductor_lines.cursor)
+		return boolean;
+	
+
+	-- Returns true if the status flag "selected"
+	-- of a conductor line is set:
+	function is_selected (
+		line : in pac_conductor_lines.cursor)
+		return boolean;
+
+
 	
 	-- Returns the length of a list
 	-- of conductor lines:

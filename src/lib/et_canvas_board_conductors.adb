@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                      CANVAS BOARD / FREETRACKS                           --
+--                      CANVAS BOARD / CONDUCTORS                           --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -52,7 +52,7 @@ with et_object_status;
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 
 
-package body et_canvas_board_freetracks is
+package body et_canvas_board_conductors is
 
 	use et_canvas_board_2.pac_canvas;
 	
@@ -64,24 +64,76 @@ package body et_canvas_board_freetracks is
 	
 	-- Outputs the selected line in the status bar:
 	procedure show_selected_line (
-		selected		: in et_board_ops.conductors.type_object_line;
+		selected		: in type_object_line;
 		clarification	: in boolean := false)
-	is begin
+	is 
+		praeamble : constant string := "selected: ";
+	begin
 		if clarification then
-			set_status (
-				to_string (element (selected.line_cursor), true) -- start/end point/width/layer
+			set_status (praeamble
+				& to_string (element (selected.line_cursor), true) -- start/end point/width/layer
 				& ". " & status_next_object_clarification);
+				-- CS net name ?
 		else
-			set_status (to_string (element (selected.line_cursor), true)); -- start/end point/width/layer
+			set_status (praeamble
+				& to_string (element (selected.line_cursor), true)); -- start/end point/width/layer
+			-- CS net name ?
 		end if;		
 	end show_selected_line;
 
 
 	
 
+	-- Outputs the selected segment in the status bar:
+	procedure show_selected_segment (
+		selected		: in type_object_segment;
+		clarification	: in boolean := false)
+	is 
+		praeamble : constant string := "selected: ";
+	begin
+		if clarification then
+			null;
+			-- set_status (praeamble & to_string (selected.segment)
+			-- & " layer" & to_string (selected.laface) & ". " 
+			-- CS read properties of zone to get the layer number
+				-- & status_next_object_clarification);
+		else
+			null;
+			-- set_status (praeamble & to_string (selected.segment));
+				-- & " face" & to_string (selected.face) & ". ");
+		end if;		
+	end show_selected_segment;
+
+	
+
+
+
+	procedure show_selected_object (
+		selected		: in type_object;
+		clarification	: in boolean := false)
+	is begin
+		case selected.cat is
+			when CAT_LINE =>
+				show_selected_line (selected.line);
+
+			when CAT_ZONE_SEGMENT =>
+				show_selected_segment (selected.segment);
+
+			when CAT_TEXT =>
+				null;
+				-- show_selected_text (selected.text);
+				
+			when CAT_VOID =>
+				null; -- CS
+		end case;	
+	end show_selected_object;
+
+
+	
+
 	
 	
-	procedure select_object is
+	procedure clarify_object is
 		use et_object_status;
 		use et_board_ops.conductors;
 		selected_line : type_object_line;
@@ -114,7 +166,7 @@ package body et_canvas_board_freetracks is
 		
 		show_selected_line (selected_line, clarification => true);
 		
-	end select_object;
+	end clarify_object;
 
 
 	
@@ -339,7 +391,7 @@ package body et_canvas_board_freetracks is
 
 			else
 				-- Here the clarification procedure ends.
-				-- An object has been selected via procedure select_object.
+				-- An object has been selected via procedure clarify_object.
 				-- By setting the status of the selected object
 				-- as "moving", the selected object
 				-- will be drawn according to object_point_of_attack and 
@@ -450,7 +502,7 @@ package body et_canvas_board_freetracks is
 
 	
 	
-end et_canvas_board_freetracks;
+end et_canvas_board_conductors;
 
 -- Soli Deo Gloria
 

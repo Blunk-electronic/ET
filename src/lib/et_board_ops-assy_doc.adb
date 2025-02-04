@@ -2281,9 +2281,11 @@ package body et_board_ops.assy_doc is
 			procedure query_zone (zone : in type_doc_zone) is
 				use pac_contours;
 				use pac_segments;
+				-- CS test circular flag !!
 				segment_cursor : pac_segments.cursor := zone.contour.segments.first;
 
 				procedure query_segment (segment : in type_segment) is begin
+					-- CS test the given flag !!
 					if is_proposed (segment) then
 						result.append ((
 							cat		=> CAT_ZONE_SEGMENT,
@@ -2302,6 +2304,7 @@ package body et_board_ops.assy_doc is
 			
 
 			procedure query_line (line : in type_doc_line) is begin
+				-- CS test the given flag !!
 				if is_proposed (line) then
 					result.append ((
 						cat		=> CAT_LINE,
@@ -2313,6 +2316,7 @@ package body et_board_ops.assy_doc is
 				
 
 			procedure query_text (text : in type_doc_text) is begin
+				-- CS test the given flag !!
 				if is_proposed (text) then
 					result.append ((
 						cat		=> CAT_TEXT,
@@ -2412,7 +2416,7 @@ package body et_board_ops.assy_doc is
 
 		log_indentation_up;
 		
-		generic_modules.update_element (						
+		generic_modules.update_element ( -- CS query_module is sufficient
 			position	=> module_cursor,
 			process		=> query_module'access);
 		

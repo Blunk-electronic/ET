@@ -120,7 +120,7 @@ is
 				
 			when key_noun_freetrack =>
 				noun := NOUN_FREETRACK;
-				set_status (et_canvas_board_freetracks.status_delete_object);
+				set_status (et_canvas_board_conductors.status_delete_object);
 
 
 				
@@ -144,7 +144,7 @@ is
 						et_canvas_board_tracks.ripup (point);
 
 					when NOUN_FREETRACK =>
-						et_canvas_board_freetracks.delete_object (point);
+						et_canvas_board_conductors.delete_object (point);
 
 					when NOUN_OUTLINE =>
 						et_canvas_board_outline.delete_object (point);
@@ -203,7 +203,7 @@ is
 
 					when NOUN_FREETRACK =>
 						if clarification_pending then
-							et_canvas_board_freetracks.select_object;
+							et_canvas_board_conductors.clarify_object;
 						end if;
 
 						
@@ -295,7 +295,7 @@ is
 
 			when key_noun_freetrack =>
 				noun := NOUN_FREETRACK;
-				set_status (et_canvas_board_freetracks.status_move_object);
+				set_status (et_canvas_board_conductors.status_move_object);
 				
 			when key_noun_device =>
 				noun := NOUN_DEVICE;
@@ -332,7 +332,7 @@ is
 						et_canvas_board_tracks.move_track (KEYBOARD, point);
 
 					when NOUN_FREETRACK =>
-						et_canvas_board_freetracks.move_object (KEYBOARD, point);
+						et_canvas_board_conductors.move_object (KEYBOARD, point);
 
 					when NOUN_DEVICE =>		
 						et_canvas_board_devices.move_electrical_device (KEYBOARD, point);
@@ -383,7 +383,7 @@ is
 
 					when NOUN_FREETRACK =>
 						if clarification_pending then
-							et_canvas_board_freetracks.select_object;
+							et_canvas_board_conductors.clarify_object;
 						end if;
 						
 					when NOUN_DEVICE =>

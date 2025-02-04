@@ -38,7 +38,7 @@
 --
 
 with et_canvas_board_tracks;
-with et_canvas_board_freetracks;
+with et_canvas_board_conductors;
 with et_canvas_board_preliminary_object;		use et_canvas_board_preliminary_object;
 
 

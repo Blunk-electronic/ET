@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -60,6 +60,8 @@ package body et_conductor_segment.boards is
 		end if;
 	end to_string;
 
+
+
 	
 	function are_connected (
 		line_1, line_2	: in type_conductor_line;
@@ -101,6 +103,47 @@ package body et_conductor_segment.boards is
 	end are_connected;
 
 
+
+	
+	function to_string (
+		line	: in pac_conductor_lines.cursor;
+		width	: in boolean)
+		return string
+	is begin
+		return to_string (element (line), width);
+	end to_string;
+
+
+	
+	
+	
+	function is_proposed (
+		line : in pac_conductor_lines.cursor)
+		return boolean
+	is begin
+		if is_proposed (element (line)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_proposed;
+
+
+
+
+	function is_selected (
+		line : in pac_conductor_lines.cursor)
+		return boolean
+	is begin
+		if is_selected (element (line)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+
+
+	
 	
 	function get_length (
 		lines	: in pac_conductor_lines.list)

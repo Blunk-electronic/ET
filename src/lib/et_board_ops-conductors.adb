@@ -560,6 +560,46 @@ package body et_board_ops.conductors is
 
 
 
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_object_line;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			-- CS
+			
+		begin
+			null;
+		end query_module;
+
+		
+	begin
+		log (text => "module " 
+			& to_string (module_cursor)
+			& " modifying status of "
+			& to_string (line.line_cursor, true) -- incl. width
+			& " in net " & to_string (line.net_cursor)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+	
 	
 	
 
@@ -2997,6 +3037,286 @@ package body et_board_ops.conductors is
 				return (CAT_TEXT, result_text);
 		end case;
 	end get_first_object;
+
+
+
+
+
+
+	function get_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return pac_objects.list
+	is
+		use pac_objects;
+		result : pac_objects.list;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+			
+			use pac_route_solid;
+			zone_cursor_solid_net : pac_route_solid.cursor;
+			
+			use pac_route_hatched;
+			zone_cursor_hatched_net : pac_route_hatched.cursor;
+
+			use pac_contours;
+			use pac_segments;
+			
+			use pac_conductor_lines;
+
+
+			-- This procedure queries a line of a net:
+			procedure query_line_net (line_cursor : in pac_conductor_lines.cursor) is 
+
+				procedure collect is begin
+					result.append ((
+						cat		=> CAT_LINE,
+						line	=> (net_cursor, line_cursor)));
+
+					-- Log the line and its linewidth:
+					log (text => to_string (line_cursor, true), level => log_threshold + 2);
+				end collect;
+
+				
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (line_cursor) then
+							collect;
+						end if;
+
+					when SELECTED =>
+						if is_selected (line_cursor) then
+							collect;
+						end if;
+
+					when others =>
+						null; -- CS
+				end case;
+			end query_line_net;
+
+
+			
+			-- This procedure queries a solidly filled zone of a net:
+			procedure query_zone_solid_net (zone : in type_route_solid) is
+				
+				procedure query_segment (segment_cursor : in pac_segments.cursor) is 
+					
+					procedure collect is begin
+						result.append ((
+							cat		=> CAT_ZONE_SEGMENT,
+							segment	=> (SOLID, segment_cursor, net_cursor, zone_cursor_solid_net)));
+	
+						log (text => to_string (segment_cursor), level => log_threshold + 2);
+					end collect;
+
+					
+				begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (segment_cursor) then
+								collect;
+							end if;
+							
+						when SELECTED =>
+							if is_selected (segment_cursor) then
+								collect;
+							end if;
+							
+						when others => null;  -- CS
+					end case;
+				end query_segment;
+
+				
+			begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					-- Iterate all segments of the candidate zone:
+					iterate (zone.contour.segments, query_segment'access);
+				end if;
+			end query_zone_solid_net;
+
+
+
+			
+
+			-- This procedure queries a hatched fill zone of a net:			
+			procedure query_zone_hatched_net (zone : in type_route_hatched) is
+				
+				procedure query_segment (segment_cursor : in pac_segments.cursor) is 
+
+					procedure collect is begin
+						result.append ((
+							cat		=> CAT_ZONE_SEGMENT,
+							segment	=> (HATCHED, segment_cursor, net_cursor, zone_cursor_hatched_net)));
+	
+						log (text => to_string (segment_cursor), level => log_threshold + 2);
+					end collect;
+
+					
+				begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (segment_cursor) then
+								collect;
+							end if;
+
+						when SELECTED =>
+							if is_selected (segment_cursor) then
+								collect;
+							end if;
+							
+						when others => null; -- CS
+					end case;
+				end query_segment;
+
+				
+			begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					-- Iterate all segments of the candidate zone:
+					iterate (zone.contour.segments, query_segment'access);
+				end if;
+			end query_zone_hatched_net;
+
+
+
+			
+			
+-- 
+-- 			procedure query_text (text : in type_doc_text) is begin
+-- 				if is_proposed (text) then
+-- 					result.append ((
+-- 						cat		=> CAT_TEXT,
+-- 						text	=> (face, text_cursor)));
+-- 
+-- 					log (text => to_string (text), level => log_threshold + 2);
+-- 				end if;
+-- 			end query_text;
+
+
+			-- This procedure queries a net:
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net)
+			is begin
+				-- Iterate the lines of the net:
+				iterate (net.route.lines, query_line_net'access);
+
+				-- CS arcs
+
+				-- fill zones:
+				-- solid:
+				zone_cursor_solid_net := net.route.zones.solid.first;
+				while zone_cursor_solid_net /= pac_route_solid.no_element loop
+					query_element (zone_cursor_solid_net, query_zone_solid_net'access);
+					next (zone_cursor_solid_net);
+				end loop;
+
+				-- hatched:
+				zone_cursor_hatched_net := net.route.zones.hatched.first;
+				while zone_cursor_hatched_net /= pac_route_hatched.no_element loop
+					query_element (zone_cursor_hatched_net, query_zone_hatched_net'access);
+					next (zone_cursor_hatched_net);
+				end loop;
+				
+			end query_net;
+			
+		
+		begin
+			log (text => "nets", level => log_threshold + 1);
+			log_indentation_up;
+
+			while net_cursor /= pac_nets.no_element loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+
+			log_indentation_down;
+
+			-- CS freetracks (lines, arcs, circles), texts, placeholders
+			
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up objects / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+
+		return result;
+	end get_objects;
+
+
+
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of object"
+			-- & to_string (segment.segment) CS output object category ?
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		case object.cat is
+			when CAT_LINE =>
+				modify_status (module_cursor, object.line, operation, log_threshold + 1);
+
+			when CAT_ZONE_SEGMENT =>
+				modify_status (module_cursor, object.segment, operation, log_threshold + 1);
+
+			when CAT_TEXT =>
+				null; -- CS
+				-- modify_status (module_cursor, object.text, operation, log_threshold + 1);
+				
+			when CAT_VOID =>
+				null; -- CS
+		end case;
+
+		log_indentation_down;
+	end modify_status;
+
+	
+
+	
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_objects;
+		object : constant type_object := element (object_cursor);
+	begin
+		modify_status (module_cursor, object, operation, log_threshold);
+	end modify_status;
+
+
 
 	
 

@@ -165,16 +165,27 @@ package et_board_ops.conductors is
 	-- identified additionally by the associated net.
 	-- If the net_cursor is no_element then it is a segment
 	-- of a freetrack:
-	type type_object_line is record
+	type type_object_line is record -- CS rename to type_object_line_net
 		net_cursor	: pac_nets.cursor;
 		line_cursor	: pac_conductor_lines.cursor;
 	end record;
 
 	-- CS do the same for arcs
-	
+
+	-- CS do the same for lines, arcs, circles of freetracks
 
 	
 	package pac_object_lines is new doubly_linked_lists (type_object_line);
+
+
+	-- Modifies the status flag of a line of a net:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_object_line;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+
 
 	
 	-- Returns all lines in the given signal layer
@@ -420,6 +431,7 @@ package et_board_ops.conductors is
 		end case;
 	end record;
 
+	-- CS do the same for segments of floating zones
 
 
 	-- Modifies the status flag of a zone segment (see package et_object_status):
@@ -524,6 +536,7 @@ package et_board_ops.conductors is
 		CAT_VOID,
 		CAT_LINE, 
 		CAT_ZONE_SEGMENT,
+		-- CS CAT_ZONE_SEGMENT_FLOATING
 		CAT_TEXT
 		);
 	-- CS CAT_ARC, CAT_CIRCLE, CAT_PLACEHOLDER
@@ -551,6 +564,34 @@ package et_board_ops.conductors is
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
 		return type_object;
+
+
+
+	-- Collects all objects (lines, arcs, circles, zone segments)
+	-- according to the given flag and returns them in a list:
+	function get_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return pac_objects.list;
+
+
+
+	-- Modifies the status flag of an object:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+
+	
+	-- Modifies the status flag of an object indicated by a cursor:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
 
 	
 	

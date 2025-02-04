@@ -84,7 +84,7 @@ is
 						et_canvas_board_tracks.move_track (MOUSE, snap_point);
 
 					when NOUN_FREETRACK =>
-						et_canvas_board_freetracks.move_object (MOUSE, snap_point);
+						et_canvas_board_conductors.move_object (MOUSE, snap_point);
 						
 					when NOUN_DEVICE =>
 						et_canvas_board_devices.move_electrical_device (MOUSE, snap_point);
@@ -176,7 +176,7 @@ is
 						et_canvas_board_tracks.ripup (event.point);
 
 					when NOUN_FREETRACK =>
-						et_canvas_board_freetracks.delete_object (event.point);
+						et_canvas_board_conductors.delete_object (event.point);
 
 
 						
@@ -222,7 +222,7 @@ is
 
 					when NOUN_FREETRACK =>
 						if clarification_pending then
-							et_canvas_board_freetracks.select_object;
+							et_canvas_board_conductors.clarify_object;
 						end if;
 						
 					when NOUN_DEVICE =>
@@ -335,7 +335,7 @@ is
 
 					when NOUN_FREETRACK =>
 						if clarification_pending then
-							et_canvas_board_freetracks.select_object;
+							et_canvas_board_conductors.clarify_object;
 						end if;
 						
 					when others => null;							

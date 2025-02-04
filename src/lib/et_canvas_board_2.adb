@@ -78,7 +78,7 @@ with et_canvas_board_devices;
 with et_canvas_board_assy_doc;
 with et_canvas_board_silkscreen;
 with et_canvas_board_tracks;
-with et_canvas_board_freetracks;
+with et_canvas_board_conductors;
 
 with et_canvas_board_preliminary_object;
 

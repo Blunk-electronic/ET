@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                      CANVAS BOARD / FREETRACKS                           --
+--                      CANVAS BOARD / CONDUCTORS                           --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -58,19 +58,22 @@ with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_canvas_board_lines;				use et_canvas_board_lines;
 
 
-package et_canvas_board_freetracks is
+package et_canvas_board_conductors is
 
 
+	-- This procedure is required in order to clarify
+	-- which object among the proposed objects is meant.
 	-- On every call of this procedure we advance from one
-	-- proposed segment to the next in a circular manner.
-	procedure select_object;
+	-- proposed segment to the next in a circular manner
+	-- and set it as "selected":
+	procedure clarify_object;
 
 
 	-- Locates objects in the vicinity of the given point
 	-- and sets their proposed-flag.
+	-- Only displayed layers are taken into account.
 	-- Depending on how many objects have been found, the behaviour is:
-	-- - If only one object found, then it is selected and 
-	--   the flag preliminary_object.ready will be set.
+	-- - If only one object found, then it is selected automatically.
 	-- - If more than one object found, then clarification is requested.
 	--   The first object of them is selected.
 	procedure find_objects (
@@ -91,7 +94,7 @@ package et_canvas_board_freetracks is
 		status_click_left 
 		& "or "
 		& status_press_space
-		& "to move freetrack object." 
+		& "to move conductor object." 
 		& status_hint_for_abort;
 
 	
@@ -107,7 +110,7 @@ package et_canvas_board_freetracks is
 		status_click_left 
 		& "or "
 		& status_press_space
-		& "to delete freetrack." 
+		& "to delete conductor object." 
 		& status_hint_for_abort;
  
 	
@@ -116,7 +119,7 @@ package et_canvas_board_freetracks is
 
 	
 	
-end et_canvas_board_freetracks;
+end et_canvas_board_conductors;
 
 -- Soli Deo Gloria
 
