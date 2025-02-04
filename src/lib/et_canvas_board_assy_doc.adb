@@ -340,8 +340,7 @@ package body et_canvas_board_assy_doc is
 			when 0 =>
 				reset_request_clarification;
 				reset_preliminary_object;
-				reset_proposed_lines (active_module, log_threshold + 1);
-				reset_proposed_segments (active_module, log_threshold + 1);
+				reset_proposed_objects (active_module, log_threshold + 1);
 				
 			when 1 =>
 				object_ready := true;
