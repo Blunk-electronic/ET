@@ -64,9 +64,7 @@ package body et_canvas_board_assy_doc is
 	use pac_doc_arcs;
 	use pac_doc_circles;
 
-	use et_board_shapes_and_text.pac_contours;
-
-
+	
 	
 	
 	-- Outputs the selected line in the status bar:
@@ -96,6 +94,8 @@ package body et_canvas_board_assy_doc is
 		clarification	: in boolean := false)
 	is 
 		praeamble : constant string := "selected: ";
+
+		use et_board_shapes_and_text.pac_contours;
 	begin
 		if clarification then
 			set_status (praeamble & to_string (selected.segment)
@@ -226,8 +226,6 @@ package body et_canvas_board_assy_doc is
 	-- This procedure searches for the first selected object
 	-- and sets its status to "moving":
 	procedure set_first_selected_object_moving is
-		use et_board_ops.assy_doc;
-
 		
 		procedure do_it is
 			-- Get the first selected object:
@@ -382,7 +380,6 @@ package body et_canvas_board_assy_doc is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
-			use et_board_ops.assy_doc;
 
 			object : constant type_object := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
@@ -471,7 +468,6 @@ package body et_canvas_board_assy_doc is
 		-- Deletes the selected object.
 		-- Resets variable preliminary_object:
 		procedure finalize is 
-			use et_board_ops.assy_doc;
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
