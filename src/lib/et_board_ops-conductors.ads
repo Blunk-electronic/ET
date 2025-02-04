@@ -593,7 +593,15 @@ package et_board_ops.conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
+
 	
+	-- This is a collective procedure that resets
+	-- the proposed-flag and the selected-flag 
+	-- of texts, lines, arcs, circles and zone segments:
+	procedure reset_proposed_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
 	
 end et_board_ops.conductors;
 
