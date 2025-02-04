@@ -3320,6 +3320,124 @@ package body et_board_ops.conductors is
 
 
 
+	procedure move_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_conductor_lines;
+		use pac_nets;
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving conductor object " 
+			-- CS & to_string (object)
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_LINE =>
+				
+				move_line (
+					module_cursor	=> module_cursor, 
+					line			=> element (object.line.line_cursor),
+					point_of_attack	=> point_of_attack, 
+					destination		=> destination,
+					net_name		=> key (object.line.net_cursor),
+					log_threshold	=> log_threshold + 1);
+
+				
+			when CAT_ZONE_SEGMENT =>
+				
+				move_segment (
+					module_cursor	=> module_cursor,
+					segment			=> object.segment,
+					point_of_attack	=> point_of_attack, 
+					destination		=> destination,
+					log_threshold	=> log_threshold + 1);
+
+
+			when CAT_TEXT =>
+				null;
+				-- CS
+			-- 	move_text (module_cursor,
+			-- 		object.text,
+			-- 		destination,
+			-- 		log_threshold + 1);
+
+				
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end move_object;
+
+
+
+	
+
+	procedure delete_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_nets;
+		use pac_conductor_lines;
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " deleting conductor object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_LINE =>
+
+				delete_line (
+					module_cursor	=> module_cursor, 
+					net_name		=> key (object.line.net_cursor),			
+					line			=> element (object.line.line_cursor),
+					log_threshold	=> log_threshold + 1);					
+    
+			-- CS arcs, circles
+
+				
+			when CAT_ZONE_SEGMENT =>
+
+				delete_segment (
+					module_cursor	=> module_cursor, 
+					segment			=> object.segment,
+					log_threshold	=> log_threshold + 1);
+
+				
+			when CAT_TEXT =>
+				-- CS
+				null;
+				-- delete_text (
+				-- 	module_cursor	=> module_cursor, 
+				-- 	text			=> object.text,
+				-- 	log_threshold	=> log_threshold + 1);
+
+								
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end delete_object;
+	
+
+
+	
+
+
 	procedure reset_proposed_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)

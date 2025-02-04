@@ -594,6 +594,38 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level);
 
 
+
+	procedure move_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+
+
+	-- CS
+	-- Deletes the object that is in the vicinity of the given point.
+	-- CS currently deletes the object found. Leaves other objects untouched.
+	-- CS a parameter like "all" to delete all objects in the vicinity of point.
+	-- procedure delete_object (
+	--  module_cursor	: in pac_generic_modules.cursor;
+	-- 	layer			: in type_signal_layer;
+	-- 	point			: in type_vector_model; -- x/y
+	-- 	accuracy		: in type_accuracy;
+	-- 	log_threshold	: in type_log_level);
+
+
+
+	procedure delete_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level);
+
+
+	
+	
 	
 	-- This is a collective procedure that resets
 	-- the proposed-flag and the selected-flag 

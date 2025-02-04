@@ -343,9 +343,10 @@ package body et_canvas_board_conductors is
 
 
 
--- MOVE:
 	
 
+-- MOVE:
+	
 	procedure move_object (
 		tool	: in type_tool;
 		point	: in type_vector_model)
@@ -357,37 +358,30 @@ package body et_canvas_board_conductors is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
-			use et_board_ops.conductors;
 
-			selected_line : type_object_line;
-
-			use et_object_status;
-
+			object : constant type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
-			selected_line := get_first_line (
-				module_cursor	=> active_module,
-				flag			=> SELECTED, 
-				freetracks		=> true,
-				log_threshold	=> log_threshold + 1);
-
-			
-			if selected_line.line_cursor /= pac_conductor_lines.no_element then
-
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
-
-				move_line_freetrack (
-					module_cursor	=> active_module,
-					line			=> element (selected_line.line_cursor),
+				
+				move_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
 					point_of_attack	=> object_point_of_attack,
 					destination		=> point,
-					log_threshold	=> log_threshold);
-				
+					log_threshold	=> log_threshold + 1);
+
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
@@ -396,12 +390,7 @@ package body et_canvas_board_conductors is
 			set_status (status_move_object);
 			
 			reset_preliminary_object;
-
-			reset_proposed_lines (
-				module_cursor	=> active_module, 
-				freetracks		=> true,
-				log_threshold	=> log_threshold + 1);
-
+			reset_proposed_objects (active_module, log_threshold + 1);
 		end finalize;
 			
 		
@@ -463,50 +452,36 @@ package body et_canvas_board_conductors is
 			use et_undo_redo;
 			use et_commit;
 
-			use et_board_ops.conductors;
-			selected_line : type_object_line;
-
-			use pac_conductor_lines;
-			use et_object_status;
-
+			object : constant type_object := get_first_object (
+				active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalizing delete ...", level => log_threshold);
 			log_indentation_up;
 
-			selected_line := get_first_line (
-				module_cursor	=> active_module,
-				flag			=> SELECTED, 
-				freetracks		=> true,
-				log_threshold	=> log_threshold + 1);
-			
-			if selected_line.line_cursor /= pac_conductor_lines.no_element then
-
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
-
-				delete_line_freetrack (
-					module_cursor	=> active_module,
-					line			=> element (selected_line.line_cursor),
-					log_threshold	=> log_threshold);
 				
+				delete_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					log_threshold	=> log_threshold + 1);
+
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
-
-			-- CS arcs, circles
-			
+				
 			log_indentation_down;			
 			set_status (status_delete_object);
 			
 			reset_preliminary_object;
-			
-			reset_proposed_lines (
-				module_cursor	=> active_module, 
-				freetracks		=> true,
-				log_threshold	=> log_threshold + 1);
-			
+			reset_proposed_objects (active_module, log_threshold + 1);
 		end finalize;
 
 		
