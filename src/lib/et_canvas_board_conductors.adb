@@ -38,16 +38,18 @@
 -- DESCRIPTION:
 -- 
 
-with et_generic_module;					use et_generic_module;
+with et_generic_module;						use et_generic_module;
 with et_canvas_board_2;
 with et_board_ops;
-with et_board_ops.conductors;			use et_board_ops.conductors;
-with et_logging;						use et_logging;
+with et_board_ops.conductors;				use et_board_ops.conductors;
+with et_logging;							use et_logging;
 with et_modes.board;
+with et_display.board;
 with et_undo_redo;
 with et_commit;
-with et_keywords;						use et_keywords;
-with et_object_status;
+with et_keywords;							use et_keywords;
+with et_object_status;						use et_object_status;
+with et_nets;
 
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 
@@ -62,22 +64,24 @@ package body et_canvas_board_conductors is
 
 
 	
+	
 	-- Outputs the selected line in the status bar:
 	procedure show_selected_line (
 		selected		: in type_object_line;
 		clarification	: in boolean := false)
 	is 
+		use et_nets;
 		praeamble : constant string := "selected: ";
 	begin
 		if clarification then
 			set_status (praeamble
-				& to_string (element (selected.line_cursor), true) -- start/end point/width/layer
+				& to_string (selected.line_cursor, true) -- start/end point/width/layer
+				& " net " & to_string (selected.net_cursor)
 				& ". " & status_next_object_clarification);
-				-- CS net name ?
 		else
 			set_status (praeamble
-				& to_string (element (selected.line_cursor), true)); -- start/end point/width/layer
-			-- CS net name ?
+				& to_string (selected.line_cursor, true) -- start/end point/width/layer
+				& " net " & to_string (selected.net_cursor));
 		end if;		
 	end show_selected_line;
 
@@ -90,17 +94,19 @@ package body et_canvas_board_conductors is
 		clarification	: in boolean := false)
 	is 
 		praeamble : constant string := "selected: ";
+
+		use et_nets;
+		use et_board_shapes_and_text.pac_contours;
 	begin
 		if clarification then
-			null;
-			-- set_status (praeamble & to_string (selected.segment)
-			-- & " layer" & to_string (selected.laface) & ". " 
-			-- CS read properties of zone to get the layer number
-				-- & status_next_object_clarification);
+			set_status (praeamble & to_string (selected.segment)
+				& " net " & to_string (selected.net)
+				-- & " layer" & to_string (selected.laface) & ". " 
+				-- CS read properties of zone to get the layer number
+				& status_next_object_clarification);
 		else
-			null;
-			-- set_status (praeamble & to_string (selected.segment));
-				-- & " face" & to_string (selected.face) & ". ");
+			set_status (praeamble & to_string (selected.segment)
+				& " net " & to_string (selected.net));
 		end if;		
 	end show_selected_segment;
 
@@ -129,81 +135,113 @@ package body et_canvas_board_conductors is
 	end show_selected_object;
 
 
-	
 
 	
-	
-	procedure clarify_object is
-		use et_object_status;
-		use et_board_ops.conductors;
-		selected_line : type_object_line;
+
+
+
+	procedure clarify_object is 
+
+		procedure do_it is
+			use pac_objects;
+			
+			-- Gather all proposed objects:
+			proposed_objects : constant pac_objects.list := 
+				get_objects (active_module, PROPOSED, log_threshold + 1);
+
+			proposed_object : pac_objects.cursor;
+
+			-- We start with the first object that is currently selected:
+			selected_object : type_object := 
+				get_first_object (active_module, SELECTED, log_threshold + 1);
+
+			-- The number of proposed objects:
+			ct : count_type := proposed_objects.length;
+
+		begin
+			log (text => "proposed objects total " & count_type'image (ct),
+				level => log_threshold + 2);
+
+			
+			-- Locate the selected object among the proposed objects:
+			proposed_object := proposed_objects.find (selected_object);
+
+			-- Deselect the the proposed object:
+			modify_status (
+				module_cursor	=> active_module, 
+				operation		=> (CLEAR, SELECTED),
+				object_cursor	=> proposed_object, 
+				log_threshold	=> log_threshold + 1);
+
+			-- Advance to the next proposed object:
+			next (proposed_object);
+
+			-- If end of list reached, then proceed at 
+			-- the begin of the list:
+			if proposed_object = pac_objects.no_element then
+				proposed_object := proposed_objects.first;
+			end if;
+			
+			-- Select the proposed object:
+			modify_status (
+				module_cursor	=> active_module, 
+				operation		=> (SET, SELECTED),
+				object_cursor	=> proposed_object, 
+				log_threshold	=> log_threshold + 1);
+
+			-- Display the object in the status bar:
+			show_selected_object (element (proposed_object));
+		end do_it;
+		
+		
 	begin
-		selected_line := get_first_line (
-			module_cursor	=> active_module, 
-			flag			=> SELECTED, 
-			freetracks		=> true,
-			log_threshold	=> log_threshold + 1);
+		log (text => "clarify_object", level => log_threshold + 1);
+
+		log_indentation_up;
 		
-		modify_status (
-			module_cursor	=> active_module, 
-			operation		=> (CLEAR, SELECTED),
-			line_cursor		=> selected_line.line_cursor, 
-			freetracks		=> true,
-			log_threshold	=> log_threshold + 1);
+		do_it;
 		
-		next_proposed_line (
-			module_cursor	=> active_module, 
-			line			=> selected_line, 
-			freetracks		=> true,
-			log_threshold	=> log_threshold + 1);
-		
-		modify_status (
-			module_cursor	=> active_module, 
-			operation		=> (SET, SELECTED),
-			line_cursor		=> selected_line.line_cursor, 
-			freetracks		=> true,
-			log_threshold	=> log_threshold + 1);
-		
-		show_selected_line (selected_line, clarification => true);
-		
+		log_indentation_down;
 	end clarify_object;
 
 
-	
+
+
+
+
 
 	-- This procedure searches for the first selected object
 	-- and sets its status to "moving":
 	procedure set_first_selected_object_moving is
-		use et_board_ops.conductors;
-		use et_object_status;
+		
+		procedure do_it is
+			-- Get the first selected object:
+			selected_object : constant type_object := 
+				get_first_object (active_module, SELECTED, log_threshold + 1);
 
-		-- use et_board_shapes_and_text.pac_contours;
-		-- use pac_segments;
-		-- selected_segment : pac_segments.cursor; -- of a contour
+			-- Gather all selected objects:
+			objects : constant pac_objects.list :=
+				get_objects (active_module, SELECTED, log_threshold + 1);
 
-		selected_line : type_object_line;
-		-- selected_arc : type_arc_segment;
+			c : pac_objects.cursor;
+		begin
+			-- Get a cursor to the candidate object
+			-- among all selected objects:
+			c := objects.find (selected_object);
+			
+			modify_status (active_module, c, (SET, MOVING), log_threshold + 1);
+		end do_it;
+		
+		
 	begin
 		log (text => "set_first_selected_object_moving ...", level => log_threshold);
-
-		selected_line := get_first_line (
-			module_cursor	=> active_module,
-			flag			=> SELECTED, 
-			freetracks		=> true,
-			log_threshold	=> log_threshold + 1);
-		
-		-- CS arcs, circles, zones
-		
-		modify_status (
-			module_cursor	=> active_module, 
-			line_cursor		=> selected_line.line_cursor, 
-			operation		=> (SET, MOVING),
-			freetracks		=> true,
-			log_threshold	=> log_threshold + 1);
-
+		log_indentation_up;
+		do_it;
+		log_indentation_down;
 	end set_first_selected_object_moving;
 
 
+	
 
 	
 	
@@ -211,75 +249,75 @@ package body et_canvas_board_conductors is
 	   point : in type_vector_model)
 	is 
 		use et_board_ops;
-		use et_board_ops.conductors;
+		use et_modes.board;
+		use et_display.board;
 
 		count_total : natural := 0;
-		
-		
-		procedure propose_lines (layer : in type_signal_layer) is 
-			count : natural := 0;
+
+
+		-- This procedure searches for the first proposed
+		-- object and marks it as "selected":
+		procedure select_first_proposed is
+			object : type_object := get_first_object (
+						active_module, PROPOSED, log_threshold + 1);
 		begin
-			propose_lines (
-				module_cursor	=> active_module, 
-				point			=> point, 
-				layer			=> layer, 
-				zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
-				count			=> count,
-				freetracks		=> true, 
-				log_threshold	=> log_threshold + 1);
-			
-			count_total := count_total + count;
-		end propose_lines;
-
-
-		procedure select_first_proposed is 
-			proposed_line : type_object_line;
-			use et_object_status;
-		begin
-			proposed_line := get_first_line (
-				module_cursor	=> active_module,
-				flag			=> PROPOSED, 
-				freetracks		=> true,
-				log_threshold	=> log_threshold + 1);
-
 			modify_status (
-				module_cursor	=> active_module, 
-				line_cursor		=> proposed_line.line_cursor, 
-				operation		=> (SET, SELECTED),
-				freetracks		=> true,
-				log_threshold	=> log_threshold + 1);			
-			
-			-- If only one line found, then show it in the status bar:
+				active_module, object, (SET, SELECTED), log_threshold + 1);
+
+			-- If only one object found, then show it in the status bar:
 			if count_total = 1 then
-				show_selected_line (proposed_line);		
+				show_selected_object (object);
 			end if;
 		end select_first_proposed;
-		
 
-		use et_modes.board;
 		
+		-- This procedure proposes all objects in the vicinity of the given point.
+		-- Only objects in enabled signal layers are adressed:
+		procedure propose_objects is begin
+			for layer in 1 .. get_deepest_conductor_layer (active_module) loop
+				if conductor_enabled (layer) then
+
+					propose_lines (
+						module_cursor	=> active_module, 
+						point			=> point,
+						layer			=> layer,
+						zone			=> get_catch_zone (et_canvas_board_2.catch_zone), 
+						count			=> count_total, 
+						freetracks		=> false,
+						log_threshold	=> log_threshold + 2);
+
+					-- CS arcs, circles
+
+					propose_segments (
+						module_cursor	=> active_module, 
+						point			=> point, 
+						zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
+						layer			=> layer,
+						count			=> count_total,
+						log_threshold	=> log_threshold + 2);
+
+					-- CS freetracks, floating zones
+				end if;
+			end loop;
+		end propose_objects;
+
+				
 	begin
 		log (text => "locating objects ...", level => log_threshold);
 		log_indentation_up;
 
-		-- Propose all objects in the vicinity of the given point.
-		-- CS should depend on enabled signal layers.
-		for l in 1 .. get_deepest_conductor_layer (active_module) loop
-			propose_lines (l);
-		end loop;
-		
-		-- CS arcs, circles, zones
+		propose_objects;		
+
+		log (text => "proposed objects total" & natural'image (count_total),
+			 level => log_threshold + 1);
+
 		
 		-- Evaluate the number of objects found here:
 		case count_total is
 			when 0 =>
 				reset_request_clarification;
 				reset_preliminary_object;
-
-				reset_proposed_lines (
-					module_cursor	=> active_module, 
-					freetracks		=> true,
-					log_threshold	=> log_threshold + 1);
+				reset_proposed_objects (active_module, log_threshold + 1);
 
 				
 			when 1 =>
@@ -296,9 +334,6 @@ package body et_canvas_board_conductors is
 			when others =>
 				--log (text => "many objects", level => log_threshold + 2);
 				set_request_clarification;
-				
-				-- preselect the object
-				-- selected_object := proposed_objects.first;
 				select_first_proposed;
 		end case;
 		

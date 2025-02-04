@@ -2691,9 +2691,7 @@ package body et_board_ops.assy_doc is
 	procedure reset_proposed_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
-	is
-
-	begin
+	is begin
 		log (text => "module " & to_string (module_cursor) &
 			" resetting proposed objects",
 			level => log_threshold);
