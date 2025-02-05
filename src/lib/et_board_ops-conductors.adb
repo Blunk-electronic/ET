@@ -1177,8 +1177,12 @@ package body et_board_ops.conductors is
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
-		
-		log (text => "found: " & to_string (element (result.line_cursor), true), level => log_threshold + 2);
+
+		-- If a line has been found, then log it:
+		if has_element (result.line_cursor) then
+			log (text => "found: " & to_string (element (result.line_cursor), true),
+				 level => log_threshold + 2);
+		end if;
 
 		log_indentation_down;
 		
@@ -2480,7 +2484,7 @@ package body et_board_ops.conductors is
 
 		-- This flag is used to abort the iterators for nets, zones and segments
 		-- as soon as a segment has been found:
-		proceed : aliased boolean := true;
+		proceed : boolean := true;
 		
 		
 		procedure query_module (
@@ -2499,13 +2503,13 @@ package body et_board_ops.conductors is
 						when PROPOSED =>
 							if is_proposed (segment) then
 								proceed := false;
-								log (text => to_string (segment), level => log_threshold + 1);
+								log (text => to_string (segment), level => log_threshold + 3);
 							end if;
 
 						when SELECTED =>
 							if is_selected (segment) then
 								proceed := false;
-								log (text => to_string (segment), level => log_threshold + 1);
+								log (text => to_string (segment), level => log_threshold + 3);
 							end if;
 
 						when others =>
@@ -2520,8 +2524,11 @@ package body et_board_ops.conductors is
 					else
 						sc := zone.contour.segments.first;
 
-						while sc /= pac_segments.no_element and proceed loop
+						while sc /= pac_segments.no_element loop
 							query_element (sc, query_segment'access);
+							if not proceed then
+								exit;
+							end if;
 							next (sc);
 						end loop;
 					end if;
@@ -2534,8 +2541,11 @@ package body et_board_ops.conductors is
 					else
 						sc := zone.contour.segments.first;
 
-						while sc /= pac_segments.no_element and proceed loop
+						while sc /= pac_segments.no_element loop
 							query_element (sc, query_segment'access);
+							if not proceed then
+								exit;
+							end if;
 							next (sc);
 						end loop;
 					end if;
@@ -2543,28 +2553,45 @@ package body et_board_ops.conductors is
 
 				
 			begin
+				log_indentation_up;
+				log (text => to_string (net_name), level => log_threshold + 2);
+				log_indentation_up;
+				
 				-- First search among solidly filled zones:
 				zcs := net.route.zones.solid.first;				
-				while zcs /= pac_route_solid.no_element and proceed loop
+				while zcs /= pac_route_solid.no_element loop
 					query_element (zcs, query_zone_solid'access);
+					if not proceed then
+						exit;
+					end if;
 					next (zcs);
 				end loop;
 
 				-- If nothing found, search among hatched zones:
 				if proceed then
 					zch := net.route.zones.hatched.first;
-					while zch /= pac_route_hatched.no_element and proceed loop
+					while zch /= pac_route_hatched.no_element loop
 						query_element (zch, query_zone_hatched'access);
+						if not proceed then
+							exit;
+						end if;
 						next (zch);
 					end loop;
 				end if;
+
+				log_indentation_down;
+				log_indentation_down;
 			end query_net;
 
 			
 		begin
+			log (text => "nets", level => log_threshold + 1);
 			net_cursor := module.nets.first;
-			while net_cursor /= pac_nets.no_element and proceed loop
+			while net_cursor /= pac_nets.no_element loop
 				query_element (net_cursor, query_net'access);
+				if not proceed then
+					exit;
+				end if;
 				next (net_cursor);
 			end loop;
 		end query_module;
@@ -2588,6 +2615,7 @@ package body et_board_ops.conductors is
 		if not proceed then -- a segment has been found.
 			-- The segment is either belonging to a solid
 			-- or a hatche zone:
+			
 			if has_element (zcs) then
 				result := (
 					fill_style 		=> SOLID,
@@ -2961,12 +2989,11 @@ package body et_board_ops.conductors is
 			level => log_threshold);
 
 		log_indentation_up;
-
 		
 		-- First we search for a line of a net.
 		-- If a line has been found, then go to the end of this procedure:
 		result_line := get_first_line (module_cursor, flag, false, log_threshold + 1);
-
+		
 		if result_line.line_cursor /= pac_conductor_lines.no_element then
 			-- A line has been found.
 			log (text => to_string (element (result_line.line_cursor)),
@@ -2975,6 +3002,7 @@ package body et_board_ops.conductors is
 			result_category := CAT_LINE;
 		end if;
 
+		-- If an object has been found, then the search is done:
 		if result_category /= CAT_VOID then
 			goto end_of_search;
 		end if;
@@ -3003,6 +3031,7 @@ package body et_board_ops.conductors is
 			result_category := CAT_ZONE_SEGMENT;
 		end if;
 
+		-- If an object has been found, then the search is done:
 		if result_category /= CAT_VOID then
 			goto end_of_search;
 		end if;
@@ -3217,6 +3246,9 @@ package body et_board_ops.conductors is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
 			is begin
+				log (text => to_string (net_name), level => log_threshold + 2);
+				log_indentation_up;
+				
 				-- Iterate the lines of the net:
 				iterate (net.route.lines, query_line_net'access);
 
@@ -3224,6 +3256,7 @@ package body et_board_ops.conductors is
 
 				-- fill zones:
 				-- solid:
+				log (text => "solid fill zones", level => log_threshold + 3);
 				zone_cursor_solid_net := net.route.zones.solid.first;
 				while zone_cursor_solid_net /= pac_route_solid.no_element loop
 					query_element (zone_cursor_solid_net, query_zone_solid_net'access);
@@ -3231,12 +3264,14 @@ package body et_board_ops.conductors is
 				end loop;
 
 				-- hatched:
+				log (text => "hatched fill zones", level => log_threshold + 3);
 				zone_cursor_hatched_net := net.route.zones.hatched.first;
 				while zone_cursor_hatched_net /= pac_route_hatched.no_element loop
 					query_element (zone_cursor_hatched_net, query_zone_hatched_net'access);
 					next (zone_cursor_hatched_net);
 				end loop;
-				
+
+				log_indentation_down;
 			end query_net;
 			
 		
@@ -3268,7 +3303,7 @@ package body et_board_ops.conductors is
 			process		=> query_module'access);
 		
 		log_indentation_down;
-
+		
 		return result;
 	end get_objects;
 
@@ -3284,8 +3319,8 @@ package body et_board_ops.conductors is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of object"
-			-- & to_string (segment.segment) CS output object category ?
+			& " modifying status of object "
+			& type_object_category'image (object.cat)
 			& " / " & to_string (operation),
 			level => log_threshold);
 
