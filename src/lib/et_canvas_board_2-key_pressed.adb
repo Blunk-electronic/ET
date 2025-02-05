@@ -113,6 +113,10 @@ is
 				set_status (et_canvas_board_vias.status_delete_via);
 
 
+			when key_noun_conductors =>
+				noun := NOUN_CONDUCTORS;
+				set_status (et_canvas_board_conductors.status_delete_object);
+				
 			when key_noun_track =>
 				noun := NOUN_TRACK;
 				set_status (et_canvas_board_tracks.status_delete_object);
@@ -140,6 +144,9 @@ is
 				null;
 				-- CS
 				case noun is
+					when NOUN_CONDUCTORS =>
+						et_canvas_board_conductors.delete_object (point);
+
 					when NOUN_TRACK =>
 						et_canvas_board_tracks.ripup (point);
 
@@ -195,7 +202,12 @@ is
 						if clarification_pending then
 							et_canvas_board_outline.select_segment;
 						end if;
-					
+
+					when NOUN_CONDUCTORS =>
+						if clarification_pending then
+							et_canvas_board_conductors.clarify_object;
+						end if;
+						
 					when NOUN_TRACK =>
 						if clarification_pending then
 							et_canvas_board_tracks.select_track;
@@ -293,6 +305,10 @@ is
 				noun := NOUN_TRACK;
 				set_status (et_canvas_board_tracks.status_move_track);
 
+			when key_noun_conductors =>
+				noun := NOUN_CONDUCTORS;
+				set_status (et_canvas_board_conductors.status_move_object);
+
 			when key_noun_freetrack =>
 				noun := NOUN_FREETRACK;
 				set_status (et_canvas_board_conductors.status_move_object);
@@ -327,6 +343,9 @@ is
 
 					when NOUN_SILKSCREEN =>
 						et_canvas_board_silkscreen.move_object (KEYBOARD, point);
+
+					when NOUN_CONDUCTORS =>
+						et_canvas_board_conductors.move_object (KEYBOARD, point);
 						
 					when NOUN_TRACK =>
 						et_canvas_board_tracks.move_track (KEYBOARD, point);
@@ -376,6 +395,11 @@ is
 							et_canvas_board_silkscreen.select_object;
 						end if;
 
+					when NOUN_CONDUCTORS =>
+						if clarification_pending then
+							et_canvas_board_conductors.clarify_object;
+						end if;
+						
 					when NOUN_TRACK =>
 						if clarification_pending then
 							et_canvas_board_tracks.select_track;

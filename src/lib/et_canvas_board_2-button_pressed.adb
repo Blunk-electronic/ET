@@ -80,6 +80,9 @@ is
 					when NOUN_SILKSCREEN =>
 						et_canvas_board_silkscreen.move_object (MOUSE, snap_point);
 
+					when NOUN_CONDUCTORS =>
+						et_canvas_board_conductors.move_object (MOUSE, snap_point);
+						
 					when NOUN_TRACK =>
 						et_canvas_board_tracks.move_track (MOUSE, snap_point);
 
@@ -172,6 +175,9 @@ is
 					when NOUN_VIA =>
 						et_canvas_board_vias.delete_via (MOUSE, event.point);
 
+					when NOUN_CONDUCTORS =>
+						et_canvas_board_conductors.delete_object (event.point);
+						
 					when NOUN_TRACK =>
 						et_canvas_board_tracks.ripup (event.point);
 
@@ -215,6 +221,11 @@ is
 							et_canvas_board_silkscreen.select_object;
 						end if;
 
+					when NOUN_CONDUCTORS =>
+						if clarification_pending then
+							et_canvas_board_conductors.clarify_object;
+						end if;
+						
 					when NOUN_TRACK =>
 						if clarification_pending then
 							et_canvas_board_tracks.select_track;

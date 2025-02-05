@@ -84,11 +84,16 @@ begin
 						redraw_board;
 					end if;
 
-				when NOUN_TRACK =>
+				when NOUN_CONDUCTORS =>
 					if object_ready then
 						redraw_board;
 					end if;
 
+				when NOUN_TRACK =>
+					if object_ready then
+						redraw_board;
+					end if;
+					
 				when NOUN_FREETRACK =>
 					if object_ready then
 						redraw_board;
