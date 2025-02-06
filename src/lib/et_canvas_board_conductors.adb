@@ -119,8 +119,8 @@ package body et_canvas_board_conductors is
 		clarification	: in boolean := false)
 	is begin
 		case selected.cat is
-			when CAT_LINE =>
-				show_selected_line (selected.line);
+			when CAT_LINE_NET =>
+				show_selected_line (selected.line_net);
 
 			when CAT_ZONE_SEGMENT =>
 				show_selected_segment (selected.segment);

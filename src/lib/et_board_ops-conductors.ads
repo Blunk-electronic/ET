@@ -541,7 +541,7 @@ package et_board_ops.conductors is
 	-- categories in order to store them in indefinite_doubly_linked_lists:
 	type type_object_category is (
 		CAT_VOID,
-		CAT_LINE, 
+		CAT_LINE_NET, 
 		CAT_ZONE_SEGMENT,
 		-- CS CAT_ZONE_SEGMENT_FLOATING
 		CAT_TEXT
@@ -554,7 +554,7 @@ package et_board_ops.conductors is
 		case cat is
 			when CAT_VOID			=> null;
 			when CAT_ZONE_SEGMENT	=> segment	: type_object_segment;
-			when CAT_LINE 			=> line 	: type_object_line_net;
+			when CAT_LINE_NET		=> line_net	: type_object_line_net;
 			when CAT_TEXT			=> text		: type_object_text;
 		end case;
 	end record;

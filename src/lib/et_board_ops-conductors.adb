@@ -2999,7 +2999,7 @@ package body et_board_ops.conductors is
 			log (text => to_string (element (result_line.line_cursor)),
 				 level => log_threshold + 1);
 			
-			result_category := CAT_LINE;
+			result_category := CAT_LINE_NET;
 		end if;
 
 		-- If an object has been found, then the search is done:
@@ -3065,8 +3065,8 @@ package body et_board_ops.conductors is
 			when CAT_VOID =>
 				return (cat => CAT_VOID);
 
-			when CAT_LINE =>
-				return (CAT_LINE, result_line);
+			when CAT_LINE_NET =>
+				return (CAT_LINE_NET, result_line);
 
 			when CAT_ZONE_SEGMENT =>
 				return (CAT_ZONE_SEGMENT, result_segment);
@@ -3114,8 +3114,8 @@ package body et_board_ops.conductors is
 
 				procedure collect is begin
 					result.append ((
-						cat		=> CAT_LINE,
-						line	=> (net_cursor, line_cursor)));
+						cat			=> CAT_LINE_NET,
+						line_net	=> (net_cursor, line_cursor)));
 
 					-- Log the line and its linewidth:
 					log (text => to_string (line_cursor, true), level => log_threshold + 2);
@@ -3327,8 +3327,8 @@ package body et_board_ops.conductors is
 		log_indentation_up;
 		
 		case object.cat is
-			when CAT_LINE =>
-				modify_status (module_cursor, object.line, operation, log_threshold + 1);
+			when CAT_LINE_NET =>
+				modify_status (module_cursor, object.line_net, operation, log_threshold + 1);
 
 			when CAT_ZONE_SEGMENT =>
 				modify_status (module_cursor, object.segment, operation, log_threshold + 1);
@@ -3385,14 +3385,14 @@ package body et_board_ops.conductors is
 		log_indentation_up;
 
 		case object.cat is
-			when CAT_LINE =>
+			when CAT_LINE_NET =>
 				
 				move_line (
 					module_cursor	=> module_cursor, 
-					line			=> element (object.line.line_cursor),
+					line			=> element (object.line_net.line_cursor),
 					point_of_attack	=> point_of_attack, 
 					destination		=> destination,
-					net_name		=> key (object.line.net_cursor),
+					net_name		=> key (object.line_net.net_cursor),
 					log_threshold	=> log_threshold + 1);
 
 				
@@ -3442,20 +3442,20 @@ package body et_board_ops.conductors is
 		log_indentation_up;
 
 		case object.cat is
-			when CAT_LINE =>
+			when CAT_LINE_NET =>
 
 				case ripup_mode is
 					when SINGLE_SEGMENT =>
 						delete_line (
 							module_cursor	=> module_cursor, 
-							net_name		=> key (object.line.net_cursor),			
-							line			=> element (object.line.line_cursor),
+							net_name		=> key (object.line_net.net_cursor),			
+							line			=> element (object.line_net.line_cursor),
 							log_threshold	=> log_threshold + 1);					
 
 					when WHOLE_NET =>
 						ripup_net (
 							module_cursor	=> active_module,
-							net_name		=> key (object.line.net_cursor),
+							net_name		=> key (object.line_net.net_cursor),
 							log_threshold	=> log_threshold + 1);
 				end case;
 						
