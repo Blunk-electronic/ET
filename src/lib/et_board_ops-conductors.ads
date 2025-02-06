@@ -165,7 +165,7 @@ package et_board_ops.conductors is
 	-- identified additionally by the associated net.
 	-- If the net_cursor is no_element then it is a segment
 	-- of a freetrack:
-	type type_object_line is record -- CS rename to type_object_line_net
+	type type_object_line_net is record
 		net_cursor	: pac_nets.cursor;
 		line_cursor	: pac_conductor_lines.cursor;
 	end record;
@@ -174,14 +174,20 @@ package et_board_ops.conductors is
 
 	-- CS do the same for lines, arcs, circles of freetracks
 
+	-- CS
+	-- type type_object_line_freetrack is record
+	-- 	line_cursor	: pac_conductor_lines.cursor;
+	-- end record;
+
 	
-	package pac_object_lines is new doubly_linked_lists (type_object_line);
+	
+	package pac_object_lines is new doubly_linked_lists (type_object_line_net);
 
 
 	-- Modifies the status flag of a line of a net:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_object_line;
+		line			: in type_object_line_net;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
@@ -266,7 +272,7 @@ package et_board_ops.conductors is
 		flag			: in type_flag;
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
-		return type_object_line;
+		return type_object_line_net;
 
 
 	-- Advances to the next proposed line, starting at
@@ -277,7 +283,7 @@ package et_board_ops.conductors is
 	-- CS last_item indicates that the last line has been reached:
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in out type_object_line;
+		line			: in out type_object_line_net;
 		freetracks		: in boolean;
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level);
@@ -547,7 +553,7 @@ package et_board_ops.conductors is
 		case cat is
 			when CAT_VOID			=> null;
 			when CAT_ZONE_SEGMENT	=> segment	: type_object_segment;
-			when CAT_LINE 			=> line 	: type_object_line;
+			when CAT_LINE 			=> line 	: type_object_line_net;
 			when CAT_TEXT			=> text		: type_object_text;
 		end case;
 	end record;

@@ -658,7 +658,7 @@ package body et_canvas_board_tracks is
 
 	-- Outputs the selected line in the status bar:
 	procedure show_selected_line (
-		selected		: in et_board_ops.conductors.type_object_line;
+		selected		: in et_board_ops.conductors.type_object_line_net;
 		clarification	: in boolean := false)
 	is 
 		praeamble : constant string := "selected: net ";
@@ -683,7 +683,7 @@ package body et_canvas_board_tracks is
 	
 	procedure select_track is
 		use et_object_status;
-		selected_line : type_object_line;
+		selected_line : type_object_line_net;
 	begin
 		-- On every call of this procedure we advance from one
 		-- proposed segment to the next in a circular manner.
@@ -729,7 +729,7 @@ package body et_canvas_board_tracks is
 		-- use pac_segments;
 		-- selected_segment : pac_segments.cursor; -- of a contour
 
-		selected_line : type_object_line;
+		selected_line : type_object_line_net;
 		-- selected_arc : type_arc_segment;
 	begin
 		log (text => "set_first_selected_object_moving ...", level => log_threshold);
@@ -782,7 +782,7 @@ package body et_canvas_board_tracks is
 
 
 		procedure select_first_proposed is 
-			proposed_line : type_object_line;
+			proposed_line : type_object_line_net;
 			use et_object_status;
 		begin
 			proposed_line := get_first_line (
@@ -871,7 +871,7 @@ package body et_canvas_board_tracks is
 			use et_commit;
 
 			use et_board_ops.conductors;
-			selected_line : type_object_line;
+			selected_line : type_object_line_net;
 
 			use pac_conductor_lines;
 			use et_object_status;
@@ -1010,7 +1010,7 @@ package body et_canvas_board_tracks is
 			use et_commit;
 
 			use et_board_ops.conductors;
-			selected_line : type_object_line;
+			selected_line : type_object_line_net;
 
 			use pac_conductor_lines;
 			use et_object_status;

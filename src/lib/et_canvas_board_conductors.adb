@@ -67,7 +67,7 @@ package body et_canvas_board_conductors is
 	
 	-- Outputs the selected line in the status bar:
 	procedure show_selected_line (
-		selected		: in type_object_line;
+		selected		: in type_object_line_net;
 		clarification	: in boolean := false)
 	is 
 		use et_nets;

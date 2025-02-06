@@ -564,7 +564,7 @@ package body et_board_ops.conductors is
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_object_line;
+		line			: in type_object_line_net;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
@@ -1062,9 +1062,9 @@ package body et_board_ops.conductors is
 		flag			: in type_flag;
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
-		return type_object_line
+		return type_object_line_net
 	is
-		result : type_object_line;
+		result : type_object_line_net;
 
 		use pac_conductor_lines;
 		
@@ -1196,7 +1196,7 @@ package body et_board_ops.conductors is
 	
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in out type_object_line;
+		line			: in out type_object_line_net;
 		freetracks		: in boolean;
 		-- last_item		: in out boolean;
 		log_threshold	: in type_log_level)
@@ -2974,7 +2974,7 @@ package body et_board_ops.conductors is
 	is
 		result_category : type_object_category := CAT_VOID;
 		result_segment  : type_object_segment;
-		result_line		: type_object_line;
+		result_line		: type_object_line_net;
 		result_text		: type_object_text;
 
 		use pac_contours;
