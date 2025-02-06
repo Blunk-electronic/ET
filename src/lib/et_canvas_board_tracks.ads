@@ -157,19 +157,19 @@ package et_canvas_board_tracks is
 		& "to draw track." 
 		& status_hint_for_abort;
 
-	status_move_track : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to move track segment." 
-		& status_hint_for_abort;
-	
-	status_ripup : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to ripup track segment." 
-		& status_hint_for_abort;
+-- 	status_move_track : constant string := 
+-- 		status_click_left 
+-- 		& "or "
+-- 		& status_press_space
+-- 		& "to move track segment." 
+-- 		& status_hint_for_abort;
+-- 	
+-- 	status_ripup : constant string := 
+-- 		status_click_left 
+-- 		& "or "
+-- 		& status_press_space
+-- 		& "to ripup track segment." 
+-- 		& status_hint_for_abort;
 
 
 	
@@ -224,7 +224,7 @@ package et_canvas_board_tracks is
 	
 	-- Advances the cursor selected_segment 
 	-- on each call of this procedure.
-	procedure select_track; -- CS rename to select_segment
+	-- procedure select_track; -- CS rename to select_segment
 
 
 
@@ -235,25 +235,25 @@ package et_canvas_board_tracks is
 	--   the flag preliminary_segment.ready will be set.
 	-- - If more than one segment found, then clarification is requested.
 	--   The first segment of them is selected.
-	procedure find_segments (
-	   point : in type_vector_model);
-	
+-- 	procedure find_segments (
+-- 	   point : in type_vector_model);
+-- 	
 
 
 
 -- MOVE:
 	
-	status_move_object : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to move track." 
-		& status_hint_for_abort;
+	-- status_move_object : constant string := 
+	-- 	status_click_left 
+	-- 	& "or "
+	-- 	& status_press_space
+	-- 	& "to move track." 
+	-- 	& status_hint_for_abort;
 
 	
-	procedure move_track (
-		tool	: in type_tool;
-		point	: in type_vector_model);				   
+	-- procedure move_track (
+	-- 	tool	: in type_tool;
+	-- 	point	: in type_vector_model);				   
 
 
 
@@ -262,16 +262,16 @@ package et_canvas_board_tracks is
 	
 -- DELETE:
 
-	status_delete_object : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to delete track." 
-		& status_hint_for_abort;
+	-- status_delete_object : constant string := 
+	-- 	status_click_left 
+	-- 	& "or "
+	-- 	& status_press_space
+	-- 	& "to delete track." 
+	-- 	& status_hint_for_abort;
 
 
-	procedure ripup ( -- CS rename to delete_track ?
-		point	: in type_vector_model);
+	-- procedure ripup ( -- CS rename to delete_track ?
+	-- 	point	: in type_vector_model);
 
 
 	-- CS change layer of track

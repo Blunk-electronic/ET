@@ -50,6 +50,7 @@ with et_fill_zones;						use et_fill_zones;
 with et_fill_zones.boards;				use et_fill_zones.boards;
 with et_conductor_text.boards;			use et_conductor_text.boards;
 with et_device_name;					use et_device_name;
+with et_ripup;							use et_ripup;
 
 
 package et_board_ops.conductors is
@@ -624,6 +625,10 @@ package et_board_ops.conductors is
 
 
 
+	-- Deletes an object as given by object.
+	-- If the object indicates a segment of a net,
+	-- then segment will be ripped up according to the
+	-- current gloabl ripup_mode:
 	procedure delete_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;

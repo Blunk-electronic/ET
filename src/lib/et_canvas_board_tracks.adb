@@ -682,41 +682,41 @@ package body et_canvas_board_tracks is
 
 	
 	
-	procedure select_track is
-		use et_object_status;
-		selected_line : type_object_line_net;
-	begin
-		-- On every call of this procedure we advance from one
-		-- proposed segment to the next in a circular manner.
-
-		selected_line := get_first_line (
-			module_cursor	=> active_module, 
-			flag			=> SELECTED, 
-			freetracks		=> false,
-			log_threshold	=> log_threshold + 1);
-		
-		modify_status (
-			module_cursor	=> active_module, 
-			operation		=> (CLEAR, SELECTED),
-			line_cursor		=> selected_line.line_cursor, 
-			freetracks		=> false,
-			log_threshold	=> log_threshold + 1);
-		
-		next_proposed_line (
-			module_cursor	=> active_module, 
-			line			=> selected_line, 
-			freetracks		=> false,
-			log_threshold	=> log_threshold + 1);
-		
-		modify_status (
-			module_cursor	=> active_module, 
-			operation		=> (SET, SELECTED),
-			line_cursor		=> selected_line.line_cursor, 
-			freetracks		=> false,
-			log_threshold	=> log_threshold + 1);
-		
-		show_selected_line (selected_line, clarification => true);
-	end select_track;
+-- 	procedure select_track is
+-- 		use et_object_status;
+-- 		selected_line : type_object_line_net;
+-- 	begin
+-- 		-- On every call of this procedure we advance from one
+-- 		-- proposed segment to the next in a circular manner.
+-- 
+-- 		selected_line := get_first_line (
+-- 			module_cursor	=> active_module, 
+-- 			flag			=> SELECTED, 
+-- 			freetracks		=> false,
+-- 			log_threshold	=> log_threshold + 1);
+-- 		
+-- 		modify_status (
+-- 			module_cursor	=> active_module, 
+-- 			operation		=> (CLEAR, SELECTED),
+-- 			line_cursor		=> selected_line.line_cursor, 
+-- 			freetracks		=> false,
+-- 			log_threshold	=> log_threshold + 1);
+-- 		
+-- 		next_proposed_line (
+-- 			module_cursor	=> active_module, 
+-- 			line			=> selected_line, 
+-- 			freetracks		=> false,
+-- 			log_threshold	=> log_threshold + 1);
+-- 		
+-- 		modify_status (
+-- 			module_cursor	=> active_module, 
+-- 			operation		=> (SET, SELECTED),
+-- 			line_cursor		=> selected_line.line_cursor, 
+-- 			freetracks		=> false,
+-- 			log_threshold	=> log_threshold + 1);
+-- 		
+-- 		show_selected_line (selected_line, clarification => true);
+-- 	end select_track;
 	
 	
 
@@ -756,217 +756,217 @@ package body et_canvas_board_tracks is
 
 
 	
-	procedure find_segments (
-	   point : in type_vector_model)
-	is 
-		count_total : natural := 0;
-		
-		use et_board_ops;
-		use et_board_ops.conductors;
-
-		
-		procedure propose_lines (layer : in type_signal_layer) is 
-			count : natural := 0;
-		begin
-			propose_lines (
-				module_cursor	=> active_module, 
-				point			=> point, 
-				layer			=> layer, 
-				zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
-				count			=> count,
-				freetracks		=> false, 
-				log_threshold	=> log_threshold + 1);
-			
-			-- CS arcs, circles
-			count_total := count_total + count;
-		end propose_lines;
-
-
-		procedure select_first_proposed is 
-			proposed_line : type_object_line_net;
-			use et_object_status;
-		begin
-			proposed_line := get_first_line (
-				module_cursor	=> active_module,
-				flag			=> PROPOSED, 
-				freetracks		=> false,
-				log_threshold	=> log_threshold + 1);
-
-			modify_status (
-				module_cursor	=> active_module, 
-				line_cursor		=> proposed_line.line_cursor, 
-				operation		=> (SET, SELECTED),
-				freetracks		=> false,
-				log_threshold	=> log_threshold + 1);
-					
-			-- If only one line found, then show it in the status bar:
-			if count_total = 1 then
-				show_selected_line (proposed_line);		
-			end if;
-		end select_first_proposed;
-
-
-		use et_modes.board;
-		
-	begin
-		log (text => "locating segments ...", level => log_threshold);
-		log_indentation_up;
-
-		-- Propose  all segments in the vicinity of the given point:
-		-- CS should depend on enabled signal layer
-		for ly in 1 .. get_deepest_conductor_layer (active_module) loop
-			propose_lines (ly);
-		end loop;
-
-		-- CS arcs, zones
-		
-		-- evaluate the number of segments found here:
-		case count_total is
-			when 0 =>
-				reset_request_clarification;
-				reset_preliminary_object;
-
-				reset_proposed_lines (
-					module_cursor	=> active_module, 
-					freetracks		=> false,
-					log_threshold	=> log_threshold + 1);
-
-				
-			when 1 =>
-				object_ready := true;
-				select_first_proposed;
-
-				if verb = VERB_MOVE then
-					set_first_selected_object_moving;
-				end if;
-				
-				reset_request_clarification;
-
-				
-			when others =>
-				--log (text => "many objects", level => log_threshold + 2);
-				set_request_clarification;
-
-				-- preselect the first segment
-				select_first_proposed;
-		end case;
-		
-		log_indentation_down;
-	end find_segments;
+-- 	procedure find_segments (
+-- 	   point : in type_vector_model)
+-- 	is 
+-- 		count_total : natural := 0;
+-- 		
+-- 		use et_board_ops;
+-- 		use et_board_ops.conductors;
+-- 
+-- 		
+-- 		procedure propose_lines (layer : in type_signal_layer) is 
+-- 			count : natural := 0;
+-- 		begin
+-- 			propose_lines (
+-- 				module_cursor	=> active_module, 
+-- 				point			=> point, 
+-- 				layer			=> layer, 
+-- 				zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
+-- 				count			=> count,
+-- 				freetracks		=> false, 
+-- 				log_threshold	=> log_threshold + 1);
+-- 			
+-- 			-- CS arcs, circles
+-- 			count_total := count_total + count;
+-- 		end propose_lines;
+-- 
+-- 
+-- 		procedure select_first_proposed is 
+-- 			proposed_line : type_object_line_net;
+-- 			use et_object_status;
+-- 		begin
+-- 			proposed_line := get_first_line (
+-- 				module_cursor	=> active_module,
+-- 				flag			=> PROPOSED, 
+-- 				freetracks		=> false,
+-- 				log_threshold	=> log_threshold + 1);
+-- 
+-- 			modify_status (
+-- 				module_cursor	=> active_module, 
+-- 				line_cursor		=> proposed_line.line_cursor, 
+-- 				operation		=> (SET, SELECTED),
+-- 				freetracks		=> false,
+-- 				log_threshold	=> log_threshold + 1);
+-- 					
+-- 			-- If only one line found, then show it in the status bar:
+-- 			if count_total = 1 then
+-- 				show_selected_line (proposed_line);		
+-- 			end if;
+-- 		end select_first_proposed;
+-- 
+-- 
+-- 		use et_modes.board;
+-- 		
+-- 	begin
+-- 		log (text => "locating segments ...", level => log_threshold);
+-- 		log_indentation_up;
+-- 
+-- 		-- Propose  all segments in the vicinity of the given point:
+-- 		-- CS should depend on enabled signal layer
+-- 		for ly in 1 .. get_deepest_conductor_layer (active_module) loop
+-- 			propose_lines (ly);
+-- 		end loop;
+-- 
+-- 		-- CS arcs, zones
+-- 		
+-- 		-- evaluate the number of segments found here:
+-- 		case count_total is
+-- 			when 0 =>
+-- 				reset_request_clarification;
+-- 				reset_preliminary_object;
+-- 
+-- 				reset_proposed_lines (
+-- 					module_cursor	=> active_module, 
+-- 					freetracks		=> false,
+-- 					log_threshold	=> log_threshold + 1);
+-- 
+-- 				
+-- 			when 1 =>
+-- 				object_ready := true;
+-- 				select_first_proposed;
+-- 
+-- 				if verb = VERB_MOVE then
+-- 					set_first_selected_object_moving;
+-- 				end if;
+-- 				
+-- 				reset_request_clarification;
+-- 
+-- 				
+-- 			when others =>
+-- 				--log (text => "many objects", level => log_threshold + 2);
+-- 				set_request_clarification;
+-- 
+-- 				-- preselect the first segment
+-- 				select_first_proposed;
+-- 		end case;
+-- 		
+-- 		log_indentation_down;
+-- 	end find_segments;
 
 
 	
 
 -- MOVE:
 	
-	procedure move_track (
-		tool	: in type_tool;
-		point	: in type_vector_model)
-	is
-
-		-- Assigns the final position after the move to the selected segment.
-		-- Resets variable preliminary_segment:
-		procedure finalize is 
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-
-			use et_board_ops.conductors;
-			selected_line : type_object_line_net;
-
-			use pac_conductor_lines;
-			use et_object_status;
-		begin
-			log (text => "finalizing move ...", level => log_threshold);
-			log_indentation_up;
-
-			selected_line := get_first_line (
-				module_cursor	=> active_module,
-				flag			=> SELECTED, 
-				freetracks		=> false,
-				log_threshold	=> log_threshold + 1);
-
-			
-			if selected_line.line_cursor /= pac_conductor_lines.no_element then
-
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-
-					-- case segment.shape is
-					-- 	when LINE =>
-							move_line (
-								module_cursor	=> active_module,
-								line			=> element (selected_line.line_cursor),
-								point_of_attack	=> object_point_of_attack,
-								destination		=> point,
-								log_threshold	=> log_threshold);
-       
-					-- 	when ARC =>
-					-- 		null; -- CS
-     -- 
-					-- 	when CIRCLE =>
-					-- 		null; -- CS
-					-- end case;
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
-
-			else
-				log (text => "nothing to do", level => log_threshold);
-			end if;
-				
-			log_indentation_down;			
-			set_status (status_move_track);
-			
-			reset_preliminary_object;
-
-			reset_proposed_lines (
-				module_cursor	=> active_module, 
-				freetracks		=> false,
-				log_threshold	=> log_threshold + 1);
-			
-		end finalize;
-			
-		
-	begin
-		-- Initially the preliminary object is not ready.
-		if not object_ready then
-
-			-- Set the tool being used:
-			object_tool := tool;
-
-			object_point_of_attack := point;
-			
-			if not clarification_pending then
-				-- Locate all segments in the vicinity of the given point:
-				find_segments (point);
-				
-				-- NOTE: If many objects have been found, then
-				-- clarification is now pending.
-
-				-- If find_objects has found only one object
-				-- then the flag object_ready is set true.
-
-			else
-				-- Here the clarification procedure ends.
-				-- An object has been selected via procedure select_object.
-				-- By setting the status of the selected object
-				-- as "moving", the selected object
-				-- will be drawn according to object_point_of_attack and 
-				-- the tool position.
-				set_first_selected_object_moving;
-
-				-- Furtheron, on the next call of this procedure
-				-- the selected segment will be assigned its final position.
-				
-				object_ready := true;
-				reset_request_clarification;
-			end if;
-			
-		else
-			finalize;
-		end if;
-	end move_track;
+-- 	procedure move_track (
+-- 		tool	: in type_tool;
+-- 		point	: in type_vector_model)
+-- 	is
+-- 
+-- 		-- Assigns the final position after the move to the selected segment.
+-- 		-- Resets variable preliminary_segment:
+-- 		procedure finalize is 
+-- 			use et_modes.board;
+-- 			use et_undo_redo;
+-- 			use et_commit;
+-- 
+-- 			use et_board_ops.conductors;
+-- 			selected_line : type_object_line_net;
+-- 
+-- 			use pac_conductor_lines;
+-- 			use et_object_status;
+-- 		begin
+-- 			log (text => "finalizing move ...", level => log_threshold);
+-- 			log_indentation_up;
+-- 
+-- 			selected_line := get_first_line (
+-- 				module_cursor	=> active_module,
+-- 				flag			=> SELECTED, 
+-- 				freetracks		=> false,
+-- 				log_threshold	=> log_threshold + 1);
+-- 
+-- 			
+-- 			if selected_line.line_cursor /= pac_conductor_lines.no_element then
+-- 
+-- 				-- Commit the current state of the design:
+-- 				commit (PRE, verb, noun, log_threshold + 1);
+-- 
+-- 					-- case segment.shape is
+-- 					-- 	when LINE =>
+-- 							move_line (
+-- 								module_cursor	=> active_module,
+-- 								line			=> element (selected_line.line_cursor),
+-- 								point_of_attack	=> object_point_of_attack,
+-- 								destination		=> point,
+-- 								log_threshold	=> log_threshold);
+--        
+-- 					-- 	when ARC =>
+-- 					-- 		null; -- CS
+--      -- 
+-- 					-- 	when CIRCLE =>
+-- 					-- 		null; -- CS
+-- 					-- end case;
+-- 
+-- 				-- Commit the new state of the design:
+-- 				commit (POST, verb, noun, log_threshold + 1);
+-- 
+-- 			else
+-- 				log (text => "nothing to do", level => log_threshold);
+-- 			end if;
+-- 				
+-- 			log_indentation_down;			
+-- 			set_status (status_move_track);
+-- 			
+-- 			reset_preliminary_object;
+-- 
+-- 			reset_proposed_lines (
+-- 				module_cursor	=> active_module, 
+-- 				freetracks		=> false,
+-- 				log_threshold	=> log_threshold + 1);
+-- 			
+-- 		end finalize;
+-- 			
+-- 		
+-- 	begin
+-- 		-- Initially the preliminary object is not ready.
+-- 		if not object_ready then
+-- 
+-- 			-- Set the tool being used:
+-- 			object_tool := tool;
+-- 
+-- 			object_point_of_attack := point;
+-- 			
+-- 			if not clarification_pending then
+-- 				-- Locate all segments in the vicinity of the given point:
+-- 				find_segments (point);
+-- 				
+-- 				-- NOTE: If many objects have been found, then
+-- 				-- clarification is now pending.
+-- 
+-- 				-- If find_objects has found only one object
+-- 				-- then the flag object_ready is set true.
+-- 
+-- 			else
+-- 				-- Here the clarification procedure ends.
+-- 				-- An object has been selected via procedure select_object.
+-- 				-- By setting the status of the selected object
+-- 				-- as "moving", the selected object
+-- 				-- will be drawn according to object_point_of_attack and 
+-- 				-- the tool position.
+-- 				set_first_selected_object_moving;
+-- 
+-- 				-- Furtheron, on the next call of this procedure
+-- 				-- the selected segment will be assigned its final position.
+-- 				
+-- 				object_ready := true;
+-- 				reset_request_clarification;
+-- 			end if;
+-- 			
+-- 		else
+-- 			finalize;
+-- 		end if;
+-- 	end move_track;
 
 
 
@@ -976,108 +976,108 @@ package body et_canvas_board_tracks is
 
 	
 	
-	procedure ripup (
-		point	: in type_vector_model)
-	is
-		-- Rips up the selected single segment or the whole net.
-		-- Resets variable preliminary_segment:
-		procedure finalize is
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-
-			use et_board_ops.conductors;
-			selected_line : type_object_line_net;
-
-			use pac_conductor_lines;
-			use et_object_status;
-
-			use et_nets;
-			use pac_nets;
-			use et_ripup;
-		begin
-			log (text => "finalizing ripup ...", level => log_threshold);
-			log_indentation_up;
-
-			selected_line := get_first_line (
-				module_cursor	=> active_module,
-				flag			=> SELECTED, 
-				freetracks		=> false,
-				log_threshold	=> log_threshold + 1);
-			
-			
-			if selected_line.line_cursor /= pac_conductor_lines.no_element then
-
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
-				-- 	case segment.shape is
-				-- 		when LINE =>
-							case ripup_mode is
-								when SINGLE_SEGMENT =>
-									delete_line (
-										module_cursor	=> active_module,
-										net_name		=> key (selected_line.net_cursor),
-										line			=> element (selected_line.line_cursor),
-										log_threshold	=> log_threshold);
-
-								when WHOLE_NET =>
-									ripup_net (
-										module_cursor	=> active_module,
-										net_name		=> key (selected_line.net_cursor),
-										log_threshold	=> log_threshold);
-							end case;
-       
-				-- 		when ARC =>
-				-- 			null; -- CS
-    -- 
-				-- 		when CIRCLE =>
-				-- 			null; -- CS
-				-- 	end case;
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
-				
-			else
-				log (text => "nothing to do", level => log_threshold);
-			end if;
-				
-			log_indentation_down;			
-			set_status (status_ripup);
-			
-			reset_preliminary_object;
-
-			reset_proposed_lines (
-				module_cursor	=> active_module, 
-				freetracks		=> false,
-				log_threshold	=> log_threshold + 1);
-			
-			reset_ripup_mode;
-		end finalize;
-
-		
-	begin
-		if not clarification_pending then
-			-- Locate all segments in the vicinity of the given point:
-			find_segments (point);
-			
-			-- NOTE: If many segments have been found, then
-			-- clarification is now pending.
-
-			-- If find_segments has found only one segment
-			-- then the flag object_ready is set true.
-
-			if object_ready then
-				finalize;
-			end if;
-		else
-			-- Here the clarification procedure ends.
-			-- A segment has been selected via procedure select_segment.
-
-			finalize;
-			reset_request_clarification;
-		end if;
-	end ripup;
+-- 	procedure ripup (
+-- 		point	: in type_vector_model)
+-- 	is
+-- 		-- Rips up the selected single segment or the whole net.
+-- 		-- Resets variable preliminary_segment:
+-- 		procedure finalize is
+-- 			use et_modes.board;
+-- 			use et_undo_redo;
+-- 			use et_commit;
+-- 
+-- 			use et_board_ops.conductors;
+-- 			selected_line : type_object_line_net;
+-- 
+-- 			use pac_conductor_lines;
+-- 			use et_object_status;
+-- 
+-- 			use et_nets;
+-- 			use pac_nets;
+-- 			use et_ripup;
+-- 		begin
+-- 			log (text => "finalizing ripup ...", level => log_threshold);
+-- 			log_indentation_up;
+-- 
+-- 			selected_line := get_first_line (
+-- 				module_cursor	=> active_module,
+-- 				flag			=> SELECTED, 
+-- 				freetracks		=> false,
+-- 				log_threshold	=> log_threshold + 1);
+-- 			
+-- 			
+-- 			if selected_line.line_cursor /= pac_conductor_lines.no_element then
+-- 
+-- 				-- Commit the current state of the design:
+-- 				commit (PRE, verb, noun, log_threshold + 1);
+-- 				
+-- 				-- 	case segment.shape is
+-- 				-- 		when LINE =>
+-- 							case ripup_mode is
+-- 								when SINGLE_SEGMENT =>
+-- 									delete_line (
+-- 										module_cursor	=> active_module,
+-- 										net_name		=> key (selected_line.net_cursor),
+-- 										line			=> element (selected_line.line_cursor),
+-- 										log_threshold	=> log_threshold);
+-- 
+-- 								when WHOLE_NET =>
+-- 									ripup_net (
+-- 										module_cursor	=> active_module,
+-- 										net_name		=> key (selected_line.net_cursor),
+-- 										log_threshold	=> log_threshold);
+-- 							end case;
+--        
+-- 				-- 		when ARC =>
+-- 				-- 			null; -- CS
+--     -- 
+-- 				-- 		when CIRCLE =>
+-- 				-- 			null; -- CS
+-- 				-- 	end case;
+-- 
+-- 				-- Commit the new state of the design:
+-- 				commit (POST, verb, noun, log_threshold + 1);
+-- 				
+-- 			else
+-- 				log (text => "nothing to do", level => log_threshold);
+-- 			end if;
+-- 				
+-- 			log_indentation_down;			
+-- 			set_status (status_ripup);
+-- 			
+-- 			reset_preliminary_object;
+-- 
+-- 			reset_proposed_lines (
+-- 				module_cursor	=> active_module, 
+-- 				freetracks		=> false,
+-- 				log_threshold	=> log_threshold + 1);
+-- 			
+-- 			reset_ripup_mode;
+-- 		end finalize;
+-- 
+-- 		
+-- 	begin
+-- 		if not clarification_pending then
+-- 			-- Locate all segments in the vicinity of the given point:
+-- 			find_segments (point);
+-- 			
+-- 			-- NOTE: If many segments have been found, then
+-- 			-- clarification is now pending.
+-- 
+-- 			-- If find_segments has found only one segment
+-- 			-- then the flag object_ready is set true.
+-- 
+-- 			if object_ready then
+-- 				finalize;
+-- 			end if;
+-- 		else
+-- 			-- Here the clarification procedure ends.
+-- 			-- A segment has been selected via procedure select_segment.
+-- 
+-- 			finalize;
+-- 			reset_request_clarification;
+-- 		end if;
+-- 	end ripup;
 
 	
 	

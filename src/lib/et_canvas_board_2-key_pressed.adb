@@ -119,9 +119,9 @@ is
 				noun := NOUN_CONDUCTORS;
 				set_status (et_canvas_board_conductors.status_delete_object);
 				
-			when key_noun_track =>
-				noun := NOUN_TRACK;
-				set_status (et_canvas_board_tracks.status_delete_object);
+			-- when key_noun_track =>
+			-- 	noun := NOUN_TRACK;
+			-- 	set_status (et_canvas_board_tracks.status_delete_object);
 				
 				
 			when key_noun_freetrack =>
@@ -133,7 +133,7 @@ is
 			-- If "m" pressed, then a mode is being selected.
 			when key_mode =>
 				case noun is
-					when NOUN_TRACK =>
+					when NOUN_TRACK | NOUN_CONDUCTORS =>
 						next_ripup_mode;
 						set_status (to_string (ripup_mode));
 						
@@ -150,8 +150,8 @@ is
 					when NOUN_CONDUCTORS =>
 						et_canvas_board_conductors.delete_object (point);
 
-					when NOUN_TRACK =>
-						et_canvas_board_tracks.ripup (point);
+					-- when NOUN_TRACK =>
+					-- 	et_canvas_board_tracks.ripup (point);
 
 					when NOUN_FREETRACK =>
 						et_canvas_board_conductors.delete_object (point);
@@ -211,10 +211,10 @@ is
 							et_canvas_board_conductors.clarify_object;
 						end if;
 						
-					when NOUN_TRACK =>
-						if clarification_pending then
-							et_canvas_board_tracks.select_track;
-						end if;
+					-- when NOUN_TRACK =>
+					-- 	if clarification_pending then
+					-- 		et_canvas_board_tracks.select_track;
+					-- 	end if;
 
 					when NOUN_FREETRACK =>
 						if clarification_pending then
@@ -304,9 +304,9 @@ is
 				noun := NOUN_SILKSCREEN;
 				set_status (et_canvas_board_silkscreen.status_move_object);
 
-			when key_noun_track =>
-				noun := NOUN_TRACK;
-				set_status (et_canvas_board_tracks.status_move_track);
+			-- when key_noun_track =>
+			-- 	noun := NOUN_TRACK;
+			-- 	set_status (et_canvas_board_tracks.status_move_track);
 
 			when key_noun_conductors =>
 				noun := NOUN_CONDUCTORS;
@@ -350,8 +350,8 @@ is
 					when NOUN_CONDUCTORS =>
 						et_canvas_board_conductors.move_object (KEYBOARD, point);
 						
-					when NOUN_TRACK =>
-						et_canvas_board_tracks.move_track (KEYBOARD, point);
+					-- when NOUN_TRACK =>
+					-- 	et_canvas_board_tracks.move_track (KEYBOARD, point);
 
 					when NOUN_FREETRACK =>
 						et_canvas_board_conductors.move_object (KEYBOARD, point);
@@ -403,10 +403,10 @@ is
 							et_canvas_board_conductors.clarify_object;
 						end if;
 						
-					when NOUN_TRACK =>
-						if clarification_pending then
-							et_canvas_board_tracks.select_track;
-						end if;
+					-- when NOUN_TRACK =>
+					-- 	if clarification_pending then
+					-- 		et_canvas_board_tracks.select_track;
+					-- 	end if;
 
 					when NOUN_FREETRACK =>
 						if clarification_pending then

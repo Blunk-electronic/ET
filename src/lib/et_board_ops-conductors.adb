@@ -3444,12 +3444,21 @@ package body et_board_ops.conductors is
 		case object.cat is
 			when CAT_LINE =>
 
-				delete_line (
-					module_cursor	=> module_cursor, 
-					net_name		=> key (object.line.net_cursor),			
-					line			=> element (object.line.line_cursor),
-					log_threshold	=> log_threshold + 1);					
-    
+				case ripup_mode is
+					when SINGLE_SEGMENT =>
+						delete_line (
+							module_cursor	=> module_cursor, 
+							net_name		=> key (object.line.net_cursor),			
+							line			=> element (object.line.line_cursor),
+							log_threshold	=> log_threshold + 1);					
+
+					when WHOLE_NET =>
+						ripup_net (
+							module_cursor	=> active_module,
+							net_name		=> key (object.line.net_cursor),
+							log_threshold	=> log_threshold + 1);
+				end case;
+						
 			-- CS arcs, circles
 
 				
