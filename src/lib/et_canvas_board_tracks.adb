@@ -82,6 +82,7 @@ with et_commit;
 with et_object_status;
 
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
+with et_ripup;
 
 
 package body et_canvas_board_tracks is
@@ -972,30 +973,6 @@ package body et_canvas_board_tracks is
 	
 -- RIPUP:
 
-	procedure reset_ripup_mode is begin
-		ripup_mode := SINGLE_SEGMENT;
-	end reset_ripup_mode;
-
-	
-
-	procedure next_ripup_mode is
-		i : constant natural := type_ripup_mode'pos (ripup_mode);
-		-- i points now to the current ripup mode
-
-		-- get the index of the last available ripup mode:
-		max : constant natural := type_ripup_mode'pos (type_ripup_mode'last);
-	begin
-		if i < max then
-			-- jump to next mode
-			ripup_mode := type_ripup_mode'succ (type_ripup_mode'val (i));
-		else 
-			-- After the last mode, jump back to the first mode:
-			ripup_mode := type_ripup_mode'first;
-		end if;
-
-		-- Show the ripup mode in the status bar:
-		set_status ("ripup mode: " & type_ripup_mode'image (ripup_mode));
-	end next_ripup_mode;
 
 	
 	
@@ -1017,6 +994,7 @@ package body et_canvas_board_tracks is
 
 			use et_nets;
 			use pac_nets;
+			use et_ripup;
 		begin
 			log (text => "finalizing ripup ...", level => log_threshold);
 			log_indentation_up;

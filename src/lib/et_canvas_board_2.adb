@@ -85,7 +85,7 @@ with et_canvas_board_preliminary_object;
 with et_undo_redo;
 
 with et_project_name;
-
+with et_ripup;
 
 
 package body et_canvas_board_2 is
@@ -827,6 +827,7 @@ package body et_canvas_board_2 is
 		use et_canvas_board_tracks;
 
 		use et_canvas_board_preliminary_object;
+		use et_ripup;
 	begin
 		-- put_line ("reset");
 

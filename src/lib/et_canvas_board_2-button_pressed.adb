@@ -196,7 +196,9 @@ is
 
 	
 	
-	procedure right_button is begin
+	procedure right_button is 
+		use et_ripup;
+	begin
 		case verb is
 			when VERB_MOVE | VERB_ROTATE =>
 				case noun is
@@ -341,7 +343,8 @@ is
 							et_canvas_board_tracks.select_track;
 						else
 							-- select ripup mode
-							et_canvas_board_tracks.next_ripup_mode;
+							next_ripup_mode;
+							set_status (to_string (ripup_mode));
 						end if;
 
 					when NOUN_FREETRACK =>

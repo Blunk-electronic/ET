@@ -256,17 +256,7 @@ package et_canvas_board_tracks is
 		point	: in type_vector_model);				   
 
 
-	type type_ripup_mode is (
-		SINGLE_SEGMENT,
-		WHOLE_NET);
-		-- CS other modes ?
 
-	ripup_mode : type_ripup_mode := SINGLE_SEGMENT;
-
-	procedure reset_ripup_mode;
-	
-	procedure next_ripup_mode;
-	
 
 
 	

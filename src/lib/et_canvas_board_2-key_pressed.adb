@@ -84,7 +84,9 @@ is
 
 	
 	
-	procedure delete is begin
+	procedure delete is 
+		use et_ripup;
+	begin
 		case key is
 			when key_noun_assy =>
 				noun := NOUN_ASSY;
@@ -132,7 +134,8 @@ is
 			when key_mode =>
 				case noun is
 					when NOUN_TRACK =>
-						et_canvas_board_tracks.next_ripup_mode;
+						next_ripup_mode;
+						set_status (to_string (ripup_mode));
 						
 					when others => null;
 				end case;
