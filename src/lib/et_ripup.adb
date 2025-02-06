@@ -4,7 +4,7 @@
 --                                                                          --
 --                     		      RIPUP                                     --
 --                                                                          --
---                               S p e c                                    --
+--                               B o d y                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
