@@ -2164,7 +2164,7 @@ package body et_board_ops.conductors is
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;
+		segment			: in type_object_segment_net;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
@@ -2504,10 +2504,10 @@ package body et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
-		return type_object_segment
+		return type_object_segment_net
 	is
 
-		result : type_object_segment;
+		result : type_object_segment_net;
 		-- Note: By default the fill style of the result is SOLID.
 		-- However, in the end of this procedure it may mutate 
 		-- to HATCHED. See specification.
@@ -2694,7 +2694,7 @@ package body et_board_ops.conductors is
 
 	procedure move_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;
+		segment			: in type_object_segment_net;
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
@@ -2790,7 +2790,7 @@ package body et_board_ops.conductors is
 
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;
+		segment			: in type_object_segment_net;
 		log_threshold	: in type_log_level)
 	is
 		use pac_contours;
@@ -3018,7 +3018,7 @@ package body et_board_ops.conductors is
 		return type_object
 	is
 		result_category : type_object_category := CAT_VOID;
-		result_segment  : type_object_segment;
+		result_segment  : type_object_segment_net;
 		result_line_net			: type_object_line_net;
 		result_line_floating	: type_object_line_floating;
 		result_text		: type_object_text;

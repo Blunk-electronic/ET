@@ -110,7 +110,7 @@ package body et_canvas_board_conductors is
 
 	-- Outputs the selected segment in the status bar:
 	procedure show_selected_segment (
-		selected		: in type_object_segment;
+		selected		: in type_object_segment_net;
 		clarification	: in boolean := false)
 	is 
 		praeamble : constant string := "selected: ";

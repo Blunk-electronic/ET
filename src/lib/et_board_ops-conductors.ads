@@ -437,9 +437,8 @@ package et_board_ops.conductors is
 
 	
 	-- This composite type helps to identify a
-	-- segment of a zone by the net it is connected with
-	-- and the zone:
-	type type_object_segment (fill_style : type_fill_style := SOLID) is record -- CS rename to type_object_segment_net
+	-- segment of a zone that is connected with a net:
+	type type_object_segment_net (fill_style : type_fill_style := SOLID) is record
 		segment	: pac_contours.pac_segments.cursor;
 		net		: pac_nets.cursor;
 		
@@ -455,13 +454,14 @@ package et_board_ops.conductors is
 	-- CS do the same for segments of floating zones
 
 
-	-- Modifies the status flag of a zone segment (see package et_object_status):
+	
+	-- Modifies the status flag of segment of a zone
+	-- that is connected with a net:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;
+		segment			: in type_object_segment_net;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
-
 
 	
 	-- Sets the proposed-flag of all line and arc segments 
@@ -479,7 +479,8 @@ package et_board_ops.conductors is
 	
 	
 	-- Clears the proposed-flag and the selected-flag 
-	-- of all line and arc segments:
+	-- of all line and arc segments of zones which are connected
+	-- with a net:
 	procedure reset_proposed_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
@@ -492,7 +493,7 @@ package et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
-		return type_object_segment;
+		return type_object_segment_net;
 
 
 	-- Moves a line or arc segment of a zone:
@@ -500,7 +501,7 @@ package et_board_ops.conductors is
 	-- CS provide parameter for move mode (move attached segments, move whole contour)
 	procedure move_segment ( -- CS rename to move_segment_net ?
 		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;
+		segment			: in type_object_segment_net;
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
@@ -511,7 +512,7 @@ package et_board_ops.conductors is
 	-- Deletes a line or arc segment of a zone:
 	procedure delete_segment ( -- CS rename to delete_segment_net ?
 		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;
+		segment			: in type_object_segment_net;
 		log_threshold	: in type_log_level);
 
 
@@ -568,7 +569,7 @@ package et_board_ops.conductors is
 	type type_object (cat : type_object_category) is record
 		case cat is
 			when CAT_VOID			=> null;
-			when CAT_ZONE_SEGMENT	=> segment	: type_object_segment;
+			when CAT_ZONE_SEGMENT	=> segment	: type_object_segment_net;
 			when CAT_LINE_NET		=> line_net			: type_object_line_net;
 			when CAT_LINE_FLOATING	=> line_floating	: type_object_line_floating;
 			when CAT_TEXT			=> text		: type_object_text;
