@@ -247,6 +247,8 @@ package et_board_ops.conductors is
 	
 	-- Sets the proposed-flag of all lines which are
 	-- in the given zone around the given place
+	-- If freetracks is false, then only nets are adressed.
+	-- If freetracks is true, then only freetracks are adressed:
 	-- Adds to count the number of lines that have been found:
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -297,7 +299,8 @@ package et_board_ops.conductors is
 	-- in a circular manner. If there are no
 	-- proposed lines, then line assumes default values (no_element).
 	-- If there is only one proposed line, then line is unchanged.
-	-- CS last_item indicates that the last line has been reached:
+	-- CS last_item indicates that the last line has been reached.
+	-- CS This procedure is currently not used:
 	procedure next_proposed_line (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in out type_object_line_net;
@@ -312,7 +315,7 @@ package et_board_ops.conductors is
 	-- If the net name is given, then the process consumes
 	-- less time. The given net must exist. Otherwise an exception
 	-- is raised:
-	procedure move_line ( -- CS rename to move_line_net
+	procedure move_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_conductor_line; -- CS use type_object_line_net
 		point_of_attack	: in type_vector_model;
@@ -324,30 +327,30 @@ package et_board_ops.conductors is
 
 	-- Moves a freetrack line. If the given line
 	-- does not exist, then nothing happens:
-	procedure move_line_freetrack (
+	procedure move_line_floating (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_conductor_line; -- CS use type_object_line_floating
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
 
+
+
 	
 	-- Deletes the given line segment in the given net.
 	-- If the net or the segment does not exist then
 	-- nothing happens and an error message is logged:
-	procedure delete_line (
+	procedure delete_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		line			: in type_conductor_line;
 		log_threshold	: in type_log_level);
 
 
-
-
 	-- Deletes the given freetrack line.
 	-- If the line does not exist then
 	-- nothing happens:
-	procedure delete_line_freetrack (
+	procedure delete_line_floating (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_conductor_line;
 		log_threshold	: in type_log_level);

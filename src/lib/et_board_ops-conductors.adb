@@ -1459,7 +1459,7 @@ package body et_board_ops.conductors is
 
 	
 	
-	procedure move_line (
+	procedure move_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_conductor_line;
 		point_of_attack	: in type_vector_model;
@@ -1537,7 +1537,7 @@ package body et_board_ops.conductors is
 		log_indentation_down;
 
 		update_ratsnest (module_cursor, log_threshold + 1);
-	end move_line;
+	end move_line_net;
 
 
 
@@ -1545,7 +1545,7 @@ package body et_board_ops.conductors is
 
 	
 
-	procedure move_line_freetrack (
+	procedure move_line_floating (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_conductor_line;
 		point_of_attack	: in type_vector_model;
@@ -1582,7 +1582,7 @@ package body et_board_ops.conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving freetrack " & to_string (line, true)  -- log incl. width
+			& " moving floating " & to_string (line, true)  -- log incl. width
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
@@ -1594,14 +1594,14 @@ package body et_board_ops.conductors is
 			process		=> query_module'access);
 		
 		log_indentation_down;
-	end move_line_freetrack;
+	end move_line_floating;
 
 
 
 	
 	
 
-	procedure delete_line (
+	procedure delete_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		line			: in type_conductor_line;
@@ -1660,14 +1660,14 @@ package body et_board_ops.conductors is
 			process		=> query_module'access);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
-	end delete_line;
+	end delete_line_net;
 
 
 	
 
 
 
-	procedure delete_line_freetrack (
+	procedure delete_line_floating (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_conductor_line;
 		log_threshold	: in type_log_level)
@@ -1700,7 +1700,7 @@ package body et_board_ops.conductors is
 			position	=> module_cursor,
 			process		=> query_module'access);
 		
-	end delete_line_freetrack;
+	end delete_line_floating;
 
 
 
@@ -3537,7 +3537,7 @@ package body et_board_ops.conductors is
 		case object.cat is
 			when CAT_LINE_NET =>
 				
-				move_line (
+				move_line_net (
 					module_cursor	=> module_cursor, 
 					line			=> element (object.line_net.line_cursor),
 					point_of_attack	=> point_of_attack, 
@@ -3548,7 +3548,7 @@ package body et_board_ops.conductors is
 
 			when CAT_LINE_FLOATING =>
 
-				move_line_freetrack (
+				move_line_floating (
 					module_cursor	=> module_cursor, 
 					line			=> element (object.line_floating.line_cursor),
 					point_of_attack	=> point_of_attack, 
@@ -3606,7 +3606,7 @@ package body et_board_ops.conductors is
 
 				case ripup_mode is
 					when SINGLE_SEGMENT =>
-						delete_line (
+						delete_line_net (
 							module_cursor	=> module_cursor, 
 							net_name		=> key (object.line_net.net_cursor),			
 							line			=> element (object.line_net.line_cursor),
@@ -3623,7 +3623,7 @@ package body et_board_ops.conductors is
 
 			when CAT_LINE_FLOATING =>
 
-				delete_line_freetrack (
+				delete_line_floating (
 					module_cursor	=> module_cursor, 
 					line			=> element (object.line_floating.line_cursor),
 					log_threshold	=> log_threshold + 1);					
