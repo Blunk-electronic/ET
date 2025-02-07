@@ -1461,11 +1461,10 @@ package body et_board_ops.conductors is
 	
 	procedure move_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_conductor_line;
+		line			: in type_object_line_net;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
-		log_threshold	: in type_log_level;
-		net_name		: in pac_net_name.bounded_string := et_net_names.no_name) -- reset_n
+		log_threshold	: in type_log_level)
 	is
 		use pac_conductor_lines;
 		use et_nets;
@@ -1475,21 +1474,6 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			net_cursor : pac_nets.cursor;
-			proceed : aliased boolean := true;
-			
-
-			procedure query_net (c : in pac_nets.cursor) is
-				net : type_net renames element (c);
-				line_cursor : pac_conductor_lines.cursor;
-			begin
-				net_cursor := c;
-				line_cursor := net.route.lines.find (line);
-				if line_cursor /= pac_conductor_lines.no_element then
-					proceed := false; -- abort iteration
-				end if;
-			end query_net;
-
 
 			procedure update_net (
 				net_name	: in pac_net_name.bounded_string;
@@ -1499,31 +1483,20 @@ package body et_board_ops.conductors is
 					move_line_to (line, point_of_attack, destination);
 				end;
 
-				line_cursor : pac_conductor_lines.cursor;
 			begin
 				log (text => "net " & to_string (net_name), level => log_threshold + 1);
-				line_cursor := net.route.lines.find (line);
-				net.route.lines.update_element (line_cursor, move'access);
+				net.route.lines.update_element (line.line_cursor, move'access);
 			end update_net;
 
 			
 		begin
-			if net_name = et_net_names.no_name then
-				-- Find the net that contains the given line segment:
-				iterate (module.nets, query_net'access, proceed'access);
-				-- Now net_cursor points to the target net.
-				
-			else
-				net_cursor := module.nets.find (net_name);
-			end if;
-
-			module.nets.update_element (net_cursor, update_net'access);			
+			module.nets.update_element (line.net_cursor, update_net'access);			
 		end query_module;
 
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving " & to_string (line, true)  -- log incl. width
+			& " moving " & to_string (line.line_cursor, true)  -- log incl. width
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
@@ -1547,7 +1520,7 @@ package body et_board_ops.conductors is
 
 	procedure move_line_floating (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_conductor_line;
+		line			: in type_object_line_floating;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level)
@@ -1557,10 +1530,8 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			-- conductors : type_conductors_non_electric renames module.board.conductors;
 
 			use pac_conductor_lines;
-			line_cursor : pac_conductor_lines.cursor;
 
 			procedure move (line : in out type_conductor_line) is begin
 				move_line_to (line, point_of_attack, destination);
@@ -1568,21 +1539,13 @@ package body et_board_ops.conductors is
 			end;
 	
 		begin
-			-- Locate the given line among the conductor lines
-			-- of the board:
-			line_cursor := find (module.board.conductors.lines, line);
-
-			-- If the line exists, then move it:
-			if line_cursor /= pac_conductor_lines.no_element then
-				log (text => "line found", level => log_threshold + 1);
-				module.board.conductors.lines.update_element (line_cursor, move'access);
-			end if;
+			module.board.conductors.lines.update_element (line.line_cursor, move'access);
 		end query_module;
 
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " moving floating " & to_string (line, true)  -- log incl. width
+			& " moving floating " & to_string (line.line_cursor, true)  -- log incl. width
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
@@ -1689,6 +1652,7 @@ package body et_board_ops.conductors is
 				delete (conductors.lines, l);
 			end if;
 		end query_module;
+
 		
 	begin
 		log (text => "module " & to_string (module_cursor) &
@@ -1738,8 +1702,8 @@ package body et_board_ops.conductors is
 
 			use et_nets;
 			
-			procedure add (
 			-- Appends the track to the net.
+			procedure add (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is begin
@@ -1748,7 +1712,7 @@ package body et_board_ops.conductors is
 					new_item	=> arc);
 			end add;
 
-		begin -- add_named_track
+		begin
 			if net_exists (net_cursor) then
 
 				pac_nets.update_element (
@@ -3539,10 +3503,9 @@ package body et_board_ops.conductors is
 				
 				move_line_net (
 					module_cursor	=> module_cursor, 
-					line			=> element (object.line_net.line_cursor),
+					line			=> object.line_net,
 					point_of_attack	=> point_of_attack, 
 					destination		=> destination,
-					net_name		=> key (object.line_net.net_cursor),
 					log_threshold	=> log_threshold + 1);
 
 
@@ -3550,7 +3513,7 @@ package body et_board_ops.conductors is
 
 				move_line_floating (
 					module_cursor	=> module_cursor, 
-					line			=> element (object.line_floating.line_cursor),
+					line			=> object.line_floating,
 					point_of_attack	=> point_of_attack, 
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);

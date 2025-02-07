@@ -311,25 +311,19 @@ package et_board_ops.conductors is
 
 	
 
-	-- Moves a line segment.
-	-- If the net name is given, then the process consumes
-	-- less time. The given net must exist. Otherwise an exception
-	-- is raised:
+	-- Moves a line of a net:
 	procedure move_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_conductor_line; -- CS use type_object_line_net
+		line			: in type_object_line_net;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
-		log_threshold	: in type_log_level;
-		net_name		: in pac_net_name.bounded_string := et_net_names.no_name); -- reset_n
-		-- CS remove net_name
+		log_threshold	: in type_log_level);
 	
 
-	-- Moves a freetrack line. If the given line
-	-- does not exist, then nothing happens:
+	-- Moves a floating line:
 	procedure move_line_floating (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_conductor_line; -- CS use type_object_line_floating
+		line			: in type_object_line_floating;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
