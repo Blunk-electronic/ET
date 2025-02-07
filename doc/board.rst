@@ -200,7 +200,7 @@ Routing, laying out Tracks and Traces
 
 		delete track
 
-	|VNS| del t
+	|VNS| del c
 
 	
 	.. code-block::
@@ -218,18 +218,18 @@ Select the delete mode by pressing key m (single segment or all segments of the 
 
 		delete freetrack 2 10 15 2
 
-	|VNS| del f		
+	|VNS| del c	
 		
 
 
 #. Moving Track Segments
 
-	|VNS| m t
+	|VNS| m c
 
 
 #. Moving Freetrack Segments
 	
-	|VNS| m f
+	|VNS| m c
 	
 
 
@@ -357,6 +357,14 @@ Fill Zones in Conductor Layers
 	
 		route freetrack 1 zone line 18 9 line 30 9 line 30 13 line 18 13
 		
+
+		
+#. Move Zone Segment
+
+	To move a segment of a zone contour:
+
+	|VNS| m c
+	
 		
 		
 #. Set Fill Style
