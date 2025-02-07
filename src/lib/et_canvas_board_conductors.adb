@@ -97,10 +97,11 @@ package body et_canvas_board_conductors is
 		if clarification then
 			set_status (praeamble
 				& to_string (selected.line_cursor, true) -- start/end point/width/layer
-				& ". " & status_next_object_clarification);
+				& " floating. " & status_next_object_clarification);
 		else
 			set_status (praeamble
-				& to_string (selected.line_cursor, true)); -- start/end point/width/layer
+				& to_string (selected.line_cursor, true) -- start/end point/width/layer
+				& " floating.");			
 		end if;		
 	end show_selected_line;
 

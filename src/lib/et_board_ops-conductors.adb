@@ -1002,8 +1002,6 @@ package body et_board_ops.conductors is
 			 level => log_threshold);
 
 		log_indentation_up;
-
-		count := 0;
 		
 		generic_modules.update_element (
 			position	=> module_cursor,
@@ -1103,10 +1101,9 @@ package body et_board_ops.conductors is
 
 	
 	
-	function get_first_line (
+	function get_first_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
-		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
 		return type_object_line_net
 	is
@@ -1122,38 +1119,6 @@ package body et_board_ops.conductors is
 			proceed : aliased boolean := true;
 
 
-			procedure process_freetracks is
-				conductors : type_conductors_non_electric renames module.board.conductors;
-
-				procedure query_line (l : in pac_conductor_lines.cursor) is
-					line : type_conductor_line renames element (l);
-				begin
-					case flag is
-						when PROPOSED =>
-							if is_proposed (line) then
-								result.line_cursor := l;
-								proceed := false;  -- no further probing required
-							end if;
-
-						when SELECTED =>
-							if is_selected (line) then
-								result.line_cursor := l;
-								proceed := false;  -- no further probing required
-							end if;
-
-						when others =>
-							null; -- CS
-					end case;
-				end query_line;
-
-				
-			begin
-				iterate (conductors.lines, query_line'access, proceed'access);
-				-- CS arcs, circles
-			end process_freetracks;
-
-
-			
 			procedure process_nets is
 
 				procedure query_net (net_cursor : in pac_nets.cursor) is
@@ -1205,11 +1170,7 @@ package body et_board_ops.conductors is
 
 			
 		begin
-			if freetracks then
-				process_freetracks;
-			else
-				process_nets;
-			end if;			
+			process_nets;
 		end query_module;
 
 
@@ -1233,10 +1194,84 @@ package body et_board_ops.conductors is
 		log_indentation_down;
 		
 		return result;
-	end get_first_line;
+	end get_first_line_net;
 
 
 
+
+
+
+	function get_first_line_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_line_floating
+	is
+		result : type_object_line_floating;
+
+		use pac_conductor_lines;
+		
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			proceed : aliased boolean := true;
+
+
+			conductors : type_conductors_non_electric renames module.board.conductors;
+
+			procedure query_line (l : in pac_conductor_lines.cursor) is
+				line : type_conductor_line renames element (l);
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (line) then
+							result.line_cursor := l;
+							proceed := false;  -- no further probing required
+						end if;
+
+					when SELECTED =>
+						if is_selected (line) then
+							result.line_cursor := l;
+							proceed := false;  -- no further probing required
+						end if;
+
+					when others =>
+						null; -- CS
+				end case;
+			end query_line;
+				
+			
+		begin
+			iterate (conductors.lines, query_line'access, proceed'access);
+		end query_module;
+
+
+	begin		
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first floating line / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- If a line has been found, then log it:
+		if has_element (result.line_cursor) then
+			log (text => "found: " & to_string (element (result.line_cursor), true),
+				 level => log_threshold + 2);
+		end if;
+
+		log_indentation_down;
+		
+		return result;
+	end get_first_line_floating;
+
+
+	
 	
 
 	
@@ -3020,7 +3055,7 @@ package body et_board_ops.conductors is
 	is
 		result_category : type_object_category := CAT_VOID;
 		result_segment  : type_object_segment;
-		result_line		: type_object_line_net; -- CS rename to result_line_net
+		result_line_net			: type_object_line_net;
 		result_line_floating	: type_object_line_floating;
 		result_text		: type_object_text;
 
@@ -3037,13 +3072,14 @@ package body et_board_ops.conductors is
 
 		log_indentation_up;
 		
-		-- First we search for a line of a net.
-		-- If a line has been found, then go to the end of this procedure:
-		result_line := get_first_line (module_cursor, flag, false, log_threshold + 1);
+		-- 1. SEARCH FOR A LINE OF A NET:
 		
-		if result_line.line_cursor /= pac_conductor_lines.no_element then
+		-- If a line has been found, then go to the end of this procedure:
+		result_line_net := get_first_line_net (module_cursor, flag, log_threshold + 1);
+		
+		if result_line_net.line_cursor /= pac_conductor_lines.no_element then
 			-- A line has been found.
-			log (text => to_string (element (result_line.line_cursor)),
+			log (text => to_string (element (result_line_net.line_cursor)),
 				 level => log_threshold + 1);
 			
 			result_category := CAT_LINE_NET;
@@ -3053,6 +3089,28 @@ package body et_board_ops.conductors is
 		if result_category /= CAT_VOID then
 			goto end_of_search;
 		end if;
+
+
+
+		-- 2. SEARCH FOR A FLOATING LINE (OF A FREETRACK):
+		
+		-- If a line has been found, then go to the end of this procedure:
+		result_line_floating := get_first_line_floating (module_cursor, flag, log_threshold + 1);
+		
+		if result_line_floating.line_cursor /= pac_conductor_lines.no_element then
+			-- A line has been found.
+			log (text => to_string (element (result_line_floating.line_cursor)),
+				 level => log_threshold + 1);
+			
+			result_category := CAT_LINE_FLOATING;
+		end if;
+
+		-- If an object has been found, then the search is done:
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
+
 
 		
 		-- Now we search for an arc.
@@ -3113,7 +3171,7 @@ package body et_board_ops.conductors is
 				return (cat => CAT_VOID);
 
 			when CAT_LINE_NET =>
-				return (CAT_LINE_NET, result_line);
+				return (CAT_LINE_NET, result_line_net);
 
 			when CAT_LINE_FLOATING =>
 				return (CAT_LINE_FLOATING, result_line_floating);
@@ -3277,19 +3335,6 @@ package body et_board_ops.conductors is
 
 
 
-			
-			
--- 
--- 			procedure query_text (text : in type_doc_text) is begin
--- 				if is_proposed (text) then
--- 					result.append ((
--- 						cat		=> CAT_TEXT,
--- 						text	=> (face, text_cursor)));
--- 
--- 					log (text => to_string (text), level => log_threshold + 2);
--- 				end if;
--- 			end query_text;
-
 
 			-- This procedure queries a net:
 			procedure query_net (
@@ -3323,6 +3368,57 @@ package body et_board_ops.conductors is
 
 				log_indentation_down;
 			end query_net;
+
+
+
+			-- This procedure queries objects which are floating
+			-- such as lines, arcs, circles, zones, texts and text placeholders:
+			procedure process_floating_objects is
+
+				procedure query_line (c : in pac_conductor_lines.cursor) is 
+
+					procedure collect is begin
+						result.append ((
+							cat				=> CAT_LINE_FLOATING,
+							line_floating	=> (line_cursor => c)));
+     
+						-- Log the line and its linewidth:
+						log (text => to_string (c, true), level => log_threshold + 2);
+					end collect;
+
+					
+				begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (c) then
+								collect;
+							end if;
+
+						when SELECTED =>
+							if is_selected (c) then
+								collect;
+							end if;
+
+						when others =>
+							null; -- CS
+					end case;
+				end query_line;
+				
+	-- 
+	-- 			procedure query_text (text : in type_doc_text) is begin
+	-- 				if is_proposed (text) then
+	-- 					result.append ((
+	-- 						cat		=> CAT_TEXT,
+	-- 						text	=> (face, text_cursor)));
+	-- 
+	-- 					log (text => to_string (text), level => log_threshold + 2);
+	-- 				end if;
+	-- 			end query_text;
+				
+			begin
+				iterate (module.board.conductors.lines, query_line'access);
+				-- CS arcs, circles, zones, texts, placeholders
+			end process_floating_objects;
 			
 		
 		begin
@@ -3334,10 +3430,11 @@ package body et_board_ops.conductors is
 				next (net_cursor);
 			end loop;
 
-			log_indentation_down;
 
-			-- CS freetracks (lines, arcs, circles), texts, placeholders
+			log (text => "floating conductor objects", level => log_threshold + 1);
+			process_floating_objects;
 			
+			log_indentation_down;
 		end query_module;
 
 		
@@ -3450,8 +3547,14 @@ package body et_board_ops.conductors is
 
 
 			when CAT_LINE_FLOATING =>
-				null;
-				-- CS
+
+				move_line_freetrack (
+					module_cursor	=> module_cursor, 
+					line			=> element (object.line_floating.line_cursor),
+					point_of_attack	=> point_of_attack, 
+					destination		=> destination,
+					log_threshold	=> log_threshold + 1);
+
 				
 			when CAT_ZONE_SEGMENT =>
 				
@@ -3519,8 +3622,12 @@ package body et_board_ops.conductors is
 			-- CS arcs, circles
 
 			when CAT_LINE_FLOATING =>
-				null;
-				-- CS
+
+				delete_line_freetrack (
+					module_cursor	=> module_cursor, 
+					line			=> element (object.line_floating.line_cursor),
+					log_threshold	=> log_threshold + 1);					
+
 				
 				
 			when CAT_ZONE_SEGMENT =>
@@ -3568,7 +3675,7 @@ package body et_board_ops.conductors is
 			freetracks		=> false,
 			log_threshold	=> log_threshold + 1);
 
-		-- Freetracks:
+		-- Floating lines (freetracks):
 		reset_proposed_lines (
 			module_cursor	=> active_module, 
 			freetracks		=> true,

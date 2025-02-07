@@ -722,35 +722,35 @@ package body et_canvas_board_tracks is
 
 	-- This procedure searches for the first selected object
 	-- and sets its status to "moving":
-	procedure set_first_selected_object_moving is
-		use et_board_ops.conductors;
-		use et_object_status;
-
-		-- use et_board_shapes_and_text.pac_contours;
-		-- use pac_segments;
-		-- selected_segment : pac_segments.cursor; -- of a contour
-
-		selected_line : type_object_line_net;
-		-- selected_arc : type_arc_segment;
-	begin
-		log (text => "set_first_selected_object_moving ...", level => log_threshold);
-
-		selected_line := get_first_line (
-			module_cursor	=> active_module,
-			flag			=> SELECTED, 
-			freetracks		=> false,
-			log_threshold	=> log_threshold + 1);
-		
-		-- CS arcs, circles, zones
-		
-		modify_status (
-			module_cursor	=> active_module, 
-			line_cursor		=> selected_line.line_cursor, 
-			operation		=> (SET, MOVING),
-			freetracks		=> false,
-			log_threshold	=> log_threshold + 1);
-
-	end set_first_selected_object_moving;
+-- 	procedure set_first_selected_object_moving is
+-- 		use et_board_ops.conductors;
+-- 		use et_object_status;
+-- 
+-- 		-- use et_board_shapes_and_text.pac_contours;
+-- 		-- use pac_segments;
+-- 		-- selected_segment : pac_segments.cursor; -- of a contour
+-- 
+-- 		selected_line : type_object_line_net;
+-- 		-- selected_arc : type_arc_segment;
+-- 	begin
+-- 		log (text => "set_first_selected_object_moving ...", level => log_threshold);
+-- 
+-- 		selected_line := get_first_line_net (
+-- 			module_cursor	=> active_module,
+-- 			flag			=> SELECTED, 
+-- 			freetracks		=> false,
+-- 			log_threshold	=> log_threshold + 1);
+-- 		
+-- 		-- CS arcs, circles, zones
+-- 		
+-- 		modify_status (
+-- 			module_cursor	=> active_module, 
+-- 			line_cursor		=> selected_line.line_cursor, 
+-- 			operation		=> (SET, MOVING),
+-- 			freetracks		=> false,
+-- 			log_threshold	=> log_threshold + 1);
+-- 
+-- 	end set_first_selected_object_moving;
 
 
 

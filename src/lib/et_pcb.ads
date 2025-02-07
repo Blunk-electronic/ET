@@ -375,8 +375,8 @@ package et_pcb is
 		via_restrict	: type_via_restrict;
 
 		-- non-electric stuff, incl. floating polygons !
-		conductors		: type_conductors_non_electric;
-		contours		: type_pcb_contours; -- pcb outline
+		conductors		: type_conductors_non_electric; -- CS rename to floating_conductors
+		contours		: type_pcb_contours; -- pcb outline -- CS rename to board_contour
 
 		user_settings	: type_user_settings;
 	end record;

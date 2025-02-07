@@ -247,6 +247,7 @@ package et_board_ops.conductors is
 	
 	-- Sets the proposed-flag of all lines which are
 	-- in the given zone around the given place
+	-- Adds to count the number of lines that have been found:
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
@@ -258,7 +259,9 @@ package et_board_ops.conductors is
 
 
 	
-	-- Clears the proposed-flag and the selected-flag of all lines:
+	-- Clears the proposed-flag and the selected-flag of all lines.
+	-- If freetracks is false, then only nets are adressed.
+	-- If freetracks is true, then only freetracks are adressed:
 	procedure reset_proposed_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		freetracks		: in boolean;							   
@@ -271,19 +274,24 @@ package et_board_ops.conductors is
 	-- If no line has been found,
 	-- then the selector line_cursor in the return is no_element
 	-- and the selector net_cursor is no_element.
-	-- If freetracks is true:
-	--  then only freetrack segments are adressed.
-	--  The selector net_cursor in the return will be no_element in any case.
-	-- If freetracks is false:
-	--  then only net segments are adressed.
-	function get_first_line (
+	function get_first_line_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
-		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
 		return type_object_line_net;
 
 
+	-- Returns the first line according to the given flag.
+	-- If no line has been found,
+	-- then the selector line_cursor in the return is no_element:
+	function get_first_line_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_line_floating;
+
+	
+	
 	-- Advances to the next proposed line, starting at
 	-- the given line. Traverses through line segments and nets
 	-- in a circular manner. If there are no
@@ -304,20 +312,21 @@ package et_board_ops.conductors is
 	-- If the net name is given, then the process consumes
 	-- less time. The given net must exist. Otherwise an exception
 	-- is raised:
-	procedure move_line (
+	procedure move_line ( -- CS rename to move_line_net
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_conductor_line;
+		line			: in type_conductor_line; -- CS use type_object_line_net
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level;
 		net_name		: in pac_net_name.bounded_string := et_net_names.no_name); -- reset_n
-
+		-- CS remove net_name
+	
 
 	-- Moves a freetrack line. If the given line
 	-- does not exist, then nothing happens:
 	procedure move_line_freetrack (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in type_conductor_line;
+		line			: in type_conductor_line; -- CS use type_object_line_floating
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
@@ -433,7 +442,7 @@ package et_board_ops.conductors is
 	-- This composite type helps to identify a
 	-- segment of a zone by the net it is connected with
 	-- and the zone:
-	type type_object_segment (fill_style : type_fill_style := SOLID) is record
+	type type_object_segment (fill_style : type_fill_style := SOLID) is record -- CS rename to type_object_segment_net
 		segment	: pac_contours.pac_segments.cursor;
 		net		: pac_nets.cursor;
 		
@@ -459,7 +468,7 @@ package et_board_ops.conductors is
 
 	
 	-- Sets the proposed-flag of all line and arc segments 
-	-- of a zone which are
+	-- of zones which are connected with nets and which are
 	-- in the given zone around the given place.
 	-- Adds to count the number of segments that have been found:
 	procedure propose_segments (
@@ -482,7 +491,7 @@ package et_board_ops.conductors is
 
 	-- Returns the first line or arc segment according to the given flag.
 	-- If no segment has been found, then the return is no_element:
-	function get_first_segment (
+	function get_first_segment ( -- CS rename to get_first_segment_net ?
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
@@ -492,7 +501,7 @@ package et_board_ops.conductors is
 	-- Moves a line or arc segment of a zone:
 	-- CS currently it moves only a single segment.
 	-- CS provide parameter for move mode (move attached segments, move whole contour)
-	procedure move_segment (
+	procedure move_segment ( -- CS rename to move_segment_net ?
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;
 		point_of_attack	: in type_vector_model;
@@ -503,7 +512,7 @@ package et_board_ops.conductors is
 	
 
 	-- Deletes a line or arc segment of a zone:
-	procedure delete_segment (
+	procedure delete_segment ( -- CS rename to delete_segment_net ?
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment;
 		log_threshold	: in type_log_level);
