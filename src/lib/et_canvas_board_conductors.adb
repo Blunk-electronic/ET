@@ -86,6 +86,25 @@ package body et_canvas_board_conductors is
 	end show_selected_line;
 
 
+
+	-- Outputs the selected line in the status bar:
+	procedure show_selected_line (
+		selected		: in type_object_line_floating;
+		clarification	: in boolean := false)
+	is 
+		praeamble : constant string := "selected: ";
+	begin
+		if clarification then
+			set_status (praeamble
+				& to_string (selected.line_cursor, true) -- start/end point/width/layer
+				& ". " & status_next_object_clarification);
+		else
+			set_status (praeamble
+				& to_string (selected.line_cursor, true)); -- start/end point/width/layer
+		end if;		
+	end show_selected_line;
+
+	
 	
 
 	-- Outputs the selected segment in the status bar:
@@ -122,6 +141,10 @@ package body et_canvas_board_conductors is
 			when CAT_LINE_NET =>
 				show_selected_line (selected.line_net);
 
+			when CAT_LINE_FLOATING =>
+				show_selected_line (selected.line_floating);
+				-- CS
+				
 			when CAT_ZONE_SEGMENT =>
 				show_selected_segment (selected.segment);
 
@@ -277,6 +300,7 @@ package body et_canvas_board_conductors is
 			for layer in 1 .. get_deepest_conductor_layer (active_module) loop
 				if conductor_enabled (layer) then
 
+					-- Lines of nets:
 					propose_lines (
 						module_cursor	=> active_module, 
 						point			=> point,
@@ -286,6 +310,17 @@ package body et_canvas_board_conductors is
 						freetracks		=> false,
 						log_threshold	=> log_threshold + 2);
 
+					-- Lines of freetracks (floating):
+					propose_lines (
+						module_cursor	=> active_module, 
+						point			=> point,
+						layer			=> layer,
+						zone			=> get_catch_zone (et_canvas_board_2.catch_zone), 
+						count			=> count_total, 
+						freetracks		=> true,
+						log_threshold	=> log_threshold + 2);
+
+					
 					-- CS arcs, circles
 
 					propose_segments (

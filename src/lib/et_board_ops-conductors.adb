@@ -611,6 +611,52 @@ package body et_board_ops.conductors is
 	end modify_status;
 
 	
+
+
+
+	
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_object_line_floating;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			procedure query_line (l : in out type_conductor_line) is begin
+				modify_status (l, operation);
+			end query_line;
+
+			use pac_conductor_lines;
+			
+		begin
+			update_element (module.board.conductors.lines, line.line_cursor, query_line'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of floating "
+			& to_string (line.line_cursor, true) -- incl. width
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+
+
 	
 	
 
@@ -2974,7 +3020,8 @@ package body et_board_ops.conductors is
 	is
 		result_category : type_object_category := CAT_VOID;
 		result_segment  : type_object_segment;
-		result_line		: type_object_line_net;
+		result_line		: type_object_line_net; -- CS rename to result_line_net
+		result_line_floating	: type_object_line_floating;
 		result_text		: type_object_text;
 
 		use pac_contours;
@@ -3068,6 +3115,9 @@ package body et_board_ops.conductors is
 			when CAT_LINE_NET =>
 				return (CAT_LINE_NET, result_line);
 
+			when CAT_LINE_FLOATING =>
+				return (CAT_LINE_FLOATING, result_line_floating);
+				
 			when CAT_ZONE_SEGMENT =>
 				return (CAT_ZONE_SEGMENT, result_segment);
 
@@ -3330,6 +3380,9 @@ package body et_board_ops.conductors is
 			when CAT_LINE_NET =>
 				modify_status (module_cursor, object.line_net, operation, log_threshold + 1);
 
+			when CAT_LINE_FLOATING =>
+				modify_status (module_cursor, object.line_floating, operation, log_threshold + 1);
+				
 			when CAT_ZONE_SEGMENT =>
 				modify_status (module_cursor, object.segment, operation, log_threshold + 1);
 
@@ -3395,6 +3448,10 @@ package body et_board_ops.conductors is
 					net_name		=> key (object.line_net.net_cursor),
 					log_threshold	=> log_threshold + 1);
 
+
+			when CAT_LINE_FLOATING =>
+				null;
+				-- CS
 				
 			when CAT_ZONE_SEGMENT =>
 				
@@ -3461,6 +3518,10 @@ package body et_board_ops.conductors is
 						
 			-- CS arcs, circles
 
+			when CAT_LINE_FLOATING =>
+				null;
+				-- CS
+				
 				
 			when CAT_ZONE_SEGMENT =>
 

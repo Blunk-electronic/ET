@@ -162,10 +162,10 @@ package et_board_ops.conductors is
 
 
 
-	-- If line segments are searched, then they can be
+	-- If line segments of a net are searched, then they can be
 	-- identified additionally by the associated net.
 	-- If the net_cursor is no_element then it is a segment
-	-- of a freetrack:
+	-- of a freetrack CS: ???
 	type type_object_line_net is record
 		net_cursor	: pac_nets.cursor;
 		line_cursor	: pac_conductor_lines.cursor;
@@ -175,10 +175,11 @@ package et_board_ops.conductors is
 
 	-- CS do the same for lines, arcs, circles of freetracks
 
-	-- CS
-	-- type type_object_line_freetrack is record
-	-- 	line_cursor	: pac_conductor_lines.cursor;
-	-- end record;
+	-- If floating line segments (of a freetrack) are searched, 
+	-- then they can be identified by a cursor:
+	type type_object_line_floating is record
+		line_cursor	: pac_conductor_lines.cursor;
+	end record;
 
 	
 	
@@ -192,6 +193,13 @@ package et_board_ops.conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
+	
+	-- Modifies the status flag of a floating line:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_object_line_floating;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
 
 
 	
@@ -541,7 +549,8 @@ package et_board_ops.conductors is
 	-- categories in order to store them in indefinite_doubly_linked_lists:
 	type type_object_category is (
 		CAT_VOID,
-		CAT_LINE_NET, 
+		CAT_LINE_NET,
+		CAT_LINE_FLOATING,
 		CAT_ZONE_SEGMENT,
 		-- CS CAT_ZONE_SEGMENT_FLOATING
 		CAT_TEXT
@@ -554,7 +563,8 @@ package et_board_ops.conductors is
 		case cat is
 			when CAT_VOID			=> null;
 			when CAT_ZONE_SEGMENT	=> segment	: type_object_segment;
-			when CAT_LINE_NET		=> line_net	: type_object_line_net;
+			when CAT_LINE_NET		=> line_net			: type_object_line_net;
+			when CAT_LINE_FLOATING	=> line_floating	: type_object_line_floating;
 			when CAT_TEXT			=> text		: type_object_text;
 		end case;
 	end record;
