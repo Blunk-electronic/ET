@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -133,7 +133,9 @@ package et_pcb is
 
 
 	
-	-- Type for NON ELECTRIC !! conductor objects:
+	-- Type for NON ELECTRIC !! conductor objects.
+	-- All these objects are not connected to any net,
+	-- means they are floating.
 	-- NON ELECTRIC conductor objects of a pcb may also 
 	-- include text placeholders:
 	type type_conductors_non_electric is record
@@ -142,8 +144,7 @@ package et_pcb is
 		circles			: pac_conductor_circles.list;
 
 		-- floating fill zones:
-		fill_zones		: type_floating; 
-		-- CS: It is probably no good idea to allow floating conductor polygons.
+		zones			: type_floating;
 		-- Useful to catch the liquid solder during wave soldering ?
 
 		-- global cutout areas:

@@ -4174,7 +4174,7 @@ is
 					case board_fill_style is
 						when SOLID =>
 							pac_floating_solid.append (
-								container	=> module.board.conductors.fill_zones.solid,
+								container	=> module.board.conductors.zones.solid,
 								new_item	=> (contour with
 									fill_style 	=> SOLID,
 									easing		=> board_easing,
@@ -4185,7 +4185,7 @@ is
 
 						when HATCHED =>
 							pac_floating_hatched.append (
-								container	=> module.board.conductors.fill_zones.hatched,
+								container	=> module.board.conductors.zones.hatched,
 								new_item	=> (contour with
 									fill_style 	=> HATCHED,
 									easing		=> board_easing,

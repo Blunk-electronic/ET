@@ -438,7 +438,9 @@ package et_board_ops.conductors is
 	
 	-- This composite type helps to identify a
 	-- segment of a zone that is connected with a net:
-	type type_object_segment_net (fill_style : type_fill_style := SOLID) is record
+	type type_object_segment_net (
+		fill_style : type_fill_style := SOLID) 
+	is record
 		segment	: pac_contours.pac_segments.cursor;
 		net		: pac_nets.cursor;
 		
@@ -451,7 +453,24 @@ package et_board_ops.conductors is
 		end case;
 	end record;
 
-	-- CS do the same for segments of floating zones
+
+	
+	-- This composite type helps to identify a
+	-- segment of a floating zone:
+	type type_object_segment_floating (
+		fill_style : type_fill_style := SOLID) 
+	is record
+		segment	: pac_contours.pac_segments.cursor;
+		
+		case fill_style is
+			when SOLID =>
+				zone_solid : pac_floating_solid.cursor;
+				
+			when HATCHED =>
+				zone_hatched : pac_floating_hatched.cursor;
+		end case;
+	end record;
+
 
 
 	
@@ -463,6 +482,16 @@ package et_board_ops.conductors is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
+
+	-- Modifies the status flag of segment of a
+	-- floating zone:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment_floating;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+	
 	
 	-- Sets the proposed-flag of all line and arc segments 
 	-- of zones which are connected with nets and which are

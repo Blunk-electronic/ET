@@ -1115,7 +1115,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			zone_cursor : pac_floating_solid.cursor := module.board.conductors.fill_zones.solid.first;
+			zone_cursor : pac_floating_solid.cursor := module.board.conductors.zones.solid.first;
 
 			procedure do_it (
 				zone : in out type_floating_solid)
@@ -1129,7 +1129,7 @@ is
 
 		begin
 			while zone_cursor /= pac_floating_solid.no_element loop
-				module.board.conductors.fill_zones.solid.update_element (zone_cursor, do_it'access);
+				module.board.conductors.zones.solid.update_element (zone_cursor, do_it'access);
 				next (zone_cursor);
 			end loop;
 		end floating_solid;
@@ -1139,7 +1139,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			zone_cursor : pac_floating_hatched.cursor := module.board.conductors.fill_zones.hatched.first;
+			zone_cursor : pac_floating_hatched.cursor := module.board.conductors.zones.hatched.first;
 
 			procedure do_it (
 				zone : in out type_floating_hatched)
@@ -1153,7 +1153,7 @@ is
 			
 		begin
 			while zone_cursor /= pac_floating_hatched.no_element loop
-				module.board.conductors.fill_zones.hatched.update_element (zone_cursor, do_it'access);
+				module.board.conductors.zones.hatched.update_element (zone_cursor, do_it'access);
 				next (zone_cursor);
 			end loop;
 		end floating_hatched;

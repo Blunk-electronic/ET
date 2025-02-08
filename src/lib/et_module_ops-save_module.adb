@@ -1977,8 +1977,8 @@ is
 			iterate (element (module_cursor).board.conductors.lines, write_line'access);
 			iterate (element (module_cursor).board.conductors.arcs, write_arc'access);
 			iterate (element (module_cursor).board.conductors.circles, write_circle'access);
-			iterate (element (module_cursor).board.conductors.fill_zones.solid, write_polygon'access);
-			iterate (element (module_cursor).board.conductors.fill_zones.hatched, write_polygon'access);
+			iterate (element (module_cursor).board.conductors.zones.solid, write_polygon'access);
+			iterate (element (module_cursor).board.conductors.zones.hatched, write_polygon'access);
 			
 			iterate (element (module_cursor).board.conductors.cutouts, write_cutout'access);			
 			iterate (element (module_cursor).board.conductors.texts, write_text'access);

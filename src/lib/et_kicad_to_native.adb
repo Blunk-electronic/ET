@@ -1972,10 +1972,10 @@ package body et_kicad_to_native is
 				
 				-- FLOATING FILL ZONES
 				-- solid
-				polygons_solid_cursor := module.board.conductors.fill_zones.solid.first;
+				polygons_solid_cursor := module.board.conductors.zones.solid.first;
 				while polygons_solid_cursor /= pac_floating_solid.no_element loop
 					pac_floating_solid.update_element (
-						container	=> module.board.conductors.fill_zones.solid,
+						container	=> module.board.conductors.zones.solid,
 						position	=> polygons_solid_cursor,
 						process		=> move_polygon'access);
 					
@@ -1984,10 +1984,10 @@ package body et_kicad_to_native is
 
 				
 				-- hatched
-				polygons_hatched_cursor := module.board.conductors.fill_zones.hatched.first;
+				polygons_hatched_cursor := module.board.conductors.zones.hatched.first;
 				while polygons_hatched_cursor /= pac_floating_hatched.no_element loop
 					pac_floating_hatched.update_element (
-						container	=> module.board.conductors.fill_zones.hatched,
+						container	=> module.board.conductors.zones.hatched,
 						position	=> polygons_hatched_cursor,
 						process		=> move_polygon'access);
 					

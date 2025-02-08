@@ -5314,9 +5314,9 @@ package body et_kicad.pcb is
 
 							-- CS set other properties like isolation and priority_level
 							
-							module.board.conductors.fill_zones.solid.append (p);
+							module.board.conductors.zones.solid.append (p);
 
-							floating_copper_polygon_properties (module.board.conductors.fill_zones.solid.last, log_threshold + 2);
+							floating_copper_polygon_properties (module.board.conductors.zones.solid.last, log_threshold + 2);
 							log (WARNING, "polygon is not connected with any net !", level => log_threshold + 2);
 
 						end if;

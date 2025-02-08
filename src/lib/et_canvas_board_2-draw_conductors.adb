@@ -1192,8 +1192,8 @@ procedure draw_conductors is
 				iterate (module.board.conductors.lines, query_line'access);
 				iterate (module.board.conductors.arcs, query_arc'access);
 				iterate (module.board.conductors.circles, query_circle'access);
-				iterate (module.board.conductors.fill_zones.solid, query_fill_zone'access);
-				iterate (module.board.conductors.fill_zones.hatched, query_fill_zone'access);
+				iterate (module.board.conductors.zones.solid, query_fill_zone'access);
+				iterate (module.board.conductors.zones.hatched, query_fill_zone'access);
 				iterate (module.board.conductors.cutouts, query_cutout'access);
 
 				-- texts

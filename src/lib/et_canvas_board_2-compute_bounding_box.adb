@@ -681,8 +681,8 @@ is
 				conductors.arcs.iterate (query_arc'access);
 				conductors.circles.iterate (query_circle'access);
 
-				conductors.fill_zones.solid.iterate (query_fill_zone_solid'access);
-				conductors.fill_zones.hatched.iterate (query_fill_zone_hatched'access);
+				conductors.zones.solid.iterate (query_fill_zone_solid'access);
+				conductors.zones.hatched.iterate (query_fill_zone_hatched'access);
 
 				-- CS
 				-- conductors.cutouts, query_cutout'access);
