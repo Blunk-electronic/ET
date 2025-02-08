@@ -2013,7 +2013,7 @@ package body et_board_ops.conductors is
 			log (text => to_string (p, p.properties),
 				level => log_threshold + 1);
 
-			module.board.conductors.fill_zones.solid.append (p);
+			module.board.conductors.zones.solid.append (p);
 		end floating_solid;
 
 		
@@ -2030,7 +2030,7 @@ package body et_board_ops.conductors is
 			log (text => to_string (p, p.properties),
 				level => log_threshold + 1);
 
-			module.board.conductors.fill_zones.hatched.append (p);
+			module.board.conductors.zones.hatched.append (p);
 		end floating_hatched;
 
 		-- Polygons which are connected with a net are part of a route.
@@ -2252,6 +2252,99 @@ package body et_board_ops.conductors is
 			& " modifying status of "
 			& to_string (segment.segment)
 			& " net " & to_string (segment.net)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment_floating;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+		use pac_contours;
+		use pac_segments;
+		use pac_floating_solid;
+		use pac_floating_hatched;
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_segment (
+				segment	: in out type_segment)
+			is begin
+				modify_status (segment, operation);
+			end query_segment;
+
+			
+				
+			procedure query_zone_solid (zone : in out type_floating_solid) is begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					-- Locate the given segment in the
+					-- candidate zone:
+					update_element (
+						container	=> zone.contour.segments,
+						position	=> segment.segment,
+						process		=> query_segment'access);
+				end if;
+			end query_zone_solid;
+
+			
+			procedure query_zone_hatched (zone : in out type_floating_hatched) is begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					-- Locate the given segment in the
+					-- candidate zone:
+					update_element (
+						container	=> zone.contour.segments,
+						position	=> segment.segment,
+						process		=> query_segment'access);
+				end if;
+			end query_zone_hatched;
+
+	
+			
+		begin
+			-- Locate the zone:
+			case segment.fill_style is
+				when SOLID =>
+					update_element (
+						container	=> module.board.conductors.zones.solid,
+						position	=> segment.zone_solid,
+						process		=> query_zone_solid'access);
+
+				when HATCHED =>
+					update_element (
+						container	=> module.board.conductors.zones.hatched,
+						position	=> segment.zone_hatched,
+						process		=> query_zone_hatched'access);
+			end case;
+
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of "
+			& to_string (segment.segment)
 			& " / " & to_string (operation),
 			level => log_threshold);
 
