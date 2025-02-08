@@ -497,7 +497,7 @@ package et_board_ops.conductors is
 	-- of zones which are connected with nets and which are
 	-- in the given zone around the given place.
 	-- Adds to count the number of segments that have been found:
-	procedure propose_segments (
+	procedure propose_segments_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		zone			: in type_accuracy; -- the circular area around the place
@@ -506,25 +506,59 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level);
 
 	
+	-- Sets the proposed-flag of all line and arc segments 
+	-- of floating zones and which are
+	-- in the given zone around the given place.
+	-- Adds to count the number of segments that have been found:
+	procedure propose_segments_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		zone			: in type_accuracy; -- the circular area around the place
+		layer			: in type_signal_layer;
+		count			: in out natural;
+		log_threshold	: in type_log_level);
+
+
 	
 	-- Clears the proposed-flag and the selected-flag 
-	-- of all line and arc segments of zones which are connected
-	-- with a net:
-	procedure reset_proposed_segments (
+	-- of all line and arc segments of zones which are connected with a net:
+	procedure reset_proposed_segments_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 
+	-- Clears the proposed-flag and the selected-flag 
+	-- of all line and arc segments of floating zones:
+	procedure reset_proposed_segments_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
 
-	-- Returns the first line or arc segment according to the given flag.
-	-- If no segment has been found, then the return is no_element:
-	function get_first_segment ( -- CS rename to get_first_segment_net ?
+
+	
+	
+	-- Returns the first segment of a
+	-- connected zone according to the given flag.
+	-- If no segment has been found, then the return 
+	-- in all components of the return is no_element:
+	function get_first_segment_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
 		return type_object_segment_net;
 
 
+	-- Returns the first segment of a
+	-- floating zone according to the given flag.
+	-- If no segment has been found, then the return 
+	-- in all components of the return is no_element:
+	function get_first_segment_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_segment_floating;
+
+
+	
 	-- Moves a line or arc segment of a zone:
 	-- CS currently it moves only a single segment.
 	-- CS provide parameter for move mode (move attached segments, move whole contour)
@@ -587,8 +621,8 @@ package et_board_ops.conductors is
 		CAT_VOID,
 		CAT_LINE_NET,
 		CAT_LINE_FLOATING,
-		CAT_ZONE_SEGMENT,
-		-- CS CAT_ZONE_SEGMENT_FLOATING
+		CAT_ZONE_SEGMENT, -- CS rename to CAT_ZONE_SEGMENT_NET
+		CAT_ZONE_SEGMENT_FLOATING,
 		CAT_TEXT
 		);
 	-- CS CAT_ARC, CAT_CIRCLE, CAT_PLACEHOLDER
@@ -599,6 +633,7 @@ package et_board_ops.conductors is
 		case cat is
 			when CAT_VOID			=> null;
 			when CAT_ZONE_SEGMENT	=> segment	: type_object_segment_net;
+			when CAT_ZONE_SEGMENT_FLOATING	=> segment_floating	: type_object_segment_floating;
 			when CAT_LINE_NET		=> line_net			: type_object_line_net;
 			when CAT_LINE_FLOATING	=> line_floating	: type_object_line_floating;
 			when CAT_TEXT			=> text		: type_object_text;

@@ -2361,7 +2361,7 @@ package body et_board_ops.conductors is
 	
 
 
-	procedure propose_segments (
+	procedure propose_segments_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		zone			: in type_accuracy; -- the circular area around the place
@@ -2469,7 +2469,7 @@ package body et_board_ops.conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing segments at " & to_string (point)
+			 & " proposing segments of connected zones at " & to_string (point)
 			 & " signal layer " & to_string (layer)
 			 & " zone " & accuracy_to_string (zone),
 			 level => log_threshold);
@@ -2481,15 +2481,127 @@ package body et_board_ops.conductors is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end propose_segments;
+	end propose_segments_net;
 
 
+
+
+
+
+	procedure propose_segments_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		zone			: in type_accuracy;
+		layer			: in type_signal_layer;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_contours;
+			use pac_segments;
+			use pac_floating_solid;
+			use pac_floating_hatched;
+
+
+			procedure query_segment (segment : in out type_segment) is begin
+				case segment.shape is
+					when LINE =>
+						if within_accuracy (
+							line	=> segment.segment_line,
+							width	=> zero,
+							point	=> point,
+							zone	=> zone)
+						then
+							set_proposed (segment);
+							count := count + 1;
+							log (text => to_string (segment), level => log_threshold + 1);
+						end if;
+
+					when ARC =>
+						null; -- CS
+				end case;
+			end query_segment;
+
+			
+			procedure query_zone_solid (zone : in out type_floating_solid) is
+				sc : pac_segments.cursor;
+			begin
+				if zone.properties.layer = layer then
+					if zone.contour.circular then
+						null; -- CS
+					else
+						sc := zone.contour.segments.first;
+
+						while sc /= pac_segments.no_element loop
+							update_element (zone.contour.segments, sc, query_segment'access);
+							next (sc);
+						end loop;
+					end if;
+				end if;
+			end query_zone_solid;
+
+			
+			procedure query_zone_hatched (zone : in out type_floating_hatched) is
+				sc : pac_segments.cursor;
+			begin
+				if zone.properties.layer = layer then
+					if zone.contour.circular then
+						null; -- CS
+					else
+						sc := zone.contour.segments.first;
+
+						while sc /= pac_segments.no_element loop
+							update_element (zone.contour.segments, sc, query_segment'access);
+							next (sc);
+						end loop;
+					end if;
+				end if;
+			end query_zone_hatched;
+
+				
+			zcs : pac_floating_solid.cursor := module.board.conductors.zones.solid.first;
+			zch : pac_floating_hatched.cursor := module.board.conductors.zones.hatched.first;
+				
+		begin
+			while zcs /= pac_floating_solid.no_element loop
+				update_element (module.board.conductors.zones.solid, zcs, query_zone_solid'access);
+				next (zcs);
+			end loop;
+			
+			while zch /= pac_floating_hatched.no_element loop
+				update_element (module.board.conductors.zones.hatched, zch, query_zone_hatched'access);
+				next (zch);
+			end loop;			
+		end query_module;
+	
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " proposing segments of floating zones at " & to_string (point)
+			 & " signal layer " & to_string (layer)
+			 & " zone " & accuracy_to_string (zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_segments_floating;
 
 
 	
 	
 
-	procedure reset_proposed_segments (
+	
+
+	procedure reset_proposed_segments_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -2575,7 +2687,7 @@ package body et_board_ops.conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " resetting proposed segments of zones in conductor layers",
+			& " resetting proposed segments of connected zones in conductor layers",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -2585,15 +2697,104 @@ package body et_board_ops.conductors is
 			process		=> query_module'access);
 
 		log_indentation_down;		
-	end reset_proposed_segments;
+	end reset_proposed_segments_net;
 
 
 	
+
+
+	
+
+	procedure reset_proposed_segments_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_contours;
+			use pac_segments;
+			use pac_floating_solid;
+			use pac_floating_hatched;
+
+
+			procedure query_segment (segment : in out type_segment) is begin
+				reset_status (segment);
+			end query_segment;
+
+			
+			procedure query_zone_solid (zone : in out type_floating_solid) is
+				sc : pac_segments.cursor;
+			begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					sc := zone.contour.segments.first;
+
+					while sc /= pac_segments.no_element loop
+						update_element (zone.contour.segments, sc, query_segment'access);
+						next (sc);
+					end loop;
+				end if;
+			end query_zone_solid;
+
+			
+			procedure query_zone_hatched (zone : in out type_floating_hatched) is
+				sc : pac_segments.cursor;
+			begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					sc := zone.contour.segments.first;
+
+					while sc /= pac_segments.no_element loop
+						update_element (zone.contour.segments, sc, query_segment'access);
+						next (sc);
+					end loop;
+				end if;
+			end query_zone_hatched;
+
+			
+			zcs : pac_floating_solid.cursor := module.board.conductors.zones.solid.first;
+			zch : pac_floating_hatched.cursor := module.board.conductors.zones.hatched.first;
+				
+		begin
+			while zcs /= pac_floating_solid.no_element loop
+				update_element (module.board.conductors.zones.solid, zcs, query_zone_solid'access);
+				next (zcs);
+			end loop;
+			
+			while zch /= pac_floating_hatched.no_element loop
+				update_element (module.board.conductors.zones.hatched, zch, query_zone_hatched'access);
+				next (zch);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " resetting proposed segments of floating zones in conductor layers",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;		
+	end reset_proposed_segments_floating;
+
+	
+
 	
 
 	
 
-	function get_first_segment (
+	function get_first_segment_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
@@ -2737,7 +2938,7 @@ package body et_board_ops.conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up the first segment / " & to_string (flag),
+			& " looking up the first segment of a connected zone / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -2777,10 +2978,174 @@ package body et_board_ops.conductors is
 		end if;
 		
 		return result;
-	end get_first_segment;
+	end get_first_segment_net;
 
 
 
+
+
+
+	function get_first_segment_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_segment_floating
+	is
+
+		result : type_object_segment_floating;
+		-- Note: By default the fill style of the result is SOLID.
+		-- However, in the end of this procedure it may mutate 
+		-- to HATCHED. See specification.
+
+		use pac_contours;
+		use pac_segments;
+		use pac_floating_solid;
+		use pac_floating_hatched;
+
+		-- The segment cursor:
+		sc : pac_segments.cursor;
+
+		-- Then zone cursors (one for solid, another for hatched):
+		zcs : pac_floating_solid.cursor;
+		zch : pac_floating_hatched.cursor;
+
+		-- This flag is used to abort the iterators zones and segments
+		-- as soon as a segment has been found:
+		proceed : boolean := true;
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is			
+
+			procedure query_segment (segment : in type_segment) is begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (segment) then
+							proceed := false;
+							log (text => to_string (segment), level => log_threshold + 3);
+						end if;
+
+					when SELECTED =>
+						if is_selected (segment) then
+							proceed := false;
+							log (text => to_string (segment), level => log_threshold + 3);
+						end if;
+
+					when others =>
+						null; -- CS
+				end case;
+			end query_segment;
+
+			
+			procedure query_zone_solid (zone : in type_floating_solid) is begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					sc := zone.contour.segments.first;
+
+					while sc /= pac_segments.no_element loop
+						query_element (sc, query_segment'access);
+						if not proceed then
+							exit;
+						end if;
+						next (sc);
+					end loop;
+				end if;
+			end query_zone_solid;
+
+			
+			procedure query_zone_hatched (zone : in type_floating_hatched) is begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					sc := zone.contour.segments.first;
+
+					while sc /= pac_segments.no_element loop
+						query_element (sc, query_segment'access);
+						if not proceed then
+							exit;
+						end if;
+						next (sc);
+					end loop;
+				end if;
+			end query_zone_hatched;
+
+				
+		begin
+			log_indentation_up;
+			
+			-- First search among solidly filled zones:
+			zcs := module.board.conductors.zones.solid.first;				
+			while zcs /= pac_floating_solid.no_element loop
+				query_element (zcs, query_zone_solid'access);
+				if not proceed then
+					exit;
+				end if;
+				next (zcs);
+			end loop;
+
+			-- If nothing found, search among hatched zones:
+			if proceed then
+				zch := module.board.conductors.zones.hatched.first;
+				while zch /= pac_floating_hatched.no_element loop
+					query_element (zch, query_zone_hatched'access);
+					if not proceed then
+						exit;
+					end if;
+					next (zch);
+				end loop;
+			end if;
+
+			log_indentation_down;
+
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first segment of a floating zone / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- put_line ("found " & to_string (result));
+		
+		log_indentation_down;
+
+		if not proceed then -- a segment has been found.
+			-- The segment is either belonging to a solid
+			-- or a hatche zone:
+			
+			if has_element (zcs) then
+				result := (
+					fill_style 		=> SOLID,
+					zone_solid		=> zcs,
+					segment			=> sc);
+
+			elsif has_element (zch) then
+				result := (
+					fill_style 		=> HATCHED, -- mutates the result !
+					zone_hatched	=> zch,
+					segment			=> sc);
+
+			else
+				return result; -- CS should never happen
+			end if;
+		else
+			-- If nothing found. Return default result. See specs:
+			return result;
+		end if;
+		
+		return result;
+	end get_first_segment_floating;
+
+	
 
 
 	
@@ -3111,7 +3476,8 @@ package body et_board_ops.conductors is
 		return type_object
 	is
 		result_category : type_object_category := CAT_VOID;
-		result_segment  : type_object_segment_net;
+		result_segment  : type_object_segment_net; -- CS rename to result_segment_net
+		result_segment_floating : type_object_segment_floating;
 		result_line_net			: type_object_line_net;
 		result_line_floating	: type_object_line_floating;
 		result_text		: type_object_text;
@@ -3182,7 +3548,7 @@ package body et_board_ops.conductors is
 
 		-- Now search for a segment of a zone.
 		-- If there is one, then go to the end  of this procedure:
-		result_segment := get_first_segment (module_cursor, flag, log_threshold + 1);
+		result_segment := get_first_segment_net (module_cursor, flag, log_threshold + 1);
 
 		if result_segment.segment /= pac_segments.no_element then
 			-- A segment has been found.
@@ -3236,6 +3602,9 @@ package body et_board_ops.conductors is
 			when CAT_ZONE_SEGMENT =>
 				return (CAT_ZONE_SEGMENT, result_segment);
 
+			when CAT_ZONE_SEGMENT_FLOATING =>
+				return (CAT_ZONE_SEGMENT_FLOATING, result_segment_floating);
+				
 			when CAT_TEXT =>
 				return (CAT_TEXT, result_text);
 		end case;
@@ -3540,6 +3909,9 @@ package body et_board_ops.conductors is
 			when CAT_ZONE_SEGMENT =>
 				modify_status (module_cursor, object.segment, operation, log_threshold + 1);
 
+			when CAT_ZONE_SEGMENT_FLOATING =>
+				modify_status (module_cursor, object.segment_floating, operation, log_threshold + 1);
+				
 			when CAT_TEXT =>
 				null; -- CS
 				-- modify_status (module_cursor, object.text, operation, log_threshold + 1);
@@ -3622,6 +3994,9 @@ package body et_board_ops.conductors is
 					log_threshold	=> log_threshold + 1);
 
 
+			when CAT_ZONE_SEGMENT_FLOATING =>
+				null; -- CS
+				
 			when CAT_TEXT =>
 				null;
 				-- CS
@@ -3694,6 +4069,10 @@ package body et_board_ops.conductors is
 					log_threshold	=> log_threshold + 1);
 
 				
+			when CAT_ZONE_SEGMENT_FLOATING =>
+				null; -- CS
+
+				
 			when CAT_TEXT =>
 				-- CS
 				null;
@@ -3740,7 +4119,8 @@ package body et_board_ops.conductors is
 		-- CS arcs, circles
 		
 		-- CS reset_proposed_texts (module_cursor, log_threshold + 1);
-		reset_proposed_segments (module_cursor, log_threshold + 1);
+		reset_proposed_segments_net (module_cursor, log_threshold + 1);
+		reset_proposed_segments_floating (module_cursor, log_threshold + 1);
 
 		log_indentation_down;
 	end reset_proposed_objects;

@@ -149,6 +149,11 @@ package body et_canvas_board_conductors is
 			when CAT_ZONE_SEGMENT =>
 				show_selected_segment (selected.segment);
 
+			when CAT_ZONE_SEGMENT_FLOATING =>
+				-- CS
+				null;
+				-- show_selected_segment (selected.segment_floating);
+				
 			when CAT_TEXT =>
 				null;
 				-- show_selected_text (selected.text);
@@ -324,7 +329,7 @@ package body et_canvas_board_conductors is
 					
 					-- CS arcs, circles
 
-					propose_segments (
+					propose_segments_net (
 						module_cursor	=> active_module, 
 						point			=> point, 
 						zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
@@ -332,7 +337,19 @@ package body et_canvas_board_conductors is
 						count			=> count_total,
 						log_threshold	=> log_threshold + 2);
 
-					-- CS freetracks, floating zones
+
+					-- floating zones:
+					propose_segments_floating (
+						module_cursor	=> active_module, 
+						point			=> point, 
+						zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
+						layer			=> layer,
+						count			=> count_total,
+						log_threshold	=> log_threshold + 2);
+
+
+					
+					-- CS freetracks
 				end if;
 			end loop;
 		end propose_objects;
