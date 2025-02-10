@@ -3812,144 +3812,145 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			net_cursor : pac_nets.cursor := module.nets.first;
+			net_cursor : pac_nets.cursor;
 			
-			use pac_route_solid;
-			zone_cursor_solid_net : pac_route_solid.cursor;
-			
-			use pac_route_hatched;
-			zone_cursor_hatched_net : pac_route_hatched.cursor;
-
-			use pac_contours;
-			use pac_segments;
-			
-			use pac_conductor_lines;
-
-
-			-- This procedure queries a line of a net:
-			procedure query_line_net (line_cursor : in pac_conductor_lines.cursor) is 
-
-				procedure collect is begin
-					result.append ((
-						cat			=> CAT_LINE_NET,
-						line_net	=> (net_cursor, line_cursor)));
-
-					-- Log the line and its linewidth:
-					log (text => to_string (line_cursor, true), level => log_threshold + 2);
-				end collect;
-
-				
-			begin
-				case flag is
-					when PROPOSED =>
-						if is_proposed (line_cursor) then
-							collect;
-						end if;
-
-					when SELECTED =>
-						if is_selected (line_cursor) then
-							collect;
-						end if;
-
-					when others =>
-						null; -- CS
-				end case;
-			end query_line_net;
-
-
-			
-			-- This procedure queries a solidly filled zone of a net:
-			procedure query_zone_solid_net (zone : in type_route_solid) is
-				
-				procedure query_segment (segment_cursor : in pac_segments.cursor) is 
-					
-					procedure collect is begin
-						result.append ((
-							cat			=> CAT_ZONE_SEGMENT_NET,
-							segment_net	=> (SOLID, segment_cursor, net_cursor, zone_cursor_solid_net)));
-	
-						log (text => to_string (segment_cursor), level => log_threshold + 2);
-					end collect;
-
-					
-				begin
-					case flag is
-						when PROPOSED =>
-							if is_proposed (segment_cursor) then
-								collect;
-							end if;
-							
-						when SELECTED =>
-							if is_selected (segment_cursor) then
-								collect;
-							end if;
-							
-						when others => null;  -- CS
-					end case;
-				end query_segment;
-
-				
-			begin
-				if zone.contour.circular then
-					null; -- CS
-				else
-					-- Iterate all segments of the candidate zone:
-					iterate (zone.contour.segments, query_segment'access);
-				end if;
-			end query_zone_solid_net;
-
-
-
-			
-
-			-- This procedure queries a hatched fill zone of a net:			
-			procedure query_zone_hatched_net (zone : in type_route_hatched) is
-				
-				procedure query_segment (segment_cursor : in pac_segments.cursor) is 
-
-					procedure collect is begin
-						result.append ((
-							cat			=> CAT_ZONE_SEGMENT_NET,
-							segment_net	=> (HATCHED, segment_cursor, net_cursor, zone_cursor_hatched_net)));
-	
-						log (text => to_string (segment_cursor), level => log_threshold + 2);
-					end collect;
-
-					
-				begin
-					case flag is
-						when PROPOSED =>
-							if is_proposed (segment_cursor) then
-								collect;
-							end if;
-
-						when SELECTED =>
-							if is_selected (segment_cursor) then
-								collect;
-							end if;
-							
-						when others => null; -- CS
-					end case;
-				end query_segment;
-
-				
-			begin
-				if zone.contour.circular then
-					null; -- CS
-				else
-					-- Iterate all segments of the candidate zone:
-					iterate (zone.contour.segments, query_segment'access);
-				end if;
-			end query_zone_hatched_net;
-
-
-
-
 			-- This procedure queries a net:
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
-			is begin
+			is 
+				
+				use pac_route_solid;
+				zone_cursor_solid_net : pac_route_solid.cursor;
+				
+				use pac_route_hatched;
+				zone_cursor_hatched_net : pac_route_hatched.cursor;
+
+				use pac_contours;
+				use pac_segments;
+				
+				use pac_conductor_lines;
+
+
+				-- This procedure queries a line of a net:
+				procedure query_line_net (line_cursor : in pac_conductor_lines.cursor) is 
+
+					procedure collect is begin
+						result.append ((
+							cat			=> CAT_LINE_NET,
+							line_net	=> (net_cursor, line_cursor)));
+
+						-- Log the line and its linewidth:
+						log (text => to_string (line_cursor, true), level => log_threshold + 2);
+					end collect;
+
+					
+				begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (line_cursor) then
+								collect;
+							end if;
+
+						when SELECTED =>
+							if is_selected (line_cursor) then
+								collect;
+							end if;
+
+						when others =>
+							null; -- CS
+					end case;
+				end query_line_net;
+
+
+				
+				-- This procedure queries a solidly filled zone of a net:
+				procedure query_zone_solid_net (zone : in type_route_solid) is
+					
+					procedure query_segment (segment_cursor : in pac_segments.cursor) is 
+						
+						procedure collect is begin
+							result.append ((
+								cat			=> CAT_ZONE_SEGMENT_NET,
+								segment_net	=> (SOLID, segment_cursor, net_cursor, zone_cursor_solid_net)));
+		
+							log (text => to_string (segment_cursor), level => log_threshold + 2);
+						end collect;
+
+						
+					begin
+						case flag is
+							when PROPOSED =>
+								if is_proposed (segment_cursor) then
+									collect;
+								end if;
+								
+							when SELECTED =>
+								if is_selected (segment_cursor) then
+									collect;
+								end if;
+								
+							when others => null;  -- CS
+						end case;
+					end query_segment;
+
+					
+				begin
+					if zone.contour.circular then
+						null; -- CS
+					else
+						-- Iterate all segments of the candidate zone:
+						iterate (zone.contour.segments, query_segment'access);
+					end if;
+				end query_zone_solid_net;
+
+
+
+				
+
+				-- This procedure queries a hatched fill zone of a net:			
+				procedure query_zone_hatched_net (zone : in type_route_hatched) is
+					
+					procedure query_segment (segment_cursor : in pac_segments.cursor) is 
+
+						procedure collect is begin
+							result.append ((
+								cat			=> CAT_ZONE_SEGMENT_NET,
+								segment_net	=> (HATCHED, segment_cursor, net_cursor, zone_cursor_hatched_net)));
+		
+							log (text => to_string (segment_cursor), level => log_threshold + 2);
+						end collect;
+
+						
+					begin
+						case flag is
+							when PROPOSED =>
+								if is_proposed (segment_cursor) then
+									collect;
+								end if;
+
+							when SELECTED =>
+								if is_selected (segment_cursor) then
+									collect;
+								end if;
+								
+							when others => null; -- CS
+						end case;
+					end query_segment;
+
+					
+				begin
+					if zone.contour.circular then
+						null; -- CS
+					else
+						-- Iterate all segments of the candidate zone:
+						iterate (zone.contour.segments, query_segment'access);
+					end if;
+				end query_zone_hatched_net;
+
+
+
+			begin
 				log (text => to_string (net_name), level => log_threshold + 2);
 				log_indentation_up;
 				
@@ -3979,11 +3980,25 @@ package body et_board_ops.conductors is
 			end query_net;
 
 
+			
 
 			-- This procedure queries objects which are floating
 			-- such as lines, arcs, circles, zones, texts and text placeholders:
 			procedure process_floating_objects is
 
+				use pac_floating_solid;
+				zcs : pac_floating_solid.cursor := module.board.conductors.zones.solid.first;
+				
+				use pac_floating_hatched;
+				zch : pac_floating_hatched.cursor := module.board.conductors.zones.hatched.first;
+				
+				use pac_contours;
+				use pac_segments;
+
+				use pac_conductor_lines;
+				
+
+				-- This procedure queries a floating line:
 				procedure query_line (c : in pac_conductor_lines.cursor) is 
 
 					procedure collect is begin
@@ -4012,6 +4027,96 @@ package body et_board_ops.conductors is
 							null; -- CS
 					end case;
 				end query_line;
+
+
+				-- CS query_arc
+				
+				
+				-- This procedure queries a floating solidly filled zone:				
+				procedure query_zone_solid (zone : in type_floating_solid) is
+
+					-- This procedure queries a contour line of the candidate zone:
+					procedure query_segment (segment_cursor : in pac_segments.cursor) is 
+
+						procedure collect is begin
+							result.append ((
+								cat					=> CAT_ZONE_SEGMENT_FLOATING,
+								segment_floating	=> (SOLID, segment_cursor, zcs)));
+		
+							log (text => to_string (segment_cursor), level => log_threshold + 2);
+						end collect;
+
+						
+					begin
+						case flag is
+							when PROPOSED =>
+								if is_proposed (segment_cursor) then
+									collect;
+								end if;
+
+							when SELECTED =>
+								if is_selected (segment_cursor) then
+									collect;
+								end if;
+								
+							when others => null; -- CS
+						end case;
+					end query_segment;
+
+					
+				begin
+					if zone.contour.circular then
+						null; -- CS
+					else
+						-- Iterate all segments of the candidate zone:
+						iterate (zone.contour.segments, query_segment'access);
+					end if;
+				end query_zone_solid;
+
+
+				
+
+				
+				-- This procedure queries a floating hatched zone:
+				procedure query_zone_hatched (zone : in type_floating_hatched) is
+
+					-- This procedure queries a contour line of the candidate zone:
+					procedure query_segment (segment_cursor : in pac_segments.cursor) is 
+
+						procedure collect is begin
+							result.append ((
+								cat					=> CAT_ZONE_SEGMENT_FLOATING,
+								segment_floating	=> (HATCHED, segment_cursor, zch)));
+		
+							log (text => to_string (segment_cursor), level => log_threshold + 2);
+						end collect;
+
+						
+					begin
+						case flag is
+							when PROPOSED =>
+								if is_proposed (segment_cursor) then
+									collect;
+								end if;
+
+							when SELECTED =>
+								if is_selected (segment_cursor) then
+									collect;
+								end if;
+								
+							when others => null; -- CS
+						end case;
+					end query_segment;
+					
+				begin
+					if zone.contour.circular then
+						null; -- CS
+					else
+						-- Iterate all segments of the candidate zone:
+						iterate (zone.contour.segments, query_segment'access);
+					end if;
+				end query_zone_hatched;
+
 				
 	-- 
 	-- 			procedure query_text (text : in type_doc_text) is begin
@@ -4025,25 +4130,44 @@ package body et_board_ops.conductors is
 	-- 			end query_text;
 				
 			begin
+				-- Iterate all floating lines:
 				iterate (module.board.conductors.lines, query_line'access);
-				-- CS arcs, circles, zones, texts, placeholders
+				-- CS arcs, circles, texts, placeholders
+
+				-- Iterate all floating solidly filled zones:
+				while zcs /= pac_floating_solid.no_element loop
+					query_element (zcs, query_zone_solid'access);
+					next (zcs);
+				end loop;
+
+				-- Iterate all floating hatched zones:
+				while zch /= pac_floating_hatched.no_element loop
+					query_element (zcH, query_zone_hatched'access);
+					next (zch);
+				end loop;
+				
 			end process_floating_objects;
 			
 		
 		begin
+			-- Process things connected with a net:
 			log (text => "nets", level => log_threshold + 1);
 			log_indentation_up;
 
+			net_cursor := module.nets.first;
 			while net_cursor /= pac_nets.no_element loop
 				query_element (net_cursor, query_net'access);
 				next (net_cursor);
 			end loop;
 
-
-			log (text => "floating conductor objects", level => log_threshold + 1);
-			process_floating_objects;
-			
 			log_indentation_down;
+
+			-- Process floating objects:
+			log (text => "floating conductor objects", level => log_threshold + 1);
+			log_indentation_up;
+			process_floating_objects;
+			log_indentation_down;
+			
 		end query_module;
 
 		

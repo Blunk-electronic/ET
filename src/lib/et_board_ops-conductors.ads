@@ -647,12 +647,22 @@ package et_board_ops.conductors is
 	-- texts, placeholders into a single type:
 	type type_object (cat : type_object_category) is record
 		case cat is
-			when CAT_VOID			=> null;
-			when CAT_ZONE_SEGMENT_NET		=> segment_net		: type_object_segment_net;
-			when CAT_ZONE_SEGMENT_FLOATING	=> segment_floating	: type_object_segment_floating;
-			when CAT_LINE_NET		=> line_net			: type_object_line_net;
-			when CAT_LINE_FLOATING	=> line_floating	: type_object_line_floating;
-			when CAT_TEXT			=> text		: type_object_text;
+			when CAT_VOID => null;
+			
+			when CAT_ZONE_SEGMENT_NET =>
+				segment_net			: type_object_segment_net;
+				
+			when CAT_ZONE_SEGMENT_FLOATING =>
+				segment_floating	: type_object_segment_floating;
+				
+			when CAT_LINE_NET =>
+				line_net			: type_object_line_net;
+				
+			when CAT_LINE_FLOATING=>
+				line_floating		: type_object_line_floating;
+				
+			when CAT_TEXT =>
+				text				: type_object_text;
 		end case;
 	end record;
 
