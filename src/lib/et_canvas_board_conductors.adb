@@ -66,7 +66,7 @@ package body et_canvas_board_conductors is
 	
 	
 	-- Outputs the selected line in the status bar:
-	procedure show_selected_line (
+	procedure show_selected_line_net (
 		selected		: in type_object_line_net;
 		clarification	: in boolean := false)
 	is 
@@ -83,12 +83,12 @@ package body et_canvas_board_conductors is
 				& to_string (selected.line_cursor, true) -- start/end point/width/layer
 				& " net " & to_string (selected.net_cursor));
 		end if;		
-	end show_selected_line;
+	end show_selected_line_net;
 
 
 
 	-- Outputs the selected line in the status bar:
-	procedure show_selected_line (
+	procedure show_selected_line_floating (
 		selected		: in type_object_line_floating;
 		clarification	: in boolean := false)
 	is 
@@ -103,13 +103,13 @@ package body et_canvas_board_conductors is
 				& to_string (selected.line_cursor, true) -- start/end point/width/layer
 				& " floating.");			
 		end if;		
-	end show_selected_line;
+	end show_selected_line_floating;
 
 	
 	
 
 	-- Outputs the selected segment in the status bar:
-	procedure show_selected_segment (
+	procedure show_selected_segment_net (
 		selected		: in type_object_segment_net;
 		clarification	: in boolean := false)
 	is 
@@ -128,10 +128,33 @@ package body et_canvas_board_conductors is
 			set_status (praeamble & to_string (selected.segment)
 				& " net " & to_string (selected.net));
 		end if;		
-	end show_selected_segment;
+	end show_selected_segment_net;
 
 	
 
+
+	-- Outputs the selected segment in the status bar:
+	procedure show_selected_segment_floating (
+		selected		: in type_object_segment_floating;
+		clarification	: in boolean := false)
+	is 
+		praeamble : constant string := "selected: ";
+
+		use et_nets;
+		use et_board_shapes_and_text.pac_contours;
+	begin
+		if clarification then
+			set_status (praeamble & to_string (selected.segment)
+				-- & " layer" & to_string (selected.laface) & ". " 
+				-- CS read properties of zone to get the layer number
+				& status_next_object_clarification);
+		else
+			set_status (praeamble & to_string (selected.segment));
+		end if;		
+	end show_selected_segment_floating;
+
+
+	
 
 
 	procedure show_selected_object (
@@ -140,19 +163,16 @@ package body et_canvas_board_conductors is
 	is begin
 		case selected.cat is
 			when CAT_LINE_NET =>
-				show_selected_line (selected.line_net);
+				show_selected_line_net (selected.line_net);
 
 			when CAT_LINE_FLOATING =>
-				show_selected_line (selected.line_floating);
-				-- CS
+				show_selected_line_floating (selected.line_floating);
 				
 			when CAT_ZONE_SEGMENT_NET =>
-				show_selected_segment (selected.segment_net);
+				show_selected_segment_net (selected.segment_net);
 
 			when CAT_ZONE_SEGMENT_FLOATING =>
-				-- CS
-				null;
-				-- show_selected_segment (selected.segment_floating);
+				show_selected_segment_floating (selected.segment_floating);
 				
 			when CAT_TEXT =>
 				null;
