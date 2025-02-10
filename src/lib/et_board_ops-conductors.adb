@@ -3150,7 +3150,7 @@ package body et_board_ops.conductors is
 
 	
 
-	procedure move_segment (
+	procedure move_segment_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment_net;
 		point_of_attack	: in type_vector_model;
@@ -3228,6 +3228,7 @@ package body et_board_ops.conductors is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " moving zone segment " & to_string (segment.segment)
+			& " of net " & to_string (segment.net)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
@@ -3239,14 +3240,100 @@ package body et_board_ops.conductors is
 			process		=> query_module'access);
 		
 		log_indentation_down;
-	end move_segment;
+	end move_segment_net;
 
+
+
+
+
+
+	procedure move_segment_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment_floating;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+		use pac_contours;
+		use pac_segments;
+		use pac_floating_solid;
+		use pac_floating_hatched;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			-- Moves the candidate segment:
+			procedure query_segment (s : in out type_segment) is begin
+				case s.shape is
+					when LINE =>
+						move_line_to (s.segment_line, point_of_attack, destination);
+
+					when ARC =>
+						null;
+						-- CS
+				end case;
+			end query_segment;
+
+			
+			procedure query_zone_solid (zone : in out type_floating_solid) is begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					-- Locate the given segment:
+					update_element (zone.contour.segments, segment.segment, query_segment'access);
+				end if;
+			end query_zone_solid;
+
+			
+			procedure query_zone_hatched (zone : in out type_floating_hatched) is begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					-- Locate the given segment:
+					update_element (zone.contour.segments, segment.segment, query_segment'access);
+				end if;
+			end query_zone_hatched;
+
+				
+		begin
+			-- Locate the zone as given by the segment:
+			case segment.fill_style is
+				when SOLID =>
+					update_element (module.board.conductors.zones.solid, segment.zone_solid, query_zone_solid'access);
+
+				when HATCHED =>
+					update_element (module.board.conductors.zones.hatched, segment.zone_hatched, query_zone_hatched'access);
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving floating zone segment " & to_string (segment.segment)
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end move_segment_floating;
 
 
 	
 
 
-	procedure delete_segment (
+	
+
+	procedure delete_segment_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment_net;
 		log_threshold	: in type_log_level)
@@ -3311,7 +3398,8 @@ package body et_board_ops.conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting zone segment " & to_string (segment.segment),
+			& " deleting zone segment " & to_string (segment.segment)
+			& " of net " & to_string (segment.net),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -3321,10 +3409,81 @@ package body et_board_ops.conductors is
 			process		=> query_module'access);
 		
 		log_indentation_down;
-	end delete_segment;
+	end delete_segment_net;
 
 
 
+
+
+
+	procedure delete_segment_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment_floating;
+		log_threshold	: in type_log_level)
+	is
+		use pac_contours;
+		use pac_segments;
+		use pac_floating_solid;
+		use pac_floating_hatched;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+				
+			procedure query_zone_solid (zone : in out type_floating_solid) is 
+				c : pac_segments.cursor := segment.segment;
+			begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					-- Delete the given segment:
+					delete (zone.contour.segments, c);
+				end if;
+			end query_zone_solid;
+
+			
+			procedure query_zone_hatched (zone : in out type_floating_hatched) is 
+				c : pac_segments.cursor := segment.segment;
+			begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					-- Delete the given segment:
+					delete (zone.contour.segments, c);
+				end if;
+			end query_zone_hatched;
+
+				
+		begin
+			-- Locate the zone as given by the segment:
+			case segment.fill_style is
+				when SOLID =>
+					update_element (module.board.conductors.zones.solid, segment.zone_solid, query_zone_solid'access);
+
+				when HATCHED =>
+					update_element (module.board.conductors.zones.hatched, segment.zone_hatched, query_zone_hatched'access);
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " deleting floating zone segment " & to_string (segment.segment),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end delete_segment_floating;
+
+	
 	
 	
 
@@ -3476,7 +3635,7 @@ package body et_board_ops.conductors is
 		return type_object
 	is
 		result_category : type_object_category := CAT_VOID;
-		result_segment  : type_object_segment_net; -- CS rename to result_segment_net
+		result_segment_net  	: type_object_segment_net;
 		result_segment_floating : type_object_segment_floating;
 		result_line_net			: type_object_line_net;
 		result_line_floating	: type_object_line_floating;
@@ -3495,7 +3654,7 @@ package body et_board_ops.conductors is
 
 		log_indentation_up;
 		
-		-- 1. SEARCH FOR A LINE OF A NET:
+		-- SEARCH FOR A LINE OF A NET:
 		
 		-- If a line has been found, then go to the end of this procedure:
 		result_line_net := get_first_line_net (module_cursor, flag, log_threshold + 1);
@@ -3515,7 +3674,7 @@ package body et_board_ops.conductors is
 
 
 
-		-- 2. SEARCH FOR A FLOATING LINE (OF A FREETRACK):
+		-- SEARCH FOR A FLOATING LINE (OF A FREETRACK):
 		
 		-- If a line has been found, then go to the end of this procedure:
 		result_line_floating := get_first_line_floating (module_cursor, flag, log_threshold + 1);
@@ -3545,18 +3704,20 @@ package body et_board_ops.conductors is
 		-- If there is one, then go to the end of this procedure:
 		-- CS
 
+		
+		-- SEARCH FOR A SEGMENT OF A CONNECTED ZONE:
 
-		-- Now search for a segment of a zone.
+		-- Now search for a segment of a connected zone.
 		-- If there is one, then go to the end  of this procedure:
-		result_segment := get_first_segment_net (module_cursor, flag, log_threshold + 1);
+		result_segment_net := get_first_segment_net (module_cursor, flag, log_threshold + 1);
 
-		if result_segment.segment /= pac_segments.no_element then
+		if result_segment_net.segment /= pac_segments.no_element then
 			-- A segment has been found.
-			log (text => to_string (result_segment.segment),
+			log (text => to_string (result_segment_net.segment),
 				 -- CS face
 				 level => log_threshold + 1);
 			
-			result_category := CAT_ZONE_SEGMENT;
+			result_category := CAT_ZONE_SEGMENT_NET;
 		end if;
 
 		-- If an object has been found, then the search is done:
@@ -3565,6 +3726,28 @@ package body et_board_ops.conductors is
 		end if;
 
 
+
+		-- SEARCH FOR A SEGMENT OF A FLOATING ZONE:
+		
+		-- If there is one, then go to the end  of this procedure:
+		result_segment_floating := get_first_segment_floating (module_cursor, flag, log_threshold + 1);
+
+		if result_segment_floating.segment /= pac_segments.no_element then
+			-- A segment has been found.
+			log (text => to_string (result_segment_floating.segment),
+				 -- CS face
+				 level => log_threshold + 1);
+			
+			result_category := CAT_ZONE_SEGMENT_FLOATING;
+		end if;
+
+		-- If an object has been found, then the search is done:
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
+
+		
 		-- CS placeholder
 
 		-- CS freetracks
@@ -3599,8 +3782,8 @@ package body et_board_ops.conductors is
 			when CAT_LINE_FLOATING =>
 				return (CAT_LINE_FLOATING, result_line_floating);
 				
-			when CAT_ZONE_SEGMENT =>
-				return (CAT_ZONE_SEGMENT, result_segment);
+			when CAT_ZONE_SEGMENT_NET =>
+				return (CAT_ZONE_SEGMENT_NET, result_segment_net);
 
 			when CAT_ZONE_SEGMENT_FLOATING =>
 				return (CAT_ZONE_SEGMENT_FLOATING, result_segment_floating);
@@ -3682,8 +3865,8 @@ package body et_board_ops.conductors is
 					
 					procedure collect is begin
 						result.append ((
-							cat		=> CAT_ZONE_SEGMENT,
-							segment	=> (SOLID, segment_cursor, net_cursor, zone_cursor_solid_net)));
+							cat			=> CAT_ZONE_SEGMENT_NET,
+							segment_net	=> (SOLID, segment_cursor, net_cursor, zone_cursor_solid_net)));
 	
 						log (text => to_string (segment_cursor), level => log_threshold + 2);
 					end collect;
@@ -3726,8 +3909,8 @@ package body et_board_ops.conductors is
 
 					procedure collect is begin
 						result.append ((
-							cat		=> CAT_ZONE_SEGMENT,
-							segment	=> (HATCHED, segment_cursor, net_cursor, zone_cursor_hatched_net)));
+							cat			=> CAT_ZONE_SEGMENT_NET,
+							segment_net	=> (HATCHED, segment_cursor, net_cursor, zone_cursor_hatched_net)));
 	
 						log (text => to_string (segment_cursor), level => log_threshold + 2);
 					end collect;
@@ -3906,8 +4089,8 @@ package body et_board_ops.conductors is
 			when CAT_LINE_FLOATING =>
 				modify_status (module_cursor, object.line_floating, operation, log_threshold + 1);
 				
-			when CAT_ZONE_SEGMENT =>
-				modify_status (module_cursor, object.segment, operation, log_threshold + 1);
+			when CAT_ZONE_SEGMENT_NET =>
+				modify_status (module_cursor, object.segment_net, operation, log_threshold + 1);
 
 			when CAT_ZONE_SEGMENT_FLOATING =>
 				modify_status (module_cursor, object.segment_floating, operation, log_threshold + 1);
@@ -3984,18 +4167,25 @@ package body et_board_ops.conductors is
 					log_threshold	=> log_threshold + 1);
 
 				
-			when CAT_ZONE_SEGMENT =>
+			when CAT_ZONE_SEGMENT_NET =>
 				
-				move_segment (
+				move_segment_net (
 					module_cursor	=> module_cursor,
-					segment			=> object.segment,
+					segment			=> object.segment_net,
 					point_of_attack	=> point_of_attack, 
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
 
 
 			when CAT_ZONE_SEGMENT_FLOATING =>
-				null; -- CS
+
+				move_segment_floating (
+					module_cursor	=> module_cursor,
+					segment			=> object.segment_floating,
+					point_of_attack	=> point_of_attack, 
+					destination		=> destination,
+					log_threshold	=> log_threshold + 1);
+
 				
 			when CAT_TEXT =>
 				null;
@@ -4061,16 +4251,21 @@ package body et_board_ops.conductors is
 
 				
 				
-			when CAT_ZONE_SEGMENT =>
+			when CAT_ZONE_SEGMENT_NET =>
 
-				delete_segment (
+				delete_segment_net (
 					module_cursor	=> module_cursor, 
-					segment			=> object.segment,
+					segment			=> object.segment_net,
 					log_threshold	=> log_threshold + 1);
 
 				
 			when CAT_ZONE_SEGMENT_FLOATING =>
-				null; -- CS
+
+				delete_segment_floating (
+					module_cursor	=> module_cursor, 
+					segment			=> object.segment_floating,
+					log_threshold	=> log_threshold + 1);
+
 
 				
 			when CAT_TEXT =>

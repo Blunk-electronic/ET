@@ -146,8 +146,8 @@ package body et_canvas_board_conductors is
 				show_selected_line (selected.line_floating);
 				-- CS
 				
-			when CAT_ZONE_SEGMENT =>
-				show_selected_segment (selected.segment);
+			when CAT_ZONE_SEGMENT_NET =>
+				show_selected_segment (selected.segment_net);
 
 			when CAT_ZONE_SEGMENT_FLOATING =>
 				-- CS

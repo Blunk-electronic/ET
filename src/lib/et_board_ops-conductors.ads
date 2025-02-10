@@ -559,10 +559,10 @@ package et_board_ops.conductors is
 
 
 	
-	-- Moves a line or arc segment of a zone:
+	-- Moves a contour segment of a connected zone:
 	-- CS currently it moves only a single segment.
 	-- CS provide parameter for move mode (move attached segments, move whole contour)
-	procedure move_segment ( -- CS rename to move_segment_net ?
+	procedure move_segment_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment_net;
 		point_of_attack	: in type_vector_model;
@@ -571,14 +571,30 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level);
 
 	
+	-- Moves a contour segment of a floating zone:
+	-- CS currently it moves only a single segment.
+	-- CS provide parameter for move mode (move attached segments, move whole contour)
+	procedure move_segment_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment_floating;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
 
-	-- Deletes a line or arc segment of a zone:
-	procedure delete_segment ( -- CS rename to delete_segment_net ?
+	
+	-- Deletes a contour segment of a connected zone:
+	procedure delete_segment_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_object_segment_net;
 		log_threshold	: in type_log_level);
 
 
+	-- Deletes a contour segment of a floating zone:
+	procedure delete_segment_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment_floating;
+		log_threshold	: in type_log_level);
 
 	
 	
@@ -621,7 +637,7 @@ package et_board_ops.conductors is
 		CAT_VOID,
 		CAT_LINE_NET,
 		CAT_LINE_FLOATING,
-		CAT_ZONE_SEGMENT, -- CS rename to CAT_ZONE_SEGMENT_NET
+		CAT_ZONE_SEGMENT_NET,
 		CAT_ZONE_SEGMENT_FLOATING,
 		CAT_TEXT
 		);
@@ -632,7 +648,7 @@ package et_board_ops.conductors is
 	type type_object (cat : type_object_category) is record
 		case cat is
 			when CAT_VOID			=> null;
-			when CAT_ZONE_SEGMENT	=> segment	: type_object_segment_net;
+			when CAT_ZONE_SEGMENT_NET		=> segment_net		: type_object_segment_net;
 			when CAT_ZONE_SEGMENT_FLOATING	=> segment_floating	: type_object_segment_floating;
 			when CAT_LINE_NET		=> line_net			: type_object_line_net;
 			when CAT_LINE_FLOATING	=> line_floating	: type_object_line_floating;
