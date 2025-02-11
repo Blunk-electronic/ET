@@ -229,59 +229,6 @@ procedure draw_conductors is
 			draw_line (line => line, width => line.width, do_stroke => true);
 		end draw;
 
-
-		
-		-- procedure draw_track_being_moved is 
-		-- 	use et_canvas_board_tracks;
-		-- begin
-		-- 	if preliminary_segment.ready then
-		-- 		declare
-		-- 			line_tmp : type_conductor_line := line;
-		-- 			POA : type_vector_model renames preliminary_segment.point_of_attack;
-		-- 		begin
-		-- 			case preliminary_segment.tool is
-		-- 				when MOUSE =>
-		-- 					move_line_to (line_tmp, POA, snap_to_grid (get_mouse_position));
-  -- 
-		-- 				when KEYBOARD =>
-		-- 					move_line_to (line_tmp, POA, get_cursor_position);
-		-- 			end case;
-  -- 
-		-- 			draw_line (line => line_tmp, width => line.width, do_stroke => true);
-		-- 		end;
-		-- 	else
-		-- 		draw;
-		-- 	end if;
-		-- end draw_track_being_moved;
-
-
-		
-		-- procedure draw_freetrack_being_moved is
-		-- 	use et_canvas_board_freetracks;
-		-- begin
-		-- 	if object_ready then
-		-- 		declare
-		-- 			line_tmp : type_conductor_line := line;
-		-- 			POA : type_vector_model renames point_of_attack;
-		-- 		begin
-		-- 			case object_tool is
-		-- 				when MOUSE =>
-		-- 					move_line_to (line_tmp, POA, snap_to_grid (get_mouse_position));
-  -- 
-		-- 				when KEYBOARD =>
-		-- 					move_line_to (line_tmp, POA, get_cursor_position);
-		-- 			end case;
-  -- 
-		-- 			draw_line (line => line_tmp, width => line.width, do_stroke => true);
-		-- 		end;
-		-- 	else
-		-- 		draw;
-		-- 	end if;
-		-- end draw_freetrack_being_moved;
-
-		
-		
-		-- use et_canvas_board_tracks;
 		
 	begin
 		-- Draw the line if it is in the current layer:
@@ -290,31 +237,7 @@ procedure draw_conductors is
 			-- If the segment is selected, then it must be drawn highlighted:
 			if is_selected (line) then
 				set_highlight_brightness;
-
 				draw;
-				
--- 				case verb is
--- 					-- If the segment is being moved, then a temporarily
--- 					-- segment must be drawn instead of the original one:
--- 					when VERB_MOVE =>
--- 						case noun is
--- 							when NOUN_TRACK => draw_track_being_moved;
--- 							when NOUN_FREETRACK => draw_freetrack_being_moved;
--- 							when others => null;
--- 						end case;
--- 						
--- 					-- when VERB_DELETE =>
--- 					-- 	if preliminary_segment.ready then
--- 					-- 		draw_line (line => line, width => line.width, do_stroke => true);
--- 					-- 	else
--- 					-- 		draw;
--- 					-- 	end if;
--- 						
--- 					when others =>
--- 						draw;
--- 						
--- 				end case;
-
 				set_default_brightness;
 			else
 				draw;
