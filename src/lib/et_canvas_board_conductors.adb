@@ -40,6 +40,7 @@
 
 with et_generic_module;						use et_generic_module;
 with et_canvas_board_2;
+with et_conductor_text.boards;
 with et_board_ops;
 with et_board_ops.conductors;				use et_board_ops.conductors;
 with et_logging;							use et_logging;
@@ -50,7 +51,6 @@ with et_commit;
 with et_keywords;							use et_keywords;
 with et_object_status;						use et_object_status;
 with et_nets;
-
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 
 
@@ -153,9 +153,28 @@ package body et_canvas_board_conductors is
 		end if;		
 	end show_selected_segment_floating;
 
-
 	
 
+	
+	-- Outputs the selected text in the status bar:
+	procedure show_selected_text (
+		selected		: in type_object_text;
+		clarification	: in boolean := false)
+	is 
+		praeamble : constant string := "selected: ";
+
+		use et_conductor_text.boards;
+	begin
+		if clarification then
+			set_status (praeamble & to_string (selected.cursor)
+				& status_next_object_clarification);
+		else
+			set_status (praeamble & to_string (selected.cursor));
+		end if;		
+	end show_selected_text;
+
+
+	
 
 	procedure show_selected_object (
 		selected		: in type_object;
@@ -175,8 +194,7 @@ package body et_canvas_board_conductors is
 				show_selected_segment_floating (selected.segment_floating);
 				
 			when CAT_TEXT =>
-				null;
-				-- show_selected_text (selected.text);
+				show_selected_text (selected.text);
 				
 			when CAT_VOID =>
 				null; -- CS
@@ -367,9 +385,15 @@ package body et_canvas_board_conductors is
 						count			=> count_total,
 						log_threshold	=> log_threshold + 2);
 
-
 					
-					-- CS freetracks
+					propose_texts (
+						module_cursor	=> active_module, 
+						point			=> point, 
+						zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
+						layer			=> layer,
+						count			=> count_total,
+						log_threshold	=> log_threshold + 2);
+
 				end if;
 			end loop;
 		end propose_objects;

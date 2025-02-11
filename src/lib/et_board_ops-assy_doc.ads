@@ -327,7 +327,8 @@ package et_board_ops.assy_doc is
 	end record;
 
 
-
+	-- This procedure sets the status flag of the
+	-- given text object:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		text			: in type_object_text;
