@@ -559,7 +559,7 @@ procedure draw_conductors is
 		-- Draw the text if it is in the current layer:
 		if text.layer = current_layer then
 
-			if is_selected (c) then
+			if et_canvas_board_texts.is_selected (c) then
 				-- The selected text must be drawn highlighted:
 				set_color_conductor (current_layer, BRIGHT);
 

@@ -3623,9 +3623,310 @@ package body et_board_ops.conductors is
 
 
 
+	
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+
+			procedure query_text (text : in out type_conductor_text) is begin
+				modify_status (text, operation);
+			end query_text;
+			
+		begin
+			module.board.conductors_floating.texts.update_element (
+				text.cursor, query_text'access);
+
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of text" -- CS log position and content ?
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end modify_status;
 
 
 
+
+
+
+	procedure propose_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		layer			: in type_signal_layer;
+		zone			: in type_accuracy;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_conductor_texts;
+			c : pac_conductor_texts.cursor := module.board.conductors_floating.texts.first;
+
+			procedure query_text (
+				text	: in out type_conductor_text)
+			is begin
+				if within_accuracy (
+					point_1	=> point,
+					zone	=> zone,
+					point_2	=> get_place (text))
+				then
+					set_proposed (text);
+					count := count + 1;
+					log (text => to_string (text), level => log_threshold + 1);
+				end if;
+			end query_text;
+			
+			
+		begin
+			while c /= pac_conductor_texts.no_element loop
+				module.board.conductors_floating.texts.update_element (c, query_text'access);
+				next (c);
+			end loop;
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " proposing texts at " & to_string (point)
+			 & " layer " & to_string (layer)
+			 & " zone " & accuracy_to_string (zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_texts;
+
+
+
+
+
+
+	procedure move_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+
+			procedure query_text (text : in out type_conductor_text) is begin
+				move_text (text, destination);
+			end query_text;
+			
+		begin
+			module.board.conductors_floating.texts.update_element (
+				text.cursor, query_text'access);
+
+		end query_module;
+		
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving conductor text " & to_string (text.cursor)
+			& " " & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end move_text;
+
+	
+
+
+	procedure delete_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			c : pac_conductor_texts.cursor := text.cursor;			
+		begin
+			module.board.conductors_floating.texts.delete (c);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " deleting conductor text " & to_string (text.cursor),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end delete_text;
+
+
+	
+
+
+
+	function get_first_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_text
+	is
+		result : type_object_text;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_conductor_texts;
+			
+			proceed : aliased boolean := true;
+
+			texts : pac_conductor_texts.list renames module.board.conductors_floating.texts;
+
+			
+			procedure query_text (c : in pac_conductor_texts.cursor) is
+				use et_object_status;
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (c) then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when SELECTED =>
+						if is_selected (c) then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when others =>
+						null; -- CS
+				end case;
+			end query_text;
+	
+			
+		begin
+			-- Query the texts:
+			iterate (texts, query_text'access, proceed'access);
+
+			-- If nothing found, return no_element:
+			if proceed then
+				result := (others => <>);	
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first text / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- put_line ("found " & to_string (result));
+		
+		log_indentation_down;
+
+		return result;
+	end get_first_text;
+
+	
+
+
+	
+
+	procedure reset_proposed_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_text (
+				text	: in out type_conductor_text)
+			is begin
+				reset_status (text);
+			end query_text;
+
+			use pac_conductor_texts;
+			c : pac_conductor_texts.cursor := module.board.conductors_floating.texts.first;
+		begin
+			while c /= pac_conductor_texts.no_element loop
+				module.board.conductors_floating.texts.update_element (
+					c, query_text'access);
+				next (c);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " resetting proposed texts",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_texts;
+
+
+	
+	
 
 
 	function get_first_object (
@@ -3634,12 +3935,12 @@ package body et_board_ops.conductors is
 		log_threshold	: in type_log_level)
 		return type_object
 	is
-		result_category : type_object_category := CAT_VOID;
+		result_category			: type_object_category := CAT_VOID;
 		result_segment_net  	: type_object_segment_net;
 		result_segment_floating : type_object_segment_floating;
 		result_line_net			: type_object_line_net;
 		result_line_floating	: type_object_line_floating;
-		result_text		: type_object_text;
+		result_text				: type_object_text;
 
 		use pac_contours;
 		use pac_segments;
@@ -3753,16 +4054,15 @@ package body et_board_ops.conductors is
 		-- CS freetracks
 		
 		-- Now search for a text:
--- 		result_text := get_first_text (module_cursor, flag, log_threshold + 1);
--- 		
--- 		if result_text.cursor /= pac_doc_texts.no_element then
--- 			-- A text has been found.
--- 			log (text => to_string (result_text.cursor)
--- 					& " face " & to_string (result_text.face),
--- 					level => log_threshold + 1);
--- 			
--- 			result_category := CAT_TEXT;
--- 		end if;
+		result_text := get_first_text (module_cursor, flag, log_threshold + 1);
+		
+		if result_text.cursor /= pac_conductor_texts.no_element then
+			-- A text has been found.
+			log (text => to_string (result_text.cursor),
+				level => log_threshold + 1);
+			
+			result_category := CAT_TEXT;
+		end if;
 
 
 		-- If still nothing has been found then the category is CAT_VOID.
@@ -3985,13 +4285,6 @@ package body et_board_ops.conductors is
 			-- This procedure queries objects which are floating
 			-- such as lines, arcs, circles, zones, texts and text placeholders:
 			procedure process_floating_objects is
-
-				use pac_floating_solid;
-				zcs : pac_floating_solid.cursor := module.board.conductors_floating.zones.solid.first;
-				
-				use pac_floating_hatched;
-				zch : pac_floating_hatched.cursor := module.board.conductors_floating.zones.hatched.first;
-				
 				use pac_contours;
 				use pac_segments;
 
@@ -4031,6 +4324,11 @@ package body et_board_ops.conductors is
 
 				-- CS query_arc
 				
+
+
+				use pac_floating_solid;
+				zcs : pac_floating_solid.cursor := module.board.conductors_floating.zones.solid.first;
+
 				
 				-- This procedure queries a floating solidly filled zone:				
 				procedure query_zone_solid (zone : in type_floating_solid) is
@@ -4076,6 +4374,10 @@ package body et_board_ops.conductors is
 
 				
 
+
+				use pac_floating_hatched;
+				zch : pac_floating_hatched.cursor := module.board.conductors_floating.zones.hatched.first;
+
 				
 				-- This procedure queries a floating hatched zone:
 				procedure query_zone_hatched (zone : in type_floating_hatched) is
@@ -4117,23 +4419,33 @@ package body et_board_ops.conductors is
 					end if;
 				end query_zone_hatched;
 
+
+
 				
-	-- 
-	-- 			procedure query_text (text : in type_doc_text) is begin
-	-- 				if is_proposed (text) then
-	-- 					result.append ((
-	-- 						cat		=> CAT_TEXT,
-	-- 						text	=> (face, text_cursor)));
-	-- 
-	-- 					log (text => to_string (text), level => log_threshold + 2);
-	-- 				end if;
-	-- 			end query_text;
+				use pac_conductor_texts;
+				
+				procedure query_text (c : in pac_conductor_texts.cursor) is begin
+					if is_proposed (c) then
+						result.append ((
+							cat		=> CAT_TEXT,
+							text	=> (cursor => c)));
+	
+						log (text => to_string (c), level => log_threshold + 2);
+					end if;
+				end query_text;
+
+				
 				
 			begin
 				-- Iterate all floating lines:
 				iterate (module.board.conductors_floating.lines, query_line'access);
-				-- CS arcs, circles, texts, placeholders
 
+				-- Iterate all texts:
+				iterate (module.board.conductors_floating.texts, query_text'access);
+				
+				-- CS arcs, circles, placeholders
+
+				
 				-- Iterate all floating solidly filled zones:
 				while zcs /= pac_floating_solid.no_element loop
 					query_element (zcs, query_zone_solid'access);
@@ -4166,8 +4478,7 @@ package body et_board_ops.conductors is
 			log (text => "floating conductor objects", level => log_threshold + 1);
 			log_indentation_up;
 			process_floating_objects;
-			log_indentation_down;
-			
+			log_indentation_down;			
 		end query_module;
 
 		
@@ -4220,8 +4531,7 @@ package body et_board_ops.conductors is
 				modify_status (module_cursor, object.segment_floating, operation, log_threshold + 1);
 				
 			when CAT_TEXT =>
-				null; -- CS
-				-- modify_status (module_cursor, object.text, operation, log_threshold + 1);
+				modify_status (module_cursor, object.text, operation, log_threshold + 1);
 				
 			when CAT_VOID =>
 				null; -- CS
@@ -4312,12 +4622,12 @@ package body et_board_ops.conductors is
 
 				
 			when CAT_TEXT =>
-				null;
-				-- CS
-			-- 	move_text (module_cursor,
-			-- 		object.text,
-			-- 		destination,
-			-- 		log_threshold + 1);
+
+				move_text (
+					module_cursor	=> module_cursor,
+					text			=> object.text,
+					destination		=> destination,
+					log_threshold	=> log_threshold + 1);
 
 				
 			when CAT_VOID =>
@@ -4393,12 +4703,11 @@ package body et_board_ops.conductors is
 
 				
 			when CAT_TEXT =>
-				-- CS
-				null;
-				-- delete_text (
-				-- 	module_cursor	=> module_cursor, 
-				-- 	text			=> object.text,
-				-- 	log_threshold	=> log_threshold + 1);
+
+				delete_text (
+					module_cursor	=> module_cursor, 
+					text			=> object.text,
+					log_threshold	=> log_threshold + 1);
 
 								
 			when CAT_VOID =>
@@ -4437,10 +4746,11 @@ package body et_board_ops.conductors is
 
 		-- CS arcs, circles
 		
-		-- CS reset_proposed_texts (module_cursor, log_threshold + 1);
 		reset_proposed_segments_net (module_cursor, log_threshold + 1);
 		reset_proposed_segments_floating (module_cursor, log_threshold + 1);
 
+		reset_proposed_texts (module_cursor, log_threshold + 1);
+		
 		log_indentation_down;
 	end reset_proposed_objects;
 

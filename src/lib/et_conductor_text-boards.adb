@@ -2,24 +2,25 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                       CONDUCTOR TEXT BOARDS                              --
+--                        CONDUCTOR TEXT BOARDS                             --
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2025                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -38,9 +39,53 @@
 
 
 
+
 package body et_conductor_text.boards is
 
 
+	function to_string (
+		text	: in pac_conductor_texts.cursor)
+		return string
+	is begin
+		-- CS return position, layer, (content ?)
+		return "";
+	end to_string;
+
+
+
+	function is_selected (
+		text : in pac_conductor_texts.cursor)
+		return boolean
+	is 
+		t : type_conductor_text := element (text);
+	begin
+		if is_selected (t) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+	
+
+
+	function is_proposed (
+		text : in pac_conductor_texts.cursor)
+		return boolean
+	is 
+		t : type_conductor_text := element (text);
+	begin
+		if is_proposed (t) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_proposed;
+
+
+
+
+	
+	
 	procedure iterate (
 		texts	: in pac_conductor_texts.list;
 		process	: not null access procedure (position : in pac_conductor_texts.cursor);

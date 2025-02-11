@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -52,6 +52,27 @@ package et_conductor_text.boards is
 	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
 	use pac_conductor_texts;
 
+
+	-- Returns the given conductor text as string:
+	function to_string (
+		text : in pac_conductor_texts.cursor)
+		return string;
+
+
+	-- Returns true if the status flag "selected"
+	-- of a text is set:
+	function is_selected (
+		text : in pac_conductor_texts.cursor)
+		return boolean;
+
+
+	-- Returns true if the status flag "proposed"
+	-- of a text is set:
+	function is_proposed (
+		text : in pac_conductor_texts.cursor)
+		return boolean;
+
+	
 	
 	-- Iterates the texts. Aborts the process when the proceed-flag goes false:
 	procedure iterate (

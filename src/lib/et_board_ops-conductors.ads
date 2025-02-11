@@ -625,6 +625,54 @@ package et_board_ops.conductors is
 	end record;
 
 	
+	-- This procedure sets the status flag of the
+	-- given text object:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+
+	-- Sets the proposed-flag of all texts which have their
+	-- origin (or anchor point) in the given zone around the given place.
+	-- Adds to count the number of texts that have been found:
+	procedure propose_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		layer			: in type_signal_layer;
+		zone			: in type_accuracy; -- the circular area around the place
+		count			: in out natural;
+		log_threshold	: in type_log_level);
+
+
+	procedure move_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+
+	procedure delete_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		log_threshold	: in type_log_level);
+
+
+
+	function get_first_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_text;
+
+
+	-- Clears the proposed-flag and the selected-flag 
+	-- of all texts:
+	procedure reset_proposed_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
 
 	
 

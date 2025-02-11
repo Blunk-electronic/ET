@@ -2014,7 +2014,7 @@ package body et_board_ops.assy_doc is
 			begin
 				case flag is
 					when PROPOSED =>
-						if is_proposed (text) then
+						if is_proposed (text) then -- CS use cursor c directly
 							result.cursor := c;
 							proceed := false;
 						end if;
