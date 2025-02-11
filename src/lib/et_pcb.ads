@@ -138,7 +138,7 @@ package et_pcb is
 	-- means they are floating.
 	-- NON ELECTRIC conductor objects of a pcb may also 
 	-- include text placeholders:
-	type type_conductors_non_electric is record
+	type type_conductors_floating is record
 		lines 			: pac_conductor_lines.list;
 		arcs			: pac_conductor_arcs.list;
 		circles			: pac_conductor_circles.list;
@@ -375,8 +375,10 @@ package et_pcb is
 		route_restrict	: type_route_restrict;
 		via_restrict	: type_via_restrict;
 
-		-- non-electric stuff, incl. floating polygons !
-		conductors		: type_conductors_non_electric; -- CS rename to floating_conductors
+		-- non-electric floating stuff:
+		-- (lines, arcs, circles, text, text placeholders, zones):
+		conductors_floating	: type_conductors_floating;
+		
 		contours		: type_pcb_contours; -- pcb outline -- CS rename to board_contour
 
 		user_settings	: type_user_settings;

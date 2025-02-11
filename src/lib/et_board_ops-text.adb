@@ -232,7 +232,7 @@ package body et_board_ops.text is
 				--segments	=> make_segments (v_text, text.line_width)
 				);
 			
-			append (module.board.conductors.texts, c_text);
+			append (module.board.conductors_floating.texts, c_text);
 		end place_text;
 
 		

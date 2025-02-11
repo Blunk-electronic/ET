@@ -4,7 +4,7 @@
 --                                                                          --
 --                             SAVE MODULE                                  --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -1974,15 +1974,15 @@ is
 			section_mark (section_conductor, HEADER);
 
 			-- floating stuff:
-			iterate (element (module_cursor).board.conductors.lines, write_line'access);
-			iterate (element (module_cursor).board.conductors.arcs, write_arc'access);
-			iterate (element (module_cursor).board.conductors.circles, write_circle'access);
-			iterate (element (module_cursor).board.conductors.zones.solid, write_polygon'access);
-			iterate (element (module_cursor).board.conductors.zones.hatched, write_polygon'access);
+			iterate (element (module_cursor).board.conductors_floating.lines, write_line'access);
+			iterate (element (module_cursor).board.conductors_floating.arcs, write_arc'access);
+			iterate (element (module_cursor).board.conductors_floating.circles, write_circle'access);
+			iterate (element (module_cursor).board.conductors_floating.zones.solid, write_polygon'access);
+			iterate (element (module_cursor).board.conductors_floating.zones.hatched, write_polygon'access);
 			
-			iterate (element (module_cursor).board.conductors.cutouts, write_cutout'access);			
-			iterate (element (module_cursor).board.conductors.texts, write_text'access);
-			iterate (element (module_cursor).board.conductors.placeholders, write_placeholder'access);
+			iterate (element (module_cursor).board.conductors_floating.cutouts, write_cutout'access);			
+			iterate (element (module_cursor).board.conductors_floating.texts, write_text'access);
+			iterate (element (module_cursor).board.conductors_floating.placeholders, write_placeholder'access);
 			section_mark (section_conductor, FOOTER);
 		end Write_conductors;
 

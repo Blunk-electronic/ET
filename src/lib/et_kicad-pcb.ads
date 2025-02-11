@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -713,7 +713,7 @@ package et_kicad.pcb is
 		contours	: et_pcb.type_pcb_contours;
 
 		 -- non-electric. used for texts only
-		copper		: et_pcb.type_conductors_non_electric;
+		copper		: et_pcb.type_conductors_floating;
 
 		-- other non-electric graphic objects in signal layers are not allowed in kicad
 

@@ -662,7 +662,7 @@ is
 		element (module_cursor).devices.iterate (extract_unconnected_terminals'access);
 
 		-- board texts:
-		element (module_cursor).board.conductors.texts.iterate (query_text'access);
+		element (module_cursor).board.conductors_floating.texts.iterate (query_text'access);
 		
 		-- CS non electrical conductor stuff (foreign floating fill zones, ...)
 
@@ -1115,7 +1115,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			zone_cursor : pac_floating_solid.cursor := module.board.conductors.zones.solid.first;
+			zone_cursor : pac_floating_solid.cursor := module.board.conductors_floating.zones.solid.first;
 
 			procedure do_it (
 				zone : in out type_floating_solid)
@@ -1129,7 +1129,7 @@ is
 
 		begin
 			while zone_cursor /= pac_floating_solid.no_element loop
-				module.board.conductors.zones.solid.update_element (zone_cursor, do_it'access);
+				module.board.conductors_floating.zones.solid.update_element (zone_cursor, do_it'access);
 				next (zone_cursor);
 			end loop;
 		end floating_solid;
@@ -1139,7 +1139,7 @@ is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			zone_cursor : pac_floating_hatched.cursor := module.board.conductors.zones.hatched.first;
+			zone_cursor : pac_floating_hatched.cursor := module.board.conductors_floating.zones.hatched.first;
 
 			procedure do_it (
 				zone : in out type_floating_hatched)
@@ -1153,7 +1153,7 @@ is
 			
 		begin
 			while zone_cursor /= pac_floating_hatched.no_element loop
-				module.board.conductors.zones.hatched.update_element (zone_cursor, do_it'access);
+				module.board.conductors_floating.zones.hatched.update_element (zone_cursor, do_it'access);
 				next (zone_cursor);
 			end loop;
 		end floating_hatched;

@@ -3561,7 +3561,7 @@ package body et_kicad.pcb is
 					when others =>
 
 						-- If text is placed in a kicad signal layer (copper) it is added to the list of
-						-- texts in board.conductors. The kicad layer id is translated to the ET layer id.
+						-- texts in board.conductors_floating. The kicad layer id is translated to the ET layer id.
 						-- The kicad bottom copper layer becomes the ET signal layer 32 ! (NOT et_pcb.type_signal_layer'last !!)
 
 						-- If text is placed in other (non-signal) layers -> error
@@ -5314,9 +5314,9 @@ package body et_kicad.pcb is
 
 							-- CS set other properties like isolation and priority_level
 							
-							module.board.conductors.zones.solid.append (p);
+							module.board.conductors_floating.zones.solid.append (p);
 
-							floating_copper_polygon_properties (module.board.conductors.zones.solid.last, log_threshold + 2);
+							floating_copper_polygon_properties (module.board.conductors_floating.zones.solid.last, log_threshold + 2);
 							log (WARNING, "polygon is not connected with any net !", level => log_threshold + 2);
 
 						end if;

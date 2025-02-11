@@ -628,7 +628,7 @@ is
 				use pac_conductor_arcs;
 				use pac_conductor_circles;
 
-				conductors : type_conductors_non_electric renames module.board.conductors;
+				conductors : type_conductors_floating renames module.board.conductors_floating;
 
 				
 				procedure query_line (c : in pac_conductor_lines.cursor) is

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -1112,16 +1112,16 @@ procedure draw_conductors is
 				
 				-- freetracks, floating stuff:
 				is_signal := false;
-				iterate (module.board.conductors.lines, query_line'access);
-				iterate (module.board.conductors.arcs, query_arc'access);
-				iterate (module.board.conductors.circles, query_circle'access);
-				iterate (module.board.conductors.zones.solid, query_fill_zone'access);
-				iterate (module.board.conductors.zones.hatched, query_fill_zone'access);
-				iterate (module.board.conductors.cutouts, query_cutout'access);
+				iterate (module.board.conductors_floating.lines, query_line'access);
+				iterate (module.board.conductors_floating.arcs, query_arc'access);
+				iterate (module.board.conductors_floating.circles, query_circle'access);
+				iterate (module.board.conductors_floating.zones.solid, query_fill_zone'access);
+				iterate (module.board.conductors_floating.zones.hatched, query_fill_zone'access);
+				iterate (module.board.conductors_floating.cutouts, query_cutout'access);
 
 				-- texts
-				iterate (module.board.conductors.placeholders, query_placeholder'access);
-				iterate (module.board.conductors.texts, query_text'access);
+				iterate (module.board.conductors_floating.placeholders, query_placeholder'access);
+				iterate (module.board.conductors_floating.texts, query_text'access);
 
 				-- tracks:
 				iterate (module.nets, query_net_track'access);

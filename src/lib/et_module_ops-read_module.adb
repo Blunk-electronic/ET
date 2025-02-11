@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -3887,7 +3887,7 @@ is
 					module		: in out type_generic_module) is
 				begin
 					pac_cutouts.append (
-						container	=> module.board.conductors.cutouts,
+						container	=> module.board.conductors_floating.cutouts,
 						new_item	=> (contour with
 								layer => signal_layer));
 				end do_it;
@@ -4174,7 +4174,7 @@ is
 					case board_fill_style is
 						when SOLID =>
 							pac_floating_solid.append (
-								container	=> module.board.conductors.zones.solid,
+								container	=> module.board.conductors_floating.zones.solid,
 								new_item	=> (contour with
 									fill_style 	=> SOLID,
 									easing		=> board_easing,
@@ -4185,7 +4185,7 @@ is
 
 						when HATCHED =>
 							pac_floating_hatched.append (
-								container	=> module.board.conductors.zones.hatched,
+								container	=> module.board.conductors_floating.zones.hatched,
 								new_item	=> (contour with
 									fill_style 	=> HATCHED,
 									easing		=> board_easing,
@@ -4221,7 +4221,7 @@ is
 					module		: in out type_generic_module) 
 				is begin
 					pac_conductor_lines.append (
-						container	=> module.board.conductors.lines,
+						container	=> module.board.conductors_floating.lines,
 						new_item	=> (et_pcb_coordinates_2.pac_geometry_2.type_line (board_line) with
 										width	=> board_line_width,
 										layer	=> signal_layer));
@@ -4252,7 +4252,7 @@ is
 					module		: in out type_generic_module) 
 				is begin
 					pac_conductor_arcs.append (
-						container	=> module.board.conductors.arcs,
+						container	=> module.board.conductors_floating.arcs,
 						new_item	=> (et_pcb_coordinates_2.pac_geometry_2.type_arc (board_arc) with
 										width	=> board_line_width,
 										layer	=> signal_layer));
@@ -4284,7 +4284,7 @@ is
 					module		: in out type_generic_module) is
 				begin
 					pac_conductor_circles.append (
-						container	=> module.board.conductors.circles,
+						container	=> module.board.conductors_floating.circles,
 						--new_item	=> (board_make_conductor_circle with signal_layer));
 						new_item	=> (et_pcb_coordinates_2.pac_geometry_2.type_circle (board_circle) with 
 										width	=> board_line_width, 
@@ -4340,7 +4340,7 @@ is
 						); 
 
 					append (
-						container	=> module.board.conductors.texts,
+						container	=> module.board.conductors_floating.texts,
 						new_item	=> board_text_conductor);
 
 				end do_it;
@@ -4366,7 +4366,7 @@ is
 					module		: in out type_generic_module) is
 				begin
 					pac_text_placeholders_conductors.append (
-						container	=> module.board.conductors.placeholders,
+						container	=> module.board.conductors_floating.placeholders,
 						new_item	=> board_text_conductor_placeholder);
 				end do_it;
 

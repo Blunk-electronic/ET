@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -1935,10 +1935,10 @@ package body et_kicad_to_native is
 			begin -- move_copper
 				
 				-- LINES
-				lines_cursor := module.board.conductors.lines.first;
+				lines_cursor := module.board.conductors_floating.lines.first;
 				while lines_cursor /= pac_conductor_lines.no_element loop
 					pac_conductor_lines.update_element (
-						container	=> module.board.conductors.lines,
+						container	=> module.board.conductors_floating.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
 					
@@ -1947,10 +1947,10 @@ package body et_kicad_to_native is
 
 				
 				-- ARCS
-				arcs_cursor := module.board.conductors.arcs.first;
+				arcs_cursor := module.board.conductors_floating.arcs.first;
 				while arcs_cursor /= pac_conductor_arcs.no_element loop
 					pac_conductor_arcs.update_element (
-						container	=> module.board.conductors.arcs,
+						container	=> module.board.conductors_floating.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
 					
@@ -1959,10 +1959,10 @@ package body et_kicad_to_native is
 
 				
 				-- CIRCLES
-				circles_cursor := module.board.conductors.circles.first;
+				circles_cursor := module.board.conductors_floating.circles.first;
 				while circles_cursor /= pac_conductor_circles.no_element loop
 					pac_conductor_circles.update_element (
-						container	=> module.board.conductors.circles,
+						container	=> module.board.conductors_floating.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
 					
@@ -1972,10 +1972,10 @@ package body et_kicad_to_native is
 				
 				-- FLOATING FILL ZONES
 				-- solid
-				polygons_solid_cursor := module.board.conductors.zones.solid.first;
+				polygons_solid_cursor := module.board.conductors_floating.zones.solid.first;
 				while polygons_solid_cursor /= pac_floating_solid.no_element loop
 					pac_floating_solid.update_element (
-						container	=> module.board.conductors.zones.solid,
+						container	=> module.board.conductors_floating.zones.solid,
 						position	=> polygons_solid_cursor,
 						process		=> move_polygon'access);
 					
@@ -1984,10 +1984,10 @@ package body et_kicad_to_native is
 
 				
 				-- hatched
-				polygons_hatched_cursor := module.board.conductors.zones.hatched.first;
+				polygons_hatched_cursor := module.board.conductors_floating.zones.hatched.first;
 				while polygons_hatched_cursor /= pac_floating_hatched.no_element loop
 					pac_floating_hatched.update_element (
-						container	=> module.board.conductors.zones.hatched,
+						container	=> module.board.conductors_floating.zones.hatched,
 						position	=> polygons_hatched_cursor,
 						process		=> move_polygon'access);
 					
@@ -1996,10 +1996,10 @@ package body et_kicad_to_native is
 				
 
 				-- TEXTS
-				texts_cursor := module.board.conductors.texts.first;
+				texts_cursor := module.board.conductors_floating.texts.first;
 				while texts_cursor /= pac_conductor_texts.no_element loop
 					update_element (
-						container	=> module.board.conductors.texts,
+						container	=> module.board.conductors_floating.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
 
@@ -2008,10 +2008,10 @@ package body et_kicad_to_native is
 
 				
 				-- TEXT PLACEHOLDERS
-				placeholders_cursor := module.board.conductors.placeholders.first;
+				placeholders_cursor := module.board.conductors_floating.placeholders.first;
 				while placeholders_cursor /= pac_text_placeholders_conductors.no_element loop
 					pac_text_placeholders_conductors.update_element (
-						container	=> module.board.conductors.placeholders,
+						container	=> module.board.conductors_floating.placeholders,
 						position	=> placeholders_cursor,
 						process		=> move_placeholder'access);
 

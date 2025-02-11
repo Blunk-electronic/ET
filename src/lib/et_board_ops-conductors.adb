@@ -213,7 +213,7 @@ package body et_board_ops.conductors is
 			module		: in out type_generic_module) 
 		is begin
 			append (
-				container	=> module.board.conductors.lines,
+				container	=> module.board.conductors_floating.lines,
 				new_item	=> line);
 		end;
 		
@@ -635,7 +635,7 @@ package body et_board_ops.conductors is
 			use pac_conductor_lines;
 			
 		begin
-			update_element (module.board.conductors.lines, line.line_cursor, query_line'access);
+			update_element (module.board.conductors_floating.lines, line.line_cursor, query_line'access);
 		end query_module;
 
 		
@@ -772,7 +772,7 @@ package body et_board_ops.conductors is
 		
 			
 		begin
-			module.board.conductors.lines.iterate (query_line'access);
+			module.board.conductors_floating.lines.iterate (query_line'access);
 		end query_module;
 
 
@@ -827,7 +827,7 @@ package body et_board_ops.conductors is
 
 			
 			procedure process_freetracks is
-				conductors : type_conductors_non_electric renames module.board.conductors;
+				conductors : type_conductors_floating renames module.board.conductors_floating;
 				l : pac_conductor_lines.cursor;
 			begin
 				l := conductors.lines.first;
@@ -943,7 +943,7 @@ package body et_board_ops.conductors is
 
 			procedure process_freetracks is
 				line_cursor : pac_conductor_lines.cursor;
-				segments : type_conductors_non_electric renames module.board.conductors;
+				segments : type_conductors_floating renames module.board.conductors_floating;
 			begin
 				line_cursor := segments.lines.first;
 				while line_cursor /= pac_conductor_lines.no_element loop
@@ -1064,10 +1064,10 @@ package body et_board_ops.conductors is
 
 
 			procedure process_freetracks is
-				line_cursor : pac_conductor_lines.cursor := module.board.conductors.lines.first;
+				line_cursor : pac_conductor_lines.cursor := module.board.conductors_floating.lines.first;
 			begin
 				while line_cursor /= pac_conductor_lines.no_element loop
-					module.board.conductors.lines.update_element (line_cursor, query_line'access);
+					module.board.conductors_floating.lines.update_element (line_cursor, query_line'access);
 					next (line_cursor);
 				end loop;
 			end process_freetracks;
@@ -1219,7 +1219,7 @@ package body et_board_ops.conductors is
 			proceed : aliased boolean := true;
 
 
-			conductors : type_conductors_non_electric renames module.board.conductors;
+			conductors : type_conductors_floating renames module.board.conductors_floating;
 
 			procedure query_line (l : in pac_conductor_lines.cursor) is
 				line : type_conductor_line renames element (l);
@@ -1294,7 +1294,7 @@ package body et_board_ops.conductors is
 				proceed : boolean := true;
 
 				l : pac_conductor_lines.cursor;
-				conductors : type_conductors_non_electric renames module.board.conductors;
+				conductors : type_conductors_floating renames module.board.conductors_floating;
 
 			begin
 				-- Start with the line after the given line:
@@ -1539,7 +1539,7 @@ package body et_board_ops.conductors is
 			end;
 	
 		begin
-			module.board.conductors.lines.update_element (line.line_cursor, move'access);
+			module.board.conductors_floating.lines.update_element (line.line_cursor, move'access);
 		end query_module;
 
 		
@@ -1640,7 +1640,7 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			conductors : type_conductors_non_electric renames module.board.conductors;
+			conductors : type_conductors_floating renames module.board.conductors_floating;
 			use pac_conductor_lines;
 			l : pac_conductor_lines.cursor;
 		begin
@@ -1688,7 +1688,7 @@ package body et_board_ops.conductors is
 			module		: in out type_generic_module) 
 		is begin
 			append (
-				container	=> module.board.conductors.arcs,
+				container	=> module.board.conductors_floating.arcs,
 				new_item	=> arc);
 		end;
 
@@ -1782,15 +1782,15 @@ package body et_board_ops.conductors is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			line_cursor : pac_conductor_lines.cursor := module.board.conductors.lines.first;
-			arc_cursor  : pac_conductor_arcs.cursor := module.board.conductors.arcs.first;
+			line_cursor : pac_conductor_lines.cursor := module.board.conductors_floating.lines.first;
+			arc_cursor  : pac_conductor_arcs.cursor := module.board.conductors_floating.arcs.first;
 		begin
 			-- first probe the lines. If a matching line found, delete it 
 			-- and abort iteration.
 			while line_cursor /= pac_conductor_lines.no_element loop
 
 				if on_segment (point, layer, line_cursor) then
-					delete (module.board.conductors.lines, line_cursor);
+					delete (module.board.conductors_floating.lines, line_cursor);
 					deleted := true;
 					exit;
 				end if;
@@ -1804,7 +1804,7 @@ package body et_board_ops.conductors is
 				while arc_cursor /= pac_conductor_arcs.no_element loop
 
 					if on_segment (point, layer, arc_cursor) then
-						delete (module.board.conductors.arcs, arc_cursor);
+						delete (module.board.conductors_floating.arcs, arc_cursor);
 						deleted := true;
 						exit;
 					end if;
@@ -2013,7 +2013,7 @@ package body et_board_ops.conductors is
 			log (text => to_string (p, p.properties),
 				level => log_threshold + 1);
 
-			module.board.conductors.zones.solid.append (p);
+			module.board.conductors_floating.zones.solid.append (p);
 		end floating_solid;
 
 		
@@ -2030,7 +2030,7 @@ package body et_board_ops.conductors is
 			log (text => to_string (p, p.properties),
 				level => log_threshold + 1);
 
-			module.board.conductors.zones.hatched.append (p);
+			module.board.conductors_floating.zones.hatched.append (p);
 		end floating_hatched;
 
 		-- Polygons which are connected with a net are part of a route.
@@ -2327,13 +2327,13 @@ package body et_board_ops.conductors is
 			case segment.fill_style is
 				when SOLID =>
 					update_element (
-						container	=> module.board.conductors.zones.solid,
+						container	=> module.board.conductors_floating.zones.solid,
 						position	=> segment.zone_solid,
 						process		=> query_zone_solid'access);
 
 				when HATCHED =>
 					update_element (
-						container	=> module.board.conductors.zones.hatched,
+						container	=> module.board.conductors_floating.zones.hatched,
 						position	=> segment.zone_hatched,
 						process		=> query_zone_hatched'access);
 			end case;
@@ -2563,17 +2563,17 @@ package body et_board_ops.conductors is
 			end query_zone_hatched;
 
 				
-			zcs : pac_floating_solid.cursor := module.board.conductors.zones.solid.first;
-			zch : pac_floating_hatched.cursor := module.board.conductors.zones.hatched.first;
+			zcs : pac_floating_solid.cursor := module.board.conductors_floating.zones.solid.first;
+			zch : pac_floating_hatched.cursor := module.board.conductors_floating.zones.hatched.first;
 				
 		begin
 			while zcs /= pac_floating_solid.no_element loop
-				update_element (module.board.conductors.zones.solid, zcs, query_zone_solid'access);
+				update_element (module.board.conductors_floating.zones.solid, zcs, query_zone_solid'access);
 				next (zcs);
 			end loop;
 			
 			while zch /= pac_floating_hatched.no_element loop
-				update_element (module.board.conductors.zones.hatched, zch, query_zone_hatched'access);
+				update_element (module.board.conductors_floating.zones.hatched, zch, query_zone_hatched'access);
 				next (zch);
 			end loop;			
 		end query_module;
@@ -2758,17 +2758,17 @@ package body et_board_ops.conductors is
 			end query_zone_hatched;
 
 			
-			zcs : pac_floating_solid.cursor := module.board.conductors.zones.solid.first;
-			zch : pac_floating_hatched.cursor := module.board.conductors.zones.hatched.first;
+			zcs : pac_floating_solid.cursor := module.board.conductors_floating.zones.solid.first;
+			zch : pac_floating_hatched.cursor := module.board.conductors_floating.zones.hatched.first;
 				
 		begin
 			while zcs /= pac_floating_solid.no_element loop
-				update_element (module.board.conductors.zones.solid, zcs, query_zone_solid'access);
+				update_element (module.board.conductors_floating.zones.solid, zcs, query_zone_solid'access);
 				next (zcs);
 			end loop;
 			
 			while zch /= pac_floating_hatched.no_element loop
-				update_element (module.board.conductors.zones.hatched, zch, query_zone_hatched'access);
+				update_element (module.board.conductors_floating.zones.hatched, zch, query_zone_hatched'access);
 				next (zch);
 			end loop;
 		end query_module;
@@ -3077,7 +3077,7 @@ package body et_board_ops.conductors is
 			log_indentation_up;
 			
 			-- First search among solidly filled zones:
-			zcs := module.board.conductors.zones.solid.first;				
+			zcs := module.board.conductors_floating.zones.solid.first;				
 			while zcs /= pac_floating_solid.no_element loop
 				query_element (zcs, query_zone_solid'access);
 				if not proceed then
@@ -3088,7 +3088,7 @@ package body et_board_ops.conductors is
 
 			-- If nothing found, search among hatched zones:
 			if proceed then
-				zch := module.board.conductors.zones.hatched.first;
+				zch := module.board.conductors_floating.zones.hatched.first;
 				while zch /= pac_floating_hatched.no_element loop
 					query_element (zch, query_zone_hatched'access);
 					if not proceed then
@@ -3303,10 +3303,10 @@ package body et_board_ops.conductors is
 			-- Locate the zone as given by the segment:
 			case segment.fill_style is
 				when SOLID =>
-					update_element (module.board.conductors.zones.solid, segment.zone_solid, query_zone_solid'access);
+					update_element (module.board.conductors_floating.zones.solid, segment.zone_solid, query_zone_solid'access);
 
 				when HATCHED =>
-					update_element (module.board.conductors.zones.hatched, segment.zone_hatched, query_zone_hatched'access);
+					update_element (module.board.conductors_floating.zones.hatched, segment.zone_hatched, query_zone_hatched'access);
 			end case;
 		end query_module;
 
@@ -3461,10 +3461,10 @@ package body et_board_ops.conductors is
 			-- Locate the zone as given by the segment:
 			case segment.fill_style is
 				when SOLID =>
-					update_element (module.board.conductors.zones.solid, segment.zone_solid, query_zone_solid'access);
+					update_element (module.board.conductors_floating.zones.solid, segment.zone_solid, query_zone_solid'access);
 
 				when HATCHED =>
-					update_element (module.board.conductors.zones.hatched, segment.zone_hatched, query_zone_hatched'access);
+					update_element (module.board.conductors_floating.zones.hatched, segment.zone_hatched, query_zone_hatched'access);
 			end case;
 		end query_module;
 
@@ -3541,7 +3541,7 @@ package body et_board_ops.conductors is
 
 			
 		begin
-			module.board.conductors.texts.iterate (query_text'access);
+			module.board.conductors_floating.texts.iterate (query_text'access);
 		end query_module;
 
 		
@@ -3592,8 +3592,8 @@ package body et_board_ops.conductors is
 			end query_text;
 			
 		begin
-			text_cursor := module.board.conductors.texts.find (text);
-			module.board.conductors.texts.update_element (text_cursor, query_text'access);
+			text_cursor := module.board.conductors_floating.texts.find (text);
+			module.board.conductors_floating.texts.update_element (text_cursor, query_text'access);
 		end query_module;
 
 		
@@ -3987,10 +3987,10 @@ package body et_board_ops.conductors is
 			procedure process_floating_objects is
 
 				use pac_floating_solid;
-				zcs : pac_floating_solid.cursor := module.board.conductors.zones.solid.first;
+				zcs : pac_floating_solid.cursor := module.board.conductors_floating.zones.solid.first;
 				
 				use pac_floating_hatched;
-				zch : pac_floating_hatched.cursor := module.board.conductors.zones.hatched.first;
+				zch : pac_floating_hatched.cursor := module.board.conductors_floating.zones.hatched.first;
 				
 				use pac_contours;
 				use pac_segments;
@@ -4131,7 +4131,7 @@ package body et_board_ops.conductors is
 				
 			begin
 				-- Iterate all floating lines:
-				iterate (module.board.conductors.lines, query_line'access);
+				iterate (module.board.conductors_floating.lines, query_line'access);
 				-- CS arcs, circles, texts, placeholders
 
 				-- Iterate all floating solidly filled zones:
