@@ -142,9 +142,11 @@ is
 
 		t : type_text_fab_with_content;
 	begin
+		-- Build the final content to be drawn:
 		content := to_placeholder_content (active_module, element (c).meaning);
 		-- put_line ("content " & to_string (content));
 
+		-- Build the text to be drawn:
 		t := (type_text_fab (element (c)) with content);
 		draw_vector_text_2 (t);
 	end query_placeholder;

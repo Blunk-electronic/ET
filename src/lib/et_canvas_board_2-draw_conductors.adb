@@ -499,41 +499,43 @@ procedure draw_conductors is
 
 
 
--- TEXTS
+
+	
+-- 	TEXT PLACEHOLDERS AND TEXTS:
 	
 	procedure query_placeholder (
 		c : in pac_text_placeholders_conductors.cursor) 
 	is 
 		use et_board_ops.text;
-		use pac_text;
-		v_text : type_vector_text;
-
-		-- CS use rename ?
-		
+		use pac_text;		
 		use pac_draw_text;
+		use et_colors.board;
+
+		use et_text;
+		content : pac_text_content.bounded_string;
+
+		t : type_text_fab_with_content;
 	begin
 		-- Draw the placeholder if it is in the current layer:
-		if element (c).layer = current_layer then
+		if get_layer (c) = current_layer then
 
-			draw_origin (element (c).position);
+			-- Build the final content to be drawn:
+			content := to_placeholder_content (active_module, element (c).meaning);
+			-- put_line ("content " & to_string (content));
 
-			-- Vectorize the text:
-			v_text := vectorize_text (
-				content		=> to_placeholder_content (active_module, element (c).meaning),
-				size		=> element (c).size,
-				rotation	=> get_rotation (element (c).position),
-				position	=> element (c).position.place,
+			-- Build the text to be drawn:
+			t := (type_text_fab (element (c)) with content);
 
-				-- Mirror the text only if it is in the bottom layer:
-				mirror		=> signal_layer_to_mirror (element (c).layer, bottom_layer),
-				
-				line_width	=> element (c).line_width,
-				alignment	=> element (c).alignment -- right, bottom
-				);
-
-			-- Draw the text:
-			draw_vector_text (v_text);
-
+			-- Draw the placeholder highlighted if it is selected:
+			if is_selected (c) then
+				set_color_conductor (current_layer, BRIGHT);				
+				draw_vector_text_2 (t);
+				set_color_conductor (current_layer, NORMAL);
+			else
+				-- not selected
+				draw_vector_text_2 (t);
+			end if;
+			
 		end if;
 	end query_placeholder;
 

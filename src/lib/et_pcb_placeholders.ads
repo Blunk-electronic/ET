@@ -94,9 +94,26 @@ package et_pcb_placeholders is
 	package pac_text_placeholders_conductors is new 
 		doubly_linked_lists (type_text_placeholder_conductors);
 
+	use pac_text_placeholders_conductors;
+
+	
+
+	-- Returns the signal layer of the given placeholder:
+	function get_layer (
+		placeholder : in pac_text_placeholders_conductors.cursor)					
+		return type_signal_layer;
+	
+
+	function is_selected (
+		placeholder : in pac_text_placeholders_conductors.cursor)					
+		return boolean;
 
 
-		
+	function is_proposed (
+		placeholder : in pac_text_placeholders_conductors.cursor)					
+		return boolean;
+
+	
 	
 -- PLACEHOLDERS FOR TEXTS IN NON-CONDUCTOR LAYERS:
 		

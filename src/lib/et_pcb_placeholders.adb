@@ -62,6 +62,42 @@ package body et_pcb_placeholders is
 	end to_meaning;
 
 
+
+	
+	function get_layer (
+		placeholder : in pac_text_placeholders_conductors.cursor)					
+		return type_signal_layer
+	is begin
+		return element (placeholder).layer;
+	end get_layer;
+
+
+
+	function is_selected (
+		placeholder : in pac_text_placeholders_conductors.cursor)					
+		return boolean
+	is begin
+		if is_selected (element (placeholder)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+	
+
+
+	function is_proposed (
+		placeholder : in pac_text_placeholders_conductors.cursor)					
+		return boolean
+	is begin
+		if is_proposed (element (placeholder)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_proposed;
+
+	
 	
 end et_pcb_placeholders;
 
