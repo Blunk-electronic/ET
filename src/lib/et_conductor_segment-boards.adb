@@ -114,6 +114,16 @@ package body et_conductor_segment.boards is
 	end to_string;
 
 
+
+
+	function get_layer (
+		line : in pac_conductor_lines.cursor)
+		return type_signal_layer
+	is begin
+		return element (line).layer;
+	end get_layer;
+
+
 	
 	
 	
@@ -240,6 +250,17 @@ package body et_conductor_segment.boards is
 	end to_string;
 
 
+
+
+	function get_layer (
+		arc : in pac_conductor_arcs.cursor)
+		return type_signal_layer
+	is begin
+		return element (arc).layer;
+	end get_layer;
+
+	
+
 	
 	function get_arcs_by_layer (
 		arcs	: in pac_conductor_arcs.list;
@@ -319,6 +340,16 @@ package body et_conductor_segment.boards is
 			return text;
 		end if;
 	end to_string;
+
+
+
+	function get_layer (
+		circle : in pac_conductor_circles.cursor)
+		return type_signal_layer
+	is begin
+		return element (circle).layer;
+	end get_layer;
+
 
 	
 end et_conductor_segment.boards;

@@ -83,6 +83,14 @@ package body et_conductor_text.boards is
 
 
 
+	function get_layer (
+		text : in pac_conductor_texts.cursor)
+		return type_signal_layer
+	is begin
+		return element (text).layer;
+	end get_layer;
+
+	
 
 	
 	

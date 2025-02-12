@@ -232,7 +232,7 @@ procedure draw_conductors is
 		
 	begin
 		-- Draw the line if it is in the current layer:
-		if line.layer = current_layer then
+		if get_layer (c) = current_layer then
 			
 			-- If the segment is selected, then it must be drawn highlighted:
 			if is_selected (line) then
@@ -248,14 +248,13 @@ procedure draw_conductors is
 
 
 
-
 	
 	
 	procedure query_arc (c : in pac_conductor_arcs.cursor) is 
 		arc : type_conductor_arc renames element (c);
 	begin
 		-- Draw the arc if it is in theh current layer:
-		if arc.layer = current_layer then
+		if get_layer (c) = current_layer then
 
 			draw_arc (
 				arc			=> arc,
@@ -265,12 +264,14 @@ procedure draw_conductors is
 		end if;
 	end query_arc;
 
+
+	
 	
 	procedure query_circle (c : in pac_conductor_circles.cursor) is 
 		circle : type_conductor_circle renames element (c);
 	begin
 		-- Draw the circle if it is in the current layer:
-		if circle.layer = current_layer then
+		if get_layer (c) = current_layer then
 			
 			-- We draw a normal non-filled circle:
 			draw_circle (
@@ -536,82 +537,34 @@ procedure draw_conductors is
 		end if;
 	end query_placeholder;
 
-
 	
+
+
+
 	procedure query_text (c : in pac_conductor_texts.cursor) is
-		text : type_conductor_text renames element (c);
-
-		-- Draws the given text as it is given:
-		procedure draw_unchanged is
-			use pac_draw_text;
-		begin
-			draw_origin (text.position);
-			draw_vector_text (text.vectors);
-		end draw_unchanged;
-
-		
-		use et_canvas_board_texts;
-		use et_colors.board;
-		use et_canvas_tool;
-
 		use pac_draw_text;
+		use et_colors.board;
 	begin
 		-- Draw the text if it is in the current layer:
-		if text.layer = current_layer then
+		if get_layer (c) = current_layer then
 
-			if et_canvas_board_texts.is_selected (c) then
+			if is_selected (c) then
 				-- The selected text must be drawn highlighted:
 				set_color_conductor (current_layer, BRIGHT);
 
-				case verb is
-					when VERB_MOVE =>
-						if object_ready then
-							-- Draw a temporarily copy of the original text at
-							-- the place where the tool is pointing at:
-							declare
-								text_tmp	: type_conductor_text := text;
-								destination	: type_vector_model;
-								offset		: type_distance_relative;
-							begin
-								case object_tool is
-									when MOUSE =>
-										destination := snap_to_grid (get_mouse_position);
-														
-									when KEYBOARD =>
-										destination := get_cursor_position;
-								end case;
-
-								-- Get the relative distance of the destination to the original
-								-- text position:
-								offset := get_distance_relative (get_place (text_tmp), destination);
-
-								-- Move the text (incl. vector text):
-								move_text (text_tmp, offset);					
-
-								draw_origin (text_tmp.position);
-
-								-- Draw the text:
-								draw_vector_text (text_tmp.vectors);
-							end;
-						else
-							draw_unchanged;
-						end if;
-
-					when others =>
-						draw_unchanged;
-						
-				end case;
+				draw_vector_text_2 (element (c));
 
 				-- After drawing a selected (highlighted) text, the brightness
 				-- must be set back to normal:
 				set_color_conductor (current_layer, NORMAL);
 
 			else -- not selected
-				draw_unchanged;
+				draw_vector_text_2 (element (c));
 			end if;
 			
 		end if;
 	end query_text;
+
 
 	
 	

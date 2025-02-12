@@ -95,7 +95,14 @@ package et_conductor_segment.boards is
 		width	: in boolean)
 		return string;
 
-		
+
+	-- Returns the signal layer of the given line:
+	function get_layer (
+		line : in pac_conductor_lines.cursor)
+		return type_signal_layer;
+
+
+	
 	-- Returns true if the status flag "proposed"
 	-- of a conductor line is set:
 	function is_proposed (
@@ -160,6 +167,13 @@ package et_conductor_segment.boards is
 	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
 	use pac_conductor_arcs;
 
+
+	-- Returns the signal layer of the given arc:
+	function get_layer (
+		arc : in pac_conductor_arcs.cursor)
+		return type_signal_layer;
+
+
 	
 	-- Extracts those arcs which are in the given layer:
 	function get_arcs_by_layer (
@@ -199,10 +213,15 @@ package et_conductor_segment.boards is
 
 
 	
-	package pac_conductor_circles is new indefinite_doubly_linked_lists (type_conductor_circle);
+	package pac_conductor_circles is new doubly_linked_lists (type_conductor_circle);
+	use pac_conductor_circles;
+
+	-- Returns the signal layer of the given circle:
+	function get_layer (
+		circle : in pac_conductor_circles.cursor)
+		return type_signal_layer;
+
 	
-
-
 	
 end et_conductor_segment.boards;
 

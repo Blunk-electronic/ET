@@ -72,8 +72,13 @@ package et_conductor_text.boards is
 		text : in pac_conductor_texts.cursor)
 		return boolean;
 
-	
-	
+
+	-- Returns the signal layer of the given text:
+	function get_layer (
+		text : in pac_conductor_texts.cursor)
+		return type_signal_layer;
+
+						   
 	-- Iterates the texts. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		texts	: in pac_conductor_texts.list;
