@@ -131,6 +131,22 @@ package et_pcb_placeholders is
 	package pac_text_placeholders is new 
 		doubly_linked_lists (type_text_placeholder);
 
+	use pac_text_placeholders;
+		
+
+	
+	
+	function is_selected (
+		placeholder : in pac_text_placeholders.cursor)					
+		return boolean;
+
+
+
+	function is_proposed (
+		placeholder : in pac_text_placeholders.cursor)					
+		return boolean;
+
+	
 	
 end et_pcb_placeholders;
 

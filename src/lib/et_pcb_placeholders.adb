@@ -97,6 +97,34 @@ package body et_pcb_placeholders is
 		end if;
 	end is_proposed;
 
+
+
+
+	
+
+	function is_selected (
+		placeholder : in pac_text_placeholders.cursor)					
+		return boolean
+	is begin
+		if is_selected (element (placeholder)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+
+
+	function is_proposed (
+		placeholder : in pac_text_placeholders.cursor)					
+		return boolean
+	is begin
+		if is_proposed (element (placeholder)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_proposed;
+
 	
 	
 end et_pcb_placeholders;

@@ -148,7 +148,16 @@ is
 
 		-- Build the text to be drawn:
 		t := (type_text_fab (element (c)) with content);
-		draw_vector_text_2 (t);
+
+		-- Draw the placeholder highlighted if it is selected:
+		if is_selected (c) then
+			set_highlight_brightness;
+			draw_vector_text_2 (t);
+			set_default_brightness;
+		else
+			-- not selected
+			draw_vector_text_2 (t);
+		end if;
 	end query_placeholder;
 
 
