@@ -88,7 +88,18 @@ package et_pcb_placeholders is
 		layer	: type_signal_layer := type_signal_layer'first; 
 	end record;
 
-	
+
+
+	function get_meaning (
+		placeholder : in type_text_placeholder_conductors)
+		return type_text_meaning_conductor;
+
+
+	function get_layer (
+		placeholder : in type_text_placeholder_conductors)
+		return type_signal_layer;
+
+						   
 	-- There can be lots of placeholders of this kind. 
 	-- So they can be are stored in a list:
 	package pac_text_placeholders_conductors is new 

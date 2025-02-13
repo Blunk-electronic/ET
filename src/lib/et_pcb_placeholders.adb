@@ -50,7 +50,7 @@ package body et_pcb_placeholders is
 		meaning : in type_text_meaning_conductor) 
 		return string 
 	is begin
-		return to_lower (type_text_meaning_conductor'image (meaning));
+		return type_text_meaning_conductor'image (meaning);
 	end to_string;
 
 
@@ -64,16 +64,35 @@ package body et_pcb_placeholders is
 
 
 
+	function get_meaning (
+		placeholder : in type_text_placeholder_conductors)
+		return type_text_meaning_conductor
+	is begin
+		return placeholder.meaning;
+	end get_meaning;
+
+	
+
+	function get_layer (
+		placeholder : in type_text_placeholder_conductors)
+		return type_signal_layer
+	is begin
+		return placeholder.layer;
+	end get_layer;
+
+
+	
+
 	function to_string (
 		placeholder : in pac_text_placeholders_conductors.cursor)					
 		return string
 	is 
 		use pac_geometry_2;
 		ph : type_text_placeholder_conductors := element (placeholder);
-		pos : type_position;
 	begin
-		pos := get_position (ph);
-		return to_string (pos);
+		return to_string (get_position (ph))
+			& " layer " & to_string (get_layer (ph)) 
+			& " meaning " & to_string (get_meaning (ph));
 	end to_string;
 
 

@@ -4259,6 +4259,7 @@ package body et_board_ops.conductors is
 		result_line_net			: type_object_line_net;
 		result_line_floating	: type_object_line_floating;
 		result_text				: type_object_text;
+		result_placeholder		: type_object_placeholder;
 
 		use pac_contours;
 		use pac_segments;
@@ -4266,6 +4267,7 @@ package body et_board_ops.conductors is
 		use pac_conductor_lines;
 		use pac_conductor_arcs;
 		use pac_conductor_texts;
+		use pac_text_placeholders_conductors;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first object / " & to_string (flag),
@@ -4366,12 +4368,10 @@ package body et_board_ops.conductors is
 		end if;
 
 
-		
-		-- CS placeholder
 
-		-- CS freetracks
 		
-		-- Now search for a text:
+		-- NOW SEARCH FOR A TEXT:
+		
 		result_text := get_first_text (module_cursor, flag, log_threshold + 1);
 		
 		if result_text.cursor /= pac_conductor_texts.no_element then
@@ -4383,6 +4383,22 @@ package body et_board_ops.conductors is
 		end if;
 
 
+		
+
+		-- SEARCH FOR A TEXT PLACEHOLDER:
+		
+		result_placeholder := get_first_placeholder (module_cursor, flag, log_threshold + 1);
+		
+		if result_placeholder.cursor /= pac_text_placeholders_conductors.no_element then
+			-- A placeholder has been found.
+			log (text => to_string (result_placeholder.cursor),
+				level => log_threshold + 1);
+			
+			result_category := CAT_PLACEHOLDER;
+		end if;
+
+
+		
 		-- If still nothing has been found then the category is CAT_VOID.
 		
 
@@ -4408,6 +4424,10 @@ package body et_board_ops.conductors is
 				
 			when CAT_TEXT =>
 				return (CAT_TEXT, result_text);
+
+			when CAT_PLACEHOLDER =>
+				return (CAT_PLACEHOLDER, result_placeholder);
+
 		end case;
 	end get_first_object;
 
@@ -4606,9 +4626,10 @@ package body et_board_ops.conductors is
 				use pac_contours;
 				use pac_segments;
 
+				
+				-- LINES
 				use pac_conductor_lines;
 				
-
 				-- This procedure queries a floating line:
 				procedure query_line (c : in pac_conductor_lines.cursor) is 
 
@@ -4643,7 +4664,7 @@ package body et_board_ops.conductors is
 				-- CS query_arc
 				
 
-
+				-- FLOATING FILL ZONES SOLID
 				use pac_floating_solid;
 				zcs : pac_floating_solid.cursor := module.board.conductors_floating.zones.solid.first;
 
@@ -4692,7 +4713,7 @@ package body et_board_ops.conductors is
 
 				
 
-
+				-- FLOATING FILL ZONES HATCHED
 				use pac_floating_hatched;
 				zch : pac_floating_hatched.cursor := module.board.conductors_floating.zones.hatched.first;
 
@@ -4738,8 +4759,9 @@ package body et_board_ops.conductors is
 				end query_zone_hatched;
 
 
-
 				
+
+				-- TEXTS:
 				use pac_conductor_texts;
 				
 				procedure query_text (c : in pac_conductor_texts.cursor) is begin
@@ -4752,16 +4774,36 @@ package body et_board_ops.conductors is
 					end if;
 				end query_text;
 
+
+
+				-- TEXT PLACEHOLDERS:
+				use pac_text_placeholders_conductors;
+				
+				procedure query_placeholder (
+					c : in pac_text_placeholders_conductors.cursor) 
+				is begin
+					if is_proposed (c) then
+						result.append ((
+							cat			=> CAT_PLACEHOLDER,
+							placeholder	=> (cursor => c)));
+	
+						log (text => to_string (c), level => log_threshold + 2);
+					end if;
+				end query_placeholder;
+
 				
 				
 			begin
 				-- Iterate all floating lines:
 				iterate (module.board.conductors_floating.lines, query_line'access);
 
+				-- CS arcs, circles
+				
 				-- Iterate all texts:
 				iterate (module.board.conductors_floating.texts, query_text'access);
-				
-				-- CS arcs, circles, placeholders
+	
+				-- Iterate all placeholders:
+				iterate (module.board.conductors_floating.placeholders, query_placeholder'access);
 
 				
 				-- Iterate all floating solidly filled zones:
@@ -4850,6 +4892,9 @@ package body et_board_ops.conductors is
 				
 			when CAT_TEXT =>
 				modify_status (module_cursor, object.text, operation, log_threshold + 1);
+
+			when CAT_PLACEHOLDER =>
+				modify_status (module_cursor, object.placeholder, operation, log_threshold + 1);
 				
 			when CAT_VOID =>
 				null; -- CS
@@ -4947,6 +4992,15 @@ package body et_board_ops.conductors is
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
 
+
+			when CAT_PLACEHOLDER =>
+
+				move_placeholder (
+					module_cursor	=> module_cursor,
+					placeholder		=> object.placeholder,
+					destination		=> destination,
+					log_threshold	=> log_threshold + 1);
+
 				
 			when CAT_VOID =>
 				null;
@@ -5027,7 +5081,16 @@ package body et_board_ops.conductors is
 					text			=> object.text,
 					log_threshold	=> log_threshold + 1);
 
-								
+
+			when CAT_PLACEHOLDER =>
+
+				delete_placeholder (
+					module_cursor	=> module_cursor, 
+					placeholder		=> object.placeholder,
+					log_threshold	=> log_threshold + 1);
+
+
+				
 			when CAT_VOID =>
 				null;
 		end case;		
@@ -5068,6 +5131,7 @@ package body et_board_ops.conductors is
 		reset_proposed_segments_floating (module_cursor, log_threshold + 1);
 
 		reset_proposed_texts (module_cursor, log_threshold + 1);
+		reset_proposed_placeholders (module_cursor, log_threshold + 1);
 		
 		log_indentation_down;
 	end reset_proposed_objects;

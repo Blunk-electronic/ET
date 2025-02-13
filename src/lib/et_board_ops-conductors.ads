@@ -748,10 +748,12 @@ package et_board_ops.conductors is
 		CAT_LINE_FLOATING,
 		CAT_ZONE_SEGMENT_NET,
 		CAT_ZONE_SEGMENT_FLOATING,
-		CAT_TEXT
+		CAT_TEXT,
+		CAT_PLACEHOLDER
 		);
-	-- CS CAT_ARC, CAT_CIRCLE, CAT_PLACEHOLDER
+	-- CS CAT_ARC, CAT_CIRCLE
 
+	
 	-- This type wraps segments of zones, lines, arcs, circles, 
 	-- texts, placeholders into a single type:
 	type type_object (cat : type_object_category) is record
@@ -772,6 +774,9 @@ package et_board_ops.conductors is
 				
 			when CAT_TEXT =>
 				text				: type_object_text;
+
+			when CAT_PLACEHOLDER =>
+				placeholder			: type_object_placeholder;
 		end case;
 	end record;
 

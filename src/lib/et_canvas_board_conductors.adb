@@ -52,6 +52,7 @@ with et_keywords;							use et_keywords;
 with et_object_status;						use et_object_status;
 with et_nets;
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
+with et_pcb_placeholders;					use et_pcb_placeholders;
 
 
 package body et_canvas_board_conductors is
@@ -174,6 +175,25 @@ package body et_canvas_board_conductors is
 	end show_selected_text;
 
 
+
+
+	-- Outputs the selected text placeholder in the status bar:
+	procedure show_selected_placeholder (
+		selected		: in type_object_placeholder;
+		clarification	: in boolean := false)
+	is 
+		praeamble : constant string := "selected: ";
+	begin
+		if clarification then
+			set_status (praeamble & to_string (selected.cursor)
+				& status_next_object_clarification);
+		else
+			set_status (praeamble & to_string (selected.cursor));
+		end if;		
+	end show_selected_placeholder;
+
+	
+
 	
 
 	procedure show_selected_object (
@@ -195,6 +215,9 @@ package body et_canvas_board_conductors is
 				
 			when CAT_TEXT =>
 				show_selected_text (selected.text);
+
+			when CAT_PLACEHOLDER =>
+				show_selected_placeholder (selected.placeholder);
 				
 			when CAT_VOID =>
 				null; -- CS
@@ -385,7 +408,7 @@ package body et_canvas_board_conductors is
 						count			=> count_total,
 						log_threshold	=> log_threshold + 2);
 
-					
+					-- texts:
 					propose_texts (
 						module_cursor	=> active_module, 
 						point			=> point, 
@@ -394,6 +417,16 @@ package body et_canvas_board_conductors is
 						count			=> count_total,
 						log_threshold	=> log_threshold + 2);
 
+					-- placeholders:
+					propose_placeholders (
+						module_cursor	=> active_module, 
+						point			=> point, 
+						zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
+						layer			=> layer,
+						count			=> count_total,
+						log_threshold	=> log_threshold + 2);
+
+					
 				end if;
 			end loop;
 		end propose_objects;
