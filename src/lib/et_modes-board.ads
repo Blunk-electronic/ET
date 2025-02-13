@@ -113,6 +113,7 @@ package et_modes.board is
 		NOUN_STOP, -- solder stop mask
 		NOUN_SUBMODULE,
 		NOUN_TEXT,
+		NOUN_TEXT_PLACEHOLDER,
 		NOUN_TEXT_SIZE,
 		NOUN_TEXT_LINE_WIDTH,
 		NOUN_TRACK,

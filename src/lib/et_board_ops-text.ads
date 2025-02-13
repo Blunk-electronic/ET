@@ -72,15 +72,6 @@ package et_board_ops.text is
 		face			: in type_face; -- top/bottom
 		text			: in type_text_fab_with_content;
 		log_threshold	: in type_log_level);
-
-
-	-- Places a text in a conductor layer.
-	procedure place_text_in_conductor_layer (
-		module_cursor	: in pac_generic_modules.cursor;
-		signal_layer	: in type_signal_layer;
-		text			: in type_text_fab_with_content;
-		log_threshold	: in type_log_level);
-
 	
 											
 end et_board_ops.text;

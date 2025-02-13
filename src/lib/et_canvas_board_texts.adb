@@ -1057,7 +1057,7 @@ package body et_canvas_board_texts is
 				
 				when LAYER_CAT_CONDUCTOR =>
 				
-					place_text_in_conductor_layer (
+					add_text (
 						module_cursor 	=> active_module,
 						signal_layer	=> object_signal_layer,
 						text			=> preliminary_text.text,
