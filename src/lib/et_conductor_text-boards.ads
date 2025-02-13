@@ -47,8 +47,13 @@ package et_conductor_text.boards is
 	record
 		layer : type_signal_layer := type_signal_layer'first;
 	end record;
+
+
+	function get_layer (
+		text : in type_conductor_text)
+		return type_signal_layer;
 	
-	
+		
 	package pac_conductor_texts is new doubly_linked_lists (type_conductor_text);
 	use pac_conductor_texts;
 
@@ -78,7 +83,8 @@ package et_conductor_text.boards is
 		text : in pac_conductor_texts.cursor)
 		return type_signal_layer;
 
-						   
+
+	
 	-- Iterates the texts. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		texts	: in pac_conductor_texts.list;

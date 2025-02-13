@@ -1765,6 +1765,11 @@ package et_text is
 		end record;
 
 
+		function get_content (
+			text : in type_text_fab_with_content)
+			return string;
+		
+			
 		-- Returns the position, linewidth and content
 		-- of the given text:
 		function to_string (

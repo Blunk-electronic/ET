@@ -43,12 +43,22 @@
 package body et_conductor_text.boards is
 
 
+	function get_layer (
+		text : in type_conductor_text)
+		return type_signal_layer
+	is begin
+		return text.layer;
+	end get_layer;
+
+
+	
 	function to_string (
 		text	: in pac_conductor_texts.cursor)
 		return string
-	is begin
-		-- CS return position, layer, (content ?)
-		return "";
+	is 
+		t : type_conductor_text := element (text);
+	begin
+		return to_string (t) & " layer " & to_string (get_layer (t));
 	end to_string;
 
 

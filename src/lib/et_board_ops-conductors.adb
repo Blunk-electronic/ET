@@ -3926,8 +3926,326 @@ package body et_board_ops.conductors is
 
 
 	
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_placeholder;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+
+			procedure query_text (
+				ph : in out type_text_placeholder_conductors) 
+			is begin
+				modify_status (ph, operation);
+			end query_text;
+			
+		begin
+			module.board.conductors_floating.placeholders.update_element (
+				text.cursor, query_text'access);
+
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of text placeholder" -- CS log position and content ?
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end modify_status;
+
+
+
 	
 
+
+	procedure propose_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		layer			: in type_signal_layer;
+		zone			: in type_accuracy;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_text_placeholders_conductors;
+			c : pac_text_placeholders_conductors.cursor := module.board.conductors_floating.placeholders.first;
+
+			procedure query_text (
+				ph : in out type_text_placeholder_conductors)
+			is begin
+				if within_accuracy (
+					point_1	=> point,
+					zone	=> zone,
+					point_2	=> get_place (ph))
+				then
+					set_proposed (ph);
+					count := count + 1;
+					log (text => to_string (ph), level => log_threshold + 1);
+				end if;
+			end query_text;
+			
+			
+		begin
+			while c /= pac_text_placeholders_conductors.no_element loop
+				module.board.conductors_floating.placeholders.update_element (c, query_text'access);
+				next (c);
+			end loop;
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " proposing text placeholders at " & to_string (point)
+			 & " layer " & to_string (layer)
+			 & " zone " & accuracy_to_string (zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_placeholders;
+
+
+
+
+
+	procedure move_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_object_placeholder;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+
+			procedure query_placeholder (
+				ph : in out type_text_placeholder_conductors) 
+			is begin
+				move_text (ph, destination);
+			end query_placeholder;
+			
+		begin
+			module.board.conductors_floating.placeholders.update_element (
+				placeholder.cursor, query_placeholder'access);
+
+		end query_module;
+		
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving conductor text placeholder " 
+			& to_string (placeholder.cursor)
+			& " " & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end move_placeholder;
+
+	
+
+
+	procedure delete_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_object_placeholder;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			c : pac_text_placeholders_conductors.cursor := placeholder.cursor;			
+		begin
+			module.board.conductors_floating.placeholders.delete (c);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " deleting conductor text placeholder" & to_string (placeholder.cursor),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end delete_placeholder;
+
+
+	
+
+
+
+	function get_first_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_placeholder
+	is
+		result : type_object_placeholder;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_text_placeholders_conductors;
+			
+			proceed : aliased boolean := true;
+
+			phs : pac_text_placeholders_conductors.list 
+				renames module.board.conductors_floating.placeholders;
+
+			
+			procedure query_placeholder (
+				c : in pac_text_placeholders_conductors.cursor) 
+			is
+				use et_object_status;
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (c) then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when SELECTED =>
+						if is_selected (c) then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when others =>
+						null; -- CS
+				end case;
+			end query_placeholder;
+	
+			
+		begin
+			-- Query the placeholders:
+			iterate (phs, query_placeholder'access, proceed'access);
+
+			-- If nothing found, return no_element:
+			if proceed then
+				result := (others => <>);	
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first text placeholder / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- put_line ("found " & to_string (result));
+		
+		log_indentation_down;
+
+		return result;
+	end get_first_placeholder;
+
+	
+
+
+	
+
+	procedure reset_proposed_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_placeholder (
+				ph : in out type_text_placeholder_conductors)
+			is begin
+				reset_status (ph);
+			end query_placeholder;
+
+			use pac_text_placeholders_conductors;
+			c : pac_text_placeholders_conductors.cursor := 
+				module.board.conductors_floating.placeholders.first;
+		begin
+			while c /= pac_text_placeholders_conductors.no_element loop
+				module.board.conductors_floating.placeholders.update_element (
+					c, query_placeholder'access);
+				next (c);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " resetting proposed text placeholders",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_placeholders;
+
+
+
+
+
+
+
+
+
+	
+	
 
 	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;

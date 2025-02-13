@@ -49,6 +49,7 @@ with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_fill_zones;						use et_fill_zones;
 with et_fill_zones.boards;				use et_fill_zones.boards;
 with et_conductor_text.boards;			use et_conductor_text.boards;
+with et_pcb_placeholders;				use et_pcb_placeholders;
 with et_device_name;					use et_device_name;
 with et_ripup;							use et_ripup;
 
@@ -672,6 +673,66 @@ package et_board_ops.conductors is
 	procedure reset_proposed_texts (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
+
+
+
+-- TEXT PLACEHOLDERS:
+
+	-- This type helps to identify a text placeholder by its cursor:
+	type type_object_placeholder is record
+		cursor	: pac_text_placeholders_conductors.cursor := 
+			pac_text_placeholders_conductors.no_element;
+	end record;
+	
+
+	-- This procedure sets the status flag of the
+	-- given text object:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_placeholder;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+
+	-- Sets the proposed-flag of all placeholders which have their
+	-- origin (or anchor point) in the given zone around the given place.
+	-- Adds to count the number of placeholders that have been found:
+	procedure propose_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		layer			: in type_signal_layer;
+		zone			: in type_accuracy; -- the circular area around the place
+		count			: in out natural;
+		log_threshold	: in type_log_level);
+	
+
+	procedure move_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_object_placeholder;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+
+	procedure delete_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_object_placeholder;
+		log_threshold	: in type_log_level);
+ 
+ 
+ 
+	function get_first_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_placeholder;
+ 
+ 
+	-- Clears the proposed-flag and the selected-flag 
+	-- of all placeholders:
+	procedure reset_proposed_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+ 
 
 
 	

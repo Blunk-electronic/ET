@@ -39,6 +39,7 @@
 
 
 with ada.characters.handling;		use ada.characters.handling;
+with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
 
 
 package body et_pcb_placeholders is
@@ -63,6 +64,36 @@ package body et_pcb_placeholders is
 
 
 
+	function to_string (
+		placeholder : in pac_text_placeholders_conductors.cursor)					
+		return string
+	is 
+		use pac_geometry_2;
+		ph : type_text_placeholder_conductors := element (placeholder);
+		pos : type_position;
+	begin
+		pos := get_position (ph);
+		return to_string (pos);
+	end to_string;
+
+
+
+	procedure iterate (
+		placeholders	: in pac_text_placeholders_conductors.list;
+		process			: not null access procedure (
+							position : in pac_text_placeholders_conductors.cursor);
+		proceed			: not null access boolean)
+	is
+		c : pac_text_placeholders_conductors.cursor := placeholders.first;
+	begin
+		while c /= pac_text_placeholders_conductors.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+	
 	
 	function get_layer (
 		placeholder : in pac_text_placeholders_conductors.cursor)					

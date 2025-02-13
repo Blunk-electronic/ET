@@ -96,6 +96,19 @@ package et_pcb_placeholders is
 
 	use pac_text_placeholders_conductors;
 
+
+	-- Iterates the placeholders. 
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		placeholders	: in pac_text_placeholders_conductors.list;
+		process			: not null access procedure (
+							position : in pac_text_placeholders_conductors.cursor);
+		proceed			: not null access boolean);
+		
+	
+	function to_string (
+		placeholder : in pac_text_placeholders_conductors.cursor)					
+		return string;
 	
 
 	-- Returns the signal layer of the given placeholder:

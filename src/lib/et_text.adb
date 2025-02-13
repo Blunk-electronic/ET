@@ -588,6 +588,16 @@ package body et_text is
 
 
 
+
+
+		function get_content (
+			text : in type_text_fab_with_content)
+			return string
+		is begin
+			return to_string (text.content);
+		end get_content;
+
+		
 		
 		function to_string (
 			text : in type_text_fab_with_content)
