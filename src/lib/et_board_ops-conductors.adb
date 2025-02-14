@@ -4039,7 +4039,7 @@ package body et_board_ops.conductors is
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		text			: in type_object_placeholder;
+		placeholder		: in type_object_placeholder;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
@@ -4049,15 +4049,15 @@ package body et_board_ops.conductors is
 			module		: in out type_generic_module)
 		is
 
-			procedure query_text (
+			procedure query_placeholder (
 				ph : in out type_text_placeholder_conductors) 
 			is begin
 				modify_status (ph, operation);
-			end query_text;
+			end query_placeholder;
 			
 		begin
 			module.board.conductors_floating.placeholders.update_element (
-				text.cursor, query_text'access);
+				placeholder.cursor, query_placeholder'access);
 
 		end query_module;
 

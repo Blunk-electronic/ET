@@ -705,10 +705,10 @@ package et_board_ops.conductors is
 	
 
 	-- This procedure sets the status flag of the
-	-- given text object:
+	-- given placeholder object:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		text			: in type_object_placeholder;
+		placeholder		: in type_object_placeholder;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
