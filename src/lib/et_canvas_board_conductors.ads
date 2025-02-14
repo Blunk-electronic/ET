@@ -38,25 +38,11 @@
 -- DESCRIPTION:
 -- 
 
-with ada.containers;   			       	use ada.containers;
-with ada.containers.indefinite_doubly_linked_lists;
-
-with gtk.box;							use gtk.box;
-
-with et_primitive_objects;				use et_primitive_objects;
-with et_pcb_sides;						use et_pcb_sides;
-with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
+with et_pcb_coordinates_2;
 use et_pcb_coordinates_2.pac_geometry_2;
 
 with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;
-
-with et_board_shapes_and_text;			use et_board_shapes_and_text;
-
-with et_pcb_stack;						use et_pcb_stack;
-with et_conductor_segment.boards;		use et_conductor_segment.boards;
-with et_canvas_board_lines;				use et_canvas_board_lines;
-
 
 package et_canvas_board_conductors is
 

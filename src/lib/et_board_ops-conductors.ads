@@ -802,6 +802,11 @@ package et_board_ops.conductors is
 	package pac_objects is new indefinite_doubly_linked_lists (type_object);
 
 
+	-- Returns the number of items stored in the given list:
+	function get_count (
+		objects : in pac_objects.list)
+		return natural;
+	
 
 	-- Returns the first object (line, arc, circle, zone segment, text,
 	-- placeholder) according to the given flag.

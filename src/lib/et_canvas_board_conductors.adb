@@ -40,7 +40,9 @@
 
 with et_generic_module;						use et_generic_module;
 with et_canvas_board_2;
+with et_board_shapes_and_text;				use et_board_shapes_and_text;
 with et_conductor_text.boards;
+with et_conductor_segment.boards;			use et_conductor_segment.boards;
 with et_board_ops;
 with et_board_ops.conductors;				use et_board_ops.conductors;
 with et_logging;							use et_logging;
@@ -245,11 +247,9 @@ package body et_canvas_board_conductors is
 			selected_object : type_object := 
 				get_first_object (active_module, SELECTED, log_threshold + 1);
 
-			-- The number of proposed objects:
-			ct : count_type := proposed_objects.length;
-
 		begin
-			log (text => "proposed objects total " & count_type'image (ct),
+			log (text => "proposed objects total " 
+				& natural'image (get_count (proposed_objects)),
 				level => log_threshold + 2);
 
 			
