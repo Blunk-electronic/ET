@@ -100,13 +100,8 @@ package body et_pcb_placeholders is
 	function to_string (
 		placeholder : in pac_text_placeholders_conductors.cursor)					
 		return string
-	is 
-		use pac_geometry_2;
-		ph : type_text_placeholder_conductors := element (placeholder);
-	begin
-		return to_string (get_position (ph))
-			& " layer " & to_string (get_layer (ph)) 
-			& " meaning " & to_string (get_meaning (ph));
+	is begin
+		return to_string (element (placeholder));
 	end to_string;
 
 
@@ -163,6 +158,57 @@ package body et_pcb_placeholders is
 
 
 
+	
+	function to_string (
+		placeholder : in type_text_placeholder)
+		return string
+	is 
+		tf : type_text_fab := type_text_fab (placeholder);
+	begin
+		return to_string (tf) 
+			& " meaning " & to_string (get_meaning (placeholder));
+	end to_string;
+
+
+
+	function get_meaning (
+		placeholder : in type_text_placeholder)
+		return type_text_meaning
+	is begin
+		return placeholder.meaning;
+	end get_meaning;
+
+	
+
+
+	procedure iterate (
+		placeholders	: in pac_text_placeholders.list;
+		process			: not null access procedure (
+							position : in pac_text_placeholders.cursor);
+		proceed			: not null access boolean)
+	is
+		c : pac_text_placeholders.cursor := placeholders.first;
+	begin
+		while c /= pac_text_placeholders.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+	
+
+
+	
+
+	function to_string (
+		placeholder : in pac_text_placeholders.cursor)
+		return string
+	is begin
+		return to_string (element (placeholder));
+	end to_string;
+
+		
+
+	
 
 	
 

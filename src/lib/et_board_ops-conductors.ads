@@ -788,7 +788,7 @@ package et_board_ops.conductors is
 			when CAT_LINE_NET =>
 				line_net			: type_object_line_net;
 				
-			when CAT_LINE_FLOATING=>
+			when CAT_LINE_FLOATING =>
 				line_floating		: type_object_line_floating;
 				
 			when CAT_TEXT =>

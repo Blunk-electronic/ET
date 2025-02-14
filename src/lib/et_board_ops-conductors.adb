@@ -4099,7 +4099,7 @@ package body et_board_ops.conductors is
 			use pac_text_placeholders_conductors;
 			c : pac_text_placeholders_conductors.cursor := module.board.conductors_floating.placeholders.first;
 
-			procedure query_text (
+			procedure query_placeholder (
 				ph : in out type_text_placeholder_conductors)
 			is begin
 				if within_accuracy (
@@ -4111,12 +4111,12 @@ package body et_board_ops.conductors is
 					count := count + 1;
 					log (text => to_string (ph), level => log_threshold + 1);
 				end if;
-			end query_text;
+			end query_placeholder;
 			
 			
 		begin
 			while c /= pac_text_placeholders_conductors.no_element loop
-				module.board.conductors_floating.placeholders.update_element (c, query_text'access);
+				module.board.conductors_floating.placeholders.update_element (c, query_placeholder'access);
 				next (c);
 			end loop;
 		end query_module;
@@ -4140,6 +4140,7 @@ package body et_board_ops.conductors is
 
 
 
+	
 
 
 	procedure move_placeholder (
@@ -4183,6 +4184,8 @@ package body et_board_ops.conductors is
 		
 		log_indentation_down;
 	end move_placeholder;
+
+
 
 	
 
@@ -4881,6 +4884,7 @@ package body et_board_ops.conductors is
 				use pac_conductor_texts;
 				
 				procedure query_text (c : in pac_conductor_texts.cursor) is begin
+					-- CS test the given flag !!
 					if is_proposed (c) then
 						result.append ((
 							cat		=> CAT_TEXT,
@@ -4898,6 +4902,7 @@ package body et_board_ops.conductors is
 				procedure query_placeholder (
 					c : in pac_text_placeholders_conductors.cursor) 
 				is begin
+					-- CS test the given flag !!
 					if is_proposed (c) then
 						result.append ((
 							cat			=> CAT_PLACEHOLDER,

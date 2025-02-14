@@ -40,9 +40,10 @@
 with ada.containers; 			use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
 
-
 with et_text;
 with et_assy_doc;					use et_assy_doc;
+with et_pcb_placeholders;			use et_pcb_placeholders;
+
 
 package et_board_ops.assy_doc is
 
@@ -377,24 +378,66 @@ package et_board_ops.assy_doc is
 
 
 	
--- PLACEHOLDERS:
+-- TEXT PLACEHOLDERS:
 	
 	-- CS
 	-- move_placeholder via commandline
 	
 	-- This composite type helps to identify a
 	-- placeholder by its face:
-	-- type type_object_placeholder is record
-	-- 	face	: type_face := TOP;
-	-- 	cursor	: pac_text_placeholders.cursor := pac_text_placeholders.no_element;
-	-- end record;
+	type type_object_placeholder is record
+		face	: type_face := TOP;
+		cursor	: pac_text_placeholders.cursor := pac_text_placeholders.no_element;
+	end record;
+
 	
-	-- modify_status of placeholder
-	-- proposed_placeholders
-	-- move_placeholder
-	-- delete_placeholder
-	-- get_first_placeholder
-	-- reset_proposed_placeholders
+	-- This procedure sets the status flag of the
+	-- given placeholder object:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_object_placeholder;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+	
+	-- Sets the proposed-flag of all placeholders which have their
+	-- origin (or anchor point) in the given zone around the given place.
+	-- Adds to count the number of placeholders that have been found:
+	procedure propose_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		face			: in type_face;
+		zone			: in type_accuracy; -- the circular area around the place
+		count			: in out natural;
+		log_threshold	: in type_log_level);
+	
+
+	procedure move_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_object_placeholder;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+	
+	procedure delete_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_object_placeholder;
+		log_threshold	: in type_log_level);
+
+	
+	function get_first_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_placeholder;
+ 
+
+	-- Clears the proposed-flag and the selected-flag 
+	-- of all placeholders:
+	procedure reset_proposed_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
 
 
 	
@@ -407,18 +450,29 @@ package et_board_ops.assy_doc is
 		CAT_VOID,
 		CAT_LINE, 
 		CAT_ZONE_SEGMENT,
-		CAT_TEXT
+		CAT_TEXT,
+		CAT_PLACEHOLDER
 		);
-	-- CS CAT_ARC, CAT_CIRCLE, CAT_PLACEHOLDER
+	-- CS CAT_ARC, CAT_CIRCLE
 
+	
 	-- This type wraps segments of zones, lines, arcs, circles, 
 	-- texts, placeholders into a single type:
 	type type_object (cat : type_object_category) is record
 		case cat is
-			when CAT_VOID			=> null;
-			when CAT_ZONE_SEGMENT	=> segment	: type_object_segment;
-			when CAT_LINE 			=> line 	: type_object_line;
-			when CAT_TEXT			=> text		: type_object_text;
+			when CAT_VOID => null;
+			
+			when CAT_ZONE_SEGMENT =>
+				segment		: type_object_segment;
+				
+			when CAT_LINE => 
+				line 		: type_object_line;
+				
+			when CAT_TEXT =>
+				text		: type_object_text;
+				
+			when CAT_PLACEHOLDER =>
+				placeholder	: type_object_placeholder;
 		end case;
 	end record;
 

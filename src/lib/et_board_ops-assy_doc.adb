@@ -2139,6 +2139,372 @@ package body et_board_ops.assy_doc is
 
 
 
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_object_placeholder;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			use pac_text_placeholders;
+			
+			procedure query_placeholder (
+				ph : in out type_text_placeholder) 
+			is begin
+				modify_status (ph, operation);
+			end query_placeholder;
+			
+		begin
+			case placeholder.face is
+				when TOP =>
+					module.board.assy_doc.top.placeholders.update_element (
+						placeholder.cursor, query_placeholder'access);
+
+				when BOTTOM =>
+					module.board.assy_doc.bottom.placeholders.update_element (
+						placeholder.cursor, query_placeholder'access);
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of text placeholder" -- CS log position and content ?
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end modify_status;
+
+
+
+
+
+	procedure propose_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		face			: in type_face;
+		zone			: in type_accuracy;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_text_placeholders;
+			c : pac_text_placeholders.cursor;
+
+			procedure query_placeholder (
+				ph : in out type_text_placeholder)
+			is begin
+				if within_accuracy (
+					point_1	=> point,
+					zone	=> zone,
+					point_2	=> get_place (ph))
+				then
+					set_proposed (ph);
+					count := count + 1;
+					log (text => to_string (ph), level => log_threshold + 1);
+				end if;
+			end query_placeholder;
+			
+			
+		begin
+			case face is
+				when TOP =>
+					c := module.board.assy_doc.top.placeholders.first;
+					
+					while c /= pac_text_placeholders.no_element loop
+						module.board.assy_doc.top.placeholders.update_element (c, query_placeholder'access);
+						next (c);
+					end loop;
+
+
+				when BOTTOM =>
+					c := module.board.assy_doc.bottom.placeholders.first;
+					
+					while c /= pac_text_placeholders.no_element loop
+						module.board.assy_doc.bottom.placeholders.update_element (c, query_placeholder'access);
+						next (c);
+					end loop;
+			end case;					
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " proposing text placeholders at " & to_string (point)
+			 & " face " & to_string (face)
+			 & " zone " & accuracy_to_string (zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_placeholders;
+	
+
+
+	
+
+	procedure move_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_object_placeholder;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			use pac_text_placeholders;
+			
+			procedure query_placeholder (
+				ph : in out type_text_placeholder) 
+			is begin
+				move_text (ph, destination);
+			end query_placeholder;
+			
+		begin
+			case placeholder.face is
+				when TOP =>
+					module.board.assy_doc.top.placeholders.update_element (
+						placeholder.cursor, query_placeholder'access);
+
+				when BOTTOM =>
+					module.board.assy_doc.bottom.placeholders.update_element (
+						placeholder.cursor, query_placeholder'access);
+			end case;
+		end query_module;
+		
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving text placeholder " 
+			& to_string (placeholder.cursor)
+			& " " & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end move_placeholder;
+
+
+
+
+
+
+	procedure delete_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_object_placeholder;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			c : pac_text_placeholders.cursor := placeholder.cursor;			
+		begin
+			case placeholder.face is
+				when TOP =>
+					module.board.assy_doc.top.placeholders.delete (c);
+
+				when BOTTOM =>
+					module.board.assy_doc.bottom.placeholders.delete (c);
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " deleting text placeholder" & to_string (placeholder.cursor),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end delete_placeholder;
+
+
+	
+
+
+	function get_first_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_placeholder
+	is
+		result : type_object_placeholder;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_text_placeholders;
+			
+			proceed : aliased boolean := true;
+
+			top_items 		: pac_text_placeholders.list renames module.board.assy_doc.top.placeholders;
+			bottom_items	: pac_text_placeholders.list renames module.board.assy_doc.bottom.placeholders;
+
+			
+			procedure query_placeholder (
+				c : in pac_text_placeholders.cursor) 
+			is
+				use et_object_status;
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (c) then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when SELECTED =>
+						if is_selected (c) then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when others =>
+						null; -- CS
+				end case;
+			end query_placeholder;
+	
+			
+		begin
+			-- Query the placeholders in the top layer first:
+			iterate (top_items, query_placeholder'access, proceed'access);
+			result.face := top;
+
+			-- If nothing found, then query the bottom layer:
+			if proceed then
+				iterate (bottom_items, query_placeholder'access, proceed'access);
+				result.face := bottom;
+			end if;
+
+			-- If still nothing found, return TOP and no_element:
+			if proceed then
+				result := (others => <>);	
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first text placeholder / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- put_line ("found " & to_string (result));
+		
+		log_indentation_down;
+
+		return result;
+	end get_first_placeholder;
+
+
+
+
+
+
+
+	procedure reset_proposed_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_placeholder (
+				ph : in out type_text_placeholder)
+			is begin
+				reset_status (ph);
+			end query_placeholder;
+
+			use pac_text_placeholders;
+			c : pac_text_placeholders.cursor := 
+				module.board.assy_doc.top.placeholders.first;
+		begin
+			-- Iterate the placeholders at the top:
+			while c /= pac_text_placeholders.no_element loop
+				module.board.assy_doc.top.placeholders.update_element (
+					c, query_placeholder'access);
+				next (c);
+			end loop;
+
+			-- Iterate the placeholders at the bottom:
+			c := module.board.assy_doc.bottom.placeholders.first;
+			while c /= pac_text_placeholders.no_element loop
+				module.board.assy_doc.bottom.placeholders.update_element (
+					c, query_placeholder'access);
+				next (c);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " resetting proposed text placeholders",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_placeholders;
+
+
+
+	
+
+
+
+	
+
 
 	function get_count (
 		objects : in pac_objects.list)
@@ -2157,16 +2523,18 @@ package body et_board_ops.assy_doc is
 		log_threshold	: in type_log_level)
 		return type_object
 	is
-		result_category : type_object_category := CAT_VOID;
-		result_segment  : type_object_segment;
-		result_line		: type_object_line;
-		result_text		: type_object_text;
+		result_category 	: type_object_category := CAT_VOID;
+		result_segment  	: type_object_segment;
+		result_line			: type_object_line;
+		result_text			: type_object_text;
+		result_placeholder	: type_object_placeholder;
 
 		use pac_contours;
 		use pac_segments;
 
 		use pac_doc_lines;
 		use pac_doc_texts;
+		use pac_text_placeholders;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first object / " & to_string (flag),
@@ -2175,7 +2543,8 @@ package body et_board_ops.assy_doc is
 		log_indentation_up;
 
 		
-		-- First we search for a line.
+		-- SEARCH FOR A LINE:
+		
 		-- If a line has been found, then go to the end of this procedure:
 		result_line := get_first_line (module_cursor, flag, log_threshold + 1);
 
@@ -2203,7 +2572,8 @@ package body et_board_ops.assy_doc is
 		-- CS
 
 
-		-- Now search for a segment of a zone.
+		-- SEARCH FOR A SEGMENT OF A ZONE:
+		
 		-- If there is one, then go to the end  of this procedure:
 		result_segment := get_first_segment (module_cursor, flag, log_threshold + 1);
 
@@ -2221,9 +2591,9 @@ package body et_board_ops.assy_doc is
 		end if;
 
 
-		-- CS placeholder
 
-		-- Now search for a text:
+		-- SEARCH FOR A TEXT:
+		
 		result_text := get_first_text (module_cursor, flag, log_threshold + 1);
 		
 		if result_text.cursor /= pac_doc_texts.no_element then
@@ -2236,6 +2606,22 @@ package body et_board_ops.assy_doc is
 		end if;
 
 
+		
+		-- SEARCH FOR A PLACEHOLDER:
+
+		result_placeholder := get_first_placeholder (module_cursor, flag, log_threshold + 1);
+		
+		if result_placeholder.cursor /= pac_text_placeholders.no_element then
+			-- A placeholder has been found.
+			log (text => to_string (result_placeholder.cursor)
+					& " face " & to_string (result_placeholder.face),
+					level => log_threshold + 1);
+			
+			result_category := CAT_PLACEHOLDER;
+		end if;
+
+
+		
 		-- If still nothing has been found then the category is CAT_VOID.
 		
 
@@ -2255,6 +2641,10 @@ package body et_board_ops.assy_doc is
 
 			when CAT_TEXT =>
 				return (CAT_TEXT, result_text);
+
+			when CAT_PLACEHOLDER =>
+				return (CAT_PLACEHOLDER, result_placeholder);
+				
 		end case;
 	end get_first_object;
 
@@ -2289,6 +2679,10 @@ package body et_board_ops.assy_doc is
 			text_cursor : pac_doc_texts.cursor;
 
 
+			use pac_text_placeholders;
+			placeholder_cursor : pac_text_placeholders.cursor;
+
+			
 			
 			procedure query_zone (zone : in type_doc_zone) is
 				use pac_contours;
@@ -2338,6 +2732,18 @@ package body et_board_ops.assy_doc is
 				end if;
 			end query_text;
 
+
+			procedure query_placeholder (placeholder : in type_text_placeholder) is begin
+				-- CS test the given flag !!
+				if is_proposed (placeholder) then
+					result.append ((
+						cat			=> CAT_PLACEHOLDER,
+						placeholder	=> (face, placeholder_cursor)));
+
+					log (text => to_string (placeholder), level => log_threshold + 2);
+				end if;
+			end query_placeholder;
+
 			
 			
 		begin
@@ -2379,6 +2785,19 @@ package body et_board_ops.assy_doc is
 			log_indentation_down;
 
 			
+
+			log (text => "top text placeholders", level => log_threshold + 1);
+			log_indentation_up;
+			
+			placeholder_cursor := module.board.assy_doc.top.placeholders.first;
+			while placeholder_cursor /= pac_text_placeholders.no_element loop
+				query_element (placeholder_cursor, query_placeholder'access);
+				next (placeholder_cursor);
+			end loop;
+
+			log_indentation_down;
+
+
 			
 			face := BOTTOM;
 
@@ -2417,7 +2836,18 @@ package body et_board_ops.assy_doc is
 			end loop;
 
 			log_indentation_down;
+
+
+			log (text => "bottom text placeholders", level => log_threshold + 1);
+			log_indentation_up;
 			
+			placeholder_cursor := module.board.assy_doc.bottom.placeholders.first;
+			while placeholder_cursor /= pac_text_placeholders.no_element loop
+				query_element (placeholder_cursor, query_placeholder'access);
+				next (placeholder_cursor);
+			end loop;
+
+			log_indentation_down;			
 		end query_module;
 
 		
@@ -2464,6 +2894,9 @@ package body et_board_ops.assy_doc is
 
 			when CAT_TEXT =>
 				modify_status (module_cursor, object.text, operation, log_threshold + 1);
+
+			when CAT_PLACEHOLDER =>
+				modify_status (module_cursor, object.placeholder, operation, log_threshold + 1);
 				
 			when CAT_VOID =>
 				null; -- CS
@@ -2528,7 +2961,12 @@ package body et_board_ops.assy_doc is
 					destination,
 					log_threshold + 1);
 
-				
+			when CAT_PLACEHOLDER =>
+				move_placeholder (module_cursor,
+					object.placeholder,
+					destination,
+					log_threshold + 1);
+							
 			when CAT_VOID =>
 				null;
 		end case;		
@@ -2689,7 +3127,14 @@ package body et_board_ops.assy_doc is
 					text			=> object.text,
 					log_threshold	=> log_threshold + 1);
 
-								
+
+			when CAT_PLACEHOLDER =>
+				delete_placeholder (
+					module_cursor	=> module_cursor, 
+					placeholder		=> object.placeholder,
+					log_threshold	=> log_threshold + 1);
+
+				
 			when CAT_VOID =>
 				null;
 		end case;		
@@ -2714,6 +3159,7 @@ package body et_board_ops.assy_doc is
 		-- CS arcs, circles
 		
 		reset_proposed_texts (module_cursor, log_threshold + 1);
+		reset_proposed_placeholders (module_cursor, log_threshold + 1);
 		reset_proposed_segments (module_cursor, log_threshold + 1);
 
 		log_indentation_down;

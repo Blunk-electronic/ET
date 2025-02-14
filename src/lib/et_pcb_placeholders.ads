@@ -53,7 +53,7 @@ package et_pcb_placeholders is
 	
 -- PLACEHOLDERS FOR TEXTS IN CONDUCTOR LAYERS:
 	
-	type type_text_meaning_conductor is ( -- CS rename to type_placeholder_meaning
+	type type_text_meaning_conductor is ( -- CS rename to type_placeholder_conductor_meaning
 		COMPANY,
 		CUSTOMER,
 		PARTCODE,
@@ -145,7 +145,7 @@ package et_pcb_placeholders is
 	
 -- PLACEHOLDERS FOR TEXTS IN NON-CONDUCTOR LAYERS:
 		
-	subtype type_text_meaning is type_text_meaning_conductor 
+	subtype type_text_meaning is type_text_meaning_conductor -- CS rename to type_placeholder_meaning ?
 		range COMPANY .. REVISION;
 
 	
@@ -155,13 +155,41 @@ package et_pcb_placeholders is
 		meaning : type_text_meaning := type_text_meaning'first;
 	end record;
 
+
+	overriding function to_string (
+		placeholder : in type_text_placeholder)
+		return string;
+
+
+	function get_meaning (
+		placeholder : in type_text_placeholder)
+		return type_text_meaning;
+
+	
+	
 	
 	package pac_text_placeholders is new 
 		doubly_linked_lists (type_text_placeholder);
 
 	use pac_text_placeholders;
-		
 
+
+	-- Iterates the placeholders. 
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		placeholders	: in pac_text_placeholders.list;
+		process			: not null access procedure (
+							position : in pac_text_placeholders.cursor);
+		proceed			: not null access boolean);
+
+
+	
+
+	function to_string (
+		placeholder : in pac_text_placeholders.cursor)
+		return string;
+
+	
 	
 	
 	function is_selected (

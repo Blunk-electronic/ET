@@ -55,6 +55,7 @@ with et_undo_redo;
 with et_commit;
 with et_object_status;						use et_object_status;
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
+with et_pcb_placeholders;
 
 
 package body et_canvas_board_assy_doc is
@@ -127,7 +128,25 @@ package body et_canvas_board_assy_doc is
 	end show_selected_text;
 
 
-	-- CS show_selected_placeholder
+	
+
+	-- Outputs the selected placeholder in the status bar:
+	procedure show_selected_placeholder (
+		selected		: in type_object_placeholder;
+		clarification	: in boolean := false)
+	is 
+		praeamble : constant string := "selected: ";
+		use et_pcb_placeholders;
+		use pac_text_placeholders;
+	begin
+		if clarification then
+			set_status (praeamble & to_string (selected.cursor)
+				& status_next_object_clarification);
+		else
+			set_status (praeamble & to_string (selected.cursor));
+		end if;		
+	end show_selected_placeholder;
+
 	
 
 
@@ -144,6 +163,9 @@ package body et_canvas_board_assy_doc is
 
 			when CAT_TEXT =>
 				show_selected_text (selected.text);
+
+			when CAT_PLACEHOLDER =>
+				show_selected_placeholder (selected.placeholder);
 				
 			when CAT_VOID =>
 				null; -- CS
@@ -309,7 +331,6 @@ package body et_canvas_board_assy_doc is
 					count			=> count_total,
 					log_threshold	=> log_threshold + 2);
 
-
 				propose_texts (
 					module_cursor	=> active_module, 
 					point			=> point,
@@ -318,6 +339,14 @@ package body et_canvas_board_assy_doc is
 					count			=> count_total, 
 					log_threshold	=> log_threshold + 2);
 
+				propose_placeholders (
+					module_cursor	=> active_module, 
+					point			=> point,
+					zone			=> get_catch_zone (et_canvas_board_2.catch_zone), 
+					face			=> face,
+					count			=> count_total, 
+					log_threshold	=> log_threshold + 2);
+				
 			end if;
 		end propose_objects;
 		
