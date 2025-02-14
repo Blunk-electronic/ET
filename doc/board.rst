@@ -580,9 +580,9 @@ where no vias a allowed.
 
 	
 
-+++++
-Texts
-+++++
+++++++++++++++++++++++
+Texts and Placeholders
+++++++++++++++++++++++
 
 
 #. Place Text
@@ -606,6 +606,30 @@ Texts
 #. Move Text
 
 	|VNS| m x
+
+	
+
+#. Place Placeholder
+
+	Placeholders have a meaning such as 
+	COMPANY, CUSTOMER, PARTCODE, DRAWING_NUMBER,
+	ASSEMBLY_VARIANT, PROJECT, MODULE, REVISION.
+	
+	Once a placeholder has been placed, its content will be
+	filled automaticall according to its meaning.
+
+	This command places a placeholder in conductor layer 3.
+	The linewidth is 0.15mm, the text size 1mm.
+	The position is at (20;5) with a rotation of 0 degrees.
+
+	.. code-block::
+		
+		place placeholder conductor 1 0.15 1 20 5 0 module
+	
+
+	.. code-block::
+		
+		place placeholder silkscreen top 0.15 1 20 5 0 partcode
 
 	
 	

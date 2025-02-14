@@ -61,6 +61,7 @@ with et_route_restrict.boards;		use et_route_restrict.boards;
 with et_via_restrict.boards;		use et_via_restrict.boards;
 with et_ratsnest;					use et_ratsnest;
 with et_pcb_contour;
+with et_pcb_placeholders;
 with et_board_ops;
 with et_board_ops.devices;
 with et_board_ops.silkscreen;
@@ -1352,78 +1353,88 @@ is
 
 	
 	procedure place_text_placeholder is
-		-- use pac_text_board;
-		-- use et_board_ops.text;
-		-- text			: type_text_fab;
-		-- pos_xy			: type_vector_model;
-		-- rotation		: type_rotation_model;
-		-- content			: pac_text_content.bounded_string;
-		-- layer_category	: type_layer_category;
-		-- signal_layer	: type_signal_layer;
-		-- face			: type_face;
+		use pac_text_board;
+		pos_xy			: type_vector_model;
+		rotation		: type_rotation_model;
+		size			: type_distance;
+		linewidth		: type_distance;
+		
+		use et_pcb_placeholders;
+		ph				: type_text_placeholder_conductors;
+		meaning			: type_text_meaning;
+		layer_category	: type_layer_category;
+		signal_layer	: type_signal_layer;
+		face			: type_face;
 	begin
-		null;
-		-- board demo place text silkscreen top 0.15 1 140 100 0 "SILKSCREEN"
-		-- board demo place text conductor  5   0.15 1 140 100 0 "L1"
+		-- board demo place placeholder silkscreen top 0.15 1 140 100 0 module
+		-- board demo place placeholder conductor  5   0.15 1 140 100 0 module
 
 		-- CS: argument for alignment
 
-		-- There is no need of an argument that controls mirroring !
-		-- See call of place_text_in_conductor_layer below.
-		
--- 		case cmd_field_count is
--- 			when 12 =>
--- 				layer_category := to_layer_category (f (5));
--- 				text.line_width := to_distance (f (7)); -- 0.15
--- 				text.size := to_distance (f (8)); -- 1
--- 				
--- 				pos_xy := type_vector_model (to_point (f (9), f (10)));
--- 
--- 				rotation := to_rotation (f (11)); -- 0
--- 				text.position := type_position (to_position (pos_xy, rotation));
--- 				
--- 				content := to_content (f (12));
--- 				-- CS check length
--- 				
--- 				if characters_valid (content) then
--- 
--- 					case layer_category is
--- 						when LAYER_CAT_SILKSCREEN | LAYER_CAT_ASSY | LAYER_CAT_STOP =>
--- 
--- 							face := to_face (f (6)); -- top/bottom
--- 							
--- 							place_text_in_non_conductor_layer (
--- 								module_cursor 	=> module_cursor,
--- 								layer_category	=> layer_category,
--- 								face			=> face,
--- 								text			=> (text with content),
--- 								log_threshold	=> log_threshold + 1);
--- 
--- 						
--- 						when LAYER_CAT_CONDUCTOR =>
--- 						
--- 							signal_layer := to_signal_layer (f (6));  -- 5 
--- 							
--- 							-- This procedure automatically cares for mirroring:
--- 							place_text_in_conductor_layer (
--- 								module_cursor 	=> module_cursor,
--- 								signal_layer	=> signal_layer,
--- 								text			=> (text with content),
--- 								log_threshold	=> log_threshold + 1);
--- 
--- 						when others => null; -- CS message invalid layer category ?
--- 					end case;
--- 
--- 				else
--- 					raise syntax_error_1 with
--- 						"ERROR: Invalid character in text !";
--- 					-- CS show invalid character and its position
--- 				end if;
--- 					
--- 			when 13 .. type_field_count'last => too_long;
--- 				
--- 			when others => command_incomplete;
--- 		end case;
+		case cmd_field_count is
+			when 12 =>
+				layer_category := to_layer_category (f (5));
+
+				-- Get the linewidth of the placeholder:
+				linewidth := to_distance (f (7)); -- 0.15
+				validate_text_line_width (linewidth);
+				ph.line_width := linewidth;
+
+				-- Get the size of the placeholder:
+				size := to_distance (f (8)); -- 1
+				validate_text_size (size);
+				ph.size := size;
+				
+				-- Assemble the position of the placeholder:
+				pos_xy := type_vector_model (to_point (f (9), f (10)));
+				rotation := to_rotation (f (11)); -- 0
+				ph.position := type_position (to_position (pos_xy, rotation));
+				
+				ph.meaning := to_meaning (f (12));
+				
+				case layer_category is
+					when LAYER_CAT_SILKSCREEN | LAYER_CAT_ASSY | LAYER_CAT_STOP =>
+
+						face := to_face (f (6)); -- top/bottom
+
+						-- CS
+						
+						-- place_text_in_non_conductor_layer (
+						-- 	module_cursor 	=> module_cursor,
+						-- 	layer_category	=> layer_category,
+						-- 	face			=> face,
+						-- 	text			=> (text with content),
+						-- 	log_threshold	=> log_threshold + 1);
+
+					
+					when LAYER_CAT_CONDUCTOR =>
+						ph.layer := to_signal_layer (f (6));  -- 5 
+
+						-- Set the mirror status according to the signal layer:
+						ph.mirror := signal_layer_to_mirror (
+							get_layer (ph), get_deepest_conductor_layer (module_cursor));
+
+						-- if ph.mirror = MIRROR_ALONG_Y_AXIS then
+						-- 	log (text => "Placeholder is in deepest signal layer -> will be mirrored",
+						-- 		level => log_threshold + 1);
+						-- else
+						-- 	log (text => "Placeholder is not in deepest signal layer -> no mirroring",
+						-- 		level => log_threshold + 1);
+						-- end if;
+						
+						-- This procedure automatically cares for mirroring:
+						add_placeholder (
+							module_cursor 	=> module_cursor,
+							placeholder		=> ph,
+							log_threshold	=> log_threshold + 1);
+
+					when others => null; -- CS message invalid layer category ?
+				end case;
+					
+			when 13 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
 	end place_text_placeholder;
 
 
@@ -3449,9 +3460,9 @@ is
 				
 			when VERB_PLACE =>
 				case noun is
-					when NOUN_VIA				=> place_via;
-					when NOUN_TEXT				=> place_text;
-					when NOUN_TEXT_PLACEHOLDER	=> place_text_placeholder;					
+					when NOUN_VIA			=> place_via;
+					when NOUN_TEXT			=> place_text;
+					when NOUN_PLACEHOLDER	=> place_text_placeholder;					
 					when others	=> invalid_noun (to_string (noun));
 				end case;
 				
@@ -3670,7 +3681,7 @@ begin -- board_cmd
 	-- read the verb from field 3
 	verb := to_verb (f (3));
 	
-	-- There are some very short commands which do not require a verb.
+	-- There are some very short commands which do not require a noun.
 	-- For such commands we do not read the noun.
 	case verb is
 		when VERB_EXIT | VERB_QUIT => null; -- no noun
@@ -3702,15 +3713,15 @@ begin -- board_cmd
 	-- end if;
 
 
-	exception when event: others =>
+	-- exception when event: others =>
 
-			null;
+			-- null;
 		-- CS
 			-- evaluate_exception (
 			-- 	name	=> exception_name (event),
 			-- 	message	=> exception_message (event));
 
-			raise;
+			-- raise;
 	
 end board_cmd;
 	

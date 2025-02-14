@@ -3998,6 +3998,41 @@ package body et_board_ops.conductors is
 	end reset_proposed_texts;
 
 
+
+
+
+	procedure add_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_text_placeholder_conductors;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_text_placeholders_conductors;
+		begin
+			append (module.board.conductors_floating.placeholders, placeholder);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " placing text placeholder in conductor layer "
+			& to_string (placeholder),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end add_placeholder;
+
 	
 
 

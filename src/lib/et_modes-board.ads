@@ -101,6 +101,7 @@ package et_modes.board is
 		NOUN_ORIGINS, -- the center of a package
 		NOUN_OUTLINE,
 		NOUN_PARTCODE,
+		NOUN_PLACEHOLDER,
 		NOUN_PNP, -- pick & place
 		NOUN_PURPOSE,
 		NOUN_RATSNEST,
@@ -113,7 +114,6 @@ package et_modes.board is
 		NOUN_STOP, -- solder stop mask
 		NOUN_SUBMODULE,
 		NOUN_TEXT,
-		NOUN_TEXT_PLACEHOLDER,
 		NOUN_TEXT_SIZE,
 		NOUN_TEXT_LINE_WIDTH,
 		NOUN_TRACK,

@@ -422,6 +422,7 @@ package body et_text is
 		is begin
 			return "position" & to_string (get_position (text))
 				& " linewidth" & to_string (text.line_width);
+				-- CS size and alignment ?
 		end to_string;
 		
 		

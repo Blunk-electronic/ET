@@ -64,6 +64,20 @@ package body et_pcb_placeholders is
 
 
 
+	function to_string (
+		placeholder : in type_text_placeholder_conductors)
+		return string
+	is 
+		tf : type_text_fab := type_text_fab (placeholder);
+	begin
+		return to_string (tf) 
+			& " layer " & to_string (get_layer (placeholder))
+			& " meaning " & to_string (get_meaning (placeholder));
+	end to_string;
+
+
+	
+
 	function get_meaning (
 		placeholder : in type_text_placeholder_conductors)
 		return type_text_meaning_conductor

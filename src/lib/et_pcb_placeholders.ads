@@ -53,7 +53,7 @@ package et_pcb_placeholders is
 	
 -- PLACEHOLDERS FOR TEXTS IN CONDUCTOR LAYERS:
 	
-	type type_text_meaning_conductor is (
+	type type_text_meaning_conductor is ( -- CS rename to type_placeholder_meaning
 		COMPANY,
 		CUSTOMER,
 		PARTCODE,
@@ -89,6 +89,10 @@ package et_pcb_placeholders is
 	end record;
 
 
+	overriding function to_string (
+		placeholder : in type_text_placeholder_conductors)
+		return string;
+	
 
 	function get_meaning (
 		placeholder : in type_text_placeholder_conductors)

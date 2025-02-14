@@ -262,7 +262,7 @@ package et_text is
 			return type_rotation;
 
 
-		-- Returns the position and linewidth of the given text:
+		-- Returns the properties of the given text:
 		function to_string (
 			text : in type_text_fab)
 			return string;

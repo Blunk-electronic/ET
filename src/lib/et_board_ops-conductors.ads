@@ -685,7 +685,17 @@ package et_board_ops.conductors is
 
 
 
+	
 -- TEXT PLACEHOLDERS:
+
+	-- Places a text placeholder in a conductor layer.
+	-- The caller must take care for mirroring the placeholder
+	-- in case its signal layer is the bottom of the board:
+	procedure add_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_text_placeholder_conductors;
+		log_threshold	: in type_log_level);
+	
 
 	-- This type helps to identify a text placeholder by its cursor:
 	type type_object_placeholder is record
