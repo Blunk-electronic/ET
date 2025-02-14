@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -38,23 +38,11 @@
 -- DESCRIPTION:
 -- 
 
-with ada.containers;   			       	use ada.containers;
-with ada.containers.indefinite_doubly_linked_lists;
-
-with gtk.box;							use gtk.box;
-
-with et_primitive_objects;				use et_primitive_objects;
-with et_pcb_sides;						use et_pcb_sides;
-with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
+with et_pcb_coordinates_2;
 use et_pcb_coordinates_2.pac_geometry_2;
 
 with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;
-
-with et_board_shapes_and_text;			use et_board_shapes_and_text;
-
-with et_assy_doc;						use et_assy_doc;
-with et_canvas_board_lines;				use et_canvas_board_lines;
 
 
 package et_canvas_board_assy_doc is

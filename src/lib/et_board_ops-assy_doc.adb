@@ -2136,6 +2136,18 @@ package body et_board_ops.assy_doc is
 	end reset_proposed_texts;
 
 
+
+
+
+
+	function get_count (
+		objects : in pac_objects.list)
+		return natural
+	is begin
+		return natural (objects.length);
+	end get_count;
+	
+	
 	
 	
 

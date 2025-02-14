@@ -426,6 +426,11 @@ package et_board_ops.assy_doc is
 
 
 
+	-- Returns the number of items stored in the given list:
+	function get_count (
+		objects : in pac_objects.list)
+		return natural;
+	
 
 	
 

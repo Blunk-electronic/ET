@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,9 +42,10 @@ with ada.text_io;						use ada.text_io;
 
 with et_generic_module;					use et_generic_module;
 with et_canvas_board_2;
+with et_pcb_sides;						use et_pcb_sides;
+with et_board_shapes_and_text;			use et_board_shapes_and_text;
 
-with et_board_shapes_and_text;
-
+with et_assy_doc;						use et_assy_doc;
 with et_board_ops.assy_doc;				use et_board_ops.assy_doc;
 
 with et_logging;						use et_logging;
@@ -169,11 +170,9 @@ package body et_canvas_board_assy_doc is
 			selected_object : type_object := 
 				get_first_object (active_module, SELECTED, log_threshold + 1);
 
-			-- The number of proposed objects:
-			ct : count_type := proposed_objects.length;
-
 		begin
-			log (text => "proposed objects total " & count_type'image (ct),
+			log (text => "proposed objects total " 
+				& natural'image (get_count (proposed_objects)),
 				level => log_threshold + 2);
 
 			
