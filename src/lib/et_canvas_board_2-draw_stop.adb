@@ -234,20 +234,20 @@ is
 
 		case face is
 			when TOP =>
-				iterate (module.board.stop_mask.top.lines, query_line'access);
-				iterate (module.board.stop_mask.top.arcs, query_arc'access);
-				iterate (module.board.stop_mask.top.circles, query_circle'access);
-				iterate (module.board.stop_mask.top.contours, query_zone'access);
-				iterate (module.board.stop_mask.top.placeholders, query_placeholder'access);
-				iterate (module.board.stop_mask.top.texts, query_text'access);
+				iterate (module.board.stopmask.top.lines, query_line'access);
+				iterate (module.board.stopmask.top.arcs, query_arc'access);
+				iterate (module.board.stopmask.top.circles, query_circle'access);
+				iterate (module.board.stopmask.top.contours, query_zone'access);
+				iterate (module.board.stopmask.top.placeholders, query_placeholder'access);
+				iterate (module.board.stopmask.top.texts, query_text'access);
 
 			when BOTTOM =>
-				iterate (module.board.stop_mask.bottom.lines, query_line'access);
-				iterate (module.board.stop_mask.bottom.arcs, query_arc'access);
-				iterate (module.board.stop_mask.bottom.circles, query_circle'access);
-				iterate (module.board.stop_mask.bottom.contours, query_zone'access);
-				iterate (module.board.stop_mask.bottom.placeholders, query_placeholder'access);
-				iterate (module.board.stop_mask.bottom.texts, query_text'access);
+				iterate (module.board.stopmask.bottom.lines, query_line'access);
+				iterate (module.board.stopmask.bottom.arcs, query_arc'access);
+				iterate (module.board.stopmask.bottom.circles, query_circle'access);
+				iterate (module.board.stopmask.bottom.contours, query_zone'access);
+				iterate (module.board.stopmask.bottom.placeholders, query_placeholder'access);
+				iterate (module.board.stopmask.bottom.texts, query_text'access);
 
 		end case;
 

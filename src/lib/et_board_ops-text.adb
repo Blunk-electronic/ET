@@ -154,9 +154,9 @@ package body et_board_ops.text is
 				when LAYER_CAT_STOP =>
 					case face is
 						when TOP =>
-							append (module.board.stop_mask.top.texts, (text with v_text));
+							append (module.board.stopmask.top.texts, (text with v_text));
 						when BOTTOM =>
-							append (module.board.stop_mask.bottom.texts, (text with v_text));
+							append (module.board.stopmask.bottom.texts, (text with v_text));
 					end case;
 
 				when others => null;

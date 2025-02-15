@@ -1913,19 +1913,19 @@ is
 			section_mark (section_stopmask, HEADER);
 
 			section_mark (section_top, HEADER);
-			iterate (element (module_cursor).board.stop_mask.top.lines, write_line'access);
-			iterate (element (module_cursor).board.stop_mask.top.arcs, write_arc'access);
-			iterate (element (module_cursor).board.stop_mask.top.circles, write_circle'access);
-			iterate (element (module_cursor).board.stop_mask.top.contours, write_polygon'access);
-			iterate (element (module_cursor).board.stop_mask.top.texts, write_text'access);			
+			iterate (element (module_cursor).board.stopmask.top.lines, write_line'access);
+			iterate (element (module_cursor).board.stopmask.top.arcs, write_arc'access);
+			iterate (element (module_cursor).board.stopmask.top.circles, write_circle'access);
+			iterate (element (module_cursor).board.stopmask.top.contours, write_polygon'access);
+			iterate (element (module_cursor).board.stopmask.top.texts, write_text'access);			
 			section_mark (section_top, FOOTER);
 
 			section_mark (section_bottom, HEADER);
-			iterate (element (module_cursor).board.stop_mask.bottom.lines, write_line'access);
-			iterate (element (module_cursor).board.stop_mask.bottom.arcs, write_arc'access);
-			iterate (element (module_cursor).board.stop_mask.bottom.circles, write_circle'access);
-			iterate (element (module_cursor).board.stop_mask.bottom.contours, write_polygon'access);
-			iterate (element (module_cursor).board.stop_mask.bottom.texts, write_text'access);
+			iterate (element (module_cursor).board.stopmask.bottom.lines, write_line'access);
+			iterate (element (module_cursor).board.stopmask.bottom.arcs, write_arc'access);
+			iterate (element (module_cursor).board.stopmask.bottom.circles, write_circle'access);
+			iterate (element (module_cursor).board.stopmask.bottom.contours, write_polygon'access);
+			iterate (element (module_cursor).board.stopmask.bottom.texts, write_text'access);
 			section_mark (section_bottom, FOOTER);
 
 			section_mark (section_stopmask, FOOTER);

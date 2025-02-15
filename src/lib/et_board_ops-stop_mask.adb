@@ -59,12 +59,12 @@ package body et_board_ops.stop_mask is
 			case face is
 				when TOP =>
 					append (
-						container	=> module.board.stop_mask.top.lines,
+						container	=> module.board.stopmask.top.lines,
 						new_item	=> line);
 					
 				when BOTTOM =>
 					append (
-						container	=> module.board.stop_mask.bottom.lines,
+						container	=> module.board.stopmask.bottom.lines,
 						new_item	=> line);
 			end case;
 		end;
@@ -106,12 +106,12 @@ package body et_board_ops.stop_mask is
 			case face is
 				when TOP =>
 					append (
-						container	=> module.board.stop_mask.top.arcs,
+						container	=> module.board.stopmask.top.arcs,
 						new_item	=> arc);
 
 				when BOTTOM =>
 					append (
-						container	=> module.board.stop_mask.bottom.arcs,
+						container	=> module.board.stopmask.bottom.arcs,
 						new_item	=> arc);
 			end case;
 		end;
@@ -155,12 +155,12 @@ package body et_board_ops.stop_mask is
 			case face is
 				when TOP =>
 					append (
-						container	=> module.board.stop_mask.top.circles,
+						container	=> module.board.stopmask.top.circles,
 						new_item	=> circle);
 
 				when BOTTOM =>
 					append (
-						container	=> module.board.stop_mask.bottom.circles,
+						container	=> module.board.stopmask.bottom.circles,
 						new_item	=> circle);
 
 			end case;
@@ -231,10 +231,10 @@ package body et_board_ops.stop_mask is
 			case face is
 				when TOP =>
 					-- Iterate through the already existing zones:
-					c := module.board.stop_mask.top.contours.first;
+					c := module.board.stopmask.top.contours.first;
 
 					while c /= pac_stop_contours.no_element and proceed loop
-						module.board.stop_mask.top.contours.update_element (c, query_zone'access);
+						module.board.stopmask.top.contours.update_element (c, query_zone'access);
 						next (c);
 					end loop;
 
@@ -243,16 +243,16 @@ package body et_board_ops.stop_mask is
 					if proceed then
 						-- put_line ("added as new zone");
 						log (text => "added as new zone", level => log_threshold + 1);
-						module.board.stop_mask.top.contours.append (zone);
+						module.board.stopmask.top.contours.append (zone);
 					end if;
 
 					
 				when BOTTOM =>
 					-- Iterate through the already existing zones:
-					c := module.board.stop_mask.bottom.contours.first;
+					c := module.board.stopmask.bottom.contours.first;
 
 					while c /= pac_stop_contours.no_element and proceed loop
-						module.board.stop_mask.bottom.contours.update_element (c, query_zone'access);
+						module.board.stopmask.bottom.contours.update_element (c, query_zone'access);
 						next (c);
 					end loop;
 
@@ -260,7 +260,7 @@ package body et_board_ops.stop_mask is
 					-- as a new zone:
 					if proceed then
 						log (text => "added as new zone", level => log_threshold + 1);
-						module.board.stop_mask.bottom.contours.append (zone);
+						module.board.stopmask.bottom.contours.append (zone);
 					end if;
 
 			end case;
@@ -311,13 +311,13 @@ package body et_board_ops.stop_mask is
 			deleted : boolean := false; -- goes true if at least one segment has been deleted
 		begin
 			if face = TOP then
-				line_cursor   	:= module.board.stop_mask.top.lines.first;
-				arc_cursor    	:= module.board.stop_mask.top.arcs.first;
-				circle_cursor	:= module.board.stop_mask.top.circles.first;
+				line_cursor   	:= module.board.stopmask.top.lines.first;
+				arc_cursor    	:= module.board.stopmask.top.arcs.first;
+				circle_cursor	:= module.board.stopmask.top.circles.first;
 			else
-				line_cursor   	:= module.board.stop_mask.bottom.lines.first;
-				arc_cursor    	:= module.board.stop_mask.bottom.arcs.first;
-				circle_cursor	:= module.board.stop_mask.bottom.circles.first;
+				line_cursor   	:= module.board.stopmask.bottom.lines.first;
+				arc_cursor    	:= module.board.stopmask.bottom.arcs.first;
+				circle_cursor	:= module.board.stopmask.bottom.circles.first;
 			end if;
 			
 			-- first search for a matching segment among the lines
@@ -326,9 +326,9 @@ package body et_board_ops.stop_mask is
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 					if face = TOP then
-						delete (module.board.stop_mask.top.lines, line_cursor);
+						delete (module.board.stopmask.top.lines, line_cursor);
 					else
-						delete (module.board.stop_mask.bottom.lines, line_cursor);
+						delete (module.board.stopmask.bottom.lines, line_cursor);
 					end if;
 					deleted := true;
 					exit;
@@ -343,9 +343,9 @@ package body et_board_ops.stop_mask is
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 						if face = TOP then
-							delete (module.board.stop_mask.top.arcs, arc_cursor);
+							delete (module.board.stopmask.top.arcs, arc_cursor);
 						else
-							delete (module.board.stop_mask.bottom.arcs, arc_cursor);
+							delete (module.board.stopmask.bottom.arcs, arc_cursor);
 						end if;
 						deleted := true;
 						exit;
@@ -362,9 +362,9 @@ package body et_board_ops.stop_mask is
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 						if face = TOP then
-							delete (module.board.stop_mask.top.circles, circle_cursor);
+							delete (module.board.stopmask.top.circles, circle_cursor);
 						else
-							delete (module.board.stop_mask.bottom.circles, circle_cursor);
+							delete (module.board.stopmask.bottom.circles, circle_cursor);
 						end if;
 						deleted := true;
 						exit;
@@ -433,10 +433,10 @@ package body et_board_ops.stop_mask is
 		begin
 			case face is
 				when TOP =>
-					module.board.stop_mask.top.texts.iterate (query_text'access);
+					module.board.stopmask.top.texts.iterate (query_text'access);
 
 				when BOTTOM =>
-					module.board.stop_mask.bottom.texts.iterate (query_text'access);
+					module.board.stopmask.bottom.texts.iterate (query_text'access);
 			end case;
 		end query_module;
 
@@ -492,12 +492,12 @@ package body et_board_ops.stop_mask is
 		begin
 			case face is
 				when TOP =>
-					text_cursor := module.board.stop_mask.top.texts.find (text);
-					module.board.stop_mask.top.texts.update_element (text_cursor, query_text'access);
+					text_cursor := module.board.stopmask.top.texts.find (text);
+					module.board.stopmask.top.texts.update_element (text_cursor, query_text'access);
 
 				when BOTTOM =>
-					text_cursor := module.board.stop_mask.bottom.texts.find (text);
-					module.board.stop_mask.bottom.texts.update_element (text_cursor, query_text'access);
+					text_cursor := module.board.stopmask.bottom.texts.find (text);
+					module.board.stopmask.bottom.texts.update_element (text_cursor, query_text'access);
 			end case;
 		end query_module;
 

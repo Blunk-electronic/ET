@@ -398,7 +398,7 @@ is
 				use pac_stop_contours;
 				-- use pac_stop_texts;
 
-				stop : type_stop_mask_both_sides renames module.board.stop_mask;
+				stop : type_stop_mask_both_sides renames module.board.stopmask;
 
 				
 				procedure query_line (c : in pac_stop_lines.cursor) is

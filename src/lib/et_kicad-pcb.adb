@@ -5338,7 +5338,7 @@ package body et_kicad.pcb is
 				module.board.silkscreen		:= board.silk_screen;
 				module.board.assy_doc		:= board.assy_doc;
 				module.board.stencil 		:= board.stencil;
-				module.board.stop_mask 		:= board.stop_mask;
+				module.board.stopmask 		:= board.stop_mask;
 				module.board.keepout 		:= board.keepout;
 				module.board.contours 		:= board.contours;
 

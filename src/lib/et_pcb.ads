@@ -370,7 +370,7 @@ package et_pcb is
 		silkscreen		: type_silkscreen_both_sides;
 		assy_doc		: type_assy_doc_both_sides;
 		stencil			: type_stencil_both_sides;
-		stop_mask		: type_stop_mask_both_sides; -- CS rename to stopmask
+		stopmask		: type_stop_mask_both_sides;
 		keepout			: type_keepout_both_sides;
 		route_restrict	: type_route_restrict;
 		via_restrict	: type_via_restrict;

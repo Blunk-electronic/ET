@@ -1552,10 +1552,10 @@ package body et_kicad_to_native is
 			begin -- move_stop_mask
 				
 				-- LINES TOP
-				lines_cursor := module.board.stop_mask.top.lines.first;
+				lines_cursor := module.board.stopmask.top.lines.first;
 				while lines_cursor /= pac_stop_lines.no_element loop
 					pac_stop_lines.update_element (
-						container	=> module.board.stop_mask.top.lines,
+						container	=> module.board.stopmask.top.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
 					
@@ -1564,10 +1564,10 @@ package body et_kicad_to_native is
 
 				
 				-- LINES BOTTOM
-				lines_cursor := module.board.stop_mask.bottom.lines.first;
+				lines_cursor := module.board.stopmask.bottom.lines.first;
 				while lines_cursor /= pac_stop_lines.no_element loop
 					pac_stop_lines.update_element (
-						container	=> module.board.stop_mask.bottom.lines,
+						container	=> module.board.stopmask.bottom.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
 					
@@ -1576,10 +1576,10 @@ package body et_kicad_to_native is
 
 				
 				-- ARCS TOP
-				arcs_cursor := module.board.stop_mask.top.arcs.first;
+				arcs_cursor := module.board.stopmask.top.arcs.first;
 				while arcs_cursor /= pac_stop_arcs.no_element loop
 					pac_stop_arcs.update_element (
-						container	=> module.board.stop_mask.top.arcs,
+						container	=> module.board.stopmask.top.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
 					
@@ -1588,10 +1588,10 @@ package body et_kicad_to_native is
 
 				
 				-- ARCS BOTTOM
-				arcs_cursor := module.board.stop_mask.bottom.arcs.first;
+				arcs_cursor := module.board.stopmask.bottom.arcs.first;
 				while arcs_cursor /= pac_stop_arcs.no_element loop
 					pac_stop_arcs.update_element (
-						container	=> module.board.stop_mask.bottom.arcs,
+						container	=> module.board.stopmask.bottom.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
 					
@@ -1600,10 +1600,10 @@ package body et_kicad_to_native is
 
 				
 				-- CIRCLES TOP
-				circles_cursor := module.board.stop_mask.top.circles.first;
+				circles_cursor := module.board.stopmask.top.circles.first;
 				while circles_cursor /= pac_stop_circles.no_element loop
 					pac_stop_circles.update_element (
-						container	=> module.board.stop_mask.top.circles,
+						container	=> module.board.stopmask.top.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
 					
@@ -1612,10 +1612,10 @@ package body et_kicad_to_native is
 
 				
 				-- CIRCLES BOTTOM
-				circles_cursor := module.board.stop_mask.bottom.circles.first;
+				circles_cursor := module.board.stopmask.bottom.circles.first;
 				while circles_cursor /= pac_stop_circles.no_element loop
 					pac_stop_circles.update_element (
-						container	=> module.board.stop_mask.bottom.circles,
+						container	=> module.board.stopmask.bottom.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
 					
@@ -1624,10 +1624,10 @@ package body et_kicad_to_native is
 
 				
 				-- POLYGONS TOP
-				polygons_cursor := module.board.stop_mask.top.contours.first;
+				polygons_cursor := module.board.stopmask.top.contours.first;
 				while polygons_cursor /= pac_stop_contours.no_element loop
 					pac_stop_contours.update_element (
-						container	=> module.board.stop_mask.top.contours,
+						container	=> module.board.stopmask.top.contours,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
 					
@@ -1636,10 +1636,10 @@ package body et_kicad_to_native is
 
 				
 				-- POLYGONS BOTTOM
-				polygons_cursor := module.board.stop_mask.bottom.contours.first;
+				polygons_cursor := module.board.stopmask.bottom.contours.first;
 				while polygons_cursor /= pac_stop_contours.no_element loop
 					pac_stop_contours.update_element (
-						container	=> module.board.stop_mask.bottom.contours,
+						container	=> module.board.stopmask.bottom.contours,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
 					
@@ -1648,10 +1648,10 @@ package body et_kicad_to_native is
 
 				
 				-- TEXTS TOP
-				texts_cursor := module.board.stop_mask.top.texts.first;
+				texts_cursor := module.board.stopmask.top.texts.first;
 				while texts_cursor /= pac_stop_texts.no_element loop
 					pac_stop_texts.update_element (
-						container	=> module.board.stop_mask.top.texts,
+						container	=> module.board.stopmask.top.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
 
@@ -1660,10 +1660,10 @@ package body et_kicad_to_native is
 
 				
 				-- TEXTS BOTTOM
-				texts_cursor := module.board.stop_mask.bottom.texts.first;
+				texts_cursor := module.board.stopmask.bottom.texts.first;
 				while texts_cursor /= pac_stop_texts.no_element loop
 					pac_stop_texts.update_element (
-						container	=> module.board.stop_mask.bottom.texts,
+						container	=> module.board.stopmask.bottom.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
 

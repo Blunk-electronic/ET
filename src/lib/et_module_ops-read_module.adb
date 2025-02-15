@@ -3340,7 +3340,7 @@ is
 									
 								when LAYER_CAT_STOP =>
 									pac_stop_lines.append (
-										container	=> module.board.stop_mask.top.lines,
+										container	=> module.board.stopmask.top.lines,
 										new_item	=> (type_line (board_line) with board_line_width));
 
 								when others => null; -- CS raise exception ?								
@@ -3365,7 +3365,7 @@ is
 									
 								when LAYER_CAT_STOP =>
 									pac_stop_lines.append (
-										container	=> module.board.stop_mask.bottom.lines,
+										container	=> module.board.stopmask.bottom.lines,
 										new_item	=> (type_line (board_line) with board_line_width));
 
 								when others => null; -- CS raise exception ?
@@ -3435,7 +3435,7 @@ is
 									
 								when LAYER_CAT_STOP =>
 									pac_stop_arcs.append (
-										container	=> module.board.stop_mask.top.arcs,
+										container	=> module.board.stopmask.top.arcs,
 										new_item	=> (type_arc (board_arc) with board_line_width));
 
 								when others => null;  -- CS raise exception ?
@@ -3461,7 +3461,7 @@ is
 									
 								when LAYER_CAT_STOP =>
 									pac_stop_arcs.append (
-										container	=> module.board.stop_mask.bottom.arcs,
+										container	=> module.board.stopmask.bottom.arcs,
 										new_item	=> (type_arc (board_arc) with board_line_width));
 
 								when others => null;  -- CS raise exception ?
@@ -3531,7 +3531,7 @@ is
 									
 								when LAYER_CAT_STOP =>
 									pac_stop_circles.append (
-										container	=> module.board.stop_mask.top.circles,
+										container	=> module.board.stopmask.top.circles,
 										new_item	=> (type_circle (board_circle) with board_line_width));
 
 								when others => null;  -- CS raise exception ?
@@ -3556,7 +3556,7 @@ is
 									
 								when LAYER_CAT_STOP =>
 									pac_stop_circles.append (
-										container	=> module.board.stop_mask.bottom.circles,
+										container	=> module.board.stopmask.bottom.circles,
 										new_item	=> (type_circle (board_circle) with board_line_width));
 
 								when others => null;  -- CS raise exception ?
@@ -3665,14 +3665,14 @@ is
 					
 					procedure append_stop_polygon_top is begin
 						pac_stop_contours.append (
-							container	=> module.board.stop_mask.top.contours,
+							container	=> module.board.stopmask.top.contours,
 							new_item	=> (contour with null record));
 					end;
 
 					
 					procedure append_stop_polygon_bottom is begin
 						pac_stop_contours.append (
-							container	=> module.board.stop_mask.bottom.contours,
+							container	=> module.board.stopmask.bottom.contours,
 							new_item	=> (contour with null record));
 					end;
 
@@ -3937,7 +3937,7 @@ is
 
 								when LAYER_CAT_STOP =>
 									pac_text_placeholders.append (
-										container	=> module.board.stop_mask.top.placeholders,
+										container	=> module.board.stopmask.top.placeholders,
 										new_item	=> board_text_placeholder);
 
 								-- CS
@@ -3965,7 +3965,7 @@ is
 									
 								when LAYER_CAT_STOP =>
 									pac_text_placeholders.append (
-										container	=> module.board.stop_mask.bottom.placeholders,
+										container	=> module.board.stopmask.bottom.placeholders,
 										new_item	=> board_text_placeholder);
 
 								-- CS
@@ -4983,7 +4983,7 @@ is
 
 									when LAYER_CAT_STOP =>
 										pac_stop_texts.append (
-											container	=> module.board.stop_mask.top.texts,
+											container	=> module.board.stopmask.top.texts,
 											new_item	=> (board_text with v_text));
 
 									when others => invalid_section;
@@ -5004,7 +5004,7 @@ is
 
 									when LAYER_CAT_STOP =>
 										pac_stop_texts.append (
-											container	=> module.board.stop_mask.bottom.texts,
+											container	=> module.board.stopmask.bottom.texts,
 											new_item	=> (board_text with v_text));
 
 									when others => invalid_section;
