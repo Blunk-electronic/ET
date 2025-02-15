@@ -404,18 +404,16 @@ package body et_board_ops.assy_doc is
 			bottom_items	: pac_doc_lines.list renames module.board.assy_doc.bottom.lines;
 
 			
-			procedure query_line (c : in pac_doc_lines.cursor) is
-				line : type_doc_line renames element (c);
-			begin
+			procedure query_line (c : in pac_doc_lines.cursor) is begin
 				case flag is
 					when PROPOSED =>
-						if is_proposed (line) then
+						if is_proposed (c) then
 							result.cursor := c;
 							proceed := false;
 						end if;
 
 					when SELECTED =>
-						if is_selected (line) then
+						if is_selected (c) then
 							result.cursor := c;
 							proceed := false;
 						end if;
