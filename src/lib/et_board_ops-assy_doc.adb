@@ -406,7 +406,6 @@ package body et_board_ops.assy_doc is
 			
 			procedure query_line (c : in pac_doc_lines.cursor) is
 				line : type_doc_line renames element (c);
-				use et_object_status;
 			begin
 				case flag is
 					when PROPOSED =>
@@ -2008,19 +2007,16 @@ package body et_board_ops.assy_doc is
 			bottom_items	: pac_doc_texts.list renames module.board.assy_doc.bottom.texts;
 
 			
-			procedure query_text (c : in pac_doc_texts.cursor) is
-				text : type_doc_text renames element (c);
-				use et_object_status;
-			begin
+			procedure query_text (c : in pac_doc_texts.cursor) is begin
 				case flag is
 					when PROPOSED =>
-						if is_proposed (text) then -- CS use cursor c directly
+						if is_proposed (c) then
 							result.cursor := c;
 							proceed := false;
 						end if;
 
 					when SELECTED =>
-						if is_selected (text) then
+						if is_selected (c) then
 							result.cursor := c;
 							proceed := false;
 						end if;
@@ -2427,9 +2423,7 @@ package body et_board_ops.assy_doc is
 			
 			procedure query_placeholder (
 				c : in pac_text_placeholders.cursor) 
-			is
-				use et_object_status;
-			begin
+			is begin
 				case flag is
 					when PROPOSED =>
 						if is_proposed (c) then
@@ -2699,7 +2693,7 @@ package body et_board_ops.assy_doc is
 	
 	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		flag			: in type_flag;
 		log_threshold	: in type_log_level)
 		return pac_objects.list
 	is
