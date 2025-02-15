@@ -1373,31 +1373,74 @@ is
 		
 		procedure place_in_assy_doc is
 			use et_board_ops.assy_doc;
-			phn : type_text_placeholder; -- non conductor layers
+			ph : type_text_placeholder; -- non conductor layers
 		begin
-			phn.meaning := to_meaning (f (12));
-			phn.position := type_position (to_position (pos_xy, rotation));
-			phn.line_width := linewidth;
-			phn.size := size;
-			phn.mirror := mirror;
+			ph.meaning := to_meaning (f (12));
+			ph.position := type_position (to_position (pos_xy, rotation));
+			ph.line_width := linewidth;
+			ph.size := size;
+			ph.mirror := mirror;
 			
 			add_placeholder (
 				module_cursor 	=> module_cursor,
-				placeholder		=> phn,
+				placeholder		=> ph,
 				face			=> face,
 				log_threshold	=> log_threshold + 1);
 
 		end place_in_assy_doc;
 
 
-		procedure place_in_conductor_layer is
-			phc : type_text_placeholder_conductors; -- conductor layers
+
+		procedure place_in_silkscreen is
+			use et_board_ops.silkscreen;
+			ph : type_text_placeholder; -- non conductor layers
 		begin
-			phc.layer := to_signal_layer (f (6));  -- 5 
+			ph.meaning := to_meaning (f (12));
+			ph.position := type_position (to_position (pos_xy, rotation));
+			ph.line_width := linewidth;
+			ph.size := size;
+			ph.mirror := mirror;
+
+			-- CS
+			-- add_placeholder (
+			-- 	module_cursor 	=> module_cursor,
+			-- 	placeholder		=> ph,
+			-- 	face			=> face,
+			-- 	log_threshold	=> log_threshold + 1);
+
+		end place_in_silkscreen;
+
+
+
+		procedure place_in_stopmask is
+			use et_board_ops.stop_mask;
+			ph : type_text_placeholder; -- non conductor layers
+		begin
+			ph.meaning := to_meaning (f (12));
+			ph.position := type_position (to_position (pos_xy, rotation));
+			ph.line_width := linewidth;
+			ph.size := size;
+			ph.mirror := mirror;
+
+			-- CS
+			-- add_placeholder (
+			-- 	module_cursor 	=> module_cursor,
+			-- 	placeholder		=> ph,
+			-- 	face			=> face,
+			-- 	log_threshold	=> log_threshold + 1);
+
+		end place_in_stopmask;
+
+		
+		
+		procedure place_in_conductor_layer is
+			ph : type_text_placeholder_conductors; -- conductor layers
+		begin
+			ph.layer := to_signal_layer (f (6));  -- 5 
 
 			-- Set the mirror status according to the signal layer:
-			phc.mirror := signal_layer_to_mirror (
-				get_layer (phc), get_deepest_conductor_layer (module_cursor));
+			ph.mirror := signal_layer_to_mirror (
+				get_layer (ph), get_deepest_conductor_layer (module_cursor));
 
 			-- if ph.mirror = MIRROR_ALONG_Y_AXIS then
 			-- 	log (text => "Placeholder is in deepest signal layer -> will be mirrored",
@@ -1407,15 +1450,15 @@ is
 			-- 		level => log_threshold + 1);
 			-- end if;
 
-			phc.meaning := to_meaning (f (12));
-			phc.position := type_position (to_position (pos_xy, rotation));
-			phc.line_width := linewidth;
-			phc.size := size;
+			ph.meaning := to_meaning (f (12));
+			ph.position := type_position (to_position (pos_xy, rotation));
+			ph.line_width := linewidth;
+			ph.size := size;
 			
 			-- This procedure automatically cares for mirroring:
 			add_placeholder (
 				module_cursor 	=> module_cursor,
-				placeholder		=> phc,
+				placeholder		=> ph,
 				log_threshold	=> log_threshold + 1);
 
 		end place_in_conductor_layer;
@@ -1446,7 +1489,7 @@ is
 				
 				
 				case layer_category is
-					when LAYER_CAT_SILKSCREEN | LAYER_CAT_ASSY | LAYER_CAT_STOP =>
+					when LAYER_CAT_ASSY =>
 
 						face := to_face (f (6)); -- top/bottom
 						if face = BOTTOM then
@@ -1454,6 +1497,26 @@ is
 						end if;
 
 						place_in_assy_doc;
+
+
+					when LAYER_CAT_SILKSCREEN =>
+
+						face := to_face (f (6)); -- top/bottom
+						if face = BOTTOM then
+							mirror := MIRROR_ALONG_Y_AXIS;
+						end if;
+
+						-- CS place_in_silkscreen;
+
+
+					when LAYER_CAT_STOP =>
+
+						face := to_face (f (6)); -- top/bottom
+						if face = BOTTOM then
+							mirror := MIRROR_ALONG_Y_AXIS;
+						end if;
+
+						-- CS place_in_stopmask;
 
 					
 					when LAYER_CAT_CONDUCTOR =>
