@@ -2734,16 +2734,31 @@ package body et_board_ops.assy_doc is
 				use pac_segments;
 				-- CS test circular flag !!
 				segment_cursor : pac_segments.cursor := zone.contour.segments.first;
+				
+				procedure query_segment (segment : in type_segment) is 
 
-				procedure query_segment (segment : in type_segment) is begin
-					-- CS test the given flag !!
-					if is_proposed (segment) then
+					procedure collect is begin
 						result.append ((
 							cat		=> CAT_ZONE_SEGMENT,
 							segment	=> (face, zone_cursor, segment_cursor)));
 
 						log (text => to_string (segment), level => log_threshold + 2);
-					end if;
+					end collect;
+
+				begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (segment) then
+								collect;
+							end if;
+
+						when SELECTED =>
+							if is_selected (segment) then
+								collect;
+							end if;
+							
+						when others => null; -- CS
+					end case;
 				end query_segment;
 				
 			begin
@@ -2754,39 +2769,84 @@ package body et_board_ops.assy_doc is
 			end query_zone;
 			
 
-			procedure query_line (line : in type_doc_line) is begin
-				-- CS test the given flag !!
-				if is_proposed (line) then
+			procedure query_line (line : in type_doc_line) is 
+
+				procedure collect is begin
 					result.append ((
 						cat		=> CAT_LINE,
 						line	=> (face, line_cursor)));
 
 					log (text => to_string (line), level => log_threshold + 2);
-				end if;
+				end collect;
+				
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (line) then
+							collect;
+						end if;
+
+					when SELECTED =>
+						if is_selected (line) then
+							collect;
+						end if;
+
+					when others => null; -- CS
+				end case;
 			end query_line;
 				
 
-			procedure query_text (text : in type_doc_text) is begin
-				-- CS test the given flag !!
-				if is_proposed (text) then
+			procedure query_text (text : in type_doc_text) is 
+
+				procedure collect is begin
 					result.append ((
 						cat		=> CAT_TEXT,
 						text	=> (face, text_cursor)));
 
 					log (text => to_string (text), level => log_threshold + 2);
-				end if;
+				end collect;
+				
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (text) then
+							collect;
+						end if;
+
+					when SELECTED =>
+						if is_selected (text) then
+							collect;
+						end if;
+
+					when others => null; -- CS
+				end case;
 			end query_text;
 
 
-			procedure query_placeholder (placeholder : in type_text_placeholder) is begin
-				-- CS test the given flag !!
-				if is_proposed (placeholder) then
+			procedure query_placeholder (placeholder : in type_text_placeholder) is 
+
+				procedure collect is begin
 					result.append ((
 						cat			=> CAT_PLACEHOLDER,
 						placeholder	=> (face, placeholder_cursor)));
 
 					log (text => to_string (placeholder), level => log_threshold + 2);
-				end if;
+				end collect;
+				
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (placeholder) then
+							collect;
+						end if;
+
+					when SELECTED =>
+						if is_selected (placeholder) then
+							collect;
+						end if;
+
+					when others => null;
+				end case;
 			end query_placeholder;
 
 			
