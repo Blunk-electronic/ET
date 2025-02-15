@@ -379,6 +379,16 @@ package et_board_ops.assy_doc is
 
 	
 -- TEXT PLACEHOLDERS:
+
+	-- Places a text placeholder.
+	-- The caller must take care for mirroring the placeholder
+	-- in case its at the bottom of the board:
+	procedure add_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_text_placeholder;
+		face			: in type_face;
+		log_threshold	: in type_log_level);
+
 	
 	-- CS
 	-- move_placeholder via commandline

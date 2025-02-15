@@ -82,7 +82,7 @@ with et_frames;
 
 with et_terminals;
 with et_package_names;
--- with et_device_model;
+with et_mirroring;
 with et_device_prefix;
 with et_vias;
 with et_pcb;
@@ -1273,7 +1273,9 @@ is
 
 
 	
-	
+
+	-- This procedure parses a command to place text
+	-- and dispatches to subprogram according to the layer category:
 	procedure place_text is
 		use pac_text_board;
 		use et_board_ops.text;
@@ -1351,20 +1353,75 @@ is
 
 
 
+
 	
+	-- This procedure parses a command to place text placeholder
+	-- and dispatches to subprogram according to the layer category:	
 	procedure place_text_placeholder is
 		use pac_text_board;
+		use et_pcb_placeholders;
+		use et_mirroring;
+		
 		pos_xy			: type_vector_model;
 		rotation		: type_rotation_model;
 		size			: type_distance;
 		linewidth		: type_distance;
-		
-		use et_pcb_placeholders;
-		ph				: type_text_placeholder_conductors;
-		meaning			: type_text_meaning;
 		layer_category	: type_layer_category;
-		signal_layer	: type_signal_layer;
 		face			: type_face;
+		mirror			: type_mirror := MIRROR_NO;
+
+		
+		procedure place_in_assy_doc is
+			use et_board_ops.assy_doc;
+			phn : type_text_placeholder; -- non conductor layers
+		begin
+			phn.meaning := to_meaning (f (12));
+			phn.position := type_position (to_position (pos_xy, rotation));
+			phn.line_width := linewidth;
+			phn.size := size;
+			phn.mirror := mirror;
+			
+			add_placeholder (
+				module_cursor 	=> module_cursor,
+				placeholder		=> phn,
+				face			=> face,
+				log_threshold	=> log_threshold + 1);
+
+		end place_in_assy_doc;
+
+
+		procedure place_in_conductor_layer is
+			phc : type_text_placeholder_conductors; -- conductor layers
+		begin
+			phc.layer := to_signal_layer (f (6));  -- 5 
+
+			-- Set the mirror status according to the signal layer:
+			phc.mirror := signal_layer_to_mirror (
+				get_layer (phc), get_deepest_conductor_layer (module_cursor));
+
+			-- if ph.mirror = MIRROR_ALONG_Y_AXIS then
+			-- 	log (text => "Placeholder is in deepest signal layer -> will be mirrored",
+			-- 		level => log_threshold + 1);
+			-- else
+			-- 	log (text => "Placeholder is not in deepest signal layer -> no mirroring",
+			-- 		level => log_threshold + 1);
+			-- end if;
+
+			phc.meaning := to_meaning (f (12));
+			phc.position := type_position (to_position (pos_xy, rotation));
+			phc.line_width := linewidth;
+			phc.size := size;
+			
+			-- This procedure automatically cares for mirroring:
+			add_placeholder (
+				module_cursor 	=> module_cursor,
+				placeholder		=> phc,
+				log_threshold	=> log_threshold + 1);
+
+		end place_in_conductor_layer;
+
+
+		
 	begin
 		-- board demo place placeholder silkscreen top 0.15 1 140 100 0 module
 		-- board demo place placeholder conductor  5   0.15 1 140 100 0 module
@@ -1378,55 +1435,30 @@ is
 				-- Get the linewidth of the placeholder:
 				linewidth := to_distance (f (7)); -- 0.15
 				validate_text_line_width (linewidth);
-				ph.line_width := linewidth;
 
 				-- Get the size of the placeholder:
 				size := to_distance (f (8)); -- 1
 				validate_text_size (size);
-				ph.size := size;
 				
-				-- Assemble the position of the placeholder:
+				-- Get the position of the placeholder:
 				pos_xy := type_vector_model (to_point (f (9), f (10)));
 				rotation := to_rotation (f (11)); -- 0
-				ph.position := type_position (to_position (pos_xy, rotation));
 				
-				ph.meaning := to_meaning (f (12));
 				
 				case layer_category is
 					when LAYER_CAT_SILKSCREEN | LAYER_CAT_ASSY | LAYER_CAT_STOP =>
 
 						face := to_face (f (6)); -- top/bottom
+						if face = BOTTOM then
+							mirror := MIRROR_ALONG_Y_AXIS;
+						end if;
 
-						-- CS
-						
-						-- place_text_in_non_conductor_layer (
-						-- 	module_cursor 	=> module_cursor,
-						-- 	layer_category	=> layer_category,
-						-- 	face			=> face,
-						-- 	text			=> (text with content),
-						-- 	log_threshold	=> log_threshold + 1);
+						place_in_assy_doc;
 
 					
 					when LAYER_CAT_CONDUCTOR =>
-						ph.layer := to_signal_layer (f (6));  -- 5 
+						place_in_conductor_layer;
 
-						-- Set the mirror status according to the signal layer:
-						ph.mirror := signal_layer_to_mirror (
-							get_layer (ph), get_deepest_conductor_layer (module_cursor));
-
-						-- if ph.mirror = MIRROR_ALONG_Y_AXIS then
-						-- 	log (text => "Placeholder is in deepest signal layer -> will be mirrored",
-						-- 		level => log_threshold + 1);
-						-- else
-						-- 	log (text => "Placeholder is not in deepest signal layer -> no mirroring",
-						-- 		level => log_threshold + 1);
-						-- end if;
-						
-						-- This procedure automatically cares for mirroring:
-						add_placeholder (
-							module_cursor 	=> module_cursor,
-							placeholder		=> ph,
-							log_threshold	=> log_threshold + 1);
 
 					when others => null; -- CS message invalid layer category ?
 				end case;
