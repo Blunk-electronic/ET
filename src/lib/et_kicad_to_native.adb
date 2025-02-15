@@ -948,10 +948,10 @@ package body et_kicad_to_native is
 			begin -- move_silk_screen
 				
 				-- LINES TOP
-				lines_cursor := module.board.silk_screen.top.lines.first;
+				lines_cursor := module.board.silkscreen.top.lines.first;
 				while lines_cursor /= pac_silk_lines.no_element loop
 					pac_silk_lines.update_element (
-						container	=> module.board.silk_screen.top.lines,
+						container	=> module.board.silkscreen.top.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
 					
@@ -960,10 +960,10 @@ package body et_kicad_to_native is
 
 				
 				-- LINES BOTTOM
-				lines_cursor := module.board.silk_screen.bottom.lines.first;
+				lines_cursor := module.board.silkscreen.bottom.lines.first;
 				while lines_cursor /= pac_silk_lines.no_element loop
 					pac_silk_lines.update_element (
-						container	=> module.board.silk_screen.bottom.lines,
+						container	=> module.board.silkscreen.bottom.lines,
 						position	=> lines_cursor,
 						process		=> move_line'access);
 					
@@ -972,10 +972,10 @@ package body et_kicad_to_native is
 
 				
 				-- ARCS TOP
-				arcs_cursor := module.board.silk_screen.top.arcs.first;
+				arcs_cursor := module.board.silkscreen.top.arcs.first;
 				while arcs_cursor /= pac_silk_arcs.no_element loop
 					pac_silk_arcs.update_element (
-						container	=> module.board.silk_screen.top.arcs,
+						container	=> module.board.silkscreen.top.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
 					
@@ -984,10 +984,10 @@ package body et_kicad_to_native is
 
 				
 				-- ARCS BOTTOM
-				arcs_cursor := module.board.silk_screen.bottom.arcs.first;
+				arcs_cursor := module.board.silkscreen.bottom.arcs.first;
 				while arcs_cursor /= pac_silk_arcs.no_element loop
 					pac_silk_arcs.update_element (
-						container	=> module.board.silk_screen.bottom.arcs,
+						container	=> module.board.silkscreen.bottom.arcs,
 						position	=> arcs_cursor,
 						process		=> move_arc'access);
 					
@@ -996,10 +996,10 @@ package body et_kicad_to_native is
 
 				
 				-- CIRCLES TOP
-				circles_cursor := module.board.silk_screen.top.circles.first;
+				circles_cursor := module.board.silkscreen.top.circles.first;
 				while circles_cursor /= pac_silk_circles.no_element loop
 					pac_silk_circles.update_element (
-						container	=> module.board.silk_screen.top.circles,
+						container	=> module.board.silkscreen.top.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
 					
@@ -1008,10 +1008,10 @@ package body et_kicad_to_native is
 
 				
 				-- CIRCLES BOTTOM
-				circles_cursor := module.board.silk_screen.bottom.circles.first;
+				circles_cursor := module.board.silkscreen.bottom.circles.first;
 				while circles_cursor /= pac_silk_circles.no_element loop
 					pac_silk_circles.update_element (
-						container	=> module.board.silk_screen.bottom.circles,
+						container	=> module.board.silkscreen.bottom.circles,
 						position	=> circles_cursor,
 						process		=> move_circle'access);
 					
@@ -1020,10 +1020,10 @@ package body et_kicad_to_native is
 
 				
 				-- POLYGONS TOP
-				polygons_cursor := module.board.silk_screen.top.zones.first;
+				polygons_cursor := module.board.silkscreen.top.zones.first;
 				while polygons_cursor /= pac_silk_contours.no_element loop
 					pac_silk_contours.update_element (
-						container	=> module.board.silk_screen.top.zones,
+						container	=> module.board.silkscreen.top.zones,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
 					
@@ -1032,10 +1032,10 @@ package body et_kicad_to_native is
 
 				
 				-- POLYGONS BOTTOM
-				polygons_cursor := module.board.silk_screen.bottom.zones.first;
+				polygons_cursor := module.board.silkscreen.bottom.zones.first;
 				while polygons_cursor /= pac_silk_contours.no_element loop
 					pac_silk_contours.update_element (
-						container	=> module.board.silk_screen.bottom.zones,
+						container	=> module.board.silkscreen.bottom.zones,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
 					
@@ -1044,10 +1044,10 @@ package body et_kicad_to_native is
 
 				
 				-- TEXTS TOP
-				texts_cursor := module.board.silk_screen.top.texts.first;
+				texts_cursor := module.board.silkscreen.top.texts.first;
 				while texts_cursor /= pac_silk_texts.no_element loop
 					pac_silk_texts.update_element (
-						container	=> module.board.silk_screen.top.texts,
+						container	=> module.board.silkscreen.top.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
 
@@ -1056,10 +1056,10 @@ package body et_kicad_to_native is
 
 				
 				-- TEXTS BOTTOM
-				texts_cursor := module.board.silk_screen.bottom.texts.first;
+				texts_cursor := module.board.silkscreen.bottom.texts.first;
 				while texts_cursor /= pac_silk_texts.no_element loop
 					pac_silk_texts.update_element (
-						container	=> module.board.silk_screen.bottom.texts,
+						container	=> module.board.silkscreen.bottom.texts,
 						position	=> texts_cursor,
 						process		=> move_text'access);
 
@@ -2689,10 +2689,10 @@ package body et_kicad_to_native is
 						
 					when APPEARANCE_PCB =>
 -- 						log (text => "placeholders silk top" & count_type'image (et_packages.pac_text_placeholders.length (
--- 							element (component_cursor_kicad).text_placeholders.silk_screen.top)));
+-- 							element (component_cursor_kicad).text_placeholders.silkscreen.top)));
 -- 
 -- 						log (text => "placeholders silk bottom" & count_type'image (et_packages.pac_text_placeholders.length (
--- 							element (component_cursor_kicad).text_placeholders.silk_screen.bottom)));
+-- 							element (component_cursor_kicad).text_placeholders.silkscreen.bottom)));
 -- 
 -- 						log (text => "placeholders assy top" & count_type'image (et_packages.pac_text_placeholders.length (
 -- 							element (component_cursor_kicad).text_placeholders.assy_doc.top)));

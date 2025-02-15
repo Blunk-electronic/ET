@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -242,20 +242,20 @@ is
 
 		case face is
 			when TOP =>
-				iterate (module.board.silk_screen.top.lines, query_line'access);
-				iterate (module.board.silk_screen.top.arcs, query_arc'access);
-				iterate (module.board.silk_screen.top.circles, query_circle'access);
-				iterate (module.board.silk_screen.top.zones, query_zone'access);
-				iterate (module.board.silk_screen.top.placeholders, query_placeholder'access);
-				iterate (module.board.silk_screen.top.texts, query_text'access);
+				iterate (module.board.silkscreen.top.lines, query_line'access);
+				iterate (module.board.silkscreen.top.arcs, query_arc'access);
+				iterate (module.board.silkscreen.top.circles, query_circle'access);
+				iterate (module.board.silkscreen.top.zones, query_zone'access);
+				iterate (module.board.silkscreen.top.placeholders, query_placeholder'access);
+				iterate (module.board.silkscreen.top.texts, query_text'access);
 
 			when BOTTOM =>
-				iterate (module.board.silk_screen.bottom.lines, query_line'access);
-				iterate (module.board.silk_screen.bottom.arcs, query_arc'access);
-				iterate (module.board.silk_screen.bottom.circles, query_circle'access);
-				iterate (module.board.silk_screen.bottom.zones, query_zone'access);
-				iterate (module.board.silk_screen.bottom.placeholders, query_placeholder'access);
-				iterate (module.board.silk_screen.bottom.texts, query_text'access);
+				iterate (module.board.silkscreen.bottom.lines, query_line'access);
+				iterate (module.board.silkscreen.bottom.arcs, query_arc'access);
+				iterate (module.board.silkscreen.bottom.circles, query_circle'access);
+				iterate (module.board.silkscreen.bottom.zones, query_zone'access);
+				iterate (module.board.silkscreen.bottom.placeholders, query_placeholder'access);
+				iterate (module.board.silkscreen.bottom.texts, query_text'access);
 
 		end case;
 

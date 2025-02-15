@@ -180,7 +180,7 @@ is
 				use pac_silk_contours;
 				-- use pac_silk_texts;				
 				
-				silk : type_silkscreen_both_sides renames module.board.silk_screen;
+				silk : type_silkscreen_both_sides renames module.board.silkscreen;
 
 				
 				procedure query_line (c : in pac_silk_lines.cursor) is

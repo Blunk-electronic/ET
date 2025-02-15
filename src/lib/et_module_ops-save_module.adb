@@ -1813,21 +1813,21 @@ is
 			section_mark (section_silkscreen, HEADER);
 
 			section_mark (section_top, HEADER);
-			iterate (element (module_cursor).board.silk_screen.top.lines, write_line'access);
-			iterate (element (module_cursor).board.silk_screen.top.arcs, write_arc'access);
-			iterate (element (module_cursor).board.silk_screen.top.circles, write_circle'access);
-			iterate (element (module_cursor).board.silk_screen.top.zones, write_polygon'access);
-			iterate (element (module_cursor).board.silk_screen.top.texts, write_text'access);
-			iterate (element (module_cursor).board.silk_screen.top.placeholders, write_placeholder'access);
+			iterate (element (module_cursor).board.silkscreen.top.lines, write_line'access);
+			iterate (element (module_cursor).board.silkscreen.top.arcs, write_arc'access);
+			iterate (element (module_cursor).board.silkscreen.top.circles, write_circle'access);
+			iterate (element (module_cursor).board.silkscreen.top.zones, write_polygon'access);
+			iterate (element (module_cursor).board.silkscreen.top.texts, write_text'access);
+			iterate (element (module_cursor).board.silkscreen.top.placeholders, write_placeholder'access);
 			section_mark (section_top, FOOTER);
 
 			section_mark (section_bottom, HEADER);
-			iterate (element (module_cursor).board.silk_screen.bottom.lines, write_line'access);
-			iterate (element (module_cursor).board.silk_screen.bottom.arcs, write_arc'access);
-			iterate (element (module_cursor).board.silk_screen.bottom.circles, write_circle'access);
-			iterate (element (module_cursor).board.silk_screen.bottom.zones, write_polygon'access);
-			iterate (element (module_cursor).board.silk_screen.bottom.texts, write_text'access);
-			iterate (element (module_cursor).board.silk_screen.bottom.placeholders, write_placeholder'access);
+			iterate (element (module_cursor).board.silkscreen.bottom.lines, write_line'access);
+			iterate (element (module_cursor).board.silkscreen.bottom.arcs, write_arc'access);
+			iterate (element (module_cursor).board.silkscreen.bottom.circles, write_circle'access);
+			iterate (element (module_cursor).board.silkscreen.bottom.zones, write_polygon'access);
+			iterate (element (module_cursor).board.silkscreen.bottom.texts, write_text'access);
+			iterate (element (module_cursor).board.silkscreen.bottom.placeholders, write_placeholder'access);
 			section_mark (section_bottom, FOOTER);
 			
 			section_mark (section_silkscreen, FOOTER);

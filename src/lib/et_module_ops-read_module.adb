@@ -1301,7 +1301,7 @@ is
 	device_text_placeholder_position: et_pcb_coordinates_2.type_package_position := et_pcb_coordinates_2.placeholder_position_default; -- incl. rotation and face
 	
 	device_text_placeholder_layer : et_device_placeholders.packages.type_placeholder_layer := 
-		et_device_placeholders.packages.type_placeholder_layer'first; -- silk_screen/assembly_documentation
+		et_device_placeholders.packages.type_placeholder_layer'first; -- silkscreen/assembly_documentation
 
 	-- a single temporarily placeholder of a package
 	device_text_placeholder : et_device_placeholders.packages.type_placeholder;
@@ -1319,7 +1319,7 @@ is
 			expect_field_count (line, 2);
 			device_text_placeholder.meaning := to_meaning (f (line, 2));
 			
-		elsif kw = keyword_layer then -- layer silk_screen/assembly_documentation
+		elsif kw = keyword_layer then -- layer silkscreen/assembly_documentation
 			expect_field_count (line, 2);
 			device_text_placeholder_layer := to_layer (f (line, 2));
 			
@@ -3251,7 +3251,7 @@ is
 -- 					device_non_electric.text_placeholders := device_text_placeholders;
 
 -- 					put_line (count_type'image (et_packages.pac_text_placeholders.length (
--- 						device_non_electric.text_placeholders.silk_screen.top)));
+-- 						device_non_electric.text_placeholders.silkscreen.top)));
 
 				
 				pac_devices_non_electric.insert (
@@ -3325,7 +3325,7 @@ is
 							case layer_cat is
 								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_lines.append (
-										container	=> module.board.silk_screen.top.lines,
+										container	=> module.board.silkscreen.top.lines,
 										new_item	=> (type_line (board_line) with board_line_width));
 
 								when LAYER_CAT_ASSY =>
@@ -3350,7 +3350,7 @@ is
 							case layer_cat is
 								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_lines.append (
-										container	=> module.board.silk_screen.bottom.lines,
+										container	=> module.board.silkscreen.bottom.lines,
 										new_item	=> (type_line (board_line) with board_line_width));
 
 								when LAYER_CAT_ASSY =>
@@ -3420,7 +3420,7 @@ is
 							case layer_cat is
 								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_arcs.append (
-										container	=> module.board.silk_screen.top.arcs,
+										container	=> module.board.silkscreen.top.arcs,
 										new_item	=> (type_arc (board_arc) with board_line_width));
 
 								when LAYER_CAT_ASSY =>
@@ -3446,7 +3446,7 @@ is
 							case layer_cat is
 								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_arcs.append (
-										container	=> module.board.silk_screen.bottom.arcs,
+										container	=> module.board.silkscreen.bottom.arcs,
 										new_item	=> (type_arc (board_arc) with board_line_width));
 
 								when LAYER_CAT_ASSY =>
@@ -3516,7 +3516,7 @@ is
 							case layer_cat is
 								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_circles.append (
-										container	=> module.board.silk_screen.top.circles,
+										container	=> module.board.silkscreen.top.circles,
 										new_item	=> (type_circle (board_circle) with board_line_width));
 
 								when LAYER_CAT_ASSY =>
@@ -3541,7 +3541,7 @@ is
 							case layer_cat is
 								when LAYER_CAT_SILKSCREEN =>
 									pac_silk_circles.append (
-										container	=> module.board.silk_screen.bottom.circles,
+										container	=> module.board.silkscreen.bottom.circles,
 										new_item	=> (type_circle (board_circle) with board_line_width));
 
 								when LAYER_CAT_ASSY =>
@@ -3609,14 +3609,14 @@ is
 					
 					procedure append_silk_polygon_top is begin
 						pac_silk_contours.append (
-							container	=> module.board.silk_screen.top.zones,
+							container	=> module.board.silkscreen.top.zones,
 							new_item	=> (contour with null record));
 					end;
 
 					
 					procedure append_silk_polygon_bottom is begin
 						pac_silk_contours.append (
-							container	=> module.board.silk_screen.bottom.zones,
+							container	=> module.board.silkscreen.bottom.zones,
 							new_item	=> (contour with null record));
 					end;
 
@@ -3927,7 +3927,7 @@ is
 							case layer_cat is
 								when LAYER_CAT_SILKSCREEN =>
 									 pac_text_placeholders.append (
-										container	=> module.board.silk_screen.top.placeholders,
+										container	=> module.board.silkscreen.top.placeholders,
 										new_item	=> board_text_placeholder);
 
 								when LAYER_CAT_ASSY =>
@@ -3955,7 +3955,7 @@ is
 							case layer_cat is
 								when LAYER_CAT_SILKSCREEN =>
 									pac_text_placeholders.append (
-										container	=> module.board.silk_screen.bottom.placeholders,
+										container	=> module.board.silkscreen.bottom.placeholders,
 										new_item	=> board_text_placeholder);
 
 								when LAYER_CAT_ASSY =>
@@ -4972,7 +4972,7 @@ is
 								case layer_cat is
 									when LAYER_CAT_SILKSCREEN =>
 										pac_silk_texts.append (
-											container	=> module.board.silk_screen.top.texts,
+											container	=> module.board.silkscreen.top.texts,
 											new_item	=> (board_text with v_text));
 
 									when LAYER_CAT_ASSY =>
@@ -4993,7 +4993,7 @@ is
 								case layer_cat is
 									when LAYER_CAT_SILKSCREEN =>
 										pac_silk_texts.append (
-											container	=> module.board.silk_screen.bottom.texts,
+											container	=> module.board.silkscreen.bottom.texts,
 											new_item	=> (board_text with v_text));
 
 									when LAYER_CAT_ASSY =>

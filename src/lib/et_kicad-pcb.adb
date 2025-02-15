@@ -5335,7 +5335,7 @@ package body et_kicad.pcb is
 				-- copied right away:
 				module.board.paper_size		:= board.paper_size;
 				
-				module.board.silk_screen	:= board.silk_screen;
+				module.board.silkscreen		:= board.silk_screen;
 				module.board.assy_doc		:= board.assy_doc;
 				module.board.stencil 		:= board.stencil;
 				module.board.stop_mask 		:= board.stop_mask;

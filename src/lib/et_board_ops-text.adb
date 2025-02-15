@@ -146,9 +146,9 @@ package body et_board_ops.text is
 				when LAYER_CAT_SILKSCREEN =>
 					case face is
 						when TOP =>
-							append (module.board.silk_screen.top.texts, (text with v_text));
+							append (module.board.silkscreen.top.texts, (text with v_text));
 						when BOTTOM =>
-							append (module.board.silk_screen.bottom.texts, (text with v_text));
+							append (module.board.silkscreen.bottom.texts, (text with v_text));
 					end case;
 					
 				when LAYER_CAT_STOP =>

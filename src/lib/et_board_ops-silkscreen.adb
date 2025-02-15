@@ -62,12 +62,12 @@ package body et_board_ops.silkscreen is
 			case face is
 				when TOP =>
 					append (
-						container	=> module.board.silk_screen.top.lines,
+						container	=> module.board.silkscreen.top.lines,
 						new_item	=> line);
 					
 				when BOTTOM =>
 					append (
-						container	=> module.board.silk_screen.bottom.lines,
+						container	=> module.board.silkscreen.bottom.lines,
 						new_item	=> line);
 			end case;
 		end;
@@ -125,10 +125,10 @@ package body et_board_ops.silkscreen is
 		begin
 			case face is
 				when TOP =>
-					module.board.silk_screen.top.lines.iterate (query_line'access);
+					module.board.silkscreen.top.lines.iterate (query_line'access);
 
 				when BOTTOM =>
-					module.board.silk_screen.bottom.lines.iterate (query_line'access);
+					module.board.silkscreen.bottom.lines.iterate (query_line'access);
 			end case;
 		end query_module;
 
@@ -167,8 +167,8 @@ package body et_board_ops.silkscreen is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			top 	: pac_silk_lines.list renames module.board.silk_screen.top.lines;
-			bottom	: pac_silk_lines.list renames module.board.silk_screen.bottom.lines;
+			top 	: pac_silk_lines.list renames module.board.silkscreen.top.lines;
+			bottom	: pac_silk_lines.list renames module.board.silkscreen.bottom.lines;
 
 			
 			procedure query_line (
@@ -270,7 +270,7 @@ package body et_board_ops.silkscreen is
 
 			
 			procedure query_top is 
-				top : pac_silk_lines.list renames module.board.silk_screen.top.lines;
+				top : pac_silk_lines.list renames module.board.silkscreen.top.lines;
 			begin
 				if not top.is_empty then
 					lc := top.first;
@@ -283,7 +283,7 @@ package body et_board_ops.silkscreen is
 
 			
 			procedure query_bottom is 
-				bottom : pac_silk_lines.list renames module.board.silk_screen.bottom.lines;
+				bottom : pac_silk_lines.list renames module.board.silkscreen.bottom.lines;
 			begin
 				if not bottom.is_empty then
 					lc := bottom.first;
@@ -333,8 +333,8 @@ package body et_board_ops.silkscreen is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			top 	: pac_silk_lines.list renames module.board.silk_screen.top.lines;
-			bottom	: pac_silk_lines.list renames module.board.silk_screen.bottom.lines;
+			top 	: pac_silk_lines.list renames module.board.silkscreen.top.lines;
+			bottom	: pac_silk_lines.list renames module.board.silkscreen.bottom.lines;
 
 			
 			procedure query_line (
@@ -412,8 +412,8 @@ package body et_board_ops.silkscreen is
 		is
 			proceed : aliased boolean := true;
 
-			top_items 		: pac_silk_lines.list renames module.board.silk_screen.top.lines;
-			bottom_items	: pac_silk_lines.list renames module.board.silk_screen.bottom.lines;
+			top_items 		: pac_silk_lines.list renames module.board.silkscreen.top.lines;
+			bottom_items	: pac_silk_lines.list renames module.board.silkscreen.bottom.lines;
 
 			
 			procedure query_line (c : in pac_silk_lines.cursor) is
@@ -489,8 +489,8 @@ package body et_board_ops.silkscreen is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module)
 		is
-			top_items 		: pac_silk_lines.list renames module.board.silk_screen.top.lines;
-			bottom_items	: pac_silk_lines.list renames module.board.silk_screen.bottom.lines;
+			top_items 		: pac_silk_lines.list renames module.board.silkscreen.top.lines;
+			bottom_items	: pac_silk_lines.list renames module.board.silkscreen.bottom.lines;
 			
 			proceed : boolean := true;
 		
@@ -624,12 +624,12 @@ package body et_board_ops.silkscreen is
 		begin
 			case face is
 				when TOP =>
-					line_cursor := module.board.silk_screen.top.lines.find (line);
-					module.board.silk_screen.top.lines.update_element (line_cursor, query_line'access);
+					line_cursor := module.board.silkscreen.top.lines.find (line);
+					module.board.silkscreen.top.lines.update_element (line_cursor, query_line'access);
 					
 				when BOTTOM =>
-					line_cursor := module.board.silk_screen.bottom.lines.find (line);
-					module.board.silk_screen.bottom.lines.update_element (line_cursor, query_line'access);
+					line_cursor := module.board.silkscreen.bottom.lines.find (line);
+					module.board.silkscreen.bottom.lines.update_element (line_cursor, query_line'access);
 			end case;
 		end query_module;
 
@@ -669,12 +669,12 @@ package body et_board_ops.silkscreen is
 			case face is
 				when TOP =>
 					append (
-						container	=> module.board.silk_screen.top.arcs,
+						container	=> module.board.silkscreen.top.arcs,
 						new_item	=> arc);
 
 				when BOTTOM =>
 					append (
-						container	=> module.board.silk_screen.bottom.arcs,
+						container	=> module.board.silkscreen.bottom.arcs,
 						new_item	=> arc);
 			end case;
 		end;
@@ -716,12 +716,12 @@ package body et_board_ops.silkscreen is
 			case face is
 				when TOP =>
 					append (
-						container	=> module.board.silk_screen.top.circles,
+						container	=> module.board.silkscreen.top.circles,
 						new_item	=> circle);
 
 				when BOTTOM =>
 					append (
-						container	=> module.board.silk_screen.bottom.circles,
+						container	=> module.board.silkscreen.bottom.circles,
 						new_item	=> circle);
 
 			end case;
@@ -793,10 +793,10 @@ package body et_board_ops.silkscreen is
 			case face is
 				when TOP =>
 					-- Iterate through the already existing zones:
-					c := module.board.silk_screen.top.zones.first;
+					c := module.board.silkscreen.top.zones.first;
 
 					while c /= pac_silk_contours.no_element and proceed loop
-						module.board.silk_screen.top.zones.update_element (c, query_zone'access);
+						module.board.silkscreen.top.zones.update_element (c, query_zone'access);
 						next (c);
 					end loop;
 
@@ -805,16 +805,16 @@ package body et_board_ops.silkscreen is
 					if proceed then
 						-- put_line ("added as new zone");
 						log (text => "added as new zone", level => log_threshold + 1);
-						module.board.silk_screen.top.zones.append (zone);
+						module.board.silkscreen.top.zones.append (zone);
 					end if;
 
 					
 				when BOTTOM =>
 					-- Iterate through the already existing zones:
-					c := module.board.silk_screen.bottom.zones.first;
+					c := module.board.silkscreen.bottom.zones.first;
 
 					while c /= pac_silk_contours.no_element and proceed loop
-						module.board.silk_screen.bottom.zones.update_element (c, query_zone'access);
+						module.board.silkscreen.bottom.zones.update_element (c, query_zone'access);
 						next (c);
 					end loop;
 
@@ -822,7 +822,7 @@ package body et_board_ops.silkscreen is
 					-- as a new zone:
 					if proceed then
 						log (text => "added as new zone", level => log_threshold + 1);
-						module.board.silk_screen.bottom.zones.append (zone);
+						module.board.silkscreen.bottom.zones.append (zone);
 					end if;
 			end case;
 		end query_module;
@@ -867,13 +867,13 @@ package body et_board_ops.silkscreen is
 			deleted : boolean := false; -- goes true if at least one segment has been deleted
 		begin
 			if face = TOP then
-				line_cursor   	:= module.board.silk_screen.top.lines.first;
-				arc_cursor    	:= module.board.silk_screen.top.arcs.first;
-				circle_cursor	:= module.board.silk_screen.top.circles.first;
+				line_cursor   	:= module.board.silkscreen.top.lines.first;
+				arc_cursor    	:= module.board.silkscreen.top.arcs.first;
+				circle_cursor	:= module.board.silkscreen.top.circles.first;
 			else
-				line_cursor   	:= module.board.silk_screen.bottom.lines.first;
-				arc_cursor    	:= module.board.silk_screen.bottom.arcs.first;
-				circle_cursor	:= module.board.silk_screen.bottom.circles.first;
+				line_cursor   	:= module.board.silkscreen.bottom.lines.first;
+				arc_cursor    	:= module.board.silkscreen.bottom.arcs.first;
+				circle_cursor	:= module.board.silkscreen.bottom.circles.first;
 			end if;
 			
 			-- first search for a matching segment among the lines
@@ -883,9 +883,9 @@ package body et_board_ops.silkscreen is
 				-- and compare distance with accuracy	
 
 					if face = TOP then
-						delete (module.board.silk_screen.top.lines, line_cursor);
+						delete (module.board.silkscreen.top.lines, line_cursor);
 					else
-						delete (module.board.silk_screen.bottom.lines, line_cursor);
+						delete (module.board.silkscreen.bottom.lines, line_cursor);
 					end if;
 					deleted := true;
 					exit;
@@ -900,9 +900,9 @@ package body et_board_ops.silkscreen is
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 						if face = TOP then
-							delete (module.board.silk_screen.top.arcs, arc_cursor);
+							delete (module.board.silkscreen.top.arcs, arc_cursor);
 						else
-							delete (module.board.silk_screen.bottom.arcs, arc_cursor);
+							delete (module.board.silkscreen.bottom.arcs, arc_cursor);
 						end if;
 						deleted := true;
 						exit;
@@ -919,9 +919,9 @@ package body et_board_ops.silkscreen is
 						-- CS use get_shortest_distance (point, element)
 						-- and compare distance with accuracy	
 						if face = TOP then
-							delete (module.board.silk_screen.top.circles, circle_cursor);
+							delete (module.board.silkscreen.top.circles, circle_cursor);
 						else
-							delete (module.board.silk_screen.bottom.circles, circle_cursor);
+							delete (module.board.silkscreen.bottom.circles, circle_cursor);
 						end if;
 						deleted := true;
 						exit;
@@ -974,22 +974,22 @@ package body et_board_ops.silkscreen is
 			case face is
 				when TOP =>
 					-- Locate the given line in the top silkscreen layer:
-					line_cursor := module.board.silk_screen.top.lines.find (line);
+					line_cursor := module.board.silkscreen.top.lines.find (line);
 
 					-- Delete the line if it exists:
 					if line_cursor /= pac_silk_lines.no_element then
-						module.board.silk_screen.top.lines.delete (line_cursor); 
+						module.board.silkscreen.top.lines.delete (line_cursor); 
 					else
 						null; -- CS message
 					end if;
 
 				when BOTTOM =>
 					-- Locate the given line in the bottom silkscreen layer:
-					line_cursor := module.board.silk_screen.bottom.lines.find (line);
+					line_cursor := module.board.silkscreen.bottom.lines.find (line);
 
 					-- Delete the line if it exists:
 					if line_cursor /= pac_silk_lines.no_element then
-						module.board.silk_screen.bottom.lines.delete (line_cursor); 
+						module.board.silkscreen.bottom.lines.delete (line_cursor); 
 					else
 						null; -- CS message
 					end if;
@@ -1050,10 +1050,10 @@ package body et_board_ops.silkscreen is
 		begin
 			case face is
 				when TOP =>
-					module.board.silk_screen.top.texts.iterate (query_text'access);
+					module.board.silkscreen.top.texts.iterate (query_text'access);
 
 				when BOTTOM =>
-					module.board.silk_screen.bottom.texts.iterate (query_text'access);
+					module.board.silkscreen.bottom.texts.iterate (query_text'access);
 			end case;
 		end query_module;
 
@@ -1108,12 +1108,12 @@ package body et_board_ops.silkscreen is
 		begin
 			case face is
 				when TOP =>
-					text_cursor := module.board.silk_screen.top.texts.find (text);
-					module.board.silk_screen.top.texts.update_element (text_cursor, query_text'access);
+					text_cursor := module.board.silkscreen.top.texts.find (text);
+					module.board.silkscreen.top.texts.update_element (text_cursor, query_text'access);
 
 				when BOTTOM =>
-					text_cursor := module.board.silk_screen.bottom.texts.find (text);
-					module.board.silk_screen.bottom.texts.update_element (text_cursor, query_text'access);
+					text_cursor := module.board.silkscreen.bottom.texts.find (text);
+					module.board.silkscreen.bottom.texts.update_element (text_cursor, query_text'access);
 			end case;
 		end query_module;
 
