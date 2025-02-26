@@ -326,7 +326,7 @@ is
 				use pac_stencil_lines;
 				use pac_stencil_arcs;
 				use pac_stencil_circles;
-				use pac_stencil_contours;
+				use pac_stencil_zones;
 				
 				stencil : type_stencil_both_sides renames module.board.stencil;
 
@@ -355,8 +355,8 @@ is
 				end query_circle;
 
 
-				procedure query_zone (c : in pac_stencil_contours.cursor) is
-					zone : type_stencil_contour renames element (c);
+				procedure query_zone (c : in pac_stencil_zones.cursor) is
+					zone : type_stencil_zone renames element (c);
 				begin
 					b := get_bounding_box (zone, 0.0);
 					merge_areas (bbox_new, b);
@@ -1233,7 +1233,7 @@ is
 					use pac_stencil_lines;
 					use pac_stencil_arcs;
 					use pac_stencil_circles;
-					use pac_stencil_contours;
+					use pac_stencil_zones;
 
 					procedure query_line (c : in pac_stencil_lines.cursor) is
 						line : type_stencil_line renames element (c);
@@ -1277,8 +1277,8 @@ is
 					end query_circle;
 
 
-					procedure query_contour (c : in pac_stencil_contours.cursor) is 
-						contour : type_stencil_contour renames element (c);
+					procedure query_contour (c : in pac_stencil_zones.cursor) is 
+						contour : type_stencil_zone renames element (c);
 					begin
 						b := get_bounding_box (
 							contour		=> contour,

@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -59,6 +59,15 @@ package et_keepout is
 
 	package pac_keepout_zones is new doubly_linked_lists (type_keepout_zone);
 	use pac_keepout_zones;
+
+
+	-- Iterates the zones.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		zones	: in pac_keepout_zones.list;
+		process	: not null access procedure (position : in pac_keepout_zones.cursor);
+		proceed	: not null access boolean);
+
 
 	
 	-- Mirrors a list of zones along the given axis:

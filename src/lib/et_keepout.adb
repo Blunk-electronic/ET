@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -40,6 +40,22 @@
 
 package body et_keepout is
 
+
+	procedure iterate (
+		zones	: in pac_keepout_zones.list;
+		process	: not null access procedure (position : in pac_keepout_zones.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_keepout_zones.cursor := zones.first;
+	begin
+		while c /= pac_keepout_zones.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+	
 	procedure mirror_zones (
 		zones	: in out pac_keepout_zones.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)

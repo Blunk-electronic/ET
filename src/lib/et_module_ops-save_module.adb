@@ -1477,7 +1477,7 @@ is
 		use pac_stencil_lines;
 		use pac_stencil_arcs;
 		use pac_stencil_circles;
-		use pac_stencil_contours;
+		use pac_stencil_zones;
 
 		use et_stopmask;
 		use pac_stop_lines;

@@ -320,7 +320,7 @@ package body et_pcb_rw.device_packages is
 			use pac_stencil_lines;
 			use pac_stencil_arcs;
 			use pac_stencil_circles;
-			use pac_stencil_contours;
+			use pac_stencil_zones;
 		begin
 			section_mark (section_stencil, HEADER);
 
@@ -1307,7 +1307,7 @@ package body et_pcb_rw.device_packages is
 				
 				procedure append_stencil_polygon_top is begin
 
-					pac_stencil_contours.append (
+					pac_stencil_zones.append (
 						container	=> packge.stencil.top.contours, 
 						new_item	=> (contour with null record));
 
@@ -1317,7 +1317,7 @@ package body et_pcb_rw.device_packages is
 
 				
 				procedure append_stencil_polygon_bottom is begin
-					pac_stencil_contours.append (
+					pac_stencil_zones.append (
 						container	=> packge.stencil.bottom.contours, 
 						new_item	=> (contour with null record));
 

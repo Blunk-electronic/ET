@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -43,6 +43,47 @@ package body et_stencil is
 
 -- LINES
 
+	procedure iterate (
+		lines	: in pac_stencil_lines.list;
+		process	: not null access procedure (position : in pac_stencil_lines.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_stencil_lines.cursor := lines.first;
+	begin
+		while c /= pac_stencil_lines.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+	
+	function is_proposed (
+		line_cursor	: in pac_stencil_lines.cursor)
+		return boolean
+	is begin
+		if is_proposed (element (line_cursor)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_proposed;
+
+	
+
+	function is_selected (
+		line_cursor	: in pac_stencil_lines.cursor)
+		return boolean
+	is begin
+		if is_selected (element (line_cursor)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+
+
+	
 	procedure mirror_lines (
 		lines	: in out pac_stencil_lines.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -106,6 +147,34 @@ package body et_stencil is
 	
 	
 -- ARCS
+
+	function is_proposed (
+		arc_cursor	: in pac_stencil_arcs.cursor)
+		return boolean
+	is begin
+		-- if element (arc_cursor).status.proposed then
+		-- 	return true;
+		-- else
+		-- 	return false;
+		-- end if;
+
+		return false; -- CS
+	end is_proposed;
+	
+
+	function is_selected (
+		arc_cursor	: in pac_stencil_arcs.cursor)
+		return boolean
+	is begin
+		-- if element (arc_cursor).status.proposed then
+		-- 	return true;
+		-- else
+		-- 	return false;
+		-- end if;
+
+		return false; -- CS
+	end is_selected;
+
 	
 	procedure mirror_arcs (
 		arcs	: in out pac_stencil_arcs.list;
@@ -170,6 +239,36 @@ package body et_stencil is
 	
 	
 -- CIRCLES
+
+
+	function is_proposed (
+		circle_cursor	: in pac_stencil_circles.cursor)
+		return boolean
+	is begin
+		-- if element (circle_cursor).status.proposed then
+		-- 	return true;
+		-- else
+		-- 	return false;
+		-- end if;
+
+		return false; -- CS
+	end is_proposed;
+	
+
+	function is_selected (
+		circle_cursor	: in pac_stencil_circles.cursor)
+		return boolean
+	is begin
+		-- if element (circle_cursor).status.proposed then
+		-- 	return true;
+		-- else
+		-- 	return false;
+		-- end if;
+
+		return false; -- CS
+	end is_selected;
+
+	
 	
 	procedure mirror_circles (
 		circles	: in out pac_stencil_circles.list;
@@ -237,13 +336,13 @@ package body et_stencil is
 
 
 	procedure iterate (
-		zones	: in pac_stencil_contours.list;
-		process	: not null access procedure (position : in pac_stencil_contours.cursor);
+		zones	: in pac_stencil_zones.list;
+		process	: not null access procedure (position : in pac_stencil_zones.cursor);
 		proceed	: not null access boolean)
 	is
-		c : pac_stencil_contours.cursor := zones.first;
+		c : pac_stencil_zones.cursor := zones.first;
 	begin
-		while c /= pac_stencil_contours.no_element and proceed.all = TRUE loop
+		while c /= pac_stencil_zones.no_element and proceed.all = TRUE loop
 			process (c);
 			next (c);
 		end loop;
@@ -253,13 +352,13 @@ package body et_stencil is
 
 
 	function get_first_open (
-		zones : in out pac_stencil_contours.list)
-		return pac_stencil_contours.cursor
+		zones : in out pac_stencil_zones.list)
+		return pac_stencil_zones.cursor
 	is
-		result : pac_stencil_contours.cursor;
+		result : pac_stencil_zones.cursor;
 		proceed : aliased boolean := true;
 
-		procedure query_contour (c : in pac_stencil_contours.cursor) is
+		procedure query_contour (c : in pac_stencil_zones.cursor) is
 			status : type_contour_status := is_closed (element (c));
 		begin
 			if not status.closed then
@@ -277,12 +376,12 @@ package body et_stencil is
 
 
 	function get_open_zones (
-		zones : in out pac_stencil_contours.list)
+		zones : in out pac_stencil_zones.list)
 		return pac_stencil_zone_cursors.list
 	is
 		result : pac_stencil_zone_cursors.list;
 
-		procedure query_zone (c : in pac_stencil_contours.cursor) is
+		procedure query_zone (c : in pac_stencil_zones.cursor) is
 			status : type_contour_status := is_closed (element (c));
 		begin
 			if not status.closed then
@@ -300,13 +399,13 @@ package body et_stencil is
 	
 	
 	procedure mirror_contours (
-		contours	: in out pac_stencil_contours.list;
+		contours	: in out pac_stencil_zones.list;
 		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
-		result : pac_stencil_contours.list;
+		result : pac_stencil_zones.list;
 
-		procedure query_contour (c : in pac_stencil_contours.cursor) is
-			contour : type_stencil_contour := element (c);
+		procedure query_contour (c : in pac_stencil_zones.cursor) is
+			contour : type_stencil_zone := element (c);
 		begin
 			mirror (contour, axis);
 			result.append (contour);
@@ -319,13 +418,13 @@ package body et_stencil is
 	
 
 	procedure rotate_contours (
-		contours	: in out pac_stencil_contours.list;
+		contours	: in out pac_stencil_zones.list;
 		angle		: in type_rotation_model)
 	is
-		result : pac_stencil_contours.list;
+		result : pac_stencil_zones.list;
 
-		procedure query_contour (c : in pac_stencil_contours.cursor) is
-			contour : type_stencil_contour := element (c);
+		procedure query_contour (c : in pac_stencil_zones.cursor) is
+			contour : type_stencil_zone := element (c);
 		begin
 			rotate_by (contour, angle);
 			result.append (contour);
@@ -338,13 +437,13 @@ package body et_stencil is
 
 	
 	procedure move_contours (
-		contours	: in out pac_stencil_contours.list;
+		contours	: in out pac_stencil_zones.list;
 		offset		: in type_distance_relative)
 	is
-		result : pac_stencil_contours.list;
+		result : pac_stencil_zones.list;
 
-		procedure query_contour (c : in pac_stencil_contours.cursor) is
-			contour : type_stencil_contour := element (c);
+		procedure query_contour (c : in pac_stencil_zones.cursor) is
+			contour : type_stencil_zone := element (c);
 		begin
 			move_by (contour, offset);
 			result.append (contour);

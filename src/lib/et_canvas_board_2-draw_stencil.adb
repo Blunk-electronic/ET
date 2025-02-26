@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -57,7 +57,7 @@ is
 	use pac_stencil_lines;
 	use pac_stencil_arcs;
 	use pac_stencil_circles;
-	use pac_stencil_contours;
+	use pac_stencil_zones;
 	
 
 	-- CS must be overwritten according to select status:
@@ -95,7 +95,7 @@ is
 	end query_circle;
 
 	
-	procedure query_zone (c : in pac_stencil_contours.cursor) is
+	procedure query_zone (c : in pac_stencil_zones.cursor) is
 		-- CS use renames
 		use pac_draw_contours;
 	begin

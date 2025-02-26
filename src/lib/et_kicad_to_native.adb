@@ -1295,8 +1295,8 @@ package body et_kicad_to_native is
 				use pac_stencil_circles;
 				circles_cursor : pac_stencil_circles.cursor;
 
-				use pac_stencil_contours;
-				polygons_cursor : pac_stencil_contours.cursor;
+				use pac_stencil_zones;
+				polygons_cursor : pac_stencil_zones.cursor;
 
 				stencil : constant string := "board stencil ";
 				
@@ -1351,8 +1351,8 @@ package body et_kicad_to_native is
 				end move_circle;
 
 
-				procedure move_polygon (polygon : in out type_stencil_contour) is begin
-					log (text => stencil & "polygon corner points", level => log_threshold + log_threshold_add);
+				procedure move_polygon (polygon : in out type_stencil_zone) is begin
+					log (text => stencil & "zone corner points", level => log_threshold + log_threshold_add);
 					move_polygon (polygon);
 				end move_polygon;
 
@@ -1432,8 +1432,8 @@ package body et_kicad_to_native is
 				
 				-- POLYGONS TOP
 				polygons_cursor := module.board.stencil.top.contours.first;
-				while polygons_cursor /= pac_stencil_contours.no_element loop
-					pac_stencil_contours.update_element (
+				while polygons_cursor /= pac_stencil_zones.no_element loop
+					pac_stencil_zones.update_element (
 						container	=> module.board.stencil.top.contours,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -1444,8 +1444,8 @@ package body et_kicad_to_native is
 				
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.stencil.bottom.contours.first;
-				while polygons_cursor /= pac_stencil_contours.no_element loop
-					pac_stencil_contours.update_element (
+				while polygons_cursor /= pac_stencil_zones.no_element loop
+					pac_stencil_zones.update_element (
 						container	=> module.board.stencil.bottom.contours,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);

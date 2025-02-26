@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -83,7 +83,7 @@ package et_board_ops.stencil is
 	--    is regarded a a new zone and added to the existing zones.
 	procedure draw_zone (
 		module_cursor	: in pac_generic_modules.cursor;
-		zone			: in type_stencil_contour;
+		zone			: in type_stencil_zone;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
 

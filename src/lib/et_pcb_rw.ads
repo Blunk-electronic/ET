@@ -296,7 +296,7 @@ package et_pcb_rw is
 	procedure write_polygon (cursor : in pac_keepout_zones.cursor);
 	procedure write_cutout (cursor : in pac_keepout_cutouts.cursor);
 
--- STOP MASK
+-- STOPMASK
 	procedure write_line (cursor : in pac_stop_lines.cursor);
 	procedure write_arc (cursor : in pac_stop_arcs.cursor);
 	procedure write_circle (cursor : in pac_stop_circles.cursor);
@@ -306,7 +306,7 @@ package et_pcb_rw is
 	procedure write_line (cursor : in pac_stencil_lines.cursor);
 	procedure write_arc (cursor : in pac_stencil_arcs.cursor);
 	procedure write_circle (cursor : in pac_stencil_circles.cursor);	
-	procedure write_polygon (cursor : in pac_stencil_contours.cursor);
+	procedure write_polygon (cursor : in pac_stencil_zones.cursor);
 	
 	
 end et_pcb_rw;

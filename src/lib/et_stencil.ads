@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -66,6 +66,29 @@ package et_stencil is
 	use pac_stencil_lines;
 	
 
+	-- Iterates the lines.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		lines	: in pac_stencil_lines.list;
+		process	: not null access procedure (position : in pac_stencil_lines.cursor);
+		proceed	: not null access boolean);
+
+	-- CS likewise iteratator for arcs and circles
+
+	-- Returns true if the "proposed-flag" of the given line is set:
+	function is_proposed (
+		line_cursor	: in pac_stencil_lines.cursor)
+		return boolean;
+
+	
+	-- Returns true if the "selected-flag" of the given line is set:
+	function is_selected (
+		line_cursor	: in pac_stencil_lines.cursor)
+		return boolean;
+
+
+
+	
 	-- Mirrors a list of lines along the given axis:
 	procedure mirror_lines (
 		lines	: in out pac_stencil_lines.list;
@@ -98,6 +121,17 @@ package et_stencil is
 	use pac_stencil_arcs;
 	
 
+	-- Returns true if the "proposed-flag" of the given arcis set:
+	function is_proposed (
+		arc_cursor	: in pac_stencil_arcs.cursor)
+		return boolean;
+	
+	-- Returns true if the "selected-flag" of the given arc is set:
+	function is_selected (
+		arc_cursor	: in pac_stencil_arcs.cursor)
+		return boolean;
+
+	
 	-- Mirrors a list of arcs along the given axis:
 	procedure mirror_arcs (
 		arcs	: in out pac_stencil_arcs.list;
@@ -129,6 +163,17 @@ package et_stencil is
 	use pac_stencil_circles;	
 
 
+	-- Returns true if the "proposed-flag" of the given circle is set:
+	function is_proposed (
+		circle_cursor	: in pac_stencil_circles.cursor)
+		return boolean;
+	
+	-- Returns true if the "selected-flag" of the given circle is set:
+	function is_selected (
+		circle_cursor	: in pac_stencil_circles.cursor)
+		return boolean;
+
+	
 	-- Mirrors a list of circles along the given axis:
 	procedure mirror_circles (
 		circles	: in out pac_stencil_circles.list;
@@ -149,34 +194,33 @@ package et_stencil is
 
 -- CONTOURS
 	
-	type type_stencil_contour is new type_contour with null record;
-	-- CS rename to type_stencil_zone
+	type type_stencil_zone is new type_contour with null record;
 	
-	package pac_stencil_contours is new doubly_linked_lists (type_stencil_contour);
-	use pac_stencil_contours; -- CS rename to pac_stencil_zones
+	package pac_stencil_zones is new doubly_linked_lists (type_stencil_zone);
+	use pac_stencil_zones;
 
 
 	-- Iterates the contours. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
-		zones	: in pac_stencil_contours.list;
-		process	: not null access procedure (position : in pac_stencil_contours.cursor);
+		zones	: in pac_stencil_zones.list;
+		process	: not null access procedure (position : in pac_stencil_zones.cursor);
 		proceed	: not null access boolean);
 
 
 	-- Returns the first zone which has an open contour among the
 	-- given list of zones:
 	function get_first_open (
-		zones : in out pac_stencil_contours.list)
-		return pac_stencil_contours.cursor;
+		zones : in out pac_stencil_zones.list)
+		return pac_stencil_zones.cursor;
 
 
 	
 	package pac_stencil_zone_cursors is 
-		new doubly_linked_lists (pac_stencil_contours.cursor);
+		new doubly_linked_lists (pac_stencil_zones.cursor);
 
 	-- Returns the cursors to all zones which have an open contour:
 	function get_open_zones (
-		zones : in out pac_stencil_contours.list)
+		zones : in out pac_stencil_zones.list)
 		return pac_stencil_zone_cursors.list;
 
 
@@ -184,17 +228,17 @@ package et_stencil is
 	
 	-- Mirrors a list of contours along the given axis:
 	procedure mirror_contours (
-		contours	: in out pac_stencil_contours.list;
+		contours	: in out pac_stencil_zones.list;
 		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS);
 	
 	-- Rotates a list of contours by the given angle about the origin:
 	procedure rotate_contours (
-		contours	: in out pac_stencil_contours.list;
+		contours	: in out pac_stencil_zones.list;
 		angle		: in type_rotation_model);
 
 	-- Moves a list of contours by the given offset:
 	procedure move_contours (
-		contours	: in out pac_stencil_contours.list;
+		contours	: in out pac_stencil_zones.list;
 		offset		: in type_distance_relative);
 
 
@@ -204,7 +248,7 @@ package et_stencil is
 		lines 		: pac_stencil_lines.list;
 		arcs		: pac_stencil_arcs.list;
 		circles		: pac_stencil_circles.list;
-		contours	: pac_stencil_contours.list; -- CS rename to zones
+		contours	: pac_stencil_zones.list; -- CS rename to zones
 	end record;
 
 

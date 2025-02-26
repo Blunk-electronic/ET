@@ -646,7 +646,7 @@ is
 			use pac_stencil_lines;
 			use pac_stencil_arcs;
 			use pac_stencil_circles;
-			use pac_stencil_contours;
+			use pac_stencil_zones;
 			stencil : type_stencil_both_sides;
 			face : type_face := TOP;
 
@@ -690,8 +690,8 @@ is
 				end query_circle;
 				
 				
-				procedure query_zone (c : pac_stencil_contours.cursor) is
-					zone : type_stencil_contour renames element (c);
+				procedure query_zone (c : pac_stencil_zones.cursor) is
+					zone : type_stencil_zone renames element (c);
 				begin
 					draw_contour (
 						contour	=> zone,

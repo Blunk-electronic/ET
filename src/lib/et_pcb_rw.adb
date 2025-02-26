@@ -1030,8 +1030,8 @@ package body et_pcb_rw is
 	end write_circle;
 
 	
-	procedure write_polygon (cursor : in pac_stencil_contours.cursor) is 
-		use pac_stencil_contours;
+	procedure write_polygon (cursor : in pac_stencil_zones.cursor) is 
+		use pac_stencil_zones;
 	begin
 		fill_zone_begin;
 		contours_begin;
