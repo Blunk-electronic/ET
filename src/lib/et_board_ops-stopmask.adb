@@ -575,6 +575,50 @@ package body et_board_ops.stopmask is
 
 	end move_text;
 
+
+
+
+	procedure add_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_text_placeholder;
+		face			: in type_face;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			use pac_text_placeholders;						
+		begin
+			case face is
+				when TOP =>
+					module.board.stopmask.top.placeholders.append (placeholder);
+
+				when BOTTOM =>
+					module.board.stopmask.bottom.placeholders.append (placeholder);
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " adding text placeholder in stopmask "
+			& to_string (placeholder)
+			& " face " & to_string (face),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end add_placeholder;
+
+	
 	
 end et_board_ops.stopmask;
 	

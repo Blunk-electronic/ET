@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,8 +37,12 @@
 --
 --   ToDo: 
 
+with ada.containers; 			use ada.containers;
+with ada.containers.indefinite_doubly_linked_lists;
+
 with et_text;
 with et_silkscreen;					use et_silkscreen;
+with et_pcb_placeholders;			use et_pcb_placeholders;
 
 
 package et_board_ops.silkscreen is
@@ -221,6 +225,24 @@ package et_board_ops.silkscreen is
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model;
 		log_threshold	: in type_log_level);
+
+
+
+	
+-- TEXT PLACEHOLDERS:
+
+	-- Places a text placeholder.
+	-- The caller must take care for mirroring the placeholder
+	-- in case its at the bottom of the board:
+	procedure add_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_text_placeholder;
+		face			: in type_face;
+		log_threshold	: in type_log_level);
+
+	
+	-- CS
+	-- move_placeholder via commandline
 
 	
 end et_board_ops.silkscreen;
