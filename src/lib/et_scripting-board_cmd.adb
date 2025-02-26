@@ -1471,12 +1471,11 @@ is
 			ph.size := size;
 			ph.mirror := mirror;
 
-			-- CS
-			-- add_placeholder (
-			-- 	module_cursor 	=> module_cursor,
-			-- 	placeholder		=> ph,
-			-- 	face			=> face,
-			-- 	log_threshold	=> log_threshold + 1);
+			add_placeholder (
+				module_cursor 	=> module_cursor,
+				placeholder		=> ph,
+				face			=> face,
+				log_threshold	=> log_threshold + 1);
 
 		end place_in_silkscreen;
 
@@ -1492,12 +1491,11 @@ is
 			ph.size := size;
 			ph.mirror := mirror;
 
-			-- CS
-			-- add_placeholder (
-			-- 	module_cursor 	=> module_cursor,
-			-- 	placeholder		=> ph,
-			-- 	face			=> face,
-			-- 	log_threshold	=> log_threshold + 1);
+			add_placeholder (
+				module_cursor 	=> module_cursor,
+				placeholder		=> ph,
+				face			=> face,
+				log_threshold	=> log_threshold + 1);
 
 		end place_in_stopmask;
 
@@ -1576,7 +1574,7 @@ is
 							mirror := MIRROR_ALONG_Y_AXIS;
 						end if;
 
-						-- CS place_in_silkscreen;
+						place_in_silkscreen;
 
 
 					when LAYER_CAT_STOP =>
@@ -1586,7 +1584,7 @@ is
 							mirror := MIRROR_ALONG_Y_AXIS;
 						end if;
 
-						-- CS place_in_stopmask;
+						place_in_stopmask;
 
 					
 					when LAYER_CAT_CONDUCTOR =>

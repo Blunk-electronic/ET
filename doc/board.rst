@@ -631,7 +631,17 @@ Texts and Placeholders
 		
 		place placeholder silkscreen top 0.15 1 20 5 0 partcode
 
-	
+
+	.. code-block::
+		
+		place placeholder stop top 0.15 1 20 5 0 partcode
+
+
+	.. code-block::
+		
+		place placeholder stencil top 0.15 1 20 5 0 partcode
+
+		
 	
 ++++++++++++++++++++++
 Assembly Documentation
