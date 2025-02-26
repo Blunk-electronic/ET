@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -300,7 +300,7 @@ package et_pcb_rw is
 	procedure write_line (cursor : in pac_stop_lines.cursor);
 	procedure write_arc (cursor : in pac_stop_arcs.cursor);
 	procedure write_circle (cursor : in pac_stop_circles.cursor);
-	procedure write_polygon (cursor : in pac_stop_contours.cursor);
+	procedure write_polygon (cursor : in pac_stop_zones.cursor);
 
 -- STENCIL (OR SOLDER PASTE MASK)
 	procedure write_line (cursor : in pac_stencil_lines.cursor);

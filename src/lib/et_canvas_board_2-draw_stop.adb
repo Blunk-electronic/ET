@@ -58,7 +58,7 @@ is
 	use pac_stop_lines;
 	use pac_stop_arcs;
 	use pac_stop_circles;
-	use pac_stop_contours;
+	use pac_stop_zones;
 	use pac_text_placeholders;
 	use pac_stop_texts;
 
@@ -107,8 +107,7 @@ is
 
 	
 	
-	procedure query_zone (c : in pac_stop_contours.cursor) is
-		-- CS use renames
+	procedure query_zone (c : in pac_stop_zones.cursor) is
 		use pac_draw_contours;
 	begin
 		draw_contour (

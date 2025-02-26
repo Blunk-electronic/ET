@@ -178,34 +178,34 @@ package et_stopmask is
 
 
 	
--- CONTOURS:
+-- ZONES:
 	
-	type type_stop_contour is new type_contour with null record; -- CS rename to type_stop_zone
-	package pac_stop_contours is new doubly_linked_lists (type_stop_contour);
-	use pac_stop_contours; -- CS rename to pac_stop_zones
+	type type_stop_zone is new type_contour with null record;
+	package pac_stop_zones is new doubly_linked_lists (type_stop_zone);
+	use pac_stop_zones;
 
 
 	-- Iterates the zones.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
-		zones	: in pac_stop_contours.list;
-		process	: not null access procedure (position : in pac_stop_contours.cursor);
+		zones	: in pac_stop_zones.list;
+		process	: not null access procedure (position : in pac_stop_zones.cursor);
 		proceed	: not null access boolean);
 
 	
 	-- Mirrors a list of contours along the given axis:
 	procedure mirror_contours (
-		contours	: in out pac_stop_contours.list;
+		contours	: in out pac_stop_zones.list;
 		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 	-- Rotates a list of contours by the given angle:
 	procedure rotate_contours (
-		contours	: in out pac_stop_contours.list;
+		contours	: in out pac_stop_zones.list;
 		angle		: in type_rotation_model);					
 
 	-- Moves a list of contours by the given offset:
 	procedure move_contours (
-		contours	: in out pac_stop_contours.list;
+		contours	: in out pac_stop_zones.list;
 		offset		: in type_distance_relative);					
 
 
@@ -276,7 +276,7 @@ package et_stopmask is
 		lines 		: pac_stop_lines.list;
 		arcs		: pac_stop_arcs.list;
 		circles		: pac_stop_circles.list;
-		contours	: pac_stop_contours.list; -- CS rename to zones
+		contours	: pac_stop_zones.list; -- CS rename to zones
 		texts		: pac_stop_texts.list;
 	end record;
 

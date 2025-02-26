@@ -1467,8 +1467,8 @@ package body et_kicad_to_native is
 				use pac_stop_circles;
 				circles_cursor : pac_stop_circles.cursor;
 
-				use pac_stop_contours;
-				polygons_cursor : pac_stop_contours.cursor;
+				use pac_stop_zones;
+				polygons_cursor : pac_stop_zones.cursor;
 
 				use pac_stop_texts;
 				texts_cursor : pac_stop_texts.cursor;
@@ -1526,8 +1526,8 @@ package body et_kicad_to_native is
 				end move_circle;
 
 				
-				procedure move_polygon (polygon : in out type_stop_contour) is begin
-					log (text => stop & "polygon corner points", level => log_threshold + log_threshold_add);
+				procedure move_polygon (polygon : in out type_stop_zone) is begin
+					log (text => stop & "zone corner points", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end move_polygon;
 
@@ -1625,8 +1625,8 @@ package body et_kicad_to_native is
 				
 				-- POLYGONS TOP
 				polygons_cursor := module.board.stopmask.top.contours.first;
-				while polygons_cursor /= pac_stop_contours.no_element loop
-					pac_stop_contours.update_element (
+				while polygons_cursor /= pac_stop_zones.no_element loop
+					pac_stop_zones.update_element (
 						container	=> module.board.stopmask.top.contours,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -1637,8 +1637,8 @@ package body et_kicad_to_native is
 				
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.stopmask.bottom.contours.first;
-				while polygons_cursor /= pac_stop_contours.no_element loop
-					pac_stop_contours.update_element (
+				while polygons_cursor /= pac_stop_zones.no_element loop
+					pac_stop_zones.update_element (
 						container	=> module.board.stopmask.bottom.contours,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -986,8 +986,8 @@ package body et_pcb_rw is
 	end write_circle;
 
 	
-	procedure write_polygon (cursor : in pac_stop_contours.cursor) is 
-		use pac_stop_contours;
+	procedure write_polygon (cursor : in pac_stop_zones.cursor) is 
+		use pac_stop_zones;
 	begin
 		fill_zone_begin;
 		contours_begin;		

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -292,7 +292,7 @@ package body et_pcb_rw.device_packages is
 			use pac_stop_lines;
 			use pac_stop_arcs;
 			use pac_stop_circles;
-			use pac_stop_contours;
+			use pac_stop_zones;
 		begin
 			section_mark (section_stopmask, HEADER);
 
@@ -1327,7 +1327,7 @@ package body et_pcb_rw.device_packages is
 
 				
 				procedure append_stop_polygon_top is begin
-					pac_stop_contours.append (
+					pac_stop_zones.append (
 						container	=> packge.stop_mask.top.contours, 
 						new_item	=> (contour with null record));
 
@@ -1337,7 +1337,7 @@ package body et_pcb_rw.device_packages is
 
 				
 				procedure append_stop_polygon_bottom is begin
-					pac_stop_contours.append (
+					pac_stop_zones.append (
 						container	=> packge.stop_mask.bottom.contours, 
 						new_item	=> (contour with null record));
 

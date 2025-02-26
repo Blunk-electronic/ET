@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -194,7 +194,7 @@ package body et_board_ops.stop_mask is
 
 	procedure draw_zone (
 		module_cursor	: in pac_generic_modules.cursor;
-		zone			: in type_stop_contour;
+		zone			: in type_stop_zone;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
@@ -207,14 +207,14 @@ package body et_board_ops.stop_mask is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
-			use pac_stop_contours;
-			c : pac_stop_contours.cursor;
+			use pac_stop_zones;
+			c : pac_stop_zones.cursor;
 
 			-- This procedure tests whether the candidate
 			-- zone z is open. If z is open, then it tries
 			-- to merge the given zone into z. If the merge operation
 			-- succeedes then no more zones are iterated (flag proceed):
-			procedure query_zone (z : in out type_stop_contour) is
+			procedure query_zone (z : in out type_stop_zone) is
 				use et_board_shapes_and_text;
 				use pac_contours;
 				mr : type_merge_result;
@@ -238,7 +238,7 @@ package body et_board_ops.stop_mask is
 					-- Iterate through the already existing zones:
 					c := module.board.stopmask.top.contours.first;
 
-					while c /= pac_stop_contours.no_element and proceed loop
+					while c /= pac_stop_zones.no_element and proceed loop
 						module.board.stopmask.top.contours.update_element (c, query_zone'access);
 						next (c);
 					end loop;
@@ -256,7 +256,7 @@ package body et_board_ops.stop_mask is
 					-- Iterate through the already existing zones:
 					c := module.board.stopmask.bottom.contours.first;
 
-					while c /= pac_stop_contours.no_element and proceed loop
+					while c /= pac_stop_zones.no_element and proceed loop
 						module.board.stopmask.bottom.contours.update_element (c, query_zone'access);
 						next (c);
 					end loop;

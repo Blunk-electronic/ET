@@ -3664,14 +3664,14 @@ is
 
 					
 					procedure append_stop_polygon_top is begin
-						pac_stop_contours.append (
+						pac_stop_zones.append (
 							container	=> module.board.stopmask.top.contours,
 							new_item	=> (contour with null record));
 					end;
 
 					
 					procedure append_stop_polygon_bottom is begin
-						pac_stop_contours.append (
+						pac_stop_zones.append (
 							container	=> module.board.stopmask.bottom.contours,
 							new_item	=> (contour with null record));
 					end;

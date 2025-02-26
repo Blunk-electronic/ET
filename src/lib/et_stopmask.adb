@@ -312,13 +312,13 @@ package body et_stopmask is
 
 
 	procedure iterate (
-		zones	: in pac_stop_contours.list;
-		process	: not null access procedure (position : in pac_stop_contours.cursor);
+		zones	: in pac_stop_zones.list;
+		process	: not null access procedure (position : in pac_stop_zones.cursor);
 		proceed	: not null access boolean)
 	is
-		c : pac_stop_contours.cursor := zones.first;
+		c : pac_stop_zones.cursor := zones.first;
 	begin
-		while c /= pac_stop_contours.no_element and proceed.all = TRUE loop
+		while c /= pac_stop_zones.no_element and proceed.all = TRUE loop
 			process (c);
 			next (c);
 		end loop;
@@ -327,13 +327,13 @@ package body et_stopmask is
 	
 
 	procedure mirror_contours (
-		contours	: in out pac_stop_contours.list;
+		contours	: in out pac_stop_zones.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 	is
-		result : pac_stop_contours.list;
+		result : pac_stop_zones.list;
 
-		procedure query_contour (c : in pac_stop_contours.cursor) is
-			contour : type_stop_contour := element (c);
+		procedure query_contour (c : in pac_stop_zones.cursor) is
+			contour : type_stop_zone := element (c);
 		begin
 			mirror (contour, axis);
 			result.append (contour);
@@ -347,13 +347,13 @@ package body et_stopmask is
 	
 
 	procedure rotate_contours (
-		contours	: in out pac_stop_contours.list;
+		contours	: in out pac_stop_zones.list;
 		angle		: in type_rotation_model)		
 	is
-		result : pac_stop_contours.list;
+		result : pac_stop_zones.list;
 
-		procedure query_contour (c : in pac_stop_contours.cursor) is
-			contour : type_stop_contour := element (c);
+		procedure query_contour (c : in pac_stop_zones.cursor) is
+			contour : type_stop_zone := element (c);
 		begin
 			rotate_by (contour, angle);
 			result.append (contour);
@@ -367,13 +367,13 @@ package body et_stopmask is
 
 	
 	procedure move_contours (
-		contours	: in out pac_stop_contours.list;
+		contours	: in out pac_stop_zones.list;
 		offset		: in type_distance_relative)		
 	is
-		result : pac_stop_contours.list;
+		result : pac_stop_zones.list;
 
-		procedure query_contour (c : in pac_stop_contours.cursor) is
-			contour : type_stop_contour := element (c);
+		procedure query_contour (c : in pac_stop_zones.cursor) is
+			contour : type_stop_zone := element (c);
 		begin
 			move_by (contour, offset);
 			result.append (contour);

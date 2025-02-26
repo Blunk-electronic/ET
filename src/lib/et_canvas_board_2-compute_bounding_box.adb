@@ -395,7 +395,7 @@ is
 				use pac_stop_lines;
 				use pac_stop_arcs;
 				use pac_stop_circles;
-				use pac_stop_contours;
+				use pac_stop_zones;
 				-- use pac_stop_texts;
 
 				stop : type_stop_mask_both_sides renames module.board.stopmask;
@@ -425,8 +425,8 @@ is
 				end query_circle;
 
 
-				procedure query_contour (c : in pac_stop_contours.cursor) is
-					zone : type_stop_contour renames element (c);
+				procedure query_contour (c : in pac_stop_zones.cursor) is
+					zone : type_stop_zone renames element (c);
 				begin
 					b := get_bounding_box (zone, 0.0);
 					merge_areas (bbox_new, b);
@@ -1134,7 +1134,7 @@ is
 					use pac_stop_lines;
 					use pac_stop_arcs;
 					use pac_stop_circles;
-					use pac_stop_contours;
+					use pac_stop_zones;
 					use pac_stop_texts;
 
 
@@ -1180,8 +1180,8 @@ is
 					end query_circle;
 
 
-					procedure query_contour (c : in pac_stop_contours.cursor) is 
-						contour : type_stop_contour renames element (c);
+					procedure query_contour (c : in pac_stop_zones.cursor) is 
+						contour : type_stop_zone renames element (c);
 					begin
 						b := get_bounding_box (
 							contour		=> contour,
