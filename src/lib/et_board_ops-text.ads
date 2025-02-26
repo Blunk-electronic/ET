@@ -62,16 +62,7 @@ package et_board_ops.text is
 		module_cursor	: in pac_generic_modules.cursor;
 		meaning 		: in type_text_meaning)										
 		return et_text.pac_text_content.bounded_string;
-
 	
-	-- Places a text in a non conductor layer like
-	-- silkscreen or assembly doc:
-	-- procedure place_text_in_non_conductor_layer (
-	-- 	module_cursor	: in pac_generic_modules.cursor;
-	-- 	layer_category	: in type_layer_category;
-	-- 	face			: in type_face; -- top/bottom
-	-- 	text			: in type_text_fab_with_content;
-	-- 	log_threshold	: in type_log_level);
 	
 											
 end et_board_ops.text;

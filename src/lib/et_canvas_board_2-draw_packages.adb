@@ -585,11 +585,9 @@ is
 				
 
 				procedure query_text (c : pac_stop_texts.cursor) is
-					text : type_stop_text renames element (c);
 					use pac_draw_text;
 				begin
-					draw_origin ((text.position.place, zero_rotation));					
-					draw_vector_text (text.vectors);
+					draw_vector_text_2 (element (c));
 				end query_text;
 
 				

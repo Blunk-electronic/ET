@@ -41,6 +41,11 @@ package body et_board_ops.stop_mask is
 
 	use pac_generic_modules;
 
+
+	use pac_stop_texts;
+
+	
+	
 	
 	procedure draw_stop_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -398,6 +403,49 @@ package body et_board_ops.stop_mask is
 
 
 
+
+
+
+	procedure add_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		text			: in type_text_fab_with_content;
+		log_threshold	: in type_log_level)
+	is 
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is begin			
+			case face is
+				when TOP =>
+					append (module.board.stopmask.top.texts, (text with null record));
+
+				when BOTTOM =>
+					append (module.board.stopmask.bottom.texts, (text with null record));
+			end case;
+		end query_module;
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " placing text in stopmask at"
+			& to_string (text.position)
+			& " face" & to_string (face),
+			level => log_threshold);
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+	end add_text;
+
+
+
+
+
+
+	
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -486,7 +534,6 @@ package body et_board_ops.stop_mask is
 
 			procedure query_text (text : in out type_stop_text) is begin
 				move_text (text, offset);
-				move_vector_text (text.vectors, offset);
 			end query_text;
 			
 		begin

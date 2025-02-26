@@ -286,6 +286,65 @@ package body et_stopmask is
 	end move_contours;
 
 
+
+
+
+
+	function is_proposed (
+		text_cursor	: in pac_stop_texts.cursor)
+		return boolean
+	is begin
+		if element (text_cursor).status.proposed then
+			return true;
+		else
+			return false;
+		end if;
+	end is_proposed;
+
+	
+
+	function is_selected (
+		text_cursor	: in pac_stop_texts.cursor)
+		return boolean
+	is begin
+		if element (text_cursor).status.selected then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+		
+
+
+	
+
+	function to_string (
+		text : in pac_stop_texts.cursor)
+		return string
+	is begin
+		return to_string (element (text));
+	end to_string;
+	
+
+
+	
+
+	procedure iterate (
+		texts	: in pac_stop_texts.list;
+		process	: not null access procedure (position : in pac_stop_texts.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_stop_texts.cursor := texts.first;
+	begin
+		while c /= pac_stop_texts.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+
+
 	
 
 	
@@ -298,7 +357,6 @@ package body et_stopmask is
 		procedure query_text (c : in pac_stop_texts.cursor) is
 			text : type_stop_text := element (c);
 		begin
-			mirror_vector_text (text.vectors, axis);
 			result.append (text);
 		end query_text;
 		
@@ -318,7 +376,6 @@ package body et_stopmask is
 		procedure query_text (c : in pac_stop_texts.cursor) is
 			text : type_stop_text := element (c);
 		begin
-			rotate_vector_text (text.vectors, angle);
 			result.append (text);
 		end query_text;
 		
@@ -338,7 +395,6 @@ package body et_stopmask is
 		procedure query_text (c : in pac_stop_texts.cursor) is
 			text : type_stop_text := element (c);
 		begin
-			move_vector_text (text.vectors, offset);
 			result.append (text);
 		end query_text;
 		

@@ -4946,27 +4946,8 @@ is
 						use et_silkscreen;
 						use et_assy_doc;
 						use et_stopmask;
-						
-						v_text : type_vector_text;
-						mirror : type_mirror;
+
 					begin
-						-- vectorize text:
-						if face = BOTTOM then
-							mirror := MIRROR_NO;
-						else
-							mirror := face_to_mirror (face);
-						end if;
-						
-						v_text := vectorize_text (
-							content		=> board_text.content,
-							size		=> board_text.size,
-							rotation	=> get_rotation (board_text.position),
-							position	=> board_text.position.place,
-							mirror		=> mirror,
-							line_width	=> board_text.line_width
-							-- CS alignment
-							); -- CS remove
-						
 						case face is
 							when TOP =>
 								case layer_cat is
@@ -4983,7 +4964,7 @@ is
 									when LAYER_CAT_STOP =>
 										pac_stop_texts.append (
 											container	=> module.board.stopmask.top.texts,
-											new_item	=> (board_text with v_text));
+											new_item	=> (board_text with null record));
 
 									when others => invalid_section;
 								end case;
@@ -5003,7 +4984,7 @@ is
 									when LAYER_CAT_STOP =>
 										pac_stop_texts.append (
 											container	=> module.board.stopmask.bottom.texts,
-											new_item	=> (board_text with v_text));
+											new_item	=> (board_text with null record));
 
 									when others => invalid_section;
 								end case;

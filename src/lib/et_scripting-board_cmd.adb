@@ -1315,13 +1315,11 @@ is
 		procedure place_in_stopmask is
 			use et_board_ops.stop_mask;
 		begin
-			-- CS
-			null;
-			-- add_text (
-			-- 	module_cursor 	=> module_cursor,
-			-- 	face			=> face,
-			-- 	text			=> text,
-			-- 	log_threshold	=> log_threshold + 1);
+			add_text (
+				module_cursor 	=> module_cursor,
+				face			=> face,
+				text			=> text,
+				log_threshold	=> log_threshold + 1);
 		end place_in_stopmask;
 
 

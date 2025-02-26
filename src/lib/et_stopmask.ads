@@ -171,13 +171,43 @@ package et_stopmask is
 -- TEXTS:
 	
 	-- for texts in conductor layer to be exposed:
-	type type_stop_text is new type_text_fab_with_content with record
-		vectors	: type_vector_text;
-	end record;	
+	type type_stop_text is new type_text_fab_with_content with null record;
+	
 
 	package pac_stop_texts is new doubly_linked_lists (type_stop_text);
 	use pac_stop_texts;
 
+
+	-- Returns true if the "proposed-flag" of the given text set:
+	function is_proposed (
+		text_cursor	: in pac_stop_texts.cursor)
+		return boolean;
+	
+	-- Returns true if the "selected-flag" of the given text is set:
+	function is_selected (
+		text_cursor	: in pac_stop_texts.cursor)
+		return boolean;
+
+
+	
+	-- Returns the position, linewidth and content
+	-- of the given text:
+	function to_string (
+		text : in pac_stop_texts.cursor)
+		return string;
+	
+
+	-- Iterates the texts.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		texts	: in pac_stop_texts.list;
+		process	: not null access procedure (position : in pac_stop_texts.cursor);
+		proceed	: not null access boolean);
+
+
+
+
+	
 	-- Mirrors a list of texts along the given axis:
 	procedure mirror_texts (
 		texts	: in out pac_stop_texts.list;

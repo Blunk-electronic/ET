@@ -1044,10 +1044,7 @@ package body et_canvas_board_texts is
 	
 	procedure place_text (
 		point : in type_vector_model) 
-	is 
-		-- use et_board_ops.conductors;
-		-- use et_board_ops.text;
-	begin
+	is begin
 		if object_ready then
 			move_to (preliminary_text.text.position.place, point);
 			
@@ -1073,16 +1070,12 @@ package body et_canvas_board_texts is
 
 				when LAYER_CAT_STOP =>
 					
-					null;
-					-- CS
-					
-					-- place_text_in_non_conductor_layer (
-					-- 	module_cursor 	=> active_module,
-					-- 	layer_category	=> object_layer_category,
-					-- 	face			=> object_face,
-					-- 	text			=> preliminary_text.text,
-					-- 	log_threshold	=> log_threshold + 1);
-					
+					et_board_ops.stop_mask.add_text (
+						module_cursor 	=> active_module,
+						face			=> object_face,
+						text			=> preliminary_text.text,
+						log_threshold	=> log_threshold + 1);
+
 					
 				when LAYER_CAT_CONDUCTOR =>
 				
