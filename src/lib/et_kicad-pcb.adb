@@ -3528,12 +3528,12 @@ package body et_kicad.pcb is
 				case board_text.layer is
 					when layer_top_silk_screen_id =>
 						board.silk_screen.top.texts.append ((type_text_fab (board_text) with 
-							content => board_text.content, vectors => <>)); -- CS vectorize text
+							content => board_text.content));
 						text_silk_screen_properties (TOP, board.silk_screen.top.texts.last, log_threshold + 1);
 						
 					when layer_bot_silk_screen_id =>
 						board.silk_screen.bottom.texts.append ((type_text_fab (board_text) with
-							content => board_text.content, vectors => <>)); -- CS vectorize text
+							content => board_text.content));
 						text_silk_screen_properties (BOTTOM, board.silk_screen.bottom.texts.last, log_threshold + 1);
 
 						
@@ -4194,12 +4194,12 @@ package body et_kicad.pcb is
 						case package_text.layer is
 							when TOP_SILK => 
 								package_silk_screen.top.texts.append ((type_text_fab (package_text) with
-									content => package_text.content, vectors => <>)); -- CS vectorize text
+									content => package_text.content));
 								text_silk_screen_properties (TOP, package_silk_screen.top.texts.last, log_threshold + 1);
 								
 							when BOT_SILK => 
 								package_silk_screen.bottom.texts.append ((type_text_fab (package_text) with
-									content => package_text.content, vectors => <>));  -- CS vectorize text
+									content => package_text.content));
 								text_silk_screen_properties (BOTTOM, package_silk_screen.bottom.texts.last, log_threshold + 1);
 
 								

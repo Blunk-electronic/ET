@@ -1618,6 +1618,44 @@ package body et_board_ops.assy_doc is
 
 
 
+	
+
+	procedure add_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		text			: in type_text_fab_with_content;
+		log_threshold	: in type_log_level)
+	is 
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is begin			
+			case face is
+				when TOP =>
+					append (module.board.assy_doc.top.texts, (text with null record));
+
+				when BOTTOM =>
+					append (module.board.assy_doc.bottom.texts, (text with null record));
+			end case;
+		end query_module;
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " placing text in assembly documentation at"
+			& to_string (text.position)
+			& " face" & to_string (face),
+			level => log_threshold);
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+	end add_text;
+
+
+	
 
 
 

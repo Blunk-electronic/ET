@@ -91,92 +91,92 @@ package body et_board_ops.text is
 
 	
 	
-	procedure place_text_in_non_conductor_layer (
-		module_cursor	: in pac_generic_modules.cursor;
-		layer_category	: in type_layer_category;
-		face			: in type_face; -- top/bottom
-		text			: in type_text_fab_with_content;
-		log_threshold	: in type_log_level)
-	is 
-		use et_silkscreen;
-		use et_assy_doc;
-		use et_stopmask;
-
-		text_tmp : type_text_fab_with_content := text;
-		
-		
-		procedure place_text (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			use et_text;
-			use pac_doc_texts;
-			use pac_silk_texts;
-			use pac_stop_texts;
-			use et_mirroring;
-
-			v_text : type_vector_text;		
-			mirror : type_mirror;
-		begin
-			mirror := face_to_mirror (face);
-			
-			v_text := vectorize_text (
-				content		=> text.content,
-				size		=> text.size,
-				rotation	=> get_rotation (text.position),
-				position	=> text.position.place,
-				mirror		=> mirror,
-				line_width	=> text.line_width
-				-- CS alignment
-				); 
-			
-			case layer_category is
-				when LAYER_CAT_ASSY =>
-					case face is
-						when TOP =>
-							-- append (module.board.assy_doc.top.texts, (text with v_text));
-							text_tmp.mirror := MIRROR_NO;
-							append (module.board.assy_doc.top.texts, (text_tmp with null record));
-						when BOTTOM =>
-							-- append (module.board.assy_doc.bottom.texts, (text with v_text));
-							text_tmp.mirror := MIRROR_ALONG_Y_AXIS;
-							append (module.board.assy_doc.bottom.texts, (text_tmp with null record));
-					end case;
-
-				when LAYER_CAT_SILKSCREEN =>
-					case face is
-						when TOP =>
-							append (module.board.silkscreen.top.texts, (text with v_text));
-						when BOTTOM =>
-							append (module.board.silkscreen.bottom.texts, (text with v_text));
-					end case;
-					
-				when LAYER_CAT_STOP =>
-					case face is
-						when TOP =>
-							append (module.board.stopmask.top.texts, (text with v_text));
-						when BOTTOM =>
-							append (module.board.stopmask.bottom.texts, (text with v_text));
-					end case;
-
-				when others => null;
-			end case;
-		end place_text;
-		
-
-	begin
-		log (text => "module " & to_string (module_cursor)
-			& " placing text in non-conductor layer at" -- CS output category
-			& to_string (text.position)
-			& " face" & to_string (face),
-			level => log_threshold);
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> place_text'access);
-
-	end place_text_in_non_conductor_layer;
+-- 	procedure place_text_in_non_conductor_layer (
+-- 		module_cursor	: in pac_generic_modules.cursor;
+-- 		layer_category	: in type_layer_category;
+-- 		face			: in type_face; -- top/bottom
+-- 		text			: in type_text_fab_with_content;
+-- 		log_threshold	: in type_log_level)
+-- 	is 
+-- 		use et_silkscreen;
+-- 		use et_assy_doc;
+-- 		use et_stopmask;
+-- 
+-- 		text_tmp : type_text_fab_with_content := text;
+-- 		
+-- 		
+-- 		procedure place_text (
+-- 			module_name	: in pac_module_name.bounded_string;
+-- 			module		: in out type_generic_module) 
+-- 		is
+-- 			use et_text;
+-- 			use pac_doc_texts;
+-- 			use pac_silk_texts;
+-- 			use pac_stop_texts;
+-- 			use et_mirroring;
+-- 
+-- 			v_text : type_vector_text;		
+-- 			mirror : type_mirror;
+-- 		begin
+-- 			mirror := face_to_mirror (face);
+-- 			
+-- 			v_text := vectorize_text (
+-- 				content		=> text.content,
+-- 				size		=> text.size,
+-- 				rotation	=> get_rotation (text.position),
+-- 				position	=> text.position.place,
+-- 				mirror		=> mirror,
+-- 				line_width	=> text.line_width
+-- 				-- CS alignment
+-- 				); 
+-- 			
+-- 			case layer_category is
+-- 				when LAYER_CAT_ASSY =>
+-- 					case face is
+-- 						when TOP =>
+-- 							-- append (module.board.assy_doc.top.texts, (text with v_text));
+-- 							text_tmp.mirror := MIRROR_NO;
+-- 							append (module.board.assy_doc.top.texts, (text_tmp with null record));
+-- 						when BOTTOM =>
+-- 							-- append (module.board.assy_doc.bottom.texts, (text with v_text));
+-- 							text_tmp.mirror := MIRROR_ALONG_Y_AXIS;
+-- 							append (module.board.assy_doc.bottom.texts, (text_tmp with null record));
+-- 					end case;
+-- 
+-- 				when LAYER_CAT_SILKSCREEN =>
+-- 					case face is
+-- 						when TOP =>
+-- 							append (module.board.silkscreen.top.texts, (text with v_text));
+-- 						when BOTTOM =>
+-- 							append (module.board.silkscreen.bottom.texts, (text with v_text));
+-- 					end case;
+-- 					
+-- 				when LAYER_CAT_STOP =>
+-- 					case face is
+-- 						when TOP =>
+-- 							append (module.board.stopmask.top.texts, (text with v_text));
+-- 						when BOTTOM =>
+-- 							append (module.board.stopmask.bottom.texts, (text with v_text));
+-- 					end case;
+-- 
+-- 				when others => null;
+-- 			end case;
+-- 		end place_text;
+-- 		
+-- 
+-- 	begin
+-- 		log (text => "module " & to_string (module_cursor)
+-- 			& " placing text in non-conductor layer at" -- CS output category
+-- 			& to_string (text.position)
+-- 			& " face" & to_string (face),
+-- 			level => log_threshold);
+-- 		
+-- 		update_element (
+-- 			container	=> generic_modules,
+-- 			position	=> module_cursor,
+-- 			process		=> place_text'access);
+-- 
+-- 	end place_text_in_non_conductor_layer;
 
 	
 

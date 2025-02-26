@@ -1174,26 +1174,13 @@ package body et_pcb_rw.device_packages is
 
 							pac_silk_texts.append (
 								container	=> packge.silkscreen.top.texts,
-								new_item	=> (pac_text with vectorize_text (
-										content		=> pac_text.content,
-										size		=> pac_text.size,
-										rotation	=> pac_text.position.rotation,
-										position	=> pac_text.position.place,
-										line_width	=> pac_text.line_width,
-										alignment	=> pac_text.alignment)));
+								new_item	=> (pac_text with null record));
 
 
 						when SEC_ASSEMBLY_DOCUMENTATION =>
 
 							pac_doc_texts.append (
 								container	=> packge.assy_doc.top.texts,
-								-- new_item	=> (pac_text with vectorize_text (
-								-- 		content		=> pac_text.content,
-								-- 		size		=> pac_text.size,
-								-- 		rotation	=> pac_text.position.rotation,
-								-- 		position	=> pac_text.position.place,
-								-- 		line_width	=> pac_text.line_width,
-								-- 		alignment	=> pac_text.alignment)));
 								new_item	=> (pac_text with null record));
 							
 						when SEC_STOPMASK =>
@@ -1237,27 +1224,13 @@ package body et_pcb_rw.device_packages is
 
 							pac_silk_texts.append (
 								container	=> packge.silkscreen.bottom.texts,
-								new_item	=> (pac_text with vectorize_text (
-										content		=> pac_text.content,
-										size		=> pac_text.size,
-										rotation	=> pac_text.position.rotation,
-										position	=> pac_text.position.place,
-										mirror		=> MIRROR_ALONG_Y_AXIS,
-										line_width	=> pac_text.line_width,
-										alignment	=> pac_text.alignment)));
+								new_item	=> (pac_text with null record));
 
 
 						when SEC_ASSEMBLY_DOCUMENTATION =>
 
 							pac_doc_texts.append (
 								container	=> packge.assy_doc.bottom.texts,
-								-- new_item	=> (pac_text with vectorize_text (
-								-- 		content		=> pac_text.content,
-								-- 		size		=> pac_text.size,
-								-- 		rotation	=> pac_text.position.rotation,
-								-- 		position	=> pac_text.position.place,
-								-- 		line_width	=> pac_text.line_width,
-								-- 		alignment	=> pac_text.alignment)));
 								new_item	=> (pac_text with null record));
 							
 						when SEC_STOPMASK =>

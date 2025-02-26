@@ -322,6 +322,65 @@ package body et_silkscreen is
 	end move_contours;
 
 
+
+
+
+
+	function is_proposed (
+		text_cursor	: in pac_silk_texts.cursor)
+		return boolean
+	is begin
+		if element (text_cursor).status.proposed then
+			return true;
+		else
+			return false;
+		end if;
+	end is_proposed;
+
+	
+
+	function is_selected (
+		text_cursor	: in pac_silk_texts.cursor)
+		return boolean
+	is begin
+		if element (text_cursor).status.selected then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+		
+
+
+	
+
+	function to_string (
+		text : in pac_silk_texts.cursor)
+		return string
+	is begin
+		return to_string (element (text));
+	end to_string;
+	
+
+
+	
+
+	procedure iterate (
+		texts	: in pac_silk_texts.list;
+		process	: not null access procedure (position : in pac_silk_texts.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_silk_texts.cursor := texts.first;
+	begin
+		while c /= pac_silk_texts.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+	
+
 	
 
 	procedure mirror_texts (
@@ -334,7 +393,6 @@ package body et_silkscreen is
 			text : type_silk_text := element (c);
 		begin
 			mirror_text (text, axis);
-			mirror_vector_text (text.vectors, axis);
 			result.append (text);
 		end query_text;
 		
@@ -354,7 +412,6 @@ package body et_silkscreen is
 			text : type_silk_text := element (c);
 		begin
 			rotate_text (text, angle);
-			rotate_vector_text (text.vectors, angle);
 			result.append (text);
 		end query_text;
 		
@@ -374,7 +431,6 @@ package body et_silkscreen is
 			text : type_silk_text := element (c);
 		begin
 			move_text (text, offset);
-			move_vector_text (text.vectors, offset);
 			result.append (text);
 		end query_text;
 		

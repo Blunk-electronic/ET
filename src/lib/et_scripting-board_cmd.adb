@@ -1273,27 +1273,79 @@ is
 
 
 	
+	
 
 	-- This procedure parses a command to place text
 	-- and dispatches to subprogram according to the layer category:
 	procedure place_text is
 		use pac_text_board;
 		use et_board_ops.text;
-		text			: type_text_fab;
+		use et_mirroring;
+		
+		text			: type_text_fab_with_content;
 		pos_xy			: type_vector_model;
 		rotation		: type_rotation_model;
 		content			: pac_text_content.bounded_string;
 		layer_category	: type_layer_category;
-		signal_layer	: type_signal_layer;
+		
 		face			: type_face;
+
+		procedure place_in_assy_doc is
+			use et_board_ops.assy_doc;
+		begin
+			add_text (
+				module_cursor 	=> module_cursor,
+				face			=> face,
+				text			=> text,
+				log_threshold	=> log_threshold + 1);
+		end place_in_assy_doc;
+
+
+		procedure place_in_silkscreen is
+			use et_board_ops.silkscreen;
+		begin
+			add_text (
+				module_cursor 	=> module_cursor,
+				face			=> face,
+				text			=> text,
+				log_threshold	=> log_threshold + 1);
+		end place_in_silkscreen;
+
+
+		procedure place_in_stopmask is
+			use et_board_ops.stop_mask;
+		begin
+			-- CS
+			null;
+			-- add_text (
+			-- 	module_cursor 	=> module_cursor,
+			-- 	face			=> face,
+			-- 	text			=> text,
+			-- 	log_threshold	=> log_threshold + 1);
+		end place_in_stopmask;
+
+
+		procedure place_in_conductor_layer is
+			use et_board_ops.conductors;
+			signal_layer	: type_signal_layer;
+		begin
+			signal_layer := to_signal_layer (f (6));  -- 5 
+							
+			-- This procedure automatically cares for mirroring:
+			add_text (
+				module_cursor 	=> module_cursor,
+				signal_layer	=> signal_layer,
+				text			=> text,
+				log_threshold	=> log_threshold + 1);
+		end place_in_conductor_layer;
+		
+		
 	begin
 		-- board demo place text silkscreen top 0.15 1 140 100 0 "SILKSCREEN"
 		-- board demo place text conductor  5   0.15 1 140 100 0 "L1"
 
 		-- CS: argument for alignment
 
-		-- There is no need of an argument that controls mirroring !
-		-- See call of place_text_in_conductor_layer below.
 		
 		case cmd_field_count is
 			when 12 =>
@@ -1306,34 +1358,54 @@ is
 				rotation := to_rotation (f (11)); -- 0
 				text.position := type_position (to_position (pos_xy, rotation));
 				
-				content := to_content (f (12));
+				text.content := to_content (f (12));
 				-- CS check length
+
+
 				
 				if characters_valid (content) then
 
 					case layer_category is
-						when LAYER_CAT_SILKSCREEN | LAYER_CAT_ASSY | LAYER_CAT_STOP =>
-
+						when LAYER_CAT_ASSY =>
 							face := to_face (f (6)); -- top/bottom
 							
-							place_text_in_non_conductor_layer (
-								module_cursor 	=> module_cursor,
-								layer_category	=> layer_category,
-								face			=> face,
-								text			=> (text with content),
-								log_threshold	=> log_threshold + 1);
+							if face = BOTTOM then
+								text.mirror := MIRROR_ALONG_Y_AXIS;
+							else
+								text.mirror := MIRROR_NO;
+							end if;
+							
+							place_in_assy_doc;
 
+							
+						when LAYER_CAT_SILKSCREEN =>
+							face := to_face (f (6)); -- top/bottom
+							
+							if face = BOTTOM then
+								text.mirror := MIRROR_ALONG_Y_AXIS;
+							else
+								text.mirror := MIRROR_NO;
+							end if;
+							
+							place_in_silkscreen;
+
+							
+						when LAYER_CAT_STOP =>						
+							face := to_face (f (6)); -- top/bottom
+							
+							if face = BOTTOM then
+								text.mirror := MIRROR_ALONG_Y_AXIS;
+							else
+								text.mirror := MIRROR_NO;
+							end if;
+							
+							place_in_stopmask;
+
+							
 						
 						when LAYER_CAT_CONDUCTOR =>
-						
-							signal_layer := to_signal_layer (f (6));  -- 5 
+							place_in_conductor_layer;
 							
-							-- This procedure automatically cares for mirroring:
-							add_text (
-								module_cursor 	=> module_cursor,
-								signal_layer	=> signal_layer,
-								text			=> (text with content),
-								log_threshold	=> log_threshold + 1);
 
 						when others => null; -- CS message invalid layer category ?
 					end case;

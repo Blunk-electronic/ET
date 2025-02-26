@@ -152,6 +152,13 @@ package body et_canvas_board_texts is
 		object_face := to_face (values.get_string (item_text));
 		--put_line ("face " & to_string (object_face));
 
+		case object_face is
+			when TOP =>
+				preliminary_text.text.mirror := MIRROR_NO;
+
+			when BOTTOM =>
+				preliminary_text.text.mirror := MIRROR_ALONG_Y_AXIS;
+		end case;
 		
 		-- Auto-enable the selected layer category:
 		case object_layer_category is
@@ -1038,32 +1045,54 @@ package body et_canvas_board_texts is
 	procedure place_text (
 		point : in type_vector_model) 
 	is 
-		use et_board_ops.conductors;
-		use et_board_ops.text;
+		-- use et_board_ops.conductors;
+		-- use et_board_ops.text;
 	begin
 		if object_ready then
 			move_to (preliminary_text.text.position.place, point);
 			
 			case object_layer_category is
-				when LAYER_CAT_SILKSCREEN | LAYER_CAT_ASSY | LAYER_CAT_STOP =>
+				when LAYER_CAT_ASSY =>
 
-					place_text_in_non_conductor_layer (
+					et_board_ops.assy_doc.add_text (
 						module_cursor 	=> active_module,
-						layer_category	=> object_layer_category,
 						face			=> object_face,
 						text			=> preliminary_text.text,
 						log_threshold	=> log_threshold + 1);
 
-				
+					
+
+				when LAYER_CAT_SILKSCREEN =>
+
+					et_board_ops.silkscreen.add_text (
+						module_cursor 	=> active_module,
+						face			=> object_face,
+						text			=> preliminary_text.text,
+						log_threshold	=> log_threshold + 1);
+
+
+				when LAYER_CAT_STOP =>
+					
+					null;
+					-- CS
+					
+					-- place_text_in_non_conductor_layer (
+					-- 	module_cursor 	=> active_module,
+					-- 	layer_category	=> object_layer_category,
+					-- 	face			=> object_face,
+					-- 	text			=> preliminary_text.text,
+					-- 	log_threshold	=> log_threshold + 1);
+					
+					
 				when LAYER_CAT_CONDUCTOR =>
 				
-					add_text (
+					et_board_ops.conductors.add_text (
 						module_cursor 	=> active_module,
 						signal_layer	=> object_signal_layer,
 						text			=> preliminary_text.text,
 						log_threshold	=> log_threshold + 1);
 
-				when others => null; -- CS rais exception ?
+				when others => null; -- CS raise exception ?
 			end case;
 		end if;	
 	end place_text;

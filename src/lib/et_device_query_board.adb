@@ -1231,18 +1231,6 @@ package body et_device_query_board is
 
 				-- Ignore the text if it has no content:
 				if not is_empty (text.content) then
-				
-					-- Vectorize the content of the placeholder:
-					text.vectors := vectorize_text (
-						content		=> text.content,
-						size		=> ph.size,
-						--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
-						rotation	=> get_rotation (ph.position),
-						position	=> ph.position.place,
-						mirror		=> MIRROR_NO,
-						line_width	=> ph.line_width,
-						alignment	=> ph.alignment); -- right, bottom
-
 					silkscreen.texts.append (text);
 				end if;
 			end query_placeholder;
@@ -1334,18 +1322,6 @@ package body et_device_query_board is
 
 				-- Ignore the text if it has no content:
 				if not is_empty (text.content) then
-				
-					-- Vectorize the content of the placeholder:
-					text.vectors := vectorize_text (
-						content		=> text.content,
-						size		=> ph.size,
-						--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
-						rotation	=> get_rotation (ph.position),
-						position	=> ph.position.place,
-						mirror		=> MIRROR_NO,
-						line_width	=> ph.line_width,
-						alignment	=> ph.alignment); -- right, bottom
-
 					silkscreen.texts.append (text);
 				end if;
 			end query_placeholder;
@@ -1433,18 +1409,6 @@ package body et_device_query_board is
 
 				-- Ignore the text if it has no content:
 				if not is_empty (text.content) then
-					
-					-- Vectorize the content of the placeholder:
-					-- text.vectors := vectorize_text (
-					-- 	content		=> text.content,
-					-- 	size		=> ph.size,
-					-- 	--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
-					-- 	rotation	=> get_rotation (ph.position),
-					-- 	position	=> ph.position.place,
-					-- 	mirror		=> MIRROR_NO,
-					-- 	line_width	=> ph.line_width,
-					-- 	alignment	=> ph.alignment); -- right, bottom
-
 					assy_doc.texts.append (text);
 				end if;
 			end query_placeholder;

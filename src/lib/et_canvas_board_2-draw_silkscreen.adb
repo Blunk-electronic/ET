@@ -160,78 +160,19 @@ is
 	
 	
 	procedure query_text (c : in pac_silk_texts.cursor) is 
-		text : type_silk_text renames element (c);
-
 		use pac_draw_text;
-
-		
-		-- Draws the given text as it is given:
-		procedure draw_unchanged is begin
-			draw_origin (text.position);
-			draw_vector_text (text.vectors);
-		end draw_unchanged;
-
-		
-		use et_canvas_board_texts;
-		use et_modes.board;
-		use et_canvas_tool;
-
-		use pac_text;
-		
 	begin
-		if is_selected (c, face) then
+		if is_selected (c) then
 			set_highlight_brightness;
-
-			case verb is
-				when VERB_MOVE =>
-					if object_ready then
-						-- Draw a temporarily copy of the original text at
-						-- the place where the tool is pointing at:
-						declare
-							text_tmp	: type_silk_text := text;
-							destination	: type_vector_model;
-							offset		: type_distance_relative;
-						begin
-							case object_tool is
-								when MOUSE =>
-									destination := snap_to_grid (get_mouse_position);
-													  
-								when KEYBOARD =>
-									destination := get_cursor_position;
-							end case;
-
-							-- Get the relative distance of the destination to the original
-							-- text position:
-							offset := get_distance_relative (get_place (text_tmp), destination);
-
-							-- Move the text:
-							move_text (text_tmp, offset);
-							move_vector_text (text_tmp.vectors, offset);
-
-							draw_origin (text_tmp.position);
-
-							-- Draw the text:
-							draw_vector_text (text_tmp.vectors);
-						end;
-					else
-						draw_unchanged;
-					end if;
-
-				when others =>
-					draw_unchanged;
-					
-			end case;
-
-			-- After drawing a selected (highlighted) text, the brightness
-			-- must be set to normal:
+			draw_vector_text_2 (element (c));
 			set_default_brightness;
-
-		else -- not selected
-			draw_unchanged;
+		else
+			draw_vector_text_2 (element (c));
 		end if;
 	end query_text;
 
 
+	
 	
 	procedure query_items (
 		module_name	: in pac_module_name.bounded_string;

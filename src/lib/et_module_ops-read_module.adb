@@ -4965,7 +4965,7 @@ is
 							mirror		=> mirror,
 							line_width	=> board_text.line_width
 							-- CS alignment
-							); 
+							); -- CS remove
 						
 						case face is
 							when TOP =>
@@ -4973,12 +4973,11 @@ is
 									when LAYER_CAT_SILKSCREEN =>
 										pac_silk_texts.append (
 											container	=> module.board.silkscreen.top.texts,
-											new_item	=> (board_text with v_text));
+											new_item	=> (board_text with null record));
 
 									when LAYER_CAT_ASSY =>
 										pac_doc_texts.append (
 											container	=> module.board.assy_doc.top.texts,
-											--new_item	=> (board_text with v_text));
 											new_item	=> (board_text with null record));
 
 									when LAYER_CAT_STOP =>
@@ -4994,12 +4993,11 @@ is
 									when LAYER_CAT_SILKSCREEN =>
 										pac_silk_texts.append (
 											container	=> module.board.silkscreen.bottom.texts,
-											new_item	=> (board_text with v_text));
+											new_item	=> (board_text with null record));
 
 									when LAYER_CAT_ASSY =>
 										pac_doc_texts.append (
 											container	=> module.board.assy_doc.bottom.texts,
-											-- new_item	=> (board_text with v_text));
 											new_item	=> (board_text with null record));
 
 									when LAYER_CAT_STOP =>
