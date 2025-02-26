@@ -73,7 +73,7 @@ use et_canvas_board_2.pac_canvas;
 with et_board_ops;						use et_board_ops;
 with et_board_ops.assy_doc;
 with et_board_ops.silkscreen;
-with et_board_ops.stop_mask;
+with et_board_ops.stopmask;
 with et_board_ops.conductors;
 with et_board_ops.text;
 with et_modes.board;
@@ -938,7 +938,7 @@ package body et_canvas_board_texts is
 	is 
 		use et_board_ops.assy_doc;
 		use et_board_ops.silkscreen;
-		use et_board_ops.stop_mask;
+		use et_board_ops.stopmask;
 		use et_board_ops.conductors;
 
 		doc : pac_doc_texts.list;
@@ -1070,7 +1070,7 @@ package body et_canvas_board_texts is
 
 				when LAYER_CAT_STOP =>
 					
-					et_board_ops.stop_mask.add_text (
+					et_board_ops.stopmask.add_text (
 						module_cursor 	=> active_module,
 						face			=> object_face,
 						text			=> preliminary_text.text,
@@ -1106,7 +1106,7 @@ package body et_canvas_board_texts is
 		procedure finalize is 
 			use et_board_ops.assy_doc;
 			use et_board_ops.silkscreen;
-			use et_board_ops.stop_mask;
+			use et_board_ops.stopmask;
 			use et_board_ops.conductors;
 			use et_modes.board;
 			use et_undo_redo;

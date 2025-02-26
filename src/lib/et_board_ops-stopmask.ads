@@ -41,7 +41,7 @@ with et_text;
 with et_stopmask;				use et_stopmask;
 
 
-package et_board_ops.stop_mask is
+package et_board_ops.stopmask is
 
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
@@ -139,7 +139,7 @@ package et_board_ops.stop_mask is
 		log_threshold	: in type_log_level);
 
 	
-end et_board_ops.stop_mask;
+end et_board_ops.stopmask;
 
 -- Soli Deo Gloria
 

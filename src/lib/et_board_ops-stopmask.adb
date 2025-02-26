@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                   BOARD OPERATIONS / STOP MASK                           --
+--                    BOARD OPERATIONS / STOPMASK                           --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
@@ -37,7 +37,7 @@
 --
 
 
-package body et_board_ops.stop_mask is
+package body et_board_ops.stopmask is
 
 	use pac_generic_modules;
 
@@ -576,7 +576,7 @@ package body et_board_ops.stop_mask is
 	end move_text;
 
 	
-end et_board_ops.stop_mask;
+end et_board_ops.stopmask;
 	
 -- Soli Deo Gloria
 

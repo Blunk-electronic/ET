@@ -66,7 +66,7 @@ with et_board_ops;
 with et_board_ops.devices;
 with et_board_ops.silkscreen;
 with et_board_ops.assy_doc;
-with et_board_ops.stop_mask;
+with et_board_ops.stopmask;
 with et_board_ops.stencil;
 with et_board_ops.keepout;
 with et_board_ops.route_restrict;
@@ -1055,7 +1055,7 @@ is
 	
 	
 	procedure draw_stop_mask is
-		use et_board_ops.stop_mask;
+		use et_board_ops.stopmask;
 
 		-- Extract from the given command the zone arguments (everything after "zone"):
 		-- example command: board demo draw stop top zone line 0 0 line 50 0 line 50 50 line 0 50
@@ -1313,7 +1313,7 @@ is
 
 
 		procedure place_in_stopmask is
-			use et_board_ops.stop_mask;
+			use et_board_ops.stopmask;
 		begin
 			add_text (
 				module_cursor 	=> module_cursor,
@@ -1483,7 +1483,7 @@ is
 
 
 		procedure place_in_stopmask is
-			use et_board_ops.stop_mask;
+			use et_board_ops.stopmask;
 			ph : type_text_placeholder; -- non conductor layers
 		begin
 			ph.meaning := to_meaning (f (12));
@@ -2984,7 +2984,7 @@ is
 	procedure delete_stopmask_object is
 
 		procedure do_it is
-			use et_board_ops.stop_mask;
+			use et_board_ops.stopmask;
 		begin
 			delete_stop (
 				module_name 	=> module,

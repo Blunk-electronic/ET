@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -66,7 +66,7 @@ with et_board_shapes_and_text;
 with et_board_ops;						use et_board_ops;
 with et_board_ops.assy_doc;
 with et_board_ops.silkscreen;
-with et_board_ops.stop_mask;
+with et_board_ops.stopmask;
 with et_board_ops.conductors;
 with et_board_ops.keepout;
 with et_board_ops.stencil;
@@ -494,7 +494,7 @@ package body et_canvas_board_zone is
 				when LAYER_CAT_STOP =>
 
 					-- Add the temporary contour to the board:
-					et_board_ops.stop_mask.draw_zone (
+					et_board_ops.stopmask.draw_zone (
 						module_cursor	=> active_module,
 						zone			=> (c with null record),
 						face			=> object_face,

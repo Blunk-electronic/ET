@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -64,7 +64,7 @@ with et_canvas_board_2;
 with et_board_ops;						use et_board_ops;
 with et_board_ops.assy_doc;
 with et_board_ops.silkscreen;
-with et_board_ops.stop_mask;
+with et_board_ops.stopmask;
 with et_board_ops.stencil;
 with et_board_ops.conductors;
 with et_board_ops.route_restrict;
@@ -593,7 +593,7 @@ package body et_canvas_board_lines is
 					
 				when LAYER_CAT_STOP =>
 					
-					et_board_ops.stop_mask.draw_stop_line (
+					et_board_ops.stopmask.draw_stop_line (
 						module_name	=> pac_generic_modules.key (active_module),
 						face		=> object_face,
 						line		=> (line with object_linewidth),
