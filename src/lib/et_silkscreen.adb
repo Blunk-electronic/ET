@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -61,7 +61,7 @@ package body et_silkscreen is
 		line_cursor	: in pac_silk_lines.cursor)
 		return boolean
 	is begin
-		if element (line_cursor).status.proposed then
+		if is_proposed (element (line_cursor)) then
 			return true;
 		else
 			return false;
@@ -74,7 +74,7 @@ package body et_silkscreen is
 		line_cursor	: in pac_silk_lines.cursor)
 		return boolean
 	is begin
-		if element (line_cursor).status.selected then
+		if is_selected (element (line_cursor)) then
 			return true;
 		else
 			return false;
@@ -144,6 +144,35 @@ package body et_silkscreen is
 
 
 
+	function is_proposed (
+		arc_cursor	: in pac_silk_arcs.cursor)
+		return boolean
+	is begin
+		-- if element (arc_cursor).status.proposed then
+		-- 	return true;
+		-- else
+		-- 	return false;
+		-- end if;
+
+		return false; -- CS
+	end is_proposed;
+	
+
+	function is_selected (
+		arc_cursor	: in pac_silk_arcs.cursor)
+		return boolean
+	is begin
+		-- if element (arc_cursor).status.proposed then
+		-- 	return true;
+		-- else
+		-- 	return false;
+		-- end if;
+
+		return false; -- CS
+	end is_selected;
+
+
+	
 	
 
 	procedure mirror_arcs (
@@ -206,6 +235,36 @@ package body et_silkscreen is
 
 
 
+	function is_proposed (
+		circle_cursor	: in pac_silk_circles.cursor)
+		return boolean
+	is begin
+		-- if element (circle_cursor).status.proposed then
+		-- 	return true;
+		-- else
+		-- 	return false;
+		-- end if;
+
+		return false; -- CS
+	end is_proposed;
+	
+
+	function is_selected (
+		circle_cursor	: in pac_silk_circles.cursor)
+		return boolean
+	is begin
+		-- if element (circle_cursor).status.proposed then
+		-- 	return true;
+		-- else
+		-- 	return false;
+		-- end if;
+
+		return false; -- CS
+	end is_selected;
+
+
+	
+
 
 	procedure mirror_circles (
 		circles	: in out pac_silk_circles.list;
@@ -265,6 +324,23 @@ package body et_silkscreen is
 
 
 
+
+	procedure iterate (
+		zones	: in pac_silk_contours.list;
+		process	: not null access procedure (position : in pac_silk_contours.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_silk_contours.cursor := zones.first;
+	begin
+		while c /= pac_silk_contours.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+
+	
 	procedure mirror_contours (
 		contours	: in out pac_silk_contours.list;
 		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)		

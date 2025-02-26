@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -40,6 +40,32 @@
 package body et_stopmask is
 	
 
+	function is_proposed (
+		line_cursor	: in pac_stop_lines.cursor)
+		return boolean
+	is begin
+		if is_proposed (element (line_cursor)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_proposed;
+
+	
+
+	function is_selected (
+		line_cursor	: in pac_stop_lines.cursor)
+		return boolean
+	is begin
+		if is_selected (element (line_cursor)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+
+
+	
 	procedure mirror_lines (
 		lines	: in out pac_stop_lines.list;
 		axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
@@ -102,6 +128,35 @@ package body et_stopmask is
 
 
 
+	function is_proposed (
+		arc_cursor	: in pac_stop_arcs.cursor)
+		return boolean
+	is begin
+		-- if element (arc_cursor).status.proposed then
+		-- 	return true;
+		-- else
+		-- 	return false;
+		-- end if;
+
+		return false; -- CS
+	end is_proposed;
+	
+
+	function is_selected (
+		arc_cursor	: in pac_stop_arcs.cursor)
+		return boolean
+	is begin
+		-- if element (arc_cursor).status.proposed then
+		-- 	return true;
+		-- else
+		-- 	return false;
+		-- end if;
+
+		return false; -- CS
+	end is_selected;
+
+
+	
 	
 	procedure mirror_arcs (
 		arcs	: in out pac_stop_arcs.list;
@@ -162,6 +217,35 @@ package body et_stopmask is
 	end move_arcs;
 
 
+
+
+
+	function is_proposed (
+		circle_cursor	: in pac_stop_circles.cursor)
+		return boolean
+	is begin
+		-- if element (circle_cursor).status.proposed then
+		-- 	return true;
+		-- else
+		-- 	return false;
+		-- end if;
+
+		return false; -- CS
+	end is_proposed;
+	
+
+	function is_selected (
+		circle_cursor	: in pac_stop_circles.cursor)
+		return boolean
+	is begin
+		-- if element (circle_cursor).status.proposed then
+		-- 	return true;
+		-- else
+		-- 	return false;
+		-- end if;
+
+		return false; -- CS
+	end is_selected;
 
 
 	
@@ -225,6 +309,21 @@ package body et_stopmask is
 	end move_circles;
 
 
+
+
+	procedure iterate (
+		zones	: in pac_stop_contours.list;
+		process	: not null access procedure (position : in pac_stop_contours.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_stop_contours.cursor := zones.first;
+	begin
+		while c /= pac_stop_contours.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+	
 	
 
 	procedure mirror_contours (
@@ -294,7 +393,7 @@ package body et_stopmask is
 		text_cursor	: in pac_stop_texts.cursor)
 		return boolean
 	is begin
-		if element (text_cursor).status.proposed then
+		if is_proposed (element (text_cursor)) then
 			return true;
 		else
 			return false;
@@ -307,7 +406,7 @@ package body et_stopmask is
 		text_cursor	: in pac_stop_texts.cursor)
 		return boolean
 	is begin
-		if element (text_cursor).status.selected then
+		if is_selected (element (text_cursor)) then
 			return true;
 		else
 			return false;

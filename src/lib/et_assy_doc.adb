@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -50,6 +50,7 @@ package body et_assy_doc is
 	end to_string;
 
 
+	
 	procedure iterate (
 		lines	: in pac_doc_lines.list;
 		process	: not null access procedure (position : in pac_doc_lines.cursor);
@@ -64,11 +65,12 @@ package body et_assy_doc is
 	end iterate;
 
 
+	
 	function is_proposed (
 		line_cursor	: in pac_doc_lines.cursor)
 		return boolean
 	is begin
-		if element (line_cursor).status.proposed then
+		if is_proposed (element (line_cursor)) then
 			return true;
 		else
 			return false;
@@ -81,7 +83,7 @@ package body et_assy_doc is
 		line_cursor	: in pac_doc_lines.cursor)
 		return boolean
 	is begin
-		if element (line_cursor).status.selected then
+		if is_selected (element (line_cursor)) then
 			return true;
 		else
 			return false;
@@ -409,7 +411,7 @@ package body et_assy_doc is
 		text_cursor	: in pac_doc_texts.cursor)
 		return boolean
 	is begin
-		if element (text_cursor).status.proposed then
+		if is_proposed (element (text_cursor)) then
 			return true;
 		else
 			return false;
@@ -422,7 +424,7 @@ package body et_assy_doc is
 		text_cursor	: in pac_doc_texts.cursor)
 		return boolean
 	is begin
-		if element (text_cursor).status.selected then
+		if is_selected (element (text_cursor)) then
 			return true;
 		else
 			return false;

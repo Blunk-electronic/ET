@@ -68,6 +68,18 @@ package et_stopmask is
 	package pac_stop_lines is new doubly_linked_lists (type_stop_line);
 	use pac_stop_lines;
 
+
+	-- Returns true if the "proposed-flag" of the given line is set:
+	function is_proposed (
+		line_cursor	: in pac_stop_lines.cursor)
+		return boolean;
+
+	
+	-- Returns true if the "selected-flag" of the given line is set:
+	function is_selected (
+		line_cursor	: in pac_stop_lines.cursor)
+		return boolean;
+
 	
 	-- Mirrors a list of lines along the given axis:
 	procedure mirror_lines (
@@ -98,6 +110,17 @@ package et_stopmask is
 	use pac_stop_arcs;	
 
 
+	-- Returns true if the "proposed-flag" of the given arcis set:
+	function is_proposed (
+		arc_cursor	: in pac_stop_arcs.cursor)
+		return boolean;
+	
+	-- Returns true if the "selected-flag" of the given arc is set:
+	function is_selected (
+		arc_cursor	: in pac_stop_arcs.cursor)
+		return boolean;
+
+	
 	-- Mirrors a list of arcs along the given axis:
 	procedure mirror_arcs (
 		arcs	: in out pac_stop_arcs.list;
@@ -125,6 +148,19 @@ package et_stopmask is
 	package pac_stop_circles is new doubly_linked_lists (type_stop_circle);
 	use pac_stop_circles;
 
+
+
+	-- Returns true if the "proposed-flag" of the given circle is set:
+	function is_proposed (
+		circle_cursor	: in pac_stop_circles.cursor)
+		return boolean;
+	
+	-- Returns true if the "selected-flag" of the given circle is set:
+	function is_selected (
+		circle_cursor	: in pac_stop_circles.cursor)
+		return boolean;
+
+	
 	-- Mirrors a list of circles along the given axis:
 	procedure mirror_circles (
 		circles	: in out pac_stop_circles.list;
@@ -148,6 +184,15 @@ package et_stopmask is
 	package pac_stop_contours is new doubly_linked_lists (type_stop_contour);
 	use pac_stop_contours; -- CS rename to pac_stop_zones
 
+
+	-- Iterates the zones.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		zones	: in pac_stop_contours.list;
+		process	: not null access procedure (position : in pac_stop_contours.cursor);
+		proceed	: not null access boolean);
+
+	
 	-- Mirrors a list of contours along the given axis:
 	procedure mirror_contours (
 		contours	: in out pac_stop_contours.list;

@@ -121,6 +121,17 @@ package et_silkscreen is
 	use pac_silk_arcs;
 
 
+	-- Returns true if the "proposed-flag" of the given arcis set:
+	function is_proposed (
+		arc_cursor	: in pac_silk_arcs.cursor)
+		return boolean;
+	
+	-- Returns true if the "selected-flag" of the given arc is set:
+	function is_selected (
+		arc_cursor	: in pac_silk_arcs.cursor)
+		return boolean;
+	
+
 	-- Mirrors a list of arcs along the given axis:
 	procedure mirror_arcs (
 		arcs	: in out pac_silk_arcs.list;
@@ -146,6 +157,18 @@ package et_silkscreen is
 	
 	package pac_silk_circles is new doubly_linked_lists (type_silk_circle);
 	use pac_silk_circles;
+
+
+	-- Returns true if the "proposed-flag" of the given circle is set:
+	function is_proposed (
+		circle_cursor	: in pac_silk_circles.cursor)
+		return boolean;
+	
+	-- Returns true if the "selected-flag" of the given circle is set:
+	function is_selected (
+		circle_cursor	: in pac_silk_circles.cursor)
+		return boolean;
+
 	
 	-- Mirrors a list of circles along the given axis:
 	procedure mirror_circles (
@@ -170,6 +193,16 @@ package et_silkscreen is
 	type type_silk_contour is new type_contour with null record; -- CS rename to type_silk_zone
 	package pac_silk_contours is new doubly_linked_lists (type_silk_contour);
 	use pac_silk_contours; -- CS rename to pac_silk_zones
+
+
+	-- Iterates the zones.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		zones	: in pac_silk_contours.list;
+		process	: not null access procedure (position : in pac_silk_contours.cursor);
+		proceed	: not null access boolean);
+
+
 	
 
 	-- Mirrors a list of contours along the given axis:
