@@ -561,7 +561,7 @@ package body et_canvas_board_lines is
 					
 				when LAYER_CAT_SILKSCREEN =>
 					
-					et_board_ops.silkscreen.draw_line (
+					et_board_ops.silkscreen.add_line (
 						module_name	=> pac_generic_modules.key (active_module),
 						face		=> object_face,
 						line		=> (line with object_linewidth),

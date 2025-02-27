@@ -673,7 +673,7 @@ is
 				when LINE =>
 					case cmd_field_count is
 						when 11 =>
-							draw_line (
+							add_line (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
 								line			=> (

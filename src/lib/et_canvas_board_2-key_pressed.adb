@@ -395,7 +395,8 @@ is
 
 					when NOUN_SILKSCREEN =>
 						if clarification_pending then
-							et_canvas_board_silkscreen.select_object;
+							null;
+							-- CS et_canvas_board_silkscreen.clarify_object;
 						end if;
 
 					when NOUN_CONDUCTORS =>

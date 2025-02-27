@@ -54,8 +54,10 @@ package et_board_ops.silkscreen is
 	use pac_text_board;
 
 
-	-- Draws a line in the PCB silk_screen.
-	procedure draw_line (
+-- LINES:
+
+	-- Draws a line:
+	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_silk_line;
@@ -72,22 +74,35 @@ package et_board_ops.silkscreen is
 		return pac_silk_lines.list;
 
 
-	-- Modifies that status flag of a line (see package et_object_status):
+
+	-- This composite type is required to distinguish
+	-- between top and bottom lines when lines are searched for:
+	type type_object_line is record
+		face	: type_face := TOP;
+		cursor	: pac_silk_lines.cursor := pac_silk_lines.no_element;
+	end record;
+
+	-- CS same for arcs and circles
+	
+	
+
+	-- Modifies the status flag of a line (see package et_object_status):
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		line_cursor		: in pac_silk_lines.cursor;
+		line			: in type_object_line;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
 
 	-- Sets the proposed-flag of all lines which are
 	-- in the given zone around the given place.
+	-- Adds to count the number of lines that have been found:
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		face			: in type_face;
 		zone			: in type_accuracy; -- the circular area around the place
-		count			: in out natural; -- the number of affected lines
+		count			: in out natural;
 		log_threshold	: in type_log_level);
 
 
@@ -97,6 +112,122 @@ package et_board_ops.silkscreen is
 		log_threshold	: in type_log_level);
 
 
+
+	-- Returns the first line according to the given flag.
+	-- If no line has been found, then the return is 
+	-- TOP and no_element:
+	function get_first_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_line;
+
+	
+	procedure move_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		line			: in type_silk_line;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+
+	-- Deletes the given line in the given module:
+	procedure delete_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		line			: in type_silk_line;
+		log_threshold	: in type_log_level);
+
+
+
+-- ARCS:
+	
+	
+	-- Adds an arc to the assembly documentation.
+	procedure add_arc (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		arc				: in type_silk_arc;
+		log_threshold	: in type_log_level);
+
+
+
+-- CIRCLES:
+	
+	-- Adds a circle to the assembly documentation.
+	procedure add_circle (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;	
+		circle			: in type_silk_circle;
+		log_threshold	: in type_log_level);
+
+
+
+-- ZONES:
+	
+	-- Adds a zone to the silkscreen layer.
+	-- The given zone can consist of a single segment or a
+	-- fragment of a zone contour.
+	-- 1. If the given zone is a single segment or a fragment
+	--    then the procedure serches for already existing zones
+	--    which are incomplete (or open) and tries to append or prepend
+	--    the given zone to one of the existing open zones.
+	-- 2. If this attempt fails, then the given zone is regarded as 
+	--    a new zone.
+	-- 3. If all existing zones are already closed, then the given zone
+	--    is regarded a a new zone and added to the existing zones.
+	procedure add_zone (
+		module_cursor	: in pac_generic_modules.cursor;
+		zone			: in type_silk_contour;
+		face			: in type_face;
+		log_threshold	: in type_log_level);
+
+
+
+	-- This composite type helps to identify a
+	-- segment of a zone by its zone and face:
+	type type_object_segment is record
+		face	: type_face := TOP;
+		zone	: pac_silk_contours.cursor;
+		segment	: pac_contours.pac_segments.cursor;
+	end record;
+
+
+
+	-- Modifies the status flag of a zone segment (see package et_object_status):
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+	
+
+
+	-- Sets the proposed-flag of all line and arc segments 
+	-- of a zone which are
+	-- in the given zone around the given place.
+	-- Adds to count the number of segments that have been found:
+	procedure propose_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		zone			: in type_accuracy; -- the circular area around the place
+		face			: in type_face;
+		count			: in out natural;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Clears the proposed-flag and the selected-flag 
+	-- of all line and arc segments:
+	procedure reset_proposed_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+	
+	
 	
 	-- This composite type is required to distinguish
 	-- between top and bottom lines when lines are seached for:
@@ -104,6 +235,7 @@ package et_board_ops.silkscreen is
 		face	: type_face;
 		cursor	: pac_silk_lines.cursor;
 	end record;
+	-- CS remove
 
 	
 	-- Returns the first line according to the given flag.
@@ -127,15 +259,7 @@ package et_board_ops.silkscreen is
 		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level);
 
-
 	
-	procedure move_line (
-		module_cursor	: in pac_generic_modules.cursor;
-		face			: in type_face;
-		line			: in type_silk_line;
-		point_of_attack	: in type_vector_model;
-		destination		: in type_vector_model;
-		log_threshold	: in type_log_level);
 	
 	
 	-- Draws an arc in the PCB silk_screen.
@@ -185,12 +309,6 @@ package et_board_ops.silkscreen is
 		log_threshold	: in type_log_level);
 
 	
-	-- Deletes the given line in the given module:
-	procedure delete (
-		module_cursor	: in pac_generic_modules.cursor;
-		face			: in type_face;
-		line			: in type_silk_line;
-		log_threshold	: in type_log_level);
 
 
 

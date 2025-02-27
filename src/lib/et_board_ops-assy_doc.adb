@@ -164,6 +164,7 @@ package body et_board_ops.assy_doc is
 
 
 	
+	
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		line			: in type_object_line;
@@ -210,8 +211,7 @@ package body et_board_ops.assy_doc is
 
 		
 	begin
-		log (text => "module " 
-			& to_string (module_cursor)
+		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
 			& to_string (element (line.cursor)) -- CS: log top/bottom			
 			& " / " & to_string (operation),
@@ -228,6 +228,7 @@ package body et_board_ops.assy_doc is
 
 
 
+	
 	
 
 	procedure propose_lines (
@@ -304,8 +305,6 @@ package body et_board_ops.assy_doc is
 
 		log_indentation_up;
 
-		-- count := 0;
-		
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
@@ -1080,8 +1079,6 @@ package body et_board_ops.assy_doc is
 
 		log_indentation_up;
 
-		-- count := 0;
-		
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);

@@ -60,7 +60,7 @@ package et_board_ops.assy_doc is
 -- LINES:
 
 	
-	-- Adds a line to the assembly documentation.
+	-- Adds a line:
 	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;

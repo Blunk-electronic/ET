@@ -85,28 +85,28 @@ package body et_canvas_board_silkscreen is
 
 
 	
-	procedure select_object is 
-		use et_object_status;
-		selected_line : type_line_segment;
-	begin
-		selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
-
-		modify_status (
-			module_cursor	=> active_module, 
-			operation		=> (CLEAR, SELECTED),
-			line_cursor		=> selected_line.cursor, 
-			log_threshold	=> log_threshold + 1);
-		
-		next_proposed_line (active_module, selected_line, log_threshold + 1);
-		
-		modify_status (
-			module_cursor	=> active_module, 
-			operation		=> (SET, SELECTED),
-			line_cursor		=> selected_line.cursor, 
-			log_threshold	=> log_threshold + 1);
-		
-		show_selected_line (selected_line, clarification => true);
-	end select_object;
+-- 	procedure select_object is 
+-- 		use et_object_status;
+-- 		selected_line : type_line_segment;
+-- 	begin
+-- 		selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
+-- 
+-- 		modify_status (
+-- 			module_cursor	=> active_module, 
+-- 			operation		=> (CLEAR, SELECTED),
+-- 			line_cursor		=> selected_line.cursor, 
+-- 			log_threshold	=> log_threshold + 1);
+-- 		
+-- 		next_proposed_line (active_module, selected_line, log_threshold + 1);
+-- 		
+-- 		modify_status (
+-- 			module_cursor	=> active_module, 
+-- 			operation		=> (SET, SELECTED),
+-- 			line_cursor		=> selected_line.cursor, 
+-- 			log_threshold	=> log_threshold + 1);
+-- 		
+-- 		show_selected_line (selected_line, clarification => true);
+-- 	end select_object;
 
 	
 
@@ -130,11 +130,11 @@ package body et_canvas_board_silkscreen is
 
 		-- CS arcs, circles, zones
 		
-		modify_status (
-			module_cursor	=> active_module, 
-			operation		=> (SET, MOVING),
-			line_cursor		=> selected_line.cursor, 
-			log_threshold	=> log_threshold + 1);
+		-- modify_status (
+		-- 	module_cursor	=> active_module, 
+		-- 	operation		=> (SET, MOVING),
+		-- 	line_cursor		=> selected_line.cursor, 
+		-- 	log_threshold	=> log_threshold + 1);
 
 	end set_first_selected_object_moving;
 
@@ -156,7 +156,7 @@ package body et_canvas_board_silkscreen is
 		begin
 			proposed_line := get_first_line (active_module, PROPOSED, log_threshold + 1);
 
-			modify_status (active_module, proposed_line.cursor, (SET, SELECTED), log_threshold + 1);
+			-- modify_status (active_module, proposed_line.cursor, (SET, SELECTED), log_threshold + 1);
 
 			-- If only one line found, then show it in the status bar:
 			if count = 1 then
@@ -351,7 +351,7 @@ package body et_canvas_board_silkscreen is
 
 					-- case object.shape is
 						-- when LINE =>
-							delete (
+							delete_line (
 								module_cursor	=> active_module,
 								face			=> selected_line.face,
 								line			=> element (selected_line.cursor),
