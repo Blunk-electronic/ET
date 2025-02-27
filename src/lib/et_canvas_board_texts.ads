@@ -145,14 +145,11 @@ package et_canvas_board_texts is
 	preliminary_text : type_preliminary_text;
 
 
-	-- Clears preliminary_text.ready.
 	-- Clears out he text properties bar.
-	-- Clears the proposed texts.
+	-- Clears the flags object_ready and resets
+	-- object_tool to MOUSE:
 	procedure reset_preliminary_text;
 
-	
-	-- Calls reset_preliminary_text if the verb is not VERB_PLACE.
-	procedure remove_text_properties;
 	
 
 	-- Builds the box for the text properties and

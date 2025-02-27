@@ -107,6 +107,16 @@ package body et_canvas_board_texts is
 	
 
 
+	procedure reset_preliminary_text is begin
+		reset_preliminary_object;
+		-- CS
+		-- Reset everything of the preliminary text:
+		--preliminary_text := (others => <>);
+		-- or reset the content only ?
+	end reset_preliminary_text;
+
+
+	
 	
 	procedure layer_category_changed (combo : access gtk_combo_box_record'class) is
 		use glib;
@@ -405,30 +415,6 @@ package body et_canvas_board_texts is
 		end if;
 		
 	end button_apply_clicked;
-
-
-
-	
-
-	procedure reset_preliminary_text is begin
-		object_ready := false;
-		object_tool := MOUSE;
-		-- clear_proposed_texts;
-
-		clear_out_properties_box;
-	end reset_preliminary_text;
-
-
-
-	
-	
-	procedure remove_text_properties is 
-		use et_modes.board;
-	begin
-		if verb /= VERB_PLACE then
-			reset_preliminary_text;
-		end if;
-	end remove_text_properties;		
 
 
 
