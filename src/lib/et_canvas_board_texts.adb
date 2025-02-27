@@ -398,7 +398,7 @@ package body et_canvas_board_texts is
 	procedure reset_preliminary_text is begin
 		object_ready := false;
 		object_tool := MOUSE;
-		clear_proposed_texts;
+		-- clear_proposed_texts;
 
 		clear_out_properties_box;
 	end reset_preliminary_text;
@@ -737,149 +737,8 @@ package body et_canvas_board_texts is
 	use pac_stop_texts;
 	use pac_conductor_texts;
 
-	
-	function is_selected (
-		text_cursor	: in pac_doc_texts.cursor;
-		face		: in type_face)
-		return boolean
-	is begin
-		if proposed_texts.is_empty then
-			return false;
-		else
-			if selected_text /= pac_proposed_texts.no_element then
-				declare
-					candidate : type_doc_text renames element (text_cursor);
-					selected : type_proposed_text renames element (selected_text);
-				begin
-					if selected.cat = LAYER_CAT_ASSY then
-						if face = selected.doc_face then
-							if candidate = selected.doc_text then
-								return true;
-							else
-								return false;
-							end if;
-						else
-							return false;
-						end if;
-					else
-						return false;
-					end if;
-				end;
-			else
-				return false;
-			end if;
-		end if;
-	end is_selected;
 
 	
-
-	function is_selected (
-		text_cursor	: in pac_silk_texts.cursor;
-		face		: in type_face)
-		return boolean
-	is begin
-		if proposed_texts.is_empty then
-			return false;
-		else
-			if selected_text /= pac_proposed_texts.no_element then
-				declare
-					candidate : type_silk_text renames element (text_cursor);
-					selected : type_proposed_text renames element (selected_text);
-				begin
-					if selected.cat = LAYER_CAT_SILKSCREEN then
-						if face = selected.silk_face then
-							if candidate = selected.silk_text then
-								return true;
-							else
-								return false;
-							end if;
-						else
-							return false;
-						end if;
-					else
-						return false;
-					end if;
-				end;
-			else
-				return false;
-			end if;
-		end if;
-	end is_selected;
-
-
-	
-	function is_selected (
-		text_cursor	: in pac_stop_texts.cursor;
-		face		: in type_face)
-		return boolean
-	is begin
-		if proposed_texts.is_empty then
-			return false;
-		else
-			if selected_text /= pac_proposed_texts.no_element then
-				declare
-					candidate : type_stop_text renames element (text_cursor);
-					selected : type_proposed_text renames element (selected_text);
-				begin
-					if selected.cat = LAYER_CAT_STOP then
-						if face = selected.stop_face then
-							if candidate = selected.stop_text then
-								return true;
-							else
-								return false;
-							end if;
-						else
-							return false;
-						end if;
-					else
-						return false;
-					end if;
-				end;
-			else
-				return false;
-			end if;
-		end if;
-	end is_selected;
-
-
-	
-	function is_selected (
-		text_cursor	: in pac_conductor_texts.cursor)
-		return boolean
-	is begin
-		if proposed_texts.is_empty then
-			return false;
-		else
-			if selected_text /= pac_proposed_texts.no_element then
-				declare
-					candidate : type_conductor_text renames element (text_cursor);
-					selected : type_proposed_text renames element (selected_text);
-				begin
-					if selected.cat = LAYER_CAT_CONDUCTOR then
-						if candidate = selected.conductor_text then
-							return true;
-						else
-							return false;
-						end if;
-					else
-						return false;
-					end if;
-				end;
-			else
-				return false;
-			end if;
-		end if;
-	end is_selected;
-
-
-	
-	
-	procedure clear_proposed_texts is begin
-		proposed_texts.clear;
-		selected_text := pac_proposed_texts.no_element;
-	end clear_proposed_texts;
-
-
 
 	function get_position (
 		text_cursor : in pac_proposed_texts.cursor)

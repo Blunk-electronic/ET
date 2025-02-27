@@ -207,33 +207,6 @@ package et_canvas_board_texts is
 	selected_text	: pac_proposed_texts.cursor;
 	
 	
-	
-	-- Returns true if the given text matches the text indicated
-	-- by cursor selected_text (see above):
-	function is_selected (
-		text_cursor	: in pac_doc_texts.cursor;
-		face		: in type_face)
-		return boolean;
-
-	function is_selected (
-		text_cursor	: in pac_silk_texts.cursor;
-		face		: in type_face)
-		return boolean;
-
-	function is_selected (
-		text_cursor	: in pac_stop_texts.cursor;
-		face		: in type_face)
-		return boolean;
-
-	function is_selected (
-		text_cursor	: in pac_conductor_texts.cursor)
-		return boolean;
-
-	
-	
-	-- Clears the proposed_texts.
-	-- Resets selected_text:
-	procedure clear_proposed_texts;
 
 
 	-- Returns the position of the given proposed text as string:
