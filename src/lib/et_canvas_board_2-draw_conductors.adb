@@ -74,6 +74,8 @@ procedure draw_conductors is
 
 	use et_pcb;
 	use et_canvas_board_preliminary_object;
+
+
 	
 	-- This procedure draws the text that is being placed in a
 	-- conductor layer.
@@ -83,56 +85,25 @@ procedure draw_conductors is
 	procedure draw_text_being_placed_in_conductors (
 		layer : in et_pcb_stack.type_signal_layer)
 	is 
-		use et_pcb;
-		use et_pcb_stack;
-
-		use et_text;
-		use pac_text;
-
 		use et_canvas_board_texts;
-		use et_board_shapes_and_text;
-		
-		v_text : type_vector_text;
-
-		use et_mirroring;
-		mirror : type_mirror;
-		
-		-- The place where the text shall be placed:
-		point : type_vector_model;
-
-		-- The place where the text origin will be drawn:
-		origin : type_position;
-
 		use pac_draw_text;
-		use et_board_ops;
+
+		point : type_vector_model;
 	begin
 		if verb = VERB_PLACE and noun = NOUN_TEXT and object_ready then
 			
 			if object_layer_category = LAYER_CAT_CONDUCTOR 
 			and object_signal_layer = layer then
 
-				-- Set the point where the text is to be drawn:
+				-- Set the point where the text is to be drawn
+				-- while the operator is moving the tool:
 				point := get_primary_tool_position;
 
-				-- Draw the origin of the text:
-				origin := type_position (to_position (point, zero_rotation));
-				draw_origin (origin);
-
-				mirror := signal_layer_to_mirror (layer, get_deepest_conductor_layer (active_module));
-				
-				-- Vectorize the text on the fly:
-				v_text := vectorize_text (
-					content		=> preliminary_text.text.content,
-					size		=> preliminary_text.text.size,
-					rotation	=> get_rotation (preliminary_text.text.position),
-					position	=> point,
-					mirror		=> mirror,
-					line_width	=> preliminary_text.text.line_width,
-					alignment	=> preliminary_text.text.alignment -- right, bottom
-					);
+				preliminary_text.text.position := 
+					type_position (to_position (point, zero_rotation));
 
 				-- Draw the text:
-				draw_vector_text (v_text);
+				draw_vector_text_2 (preliminary_text.text);
 			end if;
 		end if;
 	end draw_text_being_placed_in_conductors;

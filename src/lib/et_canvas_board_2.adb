@@ -357,17 +357,8 @@ package body et_canvas_board_2 is
 		use et_canvas_board_preliminary_object;
 		use et_canvas_board_texts;
 		use et_modes.board;
-		use et_board_shapes_and_text;
-		use et_pcb;
-		use pac_text;
 
-		v_text : type_vector_text;
-		
-		-- The place where the text shall be placed:
 		point : type_vector_model;
-
-		-- The place where the text origin will be drawn:
-		origin : type_position;
 	begin
 		-- put_line ("draw_text_being_placed");
 		
@@ -375,27 +366,15 @@ package body et_canvas_board_2 is
 
 			if object_layer_category = category and object_face = face then
 
-				-- Set the point where the text is to be drawn:
+				-- Set the point where the text is to be drawn
+				-- while the operator is moving the tool:
 				point := get_primary_tool_position;
 
-				-- Draw the origin of the text:
-				origin := type_position (to_position (point, zero_rotation));
-				draw_origin (origin);
-
-				-- Vectorize the text on the fly:
-				v_text := vectorize_text (
-					content		=> preliminary_text.text.content,
-					size		=> preliminary_text.text.size,
-					rotation	=> get_rotation (preliminary_text.text.position),
-					position	=> point,
-					mirror		=> face_to_mirror (face),
-					line_width	=> preliminary_text.text.line_width,
-					alignment	=> preliminary_text.text.alignment -- right, bottom
-					);
+				preliminary_text.text.position := 
+					type_position (to_position (point, zero_rotation));
 
 				-- Draw the text:
-				pac_draw_text.draw_vector_text (v_text);
-
+				pac_draw_text.draw_vector_text_2 (preliminary_text.text);
 			end if;
 		end if;
 	end draw_text_being_placed;

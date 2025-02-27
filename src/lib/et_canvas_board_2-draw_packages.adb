@@ -1051,8 +1051,9 @@ is
 					text : et_conductor_text.type_conductor_text renames element (c);
 					use pac_draw_text;
 				begin
-					draw_origin ((text.position.place, zero_rotation));
-					draw_vector_text (text.vectors);
+					-- draw_origin ((text.position.place, zero_rotation));
+					-- draw_vector_text (text.vectors);
+					draw_vector_text_2 (text);
 				end query_text;
 
 				

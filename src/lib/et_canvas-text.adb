@@ -353,47 +353,6 @@ package body et_canvas.text is
 
 
 
-	
-	
-	procedure draw_vector_text (
-		text	: in pac_text.type_vector_text) 
-	is
-		use pac_text;
-		use pac_character_lines;
-
-		-- Drawing a vector-text is just a matter of
-		-- drawing many lines. So we iterate the given
-		-- lines of the text and draw them one by one.
-		
-		procedure query_line (
-			c : in pac_character_lines.cursor)
-		is
-			-- The line of a character must now be
-			-- converted to a type_line:
-			lf : type_character_line renames element (c);
-			lc : type_line;
-		begin
-			lc.start_point := to_point (lf.start_point);
-			lc.end_point := to_point (lf.end_point);
-
-			draw_line (
-				line	=> lc,
-				width	=> 0.0); -- don't care
-
-		end query_line;
-		
-
-	begin
-		-- set_line_join (context.cr, cairo_line_join_miter); -- CS
-
-		-- The linewidth applies to all character lines:
-		set_linewidth (get_linewidth (text));
-		
-		iterate (text, query_line'access);
-
-		-- Do a final stroke:
-		stroke;
-	end draw_vector_text;
 
 
 

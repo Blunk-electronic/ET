@@ -67,6 +67,7 @@ with gtk.text_iter;
 --with gtk.menu_shell;
 
 with et_generic_module;					use et_generic_module;
+with et_pcb;
 with et_canvas_board_2;
 use et_canvas_board_2.pac_canvas;
 
@@ -201,6 +202,7 @@ package body et_canvas_board_texts is
 		iter : constant gtk_tree_iter := combo.get_active_iter;
 
 		item_text : glib.values.gvalue;
+		
 	begin
 		-- Get the actual text of the entry (column is 0):
 		gtk.tree_model.get_value (model, iter, 0, item_text);
@@ -208,7 +210,11 @@ package body et_canvas_board_texts is
 		object_signal_layer := to_signal_layer (values.get_string (item_text));
 		--put_line ("signal layer " & to_string (object_signal_layer));
 
-		-- Auto-enable the affected conductor layer:
+		-- Set the mirror mode according to the selected signal layer:
+		preliminary_text.text.mirror := et_pcb.signal_layer_to_mirror (
+			object_signal_layer, get_deepest_conductor_layer (active_module));
+		
+		-- Auto-enable the selected conductor layer:
 		enable_conductor (object_signal_layer);
 		
 		et_canvas_board_2.redraw_board;
