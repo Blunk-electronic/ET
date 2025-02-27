@@ -121,30 +121,32 @@ is
 	procedure query_placeholder (
 		c : in pac_text_placeholders.cursor)
 	is 
-		-- CS use renames
-		use et_pcb;
 		use pac_text;
-		v_text : type_vector_text;
-
 		use pac_draw_text;
+
+		use et_text;
+		content : pac_text_content.bounded_string;
+
+		t : type_text_fab_with_content;
 	begin
-		draw_origin (element (c).position);
+		-- Build the final content to be drawn:
+		content := to_placeholder_content (active_module, element (c).meaning);
+		-- put_line ("content " & to_string (content));
 
-		-- Vectorize the text:
-		v_text := vectorize_text (
-			content		=> to_placeholder_content (active_module, element (c).meaning),
-			size		=> element (c).size,
-			rotation	=> get_rotation (element (c).position),
-			position	=> element (c).position.place,
-			mirror		=> face_to_mirror (face),
-			line_width	=> element (c).line_width,
-			alignment	=> element (c).alignment -- right, bottom
-			);
+		-- Build the text to be drawn:
+		t := (type_text_fab (element (c)) with content);
 
-		-- Draw the text:
-		draw_vector_text (v_text);
-
+		-- Draw the placeholder highlighted if it is selected:
+		if is_selected (c) then
+			set_highlight_brightness;
+			draw_vector_text_2 (t);
+			set_default_brightness;
+		else
+			-- not selected
+			draw_vector_text_2 (t);
+		end if;
 	end query_placeholder;
+
 
 
 	

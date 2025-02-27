@@ -634,7 +634,7 @@ Texts and Placeholders
 
 	.. code-block::
 		
-		place placeholder stop top 0.15 1 20 5 0 partcode
+		place placeholder assy top 0.15 1 20 5 0 partcode
 
 
 	.. code-block::
