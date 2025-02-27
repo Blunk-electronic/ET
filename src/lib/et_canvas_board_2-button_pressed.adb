@@ -98,8 +98,8 @@ is
 					when NOUN_OUTLINE =>
 						et_canvas_board_outline.move_object (MOUSE, snap_point);
 
-					when NOUN_TEXT =>
-						et_canvas_board_texts.move_text (MOUSE, snap_point);
+					-- when NOUN_TEXT =>
+					-- 	et_canvas_board_texts.move_text (MOUSE, snap_point);
 						
 					when NOUN_VIA =>
 						et_canvas_board_vias.move_via (MOUSE, snap_point);
@@ -253,10 +253,10 @@ is
 							et_canvas_board_outline.select_segment;
 						end if;
 						
-					when NOUN_TEXT =>
-						if clarification_pending then
-							et_canvas_board_texts.select_text;
-						end if;
+					-- when NOUN_TEXT =>
+					-- 	if clarification_pending then
+					-- 		et_canvas_board_texts.select_text;
+					-- 	end if;
 						
 					when NOUN_VIA =>
 						if clarification_pending then

@@ -87,8 +87,6 @@ with et_exceptions;						use et_exceptions;
 
 with et_undo_redo;
 with et_commit;
-with et_object_status;
-with et_keywords;						use et_keywords;
 
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 
@@ -179,6 +177,8 @@ package body et_canvas_board_texts is
 	end face_changed;
 
 
+
+
 	
 	
 	procedure signal_layer_changed (combo : access gtk_combo_box_record'class) is
@@ -207,6 +207,8 @@ package body et_canvas_board_texts is
 
 
 	
+
+	
 	procedure apply_size (text : in string) is
 		size : type_text_size;
 	begin
@@ -219,6 +221,8 @@ package body et_canvas_board_texts is
 	end apply_size;
 
 
+
+	
 	
 	
 	function size_key_pressed (
@@ -248,6 +252,7 @@ package body et_canvas_board_texts is
 		return event_handled;
 	end size_key_pressed;
 
+
 	
 
 	
@@ -257,6 +262,7 @@ package body et_canvas_board_texts is
 		--put_line ("size " & text);
 		apply_size (text);
 	end size_entered;
+
 
 	
 
@@ -273,6 +279,7 @@ package body et_canvas_board_texts is
 	end apply_line_width;
 
 
+	
 	
 	
 	function line_width_key_pressed (
@@ -305,6 +312,7 @@ package body et_canvas_board_texts is
 	
 
 	
+	
 	procedure line_width_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
 	begin
@@ -313,6 +321,8 @@ package body et_canvas_board_texts is
 	end line_width_entered;
 
 
+
+	
 	
 	procedure apply_rotation (text : in string) is
 		rotation : type_rotation_model;
@@ -325,6 +335,8 @@ package body et_canvas_board_texts is
 		--put_line (to_string (preliminary_text.text.position));
 		et_canvas_board_2.redraw_board;
 	end apply_rotation;
+
+
 
 	
 
@@ -359,12 +371,14 @@ package body et_canvas_board_texts is
 
 	
 	
+	
 	procedure rotation_entered (combo_entry : access gtk_entry_record'class) is 
 		text : constant string := get_text (combo_entry);
 	begin
 		--put_line ("rotation " & text);
 		apply_rotation (text);
 	end rotation_entered;
+
 
 
 	
@@ -393,6 +407,7 @@ package body et_canvas_board_texts is
 	end button_apply_clicked;
 
 
+
 	
 
 	procedure reset_preliminary_text is begin
@@ -402,6 +417,8 @@ package body et_canvas_board_texts is
 
 		clear_out_properties_box;
 	end reset_preliminary_text;
+
+
 
 	
 	
@@ -416,6 +433,7 @@ package body et_canvas_board_texts is
 
 
 	
+	
 
 	procedure show_text_properties is
 		use gtk.cell_renderer_text;
@@ -425,7 +443,6 @@ package body et_canvas_board_texts is
 		use gtk.text_view;
 
 		use et_canvas_board_2.pac_canvas;
-
 		
 		
 		procedure make_combo_category is
@@ -731,172 +748,8 @@ package body et_canvas_board_texts is
 	end show_text_properties;
 
 
-
-	use pac_doc_texts;
-	use pac_silk_texts;
-	use pac_stop_texts;
-	use pac_conductor_texts;
-
-
-	
-
-	function get_position (
-		text_cursor : in pac_proposed_texts.cursor)
-		return string
-	is
-		text : type_proposed_text renames element (text_cursor);
-		separator : constant string := ", ";
-	begin
-		case text.cat is
-			when LAYER_CAT_ASSY =>
-				return keyword_face & to_string (text.doc_face) & separator 
-					& to_string (get_position (text.doc_text));
-
-			when LAYER_CAT_SILKSCREEN =>
-				return keyword_face & to_string (text.silk_face) & separator 
-					& to_string (get_position (text.silk_text));
-
-			when LAYER_CAT_STOP =>
-				return keyword_face & to_string (text.stop_face) & separator
-					& to_string (get_position (text.stop_text));
-
-			when LAYER_CAT_CONDUCTOR =>
-				return "signal layer " & to_string (text.conductor_text.layer) & separator &
-					to_string (get_position (text.conductor_text));
-
-			when others => 
-				return ""; 
-				-- CS raise exception ?
-				
-		end case;
-	end get_position;
-
-
-	
-				
-	procedure select_text is 
-		position : type_position;
-	begin
-		if next (selected_text) /= pac_proposed_texts.no_element then
-			next (selected_text);
-		else
-			selected_text := proposed_texts.first;
-		end if;
-
-		-- show the position of the selected text in the status bar
-		set_status ("selected text: " & get_position (selected_text)
-			& ". " & status_next_object_clarification);
-
-	end select_text;
-	
-
 	
 	
-	procedure find_texts (
-		point : in type_vector_model)
-	is 
-		use et_board_ops.assy_doc;
-		use et_board_ops.silkscreen;
-		use et_board_ops.stopmask;
-		use et_board_ops.conductors;
-
-		doc : pac_doc_texts.list;
-		silk : pac_silk_texts.list;
-		stop : pac_stop_texts.list;
-		conductors : pac_conductor_texts.list;
-
-		face : type_face := TOP;
-		
-		procedure query_doc_text (text : in pac_doc_texts.cursor) is begin
-			proposed_texts.append ((
-				cat			=> LAYER_CAT_ASSY,
-				doc_face	=> face,
-				doc_text	=> element (text)));
-		end query_doc_text;
-
-		procedure query_silk_text (text : in pac_silk_texts.cursor) is begin
-			proposed_texts.append ((
-				cat			=> LAYER_CAT_SILKSCREEN,
-				silk_face	=> face,
-				silk_text	=> element (text)));
-		end query_silk_text;
-		
-		procedure query_stop_text (text : in pac_stop_texts.cursor) is begin
-			proposed_texts.append ((
-				cat			=> LAYER_CAT_STOP,
-				stop_face	=> face,
-				stop_text	=> element (text)));
-		end query_stop_text;
-
-		
-		procedure collect is begin
-			doc := get_texts (active_module, face, point, 
-					get_catch_zone (et_canvas_board_2.catch_zone),
-					log_threshold + 1);
-			
-			doc.iterate (query_doc_text'access);
-
-			silk := get_texts (active_module, face, point, 
-					get_catch_zone (et_canvas_board_2.catch_zone),
-					log_threshold + 1);
-			
-			silk.iterate (query_silk_text'access);
-			
-			stop := get_texts (active_module, face, point, 
-					get_catch_zone (et_canvas_board_2.catch_zone),
-					log_threshold + 1);
-			
-			stop.iterate (query_stop_text'access);
-		end collect;
-
-		
-		procedure query_conductor_text (text : in pac_conductor_texts.cursor) is begin
-			proposed_texts.append ((
-				cat				=> LAYER_CAT_CONDUCTOR,
-				conductor_text	=> element (text)));			   
-		end query_conductor_text;
-
-		
-	begin
-		log (text => "locating texts ...", level => log_threshold);
-		log_indentation_up;
-
-		-- Collect all texts in the vicinity of the given point
-		-- and transfer them to the list proposed_texts:
-		face := TOP;
-		collect;
-		face := BOTTOM;
-		collect;
-		
-		conductors := get_texts (active_module, point, 
-			get_catch_zone (et_canvas_board_2.catch_zone),
-			log_threshold + 1);
-		
-		conductors.iterate (query_conductor_text'access);
-		
-		-- evaluate the number of vias found here:
-		case proposed_texts.length is
-			when 0 =>
-				reset_request_clarification;
-				reset_preliminary_text;
-				
-			when 1 =>
-				object_ready := true;
-				selected_text := proposed_texts.first;
-				reset_request_clarification;
-				
-			when others =>
-				--log (text => "many objects", level => log_threshold + 2);
-				set_request_clarification;
-
-				-- preselect the text
-				selected_text := proposed_texts.first;
-		end case;
-		
-		log_indentation_down;
-	end find_texts;
-
-
 	
 	
 -- PLACE:
@@ -948,137 +801,6 @@ package body et_canvas_board_texts is
 			end case;
 		end if;	
 	end place_text;
-
-
-
-	
-	
--- MOVE:
-
-	procedure move_text (
-		tool	: in type_tool;
-		point	: in type_vector_model)
-	is 
-
-		-- Assigns the final position after the move to the selected text.
-		-- Resets variable preliminary_text:
-		procedure finalize is 
-			use et_board_ops.assy_doc;
-			use et_board_ops.silkscreen;
-			use et_board_ops.stopmask;
-			use et_board_ops.conductors;
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-		begin
-			log (text => "finalizing move ...", level => log_threshold);
-			log_indentation_up;
-
-			if selected_text /= pac_proposed_texts.no_element then
-
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-				
-				declare
-					text : type_proposed_text renames element (selected_text);
-				begin
-					case text.cat is
-						when LAYER_CAT_ASSY =>
-	
-							move_text (
-								module_cursor	=> active_module,
-								face			=> text.doc_face,
-								text			=> text.doc_text,
-								coordinates		=> ABSOLUTE,
-								point			=> point,
-								log_threshold	=> log_threshold);
-
-							
-						when LAYER_CAT_SILKSCREEN =>
-	
-							move_text (
-								module_cursor	=> active_module,
-								face			=> text.silk_face,
-								text			=> text.silk_text,
-								coordinates		=> ABSOLUTE,
-								point			=> point,
-								log_threshold	=> log_threshold);
-	
-	
-						when LAYER_CAT_STOP =>
-	
-							move_text (
-								module_cursor	=> active_module,
-								face			=> text.stop_face,
-								text			=> text.stop_text,
-								coordinates		=> ABSOLUTE,
-								point			=> point,
-								log_threshold	=> log_threshold);
-	
-	
-						when LAYER_CAT_CONDUCTOR =>
-	
-							move_text (
-								module_cursor	=> active_module,
-								text			=> text.conductor_text,
-								coordinates		=> ABSOLUTE,
-								point			=> point,
-								log_threshold	=> log_threshold);
-
-							
-						when others => null; -- CS raise exception ?
-					end case;
-				end;
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
-				
-			else
-				log (text => "nothing to do", level => log_threshold);
-			end if;
-				
-			log_indentation_down;			
-			set_status (status_move_text);
-			reset_preliminary_text;
-		end finalize;
-
-
-	begin
-		-- Initially the preliminary_text is not ready.
-		if not object_ready then
-
-			-- Set the tool being used:
-			object_tool := tool;
-			
-			if not clarification_pending then
-				-- Locate all texts in the vicinity of the given point:
-				find_texts (point);
-				
-				-- NOTE: If many texts have been found, then
-				-- clarification is now pending.
-
-				-- If find_texts has found only one text
-				-- then the flag preliminary_text.read is set true.
-
-			else
-				-- Here the clarification procedure ends.
-				-- A text has been selected (indicated by select_text)
-				-- via procedure select_text.
-				-- By setting object_ready, the selected
-				-- text will be drawn at the tool position
-				-- when texts are drawn on the canvas.
-				-- Furtheron, on the next call of this procedure
-				-- the selected text will be assigned its final position.
-				object_ready := true;
-				reset_request_clarification;
-			end if;
-			
-		else
-			-- Finally move the selected text:
-			finalize;
-		end if;
-	end move_text;
-
 	
 	
 end et_canvas_board_texts;

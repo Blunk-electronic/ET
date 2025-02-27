@@ -332,9 +332,9 @@ is
 				noun := NOUN_VIA;
 				set_status (et_canvas_board_vias.status_move_via);
 		
-			when key_noun_text =>
-				noun := NOUN_TEXT;
-				set_status (et_canvas_board_texts.status_move_text);
+			-- when key_noun_text =>
+			-- 	noun := NOUN_TEXT;
+			-- 	set_status (et_canvas_board_texts.status_move_text);
 
 
 				
@@ -365,8 +365,8 @@ is
 					when NOUN_OUTLINE =>
 						et_canvas_board_outline.move_object (KEYBOARD, point);
 						
-					when NOUN_TEXT =>
-						et_canvas_board_texts.move_text (KEYBOARD, point);
+					-- when NOUN_TEXT =>
+					-- 	et_canvas_board_texts.move_text (KEYBOARD, point);
 						
 					when NOUN_VIA =>
 						et_canvas_board_vias.move_via (KEYBOARD, point);
@@ -428,10 +428,10 @@ is
 							et_canvas_board_outline.select_segment;
 						end if;
 						
-					when NOUN_TEXT =>
-						if clarification_pending then
-							et_canvas_board_texts.select_text;
-						end if;
+					-- when NOUN_TEXT =>
+					-- 	if clarification_pending then
+					-- 		et_canvas_board_texts.select_text;
+					-- 	end if;
 						
 					when NOUN_VIA =>
 						if clarification_pending then

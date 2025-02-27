@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -38,9 +38,6 @@
 -- DESCRIPTION:
 -- 
 
-with ada.containers;   			       	use ada.containers;
-with ada.containers.indefinite_doubly_linked_lists;
-
 with glib;								use glib;
 
 with gtk.box;							use gtk.box;
@@ -49,9 +46,6 @@ with gtk.text_view;
 with gtk.combo_box;						use gtk.combo_box;
 with gtk.combo_box_text;				use gtk.combo_box_text;
 with gtk.button;						use gtk.button;
-
-with ada.containers;					use ada.containers;
-with ada.containers.vectors;
 
 with et_canvas;
 with et_canvas_tool;					use et_canvas_tool;
@@ -167,73 +161,6 @@ package et_canvas_board_texts is
 	procedure show_text_properties;
 
 
-	
-
-	-- When texts are proposed, we classify them by
-	-- their layer category and face:
-	type type_proposed_text (cat : type_layer_category) is record
-		case cat is
-			when LAYER_CAT_ASSY =>
-				doc_face	: type_face;
-				doc_text	: type_doc_text; -- the text candidate itself
-	
-			when LAYER_CAT_SILKSCREEN =>
-				silk_face	: type_face;
-				silk_text	: type_silk_text;  -- the text candidate itself
-
-			when LAYER_CAT_STOP =>
-				stop_face	: type_face;
-				stop_text	: type_stop_text;  -- the text candidate itself
-
-			when LAYER_CAT_CONDUCTOR =>
-				conductor_text	: type_conductor_text;  -- the text candidate itself
-
-			when others => null;
-		end case;
-	end record;
-
-	
-	-- All the proposed texts are collected via a list:
-	package pac_proposed_texts is new indefinite_doubly_linked_lists (type_proposed_text);
-	use pac_proposed_texts;
-
-	
-	-- Here we store the proposed texts:
-	proposed_texts	: pac_proposed_texts.list;
-
-	-- A selected text among the proposed texts is held here.
-	-- After clarification (among the proposed texts),
-	-- this cursor points to the selected text candidate:
-	selected_text	: pac_proposed_texts.cursor;
-	
-	
-
-
-	-- Returns the position of the given proposed text as string:
-	function get_position (
-		text_cursor : in pac_proposed_texts.cursor)
-		return string;
-
-	
-
-	-- Advances the cursors in variable selected_text 
-	-- on each call of this procedure.
-	procedure select_text;
-
-
-	-- Locates texts in the vicinity of the given point.
-	-- Depending on how many texts have been found, the behaviour is:
-	-- - If only one text found, then it is selected and 
-	--   the flag preliminary_text.ready will be set.
-	--   This causes the selected text to be drawn at the tool position.
-	-- - If more than one text found, then clarification is requested.
-	--   No text will be moved.
-	--   The next call of this procedure sets preliminary_text.ready
-	--   so that the selected text will be drawn at the tool position.
-	--   The next call of this procedure assigns the final position 
-	--   to the selected_text:
-	procedure find_texts (
-		point : in type_vector_model);
 
 	
 	
@@ -253,22 +180,6 @@ package et_canvas_board_texts is
 	-- Places the text at the given point:
 	procedure place_text (
 		point : in type_vector_model);
-
-	
-
--- MOVE:
-
-	status_move_text : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to move text." 
-		& status_hint_for_abort;
-
-	
-	procedure move_text (
-		tool	: in type_tool;
-		point	: in type_vector_model);				   
 
 	
 	
