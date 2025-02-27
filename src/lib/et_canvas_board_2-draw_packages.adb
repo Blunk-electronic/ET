@@ -276,7 +276,7 @@ is
 				procedure query_text (c : in pac_silk_texts.cursor) is 
 					use pac_draw_text;
 				begin
-					draw_vector_text_2 (element (c));
+					draw_vector_text (element (c));
 				end query_text;
 
 				
@@ -398,7 +398,7 @@ is
 				procedure query_text (c : in pac_doc_texts.cursor) is 
 					use pac_draw_text;
 				begin
-					draw_vector_text_2 (element (c));
+					draw_vector_text (element (c));
 				end query_text;
 
 				
@@ -587,7 +587,7 @@ is
 				procedure query_text (c : pac_stop_texts.cursor) is
 					use pac_draw_text;
 				begin
-					draw_vector_text_2 (element (c));
+					draw_vector_text (element (c));
 				end query_text;
 
 				
@@ -1048,12 +1048,9 @@ is
 
 				
 				procedure query_text (c : in pac_conductor_texts.cursor) is
-					text : et_conductor_text.type_conductor_text renames element (c);
 					use pac_draw_text;
 				begin
-					-- draw_origin ((text.position.place, zero_rotation));
-					-- draw_vector_text (text.vectors);
-					draw_vector_text_2 (text);
+					draw_vector_text (element (c));
 				end query_text;
 
 				

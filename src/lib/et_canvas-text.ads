@@ -129,7 +129,7 @@ package et_canvas.text is
 
 	
 	-- Draws a text. Draws the origin and vectorizes the text:
-	procedure draw_vector_text_2 (
+	procedure draw_vector_text (
 		text	: in pac_text.type_text_fab_with_content'class);
 	
 	

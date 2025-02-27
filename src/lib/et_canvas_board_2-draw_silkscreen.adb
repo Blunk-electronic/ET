@@ -149,11 +149,11 @@ is
 		-- Draw the placeholder highlighted if it is selected:
 		if is_selected (c) then
 			set_highlight_brightness;
-			draw_vector_text_2 (t);
+			draw_vector_text (t);
 			set_default_brightness;
 		else
 			-- not selected
-			draw_vector_text_2 (t);
+			draw_vector_text (t);
 		end if;
 	end query_placeholder;
 
@@ -166,10 +166,10 @@ is
 	begin
 		if is_selected (c) then
 			set_highlight_brightness;
-			draw_vector_text_2 (element (c));
+			draw_vector_text (element (c));
 			set_default_brightness;
 		else
-			draw_vector_text_2 (element (c));
+			draw_vector_text (element (c));
 		end if;
 	end query_text;
 

@@ -357,7 +357,7 @@ package body et_canvas.text is
 
 
 	
-	procedure draw_vector_text_2 (
+	procedure draw_vector_text (
 		text	: in pac_text.type_text_fab_with_content'class) 
 	is
 		use pac_text;
@@ -419,7 +419,7 @@ package body et_canvas.text is
 
 		-- Do a final stroke:
 		stroke;
-	end draw_vector_text_2;
+	end draw_vector_text;
 
 
 

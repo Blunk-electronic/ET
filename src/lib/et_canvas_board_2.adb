@@ -374,7 +374,7 @@ package body et_canvas_board_2 is
 					type_position (to_position (point, zero_rotation));
 
 				-- Draw the text:
-				pac_draw_text.draw_vector_text_2 (preliminary_text.text);
+				pac_draw_text.draw_vector_text (preliminary_text.text);
 			end if;
 		end if;
 	end draw_text_being_placed;

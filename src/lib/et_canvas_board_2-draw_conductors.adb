@@ -103,7 +103,7 @@ procedure draw_conductors is
 					type_position (to_position (point, zero_rotation));
 
 				-- Draw the text:
-				draw_vector_text_2 (preliminary_text.text);
+				draw_vector_text (preliminary_text.text);
 			end if;
 		end if;
 	end draw_text_being_placed_in_conductors;
@@ -500,11 +500,11 @@ procedure draw_conductors is
 			-- Draw the placeholder highlighted if it is selected:
 			if is_selected (c) then
 				set_color_conductor (current_layer, BRIGHT);				
-				draw_vector_text_2 (t);
+				draw_vector_text (t);
 				set_color_conductor (current_layer, NORMAL);
 			else
 				-- not selected
-				draw_vector_text_2 (t);
+				draw_vector_text (t);
 			end if;
 			
 		end if;
@@ -525,14 +525,14 @@ procedure draw_conductors is
 				-- The selected text must be drawn highlighted:
 				set_color_conductor (current_layer, BRIGHT);
 
-				draw_vector_text_2 (element (c));
+				draw_vector_text (element (c));
 
 				-- After drawing a selected (highlighted) text, the brightness
 				-- must be set back to normal:
 				set_color_conductor (current_layer, NORMAL);
 
 			else -- not selected
-				draw_vector_text_2 (element (c));
+				draw_vector_text (element (c));
 			end if;
 			
 		end if;
