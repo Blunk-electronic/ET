@@ -2835,6 +2835,29 @@ package body et_board_ops.silkscreen is
 
 	
 
+	procedure reset_proposed_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor) &
+			" resetting proposed objects",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		reset_proposed_lines (module_cursor, log_threshold + 1);
+		-- CS arcs, circles
+		
+		reset_proposed_texts (module_cursor, log_threshold + 1);
+		reset_proposed_placeholders (module_cursor, log_threshold + 1);
+		reset_proposed_segments (module_cursor, log_threshold + 1);
+
+		log_indentation_down;
+	end reset_proposed_objects;
+
+
+	
+	
 
 
 	procedure delete_object (
@@ -2887,29 +2910,6 @@ package body et_board_ops.silkscreen is
 		log_indentation_down;
 	end delete_object;
 	
-
-
-	
-	procedure reset_proposed_objects (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)
-	is begin
-		log (text => "module " & to_string (module_cursor) &
-			" resetting proposed objects",
-			level => log_threshold);
-
-		log_indentation_up;
-
-		reset_proposed_lines (module_cursor, log_threshold + 1);
-		-- CS arcs, circles
-		
-		reset_proposed_texts (module_cursor, log_threshold + 1);
-		reset_proposed_placeholders (module_cursor, log_threshold + 1);
-		reset_proposed_segments (module_cursor, log_threshold + 1);
-
-		log_indentation_down;
-	end reset_proposed_objects;
-
 
 
 	
