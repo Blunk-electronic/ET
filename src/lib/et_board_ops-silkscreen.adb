@@ -2303,7 +2303,616 @@ package body et_board_ops.silkscreen is
 
 	
 
+	function get_count (
+		objects : in pac_objects.list)
+		return natural
+	is begin
+		return natural (objects.length);
+	end get_count;
+	
+	
+	
+	
 
+	function get_first_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object
+	is
+		result_category 	: type_object_category := CAT_VOID;
+		result_segment  	: type_object_segment;
+		result_line			: type_object_line;
+		result_text			: type_object_text;
+		result_placeholder	: type_object_placeholder;
+
+		use pac_contours;
+		use pac_segments;
+
+		use pac_silk_lines;
+		use pac_silk_texts;
+		use pac_text_placeholders;
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first object / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		
+		-- SEARCH FOR A LINE:
+		
+		-- If a line has been found, then go to the end of this procedure:
+		result_line := get_first_line (module_cursor, flag, log_threshold + 1);
+
+		if result_line.cursor /= pac_silk_lines.no_element then
+			-- A line has been found.
+			log (text => to_string (element (result_line.cursor))
+				 & " face " & to_string (result_line.face),
+				 level => log_threshold + 1);
+			
+			result_category := CAT_LINE;
+		end if;
+
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
+		
+		-- Now we search for an arc.
+		-- If there is one, then go to the end of this procedure:
+		-- CS
+
+
+		-- Now we search for an circle.
+		-- If there is one, then go to the end of this procedure:
+		-- CS
+
+
+		-- SEARCH FOR A SEGMENT OF A ZONE:
+		
+		-- If there is one, then go to the end  of this procedure:
+		result_segment := get_first_segment (module_cursor, flag, log_threshold + 1);
+
+		if result_segment.segment /= pac_segments.no_element then
+			-- A segment has been found.
+			log (text => to_string (result_segment.segment)
+					& " face " & to_string (result_segment.face),
+					level => log_threshold + 1);
+			
+			result_category := CAT_ZONE_SEGMENT;
+		end if;
+
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
+
+
+		-- SEARCH FOR A TEXT:
+		
+		result_text := get_first_text (module_cursor, flag, log_threshold + 1);
+		
+		if result_text.cursor /= pac_silk_texts.no_element then
+			-- A text has been found.
+			log (text => to_string (result_text.cursor)
+					& " face " & to_string (result_text.face),
+					level => log_threshold + 1);
+			
+			result_category := CAT_TEXT;
+		end if;
+
+
+		
+		-- SEARCH FOR A PLACEHOLDER:
+
+		result_placeholder := get_first_placeholder (module_cursor, flag, log_threshold + 1);
+		
+		if result_placeholder.cursor /= pac_text_placeholders.no_element then
+			-- A placeholder has been found.
+			log (text => to_string (result_placeholder.cursor)
+					& " face " & to_string (result_placeholder.face),
+					level => log_threshold + 1);
+			
+			result_category := CAT_PLACEHOLDER;
+		end if;
+
+
+		
+		-- If still nothing has been found then the category is CAT_VOID.
+		
+
+	<<end_of_search>>
+		
+		log_indentation_down;
+
+		case result_category is
+			when CAT_VOID =>
+				return (cat => CAT_VOID);
+
+			when CAT_LINE =>
+				return (CAT_LINE, result_line);
+
+			when CAT_ZONE_SEGMENT =>
+				return (CAT_ZONE_SEGMENT, result_segment);
+
+			when CAT_TEXT =>
+				return (CAT_TEXT, result_text);
+
+			when CAT_PLACEHOLDER =>
+				return (CAT_PLACEHOLDER, result_placeholder);
+				
+		end case;
+	end get_first_object;
+
+
+
+	
+	
+	function get_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return pac_objects.list
+	is
+		use pac_objects;
+		result : pac_objects.list;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_silk_contours;
+			zone_cursor : pac_silk_contours.cursor;
+			face : type_face := TOP;
+			
+			use pac_silk_lines;
+			line_cursor : pac_silk_lines.cursor;
+
+			-- CS arcs, circles
+			
+			use pac_silk_texts;
+			text_cursor : pac_silk_texts.cursor;
+
+
+			use pac_text_placeholders;
+			placeholder_cursor : pac_text_placeholders.cursor;
+
+			
+			
+			procedure query_zone (zone : in type_silk_contour) is
+				use pac_contours;
+				use pac_segments;
+				-- CS test circular flag !!
+				segment_cursor : pac_segments.cursor := zone.contour.segments.first;
+				
+				procedure query_segment (segment : in type_segment) is 
+
+					procedure collect is begin
+						result.append ((
+							cat		=> CAT_ZONE_SEGMENT,
+							segment	=> (face, zone_cursor, segment_cursor)));
+
+						log (text => to_string (segment), level => log_threshold + 2);
+					end collect;
+
+				begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (segment) then
+								collect;
+							end if;
+
+						when SELECTED =>
+							if is_selected (segment) then
+								collect;
+							end if;
+							
+						when others => null; -- CS
+					end case;
+				end query_segment;
+				
+			begin
+				while segment_cursor /= pac_segments.no_element loop
+					query_element (segment_cursor, query_segment'access);
+					next (segment_cursor);
+				end loop;
+			end query_zone;
+			
+
+			procedure query_line (line : in type_silk_line) is 
+
+				procedure collect is begin
+					result.append ((
+						cat		=> CAT_LINE,
+						line	=> (face, line_cursor)));
+
+					log (text => to_string (line), level => log_threshold + 2);
+				end collect;
+				
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (line) then
+							collect;
+						end if;
+
+					when SELECTED =>
+						if is_selected (line) then
+							collect;
+						end if;
+
+					when others => null; -- CS
+				end case;
+			end query_line;
+				
+
+			procedure query_text (text : in type_silk_text) is 
+
+				procedure collect is begin
+					result.append ((
+						cat		=> CAT_TEXT,
+						text	=> (face, text_cursor)));
+
+					log (text => to_string (text), level => log_threshold + 2);
+				end collect;
+				
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (text) then
+							collect;
+						end if;
+
+					when SELECTED =>
+						if is_selected (text) then
+							collect;
+						end if;
+
+					when others => null; -- CS
+				end case;
+			end query_text;
+
+
+			procedure query_placeholder (placeholder : in type_text_placeholder) is 
+
+				procedure collect is begin
+					result.append ((
+						cat			=> CAT_PLACEHOLDER,
+						placeholder	=> (face, placeholder_cursor)));
+
+					log (text => to_string (placeholder), level => log_threshold + 2);
+				end collect;
+				
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (placeholder) then
+							collect;
+						end if;
+
+					when SELECTED =>
+						if is_selected (placeholder) then
+							collect;
+						end if;
+
+					when others => null;
+				end case;
+			end query_placeholder;
+
+			
+			
+		begin
+			log (text => "top zones", level => log_threshold + 1);
+			log_indentation_up;
+			
+			zone_cursor := module.board.silkscreen.top.zones.first;
+			while zone_cursor /= pac_silk_contours.no_element loop
+				query_element (zone_cursor, query_zone'access);
+				next (zone_cursor);
+			end loop;
+
+			log_indentation_down;
+
+			
+			log (text => "top lines", level => log_threshold + 1);
+			log_indentation_up;
+			
+			line_cursor := module.board.silkscreen.top.lines.first;
+			while line_cursor /= pac_silk_lines.no_element loop
+				query_element (line_cursor, query_line'access);
+				next (line_cursor);
+			end loop;
+
+			log_indentation_down;
+			
+			-- CS arcs, circles
+
+
+			log (text => "top texts", level => log_threshold + 1);
+			log_indentation_up;
+			
+			text_cursor := module.board.silkscreen.top.texts.first;
+			while text_cursor /= pac_silk_texts.no_element loop
+				query_element (text_cursor, query_text'access);
+				next (text_cursor);
+			end loop;
+
+			log_indentation_down;
+
+			
+
+			log (text => "top text placeholders", level => log_threshold + 1);
+			log_indentation_up;
+			
+			placeholder_cursor := module.board.silkscreen.top.placeholders.first;
+			while placeholder_cursor /= pac_text_placeholders.no_element loop
+				query_element (placeholder_cursor, query_placeholder'access);
+				next (placeholder_cursor);
+			end loop;
+
+			log_indentation_down;
+
+
+			
+			face := BOTTOM;
+
+			log (text => "bottom zones", level => log_threshold + 1);
+			log_indentation_up;
+			
+			zone_cursor := module.board.silkscreen.bottom.zones.first;
+			while zone_cursor /= pac_silk_contours.no_element loop
+				query_element (zone_cursor, query_zone'access);
+				next (zone_cursor);
+			end loop;
+
+			log_indentation_down;
+
+			
+			log (text => "bottom lines", level => log_threshold + 1);
+			log_indentation_up;
+			
+			line_cursor := module.board.silkscreen.bottom.lines.first;
+			while line_cursor /= pac_silk_lines.no_element loop
+				query_element (line_cursor, query_line'access);
+				next (line_cursor);
+			end loop;
+
+			log_indentation_down;
+			-- CS arcs, circles
+
+			
+			log (text => "bottom texts", level => log_threshold + 1);
+			log_indentation_up;
+			
+			text_cursor := module.board.silkscreen.bottom.texts.first;
+			while text_cursor /= pac_silk_texts.no_element loop
+				query_element (text_cursor, query_text'access);
+				next (text_cursor);
+			end loop;
+
+			log_indentation_down;
+
+
+			log (text => "bottom text placeholders", level => log_threshold + 1);
+			log_indentation_up;
+			
+			placeholder_cursor := module.board.silkscreen.bottom.placeholders.first;
+			while placeholder_cursor /= pac_text_placeholders.no_element loop
+				query_element (placeholder_cursor, query_placeholder'access);
+				next (placeholder_cursor);
+			end loop;
+
+			log_indentation_down;			
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up objects / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element ( -- CS query_module is sufficient
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+
+		return result;
+	end get_objects;
+	
+
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of object"
+			-- & to_string (segment.segment) CS output object category ?
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		case object.cat is
+			when CAT_LINE =>
+				modify_status (module_cursor, object.line, operation, log_threshold + 1);
+
+			when CAT_ZONE_SEGMENT =>
+				modify_status (module_cursor, object.segment, operation, log_threshold + 1);
+
+			when CAT_TEXT =>
+				modify_status (module_cursor, object.text, operation, log_threshold + 1);
+
+			when CAT_PLACEHOLDER =>
+				modify_status (module_cursor, object.placeholder, operation, log_threshold + 1);
+				
+			when CAT_VOID =>
+				null; -- CS
+		end case;
+
+		log_indentation_down;
+	end modify_status;
+
+	
+
+	
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_objects;
+		object : constant type_object := element (object_cursor);
+	begin
+		modify_status (module_cursor, object, operation, log_threshold);
+	end modify_status;
+
+
+
+	
+
+	procedure move_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving silkscreen object " 
+			-- CS & to_string (object)
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_LINE =>
+				move_line (module_cursor, object.line.face, 
+					element (object.line.cursor),
+					point_of_attack, destination,
+					log_threshold + 1);
+
+			when CAT_ZONE_SEGMENT =>
+				move_segment (module_cursor,
+					object.segment,
+					point_of_attack, destination,
+					log_threshold + 1);
+
+			when CAT_TEXT =>
+				move_text (module_cursor,
+					object.text,
+					destination,
+					log_threshold + 1);
+
+			when CAT_PLACEHOLDER =>
+				move_placeholder (module_cursor,
+					object.placeholder,
+					destination,
+					log_threshold + 1);
+							
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end move_object;
+	
+
+
+	
+
+
+
+	procedure delete_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " deleting silkscreen object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_LINE =>
+				delete_line (
+					module_cursor	=> module_cursor, 
+					face			=> object.line.face,
+					line			=> element (object.line.cursor),
+					log_threshold	=> log_threshold + 1);					
+
+			-- CS arcs, circles
+				
+			when CAT_ZONE_SEGMENT =>
+				delete_segment (
+					module_cursor	=> module_cursor, 
+					segment			=> object.segment,
+					log_threshold	=> log_threshold + 1);
+
+				
+			when CAT_TEXT =>
+				delete_text (
+					module_cursor	=> module_cursor, 
+					text			=> object.text,
+					log_threshold	=> log_threshold + 1);
+
+
+			when CAT_PLACEHOLDER =>
+				delete_placeholder (
+					module_cursor	=> module_cursor, 
+					placeholder		=> object.placeholder,
+					log_threshold	=> log_threshold + 1);
+
+				
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end delete_object;
+	
+
+
+	
+	procedure reset_proposed_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor) &
+			" resetting proposed objects",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		reset_proposed_lines (module_cursor, log_threshold + 1);
+		-- CS arcs, circles
+		
+		reset_proposed_texts (module_cursor, log_threshold + 1);
+		reset_proposed_placeholders (module_cursor, log_threshold + 1);
+		reset_proposed_segments (module_cursor, log_threshold + 1);
+
+		log_indentation_down;
+	end reset_proposed_objects;
+
+
+
+	
 	
 	procedure delete_object (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
