@@ -58,7 +58,7 @@ is
 	use pac_silk_lines;
 	use pac_silk_arcs;
 	use pac_silk_circles;
-	use pac_silk_contours;
+	use pac_silk_zones;
 	use pac_silk_texts;
 	use pac_text_placeholders;
 
@@ -116,8 +116,8 @@ is
 	end query_circle;
 
 	
-	procedure query_zone (c : in pac_silk_contours.cursor) is 
-		contour : type_silk_contour renames element (c);
+	procedure query_zone (c : in pac_silk_zones.cursor) is 
+		contour : type_silk_zone renames element (c);
 		use pac_draw_contours;
 	begin
 		draw_contour (

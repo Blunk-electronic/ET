@@ -1465,7 +1465,7 @@ is
 		use pac_silk_lines;
 		use pac_silk_arcs;
 		use pac_silk_circles;
-		use pac_silk_contours;
+		use pac_silk_zones;
 
 		use et_assy_doc;
 		use pac_doc_lines;

@@ -845,7 +845,7 @@ package body et_pcb_rw is
 
 	
 	
--- SILK SCREEN
+-- SILKSCREEN
 	procedure write_line (cursor : in pac_silk_lines.cursor) is 
 		use pac_silk_lines;
 	begin
@@ -876,8 +876,8 @@ package body et_pcb_rw is
 	end write_circle;
 
 	
-	procedure write_polygon (cursor : in pac_silk_contours.cursor) is 
-		use pac_silk_contours;
+	procedure write_polygon (cursor : in pac_silk_zones.cursor) is 
+		use pac_silk_zones;
 	begin
 		fill_zone_begin;
 		contours_begin;		

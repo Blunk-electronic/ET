@@ -676,7 +676,7 @@ package body et_board_ops.silkscreen is
 
 	procedure add_zone (
 		module_cursor	: in pac_generic_modules.cursor;
-		zone			: in type_silk_contour;
+		zone			: in type_silk_zone;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
@@ -689,14 +689,14 @@ package body et_board_ops.silkscreen is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is 
-			use pac_silk_contours;
-			c : pac_silk_contours.cursor;
+			use pac_silk_zones;
+			c : pac_silk_zones.cursor;
 
 			-- This procedure tests whether the candidate
 			-- zone z is open. If z is open, then it tries
 			-- to merge the given zone into z. If the merge operation
 			-- succeedes then no more zones are iterated (flag proceed):
-			procedure query_zone (z : in out type_silk_contour) is
+			procedure query_zone (z : in out type_silk_zone) is
 				use et_board_shapes_and_text;
 				use pac_contours;
 				mr : type_merge_result;
@@ -720,7 +720,7 @@ package body et_board_ops.silkscreen is
 					-- Iterate through the already existing zones:
 					c := module.board.silkscreen.top.zones.first;
 
-					while c /= pac_silk_contours.no_element and proceed loop
+					while c /= pac_silk_zones.no_element and proceed loop
 						module.board.silkscreen.top.zones.update_element (c, query_zone'access);
 						next (c);
 					end loop;
@@ -738,7 +738,7 @@ package body et_board_ops.silkscreen is
 					-- Iterate through the already existing zones:
 					c := module.board.silkscreen.bottom.zones.first;
 
-					while c /= pac_silk_contours.no_element and proceed loop
+					while c /= pac_silk_zones.no_element and proceed loop
 						module.board.silkscreen.bottom.zones.update_element (c, query_zone'access);
 						next (c);
 					end loop;
@@ -779,7 +779,7 @@ package body et_board_ops.silkscreen is
 	is
 		use pac_contours;
 		use pac_segments;
-		use pac_silk_contours;
+		use pac_silk_zones;
 		
 		
 		procedure query_module (
@@ -795,7 +795,7 @@ package body et_board_ops.silkscreen is
 
 			
 			procedure query_zone (
-				zone : in out type_silk_contour)
+				zone : in out type_silk_zone)
 			is begin
 				if zone.contour.circular then
 					null; -- CS
@@ -865,8 +865,8 @@ package body et_board_ops.silkscreen is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			use pac_silk_contours;
-			zc : pac_silk_contours.cursor;
+			use pac_silk_zones;
+			zc : pac_silk_zones.cursor;
 
 			use pac_contours;
 			use pac_segments;
@@ -896,7 +896,7 @@ package body et_board_ops.silkscreen is
 
 			
 			procedure query_zone (
-				zone : in out type_silk_contour)
+				zone : in out type_silk_zone)
 			is
 				use pac_contours;
 				use pac_segments;
@@ -925,7 +925,7 @@ package body et_board_ops.silkscreen is
 				when TOP =>
 					zc := module.board.silkscreen.top.zones.first;
 
-					while zc /= pac_silk_contours.no_element loop
+					while zc /= pac_silk_zones.no_element loop
 						update_element (
 							container	=> module.board.silkscreen.top.zones,
 							position	=> zc,
@@ -938,7 +938,7 @@ package body et_board_ops.silkscreen is
 				when BOTTOM =>
 					zc := module.board.silkscreen.bottom.zones.first;
 
-					while zc /= pac_silk_contours.no_element loop
+					while zc /= pac_silk_zones.no_element loop
 						update_element (
 							container	=> module.board.silkscreen.bottom.zones,
 							position	=> zc,
@@ -981,8 +981,8 @@ package body et_board_ops.silkscreen is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			use pac_silk_contours;
-			zc : pac_silk_contours.cursor;
+			use pac_silk_zones;
+			zc : pac_silk_zones.cursor;
 
 			use pac_contours;
 			use pac_segments;
@@ -997,7 +997,7 @@ package body et_board_ops.silkscreen is
 
 			
 			procedure query_zone (
-				zone : in out type_silk_contour)
+				zone : in out type_silk_zone)
 			is
 				use pac_contours;
 				use pac_segments;
@@ -1024,7 +1024,7 @@ package body et_board_ops.silkscreen is
 		begin
 			zc := module.board.silkscreen.top.zones.first;
 
-			while zc /= pac_silk_contours.no_element loop
+			while zc /= pac_silk_zones.no_element loop
 				update_element (
 					container	=> module.board.silkscreen.top.zones,
 					position	=> zc,
@@ -1036,7 +1036,7 @@ package body et_board_ops.silkscreen is
 					
 			zc := module.board.silkscreen.bottom.zones.first;
 
-			while zc /= pac_silk_contours.no_element loop
+			while zc /= pac_silk_zones.no_element loop
 				update_element (
 					container	=> module.board.silkscreen.bottom.zones,
 					position	=> zc,
@@ -1080,14 +1080,14 @@ package body et_board_ops.silkscreen is
 		is
 			use pac_contours;
 			use pac_segments;
-			use pac_silk_contours;
+			use pac_silk_zones;
 			
 			proceed : aliased boolean := true;
 
 			face : type_face := TOP;
 			
 			
-			procedure query_zone (z : in pac_silk_contours.cursor) is 
+			procedure query_zone (z : in pac_silk_zones.cursor) is 
 
 				procedure query_segment (
 					c : in pac_segments.cursor) 
@@ -1119,7 +1119,7 @@ package body et_board_ops.silkscreen is
 				end query_segment;
 				
 				
-				procedure query_segments (z : in type_silk_contour) is begin
+				procedure query_segments (z : in type_silk_zone) is begin
 					iterate (
 						segments	=> z.contour.segments,
 						process		=> query_segment'access,
@@ -1190,7 +1190,7 @@ package body et_board_ops.silkscreen is
 	is
 		use pac_contours;
 		use pac_segments;
-		use pac_silk_contours;
+		use pac_silk_zones;
 				
 		
 		procedure query_module (
@@ -1212,7 +1212,7 @@ package body et_board_ops.silkscreen is
 
 			
 			procedure query_zone (
-				zone : in out type_silk_contour)
+				zone : in out type_silk_zone)
 			is 
 				c : pac_segments.cursor;
 			begin
@@ -1281,7 +1281,7 @@ package body et_board_ops.silkscreen is
 	is
 		use pac_contours;
 		use pac_segments;
-		use pac_silk_contours;
+		use pac_silk_zones;
 
 		
 		procedure query_module (
@@ -1290,7 +1290,7 @@ package body et_board_ops.silkscreen is
 		is
 			
 			procedure query_zone (
-				zone : in out type_silk_contour)
+				zone : in out type_silk_zone)
 			is 
 				c : pac_segments.cursor;
 			begin
@@ -2463,8 +2463,8 @@ package body et_board_ops.silkscreen is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			use pac_silk_contours;
-			zone_cursor : pac_silk_contours.cursor;
+			use pac_silk_zones;
+			zone_cursor : pac_silk_zones.cursor;
 			face : type_face := TOP;
 			
 			use pac_silk_lines;
@@ -2481,7 +2481,7 @@ package body et_board_ops.silkscreen is
 
 			
 			
-			procedure query_zone (zone : in type_silk_contour) is
+			procedure query_zone (zone : in type_silk_zone) is
 				use pac_contours;
 				use pac_segments;
 				-- CS test circular flag !!
@@ -2608,7 +2608,7 @@ package body et_board_ops.silkscreen is
 			log_indentation_up;
 			
 			zone_cursor := module.board.silkscreen.top.zones.first;
-			while zone_cursor /= pac_silk_contours.no_element loop
+			while zone_cursor /= pac_silk_zones.no_element loop
 				query_element (zone_cursor, query_zone'access);
 				next (zone_cursor);
 			end loop;
@@ -2662,7 +2662,7 @@ package body et_board_ops.silkscreen is
 			log_indentation_up;
 			
 			zone_cursor := module.board.silkscreen.bottom.zones.first;
-			while zone_cursor /= pac_silk_contours.no_element loop
+			while zone_cursor /= pac_silk_zones.no_element loop
 				query_element (zone_cursor, query_zone'access);
 				next (zone_cursor);
 			end loop;

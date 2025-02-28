@@ -217,7 +217,7 @@ is
 			use pac_silk_lines;
 			use pac_silk_arcs;
 			use pac_silk_circles;
-			use pac_silk_contours;
+			use pac_silk_zones;
 			use pac_silk_texts;
 
 			face : type_face := TOP;			
@@ -263,8 +263,8 @@ is
 				end query_circle;
 
 				
-				procedure query_zone (c : in pac_silk_contours.cursor) is 
-					zone : type_silk_contour renames element (c);
+				procedure query_zone (c : in pac_silk_zones.cursor) is 
+					zone : type_silk_zone renames element (c);
 				begin
 					draw_contour (
 						contour	=> zone,

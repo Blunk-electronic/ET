@@ -3608,14 +3608,14 @@ is
 					use et_pcb_sides;
 					
 					procedure append_silk_polygon_top is begin
-						pac_silk_contours.append (
+						pac_silk_zones.append (
 							container	=> module.board.silkscreen.top.zones,
 							new_item	=> (contour with null record));
 					end;
 
 					
 					procedure append_silk_polygon_bottom is begin
-						pac_silk_contours.append (
+						pac_silk_zones.append (
 							container	=> module.board.silkscreen.bottom.zones,
 							new_item	=> (contour with null record));
 					end;

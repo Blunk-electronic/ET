@@ -182,7 +182,7 @@ package body et_pcb_rw.device_packages is
 			use pac_silk_lines;
 			use pac_silk_arcs;
 			use pac_silk_circles;
-			use pac_silk_contours;
+			use pac_silk_zones;
 			use pac_silk_texts;
 
 			-- CS move this procedure to et_pcb_rw
@@ -1246,7 +1246,7 @@ package body et_pcb_rw.device_packages is
 
 				-- fill zones
 				procedure append_silk_polygon_top is begin
-					pac_silk_contours.append (
+					pac_silk_zones.append (
 						container	=> packge.silkscreen.top.zones, 
 						new_item	=> (contour with null record));
 					
@@ -1254,7 +1254,7 @@ package body et_pcb_rw.device_packages is
 				end;
 				
 				procedure append_silk_polygon_bottom is begin
-					pac_silk_contours.append (
+					pac_silk_zones.append (
 						container	=> packge.silkscreen.bottom.zones, 
 						new_item	=> (contour with null record));
 					

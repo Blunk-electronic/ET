@@ -181,7 +181,7 @@ package et_board_ops.silkscreen is
 	--    is regarded a a new zone and added to the existing zones.
 	procedure add_zone (
 		module_cursor	: in pac_generic_modules.cursor;
-		zone			: in type_silk_contour;
+		zone			: in type_silk_zone;
 		face			: in type_face;
 		log_threshold	: in type_log_level);
 
@@ -191,7 +191,7 @@ package et_board_ops.silkscreen is
 	-- segment of a zone by its zone and face:
 	type type_object_segment is record
 		face	: type_face := TOP;
-		zone	: pac_silk_contours.cursor;
+		zone	: pac_silk_zones.cursor;
 		segment	: pac_contours.pac_segments.cursor;
 	end record;
 

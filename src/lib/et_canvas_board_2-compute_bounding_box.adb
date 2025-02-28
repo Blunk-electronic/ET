@@ -177,7 +177,7 @@ is
 				use pac_silk_lines;
 				use pac_silk_arcs;
 				use pac_silk_circles;
-				use pac_silk_contours;
+				use pac_silk_zones;
 				-- use pac_silk_texts;				
 				
 				silk : type_silkscreen_both_sides renames module.board.silkscreen;
@@ -207,8 +207,8 @@ is
 				end query_circle;
 
 
-				procedure query_zone (c : in pac_silk_contours.cursor) is
-					zone : type_silk_contour renames element (c);
+				procedure query_zone (c : in pac_silk_zones.cursor) is
+					zone : type_silk_zone renames element (c);
 				begin
 					b := get_bounding_box (zone, 0.0);
 					merge_areas (bbox_new, b);
@@ -907,7 +907,7 @@ is
 					use pac_silk_lines;
 					use pac_silk_arcs;
 					use pac_silk_circles;
-					use pac_silk_contours;
+					use pac_silk_zones;
 					use pac_silk_texts;
 
 					procedure query_line (c : in pac_silk_lines.cursor) is
@@ -952,8 +952,8 @@ is
 					end query_circle;
 
 
-					procedure query_contour (c : in pac_silk_contours.cursor) is 
-						contour : type_silk_contour renames element (c);
+					procedure query_contour (c : in pac_silk_zones.cursor) is 
+						contour : type_silk_zone renames element (c);
 					begin
 						b := get_bounding_box (
 							contour		=> contour,

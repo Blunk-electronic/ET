@@ -326,13 +326,13 @@ package body et_silkscreen is
 
 
 	procedure iterate (
-		zones	: in pac_silk_contours.list;
-		process	: not null access procedure (position : in pac_silk_contours.cursor);
+		zones	: in pac_silk_zones.list;
+		process	: not null access procedure (position : in pac_silk_zones.cursor);
 		proceed	: not null access boolean)
 	is
-		c : pac_silk_contours.cursor := zones.first;
+		c : pac_silk_zones.cursor := zones.first;
 	begin
-		while c /= pac_silk_contours.no_element and proceed.all = TRUE loop
+		while c /= pac_silk_zones.no_element and proceed.all = TRUE loop
 			process (c);
 			next (c);
 		end loop;
@@ -342,13 +342,13 @@ package body et_silkscreen is
 
 	
 	procedure mirror_contours (
-		contours	: in out pac_silk_contours.list;
+		contours	: in out pac_silk_zones.list;
 		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS)		
 	is
-		result : pac_silk_contours.list;
+		result : pac_silk_zones.list;
 
-		procedure query_contour (c : in pac_silk_contours.cursor) is
-			contour : type_silk_contour := element (c);
+		procedure query_contour (c : in pac_silk_zones.cursor) is
+			contour : type_silk_zone := element (c);
 		begin
 			mirror (contour, axis);
 			result.append (contour);
@@ -361,13 +361,13 @@ package body et_silkscreen is
 
 
 	procedure rotate_contours (
-		contours	: in out pac_silk_contours.list;
+		contours	: in out pac_silk_zones.list;
 		angle		: in type_rotation_model)		
 	is
-		result : pac_silk_contours.list;
+		result : pac_silk_zones.list;
 
-		procedure query_contour (c : in pac_silk_contours.cursor) is
-			contour : type_silk_contour := element (c);
+		procedure query_contour (c : in pac_silk_zones.cursor) is
+			contour : type_silk_zone := element (c);
 		begin
 			rotate_by (contour, angle);
 			result.append (contour);
@@ -380,13 +380,13 @@ package body et_silkscreen is
 
 
 	procedure move_contours (
-		contours	: in out pac_silk_contours.list;
+		contours	: in out pac_silk_zones.list;
 		offset		: in type_distance_relative)		
 	is
-		result : pac_silk_contours.list;
+		result : pac_silk_zones.list;
 
-		procedure query_contour (c : in pac_silk_contours.cursor) is
-			contour : type_silk_contour := element (c);
+		procedure query_contour (c : in pac_silk_zones.cursor) is
+			contour : type_silk_zone := element (c);
 		begin
 			move_by (contour, offset);
 			result.append (contour);

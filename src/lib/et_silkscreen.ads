@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -190,16 +190,16 @@ package et_silkscreen is
 	
 -- CONTOURS:
 	
-	type type_silk_contour is new type_contour with null record; -- CS rename to type_silk_zone
-	package pac_silk_contours is new doubly_linked_lists (type_silk_contour);
-	use pac_silk_contours; -- CS rename to pac_silk_zones
+	type type_silk_zone is new type_contour with null record;
+	package pac_silk_zones is new doubly_linked_lists (type_silk_zone);
+	use pac_silk_zones;
 
 
 	-- Iterates the zones.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
-		zones	: in pac_silk_contours.list;
-		process	: not null access procedure (position : in pac_silk_contours.cursor);
+		zones	: in pac_silk_zones.list;
+		process	: not null access procedure (position : in pac_silk_zones.cursor);
 		proceed	: not null access boolean);
 
 
@@ -207,17 +207,17 @@ package et_silkscreen is
 
 	-- Mirrors a list of contours along the given axis:
 	procedure mirror_contours (
-		contours	: in out pac_silk_contours.list;
+		contours	: in out pac_silk_zones.list;
 		axis		: in type_mirror := MIRROR_ALONG_Y_AXIS);					
 
 	-- Rotates a list of contours by the given angle:
 	procedure rotate_contours (
-		contours	: in out pac_silk_contours.list;
+		contours	: in out pac_silk_zones.list;
 		angle		: in type_rotation_model);					
 
 	-- Moves a list of contours by the given offset:
 	procedure move_contours (
-		contours	: in out pac_silk_contours.list;
+		contours	: in out pac_silk_zones.list;
 		offset		: in type_distance_relative);					
 
 	
@@ -284,7 +284,7 @@ package et_silkscreen is
 		lines 	: pac_silk_lines.list;
 		arcs	: pac_silk_arcs.list;
 		circles	: pac_silk_circles.list;
-		zones	: pac_silk_contours.list;
+		zones	: pac_silk_zones.list;
 		texts	: pac_silk_texts.list;
 	end record;
 

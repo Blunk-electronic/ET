@@ -868,8 +868,8 @@ package body et_kicad_to_native is
 				use pac_silk_circles;
 				circles_cursor : pac_silk_circles.cursor;
 
-				use pac_silk_contours;
-				polygons_cursor : pac_silk_contours.cursor;
+				use pac_silk_zones;
+				polygons_cursor : pac_silk_zones.cursor;
 
 				use pac_silk_texts;
 				texts_cursor : pac_silk_texts.cursor;
@@ -923,8 +923,8 @@ package body et_kicad_to_native is
 				end move_circle;
 
 				
-				procedure move_polygon (polygon : in out type_silk_contour) is begin
-					log (text => board_silk_screen & "polygon segments", level => log_threshold + log_threshold_add);
+				procedure move_polygon (polygon : in out type_silk_zone) is begin
+					log (text => board_silk_screen & "zone segments", level => log_threshold + log_threshold_add);
 					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end;
 
@@ -1021,8 +1021,8 @@ package body et_kicad_to_native is
 				
 				-- POLYGONS TOP
 				polygons_cursor := module.board.silkscreen.top.zones.first;
-				while polygons_cursor /= pac_silk_contours.no_element loop
-					pac_silk_contours.update_element (
+				while polygons_cursor /= pac_silk_zones.no_element loop
+					pac_silk_zones.update_element (
 						container	=> module.board.silkscreen.top.zones,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
@@ -1033,8 +1033,8 @@ package body et_kicad_to_native is
 				
 				-- POLYGONS BOTTOM
 				polygons_cursor := module.board.silkscreen.bottom.zones.first;
-				while polygons_cursor /= pac_silk_contours.no_element loop
-					pac_silk_contours.update_element (
+				while polygons_cursor /= pac_silk_zones.no_element loop
+					pac_silk_zones.update_element (
 						container	=> module.board.silkscreen.bottom.zones,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
