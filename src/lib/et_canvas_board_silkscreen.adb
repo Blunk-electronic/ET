@@ -310,7 +310,7 @@ package body et_canvas_board_silkscreen is
 		procedure propose_objects (face : in type_face) is 
 			use et_display.board;
 		begin
-			if assy_doc_enabled (face) then
+			if silkscreen_enabled (face) then
 				
 				propose_lines (
 					module_cursor	=> active_module, 
