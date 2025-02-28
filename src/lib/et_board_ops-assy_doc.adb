@@ -3108,7 +3108,89 @@ package body et_board_ops.assy_doc is
 
 	
 
+
+
+
 	
+	procedure reset_proposed_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor) &
+			" resetting proposed objects",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		reset_proposed_lines (module_cursor, log_threshold + 1);
+		-- CS arcs, circles
+		
+		reset_proposed_texts (module_cursor, log_threshold + 1);
+		reset_proposed_placeholders (module_cursor, log_threshold + 1);
+		reset_proposed_segments (module_cursor, log_threshold + 1);
+
+		log_indentation_down;
+	end reset_proposed_objects;
+	
+
+
+
+
+
+	procedure delete_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " deleting assy documentation object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_LINE =>
+				delete_line (
+					module_cursor	=> module_cursor, 
+					face			=> object.line.face,
+					line			=> element (object.line.cursor),
+					log_threshold	=> log_threshold + 1);					
+
+			-- CS arcs, circles
+				
+			when CAT_ZONE_SEGMENT =>
+				delete_segment (
+					module_cursor	=> module_cursor, 
+					segment			=> object.segment,
+					log_threshold	=> log_threshold + 1);
+
+				
+			when CAT_TEXT =>
+				delete_text (
+					module_cursor	=> module_cursor, 
+					text			=> object.text,
+					log_threshold	=> log_threshold + 1);
+
+
+			when CAT_PLACEHOLDER =>
+				delete_placeholder (
+					module_cursor	=> module_cursor, 
+					placeholder		=> object.placeholder,
+					log_threshold	=> log_threshold + 1);
+
+				
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end delete_object;
+	
+
+
+
+
 	procedure delete_object (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
@@ -3217,84 +3299,6 @@ package body et_board_ops.assy_doc is
 		
 	end delete_object;
 
-	
-
-
-
-
-
-	procedure delete_object (
-		module_cursor	: in pac_generic_modules.cursor;
-		object			: in type_object;
-		log_threshold	: in type_log_level)
-	is begin
-		log (text => "module " & to_string (module_cursor)
-			& " deleting assy documentation object",
-			-- CS & to_string (object)
-			level => log_threshold);
-
-		log_indentation_up;
-
-		case object.cat is
-			when CAT_LINE =>
-				delete_line (
-					module_cursor	=> module_cursor, 
-					face			=> object.line.face,
-					line			=> element (object.line.cursor),
-					log_threshold	=> log_threshold + 1);					
-
-			-- CS arcs, circles
-				
-			when CAT_ZONE_SEGMENT =>
-				delete_segment (
-					module_cursor	=> module_cursor, 
-					segment			=> object.segment,
-					log_threshold	=> log_threshold + 1);
-
-				
-			when CAT_TEXT =>
-				delete_text (
-					module_cursor	=> module_cursor, 
-					text			=> object.text,
-					log_threshold	=> log_threshold + 1);
-
-
-			when CAT_PLACEHOLDER =>
-				delete_placeholder (
-					module_cursor	=> module_cursor, 
-					placeholder		=> object.placeholder,
-					log_threshold	=> log_threshold + 1);
-
-				
-			when CAT_VOID =>
-				null;
-		end case;		
-		
-		log_indentation_down;
-	end delete_object;
-	
-
-
-	
-	procedure reset_proposed_objects (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)
-	is begin
-		log (text => "module " & to_string (module_cursor) &
-			" resetting proposed objects",
-			level => log_threshold);
-
-		log_indentation_up;
-
-		reset_proposed_lines (module_cursor, log_threshold + 1);
-		-- CS arcs, circles
-		
-		reset_proposed_texts (module_cursor, log_threshold + 1);
-		reset_proposed_placeholders (module_cursor, log_threshold + 1);
-		reset_proposed_segments (module_cursor, log_threshold + 1);
-
-		log_indentation_down;
-	end reset_proposed_objects;
 
 	
 end et_board_ops.assy_doc;

@@ -555,8 +555,19 @@ package et_board_ops.assy_doc is
 
 
 
-	
+	-- This is a collective procedure that resets
+	-- the proposed-flag and the selected-flag 
+	-- of texts, lines, arcs, circles and zone segments:
+	procedure reset_proposed_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
 
+
+
+	procedure delete_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level);
 
 	
 	
@@ -571,19 +582,6 @@ package et_board_ops.assy_doc is
 		log_threshold	: in type_log_level);
 
 
-
-	procedure delete_object (
-		module_cursor	: in pac_generic_modules.cursor;
-		object			: in type_object;
-		log_threshold	: in type_log_level);
-
-
-	-- This is a collective procedure that resets
-	-- the proposed-flag and the selected-flag 
-	-- of texts, lines, arcs, circles and zone segments:
-	procedure reset_proposed_objects (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level);
 
 										 
 end et_board_ops.assy_doc;

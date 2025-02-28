@@ -526,12 +526,6 @@ package et_board_ops.silkscreen is
 
 
 
-	procedure delete_object (
-		module_cursor	: in pac_generic_modules.cursor;
-		object			: in type_object;
-		log_threshold	: in type_log_level);
-
-
 	-- This is a collective procedure that resets
 	-- the proposed-flag and the selected-flag 
 	-- of texts, lines, arcs, circles and zone segments:
@@ -539,8 +533,12 @@ package et_board_ops.silkscreen is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-
 	
+	
+	procedure delete_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level);
 	
 	
 
