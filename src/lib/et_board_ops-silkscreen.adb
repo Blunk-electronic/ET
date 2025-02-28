@@ -531,7 +531,6 @@ package body et_board_ops.silkscreen is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			use pac_silk_lines;
 			line_cursor : pac_silk_lines.cursor;
 		begin
 			case face is

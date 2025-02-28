@@ -473,7 +473,7 @@ package body et_canvas_board_zone is
 			case object_layer_category is
 				when LAYER_CAT_ASSY =>
 
-					-- Add the temporary contour to the board:
+					-- Add the temporary zone to the board:
 					et_board_ops.assy_doc.add_zone (
 						module_cursor	=> active_module,
 						zone			=> (c with null record),
@@ -483,7 +483,7 @@ package body et_canvas_board_zone is
 					
 				when LAYER_CAT_SILKSCREEN =>
 					
-					-- Add the temporary contour to the board:					
+					-- Add the temporary zone to the board:					
 					et_board_ops.silkscreen.add_zone (
 						module_cursor	=> active_module,
 						zone			=> (c with null record),
@@ -493,8 +493,8 @@ package body et_canvas_board_zone is
 
 				when LAYER_CAT_STOP =>
 
-					-- Add the temporary contour to the board:
-					et_board_ops.stopmask.draw_zone (
+					-- Add the temporary zone to the board:
+					et_board_ops.stopmask.add_zone (
 						module_cursor	=> active_module,
 						zone			=> (c with null record),
 						face			=> object_face,
@@ -503,7 +503,7 @@ package body et_canvas_board_zone is
 
 				when LAYER_CAT_STENCIL =>
 
-					-- Add the temporary contour to the board:
+					-- Add the temporary zone to the board:
 					et_board_ops.stencil.draw_zone (
 						module_cursor	=> active_module,
 						zone			=> (c with null record),

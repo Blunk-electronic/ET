@@ -41,13 +41,15 @@ package body et_board_ops.stopmask is
 
 	use pac_generic_modules;
 
-
+	use pac_stop_lines;
+	use pac_stop_arcs;
+	use pac_stop_circles;
 	use pac_stop_texts;
 
 	
 	
 	
-	procedure draw_stop_line (
+	procedure add_line (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		line			: in type_stop_line;
@@ -58,9 +60,7 @@ package body et_board_ops.stopmask is
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is
-			use pac_stop_lines;
-		begin
+		is begin
 			case face is
 				when TOP =>
 					append (
@@ -74,9 +74,9 @@ package body et_board_ops.stopmask is
 			end case;
 		end;
 							   
-	begin -- draw_stop_line
+	begin
 		log (text => "module " & to_string (module_name) &
-			" drawing stop mask line" &
+			" drawing stopmask line" &
 			" face" & to_string (face) &
 			to_string (line),
 			level => log_threshold);
@@ -89,12 +89,437 @@ package body et_board_ops.stopmask is
 			position	=> module_cursor,
 			process		=> add'access);
 
-	end draw_stop_line;
+	end add_line;
+
+
+
+	
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		line			: in type_object_line;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_line (
+				line	: in out type_stop_line)
+			is begin
+				modify_status (line, operation);
+			end query_line;
+
+			
+			procedure query_top is 
+				top : pac_stop_lines.list renames module.board.stopmask.top.lines;
+			begin
+				top.update_element (line.cursor, query_line'access);
+			end query_top;
+
+			
+			procedure query_bottom is 
+				bottom	: pac_stop_lines.list renames module.board.stopmask.bottom.lines;
+			begin
+				bottom.update_element (line.cursor, query_line'access);
+			end query_bottom;
+
+			
+		begin
+			case line.face is
+				when TOP =>
+					query_top;
+
+				when BOTTOM =>
+					query_bottom;
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of "
+			& to_string (element (line.cursor)) -- CS: log top/bottom			
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+
+
+	
+
+
+	procedure propose_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		face			: in type_face;
+		zone			: in type_accuracy; -- the circular area around the place
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			lc : pac_stop_lines.cursor;
+
+			procedure query_line (
+				line	: in out type_stop_line)
+			is begin
+				if within_accuracy (
+					line	=> line,
+					width	=> line.width,
+					point	=> point,
+					zone	=> zone)
+				then
+					set_proposed (line);
+					count := count + 1;
+					log (text => to_string (line), level => log_threshold + 1);
+				end if;
+			end query_line;
+
+			
+			procedure query_top is 
+				top : pac_stop_lines.list renames module.board.stopmask.top.lines;
+			begin
+				if not top.is_empty then
+					lc := top.first;
+					while lc /= pac_stop_lines.no_element loop
+						top.update_element (lc, query_line'access);
+						next (lc);
+					end loop;
+				end if;
+			end query_top;
+
+			
+			procedure query_bottom is 
+				bottom : pac_stop_lines.list renames module.board.stopmask.bottom.lines;
+			begin
+				if not bottom.is_empty then
+					lc := bottom.first;
+					while lc /= pac_stop_lines.no_element loop
+						bottom.update_element (lc, query_line'access);
+						next (lc);
+					end loop;
+				end if;
+			end query_bottom;
+
+			
+		begin
+			case face is
+				when TOP	=> query_top;
+				when BOTTOM	=> query_bottom;
+			end case;
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " proposing lines at " & to_string (point)
+			 & " face " & to_string (face)
+			 & " zone " & accuracy_to_string (zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_lines;
+
+
+
+
+	
+
+	procedure reset_proposed_lines (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			top 	: pac_stop_lines.list renames module.board.stopmask.top.lines;
+			bottom	: pac_stop_lines.list renames module.board.stopmask.bottom.lines;
+
+			
+			procedure query_line (
+				line	: in out type_stop_line)
+			is begin
+				reset_status (line);
+			end query_line;
+
+			
+			lc : pac_stop_lines.cursor;
+			
+			procedure query_top is begin
+				if not top.is_empty then
+					lc := top.first;
+					while lc /= pac_stop_lines.no_element loop
+						top.update_element (lc, query_line'access);
+						next (lc);
+					end loop;
+				end if;
+			end query_top;
+
+			
+			procedure query_bottom is begin
+				if not bottom.is_empty then
+					lc := bottom.first;
+					while lc /= pac_stop_lines.no_element loop
+						bottom.update_element (lc, query_line'access);
+						next (lc);
+					end loop;
+				end if;
+			end query_bottom;
+
+			
+		begin
+			query_top;
+			query_bottom;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " resetting proposed lines",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_lines;
+
+
+
+
+	
+	function get_first_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_line
+	is
+		result : type_object_line;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			proceed : aliased boolean := true;
+
+			top_items 		: pac_stop_lines.list renames module.board.stopmask.top.lines;
+			bottom_items	: pac_stop_lines.list renames module.board.stopmask.bottom.lines;
+
+			
+			procedure query_line (c : in pac_stop_lines.cursor) is begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (c) then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when SELECTED =>
+						if is_selected (c) then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when others =>
+						null; -- CS
+				end case;
+			end query_line;
+			
+
+			
+		begin
+			-- Query the lines in the top layer first:
+			iterate (top_items, query_line'access, proceed'access);
+			result.face := top;
+
+			-- If nothing found, then query the bottom layer:
+			if proceed then
+				iterate (bottom_items, query_line'access, proceed'access);
+				result.face := bottom;
+			end if;
+
+			-- If still nothing found, return TOP and no_element:
+			if proceed then
+				result := (others => <>);	
+			end if;
+		end query_module;
+
+			
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first line / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+
+		return result;
+	end get_first_line;
+
+
+
+	
+
+	
+	procedure move_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		line			: in type_stop_line;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			line_cursor : pac_stop_lines.cursor;
+
+			
+			procedure query_line (line : in out type_stop_line) is
+			begin
+				-- case coordinates is
+					-- when ABSOLUTE =>
+						move_line_to (line, point_of_attack, destination);
+						-- null;
+					-- when RELATIVE =>
+						-- null;
+						-- CS
+				-- end case;
+			end query_line;
+
+			
+		begin
+			case face is
+				when TOP =>
+					line_cursor := module.board.stopmask.top.lines.find (line);
+					module.board.stopmask.top.lines.update_element (line_cursor, query_line'access);
+					
+				when BOTTOM =>
+					line_cursor := module.board.stopmask.bottom.lines.find (line);
+					module.board.stopmask.bottom.lines.update_element (line_cursor, query_line'access);
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " face" & to_string (face) 
+			& " moving stopmask " & to_string (line)
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end move_line;
+
+
+
+
+
+
+	procedure delete_line (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		line			: in type_stop_line;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			line_cursor : pac_stop_lines.cursor;
+		begin
+			case face is
+				when TOP =>
+					-- Locate the given line in the top stopmask layer:
+					line_cursor := module.board.stopmask.top.lines.find (line);
+
+					-- Delete the line if it exists:
+					if line_cursor /= pac_stop_lines.no_element then
+						module.board.stopmask.top.lines.delete (line_cursor); 
+					else
+						null; -- CS message
+					end if;
+
+				when BOTTOM =>
+					-- Locate the given line in the bottom stopmask layer:
+					line_cursor := module.board.stopmask.bottom.lines.find (line);
+
+					-- Delete the line if it exists:
+					if line_cursor /= pac_stop_lines.no_element then
+						module.board.stopmask.bottom.lines.delete (line_cursor); 
+					else
+						null; -- CS message
+					end if;
+			end case;
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " face" & to_string (face) 
+			& " deleting in stopmask" & to_string (line),
+			level => log_threshold);
+		
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end delete_line;
+
+
 
 
 	
 	
-	procedure draw_stop_arc (
+	
+	procedure add_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		arc				: in type_stop_arc;		
@@ -105,9 +530,7 @@ package body et_board_ops.stopmask is
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is
-			use pac_stop_arcs;
-		begin
+		is begin
 			case face is
 				when TOP =>
 					append (
@@ -121,9 +544,9 @@ package body et_board_ops.stopmask is
 			end case;
 		end;
 							   
-	begin -- draw_stop_arc
+	begin
 		log (text => "module " & to_string (module_name) &
-			" drawing stop mask arc" &
+			" drawing stopmask arc" &
 			" face" & to_string (face) &
 			to_string (arc) &
 			" width" & to_string (arc.width),
@@ -138,12 +561,12 @@ package body et_board_ops.stopmask is
 			position	=> module_cursor,
 			process		=> add'access);
 
-	end draw_stop_arc;
+	end add_arc;
 	
 
 
 	
-	procedure draw_stop_circle (
+	procedure add_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		circle			: in type_stop_circle;
@@ -154,9 +577,7 @@ package body et_board_ops.stopmask is
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is
-			use pac_stop_circles;
-		begin
+		is begin
 			case face is
 				when TOP =>
 					append (
@@ -171,9 +592,9 @@ package body et_board_ops.stopmask is
 			end case;
 		end;
 							   
-	begin -- draw_stop_circle
+	begin
 		log (text => "module " & to_string (module_name) &
-			" drawing stop mask circle" &
+			" drawing stopmask circle" &
 			" face" & to_string (face) &
 			to_string (circle),
 			level => log_threshold);
@@ -186,13 +607,14 @@ package body et_board_ops.stopmask is
 			position	=> module_cursor,
 			process		=> add'access);
 
-	end draw_stop_circle;
+	end add_circle;
+
+
+	
 
 
 
-
-
-	procedure draw_zone (
+	procedure add_zone (
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_stop_zone;
 		face			: in type_face;
@@ -287,8 +709,588 @@ package body et_board_ops.stopmask is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end draw_zone;
+	end add_zone;
 	
+
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+		use pac_contours;
+		use pac_segments;
+		use pac_stop_zones;
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_segment (
+				segment	: in out type_segment)
+			is begin
+				modify_status (segment, operation);
+			end query_segment;
+
+			
+			procedure query_zone (
+				zone : in out type_stop_zone)
+			is begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					-- Locate the given segment in the
+					-- candidate zone:
+					update_element (
+						container	=> zone.contour.segments,
+						position	=> segment.segment,
+						process		=> query_segment'access);
+
+				end if;
+			end query_zone;
+	
+			
+		begin
+			-- Search the given segment according to its
+			-- zone and face:
+			case segment.face is
+				when TOP =>
+					update_element (
+						container	=> module.board.stopmask.top.contours, 
+						position	=> segment.zone, 
+						process		=> query_zone'access);
+
+				when BOTTOM =>
+					update_element (
+						container	=> module.board.stopmask.bottom.contours, 
+						position	=> segment.zone, 
+						process		=> query_zone'access);
+
+			end case;
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of "
+			& to_string (segment.segment)
+			& " face " & to_string (segment.face)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+
+	
+
+
+	procedure propose_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model;
+		zone			: in type_accuracy;
+		face			: in type_face;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_stop_zones;
+			zc : pac_stop_zones.cursor;
+
+			use pac_contours;
+			use pac_segments;
+
+			
+			procedure query_segment (
+				segment	: in out type_segment)
+			is begin
+				case segment.shape is
+					when LINE =>
+						if within_accuracy (
+							line	=> segment.segment_line,
+							width	=> zero,
+							point	=> point,
+							zone	=> zone)
+						then
+							set_proposed (segment);
+							count := count + 1;
+							log (text => to_string (segment), level => log_threshold + 1);
+						end if;
+   
+					when ARC =>
+						null; -- CS
+				end case;
+			end query_segment;
+
+
+			
+			procedure query_zone (
+				zone : in out type_stop_zone)
+			is
+				use pac_contours;
+				use pac_segments;
+				c : pac_segments.cursor;
+				
+			begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					c := zone.contour.segments.first;
+
+					while c /= pac_segments.no_element loop
+						update_element (
+							container	=> zone.contour.segments,
+							position	=> c,
+							process		=> query_segment'access);
+
+						next (c);
+					end loop;
+				end if;
+			end query_zone;
+			
+			
+		begin
+			case face is
+				when TOP =>
+					zc := module.board.stopmask.top.contours.first;
+
+					while zc /= pac_stop_zones.no_element loop
+						update_element (
+							container	=> module.board.stopmask.top.contours,
+							position	=> zc,
+							process		=> query_zone'access);
+						
+						next (zc);
+					end loop;
+
+					
+				when BOTTOM =>
+					zc := module.board.stopmask.bottom.contours.first;
+
+					while zc /= pac_stop_zones.no_element loop
+						update_element (
+							container	=> module.board.stopmask.bottom.contours,
+							position	=> zc,
+							process		=> query_zone'access);
+						
+						next (zc);
+					end loop;
+			end case;	
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " proposing segments at " & to_string (point)
+			 & " face " & to_string (face)
+			 & " zone " & accuracy_to_string (zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_segments;
+
+
+	
+
+
+	
+	
+	procedure reset_proposed_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_stop_zones;
+			zc : pac_stop_zones.cursor;
+
+			use pac_contours;
+			use pac_segments;
+
+			
+			procedure query_segment (
+				segment	: in out type_segment)
+			is begin
+				reset_status (segment);
+			end query_segment;
+
+
+			
+			procedure query_zone (
+				zone : in out type_stop_zone)
+			is
+				use pac_contours;
+				use pac_segments;
+				c : pac_segments.cursor;
+				
+			begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					c := zone.contour.segments.first;
+
+					while c /= pac_segments.no_element loop
+						update_element (
+							container	=> zone.contour.segments,
+							position	=> c,
+							process		=> query_segment'access);
+
+						next (c);
+					end loop;
+				end if;
+			end query_zone;
+			
+			
+		begin
+			zc := module.board.stopmask.top.contours.first;
+
+			while zc /= pac_stop_zones.no_element loop
+				update_element (
+					container	=> module.board.stopmask.top.contours,
+					position	=> zc,
+					process		=> query_zone'access);
+				
+				next (zc);
+			end loop;
+
+					
+			zc := module.board.stopmask.bottom.contours.first;
+
+			while zc /= pac_stop_zones.no_element loop
+				update_element (
+					container	=> module.board.stopmask.bottom.contours,
+					position	=> zc,
+					process		=> query_zone'access);
+				
+				next (zc);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " resetting proposed segments of zones in stopmask",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_segments;
+
+
+
+
+	
+	function get_first_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_segment
+	is
+		use pac_contours;
+		result : type_object_segment;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_contours;
+			use pac_segments;
+			use pac_stop_zones;
+			
+			proceed : aliased boolean := true;
+
+			face : type_face := TOP;
+			
+			
+			procedure query_zone (z : in pac_stop_zones.cursor) is 
+
+				procedure query_segment (
+					c : in pac_segments.cursor) 
+				is begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (c) then
+								result.segment := c;
+								result.zone := z;
+								result.face := face;
+								proceed := false;
+
+								log (text => to_string (c), level => log_threshold + 1);
+							end if;
+
+						when SELECTED =>
+							if is_selected (c) then
+								result.segment := c;
+								result.zone := z;
+								result.face := face;
+								proceed := false;
+
+								log (text => to_string (c), level => log_threshold + 1);
+							end if;
+
+						when others =>
+							null; -- CS
+					end case;
+				end query_segment;
+				
+				
+				procedure query_segments (z : in type_stop_zone) is begin
+					iterate (
+						segments	=> z.contour.segments,
+						process		=> query_segment'access,
+						proceed		=> proceed'access);				
+				end query_segments;
+
+				
+			begin
+				if element (z).contour.circular then
+					null; -- CS
+				else
+					query_element (z, query_segments'access);
+				end if;
+			end query_zone;
+
+			
+		begin
+			-- Iterate the zones in top layer:
+			iterate (
+				zones	=> module.board.stopmask.top.contours,
+				process	=> query_zone'access, 
+				proceed	=> proceed'access);
+
+			
+			-- If nothing found, iterate the bottom layer:
+			if proceed then
+				face := BOTTOM;
+				
+				iterate (
+					zones	=> module.board.stopmask.bottom.contours,
+					process	=> query_zone'access, 
+					proceed	=> proceed'access);
+
+			end if;
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first segment / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- put_line ("found " & to_string (result));
+		
+		log_indentation_down;
+
+		return result;
+	end get_first_segment;
+
+
+
+
+
+
+	procedure move_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+		use pac_contours;
+		use pac_segments;
+		use pac_stop_zones;
+				
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			-- Moves the candidate segment:
+			procedure do_it (s : in out type_segment) is begin
+				case s.shape is
+					when LINE =>
+						move_line_to (s.segment_line, point_of_attack, destination);
+
+					when ARC =>
+						null;
+						-- CS
+				end case;
+			end do_it;
+
+			
+			procedure query_zone (
+				zone : in out type_stop_zone)
+			is 
+				c : pac_segments.cursor;
+			begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					-- Locate the given segment in 
+					-- the candidate zone:
+					update_element (
+						container	=> zone.contour.segments,
+						position	=> segment.segment,
+						process		=> do_it'access);
+
+				end if;
+			end query_zone;
+	
+			
+		begin
+			-- Search for the given segment according to the 
+			-- given zone and face:
+			case segment.face is
+				when TOP =>
+					update_element (
+						container	=> module.board.stopmask.top.contours, 
+						position	=> segment.zone, 
+						process		=> query_zone'access);
+
+				when BOTTOM =>
+					update_element (
+						container	=> module.board.stopmask.bottom.contours, 
+						position	=> segment.zone, 
+						process		=> query_zone'access);
+
+			end case;
+		end query_module;
+		
+				
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving stopmask zone segment " & to_string (segment.segment)
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- log (text => "new outline:" & to_string (get_outline (module_cursor), true),
+		-- 	 level => log_threshold + 1);
+		
+		log_indentation_down;
+	end move_segment;
+
+
+	
+
+
+
+	procedure delete_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		log_threshold	: in type_log_level)
+	is
+		use pac_contours;
+		use pac_segments;
+		use pac_stop_zones;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_zone (
+				zone : in out type_stop_zone)
+			is 
+				c : pac_segments.cursor;
+			begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					-- Delete the given segment:
+					c := segment.segment;					
+					zone.contour.segments.delete (c);
+				end if;
+			end query_zone;
+	
+			
+		begin
+			-- Search for the given segment according to the 
+			-- given zone and face:
+			case segment.face is
+				when TOP =>
+					update_element (
+						container	=> module.board.stopmask.top.contours, 
+						position	=> segment.zone, 
+						process		=> query_zone'access);
+
+				when BOTTOM =>
+					update_element (
+						container	=> module.board.stopmask.bottom.contours, 
+						position	=> segment.zone, 
+						process		=> query_zone'access);
+
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " deleting stopmask zone segment " 
+			& to_string (segment.segment),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end delete_segment;
+	
+
+
+
+
+
+
+
 
 
 	

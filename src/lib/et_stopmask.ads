@@ -69,6 +69,17 @@ package et_stopmask is
 	use pac_stop_lines;
 
 
+	-- Iterates the lines.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		lines	: in pac_stop_lines.list;
+		process	: not null access procedure (position : in pac_stop_lines.cursor);
+		proceed	: not null access boolean);
+
+	-- CS likewise iteratator for arcs and circles
+
+	
+	
 	-- Returns true if the "proposed-flag" of the given line is set:
 	function is_proposed (
 		line_cursor	: in pac_stop_lines.cursor)

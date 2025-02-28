@@ -593,7 +593,7 @@ package body et_canvas_board_lines is
 					
 				when LAYER_CAT_STOP =>
 					
-					et_board_ops.stopmask.draw_stop_line (
+					et_board_ops.stopmask.add_line (
 						module_name	=> pac_generic_modules.key (active_module),
 						face		=> object_face,
 						line		=> (line with object_linewidth),

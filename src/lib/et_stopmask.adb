@@ -38,8 +38,24 @@
 --   to do:
 
 package body et_stopmask is
-	
 
+	
+	procedure iterate (
+		lines	: in pac_stop_lines.list;
+		process	: not null access procedure (position : in pac_stop_lines.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_stop_lines.cursor := lines.first;
+	begin
+		while c /= pac_stop_lines.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+
+	
 	function is_proposed (
 		line_cursor	: in pac_stop_lines.cursor)
 		return boolean
