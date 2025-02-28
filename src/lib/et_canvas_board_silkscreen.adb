@@ -65,21 +65,21 @@ package body et_canvas_board_silkscreen is
 
 
 	-- Outputs the selected line in the status bar:
-	procedure show_selected_line (
-		selected		: in type_line_segment;
-		clarification	: in boolean := false)
-	is 
-		praeamble : constant string := "selected: ";
-	begin
-		if clarification then
-			set_status (praeamble & to_string (element (selected.cursor))
-				& ". " & status_next_object_clarification);
-			-- CS face
-		else
-			set_status (praeamble & to_string (element (selected.cursor)));
-			-- CS face
-		end if;		
-	end show_selected_line;
+	-- procedure show_selected_line (
+	-- 	selected		: in type_line_segment;
+	-- 	clarification	: in boolean := false)
+	-- is 
+	-- 	praeamble : constant string := "selected: ";
+	-- begin
+	-- 	if clarification then
+	-- 		set_status (praeamble & to_string (element (selected.cursor))
+	-- 			& ". " & status_next_object_clarification);
+	-- 		-- CS face
+	-- 	else
+	-- 		set_status (praeamble & to_string (element (selected.cursor)));
+	-- 		-- CS face
+	-- 	end if;		
+	-- end show_selected_line;
 
 	
 
@@ -121,12 +121,13 @@ package body et_canvas_board_silkscreen is
 		-- use pac_segments;
 		-- selected_segment : pac_segments.cursor; -- of a contour
 
-		selected_line : type_line_segment;
+		-- selected_line : type_line_segment;
 		-- selected_arc : type_arc_segment;
 	begin
 		-- log (text => "set_first_selected_object_moving ...", level => log_threshold);
 
-		selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
+		null;
+		-- selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
 
 		-- CS arcs, circles, zones
 		
@@ -151,16 +152,17 @@ package body et_canvas_board_silkscreen is
 		count_total : natural := 0;
 		
 		procedure select_first_proposed is
-			proposed_line : type_line_segment;
+			-- proposed_line : type_line_segment;
 			use et_object_status;
 		begin
-			proposed_line := get_first_line (active_module, PROPOSED, log_threshold + 1);
+			-- proposed_line := get_first_line (active_module, PROPOSED, log_threshold + 1);
 
 			-- modify_status (active_module, proposed_line.cursor, (SET, SELECTED), log_threshold + 1);
 
 			-- If only one line found, then show it in the status bar:
 			if count = 1 then
-				show_selected_line (proposed_line);
+				null;
+				-- show_selected_line (proposed_line);
 			end if;
 		end select_first_proposed;
 
@@ -234,28 +236,28 @@ package body et_canvas_board_silkscreen is
 			use et_board_ops.silkscreen;
 			use et_object_status;
 
-			selected_line : type_line_segment;
+			-- selected_line : type_line_segment;
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
-			selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
+			-- selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
 
-			if selected_line.cursor /= pac_silk_lines.no_element then
+			-- if selected_line.cursor /= pac_silk_lines.no_element then
 
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
 				-- case object.shape is
 				-- 	when LINE =>
-						move_line (
-							module_cursor	=> active_module,
-							face			=> selected_line.face,
-							line			=> element (selected_line.cursor),
-							point_of_attack	=> object_point_of_attack,
-							-- coordinates		=> ABSOLUTE,
-							destination		=> point,
-							log_threshold	=> log_threshold);
+						-- move_line (
+						-- 	module_cursor	=> active_module,
+						-- 	face			=> selected_line.face,
+						-- 	line			=> element (selected_line.cursor),
+						-- 	point_of_attack	=> object_point_of_attack,
+						-- 	-- coordinates		=> ABSOLUTE,
+						-- 	destination		=> point,
+						-- 	log_threshold	=> log_threshold);
 
 				-- 	when ARC =>
 				-- 		null; -- CS
@@ -267,9 +269,9 @@ package body et_canvas_board_silkscreen is
 
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
-			else
+			-- else
 				log (text => "nothing to do", level => log_threshold);
-			end if;
+			-- end if;
 				
 			log_indentation_down;			
 			set_status (status_move_object);
@@ -337,38 +339,38 @@ package body et_canvas_board_silkscreen is
 			use et_commit;
 			use et_object_status;
 
-			selected_line : type_line_segment;
+			-- selected_line : type_line_segment;
 		begin
 			log (text => "finalizing delete ...", level => log_threshold);
 			log_indentation_up;
 
-			selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
-
-			if selected_line.cursor /= pac_silk_lines.no_element then
-
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-
-					-- case object.shape is
-						-- when LINE =>
-							delete_line (
-								module_cursor	=> active_module,
-								face			=> selected_line.face,
-								line			=> element (selected_line.cursor),
-								log_threshold	=> log_threshold);
-
-					-- 	when ARC =>
-					-- 		null; -- CS
-     -- 
-					-- 	when CIRCLE =>
-					-- 		null; -- CS
-					-- end case;
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
-			else
-				log (text => "nothing to do", level => log_threshold);
-			end if;
+			-- selected_line := get_first_line (active_module, SELECTED, log_threshold + 1);
+   -- 
+			-- if selected_line.cursor /= pac_silk_lines.no_element then
+   -- 
+			-- 	-- Commit the current state of the design:
+			-- 	commit (PRE, verb, noun, log_threshold + 1);
+   -- 
+			-- 		-- case object.shape is
+			-- 			-- when LINE =>
+			-- 				delete_line (
+			-- 					module_cursor	=> active_module,
+			-- 					face			=> selected_line.face,
+			-- 					line			=> element (selected_line.cursor),
+			-- 					log_threshold	=> log_threshold);
+   -- 
+			-- 		-- 	when ARC =>
+			-- 		-- 		null; -- CS
+   --   -- 
+			-- 		-- 	when CIRCLE =>
+			-- 		-- 		null; -- CS
+			-- 		-- end case;
+   -- 
+			-- 	-- Commit the new state of the design:
+			-- 	commit (POST, verb, noun, log_threshold + 1);
+			-- else
+			-- 	log (text => "nothing to do", level => log_threshold);
+			-- end if;
 				
 			log_indentation_down;			
 			set_status (status_delete_object);

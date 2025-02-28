@@ -1341,40 +1341,442 @@ package body et_board_ops.silkscreen is
 	
 
 	
+
+
 	
 
-	function get_first_line (
+	procedure add_text (
 		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
+		face			: in type_face;
+		text			: in type_text_fab_with_content;
 		log_threshold	: in type_log_level)
-		return type_line_segment
-	is
-		result : type_line_segment;
-
+	is 
 		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is begin			
+			case face is
+				when TOP =>
+					append (module.board.silkscreen.top.texts, (text with null record));
+
+				when BOTTOM =>
+					append (module.board.silkscreen.bottom.texts, (text with null record));
+			end case;
+		end query_module;
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " placing text in silkscreen at"
+			& to_string (text.position)
+			& " face" & to_string (face),
+			level => log_threshold);
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+	end add_text;
+
+
+
+
+
+	
+	
+	function get_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		point			: in type_vector_model;
+		zone			: in type_accuracy; -- the circular area around the place
+		log_threshold	: in type_log_level)
+		return pac_silk_texts.list
+	is
+		use et_text;
+		use pac_silk_texts;
+		result : pac_silk_texts.list;
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			proceed : aliased boolean := true;
+			procedure query_text (c : in pac_silk_texts.cursor) is
+				text : type_silk_text renames element (c);
+			begin
+				if within_accuracy (
+					point_1	=> point,
+					zone	=> zone,
+					point_2	=> text.position.place)
+				then
+					log (text => to_string (text.position.place) 
+						& " content " & enclose_in_quotes (to_string (text.content)),
+						level => log_threshold + 2);
+						
+					result.append (text);
+				end if;
+			end query_text;
+			
+		begin
+			case face is
+				when TOP =>
+					module.board.silkscreen.top.texts.iterate (query_text'access);
 
-			top_items 		: pac_silk_lines.list renames module.board.silkscreen.top.lines;
-			bottom_items	: pac_silk_lines.list renames module.board.silkscreen.bottom.lines;
+				when BOTTOM =>
+					module.board.silkscreen.bottom.texts.iterate (query_text'access);
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " face" & to_string (face) 
+			& " looking up silkscreen texts at" & to_string (point) 
+			& " zone" & accuracy_to_string (zone),
+			level => log_threshold);
+		
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log (text => "found" & count_type'image (result.length),
+			 level => log_threshold + 1);
+		
+		log_indentation_down;
+		return result;
+	end get_texts;
+
+
+
+	
+
+	procedure move_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		text			: in type_silk_text;
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+		old_position : constant type_vector_model := get_place (text);
+		new_position : type_vector_model;
+		offset : type_distance_relative;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			text_cursor : pac_silk_texts.cursor;
+
+			procedure query_text (text : in out type_silk_text) is begin
+				move_text (text, offset);
+			end query_text;
+			
+		begin
+			case face is
+				when TOP =>
+					text_cursor := module.board.silkscreen.top.texts.find (text);
+					module.board.silkscreen.top.texts.update_element (text_cursor, query_text'access);
+
+				when BOTTOM =>
+					text_cursor := module.board.silkscreen.bottom.texts.find (text);
+					module.board.silkscreen.bottom.texts.update_element (text_cursor, query_text'access);
+			end case;
+		end query_module;
+
+		
+	begin
+		case coordinates is
+			when ABSOLUTE =>
+				new_position := point;
+				offset := get_distance_relative (old_position, new_position);
+
+			when RELATIVE =>
+				new_position := point;
+				offset := to_distance_relative (point);
+				move_by (new_position, offset);
+		end case;
+		
+		log (text => "module " 
+			& enclose_in_quotes (to_string (key (module_cursor)))
+			& " face" & to_string (face) 
+			& " moving silkscreen text from" & to_string (old_position)
+			& " to" & to_string (new_position), -- CS by offset
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+	end move_text;
+
+
+
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+
+			procedure query_text (text : in out type_silk_text) is begin
+				modify_status (text, operation);
+			end query_text;
+			
+		begin
+			case text.face is
+				when TOP =>
+					module.board.silkscreen.top.texts.update_element (
+						text.cursor, query_text'access);
+
+				when BOTTOM =>
+					module.board.silkscreen.bottom.texts.update_element (
+						text.cursor, query_text'access);
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of text" -- CS log position and content ?
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end modify_status;
+
+	
+
+
+	
+
+	procedure propose_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		face			: in type_face;
+		zone			: in type_accuracy;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			c : pac_silk_texts.cursor;
+
+			procedure query_text (
+				text	: in out type_silk_text)
+			is begin
+				if within_accuracy (
+					point_1	=> point,
+					zone	=> zone,
+					point_2	=> get_place (text))
+				then
+					set_proposed (text);
+					count := count + 1;
+					log (text => to_string (text), level => log_threshold + 1);
+				end if;
+			end query_text;
 
 			
-			procedure query_line (c : in pac_silk_lines.cursor) is
-				line : type_silk_line renames element (c);
-				use et_object_status;
+			procedure query_top is 
+				top : pac_silk_texts.list renames module.board.silkscreen.top.texts;
 			begin
+				if not top.is_empty then
+					c := top.first;
+					while c /= pac_silk_texts.no_element loop
+						top.update_element (c, query_text'access);
+						next (c);
+					end loop;
+				end if;
+			end query_top;
+
+			
+			procedure query_bottom is 
+				bottom : pac_silk_texts.list renames module.board.silkscreen.bottom.texts;
+			begin
+				if not bottom.is_empty then
+					c := bottom.first;
+					while c /= pac_silk_texts.no_element loop
+						bottom.update_element (c, query_text'access);
+						next (c);
+					end loop;
+				end if;
+			end query_bottom;
+
+			
+		begin
+			case face is
+				when TOP	=> query_top;
+				when BOTTOM	=> query_bottom;
+			end case;
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " proposing texts at " & to_string (point)
+			 & " face " & to_string (face)
+			 & " zone " & accuracy_to_string (zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_texts;
+
+
+
+	
+	
+
+	procedure move_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+
+			procedure query_text (text : in out type_silk_text) is begin
+				move_text (text, destination);
+			end query_text;
+			
+		begin
+			case text.face is
+				when TOP =>
+					module.board.silkscreen.top.texts.update_element (
+						text.cursor, query_text'access);
+
+				when BOTTOM =>
+					module.board.silkscreen.bottom.texts.update_element (
+						text.cursor, query_text'access);
+			end case;
+		end query_module;
+		
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " face" & to_string (text.face) 
+			& " moving silkscreen text to "
+			& to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end move_text;
+
+
+	
+
+
+	procedure delete_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			c : pac_silk_texts.cursor := text.cursor;			
+		begin
+			case text.face is
+				when TOP =>
+					module.board.silkscreen.top.texts.delete (c);
+
+				when BOTTOM =>
+					module.board.silkscreen.bottom.texts.delete (c);
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " face" & to_string (text.face) 
+			& " deleting silkscreen text",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end delete_text;
+
+
+
+	
+
+	function get_first_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_text
+	is
+		result : type_object_text;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_silk_texts;
+			
+			proceed : aliased boolean := true;
+
+			top_items 		: pac_silk_texts.list renames module.board.silkscreen.top.texts;
+			bottom_items	: pac_silk_texts.list renames module.board.silkscreen.bottom.texts;
+
+			
+			procedure query_text (c : in pac_silk_texts.cursor) is begin
 				case flag is
 					when PROPOSED =>
-						if is_proposed (line) then
+						if is_proposed (c) then
 							result.cursor := c;
 							proceed := false;
 						end if;
 
 					when SELECTED =>
-						if is_selected (line) then
+						if is_selected (c) then
 							result.cursor := c;
 							proceed := false;
 						end if;
@@ -1382,31 +1784,30 @@ package body et_board_ops.silkscreen is
 					when others =>
 						null; -- CS
 				end case;
-			end query_line;
-			
-
+			end query_text;
+	
 			
 		begin
-			-- Query the objects in the top layer first:
-			iterate (top_items, query_line'access, proceed'access);
+			-- Query the texts in the top layer first:
+			iterate (top_items, query_text'access, proceed'access);
 			result.face := top;
 
 			-- If nothing found, then query the bottom layer:
 			if proceed then
-				iterate (bottom_items, query_line'access, proceed'access);
+				iterate (bottom_items, query_text'access, proceed'access);
 				result.face := bottom;
 			end if;
 
-			-- If still nothing found, error:
+			-- If still nothing found, return TOP and no_element:
 			if proceed then
-				raise constraint_error; -- CS
+				result := (others => <>);	
 			end if;
 		end query_module;
 
-			
+		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up the first line / " & to_string (flag),
+			& " looking up the first text / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1415,325 +1816,134 @@ package body et_board_ops.silkscreen is
 			position	=> module_cursor,
 			process		=> query_module'access);
 
+		-- put_line ("found " & to_string (result));
+		
 		log_indentation_down;
 
 		return result;
-	end get_first_line;
+	end get_first_text;
 
 
 
 	
 
-	procedure next_proposed_line (
+	procedure reset_proposed_texts (
 		module_cursor	: in pac_generic_modules.cursor;
-		line			: in out type_line_segment;
-		-- CS last_item		: in out boolean;
 		log_threshold	: in type_log_level)
 	is
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module)
+			module		: in out type_generic_module) 
 		is
-			top_items 		: pac_silk_lines.list renames module.board.silkscreen.top.lines;
-			bottom_items	: pac_silk_lines.list renames module.board.silkscreen.bottom.lines;
+			top 	: pac_silk_texts.list renames module.board.silkscreen.top.texts;
+			bottom	: pac_silk_texts.list renames module.board.silkscreen.bottom.texts;
+
 			
-			proceed : boolean := true;
-		
-			
-			procedure query_items (
-				items			: in pac_silk_lines.list;
-				start_at_first	: in boolean := false) 
-			is 
-				c : pac_silk_lines.cursor;
-				do_iterate : boolean := false;
-			begin
-				-- If there are no items, then nothing to do.
-				if not items.is_empty then
-					
-					-- Preset the cursor:
-					if start_at_first then
-						c := items.first; -- begin of list
-						do_iterate := true;
-					else
-						c := line.cursor; -- forward to the position given by caller
-						
-						-- Advance to the next item after the given item:
-						if c /= items.last then
-							next (c);
-							do_iterate := true;
-						end if;
-					end if;
+			procedure query_text (
+				text	: in out type_silk_text)
+			is begin
+				reset_status (text);
+			end query_text;
 
 
-					if do_iterate then
-						while c /= pac_silk_lines.no_element loop
-							if is_proposed (c) then
-								line.cursor := c;
-								proceed := false;
-								exit; -- no further probing required
-							end if;
-							
-							next (c);						
-						end loop;
-					end if;
+			c : pac_silk_texts.cursor;
+			
+			procedure query_top is begin
+				if not top.is_empty then
+					c := top.first;
+					while c /= pac_silk_texts.no_element loop
+						top.update_element (c, query_text'access);
+						next (c);
+					end loop;
 				end if;
-			end query_items;
+			end query_top;
+
+			
+			procedure query_bottom is begin
+				if not bottom.is_empty then
+					c := bottom.first;
+					while c /= pac_silk_texts.no_element loop
+						bottom.update_element (c, query_text'access);
+						next (c);
+					end loop;
+				end if;
+			end query_bottom;
 
 			
 		begin
-			case line.face is
-				when TOP =>
-					query_items (top_items);
-
-					-- If nothing found, start searching the bottom items:
-					if proceed then
-						query_items (bottom_items, start_at_first => true);
-					end if;
-
-					-- If still nothing found, search the top items from the begining:
-					if proceed then
-						query_items (top_items, start_at_first => true);
-					end if;
-
-					
-				when BOTTOM =>
-					query_items (bottom_items);
-
-					-- If nothing found, start searching the top items:
-					if proceed then
-						query_items (top_items, start_at_first => true);
-					end if;
-
-					-- If still nothing found, search the bottom items from the begining:
-					if proceed then
-						query_items (bottom_items, start_at_first => true);
-					end if;
-				
-			end case;
-
-
-			-- If still nothing found, error:
-			if proceed then
-				raise constraint_error; -- CS
-			end if;
+			query_top;
+			query_bottom;
 		end query_module;
-		
+
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " advancing to next proposed line",
-			level => log_threshold);
+			 & " resetting proposed texts",
+			 level => log_threshold);
 
 		log_indentation_up;
-		
-		query_element (
+
+		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end next_proposed_line;
-
-
+	end reset_proposed_texts;
 
 
 
 
 
 	
-	procedure draw_arc (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		arc				: in type_silk_arc;		
-		log_threshold	: in type_log_level) 
-	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		procedure add (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is begin
-			case face is
-				when TOP =>
-					append (
-						container	=> module.board.silkscreen.top.arcs,
-						new_item	=> arc);
-
-				when BOTTOM =>
-					append (
-						container	=> module.board.silkscreen.bottom.arcs,
-						new_item	=> arc);
-			end case;
-		end;
-							   
-	begin -- draw_silk_screen_arc
-		log (text => "module " & to_string (module_name) &
-			" drawing silk screen arc" &
-			" face" & to_string (face) &
-			to_string (arc) &
-			" width" & to_string (arc.width),
-
-			level => log_threshold);
-
-		-- locate module
-		module_cursor := locate_module (module_name);
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> add'access);
-
-	end draw_arc;
-
-
-
-	
-	procedure draw_circle (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		circle			: in type_silk_circle;
-		log_threshold	: in type_log_level) 
-	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-
-		procedure add (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is begin
-			case face is
-				when TOP =>
-					append (
-						container	=> module.board.silkscreen.top.circles,
-						new_item	=> circle);
-
-				when BOTTOM =>
-					append (
-						container	=> module.board.silkscreen.bottom.circles,
-						new_item	=> circle);
-
-			end case;
-		end;
-							   
-	begin -- draw_silk_screen_circle
-		log (text => "module " & to_string (module_name) &
-			" drawing silk screen circle" &
-			" face" & to_string (face) &
-			to_string (circle),
-			level => log_threshold);
-
-		-- locate module
-		module_cursor := locate_module (module_name);
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> add'access);
-
-	end draw_circle;
-
-
-
-
-
-
-	procedure draw_zone (
+	procedure add_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
-		zone			: in type_silk_contour;
+		placeholder		: in type_text_placeholder;
 		face			: in type_face;
 		log_threshold	: in type_log_level)
 	is
-		-- When searching among already existing zones then
-		-- this flag is used to abort the iteration prematurely:
-		proceed : boolean := true;
-
 
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
-		is 
-			use pac_silk_contours;
-			c : pac_silk_contours.cursor;
-
-			-- This procedure tests whether the candidate
-			-- zone z is open. If z is open, then it tries
-			-- to merge the given zone into z. If the merge operation
-			-- succeedes then no more zones are iterated (flag proceed):
-			procedure query_zone (z : in out type_silk_contour) is
-				use et_board_shapes_and_text;
-				use pac_contours;
-				mr : type_merge_result;
-			begin
-				-- put_line ("query_zone");
-				if is_open (zone) then
-					--put_line (" is open");
-					merge_contours (z, zone, mr);
-					if mr.successful then
-						--put_line ("  successful");
-						-- No more searching needed -> abort iterator
-						proceed := false;
-					end if;
-				end if;
-			end query_zone;
-
-
+		is
+			use pac_text_placeholders;						
 		begin
 			case face is
 				when TOP =>
-					-- Iterate through the already existing zones:
-					c := module.board.silkscreen.top.zones.first;
+					module.board.silkscreen.top.placeholders.append (placeholder);
 
-					while c /= pac_silk_contours.no_element and proceed loop
-						module.board.silkscreen.top.zones.update_element (c, query_zone'access);
-						next (c);
-					end loop;
-
-					-- If no open zone found, then add the given zone
-					-- as a new zone:
-					if proceed then
-						-- put_line ("added as new zone");
-						log (text => "added as new zone", level => log_threshold + 1);
-						module.board.silkscreen.top.zones.append (zone);
-					end if;
-
-					
 				when BOTTOM =>
-					-- Iterate through the already existing zones:
-					c := module.board.silkscreen.bottom.zones.first;
-
-					while c /= pac_silk_contours.no_element and proceed loop
-						module.board.silkscreen.bottom.zones.update_element (c, query_zone'access);
-						next (c);
-					end loop;
-
-					-- If no open zone found, then add the given zone
-					-- as a new zone:
-					if proceed then
-						log (text => "added as new zone", level => log_threshold + 1);
-						module.board.silkscreen.bottom.zones.append (zone);
-					end if;
+					module.board.silkscreen.bottom.placeholders.append (placeholder);
 			end case;
 		end query_module;
 
-
+		
 	begin
-		log (text => "module " & to_string (module_cursor) 
-			 & "drawing silkscreen zone"			 
-			 & to_string (face)
-			 & " " & to_string (contour => zone, full => true),
+		log (text => "module " & to_string (module_cursor)
+			& " adding text placeholder in silkscreen "
+			& to_string (placeholder)
+			& " face " & to_string (face),
 			level => log_threshold);
+
+		log_indentation_up;
 
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_module'access);
-
-	end draw_zone;
-
-	
-	
+		
+		log_indentation_down;
+	end add_placeholder;
 
 	
-	procedure delete (
+
+
+
+
+	
+	procedure delete_object (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
 		point			: in type_vector_model; -- x/y
@@ -1824,9 +2034,9 @@ package body et_board_ops.silkscreen is
 		end delete;
 
 		
-	begin -- delete_silk_screen
+	begin
 		log (text => "module " & to_string (module_name) &
-			" deleting silkscreen segment face" & to_string (face) &
+			" deleting silkscreen object face" & to_string (face) &
 			" at" & to_string (point) &
 			" zone" & accuracy_to_string (zone),
 			level => log_threshold);
@@ -1839,230 +2049,9 @@ package body et_board_ops.silkscreen is
 			position	=> module_cursor,
 			process		=> delete'access);
 		
-	end delete;
+	end delete_object;
 
 
-	
-
-
-
-
-
-	
-
-	procedure add_text (
-		module_cursor	: in pac_generic_modules.cursor;
-		face			: in type_face;
-		text			: in type_text_fab_with_content;
-		log_threshold	: in type_log_level)
-	is 
-		
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is begin			
-			case face is
-				when TOP =>
-					append (module.board.silkscreen.top.texts, (text with null record));
-
-				when BOTTOM =>
-					append (module.board.silkscreen.bottom.texts, (text with null record));
-			end case;
-		end query_module;
-
-	begin
-		log (text => "module " & to_string (module_cursor)
-			& " placing text in silkscreen at"
-			& to_string (text.position)
-			& " face" & to_string (face),
-			level => log_threshold);
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-	end add_text;
-
-
-
-
-
-	
-	
-	function get_texts (
-		module_cursor	: in pac_generic_modules.cursor;
-		face			: in type_face;
-		point			: in type_vector_model;
-		zone			: in type_accuracy; -- the circular area around the place
-		log_threshold	: in type_log_level)
-		return pac_silk_texts.list
-	is
-		use et_text;
-		use pac_silk_texts;
-		result : pac_silk_texts.list;
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is
-			procedure query_text (c : in pac_silk_texts.cursor) is
-				text : type_silk_text renames element (c);
-			begin
-				if within_accuracy (
-					point_1	=> point,
-					zone	=> zone,
-					point_2	=> text.position.place)
-				then
-					log (text => to_string (text.position.place) 
-						& " content " & enclose_in_quotes (to_string (text.content)),
-						level => log_threshold + 2);
-						
-					result.append (text);
-				end if;
-			end query_text;
-			
-		begin
-			case face is
-				when TOP =>
-					module.board.silkscreen.top.texts.iterate (query_text'access);
-
-				when BOTTOM =>
-					module.board.silkscreen.bottom.texts.iterate (query_text'access);
-			end case;
-		end query_module;
-
-		
-	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " face" & to_string (face) 
-			& " looking up silkscreen texts at" & to_string (point) 
-			& " zone" & accuracy_to_string (zone),
-			level => log_threshold);
-		
-		log_indentation_up;
-		
-		query_element (
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-		log (text => "found" & count_type'image (result.length),
-			 level => log_threshold + 1);
-		
-		log_indentation_down;
-		return result;
-	end get_texts;
-
-
-
-	procedure move_text (
-		module_cursor	: in pac_generic_modules.cursor;
-		face			: in type_face;
-		text			: in type_silk_text;
-		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_vector_model;
-		log_threshold	: in type_log_level)
-	is
-		old_position : constant type_vector_model := get_place (text);
-		new_position : type_vector_model;
-		offset : type_distance_relative;
-
-		
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module)
-		is
-			text_cursor : pac_silk_texts.cursor;
-
-			procedure query_text (text : in out type_silk_text) is begin
-				move_text (text, offset);
-			end query_text;
-			
-		begin
-			case face is
-				when TOP =>
-					text_cursor := module.board.silkscreen.top.texts.find (text);
-					module.board.silkscreen.top.texts.update_element (text_cursor, query_text'access);
-
-				when BOTTOM =>
-					text_cursor := module.board.silkscreen.bottom.texts.find (text);
-					module.board.silkscreen.bottom.texts.update_element (text_cursor, query_text'access);
-			end case;
-		end query_module;
-
-		
-	begin
-		case coordinates is
-			when ABSOLUTE =>
-				new_position := point;
-				offset := get_distance_relative (old_position, new_position);
-
-			when RELATIVE =>
-				new_position := point;
-				offset := to_distance_relative (point);
-				move_by (new_position, offset);
-		end case;
-		
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " face" & to_string (face) 
-			& " moving silkscreen text from" & to_string (old_position)
-			& " to" & to_string (new_position), -- CS by offset
-			level => log_threshold);
-
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_module'access);
-
-	end move_text;
-
-
-
-
-
-	procedure add_placeholder (
-		module_cursor	: in pac_generic_modules.cursor;
-		placeholder		: in type_text_placeholder;
-		face			: in type_face;
-		log_threshold	: in type_log_level)
-	is
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module)
-		is
-			use pac_text_placeholders;						
-		begin
-			case face is
-				when TOP =>
-					module.board.silkscreen.top.placeholders.append (placeholder);
-
-				when BOTTOM =>
-					module.board.silkscreen.bottom.placeholders.append (placeholder);
-			end case;
-		end query_module;
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor)
-			& " adding text placeholder in silkscreen "
-			& to_string (placeholder)
-			& " face " & to_string (face),
-			level => log_threshold);
-
-		log_indentation_up;
-
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_module'access);
-		
-		log_indentation_down;
-	end add_placeholder;
-
-	
 
 	
 	

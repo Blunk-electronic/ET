@@ -153,6 +153,7 @@ package et_board_ops.silkscreen is
 		log_threshold	: in type_log_level);
 
 
+	
 
 -- CIRCLES:
 	
@@ -258,86 +259,7 @@ package et_board_ops.silkscreen is
 		log_threshold	: in type_log_level);
 
 
-	
-	
-	-- This composite type is required to distinguish
-	-- between top and bottom lines when lines are seached for:
-	type type_line_segment is record
-		face	: type_face;
-		cursor	: pac_silk_lines.cursor;
-	end record;
-	-- CS remove
-
-	
-	-- Returns the first line according to the given flag.
-	-- If no line has been found, then the return is no_element:
-	function get_first_line (
-		module_cursor	: in pac_generic_modules.cursor;
-		flag			: in type_flag;								 
-		log_threshold	: in type_log_level)
-		return type_line_segment;
-
-
-	-- Advances to the next proposed line, starting at
-	-- the given line. Traverses through the lines
-	-- in a circular manner. If there are no
-	-- proposed lines, then line assumes default value (no_element).
-	-- If there is only one proposed line, then line is unchanged.
-	-- CS last_item indicates that the last line has been reached:
-	procedure next_proposed_line (
-		module_cursor	: in pac_generic_modules.cursor;
-		line			: in out type_line_segment;
-		-- CS last_item		: in out boolean;
-		log_threshold	: in type_log_level);
-
-	
-	
-	
-	-- Draws an arc in the PCB silk_screen.
-	procedure draw_arc (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		arc				: in type_silk_arc;
-		log_threshold	: in type_log_level);
-
-	
-	-- Draws a circle in the PCB silk_screen.
-	procedure draw_circle (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;	
-		circle			: in type_silk_circle;
-		log_threshold	: in type_log_level);
-
-
-	-- Draws a zone in the silkscreen layer.
-	-- The given zone can consist of a single segment or a
-	-- fragment of a zone contour.
-	-- 1. If the given zone is a single segment or a fragment
-	--    then the procedure serches for already existing zones
-	--    which are incomplete (or open) and tries to append or prepend
-	--    the given zone to one of the existing open zones.
-	-- 2. If this attempt fails, then the given zone is regarded as 
-	--    a new zone.
-	-- 3. If all existing zones are already closed, then the given zone
-	--    is regarded a a new zone and added to the existing zones.
-	procedure draw_zone (
-		module_cursor	: in pac_generic_modules.cursor;
-		zone			: in type_silk_contour;
-		face			: in type_face;
-		log_threshold	: in type_log_level);
-
-
-	
-	-- Deletes the segment of the silkscreen in the zone
-	-- around the given point.
-	-- CS currently deletes the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-	procedure delete (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		point			: in type_vector_model; -- x/y
-		zone			: in type_accuracy;
-		log_threshold	: in type_log_level);
+		
 
 	
 
@@ -377,6 +299,65 @@ package et_board_ops.silkscreen is
 
 
 
+
+	-- This composite type helps to identify a
+	-- text by its face:
+	type type_object_text is record
+		face	: type_face := TOP;
+		cursor	: pac_silk_texts.cursor := pac_silk_texts.no_element;
+	end record;
+
+
+	-- This procedure sets the status flag of the
+	-- given text object:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+
+	-- Sets the proposed-flag of all texts which have their
+	-- origin (or anchor point) in the given zone around the given place.
+	-- Adds to count the number of texts that have been found:
+	procedure propose_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		face			: in type_face;
+		zone			: in type_accuracy; -- the circular area around the place
+		count			: in out natural;
+		log_threshold	: in type_log_level);
+	
+
+	procedure move_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+	
+	procedure delete_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		log_threshold	: in type_log_level);
+
+
+	function get_first_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_text;
+
+
+	-- Clears the proposed-flag and the selected-flag 
+	-- of all texts:
+	procedure reset_proposed_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+	
+
+	
 	
 -- TEXT PLACEHOLDERS:
 
@@ -392,6 +373,18 @@ package et_board_ops.silkscreen is
 	
 	-- CS
 	-- move_placeholder via commandline
+
+
+	-- Deletes the object in the zone around the given point.
+	-- CS currently deletes the first segment found. Leaves other segments untouched.
+	-- CS a parameter like "all" to delete all segments in the vicinity of point.
+	procedure delete_object (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		point			: in type_vector_model; -- x/y
+		zone			: in type_accuracy;
+		log_threshold	: in type_log_level);
+
 
 	
 end et_board_ops.silkscreen;

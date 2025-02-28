@@ -1745,7 +1745,6 @@ package body et_board_ops.assy_doc is
 
 			procedure query_text (text : in out type_doc_text) is begin
 				move_text (text, offset);
-				-- move_vector_text (text.vectors, offset);
 			end query_text;
 			
 		begin
