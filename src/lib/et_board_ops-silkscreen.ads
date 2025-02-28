@@ -227,6 +227,37 @@ package et_board_ops.silkscreen is
 
 
 	
+
+	-- Returns the first line or arc segment according to the given flag.
+	-- If no segment has been found, then the return is no_element:
+	function get_first_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_segment;
+
+
+
+	-- Moves a line or arc segment of a zone:
+	-- CS currently it moves only a single segment.
+	-- CS provide parameter for move mode (move attached segments, move whole contour)
+	procedure move_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Deletes a line or arc segment of a zone:
+	procedure delete_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		log_threshold	: in type_log_level);
+
+
 	
 	
 	-- This composite type is required to distinguish

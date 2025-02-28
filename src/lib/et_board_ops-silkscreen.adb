@@ -1064,7 +1064,280 @@ package body et_board_ops.silkscreen is
 
 
 
+	function get_first_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_segment
+	is
+		use pac_contours;
+		result : type_object_segment;
 
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_contours;
+			use pac_segments;
+			use pac_silk_contours;
+			
+			proceed : aliased boolean := true;
+
+			face : type_face := TOP;
+			
+			
+			procedure query_zone (z : in pac_silk_contours.cursor) is 
+
+				procedure query_segment (
+					c : in pac_segments.cursor) 
+				is begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (c) then
+								result.segment := c;
+								result.zone := z;
+								result.face := face;
+								proceed := false;
+
+								log (text => to_string (c), level => log_threshold + 1);
+							end if;
+
+						when SELECTED =>
+							if is_selected (c) then
+								result.segment := c;
+								result.zone := z;
+								result.face := face;
+								proceed := false;
+
+								log (text => to_string (c), level => log_threshold + 1);
+							end if;
+
+						when others =>
+							null; -- CS
+					end case;
+				end query_segment;
+				
+				
+				procedure query_segments (z : in type_silk_contour) is begin
+					iterate (
+						segments	=> z.contour.segments,
+						process		=> query_segment'access,
+						proceed		=> proceed'access);				
+				end query_segments;
+
+				
+			begin
+				if element (z).contour.circular then
+					null; -- CS
+				else
+					query_element (z, query_segments'access);
+				end if;
+			end query_zone;
+
+			
+		begin
+			-- Iterate the zones in top layer:
+			iterate (
+				zones	=> module.board.silkscreen.top.zones,
+				process	=> query_zone'access, 
+				proceed	=> proceed'access);
+
+			
+			-- If nothing found, iterate the bottom layer:
+			if proceed then
+				face := BOTTOM;
+				
+				iterate (
+					zones	=> module.board.silkscreen.bottom.zones,
+					process	=> query_zone'access, 
+					proceed	=> proceed'access);
+
+			end if;
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first segment / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- put_line ("found " & to_string (result));
+		
+		log_indentation_down;
+
+		return result;
+	end get_first_segment;
+
+
+
+
+
+
+	procedure move_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+		use pac_contours;
+		use pac_segments;
+		use pac_silk_contours;
+				
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			-- Moves the candidate segment:
+			procedure do_it (s : in out type_segment) is begin
+				case s.shape is
+					when LINE =>
+						move_line_to (s.segment_line, point_of_attack, destination);
+
+					when ARC =>
+						null;
+						-- CS
+				end case;
+			end do_it;
+
+			
+			procedure query_zone (
+				zone : in out type_silk_contour)
+			is 
+				c : pac_segments.cursor;
+			begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					-- Locate the given segment in 
+					-- the candidate zone:
+					update_element (
+						container	=> zone.contour.segments,
+						position	=> segment.segment,
+						process		=> do_it'access);
+
+				end if;
+			end query_zone;
+	
+			
+		begin
+			-- Search for the given segment according to the 
+			-- given zone and face:
+			case segment.face is
+				when TOP =>
+					update_element (
+						container	=> module.board.silkscreen.top.zones, 
+						position	=> segment.zone, 
+						process		=> query_zone'access);
+
+				when BOTTOM =>
+					update_element (
+						container	=> module.board.silkscreen.bottom.zones, 
+						position	=> segment.zone, 
+						process		=> query_zone'access);
+
+			end case;
+		end query_module;
+		
+				
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving silkscreen zone segment " & to_string (segment.segment)
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- log (text => "new outline:" & to_string (get_outline (module_cursor), true),
+		-- 	 level => log_threshold + 1);
+		
+		log_indentation_down;
+	end move_segment;
+
+
+	
+
+
+
+	procedure delete_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		log_threshold	: in type_log_level)
+	is
+		use pac_contours;
+		use pac_segments;
+		use pac_silk_contours;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_zone (
+				zone : in out type_silk_contour)
+			is 
+				c : pac_segments.cursor;
+			begin
+				if zone.contour.circular then
+					null; -- CS
+				else
+					-- Delete the given segment:
+					c := segment.segment;					
+					zone.contour.segments.delete (c);
+				end if;
+			end query_zone;
+	
+			
+		begin
+			-- Search for the given segment according to the 
+			-- given zone and face:
+			case segment.face is
+				when TOP =>
+					update_element (
+						container	=> module.board.silkscreen.top.zones, 
+						position	=> segment.zone, 
+						process		=> query_zone'access);
+
+				when BOTTOM =>
+					update_element (
+						container	=> module.board.silkscreen.bottom.zones, 
+						position	=> segment.zone, 
+						process		=> query_zone'access);
+
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " deleting silkscreen zone segment " 
+			& to_string (segment.segment),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end delete_segment;
 	
 
 	
