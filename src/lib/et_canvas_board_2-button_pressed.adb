@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -220,8 +220,7 @@ is
 
 					when NOUN_SILKSCREEN =>
 						if clarification_pending then
-							null;
-							-- CS et_canvas_board_silkscreen.clarify_object;
+							et_canvas_board_silkscreen.clarify_object;
 						end if;
 
 					when NOUN_CONDUCTORS =>
@@ -316,8 +315,7 @@ is
 
 					when NOUN_SILKSCREEN =>
 						if clarification_pending then
-							null;
-							-- CS et_canvas_board_silkscreen.clarify_object;
+							et_canvas_board_silkscreen.clarify_object;
 						end if;
 					
 					when NOUN_NON_ELECTRICAL_DEVICE =>

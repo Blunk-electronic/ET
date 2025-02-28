@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -161,10 +161,10 @@ is
 						
 					when NOUN_ASSY =>
 						et_canvas_board_assy_doc.delete_object (point);
--- 
--- 					when NOUN_SILKSCREEN =>
--- 						et_canvas_board_silkscreen.delete_object (point);
--- 
+
+					when NOUN_SILKSCREEN =>
+						et_canvas_board_silkscreen.delete_object (point);
+
 -- 
 -- 					when NOUN_NON_ELECTRICAL_DEVICE =>
 -- 						delete_non_electrical_device (KEYBOARD, point);
@@ -185,12 +185,12 @@ is
 						if clarification_pending then
 							et_canvas_board_assy_doc.clarify_object;
 						end if;
--- 
--- 					when NOUN_SILKSCREEN =>
--- 						if clarification_pending then
--- 							et_canvas_board_silkscreen.select_object;
--- 						end if;
--- 					
+
+					when NOUN_SILKSCREEN =>
+						if clarification_pending then
+							et_canvas_board_silkscreen.clarify_object;
+						end if;
+					
 -- 					when NOUN_NON_ELECTRICAL_DEVICE =>
 -- 						if clarification_pending then
 -- 							select_non_electrical_device;
@@ -395,8 +395,7 @@ is
 
 					when NOUN_SILKSCREEN =>
 						if clarification_pending then
-							null;
-							-- CS et_canvas_board_silkscreen.clarify_object;
+							et_canvas_board_silkscreen.clarify_object;
 						end if;
 
 					when NOUN_CONDUCTORS =>

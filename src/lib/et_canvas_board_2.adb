@@ -822,8 +822,6 @@ package body et_canvas_board_2 is
 		-- properties of the preliminary object:
 		reset_preliminary_object;
 		
-		-- et_canvas_board_lines.remove_properties_bar;		
-		-- et_canvas_board_zone.remove_properties_bar;
 		clear_out_properties_box;
 		
 		reset_preliminary_text; -- after placing a text
@@ -836,8 +834,7 @@ package body et_canvas_board_2 is
 		reset_preliminary_non_electrical_device;
 
 		et_board_ops.assy_doc.reset_proposed_objects (active_module, log_threshold + 1);
-		
-		et_board_ops.silkscreen.reset_proposed_lines (active_module, log_threshold + 1);
+		et_board_ops.silkscreen.reset_proposed_objects (active_module, log_threshold + 1);
 
 		et_board_ops.conductors.reset_proposed_lines (
 			module_cursor	=> active_module, 
@@ -855,6 +852,8 @@ package body et_canvas_board_2 is
 	end reset;
 	
 
+
+	
 	procedure key_pressed (
 		key			: in gdk_key_type;
 		key_shift	: in gdk_modifier_type)
