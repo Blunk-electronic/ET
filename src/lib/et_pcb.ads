@@ -116,8 +116,9 @@ package et_pcb is
 	
 -- CONTOUR / OUTLINE / HOLES / EDGE CUTS
 
-	
-	type type_pcb_contours is record -- PCB contour defined for the PCB as a whole
+	-- The board contour consists of the outer edges
+	-- and holes:
+	type type_board_contour is record
 		outline	: type_outer_contour;
 		holes	: pac_holes.list;
 	end record;
@@ -379,7 +380,7 @@ package et_pcb is
 		-- (lines, arcs, circles, text, text placeholders, zones):
 		conductors_floating	: type_conductors_floating;
 		
-		board_contour	: type_pcb_contours; -- pcb outline
+		board_contour	: type_board_contour; -- outer and inner edges
 
 		user_settings	: type_user_settings;
 	end record;

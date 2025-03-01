@@ -3370,8 +3370,8 @@ package body et_kicad.pcb is
 
 						
 					when EDGE_CUTS =>
-						append (board.contours.outline.contour.segments, (ARC, pac_geometry_2.type_arc (board_arc)));
-						pcb_contour_segment_properties (board.contours.outline.contour.segments.last, log_threshold + 1);
+						append (board.contour.outline.contour.segments, (ARC, pac_geometry_2.type_arc (board_arc)));
+						pcb_contour_segment_properties (board.contour.outline.contour.segments.last, log_threshold + 1);
 						
 					when others => invalid_layer;
 				end case;
@@ -3450,8 +3450,8 @@ package body et_kicad.pcb is
 						
 						
 					when EDGE_CUTS =>
-						board.contours.outline.contour.circle := pac_geometry_2.type_circle (board_circle);
-						pcb_contour_circle_properties (board.contours.outline.contour.circle, log_threshold + 1);
+						board.contour.outline.contour.circle := pac_geometry_2.type_circle (board_circle);
+						pcb_contour_circle_properties (board.contour.outline.contour.circle, log_threshold + 1);
 						
 						
 					when others => invalid_layer;
@@ -3509,8 +3509,8 @@ package body et_kicad.pcb is
 
 						
 					when EDGE_CUTS =>
-						append (board.contours.outline.contour.segments, (LINE, pac_geometry_2.type_line (board_line)));
-						pcb_contour_segment_properties (board.contours.outline.contour.segments.last, log_threshold + 1);
+						append (board.contour.outline.contour.segments, (LINE, pac_geometry_2.type_line (board_line)));
+						pcb_contour_segment_properties (board.contour.outline.contour.segments.last, log_threshold + 1);
 
 						
 					when others => invalid_layer;
@@ -5340,7 +5340,7 @@ package body et_kicad.pcb is
 				module.board.stencil 		:= board.stencil;
 				module.board.stopmask 		:= board.stop_mask;
 				module.board.keepout 		:= board.keepout;
-				module.board.board_contour	:= board.contours;
+				module.board.board_contour	:= board.contour;
 
 				-- segments, vias and polygons (only those polygons that are connected with a net)
 				log_indentation_up;

@@ -750,7 +750,7 @@ is
 					use et_pcb;
 					use pac_holes;
 
-					contours : type_pcb_contours renames module.board.board_contour;
+					contour : type_board_contour renames module.board.board_contour;
 					
 					procedure query_hole (c : in pac_holes.cursor) is 
 						h : type_hole renames element (c);
@@ -760,7 +760,7 @@ is
 					end query_hole;
 					
 				begin
-					iterate (contours.holes, query_hole'access);
+					iterate (contour.holes, query_hole'access);
 				end query_holes;
 
 				

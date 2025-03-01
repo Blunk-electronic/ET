@@ -710,7 +710,7 @@ package et_kicad.pcb is
 		stencil		: type_stencil_both_sides;
 		stop_mask	: et_pcb.type_stop_mask_both_sides;
 		keepout		: type_keepout_both_sides;		
-		contours	: et_pcb.type_pcb_contours;
+		contour		: et_pcb.type_board_contour;
 
 		 -- non-electric. used for texts only
 		copper		: et_pcb.type_conductors_floating;
