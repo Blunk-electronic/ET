@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -202,14 +202,14 @@ begin -- draw_stop
 		position	=> active_module,
 		process		=> query_items'access);
 
-	draw_text_being_placed (face, LAYER_CAT_STOP);
+	draw_text_being_placed (face, LAYER_CAT_STOPMASK);
 
 	-- Draw the lines of a path that is being drawn:
-	draw_path (LAYER_CAT_STOP);
+	draw_path (LAYER_CAT_STOPMASK);
 
 	
 	-- Draw the zone begin drawn:
-	draw_live_zone (LAYER_CAT_STOP);
+	draw_live_zone (LAYER_CAT_STOPMASK);
 	
 end draw_stop;
 

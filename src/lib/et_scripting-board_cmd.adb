@@ -1388,7 +1388,7 @@ is
 							place_in_silkscreen;
 
 							
-						when LAYER_CAT_STOP =>						
+						when LAYER_CAT_STOPMASK =>						
 							face := to_face (f (6)); -- top/bottom
 							
 							if face = BOTTOM then
@@ -1577,7 +1577,7 @@ is
 						place_in_silkscreen;
 
 
-					when LAYER_CAT_STOP =>
+					when LAYER_CAT_STOPMASK =>
 
 						face := to_face (f (6)); -- top/bottom
 						if face = BOTTOM then

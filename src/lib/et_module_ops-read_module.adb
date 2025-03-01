@@ -3338,7 +3338,7 @@ is
 										container	=> module.board.stencil.top.lines,
 										new_item	=> (type_line (board_line) with board_line_width));
 									
-								when LAYER_CAT_STOP =>
+								when LAYER_CAT_STOPMASK =>
 									pac_stop_lines.append (
 										container	=> module.board.stopmask.top.lines,
 										new_item	=> (type_line (board_line) with board_line_width));
@@ -3363,7 +3363,7 @@ is
 										container	=> module.board.stencil.bottom.lines,
 										new_item	=> (type_line (board_line) with board_line_width));
 									
-								when LAYER_CAT_STOP =>
+								when LAYER_CAT_STOPMASK =>
 									pac_stop_lines.append (
 										container	=> module.board.stopmask.bottom.lines,
 										new_item	=> (type_line (board_line) with board_line_width));
@@ -3433,7 +3433,7 @@ is
 										container	=> module.board.stencil.top.arcs,
 										new_item	=> (type_arc (board_arc) with board_line_width));
 									
-								when LAYER_CAT_STOP =>
+								when LAYER_CAT_STOPMASK =>
 									pac_stop_arcs.append (
 										container	=> module.board.stopmask.top.arcs,
 										new_item	=> (type_arc (board_arc) with board_line_width));
@@ -3459,7 +3459,7 @@ is
 										container	=> module.board.stencil.bottom.arcs,
 										new_item	=> (type_arc (board_arc) with board_line_width));
 									
-								when LAYER_CAT_STOP =>
+								when LAYER_CAT_STOPMASK =>
 									pac_stop_arcs.append (
 										container	=> module.board.stopmask.bottom.arcs,
 										new_item	=> (type_arc (board_arc) with board_line_width));
@@ -3529,7 +3529,7 @@ is
 										container	=> module.board.stencil.top.circles,
 										new_item	=> (type_circle (board_circle) with board_line_width));
 									
-								when LAYER_CAT_STOP =>
+								when LAYER_CAT_STOPMASK =>
 									pac_stop_circles.append (
 										container	=> module.board.stopmask.top.circles,
 										new_item	=> (type_circle (board_circle) with board_line_width));
@@ -3554,7 +3554,7 @@ is
 										container	=> module.board.stencil.bottom.circles,
 										new_item	=> (type_circle (board_circle) with board_line_width));
 									
-								when LAYER_CAT_STOP =>
+								when LAYER_CAT_STOPMASK =>
 									pac_stop_circles.append (
 										container	=> module.board.stopmask.bottom.circles,
 										new_item	=> (type_circle (board_circle) with board_line_width));
@@ -3690,7 +3690,7 @@ is
 								when LAYER_CAT_STENCIL =>
 									append_stencil_polygon_top;
 									
-								when LAYER_CAT_STOP =>
+								when LAYER_CAT_STOPMASK =>
 									append_stop_polygon_top;
 									
 								when LAYER_CAT_KEEPOUT =>
@@ -3710,7 +3710,7 @@ is
 								when LAYER_CAT_STENCIL =>
 									append_stencil_polygon_bottom;
 									
-								when LAYER_CAT_STOP =>
+								when LAYER_CAT_STOPMASK =>
 									append_stop_polygon_bottom;
 									
 								when LAYER_CAT_KEEPOUT =>
@@ -3935,7 +3935,7 @@ is
 										container	=> module.board.assy_doc.top.placeholders,
 										new_item	=> board_text_placeholder);
 
-								when LAYER_CAT_STOP =>
+								when LAYER_CAT_STOPMASK =>
 									pac_text_placeholders.append (
 										container	=> module.board.stopmask.top.placeholders,
 										new_item	=> board_text_placeholder);
@@ -3963,7 +3963,7 @@ is
 										container	=> module.board.assy_doc.bottom.placeholders,
 										new_item	=> board_text_placeholder);
 									
-								when LAYER_CAT_STOP =>
+								when LAYER_CAT_STOPMASK =>
 									pac_text_placeholders.append (
 										container	=> module.board.stopmask.bottom.placeholders,
 										new_item	=> board_text_placeholder);
@@ -4546,7 +4546,7 @@ is
 
 					when SEC_STOPMASK =>
 						insert_line (
-							layer_cat	=> LAYER_CAT_STOP,
+							layer_cat	=> LAYER_CAT_STOPMASK,
 							face		=> face);
 
 					when SEC_KEEPOUT =>
@@ -4586,7 +4586,7 @@ is
 
 					when SEC_STOPMASK =>
 						insert_arc (
-							layer_cat	=> LAYER_CAT_STOP,
+							layer_cat	=> LAYER_CAT_STOPMASK,
 							face		=> face);
 
 					when SEC_KEEPOUT =>
@@ -4623,7 +4623,7 @@ is
 
 					when SEC_STOPMASK =>
 						insert_circle (
-							layer_cat	=> LAYER_CAT_STOP,
+							layer_cat	=> LAYER_CAT_STOPMASK,
 							face		=> face);
 
 					when SEC_KEEPOUT =>
@@ -4873,7 +4873,7 @@ is
 
 					when SEC_STOPMASK =>
 						insert_cutout (
-							layer_cat	=> LAYER_CAT_STOP,
+							layer_cat	=> LAYER_CAT_STOPMASK,
 							face		=> face);
 
 					when SEC_KEEPOUT =>
@@ -4910,7 +4910,7 @@ is
 
 					when SEC_STOPMASK =>
 						insert_polygon (
-							layer_cat	=> LAYER_CAT_STOP,
+							layer_cat	=> LAYER_CAT_STOPMASK,
 							face		=> face);
 
 					when SEC_KEEPOUT =>
@@ -4961,7 +4961,7 @@ is
 											container	=> module.board.assy_doc.top.texts,
 											new_item	=> (board_text with null record));
 
-									when LAYER_CAT_STOP =>
+									when LAYER_CAT_STOPMASK =>
 										pac_stop_texts.append (
 											container	=> module.board.stopmask.top.texts,
 											new_item	=> (board_text with null record));
@@ -4981,7 +4981,7 @@ is
 											container	=> module.board.assy_doc.bottom.texts,
 											new_item	=> (board_text with null record));
 
-									when LAYER_CAT_STOP =>
+									when LAYER_CAT_STOPMASK =>
 										pac_stop_texts.append (
 											container	=> module.board.stopmask.bottom.texts,
 											new_item	=> (board_text with null record));
@@ -5016,7 +5016,7 @@ is
 						insert_text (LAYER_CAT_STENCIL);
 						
 					when SEC_STOPMASK =>
-						insert_text (LAYER_CAT_STOP);
+						insert_text (LAYER_CAT_STOPMASK);
 						
 					when others => invalid_section;
 				end case;
@@ -5648,7 +5648,7 @@ is
 
 								when SEC_STOPMASK =>
 									insert_placeholder (
-										layer_cat	=> LAYER_CAT_STOP,
+										layer_cat	=> LAYER_CAT_STOPMASK,
 										face		=> et_pcb_sides.TOP);
 
 								when others => invalid_section;
@@ -5668,7 +5668,7 @@ is
 
 								when SEC_STOPMASK =>
 									insert_placeholder (
-										layer_cat	=> LAYER_CAT_STOP,
+										layer_cat	=> LAYER_CAT_STOPMASK,
 										face		=> et_pcb_sides.BOTTOM);
 
 								when others => invalid_section;

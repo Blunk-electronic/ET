@@ -95,7 +95,7 @@ package body et_canvas_board_lines is
 		layer_categories.append (LAYER_CAT_SILKSCREEN);
 		layer_categories.append (LAYER_CAT_ROUTE_RESTRICT);
 		layer_categories.append (LAYER_CAT_STENCIL);
-		layer_categories.append (LAYER_CAT_STOP);
+		layer_categories.append (LAYER_CAT_STOPMASK);
 	end make_affected_layer_categories;
 	
 
@@ -136,7 +136,7 @@ package body et_canvas_board_lines is
 			when LAYER_CAT_STENCIL =>
 				enable_stencil (object_face);
 
-			when LAYER_CAT_STOP =>
+			when LAYER_CAT_STOPMASK =>
 				enable_stopmask (object_face);
 				
 			when others => null;
@@ -176,7 +176,7 @@ package body et_canvas_board_lines is
 			when LAYER_CAT_STENCIL =>
 				enable_stencil (object_face);
 
-			when LAYER_CAT_STOP =>
+			when LAYER_CAT_STOPMASK =>
 				enable_stopmask (object_face);
 				
 			when others => null;
@@ -591,7 +591,7 @@ package body et_canvas_board_lines is
 
 					
 					
-				when LAYER_CAT_STOP =>
+				when LAYER_CAT_STOPMASK =>
 					
 					et_board_ops.stopmask.add_line (
 						module_name	=> pac_generic_modules.key (active_module),

@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -63,7 +63,7 @@ package et_board_layer_category is
 		-- These layers are paired. Means there is a TOP and a BOTTOM:
 		LAYER_CAT_SILKSCREEN,
 		LAYER_CAT_ASSY,
-		LAYER_CAT_STOP,
+		LAYER_CAT_STOPMASK,
 		
 		LAYER_CAT_KEEPOUT,
 		LAYER_CAT_STENCIL,

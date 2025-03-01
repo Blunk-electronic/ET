@@ -98,7 +98,7 @@ package body et_canvas_board_zone is
 		layer_categories.append (LAYER_CAT_ASSY);
 		layer_categories.append (LAYER_CAT_KEEPOUT);
 		layer_categories.append (LAYER_CAT_SILKSCREEN);
-		layer_categories.append (LAYER_CAT_STOP);
+		layer_categories.append (LAYER_CAT_STOPMASK);
 		layer_categories.append (LAYER_CAT_STENCIL);
 		layer_categories.append (LAYER_CAT_VIA_RESTRICT);
 	end make_affected_layer_categories;
@@ -136,7 +136,7 @@ package body et_canvas_board_zone is
 			when LAYER_CAT_SILKSCREEN =>
 				enable_silkscreen (object_face);
 
-			when LAYER_CAT_STOP =>
+			when LAYER_CAT_STOPMASK =>
 				enable_stopmask (object_face);
 
 			when LAYER_CAT_STENCIL =>
@@ -182,7 +182,7 @@ package body et_canvas_board_zone is
 			when LAYER_CAT_SILKSCREEN =>
 				enable_silkscreen (object_face);
 
-			when LAYER_CAT_STOP =>
+			when LAYER_CAT_STOPMASK =>
 				enable_stopmask (object_face);
 
 			when LAYER_CAT_STENCIL =>
@@ -491,7 +491,7 @@ package body et_canvas_board_zone is
 						log_threshold	=> log_threshold);
 
 
-				when LAYER_CAT_STOP =>
+				when LAYER_CAT_STOPMASK =>
 
 					-- Add the temporary zone to the board:
 					et_board_ops.stopmask.add_zone (

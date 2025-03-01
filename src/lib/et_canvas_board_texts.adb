@@ -102,7 +102,7 @@ package body et_canvas_board_texts is
 		layer_categories.append (LAYER_CAT_ASSY);
 		layer_categories.append (LAYER_CAT_CONDUCTOR);
 		layer_categories.append (LAYER_CAT_SILKSCREEN);
-		layer_categories.append (LAYER_CAT_STOP);
+		layer_categories.append (LAYER_CAT_STOPMASK);
 	end make_affected_layer_categories;
 
 	
@@ -177,7 +177,7 @@ package body et_canvas_board_texts is
 			when LAYER_CAT_SILKSCREEN =>
 				enable_silkscreen (object_face);
 
-			when LAYER_CAT_STOP =>
+			when LAYER_CAT_STOPMASK =>
 				enable_stopmask (object_face);
 
 			when others => null;
@@ -772,7 +772,7 @@ package body et_canvas_board_texts is
 						log_threshold	=> log_threshold + 1);
 
 
-				when LAYER_CAT_STOP =>
+				when LAYER_CAT_STOPMASK =>
 					
 					et_board_ops.stopmask.add_text (
 						module_cursor 	=> active_module,
