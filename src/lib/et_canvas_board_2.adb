@@ -80,7 +80,7 @@ with et_canvas_board_devices;
 with et_canvas_board_assy_doc;
 with et_canvas_board_silkscreen;
 with et_canvas_board_stopmask;
--- with et_canvas_board_stencil;
+with et_canvas_board_stencil;
 with et_canvas_board_tracks;
 with et_canvas_board_conductors;
 

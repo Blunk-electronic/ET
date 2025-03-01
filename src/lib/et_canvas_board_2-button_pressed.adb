@@ -80,6 +80,9 @@ is
 
 					when NOUN_STOPMASK =>
 						et_canvas_board_stopmask.move_object (MOUSE, snap_point);
+
+					when NOUN_STENCIL =>
+						et_canvas_board_stencil.move_object (MOUSE, snap_point);
 						
 					when NOUN_CONDUCTORS =>
 						et_canvas_board_conductors.move_object (MOUSE, snap_point);
@@ -170,6 +173,9 @@ is
 					when NOUN_STOPMASK =>
 						et_canvas_board_stopmask.delete_object (event.point);
 
+					when NOUN_STENCIL =>
+						et_canvas_board_stencil.delete_object (event.point);
+						
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						et_canvas_board_devices.delete_non_electrical_device (MOUSE, event.point);
 
@@ -230,6 +236,11 @@ is
 					when NOUN_STOPMASK =>
 						if clarification_pending then
 							et_canvas_board_stopmask.clarify_object;
+						end if;
+
+					when NOUN_STENCIL =>
+						if clarification_pending then
+							et_canvas_board_stencil.clarify_object;
 						end if;
 						
 					when NOUN_CONDUCTORS =>

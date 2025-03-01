@@ -346,6 +346,12 @@ package et_board_ops.stencil is
 
 
 
+
+	procedure delete_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level);
+
 	
 	
 	

@@ -81,7 +81,7 @@ begin
 						redraw_board;
 					end if;
 
-				when NOUN_STOPMASK =>
+				when NOUN_STOPMASK | NOUN_STENCIL =>
 					if object_ready then
 						redraw_board;
 					end if;

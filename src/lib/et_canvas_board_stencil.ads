@@ -1,8 +1,8 @@
 ------------------------------------------------------------------------------
 --                                                                          --
---                             SYSTEM ET                                    --
+--                              SYSTEM ET                                   --
 --                                                                          --
---                       BOARD VERB AND NOUN KEYS                           --
+--                      CANVAS BOARD / STENCIL                              --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -35,67 +35,88 @@
 --
 --   history of changes:
 --
---   ToDo: 
+-- DESCRIPTION:
+-- 
+
+with ada.containers;   			       	use ada.containers;
+with ada.containers.indefinite_doubly_linked_lists;
+
+with gtk.box;							use gtk.box;
+
+with et_primitive_objects;				use et_primitive_objects;
+with et_pcb_sides;						use et_pcb_sides;
+with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
+use et_pcb_coordinates_2.pac_geometry_2;
+
+with et_canvas_tool;					use et_canvas_tool;
+with et_canvas_messages;				use et_canvas_messages;
+
+with et_canvas_board_lines;				use et_canvas_board_lines;
 
 
-with gdk.types;						use gdk.types;
-with gdk.types.keysyms;				use gdk.types.keysyms;
-
-
-package et_board_verb_noun_keys is
-
--- VERBS:
+package et_canvas_board_stencil is
 	
-	key_verb_clear		: constant gdk_key_type := GDK_LC_c;
-	key_verb_delete		: constant gdk_key_type := GDK_Delete;
-	key_verb_draw		: constant gdk_key_type := GDK_LC_d;
-	key_verb_fill		: constant gdk_key_type := GDK_LC_f;
-	key_verb_flip		: constant gdk_key_type := GDK_LC_l;
-	key_verb_move		: constant gdk_key_type := GDK_LC_m;
-	key_verb_rotate		: constant gdk_key_type := GDK_LC_o;
-	key_verb_route		: constant gdk_key_type := GDK_LC_r;
-	key_verb_place		: constant gdk_key_type := GDK_LC_p;
-	key_verb_update		: constant gdk_key_type := GDK_LC_u;
+
+	-- This procedure is required in order to clarify
+	-- which object among the proposed objects is meant.
+	-- On every call of this procedure we advance from one
+	-- proposed segment to the next in a circular manner
+	-- and set it as "selected":
+	procedure clarify_object;
 
 
-
-	
--- NOUNS:	
-
-	key_noun_assy		: constant gdk_key_type := GDK_LC_a;
-	key_noun_device		: constant gdk_key_type := GDK_LC_d;
-	key_noun_freetrack	: constant gdk_key_type := GDK_LC_f;
-	key_noun_line		: constant gdk_key_type := GDK_LC_l;
-	key_noun_outline	: constant gdk_key_type := GDK_LC_o;
-	
-	-- CS: This is a multi-assignment to key "n".
-	-- For the moment it seems not to cause trouble:
-	key_noun_net 		: constant gdk_key_type := GDK_LC_n;
-	key_noun_non_electrical_device	: constant gdk_key_type := GDK_LC_n;
-	
-	-- CS ? key_noun_contour		: constant gdk_key_type := GDK_LC_c;
-
-	key_noun_ratsnest	: constant gdk_key_type := GDK_LC_r;
-	key_noun_silkscreen	: constant gdk_key_type := GDK_LC_s;
-	key_noun_stopmask	: constant gdk_key_type := GDK_LC_t;
-	key_noun_stencil	: constant gdk_key_type := GDK_LC_e;
-	key_noun_conductors	: constant gdk_key_type := GDK_LC_c;
-	key_noun_text		: constant gdk_key_type := GDK_LC_x;
-	-- key_noun_track		: constant gdk_key_type := GDK_LC_t;
-	key_noun_via		: constant gdk_key_type := GDK_LC_v;
-	key_noun_zone		: constant gdk_key_type := GDK_LC_z;
-
+	-- Locates objects in the vicinity of the given point
+	-- and sets their proposed-flag.
+	-- Only displayed layers are taken into account.
+	-- Depending on how many objects have been found, the behaviour is:
+	-- - If only one object found, then it is selected automatically.
+	-- - If more than one object found, then clarification is requested.
+	--   The first object of them is selected.
+	procedure find_objects (
+		point : in type_vector_model);
 
 
 	
--- MISCELLANEOUS:
 	
-	key_space			: constant gdk_key_type := GDK_Space;
-	key_mode			: constant gdk_key_type := GDK_LC_m;
-	key_bend_style		: constant gdk_key_type := GDK_LC_b;
-	key_clarify			: constant gdk_key_type := GDK_page_down;
+-- PLACING:
 
-end et_board_verb_noun_keys;
+	-- see package et_canvas_board_lines
+	
+
+	
+
+-- MOVE:
+
+	status_move_object : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to move object in stencil." 
+		& status_hint_for_abort;
+
+	
+	procedure move_object (
+		tool	: in type_tool;
+		point	: in type_vector_model);				   
+
+
+
+-- DELETE:
+
+	status_delete_object : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to delete object in stencil." 
+		& status_hint_for_abort;
+
+	
+	procedure delete_object (
+		point	: in type_vector_model);				   
+
+	
+	
+end et_canvas_board_stencil;
 
 -- Soli Deo Gloria
 
