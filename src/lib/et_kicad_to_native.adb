@@ -1759,13 +1759,13 @@ package body et_kicad_to_native is
 						
 						when LINE => 
 							update_element (
-								container	=> module.board.contours.outline.contour.segments,
+								container	=> module.board.board_contour.outline.contour.segments,
 								position	=> c,
 								process		=> move_line'access);
 							
 						when ARC =>
 							update_element (
-								container	=> module.board.contours.outline.contour.segments,
+								container	=> module.board.board_contour.outline.contour.segments,
 								position	=> c,
 								process		=> move_arc'access);
 
@@ -1774,26 +1774,26 @@ package body et_kicad_to_native is
 
 				
 				procedure move_outline is begin
-					if module.board.contours.outline.contour.circular then
+					if module.board.board_contour.outline.contour.circular then
 
 						-- move the single circle the outline consists of:
 						log (text => contour & "circle", level => log_threshold + log_threshold_add);
 						log_indentation_up;
 
 						log (text => before & " center" 
-							& to_string (module.board.contours.outline.contour.circle.center), 
+							& to_string (module.board.board_contour.outline.contour.circle.center), 
 							level => log_threshold + log_threshold_add);
 
-						move (module.board.contours.outline.contour.circle.center);
+						move (module.board.board_contour.outline.contour.circle.center);
 						
 						log (text => now & " center" 
-							& to_string (module.board.contours.outline.contour.circle.center), 
+							& to_string (module.board.board_contour.outline.contour.circle.center), 
 							level => log_threshold + log_threshold_add);
 								
 						log_indentation_down;
 					else
 						-- move the segments of the outline:
-						iterate (module.board.contours.outline.contour.segments, move_segment'access);
+						iterate (module.board.board_contour.outline.contour.segments, move_segment'access);
 					end if;
 				end move_outline;
 

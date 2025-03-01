@@ -721,7 +721,7 @@ is
 					module		: in type_generic_module)
 				is begin
 					b := get_bounding_box (
-						contour	=> module.board.contours.outline,
+						contour	=> module.board.board_contour.outline,
 						width	=> zero);
 
 					merge_areas (bbox_new, b);
@@ -750,7 +750,7 @@ is
 					use et_pcb;
 					use pac_holes;
 
-					contours : type_pcb_contours renames module.board.contours;
+					contours : type_pcb_contours renames module.board.board_contour;
 					
 					procedure query_hole (c : in pac_holes.cursor) is 
 						h : type_hole renames element (c);

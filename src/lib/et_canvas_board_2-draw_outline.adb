@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -59,7 +59,7 @@ procedure draw_outline is
 		module		: in type_generic_module)
 	is begin
 		draw_contour (
-			contour	=> module.board.contours.outline,
+			contour	=> module.board.board_contour.outline,
 			filled	=> NO,
 			width	=> zero);
 	end query_outline_segments;
@@ -84,7 +84,7 @@ procedure draw_outline is
 
 		
 	begin
-		iterate (module.board.contours.holes, query_hole'access);
+		iterate (module.board.board_contour.holes, query_hole'access);
 	end query_holes;
 
 	

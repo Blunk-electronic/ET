@@ -1786,11 +1786,11 @@ is
 
 			-- board outline (outer contours)
 			section_mark (section_outline, HEADER);
-			write_polygon_segments (element (module_cursor).board.contours.outline);
+			write_polygon_segments (element (module_cursor).board.board_contour.outline);
 			section_mark (section_outline, FOOTER);
 
 			-- holes (inner contours)
-			iterate (element (module_cursor).board.contours.holes, write_hole'access);
+			iterate (element (module_cursor).board.board_contour.holes, write_hole'access);
 			
 			section_mark (section_pcb_contours, FOOTER);
 		end write_board_contours;

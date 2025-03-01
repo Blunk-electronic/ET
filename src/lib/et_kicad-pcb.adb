@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -5340,7 +5340,7 @@ package body et_kicad.pcb is
 				module.board.stencil 		:= board.stencil;
 				module.board.stopmask 		:= board.stop_mask;
 				module.board.keepout 		:= board.keepout;
-				module.board.contours 		:= board.contours;
+				module.board.board_contour	:= board.contours;
 
 				-- segments, vias and polygons (only those polygons that are connected with a net)
 				log_indentation_up;

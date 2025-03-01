@@ -55,7 +55,7 @@ package body et_board_ops.board_contour is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is begin
-			module.board.contours.outline := outline;
+			module.board.board_contour.outline := outline;
 		end;
 							   
 	begin
@@ -90,7 +90,7 @@ package body et_board_ops.board_contour is
 		begin
 			if is_open (outline) then
 				merge_contours (
-					target	=> module.board.contours.outline,
+					target	=> module.board.board_contour.outline,
 					source	=> outline,
 					status	=> mr);
 
@@ -142,7 +142,7 @@ package body et_board_ops.board_contour is
 			
 		begin
 			pac_segments.update_element (
-				container	=> module.board.contours.outline.contour.segments, 
+				container	=> module.board.board_contour.outline.contour.segments, 
 				position	=> segment_cursor, 
 				process		=> query_segment'access);
 		end query_module;
@@ -181,7 +181,7 @@ package body et_board_ops.board_contour is
 			module		: in out type_generic_module) 
 		is
 			use pac_segments;
-			lc : pac_segments.cursor := module.board.contours.outline.contour.segments.first;
+			lc : pac_segments.cursor := module.board.board_contour.outline.contour.segments.first;
 
 			
 			procedure query_segment (
@@ -211,7 +211,7 @@ package body et_board_ops.board_contour is
 		begin
 			while lc /= pac_segments.no_element loop
 				pac_segments.update_element (
-					container	=> module.board.contours.outline.contour.segments, 
+					container	=> module.board.board_contour.outline.contour.segments, 
 					position	=> lc, 
 					process		=> query_segment'access);
 
@@ -250,7 +250,7 @@ package body et_board_ops.board_contour is
 			module		: in out type_generic_module) 
 		is
 			use pac_segments;
-			lc : pac_segments.cursor := module.board.contours.outline.contour.segments.first;
+			lc : pac_segments.cursor := module.board.board_contour.outline.contour.segments.first;
 
 			
 			procedure query_segment (
@@ -265,7 +265,7 @@ package body et_board_ops.board_contour is
 		begin
 			while lc /= pac_segments.no_element loop
 				pac_segments.update_element (
-					container	=> module.board.contours.outline.contour.segments, 
+					container	=> module.board.board_contour.outline.contour.segments, 
 					position	=> lc, 
 					process		=> query_segment'access);
 
@@ -333,7 +333,7 @@ package body et_board_ops.board_contour is
 			
 		begin
 			iterate (
-				segments	=> module.board.contours.outline.contour.segments,
+				segments	=> module.board.board_contour.outline.contour.segments,
 				process		=> query_segment'access, 
 				proceed		=> proceed'access);
 		end query_module;
@@ -385,7 +385,7 @@ package body et_board_ops.board_contour is
 			-- If nothing found, then restart the search
 			-- at the begin of the list:
 			if c = pac_segments.no_element then
-				c := module.board.contours.outline.contour.segments.first;
+				c := module.board.board_contour.outline.contour.segments.first;
 
 				while c /= pac_segments.no_element loop
 					if is_proposed (c) then
@@ -444,7 +444,7 @@ package body et_board_ops.board_contour is
 			end do_it;
 			
 		begin
-			module.board.contours.outline.contour.segments.update_element (
+			module.board.board_contour.outline.contour.segments.update_element (
 				segment, do_it'access);
 		end query_module;
 
@@ -477,7 +477,7 @@ package body et_board_ops.board_contour is
 		module_cursor	: in pac_generic_modules.cursor)
 		return type_outer_contour
 	is begin
-		return element (module_cursor).board.contours.outline;
+		return element (module_cursor).board.board_contour.outline;
 	end get_outline;
 
 
@@ -524,7 +524,7 @@ package body et_board_ops.board_contour is
 				use pac_segments;
 				c : pac_segments.cursor;
 			begin
-				c := module.board.contours.outline.contour.segments.first;
+				c := module.board.board_contour.outline.contour.segments.first;
 				
 				while c /= pac_segments.no_element loop
 
@@ -534,7 +534,7 @@ package body et_board_ops.board_contour is
 								-- CS use get_shortest_distance (point, element)
 								-- and compare distance with accuracy	
 
-								delete (module.board.contours.outline.contour.segments, c);
+								delete (module.board.board_contour.outline.contour.segments, c);
 								deleted := true;
 
 								-- CS update start/end point of predecessor/successor segment
@@ -547,7 +547,7 @@ package body et_board_ops.board_contour is
 								-- CS use get_shortest_distance (point, element)
 								-- and compare distance with accuracy	
 
-								delete (module.board.contours.outline.contour.segments, c);
+								delete (module.board.board_contour.outline.contour.segments, c);
 								deleted := true;
 
 								-- CS update start/end point of predecessor/successor segment
@@ -562,18 +562,18 @@ package body et_board_ops.board_contour is
 			end delete_segment;
 
 			procedure delete_circle is begin
-				if module.board.contours.outline.contour.circle.on_circle (point) then
+				if module.board.board_contour.outline.contour.circle.on_circle (point) then
 					-- CS use get_shortest_distance (point, element)
 					-- and compare distance with accuracy	
 
-					module.board.contours.outline.contour := (others => <>);					
+					module.board.board_contour.outline.contour := (others => <>);					
 					deleted := true;
 				end if;
 			end delete_circle;
 
 			
 		begin -- delete
-			if module.board.contours.outline.contour.circular then
+			if module.board.board_contour.outline.contour.circular then
 				delete_circle;				
 			else
 				delete_segment;
@@ -616,7 +616,7 @@ package body et_board_ops.board_contour is
 		is			
 			c : pac_segments.cursor := segment;
 		begin
-			module.board.contours.outline.contour.segments.delete (c);
+			module.board.board_contour.outline.contour.segments.delete (c);
 		end query_module;
 
 		
@@ -654,7 +654,7 @@ package body et_board_ops.board_contour is
 		is 
 			use pac_holes;
 		begin
-			append (module.board.contours.holes, hole);
+			append (module.board.board_contour.holes, hole);
 		end;
 							   
 	begin
@@ -684,7 +684,7 @@ package body et_board_ops.board_contour is
 		is 
 			use pac_holes;
 		begin
-			append (module.board.contours.holes, hole);
+			append (module.board.board_contour.holes, hole);
 		end;
 							   
 	begin
@@ -706,7 +706,7 @@ package body et_board_ops.board_contour is
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_holes.list
 	is begin
-		return element (module_cursor).board.contours.holes;
+		return element (module_cursor).board.board_contour.holes;
 	end get_holes;
 	
 

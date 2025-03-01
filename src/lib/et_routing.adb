@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -120,7 +120,7 @@ package body et_routing is
 				log (text => "probing outline ...", level => lth + 1);
 			end if;
 			
-			result := get_shortest_distance (module.board.contours.outline, point);
+			result := get_shortest_distance (module.board.board_contour.outline, point);
 
 			if log_category >= HIGH then
 				log (text => " distance to outline" & to_string (result),
@@ -128,13 +128,13 @@ package body et_routing is
 			end if;
 			
 			-- test holes in board (if there are any):
-			if not is_empty (module.board.contours.holes) then
+			if not is_empty (module.board.board_contour.holes) then
 
 				if log_category >= HIGH then
 					log (text => "probing holes...", level => lth + 1);			
 				end if;
 				
-				iterate (module.board.contours.holes, query_hole'access);
+				iterate (module.board.board_contour.holes, query_hole'access);
 
 				if log_category >= HIGH then
 					log (text => " distance to hole" & to_string (result),
@@ -177,7 +177,7 @@ package body et_routing is
 		--is
 			--procedure query_outline is begin
 				--if get_point_to_polygon_status (
-					--module.board.contours.outline, to_vector (point)).location = OUTSIDE 
+					--module.board.board_contour.outline, to_vector (point)).location = OUTSIDE 
 				--then
 					----log (text => "outside", level => lth + 1);
 					--result := false;
@@ -188,7 +188,7 @@ package body et_routing is
 			--procedure query_holes is
 				--use et_packages;
 				--use pac_holes;
-				--c : pac_holes.cursor := module.board.contours.holes.first;
+				--c : pac_holes.cursor := module.board.board_contour.holes.first;
 			--begin
 				--while c /= pac_holes.no_element loop
 					--if get_point_to_polygon_status (

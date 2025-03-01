@@ -379,7 +379,7 @@ package et_pcb is
 		-- (lines, arcs, circles, text, text placeholders, zones):
 		conductors_floating	: type_conductors_floating;
 		
-		contours		: type_pcb_contours; -- pcb outline -- CS rename to board_contour
+		board_contour	: type_pcb_contours; -- pcb outline
 
 		user_settings	: type_user_settings;
 	end record;

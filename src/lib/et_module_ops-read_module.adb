@@ -4397,7 +4397,7 @@ is
 					module		: in out type_generic_module) 
 				is begin
 					append (
-						container	=> module.board.contours.outline.contour.segments,
+						container	=> module.board.board_contour.outline.contour.segments,
 						new_item	=> (pac_contours.LINE, board_line));
 				end do_it;
 									
@@ -4427,7 +4427,7 @@ is
 					module		: in out type_generic_module) 
 				is begin
 					append (
-						container	=> module.board.contours.outline.contour.segments,
+						container	=> module.board.board_contour.outline.contour.segments,
 						new_item	=> (pac_contours.ARC, board_arc));
 				end do_it;
 
@@ -4453,7 +4453,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out type_generic_module) 
 				is begin
-					module.board.contours.outline.contour := (
+					module.board.board_contour.outline.contour := (
 						circular	=> true,
 						circle		=> board_circle);
 				end do_it;
@@ -4484,7 +4484,7 @@ is
 					module		: in out type_generic_module) 
 				is begin
 					append (
-						container 	=> module.board.contours.holes,
+						container 	=> module.board.board_contour.holes,
 						new_item	=> (contour with null record));
 				end do_it;
 
@@ -4507,7 +4507,7 @@ is
 					--module		: in out type_generic_module) is
 				--begin
 					--pac_pcb_contour_circles.append (
-						--container	=> module.board.contours.texts,
+						--container	=> module.board.board_contour.texts,
 						--new_item	=> (et_board_shapes_and_text.pac_geometry_2.type_circle (board_circle) with board_lock_status));
 				--end do_it;
 									
