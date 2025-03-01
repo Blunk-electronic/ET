@@ -44,10 +44,6 @@ with et_board_verb_noun_keys;			use et_board_verb_noun_keys;
 
 with et_ratsnest;
 
-with et_canvas_board_preliminary_object;
-
--- with et_canvas_board_assy_doc;			use et_canvas_board_assy_doc;
--- with et_canvas_board_silkscreen;		use et_canvas_board_silkscreen;
 
 
 separate (et_canvas_board_2)
@@ -96,7 +92,10 @@ is
 				noun := NOUN_SILKSCREEN;
 				set_status (et_canvas_board_silkscreen.status_delete_object);
 
-			
+			when key_noun_stopmask =>
+				noun := NOUN_STOP;
+				set_status (et_canvas_board_stopmask.status_delete_object);
+				
 			when key_noun_non_electrical_device =>
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
 				set_status (et_canvas_board_devices.status_delete_device);
@@ -165,6 +164,10 @@ is
 					when NOUN_SILKSCREEN =>
 						et_canvas_board_silkscreen.delete_object (point);
 
+					when NOUN_STOP =>
+						et_canvas_board_stopmask.delete_object (point);
+
+						
 -- 
 -- 					when NOUN_NON_ELECTRICAL_DEVICE =>
 -- 						delete_non_electrical_device (KEYBOARD, point);
@@ -190,7 +193,13 @@ is
 						if clarification_pending then
 							et_canvas_board_silkscreen.clarify_object;
 						end if;
-					
+
+					when NOUN_STOP =>
+						if clarification_pending then
+							et_canvas_board_stopmask.clarify_object;
+						end if;
+
+						
 -- 					when NOUN_NON_ELECTRICAL_DEVICE =>
 -- 						if clarification_pending then
 -- 							select_non_electrical_device;
@@ -304,6 +313,10 @@ is
 				noun := NOUN_SILKSCREEN;
 				set_status (et_canvas_board_silkscreen.status_move_object);
 
+			when key_noun_stopmask =>
+				noun := NOUN_STOP;
+				set_status (et_canvas_board_stopmask.status_move_object);
+				
 			-- when key_noun_track =>
 			-- 	noun := NOUN_TRACK;
 			-- 	set_status (et_canvas_board_tracks.status_move_track);
@@ -347,6 +360,9 @@ is
 					when NOUN_SILKSCREEN =>
 						et_canvas_board_silkscreen.move_object (KEYBOARD, point);
 
+					when NOUN_STOP =>
+						et_canvas_board_stopmask.move_object (KEYBOARD, point);
+						
 					when NOUN_CONDUCTORS =>
 						et_canvas_board_conductors.move_object (KEYBOARD, point);
 						
@@ -398,6 +414,11 @@ is
 							et_canvas_board_silkscreen.clarify_object;
 						end if;
 
+					when NOUN_STOP =>
+						if clarification_pending then
+							et_canvas_board_stopmask.clarify_object;
+						end if;
+						
 					when NOUN_CONDUCTORS =>
 						if clarification_pending then
 							et_canvas_board_conductors.clarify_object;

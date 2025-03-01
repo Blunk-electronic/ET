@@ -38,9 +38,7 @@
 
 
 with et_canvas_tool;						use et_canvas_tool;
-with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 
-with et_board_ops.conductors;
 
 
 separate (et_canvas_board_2)
@@ -80,6 +78,9 @@ is
 					when NOUN_SILKSCREEN =>
 						et_canvas_board_silkscreen.move_object (MOUSE, snap_point);
 
+					when NOUN_STOP =>
+						et_canvas_board_stopmask.move_object (MOUSE, snap_point);
+						
 					when NOUN_CONDUCTORS =>
 						et_canvas_board_conductors.move_object (MOUSE, snap_point);
 						
@@ -166,6 +167,9 @@ is
 					when NOUN_SILKSCREEN =>
 						et_canvas_board_silkscreen.delete_object (event.point);
 					
+					when NOUN_STOP =>
+						et_canvas_board_stopmask.delete_object (event.point);
+
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						et_canvas_board_devices.delete_non_electrical_device (MOUSE, event.point);
 
@@ -223,6 +227,11 @@ is
 							et_canvas_board_silkscreen.clarify_object;
 						end if;
 
+					when NOUN_STOP =>
+						if clarification_pending then
+							et_canvas_board_stopmask.clarify_object;
+						end if;
+						
 					when NOUN_CONDUCTORS =>
 						if clarification_pending then
 							et_canvas_board_conductors.clarify_object;
@@ -317,7 +326,12 @@ is
 						if clarification_pending then
 							et_canvas_board_silkscreen.clarify_object;
 						end if;
-					
+
+					when NOUN_STOP =>
+						if clarification_pending then
+							et_canvas_board_stopmask.clarify_object;
+						end if;
+						
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						if clarification_pending then
 							et_canvas_board_devices.select_non_electrical_device;

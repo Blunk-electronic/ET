@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                      CANVAS BOARD / SILKSCREEN                           --
+--                      CANVAS BOARD / STOPMASK                             --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -54,7 +54,7 @@ with et_canvas_messages;				use et_canvas_messages;
 with et_canvas_board_lines;				use et_canvas_board_lines;
 
 
-package et_canvas_board_silkscreen is
+package et_canvas_board_stopmask is
 	
 
 	-- This procedure is required in order to clarify
@@ -91,7 +91,7 @@ package et_canvas_board_silkscreen is
 		status_click_left 
 		& "or "
 		& status_press_space
-		& "to move object in silkscreen." 
+		& "to move object in stopmask." 
 		& status_hint_for_abort;
 
 	
@@ -107,7 +107,7 @@ package et_canvas_board_silkscreen is
 		status_click_left 
 		& "or "
 		& status_press_space
-		& "to delete object in silkscreen." 
+		& "to delete object in stopmask." 
 		& status_hint_for_abort;
 
 	
@@ -116,7 +116,7 @@ package et_canvas_board_silkscreen is
 
 	
 	
-end et_canvas_board_silkscreen;
+end et_canvas_board_stopmask;
 
 -- Soli Deo Gloria
 

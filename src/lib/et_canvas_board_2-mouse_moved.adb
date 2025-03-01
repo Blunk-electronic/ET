@@ -37,9 +37,6 @@
 --   history of changes:
 --
 
-with et_canvas_board_tracks;
-with et_canvas_board_conductors;
-with et_canvas_board_preliminary_object;		use et_canvas_board_preliminary_object;
 
 
 separate (et_canvas_board_2)
@@ -84,6 +81,11 @@ begin
 						redraw_board;
 					end if;
 
+				when NOUN_STOP =>
+					if object_ready then
+						redraw_board;
+					end if;
+					
 				when NOUN_CONDUCTORS =>
 					if object_ready then
 						redraw_board;

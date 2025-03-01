@@ -1290,16 +1290,6 @@ package body et_board_ops.stopmask is
 
 
 
-
-
-
-	
-	
-
-
-
-
-
 	procedure add_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -1384,10 +1374,9 @@ package body et_board_ops.stopmask is
 
 		
 	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
+		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
-			& " looking up stop mask texts at" & to_string (point) 
+			& " looking up stopmask texts at" & to_string (point) 
 			& " zone" & accuracy_to_string (zone),
 			level => log_threshold);
 		
@@ -1407,6 +1396,8 @@ package body et_board_ops.stopmask is
 
 	
 
+
+	
 	procedure move_text (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
@@ -1455,10 +1446,9 @@ package body et_board_ops.stopmask is
 				move_by (new_position, offset);
 		end case;
 		
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
+		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
-			& " moving stop mask text from" & to_string (old_position)
+			& " moving stopmask text from" & to_string (old_position)
 			& " to" & to_string (new_position), -- CS by offset
 			level => log_threshold);
 
@@ -1471,6 +1461,389 @@ package body et_board_ops.stopmask is
 
 
 
+
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+
+			procedure query_text (text : in out type_stop_text) is begin
+				modify_status (text, operation);
+			end query_text;
+			
+		begin
+			case text.face is
+				when TOP =>
+					module.board.stopmask.top.texts.update_element (
+						text.cursor, query_text'access);
+
+				when BOTTOM =>
+					module.board.stopmask.bottom.texts.update_element (
+						text.cursor, query_text'access);
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of text" -- CS log position and content ?
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end modify_status;
+
+	
+
+
+	
+
+	procedure propose_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		face			: in type_face;
+		zone			: in type_accuracy;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			c : pac_stop_texts.cursor;
+
+			procedure query_text (
+				text	: in out type_stop_text)
+			is begin
+				if within_accuracy (
+					point_1	=> point,
+					zone	=> zone,
+					point_2	=> get_place (text))
+				then
+					set_proposed (text);
+					count := count + 1;
+					log (text => to_string (text), level => log_threshold + 1);
+				end if;
+			end query_text;
+
+			
+			procedure query_top is 
+				top : pac_stop_texts.list renames module.board.stopmask.top.texts;
+			begin
+				if not top.is_empty then
+					c := top.first;
+					while c /= pac_stop_texts.no_element loop
+						top.update_element (c, query_text'access);
+						next (c);
+					end loop;
+				end if;
+			end query_top;
+
+			
+			procedure query_bottom is 
+				bottom : pac_stop_texts.list renames module.board.stopmask.bottom.texts;
+			begin
+				if not bottom.is_empty then
+					c := bottom.first;
+					while c /= pac_stop_texts.no_element loop
+						bottom.update_element (c, query_text'access);
+						next (c);
+					end loop;
+				end if;
+			end query_bottom;
+
+			
+		begin
+			case face is
+				when TOP	=> query_top;
+				when BOTTOM	=> query_bottom;
+			end case;
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " proposing texts at " & to_string (point)
+			 & " face " & to_string (face)
+			 & " zone " & accuracy_to_string (zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_texts;
+
+
+
+	
+	
+
+	procedure move_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+
+			procedure query_text (text : in out type_stop_text) is begin
+				move_text (text, destination);
+			end query_text;
+			
+		begin
+			case text.face is
+				when TOP =>
+					module.board.stopmask.top.texts.update_element (
+						text.cursor, query_text'access);
+
+				when BOTTOM =>
+					module.board.stopmask.bottom.texts.update_element (
+						text.cursor, query_text'access);
+			end case;
+		end query_module;
+		
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " face" & to_string (text.face) 
+			& " moving stopmask text to "
+			& to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end move_text;
+
+
+	
+
+
+	procedure delete_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		text			: in type_object_text;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			c : pac_stop_texts.cursor := text.cursor;			
+		begin
+			case text.face is
+				when TOP =>
+					module.board.stopmask.top.texts.delete (c);
+
+				when BOTTOM =>
+					module.board.stopmask.bottom.texts.delete (c);
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " face" & to_string (text.face) 
+			& " deleting stopmask text",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end delete_text;
+
+
+
+	
+
+	function get_first_text (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_text
+	is
+		result : type_object_text;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_stop_texts;
+			
+			proceed : aliased boolean := true;
+
+			top_items 		: pac_stop_texts.list renames module.board.stopmask.top.texts;
+			bottom_items	: pac_stop_texts.list renames module.board.stopmask.bottom.texts;
+
+			
+			procedure query_text (c : in pac_stop_texts.cursor) is begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (c) then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when SELECTED =>
+						if is_selected (c) then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when others =>
+						null; -- CS
+				end case;
+			end query_text;
+	
+			
+		begin
+			-- Query the texts in the top layer first:
+			iterate (top_items, query_text'access, proceed'access);
+			result.face := top;
+
+			-- If nothing found, then query the bottom layer:
+			if proceed then
+				iterate (bottom_items, query_text'access, proceed'access);
+				result.face := bottom;
+			end if;
+
+			-- If still nothing found, return TOP and no_element:
+			if proceed then
+				result := (others => <>);	
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first text / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- put_line ("found " & to_string (result));
+		
+		log_indentation_down;
+
+		return result;
+	end get_first_text;
+
+
+
+	
+
+	procedure reset_proposed_texts (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			top 	: pac_stop_texts.list renames module.board.stopmask.top.texts;
+			bottom	: pac_stop_texts.list renames module.board.stopmask.bottom.texts;
+
+			
+			procedure query_text (
+				text	: in out type_stop_text)
+			is begin
+				reset_status (text);
+			end query_text;
+
+
+			c : pac_stop_texts.cursor;
+			
+			procedure query_top is begin
+				if not top.is_empty then
+					c := top.first;
+					while c /= pac_stop_texts.no_element loop
+						top.update_element (c, query_text'access);
+						next (c);
+					end loop;
+				end if;
+			end query_top;
+
+			
+			procedure query_bottom is begin
+				if not bottom.is_empty then
+					c := bottom.first;
+					while c /= pac_stop_texts.no_element loop
+						bottom.update_element (c, query_text'access);
+						next (c);
+					end loop;
+				end if;
+			end query_bottom;
+
+			
+		begin
+			query_top;
+			query_bottom;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " resetting proposed texts",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_texts;
+
+
+
+
+
+	
+
+	
 
 	procedure add_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1515,6 +1888,983 @@ package body et_board_ops.stopmask is
 
 
 
+
+
+	
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_object_placeholder;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			use pac_text_placeholders;
+			
+			procedure query_placeholder (
+				ph : in out type_text_placeholder) 
+			is begin
+				modify_status (ph, operation);
+			end query_placeholder;
+			
+		begin
+			case placeholder.face is
+				when TOP =>
+					module.board.stopmask.top.placeholders.update_element (
+						placeholder.cursor, query_placeholder'access);
+
+				when BOTTOM =>
+					module.board.stopmask.bottom.placeholders.update_element (
+						placeholder.cursor, query_placeholder'access);
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of text placeholder" -- CS log position and content ?
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end modify_status;
+
+
+
+
+
+	procedure propose_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model; -- x/y
+		face			: in type_face;
+		zone			: in type_accuracy;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_text_placeholders;
+			c : pac_text_placeholders.cursor;
+
+			procedure query_placeholder (
+				ph : in out type_text_placeholder)
+			is begin
+				if within_accuracy (
+					point_1	=> point,
+					zone	=> zone,
+					point_2	=> get_place (ph))
+				then
+					set_proposed (ph);
+					count := count + 1;
+					log (text => to_string (ph), level => log_threshold + 1);
+				end if;
+			end query_placeholder;
+			
+			
+		begin
+			case face is
+				when TOP =>
+					c := module.board.stopmask.top.placeholders.first;
+					
+					while c /= pac_text_placeholders.no_element loop
+						module.board.stopmask.top.placeholders.update_element (c, query_placeholder'access);
+						next (c);
+					end loop;
+
+
+				when BOTTOM =>
+					c := module.board.stopmask.bottom.placeholders.first;
+					
+					while c /= pac_text_placeholders.no_element loop
+						module.board.stopmask.bottom.placeholders.update_element (c, query_placeholder'access);
+						next (c);
+					end loop;
+			end case;					
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " proposing text placeholders at " & to_string (point)
+			 & " face " & to_string (face)
+			 & " zone " & accuracy_to_string (zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_placeholders;
+	
+
+
+	
+
+	procedure move_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_object_placeholder;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			use pac_text_placeholders;
+			
+			procedure query_placeholder (
+				ph : in out type_text_placeholder) 
+			is begin
+				move_text (ph, destination);
+			end query_placeholder;
+			
+		begin
+			case placeholder.face is
+				when TOP =>
+					module.board.stopmask.top.placeholders.update_element (
+						placeholder.cursor, query_placeholder'access);
+
+				when BOTTOM =>
+					module.board.stopmask.bottom.placeholders.update_element (
+						placeholder.cursor, query_placeholder'access);
+			end case;
+		end query_module;
+		
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving text placeholder " 
+			& to_string (placeholder.cursor)
+			& " " & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end move_placeholder;
+
+
+
+
+
+
+	procedure delete_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		placeholder		: in type_object_placeholder;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			c : pac_text_placeholders.cursor := placeholder.cursor;			
+		begin
+			case placeholder.face is
+				when TOP =>
+					module.board.stopmask.top.placeholders.delete (c);
+
+				when BOTTOM =>
+					module.board.stopmask.bottom.placeholders.delete (c);
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " deleting text placeholder" & to_string (placeholder.cursor),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end delete_placeholder;
+
+
+	
+
+
+	function get_first_placeholder (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_placeholder
+	is
+		result : type_object_placeholder;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_text_placeholders;
+			
+			proceed : aliased boolean := true;
+
+			top_items 		: pac_text_placeholders.list renames module.board.stopmask.top.placeholders;
+			bottom_items	: pac_text_placeholders.list renames module.board.stopmask.bottom.placeholders;
+
+			
+			procedure query_placeholder (
+				c : in pac_text_placeholders.cursor) 
+			is begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (c) then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when SELECTED =>
+						if is_selected (c) then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when others =>
+						null; -- CS
+				end case;
+			end query_placeholder;
+	
+			
+		begin
+			-- Query the placeholders in the top layer first:
+			iterate (top_items, query_placeholder'access, proceed'access);
+			result.face := top;
+
+			-- If nothing found, then query the bottom layer:
+			if proceed then
+				iterate (bottom_items, query_placeholder'access, proceed'access);
+				result.face := bottom;
+			end if;
+
+			-- If still nothing found, return TOP and no_element:
+			if proceed then
+				result := (others => <>);	
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first text placeholder / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- put_line ("found " & to_string (result));
+		
+		log_indentation_down;
+
+		return result;
+	end get_first_placeholder;
+
+
+
+
+
+
+
+	procedure reset_proposed_placeholders (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_placeholder (
+				ph : in out type_text_placeholder)
+			is begin
+				reset_status (ph);
+			end query_placeholder;
+
+			use pac_text_placeholders;
+			c : pac_text_placeholders.cursor := 
+				module.board.stopmask.top.placeholders.first;
+		begin
+			-- Iterate the placeholders at the top:
+			while c /= pac_text_placeholders.no_element loop
+				module.board.stopmask.top.placeholders.update_element (
+					c, query_placeholder'access);
+				next (c);
+			end loop;
+
+			-- Iterate the placeholders at the bottom:
+			c := module.board.stopmask.bottom.placeholders.first;
+			while c /= pac_text_placeholders.no_element loop
+				module.board.stopmask.bottom.placeholders.update_element (
+					c, query_placeholder'access);
+				next (c);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " resetting proposed text placeholders",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_placeholders;
+
+
+
+
+
+
+
+
+	function get_count (
+		objects : in pac_objects.list)
+		return natural
+	is begin
+		return natural (objects.length);
+	end get_count;
+	
+	
+	
+
+
+
+	function get_first_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object
+	is
+		result_category 	: type_object_category := CAT_VOID;
+		result_segment  	: type_object_segment;
+		result_line			: type_object_line;
+		result_text			: type_object_text;
+		result_placeholder	: type_object_placeholder;
+
+		use pac_contours;
+		use pac_segments;
+
+		use pac_stop_lines;
+		use pac_stop_texts;
+		use pac_text_placeholders;
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first object / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		
+		-- SEARCH FOR A LINE:
+		
+		-- If a line has been found, then go to the end of this procedure:
+		result_line := get_first_line (module_cursor, flag, log_threshold + 1);
+
+		if result_line.cursor /= pac_stop_lines.no_element then
+			-- A line has been found.
+			log (text => to_string (element (result_line.cursor))
+				 & " face " & to_string (result_line.face),
+				 level => log_threshold + 1);
+			
+			result_category := CAT_LINE;
+		end if;
+
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
+		
+		-- Now we search for an arc.
+		-- If there is one, then go to the end of this procedure:
+		-- CS
+
+
+		-- Now we search for an circle.
+		-- If there is one, then go to the end of this procedure:
+		-- CS
+
+
+		-- SEARCH FOR A SEGMENT OF A ZONE:
+		
+		-- If there is one, then go to the end  of this procedure:
+		result_segment := get_first_segment (module_cursor, flag, log_threshold + 1);
+
+		if result_segment.segment /= pac_segments.no_element then
+			-- A segment has been found.
+			log (text => to_string (result_segment.segment)
+					& " face " & to_string (result_segment.face),
+					level => log_threshold + 1);
+			
+			result_category := CAT_ZONE_SEGMENT;
+		end if;
+
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
+
+
+		-- SEARCH FOR A TEXT:
+		
+		result_text := get_first_text (module_cursor, flag, log_threshold + 1);
+		
+		if result_text.cursor /= pac_stop_texts.no_element then
+			-- A text has been found.
+			log (text => to_string (result_text.cursor)
+					& " face " & to_string (result_text.face),
+					level => log_threshold + 1);
+			
+			result_category := CAT_TEXT;
+		end if;
+
+
+		
+		-- SEARCH FOR A PLACEHOLDER:
+
+		result_placeholder := get_first_placeholder (module_cursor, flag, log_threshold + 1);
+		
+		if result_placeholder.cursor /= pac_text_placeholders.no_element then
+			-- A placeholder has been found.
+			log (text => to_string (result_placeholder.cursor)
+					& " face " & to_string (result_placeholder.face),
+					level => log_threshold + 1);
+			
+			result_category := CAT_PLACEHOLDER;
+		end if;
+
+
+		
+		-- If still nothing has been found then the category is CAT_VOID.
+		
+
+	<<end_of_search>>
+		
+		log_indentation_down;
+
+		case result_category is
+			when CAT_VOID =>
+				return (cat => CAT_VOID);
+
+			when CAT_LINE =>
+				return (CAT_LINE, result_line);
+
+			when CAT_ZONE_SEGMENT =>
+				return (CAT_ZONE_SEGMENT, result_segment);
+
+			when CAT_TEXT =>
+				return (CAT_TEXT, result_text);
+
+			when CAT_PLACEHOLDER =>
+				return (CAT_PLACEHOLDER, result_placeholder);
+				
+		end case;
+	end get_first_object;
+
+
+
+	
+	
+	function get_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return pac_objects.list
+	is
+		use pac_objects;
+		result : pac_objects.list;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_stop_zones;
+			zone_cursor : pac_stop_zones.cursor;
+			face : type_face := TOP;
+			
+			use pac_stop_lines;
+			line_cursor : pac_stop_lines.cursor;
+
+			-- CS arcs, circles
+			
+			use pac_stop_texts;
+			text_cursor : pac_stop_texts.cursor;
+
+
+			use pac_text_placeholders;
+			placeholder_cursor : pac_text_placeholders.cursor;
+
+			
+			
+			procedure query_zone (zone : in type_stop_zone) is
+				use pac_contours;
+				use pac_segments;
+				-- CS test circular flag !!
+				segment_cursor : pac_segments.cursor := zone.contour.segments.first;
+				
+				procedure query_segment (segment : in type_segment) is 
+
+					procedure collect is begin
+						result.append ((
+							cat		=> CAT_ZONE_SEGMENT,
+							segment	=> (face, zone_cursor, segment_cursor)));
+
+						log (text => to_string (segment), level => log_threshold + 2);
+					end collect;
+
+				begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (segment) then
+								collect;
+							end if;
+
+						when SELECTED =>
+							if is_selected (segment) then
+								collect;
+							end if;
+							
+						when others => null; -- CS
+					end case;
+				end query_segment;
+				
+			begin
+				while segment_cursor /= pac_segments.no_element loop
+					query_element (segment_cursor, query_segment'access);
+					next (segment_cursor);
+				end loop;
+			end query_zone;
+			
+
+			procedure query_line (line : in type_stop_line) is 
+
+				procedure collect is begin
+					result.append ((
+						cat		=> CAT_LINE,
+						line	=> (face, line_cursor)));
+
+					log (text => to_string (line), level => log_threshold + 2);
+				end collect;
+				
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (line) then
+							collect;
+						end if;
+
+					when SELECTED =>
+						if is_selected (line) then
+							collect;
+						end if;
+
+					when others => null; -- CS
+				end case;
+			end query_line;
+				
+
+			procedure query_text (text : in type_stop_text) is 
+
+				procedure collect is begin
+					result.append ((
+						cat		=> CAT_TEXT,
+						text	=> (face, text_cursor)));
+
+					log (text => to_string (text), level => log_threshold + 2);
+				end collect;
+				
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (text) then
+							collect;
+						end if;
+
+					when SELECTED =>
+						if is_selected (text) then
+							collect;
+						end if;
+
+					when others => null; -- CS
+				end case;
+			end query_text;
+
+
+			procedure query_placeholder (placeholder : in type_text_placeholder) is 
+
+				procedure collect is begin
+					result.append ((
+						cat			=> CAT_PLACEHOLDER,
+						placeholder	=> (face, placeholder_cursor)));
+
+					log (text => to_string (placeholder), level => log_threshold + 2);
+				end collect;
+				
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (placeholder) then
+							collect;
+						end if;
+
+					when SELECTED =>
+						if is_selected (placeholder) then
+							collect;
+						end if;
+
+					when others => null;
+				end case;
+			end query_placeholder;
+
+			
+			
+		begin
+			log (text => "top zones", level => log_threshold + 1);
+			log_indentation_up;
+			
+			zone_cursor := module.board.stopmask.top.zones.first;
+			while zone_cursor /= pac_stop_zones.no_element loop
+				query_element (zone_cursor, query_zone'access);
+				next (zone_cursor);
+			end loop;
+
+			log_indentation_down;
+
+			
+			log (text => "top lines", level => log_threshold + 1);
+			log_indentation_up;
+			
+			line_cursor := module.board.stopmask.top.lines.first;
+			while line_cursor /= pac_stop_lines.no_element loop
+				query_element (line_cursor, query_line'access);
+				next (line_cursor);
+			end loop;
+
+			log_indentation_down;
+			
+			-- CS arcs, circles
+
+
+			log (text => "top texts", level => log_threshold + 1);
+			log_indentation_up;
+			
+			text_cursor := module.board.stopmask.top.texts.first;
+			while text_cursor /= pac_stop_texts.no_element loop
+				query_element (text_cursor, query_text'access);
+				next (text_cursor);
+			end loop;
+
+			log_indentation_down;
+
+			
+
+			log (text => "top text placeholders", level => log_threshold + 1);
+			log_indentation_up;
+			
+			placeholder_cursor := module.board.stopmask.top.placeholders.first;
+			while placeholder_cursor /= pac_text_placeholders.no_element loop
+				query_element (placeholder_cursor, query_placeholder'access);
+				next (placeholder_cursor);
+			end loop;
+
+			log_indentation_down;
+
+
+			
+			face := BOTTOM;
+
+			log (text => "bottom zones", level => log_threshold + 1);
+			log_indentation_up;
+			
+			zone_cursor := module.board.stopmask.bottom.zones.first;
+			while zone_cursor /= pac_stop_zones.no_element loop
+				query_element (zone_cursor, query_zone'access);
+				next (zone_cursor);
+			end loop;
+
+			log_indentation_down;
+
+			
+			log (text => "bottom lines", level => log_threshold + 1);
+			log_indentation_up;
+			
+			line_cursor := module.board.stopmask.bottom.lines.first;
+			while line_cursor /= pac_stop_lines.no_element loop
+				query_element (line_cursor, query_line'access);
+				next (line_cursor);
+			end loop;
+
+			log_indentation_down;
+			-- CS arcs, circles
+
+			
+			log (text => "bottom texts", level => log_threshold + 1);
+			log_indentation_up;
+			
+			text_cursor := module.board.stopmask.bottom.texts.first;
+			while text_cursor /= pac_stop_texts.no_element loop
+				query_element (text_cursor, query_text'access);
+				next (text_cursor);
+			end loop;
+
+			log_indentation_down;
+
+
+			log (text => "bottom text placeholders", level => log_threshold + 1);
+			log_indentation_up;
+			
+			placeholder_cursor := module.board.stopmask.bottom.placeholders.first;
+			while placeholder_cursor /= pac_text_placeholders.no_element loop
+				query_element (placeholder_cursor, query_placeholder'access);
+				next (placeholder_cursor);
+			end loop;
+
+			log_indentation_down;			
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up objects / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element ( -- CS query_module is sufficient
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+
+		return result;
+	end get_objects;
+	
+
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of object"
+			-- & to_string (segment.segment) CS output object category ?
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		case object.cat is
+			when CAT_LINE =>
+				modify_status (module_cursor, object.line, operation, log_threshold + 1);
+
+			when CAT_ZONE_SEGMENT =>
+				modify_status (module_cursor, object.segment, operation, log_threshold + 1);
+
+			when CAT_TEXT =>
+				modify_status (module_cursor, object.text, operation, log_threshold + 1);
+
+			when CAT_PLACEHOLDER =>
+				modify_status (module_cursor, object.placeholder, operation, log_threshold + 1);
+				
+			when CAT_VOID =>
+				null; -- CS
+		end case;
+
+		log_indentation_down;
+	end modify_status;
+
+	
+
+	
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_objects;
+		object : constant type_object := element (object_cursor);
+	begin
+		modify_status (module_cursor, object, operation, log_threshold);
+	end modify_status;
+
+
+
+	
+
+	procedure move_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving stopmask object " 
+			-- CS & to_string (object)
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_LINE =>
+				move_line (module_cursor, object.line.face, 
+					element (object.line.cursor),
+					point_of_attack, destination,
+					log_threshold + 1);
+
+			when CAT_ZONE_SEGMENT =>
+				move_segment (module_cursor,
+					object.segment,
+					point_of_attack, destination,
+					log_threshold + 1);
+
+			when CAT_TEXT =>
+				move_text (module_cursor,
+					object.text,
+					destination,
+					log_threshold + 1);
+
+			when CAT_PLACEHOLDER =>
+				move_placeholder (module_cursor,
+					object.placeholder,
+					destination,
+					log_threshold + 1);
+							
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end move_object;
+	
+
+
+	
+
+	procedure reset_proposed_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor) &
+			" resetting proposed objects",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		reset_proposed_lines (module_cursor, log_threshold + 1);
+		-- CS arcs, circles
+		
+		reset_proposed_texts (module_cursor, log_threshold + 1);
+		reset_proposed_placeholders (module_cursor, log_threshold + 1);
+		reset_proposed_segments (module_cursor, log_threshold + 1);
+
+		log_indentation_down;
+	end reset_proposed_objects;
+
+
+
+
+	
+	procedure delete_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " deleting stopmask object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_LINE =>
+				delete_line (
+					module_cursor	=> module_cursor, 
+					face			=> object.line.face,
+					line			=> element (object.line.cursor),
+					log_threshold	=> log_threshold + 1);					
+
+			-- CS arcs, circles
+				
+			when CAT_ZONE_SEGMENT =>
+				delete_segment (
+					module_cursor	=> module_cursor, 
+					segment			=> object.segment,
+					log_threshold	=> log_threshold + 1);
+
+				
+			when CAT_TEXT =>
+				delete_text (
+					module_cursor	=> module_cursor, 
+					text			=> object.text,
+					log_threshold	=> log_threshold + 1);
+
+
+			when CAT_PLACEHOLDER =>
+				delete_placeholder (
+					module_cursor	=> module_cursor, 
+					placeholder		=> object.placeholder,
+					log_threshold	=> log_threshold + 1);
+
+				
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end delete_object;
+	
+
+
+	
+	
 
 	procedure delete_object (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)

@@ -77,6 +77,7 @@ package et_board_verb_noun_keys is
 
 	key_noun_ratsnest	: constant gdk_key_type := GDK_LC_r;
 	key_noun_silkscreen	: constant gdk_key_type := GDK_LC_s;
+	key_noun_stopmask	: constant gdk_key_type := GDK_LC_t;
 	key_noun_conductors	: constant gdk_key_type := GDK_LC_c;
 	key_noun_text		: constant gdk_key_type := GDK_LC_x;
 	-- key_noun_track		: constant gdk_key_type := GDK_LC_t;
