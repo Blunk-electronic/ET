@@ -2984,7 +2984,7 @@ is
 		procedure do_it is
 			use et_board_ops.stopmask;
 		begin
-			delete_stop (
+			delete_object (
 				module_name 	=> module,
 				face			=> to_face (f (5)),
 				point			=> type_vector_model (set (

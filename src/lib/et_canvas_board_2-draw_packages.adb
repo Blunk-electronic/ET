@@ -597,7 +597,7 @@ is
 				stopmask.top.lines.iterate (query_line'access);
 				stopmask.top.arcs.iterate (query_arc'access);
 				stopmask.top.circles.iterate (query_circle'access);
-				stopmask.top.contours.iterate (query_zone'access);
+				stopmask.top.zones.iterate (query_zone'access);
 				stopmask.top.texts.iterate (query_text'access);
 
 				-- bottom
@@ -605,7 +605,7 @@ is
 				stopmask.bottom.lines.iterate (query_line'access);
 				stopmask.bottom.arcs.iterate (query_arc'access);
 				stopmask.bottom.circles.iterate (query_circle'access);
-				stopmask.bottom.contours.iterate (query_zone'access);
+				stopmask.bottom.zones.iterate (query_zone'access);
 				stopmask.bottom.texts.iterate (query_text'access);
 			end draw;
 			

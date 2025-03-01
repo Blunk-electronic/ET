@@ -177,7 +177,7 @@ is
 				iterate (module.board.stopmask.top.lines, query_line'access);
 				iterate (module.board.stopmask.top.arcs, query_arc'access);
 				iterate (module.board.stopmask.top.circles, query_circle'access);
-				iterate (module.board.stopmask.top.contours, query_zone'access);
+				iterate (module.board.stopmask.top.zones, query_zone'access);
 				iterate (module.board.stopmask.top.placeholders, query_placeholder'access);
 				iterate (module.board.stopmask.top.texts, query_text'access);
 
@@ -185,7 +185,7 @@ is
 				iterate (module.board.stopmask.bottom.lines, query_line'access);
 				iterate (module.board.stopmask.bottom.arcs, query_arc'access);
 				iterate (module.board.stopmask.bottom.circles, query_circle'access);
-				iterate (module.board.stopmask.bottom.contours, query_zone'access);
+				iterate (module.board.stopmask.bottom.zones, query_zone'access);
 				iterate (module.board.stopmask.bottom.placeholders, query_placeholder'access);
 				iterate (module.board.stopmask.bottom.texts, query_text'access);
 

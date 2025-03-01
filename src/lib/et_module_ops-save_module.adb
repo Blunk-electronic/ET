@@ -1916,7 +1916,7 @@ is
 			iterate (element (module_cursor).board.stopmask.top.lines, write_line'access);
 			iterate (element (module_cursor).board.stopmask.top.arcs, write_arc'access);
 			iterate (element (module_cursor).board.stopmask.top.circles, write_circle'access);
-			iterate (element (module_cursor).board.stopmask.top.contours, write_polygon'access);
+			iterate (element (module_cursor).board.stopmask.top.zones, write_polygon'access);
 			iterate (element (module_cursor).board.stopmask.top.texts, write_text'access);			
 			section_mark (section_top, FOOTER);
 
@@ -1924,7 +1924,7 @@ is
 			iterate (element (module_cursor).board.stopmask.bottom.lines, write_line'access);
 			iterate (element (module_cursor).board.stopmask.bottom.arcs, write_arc'access);
 			iterate (element (module_cursor).board.stopmask.bottom.circles, write_circle'access);
-			iterate (element (module_cursor).board.stopmask.bottom.contours, write_polygon'access);
+			iterate (element (module_cursor).board.stopmask.bottom.zones, write_polygon'access);
 			iterate (element (module_cursor).board.stopmask.bottom.texts, write_text'access);
 			section_mark (section_bottom, FOOTER);
 

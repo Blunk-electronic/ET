@@ -1623,11 +1623,11 @@ package body et_kicad_to_native is
 				end loop;
 
 				
-				-- POLYGONS TOP
-				polygons_cursor := module.board.stopmask.top.contours.first;
+				-- ZONES TOP
+				polygons_cursor := module.board.stopmask.top.zones.first;
 				while polygons_cursor /= pac_stop_zones.no_element loop
 					pac_stop_zones.update_element (
-						container	=> module.board.stopmask.top.contours,
+						container	=> module.board.stopmask.top.zones,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
 					
@@ -1635,11 +1635,11 @@ package body et_kicad_to_native is
 				end loop;
 
 				
-				-- POLYGONS BOTTOM
-				polygons_cursor := module.board.stopmask.bottom.contours.first;
+				-- ZONES BOTTOM
+				polygons_cursor := module.board.stopmask.bottom.zones.first;
 				while polygons_cursor /= pac_stop_zones.no_element loop
 					pac_stop_zones.update_element (
-						container	=> module.board.stopmask.bottom.contours,
+						container	=> module.board.stopmask.bottom.zones,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
 					

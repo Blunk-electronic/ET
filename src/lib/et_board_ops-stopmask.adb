@@ -658,10 +658,10 @@ package body et_board_ops.stopmask is
 			case face is
 				when TOP =>
 					-- Iterate through the already existing zones:
-					c := module.board.stopmask.top.contours.first;
+					c := module.board.stopmask.top.zones.first;
 
 					while c /= pac_stop_zones.no_element and proceed loop
-						module.board.stopmask.top.contours.update_element (c, query_zone'access);
+						module.board.stopmask.top.zones.update_element (c, query_zone'access);
 						next (c);
 					end loop;
 
@@ -670,16 +670,16 @@ package body et_board_ops.stopmask is
 					if proceed then
 						-- put_line ("added as new zone");
 						log (text => "added as new zone", level => log_threshold + 1);
-						module.board.stopmask.top.contours.append (zone);
+						module.board.stopmask.top.zones.append (zone);
 					end if;
 
 					
 				when BOTTOM =>
 					-- Iterate through the already existing zones:
-					c := module.board.stopmask.bottom.contours.first;
+					c := module.board.stopmask.bottom.zones.first;
 
 					while c /= pac_stop_zones.no_element and proceed loop
-						module.board.stopmask.bottom.contours.update_element (c, query_zone'access);
+						module.board.stopmask.bottom.zones.update_element (c, query_zone'access);
 						next (c);
 					end loop;
 
@@ -687,7 +687,7 @@ package body et_board_ops.stopmask is
 					-- as a new zone:
 					if proceed then
 						log (text => "added as new zone", level => log_threshold + 1);
-						module.board.stopmask.bottom.contours.append (zone);
+						module.board.stopmask.bottom.zones.append (zone);
 					end if;
 
 			end case;
@@ -761,13 +761,13 @@ package body et_board_ops.stopmask is
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.stopmask.top.contours, 
+						container	=> module.board.stopmask.top.zones, 
 						position	=> segment.zone, 
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.stopmask.bottom.contours, 
+						container	=> module.board.stopmask.bottom.zones, 
 						position	=> segment.zone, 
 						process		=> query_zone'access);
 
@@ -867,11 +867,11 @@ package body et_board_ops.stopmask is
 		begin
 			case face is
 				when TOP =>
-					zc := module.board.stopmask.top.contours.first;
+					zc := module.board.stopmask.top.zones.first;
 
 					while zc /= pac_stop_zones.no_element loop
 						update_element (
-							container	=> module.board.stopmask.top.contours,
+							container	=> module.board.stopmask.top.zones,
 							position	=> zc,
 							process		=> query_zone'access);
 						
@@ -880,11 +880,11 @@ package body et_board_ops.stopmask is
 
 					
 				when BOTTOM =>
-					zc := module.board.stopmask.bottom.contours.first;
+					zc := module.board.stopmask.bottom.zones.first;
 
 					while zc /= pac_stop_zones.no_element loop
 						update_element (
-							container	=> module.board.stopmask.bottom.contours,
+							container	=> module.board.stopmask.bottom.zones,
 							position	=> zc,
 							process		=> query_zone'access);
 						
@@ -966,11 +966,11 @@ package body et_board_ops.stopmask is
 			
 			
 		begin
-			zc := module.board.stopmask.top.contours.first;
+			zc := module.board.stopmask.top.zones.first;
 
 			while zc /= pac_stop_zones.no_element loop
 				update_element (
-					container	=> module.board.stopmask.top.contours,
+					container	=> module.board.stopmask.top.zones,
 					position	=> zc,
 					process		=> query_zone'access);
 				
@@ -978,11 +978,11 @@ package body et_board_ops.stopmask is
 			end loop;
 
 					
-			zc := module.board.stopmask.bottom.contours.first;
+			zc := module.board.stopmask.bottom.zones.first;
 
 			while zc /= pac_stop_zones.no_element loop
 				update_element (
-					container	=> module.board.stopmask.bottom.contours,
+					container	=> module.board.stopmask.bottom.zones,
 					position	=> zc,
 					process		=> query_zone'access);
 				
@@ -1084,7 +1084,7 @@ package body et_board_ops.stopmask is
 		begin
 			-- Iterate the zones in top layer:
 			iterate (
-				zones	=> module.board.stopmask.top.contours,
+				zones	=> module.board.stopmask.top.zones,
 				process	=> query_zone'access, 
 				proceed	=> proceed'access);
 
@@ -1094,7 +1094,7 @@ package body et_board_ops.stopmask is
 				face := BOTTOM;
 				
 				iterate (
-					zones	=> module.board.stopmask.bottom.contours,
+					zones	=> module.board.stopmask.bottom.zones,
 					process	=> query_zone'access, 
 					proceed	=> proceed'access);
 
@@ -1181,13 +1181,13 @@ package body et_board_ops.stopmask is
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.stopmask.top.contours, 
+						container	=> module.board.stopmask.top.zones, 
 						position	=> segment.zone, 
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.stopmask.bottom.contours, 
+						container	=> module.board.stopmask.bottom.zones, 
 						position	=> segment.zone, 
 						process		=> query_zone'access);
 
@@ -1255,13 +1255,13 @@ package body et_board_ops.stopmask is
 			case segment.face is
 				when TOP =>
 					update_element (
-						container	=> module.board.stopmask.top.contours, 
+						container	=> module.board.stopmask.top.zones, 
 						position	=> segment.zone, 
 						process		=> query_zone'access);
 
 				when BOTTOM =>
 					update_element (
-						container	=> module.board.stopmask.bottom.contours, 
+						container	=> module.board.stopmask.bottom.zones, 
 						position	=> segment.zone, 
 						process		=> query_zone'access);
 
@@ -1295,114 +1295,6 @@ package body et_board_ops.stopmask is
 
 	
 	
-	procedure delete_stop (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		point			: in type_vector_model; -- x/y
-		accuracy		: in type_accuracy;
-		log_threshold	: in type_log_level) 
-	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-
-		procedure delete (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			use pac_stop_lines;
-			use pac_stop_arcs;
-			use pac_stop_circles;
-			line_cursor   : pac_stop_lines.cursor;
-			arc_cursor    : pac_stop_arcs.cursor;
-			circle_cursor : pac_stop_circles.cursor;
-
-			deleted : boolean := false; -- goes true if at least one segment has been deleted
-		begin
-			if face = TOP then
-				line_cursor   	:= module.board.stopmask.top.lines.first;
-				arc_cursor    	:= module.board.stopmask.top.arcs.first;
-				circle_cursor	:= module.board.stopmask.top.circles.first;
-			else
-				line_cursor   	:= module.board.stopmask.bottom.lines.first;
-				arc_cursor    	:= module.board.stopmask.bottom.arcs.first;
-				circle_cursor	:= module.board.stopmask.bottom.circles.first;
-			end if;
-			
-			-- first search for a matching segment among the lines
-			while line_cursor /= pac_stop_lines.no_element loop
-				if element (line_cursor).on_line (point) then
-						-- CS use get_shortest_distance (point, element)
-						-- and compare distance with accuracy	
-					if face = TOP then
-						delete (module.board.stopmask.top.lines, line_cursor);
-					else
-						delete (module.board.stopmask.bottom.lines, line_cursor);
-					end if;
-					deleted := true;
-					exit;
-				end if;
-				next (line_cursor);
-			end loop;
-
-			-- if no line found, search among arcs
-			if not deleted then
-				while arc_cursor /= pac_stop_arcs.no_element loop
-					if element (arc_cursor).on_arc (point) then
-						-- CS use get_shortest_distance (point, element)
-						-- and compare distance with accuracy	
-						if face = TOP then
-							delete (module.board.stopmask.top.arcs, arc_cursor);
-						else
-							delete (module.board.stopmask.bottom.arcs, arc_cursor);
-						end if;
-						deleted := true;
-						exit;
-					end if;
-					next (arc_cursor);
-				end loop;
-			end if;
-
-			-- if no arc found, search among circles
-			if not deleted then
-				while circle_cursor /= pac_stop_circles.no_element loop
-
-					if element (circle_cursor).on_circle (point) then
-						-- CS use get_shortest_distance (point, element)
-						-- and compare distance with accuracy	
-						if face = TOP then
-							delete (module.board.stopmask.top.circles, circle_cursor);
-						else
-							delete (module.board.stopmask.bottom.circles, circle_cursor);
-						end if;
-						deleted := true;
-						exit;
-					end if;
-					next (circle_cursor);
-				end loop;
-			end if;
-
-			if not deleted then
-				nothing_found (point, accuracy);
-			end if;
-			
-		end delete;
-		
-	begin -- delete_stop
-		log (text => "module " & to_string (module_name) &
-			" deleting stop mask segment face" & to_string (face) &
-			" at" & to_string (point) &
-			" accuracy" & accuracy_to_string (accuracy),
-			level => log_threshold);
-
-		-- locate module
-		module_cursor := locate_module (module_name);
-
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> delete'access);
-		
-	end delete_stop;
-
 
 
 
@@ -1619,6 +1511,118 @@ package body et_board_ops.stopmask is
 		
 		log_indentation_down;
 	end add_placeholder;
+
+
+
+
+
+	procedure delete_object (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		point			: in type_vector_model; -- x/y
+		accuracy		: in type_accuracy;
+		log_threshold	: in type_log_level) 
+	is
+		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
+
+		procedure delete (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_stop_lines;
+			use pac_stop_arcs;
+			use pac_stop_circles;
+			line_cursor   : pac_stop_lines.cursor;
+			arc_cursor    : pac_stop_arcs.cursor;
+			circle_cursor : pac_stop_circles.cursor;
+
+			deleted : boolean := false; -- goes true if at least one segment has been deleted
+		begin
+			if face = TOP then
+				line_cursor   	:= module.board.stopmask.top.lines.first;
+				arc_cursor    	:= module.board.stopmask.top.arcs.first;
+				circle_cursor	:= module.board.stopmask.top.circles.first;
+			else
+				line_cursor   	:= module.board.stopmask.bottom.lines.first;
+				arc_cursor    	:= module.board.stopmask.bottom.arcs.first;
+				circle_cursor	:= module.board.stopmask.bottom.circles.first;
+			end if;
+			
+			-- first search for a matching segment among the lines
+			while line_cursor /= pac_stop_lines.no_element loop
+				if element (line_cursor).on_line (point) then
+						-- CS use get_shortest_distance (point, element)
+						-- and compare distance with accuracy	
+					if face = TOP then
+						delete (module.board.stopmask.top.lines, line_cursor);
+					else
+						delete (module.board.stopmask.bottom.lines, line_cursor);
+					end if;
+					deleted := true;
+					exit;
+				end if;
+				next (line_cursor);
+			end loop;
+
+			-- if no line found, search among arcs
+			if not deleted then
+				while arc_cursor /= pac_stop_arcs.no_element loop
+					if element (arc_cursor).on_arc (point) then
+						-- CS use get_shortest_distance (point, element)
+						-- and compare distance with accuracy	
+						if face = TOP then
+							delete (module.board.stopmask.top.arcs, arc_cursor);
+						else
+							delete (module.board.stopmask.bottom.arcs, arc_cursor);
+						end if;
+						deleted := true;
+						exit;
+					end if;
+					next (arc_cursor);
+				end loop;
+			end if;
+
+			-- if no arc found, search among circles
+			if not deleted then
+				while circle_cursor /= pac_stop_circles.no_element loop
+
+					if element (circle_cursor).on_circle (point) then
+						-- CS use get_shortest_distance (point, element)
+						-- and compare distance with accuracy	
+						if face = TOP then
+							delete (module.board.stopmask.top.circles, circle_cursor);
+						else
+							delete (module.board.stopmask.bottom.circles, circle_cursor);
+						end if;
+						deleted := true;
+						exit;
+					end if;
+					next (circle_cursor);
+				end loop;
+			end if;
+
+			if not deleted then
+				nothing_found (point, accuracy);
+			end if;
+			
+		end delete;
+		
+	begin
+		log (text => "module " & to_string (module_name) &
+			" deleting stopmask object face" & to_string (face) &
+			" at" & to_string (point) &
+			" accuracy" & accuracy_to_string (accuracy),
+			level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> delete'access);
+		
+	end delete_object;
 
 	
 	

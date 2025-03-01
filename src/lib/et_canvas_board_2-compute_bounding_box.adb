@@ -443,8 +443,8 @@ is
 				stop.top.circles.iterate (query_circle'access);
 				stop.bottom.circles.iterate (query_circle'access);
 
-				stop.top.contours.iterate (query_contour'access);
-				stop.bottom.contours.iterate (query_contour'access);
+				stop.top.zones.iterate (query_contour'access);
+				stop.bottom.zones.iterate (query_contour'access);
 
 				-- CS texts
 			end query_stopmask;
@@ -1215,8 +1215,8 @@ is
 					packge.stop_mask.top.circles.iterate (query_circle'access);
 					packge.stop_mask.bottom.circles.iterate (query_circle'access);
 
-					packge.stop_mask.top.contours.iterate (query_contour'access);
-					packge.stop_mask.bottom.contours.iterate (query_contour'access);
+					packge.stop_mask.top.zones.iterate (query_contour'access);
+					packge.stop_mask.bottom.zones.iterate (query_contour'access);
 					
 					packge.stop_mask.top.texts.iterate (query_text'access);
 					packge.stop_mask.bottom.texts.iterate (query_text'access);

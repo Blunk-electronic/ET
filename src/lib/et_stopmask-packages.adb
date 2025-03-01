@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -48,7 +48,7 @@ package body et_stopmask.packages is
 		mirror_lines (stopmask.lines, axis);
 		mirror_arcs (stopmask.arcs, axis);
 		mirror_circles (stopmask.circles, axis);
-		mirror_contours (stopmask.contours, axis);
+		mirror_contours (stopmask.zones, axis);
 		mirror_texts (stopmask.texts, axis);
 	end mirror_stopmask_objects;
 
@@ -60,7 +60,7 @@ package body et_stopmask.packages is
 		rotate_lines (stopmask.lines, angle);
 		rotate_arcs (stopmask.arcs, angle);
 		rotate_circles (stopmask.circles, angle);
-		rotate_contours (stopmask.contours, angle);
+		rotate_contours (stopmask.zones, angle);
 		rotate_texts (stopmask.texts, angle);
 	end rotate_stopmask_objects;
 
@@ -72,7 +72,7 @@ package body et_stopmask.packages is
 		move_lines (stopmask.lines, offset);
 		move_arcs (stopmask.arcs, offset);
 		move_circles (stopmask.circles, offset);
-		move_contours (stopmask.contours, offset);
+		move_contours (stopmask.zones, offset);
 		move_texts (stopmask.texts, offset);
 	end move_stopmask_objects;
 

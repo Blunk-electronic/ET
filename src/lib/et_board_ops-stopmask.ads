@@ -253,16 +253,6 @@ package et_board_ops.stopmask is
 
 
 	
-	
-	-- Deletes the segment of the stop mask that crosses the given point.
-	-- CS currently deletes the first segment found. Leaves other segments untouched.
-	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-	procedure delete_stop (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		face			: in type_face;
-		point			: in type_vector_model; -- x/y
-		accuracy		: in type_accuracy;
-		log_threshold	: in type_log_level);
 
 
 
@@ -315,6 +305,21 @@ package et_board_ops.stopmask is
 	
 	-- CS
 	-- move_placeholder via commandline
+
+
+
+
+	
+	-- Deletes the object that crosses the given point.
+	-- CS currently deletes the item found first. Leaves other items untouched.
+	-- CS a parameter like "all" to delete all items in the vicinity of point.
+	procedure delete_object (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		face			: in type_face;
+		point			: in type_vector_model; -- x/y
+		accuracy		: in type_accuracy;
+		log_threshold	: in type_log_level);
+
 	
 	
 end et_board_ops.stopmask;
