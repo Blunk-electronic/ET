@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -271,7 +271,7 @@ package body et_undo_redo is
 					end case;
 
 
-				when NOUN_SILKSCREEN | NOUN_ASSY | NOUN_STOP | NOUN_ROUTE_RESTRICT |
+				when NOUN_SILKSCREEN | NOUN_ASSY | NOUN_STOPMASK | NOUN_ROUTE_RESTRICT |
 					NOUN_KEEPOUT | NOUN_VIA_RESTRICT | NOUN_LINE | NOUN_ARC | NOUN_TEXT => -- CS others ?
 					case verb is
 						when VERB_DRAW | VERB_MOVE | VERB_DELETE =>

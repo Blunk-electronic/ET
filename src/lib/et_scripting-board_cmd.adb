@@ -348,7 +348,7 @@ is
 						when NOUN_ASSY			=> layers.assy_doc.top			:= ls;
 						when NOUN_KEEPOUT		=> layers.keepout.top			:= ls;
 						when NOUN_STENCIL		=> layers.stencil.top			:= ls;
-						when NOUN_STOP			=> layers.stop_mask.top			:= ls;
+						when NOUN_STOPMASK		=> layers.stop_mask.top			:= ls;
 						when NOUN_ORIGINS		=> layers.device_origins.top	:= ls;
 						
 						when others => 
@@ -361,7 +361,7 @@ is
 						when NOUN_ASSY			=> layers.assy_doc.bottom		:= ls;
 						when NOUN_KEEPOUT		=> layers.keepout.bottom		:= ls;
 						when NOUN_STENCIL		=> layers.stencil.bottom		:= ls;
-						when NOUN_STOP			=> layers.stop_mask.bottom		:= ls;
+						when NOUN_STOPMASK		=> layers.stop_mask.bottom		:= ls;
 						when NOUN_ORIGINS		=> layers.device_origins.bottom	:= ls;
 						
 						when others => 
@@ -3395,7 +3395,7 @@ is
 					when NOUN_STENCIL =>
 						delete_stencil_object;
 						
-					when NOUN_STOP =>
+					when NOUN_STOPMASK =>
 						delete_stopmask_object;
 
 					when NOUN_VIA =>
@@ -3421,7 +3421,7 @@ is
 			when VERB_DISPLAY => -- GUI related
 				case noun is
 					when NOUN_SILKSCREEN
-						| NOUN_ASSY | NOUN_KEEPOUT | NOUN_STOP | NOUN_STENCIL | NOUN_ORIGINS =>
+						| NOUN_ASSY | NOUN_KEEPOUT | NOUN_STOPMASK | NOUN_STENCIL | NOUN_ORIGINS =>
 						display_non_conductor_layer;
 
 						
@@ -3481,7 +3481,7 @@ is
 					when NOUN_STENCIL =>
 						draw_stencil;
 						
-					when NOUN_STOP =>
+					when NOUN_STOPMASK =>
 						draw_stop_mask;
 
 					when NOUN_VIA_RESTRICT =>

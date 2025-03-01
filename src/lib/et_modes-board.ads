@@ -111,7 +111,7 @@ package et_modes.board is
 		NOUN_SCRIPT,
 		NOUN_SILKSCREEN,
 		NOUN_STENCIL, -- solder mask or solder paste
-		NOUN_STOP, -- solder stop mask -- CS rename to NOUN_STOPMASK
+		NOUN_STOPMASK, -- solder stop mask
 		NOUN_SUBMODULE,
 		NOUN_TEXT,
 		NOUN_TEXT_SIZE,

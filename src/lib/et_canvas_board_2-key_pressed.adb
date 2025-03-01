@@ -93,7 +93,7 @@ is
 				set_status (et_canvas_board_silkscreen.status_delete_object);
 
 			when key_noun_stopmask =>
-				noun := NOUN_STOP;
+				noun := NOUN_STOPMASK;
 				set_status (et_canvas_board_stopmask.status_delete_object);
 				
 			when key_noun_non_electrical_device =>
@@ -164,7 +164,7 @@ is
 					when NOUN_SILKSCREEN =>
 						et_canvas_board_silkscreen.delete_object (point);
 
-					when NOUN_STOP =>
+					when NOUN_STOPMASK =>
 						et_canvas_board_stopmask.delete_object (point);
 
 						
@@ -194,7 +194,7 @@ is
 							et_canvas_board_silkscreen.clarify_object;
 						end if;
 
-					when NOUN_STOP =>
+					when NOUN_STOPMASK =>
 						if clarification_pending then
 							et_canvas_board_stopmask.clarify_object;
 						end if;
@@ -314,7 +314,7 @@ is
 				set_status (et_canvas_board_silkscreen.status_move_object);
 
 			when key_noun_stopmask =>
-				noun := NOUN_STOP;
+				noun := NOUN_STOPMASK;
 				set_status (et_canvas_board_stopmask.status_move_object);
 				
 			-- when key_noun_track =>
@@ -360,7 +360,7 @@ is
 					when NOUN_SILKSCREEN =>
 						et_canvas_board_silkscreen.move_object (KEYBOARD, point);
 
-					when NOUN_STOP =>
+					when NOUN_STOPMASK =>
 						et_canvas_board_stopmask.move_object (KEYBOARD, point);
 						
 					when NOUN_CONDUCTORS =>
@@ -414,7 +414,7 @@ is
 							et_canvas_board_silkscreen.clarify_object;
 						end if;
 
-					when NOUN_STOP =>
+					when NOUN_STOPMASK =>
 						if clarification_pending then
 							et_canvas_board_stopmask.clarify_object;
 						end if;
