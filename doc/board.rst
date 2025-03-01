@@ -23,6 +23,21 @@ Board Outline
 	|VNS| d o
 	
 		
+#. Move Outline Segment
+
+	To move a segment of the board contour:
+
+	|VNS| m o
+	
+
+#. Delete Outline Segment
+
+	To delete a segment of the board contour:
+
+	|VNS| del o
+
+	
+		
 +++++++++++++
 Signal Layers
 +++++++++++++
