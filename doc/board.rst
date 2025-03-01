@@ -761,6 +761,8 @@ Stopmask
 	.. code-block::
 		
 		draw stop top line 1 70 55  60 66
+		
+	|VNS| d l
 	
 	.. code-block::
 	
@@ -781,7 +783,17 @@ Stopmask
 	|VNS| d z
 		
 		
+
+#. Move
+
+	|VNS| m t
+
+		
+		
 #. Deleting Objects
+		
+	|VNS| del t
+		
 		
 	.. code-block::
 	
