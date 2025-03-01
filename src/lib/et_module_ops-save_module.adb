@@ -1882,14 +1882,14 @@ is
 			iterate (element (module_cursor).board.stencil.top.lines, write_line'access);
 			iterate (element (module_cursor).board.stencil.top.arcs, write_arc'access);
 			iterate (element (module_cursor).board.stencil.top.circles, write_circle'access);
-			iterate (element (module_cursor).board.stencil.top.contours, write_polygon'access);
+			iterate (element (module_cursor).board.stencil.top.zones, write_polygon'access);
 			section_mark (section_top, FOOTER);
 
 			section_mark (section_bottom, HEADER);
 			iterate (element (module_cursor).board.stencil.bottom.lines, write_line'access);
 			iterate (element (module_cursor).board.stencil.bottom.arcs, write_arc'access);
 			iterate (element (module_cursor).board.stencil.bottom.circles, write_circle'access);
-			iterate (element (module_cursor).board.stencil.bottom.contours, write_polygon'access);
+			iterate (element (module_cursor).board.stencil.bottom.zones, write_polygon'access);
 			section_mark (section_bottom, FOOTER);
 
 			section_mark (section_stencil, FOOTER);

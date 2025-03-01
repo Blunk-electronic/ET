@@ -245,10 +245,10 @@ package et_stencil is
 	
 	-- This is the type for solder paste stencil objects in general:
 	type type_stencil is record
-		lines 		: pac_stencil_lines.list;
-		arcs		: pac_stencil_arcs.list;
-		circles		: pac_stencil_circles.list;
-		contours	: pac_stencil_zones.list; -- CS rename to zones
+		lines 	: pac_stencil_lines.list;
+		arcs	: pac_stencil_arcs.list;
+		circles	: pac_stencil_circles.list;
+		zones	: pac_stencil_zones.list;
 	end record;
 
 

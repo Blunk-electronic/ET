@@ -706,14 +706,14 @@ is
 				stencil.top.lines.iterate (query_line'access);
 				stencil.top.arcs.iterate (query_arc'access);
 				stencil.top.circles.iterate (query_circle'access);
-				stencil.top.contours.iterate (query_zone'access);
+				stencil.top.zones.iterate (query_zone'access);
 
 				-- bottom
 				set_color_stencil (BOTTOM, brightness);
 				stencil.bottom.lines.iterate (query_line'access);
 				stencil.bottom.arcs.iterate (query_arc'access);
 				stencil.bottom.circles.iterate (query_circle'access);
-				stencil.bottom.contours.iterate (query_zone'access);
+				stencil.bottom.zones.iterate (query_zone'access);
 			end draw;
 
 			

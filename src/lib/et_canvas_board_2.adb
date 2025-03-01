@@ -65,6 +65,7 @@ with et_board_ops.grid;
 with et_board_ops.assy_doc;
 with et_board_ops.silkscreen;
 with et_board_ops.stopmask;
+with et_board_ops.stencil;
 with et_board_ops.conductors;
 with et_board_ops.board_contour;
 with et_pcb;
@@ -79,6 +80,7 @@ with et_canvas_board_devices;
 with et_canvas_board_assy_doc;
 with et_canvas_board_silkscreen;
 with et_canvas_board_stopmask;
+-- with et_canvas_board_stencil;
 with et_canvas_board_tracks;
 with et_canvas_board_conductors;
 
@@ -838,6 +840,7 @@ package body et_canvas_board_2 is
 		et_board_ops.assy_doc.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops.silkscreen.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops.stopmask.reset_proposed_objects (active_module, log_threshold + 1);
+		et_board_ops.stencil.reset_proposed_objects (active_module, log_threshold + 1);
 		et_board_ops.conductors.reset_proposed_objects (active_module, log_threshold + 1);
 
 		

@@ -118,13 +118,13 @@ is
 				iterate (module.board.stencil.top.lines, query_line'access);
 				iterate (module.board.stencil.top.arcs, query_arc'access);
 				iterate (module.board.stencil.top.circles, query_circle'access);
-				iterate (module.board.stencil.top.contours, query_zone'access);
+				iterate (module.board.stencil.top.zones, query_zone'access);
 				
 			when BOTTOM =>
 				iterate (module.board.stencil.bottom.lines, query_line'access);
 				iterate (module.board.stencil.bottom.arcs, query_arc'access);
 				iterate (module.board.stencil.bottom.circles, query_circle'access);
-				iterate (module.board.stencil.bottom.contours, query_zone'access);
+				iterate (module.board.stencil.bottom.zones, query_zone'access);
 		end case;
 	end query_items;
 

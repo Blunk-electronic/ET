@@ -1430,11 +1430,11 @@ package body et_kicad_to_native is
 				end loop;
 
 				
-				-- POLYGONS TOP
-				polygons_cursor := module.board.stencil.top.contours.first;
+				-- ZONES TOP
+				polygons_cursor := module.board.stencil.top.zones.first;
 				while polygons_cursor /= pac_stencil_zones.no_element loop
 					pac_stencil_zones.update_element (
-						container	=> module.board.stencil.top.contours,
+						container	=> module.board.stencil.top.zones,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
 					
@@ -1442,11 +1442,11 @@ package body et_kicad_to_native is
 				end loop;
 
 				
-				-- POLYGONS BOTTOM
-				polygons_cursor := module.board.stencil.bottom.contours.first;
+				-- ZONES BOTTOM
+				polygons_cursor := module.board.stencil.bottom.zones.first;
 				while polygons_cursor /= pac_stencil_zones.no_element loop
 					pac_stencil_zones.update_element (
-						container	=> module.board.stencil.bottom.contours,
+						container	=> module.board.stencil.bottom.zones,
 						position	=> polygons_cursor,
 						process		=> move_polygon'access);
 					

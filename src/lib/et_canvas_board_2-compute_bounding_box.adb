@@ -373,8 +373,8 @@ is
 				stencil.top.circles.iterate (query_circle'access);
 				stencil.bottom.circles.iterate (query_circle'access);
 
-				stencil.top.contours.iterate (query_zone'access);
-				stencil.bottom.contours.iterate (query_zone'access);
+				stencil.top.zones.iterate (query_zone'access);
+				stencil.bottom.zones.iterate (query_zone'access);
 			end query_stencil;
 			
 		begin
@@ -1302,8 +1302,8 @@ is
 					packge.stencil.top.circles.iterate (query_circle'access);
 					packge.stencil.bottom.circles.iterate (query_circle'access);
 
-					packge.stencil.top.contours.iterate (query_contour'access);
-					packge.stencil.bottom.contours.iterate (query_contour'access);
+					packge.stencil.top.zones.iterate (query_contour'access);
+					packge.stencil.bottom.zones.iterate (query_contour'access);
 				end process_stencil;
 				
 

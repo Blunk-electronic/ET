@@ -329,7 +329,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.stencil.top.lines, write_line'access);
 			iterate (packge.stencil.top.arcs, write_arc'access);
 			iterate (packge.stencil.top.circles, write_circle'access);
-			iterate (packge.stencil.top.contours, write_polygon'access);
+			iterate (packge.stencil.top.zones, write_polygon'access);
 			section_mark (section_top, FOOTER);
 			
 			-- bottom
@@ -337,7 +337,7 @@ package body et_pcb_rw.device_packages is
 			iterate (packge.stencil.bottom.lines, write_line'access);
 			iterate (packge.stencil.bottom.arcs, write_arc'access);
 			iterate (packge.stencil.bottom.circles, write_circle'access);
-			iterate (packge.stencil.bottom.contours, write_polygon'access);
+			iterate (packge.stencil.bottom.zones, write_polygon'access);
 			section_mark (section_bottom, FOOTER);
 
 			section_mark (section_stencil, FOOTER);			
@@ -1308,7 +1308,7 @@ package body et_pcb_rw.device_packages is
 				procedure append_stencil_polygon_top is begin
 
 					pac_stencil_zones.append (
-						container	=> packge.stencil.top.contours, 
+						container	=> packge.stencil.top.zones, 
 						new_item	=> (contour with null record));
 
 					-- clean up for next polygon
@@ -1318,7 +1318,7 @@ package body et_pcb_rw.device_packages is
 				
 				procedure append_stencil_polygon_bottom is begin
 					pac_stencil_zones.append (
-						container	=> packge.stencil.bottom.contours, 
+						container	=> packge.stencil.bottom.zones, 
 						new_item	=> (contour with null record));
 
 					-- clean up for next polygon

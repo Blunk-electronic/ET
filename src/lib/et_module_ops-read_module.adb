@@ -3651,14 +3651,14 @@ is
 					
 					procedure append_stencil_polygon_top is begin
 						pac_stencil_zones.append (
-							container	=> module.board.stencil.top.contours,
+							container	=> module.board.stencil.top.zones,
 							new_item	=> (contour with null record));
 					end;
 
 					
 					procedure append_stencil_polygon_bottom is begin
 						pac_stencil_zones.append (
-							container	=> module.board.stencil.bottom.contours,
+							container	=> module.board.stencil.bottom.zones,
 							new_item	=> (contour with null record));
 					end;
 

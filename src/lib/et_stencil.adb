@@ -465,7 +465,7 @@ package body et_stencil is
 		mirror_lines (stencil.lines);
 		mirror_arcs (stencil.arcs);
 		mirror_circles (stencil.circles);
-		mirror_contours (stencil.contours);
+		mirror_contours (stencil.zones);
 	end mirror_stencil_objects;
 	
 
@@ -476,7 +476,7 @@ package body et_stencil is
 		rotate_lines (stencil.lines, angle);
 		rotate_arcs (stencil.arcs, angle);
 		rotate_circles (stencil.circles, angle);
-		rotate_contours (stencil.contours, angle);
+		rotate_contours (stencil.zones, angle);
 	end rotate_stencil_objects;
 
 
@@ -487,7 +487,7 @@ package body et_stencil is
 		move_lines (stencil.lines, offset);
 		move_arcs (stencil.arcs, offset);
 		move_circles (stencil.circles, offset);
-		move_contours (stencil.contours, offset);
+		move_contours (stencil.zones, offset);
 	end move_stencil_objects;
 
 
