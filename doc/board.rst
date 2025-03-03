@@ -839,8 +839,17 @@ Stencil
 		draw stencil top zone line 0 70 line 10 70 line 10 80 line 0 80
 
 		
+
+#. Moving Objects
+
+	|VNS| m e
+
+	
 		
 #. Deleting Objects
+
+	|VNS| del e
+
 		
 	.. code-block::
 	
