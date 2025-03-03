@@ -60,18 +60,35 @@ is
 	use pac_stencil_zones;
 	
 
-	-- CS must be overwritten according to select status:
-	brightness : type_brightness := NORMAL;
+	procedure set_default_brightness is begin
+		set_color_stencil (face, NORMAL);
+	end set_default_brightness;
 
 	
+	procedure set_highlight_brightness is begin
+		set_color_stencil (face, BRIGHT);
+	end set_highlight_brightness;
+
+
+	
+	
 	procedure query_line (c : in pac_stencil_lines.cursor) is 
-		-- CS use renames
+		line : type_stencil_line renames element (c);
+
+		procedure draw is begin
+			draw_line (line => line, width => line.width, do_stroke => true);
+		end draw;
+
 	begin
-		draw_line (
-			line	=> element (c),
-			width	=> element (c).width,
-			do_stroke => true);
+		if is_selected (line) then
+			set_highlight_brightness;
+			draw;
+			set_default_brightness;
+		else
+			draw;
+		end if;
 	end query_line;
+
 
 	
 	procedure query_arc (c : in pac_stencil_arcs.cursor) is 
@@ -111,7 +128,7 @@ is
 		module		: in type_generic_module) 
 	is begin
 		-- All stencil segments will be drawn with the same color:
-		set_color_stencil (face, brightness);
+		set_color_stencil (face, NORMAL);
 
 		case face is
 			when TOP =>
