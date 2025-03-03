@@ -99,6 +99,10 @@ is
 			when key_noun_stencil =>
 				noun := NOUN_STENCIL;
 				set_status (et_canvas_board_stencil.status_delete_object);
+
+			when key_noun_keepout =>
+				noun := NOUN_KEEPOUT;
+				set_status (et_canvas_board_keepout.status_delete_object);
 				
 			when key_noun_non_electrical_device =>
 				noun := NOUN_NON_ELECTRICAL_DEVICE;
@@ -174,7 +178,8 @@ is
 					when NOUN_STENCIL =>
 						et_canvas_board_stencil.delete_object (point);
 						
-						
+					when NOUN_KEEPOUT =>
+						et_canvas_board_keepout.delete_object (point);
 -- 
 -- 					when NOUN_NON_ELECTRICAL_DEVICE =>
 -- 						delete_non_electrical_device (KEYBOARD, point);
@@ -211,6 +216,12 @@ is
 							et_canvas_board_stencil.clarify_object;
 						end if;
 
+					when NOUN_KEEPOUT =>
+						if clarification_pending then
+							et_canvas_board_keepout.clarify_object;
+						end if;
+
+						
 						
 -- 					when NOUN_NON_ELECTRICAL_DEVICE =>
 -- 						if clarification_pending then
@@ -332,6 +343,10 @@ is
 			when key_noun_stencil =>
 				noun := NOUN_STENCIL;
 				set_status (et_canvas_board_stencil.status_move_object);
+
+			when key_noun_keepout =>
+				noun := NOUN_KEEPOUT;
+				set_status (et_canvas_board_keepout.status_move_object);
 				
 			-- when key_noun_track =>
 			-- 	noun := NOUN_TRACK;
@@ -381,6 +396,9 @@ is
 
 					when NOUN_STENCIL =>
 						et_canvas_board_stencil.move_object (KEYBOARD, point);
+
+					when NOUN_KEEPOUT =>
+						et_canvas_board_keepout.move_object (KEYBOARD, point);
 						
 					when NOUN_CONDUCTORS =>
 						et_canvas_board_conductors.move_object (KEYBOARD, point);
@@ -441,6 +459,11 @@ is
 					when NOUN_STENCIL =>
 						if clarification_pending then
 							et_canvas_board_stencil.clarify_object;
+						end if;
+
+					when NOUN_KEEPOUT =>
+						if clarification_pending then
+							et_canvas_board_keepout.clarify_object;
 						end if;
 						
 					when NOUN_CONDUCTORS =>

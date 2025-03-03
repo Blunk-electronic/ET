@@ -573,7 +573,7 @@ is
 		begin
 			face := to_face (f (5));
 			
-			draw_zone (
+			add_zone (
 				module_cursor	=> module_cursor,
 				zone			=> (c with null record),
 				face			=> face,

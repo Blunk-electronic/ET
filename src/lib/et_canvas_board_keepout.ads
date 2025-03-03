@@ -2,9 +2,9 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                          BOARD DRAW KEEPOUT                              --
+--                      CANVAS BOARD / KEEPOUT                              --
 --                                                                          --
---                               B o d y                                    --
+--                               S p e c                                    --
 --                                                                          --
 -- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
@@ -35,98 +35,87 @@
 --
 --   history of changes:
 --
+-- DESCRIPTION:
+-- 
 
-with ada.text_io;				use ada.text_io;
+with ada.containers;   			       	use ada.containers;
+with ada.containers.indefinite_doubly_linked_lists;
 
-with et_keepout;				use et_keepout;
-with et_colors;					use et_colors;
-with et_modes.board;
-with et_canvas_tool;
-with et_schematic;
+with gtk.box;							use gtk.box;
 
+with et_primitive_objects;				use et_primitive_objects;
+with et_pcb_sides;						use et_pcb_sides;
+with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
+use et_pcb_coordinates_2.pac_geometry_2;
 
-separate (et_canvas_board_2)
-
-procedure draw_keepout (
-	face	: in type_face) 
-is
-	use et_colors.board;
-	use et_board_shapes_and_text;
-
-	use pac_keepout_zones;
-	use pac_keepout_cutouts;
+with et_canvas_tool;					use et_canvas_tool;
+with et_canvas_messages;				use et_canvas_messages;
 
 
-	procedure set_default_brightness is begin
-		set_color_keepout (face, NORMAL);
-	end set_default_brightness;
 
-	
-	procedure set_highlight_brightness is begin
-		set_color_keepout (face, BRIGHT);
-	end set_highlight_brightness;
-		
+package et_canvas_board_keepout is
 	
 
-	
-	procedure query_zone (c : in pac_keepout_zones.cursor) is
-		use pac_draw_contours;
-	begin
-		draw_contour (
-			contour	=> element (c),
-			filled	=> NO, -- CS YES ?
-			width	=> zero);
-	end query_zone;
+	-- This procedure is required in order to clarify
+	-- which object among the proposed objects is meant.
+	-- On every call of this procedure we advance from one
+	-- proposed segment to the next in a circular manner
+	-- and set it as "selected":
+	procedure clarify_object;
+
+
+	-- Locates objects in the vicinity of the given point
+	-- and sets their proposed-flag.
+	-- Only displayed layers are taken into account.
+	-- Depending on how many objects have been found, the behaviour is:
+	-- - If only one object found, then it is selected automatically.
+	-- - If more than one object found, then clarification is requested.
+	--   The first object of them is selected.
+	procedure find_objects (
+		point : in type_vector_model);
+
 
 	
-	procedure query_cutout (c : in pac_keepout_cutouts.cursor) is 
-		-- CS use rename
-		use pac_draw_contours;
-	begin
-		set_color_background;
-		
-		draw_contour (
-			contour	=> element (c),
-			filled	=> YES,
-			width	=> zero);
-	end query_cutout;
+	
+-- PLACING:
 
+	-- see package et_canvas_board_lines
 	
 
 	
-	procedure query_items (
-		module_name	: in pac_module_name.bounded_string;
-		module		: in type_generic_module) 
-	is begin
-		-- All keepout segments will be drawn with the same color:
-		set_color_keepout (face, NORMAL);
-		
-		case face is
-			when TOP =>
-				iterate (module.board.keepout.top.zones, query_zone'access);
-				iterate (module.board.keepout.top.cutouts, query_cutout'access);
 
-			when BOTTOM =>
-				iterate (module.board.keepout.bottom.zones, query_zone'access);
-				iterate (module.board.keepout.bottom.cutouts, query_cutout'access);
-		end case;
-	end query_items;
-	
-	
-begin -- draw_keepout
--- 	put_line ("draw keepout ...");
-	
-	pac_generic_modules.query_element (
-		position	=> active_module,
-		process		=> query_items'access);
+-- MOVE:
 
-
-	-- Draw the zone begin drawn:
-	draw_live_zone (LAYER_CAT_KEEPOUT);
+	status_move_object : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to move object in keepout." 
+		& status_hint_for_abort;
 
 	
-end draw_keepout;
+	procedure move_object (
+		tool	: in type_tool;
+		point	: in type_vector_model);				   
 
+
+
+-- DELETE:
+
+	status_delete_object : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to delete object in keepout." 
+		& status_hint_for_abort;
+
+	
+	procedure delete_object (
+		point	: in type_vector_model);				   
+
+	
+	
+end et_canvas_board_keepout;
 
 -- Soli Deo Gloria
 
