@@ -1368,7 +1368,7 @@ begin -- fill_zones
 	log (text => "converting outer board contour to polygon ...", level => log_threshold + 1);
 	
 	board_outer_contour_master := to_polygon (
-		contour		=> get_outline (module_cursor),
+		contour		=> get_outer_contour (module_cursor),
 		mode		=> SHRINK,										 
 		tolerance	=> fill_tolerance);
 

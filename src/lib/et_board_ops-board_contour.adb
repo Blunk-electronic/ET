@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -120,6 +120,53 @@ package body et_board_ops.board_contour is
 	
 
 
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_outer_contour_segment;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_segment (
+				segment	: in out type_segment)
+			is begin
+				modify_status (segment, operation);
+			end query_segment;
+
+			
+		begin
+			pac_segments.update_element (
+				container	=> module.board.board_contour.outline.contour.segments, 
+				position	=> segment.segment, 
+				process		=> query_segment'access);
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of "
+			& to_string (segment.segment)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+
+
+	
+
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -168,7 +215,7 @@ package body et_board_ops.board_contour is
 
 	
 
-	procedure propose_segments (
+	procedure propose_outer_contour_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model;
 		zone			: in type_accuracy;
@@ -181,7 +228,7 @@ package body et_board_ops.board_contour is
 			module		: in out type_generic_module) 
 		is
 			use pac_segments;
-			lc : pac_segments.cursor := module.board.board_contour.outline.contour.segments.first;
+			c : pac_segments.cursor;
 
 			
 			procedure query_segment (
@@ -209,38 +256,42 @@ package body et_board_ops.board_contour is
 
 			
 		begin
-			while lc /= pac_segments.no_element loop
-				pac_segments.update_element (
-					container	=> module.board.board_contour.outline.contour.segments, 
-					position	=> lc, 
-					process		=> query_segment'access);
+			if module.board.board_contour.outline.contour.circular then
+				null; -- CS
+			else
+				c := module.board.board_contour.outline.contour.segments.first;
+				
+				while c /= pac_segments.no_element loop
+					pac_segments.update_element (
+						container	=> module.board.board_contour.outline.contour.segments, 
+						position	=> c, 
+						process		=> query_segment'access);
 
-				next (lc);
-			end loop;
+					next (c);
+				end loop;
+			end if;
 		end query_module;
 		
 		
 	begin
-		log (text => "proposing segments at " & to_string (point)
+		log (text => "proposing outer contour segments at " & to_string (point)
 			 & " zone " & accuracy_to_string (zone),
 			 level => log_threshold);
 
 		log_indentation_up;
-
-		count := 0;
 		
 		generic_modules.update_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end propose_segments;
+	end propose_outer_contour_segments;
 
 	
 
 
 
-	procedure reset_proposed_segments (
+	procedure reset_proposed_outer_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 	is
@@ -250,7 +301,7 @@ package body et_board_ops.board_contour is
 			module		: in out type_generic_module) 
 		is
 			use pac_segments;
-			lc : pac_segments.cursor := module.board.board_contour.outline.contour.segments.first;
+			c : pac_segments.cursor;
 
 			
 			procedure query_segment (
@@ -263,19 +314,25 @@ package body et_board_ops.board_contour is
 
 			
 		begin
-			while lc /= pac_segments.no_element loop
-				pac_segments.update_element (
-					container	=> module.board.board_contour.outline.contour.segments, 
-					position	=> lc, 
-					process		=> query_segment'access);
+			if module.board.board_contour.outline.contour.circular then
+				null; -- CS
+			else
+				c := module.board.board_contour.outline.contour.segments.first;
+				
+				while c /= pac_segments.no_element loop
+					pac_segments.update_element (
+						container	=> module.board.board_contour.outline.contour.segments, 
+						position	=> c, 
+						process		=> query_segment'access);
 
-				next (lc);
-			end loop;
+					next (c);
+				end loop;
+			end if;
 		end query_module;
 
 		
 	begin
-		log (text => "resetting proposed lines of board outline",
+		log (text => "resetting proposed outer contour segments of board",
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -285,7 +342,7 @@ package body et_board_ops.board_contour is
 			process		=> query_module'access);
 
 		log_indentation_down;
-	end reset_proposed_segments;
+	end reset_proposed_outer_segments;
 
 
 
@@ -357,6 +414,77 @@ package body et_board_ops.board_contour is
 	
 
 
+
+
+	function get_first_outer_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_outer_contour_segment
+	is
+		result : type_object_outer_contour_segment;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_segments;
+			proceed : aliased boolean := true;
+
+			
+			procedure query_segment (
+				c : in pac_segments.cursor) 
+			is begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (c) then
+							result.segment := c;
+							proceed := false;
+						end if;
+
+					when SELECTED =>
+						if is_selected (c) then
+							result.segment := c;
+							proceed := false;
+						end if;
+
+					when others =>
+						null; -- CS
+				end case;
+			end query_segment;
+
+			
+		begin
+			if module.board.board_contour.outline.contour.circular then
+				null; -- CS
+			else
+				iterate (
+					segments	=> module.board.board_contour.outline.contour.segments,
+					process		=> query_segment'access, 
+					proceed		=> proceed'access);
+			end if;
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first outer contour segment / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+
+		return result;
+	end get_first_outer_segment;
+
+
+	
 	
 
 	procedure next_proposed_segment (
@@ -462,44 +590,104 @@ package body et_board_ops.board_contour is
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		log (text => "new outline:" & to_string (get_outline (module_cursor), true),
+		log (text => "new outline:" & to_string (get_outer_contour (module_cursor), true),
 			 level => log_threshold + 1);
 		
 		log_indentation_down;
 	end move_segment;
 
 
+
+	
+
+	procedure move_outer_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_outer_contour_segment;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_segments;
+
+			procedure do_it (s : in out type_segment) is
+			begin
+				case s.shape is
+					when LINE =>
+						move_line_to (s.segment_line, point_of_attack, destination);
+
+					when ARC =>
+						null;
+						-- CS
+				end case;
+			end do_it;
+			
+		begin
+			if module.board.board_contour.outline.contour.circular then
+				null; -- CS
+			else
+				module.board.board_contour.outline.contour.segments.update_element (
+					segment.segment, do_it'access);
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving outer contour segment " & to_string (segment.segment)
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log (text => "new outer contour:" & to_string (get_outer_contour (module_cursor), true),
+			 level => log_threshold + 1);
+		
+		log_indentation_down;
+	end move_outer_segment;
+
+	
 	
 	
 	
 
-	function get_outline (
+	function get_outer_contour (
 		module_cursor	: in pac_generic_modules.cursor)
 		return type_outer_contour
 	is begin
 		return element (module_cursor).board.board_contour.outline;
-	end get_outline;
+	end get_outer_contour;
 
 
 
 
 	
 	
-	function get_outline (
+	function get_outer_contour (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		log_threshold	: in type_log_level)
 		return type_outer_contour
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being queried
 	begin
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) 
+		log (text => "module " & to_string (module_name)
 			 & " getting outline",
 			level => log_threshold);
 
 		module_cursor := locate_module (module_name);
 		
-		return get_outline (module_cursor);
-	end get_outline;
+		return get_outer_contour (module_cursor);
+	end get_outer_contour;
 
 
 
@@ -632,7 +820,7 @@ package body et_board_ops.board_contour is
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-		log (text => "new outline:" & to_string (get_outline (module_cursor), true),
+		log (text => "new outline:" & to_string (get_outer_contour (module_cursor), true),
 			 level => log_threshold + 1);
 		
 		log_indentation_down;
@@ -640,6 +828,551 @@ package body et_board_ops.board_contour is
 
 
 
+	
+
+	procedure delete_outer_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_outer_contour_segment;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is			
+			c : pac_segments.cursor := segment.segment;
+		begin
+			-- CS test circular flag ?
+			module.board.board_contour.outline.contour.segments.delete (c);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " deleting outer contour segment " & to_string (segment.segment),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log (text => "new outer contour:" & to_string (get_outer_contour (module_cursor), true),
+			 level => log_threshold + 1);
+		
+		log_indentation_down;
+	end delete_outer_segment;
+
+
+	
+
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_hole_segment;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+		use pac_contours;
+		use pac_segments;
+		use pac_holes;
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_segment (
+				segment	: in out type_segment)
+			is begin
+				modify_status (segment, operation);
+			end query_segment;
+
+			
+			procedure query_hole (
+				hole : in out type_hole)
+			is begin
+				if hole.contour.circular then
+					null; -- CS
+				else
+					-- Locate the given segment in the
+					-- candidate hole:
+					update_element (
+						container	=> hole.contour.segments,
+						position	=> segment.segment,
+						process		=> query_segment'access);
+
+				end if;
+			end query_hole;
+	
+			
+		begin
+			-- Search the given segment according to the
+			-- hole it belongs to:
+			update_element (
+				container	=> module.board.board_contour.holes, 
+				position	=> segment.hole, 
+				process		=> query_hole'access);
+
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of "
+			& to_string (segment.segment)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+
+	
+
+
+	procedure propose_hole_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		point			: in type_vector_model;
+		zone			: in type_accuracy;
+		face			: in type_face;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_holes;
+			hc : pac_holes.cursor;
+
+			use pac_contours;
+			use pac_segments;
+
+			
+			procedure query_segment (
+				segment	: in out type_segment)
+			is begin
+				case segment.shape is
+					when LINE =>
+						if within_accuracy (
+							line	=> segment.segment_line,
+							width	=> zero,
+							point	=> point,
+							zone	=> zone)
+						then
+							set_proposed (segment);
+							count := count + 1;
+							log (text => to_string (segment), level => log_threshold + 1);
+						end if;
+   
+					when ARC =>
+						null; -- CS
+				end case;
+			end query_segment;
+
+
+			
+			procedure query_hole (
+				hole : in out type_hole)
+			is
+				use pac_contours;
+				use pac_segments;
+				c : pac_segments.cursor;
+				
+			begin
+				if hole.contour.circular then
+					null; -- CS
+				else
+					c := hole.contour.segments.first;
+
+					while c /= pac_segments.no_element loop
+						update_element (
+							container	=> hole.contour.segments,
+							position	=> c,
+							process		=> query_segment'access);
+
+						next (c);
+					end loop;
+				end if;
+			end query_hole;
+			
+			
+		begin
+			hc := module.board.board_contour.holes.first;
+
+			while hc /= pac_holes.no_element loop
+				update_element (
+					container	=> module.board.board_contour.holes,
+					position	=> hc,
+					process		=> query_hole'access);
+				
+				next (hc);
+			end loop;
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " proposing hole segments at " & to_string (point)
+			 & " zone " & accuracy_to_string (zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_hole_segments;
+
+	
+
+
+
+
+	procedure reset_proposed_hole_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_holes;
+			hc : pac_holes.cursor;
+
+			use pac_contours;
+			use pac_segments;
+
+			
+			procedure query_segment (
+				segment	: in out type_segment)
+			is begin
+				reset_status (segment);
+			end query_segment;
+
+
+			
+			procedure query_hole (
+				hole : in out type_hole)
+			is
+				use pac_contours;
+				use pac_segments;
+				c : pac_segments.cursor;
+				
+			begin
+				if hole.contour.circular then
+					null; -- CS
+				else
+					c := hole.contour.segments.first;
+
+					while c /= pac_segments.no_element loop
+						update_element (
+							container	=> hole.contour.segments,
+							position	=> c,
+							process		=> query_segment'access);
+
+						next (c);
+					end loop;
+				end if;
+			end query_hole;
+			
+			
+		begin
+			hc := module.board.board_contour.holes.first;
+
+			while hc /= pac_holes.no_element loop
+				update_element (
+					container	=> module.board.board_contour.holes,
+					position	=> hc,
+					process		=> query_hole'access);
+				
+				next (hc);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " resetting proposed board contour hole segments",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_hole_segments;
+
+
+	
+
+
+
+
+	function get_first_hole_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_hole_segment
+	is
+		use pac_contours;
+		result : type_object_hole_segment;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_contours;
+			use pac_segments;
+			use pac_holes;
+			
+			proceed : aliased boolean := true;
+
+			
+			procedure query_hole (h : in pac_holes.cursor) is 
+
+				procedure query_segment (
+					c : in pac_segments.cursor) 
+				is begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (c) then
+								result.segment := c;
+								result.hole := h;
+								proceed := false;
+
+								log (text => to_string (c), level => log_threshold + 1);
+							end if;
+
+						when SELECTED =>
+							if is_selected (c) then
+								result.segment := c;
+								result.hole := h;
+								proceed := false;
+
+								log (text => to_string (c), level => log_threshold + 1);
+							end if;
+
+						when others =>
+							null; -- CS
+					end case;
+				end query_segment;
+				
+				
+				procedure query_segments (hole : in type_hole) is begin
+					iterate (
+						segments	=> hole.contour.segments,
+						process		=> query_segment'access,
+						proceed		=> proceed'access);				
+				end query_segments;
+
+				
+			begin
+				if element (h).contour.circular then
+					null; -- CS
+				else
+					query_element (h, query_segments'access);
+				end if;
+			end query_hole;
+
+			
+		begin
+			-- Iterate the holes:
+			iterate (
+				holes	=> module.board.board_contour.holes,
+				process	=> query_hole'access, 
+				proceed	=> proceed'access);
+
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first hole segment / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- put_line ("found " & to_string (result));
+		
+		log_indentation_down;
+
+		return result;
+	end get_first_hole_segment;
+
+
+	
+
+
+	procedure move_hole_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_hole_segment;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+		use pac_contours;
+		use pac_segments;
+		use pac_holes;
+				
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			-- Moves the candidate segment:
+			procedure do_it (s : in out type_segment) is begin
+				case s.shape is
+					when LINE =>
+						move_line_to (s.segment_line, point_of_attack, destination);
+
+					when ARC =>
+						null;
+						-- CS
+				end case;
+			end do_it;
+
+			
+			procedure query_hole (
+				hole : in out type_hole)
+			is 
+				c : pac_segments.cursor;
+			begin
+				if hole.contour.circular then
+					null; -- CS
+				else
+					-- Locate the given segment in 
+					-- the candidate zone:
+					update_element (
+						container	=> hole.contour.segments,
+						position	=> segment.segment,
+						process		=> do_it'access);
+
+				end if;
+			end query_hole;
+	
+			
+		begin
+			-- Search for the given segment according to hole
+			-- it belongs to:
+			update_element (
+				container	=> module.board.board_contour.holes, 
+				position	=> segment.hole, 
+				process		=> query_hole'access);
+
+		end query_module;
+		
+				
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving hole segment " & to_string (segment.segment)
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- log (text => "new outline:" & to_string (get_outline (module_cursor), true),
+		-- 	 level => log_threshold + 1);
+		
+		log_indentation_down;
+	end move_hole_segment;
+
+
+
+	
+
+
+	procedure delete_hole_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_hole_segment;
+		log_threshold	: in type_log_level)
+	is
+		use pac_contours;
+		use pac_segments;
+		use pac_holes;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_hole (
+				hole : in out type_hole)
+			is 
+				c : pac_segments.cursor;
+			begin
+				if hole.contour.circular then
+					null; -- CS
+				else
+					-- Delete the given segment:
+					c := segment.segment;					
+					hole.contour.segments.delete (c);
+				end if;
+			end query_hole;
+	
+			
+		begin
+			-- Search for the given segment according to the 
+			-- hole it belongs to:
+			update_element (
+				container	=> module.board.board_contour.holes, 
+				position	=> segment.hole, 
+				process		=> query_hole'access);
+
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " deleting hole segment " 
+			& to_string (segment.segment),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end delete_hole_segment;
+	
+
+	
+
+
+	
 	
 
 	procedure add_hole (
@@ -737,6 +1470,383 @@ package body et_board_ops.board_contour is
 	end delete_hole;
 
 
+
+
+
+
+
+	function get_count (
+		objects : in pac_objects.list)
+		return natural
+	is begin
+		return natural (objects.length);
+	end get_count;
+	
+	
+	
+	
+
+	function get_first_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object
+	is
+		result_category			: type_object_category := CAT_VOID;
+		result_outer_segment 	: type_object_outer_contour_segment;
+		result_hole_segment		: type_object_hole_segment;
+
+		use pac_contours;
+		use pac_segments;
+
+		use pac_holes;
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first object / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		
+		-- SEARCH FOR A SEGMENT OF THE OUTER BOARD CONTOUR:
+		
+		-- If there is one, then go to the end of this procedure:
+		result_outer_segment := get_first_outer_segment (module_cursor, flag, log_threshold + 1);
+
+		if result_outer_segment.segment /= pac_segments.no_element then
+			-- A segment has been found.
+			log (text => to_string (result_outer_segment.segment),
+				level => log_threshold + 1);
+			
+			result_category := CAT_OUTER_CONTOUR_SEGMENT;
+		end if;
+
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
+
+
+		-- SEARCH FOR A SEGMENT OF A HOLE:
+	
+		-- If there is one, then go to the end of this procedure:
+		result_hole_segment := get_first_hole_segment (module_cursor, flag, log_threshold + 1);
+
+		if result_hole_segment.segment /= pac_segments.no_element then
+			-- A segment has been found.
+			log (text => to_string (result_hole_segment.segment),
+				level => log_threshold + 1);
+			
+			result_category := CAT_HOLE_SEGMENT;
+		end if;
+
+		
+		-- If still nothing has been found then the category is CAT_VOID.
+		
+
+	<<end_of_search>>
+		
+		log_indentation_down;
+
+		case result_category is
+			when CAT_VOID =>
+				return (cat => CAT_VOID);
+
+			when CAT_OUTER_CONTOUR_SEGMENT =>
+				return (CAT_OUTER_CONTOUR_SEGMENT, result_outer_segment);
+
+			when CAT_HOLE_SEGMENT =>
+				return (CAT_HOLE_SEGMENT, result_hole_segment);
+				
+		end case;
+	end get_first_object;
+
+
+
+	
+	
+	function get_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return pac_objects.list
+	is
+		use pac_objects;
+		result : pac_objects.list;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_contours;
+			use pac_segments;
+
+			outer_segment_cursor : pac_segments.cursor;
+
+			
+			-- This procedure queries a segment of the outer contour:
+			procedure query_outer_segment (segment : in type_segment) is 
+
+				procedure collect is begin
+					result.append ((
+						cat				=> CAT_OUTER_CONTOUR_SEGMENT,
+						outer_segment	=> (segment => outer_segment_cursor)));
+
+					log (text => to_string (segment), level => log_threshold + 2);
+				end collect;
+
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (segment) then
+							collect;
+						end if;
+
+					when SELECTED =>
+						if is_selected (segment) then
+							collect;
+						end if;
+						
+					when others => null; -- CS
+				end case;
+			end query_outer_segment;
+
+			
+			
+			use pac_holes;
+			hole_cursor : pac_holes.cursor;
+			
+			
+			-- This procedure queries a hole and iterates its segments:
+			procedure query_hole (hole : in type_hole) is
+				-- CS test circular flag !!
+				segment_cursor : pac_segments.cursor := hole.contour.segments.first;
+				
+				procedure query_segment (segment : in type_segment) is 
+
+					procedure collect is begin
+						result.append ((
+							cat				=> CAT_HOLE_SEGMENT,
+							hole_segment	=> (hole_cursor, segment_cursor)));
+
+						log (text => to_string (segment), level => log_threshold + 2);
+					end collect;
+
+				begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (segment) then
+								collect;
+							end if;
+
+						when SELECTED =>
+							if is_selected (segment) then
+								collect;
+							end if;
+							
+						when others => null; -- CS
+					end case;
+				end query_segment;
+				
+			begin
+				-- Iterate the segments of the hole candidate:
+				while segment_cursor /= pac_segments.no_element loop
+					query_element (segment_cursor, query_segment'access);
+					next (segment_cursor);
+				end loop;
+			end query_hole;
+			
+
+			
+		begin
+			log (text => "outer contour", level => log_threshold + 1);
+			log_indentation_up;
+			
+			outer_segment_cursor := module.board.board_contour.outline.contour.segments.first;
+			while outer_segment_cursor /= pac_segments.no_element loop
+				query_element (outer_segment_cursor, query_outer_segment'access);
+				next (outer_segment_cursor);
+			end loop;
+
+			log_indentation_down;			
+
+			
+			log (text => "holes", level => log_threshold + 1);
+			log_indentation_up;
+			
+			hole_cursor := module.board.board_contour.holes.first;
+			while hole_cursor /= pac_holes.no_element loop
+				query_element (hole_cursor, query_hole'access);
+				next (hole_cursor);
+			end loop;
+
+			log_indentation_down;			
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up objects / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element ( -- CS query_module is sufficient
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+
+		return result;
+	end get_objects;
+	
+
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of object"
+			-- & to_string (segment.segment) CS output object category ?
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		case object.cat is
+			when CAT_OUTER_CONTOUR_SEGMENT =>
+				modify_status (module_cursor, object.outer_segment, operation, log_threshold + 1);
+
+			when CAT_HOLE_SEGMENT =>
+				modify_status (module_cursor, object.hole_segment, operation, log_threshold + 1);
+
+			when CAT_VOID =>
+				null; -- CS
+		end case;
+
+		log_indentation_down;
+	end modify_status;
+
+	
+
+	
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_objects;
+		object : constant type_object := element (object_cursor);
+	begin
+		modify_status (module_cursor, object, operation, log_threshold);
+	end modify_status;
+
+
+
+	
+
+	procedure move_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving board contour object " 
+			-- CS & to_string (object)
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_OUTER_CONTOUR_SEGMENT =>
+				move_outer_segment (module_cursor,
+					object.outer_segment,
+					point_of_attack, destination,
+					log_threshold + 1);
+
+			when CAT_HOLE_SEGMENT =>
+				move_hole_segment (module_cursor,
+					object.hole_segment,
+					point_of_attack, destination,
+					log_threshold + 1);
+							
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end move_object;
+	
+
+
+	
+
+	procedure reset_proposed_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor) &
+			" resetting proposed objects",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		reset_proposed_outer_segments (module_cursor, log_threshold + 1);
+		reset_proposed_hole_segments (module_cursor, log_threshold + 1);
+
+		log_indentation_down;
+	end reset_proposed_objects;
+
+
+	
+	
+
+
+	procedure delete_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " deleting board contour object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_OUTER_CONTOUR_SEGMENT =>
+				delete_outer_segment (
+					module_cursor	=> module_cursor, 
+					segment			=> object.outer_segment,
+					log_threshold	=> log_threshold + 1);
+
+			when CAT_HOLE_SEGMENT =>
+				delete_hole_segment (
+					module_cursor	=> module_cursor, 
+					segment			=> object.hole_segment,
+					log_threshold	=> log_threshold + 1);
+				
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end delete_object;
+	
 
 	
 end et_board_ops.board_contour;

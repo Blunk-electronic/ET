@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                           PCB CONTOURS                                   --
+--                           PCB CONTOUR                                    --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -48,7 +48,7 @@ with et_board_shapes_and_text;		use et_board_shapes_and_text;
 with et_contour_to_polygon;
 
 
-package et_pcb_contour is
+package et_pcb_contour is -- CS rename to et_board_contour ?
 
 	use pac_geometry_brd;
 
@@ -75,6 +75,15 @@ package et_pcb_contour is
 	package pac_holes is new doubly_linked_lists (type_hole);
 	use pac_holes;
 
+
+	-- Iterates the holes.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		holes	: in pac_holes.list;
+		process	: not null access procedure (position : in pac_holes.cursor);
+		proceed	: not null access boolean);
+
+	
 
 	-- Mirrors a list of holes along the given axis:
 	procedure mirror_holes (

@@ -306,7 +306,7 @@ package body et_canvas_board_outline is
 		log_indentation_up;
 
 		-- Propose lines in the vicinity of the given point:
-		propose_segments (active_module, point,
+		propose_outer_contour_segments (active_module, point,
 			get_catch_zone (et_canvas_board_2.catch_zone), 
 			count, log_threshold + 1);
 		
@@ -319,7 +319,7 @@ package body et_canvas_board_outline is
 			when 0 =>
 				reset_request_clarification;
 				reset_object;
-				reset_proposed_segments (active_module, log_threshold + 1);
+				reset_proposed_outer_segments (active_module, log_threshold + 1);
 				
 			when 1 =>
 				object_ready := true;
@@ -400,7 +400,7 @@ package body et_canvas_board_outline is
 			set_status (status_move_object);
 			
 			reset_object;
-			reset_proposed_segments (active_module, log_threshold + 1);
+			reset_proposed_outer_segments (active_module, log_threshold + 1);
 		end finalize;
 			
 			
@@ -494,7 +494,7 @@ package body et_canvas_board_outline is
 			set_status (status_delete_object);
 			
 			reset_object;
-			reset_proposed_segments (active_module, log_threshold + 1);
+			reset_proposed_outer_segments (active_module, log_threshold + 1);
 		end finalize;
 
 

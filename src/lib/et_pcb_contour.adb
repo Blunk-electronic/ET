@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                           PCB CONTOURS                                   --
+--                           PCB CONTOUR                                    --
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,6 +42,24 @@ with ada.text_io;				use ada.text_io;
 
 package body et_pcb_contour is
 
+
+
+	procedure iterate (
+		holes	: in pac_holes.list;
+		process	: not null access procedure (position : in pac_holes.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_holes.cursor := holes.first;
+	begin
+		while c /= pac_holes.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+	
+
+
+	
 
 	procedure mirror_holes (
 		holes	: in out pac_holes.list;
