@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -76,10 +76,7 @@ with et_exceptions;						use et_exceptions;
 
 with et_undo_redo;
 with et_commit;
-
-with et_object_status;
-
-
+with et_object_status;						use et_object_status;
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 
 
@@ -198,135 +195,244 @@ package body et_canvas_board_outline is
 
 
 
-	procedure show_selected_segment (
-		selected		: in pac_contours.pac_segments.cursor;
+	procedure show_selected_outer_contour_segment (
+		selected		: in type_object_outer_contour_segment;
 		clarification	: in boolean := false)
 	is 
 		use pac_contours;
 		use pac_segments;
 		praeamble : constant string := "selected: ";
 	begin
-		
 		if clarification then
-			set_status (praeamble & to_string (selected)
+			set_status (praeamble & to_string (selected.segment)
 				& ". " & status_next_object_clarification);
-			-- CS face
 		else
-			set_status (praeamble & to_string (selected));
-			-- CS face
+			set_status (praeamble & to_string (selected.segment));
 		end if;		
-	end show_selected_segment;
-
-
-	
-	
-
-	procedure select_segment is 
-		use pac_contours;
-		use et_object_status;
-		selected_object : pac_segments.cursor;
-	begin
-		selected_object := get_first_segment (active_module, SELECTED, log_threshold + 1);
-
-		modify_status (
-			module_cursor	=> active_module, 
-			operation		=> (CLEAR, SELECTED),
-			segment_cursor	=> selected_object, 
-			log_threshold	=> log_threshold + 1);
-		
-		next_proposed_segment (active_module, selected_object, log_threshold + 1);
-		
-		modify_status (
-			module_cursor	=> active_module, 
-			operation		=> (SET, SELECTED),
-			segment_cursor	=> selected_object, 
-			log_threshold	=> log_threshold + 1);
-		
-		show_selected_segment (selected_object, clarification => true);
-	end select_segment;
+	end show_selected_outer_contour_segment;
 
 
 
 
-	-- This procedure searches for the first selected segment
-	-- and sets its status to "moving":
-	procedure set_first_selected_segment_moving is
-		use et_board_ops.board_contour;
-		use et_object_status;
-
+	procedure show_selected_hole_segment (
+		selected		: in type_object_hole_segment;
+		clarification	: in boolean := false)
+	is 
 		use pac_contours;
 		use pac_segments;
-		selected_segment : pac_segments.cursor;
+		praeamble : constant string := "selected: ";
 	begin
-		-- log (text => "set_first_selected_segment_moving ...", level => log_threshold);
+		if clarification then
+			set_status (praeamble & to_string (selected.segment)
+				& ". " & status_next_object_clarification);
+		else
+			set_status (praeamble & to_string (selected.segment));
+		end if;		
+	end show_selected_hole_segment;
 
-		selected_segment := get_first_segment (active_module, SELECTED, log_threshold + 1);
+	
+	
+	
 
-		modify_status (
-			module_cursor	=> active_module, 
-			operation		=> (SET, MOVING),
-			segment_cursor	=> selected_segment, 
-			log_threshold	=> log_threshold + 1);
+	procedure show_selected_object (
+		selected		: in type_object;
+		clarification	: in boolean := false)
+	is begin
+		case selected.cat is
+			when CAT_OUTER_CONTOUR_SEGMENT =>
+				show_selected_outer_contour_segment (selected.outer_segment);
 
-	end set_first_selected_segment_moving;
+			when CAT_HOLE_SEGMENT =>
+				show_selected_hole_segment (selected.hole_segment);
+						
+			when CAT_VOID =>
+				null; -- CS
+		end case;	
+	end show_selected_object;
 
 
 
 	
 
+
+	procedure clarify_object is 
+
+		procedure do_it is
+			use pac_objects;
+			
+			-- Gather all proposed objects:
+			proposed_objects : constant pac_objects.list := 
+				get_objects (active_module, PROPOSED, log_threshold + 1);
+
+			proposed_object : pac_objects.cursor;
+
+			-- We start with the first object that is currently selected:
+			selected_object : type_object := 
+				get_first_object (active_module, SELECTED, log_threshold + 1);
+
+		begin
+			log (text => "proposed objects total " 
+				& natural'image (get_count (proposed_objects)),
+				level => log_threshold + 2);
+
+			
+			-- Locate the selected object among the proposed objects:
+			proposed_object := proposed_objects.find (selected_object);
+
+			-- Deselect the the proposed object:
+			modify_status (
+				module_cursor	=> active_module, 
+				operation		=> (CLEAR, SELECTED),
+				object_cursor	=> proposed_object, 
+				log_threshold	=> log_threshold + 1);
+
+			-- Advance to the next proposed object:
+			next (proposed_object);
+
+			-- If end of list reached, then proceed at 
+			-- the begin of the list:
+			if proposed_object = pac_objects.no_element then
+				proposed_object := proposed_objects.first;
+			end if;
+			
+			-- Select the proposed object:
+			modify_status (
+				module_cursor	=> active_module, 
+				operation		=> (SET, SELECTED),
+				object_cursor	=> proposed_object, 
+				log_threshold	=> log_threshold + 1);
+
+			-- Display the object in the status bar:
+			show_selected_object (element (proposed_object));
+		end do_it;
+		
+		
+	begin
+		log (text => "clarify_object", level => log_threshold + 1);
+
+		log_indentation_up;
+		
+		do_it;
+		
+		log_indentation_down;
+	end clarify_object;
+	
+
+
+	
+
+
+	-- This procedure searches for the first selected object
+	-- and sets its status to "moving":
+	procedure set_first_selected_object_moving is
+		
+		procedure do_it is
+			-- Get the first selected object:
+			selected_object : constant type_object := 
+				get_first_object (active_module, SELECTED, log_threshold + 1);
+
+			-- Gather all selected objects:
+			objects : constant pac_objects.list :=
+				get_objects (active_module, SELECTED, log_threshold + 1);
+
+			c : pac_objects.cursor;
+		begin
+			-- Get a cursor to the candidate object
+			-- among all selected objects:
+			c := objects.find (selected_object);
+			
+			modify_status (active_module, c, (SET, MOVING), log_threshold + 1);
+		end do_it;
+		
+		
+	begin
+		log (text => "set_first_selected_object_moving ...", level => log_threshold);
+		log_indentation_up;
+		do_it;
+		log_indentation_down;
+	end set_first_selected_object_moving;
+
+
+	
+
+	
+
+	
 	procedure find_objects (
 	   point : in type_vector_model)
 	is 
-		face : type_face := TOP;
+		use et_modes.board;
 
-		count : natural := 0;
+		-- The number of proposed objects:
 		count_total : natural := 0;
 
-		
+
+		-- This procedure searches for the first proposed
+		-- object and marks it as "selected":
 		procedure select_first_proposed is
-			use et_object_status;
-			use pac_contours;
-			proposed_object : pac_segments.cursor;
+			object : type_object := get_first_object (
+						active_module, PROPOSED, log_threshold + 1);
 		begin
-			proposed_object := get_first_segment (active_module, PROPOSED, log_threshold + 1);
-  
-			modify_status (active_module, proposed_object, (SET, SELECTED), log_threshold + 1);
-  
-			-- If only one line found, then show it in the status bar:
-			if count = 1 then
-				show_selected_segment (proposed_object);
+			modify_status (
+				active_module, object, (SET, SELECTED), log_threshold + 1);
+
+			-- If only one object found, then show it in the status bar:
+			if count_total = 1 then
+				show_selected_object (object);
 			end if;
 		end select_first_proposed;
 
 
-		use et_modes.board;
-	
+
+		-- This procedure proposes objects on the given 
+		-- face of the board:
+		procedure propose_objects is 
+			use et_display.board;
+		begin
+			if outline_enabled then
+				
+				propose_outer_contour_segments (
+					module_cursor	=> active_module, 
+					point			=> point,
+					zone			=> get_catch_zone (et_canvas_board_2.catch_zone), 
+					count			=> count_total, 
+					log_threshold	=> log_threshold + 2);
+
+				propose_hole_segments (
+					module_cursor	=> active_module, 
+					point			=> point,
+					zone			=> get_catch_zone (et_canvas_board_2.catch_zone), 
+					count			=> count_total, 
+					log_threshold	=> log_threshold + 2);
+				
+			end if;
+		end propose_objects;
+		
+			
 	begin
 		log (text => "locating objects ...", level => log_threshold);
 		log_indentation_up;
 
-		-- Propose lines in the vicinity of the given point:
-		propose_outer_contour_segments (active_module, point,
-			get_catch_zone (et_canvas_board_2.catch_zone), 
-			count, log_threshold + 1);
+		-- Propose objects in the vicinity of the given point:
+		propose_objects;
 		
-		count_total := count;
-		
-		-- CS arcs, circles
+		log (text => "proposed objects total" & natural'image (count_total),
+			 level => log_threshold + 1);
+
 		
 		-- evaluate the number of objects found here:
 		case count_total is
 			when 0 =>
 				reset_request_clarification;
-				reset_object;
-				reset_proposed_outer_segments (active_module, log_threshold + 1);
+				reset_preliminary_object;
+				reset_proposed_objects (active_module, log_threshold + 1);
 				
 			when 1 =>
 				object_ready := true;
 				select_first_proposed;
 
 				if verb = VERB_MOVE then
-					set_first_selected_segment_moving;
+					set_first_selected_object_moving;
 				end if;
 				
 				reset_request_clarification;
@@ -341,9 +447,13 @@ package body et_canvas_board_outline is
 	end find_objects;
 
 
-
+	
 
 	
+
+	
+
+-- MOVE:
 
 	procedure move_object (
 		tool	: in type_tool;
@@ -356,42 +466,30 @@ package body et_canvas_board_outline is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
-			use et_board_ops.board_contour;
-			use et_object_status;
 
-			use pac_contours;
-			use pac_segments;
-			selected_segment : pac_segments.cursor;
+			object : constant type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
-			selected_segment := get_first_segment (active_module, SELECTED, log_threshold + 1);
-			-- CS arcs
-			
-			if selected_segment /= pac_segments.no_element then
-
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
-				move_segment (
-					module_cursor	=> active_module,
-					segment			=> selected_segment,
-					point_of_attack	=> object_point_of_attack,
-					-- coordinates		=> ABSOLUTE,
-					destination		=> point,
-					log_threshold	=> log_threshold);
-
-
-				modify_status (
+				move_object (
 					module_cursor	=> active_module, 
-					operation		=> (CLEAR, MOVING),
-					segment_cursor	=> selected_segment, 
+					object			=> object, 
+					point_of_attack	=> object_point_of_attack,
+					destination		=> point,
 					log_threshold	=> log_threshold + 1);
 
-				
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
@@ -399,15 +497,13 @@ package body et_canvas_board_outline is
 			log_indentation_down;			
 			set_status (status_move_object);
 			
-			reset_object;
-			reset_proposed_outer_segments (active_module, log_threshold + 1);
+			reset_preliminary_object;
+			reset_proposed_objects (active_module, log_threshold + 1);
 		end finalize;
 			
-			
-		
 		
 	begin
-		-- Initially the object is not ready.
+		-- Initially the preliminary object is not ready.
 		if not object_ready then
 
 			-- Set the tool being used:
@@ -427,28 +523,30 @@ package body et_canvas_board_outline is
 
 			else
 				-- Here the clarification procedure ends.
-				-- A segment has been selected via procedure select_segment.
-				-- By setting the status of the selected segment 
-				-- as "moving", the selected segment
+				-- An object has been selected via procedure clarify_object.
+				-- By setting the status of the selected object
+				-- as "moving", the selected object
 				-- will be drawn according to object_point_of_attack and 
 				-- the tool position.
-				set_first_selected_segment_moving;
-				
+				set_first_selected_object_moving;
+
 				-- Furtheron, on the next call of this procedure
 				-- the selected segment will be assigned its final position.
-
-				reset_request_clarification;
+				
 				object_ready := true;
+				reset_request_clarification;
 			end if;
 			
 		else
 			finalize;
 		end if;
 	end move_object;
+	
+
+
 
 	
 	
-
 -- DELETE:
 	
 	procedure delete_object (
@@ -457,35 +555,31 @@ package body et_canvas_board_outline is
 		-- Deletes the selected object.
 		-- Resets variable preliminary_object:
 		procedure finalize is 
-			use et_board_ops.board_contour;
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
-			use et_object_status;
 
-			use pac_contours;
-			use pac_segments;
-			selected_segment : pac_segments.cursor;
+			object : constant type_object := get_first_object (
+				active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalizing delete ...", level => log_threshold);
 			log_indentation_up;
 
-			selected_segment := get_first_segment (active_module, SELECTED, log_threshold + 1);
-			-- CS arcs
-
-			if selected_segment /= pac_segments.no_element then
-
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+				
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
-
-				delete_segment (
-					module_cursor	=> active_module,
-					segment			=> selected_segment,
-					log_threshold	=> log_threshold);
-
 				
+				delete_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					log_threshold	=> log_threshold + 1);
+
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
+
 			else
 				log (text => "nothing to do", level => log_threshold);
 			end if;
@@ -493,10 +587,9 @@ package body et_canvas_board_outline is
 			log_indentation_down;			
 			set_status (status_delete_object);
 			
-			reset_object;
-			reset_proposed_outer_segments (active_module, log_threshold + 1);
+			reset_preliminary_object;
+			reset_proposed_objects (active_module, log_threshold + 1);
 		end finalize;
-
 
 		
 	begin
@@ -516,7 +609,7 @@ package body et_canvas_board_outline is
 		else
 			-- Here the clarification procedure ends.
 			-- An object has been selected
-			-- via procedure selected_object.
+			-- via procedure clarify_object.
 
 			finalize;
 			reset_request_clarification;

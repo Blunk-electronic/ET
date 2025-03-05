@@ -235,7 +235,7 @@ is
 
 					when NOUN_OUTLINE =>
 						if clarification_pending then
-							et_canvas_board_outline.select_segment;
+							et_canvas_board_outline.clarify_object;
 						end if;
 
 					when NOUN_CONDUCTORS =>
@@ -493,7 +493,7 @@ is
 
 					when NOUN_OUTLINE =>
 						if clarification_pending then
-							et_canvas_board_outline.select_segment;
+							et_canvas_board_outline.clarify_object;
 						end if;
 						
 					-- when NOUN_TEXT =>

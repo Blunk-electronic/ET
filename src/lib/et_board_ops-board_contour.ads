@@ -250,7 +250,6 @@ package et_board_ops.board_contour is
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		zone			: in type_accuracy; -- the circular area around the place
-		face			: in type_face;
 		count			: in out natural;
 		log_threshold	: in type_log_level);
 

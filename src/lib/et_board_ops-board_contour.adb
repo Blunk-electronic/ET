@@ -946,7 +946,6 @@ package body et_board_ops.board_contour is
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model;
 		zone			: in type_accuracy;
-		face			: in type_face;
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
@@ -1620,8 +1619,7 @@ package body et_board_ops.board_contour is
 			
 			-- This procedure queries a hole and iterates its segments:
 			procedure query_hole (hole : in type_hole) is
-				-- CS test circular flag !!
-				segment_cursor : pac_segments.cursor := hole.contour.segments.first;
+				segment_cursor : pac_segments.cursor;
 				
 				procedure query_segment (segment : in type_segment) is 
 
@@ -1650,28 +1648,38 @@ package body et_board_ops.board_contour is
 				end query_segment;
 				
 			begin
-				-- Iterate the segments of the hole candidate:
-				while segment_cursor /= pac_segments.no_element loop
-					query_element (segment_cursor, query_segment'access);
-					next (segment_cursor);
-				end loop;
+				if hole.contour.circular then
+					null; -- CS
+				else
+					-- Iterate the segments of the hole candidate:
+					segment_cursor := hole.contour.segments.first;
+					
+					while segment_cursor /= pac_segments.no_element loop
+						query_element (segment_cursor, query_segment'access);
+						next (segment_cursor);
+					end loop;
+				end if;
 			end query_hole;
 			
 
 			
 		begin
+			-- OUTER CONTOUR:
 			log (text => "outer contour", level => log_threshold + 1);
 			log_indentation_up;
-			
-			outer_segment_cursor := module.board.board_contour.outline.contour.segments.first;
-			while outer_segment_cursor /= pac_segments.no_element loop
-				query_element (outer_segment_cursor, query_outer_segment'access);
-				next (outer_segment_cursor);
-			end loop;
 
+			if module.board.board_contour.outline.contour.circular then
+				null; -- CS 
+			else
+				outer_segment_cursor := module.board.board_contour.outline.contour.segments.first;
+				while outer_segment_cursor /= pac_segments.no_element loop
+					query_element (outer_segment_cursor, query_outer_segment'access);
+					next (outer_segment_cursor);
+				end loop;
+			end if;
 			log_indentation_down;			
 
-			
+			-- HOLES:
 			log (text => "holes", level => log_threshold + 1);
 			log_indentation_up;
 			
