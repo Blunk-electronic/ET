@@ -110,7 +110,7 @@ package body et_canvas_board_outline is
 			commit (PRE, verb, noun, log_threshold + 1);
 
 			-- Add the temporary contour to the board:
-			draw_outline (
+			add_outline (
 				module_cursor	=> active_module,
 				outline			=> (c with null record),
 				log_threshold	=> log_threshold);

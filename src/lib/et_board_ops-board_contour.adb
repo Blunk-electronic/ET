@@ -76,7 +76,7 @@ package body et_board_ops.board_contour is
 
 
 
-	procedure draw_outline (
+	procedure add_outline (
 		module_cursor	: in pac_generic_modules.cursor;
 		outline			: in type_outer_contour;
 		log_threshold	: in type_log_level)
@@ -115,7 +115,7 @@ package body et_board_ops.board_contour is
 			position	=> module_cursor,
 			process		=> query_module'access);
 
-	end draw_outline;
+	end add_outline;
 
 	
 

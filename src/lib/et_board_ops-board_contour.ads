@@ -75,7 +75,7 @@ package et_board_ops.board_contour is
 	-- 2. If this attempt fails, then the given contour is rejected.
 	-- 3. If the existing contour is already closed, then the given fragment
 	--    is rejected.
-	procedure draw_outline (
+	procedure add_outline (
 		module_cursor	: in pac_generic_modules.cursor;
 		outline			: in type_outer_contour;
 		log_threshold	: in type_log_level);
