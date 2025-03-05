@@ -132,15 +132,12 @@ package et_canvas_board_lines is
 
 
 
-	-- Builds the final path. This procedure requires to be called twice:
-	-- first time for the start and the second time for the end point of the path.
-	-- The current bend style in preliminary_line.path is taken into account.
-	-- The path may be started and finished with different tools. For example start
-	-- with MOUSE and finish with KEYBOARD or vice versa.
-	procedure make_path (
-		tool	: in type_tool;
-		point	: in type_vector_model);
-	
+	-- This procedure is called via an access
+	-- when a line is to be added to assy doc,
+	-- conductors, silkscreen, route/via restrict,
+	-- stencil or stopmask:
+	procedure add_by_category (
+		line : in type_line);
 
 	
 end et_canvas_board_lines;

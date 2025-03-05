@@ -1179,8 +1179,19 @@ package et_canvas is
 	-- Instead individual small procedures could be useful
 	-- like reset_object_linewidth or reset_object_ready.
 	
-	
 
+
+	-- Builds a path. This procedure requires to be called twice:
+	-- first time for the start and the second time for the 
+	-- end point of the path.
+	-- The current bend style in live_path is taken into account.
+	-- The path may be started and finished with different tools. 
+	-- For example start with MOUSE and finish with KEYBOARD 
+	-- or vice versa:
+	procedure make_path (
+		tool	: in type_tool;
+		point	: in type_vector_model;
+		process	: not null access procedure (line : in type_line));
 
 
 

@@ -119,13 +119,16 @@ is
 				case noun is
 					when NOUN_LINE =>
 						-- put_line ("draw line");
-						et_canvas_board_lines.make_path (MOUSE, snap_point);
+						make_path (MOUSE, snap_point,
+							et_canvas_board_lines.add_by_category'access);
 
 					when NOUN_OUTLINE =>
-						et_canvas_board_outline.make_path (MOUSE, snap_point);
+						make_path (MOUSE, snap_point, 
+							et_canvas_board_outline.add_to_outer_contour'access);
 						
 					when NOUN_ZONE =>
-						et_canvas_board_zone.make_path (MOUSE, snap_point);
+						make_path (MOUSE, snap_point, 
+							et_canvas_board_zone.add_to_zone'access);
 
 						
 					when others => null;						

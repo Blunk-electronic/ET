@@ -98,6 +98,15 @@ package et_canvas_board_zone is
 	procedure show_zone_properties;
 
 
+	-- This procedure is called via an access
+	-- when a line is to be added to a zone.
+	-- The final zone is determined by the current 
+	-- object_layer_category:
+	procedure add_to_zone (
+		line : in type_line);
+
+	
+
 	-- to be output in the status bar:
 	status_draw_zone : constant string := 
 		status_click_left 
@@ -105,18 +114,6 @@ package et_canvas_board_zone is
 		& status_press_space
 		& "to draw zone." 
 		& status_hint_for_abort;
-
-
-
-	-- Builds the final path. This procedure requires to be called twice:
-	-- first time for the start and the second time for the end point of the path.
-	-- The current bend style in preliminary_line.path is taken into account.
-	-- The path may be started and finished with different tools. For example start
-	-- with MOUSE and finish with KEYBOARD or vice versa.
-	procedure make_path (
-		tool	: in type_tool;
-		point	: in type_vector_model);
-	
 
 	
 end et_canvas_board_zone;

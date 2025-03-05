@@ -551,14 +551,16 @@ is
 			when key_space =>
 				case noun is
 					when NOUN_LINE =>
-						et_canvas_board_lines.make_path (KEYBOARD, point);
+						make_path (KEYBOARD, point,
+							et_canvas_board_lines.add_by_category'access);
 
 					when NOUN_OUTLINE =>
-						et_canvas_board_outline.make_path (KEYBOARD, point);
+						make_path (KEYBOARD, point, 
+							et_canvas_board_outline.add_to_outer_contour'access);
 						
 					when NOUN_ZONE =>
-						et_canvas_board_zone.make_path (KEYBOARD, point);
-
+						make_path (KEYBOARD, point, 
+							et_canvas_board_zone.add_to_zone'access);
 						
 					when others => null;
 				end case;

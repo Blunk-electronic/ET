@@ -520,161 +520,88 @@ package body et_canvas_board_lines is
 
 
 
-	
-
-	procedure make_path (
-		tool	: in type_tool;
-		point	: in type_vector_model)
-	is
-		line : type_line;
-
-		
-		procedure add_by_category is 
-			use et_modes.board;
-			use et_undo_redo;
-			use et_commit;
-		begin
-			-- Commit the current state of the design:
-			commit (PRE, verb, noun, log_threshold + 1);
-
-			case object_layer_category is
-				when LAYER_CAT_ASSY =>
-					
-					et_board_ops.assy_doc.add_line (
-						module_name	=> pac_generic_modules.key (active_module),
-						face		=> object_face,
-						line		=> (line with object_linewidth),
-						log_threshold	=> log_threshold);
 
 
-					
-				when LAYER_CAT_CONDUCTOR =>
+	procedure add_by_category (
+		line : in type_line)
+	is 
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+	begin
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun, log_threshold + 1);
 
-					-- Because we do not pass a net name, this is going
-					-- to be a freetrack:
-					et_board_ops.conductors.add_line (
-						module_name	=> pac_generic_modules.key (active_module),
-						line		=> (line with object_linewidth, object_signal_layer),
-						log_threshold	=> log_threshold);
-
-					
-					
-				when LAYER_CAT_SILKSCREEN =>
-					
-					et_board_ops.silkscreen.add_line (
-						module_name	=> pac_generic_modules.key (active_module),
-						face		=> object_face,
-						line		=> (line with object_linewidth),
-						log_threshold	=> log_threshold);
-
-
-					
-				when LAYER_CAT_ROUTE_RESTRICT =>
-
-					et_board_ops.route_restrict.draw_route_restrict_line (
-						module_name	=> pac_generic_modules.key (active_module),
-						line		=> (line with to_layers (object_signal_layer)),
-						log_threshold	=> log_threshold);
-
-					-- CS: Currently only a single signal layer can be assigned
-					-- to the line. Multi-layer assignment is possible via
-					-- commandline only.
-
-
-				when LAYER_CAT_STENCIL =>
-					
-					et_board_ops.stencil.add_line (
-						module_name	=> pac_generic_modules.key (active_module),
-						face		=> object_face,
-						line		=> (line with object_linewidth),
-						log_threshold	=> log_threshold);
-
-					
-					
-				when LAYER_CAT_STOPMASK =>
-					
-					et_board_ops.stopmask.add_line (
-						module_name	=> pac_generic_modules.key (active_module),
-						face		=> object_face,
-						line		=> (line with object_linewidth),
-						log_threshold	=> log_threshold);
-
-
-				when others =>
-					null; -- CS
-			end case;
-
-			-- Commit the new state of the design:
-			commit (POST, verb, noun, log_threshold + 1);			
-		end add_by_category;
-
-		
-	begin -- make_path
-		-- put_line ("make_path");
-		
-		-- Set the tool being used for this path so that procedure
-		-- draw_path (for example in et_canvas_board_2-draw_nets-draw_assy_doc)
-		-- knows where to get the end point from.
-		object_tool := tool;
-
-		-- Initally the preliminary_object is NOT ready. Nothing will be drawn.
-		-- Upon the first calling of this procedure the start point of the
-		-- path will be set.
-		
-		if not object_ready then
-			-- set start point:
-			live_path.start_point := point;
-
-			-- Allow drawing of the path:
-			object_ready := true;
-
-			set_status (status_start_point & to_string (live_path.start_point) & ". " &
-				status_press_space & status_set_end_point & status_hint_for_abort);
-
-		else -- preliminary_object IS ready
-
-			-- Start a new path only if the given point differs from 
-			-- the start point of the current path:
-			if point /= live_path.start_point then
-
-				-- Complete the path by setting its end point.
-				-- The the current bend point (if there is one) into account:
+		case object_layer_category is
+			when LAYER_CAT_ASSY =>
 				
-				if live_path.bended = NO then
-					live_path.end_point := point;
+				et_board_ops.assy_doc.add_line (
+					module_name	=> pac_generic_modules.key (active_module),
+					face		=> object_face,
+					line		=> (line with object_linewidth),
+					log_threshold	=> log_threshold);
 
-					-- insert a single line:
-					line.start_point := live_path.start_point;
-					line.end_point   := live_path.end_point;
-					add_by_category;
-					
-				else
-					-- The path is bended. The bend point has been computed
-					-- interactively while moving the mouse or the cursor.
-					-- See for example procedure draw_path in et_canvas_board_2-draw_assy_doc.
 
-					-- insert first line of the path:
-					line.start_point := live_path.start_point;
-					line.end_point   := live_path.bend_point;
-					add_by_category;
-
-					
-					-- insert second line of the path:
-					live_path.end_point := point;
-					line.start_point := live_path.bend_point;
-					line.end_point   := live_path.end_point;
-					add_by_category;
-				end if;
-
-				-- Set start point of path so that a new
-				-- path can be drawn:
-				live_path.start_point := point;
 				
-			else
-				reset_preliminary_object;
-			end if;
-		end if;			
-	end make_path;
+			when LAYER_CAT_CONDUCTOR =>
+
+				-- Because we do not pass a net name, this is going
+				-- to be a freetrack:
+				et_board_ops.conductors.add_line (
+					module_name	=> pac_generic_modules.key (active_module),
+					line		=> (line with object_linewidth, object_signal_layer),
+					log_threshold	=> log_threshold);
+
+				
+				
+			when LAYER_CAT_SILKSCREEN =>
+				
+				et_board_ops.silkscreen.add_line (
+					module_name	=> pac_generic_modules.key (active_module),
+					face		=> object_face,
+					line		=> (line with object_linewidth),
+					log_threshold	=> log_threshold);
+
+
+				
+			when LAYER_CAT_ROUTE_RESTRICT =>
+
+				et_board_ops.route_restrict.draw_route_restrict_line (
+					module_name	=> pac_generic_modules.key (active_module),
+					line		=> (line with to_layers (object_signal_layer)),
+					log_threshold	=> log_threshold);
+
+				-- CS: Currently only a single signal layer can be assigned
+				-- to the line. Multi-layer assignment is possible via
+				-- commandline only.
+
+
+			when LAYER_CAT_STENCIL =>
+				
+				et_board_ops.stencil.add_line (
+					module_name	=> pac_generic_modules.key (active_module),
+					face		=> object_face,
+					line		=> (line with object_linewidth),
+					log_threshold	=> log_threshold);
+
+				
+				
+			when LAYER_CAT_STOPMASK =>
+				
+				et_board_ops.stopmask.add_line (
+					module_name	=> pac_generic_modules.key (active_module),
+					face		=> object_face,
+					line		=> (line with object_linewidth),
+					log_threshold	=> log_threshold);
+
+
+			when others =>
+				null; -- CS
+		end case;
+
+		-- Commit the new state of the design:
+		commit (POST, verb, noun, log_threshold + 1);			
+	end add_by_category;
 		
 
 	

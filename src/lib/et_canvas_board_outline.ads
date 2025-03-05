@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -80,16 +80,12 @@ package et_canvas_board_outline is
 
 
 
-	-- Builds the final path. This procedure requires to be called twice:
-	-- first time for the start and the second time for the end point of the path.
-	-- The current bend style in preliminary_object.path is taken into account.
-	-- The path may be started and finished with different tools. For example start
-	-- with MOUSE and finish with KEYBOARD or vice versa.
-	procedure make_path (
-		tool	: in type_tool;
-		point	: in type_vector_model);
-	
+	-- This procedure is called via an access
+	-- when a line is to be added to the board outer contour:
+	procedure add_to_outer_contour (
+		line : in type_line);
 
+	
 
 	-- This procedure is required in order to clarify
 	-- which object among the proposed objects is meant.

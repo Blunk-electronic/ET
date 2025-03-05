@@ -3331,6 +3331,91 @@ package body et_canvas is
 	end reset_object;
 
 
+
+	
+
+	procedure make_path (
+		tool	: in type_tool;
+		point	: in type_vector_model;
+		process	: not null access procedure (line : in type_line))
+	is
+		line : type_line;
+		use pac_path;		
+	begin
+		-- put_line ("make_path");
+		
+		-- Set the tool being used for this path so that procedure
+		-- draw_path_live (for example in et_canvas_board_2-draw_assy_doc)
+		-- knows where to get the end point from.
+		object_tool := tool;
+
+		-- Initally the preliminary_object is NOT ready. Nothing will be drawn.
+		-- Upon the first calling of this procedure the start point of the
+		-- path will be set.
+		
+		if not object_ready then
+			-- set start point:
+			live_path.start_point := point;
+
+			-- Allow drawing of the path:
+			object_ready := true;
+
+			set_status (status_start_point & to_string (live_path.start_point) & ". " &
+				status_press_space & status_set_end_point & status_hint_for_abort);
+
+		else -- preliminary_zone IS ready
+
+			-- Start a new path only if the given point differs from 
+			-- the start point of the current path:
+			if point /= live_path.start_point then
+
+				-- Complete the path by setting its end point.
+				-- The the current bend point (if there is one) into account:
+				
+				if live_path.bended = NO then
+					live_path.end_point := point;
+
+					-- insert a single line:
+					line.start_point := live_path.start_point;
+					line.end_point   := live_path.end_point;
+
+					-- Process the line further by the procedure given
+					-- by argument "process":
+					process (line);
+					
+				else
+					-- The path is bended. The bend point has been computed
+					-- interactively while moving the mouse or the cursor.
+					-- See for example procedure draw_path in et_canvas_board_2-draw_assy_doc.
+
+					-- insert first line of the path:
+					line.start_point := live_path.start_point;
+					line.end_point   := live_path.bend_point;
+
+					-- Process the line further by the procedure given
+					-- by argument "process":
+					process (line);
+					
+					-- insert second line of the path:
+					live_path.end_point := point;
+					line.start_point := live_path.bend_point;
+					line.end_point   := live_path.end_point;
+
+					-- Process the line further by the procedure given
+					-- by argument "process":
+					process (line);
+				end if;
+
+				-- Set start point of path so that a new
+				-- path can be drawn:
+				live_path.start_point := point;
+				
+			else
+				reset_object;
+			end if;
+		end if;			
+	end make_path;
+
 	
 	
 
