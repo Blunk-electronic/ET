@@ -256,7 +256,7 @@ package body et_board_ops.board_contour is
 
 			
 		begin
-			if module.board.board_contour.outline.contour.circular then
+			if is_circular (module.board.board_contour.outline) then
 				null; -- CS
 			else
 				c := module.board.board_contour.outline.contour.segments.first;
@@ -314,7 +314,7 @@ package body et_board_ops.board_contour is
 
 			
 		begin
-			if module.board.board_contour.outline.contour.circular then
+			if is_circular (module.board.board_contour.outline) then
 				null; -- CS
 			else
 				c := module.board.board_contour.outline.contour.segments.first;
@@ -456,7 +456,7 @@ package body et_board_ops.board_contour is
 
 			
 		begin
-			if module.board.board_contour.outline.contour.circular then
+			if is_circular (module.board.board_contour.outline) then
 				null; -- CS
 			else
 				iterate (
@@ -628,7 +628,7 @@ package body et_board_ops.board_contour is
 			end do_it;
 			
 		begin
-			if module.board.board_contour.outline.contour.circular then
+			if is_circular (module.board.board_contour.outline) then
 				null; -- CS
 			else
 				module.board.board_contour.outline.contour.segments.update_element (
@@ -761,7 +761,7 @@ package body et_board_ops.board_contour is
 
 			
 		begin -- delete
-			if module.board.board_contour.outline.contour.circular then
+			if is_circular (module.board.board_contour.outline) then
 				delete_circle;				
 			else
 				delete_segment;
@@ -897,7 +897,7 @@ package body et_board_ops.board_contour is
 			procedure query_hole (
 				hole : in out type_hole)
 			is begin
-				if hole.contour.circular then
+				if is_circular (hole) then
 					null; -- CS
 				else
 					-- Locate the given segment in the
@@ -992,7 +992,7 @@ package body et_board_ops.board_contour is
 				c : pac_segments.cursor;
 				
 			begin
-				if hole.contour.circular then
+				if is_circular (hole) then
 					null; -- CS
 				else
 					c := hole.contour.segments.first;
@@ -1075,7 +1075,7 @@ package body et_board_ops.board_contour is
 				c : pac_segments.cursor;
 				
 			begin
-				if hole.contour.circular then
+				if is_circular (hole) then
 					null; -- CS
 				else
 					c := hole.contour.segments.first;
@@ -1186,7 +1186,7 @@ package body et_board_ops.board_contour is
 
 				
 			begin
-				if element (h).contour.circular then
+				if is_circular (element (h)) then
 					null; -- CS
 				else
 					query_element (h, query_segments'access);
@@ -1262,7 +1262,7 @@ package body et_board_ops.board_contour is
 			is 
 				c : pac_segments.cursor;
 			begin
-				if hole.contour.circular then
+				if is_circular (hole) then
 					null; -- CS
 				else
 					-- Locate the given segment in 
@@ -1331,7 +1331,7 @@ package body et_board_ops.board_contour is
 			is 
 				c : pac_segments.cursor;
 			begin
-				if hole.contour.circular then
+				if is_circular (hole) then
 					null; -- CS
 				else
 					-- Delete the given segment:
@@ -1648,7 +1648,7 @@ package body et_board_ops.board_contour is
 				end query_segment;
 				
 			begin
-				if hole.contour.circular then
+				if is_circular (hole) then
 					null; -- CS
 				else
 					-- Iterate the segments of the hole candidate:
@@ -1668,7 +1668,7 @@ package body et_board_ops.board_contour is
 			log (text => "outer contour", level => log_threshold + 1);
 			log_indentation_up;
 
-			if module.board.board_contour.outline.contour.circular then
+			if is_circular (module.board.board_contour.outline) then
 				null; -- CS 
 			else
 				outer_segment_cursor := module.board.board_contour.outline.contour.segments.first;

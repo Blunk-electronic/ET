@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -369,6 +369,20 @@ package body et_geometry_2a.contours is
 	end iterate;
 
 
+
+	
+	function is_circular (
+		contour : in type_contour)
+		return boolean
+	is begin
+		if contour.contour.circular then
+			return true;
+		else
+			return false;
+		end if;
+	end is_circular;
+
+	
 
 
 	function get_proposed_segments (

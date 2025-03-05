@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -158,6 +158,9 @@ package et_geometry_2a.contours is
 		proceed		: not null access boolean);
 
 
+	-- A contour exists in two forms:
+	-- 1. As a single circle.
+	-- 2. As a list of lines and arcs:
 	type type_segments (circular : boolean := false) is record
 		case circular is
 			when TRUE	=> circle   : type_circle;
@@ -172,6 +175,11 @@ package et_geometry_2a.contours is
 	end record;
 
 
+	-- Returns true if the given contour consists of a circle:
+	function is_circular (
+		contour : in type_contour)
+		return boolean;
+	
 
 	package pac_proposed_segments is new doubly_linked_lists (pac_segments.cursor);
 
