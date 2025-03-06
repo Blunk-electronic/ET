@@ -248,6 +248,7 @@ package et_canvas_board_2 is
 		cat : in type_layer_category);
 	
 
+	-- CS unify this procedure with draw_path
 	procedure draw_live_zone ( 
 		cat : in type_layer_category);
 

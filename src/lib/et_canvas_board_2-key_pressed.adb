@@ -534,11 +534,6 @@ is
 				show_line_properties;
 				set_status (status_draw_line);
 
-			when key_noun_outline =>
-				noun := NOUN_OUTLINE;
-				reset_object;				
-				set_status (status_draw_outline);
-
 				
 			when key_noun_zone =>
 				noun := NOUN_ZONE;
@@ -553,10 +548,6 @@ is
 					when NOUN_LINE =>
 						make_path (KEYBOARD, point,
 							et_canvas_board_lines.add_by_category'access);
-
-					when NOUN_OUTLINE =>
-						make_path (KEYBOARD, point, 
-							et_canvas_board_outline.add_to_outer_contour'access);
 						
 					when NOUN_ZONE =>
 						make_path (KEYBOARD, point, 
@@ -570,9 +561,6 @@ is
 			when key_bend_style =>
 				case noun is
 					when NOUN_LINE =>
-						next_bend_style (live_path);
-
-					when NOUN_OUTLINE =>
 						next_bend_style (live_path);
 						
 					when NOUN_ZONE =>

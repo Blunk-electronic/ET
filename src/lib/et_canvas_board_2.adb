@@ -570,7 +570,7 @@ package body et_canvas_board_2 is
 		if verb = VERB_DRAW and object_ready
 		and object_layer_category = cat 
 			
-		and (noun = NOUN_ZONE or noun = NOUN_OUTLINE) 
+		-- and (noun = NOUN_ZONE or noun = NOUN_OUTLINE) 
 		
 		then
 			case object_tool is

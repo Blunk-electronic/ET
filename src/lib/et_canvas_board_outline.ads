@@ -80,13 +80,6 @@ package et_canvas_board_outline is
 
 
 
-	-- This procedure is called via an access
-	-- when a line is to be added to the board outer contour:
-	procedure add_to_outer_contour (
-		line : in type_line);
-
-	
-
 	-- This procedure is required in order to clarify
 	-- which object among the proposed objects is meant.
 	-- On every call of this procedure we advance from one

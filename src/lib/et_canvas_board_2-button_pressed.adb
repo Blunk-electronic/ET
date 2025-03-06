@@ -121,11 +121,7 @@ is
 						-- put_line ("draw line");
 						make_path (MOUSE, snap_point,
 							et_canvas_board_lines.add_by_category'access);
-
-					when NOUN_OUTLINE =>
-						make_path (MOUSE, snap_point, 
-							et_canvas_board_outline.add_to_outer_contour'access);
-						
+			
 					when NOUN_ZONE =>
 						make_path (MOUSE, snap_point, 
 							et_canvas_board_zone.add_to_zone'access);
@@ -309,10 +305,6 @@ is
 			when VERB_DRAW =>
 				case noun is
 					when NOUN_LINE =>
-						pac_path_and_bend.next_bend_style (
-							live_path);
-
-					when NOUN_OUTLINE =>
 						pac_path_and_bend.next_bend_style (
 							live_path);
 						

@@ -60,8 +60,10 @@ with gtk.container;						use gtk.container;
 
 with et_generic_module;					use et_generic_module;
 with et_canvas_board_2;
+with et_board_shapes_and_text;
 
 with et_board_ops;						use et_board_ops;
+with et_board_ops.board_contour;
 with et_board_ops.assy_doc;
 with et_board_ops.silkscreen;
 with et_board_ops.stopmask;
@@ -96,6 +98,7 @@ package body et_canvas_board_lines is
 		layer_categories.append (LAYER_CAT_ROUTE_RESTRICT);
 		layer_categories.append (LAYER_CAT_STENCIL);
 		layer_categories.append (LAYER_CAT_STOPMASK);
+		layer_categories.append (LAYER_CAT_OUTLINE);
 	end make_affected_layer_categories;
 	
 
@@ -121,6 +124,9 @@ package body et_canvas_board_lines is
 
 		-- Auto-enable the selected layer category:
 		case object_layer_category is
+			when LAYER_CAT_OUTLINE =>
+				enable_board_contour;
+
 			when LAYER_CAT_ASSY =>
 				enable_assy_doc (object_face);
 
@@ -528,11 +534,35 @@ package body et_canvas_board_lines is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
+
+		
+		procedure add_to_outer_contour is
+			use et_board_ops.board_contour;
+			use et_board_shapes_and_text.pac_contours;
+
+			-- A temporary contour consisting of a single segment:
+			c : type_contour;
+		begin
+			-- Add the line to the temporary contour:
+			append_segment (c, to_segment (line));
+
+			-- Add the temporary contour to the board:
+			add_outline (
+				module_cursor	=> active_module,
+				outline			=> (c with null record),
+				log_threshold	=> log_threshold);
+			
+		end add_to_outer_contour;
+
+		
 	begin
 		-- Commit the current state of the design:
 		commit (PRE, verb, noun, log_threshold + 1);
 
 		case object_layer_category is
+			when LAYER_CAT_OUTLINE =>
+				add_to_outer_contour;
+				
 			when LAYER_CAT_ASSY =>
 				
 				et_board_ops.assy_doc.add_line (

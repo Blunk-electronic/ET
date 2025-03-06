@@ -84,40 +84,6 @@ with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 package body et_canvas_board_outline is
 
 
-	procedure add_to_outer_contour (
-		line : in type_line)
-	is 
-		use et_modes.board;
-		use et_undo_redo;
-		use et_commit;
-		
-		use et_board_shapes_and_text;
-		use et_board_shapes_and_text.pac_contours;
-
-		-- A temporary contour consisting of a single 
-		-- segment:
-		c : type_contour;
-	begin
-		-- Add the line to the temporary contour:
-		append_segment (c, to_segment (line));
-						
-		-- Commit the current state of the design:
-		commit (PRE, verb, noun, log_threshold + 1);
-
-		-- Add the temporary contour to the board:
-		add_outline (
-			module_cursor	=> active_module,
-			outline			=> (c with null record),
-			log_threshold	=> log_threshold);
-		
-
-		-- Commit the new state of the design:
-		commit (POST, verb, noun, log_threshold + 1);			
-	end add_to_outer_contour;
-
-
-
-
 	procedure show_selected_outer_contour_segment (
 		selected		: in type_object_outer_contour_segment;
 		clarification	: in boolean := false)
