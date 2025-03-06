@@ -534,13 +534,6 @@ is
 				show_line_properties;
 				set_status (status_draw_line);
 
-				
-			when key_noun_zone =>
-				noun := NOUN_ZONE;
-				reset_preliminary_object;
-				show_zone_properties;
-				set_status (status_draw_zone);
-				
 
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
@@ -548,10 +541,6 @@ is
 					when NOUN_LINE =>
 						make_path (KEYBOARD, point,
 							et_canvas_board_lines.add_by_category'access);
-						
-					when NOUN_ZONE =>
-						make_path (KEYBOARD, point, 
-							et_canvas_board_zone.add_to_zone'access);
 						
 					when others => null;
 				end case;

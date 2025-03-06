@@ -66,17 +66,6 @@ with et_board_layer_category;			use et_board_layer_category;
 package et_canvas_board_outline is
 
 	use et_canvas_board_2.pac_canvas;
-	
-
-
-
-	-- to be output in the status bar:
-	status_draw_outline : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to draw board outline." 
-		& status_hint_for_abort;
 
 
 

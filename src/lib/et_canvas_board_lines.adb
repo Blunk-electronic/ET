@@ -65,11 +65,13 @@ with et_board_shapes_and_text;
 with et_board_ops;						use et_board_ops;
 with et_board_ops.board_contour;
 with et_board_ops.assy_doc;
+with et_board_ops.keepout;
 with et_board_ops.silkscreen;
 with et_board_ops.stopmask;
 with et_board_ops.stencil;
 with et_board_ops.conductors;
 with et_board_ops.route_restrict;
+with et_board_ops.via_restrict;
 with et_modes.board;
 
 with et_display;						use et_display;
@@ -94,11 +96,13 @@ package body et_canvas_board_lines is
 		layer_categories.clear;
 		layer_categories.append (LAYER_CAT_ASSY);
 		layer_categories.append (LAYER_CAT_CONDUCTOR);
+		layer_categories.append (LAYER_CAT_KEEPOUT);
+		layer_categories.append (LAYER_CAT_OUTLINE);
 		layer_categories.append (LAYER_CAT_SILKSCREEN);
 		layer_categories.append (LAYER_CAT_ROUTE_RESTRICT);
 		layer_categories.append (LAYER_CAT_STENCIL);
 		layer_categories.append (LAYER_CAT_STOPMASK);
-		layer_categories.append (LAYER_CAT_OUTLINE);
+		layer_categories.append (LAYER_CAT_VIA_RESTRICT);
 	end make_affected_layer_categories;
 	
 
@@ -139,6 +143,9 @@ package body et_canvas_board_lines is
 			when LAYER_CAT_ROUTE_RESTRICT =>
 				enable_route_restrict (object_signal_layer);
 
+			when LAYER_CAT_VIA_RESTRICT =>
+				enable_via_restrict (object_signal_layer);
+				
 			when LAYER_CAT_STENCIL =>
 				enable_stencil (object_face);
 
@@ -534,14 +541,17 @@ package body et_canvas_board_lines is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
+		use et_board_shapes_and_text.pac_contours;
+
+		-- A temporary contour consisting of a single segment,
+		-- used in case it is about a contour segment:
+		c : type_contour; 
 
 		
+		-- This procedure adds the given line
+		-- to the outer board contour:
 		procedure add_to_outer_contour is
 			use et_board_ops.board_contour;
-			use et_board_shapes_and_text.pac_contours;
-
-			-- A temporary contour consisting of a single segment:
-			c : type_contour;
 		begin
 			-- Add the line to the temporary contour:
 			append_segment (c, to_segment (line));
@@ -555,6 +565,210 @@ package body et_canvas_board_lines is
 		end add_to_outer_contour;
 
 		
+		
+		-- This procedure adds the given line to either
+		-- the lines (which hava a certain width) or to a zone
+		-- in the assembly documentation:
+		procedure add_to_assy_doc is
+			use et_board_ops.assy_doc;
+		begin
+			-- If the linewidth (given by the operator via the GUI)
+			-- is non-zero, then the given line is to be added as
+			-- a single line.
+			-- If the linewidth is zero, then the line is 
+			-- regarded as part of the contour of a zone:
+			if object_linewidth > 0.0 then
+				add_line (
+					module_name	=> pac_generic_modules.key (active_module),
+					face		=> object_face,
+					line		=> (line with object_linewidth),
+					log_threshold	=> log_threshold);
+
+			else				
+				-- Add the line to the temporary contour:
+				append_segment (c, to_segment (line));
+
+				-- Add the temporary zone to the board:
+				add_zone (
+					module_cursor	=> active_module,
+					zone			=> (c with null record),
+					face			=> object_face,
+					log_threshold	=> log_threshold);
+				
+			end if;
+		end add_to_assy_doc;
+
+
+
+		-- This procedure adds the given line to either
+		-- the lines (which hava a certain width) or to a zone
+		-- in the silkscreen:
+		procedure add_to_silkscreen is
+			use et_board_ops.silkscreen;
+		begin
+			-- If the linewidth (given by the operator via the GUI)
+			-- is non-zero, then the given line is to be added as
+			-- a single line.
+			-- If the linewidth is zero, then the line is 
+			-- regarded as part of the contour of a zone:
+			if object_linewidth > 0.0 then
+				add_line (
+					module_name	=> pac_generic_modules.key (active_module),
+					face		=> object_face,
+					line		=> (line with object_linewidth),
+					log_threshold	=> log_threshold);
+
+			else				
+				-- Add the line to the temporary contour:
+				append_segment (c, to_segment (line));
+
+				-- Add the temporary zone to the board:
+				add_zone (
+					module_cursor	=> active_module,
+					zone			=> (c with null record),
+					face			=> object_face,
+					log_threshold	=> log_threshold);
+				
+			end if;
+		end add_to_silkscreen;
+
+		
+
+		-- This procedure adds the given line to either
+		-- the lines (which hava a certain width) or to a zone
+		-- in the stopmask:
+		procedure add_to_stopmask is
+			use et_board_ops.stopmask;
+		begin
+			-- If the linewidth (given by the operator via the GUI)
+			-- is non-zero, then the given line is to be added as
+			-- a single line.
+			-- If the linewidth is zero, then the line is 
+			-- regarded as part of the contour of a zone:
+			if object_linewidth > 0.0 then
+				add_line (
+					module_name	=> pac_generic_modules.key (active_module),
+					face		=> object_face,
+					line		=> (line with object_linewidth),
+					log_threshold	=> log_threshold);
+
+			else				
+				-- Add the line to the temporary contour:
+				append_segment (c, to_segment (line));
+
+				-- Add the temporary zone to the board:
+				add_zone (
+					module_cursor	=> active_module,
+					zone			=> (c with null record),
+					face			=> object_face,
+					log_threshold	=> log_threshold);
+				
+			end if;
+		end add_to_stopmask;
+
+		
+
+		-- This procedure adds the given line to either
+		-- the lines (which hava a certain width) or to a zone
+		-- in the stencil:
+		procedure add_to_stencil is
+			use et_board_ops.stencil;
+		begin
+			-- If the linewidth (given by the operator via the GUI)
+			-- is non-zero, then the given line is to be added as
+			-- a single line.
+			-- If the linewidth is zero, then the line is 
+			-- regarded as part of the contour of a zone:
+			if object_linewidth > 0.0 then
+				add_line (
+					module_name	=> pac_generic_modules.key (active_module),
+					face		=> object_face,
+					line		=> (line with object_linewidth),
+					log_threshold	=> log_threshold);
+
+			else				
+				-- Add the line to the temporary contour:
+				append_segment (c, to_segment (line));
+
+				-- Add the temporary zone to the board:
+				draw_zone (
+					module_cursor	=> active_module,
+					zone			=> (c with null record),
+					face			=> object_face,
+					log_threshold	=> log_threshold);
+				
+			end if;
+		end add_to_stencil;
+
+
+		-- This procedure adds the given line to 
+		-- the route restrict layers:
+		procedure add_to_route_restrict is
+			use et_board_ops.route_restrict;
+		begin
+			draw_route_restrict_line (
+				module_name	=> pac_generic_modules.key (active_module),
+				line		=> (line with to_layers (object_signal_layer)),
+				log_threshold	=> log_threshold);
+
+				-- CS: Currently only a single signal layer can be assigned
+				-- to the line. Multi-layer assignment is possible via
+				-- commandline only.
+		end add_to_route_restrict;
+		
+
+		
+		-- This procedure adds the given line to either
+		-- the lines (which hava a certain width) or to a zone
+		-- in a via restrict layer:
+		procedure add_to_via_restrict is
+			use et_board_ops.via_restrict;
+		begin
+			-- Add the line to the temporary contour:
+			append_segment (c, to_segment (line));
+
+			-- Add the temporary contour to the board:
+			draw_zone (
+				module_cursor	=> active_module,
+				zone			=> (c with to_layers (object_signal_layer)),
+				log_threshold	=> log_threshold);
+
+		end add_to_via_restrict;
+
+
+		-- This procedure adds the given line
+		-- to the keepout layer:
+		procedure add_to_keepout is
+			use et_board_ops.keepout;
+		begin
+			-- Add the line to the temporary contour:
+			append_segment (c, to_segment (line));
+
+			-- Add the temporary contour to the board:
+			add_zone (
+				module_cursor	=> active_module,
+				zone			=> (c with null record),
+				face			=> object_face,
+				log_threshold	=> log_threshold);
+			
+		end add_to_keepout;
+
+
+		-- This procedure adds the given line to 
+		-- a conductor layer:
+		procedure add_to_conductors is
+			use et_board_ops.conductors;
+		begin
+			-- Because we do not pass a net name, this is going
+			-- to be a freetrack:
+			add_line (
+				module_name	=> pac_generic_modules.key (active_module),
+				line		=> (line with object_linewidth, object_signal_layer),
+				log_threshold	=> log_threshold);
+		end add_to_conductors;
+
+		
+		
 	begin
 		-- Commit the current state of the design:
 		commit (PRE, verb, noun, log_threshold + 1);
@@ -564,66 +778,28 @@ package body et_canvas_board_lines is
 				add_to_outer_contour;
 				
 			when LAYER_CAT_ASSY =>
-				
-				et_board_ops.assy_doc.add_line (
-					module_name	=> pac_generic_modules.key (active_module),
-					face		=> object_face,
-					line		=> (line with object_linewidth),
-					log_threshold	=> log_threshold);
-
-
+				add_to_assy_doc;
 				
 			when LAYER_CAT_CONDUCTOR =>
-
-				-- Because we do not pass a net name, this is going
-				-- to be a freetrack:
-				et_board_ops.conductors.add_line (
-					module_name	=> pac_generic_modules.key (active_module),
-					line		=> (line with object_linewidth, object_signal_layer),
-					log_threshold	=> log_threshold);
-
-				
+				add_to_conductors;	
 				
 			when LAYER_CAT_SILKSCREEN =>
-				
-				et_board_ops.silkscreen.add_line (
-					module_name	=> pac_generic_modules.key (active_module),
-					face		=> object_face,
-					line		=> (line with object_linewidth),
-					log_threshold	=> log_threshold);
-
-
+				add_to_silkscreen;
 				
 			when LAYER_CAT_ROUTE_RESTRICT =>
+				add_to_route_restrict;
 
-				et_board_ops.route_restrict.draw_route_restrict_line (
-					module_name	=> pac_generic_modules.key (active_module),
-					line		=> (line with to_layers (object_signal_layer)),
-					log_threshold	=> log_threshold);
-
-				-- CS: Currently only a single signal layer can be assigned
-				-- to the line. Multi-layer assignment is possible via
-				-- commandline only.
-
-
+			when LAYER_CAT_VIA_RESTRICT =>
+				add_to_via_restrict;
+				
 			when LAYER_CAT_STENCIL =>
-				
-				et_board_ops.stencil.add_line (
-					module_name	=> pac_generic_modules.key (active_module),
-					face		=> object_face,
-					line		=> (line with object_linewidth),
-					log_threshold	=> log_threshold);
+				add_to_stencil;				
 
-				
+			when LAYER_CAT_KEEPOUT =>
+				add_to_keepout;				
 				
 			when LAYER_CAT_STOPMASK =>
-				
-				et_board_ops.stopmask.add_line (
-					module_name	=> pac_generic_modules.key (active_module),
-					face		=> object_face,
-					line		=> (line with object_linewidth),
-					log_threshold	=> log_threshold);
-
+				add_to_stopmask;
 
 			when others =>
 				null; -- CS

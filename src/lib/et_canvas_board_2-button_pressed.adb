@@ -121,11 +121,6 @@ is
 						-- put_line ("draw line");
 						make_path (MOUSE, snap_point,
 							et_canvas_board_lines.add_by_category'access);
-			
-					when NOUN_ZONE =>
-						make_path (MOUSE, snap_point, 
-							et_canvas_board_zone.add_to_zone'access);
-
 						
 					when others => null;						
 				end case;

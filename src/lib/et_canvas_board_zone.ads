@@ -98,24 +98,6 @@ package et_canvas_board_zone is
 	procedure show_zone_properties;
 
 
-	-- This procedure is called via an access
-	-- when a line is to be added to a zone.
-	-- The final zone is determined by the current 
-	-- object_layer_category:
-	procedure add_to_zone (
-		line : in type_line);
-
-	
-
-	-- to be output in the status bar:
-	status_draw_zone : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to draw zone." 
-		& status_hint_for_abort;
-
-	
 end et_canvas_board_zone;
 
 -- Soli Deo Gloria
