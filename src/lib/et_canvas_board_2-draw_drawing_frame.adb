@@ -387,7 +387,7 @@ procedure draw_drawing_frame is
 
 
 		-- outline
-		if outline_enabled then
+		if board_contour_enabled then
 			outline;
 		end if;
 

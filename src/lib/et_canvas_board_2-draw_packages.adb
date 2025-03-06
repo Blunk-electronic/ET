@@ -977,7 +977,7 @@ is
 				
 			
 		begin
-			if outline_enabled then
+			if board_contour_enabled then
 				set_color_outline;
 
 				if electric then

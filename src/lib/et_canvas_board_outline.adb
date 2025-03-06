@@ -312,7 +312,7 @@ package body et_canvas_board_outline is
 		procedure propose_objects is 
 			use et_display.board;
 		begin
-			if outline_enabled then
+			if board_contour_enabled then
 				
 				propose_outer_contour_segments (
 					module_cursor	=> active_module, 

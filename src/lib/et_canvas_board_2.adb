@@ -695,11 +695,11 @@ package body et_canvas_board_2 is
 		end draw_stencil;
 
 		
-		procedure draw_pcb_outline is begin
-			if outline_enabled then		
+		procedure draw_board_contour is begin
+			if board_contour_enabled then		
 				draw_outline;
 			end if;
-		end draw_pcb_outline;
+		end draw_board_contour;
 		
 
 	begin
@@ -710,7 +710,7 @@ package body et_canvas_board_2 is
 		draw_keepout;
 		draw_stop_mask;
 		draw_stencil;
-		draw_pcb_outline;
+		draw_board_contour;
 		
 		-- CS draw_submodules			
 	end draw_board;
