@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -44,14 +44,28 @@ with ada.strings.unbounded;
 package body et_display.board is
 
 	
-	function outline_enabled return boolean is begin
+	function board_contour_enabled return boolean is begin
 		if layers.outline = ON then 
 			return true;
 		else
 			return false;
 		end if;
-	end outline_enabled;
+	end board_contour_enabled;
 
+	
+
+	procedure enable_board_contour is begin
+		layers.outline := ON;
+	end;
+
+
+	
+	procedure disable_board_contour is begin
+		layers.outline := OFF;
+	end;
+
+
+	
 	
 	function plated_millings_enabled return boolean is begin
 		if layers.plated_millings = ON then 

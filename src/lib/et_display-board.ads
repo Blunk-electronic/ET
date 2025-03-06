@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -93,7 +93,20 @@ package et_display.board is
 	layers : type_layers;
 
 
-	function outline_enabled return boolean;
+
+-- BOARD OUTLINE:
+
+	function board_contour_enabled return boolean;
+
+	procedure enable_board_contour;
+
+	procedure disable_board_contour;
+
+
+	
+
+-- PLATED MILLINGS:
+	
 	function plated_millings_enabled return boolean;
 
 
