@@ -528,7 +528,7 @@ is
 	begin
 		-- Convert the contour to a pcb outer edge type
 		-- and assign it to the module:
-		set_outline (module, (c with null record), log_threshold + 1);
+		set_outline (module_cursor, (c with null record), log_threshold + 1);
 	end draw_board_outline;
 
 
@@ -546,7 +546,7 @@ is
 	begin
 		-- Convert the contour to an inner pcb edge type and add it to
 		-- the already existing holes:
-		add_hole (module, (c with null record), log_threshold + 1);
+		add_hole (module_cursor, (c with null record), log_threshold + 1);
 	end draw_hole;
 
 
@@ -602,7 +602,7 @@ is
 			when 7 =>
 				-- delete a segment of board outline
 				delete_outline (
-					module_name 	=> module,
+					module_cursor 	=> module_cursor,
 					point			=> type_vector_model (to_point (f (5), f (6))),
 					accuracy		=> to_accuracy (f (7)),					
 					log_threshold	=> log_threshold + 1);

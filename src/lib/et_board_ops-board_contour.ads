@@ -6,20 +6,21 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2025                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -46,9 +47,6 @@ with et_pcb_contour;				use et_pcb_contour;
 
 package et_board_ops.board_contour is
 
-	-- CS rework procedures so that a module cursor
-	-- is used instead the module_name.
-
 	use et_board_shapes_and_text;
 	use pac_contours;
 	
@@ -60,7 +58,7 @@ package et_board_ops.board_contour is
 	-- Overwrites the already existing outline as there can
 	-- be only one outline:
 	procedure set_outline (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		outline			: in type_outer_contour;
 		log_threshold	: in type_log_level);
 
@@ -192,7 +190,7 @@ package et_board_ops.board_contour is
 
 	
 	function get_outer_contour (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 		return type_outer_contour;
 	
@@ -201,7 +199,7 @@ package et_board_ops.board_contour is
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 	procedure delete_outline (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level);
@@ -301,11 +299,6 @@ package et_board_ops.board_contour is
 		log_threshold	: in type_log_level);
 
 	
-	procedure add_hole (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		hole			: in type_hole;
-		log_threshold	: in type_log_level);
-
 	
 	-- Returns the holes of the given module:
 	function get_holes (

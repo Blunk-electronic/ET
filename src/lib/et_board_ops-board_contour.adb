@@ -45,11 +45,10 @@ package body et_board_ops.board_contour is
 
 	
 	procedure set_outline (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		outline			: in type_outer_contour;
 		log_threshold	: in type_log_level)
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
@@ -59,12 +58,10 @@ package body et_board_ops.board_contour is
 		end;
 							   
 	begin
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) 
+		log (text => "module " & to_string (module_cursor) 
 			 & " setting outline" & to_string (outline),
 			level => log_threshold);
 
-		module_cursor := locate_module (module_name);
-		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -674,17 +671,13 @@ package body et_board_ops.board_contour is
 	
 	
 	function get_outer_contour (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
 		return type_outer_contour
-	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being queried
-	begin
-		log (text => "module " & to_string (module_name)
+	is begin
+		log (text => "module " & to_string (module_cursor)
 			 & " getting outline",
 			level => log_threshold);
-
-		module_cursor := locate_module (module_name);
 		
 		return get_outer_contour (module_cursor);
 	end get_outer_contour;
@@ -694,13 +687,11 @@ package body et_board_ops.board_contour is
 	
 
 	procedure delete_outline (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level)
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-
 		
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
@@ -774,12 +765,10 @@ package body et_board_ops.board_contour is
 
 		
 	begin
-		log (text => "module " & to_string (module_name)
+		log (text => "module " & to_string (module_cursor)
 			& " deleting outline segment at" & to_string (point) 
 			& " accuracy" & accuracy_to_string (accuracy),
 			level => log_threshold);
-
-		module_cursor := locate_module (module_name);
 
 		update_element (
 			container	=> generic_modules,
@@ -1390,7 +1379,7 @@ package body et_board_ops.board_contour is
 		end;
 							   
 	begin
-		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) 
+		log (text => "module " & to_string (module_cursor) 
 			 & " adding hole" & to_string (hole),
 			level => log_threshold);
 
@@ -1403,37 +1392,7 @@ package body et_board_ops.board_contour is
 
 	
 	
-	procedure add_hole (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		hole			: in type_hole;
-		log_threshold	: in type_log_level)
-	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-
-		procedure add (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module)
-		is 
-			use pac_holes;
-		begin
-			append (module.board.board_contour.holes, hole);
-		end;
-							   
-	begin
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) 
-			 & " adding hole" & to_string (hole),
-			level => log_threshold);
-
-		module_cursor := locate_module (module_name);
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> add'access);
-
-	end add_hole;
-
-
+	
 	
 
 	function get_holes (
