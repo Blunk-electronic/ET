@@ -107,7 +107,8 @@ begin
 
 
 	-- Draw the contour that is being drawn:
-    draw_live_zone (LAYER_CAT_OUTLINE);
+	draw_live_zone (LAYER_CAT_OUTLINE);
+	draw_live_zone (LAYER_CAT_HOLE);
 
 	
 end draw_outline;

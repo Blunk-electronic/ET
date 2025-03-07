@@ -292,7 +292,28 @@ package et_board_ops.board_contour is
 	
 	
 	
-	-- Adds a hole to the already existing holes:
+	-- Adds a hole to the already existing holes.
+	-- It just adds the given hole without trying to
+	-- append the given hole structure to any existing hole:
+	procedure set_hole (
+		module_cursor	: in pac_generic_modules.cursor;
+		hole			: in type_hole;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Adds a hole to the already existing holes.
+	-- The given hole can consist of a single segment or a
+	-- fragment of a contour.
+	-- 1. If the given contour is a single segment or a fragment
+	--    then the procedure searches for an already existing hole contour
+	--    which is incomplete (or open) and tries to append or prepend
+	--    the given contour fragment to the existing open contour.
+	-- 2. If this attempt fails, means if the given hole contour
+	--    could not be attached somewhere, then the given hole
+	--    is added as a new hole.
+	-- 3. If the given contour touches or crosses an already existing 
+	--    contour, then the given contour is rejected.	
 	procedure add_hole (
 		module_cursor	: in pac_generic_modules.cursor;
 		hole			: in type_hole;

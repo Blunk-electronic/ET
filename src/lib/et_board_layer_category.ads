@@ -53,7 +53,7 @@ package et_board_layer_category is
 	type type_layer_category is (
 
 		LAYER_CAT_OUTLINE,
-		-- CS LAYER_CAT_HOLE,							
+		LAYER_CAT_HOLE,							
 									
 		-- CONDUCTOR LAYERS.
 		-- These layers are numbered:

@@ -552,7 +552,7 @@ is
 						next_bend_style (live_path);
 						
 					when NOUN_ZONE =>
-						next_bend_style (live_path);
+						next_bend_style (live_path); -- CS remove ?
 						
 					when others => null;
 				end case;

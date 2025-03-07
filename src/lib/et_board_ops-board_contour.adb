@@ -1363,7 +1363,7 @@ package body et_board_ops.board_contour is
 	
 	
 
-	procedure add_hole (
+	procedure set_hole (
 		module_cursor	: in pac_generic_modules.cursor;
 		hole			: in type_hole;
 		log_threshold	: in type_log_level)
@@ -1380,7 +1380,7 @@ package body et_board_ops.board_contour is
 							   
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			 & " adding hole" & to_string (hole),
+			 & " setting hole" & to_string (hole),
 			level => log_threshold);
 
 		update_element (
@@ -1388,10 +1388,94 @@ package body et_board_ops.board_contour is
 			position	=> module_cursor,
 			process		=> add'access);
 
-	end add_hole;
+	end set_hole;
 
 	
 	
+
+
+	procedure add_hole (
+		module_cursor	: in pac_generic_modules.cursor;
+		hole			: in type_hole;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is 
+			use pac_holes;
+			hc : pac_holes.cursor := module.board.board_contour.holes.first;
+
+			proceed : boolean := true;
+			
+			procedure query_hole (
+				h : in out type_hole)
+			is 
+				mr : type_merge_result;
+			begin
+				log (text => "query hole " & to_string (h), level => log_threshold + 1);
+				
+				if is_open (h) then
+					merge_contours (
+						target	=> h,
+						source	=> hole,
+						status	=> mr);
+
+					if mr.successful then
+						proceed := false;
+					end if;
+					
+					-- if not mr.successful then
+					-- 	log_indentation_up;
+					-- 	log (text => "hole contour rejected", level => log_threshold + 1);
+					-- 	log_indentation_down;
+					-- end if;
+
+				else -- closed candidate contour
+					null;
+					-- CS test whether given hole touches or crosses
+					-- the candidate contour.
+					-- When positive, reject given hole.
+				end if;
+			end query_hole;
+			
+		begin
+			-- Iterate the holes of the board.
+			-- Abort the iteration once the given hole contour has
+			-- been successfully added to the holes:
+			while has_element (hc) loop
+				module.board.board_contour.holes.update_element (hc, query_hole'access);
+				
+				if not proceed then
+					exit;
+				end if;
+				next (hc);
+			end loop;
+
+			if proceed then
+				module.board.board_contour.holes.append (hole);
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " adding hole " & to_string (hole),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end add_hole;
+
+
+
 	
 	
 

@@ -96,6 +96,7 @@ package body et_canvas_board_lines is
 		layer_categories.clear;
 		layer_categories.append (LAYER_CAT_ASSY);
 		layer_categories.append (LAYER_CAT_CONDUCTOR);
+		layer_categories.append (LAYER_CAT_HOLE);
 		layer_categories.append (LAYER_CAT_KEEPOUT);
 		layer_categories.append (LAYER_CAT_OUTLINE);
 		layer_categories.append (LAYER_CAT_SILKSCREEN);
@@ -128,7 +129,7 @@ package body et_canvas_board_lines is
 
 		-- Auto-enable the selected layer category:
 		case object_layer_category is
-			when LAYER_CAT_OUTLINE =>
+			when LAYER_CAT_OUTLINE | LAYER_CAT_HOLE =>
 				enable_board_contour;
 
 			when LAYER_CAT_ASSY =>
@@ -564,6 +565,25 @@ package body et_canvas_board_lines is
 			
 		end add_to_outer_contour;
 
+
+
+		-- This procedure adds the given line
+		-- to the holes of the board:
+		procedure add_to_holes is
+			use et_board_ops.board_contour;
+		begin
+			-- Add the line to the temporary contour:
+			append_segment (c, to_segment (line));
+
+			-- Add the temporary contour to the board:
+			add_hole (
+				module_cursor	=> active_module,
+				hole			=> (c with null record),
+				log_threshold	=> log_threshold);
+			
+		end add_to_holes;
+
+
 		
 		
 		-- This procedure adds the given line to either
@@ -776,6 +796,9 @@ package body et_canvas_board_lines is
 		case object_layer_category is
 			when LAYER_CAT_OUTLINE =>
 				add_to_outer_contour;
+
+			when LAYER_CAT_HOLE =>
+				add_to_holes;
 				
 			when LAYER_CAT_ASSY =>
 				add_to_assy_doc;

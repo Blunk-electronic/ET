@@ -546,7 +546,7 @@ is
 	begin
 		-- Convert the contour to an inner pcb edge type and add it to
 		-- the already existing holes:
-		add_hole (module_cursor, (c with null record), log_threshold + 1);
+		set_hole (module_cursor, (c with null record), log_threshold + 1);
 	end draw_hole;
 
 
