@@ -316,8 +316,8 @@ package et_board_ops.board_contour is
 	-- Deletes the segment of a hole that crosses the given point.
 	-- CS currently rips up the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-	procedure delete_hole (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+	procedure delete_hole_segment (
+		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level);

@@ -1434,6 +1434,8 @@ package body et_board_ops.board_contour is
 	end add_hole;
 
 
+	
+
 	function get_holes (
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_holes.list
@@ -1443,30 +1445,37 @@ package body et_board_ops.board_contour is
 	
 
 
-	procedure delete_hole (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+	
+	procedure delete_hole_segment (
+		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level)
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-	begin -- delete_hole
-		log (text => "module " & enclose_in_quotes (to_string (module_name)) 
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is 
+			use pac_holes;
+		begin
+			null;
+			-- CS
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
 			& " deleting hole segment at" & to_string (point) 
-			& " accuracy" & accuracy_to_string (accuracy),
+			& " zone" & accuracy_to_string (accuracy),
 			level => log_threshold);
 
-		module_cursor := locate_module (module_name);
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
 
-		--update_element (
-			--container	=> generic_modules,
-			--position	=> module_cursor,
-			--process		=> delete'access);
-
-		-- CS
-		
-	end delete_hole;
+	end delete_hole_segment;
 
 
 

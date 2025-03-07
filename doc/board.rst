@@ -6,11 +6,11 @@
 Board Layout Editor
 *******************
 
-+++++++++++++
-Board Outline
-+++++++++++++
++++++++++++++++++++
+Board Outer Contour
++++++++++++++++++++
 
-#. Drawing the Board Outline
+#. Drawing the Outer Board Contour
 
 	
 	Draw the outline of a EURO card with dimensions 160x100 mm:
@@ -37,8 +37,49 @@ Board Outline
 
 	|VNS| del o
 
+
+++++++++++++++++++
+Holes in the Board
+++++++++++++++++++
+
+#. Drawing Holes
+
+	|VNS| d l
 	
-		
+
+	This command draws a hole consisting of four lines:
+
+	.. code-block::
+
+		board demo draw hole line 45.5 0.5 line 48 0.5 line 48 8 line 47 8
+	
+	
+	This command draws a circular hole at (32/5) with a radius of 6mm:
+	
+	.. code-block::
+	
+		board demo draw hole circle 32 5 6
+	
+
+	
+#. Move Hole Segment
+
+	To move a segment of a hole:
+
+	|VNS| m o
+	
+
+#. Delete Hole Segment
+
+	To delete a segment of a hole:
+
+	|VNS| del o
+
+	.. code-block::
+	
+		board demo delete hole 32 5
+	
+	
 +++++++++++++
 Signal Layers
 +++++++++++++
@@ -568,7 +609,7 @@ they represent a barrier.
 
 		draw route_restrict [1] zone line 0 0 line 100 0 line 100 100 line 0 100
 
-	|VNS| d z
+	|VNS| d l
 		
 		
 #. Deleting
@@ -591,8 +632,8 @@ where no vias a allowed.
 	.. code-block::
 
 		draw via_restrict [1] zone line 0 0 line 100 0 line 100 100 line 0 100
-		
-	|VNS| d z
+	
+	|VNS| d l
 
 	
 
@@ -688,7 +729,6 @@ Assembly Documentation
 	
 		draw assy top zone line 26 25 line 28 25 line 28 33 line 26 33
 
-	|VNS| d z
 	
 		
 #. Moving Objects
@@ -737,7 +777,6 @@ Silkscreen
 	
 		board demo draw silkscreen top zone line 26 25 line 28 25 line 28 33 line 26 33
 	
-	|VNS| d z
 	
 	
 #. Texts
@@ -795,8 +834,7 @@ Stopmask
 	.. code-block::
 		
 		draw stop top zone line 52 0 line 60 0 line 60 4 line 52 4
-		
-	|VNS| d z
+
 		
 		
 
@@ -869,6 +907,8 @@ of devices is allowed.
 	
 		draw keepout top zone line 0 70 line 10 70 line 10 80 line 0 80
 		
+
+	|VNS| d l
 		
 
 #. Moving Objects

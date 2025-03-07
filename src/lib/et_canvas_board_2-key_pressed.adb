@@ -524,7 +524,6 @@ is
 		use pac_path_and_bend;
 		use et_canvas_board_lines;
 		use et_canvas_board_outline;
-		use et_canvas_board_zone;
 		use et_canvas_board_preliminary_object;
 	begin
 		case key is

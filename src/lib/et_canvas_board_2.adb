@@ -74,7 +74,6 @@ with et_pcb;
 with et_text;
 with et_canvas_board_lines;
 with et_canvas_board_outline;
-with et_canvas_board_zone;
 with et_canvas_board_texts;
 with et_canvas_board_vias;
 with et_canvas_board_devices;
@@ -502,7 +501,6 @@ package body et_canvas_board_2 is
 		cat : in type_layer_category) 
 	is
 		use et_board_shapes_and_text;
-		use et_canvas_board_zone;
 		use pac_path_and_bend;
 		use et_modes.board;
 		use et_canvas_tool;
