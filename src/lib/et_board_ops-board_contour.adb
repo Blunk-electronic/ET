@@ -686,19 +686,20 @@ package body et_board_ops.board_contour is
 
 	
 
-	procedure delete_outline (
+	procedure delete_outer_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		accuracy		: in type_accuracy;
 		log_threshold	: in type_log_level)
 	is
 		
-		procedure delete (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is			
 			deleted : boolean := false; -- goes true if at least one segment has been deleted
 
+			
 			procedure delete_segment is 
 				use pac_segments;
 				c : pac_segments.cursor;
@@ -709,23 +710,30 @@ package body et_board_ops.board_contour is
 
 					case element (c).shape is
 						when LINE =>
-							if element (c).segment_line.on_line (point) then
-								-- CS use get_shortest_distance (point, element)
-								-- and compare distance with accuracy	
-
+							-- Delete the segment if it is inside the
+							-- given area around the the given point:
+							if within_accuracy (
+								line	=> element (c).segment_line, 
+								point	=> point,
+								zone	=> accuracy)
+							then
 								delete (module.board.board_contour.outline.contour.segments, c);
 								deleted := true;
 
 								-- CS update start/end point of predecessor/successor segment
-								
+							
 								exit; -- CS no exit if all segments are to be deleted
 							end if;
 
-						when ARC =>
-							if element (c).segment_arc.on_arc (point) then
-								-- CS use get_shortest_distance (point, element)
-								-- and compare distance with accuracy	
 
+						when ARC =>
+							-- Delete the segment if it is inside the
+							-- given area around the the given point:
+							if within_accuracy (
+								arc		=> element (c).segment_arc, 
+								point	=> point,
+								zone	=> accuracy)
+							then
 								delete (module.board.board_contour.outline.contour.segments, c);
 								deleted := true;
 
@@ -740,6 +748,7 @@ package body et_board_ops.board_contour is
 				end loop;
 			end delete_segment;
 
+			
 			procedure delete_circle is begin
 				if module.board.board_contour.outline.contour.circle.on_circle (point) then
 					-- CS use get_shortest_distance (point, element)
@@ -751,7 +760,7 @@ package body et_board_ops.board_contour is
 			end delete_circle;
 
 			
-		begin -- delete
+		begin
 			if is_circular (module.board.board_contour.outline) then
 				delete_circle;				
 			else
@@ -761,21 +770,21 @@ package body et_board_ops.board_contour is
 			if not deleted then
 				nothing_found (point, accuracy);
 			end if;			
-		end delete;
+		end query_module;
 
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting outline segment at" & to_string (point) 
+			& " deleting outer contour segment at" & to_string (point) 
 			& " accuracy" & accuracy_to_string (accuracy),
 			level => log_threshold);
 
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
-			process		=> delete'access);
+			process		=> query_module'access);
 		
-	end delete_outline;
+	end delete_outer_segment;
 
 
 

@@ -600,8 +600,8 @@ is
 	begin
 		case cmd_field_count is
 			when 7 =>
-				-- delete a segment of board outline
-				delete_outline (
+				-- delete a segment of the outer board contour:
+				delete_outer_segment (
 					module_cursor 	=> module_cursor,
 					point			=> type_vector_model (to_point (f (5), f (6))),
 					accuracy		=> to_accuracy (f (7)),					

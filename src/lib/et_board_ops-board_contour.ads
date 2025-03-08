@@ -195,10 +195,10 @@ package et_board_ops.board_contour is
 		return type_outer_contour;
 	
 
-	-- Deletes the segment of the outline that crosses the given point.
+	-- Deletes the segment of the outer contour that crosses the given point.
 	-- CS currently deletes the first segment found. Leaves other segments untouched.
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
-	procedure delete_outline (
+	procedure delete_outer_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model; -- x/y
 		accuracy		: in type_accuracy;

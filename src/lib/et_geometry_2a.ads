@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -1358,7 +1358,7 @@ package et_geometry_2a is
 	
 	subtype type_accuracy is type_float_positive
 		range 0.0 .. type_float_positive (type_distance_positive'last/100.0);
-
+	-- CS rename to type_circular_area ?
 
 	function accuracy_to_string (
 		c : in type_accuracy)
@@ -1400,6 +1400,35 @@ package et_geometry_2a is
 		zone	: in type_accuracy)
 		return boolean;
 	
+
+	-- Returns true if the given arc is in the accuracy zone
+	-- of the given point.
+	-- Optionally the linewidth can be specified so that it
+	-- is taken into account when the distance of the point
+	-- to the arc is computed. If a linewidth greater zero
+	-- is given, then we assume, that the arc has round caps:
+	function within_accuracy (
+		arc		: in type_arc;
+		width	: in type_distance_positive := 0.0;
+		point	: in type_vector_model;
+		zone	: in type_accuracy)
+		return boolean;
+
+
+	-- Returns true if the given circle is in the accuracy zone
+	-- of the given point.
+	-- Optionally the linewidth can be specified so that it
+	-- is taken into account when the distance of the point
+	-- to the circle is computed. If a linewidth greater zero
+	-- is given, then we assume, that the circle has round caps:
+	function within_accuracy (
+		circle	: in type_circle;
+		width	: in type_distance_positive := 0.0;
+		point	: in type_vector_model;
+		zone	: in type_accuracy)
+		return boolean;
+
+
 	
 	procedure nothing_found (
 		point		: in type_vector_model; 

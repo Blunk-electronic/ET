@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 -2024                                                 --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -3279,6 +3279,33 @@ package body et_geometry_2a is
 	end within_accuracy;
 
 
+
+	function within_accuracy (
+		arc		: in type_arc;
+		width	: in type_distance_positive := 0.0;
+		point	: in type_vector_model;
+		zone	: in type_accuracy)
+		return boolean
+	is
+	begin
+		return false; -- CS
+	end within_accuracy;
+
+
+
+
+	function within_accuracy (
+		circle	: in type_circle;
+		width	: in type_distance_positive := 0.0;
+		point	: in type_vector_model;
+		zone	: in type_accuracy)
+		return boolean
+	is
+	begin
+		return false; -- CS
+	end within_accuracy;
+
+	
 
 	procedure nothing_found (
 		point		: in type_vector_model; 
