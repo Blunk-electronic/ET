@@ -3186,7 +3186,17 @@ package body et_geometry_2a is
 	
 
 -- ACCURACY:
-		
+
+	function set_catch_zone (
+		center	: in type_vector_model;
+		radius	: in type_accuracy)
+		return type_catch_zone
+	is begin
+		return (center, radius);
+	end set_catch_zone;
+
+
+	
 	function accuracy_to_string (
 		c : in type_accuracy)
 		return string
@@ -3216,25 +3226,26 @@ package body et_geometry_2a is
 	end within_accuracy;
 	
 	
-	
-	function within_accuracy (
-		point_1	: in type_vector_model; -- the reference point
-		zone	: in type_accuracy; -- zone around reference point
-		point_2 : in type_vector_model) -- the point being tested
-		return boolean 
+
+
+
+	function in_catch_zone (
+		zone	: in type_catch_zone;
+		point	: in type_vector_model)
+		return boolean
 	is
-		d : type_float_positive := get_distance_total (point_1, point_2);
+		d : type_float_positive := get_distance_total (zone.center, point);
 	begin
-		if d <= zone then
+		if d <= zone.radius then
 			return true;
 		else
 			return false;
 		end if;
-	end within_accuracy;
+	end in_catch_zone;
+	
 
 
 	
-
 	function within_accuracy (
 		line	: in type_line;
 		width	: in type_distance_positive := 0.0;

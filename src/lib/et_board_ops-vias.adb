@@ -111,10 +111,9 @@ package body et_board_ops.vias is
 				via_cursor : pac_vias.cursor := net.route.vias.first;
 				
 				procedure query_via (via : in type_via) is begin
-					if within_accuracy (
-						point_1	=> point, 
-						zone	=> zone,
-						point_2	=> via.position)
+					if in_catch_zone (
+						zone	=> set_catch_zone (point, zone),
+						point	=> via.position)
 					then
 						log (text => to_string (via.position) 
 							& " cat " & to_string (via.category)

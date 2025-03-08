@@ -1360,6 +1360,21 @@ package et_geometry_2a is
 		range 0.0 .. type_float_positive (type_distance_positive'last/100.0);
 	-- CS rename to type_circular_area ?
 
+	
+	type type_catch_zone is record
+		center	: type_vector_model;
+		radius	: type_accuracy;
+	end record;
+
+
+	
+	function set_catch_zone (
+		center	: in type_vector_model;
+		radius	: in type_accuracy)
+		return type_catch_zone;
+
+	
+
 	function accuracy_to_string (
 		c : in type_accuracy)
 		return string;
@@ -1378,14 +1393,12 @@ package et_geometry_2a is
 		return boolean;
 							   
 	
-	-- Returns true if point_2 is within the 
-	-- accuracy zone around point_1:
-	function within_accuracy (
-		point_1	: in type_vector_model; -- the reference point
-		zone	: in type_accuracy; -- zone around reference point
-		point_2 : in type_vector_model) -- the point being tested
+	-- Returns true if point is inside the given catch zone:
+	function in_catch_zone (
+		zone	: in type_catch_zone;
+		point	: in type_vector_model)
 		return boolean;
-
+	
 
 	-- Returns true if the given line is in the accuracy zone
 	-- of the given point.

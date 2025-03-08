@@ -1675,10 +1675,9 @@ package body et_board_ops.assy_doc is
 			procedure query_text (c : in pac_doc_texts.cursor) is
 				text : type_doc_text renames element (c);
 			begin
-				if within_accuracy (
-					point_1	=> point,
-					zone	=> zone,
-					point_2	=> text.position.place)
+				if in_catch_zone (
+					zone	=> set_catch_zone (point, zone),
+					point	=> text.position.place)
 				then
 					log (text => to_string (text.position.place) 
 						& " content " & enclose_in_quotes (to_string (text.content)),
@@ -1859,10 +1858,9 @@ package body et_board_ops.assy_doc is
 			procedure query_text (
 				text	: in out type_doc_text)
 			is begin
-				if within_accuracy (
-					point_1	=> point,
-					zone	=> zone,
-					point_2	=> get_place (text))
+				if in_catch_zone (
+					zone	=> set_catch_zone (point, zone),
+					point	=> get_place (text))
 				then
 					set_proposed (text);
 					count := count + 1;
@@ -2283,10 +2281,9 @@ package body et_board_ops.assy_doc is
 			procedure query_placeholder (
 				ph : in out type_text_placeholder)
 			is begin
-				if within_accuracy (
-					point_1	=> point,
-					zone	=> zone,
-					point_2	=> get_place (ph))
+				if in_catch_zone (
+					zone	=> set_catch_zone (point, zone),
+					point	=> get_place (ph))
 				then
 					set_proposed (ph);
 					count := count + 1;

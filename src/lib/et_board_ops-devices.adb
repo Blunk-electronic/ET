@@ -90,10 +90,9 @@ package body et_board_ops.devices is
 						level => log_threshold + 1);
 					log_indentation_up;
 						
-					if within_accuracy (
-						point_1	=> place, 
-						zone	=> zone, 
-						point_2	=> element (device_cursor).position.place) 
+					if in_catch_zone (
+						zone	=> set_catch_zone (place, zone),
+						point	=> element (device_cursor).position.place) 
 					then
 						log_indentation_up;
 
@@ -230,10 +229,9 @@ package body et_board_ops.devices is
 					-- 	 level => log_threshold + 1);
 					-- log_indentation_up;
 						
-					if within_accuracy (
-						point_1	=> place, 
-						zone	=> zone, 
-						point_2	=> element (device_cursor).position.place) 
+					if in_catch_zone (
+						zone	=> set_catch_zone (place, zone),
+						point	=> element (device_cursor).position.place) 
 					then
 						-- log_indentation_up;
 						-- log (text => "in catch zone", level => log_threshold + 1);
@@ -457,10 +455,9 @@ package body et_board_ops.devices is
 					 level => log_threshold + 1);
 				log_indentation_up;
 					 
-				if within_accuracy (
-					point_1	=> place, 
-					zone	=> zone, 
-					point_2	=> element (device_cursor).position.place) 
+				if in_catch_zone (
+					zone	=> set_catch_zone (place, zone),
+					point	=> element (device_cursor).position.place) 
 				then
 					log_indentation_up;
 
@@ -542,8 +539,7 @@ package body et_board_ops.devices is
 
 		
 	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
+		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
 			& to_string (key (device_cursor))
 			& " / " & to_string (operation),
@@ -591,10 +587,9 @@ package body et_board_ops.devices is
 				-- 	 level => log_threshold + 1);
 				-- log_indentation_up;
 					
-				if within_accuracy (
-					point_1	=> place, 
-					zone	=> zone, 
-					point_2	=> element (device_cursor).position.place) 
+				if in_catch_zone (
+					zone	=> set_catch_zone (place, zone), 
+					point	=> element (device_cursor).position.place) 
 				then
 					-- log_indentation_up;
 					-- log (text => "in catch zone", level => log_threshold + 1);
@@ -609,8 +604,8 @@ package body et_board_ops.devices is
 
 		
 	begin
-		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
-			"proposing non-electrical devices at " & to_string (place) 
+		log (text => "module " & to_string (module_cursor)
+			& " proposing non-electrical devices at " & to_string (place) 
 			& " zone " & accuracy_to_string (zone), 
 			level => log_threshold);
 
@@ -624,6 +619,8 @@ package body et_board_ops.devices is
 
 		log_indentation_down;
 	end propose_non_electrical_devices;
+
+
 
 
 	

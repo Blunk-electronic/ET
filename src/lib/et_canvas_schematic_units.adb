@@ -135,10 +135,9 @@ package body et_canvas_schematic_units is
 						log (text => "probing unit " & to_string (unit_cursor),
 							level => log_threshold + 1);
 
-						if within_accuracy (
-							point_1	=> place.place, 
-							zone	=> zone, 
-							point_2	=> element (unit_cursor).position.place) 
+						if in_catch_zone (
+							zone	=> set_catch_zone (place.place, zone), 
+							point	=> element (unit_cursor).position.place) 
 						then
 							log_indentation_up;
 
@@ -1843,7 +1842,10 @@ package body et_canvas_schematic_units is
 					--log (text => to_string (pos_abs), level => log_threshold + 1);
 
 					-- Test whether the placeholder is inside the catch zone around the given place:
-					if within_accuracy (place.place, zone, pos_abs.place) then
+					if in_catch_zone (
+						zone	=> set_catch_zone (place.place, zone),
+						point	=> pos_abs.place) 
+					then
 						log_indentation_up;
 
 						log (text => "in catch zone", level => log_threshold + 1);
