@@ -726,10 +726,9 @@ package body et_board_ops.board_contour is
 						when ARC =>
 							-- Delete the segment if it is inside the
 							-- given area around the the given point:
-							if within_accuracy (
-								arc		=> element (c).segment_arc, 
-								point	=> point,
-								zone	=> accuracy)
+							if in_catch_zone (
+								zone	=> set_catch_zone (point, accuracy),
+								arc		=> element (c).segment_arc)
 							then
 								delete (module.board.board_contour.outline.contour.segments, c);
 								deleted := true;

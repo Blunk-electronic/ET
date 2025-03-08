@@ -3296,30 +3296,29 @@ package body et_geometry_2a is
 
 	
 
-	function within_accuracy (
+	function in_catch_zone (
+		zone	: in type_catch_zone;
 		arc		: in type_arc;
-		width	: in type_distance_positive := 0.0;
-		point	: in type_vector_model;
-		zone	: in type_accuracy)
+		width	: in type_distance_positive := 0.0)
 		return boolean
 	is
 	begin
 		return false; -- CS
-	end within_accuracy;
+	end in_catch_zone;
 
 
 
 
-	function within_accuracy (
+	function in_catch_zone (
+		zone	: in type_catch_zone;
 		circle	: in type_circle;
-		width	: in type_distance_positive := 0.0;
-		point	: in type_vector_model;
-		zone	: in type_accuracy)
+		width	: in type_distance_positive := 0.0)
 		return boolean
 	is
 	begin
 		return false; -- CS
-	end within_accuracy;
+	end in_catch_zone;
+
 
 	
 
