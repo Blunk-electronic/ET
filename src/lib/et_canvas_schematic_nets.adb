@@ -252,6 +252,7 @@ package body et_canvas_schematic_nets is
 	end between_start_and_end_point_of_sloping_segment;
 	
 
+	
 	function collect_segments (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates_2.type_position; -- sheet/x/y
@@ -261,6 +262,7 @@ package body et_canvas_schematic_nets is
 	is
 		result : pac_proposed_segments.list;
 
+		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
@@ -274,7 +276,10 @@ package body et_canvas_schematic_nets is
 			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
-				procedure query_segments (strand : in type_strand) is
+				
+				procedure query_segments (
+					strand : in type_strand) 
+				is
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 				begin
 					log (text => "probing strand at" & to_string (strand.position),
@@ -290,11 +295,10 @@ package body et_canvas_schematic_nets is
 
 						-- If the segment is in the catch zone, append
 						-- the current net, stand and segment cursor to the result:
-						if within_accuracy (
+						if in_catch_zone (
+							zone	=> set_catch_zone (place.place, zone),
 							line	=> element (segment_cursor),
-							width	=> net_line_width,
-							point	=> place.place,
-							zone	=> zone)
+							width	=> net_line_width)
 						then
 							log_indentation_up;
 							log (text => "sits on segment", level => log_threshold + 1);
@@ -309,7 +313,8 @@ package body et_canvas_schematic_nets is
 					log_indentation_down;
 				end query_segments;
 				
-			begin -- query_strands
+				
+			begin
 				while strand_cursor /= pac_strands.no_element loop
 
 					-- We are interested in strands on the given sheet only:
@@ -321,7 +326,8 @@ package body et_canvas_schematic_nets is
 				end loop;
 			end query_strands;
 			
-		begin -- query_nets
+			
+		begin
 			while net_cursor /= pac_nets.no_element loop
 
 				query_element (

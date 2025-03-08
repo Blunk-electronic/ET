@@ -3244,28 +3244,31 @@ package body et_geometry_2a is
 	end in_catch_zone;
 	
 
+	
+
 
 	
-	function within_accuracy (
+
+	function in_catch_zone (
+		zone	: in type_catch_zone;
 		line	: in type_line;
-		width	: in type_distance_positive := 0.0;
-		point	: in type_vector_model;
-		zone	: in type_accuracy)
+		width	: in type_distance_positive := 0.0)
 		return boolean
 	is
 		width_float : constant type_float_positive := type_float_positive (width);
-		distance_to_point : type_float_positive;
+		distance_to_center : type_float_positive;
 	begin
 		-- put_line ("point " & to_string (point));
 		-- put_line ("line  " & to_string (line));
-		
-		distance_to_point := get_shortest_distance (line, point);
 
-		-- If no linewidth, then we simply compare the distance_to_point
-		-- with the zone:
+		-- Compute the distance from line to center of catch zone:
+		distance_to_center := get_shortest_distance (line, zone.center);
+
+		-- If no linewidth, then we simply compare the distance_to_center
+		-- with the radius of the zone:
 		if width = 0.0 then
-			-- put_line ("distance to point " & to_string (distance_to_point));
-			if distance_to_point <= zone then
+			-- put_line ("distance to center " & to_string (distance_to_center));
+			if distance_to_center <= zone.radius then
 				return true;
 			else
 				return false;
@@ -3275,21 +3278,23 @@ package body et_geometry_2a is
 		-- Case 1: The given point is inside the strip around the line.
 		-- Case 2: The point is outside the strip around the line.
 		else
-			if distance_to_point <= width_float then
+			if distance_to_center <= width_float then
 				-- case 1
 				return true;
 			else
 				-- case 2
-				if distance_to_point - width_float <= zone then 
+				if distance_to_center - width_float <= zone.radius then 
 					return true;
 				else
 					return false;
 				end if;				
 			end if;
 		end if;
-	end within_accuracy;
+	end in_catch_zone;
+		
 
 
+	
 
 	function within_accuracy (
 		arc		: in type_arc;

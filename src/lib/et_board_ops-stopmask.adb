@@ -179,11 +179,10 @@ package body et_board_ops.stopmask is
 			procedure query_line (
 				line	: in out type_stop_line)
 			is begin
-				if within_accuracy (
+				if in_catch_zone (
+					zone	=> set_catch_zone (point, zone),
 					line	=> line,
-					width	=> line.width,
-					point	=> point,
-					zone	=> zone)
+					width	=> line.width)
 				then
 					set_proposed (line);
 					count := count + 1;
@@ -821,11 +820,9 @@ package body et_board_ops.stopmask is
 			is begin
 				case segment.shape is
 					when LINE =>
-						if within_accuracy (
-							line	=> segment.segment_line,
-							width	=> zero,
-							point	=> point,
-							zone	=> zone)
+						if in_catch_zone (
+							zone	=> set_catch_zone (point, zone),
+							line	=> segment.segment_line)
 						then
 							set_proposed (segment);
 							count := count + 1;

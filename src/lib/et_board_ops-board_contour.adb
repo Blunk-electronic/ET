@@ -235,11 +235,9 @@ package body et_board_ops.board_contour is
 			begin
 				case segment.shape is
 					when LINE =>
-						if within_accuracy (
-							line	=> segment.segment_line,
-							width	=> zero,
-							point	=> point,
-							zone	=> zone)
+						if in_catch_zone (
+							zone	=> set_catch_zone (point, zone),
+							line	=> segment.segment_line)
 						then
 							set_proposed (segment);
 							count := count + 1;
@@ -712,10 +710,9 @@ package body et_board_ops.board_contour is
 						when LINE =>
 							-- Delete the segment if it is inside the
 							-- given area around the the given point:
-							if within_accuracy (
-								line	=> element (c).segment_line, 
-								point	=> point,
-								zone	=> accuracy)
+							if in_catch_zone (
+								zone	=> set_catch_zone (point, accuracy),
+								line	=> element (c).segment_line)
 							then
 								delete (module.board.board_contour.outline.contour.segments, c);
 								deleted := true;
@@ -964,11 +961,9 @@ package body et_board_ops.board_contour is
 			is begin
 				case segment.shape is
 					when LINE =>
-						if within_accuracy (
-							line	=> segment.segment_line,
-							width	=> zero,
-							point	=> point,
-							zone	=> zone)
+						if in_catch_zone (
+							zone	=> set_catch_zone (point, zone),
+							line	=> segment.segment_line)
 						then
 							set_proposed (segment);
 							count := count + 1;

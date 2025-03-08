@@ -251,11 +251,9 @@ package body et_board_ops.keepout is
 			is begin
 				case segment.shape is
 					when LINE =>
-						if within_accuracy (
-							line	=> segment.segment_line,
-							width	=> zero,
-							point	=> point,
-							zone	=> zone)
+						if in_catch_zone (
+							zone	=> set_catch_zone (point, zone),
+							line	=> segment.segment_line)
 						then
 							set_proposed (segment);
 							count := count + 1;

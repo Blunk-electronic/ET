@@ -1400,20 +1400,18 @@ package et_geometry_2a is
 		return boolean;
 	
 
-	-- Returns true if the given line is in the accuracy zone
-	-- of the given point.
+	-- Returns true if the given line is in the givencatch zone.
 	-- Optionally the linewidth can be specified so that it
-	-- is taken into account when the distance of the point
-	-- to the line is computed. If a linewidth greater zero
+	-- is taken into account. If a linewidth greater zero
 	-- is given, then we assume, that the line has round caps:
-	function within_accuracy (
+	function in_catch_zone (
+		zone	: in type_catch_zone;
 		line	: in type_line;
-		width	: in type_distance_positive := 0.0;
-		point	: in type_vector_model;
-		zone	: in type_accuracy)
+		width	: in type_distance_positive := 0.0)
 		return boolean;
-	
 
+
+	
 	-- Returns true if the given arc is in the accuracy zone
 	-- of the given point.
 	-- Optionally the linewidth can be specified so that it
