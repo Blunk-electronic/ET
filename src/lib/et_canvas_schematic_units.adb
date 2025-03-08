@@ -174,8 +174,9 @@ package body et_canvas_schematic_units is
 
 		
 	begin -- collect_units
-		log (text => "looking up units at " & to_string (place) 
-			 & " zone" & accuracy_to_string (zone), level => log_threshold);
+		log (text => "looking up units at " 
+			 & to_string (set_catch_zone (place.place, zone)), 
+			 level => log_threshold);
 
 		log_indentation_up;
 		
@@ -1916,8 +1917,7 @@ package body et_canvas_schematic_units is
 	begin -- collect_placeholders
 		log (text => "looking up placeholders of category " 
 			& enclose_in_quotes (to_string (category))
-			& " at " & to_string (place) 
-			& " catch zone " & accuracy_to_string (zone),
+			& to_string (set_catch_zone (place.place, zone)),
 			level => log_threshold);
 
 		log_indentation_up;

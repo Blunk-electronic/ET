@@ -95,13 +95,11 @@ package body et_board_ops.conductors is
 
 	procedure no_net_segment_found (
 		layer		: in et_pcb_stack.type_signal_layer;
-		point		: in type_vector_model; 
-		accuracy	: in type_accuracy) 
+		zone		: in type_catch_zone) 
 	is begin
-		log (importance => WARNING, 
-			 text => "no net segment found in layer" & to_string (layer) &
-			 " at" & to_string (point) &
-			 " in vicinity of" & accuracy_to_string (accuracy));
+		log (importance => WARNING, text => "no net segment found in layer" 
+			& to_string (layer) 
+			& " in" & to_string (zone));
 	end no_net_segment_found;
 
 	
@@ -663,8 +661,7 @@ package body et_board_ops.conductors is
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
-		point			: in type_vector_model;
-		zone			: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_object_lines.list
 	is
@@ -689,7 +686,7 @@ package body et_board_ops.conductors is
 				procedure query_line (line : in type_conductor_line) is begin
 					if line.layer = layer then
 						if in_catch_zone (
-							zone	=> set_catch_zone (point, zone),
+							zone	=> catch_zone,
 							line	=> line,
 							width	=> line.width)
 						then
@@ -713,9 +710,9 @@ package body et_board_ops.conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up line segments of nets at" & to_string (point)
+			& " looking up line segments of nets"
 			 & " in signal layer " & to_string (layer)
-			 & " zone" & accuracy_to_string (zone),
+			 & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -738,8 +735,7 @@ package body et_board_ops.conductors is
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
-		point			: in type_vector_model;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_conductor_lines.list
 	is
@@ -759,7 +755,7 @@ package body et_board_ops.conductors is
 			begin
 				if line.layer = layer then
 					if in_catch_zone (
-						zone	=> set_catch_zone (point, zone),
+						zone	=> catch_zone,
 						line	=> line,
 						width	=> line.width)
 					then
@@ -776,9 +772,9 @@ package body et_board_ops.conductors is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up line segments of nets at" & to_string (point)
+			& " looking up line segments of nets"
 			 & " in signal layer " & to_string (layer)
-			 & " zone" & accuracy_to_string (zone),
+			 & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -903,9 +899,8 @@ package body et_board_ops.conductors is
 
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
 		layer			: in et_pcb_stack.type_signal_layer;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		count			: in out natural; -- the number of affected devices
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
@@ -925,7 +920,7 @@ package body et_board_ops.conductors is
 			begin
 				if line.layer = layer then
 					if in_catch_zone (
-						zone	=> set_catch_zone (point, zone),
+						zone	=> catch_zone,
 						line	=> line,
 						width	=> line.width)
 					then
@@ -993,9 +988,8 @@ package body et_board_ops.conductors is
 		
 		
 	begin
-		log (text => "proposing lines at " & to_string (point)
-			 & " in signal layer " & to_string (layer)
-			 & " zone " & accuracy_to_string (zone),
+		log (text => "proposing lines in signal layer " & to_string (layer)
+			 & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -1763,8 +1757,7 @@ package body et_board_ops.conductors is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
-		point			: in type_vector_model; -- x/y
-		accuracy		: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -1786,7 +1779,7 @@ package body et_board_ops.conductors is
 			-- and abort iteration.
 			while line_cursor /= pac_conductor_lines.no_element loop
 
-				if on_segment (point, layer, line_cursor) then
+				if on_segment (catch_zone.center, layer, line_cursor) then
 					delete (module.board.conductors_floating.lines, line_cursor);
 					deleted := true;
 					exit;
@@ -1800,7 +1793,7 @@ package body et_board_ops.conductors is
 			if not deleted then
 				while arc_cursor /= pac_conductor_arcs.no_element loop
 
-					if on_segment (point, layer, arc_cursor) then
+					if on_segment (catch_zone.center, layer, arc_cursor) then
 						delete (module.board.conductors_floating.arcs, arc_cursor);
 						deleted := true;
 						exit;
@@ -1812,7 +1805,7 @@ package body et_board_ops.conductors is
 
 			-- if no line and no arc found, issue warning:
 			if not deleted then
-				no_net_segment_found (layer, point, accuracy);
+				no_net_segment_found (layer, catch_zone);
 			end if;
 			
 		end ripup_freetrack;
@@ -1839,7 +1832,7 @@ package body et_board_ops.conductors is
 				-- and abort iteration.
 				while line_cursor /= pac_conductor_lines.no_element loop
 
-					if on_segment (point, layer, line_cursor) then
+					if on_segment (catch_zone.center, layer, line_cursor) then
 						delete (net.route.lines, line_cursor);
 						deleted := true;
 						exit;
@@ -1853,7 +1846,7 @@ package body et_board_ops.conductors is
 				if not deleted then
 					while arc_cursor /= pac_conductor_arcs.no_element loop
 
-						if on_segment (point, layer, arc_cursor) then
+						if on_segment (catch_zone.center, layer, arc_cursor) then
 							delete (net.route.arcs, arc_cursor);
 							deleted := true;
 							exit;
@@ -1865,7 +1858,7 @@ package body et_board_ops.conductors is
 
 				-- if no line and no arc found, issue warning:
 				if not deleted then
-					no_net_segment_found (layer, point, accuracy);
+					no_net_segment_found (layer, catch_zone);
 				end if;
 
 			end ripup;
@@ -1891,8 +1884,7 @@ package body et_board_ops.conductors is
 			freetrack (net_name) &
 			" deleting segment" &
 			" in layer " & to_string (layer) &
-			" at" & to_string (point) &
-			" accuracy" & accuracy_to_string (accuracy),
+			" in " & to_string (catch_zone),
 			level => log_threshold);
 
 		-- locate module
@@ -2360,8 +2352,7 @@ package body et_board_ops.conductors is
 
 	procedure propose_segments_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		layer			: in type_signal_layer;
 		count			: in out natural;
 		log_threshold	: in type_log_level)
@@ -2386,7 +2377,7 @@ package body et_board_ops.conductors is
 					case segment.shape is
 						when LINE =>
 							if in_catch_zone (
-								zone	=> set_catch_zone (point, zone),
+								zone	=> catch_zone,
 								line	=> segment.segment_line)
 							then
 								set_proposed (segment);
@@ -2464,9 +2455,9 @@ package body et_board_ops.conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing segments of connected zones at " & to_string (point)
+			 & " proposing segments of connected zones in"
 			 & " signal layer " & to_string (layer)
-			 & " zone " & accuracy_to_string (zone),
+			 & " in " & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -2485,8 +2476,7 @@ package body et_board_ops.conductors is
 
 	procedure propose_segments_floating (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
-		zone			: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		layer			: in type_signal_layer;
 		count			: in out natural;
 		log_threshold	: in type_log_level)
@@ -2506,7 +2496,7 @@ package body et_board_ops.conductors is
 				case segment.shape is
 					when LINE =>
 						if in_catch_zone (
-							zone	=> set_catch_zone (point, zone),
+							zone	=> catch_zone,
 							line	=> segment.segment_line)
 						then
 							set_proposed (segment);
@@ -2574,9 +2564,9 @@ package body et_board_ops.conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing segments of floating zones at " & to_string (point)
+			 & " proposing segments of floating zones in"
 			 & " signal layer " & to_string (layer)
-			 & " zone " & accuracy_to_string (zone),
+			 & " in " & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -3575,8 +3565,7 @@ package body et_board_ops.conductors is
 
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_conductor_texts.list
 	is
@@ -3593,7 +3582,7 @@ package body et_board_ops.conductors is
 				text : type_conductor_text renames element (c);
 			begin
 				if in_catch_zone (
-					zone	=> set_catch_zone (point, zone),
+					zone	=> catch_zone,
 					point	=> get_place (text))
 				then
 					log (text => to_string (get_place (text)) 
@@ -3612,8 +3601,8 @@ package body et_board_ops.conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up conductor texts at" & to_string (point) 
-			& " zone" & accuracy_to_string (zone),
+			& " looking up conductor texts"
+			& " in" & to_string (catch_zone),
 			level => log_threshold);
 		
 		log_indentation_up;
@@ -3736,9 +3725,8 @@ package body et_board_ops.conductors is
 
 	procedure propose_texts (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
 		layer			: in type_signal_layer;
-		zone			: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
@@ -3754,7 +3742,7 @@ package body et_board_ops.conductors is
 				text	: in out type_conductor_text)
 			is begin
 				if in_catch_zone (
-					zone	=> set_catch_zone (point, zone),
+					zone	=> catch_zone,
 					point	=> get_place (text))
 				then
 					set_proposed (text);
@@ -3774,9 +3762,8 @@ package body et_board_ops.conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing texts at " & to_string (point)
-			 & " layer " & to_string (layer)
-			 & " zone " & accuracy_to_string (zone),
+			 & " proposing texts in layer " & to_string (layer)
+			 & " in" & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -4076,9 +4063,8 @@ package body et_board_ops.conductors is
 
 	procedure propose_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
 		layer			: in type_signal_layer;
-		zone			: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
@@ -4094,7 +4080,7 @@ package body et_board_ops.conductors is
 				ph : in out type_text_placeholder_conductors)
 			is begin
 				if in_catch_zone (
-					zone	=> set_catch_zone (point, zone),
+					zone	=> catch_zone,
 					point	=> get_place (ph))
 				then
 					set_proposed (ph);
@@ -4114,9 +4100,8 @@ package body et_board_ops.conductors is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing text placeholders at " & to_string (point)
-			 & " layer " & to_string (layer)
-			 & " zone " & accuracy_to_string (zone),
+			 & " proposing text placeholders in layer " & to_string (layer)
+			 & " in" & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;

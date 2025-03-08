@@ -363,16 +363,19 @@ package body et_canvas_board_conductors is
 		
 		-- This procedure proposes all objects in the vicinity of the given point.
 		-- Only objects in enabled signal layers are adressed:
-		procedure propose_objects is begin
+		procedure propose_objects is 
+			catch_zone : type_catch_zone;
+		begin
 			for layer in 1 .. get_deepest_conductor_layer (active_module) loop
 				if conductor_enabled (layer) then
+
+					catch_zone := set_catch_zone (point, get_catch_zone (et_canvas_board_2.catch_zone));
 
 					-- Lines of nets:
 					propose_lines (
 						module_cursor	=> active_module, 
-						point			=> point,
 						layer			=> layer,
-						zone			=> get_catch_zone (et_canvas_board_2.catch_zone), 
+						catch_zone		=> catch_zone, 
 						count			=> count_total, 
 						freetracks		=> false,
 						log_threshold	=> log_threshold + 2);
@@ -380,9 +383,8 @@ package body et_canvas_board_conductors is
 					-- Lines of freetracks (floating):
 					propose_lines (
 						module_cursor	=> active_module, 
-						point			=> point,
 						layer			=> layer,
-						zone			=> get_catch_zone (et_canvas_board_2.catch_zone), 
+						catch_zone		=> catch_zone, 
 						count			=> count_total, 
 						freetracks		=> true,
 						log_threshold	=> log_threshold + 2);
@@ -392,8 +394,7 @@ package body et_canvas_board_conductors is
 
 					propose_segments_net (
 						module_cursor	=> active_module, 
-						point			=> point, 
-						zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
+						catch_zone		=> catch_zone, 
 						layer			=> layer,
 						count			=> count_total,
 						log_threshold	=> log_threshold + 2);
@@ -402,8 +403,7 @@ package body et_canvas_board_conductors is
 					-- floating zones:
 					propose_segments_floating (
 						module_cursor	=> active_module, 
-						point			=> point, 
-						zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
+						catch_zone		=> catch_zone,
 						layer			=> layer,
 						count			=> count_total,
 						log_threshold	=> log_threshold + 2);
@@ -411,8 +411,7 @@ package body et_canvas_board_conductors is
 					-- texts:
 					propose_texts (
 						module_cursor	=> active_module, 
-						point			=> point, 
-						zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
+						catch_zone		=> catch_zone,
 						layer			=> layer,
 						count			=> count_total,
 						log_threshold	=> log_threshold + 2);
@@ -420,8 +419,7 @@ package body et_canvas_board_conductors is
 					-- placeholders:
 					propose_placeholders (
 						module_cursor	=> active_module, 
-						point			=> point, 
-						zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
+						catch_zone		=> catch_zone,
 						layer			=> layer,
 						count			=> count_total,
 						log_threshold	=> log_threshold + 2);

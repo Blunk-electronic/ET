@@ -228,8 +228,7 @@ package body et_board_ops.keepout is
 
 	procedure propose_segments (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model;
-		zone			: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		face			: in type_face;
 		count			: in out natural;
 		log_threshold	: in type_log_level)
@@ -252,7 +251,7 @@ package body et_board_ops.keepout is
 				case segment.shape is
 					when LINE =>
 						if in_catch_zone (
-							zone	=> set_catch_zone (point, zone),
+							zone	=> catch_zone,
 							line	=> segment.segment_line)
 						then
 							set_proposed (segment);
@@ -324,9 +323,8 @@ package body et_board_ops.keepout is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing segments at " & to_string (point)
-			 & " face " & to_string (face)
-			 & " zone " & accuracy_to_string (zone),
+			 & " proposing segments in" & to_string (catch_zone)
+			 & " face " & to_string (face),
 			 level => log_threshold);
 
 		log_indentation_up;

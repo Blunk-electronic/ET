@@ -162,9 +162,8 @@ package body et_board_ops.stencil is
 
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
 		face			: in type_face;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
@@ -179,7 +178,7 @@ package body et_board_ops.stencil is
 				line	: in out type_stencil_line)
 			is begin
 				if in_catch_zone (
-					zone	=> set_catch_zone (point, zone),
+					zone	=> catch_zone,
 					line	=> line,
 					width	=> line.width)
 				then
@@ -226,9 +225,8 @@ package body et_board_ops.stencil is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing lines at " & to_string (point)
-			 & " face " & to_string (face)
-			 & " zone " & accuracy_to_string (zone),
+			 & " proposing lines in" & to_string (catch_zone)
+			 & " face " & to_string (face),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -800,8 +798,7 @@ package body et_board_ops.stencil is
 
 	procedure propose_segments (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model;
-		zone			: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		face			: in type_face;
 		count			: in out natural;
 		log_threshold	: in type_log_level)
@@ -824,7 +821,7 @@ package body et_board_ops.stencil is
 				case segment.shape is
 					when LINE =>
 						if in_catch_zone (
-							zone	=> set_catch_zone (point, zone),
+							zone	=> catch_zone,
 							line	=> segment.segment_line)
 						then
 							set_proposed (segment);
@@ -896,9 +893,8 @@ package body et_board_ops.stencil is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing segments at " & to_string (point)
-			 & " face " & to_string (face)
-			 & " zone " & accuracy_to_string (zone),
+			 & " proposing segments in" & to_string (catch_zone)
+			 & " face " & to_string (face),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -1717,12 +1713,12 @@ package body et_board_ops.stencil is
 	procedure delete_object (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		point			: in type_vector_model; -- x/y
-		accuracy		: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure delete (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -1748,9 +1744,10 @@ package body et_board_ops.stencil is
 			
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_stencil_lines.no_element loop
-				if element (line_cursor).on_line (point) then
-					-- CS use get_shortest_distance (point, element)
-					-- and compare distance with accuracy	
+				if in_catch_zone (
+					zone	=> catch_zone,
+					line	=> element (line_cursor))
+				then
 					if face = TOP then
 						delete (module.board.stencil.top.lines, line_cursor);
 					else
@@ -1765,9 +1762,10 @@ package body et_board_ops.stencil is
 			-- if no line found, search among arcs
 			if not deleted then
 				while arc_cursor /= pac_stencil_arcs.no_element loop
-					if element (arc_cursor).on_arc (point) then
-						-- CS use get_shortest_distance (point, element)
-						-- and compare distance with accuracy	
+					if in_catch_zone (
+						zone	=> catch_zone,
+						arc		=> element (arc_cursor))
+					then
 						if face = TOP then
 							delete (module.board.stencil.top.arcs, arc_cursor);
 						else
@@ -1783,10 +1781,10 @@ package body et_board_ops.stencil is
 			-- if no arc found, search among circles
 			if not deleted then
 				while circle_cursor /= pac_stencil_circles.no_element loop
-					
-					if element (circle_cursor).on_circle (point) then
-						-- CS use get_shortest_distance (point, element)
-						-- and compare distance with accuracy	
+					if in_catch_zone (
+						zone	=> catch_zone,
+						circle	=> element (circle_cursor))
+					then					
 						if face = TOP then
 							delete (module.board.stencil.top.circles, circle_cursor);
 						else
@@ -1800,7 +1798,7 @@ package body et_board_ops.stencil is
 			end if;
 
 			if not deleted then
-				nothing_found (point, accuracy);
+				nothing_found (catch_zone);
 			end if;
 			
 		end delete;
@@ -1808,8 +1806,7 @@ package body et_board_ops.stencil is
 	begin
 		log (text => "module " & to_string (module_name) &
 			" deleting stencil object face" & to_string (face) &
-			" at" & to_string (point) &
-			" accuracy" & accuracy_to_string (accuracy),
+			" in" & to_string (catch_zone),
 			level => log_threshold);
 
 		-- locate module

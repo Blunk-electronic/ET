@@ -98,13 +98,13 @@ package body et_board_ops.assy_doc is
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
-		point			: in type_vector_model;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_doc_lines.list
 	is
 		result : pac_doc_lines.list;
 
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
@@ -114,13 +114,14 @@ package body et_board_ops.assy_doc is
 				line : type_doc_line renames element (c);
 			begin
 				if in_catch_zone (
-					zone	=> set_catch_zone (point, zone),
+					zone	=> catch_zone,
 					line	=> line,
 					width	=> line.width)
 				then
 					result.append (line);
 				end if;
 			end query_line;
+
 			
 		begin
 			case face is
@@ -131,10 +132,10 @@ package body et_board_ops.assy_doc is
 					module.board.assy_doc.bottom.lines.iterate (query_line'access);
 			end case;
 		end query_module;
-			
+
+		
 	begin
-		log (text => "looking up lines at" & to_string (point) 
-			 & " zone" & accuracy_to_string (zone),
+		log (text => "looking up lines in" & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -224,9 +225,8 @@ package body et_board_ops.assy_doc is
 
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
 		face			: in type_face;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
@@ -241,7 +241,7 @@ package body et_board_ops.assy_doc is
 				line	: in out type_doc_line)
 			is begin
 				if in_catch_zone (
-					zone	=> set_catch_zone (point, zone),
+					zone	=> catch_zone,
 					line	=> line,
 					width	=> line.width)
 				then
@@ -288,9 +288,8 @@ package body et_board_ops.assy_doc is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing lines at " & to_string (point)
-			 & " face " & to_string (face)
-			 & " zone " & accuracy_to_string (zone),
+			 & " proposing lines in " & to_string (catch_zone)
+			 & " face " & to_string (face),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -964,8 +963,7 @@ package body et_board_ops.assy_doc is
 
 	procedure propose_segments (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model;
-		zone			: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		face			: in type_face;
 		count			: in out natural;
 		log_threshold	: in type_log_level)
@@ -988,7 +986,7 @@ package body et_board_ops.assy_doc is
 				case segment.shape is
 					when LINE =>
 						if in_catch_zone (
-							zone	=> set_catch_zone (point, zone),
+							zone	=> catch_zone,
 							line	=> segment.segment_line)
 						then
 							set_proposed (segment);
@@ -1060,9 +1058,8 @@ package body et_board_ops.assy_doc is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing segments at " & to_string (point)
-			 & " face " & to_string (face)
-			 & " zone " & accuracy_to_string (zone),
+			 & " proposing segments in" & to_string (catch_zone)
+			 & " face " & to_string (face),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -1647,8 +1644,7 @@ package body et_board_ops.assy_doc is
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
-		point			: in type_vector_model;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_doc_texts.list
 	is
@@ -1664,7 +1660,7 @@ package body et_board_ops.assy_doc is
 				text : type_doc_text renames element (c);
 			begin
 				if in_catch_zone (
-					zone	=> set_catch_zone (point, zone),
+					zone	=> catch_zone,
 					point	=> text.position.place)
 				then
 					log (text => to_string (text.position.place) 
@@ -1689,8 +1685,7 @@ package body et_board_ops.assy_doc is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " face" & to_string (face) 
-			& " looking up assembly documentation texts at" & to_string (point) 
-			& " zone" & accuracy_to_string (zone),
+			& " looking up assembly documentation texts in" & to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -1830,9 +1825,8 @@ package body et_board_ops.assy_doc is
 
 	procedure propose_texts (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
 		face			: in type_face;
-		zone			: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
@@ -1847,7 +1841,7 @@ package body et_board_ops.assy_doc is
 				text	: in out type_doc_text)
 			is begin
 				if in_catch_zone (
-					zone	=> set_catch_zone (point, zone),
+					zone	=> catch_zone,
 					point	=> get_place (text))
 				then
 					set_proposed (text);
@@ -1893,9 +1887,8 @@ package body et_board_ops.assy_doc is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing texts at " & to_string (point)
-			 & " face " & to_string (face)
-			 & " zone " & accuracy_to_string (zone),
+			 & " proposing texts in" & to_string (catch_zone)
+			 & " face " & to_string (face),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -2252,9 +2245,8 @@ package body et_board_ops.assy_doc is
 
 	procedure propose_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
 		face			: in type_face;
-		zone			: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
@@ -2270,7 +2262,7 @@ package body et_board_ops.assy_doc is
 				ph : in out type_text_placeholder)
 			is begin
 				if in_catch_zone (
-					zone	=> set_catch_zone (point, zone),
+					zone	=> catch_zone,
 					point	=> get_place (ph))
 				then
 					set_proposed (ph);
@@ -2304,9 +2296,8 @@ package body et_board_ops.assy_doc is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing text placeholders at " & to_string (point)
-			 & " face " & to_string (face)
-			 & " zone " & accuracy_to_string (zone),
+			 & " proposing text placeholders in" & to_string (catch_zone)
+			 & " face " & to_string (face),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -3179,8 +3170,7 @@ package body et_board_ops.assy_doc is
 	procedure delete_object (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		point			: in type_vector_model; -- x/y
-		accuracy		: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -3209,10 +3199,11 @@ package body et_board_ops.assy_doc is
 			
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_doc_lines.no_element loop
-				if element (line_cursor).on_line (point) then
-					-- CS use get_shortest_distance (point, element)
-					-- and compare distance with accuracy	
-
+				if in_catch_zone (
+					zone	=> catch_zone,
+					line	=> element (line_cursor),
+					width	=> element (line_cursor).width)
+				then
 					if face = TOP then
 						delete (module.board.assy_doc.top.lines, line_cursor);
 					else
@@ -3227,9 +3218,11 @@ package body et_board_ops.assy_doc is
 			-- if no line found, search among arcs
 			if not deleted then
 				while arc_cursor /= pac_doc_arcs.no_element loop
-					if element (arc_cursor).on_arc (point) then
-						-- CS use get_shortest_distance (point, element)
-						-- and compare distance with accuracy	
+					if in_catch_zone (
+						zone	=> catch_zone,
+						arc		=> element (arc_cursor),
+						width	=> element (arc_cursor).width)
+					then
 						if face = TOP then
 							delete (module.board.assy_doc.top.arcs, arc_cursor);
 						else
@@ -3245,10 +3238,11 @@ package body et_board_ops.assy_doc is
 			-- if no arc found, search among circles
 			if not deleted then
 				while circle_cursor /= pac_doc_circles.no_element loop
-					
-					if element (circle_cursor).on_circle (point) then
-						-- CS use get_shortest_distance (point, element)
-						-- and compare distance with accuracy	
+					if in_catch_zone (
+						zone	=> catch_zone,
+						circle	=> element (circle_cursor),
+						width	=> element (circle_cursor).width)
+					then
 						if face = TOP then
 							delete (module.board.assy_doc.top.circles, circle_cursor);
 						else
@@ -3262,17 +3256,15 @@ package body et_board_ops.assy_doc is
 			end if;
 
 			if not deleted then
-				nothing_found (point, accuracy);
-			end if;
-			
+				nothing_found (catch_zone);
+			end if;			
 		end delete;
 
 		
 	begin
 		log (text => "module " & to_string (module_name) &
 			" deleting assembly documentation object. face" & to_string (face) &
-			" at" & to_string (point) &
-			" accuracy" & accuracy_to_string (accuracy),
+			" in" & to_string (catch_zone),
 			level => log_threshold);
 
 		module_cursor := locate_module (module_name);

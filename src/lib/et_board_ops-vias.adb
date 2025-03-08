@@ -141,9 +141,9 @@ package body et_board_ops.vias is
 
 
 	begin
-		log (text => "looking up vias at" & to_string (point) 
-			 & " zone" & accuracy_to_string (zone),
-			 level => log_threshold);
+		log (text => "looking up vias in " 
+			& to_string (set_catch_zone (point, zone)),
+			level => log_threshold);
 
 		log_indentation_up;
 		

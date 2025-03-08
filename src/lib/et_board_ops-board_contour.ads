@@ -107,12 +107,11 @@ package et_board_ops.board_contour is
 	
 	-- Sets the proposed-flag of all line and arc segments 
 	-- of the outer contour which are
-	-- in the given zone around the given place.
+	-- in the given catch zone.
 	-- Adds to count the number of segments that have been found:
 	procedure propose_outer_contour_segments (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level);
 
@@ -200,8 +199,7 @@ package et_board_ops.board_contour is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 	procedure delete_outer_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
-		accuracy		: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
 
@@ -246,8 +244,7 @@ package et_board_ops.board_contour is
 	-- Adds to count the number of segments that have been found:
 	procedure propose_hole_segments (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level);
 
@@ -332,8 +329,7 @@ package et_board_ops.board_contour is
 	-- CS a parameter like "all" to delete all segments in the vicinity of point.
 	procedure delete_hole_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
-		accuracy		: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
 

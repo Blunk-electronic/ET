@@ -267,13 +267,15 @@ package body et_canvas_board_stencil is
 		-- face of the board:
 		procedure propose_objects (face : in type_face) is 
 			use et_display.board;
+			catch_zone : type_catch_zone;
 		begin
 			if stencil_enabled (face) then
+
+				catch_zone := set_catch_zone (point, get_catch_zone (et_canvas_board_2.catch_zone));
 				
 				propose_lines (
 					module_cursor	=> active_module, 
-					point			=> point,
-					zone			=> get_catch_zone (et_canvas_board_2.catch_zone), 
+					catch_zone		=> catch_zone, 
 					face			=> face,
 					count			=> count_total, 
 					log_threshold	=> log_threshold + 2);
@@ -282,8 +284,7 @@ package body et_canvas_board_stencil is
 
 				propose_segments (
 					module_cursor	=> active_module, 
-					point			=> point, 
-					zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
+					catch_zone		=> catch_zone, 
 					face			=> face,
 					count			=> count_total,
 					log_threshold	=> log_threshold + 2);

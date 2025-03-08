@@ -155,11 +155,12 @@ package body et_board_ops.route_restrict is
 		
 	end draw_route_restrict_circle;
 
+
+	
 	
 	procedure delete_route_restrict (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		point			: in type_vector_model; -- x/y
-		accuracy		: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -179,7 +180,7 @@ package body et_board_ops.route_restrict is
 		begin
 			-- first search for a matching segment among the lines
 			while line_cursor /= pac_route_restrict_lines.no_element loop
-				if element (line_cursor).on_line (point) then
+				if in_catch_zone (catch_zone, element (line_cursor)) then
 					delete (module.board.route_restrict.lines, line_cursor);
 					deleted := true;
 					exit;
@@ -189,14 +190,12 @@ package body et_board_ops.route_restrict is
 
 			-- if no line found, search among arcs
 			if not deleted then
-				while arc_cursor /= pac_route_restrict_arcs.no_element loop
-					
-					if element (arc_cursor).on_arc (point) then
+				while arc_cursor /= pac_route_restrict_arcs.no_element loop					
+					if in_catch_zone (catch_zone, element (arc_cursor)) then
 						delete (module.board.route_restrict.arcs, arc_cursor);
 						deleted := true;
 						exit;
 					end if;
-					
 					next (arc_cursor);
 				end loop;
 			end if;
@@ -204,29 +203,26 @@ package body et_board_ops.route_restrict is
 			-- if no arc found, search among circles
 			if not deleted then
 				while circle_cursor /= pac_route_restrict_circles.no_element loop
-					
-					if element (circle_cursor).on_circle (point) then
+					if in_catch_zone (catch_zone, element (circle_cursor)) then
 						delete (module.board.route_restrict.circles, circle_cursor);
 						deleted := true;
 						exit;
 					end if;
-					
 					next (circle_cursor);
 				end loop;
 			end if;
 
 			if not deleted then
-				nothing_found (point, accuracy);
+				nothing_found (catch_zone);
 			end if;
 			
 		end delete;
 
 		
-	begin -- delete_route_restrict
+	begin
 		log (text => "module " & to_string (module_name) &
 			" deleting route restrict segment" &
-			" at" & to_string (point) &
-			" accuracy" & accuracy_to_string (accuracy),
+			" in" & to_string (catch_zone),
 			level => log_threshold);
 
 		-- locate module
@@ -239,6 +235,7 @@ package body et_board_ops.route_restrict is
 		
 	end delete_route_restrict;
 
+	
 
 
 	procedure draw_zone (

@@ -597,14 +597,19 @@ is
 	
 	procedure delete_outline_segment is 
 		use et_board_ops.board_contour;
+		catch_zone : type_catch_zone;
 	begin
 		case cmd_field_count is
 			when 7 =>
 				-- delete a segment of the outer board contour:
+
+				catch_zone := set_catch_zone (
+					center	=> type_vector_model (to_point (f (5), f (6))),
+					radius	=> to_accuracy (f (7)));
+					
 				delete_outer_segment (
 					module_cursor 	=> module_cursor,
-					point			=> type_vector_model (to_point (f (5), f (6))),
-					accuracy		=> to_accuracy (f (7)),					
+					catch_zone		=> catch_zone,
 					log_threshold	=> log_threshold + 1);
 
 			when 8 .. type_field_count'last => too_long;
@@ -618,14 +623,19 @@ is
 	
 	procedure delete_hole_segment is 
 		use et_board_ops.board_contour;
+		catch_zone : type_catch_zone;
 	begin
 		case cmd_field_count is
 			when 7 =>
 				-- delete a segment of a hole
+
+				catch_zone := set_catch_zone (
+					center	=> type_vector_model (to_point (f (5), f (6))),
+					radius	=> to_accuracy (f (7)));
+
 				delete_hole_segment (
 					module_cursor 	=> module_cursor,
-					point			=> type_vector_model (to_point (f (5), f (6))),
-					accuracy		=> to_accuracy (f (7)),					
+					catch_zone		=> catch_zone,					
 					log_threshold	=> log_threshold + 1);
 
 			when 8 .. type_field_count'last => too_long;
@@ -2877,17 +2887,20 @@ is
 		
 		procedure do_it is
 			use et_board_ops.silkscreen;
+			catch_zone : type_catch_zone;
 		begin
 			update_mode_display;
-			
+
+			catch_zone := set_catch_zone (
+				center	=> type_vector_model (set (
+						x => to_distance (dd => f (6)),
+						y => to_distance (dd => f (7)))),
+				radius	=> to_accuracy (f (8)));
+				
 			delete_object (
 				module_name 	=> module,
 				face			=> to_face (f (5)),
-				point			=> type_vector_model (set (
-						x => to_distance (dd => f (6)),
-						y => to_distance (dd => f (7)))),
-				zone			=> to_accuracy (f (8)),
-				
+				catch_zone		=> catch_zone,
 				log_threshold	=> log_threshold + 1);
 			
 		end do_it;
@@ -2910,15 +2923,18 @@ is
 
 		procedure do_it is
 			use et_board_ops.assy_doc;
+			catch_zone : type_catch_zone;
 		begin
+			catch_zone := set_catch_zone (
+				center	=> type_vector_model (set (
+						x => to_distance (dd => f (6)),
+						y => to_distance (dd => f (7)))),
+				radius	=> to_accuracy (f (8)));
+				
 			delete_object (
 				module_name 	=> module,
 				face			=> to_face (f (5)),
-				point			=> type_vector_model (set (
-						x => to_distance (dd => f (6)),
-						y => to_distance (dd => f (7)))),
-				accuracy		=> to_accuracy (f (8)),
-				
+				catch_zone		=> catch_zone,
 				log_threshold	=> log_threshold + 1);
 
 		end do_it;
@@ -2951,15 +2967,18 @@ is
 
 		procedure do_it is
 			use et_board_ops.stencil;
+			catch_zone : type_catch_zone;
 		begin
+			catch_zone := set_catch_zone (
+				center	=> type_vector_model (set (
+						x => to_distance (dd => f (6)),
+						y => to_distance (dd => f (7)))),
+				radius => to_accuracy (f (8)));
+
 			delete_object (
 				module_name 	=> module,
 				face			=> to_face (f (5)),
-				point			=> type_vector_model (set (
-						x => to_distance (dd => f (6)),
-						y => to_distance (dd => f (7)))),
-				accuracy		=> to_accuracy (f (8)),
-				
+				catch_zone		=> catch_zone,
 				log_threshold	=> log_threshold + 1);
 
 		end do_it;
@@ -2982,15 +3001,18 @@ is
 
 		procedure do_it is
 			use et_board_ops.stopmask;
+			catch_zone : type_catch_zone;
 		begin
+			catch_zone := set_catch_zone (
+				center	=> type_vector_model (set (
+						x => to_distance (dd => f (6)),
+						y => to_distance (dd => f (7)))),
+				radius	=> to_accuracy (f (8)));
+				
 			delete_object (
 				module_name 	=> module,
 				face			=> to_face (f (5)),
-				point			=> type_vector_model (set (
-						x => to_distance (dd => f (6)),
-						y => to_distance (dd => f (7)))),
-				accuracy		=> to_accuracy (f (8)),
-				
+				catch_zone		=> catch_zone,				
 				log_threshold	=> log_threshold + 1);
 
 		end do_it;
@@ -3013,14 +3035,17 @@ is
 
 		procedure do_it is
 			use et_board_ops.route_restrict;
+			catch_zone : type_catch_zone;
 		begin
-			delete_route_restrict (
-				module_name 	=> module,
-				point			=> type_vector_model (set (
+			catch_zone := set_catch_zone (
+				center	=> type_vector_model (set (
 						x => to_distance (dd => f (5)),
 						y => to_distance (dd => f (6)))),
-				accuracy		=> to_accuracy (f (7)),
-				
+				radius	=> to_accuracy (f (7)));
+											 
+			delete_route_restrict (
+				module_name 	=> module,
+				catch_zone		=> catch_zone,
 				log_threshold	=> log_threshold + 1);
 
 		end do_it;
@@ -3073,17 +3098,21 @@ is
 	-- This procedure parses a command to 
 	-- delete an freetrack segment in a conductor layer:
 	procedure delete_freetrack_segment is
-
-		procedure do_it is begin
+	
+		procedure do_it is 
+			catch_zone : type_catch_zone;
+		begin
+			catch_zone := set_catch_zone (
+				center	=> type_vector_model (set (
+						x => to_distance (dd => f (6)),
+						y => to_distance (dd => f (7)))),
+				radius	=> to_accuracy (f (8)));
+				
 			delete_track (
 				module_name 	=> module,
 				net_name		=> to_net_name (""),
 				layer			=> to_signal_layer (f (5)),
-				point			=> type_vector_model (set (
-						x => to_distance (dd => f (6)),
-						y => to_distance (dd => f (7)))),
-				accuracy		=> to_accuracy (f (8)),
-				
+				catch_zone		=> catch_zone,
 				log_threshold	=> log_threshold + 1);
 
 		end do_it;
@@ -3104,16 +3133,20 @@ is
 	-- delete a segment of a net in a conductor layer:
 	procedure delete_net_segment is
 
-		procedure do_it is begin
+		procedure do_it is 
+			catch_zone : type_catch_zone;
+		begin
+			catch_zone := set_catch_zone (
+				center	=> type_vector_model (set (
+						x => to_distance (dd => f (7)),
+						y => to_distance (dd => f (8)))),
+				radius	=> to_accuracy (f (9)));
+		
 			delete_track (
 				module_name 	=> module,
 				net_name		=> to_net_name (f (5)),
 				layer			=> to_signal_layer (f (6)),
-				point			=> type_vector_model (set (
-						x => to_distance (dd => f (7)),
-						y => to_distance (dd => f (8)))),
-				accuracy		=> to_accuracy (f (9)),
-				
+				catch_zone		=> catch_zone,				
 				log_threshold	=> log_threshold + 1);
 
 		end do_it;

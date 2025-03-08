@@ -224,8 +224,8 @@ package body et_board_ops.ratsnest is
 		
 		
 	begin
-		log (text => "looking up airwires at" & to_string (point)
-			 & " zone" & accuracy_to_string (zone),
+		log (text => "looking up airwires in" 
+			 & to_string (set_catch_zone (point, zone)),
 			 level => log_threshold);
 
 		-- log_indentation_up;

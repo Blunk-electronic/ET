@@ -277,20 +277,21 @@ package body et_canvas_board_outline is
 		-- face of the board:
 		procedure propose_objects is 
 			use et_display.board;
+			catch_zone : type_catch_zone;
 		begin
 			if board_contour_enabled then
+
+				catch_zone := set_catch_zone (point, get_catch_zone (et_canvas_board_2.catch_zone));
 				
 				propose_outer_contour_segments (
 					module_cursor	=> active_module, 
-					point			=> point,
-					zone			=> get_catch_zone (et_canvas_board_2.catch_zone), 
+					catch_zone		=> catch_zone, 
 					count			=> count_total, 
 					log_threshold	=> log_threshold + 2);
 
 				propose_hole_segments (
 					module_cursor	=> active_module, 
-					point			=> point,
-					zone			=> get_catch_zone (et_canvas_board_2.catch_zone), 
+					catch_zone		=> catch_zone, 
 					count			=> count_total, 
 					log_threshold	=> log_threshold + 2);
 				

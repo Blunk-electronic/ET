@@ -3197,12 +3197,14 @@ package body et_geometry_2a is
 
 
 	
-	function accuracy_to_string (
-		c : in type_accuracy)
+	function to_string (
+		zone : in type_catch_zone)
 		return string
 	is begin
-		return pac_geometry_1.to_string (c);
-	end accuracy_to_string;
+		return " catch zone: " & to_string (zone.center)
+			& " radius " & pac_geometry_1.to_string (zone.radius);
+	end to_string;
+	
 
 
 	function to_accuracy (
@@ -3323,12 +3325,10 @@ package body et_geometry_2a is
 	
 
 	procedure nothing_found (
-		point		: in type_vector_model; 
-		accuracy	: in type_accuracy)
+		zone	: in type_catch_zone)
 	is begin
 		log (importance => WARNING, 
-			 text => "nothing found at" & to_string (point) &
-			 " in vicinity of" & accuracy_to_string (accuracy));
+			 text => "nothing found in" & to_string (zone));
 	end nothing_found;
 
 

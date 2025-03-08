@@ -210,8 +210,7 @@ package et_board_ops.conductors is
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
-		point			: in type_vector_model;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_object_lines.list;
 
@@ -224,8 +223,7 @@ package et_board_ops.conductors is
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
-		point			: in type_vector_model;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_conductor_lines.list;
 
@@ -253,9 +251,8 @@ package et_board_ops.conductors is
 	-- Adds to count the number of lines that have been found:
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
 		layer			: in et_pcb_stack.type_signal_layer;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		count			: in out natural; -- the number of affected lines
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level);
@@ -381,8 +378,7 @@ package et_board_ops.conductors is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		net_name		: in pac_net_name.bounded_string; -- reset_n
 		layer			: in et_pcb_stack.type_signal_layer;
-		point			: in type_vector_model; -- x/y
-		accuracy		: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
 	
@@ -500,8 +496,7 @@ package et_board_ops.conductors is
 	-- Adds to count the number of segments that have been found:
 	procedure propose_segments_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		layer			: in type_signal_layer;
 		count			: in out natural;
 		log_threshold	: in type_log_level);
@@ -513,8 +508,7 @@ package et_board_ops.conductors is
 	-- Adds to count the number of segments that have been found:
 	procedure propose_segments_floating (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		layer			: in type_signal_layer;
 		count			: in out natural;
 		log_threshold	: in type_log_level);
@@ -614,8 +608,7 @@ package et_board_ops.conductors is
 	-- Returns all texts in the vicinity of the given point:
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_conductor_texts.list;
 
@@ -649,9 +642,8 @@ package et_board_ops.conductors is
 	-- Adds to count the number of texts that have been found:
 	procedure propose_texts (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
 		layer			: in type_signal_layer;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level);
 
@@ -718,9 +710,8 @@ package et_board_ops.conductors is
 	-- Adds to count the number of placeholders that have been found:
 	procedure propose_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
 		layer			: in type_signal_layer;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level);
 	

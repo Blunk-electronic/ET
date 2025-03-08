@@ -111,9 +111,10 @@ package body et_board_ops.devices is
 		end query_devices;
 
 		
-	begin -- get_devices		
-		log (text => "looking up devices at" & to_string (place) 
-			 & " zone" & accuracy_to_string (zone), level => log_threshold);
+	begin
+		log (text => "looking up devices in" 
+			 & to_string (set_catch_zone (place, zone)),
+			 level => log_threshold);
 
 		log_indentation_up;
 		
@@ -249,9 +250,8 @@ package body et_board_ops.devices is
 
 		
 	begin
-		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
-			"proposing devices at " & to_string (place) 
-			& " zone " & accuracy_to_string (zone), 
+		log (text => "module " & to_string (module_cursor)
+			& " proposing devices in " & to_string (set_catch_zone (place, zone)),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -474,9 +474,9 @@ package body et_board_ops.devices is
 		end query_devices;
 
 		
-	begin -- get_devices		
-		log (text => "looking up devices at" & to_string (place) 
-			 & " zone" & accuracy_to_string (zone), level => log_threshold);
+	begin
+		log (text => "looking up devices in" & to_string (set_catch_zone (place, zone)),
+			 level => log_threshold);
 
 		log_indentation_up;
 		
@@ -605,8 +605,7 @@ package body et_board_ops.devices is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " proposing non-electrical devices at " & to_string (place) 
-			& " zone " & accuracy_to_string (zone), 
+			& " proposing non-electrical devices in" & to_string (set_catch_zone (place, zone)),
 			level => log_threshold);
 
 		log_indentation_up;

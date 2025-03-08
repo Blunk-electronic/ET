@@ -214,8 +214,7 @@ package body et_board_ops.board_contour is
 
 	procedure propose_outer_contour_segments (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model;
-		zone			: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
@@ -236,7 +235,7 @@ package body et_board_ops.board_contour is
 				case segment.shape is
 					when LINE =>
 						if in_catch_zone (
-							zone	=> set_catch_zone (point, zone),
+							zone	=> catch_zone,
 							line	=> segment.segment_line)
 						then
 							set_proposed (segment);
@@ -269,8 +268,7 @@ package body et_board_ops.board_contour is
 		
 		
 	begin
-		log (text => "proposing outer contour segments at " & to_string (point)
-			 & " zone " & accuracy_to_string (zone),
+		log (text => "proposing outer contour segments in" & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -686,8 +684,7 @@ package body et_board_ops.board_contour is
 
 	procedure delete_outer_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
-		accuracy		: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 	is
 		
@@ -711,7 +708,7 @@ package body et_board_ops.board_contour is
 							-- Delete the segment if it is inside the
 							-- given area around the the given point:
 							if in_catch_zone (
-								zone	=> set_catch_zone (point, accuracy),
+								zone	=> catch_zone,
 								line	=> element (c).segment_line)
 							then
 								delete (module.board.board_contour.outline.contour.segments, c);
@@ -727,7 +724,7 @@ package body et_board_ops.board_contour is
 							-- Delete the segment if it is inside the
 							-- given area around the the given point:
 							if in_catch_zone (
-								zone	=> set_catch_zone (point, accuracy),
+								zone	=> catch_zone,
 								arc		=> element (c).segment_arc)
 							then
 								delete (module.board.board_contour.outline.contour.segments, c);
@@ -746,10 +743,10 @@ package body et_board_ops.board_contour is
 
 			
 			procedure delete_circle is begin
-				if module.board.board_contour.outline.contour.circle.on_circle (point) then
-					-- CS use get_shortest_distance (point, element)
-					-- and compare distance with accuracy	
-
+				if in_catch_zone (
+					zone	=> catch_zone,
+					circle	=> module.board.board_contour.outline.contour.circle)
+				then
 					module.board.board_contour.outline.contour := (others => <>);					
 					deleted := true;
 				end if;
@@ -764,15 +761,14 @@ package body et_board_ops.board_contour is
 			end if;
 			
 			if not deleted then
-				nothing_found (point, accuracy);
+				nothing_found (catch_zone);
 			end if;			
 		end query_module;
 
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting outer contour segment at" & to_string (point) 
-			& " accuracy" & accuracy_to_string (accuracy),
+			& " deleting outer contour segment in" & to_string (catch_zone),
 			level => log_threshold);
 
 		update_element (
@@ -938,8 +934,7 @@ package body et_board_ops.board_contour is
 
 	procedure propose_hole_segments (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model;
-		zone			: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level)
 	is
@@ -961,7 +956,7 @@ package body et_board_ops.board_contour is
 				case segment.shape is
 					when LINE =>
 						if in_catch_zone (
-							zone	=> set_catch_zone (point, zone),
+							zone	=> catch_zone,
 							line	=> segment.segment_line)
 						then
 							set_proposed (segment);
@@ -1017,8 +1012,7 @@ package body et_board_ops.board_contour is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " proposing hole segments at " & to_string (point)
-			 & " zone " & accuracy_to_string (zone),
+			 & " proposing hole segments in" & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -1494,8 +1488,7 @@ package body et_board_ops.board_contour is
 	
 	procedure delete_hole_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
-		accuracy		: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 	is
 
@@ -1512,8 +1505,7 @@ package body et_board_ops.board_contour is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " deleting hole segment at" & to_string (point) 
-			& " zone" & accuracy_to_string (accuracy),
+			& " deleting hole segment in" & to_string (catch_zone),
 			level => log_threshold);
 
 		update_element (

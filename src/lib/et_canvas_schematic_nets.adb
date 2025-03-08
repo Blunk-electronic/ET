@@ -340,8 +340,8 @@ package body et_canvas_schematic_nets is
 
 		
 	begin -- collect_segments
-		log (text => "looking up net segments at " & to_string (place) 
-			 & " zone " & accuracy_to_string (zone),
+		log (text => "looking up net segments in " 
+			 & to_string (set_catch_zone (place.place, zone)),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -1278,9 +1278,10 @@ package body et_canvas_schematic_nets is
 			end loop;
 		end query_nets;
 
+		
 	begin -- collect_labels
-		log (text => "looking up net labels at " & to_string (place) 
-			 & " zone" & accuracy_to_string (zone),
+		log (text => "looking up net labels" 
+			 & to_string (set_catch_zone (place.place, zone)),
 			 level => log_threshold);
 		-- CS output category of label
 		
@@ -1292,10 +1293,10 @@ package body et_canvas_schematic_nets is
 
 		log_indentation_down;
 		
-		return result;
-		
+		return result;		
 	end collect_labels;
 
+	
 	
 
 	procedure delete_selected_label (

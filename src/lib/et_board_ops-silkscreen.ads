@@ -68,8 +68,7 @@ package et_board_ops.silkscreen is
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
-		point			: in type_vector_model;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_silk_lines.list;
 
@@ -99,9 +98,8 @@ package et_board_ops.silkscreen is
 	-- Adds to count the number of lines that have been found:
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
 		face			: in type_face;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level);
 
@@ -212,8 +210,7 @@ package et_board_ops.silkscreen is
 	-- Adds to count the number of segments that have been found:
 	procedure propose_segments (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		face			: in type_face;
 		count			: in out natural;
 		log_threshold	: in type_log_level);
@@ -282,8 +279,7 @@ package et_board_ops.silkscreen is
 	function get_texts (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
-		point			: in type_vector_model;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_silk_texts.list;
 
@@ -322,9 +318,8 @@ package et_board_ops.silkscreen is
 	-- Adds to count the number of texts that have been found:
 	procedure propose_texts (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
 		face			: in type_face;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level);
 	
@@ -396,9 +391,8 @@ package et_board_ops.silkscreen is
 	-- Adds to count the number of placeholders that have been found:
 	procedure propose_placeholders (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model; -- x/y
 		face			: in type_face;
-		zone			: in type_accuracy; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		count			: in out natural;
 		log_threshold	: in type_log_level);
 	
@@ -548,8 +542,7 @@ package et_board_ops.silkscreen is
 	procedure delete_object (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
-		point			: in type_vector_model; -- x/y
-		zone			: in type_accuracy;
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
 
