@@ -105,7 +105,7 @@ package body et_canvas_schematic_units is
 	function collect_units (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates_2.type_position; -- sheet/x/y
-		zone			: in type_accuracy; -- the circular area around the place
+		zone			: in type_zone_radius; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_units.list
 	is
@@ -1802,7 +1802,7 @@ package body et_canvas_schematic_units is
 	function collect_placeholders (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates_2.type_position; -- sheet/x/y
-		zone			: in type_accuracy; -- the circular area around the place
+		zone			: in type_zone_radius; -- the circular area around the place
 		category		: in type_placeholder_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level)
 		return pac_proposed_placeholders.list

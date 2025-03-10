@@ -3491,7 +3491,7 @@ package body et_canvas is
 
 	function get_catch_zone (
 		pixels	: in type_logical_pixels_positive)
-		return type_accuracy 
+		return type_zone_radius 
 	is 
 		-- This is the zone in model coordinates (CS1):
 		zone : type_distance_positive;
@@ -3503,9 +3503,9 @@ package body et_canvas is
 
 		-- put_line ("zone " & to_string (zone));
 
-		-- Since type_accuracy is a float type,
+		-- Since type_zone_radius is a float type,
 		-- convert model zone to a float number:
-		return type_accuracy (zone);
+		return type_zone_radius (zone);
 	end get_catch_zone;
 
 	

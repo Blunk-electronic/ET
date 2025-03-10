@@ -1354,23 +1354,23 @@ package et_geometry_2a is
 -- ACCURACY:
 
 	-- When searching objects within a given zone or vicinity
-	-- we use a type_accuracy:
+	-- we use a type_zone_radius:
 	
-	subtype type_accuracy is type_float_positive
+	subtype type_zone_radius is type_float_positive
 		range 0.0 .. type_float_positive (type_distance_positive'last/100.0);
 	-- CS rename to type_circular_area ?
 
 	
 	type type_catch_zone is record
 		center	: type_vector_model;
-		radius	: type_accuracy;
+		radius	: type_zone_radius;
 	end record;
 
 
 	
 	function set_catch_zone (
 		center	: in type_vector_model;
-		radius	: in type_accuracy)
+		radius	: in type_zone_radius)
 		return type_catch_zone;
 
 	
@@ -1382,14 +1382,14 @@ package et_geometry_2a is
 	
 	function to_accuracy (
 		c : in string)
-		return type_accuracy;
+		return type_zone_radius;
 
 
 	-- Returns true if the given distance is 
-	-- less or equal the given accuracy:
-	function within_accuracy (
+	-- less or equal the given zone radius:
+	function in_radius (
 		distance : in type_float_positive;
-		zone	 : in type_accuracy)
+		radius	 : in type_zone_radius)
 		return boolean;
 							   
 	

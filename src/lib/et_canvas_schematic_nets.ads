@@ -154,7 +154,7 @@ package et_canvas_schematic_nets is
 	function collect_segments (
 		module			: in pac_generic_modules.cursor;
 		place			: in et_coordinates_2.type_position; -- sheet/x/y
-		zone			: in type_accuracy := type_accuracy'first; -- the circular area around the place
+		zone			: in type_zone_radius := type_zone_radius'first; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_segments.list;
 

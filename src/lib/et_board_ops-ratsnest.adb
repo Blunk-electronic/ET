@@ -188,7 +188,7 @@ package body et_board_ops.ratsnest is
 	function get_airwires (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model;
-		zone			: in type_accuracy; -- the circular area around the place
+		zone			: in type_zone_radius; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_airwires.list
 	is

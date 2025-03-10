@@ -57,7 +57,7 @@ package et_board_ops.devices is
 	function get_devices (
 		module			: in pac_generic_modules.cursor;
 		place			: in type_vector_model; -- x/y
-		zone			: in type_accuracy; -- the circular area around the place
+		zone			: in type_zone_radius; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_devices_sch.map;
 
@@ -76,7 +76,7 @@ package et_board_ops.devices is
 	procedure propose_devices (
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_vector_model; -- x/y
-		zone			: in type_accuracy; -- the circular area around the place
+		zone			: in type_zone_radius; -- the circular area around the place
 		count			: in out natural; -- the number of affected devices
 		log_threshold	: in type_log_level);
 
@@ -116,7 +116,7 @@ package et_board_ops.devices is
 	function get_devices (
 		module			: in pac_generic_modules.cursor;
 		place			: in type_vector_model;
-		zone			: in type_accuracy;
+		zone			: in type_zone_radius;
 		log_threshold	: in type_log_level)
 		return pac_devices_non_electric.map;
 
@@ -134,7 +134,7 @@ package et_board_ops.devices is
 	procedure propose_non_electrical_devices (
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_vector_model; -- x/y
-		zone			: in type_accuracy; -- the circular area around the place
+		zone			: in type_zone_radius; -- the circular area around the place
 		count			: in out natural; -- the number of affected devices
 		log_threshold	: in type_log_level);
 

@@ -89,7 +89,7 @@ package body et_board_ops.vias is
 	function get_vias (
 		module_cursor	: in pac_generic_modules.cursor;
 		point			: in type_vector_model;
-		zone			: in type_accuracy;
+		zone			: in type_zone_radius;
 		log_threshold	: in type_log_level)
 		return pac_proposed_vias.list
 	is

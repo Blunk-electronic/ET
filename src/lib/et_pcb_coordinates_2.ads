@@ -111,7 +111,7 @@ package et_pcb_coordinates_2 is
 
 	-- In headless mode this accuracy should be used
 	-- when locating objects inside a particual zone:
-	accuracy_default : constant type_accuracy := 2.0; 
+	accuracy_default : constant type_zone_radius := 2.0; 
 	-- CS: should be a general setting for board and package editor in the future
 	
 	
