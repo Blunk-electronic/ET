@@ -3185,7 +3185,8 @@ package body et_geometry_2a is
 
 	
 
--- ACCURACY:
+	
+-- CATCH ZONE:
 
 	function set_catch_zone (
 		center	: in type_vector_model;
@@ -3196,6 +3197,24 @@ package body et_geometry_2a is
 	end set_catch_zone;
 
 
+
+	function get_center (
+		zone	: in type_catch_zone)
+		return type_vector_model
+	is begin
+		return zone.center;
+	end get_center;
+
+	
+
+	function get_radius (
+		zone	: in type_catch_zone)
+		return type_zone_radius
+	is begin
+		return zone.radius;
+	end get_radius;
+
+	
 	
 	function to_string (
 		zone : in type_catch_zone)
@@ -3207,12 +3226,12 @@ package body et_geometry_2a is
 	
 
 
-	function to_accuracy (
+	function to_zone_radius (
 		c : in string)
 		return type_zone_radius
 	is begin
 		return pac_geometry_1.to_distance (c);
-	end to_accuracy;
+	end to_zone_radius;
 
 
 	
@@ -3333,6 +3352,9 @@ package body et_geometry_2a is
 	end nothing_found;
 
 
+
+
+	
 	
 	
 

@@ -1779,7 +1779,7 @@ package body et_board_ops.conductors is
 			-- and abort iteration.
 			while line_cursor /= pac_conductor_lines.no_element loop
 
-				if on_segment (catch_zone.center, layer, line_cursor) then
+				if on_segment (get_center (catch_zone), layer, line_cursor) then
 					delete (module.board.conductors_floating.lines, line_cursor);
 					deleted := true;
 					exit;
@@ -1793,7 +1793,7 @@ package body et_board_ops.conductors is
 			if not deleted then
 				while arc_cursor /= pac_conductor_arcs.no_element loop
 
-					if on_segment (catch_zone.center, layer, arc_cursor) then
+					if on_segment (get_center (catch_zone), layer, arc_cursor) then
 						delete (module.board.conductors_floating.arcs, arc_cursor);
 						deleted := true;
 						exit;
@@ -1832,7 +1832,7 @@ package body et_board_ops.conductors is
 				-- and abort iteration.
 				while line_cursor /= pac_conductor_lines.no_element loop
 
-					if on_segment (catch_zone.center, layer, line_cursor) then
+					if on_segment (get_center (catch_zone), layer, line_cursor) then
 						delete (net.route.lines, line_cursor);
 						deleted := true;
 						exit;
@@ -1846,7 +1846,7 @@ package body et_board_ops.conductors is
 				if not deleted then
 					while arc_cursor /= pac_conductor_arcs.no_element loop
 
-						if on_segment (catch_zone.center, layer, arc_cursor) then
+						if on_segment (get_center (catch_zone), layer, arc_cursor) then
 							delete (net.route.arcs, arc_cursor);
 							deleted := true;
 							exit;

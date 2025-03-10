@@ -604,8 +604,8 @@ is
 				-- delete a segment of the outer board contour:
 
 				catch_zone := set_catch_zone (
-					center	=> type_vector_model (to_point (f (5), f (6))),
-					radius	=> to_accuracy (f (7)));
+					center	=> to_point (f (5), f (6)),
+					radius	=> to_zone_radius (f (7)));
 					
 				delete_outer_segment (
 					module_cursor 	=> module_cursor,
@@ -630,8 +630,8 @@ is
 				-- delete a segment of a hole
 
 				catch_zone := set_catch_zone (
-					center	=> type_vector_model (to_point (f (5), f (6))),
-					radius	=> to_accuracy (f (7)));
+					center	=> to_point (f (5), f (6)),
+					radius	=> to_zone_radius (f (7)));
 
 				delete_hole_segment (
 					module_cursor 	=> module_cursor,
@@ -2892,10 +2892,8 @@ is
 			update_mode_display;
 
 			catch_zone := set_catch_zone (
-				center	=> type_vector_model (set (
-						x => to_distance (dd => f (6)),
-						y => to_distance (dd => f (7)))),
-				radius	=> to_accuracy (f (8)));
+				center	=> to_point (f (6), f (7)),
+				radius	=> to_zone_radius (f (8)));
 				
 			delete_object (
 				module_name 	=> module,
@@ -2926,10 +2924,8 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> type_vector_model (set (
-						x => to_distance (dd => f (6)),
-						y => to_distance (dd => f (7)))),
-				radius	=> to_accuracy (f (8)));
+				center	=> to_point (f (6), f (7)),
+				radius	=> to_zone_radius (f (8)));
 				
 			delete_object (
 				module_name 	=> module,
@@ -2970,10 +2966,8 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> type_vector_model (set (
-						x => to_distance (dd => f (6)),
-						y => to_distance (dd => f (7)))),
-				radius => to_accuracy (f (8)));
+				center	=> to_point (f (6), f (7)),
+				radius	=> to_zone_radius (f (8)));
 
 			delete_object (
 				module_name 	=> module,
@@ -3004,10 +2998,8 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> type_vector_model (set (
-						x => to_distance (dd => f (6)),
-						y => to_distance (dd => f (7)))),
-				radius	=> to_accuracy (f (8)));
+				center	=> to_point (f (6), f (7)),
+				radius	=> to_zone_radius (f (8)));
 				
 			delete_object (
 				module_name 	=> module,
@@ -3038,10 +3030,8 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> type_vector_model (set (
-						x => to_distance (dd => f (5)),
-						y => to_distance (dd => f (6)))),
-				radius	=> to_accuracy (f (7)));
+				center	=> to_point (f (5), f (6)),
+				radius	=> to_zone_radius (f (7)));
 											 
 			delete_route_restrict (
 				module_name 	=> module,
@@ -3103,10 +3093,8 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> type_vector_model (set (
-						x => to_distance (dd => f (6)),
-						y => to_distance (dd => f (7)))),
-				radius	=> to_accuracy (f (8)));
+				center	=> to_point (f (6), f (7)),
+				radius	=> to_zone_radius (f (8)));
 				
 			delete_track (
 				module_name 	=> module,
@@ -3137,10 +3125,8 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> type_vector_model (set (
-						x => to_distance (dd => f (7)),
-						y => to_distance (dd => f (8)))),
-				radius	=> to_accuracy (f (9)));
+				center	=> to_point (f (7), f (8)),
+				radius	=> to_zone_radius (f (9)));
 		
 			delete_track (
 				module_name 	=> module,

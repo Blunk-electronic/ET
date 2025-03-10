@@ -572,7 +572,7 @@ package et_geometry_2a is
 
 
 	
--- AREA:
+-- AREA (rectangular):
 	
 	type type_area is record
 		width		: type_distance_positive := 0.0;
@@ -1351,39 +1351,47 @@ package et_geometry_2a is
 
 	
 	
--- ACCURACY:
+-- CATCH ZONE:
 
-	-- When searching objects within a given zone or vicinity
-	-- we use a type_zone_radius:
+	-- When searching objects within a circular zone 
+	-- around a certain point the concept of a catch zone
+	-- is required:
 	
 	subtype type_zone_radius is type_float_positive
 		range 0.0 .. type_float_positive (type_distance_positive'last/100.0);
-	-- CS rename to type_circular_area ?
 
+
+	type type_catch_zone is private;
 	
-	type type_catch_zone is record
-		center	: type_vector_model;
-		radius	: type_zone_radius;
-	end record;
-
-
 	
 	function set_catch_zone (
 		center	: in type_vector_model;
 		radius	: in type_zone_radius)
 		return type_catch_zone;
 
+
+	function get_center (
+		zone	: in type_catch_zone)
+		return type_vector_model;
 	
 
+	function get_radius (
+		zone	: in type_catch_zone)
+		return type_zone_radius;
+
+	
 	function to_string (
 		zone : in type_catch_zone)
 		return string;
 
 	
-	function to_accuracy (
+	function to_zone_radius (
 		c : in string)
 		return type_zone_radius;
 
+
+
+	
 
 	-- Returns true if the given distance is 
 	-- less or equal the given zone radius:
@@ -1438,6 +1446,10 @@ package et_geometry_2a is
 		zone	: in type_catch_zone); 
 
 
+
+
+
+	
 	
 
 -- ZONES OF A LINE
@@ -1544,6 +1556,12 @@ private
 
 
 	-- boundaries_default : constant type_boundaries := (others => <>);
+
+
+	type type_catch_zone is record
+		center	: type_vector_model;
+		radius	: type_zone_radius;
+	end record;
 
 	
 end et_geometry_2a;
