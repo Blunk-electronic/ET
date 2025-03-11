@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -185,10 +185,11 @@ package body et_board_ops.ratsnest is
 
 
 
+
+	
 	function get_airwires (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model;
-		zone			: in type_zone_radius; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_proposed_airwires.list
 	is
@@ -207,9 +208,10 @@ package body et_board_ops.ratsnest is
 					use pac_airwires;
 					use pac_geometry_brd;
 					wire : type_airwire renames element (ac);
-					d : type_float_positive := get_shortest_distance (to_vector (point), wire);
+					d : type_float_positive;
 				begin
-					if d <= zone then
+					d := get_shortest_distance (to_vector (get_center (catch_zone)), wire);
+					if d <= get_radius (catch_zone) then
 						result.append ((wire, key (nc)));
 					end if;
 				end query_airwire;
@@ -225,7 +227,7 @@ package body et_board_ops.ratsnest is
 		
 	begin
 		log (text => "looking up airwires in" 
-			 & to_string (set_catch_zone (point, zone)),
+			 & to_string (catch_zone),
 			 level => log_threshold);
 
 		-- log_indentation_up;

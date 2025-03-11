@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -522,8 +522,7 @@ package body et_canvas_board_tracks is
 
 						proposed_airwires := get_airwires (
 							module_cursor	=> active_module, 
-							point			=> point,
-							zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
+							catch_zone		=> set_catch_zone (point, get_catch_zone (et_canvas_board_2.catch_zone)),
 							log_threshold	=> log_threshold + 1);
 
 						case proposed_airwires.length is

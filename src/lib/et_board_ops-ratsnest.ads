@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -85,8 +85,7 @@ package et_board_ops.ratsnest is
 	-- Returns all airwires in the vicinity of the given point:
 	function get_airwires (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model;
-		zone			: in type_zone_radius; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_proposed_airwires.list;
 
