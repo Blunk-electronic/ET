@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -56,8 +56,7 @@ package et_board_ops.devices is
 	-- Collects all devices in the vicinity of the given point:	
 	function get_devices (
 		module			: in pac_generic_modules.cursor;
-		place			: in type_vector_model; -- x/y
-		zone			: in type_zone_radius; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_devices_sch.map;
 
@@ -75,8 +74,7 @@ package et_board_ops.devices is
 	-- given zone around the given place.
 	procedure propose_devices (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_vector_model; -- x/y
-		zone			: in type_zone_radius; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		count			: in out natural; -- the number of affected devices
 		log_threshold	: in type_log_level);
 
@@ -115,8 +113,7 @@ package et_board_ops.devices is
 	-- Collects all non-electrical devices in the vicinity of the given point:	
 	function get_devices (
 		module			: in pac_generic_modules.cursor;
-		place			: in type_vector_model;
-		zone			: in type_zone_radius;
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_devices_non_electric.map;
 
@@ -133,8 +130,7 @@ package et_board_ops.devices is
 	-- given zone around the given place.
 	procedure propose_non_electrical_devices (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_vector_model; -- x/y
-		zone			: in type_zone_radius; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		count			: in out natural; -- the number of affected devices
 		log_threshold	: in type_log_level);
 

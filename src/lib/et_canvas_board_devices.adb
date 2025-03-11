@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -178,8 +178,7 @@ package body et_canvas_board_devices is
 		-- Propose all devices in the vicinity of the given point:
 		propose_devices (
 			module_cursor	=> active_module,
-			place			=> point,
-			zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
+			catch_zone		=> set_catch_zone (point, get_catch_zone (et_canvas_board_2.catch_zone)),
 			count			=> count,
 			log_threshold	=> log_threshold + 1);
 		
@@ -205,6 +204,7 @@ package body et_canvas_board_devices is
 	end find_electrical_devices;
 	
 
+	
 	
 	
 	procedure find_non_electrical_devices (
@@ -235,8 +235,7 @@ package body et_canvas_board_devices is
 		-- Propose all devices in the vicinity of the given point:
 		propose_non_electrical_devices (
 			module_cursor	=> active_module,
-			place			=> point,
-			zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
+			catch_zone		=> set_catch_zone (point, get_catch_zone (et_canvas_board_2.catch_zone)),
 			count			=> count,
 			log_threshold	=> log_threshold + 1);
 		
@@ -263,6 +262,7 @@ package body et_canvas_board_devices is
 
 
 
+	
 	
 -- MOVE:
 

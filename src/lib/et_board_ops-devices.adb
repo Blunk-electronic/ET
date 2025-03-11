@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -66,8 +66,7 @@ package body et_board_ops.devices is
 	
 	function get_devices (
 		module			: in pac_generic_modules.cursor;
-		place			: in type_vector_model;
-		zone			: in type_zone_radius;
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_devices_sch.map
 	is
@@ -91,7 +90,7 @@ package body et_board_ops.devices is
 					log_indentation_up;
 						
 					if in_catch_zone (
-						zone	=> set_catch_zone (place, zone),
+						zone	=> catch_zone,
 						point	=> element (device_cursor).position.place) 
 					then
 						log_indentation_up;
@@ -113,7 +112,7 @@ package body et_board_ops.devices is
 		
 	begin
 		log (text => "looking up devices in" 
-			 & to_string (set_catch_zone (place, zone)),
+			 & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -128,6 +127,8 @@ package body et_board_ops.devices is
 	end get_devices;
 
 
+
+	
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -179,8 +180,7 @@ package body et_board_ops.devices is
 
 		
 	begin
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
+		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
 			& to_string (key (device_cursor))
 			& " / " & to_string (operation),
@@ -196,11 +196,13 @@ package body et_board_ops.devices is
 	end modify_status;
 
 
+
+	
+	
 	
 	procedure propose_devices (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_vector_model; -- x/y
-		zone			: in type_zone_radius; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		count			: in out natural; -- the number of affected devices
 		log_threshold	: in type_log_level)
 	is
@@ -209,16 +211,16 @@ package body et_board_ops.devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_sch)
-			is
-				use et_object_status;
-			begin
+			is begin
 				log (text => to_string (device_name), level => log_threshold + 1);
 				device.status.proposed := true;
 				count := count + 1;
 			end query_device;
+
 			
 			device_cursor : pac_devices_sch.cursor := module.devices.first;
 		begin
@@ -231,7 +233,7 @@ package body et_board_ops.devices is
 					-- log_indentation_up;
 						
 					if in_catch_zone (
-						zone	=> set_catch_zone (place, zone),
+						zone	=> catch_zone,
 						point	=> element (device_cursor).position.place) 
 					then
 						-- log_indentation_up;
@@ -251,7 +253,7 @@ package body et_board_ops.devices is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " proposing devices in " & to_string (set_catch_zone (place, zone)),
+			& " proposing devices in " & to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -266,6 +268,10 @@ package body et_board_ops.devices is
 	end propose_devices;
 
 
+
+
+	
+
 	procedure reset_proposed_devices (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level)
@@ -275,6 +281,7 @@ package body et_board_ops.devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_sch)
@@ -285,6 +292,7 @@ package body et_board_ops.devices is
 				device.status.proposed := false;
 				device.status.selected := false;
 			end query_device;
+
 			
 			device_cursor : pac_devices_sch.cursor := module.devices.first;
 		begin
@@ -303,10 +311,11 @@ package body et_board_ops.devices is
 				next (device_cursor);
 			end loop;
 		end query_module;
+
 		
 	begin
-		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
-			"resetting proposed devices", 
+		log (text => "module " & to_string (module_cursor)
+			& " resetting proposed devices", 
 			level => log_threshold);
 
 		log_indentation_up;
@@ -318,6 +327,10 @@ package body et_board_ops.devices is
 		log_indentation_down;
 	end reset_proposed_devices;
 
+
+
+	
+	
 
 	function get_first_device (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -354,10 +367,11 @@ package body et_board_ops.devices is
 				next (device_cursor);
 			end loop;
 		end query_module;
+
 		
 	begin
-		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
-			"looking up the first device /" & to_string (flag),
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first device /" & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -372,6 +386,9 @@ package body et_board_ops.devices is
 	end get_first_device;
 	
 
+
+
+	
 	
 	procedure next_proposed_device (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -417,8 +434,8 @@ package body et_board_ops.devices is
 		
 		
 	begin
-		log (text => -- CS "module " & enclose_in_quotes (to_string (key (module_cursor)))
-			"advancing to next proposed device",
+		log (text => "module " & to_string (module_cursor)
+			& " advancing to next proposed device",
 			level => log_threshold);
 
 		log_indentation_up;
@@ -430,13 +447,13 @@ package body et_board_ops.devices is
 		log_indentation_down;
 	end next_proposed_device;
 		
+
 	
 --------------------------------------------------------------------------------------
 	
 	function get_devices (
 		module			: in pac_generic_modules.cursor;
-		place			: in type_vector_model;
-		zone			: in type_zone_radius;
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_devices_non_electric.map
 	is
@@ -456,7 +473,7 @@ package body et_board_ops.devices is
 				log_indentation_up;
 					 
 				if in_catch_zone (
-					zone	=> set_catch_zone (place, zone),
+					zone	=> catch_zone,
 					point	=> element (device_cursor).position.place) 
 				then
 					log_indentation_up;
@@ -475,7 +492,7 @@ package body et_board_ops.devices is
 
 		
 	begin
-		log (text => "looking up devices in" & to_string (set_catch_zone (place, zone)),
+		log (text => "looking up devices in" & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -490,6 +507,9 @@ package body et_board_ops.devices is
 	end get_devices;
 
 
+	
+
+	
 	
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -555,11 +575,12 @@ package body et_board_ops.devices is
 	end modify_status;
 
 
+
+	
 	
 	procedure propose_non_electrical_devices (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_vector_model; -- x/y
-		zone			: in type_zone_radius; -- the circular area around the place
+		catch_zone		: in type_catch_zone;
 		count			: in out natural; -- the number of affected devices
 		log_threshold	: in type_log_level)
 	is
@@ -568,6 +589,7 @@ package body et_board_ops.devices is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+			
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electric)
@@ -578,6 +600,7 @@ package body et_board_ops.devices is
 				device.status.proposed := true;
 				count := count + 1;
 			end query_device;
+
 			
 			device_cursor : pac_devices_non_electric.cursor := module.devices_non_electric.first;
 		begin
@@ -588,7 +611,7 @@ package body et_board_ops.devices is
 				-- log_indentation_up;
 					
 				if in_catch_zone (
-					zone	=> set_catch_zone (place, zone), 
+					zone	=> catch_zone, 
 					point	=> element (device_cursor).position.place) 
 				then
 					-- log_indentation_up;
@@ -605,7 +628,7 @@ package body et_board_ops.devices is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " proposing non-electrical devices in" & to_string (set_catch_zone (place, zone)),
+			& " proposing non-electrical devices in" & to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -622,6 +645,8 @@ package body et_board_ops.devices is
 
 
 
+
+	
 	
 	procedure reset_proposed_non_electrical_devices (
 		module_cursor	: in pac_generic_modules.cursor;
