@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -72,6 +72,8 @@ package body et_board_ops.vias is
 	
 
 
+	
+
 	function to_string (
 		via	: in pac_proposed_vias.cursor)
 		return string
@@ -84,12 +86,13 @@ package body et_board_ops.vias is
 			& to_string (v.category) & ". Net " & to_string (n);
 	end to_string;
 
+
 	
 
+	
 	function get_vias (
 		module_cursor	: in pac_generic_modules.cursor;
-		point			: in type_vector_model;
-		zone			: in type_zone_radius;
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level)
 		return pac_proposed_vias.list
 	is
@@ -109,10 +112,11 @@ package body et_board_ops.vias is
 				net		: in type_net) 
 			is
 				via_cursor : pac_vias.cursor := net.route.vias.first;
+
 				
 				procedure query_via (via : in type_via) is begin
 					if in_catch_zone (
-						zone	=> set_catch_zone (point, zone),
+						zone	=> catch_zone,
 						point	=> via.position)
 					then
 						log (text => to_string (via.position) 
@@ -124,6 +128,7 @@ package body et_board_ops.vias is
 					end if;
 				end query_via;
 
+				
 			begin
 				while via_cursor /= pac_vias.no_element loop
 					query_element (via_cursor, query_via'access);
@@ -142,7 +147,7 @@ package body et_board_ops.vias is
 
 	begin
 		log (text => "looking up vias in " 
-			& to_string (set_catch_zone (point, zone)),
+			& to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -159,6 +164,8 @@ package body et_board_ops.vias is
 		return result;
 	end get_vias;
 
+
+	
 	
 	
 	procedure place_via (

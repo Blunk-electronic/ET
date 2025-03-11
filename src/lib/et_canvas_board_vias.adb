@@ -871,8 +871,7 @@ package body et_canvas_board_vias is
 		-- Collect all vias in the vicinity of the given point:
 		proposed_vias := get_vias (
 			module_cursor	=> active_module, 
-			point			=> point, 
-			zone			=> get_catch_zone (et_canvas_board_2.catch_zone),
+			catch_zone		=> set_catch_zone (point, get_catch_zone (et_canvas_board_2.catch_zone)),
 			log_threshold	=> log_threshold + 1);
 
 		--put_line (count_type'image (proposed_vias.length));
