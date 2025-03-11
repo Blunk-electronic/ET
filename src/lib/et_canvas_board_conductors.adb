@@ -369,7 +369,7 @@ package body et_canvas_board_conductors is
 			for layer in 1 .. get_deepest_conductor_layer (active_module) loop
 				if conductor_enabled (layer) then
 
-					catch_zone := set_catch_zone (point, get_catch_zone (et_canvas_board_2.catch_zone));
+					catch_zone := set_catch_zone (point, get_catch_zone (catch_zone_radius_default));
 
 					-- Lines of nets:
 					propose_lines (

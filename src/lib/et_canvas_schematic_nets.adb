@@ -373,7 +373,7 @@ package body et_canvas_schematic_nets is
 		proposed_segments := collect_segments (
 			module			=> active_module,
 			place			=> to_position (point, active_sheet),
-			zone			=> get_catch_zone (catch_zone),
+			zone			=> get_catch_zone (catch_zone_radius_default),
 			log_threshold	=> log_threshold + 1);
 
 		
@@ -934,7 +934,7 @@ package body et_canvas_schematic_nets is
 		proposed_segments := collect_segments (
 			module			=> active_module,
 			place			=> to_position (point, active_sheet),
-			zone			=> get_catch_zone (catch_zone),
+			zone			=> get_catch_zone (catch_zone_radius_default),
 			log_threshold	=> log_threshold + 1);
 
 		
@@ -1430,7 +1430,7 @@ package body et_canvas_schematic_nets is
 		proposed_labels := collect_labels (
 			module			=> active_module,
 			place			=> to_position (point, active_sheet),
-			zone			=> get_catch_zone (catch_zone),
+			zone			=> get_catch_zone (catch_zone_radius_default),
 			log_threshold	=> log_threshold + 1);
 
 		
@@ -1671,7 +1671,7 @@ package body et_canvas_schematic_nets is
 		proposed_labels := collect_labels (
 			module			=> active_module,
 			place			=> to_position (point, active_sheet),
-			zone			=> get_catch_zone (catch_zone),
+			zone			=> get_catch_zone (catch_zone_radius_default),
 			category		=> category,
 			log_threshold	=> log_threshold + 1);
 

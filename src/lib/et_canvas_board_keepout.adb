@@ -245,7 +245,7 @@ package body et_canvas_board_keepout is
 				
 				propose_segments (
 					module_cursor	=> active_module, 
-					catch_zone		=> set_catch_zone (point, get_catch_zone (et_canvas_board_2.catch_zone)), 
+					catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)), 
 					face			=> face,
 					count			=> count_total,
 					log_threshold	=> log_threshold + 2);

@@ -1013,6 +1013,9 @@ package et_canvas is
 
 
 
+	
+
+
 -- BUTTONS:
 
 	buttons_table		: gtk_table;
@@ -1237,6 +1240,9 @@ package et_canvas is
 
 -- CATCH ZONE:
 
+	catch_zone_radius_default : type_logical_pixels_positive := 20.0;
+	
+	
 	-- Returns a catch zone radius according to the current
 	-- zoom factor (S) and the given distance in pixels.
 	-- The zone is a circular area with a radius

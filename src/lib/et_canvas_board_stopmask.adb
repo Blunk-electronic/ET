@@ -313,7 +313,7 @@ package body et_canvas_board_stopmask is
 		begin
 			if stop_mask_enabled (face) then
 
-				catch_zone := set_catch_zone (point, get_catch_zone (et_canvas_board_2.catch_zone));
+				catch_zone := set_catch_zone (point, get_catch_zone (catch_zone_radius_default));
 				
 				propose_lines (
 					module_cursor	=> active_module, 

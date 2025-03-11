@@ -178,7 +178,7 @@ package body et_canvas_board_devices is
 		-- Propose all devices in the vicinity of the given point:
 		propose_devices (
 			module_cursor	=> active_module,
-			catch_zone		=> set_catch_zone (point, get_catch_zone (et_canvas_board_2.catch_zone)),
+			catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
 			count			=> count,
 			log_threshold	=> log_threshold + 1);
 		
@@ -235,7 +235,7 @@ package body et_canvas_board_devices is
 		-- Propose all devices in the vicinity of the given point:
 		propose_non_electrical_devices (
 			module_cursor	=> active_module,
-			catch_zone		=> set_catch_zone (point, get_catch_zone (et_canvas_board_2.catch_zone)),
+			catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
 			count			=> count,
 			log_threshold	=> log_threshold + 1);
 		

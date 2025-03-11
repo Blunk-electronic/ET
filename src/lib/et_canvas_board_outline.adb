@@ -281,7 +281,7 @@ package body et_canvas_board_outline is
 		begin
 			if board_contour_enabled then
 
-				catch_zone := set_catch_zone (point, get_catch_zone (et_canvas_board_2.catch_zone));
+				catch_zone := set_catch_zone (point, get_catch_zone (catch_zone_radius_default));
 				
 				propose_outer_contour_segments (
 					module_cursor	=> active_module, 
