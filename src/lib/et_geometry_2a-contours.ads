@@ -171,7 +171,13 @@ package et_geometry_2a.contours is
 		zone	: in type_catch_zone;
 		segment : in pac_segments.cursor)
 		return boolean;
-	
+
+
+	-- Moves a segment according to the point of attack:
+	procedure move_segment (
+		segment			: in out type_segment;
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model);
 	
 	
 	-- Iterates the segments. Aborts the process when the proceed-flag goes false:

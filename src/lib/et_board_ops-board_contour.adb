@@ -232,20 +232,11 @@ package body et_board_ops.board_contour is
 			is 
 				use et_object_status;
 			begin
-				case segment.shape is
-					when LINE =>
-						if in_catch_zone (
-							zone	=> catch_zone,
-							line	=> segment.segment_line)
-						then
-							set_proposed (segment);
-							count := count + 1;
-							log (text => to_string (segment), level => log_threshold + 1);
-						end if;
-
-					when ARC =>
-						null; -- CS
-				end case;
+				if in_catch_zone (catch_zone, segment) then
+					set_proposed (segment);
+					count := count + 1;
+					log (text => to_string (segment), level => log_threshold + 1);
+				end if;
 			end query_segment;
 
 			
@@ -608,16 +599,8 @@ package body et_board_ops.board_contour is
 		is
 			use pac_segments;
 
-			procedure do_it (s : in out type_segment) is
-			begin
-				case s.shape is
-					when LINE =>
-						move_line_to (s.segment_line, point_of_attack, destination);
-
-					when ARC =>
-						null;
-						-- CS
-				end case;
+			procedure do_it (s : in out type_segment) is begin
+				move_segment (s, point_of_attack, destination);
 			end do_it;
 			
 		begin
@@ -703,39 +686,15 @@ package body et_board_ops.board_contour is
 				
 				while c /= pac_segments.no_element loop
 
-					case element (c).shape is
-						when LINE =>
-							-- Delete the segment if it is inside the
-							-- given area around the the given point:
-							if in_catch_zone (
-								zone	=> catch_zone,
-								line	=> element (c).segment_line)
-							then
-								delete (module.board.board_contour.outline.contour.segments, c);
-								deleted := true;
+					-- Delete the segment if it is the given catch zone:					
+					if in_catch_zone (catch_zone, c) then
+						delete (module.board.board_contour.outline.contour.segments, c);
+						deleted := true;
 
-								-- CS update start/end point of predecessor/successor segment
+						-- CS update start/end point of predecessor/successor segment
 							
-								exit; -- CS no exit if all segments are to be deleted
-							end if;
-
-
-						when ARC =>
-							-- Delete the segment if it is inside the
-							-- given area around the the given point:
-							if in_catch_zone (
-								zone	=> catch_zone,
-								arc		=> element (c).segment_arc)
-							then
-								delete (module.board.board_contour.outline.contour.segments, c);
-								deleted := true;
-
-								-- CS update start/end point of predecessor/successor segment
-								
-								exit; -- CS no exit if all segments are to be deleted
-							end if;
-
-					end case;
+						exit; -- CS no exit if all segments are to be deleted
+					end if;
 					
 					next (c);
 				end loop;
@@ -953,20 +912,11 @@ package body et_board_ops.board_contour is
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
-				case segment.shape is
-					when LINE =>
-						if in_catch_zone (
-							zone	=> catch_zone,
-							line	=> segment.segment_line)
-						then
-							set_proposed (segment);
-							count := count + 1;
-							log (text => to_string (segment), level => log_threshold + 1);
-						end if;
-   
-					when ARC =>
-						null; -- CS
-				end case;
+				if in_catch_zone (catch_zone, segment) then
+					set_proposed (segment);
+					count := count + 1;
+					log (text => to_string (segment), level => log_threshold + 1);
+				end if;
 			end query_segment;
 
 
@@ -1232,14 +1182,7 @@ package body et_board_ops.board_contour is
 
 			-- Moves the candidate segment:
 			procedure do_it (s : in out type_segment) is begin
-				case s.shape is
-					when LINE =>
-						move_line_to (s.segment_line, point_of_attack, destination);
-
-					when ARC =>
-						null;
-						-- CS
-				end case;
+				move_segment (s, point_of_attack, destination);
 			end do_it;
 
 			
@@ -1377,7 +1320,7 @@ package body et_board_ops.board_contour is
 							   
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			 & " setting hole" & to_string (hole),
+			 & " setting hole " & to_string (hole),
 			level => log_threshold);
 
 		update_element (

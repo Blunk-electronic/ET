@@ -418,6 +418,33 @@ package body et_geometry_2a.contours is
 	
 
 
+
+	procedure move_segment (
+		segment			: in out type_segment;
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model)
+	is begin
+		case get_shape (segment) is
+			when LINE =>
+				move_line_to (
+					line			=> segment.segment_line, 
+					point_of_attack	=> point_of_attack, 
+					destination		=> destination);
+				
+			when ARC =>
+				move_arc_to (
+					arc				=> segment.segment_arc, 
+					point_of_attack	=> point_of_attack, 
+					destination		=> destination);
+
+		end case;
+	end move_segment;
+	
+
+
+
+
+	
 	
 	procedure iterate (
 		segments	: in pac_segments.list;

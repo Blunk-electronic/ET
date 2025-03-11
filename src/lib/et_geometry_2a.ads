@@ -1486,6 +1486,12 @@ package et_geometry_2a is
 		destination		: in type_vector_model);
 
 
+	procedure move_arc_to (
+		arc				: in out type_arc;
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model);
+
+	
 
 -- EXTENDED BOUNDING BOX COMPUTATIONS:
 

@@ -3474,6 +3474,18 @@ package body et_geometry_2a is
 
 
 
+	procedure move_arc_to (
+		arc				: in out type_arc;
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model)
+	is
+	begin
+		null;
+	end move_arc_to;
+
+
+	
+
 	function get_bounding_box (
 		line		: in type_line'class;
 		width		: in type_distance_positive;
