@@ -236,7 +236,7 @@ package body et_canvas_schematic_nets is
 		procedure query_segment (c : in pac_proposed_segments.cursor) is 
 			s : type_selected_segment := element (c);
 		begin
-			if between_start_and_end_point (point, s.segment) then
+			if between_start_and_end_point (set_catch_zone (point, 0.0), s.segment) then
 
 				if segment_orientation (s.segment) = SLOPING then
 					result := true;

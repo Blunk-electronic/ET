@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -117,6 +117,8 @@ package body et_schematic_ops.nets is
 	end lowest_available_anonymous_net;
 	
 
+
+	
 	function net_exists (
 		net_cursor : in pac_nets.cursor) 
 		return boolean 
@@ -130,45 +132,48 @@ package body et_schematic_ops.nets is
 
 
 	
+	
 	procedure junction_in_sloping_segment (point : in et_coordinates_2.type_position) is begin
 		log (ERROR, "Junction not allowed in a sloping net segment at" & to_string (point),
 			 console => true);
 		raise constraint_error;
 	end;
 
+
+	
 	
 	function between_start_and_end_point (
-		point 	: in type_vector_model;
-		segment : in pac_net_segments.cursor;
-		zone	: in type_zone_radius := type_zone_radius'first)
+		catch_zone	: in type_catch_zone;
+		segment 	: in pac_net_segments.cursor)
 		return boolean 
 	is
 		dist : type_distance_point_line;
 	begin
 		dist := get_distance (
-			point 		=> point,
+			point 		=> get_center (catch_zone),
 			line		=> element (segment),
 			line_range	=> BETWEEN_END_POINTS);
 
 		if (not out_of_range (dist)) 
-		and in_radius (get_distance (dist), zone) then
+		and in_radius (get_distance (dist), get_radius (catch_zone)) then
 			return true;
 		else
 			return false;
 		end if;
 	end between_start_and_end_point;
 
+
+	
 	
 	function on_segment (
-		point 	: in type_vector_model;
-		segment : in pac_net_segments.cursor;
-		zone	: in type_zone_radius := type_zone_radius'first)
+		catch_zone	: in type_catch_zone;
+		segment 	: in pac_net_segments.cursor)
 		return boolean 
 	is
 		dist : type_distance_point_line;
 	begin
 		dist := get_distance (
-			point 		=> point,
+			point 		=> get_center (catch_zone),
 			line		=> element (segment),
 			line_range	=> WITH_END_POINTS);
 
@@ -179,12 +184,14 @@ package body et_schematic_ops.nets is
 -- 			);
 		
 		if (not out_of_range (dist)) 
-		and in_radius (get_distance (dist), zone) then
+		and in_radius (get_distance (dist), get_radius (catch_zone)) then
 			return true;
 		else
 			return false;
 		end if;
 	end on_segment;
+
+
 	
 	
 	procedure rename_net (
@@ -675,8 +682,8 @@ package body et_schematic_ops.nets is
 						-- If segment crosses the given x/y position (in place),
 						-- delete the segment.
 						if between_start_and_end_point (
-							point	=> place.place,
-							segment	=> segment_cursor) 
+							catch_zone	=> set_catch_zone (center => place.place, radius => 0.0),
+							segment		=> segment_cursor) 
 						then
 							delete (strand.segments, segment_cursor);
 
@@ -1243,9 +1250,8 @@ package body et_schematic_ops.nets is
 						-- If segment crosses the given x/y position (in point_of_attack) then
 						-- the segment has been found:
 						if on_segment (
-							point	=> point_of_attack.place,
-							segment	=> segment_cursor,
-							zone	=> accuracy_default)
+							catch_zone	=> set_catch_zone (point_of_attack.place, accuracy_default),
+							segment		=> segment_cursor)
 						then
 							--log (text => "point of attack sits on segment", level => log_threshold + 1);
 							
@@ -1371,8 +1377,7 @@ package body et_schematic_ops.nets is
 		end query_net;
 
 
-		praeamble : constant string := "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
+		praeamble : constant string := "module " & to_string (module_cursor)
 			& " dragging segment of net " & enclose_in_quotes (to_string (net_name))
 			& " / point of attack" & to_string (position => point_of_attack)
 			& " ";
@@ -1847,7 +1852,7 @@ package body et_schematic_ops.nets is
 -- 								segment_found := true;
 								
 								-- test whether a junction is required at place
-								if between_start_and_end_point (place.place, segment_cursor) then
+								if between_start_and_end_point (set_catch_zone (place.place, 0.0), segment_cursor) then
 
 									-- It is not allowed to place a junction in a sloped segment,
 									-- because splitting sloping segments seems a rare, difficult and dangerous task.
@@ -2735,8 +2740,8 @@ package body et_schematic_ops.nets is
 							exit; -- no need to search for other segments
 							
 						elsif between_start_and_end_point (
-							point	=> place.place,
-							segment	=> segment_cursor) 
+							catch_zone	=> set_catch_zone (place.place, 0.0),
+							segment		=> segment_cursor) 
 						then -- targeted segment found
 
 							log (text => "net " & to_string (net_name) & " strand" &

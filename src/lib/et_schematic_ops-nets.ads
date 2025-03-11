@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -72,22 +72,20 @@ package et_schematic_ops.nets is
 		);
 
 	-- Returns true if given point sits between start and end point of given segment.
-	-- The zone is a means of reducing the accuracy. The greater the zone
-	-- the greater can be the distance of point from the segment.
+	-- The catch zone is a means of reducing the accuracy. The greater the zone
+	-- the greater can be the distance to the segment:
 	function between_start_and_end_point (
-		point 	: in type_vector_model;
-		segment : in pac_net_segments.cursor;
-		zone	: in type_zone_radius := type_zone_radius'first)
+		catch_zone	: in type_catch_zone;
+		segment		: in pac_net_segments.cursor)
 		return boolean;
 
 	
-	-- Returns true if given point sits on the given segment.
-	-- The zone is a means of reducing the accuracy. The greater the zone
-	-- the greater can be the distance of point from the segment.
+	-- Returns true if given center of a zone in on the given segment.
+	-- The catch zone is a means of reducing the accuracy. The greater the zone
+	-- the greater can be the distance to the segment:
 	function on_segment (
-		point 	: in type_vector_model;
-		segment : in pac_net_segments.cursor;
-		zone	: in type_zone_radius := type_zone_radius'first)
+		catch_zone	: in type_catch_zone;
+		segment 	: in pac_net_segments.cursor)
 		return boolean;
 
 	
