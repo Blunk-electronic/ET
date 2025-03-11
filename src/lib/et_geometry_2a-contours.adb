@@ -343,6 +343,16 @@ package body et_geometry_2a.contours is
 		clear_moving (segment);
 	end reset_status;
 	
+
+
+
+	function get_shape (
+		segment	: in type_segment)
+		return type_segment_shape
+	is begin
+		return segment.shape;
+	end get_shape;
+
 	
 
 	function get_shape (
@@ -352,8 +362,62 @@ package body et_geometry_2a.contours is
 		return element (segment).shape;
 	end get_shape;
 
+
+
+
+	function in_catch_zone (
+		zone	: in type_catch_zone;
+		segment : in type_segment)
+		return boolean
+	is 
+		result : boolean := false;
+	begin
+		case get_shape (segment) is
+			when LINE =>
+				if in_catch_zone (zone, segment.segment_line) then 
+					result := true;
+				end if;
+
+			when ARC =>
+				if in_catch_zone (zone, segment.segment_arc) then 
+					result := true;
+				end if;
+
+				return true;
+		end case;
+
+		return result;
+	end in_catch_zone;
 	
+
 	
+
+	function in_catch_zone (
+		zone	: in type_catch_zone;
+		segment : in pac_segments.cursor)
+		return boolean
+	is 
+		result : boolean := false;
+	begin
+		case get_shape (segment) is
+			when LINE =>
+				if in_catch_zone (zone, element (segment).segment_line) then 
+					result := true;
+				end if;
+
+			when ARC =>
+				if in_catch_zone (zone, element (segment).segment_arc) then 
+					result := true;
+				end if;
+
+				return true;
+		end case;
+
+		return result;
+	end in_catch_zone;
+	
+
+
 	
 	procedure iterate (
 		segments	: in pac_segments.list;

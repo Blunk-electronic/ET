@@ -144,11 +144,34 @@ package et_geometry_2a.contours is
 	procedure reset_status (
 		segment 	: in out type_segment);
 							   
+
+
+	function get_shape (
+		segment	: in type_segment)
+		return type_segment_shape;
+
 	
 	function get_shape (
 		segment	: in pac_segments.cursor)
 		return type_segment_shape;
 
+
+
+	-- Returns true if the given segment
+	-- is in the given catch zone:
+	function in_catch_zone (
+		zone	: in type_catch_zone;
+		segment : in type_segment)
+		return boolean;
+	
+
+	-- Returns true if the given segment
+	-- is in the given catch zone:
+	function in_catch_zone (
+		zone	: in type_catch_zone;
+		segment : in pac_segments.cursor)
+		return boolean;
+	
 	
 	
 	-- Iterates the segments. Aborts the process when the proceed-flag goes false:
