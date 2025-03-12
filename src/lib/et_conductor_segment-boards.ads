@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -145,6 +145,7 @@ package et_conductor_segment.boards is
 	
 	
 	-- Returns true if the given point sits on the given line.
+	-- CS: rename to in_catch_zone (catch_zone, layer, line)
 	function on_segment (
 		point		: in type_vector_model; -- x/y
 		layer		: in type_signal_layer;
