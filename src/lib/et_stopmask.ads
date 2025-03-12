@@ -196,6 +196,14 @@ package et_stopmask is
 	use pac_stop_zones;
 
 
+
+	-- Returns true if the given zone consists of a circle:
+	function is_circular (
+		zone	: in pac_stop_zones.cursor)
+		return boolean;
+
+
+	
 	-- Iterates the zones.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (

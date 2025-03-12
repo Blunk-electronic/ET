@@ -317,6 +317,20 @@ package body et_assy_doc is
 	end move_circles;
 
 
+
+
+	function is_circular (
+		zone	: in pac_doc_zones.cursor)
+		return boolean
+	is begin
+		if is_circular (element (zone)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_circular;
+
+
 	
 
 	procedure iterate (

@@ -192,7 +192,7 @@ package et_stencil is
 	
 
 
--- CONTOURS
+-- ZONES:
 	
 	type type_stencil_zone is new type_contour with null record;
 	
@@ -200,6 +200,13 @@ package et_stencil is
 	use pac_stencil_zones;
 
 
+	-- Returns true if the given zone consists of a circle:
+	function is_circular (
+		zone	: in pac_stencil_zones.cursor)
+		return boolean;
+
+
+	
 	-- Iterates the contours. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		zones	: in pac_stencil_zones.list;

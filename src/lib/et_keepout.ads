@@ -61,6 +61,13 @@ package et_keepout is
 	use pac_keepout_zones;
 
 
+	-- Returns true if the given zone consists of a circle:
+	function is_circular (
+		zone	: in pac_keepout_zones.cursor)
+		return boolean;
+
+	
+	
 	-- Iterates the zones.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (

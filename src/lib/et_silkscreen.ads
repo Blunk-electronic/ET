@@ -188,12 +188,21 @@ package et_silkscreen is
 
 
 	
--- CONTOURS:
+-- ZONES:
 	
 	type type_silk_zone is new type_contour with null record;
 	package pac_silk_zones is new doubly_linked_lists (type_silk_zone);
 	use pac_silk_zones;
 
+
+	-- Returns true if the given zone consists of a circle:
+	function is_circular (
+		zone	: in pac_silk_zones.cursor)
+		return boolean;
+
+
+
+	
 
 	-- Iterates the zones.
 	-- Aborts the process when the proceed-flag goes false:

@@ -317,6 +317,20 @@ package body et_silkscreen is
 
 
 
+	function is_circular (
+		zone	: in pac_silk_zones.cursor)
+		return boolean
+	is begin
+		if is_circular (element (zone)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_circular;
+
+	
+
+
 	procedure iterate (
 		zones	: in pac_silk_zones.list;
 		process	: not null access procedure (position : in pac_silk_zones.cursor);
