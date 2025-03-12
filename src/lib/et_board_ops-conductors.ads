@@ -249,6 +249,7 @@ package et_board_ops.conductors is
 	-- If freetracks is false, then only nets are adressed.
 	-- If freetracks is true, then only freetracks are adressed:
 	-- Adds to count the number of lines that have been found:
+	-- CS extend so that arces are also proposed ?
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -262,6 +263,7 @@ package et_board_ops.conductors is
 	-- Clears the proposed-flag and the selected-flag of all lines.
 	-- If freetracks is false, then only nets are adressed.
 	-- If freetracks is true, then only freetracks are adressed:
+	-- CS extend so that arces are also reset ?
 	procedure reset_proposed_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		freetracks		: in boolean;							   

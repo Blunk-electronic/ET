@@ -171,7 +171,7 @@ package body et_board_ops.keepout is
 			procedure query_zone (
 				zone : in out type_keepout_zone)
 			is begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					-- Locate the given segment in the
@@ -248,20 +248,11 @@ package body et_board_ops.keepout is
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
-				case segment.shape is
-					when LINE =>
-						if in_catch_zone (
-							zone	=> catch_zone,
-							line	=> segment.segment_line)
-						then
-							set_proposed (segment);
-							count := count + 1;
-							log (text => to_string (segment), level => log_threshold + 1);
-						end if;
-   
-					when ARC =>
-						null; -- CS
-				end case;
+				if in_catch_zone (catch_zone, segment) then
+					set_proposed (segment);
+					count := count + 1;
+					log (text => to_string (segment), level => log_threshold + 1);
+				end if;
 			end query_segment;
 
 
@@ -274,7 +265,7 @@ package body et_board_ops.keepout is
 				c : pac_segments.cursor;
 				
 			begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					c := zone.contour.segments.first;
@@ -374,7 +365,7 @@ package body et_board_ops.keepout is
 				c : pac_segments.cursor;
 				
 			begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					c := zone.contour.segments.first;
@@ -498,7 +489,7 @@ package body et_board_ops.keepout is
 
 				
 			begin
-				if element (z).contour.circular then
+				if is_circular (z) then
 					null; -- CS
 				else
 					query_element (z, query_segments'access);
@@ -570,14 +561,7 @@ package body et_board_ops.keepout is
 
 			-- Moves the candidate segment:
 			procedure do_it (s : in out type_segment) is begin
-				case s.shape is
-					when LINE =>
-						move_line_to (s.segment_line, point_of_attack, destination);
-
-					when ARC =>
-						null;
-						-- CS
-				end case;
+				move_segment (s, point_of_attack, destination);
 			end do_it;
 
 			
@@ -586,7 +570,7 @@ package body et_board_ops.keepout is
 			is 
 				c : pac_segments.cursor;
 			begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					-- Locate the given segment in 
@@ -664,7 +648,7 @@ package body et_board_ops.keepout is
 			is 
 				c : pac_segments.cursor;
 			begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					-- Delete the given segment:
@@ -806,8 +790,9 @@ package body et_board_ops.keepout is
 			procedure query_zone (zone : in type_keepout_zone) is
 				use pac_contours;
 				use pac_segments;
-				-- CS test circular flag !!
-				segment_cursor : pac_segments.cursor := zone.contour.segments.first;
+
+				segment_cursor : pac_segments.cursor;
+
 				
 				procedure query_segment (segment : in type_segment) is 
 
@@ -834,12 +819,19 @@ package body et_board_ops.keepout is
 						when others => null; -- CS
 					end case;
 				end query_segment;
+
 				
 			begin
-				while segment_cursor /= pac_segments.no_element loop
-					query_element (segment_cursor, query_segment'access);
-					next (segment_cursor);
-				end loop;
+				if is_circular (zone) then
+					null; -- CS
+				else
+					segment_cursor := zone.contour.segments.first;
+					
+					while segment_cursor /= pac_segments.no_element loop
+						query_element (segment_cursor, query_segment'access);
+						next (segment_cursor);
+					end loop;
+				end if;
 			end query_zone;
 			
 			

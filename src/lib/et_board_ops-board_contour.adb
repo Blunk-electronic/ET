@@ -229,9 +229,7 @@ package body et_board_ops.board_contour is
 			
 			procedure query_segment (
 				segment	: in out type_segment)
-			is 
-				use et_object_status;
-			begin
+			is begin
 				if in_catch_zone (catch_zone, segment) then
 					set_proposed (segment);
 					count := count + 1;
@@ -543,16 +541,8 @@ package body et_board_ops.board_contour is
 		is
 			use pac_segments;
 
-			procedure do_it (s : in out type_segment) is
-			begin
-				case s.shape is
-					when LINE =>
-						move_line_to (s.segment_line, point_of_attack, destination);
-
-					when ARC =>
-						null;
-						-- CS
-				end case;
+			procedure do_it (s : in out type_segment) is begin
+				move_segment (s, point_of_attack, destination);
 			end do_it;
 			
 		begin

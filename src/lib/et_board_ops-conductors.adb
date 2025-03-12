@@ -215,7 +215,7 @@ package body et_board_ops.conductors is
 				new_item	=> line);
 		end;
 		
-	begin -- draw_track_line
+	begin
 		log (text => "module " & to_string (module_name) &
 			freetrack (net_name) &
 			" drawing " & to_string (line, true),  -- log incl. width
@@ -732,6 +732,7 @@ package body et_board_ops.conductors is
 	
 
 	
+	
 	function get_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -915,9 +916,7 @@ package body et_board_ops.conductors is
 			
 			procedure query_line (
 				line : in out type_conductor_line)
-			is 
-				use et_object_status;
-			begin
+			is begin
 				if line.layer = layer then
 					if in_catch_zone (
 						zone	=> catch_zone,
@@ -2097,8 +2096,7 @@ package body et_board_ops.conductors is
 
 		
 	begin -- add_zone
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
+		log (text => "module " & to_string (module_cursor)
 			& " placing fill zone in conductor layer ...",
 			level => log_threshold);
 
@@ -2181,7 +2179,7 @@ package body et_board_ops.conductors is
 			is 
 				
 				procedure query_zone_solid (zone : in out type_route_solid) is begin
-					if zone.contour.circular then
+					if is_circular (zone) then
 						null; -- CS
 					else
 						-- Locate the given segment in the
@@ -2195,7 +2193,7 @@ package body et_board_ops.conductors is
 
 				
 				procedure query_zone_hatched (zone : in out type_route_hatched) is begin
-					if zone.contour.circular then
+					if is_circular (zone) then
 						null; -- CS
 					else
 						-- Locate the given segment in the
@@ -2283,7 +2281,7 @@ package body et_board_ops.conductors is
 			
 				
 			procedure query_zone_solid (zone : in out type_floating_solid) is begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					-- Locate the given segment in the
@@ -2297,7 +2295,7 @@ package body et_board_ops.conductors is
 
 			
 			procedure query_zone_hatched (zone : in out type_floating_hatched) is begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					-- Locate the given segment in the
@@ -2374,20 +2372,11 @@ package body et_board_ops.conductors is
 			is
 
 				procedure query_segment (segment : in out type_segment) is begin
-					case segment.shape is
-						when LINE =>
-							if in_catch_zone (
-								zone	=> catch_zone,
-								line	=> segment.segment_line)
-							then
-								set_proposed (segment);
-								count := count + 1;
-								log (text => to_string (segment), level => log_threshold + 1);
-							end if;
-	
-						when ARC =>
-							null; -- CS
-					end case;
+					if in_catch_zone (catch_zone, segment) then
+						set_proposed (segment);
+						count := count + 1;
+						log (text => to_string (segment), level => log_threshold + 1);
+					end if;
 				end query_segment;
 
 				
@@ -2395,7 +2384,7 @@ package body et_board_ops.conductors is
 					sc : pac_segments.cursor;
 				begin
 					if zone.properties.layer = layer then
-						if zone.contour.circular then
+						if is_circular (zone) then
 							null; -- CS
 						else
 							sc := zone.contour.segments.first;
@@ -2413,7 +2402,7 @@ package body et_board_ops.conductors is
 					sc : pac_segments.cursor;
 				begin
 					if zone.properties.layer = layer then
-						if zone.contour.circular then
+						if is_circular (zone) then
 							null; -- CS
 						else
 							sc := zone.contour.segments.first;
@@ -2493,20 +2482,11 @@ package body et_board_ops.conductors is
 
 
 			procedure query_segment (segment : in out type_segment) is begin
-				case segment.shape is
-					when LINE =>
-						if in_catch_zone (
-							zone	=> catch_zone,
-							line	=> segment.segment_line)
-						then
-							set_proposed (segment);
-							count := count + 1;
-							log (text => to_string (segment), level => log_threshold + 1);
-						end if;
-
-					when ARC =>
-						null; -- CS
-				end case;
+				if in_catch_zone (catch_zone, segment) then
+					set_proposed (segment);
+					count := count + 1;
+					log (text => to_string (segment), level => log_threshold + 1);
+				end if;
 			end query_segment;
 
 			
@@ -2514,7 +2494,7 @@ package body et_board_ops.conductors is
 				sc : pac_segments.cursor;
 			begin
 				if zone.properties.layer = layer then
-					if zone.contour.circular then
+					if is_circular (zone) then
 						null; -- CS
 					else
 						sc := zone.contour.segments.first;
@@ -2532,7 +2512,7 @@ package body et_board_ops.conductors is
 				sc : pac_segments.cursor;
 			begin
 				if zone.properties.layer = layer then
-					if zone.contour.circular then
+					if is_circular (zone) then
 						null; -- CS
 					else
 						sc := zone.contour.segments.first;
@@ -2613,7 +2593,7 @@ package body et_board_ops.conductors is
 				procedure query_zone_solid (zone : in out type_route_solid) is
 					sc : pac_segments.cursor;
 				begin
-					if zone.contour.circular then
+					if is_circular (zone) then
 						null; -- CS
 					else
 						sc := zone.contour.segments.first;
@@ -2629,7 +2609,7 @@ package body et_board_ops.conductors is
 				procedure query_zone_hatched (zone : in out type_route_hatched) is
 					sc : pac_segments.cursor;
 				begin
-					if zone.contour.circular then
+					if is_circular (zone) then
 						null; -- CS
 					else
 						sc := zone.contour.segments.first;
@@ -2712,7 +2692,7 @@ package body et_board_ops.conductors is
 			procedure query_zone_solid (zone : in out type_floating_solid) is
 				sc : pac_segments.cursor;
 			begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					sc := zone.contour.segments.first;
@@ -2728,7 +2708,7 @@ package body et_board_ops.conductors is
 			procedure query_zone_hatched (zone : in out type_floating_hatched) is
 				sc : pac_segments.cursor;
 			begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					sc := zone.contour.segments.first;
@@ -2841,7 +2821,7 @@ package body et_board_ops.conductors is
 
 				
 				procedure query_zone_solid (zone : in type_route_solid) is begin
-					if zone.contour.circular then
+					if is_circular (zone) then
 						null; -- CS
 					else
 						sc := zone.contour.segments.first;
@@ -2858,7 +2838,7 @@ package body et_board_ops.conductors is
 
 				
 				procedure query_zone_hatched (zone : in type_route_hatched) is begin
-					if zone.contour.circular then
+					if is_circular (zone) then
 						null; -- CS
 					else
 						sc := zone.contour.segments.first;
@@ -3023,7 +3003,7 @@ package body et_board_ops.conductors is
 
 			
 			procedure query_zone_solid (zone : in type_floating_solid) is begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					sc := zone.contour.segments.first;
@@ -3040,7 +3020,7 @@ package body et_board_ops.conductors is
 
 			
 			procedure query_zone_hatched (zone : in type_floating_hatched) is begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					sc := zone.contour.segments.first;
@@ -3159,19 +3139,12 @@ package body et_board_ops.conductors is
 
 				-- Moves the candidate segment:
 				procedure query_segment (s : in out type_segment) is begin
-					case s.shape is
-						when LINE =>
-							move_line_to (s.segment_line, point_of_attack, destination);
-
-						when ARC =>
-							null;
-							-- CS
-					end case;
+					move_segment (s, point_of_attack, destination);
 				end query_segment;
 
 				
 				procedure query_zone_solid (zone : in out type_route_solid) is begin
-					if zone.contour.circular then
+					if is_circular (zone) then
 						null; -- CS
 					else
 						-- Locate the given segment:
@@ -3181,7 +3154,7 @@ package body et_board_ops.conductors is
 
 				
 				procedure query_zone_hatched (zone : in out type_route_hatched) is begin
-					if zone.contour.circular then
+					if is_circular (zone) then
 						null; -- CS
 					else
 						-- Locate the given segment:
@@ -3251,19 +3224,12 @@ package body et_board_ops.conductors is
 
 			-- Moves the candidate segment:
 			procedure query_segment (s : in out type_segment) is begin
-				case s.shape is
-					when LINE =>
-						move_line_to (s.segment_line, point_of_attack, destination);
-
-					when ARC =>
-						null;
-						-- CS
-				end case;
+				move_segment (s, point_of_attack, destination);
 			end query_segment;
 
 			
 			procedure query_zone_solid (zone : in out type_floating_solid) is begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					-- Locate the given segment:
@@ -3273,7 +3239,7 @@ package body et_board_ops.conductors is
 
 			
 			procedure query_zone_hatched (zone : in out type_floating_hatched) is begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					-- Locate the given segment:
@@ -3340,7 +3306,7 @@ package body et_board_ops.conductors is
 				procedure query_zone_solid (zone : in out type_route_solid) is 
 					c : pac_segments.cursor := segment.segment;
 				begin
-					if zone.contour.circular then
+					if is_circular (zone) then
 						null; -- CS
 					else
 						-- Delete the given segment:
@@ -3352,7 +3318,7 @@ package body et_board_ops.conductors is
 				procedure query_zone_hatched (zone : in out type_route_hatched) is 
 					c : pac_segments.cursor := segment.segment;
 				begin
-					if zone.contour.circular then
+					if is_circular (zone) then
 						null; -- CS
 					else
 						-- Delete the given segment:
@@ -3419,7 +3385,7 @@ package body et_board_ops.conductors is
 			procedure query_zone_solid (zone : in out type_floating_solid) is 
 				c : pac_segments.cursor := segment.segment;
 			begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					-- Delete the given segment:
@@ -3431,7 +3397,7 @@ package body et_board_ops.conductors is
 			procedure query_zone_hatched (zone : in out type_floating_hatched) is 
 				c : pac_segments.cursor := segment.segment;
 			begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					-- Delete the given segment:

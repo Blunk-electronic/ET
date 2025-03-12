@@ -582,6 +582,7 @@ package body et_board_ops.silkscreen is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -598,6 +599,7 @@ package body et_board_ops.silkscreen is
 						new_item	=> arc);
 			end case;
 		end;
+
 		
 	begin
 		log (text => "module " & to_string (module_name) &
@@ -621,6 +623,7 @@ package body et_board_ops.silkscreen is
 
 
 	
+	
 	procedure add_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
@@ -629,6 +632,7 @@ package body et_board_ops.silkscreen is
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
+		
 		procedure add (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -646,7 +650,8 @@ package body et_board_ops.silkscreen is
 
 			end case;
 		end;
-							   
+
+		
 	begin
 		log (text => "module " & to_string (module_name) &
 			" drawing silkscreen circle" &
@@ -667,6 +672,7 @@ package body et_board_ops.silkscreen is
 
 
 
+	
 
 	procedure add_zone (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -763,6 +769,7 @@ package body et_board_ops.silkscreen is
 
 
 
+	
 
 
 	procedure modify_status (
@@ -791,7 +798,7 @@ package body et_board_ops.silkscreen is
 			procedure query_zone (
 				zone : in out type_silk_zone)
 			is begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					-- Locate the given segment in the
@@ -843,6 +850,7 @@ package body et_board_ops.silkscreen is
 	end modify_status;
 
 
+
 	
 
 
@@ -868,21 +876,12 @@ package body et_board_ops.silkscreen is
 			procedure query_segment (
 				segment	: in out type_segment)
 			is begin
-				case segment.shape is
-					when LINE =>
-						if in_catch_zone (
-							zone	=> catch_zone,
-							line	=> segment.segment_line)
-						then
-							set_proposed (segment);
-							count := count + 1;
-							log (text => to_string (segment), level => log_threshold + 1);
-						end if;
-   
-					when ARC =>
-						null; -- CS
-				end case;
-			end query_segment;
+				if in_catch_zone (catch_zone, segment) then
+					set_proposed (segment);
+					count := count + 1;
+					log (text => to_string (segment), level => log_threshold + 1);
+				end if;
+   			end query_segment;
 
 
 			
@@ -894,7 +893,7 @@ package body et_board_ops.silkscreen is
 				c : pac_segments.cursor;
 				
 			begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					c := zone.contour.segments.first;
@@ -994,7 +993,7 @@ package body et_board_ops.silkscreen is
 				c : pac_segments.cursor;
 				
 			begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					c := zone.contour.segments.first;
@@ -1052,6 +1051,7 @@ package body et_board_ops.silkscreen is
 	end reset_proposed_segments;
 
 
+	
 
 
 	function get_first_segment (
@@ -1118,7 +1118,7 @@ package body et_board_ops.silkscreen is
 
 				
 			begin
-				if element (z).contour.circular then
+				if is_circular (z) then
 					null; -- CS
 				else
 					query_element (z, query_segments'access);
@@ -1190,14 +1190,7 @@ package body et_board_ops.silkscreen is
 
 			-- Moves the candidate segment:
 			procedure do_it (s : in out type_segment) is begin
-				case s.shape is
-					when LINE =>
-						move_line_to (s.segment_line, point_of_attack, destination);
-
-					when ARC =>
-						null;
-						-- CS
-				end case;
+				move_segment (s, point_of_attack, destination);
 			end do_it;
 
 			
@@ -1206,7 +1199,7 @@ package body et_board_ops.silkscreen is
 			is 
 				c : pac_segments.cursor;
 			begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					-- Locate the given segment in 
@@ -1284,7 +1277,7 @@ package body et_board_ops.silkscreen is
 			is 
 				c : pac_segments.cursor;
 			begin
-				if zone.contour.circular then
+				if is_circular (zone) then
 					null; -- CS
 				else
 					-- Delete the given segment:
