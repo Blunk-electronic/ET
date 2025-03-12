@@ -1329,6 +1329,7 @@ package body et_geometry_2a is
 			return false;
 		end if;
 	end is_selected;
+
 	
 	procedure set_selected (
 		line : in out type_line)
@@ -1336,6 +1337,7 @@ package body et_geometry_2a is
 		line.status.selected := true;
 	end set_selected;
 
+	
 	procedure clear_selected (
 		line : in out type_line)
 	is begin
@@ -1355,6 +1357,7 @@ package body et_geometry_2a is
 			return false;
 		end if;
 	end is_proposed;
+
 	
 	procedure set_proposed (
 		line : in out type_line)
@@ -1362,6 +1365,7 @@ package body et_geometry_2a is
 		line.status.proposed := true;
 	end set_proposed;
 
+	
 	procedure clear_proposed (
 		line : in out type_line)
 	is begin
@@ -1383,12 +1387,14 @@ package body et_geometry_2a is
 		end if;
 	end is_moving;
 
+	
 	procedure set_moving (
 		line : in out type_line)
 	is begin
 		line.status.moving := true;
 	end set_moving;
 
+	
 	procedure clear_moving (
 		line : in out type_line)
 	is begin
@@ -1736,6 +1742,146 @@ package body et_geometry_2a is
 	end to_string;
 
 
+
+	function is_selected (
+		arc : in type_arc)
+		return boolean
+	is begin
+		if arc.status.selected then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+
+	
+	procedure set_selected (
+		arc : in out type_arc)
+	is begin
+		arc.status.selected := true;
+	end set_selected;
+
+	
+	procedure clear_selected (
+		arc : in out type_arc)
+	is begin
+		arc.status.selected := false;
+	end clear_selected;
+
+	
+	
+
+	function is_proposed (
+		arc : in type_arc)
+		return boolean
+	is begin
+		if arc.status.proposed then
+			return true;
+		else 
+			return false;
+		end if;
+	end is_proposed;
+
+	
+	procedure set_proposed (
+		arc : in out type_arc)
+	is begin
+		arc.status.proposed := true;
+	end set_proposed;
+
+	
+	procedure clear_proposed (
+		arc : in out type_arc)
+	is begin
+		arc.status.proposed := false;
+	end clear_proposed;
+
+
+	
+
+
+	function is_moving (
+		arc : in type_arc)
+		return boolean
+	is begin
+		if arc.status.moving then
+			return true;
+		else 
+			return false;
+		end if;
+	end is_moving;
+
+	
+	procedure set_moving (
+		arc : in out type_arc)
+	is begin
+		arc.status.moving := true;
+	end set_moving;
+
+	
+	procedure clear_moving (
+		arc : in out type_arc)
+	is begin
+		arc.status.moving := false;
+	end clear_moving;
+
+
+
+	procedure modify_status (
+		arc 		: in out type_arc;
+		operation	: in type_status_operation)						
+	is begin
+		case operation.flag is
+			when SELECTED =>
+				case operation.action is
+					when SET =>
+						set_selected (arc);
+
+					when CLEAR =>
+						clear_selected (arc);
+				end case;
+
+				
+			when PROPOSED =>
+				case operation.action is
+					when SET =>
+						set_proposed (arc);
+
+					when CLEAR =>
+						clear_proposed (arc);
+				end case;
+
+				
+			when MOVING =>
+				case operation.action is
+					when SET =>
+						set_moving (arc);
+
+					when CLEAR =>
+						clear_moving (arc);
+				end case;
+
+				
+			when others =>
+				null; -- CS
+		end case;
+	end modify_status;
+
+	
+
+	procedure reset_status (
+		arc 		: in out type_arc)
+	is begin
+		clear_selected (arc);
+		clear_proposed (arc);
+		clear_moving (arc);
+	end reset_status;
+
+
+
+
+
+	
 
 	function reverse_arc (arc : in type_arc) return type_arc'class is
 		result : type_arc := arc;
@@ -2616,6 +2762,145 @@ package body et_geometry_2a is
 	end to_string;
 
 
+
+	function is_selected (
+		circle : in type_circle)
+		return boolean
+	is begin
+		if circle.status.selected then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+
+	
+	procedure set_selected (
+		circle : in out type_circle)
+	is begin
+		circle.status.selected := true;
+	end set_selected;
+
+	
+	procedure clear_selected (
+		circle : in out type_circle)
+	is begin
+		circle.status.selected := false;
+	end clear_selected;
+
+	
+	
+
+	function is_proposed (
+		circle : in type_circle)
+		return boolean
+	is begin
+		if circle.status.proposed then
+			return true;
+		else 
+			return false;
+		end if;
+	end is_proposed;
+
+	
+	procedure set_proposed (
+		circle : in out type_circle)
+	is begin
+		circle.status.proposed := true;
+	end set_proposed;
+
+	
+	procedure clear_proposed (
+		circle : in out type_circle)
+	is begin
+		circle.status.proposed := false;
+	end clear_proposed;
+
+
+	
+
+
+	function is_moving (
+		circle : in type_circle)
+		return boolean
+	is begin
+		if circle.status.moving then
+			return true;
+		else 
+			return false;
+		end if;
+	end is_moving;
+
+	
+	procedure set_moving (
+		circle : in out type_circle)
+	is begin
+		circle.status.moving := true;
+	end set_moving;
+
+	
+	procedure clear_moving (
+		circle : in out type_circle)
+	is begin
+		circle.status.moving := false;
+	end clear_moving;
+
+
+
+	procedure modify_status (
+		circle 		: in out type_circle;
+		operation	: in type_status_operation)						
+	is begin
+		case operation.flag is
+			when SELECTED =>
+				case operation.action is
+					when SET =>
+						set_selected (circle);
+
+					when CLEAR =>
+						clear_selected (circle);
+				end case;
+
+				
+			when PROPOSED =>
+				case operation.action is
+					when SET =>
+						set_proposed (circle);
+
+					when CLEAR =>
+						clear_proposed (circle);
+				end case;
+
+				
+			when MOVING =>
+				case operation.action is
+					when SET =>
+						set_moving (circle);
+
+					when CLEAR =>
+						clear_moving (circle);
+				end case;
+
+				
+			when others =>
+				null; -- CS
+		end case;
+	end modify_status;
+
+	
+
+	procedure reset_status (
+		circle 		: in out type_circle)
+	is begin
+		clear_selected (circle);
+		clear_proposed (circle);
+		clear_moving (circle);
+	end reset_status;
+
+
+
+
+	
 	function to_radius (
 		r : in string)
 		return type_distance_positive

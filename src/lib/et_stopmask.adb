@@ -148,13 +148,11 @@ package body et_stopmask is
 		arc_cursor	: in pac_stop_arcs.cursor)
 		return boolean
 	is begin
-		-- if element (arc_cursor).status.proposed then
-		-- 	return true;
-		-- else
-		-- 	return false;
-		-- end if;
-
-		return false; -- CS
+		if is_proposed (element (arc_cursor)) then
+			return true;
+		else
+			return false;
+		end if;
 	end is_proposed;
 	
 
@@ -162,13 +160,11 @@ package body et_stopmask is
 		arc_cursor	: in pac_stop_arcs.cursor)
 		return boolean
 	is begin
-		-- if element (arc_cursor).status.proposed then
-		-- 	return true;
-		-- else
-		-- 	return false;
-		-- end if;
-
-		return false; -- CS
+		if is_selected (element (arc_cursor)) then
+			return true;
+		else
+			return false;
+		end if;
 	end is_selected;
 
 
@@ -240,13 +236,11 @@ package body et_stopmask is
 		circle_cursor	: in pac_stop_circles.cursor)
 		return boolean
 	is begin
-		-- if element (circle_cursor).status.proposed then
-		-- 	return true;
-		-- else
-		-- 	return false;
-		-- end if;
-
-		return false; -- CS
+		if is_proposed (element (circle_cursor)) then
+			return true;
+		else
+			return false;
+		end if;
 	end is_proposed;
 	
 
@@ -254,13 +248,11 @@ package body et_stopmask is
 		circle_cursor	: in pac_stop_circles.cursor)
 		return boolean
 	is begin
-		-- if element (circle_cursor).status.proposed then
-		-- 	return true;
-		-- else
-		-- 	return false;
-		-- end if;
-
-		return false; -- CS
+		if is_selected (element (circle_cursor)) then
+			return true;
+		else
+			return false;
+		end if;
 	end is_selected;
 
 

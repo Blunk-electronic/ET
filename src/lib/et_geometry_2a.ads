@@ -935,6 +935,53 @@ package et_geometry_2a is
 	function to_string (arc : in type_arc) return string;
 
 
+
+	function is_selected (
+		arc : in type_arc)
+		return boolean;
+	
+	procedure set_selected (
+		arc : in out type_arc);
+
+	procedure clear_selected (
+		arc : in out type_arc);
+
+
+	
+	function is_proposed (
+		arc : in type_arc)
+		return boolean;
+
+	procedure set_proposed (
+		arc : in out type_arc);
+	
+	procedure clear_proposed (
+		arc : in out type_arc);
+
+
+	
+	function is_moving (
+		arc : in type_arc)
+		return boolean;
+
+	procedure set_moving (
+		arc : in out type_arc);
+
+	procedure clear_moving (
+		arc : in out type_arc);
+
+
+
+	procedure modify_status (
+		arc 		: in out type_arc;
+		operation	: in type_status_operation);
+
+
+	procedure reset_status (
+		arc 		: in out type_arc);
+
+
+	
 	-- Swaps start and end point of an arc. Reverses the direction of the arc:
 	function reverse_arc (arc : in type_arc) return type_arc'class;
 	procedure reverse_arc (arc : in out type_arc);
@@ -1143,6 +1190,53 @@ package et_geometry_2a is
 	function to_string (circle : in type_circle) return string;
 
 
+	function is_selected (
+		circle : in type_circle)
+		return boolean;
+	
+	procedure set_selected (
+		circle : in out type_circle);
+
+	procedure clear_selected (
+		circle : in out type_circle);
+
+
+	
+	function is_proposed (
+		circle : in type_circle)
+		return boolean;
+
+	procedure set_proposed (
+		circle : in out type_circle);
+	
+	procedure clear_proposed (
+		circle : in out type_circle);
+
+
+	
+	function is_moving (
+		circle : in type_circle)
+		return boolean;
+
+	procedure set_moving (
+		circle : in out type_circle);
+
+	procedure clear_moving (
+		circle : in out type_circle);
+
+
+
+	procedure modify_status (
+		circle 		: in out type_circle;
+		operation	: in type_status_operation);
+
+
+	procedure reset_status (
+		circle 		: in out type_circle);
+
+
+
+	
 	function to_radius (
 		r : in string)
 		return type_distance_positive;

@@ -99,7 +99,7 @@ package body et_geometry_2a.contours is
 				end if;
 
 			when ARC =>
-				if s.segment_arc.status.proposed then
+				if is_proposed (s.segment_arc) then
 					result := true;
 				end if;
 		end case;
@@ -122,7 +122,7 @@ package body et_geometry_2a.contours is
 				end if;
 
 			when ARC =>
-				if segment.segment_arc.status.proposed then
+				if is_proposed (segment.segment_arc) then
 					result := true;
 				end if;
 		end case;
@@ -142,7 +142,7 @@ package body et_geometry_2a.contours is
 				set_proposed (segment.segment_line);
 
 			when ARC =>
-				segment.segment_arc.status.proposed := true;
+				set_proposed (segment.segment_arc);
 		end case;
 	end set_proposed;
 
@@ -156,7 +156,7 @@ package body et_geometry_2a.contours is
 				clear_proposed (segment.segment_line);
 
 			when ARC =>
-				segment.segment_arc.status.proposed := false;
+				clear_proposed (segment.segment_arc);
 		end case;
 	end clear_proposed;
 
@@ -176,7 +176,7 @@ package body et_geometry_2a.contours is
 				end if;
 
 			when ARC =>
-				if segment.segment_arc.status.selected then
+				if is_selected (segment.segment_arc) then
 					result := true;
 				end if;
 		end case;
@@ -201,7 +201,7 @@ package body et_geometry_2a.contours is
 				end if;
 
 			when ARC =>
-				if s.segment_arc.status.selected then
+				if is_selected (s.segment_arc) then
 					result := true;
 				end if;
 		end case;
@@ -219,7 +219,7 @@ package body et_geometry_2a.contours is
 				set_selected (segment.segment_line);
 
 			when ARC =>
-				segment.segment_arc.status.selected := true;
+				set_selected (segment.segment_arc);
 		end case;
 	end set_selected;
 
@@ -233,7 +233,7 @@ package body et_geometry_2a.contours is
 				clear_selected (segment.segment_line);
 
 			when ARC =>
-				segment.segment_arc.status.selected := false;
+				clear_selected (segment.segment_arc);
 		end case;
 	end clear_selected;
 
@@ -254,7 +254,7 @@ package body et_geometry_2a.contours is
 				end if;
 
 			when ARC =>
-				if s.segment_arc.status.moving then
+				if is_moving (s.segment_arc) then
 					result := true;
 				end if;
 		end case;
@@ -272,7 +272,7 @@ package body et_geometry_2a.contours is
 				set_moving (segment.segment_line);
 
 			when ARC =>
-				segment.segment_arc.status.moving := true;
+				set_moving (segment.segment_arc);
 		end case;
 	end set_moving;
 
@@ -286,7 +286,7 @@ package body et_geometry_2a.contours is
 				clear_moving (segment.segment_line);
 
 			when ARC =>
-				segment.segment_arc.status.moving := false;
+				clear_moving (segment.segment_arc);
 		end case;
 	end clear_moving;
 
@@ -382,8 +382,6 @@ package body et_geometry_2a.contours is
 				if in_catch_zone (zone, segment.segment_arc) then 
 					result := true;
 				end if;
-
-				return true;
 		end case;
 
 		return result;
