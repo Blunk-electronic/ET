@@ -3647,8 +3647,16 @@ package body et_geometry_2a is
 		width	: in type_distance_positive := 0.0)
 		return boolean
 	is
+		distance : type_distance_positive;
 	begin
-		return false; -- CS
+		distance := get_distance (circle.center, get_center (zone));
+		distance := distance - circle.radius - width;
+
+		if distance <= type_distance_positive (get_radius (zone)) then
+			return true;
+		else
+			return false;
+		end if;
 	end in_catch_zone;
 
 
