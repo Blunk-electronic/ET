@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -2308,6 +2308,10 @@ package body et_geometry_1 is
 
 		return result;
 	end get_span;
+
+
+	
+
 	
 
 	function to_string (
@@ -2322,6 +2326,8 @@ package body et_geometry_1 is
 	end to_string;
 
 
+
+	
 	
 	function get_span (
 		arc	: type_arc_angles)
@@ -2341,6 +2347,9 @@ package body et_geometry_1 is
 		return result;
 	end get_span;
 
+
+
+
 	
 	procedure move_to (
 		arc			: in out type_arc_fine;
@@ -2357,6 +2366,9 @@ package body et_geometry_1 is
 	end move_to;
 
 
+
+
+	
 	function move_to (
 		arc			: in type_arc_fine;
 		position	: in type_vector)
@@ -2367,7 +2379,10 @@ package body et_geometry_1 is
 		move_to (result, position);
 		return result;
 	end move_to;
-		
+
+
+
+	
 	
 	function to_arc_angles (
 		arc					: in type_arc_fine;
@@ -2442,6 +2457,9 @@ package body et_geometry_1 is
 	end to_arc_angles;
 
 
+
+	
+
 	function to_arc (
 		arc : in type_arc_angles) 
 		return type_arc_fine 
@@ -2469,6 +2487,54 @@ package body et_geometry_1 is
 	end to_arc;
 
 
+
+	
+
+	function split_arc (
+		arc		: in type_arc_fine;
+		count	: in positive)
+		return type_arc_segments
+	is
+		subtype type_arcs is type_arc_segments (1 .. count);
+		result : type_arcs;
+
+		radius : type_float_positive := get_radius_start (arc);
+		center : type_vector := arc.center;
+		
+		norm : type_arc_fine;
+		angles : type_arc_angles;
+		span : type_angle;
+		fragment_angle : type_angle;
+
+		S, E : type_angle_positive;
+		O : type_angle_positive;
+	begin
+		norm := normalize_arc (arc);
+		angles := to_arc_angles (norm);
+		span := get_span (arc);
+
+		fragment_angle := span / type_float_positive (count);
+
+		for i in 1 .. count loop
+			O := type_float_positive (i - 1) * fragment_angle;			
+			S := angles.angle_start + O;
+			E := angles.angle_end + O;
+
+			result (i) := to_arc ((
+				center		=> center,
+				radius		=> radius,
+				angle_start	=> S,
+				angle_end	=> E,
+				direction	=> CCW));
+					 
+		end loop;
+		
+		return result;
+	end split_arc;
+	
+
+
+	
 
 -- DISTANCE POINT TO LINE
 

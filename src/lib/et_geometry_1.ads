@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -1109,6 +1109,10 @@ package et_geometry_1 is
 		arc	: type_arc_fine)
 		return type_angle;
 
+
+
+
+	
 	
 	type type_arc_angles is record -- CS should be private ?
 		center		: type_vector;
@@ -1160,6 +1164,19 @@ package et_geometry_1 is
 	
 
 
+	-- If an arc is to be broken down into smaller fragments,
+	-- then the outcome is an array of arcs:
+	type type_arc_segments is array (positive range <>) of type_arc_fine;
+
+	-- Splits an arc into the given number of fragments:
+	function split_arc (
+		arc		: in type_arc_fine;
+		count	: in positive)
+		return type_arc_segments;
+
+
+
+	
 -- DISTANCE LOCATION VECTOR TO LINE
 
 	-- Computes the distance between a location vector and a line.
