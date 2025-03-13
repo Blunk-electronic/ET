@@ -1130,9 +1130,8 @@ package et_geometry_2a is
 	
 
 	-- Returns the shortest distance between a point and an arc.
-	-- If the point is on the center of the arc, then the return is
-	-- absolute zero and angle zero degree:
-	-- CS: wrong, should be absolute distance to start and angle of start point.
+	-- If the point is equal the center of the arc, then the return is
+	-- the radius of the arc and the angle to the start point of the arc:
 	function get_shortest_distance (
 		arc		: in type_arc;
 		point	: in type_vector_model)

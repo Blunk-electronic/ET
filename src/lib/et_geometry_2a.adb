@@ -2251,6 +2251,9 @@ package body et_geometry_2a is
 	is
 		result : type_distance_polar;
 
+		radius : constant type_float_positive := get_radius_start (arc);
+		
+		
 		procedure do_it is 
 			-- Build a line that runs from the given point to the center of the arc:
 			line : constant type_line_vector := 
@@ -2264,8 +2267,8 @@ package body et_geometry_2a is
 			ILC : constant type_intersection_of_line_and_circle := get_intersection (arc, line);
 
 			DPC : constant type_distance_polar := get_distance (point, arc.center);
-			radius : constant type_float_positive := get_radius_start (arc);
 
+			
 			-- Assigns to the result either the start or the end point of
 			-- the arc, depending on which one is closer.
 			procedure compare_start_and_end_point is 
@@ -2281,6 +2284,7 @@ package body et_geometry_2a is
 				end if;
 			end compare_start_and_end_point;
 
+			
 			-- Compute the distance of point to circle:
 			procedure like_circle is begin
 				-- The arc can be treated like a circle.
@@ -2288,6 +2292,7 @@ package body et_geometry_2a is
 				set_absolute (result, get_absolute (DPC) - radius);
 			end like_circle;
 
+			
 			-- Detects whether the given location vector i is after the
 			-- center of the arc on "line".
 			-- 1. It bases on the well known vector formula:
@@ -2309,6 +2314,7 @@ package body et_geometry_2a is
 					return false; -- i is on or before center of arc
 				end if;
 			end after_center;
+
 			
 		begin -- do_it
 			--log (text => "DPC" & to_string (get_absolute (DPC)));
@@ -2409,15 +2415,17 @@ package body et_geometry_2a is
 		end do_it;
 
 		
-	begin -- get_shortest_distance
-		--put_line ("point" & to_string (point) & " " & to_string (arc));
+	begin
+		-- put_line ("point" & to_string (point) 
+		-- 		  & " " & to_string (arc)
+		-- 		  & " " & to_string (to_arc_angles (arc)));
 		
 		if point = arc.center then
 			-- If the given point is right on the center of the arc,
 			-- then return zero distance and zero angle:
 
-			set_absolute (result, 0.0);
-			set_angle (result, 0.0);
+			set_absolute (result, radius);
+			set_angle (result, to_arc_angles (arc).angle_start);
 		else
 			do_it;
 		end if;
@@ -2428,6 +2436,7 @@ package body et_geometry_2a is
 	end get_shortest_distance;
 
 
+	
 
 	function get_shortest_distance (
 		arc		: in type_arc;
@@ -2621,11 +2630,15 @@ package body et_geometry_2a is
 
 		-- A representation of the given arc in angles:
 		arc_angles : constant type_arc_angles := to_arc_angles (arc);
+
+		-- CS: The procedure could be simplified if the given arc was
+		-- normalized via function normalize_arc at first.
 		
 		-- make the angles of the arc positive:
-		S : type_angle_positive := arc_angles.angle_start;
-		E : type_angle_positive := arc_angles.angle_end;
+		S : type_angle_positive := to_angle_positive (arc_angles.angle_start);
+		E : type_angle_positive := to_angle_positive (arc_angles.angle_end);
 
+		
 		procedure offset_ccw is 
 			T : type_angle_positive;
 		begin
@@ -2637,6 +2650,7 @@ package body et_geometry_2a is
 			P := add (P, T);
 		end offset_ccw;
 
+		
 		procedure offset_cw is 
 			T : type_angle_positive;
 		begin
@@ -2646,6 +2660,7 @@ package body et_geometry_2a is
 			P := add (P, T);
 		end offset_cw;
 
+		
 		distance_center_to_point : constant type_float :=
 			get_distance_total (arc.center, vector);
 
@@ -3609,8 +3624,18 @@ package body et_geometry_2a is
 		width	: in type_distance_positive := 0.0)
 		return boolean
 	is
+		distance : type_float_positive;
+		distance_polar : type_distance_polar;
 	begin
-		return false; -- CS
+		distance_polar := get_shortest_distance (arc, get_center (zone));
+		distance := get_absolute (distance_polar);
+		distance := distance - type_float_positive (width);
+
+		if distance <= get_radius (zone) then
+			return true;
+		else
+			return false;
+		end if;
 	end in_catch_zone;
 
 
