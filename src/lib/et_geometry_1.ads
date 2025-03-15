@@ -1127,10 +1127,30 @@ package et_geometry_1 is
 		arc : in type_arc_angles)
 		return string;
 
+
+	-- Changes the direction of an arc to CCW (mathematical sense)
+	-- by swapping start and end angles. Converts all angles to
+	-- positive values (example: -90 degree turns to 270 degree):
+	function normalize_arc (
+		arc: in type_arc_angles) 
+		return type_arc_angles;
+
+
+	-- Rotates the given arc by the given angle
+	-- about its center:
+	function rotate (
+		arc		: in type_arc_angles;
+		angle	: in type_angle)
+		return type_arc_angles;
 	
-	-- Returns the total span in degree between start and end of an arc:
+	
+	-- Returns the total span in degree between start and end of an arc.
+	-- If full is true, then an arc having the same start and end angle
+	-- is regarded as a full circle with a span of 360 degree.
+	-- If full is true, then for such an arc the returned span is zero:
 	function get_span (
-		arc	: type_arc_angles)
+		arc		: in type_arc_angles;
+		full	: in boolean := true)
 		return type_angle;
 
 	

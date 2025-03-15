@@ -2267,6 +2267,8 @@ package body et_geometry_1 is
 	end reverse_arc;
 
 
+
+	
 	function normalize_arc (
 		arc: in type_arc_fine) 
 		return type_arc_fine
@@ -2278,6 +2280,8 @@ package body et_geometry_1 is
 	end normalize_arc;
 
 
+
+	
 	function zero_length (
 		arc : in type_arc_fine) 
 		return boolean 
@@ -2290,23 +2294,14 @@ package body et_geometry_1 is
 	end zero_length;
 
 
+	
 	function get_span (
 		arc	: type_arc_fine)
 		return type_angle
 	is
-		result : type_angle;
 		arc_angles : constant type_arc_angles := to_arc_angles (arc);
 	begin
-		case arc.direction is
-			when CCW =>
-				result := abs (arc_angles.angle_end - arc_angles.angle_start);
-				
-			when CW =>
-				-- CS use function normalize_arc ?
-				result := abs (arc_angles.angle_start - arc_angles.angle_end);
-		end case;
-
-		return result;
+		return get_span (arc_angles);
 	end get_span;
 
 
@@ -2327,24 +2322,83 @@ package body et_geometry_1 is
 
 
 
-	
-	
-	function get_span (
-		arc	: type_arc_angles)
-		return type_angle
+	function normalize_arc (
+		arc: in type_arc_angles) 
+		return type_arc_angles
 	is
-		result : type_angle;
+		result : type_arc_angles;
 	begin
 		case arc.direction is
-			when CCW =>
-				result := abs (arc.angle_end - arc.angle_start);
-				
 			when CW =>
-				-- CS use function normalize_arc ?
-				result := abs (arc.angle_start - arc.angle_end);
+				result.center 		:= arc.center;
+				result.radius 		:= arc.radius;
+				result.angle_start	:= to_angle_positive (arc.angle_end);
+				result.angle_end	:= to_angle_positive (arc.angle_start);
+				result.direction	:= CCW;
+
+			when CCW =>
+				result.center 		:= arc.center;
+				result.radius 		:= arc.radius;
+				result.angle_start	:= to_angle_positive (arc.angle_start);
+				result.angle_end	:= to_angle_positive (arc.angle_end);
+				result.direction	:= arc.direction;
+
 		end case;
 
 		return result;
+	end normalize_arc;
+
+
+
+
+	function rotate (
+		arc		: in type_arc_angles;
+		angle	: in type_angle)
+		return type_arc_angles
+	is
+		A : type_arc_angles := arc;
+	begin
+		add (A.angle_start, angle);
+		add (A.angle_end,   angle);
+
+		return A;
+	end rotate;
+	
+	
+	
+	
+	function get_span (
+		arc		: in type_arc_angles;
+		full	: in boolean := true)
+		return type_angle
+	is
+		A : type_angle; -- span to be returned
+
+		N : type_arc_angles := normalize_arc (arc);
+		
+		S : type_angle_positive renames arc.angle_start;
+		E : type_angle_positive renames arc.angle_end;
+	begin
+		-- put_line ("get_span");
+		-- put_line ("S: " & to_string (S));
+		-- put_line ("E: " & to_string (E));
+
+		if E > S then
+			A := E - S;
+			
+		elsif E < S then
+			A := (360.0 - S) + E;
+			-- test 1: S=90, E=0 => S=270 
+
+		else -- E=S
+			if full then
+				A := 360.0;
+			else
+				A := 0.0;
+			end if;
+		end if;
+
+		return A;
 	end get_span;
 
 
@@ -2495,6 +2549,8 @@ package body et_geometry_1 is
 		count	: in positive)
 		return type_arc_segments
 	is
+		debug : boolean := true;
+		
 		subtype type_arcs is type_arc_segments (1 .. count);
 		result : type_arcs;
 
@@ -2506,20 +2562,49 @@ package body et_geometry_1 is
 		span : type_angle;
 		fragment_angle : type_angle;
 
-		S, E : type_angle_positive;
+		S, E : type_angle;
 		O : type_angle_positive;
 	begin
 		norm := normalize_arc (arc);
+		if debug then
+			put_line ("norm   : " & to_string (norm));
+		end if;
+		
 		angles := to_arc_angles (norm);
+		if debug then
+			put_line ("angles : " & to_string (angles));
+		end if;
+		
 		span := get_span (arc);
-
+		if debug then
+			put_line ("span   : " & to_string (span));
+		end if;
+		
 		fragment_angle := span / type_float_positive (count);
-
+		if debug then
+			put_line ("frag   : " & to_string (fragment_angle));
+		end if;
+		
 		for i in 1 .. count loop
+			if debug then
+				put_line ("i      : " & positive'image (i));
+			end if;
+			
 			O := type_float_positive (i - 1) * fragment_angle;			
-			S := angles.angle_start + O;
-			E := angles.angle_end + O;
 
+			if debug then
+				put_line ("O      : " & to_string (O));
+			end if;
+			
+			S := add (angles.angle_start, O);
+			E := add (S, fragment_angle);
+
+			if debug then
+				put_line ("S      : " & to_string (S));
+				put_line ("E      : " & to_string (E));
+			end if;
+
+			
 			result (i) := to_arc ((
 				center		=> center,
 				radius		=> radius,
