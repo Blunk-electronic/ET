@@ -2376,8 +2376,8 @@ package body et_geometry_1 is
 
 		N : type_arc_angles := normalize_arc (arc);
 		
-		S : type_angle_positive renames arc.angle_start;
-		E : type_angle_positive renames arc.angle_end;
+		S : type_angle_positive renames N.angle_start;
+		E : type_angle_positive renames N.angle_end;
 	begin
 		-- put_line ("get_span");
 		-- put_line ("S: " & to_string (S));
