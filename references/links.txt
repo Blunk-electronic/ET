@@ -1,0 +1,8 @@
+Links:
+
+
+https://math.stackexchange.com/questions/1507248/find-arc-between-two-tips-of-vectors-in-3d
+
+https://stackoverflow.com/questions/47394721/how-to-calculate-3d-point-on-circumference-of-a-circle-by-angle
+
+https://stackoverflow.com/questions/16428444/how-to-find-point-along-arc-in-3d-given-center-start-end-points-radius-ce
