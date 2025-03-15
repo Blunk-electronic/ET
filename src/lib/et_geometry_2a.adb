@@ -2089,6 +2089,50 @@ package body et_geometry_2a is
 
 	
 
+
+	function get_nearest (
+		segments	: in type_arc_segments;
+		point		: in type_vector_model)
+		return positive
+	is
+		result : positive := 1;
+
+		-- A temporarly storage place for the
+		-- distance between a candidate segment and the point
+		-- in polar form:
+		p : type_distance_polar;
+		
+		-- A temporarly storage place for the absolute
+		-- distance between a candidate segment and the point:
+		d2 : type_float_positive;
+
+		-- The storage place for the smallest
+		-- distance found. Will be updated if a smaller
+		-- distance has been detected:
+		d1 : type_float_positive := type_float_positive'last;
+	begin
+		for i in segments'first .. segments'last loop
+			p := get_shortest_distance (to_arc_coarse (segments (i)), point);
+
+			-- We are interested in the total distance:
+			d2 := get_absolute (p);
+
+			-- If the total distance is less than the latest
+			-- shortest distance then update the shortest distance
+			-- by the current total distance:
+			if d2 < d1 then
+				-- update:
+				d1 := d2;
+
+				-- store index of arc segment:
+				result := i;
+			end if;
+		end loop;
+		
+		return result;
+	end get_nearest;
+
+	
 	
 	
 	function to_arc_angles (
@@ -3677,6 +3721,17 @@ package body et_geometry_2a is
 	
 
 -- ZONES OF A LINE
+
+
+	function to_string (
+		zone : in type_line_zone)
+		return string
+	is begin
+		return type_line_zone'image (zone);
+	end;
+
+	
+
 	
 	function get_zone (
 		line	: in type_line;
@@ -3791,6 +3846,42 @@ package body et_geometry_2a is
 
 
 
+	
+
+	function get_zone (
+		arc		: in type_arc;
+		point	: in type_vector_model)
+		return type_line_zone 
+	is
+		zone : type_line_zone := CENTER; -- to be returned
+
+		subtype type_arcs is type_arc_segments (1 .. 3);
+		segments : type_arcs;
+
+		idx : positive;		
+
+	begin
+		-- Split the given arc into three segments
+		-- which are the start, center and end portion of the arc:
+		segments := split_arc (to_arc_fine (arc), 3);
+
+		-- Find the index of the segment that is
+		-- nearest to the given point:
+		idx := get_nearest (segments, point);
+
+		-- put_line ("idx" & positive'image (idx));
+		
+		case idx is
+			when 1 => zone := START_POINT;
+			when 3 => zone := END_POINT;
+			when others => null;
+		end case;
+		
+		return zone;
+	end get_zone;
+
+
+	
 
 	procedure move_arc_to (
 		arc				: in out type_arc;

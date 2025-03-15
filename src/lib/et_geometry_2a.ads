@@ -1065,6 +1065,15 @@ package et_geometry_2a is
 
 	
 
+
+	-- Returns the arc segment that is nearest
+	-- to the given point:
+	function get_nearest (
+		segments	: in type_arc_segments;
+		point		: in type_vector_model)
+		return positive;
+
+	
 	
 	
 	type type_intersection_status_of_line_and_circle is (
@@ -1545,7 +1554,7 @@ package et_geometry_2a is
 	
 	
 
--- ZONES OF A LINE
+-- ZONES OF A LINE:
 
 	-- A line is divided into three zones. Their width is the ratio
 	-- of line length and the zone_division_factor.
@@ -1557,7 +1566,12 @@ package et_geometry_2a is
 	type type_line_zone is (START_POINT, END_POINT, CENTER);
 	line_zone_division_factor : constant positive := 4;
 
+
+	function to_string (
+		zone : in type_line_zone)
+		return string;
 	
+		
 	-- Calculates the zone of the line where point is nearest.
 	-- Point is not required to sit exactly on the line.
 	function get_zone (
@@ -1579,6 +1593,15 @@ package et_geometry_2a is
 		destination		: in type_vector_model);
 
 
+
+	-- Calculates the zone of the arc where point is nearest.
+	-- Point is not required to sit exactly on the arc.
+	function get_zone (
+		arc		: in type_arc;
+		point	: in type_vector_model)
+		return type_line_zone;
+	
+	
 	procedure move_arc_to (
 		arc				: in out type_arc;
 		point_of_attack	: in type_vector_model;

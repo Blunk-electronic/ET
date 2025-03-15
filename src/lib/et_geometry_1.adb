@@ -2542,6 +2542,35 @@ package body et_geometry_1 is
 
 
 
+
+
+	procedure reverse_arc_segments (
+		segments : in out type_arc_segments)
+	is
+		scratch : type_arc_segments := segments;
+
+		b : positive := segments'last + 1;
+	begin
+		-- Loop forward through the elements of the input:
+		for a in segments'first .. segments'last loop
+
+			-- Reverse the candidate arc:
+			reverse_arc (segments (a));
+
+			-- Store the reversed arc in the output
+			-- array in reverse order:
+			scratch (b - a) := segments (a);
+		end loop;
+
+		-- Overwrite the input array with the reversed arcs:
+		segments := scratch;
+	end reverse_arc_segments;
+
+
+
+
+
+	
 	
 
 	function split_arc (
@@ -2549,7 +2578,8 @@ package body et_geometry_1 is
 		count	: in positive)
 		return type_arc_segments
 	is
-		debug : boolean := true;
+		-- debug : boolean := true;
+		debug : boolean := false;
 		
 		subtype type_arcs is type_arc_segments (1 .. count);
 		result : type_arcs;
@@ -2613,6 +2643,13 @@ package body et_geometry_1 is
 				direction	=> CCW));
 					 
 		end loop;
+
+
+		-- If the given arc direction was CW then
+		-- the arc segments must be reversed:
+		if arc.direction = CW then
+			reverse_arc_segments (result);
+		end if;
 		
 		return result;
 	end split_arc;

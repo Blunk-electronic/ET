@@ -1188,7 +1188,28 @@ package et_geometry_1 is
 	-- then the outcome is an array of arcs:
 	type type_arc_segments is array (positive range <>) of type_arc_fine;
 
-	-- Splits an arc into the given number of fragments:
+
+	-- Reverses the order of the given arcs and the
+	-- direction of each arc:
+	procedure reverse_arc_segments (
+		segments : in out type_arc_segments);
+
+
+	-- type type_nearest_arc_segment is record
+	-- 	index : positive;
+	-- 	distance	: type_float_positive);
+	-- end record;
+
+
+	
+	
+	-- Splits an arc into the given number of fragments.
+	-- In the return, the direction of the fragments
+	-- is the same as of the given arc.
+	-- The first segment will be at the start point 
+	-- of the arc with index 1,
+	-- and the last segment will be at the end point of 
+	-- the arc with the highest index:
 	function split_arc (
 		arc		: in type_arc_fine;
 		count	: in positive)
