@@ -2057,6 +2057,8 @@ package body et_geometry_1 is
 	end move_by;
 
 
+
+	
 	function move_by (
 		line		: in type_line_fine;
 		direction	: in type_angle;
@@ -2069,6 +2071,7 @@ package body et_geometry_1 is
 		result.end_point := move_by (line.end_point, direction, distance);		
 		return result;
 	end move_by;
+
 
 	
 	
@@ -2108,6 +2111,7 @@ package body et_geometry_1 is
 		
 	end get_intersection;
 	
+
 
 	
 	function get_intersection (
@@ -2155,6 +2159,9 @@ package body et_geometry_1 is
 
 	end get_intersection;
 
+
+	
+
 	
 	function get_intersection (
 		line_1 : in type_line_fine;
@@ -2190,6 +2197,9 @@ package body et_geometry_1 is
 	end get_intersection;
 
 	
+
+
+	
 	function lines_overlap (
 		line_1, line_2 : in type_line_fine)
 		return boolean
@@ -2203,6 +2213,8 @@ package body et_geometry_1 is
 			return false;
 		end if;
 	end lines_overlap;
+
+
 
 	
 
@@ -2220,6 +2232,7 @@ package body et_geometry_1 is
 	end to_string;
 
 
+	
 	function get_radius_start (
 		arc : in type_arc_fine) 
 		return type_float_positive 
@@ -2228,6 +2241,7 @@ package body et_geometry_1 is
 	end get_radius_start;
 
 	
+	
 	function get_radius_end (
 		arc : in type_arc_fine)
 		return type_float_positive
@@ -2235,6 +2249,7 @@ package body et_geometry_1 is
 		return get_distance_total (arc.center, arc.end_point);
 	end get_radius_end;
 
+	
 
 	function reverse_arc (
 		arc : in type_arc_fine) 
@@ -2253,6 +2268,8 @@ package body et_geometry_1 is
 		return result;
 	end reverse_arc;
 
+
+	
 	
 	procedure reverse_arc (
 		arc : in out type_arc_fine) 

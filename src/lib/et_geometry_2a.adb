@@ -1686,6 +1686,8 @@ package body et_geometry_2a is
 
 
 
+	
+
 	function get_intersection (
 		line		: in type_line;
 		line_vector	: in type_line_vector)
@@ -1699,9 +1701,9 @@ package body et_geometry_2a is
 	
 	
 
+
+	
 -- ARC:
-
-
 
 	function to_arc_fine (
 		arc : in type_arc)
@@ -1714,6 +1716,7 @@ package body et_geometry_2a is
 			direction	=> arc.direction);
 	end to_arc_fine;
 
+	
 
 	function to_arc_coarse (
 		arc : in pac_geometry_1.type_arc_fine)
@@ -1754,6 +1757,7 @@ package body et_geometry_2a is
 		end if;
 	end is_selected;
 
+	
 	
 	procedure set_selected (
 		arc : in out type_arc)
@@ -2228,6 +2232,7 @@ package body et_geometry_2a is
 			put_line (to_string (vc));
 			put_line (to_string (arc));
 		end if;
+
 		
 		case vi.status is
 			when NONE_EXIST => 
@@ -2292,6 +2297,8 @@ package body et_geometry_2a is
 
 	
 
+	
+
 	function get_shortest_distance (
 		arc		: in type_arc;
 		point	: in type_vector_model)
@@ -2308,15 +2315,18 @@ package body et_geometry_2a is
 			-- Build a line that runs from the given point to the center of the arc:
 			line : constant type_line_vector := 
 				et_geometry_2a.to_line_vector (line => (point, arc.center, others => <>));
-			-- IMPORTANT NOTE: Function to_line_vector computes the direction vector of line as:
+			-- IMPORTANT NOTE: Function to_line_vector computes the direction vector 
+			-- of line as:
 			--  arc.center.x - point.x and arc.center.y - point.y.
 			--  Function after_center (see below) bases on this fact. Otherwise its result
 			--  will be nonsense !!
 
 			-- Get the intersection(s) of the line with the arc:
-			ILC : constant type_intersection_of_line_and_circle := get_intersection (arc, line);
+			ILC : constant type_intersection_of_line_and_circle := 
+				get_intersection (arc, line);
 
-			DPC : constant type_distance_polar := get_distance (point, arc.center);
+			DPC : constant type_distance_polar := 
+				get_distance (point, arc.center);
 
 			
 			-- Assigns to the result either the start or the end point of
@@ -2416,6 +2426,7 @@ package body et_geometry_2a is
 						
 				end case;
 
+				
 			else -- point is inside the virtual circle
 				--put_line ("inside");
 				--log (text => "inside");
@@ -3284,6 +3295,8 @@ package body et_geometry_2a is
 		return result;
 	end get_shortest_distance;
 
+
+	
 
 	function get_shortest_distance (
 		point	: in type_vector;
