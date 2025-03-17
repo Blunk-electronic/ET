@@ -1593,7 +1593,7 @@ package et_geometry_2a is
 	-- If center of the the line is affected, then start and end point
 	-- of the line is moved by the relative distance of point_of_attack
 	-- to the destination:
-	procedure move_line_to (
+	procedure attack (
 		line			: in out type_line;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model);
@@ -1608,7 +1608,7 @@ package et_geometry_2a is
 		return type_line_zone;
 	
 	
-	procedure move_arc_to (
+	procedure attack (
 		arc				: in out type_arc;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model);

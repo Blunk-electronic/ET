@@ -3827,7 +3827,7 @@ package body et_geometry_2a is
 
 
 
-	procedure move_line_to (
+	procedure attack (
 		line			: in out type_line;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model)
@@ -3850,7 +3850,7 @@ package body et_geometry_2a is
 				move_end_by (line, offset);
 
 		end case;
-	end move_line_to;
+	end attack;
 
 
 
@@ -3891,7 +3891,7 @@ package body et_geometry_2a is
 
 	
 
-	procedure move_arc_to (
+	procedure attack (
 		arc				: in out type_arc;
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model)
@@ -3924,7 +3924,7 @@ package body et_geometry_2a is
 				offset := subtract (destination, point_of_attack);
 				move_by (arc, offset);
 		end case;
-	end move_arc_to;
+	end attack;
 
 
 	

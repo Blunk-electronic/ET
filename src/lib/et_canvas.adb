@@ -3625,7 +3625,7 @@ package body et_canvas is
 		-- Otherwise the line remains unchanged and will be drawn
 		-- as it is:
 		if l.status.moving then
-			move_line_to (l, object_point_of_attack, get_object_tool_position);
+			attack (l, object_point_of_attack, get_object_tool_position);
 		end if;
 
 		

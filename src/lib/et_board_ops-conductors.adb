@@ -1470,7 +1470,7 @@ package body et_board_ops.conductors is
 				net			: in out type_net)
 			is
 				procedure move (line : in out type_conductor_line) is begin
-					move_line_to (line, point_of_attack, destination);
+					attack (line, point_of_attack, destination);
 				end;
 
 			begin
@@ -1524,7 +1524,7 @@ package body et_board_ops.conductors is
 			use pac_conductor_lines;
 
 			procedure move (line : in out type_conductor_line) is begin
-				move_line_to (line, point_of_attack, destination);
+				attack (line, point_of_attack, destination);
 				log (text => (to_string (line, true)), level => log_threshold + 1);
 			end;
 	

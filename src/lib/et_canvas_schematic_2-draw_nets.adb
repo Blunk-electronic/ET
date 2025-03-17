@@ -755,7 +755,7 @@ procedure draw_nets is
 		
 			case verb is
 				when VERB_DRAG =>
-					move_line_to (primary_segment, object_point_of_attack, destination);
+					attack (primary_segment, object_point_of_attack, destination);
 					move_labels_and_secondary_nets;
 
 				when others => null;

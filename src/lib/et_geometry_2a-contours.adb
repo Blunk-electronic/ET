@@ -424,13 +424,13 @@ package body et_geometry_2a.contours is
 	is begin
 		case get_shape (segment) is
 			when LINE =>
-				move_line_to (
+				attack (
 					line			=> segment.segment_line, 
 					point_of_attack	=> point_of_attack, 
 					destination		=> destination);
 				
 			when ARC =>
-				move_arc_to (
+				attack (
 					arc				=> segment.segment_arc, 
 					point_of_attack	=> point_of_attack, 
 					destination		=> destination);

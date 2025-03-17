@@ -471,7 +471,7 @@ package body et_board_ops.silkscreen is
 			begin
 				-- case coordinates is
 					-- when ABSOLUTE =>
-						move_line_to (line, point_of_attack, destination);
+						attack (line, point_of_attack, destination);
 						-- null;
 					-- when RELATIVE =>
 						-- null;

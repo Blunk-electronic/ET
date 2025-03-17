@@ -1060,7 +1060,7 @@ package body et_schematic_ops.nets is
 						case coordinates is
 							when ABSOLUTE =>
 								--log (text => "move targeted segment absolute", level => log_threshold + 3);
-								move_line_to (segment, point_of_attack.place, destination);
+								attack (segment, point_of_attack.place, destination);
 
 							when RELATIVE =>
 								--log (text => "move targeted segment relative", level => log_threshold + 3);
