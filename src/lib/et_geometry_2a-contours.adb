@@ -1878,9 +1878,10 @@ package body et_geometry_2a.contours is
 
 		result : unbounded_string;
 		
-		procedure query_intersection (c : pac_probe_line_intersections_contour.cursor) is begin
-			result := result & type_float'image (element (c).x_position) 
-						& "/" & trim (to_string (element (c).angle), left);
+		procedure query_intersection (
+			c : pac_probe_line_intersections_contour.cursor) 
+		is begin
+			result := result & to_string (element (c).x_position);
 		end query_intersection;
 
 		
@@ -2028,12 +2029,12 @@ package body et_geometry_2a.contours is
 		
 		-- This procedure collects the intersection in the return value.
 		procedure collect_intersection (
-			intersection: in type_intersection; -- incl. point and angle
+			intersection: in type_vector;
 			segment		: in type_intersected_segment)
 			--center		: in type_vector_model := origin;
 			--radius		: in type_distance_positive := zero)
 		is 
-			xi : constant type_float := get_x (intersection.vector);
+			xi : constant type_float := get_x (intersection);
 		begin
 			-- The intersection will be collected if it is ON or
 			-- AFTER the given start point. If it is before the start
@@ -2043,7 +2044,6 @@ package body et_geometry_2a.contours is
 				
 				append (result_intersections, (
 					x_position	=> xi,
-					angle		=> intersection.angle,
 					segment		=> segment));
 
 			end if;

@@ -655,12 +655,12 @@ package body et_routing is
 			case i.status is
 				when ONE_EXISTS =>
 					if i.tangent_status = SECANT then
-						result.append (to_distance (get_x (i.intersection.vector)));
+						result.append (to_distance (get_x (i.intersection)));
 					end if;
 
 				when TWO_EXIST =>
-					result.append (to_distance (get_x (i.intersection_1.vector)));
-					result.append (to_distance (get_x (i.intersection_2.vector)));
+					result.append (to_distance (get_x (i.intersection_1)));
+					result.append (to_distance (get_x (i.intersection_2)));
 					
 				when NONE_EXIST => null;
 			end case;

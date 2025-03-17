@@ -2244,7 +2244,7 @@ package body et_geometry_2a is
 
 				-- Test whether the point where the tangent meets the
 				-- circle is on the given arc:
-				if on_arc (arc, vi.intersection.vector) then
+				if on_arc (arc, vi.intersection) then
 					return (ONE_EXISTS, vi.intersection, TANGENT);
 				else
 					return (status => NONE_EXIST);
@@ -2262,8 +2262,8 @@ package body et_geometry_2a is
 				--put_line ("p2" & to_string (to_point ((vi.intersection_2.point))));
 
 				declare
-					oa_1 : constant boolean := on_arc (arc, vi.intersection_1.vector);
-					oa_2 : constant boolean := on_arc (arc, vi.intersection_2.vector);
+					oa_1 : constant boolean := on_arc (arc, vi.intersection_1);
+					oa_2 : constant boolean := on_arc (arc, vi.intersection_2);
 				begin					
 					--put_line (boolean'image (oa_1));
 					--put_line (boolean'image (oa_2));
@@ -2390,7 +2390,7 @@ package body et_geometry_2a is
 							--log (text => "l: " & to_string (line));
 							--log (text => "i: " & to_string (ILC.intersection.point));
 							
-							if after_center (ILC.intersection.vector) then
+							if after_center (ILC.intersection) then
 								-- intersection after center of arc
 								--log (text => "i after center");
 								compare_start_and_end_point;
@@ -2434,7 +2434,7 @@ package body et_geometry_2a is
 
 							--put_line ("i: " & to_string (ILC.intersection.point));
 							
-							if after_center (ILC.intersection.vector) then
+							if after_center (ILC.intersection) then
 								-- intersection after center of arc
 								--put_line ("i after center");
 								compare_start_and_end_point;
@@ -3107,9 +3107,9 @@ package body et_geometry_2a is
 		s : type_intersection_status_of_line_and_circle;
 		intersection_1, intersection_2 : type_vector;
 
-		line_angle : constant type_angle := get_angle (line);
+		line_angle : constant type_angle := get_angle (line); -- CS remove
 
-		intersection_angle_1, intersection_angle_2 : type_angle;
+		intersection_angle_1, intersection_angle_2 : type_angle; -- CS remove
 
 		-- Computes the angle of intersection of the given line with
 		-- the circle at point p.
@@ -3212,9 +3212,7 @@ package body et_geometry_2a is
 			-- (Which is the center of the given circle):
 			move_by (intersection_1, offset);
 			
-			return (ONE_EXISTS, 
-					(vector => intersection_1, angle => line_angle),
-					TANGENT);
+			return (ONE_EXISTS, intersection_1, TANGENT);
 
 			-- NOTE: The angle of the travel direction of the given line
 			-- is now the angle of the tangent at this single intersection point.
@@ -3265,10 +3263,7 @@ package body et_geometry_2a is
 			-- (Which is the center of the given circle):
 			move_by (intersection_2, offset);				
 			
-			return (TWO_EXIST, 
-					(vector => intersection_1, angle => intersection_angle_1),
-					(vector => intersection_2, angle => intersection_angle_2)
-					);
+			return (TWO_EXIST, intersection_1, intersection_2);
 
 			
 		end if;
@@ -3431,10 +3426,10 @@ package body et_geometry_2a is
 		d1, d2 : type_float;
 	begin
 		-- the distance from start point to intersection point 1:
-		d1 := get_distance_total (start_point, i.intersection_1.vector);
+		d1 := get_distance_total (start_point, i.intersection_1);
 
 		-- the distance from start point to intersection point 2:
-		d2 := get_distance_total (start_point, i.intersection_2.vector);
+		d2 := get_distance_total (start_point, i.intersection_2);
 
 		if d1 < d2 then -- point ip1 is closer to start point that ip2
 			result.entry_point := i.intersection_1;

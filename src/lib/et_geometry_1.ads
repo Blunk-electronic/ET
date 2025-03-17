@@ -755,20 +755,7 @@ package et_geometry_1 is
 		-- The distance between them is zero everywhere:
 		OVERLAP);
 
-	
-	-- In general an intersection is composed of a 
-	-- location vector, where the two lines meet,
-	-- and and the angle at which they intersect.
-	-- The angle of intersection is measured between the 
-	-- start points of the two lines. It is always positive.
-	type type_intersection is record
-		vector	: type_vector; -- location vector -- CS rename to point
-		angle	: type_angle_positive := 0.0; -- CS required ?
-	end record;
 
-	
-	function to_string (intersection : in type_intersection)
-		return string;
 	
 
 	-- When finding intersections of two lines this type is required:
@@ -777,7 +764,7 @@ package et_geometry_1 is
 	is record
 		case status is
 			when EXISTS => 
-				intersection : type_intersection;
+				intersection : type_vector;
 				
 			when NOT_EXISTENT | OVERLAP => 
 				null;

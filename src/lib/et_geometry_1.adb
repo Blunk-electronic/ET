@@ -1467,6 +1467,8 @@ package body et_geometry_1 is
 		return a;
 	end get_angle;
 
+
+
 	
 	
 	function to_line_vector (
@@ -1478,6 +1480,9 @@ package body et_geometry_1 is
 			v_direction	=> direction_vector (ray));
 	
 	end to_line_vector;
+
+
+
 
 	
 	function get_normal_vector (
@@ -1502,12 +1507,6 @@ package body et_geometry_1 is
 	
 -- INTERSECTIONS
 
-	function to_string (intersection : in type_intersection)
-		return string
-	is begin
-		return to_string (intersection.vector) 
-			& " angle" & to_string (intersection.angle);
-	end to_string;
 
 
 	function get_angle_of_itersection (
@@ -1538,6 +1537,8 @@ package body et_geometry_1 is
 		return r;
 	end get_angle_of_itersection;
 
+
+
 	
 	
 	function get_intersection (
@@ -1549,7 +1550,7 @@ package body et_geometry_1 is
 		lambda : type_float;
 
 		-- location vector and angle of intersection to be returned:			
-		i : type_intersection;
+		i : type_vector;
 
 		
 		function exists_intersection return boolean is
@@ -1636,7 +1637,7 @@ package body et_geometry_1 is
 
 					lambda := (a + b - c - d) * g;
 
-					i.vector := add (line_2.v_start, scale (line_2.v_direction, lambda));
+					i := add (line_2.v_start, scale (line_2.v_direction, lambda));
 				else
 					a := line_2.v_start.y;
 					b := line_1.v_start.x * line_2.v_direction.y / line_2.v_direction.x;
@@ -1648,10 +1649,10 @@ package body et_geometry_1 is
 
 					lambda := (a + b - c - d) * g;
 
-					i.vector := add (line_1.v_start, scale (line_1.v_direction, lambda));
+					i := add (line_1.v_start, scale (line_1.v_direction, lambda));
 				end if;
 
-				i.angle := get_angle_of_itersection (line_1, line_2);
+				--i.angle := get_angle_of_itersection (line_1, line_2);
 
 				--put_line ("get_intersection: " & to_string (i.vector));
 				return (status => EXISTS, intersection => i);
@@ -2095,7 +2096,7 @@ package body et_geometry_1 is
 				-- of candidate line, then return the intersection as it is.
 				-- If the intersection is before start point or
 				-- beyond end point, then return NOT_EXISTENT.
-				if on_line (i.intersection.vector, line, debug) then
+				if on_line (i.intersection, line, debug) then
 					return i;
 				else
 					return (status => NOT_EXISTENT);
@@ -2108,6 +2109,7 @@ package body et_geometry_1 is
 	end get_intersection;
 	
 
+	
 	function get_intersection (
 		ray			: in type_ray;
 		line		: in type_line_fine;
@@ -2129,7 +2131,7 @@ package body et_geometry_1 is
 		case I.status is
 			-- If line_vector and line intersect:
 			when EXISTS =>
-				dp := get_distance (ray.start_point, I.intersection.vector);
+				dp := get_distance (ray.start_point, I.intersection);
 
 				-- The direction from ray start to intersection must be positive:
 				dp.angle := to_angle_positive (dp.angle);
@@ -2174,8 +2176,8 @@ package body et_geometry_1 is
 				return (status => OVERLAP);
 			
 			when EXISTS =>
-				if on_line (I.intersection.vector, line_1) and
-				   on_line (I.intersection.vector, line_2) 
+				if on_line (I.intersection, line_1) and
+				   on_line (I.intersection, line_2) 
 				then
 					return (EXISTS, I.intersection);
 				else

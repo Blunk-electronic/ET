@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -481,10 +481,10 @@ package body et_fill_zones is
 				case I.status is
 					when EXISTS =>
 						if debug then
-							put_line (" intersection at " & to_string (I.intersection.vector));
+							put_line (" intersection at " & to_string (I.intersection));
 						end if;
 
-						intersections_with_centerlines.append (I.intersection.vector);
+						intersections_with_centerlines.append (I.intersection);
 
 					when others => null;
 				end case;
@@ -499,10 +499,10 @@ package body et_fill_zones is
 				case I.status is
 					when EXISTS =>
 						if debug then
-							put_line (" intersection at " & to_string (I.intersection.vector));
+							put_line (" intersection at " & to_string (I.intersection));
 						end if;
 
-						intersections_with_edges.append (I.intersection.vector);
+						intersections_with_edges.append (I.intersection);
 
 					when others => null;
 				end case;

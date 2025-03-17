@@ -1094,12 +1094,12 @@ package et_geometry_2a is
 			when NONE_EXIST => null;
 			
 			when ONE_EXISTS	=> 
-				intersection	: type_intersection;
+				intersection	: type_vector;
 				tangent_status	: type_tangent_status;
 			
 			when TWO_EXIST	=> 
-				intersection_1	: type_intersection;
-				intersection_2	: type_intersection;
+				intersection_1	: type_vector;
+				intersection_2	: type_vector;
 				
 		end case;
 	end record;
@@ -1350,8 +1350,8 @@ package et_geometry_2a is
 		start_point	: type_vector;
 
 		-- The point where the line enters and exits the circle:
-		entry_point	: type_intersection;
-		exit_point	: type_intersection;
+		entry_point	: type_vector;
+		exit_point	: type_vector;
 	end record;
 
 

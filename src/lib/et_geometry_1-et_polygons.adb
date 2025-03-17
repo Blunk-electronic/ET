@@ -289,7 +289,7 @@ package body et_geometry_1.et_polygons is
 					--put_line ("I1 : " & to_string (I1.intersection.vector));
 				--end if;
 
-				E1.start_point := I1.intersection.vector;
+				E1.start_point := I1.intersection;
 				--put_line ("prepend B" & to_string (E1));
 				result.prepend (E1);
 
@@ -310,7 +310,7 @@ package body et_geometry_1.et_polygons is
 					--put_line ("I2 : " & to_string (I2.intersection.vector));
 				--end if;
 
-				E2.end_point := I2.intersection.vector;
+				E2.end_point := I2.intersection;
 				--put_line ("append B" & to_string (E2));
 				result.append (E2);
 
@@ -1544,9 +1544,9 @@ package body et_geometry_1.et_polygons is
 		
 		-- This procedure collects the intersection in the return value.
 		procedure collect_intersection (
-			intersection: in et_geometry_1.type_intersection)
+			intersection: in type_vector)
 		is 
-			xi : constant type_float := get_x (intersection.vector);
+			xi : constant type_float := get_x (intersection);
 		begin
 			-- The intersection will be collected if it is ON or
 			-- AFTER the given start point. If it is before the start
@@ -3626,7 +3626,7 @@ package body et_geometry_1.et_polygons is
 		begin
 			if I.status = EXISTS then
 				proceed := false;
-				result := get_distance_total (point, I.intersection.vector);
+				result := get_distance_total (point, I.intersection);
 			end if;
 		end query_edge;
 		
