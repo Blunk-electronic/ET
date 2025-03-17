@@ -527,6 +527,23 @@ package body et_geometry_2a is
 		v1.y := v1.y + v2.y;
 	end add;
 
+
+
+
+	function subtract (
+		v1, v2 : in type_vector_model)
+		return type_distance_relative
+	is 
+		r : type_distance_relative;
+	begin
+		r.x := v1.x - v2.x;
+		r.y := v1.y - v2.y;
+		
+		return r;
+	end subtract;
+
+	
+
 	
 	procedure move_by (
 		point	: in out type_vector_model;
@@ -881,7 +898,9 @@ package body et_geometry_2a is
 	end to_offset;
 
 
+	
 
+	
 	function to_distance_relative (
 		p : in type_vector_model)
 		return type_distance_relative
@@ -2209,7 +2228,8 @@ package body et_geometry_2a is
 		-- default radius = zero ?
 		return type_intersection_of_line_and_circle
 	is
-		debug : boolean := true;
+		--debug : boolean := true;
+		debug : boolean := false;
 		
 		-- We assume the arc is a virtual circle and compute the
 		-- intersections of the line with the virtual circle.
@@ -3876,9 +3896,20 @@ package body et_geometry_2a is
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model)
 	is
+		debug : boolean := true;
+		
 		zone : type_line_zone;
+		offset : type_distance_relative;
 	begin
 		zone := get_zone (arc, point_of_attack);
+
+		if debug then
+			put_line (to_string (arc));
+			put_line ("point of attack" & to_string (point_of_attack));
+			put_line ("destination    " & to_string (destination));
+			put_line ("zone           " & to_string (zone));
+		end if;
+		
 
 		case zone is
 			when START_POINT =>
@@ -3888,8 +3919,10 @@ package body et_geometry_2a is
 				null;
 
 			when CENTER =>
-				null;
-				-- move_to (arc, destination);
+				-- Move the arc without changing
+				-- start, end or radius:
+				offset := subtract (destination, point_of_attack);
+				move_by (arc, offset);
 		end case;
 	end move_arc_to;
 

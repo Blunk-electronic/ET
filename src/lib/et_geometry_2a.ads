@@ -248,7 +248,7 @@ package et_geometry_2a is
 
 -- RELATIVE DISTANCE:
 	
-	type type_distance_relative is record -- CS rename to type_distance_relative
+	type type_distance_relative is record
 		x, y : type_distance := zero;
 	end record;
 
@@ -257,6 +257,7 @@ package et_geometry_2a is
 		distance : in type_distance_relative)
 		return string;
 
+	
 
 	function to_distance_relative (
 		x,y : in type_distance)
@@ -328,6 +329,11 @@ package et_geometry_2a is
 		v1 : in out type_vector_model;
 		v2 : in type_vector_model);
 	
+
+	-- Subtracts v2 from v1. Computes v2 - v2:
+	function subtract (
+		v1, v2 : in type_vector_model)
+		return type_distance_relative;
 
 	
 	-- Moves a model point by the given offset:
