@@ -3038,6 +3038,8 @@ package body et_geometry_2a is
 		end if;
 	end on_circle;
 
+
+
 	
 
 	function get_tangent_angle (p : in type_vector) 
@@ -3060,6 +3062,7 @@ package body et_geometry_2a is
 	end get_tangent_angle;
 
 
+
 	
 
 	function get_intersection (
@@ -3073,9 +3076,6 @@ package body et_geometry_2a is
 		-- Weisstein, Eric W. "Circle-Line Intersection." 
 		-- From MathWorld--A Wolfram Web Resource. 
 		-- <https://mathworld.wolfram.com/Circle-LineIntersection.html>.
-		-- It has been further-on extended so that the angles
-		-- of intersections are computed along with the actual points
-		-- of intersection.
 
 		-- The appoach assumes the circle center at 0/0.
 		-- So we must first move the line by
@@ -3106,44 +3106,6 @@ package body et_geometry_2a is
 
 		s : type_intersection_status_of_line_and_circle;
 		intersection_1, intersection_2 : type_vector;
-
-		line_angle : constant type_angle := get_angle (line); -- CS remove
-
-		intersection_angle_1, intersection_angle_2 : type_angle; -- CS remove
-
-		-- Computes the angle of intersection of the given line with
-		-- the circle at point p.
-		-- NOTE: Since we assume a secant, the angle
-		-- line_angle is travelling with, must not be a multiple of 90 degrees !
-		function compute_intersection_angle (p : in type_vector) 
-			return type_angle
-		is
-			result : type_angle;
-
-			-- Compute the tangent at the intersection:
-			tangent_angle : type_angle := get_tangent_angle (p);
-		begin
-			--log (text => "line angle:" & to_string (line_angle));
-			--log (text => "tangent angle A:" & to_string (tangent_angle));
-			
-			if tangent_angle < 0.0 then
-				tangent_angle := abs (tangent_angle);
-			else
-				tangent_angle := 180.0 - tangent_angle;
-			end if;
-
-			--log (text => "tangent angle B:" & to_string (tangent_angle));
-			
-			result := line_angle + tangent_angle;
-
-			if result > 180.0 then
-				result := result - 180.0;
-			end if;
-			
-			--log (text => "intersection angle:" & to_string (result));
-			
-			return result;
-		end compute_intersection_angle;
 		
 		
 	begin
@@ -3168,20 +3130,26 @@ package body et_geometry_2a is
 		dy := y2 - y1; -- the delta in y
 
 		dr := sqrt (dx ** 2 + dy ** 2);
-		
+
+		-- Compute the discriminant
 		DI := x1 * y2 - x2 * y1;
 		
 		b := dr ** 2;
 		a := r ** 2;
 		c := DI ** 2;
-		d := a * b - c; -- incidence of line and circle
+
+		-- Compute the incidence of line and circle:
+		d := a * b - c;
 
 		-- Theoretically the comparison should be against 0.0. 
 		-- See comments on th above.
 		if debug then
 			put_line ("d:" & to_string (d));
 		end if;
-		
+
+		-- CASE 1: 
+		-- If the incidence is less than zero, then
+		-- there is no intersection at all:
 		if d < (-th) then
 			if debug then
 				put_line ("no intersection");
@@ -3192,21 +3160,20 @@ package body et_geometry_2a is
 			return (status => NONE_EXIST);
 
 			
+		-- CASE 2: 
+		-- If the incidence is zero, then
+		-- there is one intersection -> we have a tangent:			
 		elsif abs (d) < th then	
 			if debug then
 				put_line ("one intersection");
 			end if;
-
 			
 			s := ONE_EXISTS; -- tangent
 
 			x := (DI * dy) / b;
 			y := (-DI * dx) / b;
 
-			--intersection_1 := type_vector_model (set (to_distance (x), to_distance (y)));
-			intersection_1 := set (x, y, 0.0);
-			-- NOTE: A constraint error is raised here if x or y is not in range 
-			-- of type_position_axis !
+			intersection_1 := set (x, y);
 
 			-- Move computed intersection back by offset
 			-- (Which is the center of the given circle):
@@ -3214,37 +3181,27 @@ package body et_geometry_2a is
 			
 			return (ONE_EXISTS, intersection_1, TANGENT);
 
-			-- NOTE: The angle of the travel direction of the given line
-			-- is now the angle of the tangent at this single intersection point.
 			
+		-- CASE 3: 
+		-- If the incidence is greater than zero, then
+		-- there are two intersections -> we have a secant:			
 		else
 			if debug then
 				put_line ("two intersections");
 			end if;
-
 			
-			s := TWO_EXIST; -- two intersections
+			s := TWO_EXIST; -- secant
 
 			-- COMPUTE 1ST INTERSECTION:
 			x := ( DI * dy + sgn (dy) * dx * sqrt (d)) / b;
 			y := (-DI * dx + abs (dy) * sqrt (d))      / b;
 
 			-- Compose the point of intersection 1:
-			--intersection_1 := type_vector_model (set (to_distance (x), to_distance (y)));
-			intersection_1 := set (x, y, 0.0);
-			-- NOTE: A constraint error is raised here if x or y is not in range 
-			-- of type_position_axis !
-			
-			intersection_angle_1 := compute_intersection_angle (intersection_1);
-
-			if debug then
-				put_line ("intersection_angle_1 " & to_string (intersection_angle_1));
-			end if;
-			
+			intersection_1 := set (x, y);
+		
 			-- Move computed intersection 1 back by offset
 			-- (Which is the center of the given circle):
 			move_by (intersection_1, offset);
-
 
 			
 			-- COMPUTE 2ND INTERSECTION:				
@@ -3252,24 +3209,18 @@ package body et_geometry_2a is
 			y := (-DI * dx - abs (dy) * sqrt (d))      / b;
 					
 			-- Compose the point of intersection 2:
-			--intersection_2 := type_vector_model (set (to_distance (x), to_distance (y)));
 			intersection_2 := set (x, y, 0.0);
-			-- NOTE: A constraint error is raised here if x or y is not in range 
-			-- of type_position_axis !
-
-			intersection_angle_2 := compute_intersection_angle (intersection_2);
 			
 			-- Move computed intersection 2 back by offset
 			-- (Which is the center of the given circle):
 			move_by (intersection_2, offset);				
 			
-			return (TWO_EXIST, intersection_1, intersection_2);
-
-			
+			return (TWO_EXIST, intersection_1, intersection_2);			
 		end if;
-
 	end get_intersection;
 
+
+	
 
 
 	function get_distance_to_circumfence (
