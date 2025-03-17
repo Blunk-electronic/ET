@@ -2205,6 +2205,8 @@ package body et_geometry_2a is
 		-- default radius = zero ?
 		return type_intersection_of_line_and_circle
 	is
+		debug : boolean := true;
+		
 		-- We assume the arc is a virtual circle and compute the
 		-- intersections of the line with the virtual circle.
 		
@@ -2220,11 +2222,12 @@ package body et_geometry_2a is
 		
 
 	begin
-		--new_line;
-		--put_line ("---");
-		--put_line (to_string (line));
-		--put_line (to_string (vc));
-		--put_line (to_string (arc));
+		if debug then
+			put_line ("get_intersection");
+			put_line (to_string (line));
+			put_line (to_string (vc));
+			put_line (to_string (arc));
+		end if;
 		
 		case vi.status is
 			when NONE_EXIST => 
@@ -2286,6 +2289,7 @@ package body et_geometry_2a is
 		
 	end get_intersection;
 
+
 	
 
 	function get_shortest_distance (
@@ -2293,6 +2297,8 @@ package body et_geometry_2a is
 		point	: in type_vector_model)
 		return type_distance_polar
 	is
+		debug : boolean := true;
+		
 		result : type_distance_polar;
 
 		radius : constant type_float_positive := get_radius_start (arc);
@@ -2460,9 +2466,12 @@ package body et_geometry_2a is
 
 		
 	begin
-		-- put_line ("point" & to_string (point) 
-		-- 		  & " " & to_string (arc)
-		-- 		  & " " & to_string (to_arc_angles (arc)));
+		if debug then
+			put_line ("get_shortest_distance");
+			put_line ("point" & to_string (point)); 
+			put_line (to_string (arc));
+			put_line (to_string (to_arc_angles (arc)));
+		end if;
 		
 		if point = arc.center then
 			-- If the given point is right on the center of the arc,
@@ -3058,6 +3067,8 @@ package body et_geometry_2a is
 		line	: in type_line_vector)
 		return type_intersection_of_line_and_circle
 	is
+		debug : boolean := true;
+		
 		-- This function bases on the approach by
 		-- Weisstein, Eric W. "Circle-Line Intersection." 
 		-- From MathWorld--A Wolfram Web Resource. 
@@ -3135,11 +3146,12 @@ package body et_geometry_2a is
 		end compute_intersection_angle;
 		
 		
-	begin -- get_intersection
-		--new_line;
-		--put_line ("GI LC");
-		--put_line (to_string (line));
-		--put_line (to_string (circle));
+	begin
+		if debug then
+			put_line ("get_intersection");
+			put_line (to_string (line));
+			put_line (to_string (circle));
+		end if;
 		
 		-- Move the line by the offset (which is the center of the given circle):
 		line_moved := move_by (line, invert (offset));
@@ -3166,18 +3178,25 @@ package body et_geometry_2a is
 
 		-- Theoretically the comparison should be against 0.0. 
 		-- See comments on th above.
-		--put_line (type_float'image (d));
+		if debug then
+			put_line ("d:" & to_string (d));
+		end if;
 		
 		if d < (-th) then
-			
-			--put_line ("none");
+			if debug then
+				put_line ("no intersection");
+			end if;
 			
 			s := NONE_EXIST;
 			
 			return (status => NONE_EXIST);
+
 			
 		elsif abs (d) < th then	
-			--put_line ("one");
+			if debug then
+				put_line ("one intersection");
+			end if;
+
 			
 			s := ONE_EXISTS; -- tangent
 
@@ -3201,7 +3220,10 @@ package body et_geometry_2a is
 			-- is now the angle of the tangent at this single intersection point.
 			
 		else
-			--put_line ("two");
+			if debug then
+				put_line ("two intersections");
+			end if;
+
 			
 			s := TWO_EXIST; -- two intersections
 
@@ -3216,7 +3238,11 @@ package body et_geometry_2a is
 			-- of type_position_axis !
 			
 			intersection_angle_1 := compute_intersection_angle (intersection_1);
-				
+
+			if debug then
+				put_line ("intersection_angle_1 " & to_string (intersection_angle_1));
+			end if;
+			
 			-- Move computed intersection 1 back by offset
 			-- (Which is the center of the given circle):
 			move_by (intersection_1, offset);
@@ -3671,7 +3697,10 @@ package body et_geometry_2a is
 		distance : type_float_positive;
 		distance_polar : type_distance_polar;
 	begin
+		put_line ("in_catch_zone arc");
 		distance_polar := get_shortest_distance (arc, get_center (zone));
+		put_line ("dp" & to_string (distance_polar));
+		
 		distance := get_absolute (distance_polar);
 		distance := distance - type_float_positive (width);
 
@@ -3888,8 +3917,21 @@ package body et_geometry_2a is
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model)
 	is
+		zone : type_line_zone;
 	begin
-		null;
+		zone := get_zone (arc, point_of_attack);
+
+		case zone is
+			when START_POINT =>
+				null;
+
+			when END_POINT =>
+				null;
+
+			when CENTER =>
+				null;
+				-- move_to (arc, destination);
+		end case;
 	end move_arc_to;
 
 

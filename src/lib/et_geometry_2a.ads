@@ -1298,7 +1298,7 @@ package et_geometry_2a is
 	-- - If it is vertical, then its angle is 90 degrees.
 	function get_tangent_angle (p : in type_vector) 
 		return type_tangent_angle_circle;
-
+	-- CS move this stuff to et_geometry_1 ?
 
 	
 
