@@ -1043,7 +1043,7 @@ package body et_board_ops.assy_doc is
 	procedure move_arc (
 		module_cursor	: in pac_generic_modules.cursor;
 		face			: in type_face;
-		arc			: in type_doc_arc;
+		arc				: in type_doc_arc;
 		point_of_attack	: in type_vector_model;
 		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
@@ -1088,7 +1088,7 @@ package body et_board_ops.assy_doc is
 			& " face" & to_string (face) 
 			& " moving assy doc " & to_string (arc)
 			& " point of attack " & to_string (point_of_attack)
-			& " to" & to_string (destination),
+			& " to " & to_string (destination),
 			level => log_threshold);
 
 		log_indentation_up;
