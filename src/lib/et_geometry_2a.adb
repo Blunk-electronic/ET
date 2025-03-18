@@ -1069,6 +1069,8 @@ package body et_geometry_2a is
 			d_scratch : constant type_float_positive := 
 				get_absolute (get_distance (reference, element (p)));
 		begin
+			-- put_line (to_string (element (p)));
+					  
 			if d_scratch < distance then
 				distance := d_scratch;
 				result := element (p);
@@ -1076,6 +1078,8 @@ package body et_geometry_2a is
 		end query_point;
 		
 	begin
+		-- put_line ("get_nearest");
+		
 		points.iterate (query_point'access);
 		return result;
 	end get_nearest;
@@ -2118,6 +2122,8 @@ package body et_geometry_2a is
 		point		: in type_vector_model)
 		return positive
 	is
+		debug : boolean := false;
+		
 		result : positive := 1;
 
 		-- A temporarly storage place for the
@@ -2134,12 +2140,25 @@ package body et_geometry_2a is
 		-- distance has been detected:
 		d1 : type_float_positive := type_float_positive'last;
 	begin
+		if debug then
+			put_line ("get_nearest");
+		end if;
+
+		
 		for i in segments'first .. segments'last loop
+			if debug then
+				put_line (" segment " & to_string (segments (i)));	
+			end if;
+			
 			p := get_shortest_distance (to_arc_coarse (segments (i)), point);
 
 			-- We are interested in the total distance:
 			d2 := get_absolute (p);
 
+			if debug then
+				put_line (" distance " & to_string (d2));	
+			end if;
+			
 			-- If the total distance is less than the latest
 			-- shortest distance then update the shortest distance
 			-- by the current total distance:
@@ -2228,8 +2247,8 @@ package body et_geometry_2a is
 		-- default radius = zero ?
 		return type_intersection_of_line_and_circle
 	is
-		--debug : boolean := true;
-		debug : boolean := false;
+		debug : boolean := true;
+		-- debug : boolean := false;
 		
 		-- We assume the arc is a virtual circle and compute the
 		-- intersections of the line with the virtual circle.
@@ -2247,7 +2266,7 @@ package body et_geometry_2a is
 
 	begin
 		if debug then
-			put_line ("get_intersection");
+			put_line ("get_intersection arc/line");
 			put_line (to_string (line));
 			put_line (to_string (vc));
 			put_line (to_string (arc));
@@ -2256,7 +2275,9 @@ package body et_geometry_2a is
 		
 		case vi.status is
 			when NONE_EXIST => 
-				--put_line ("none");
+				if debug then
+					put_line ("no intersection");
+				end if;
 				
 				-- line does not meet the virtual circle
 				-- and does not meet the given arc either.
@@ -2265,7 +2286,10 @@ package body et_geometry_2a is
 			when ONE_EXISTS => 
 				-- line is a tangent to the virtual circle
 				
-				--put_line ("one");					
+				if debug then
+					put_line ("one intersection");
+				end if;
+
 
 				-- Test whether the point where the tangent meets the
 				-- circle is on the given arc:
@@ -2278,20 +2302,23 @@ package body et_geometry_2a is
 			when TWO_EXIST => 
 				-- line is a secant to the virtual circle:
 				
-				--put_line ("two");
-
 				-- Test whether the points where the secant meets the
 				-- circle are on the given arc:
-
-				--put_line ("p1" & to_string (to_point ((vi.intersection_1.point))));
-				--put_line ("p2" & to_string (to_point ((vi.intersection_2.point))));
+				
+				if debug then
+					put_line ("two intersections");
+					put_line (" p1 " & to_string (to_point ((vi.intersection_1))));
+					put_line (" p2 " & to_string (to_point ((vi.intersection_2))));
+				end if;
 
 				declare
 					oa_1 : constant boolean := on_arc (arc, vi.intersection_1);
 					oa_2 : constant boolean := on_arc (arc, vi.intersection_2);
 				begin					
-					--put_line (boolean'image (oa_1));
-					--put_line (boolean'image (oa_2));
+					if debug then
+						put_line (boolean'image (oa_1));
+						put_line (boolean'image (oa_2));
+					end if;
 					
 					if oa_1 and oa_2 then
 						-- both intersections are on the arc
@@ -2324,7 +2351,8 @@ package body et_geometry_2a is
 		point	: in type_vector_model)
 		return type_distance_polar
 	is
-		debug : boolean := false;
+		-- debug : boolean := false;
+		debug : boolean := true;
 		
 		result : type_distance_polar;
 
@@ -2499,9 +2527,9 @@ package body et_geometry_2a is
 	begin
 		if debug then
 			put_line ("get_shortest_distance");
-			put_line ("point" & to_string (point)); 
-			put_line (to_string (arc));
-			put_line (to_string (to_arc_angles (arc)));
+			put_line (" P " & to_string (point)); 
+			put_line ("   " & to_string (arc));
+			put_line ("   " & to_string (to_arc_angles (arc)));
 		end if;
 		
 		if point = arc.center then
@@ -2708,6 +2736,8 @@ package body et_geometry_2a is
 		vector	: in type_vector)
 		return boolean 
 	is
+		debug : boolean := true;
+		
 		-- The angle of the given point relative to the
 		-- center of the given arc:
 		P : type_angle_positive;
@@ -2748,30 +2778,43 @@ package body et_geometry_2a is
 		distance_center_to_point : constant type_float :=
 			get_distance_total (arc.center, vector);
 
+		d1 : type_float;
+		
 	begin
-		--put_line ("center" & to_string (arc.center) 
-				--& " radius" & to_string (arc_angles.radius)
-				--& " start" & to_string (arc.start_point)
-				--& " end" & to_string (arc.end_point)
-				--& " point" & to_string (point)
-				--& " distance center to point" & to_string (distance_center_to_point));
-
+		if debug then
+			put_line ("on_arc");
+			put_line (" " & to_string (arc));
+			put_line (" " & to_string (arc_angles));
+			put_line (" P " & to_string (vector));
+			put_line (" distance center to point " & to_string (distance_center_to_point));
+		end if;
+		
 		-- First test whether the given point is on the circumfence of
 		-- a virtual circle. The circle has the same radius as the arc:
-		--put_line ("delta:" & to_string (distance_center_to_point - arc_angles.radius));
+
+		d1 := distance_center_to_point - arc_angles.radius;
+
+		if debug then
+			put_line (" d1 " & to_string (d1));
+		end if;
 		
 		if abs (distance_center_to_point - arc_angles.radius) <= accuracy then
-		
-			-- Point is on circumfence of virtual circle.
-			--log (text => "on circumfence");
 
-			--log (text => "S" & to_string (S));
-			--log (text => "E" & to_string (E));
+			-- Point is on circumfence of virtual circle.
+			if debug then
+				put_line (" on circumfence of virtual circle");
+				put_line (" S " & to_string (S));
+				put_line (" E " & to_string (E));
+			end if;
+
 			
 			-- Compute the angle of the point relative to the center
 			-- of the given arc:
 			P := to_angle_positive (get_angle (get_distance (arc.center, vector)));
-			--log (text => "P" & to_string (P));
+
+			if debug then
+				put_line (" P " & to_string (P));
+			end if;
 			
 			-- The angle of the point must be between start and end point
 			-- of the arc to be considered as "on the arc".
@@ -3101,7 +3144,8 @@ package body et_geometry_2a is
 		line	: in type_line_vector)
 		return type_intersection_of_line_and_circle
 	is
-		debug : boolean := true;
+		-- debug : boolean := true;
+		debug : boolean := false;
 		
 		-- This function bases on the approach by
 		-- Weisstein, Eric W. "Circle-Line Intersection." 
@@ -3141,7 +3185,7 @@ package body et_geometry_2a is
 		
 	begin
 		if debug then
-			put_line ("get_intersection");
+			put_line ("get_intersection circle/line");
 			put_line (to_string (line));
 			put_line (to_string (circle));
 		end if;
@@ -3885,7 +3929,7 @@ package body et_geometry_2a is
 		-- nearest to the given point:
 		idx := get_nearest (segments, point);
 
-		-- put_line ("idx" & positive'image (idx));
+		put_line ("idx" & positive'image (idx));
 		
 		case idx is
 			when 1 => zone := START_POINT;
@@ -3913,9 +3957,9 @@ package body et_geometry_2a is
 
 		if debug then
 			put_line (to_string (arc));
-			put_line ("point of attack" & to_string (point_of_attack));
-			put_line ("destination    " & to_string (destination));
-			put_line ("zone           " & to_string (zone));
+			put_line ("point of attack " & to_string (point_of_attack));
+			put_line ("destination     " & to_string (destination));
+			put_line ("zone            " & to_string (zone));
 		end if;
 		
 
