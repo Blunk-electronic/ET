@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -3792,6 +3792,8 @@ package body et_canvas is
 	
 
 
+	
+
 	procedure draw_arc (
 		arc			: in type_arc'class;
 		pos			: in type_position := origin_zero_rotation;
@@ -3831,6 +3833,16 @@ package body et_canvas is
 		
 		-- Move the arc to the given position:
 		move_by (c, (pos.place.x, pos.place.y));
+
+		-- If the arc is set as "moving", then
+		-- its position will be modified according to the
+		-- object_point_of_attack and the current tool position.
+		-- Otherwise the arc remains unchanged and will be drawn
+		-- as it is:
+		if c.status.moving then
+			attack (c, object_point_of_attack, get_object_tool_position);
+		end if;
+
 		
 		-- Get the bounding-box of the arc:
 		b := get_bounding_box (c, width);
@@ -3849,8 +3861,7 @@ package body et_canvas is
 			-- put_line ("draw_arc");
 
 			-- If an individual stroke is requested for
-			-- the given circle, then set the linewidth of the 
-			-- circumfence:
+			-- the given arc, then set the linewidth:
 			if do_stroke then
 				if width > zero then
 					set_line_width (context, 
@@ -3905,10 +3916,11 @@ package body et_canvas is
 			
 			-- CS: use OpenGL ?
 		end if;
-
 	end draw_arc;
 
 
+
+	
 
 	procedure draw_rectangle (
 		rectangle	: in type_area;
