@@ -98,14 +98,25 @@ is
 	
 	procedure query_arc (c : in pac_doc_arcs.cursor) is
 		arc : type_doc_arc renames element (c);
+
+		procedure draw is begin
+			draw_arc (
+				arc			=> arc,
+				width		=> arc.width,
+				do_stroke	=> true);
+		end draw;
+		
 	begin
-		-- CS is_selected
-		draw_arc (
-			arc			=> arc,
-			width		=> arc.width,
-			do_stroke	=> true);
+		if is_selected (c) then
+			set_highlight_brightness;
+			draw;			
+			set_default_brightness;
+		else
+			draw;
+		end if;
 	end query_arc;
 
+	
 	
 	procedure query_circle (c : in pac_doc_circles.cursor) is 
 		circle : type_doc_circle renames element (c);

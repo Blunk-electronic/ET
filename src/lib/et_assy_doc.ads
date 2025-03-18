@@ -81,7 +81,7 @@ package et_assy_doc is
 		process	: not null access procedure (position : in pac_doc_lines.cursor);
 		proceed	: not null access boolean);
 
-	-- CS likewise iteratator for arcs and circles
+	-- CS likewise iteratator for circles
 
 	-- Returns true if the "proposed-flag" of the given line is set:
 	function is_proposed (
@@ -123,6 +123,16 @@ package et_assy_doc is
 	use pac_doc_arcs;
 
 
+	-- Iterates the arcs
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		arcs	: in pac_doc_arcs.list;
+		process	: not null access procedure (position : in pac_doc_arcs.cursor);
+		proceed	: not null access boolean);
+
+
+
+	
 	-- Returns true if the "proposed-flag" of the given arcis set:
 	function is_proposed (
 		arc_cursor	: in pac_doc_arcs.cursor)

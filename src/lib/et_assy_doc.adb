@@ -152,6 +152,24 @@ package body et_assy_doc is
 
 
 
+	
+	procedure iterate (
+		arcs	: in pac_doc_arcs.list;
+		process	: not null access procedure (position : in pac_doc_arcs.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_doc_arcs.cursor := arcs.first;
+	begin
+		while c /= pac_doc_arcs.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+	
+
+
 	function is_proposed (
 		arc_cursor	: in pac_doc_arcs.cursor)
 		return boolean

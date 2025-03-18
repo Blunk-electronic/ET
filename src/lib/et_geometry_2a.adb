@@ -2324,7 +2324,7 @@ package body et_geometry_2a is
 		point	: in type_vector_model)
 		return type_distance_polar
 	is
-		debug : boolean := true;
+		debug : boolean := false;
 		
 		result : type_distance_polar;
 
@@ -3673,15 +3673,23 @@ package body et_geometry_2a is
 		width	: in type_distance_positive := 0.0)
 		return boolean
 	is
-		distance : type_float_positive;
+		debug : boolean := true;
+		
+		distance : type_float;
 		distance_polar : type_distance_polar;
 	begin
-		put_line ("in_catch_zone arc");
 		distance_polar := get_shortest_distance (arc, get_center (zone));
-		put_line ("dp" & to_string (distance_polar));
+		
+		if debug then
+			put_line ("in_catch_zone arc");
+			put_line ("dp " & to_string (distance_polar));
+		end if;
 		
 		distance := get_absolute (distance_polar);
+
 		distance := distance - type_float_positive (width);
+		-- Due to the linewidth, the distance can also
+		-- assume a negative value.
 
 		if distance <= get_radius (zone) then
 			return true;
