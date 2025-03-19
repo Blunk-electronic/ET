@@ -52,7 +52,12 @@ with et_coordinates_formatting;		use et_coordinates_formatting;
 package body et_geometry_1 is
 
 	
-	function "=" (left, right : in type_float) return boolean is begin
+	function "=" (
+		left, right : in type_float) 
+		return boolean 
+	is begin
+		-- put_line ("test equality");
+		
 		if abs (left - right) <= accuracy then
 			return true;
 		else
@@ -2331,7 +2336,8 @@ package body et_geometry_1 is
 		vector	: in type_vector)
 		return boolean 
 	is
-		debug : boolean := true;
+		--debug : boolean := true;
+		debug : boolean := false;
 		
 		-- The angle of the given point relative to the
 		-- center of the given arc:
@@ -2392,8 +2398,9 @@ package body et_geometry_1 is
 		if debug then
 			put_line (" d1 " & to_string (d1));
 		end if;
+
 		
-		if abs (distance_center_to_point - arc_angles.radius) <= accuracy then
+		if d1 = 0.0 then
 
 			-- Point is on circumfence of virtual circle.
 			if debug then
