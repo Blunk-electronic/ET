@@ -1769,6 +1769,19 @@ package body et_geometry_2a is
 
 
 
+	function get_intersection (
+		arc		: in type_arc;
+		line	: in type_line_vector)
+		return type_intersection_of_line_and_circle
+	is
+		A : type_arc_fine := to_arc_fine (arc);
+	begin
+		return get_intersection (A, line);
+	end get_intersection;
+
+
+	
+
 	function is_selected (
 		arc : in type_arc)
 		return boolean
@@ -2117,63 +2130,6 @@ package body et_geometry_2a is
 	
 
 
-	function get_nearest (
-		segments	: in type_arc_segments;
-		point		: in type_vector_model)
-		return positive
-	is
-		debug : boolean := false;
-		
-		result : positive := 1;
-
-		-- A temporarly storage place for the
-		-- distance between a candidate segment and the point
-		-- in polar form:
-		p : type_distance_polar;
-		
-		-- A temporarly storage place for the absolute
-		-- distance between a candidate segment and the point:
-		d2 : type_float_positive;
-
-		-- The storage place for the smallest
-		-- distance found. Will be updated if a smaller
-		-- distance has been detected:
-		d1 : type_float_positive := type_float_positive'last;
-	begin
-		if debug then
-			put_line ("get_nearest");
-		end if;
-
-		
-		for i in segments'first .. segments'last loop
-			if debug then
-				put_line (" segment " & to_string (segments (i)));	
-			end if;
-			
-			p := get_shortest_distance (to_arc_coarse (segments (i)), point);
-
-			-- We are interested in the total distance:
-			d2 := get_absolute (p);
-
-			if debug then
-				put_line (" distance " & to_string (d2));	
-			end if;
-			
-			-- If the total distance is less than the latest
-			-- shortest distance then update the shortest distance
-			-- by the current total distance:
-			if d2 < d1 then
-				-- update:
-				d1 := d2;
-
-				-- store index of arc segment:
-				result := i;
-			end if;
-		end loop;
-		
-		return result;
-	end get_nearest;
-
 	
 	
 	
@@ -2240,109 +2196,12 @@ package body et_geometry_2a is
 
 	
 	
-	function get_intersection (
-		arc		: in type_arc;
-		line	: in type_line_vector)
-		-- CS optional argument for radius should improve performance
-		-- default radius = zero ?
-		return type_intersection_of_line_and_circle
-	is
-		debug : boolean := true;
-		-- debug : boolean := false;
-		
-		-- We assume the arc is a virtual circle and compute the
-		-- intersections of the line with the virtual circle.
-		
-		-- Build a virtual circle from the given arc:
-		vc : constant type_circle := (
-				center => arc.center, 
-				radius => to_distance (get_radius_start (arc)),
-				others => <>);
-
-		-- Compute the intersections of the line with the virtual circle:
-		vi : constant type_intersection_of_line_and_circle := 
-			get_intersection (vc, line);
-		
-
-	begin
-		if debug then
-			put_line ("get_intersection arc/line");
-			put_line (to_string (line));
-			put_line (to_string (vc));
-			put_line (to_string (arc));
-		end if;
-
-		
-		case vi.status is
-			when NONE_EXIST => 
-				if debug then
-					put_line ("no intersection");
-				end if;
-				
-				-- line does not meet the virtual circle
-				-- and does not meet the given arc either.
-				return (status => NONE_EXIST);
-
-			when ONE_EXISTS => 
-				-- line is a tangent to the virtual circle
-				
-				if debug then
-					put_line ("one intersection");
-				end if;
-
-
-				-- Test whether the point where the tangent meets the
-				-- circle is on the given arc:
-				if on_arc (arc, vi.intersection) then
-					return (ONE_EXISTS, vi.intersection, TANGENT);
-				else
-					return (status => NONE_EXIST);
-				end if;
-				
-			when TWO_EXIST => 
-				-- line is a secant to the virtual circle:
-				
-				-- Test whether the points where the secant meets the
-				-- circle are on the given arc:
-				
-				if debug then
-					put_line ("two intersections");
-					put_line (" p1 " & to_string (to_point ((vi.intersection_1))));
-					put_line (" p2 " & to_string (to_point ((vi.intersection_2))));
-				end if;
-
-				declare
-					oa_1 : constant boolean := on_arc (arc, vi.intersection_1);
-					oa_2 : constant boolean := on_arc (arc, vi.intersection_2);
-				begin					
-					if debug then
-						put_line (boolean'image (oa_1));
-						put_line (boolean'image (oa_2));
-					end if;
-					
-					if oa_1 and oa_2 then
-						-- both intersections are on the arc
-						return (TWO_EXIST, vi.intersection_1, vi.intersection_2);
-						
-					elsif oa_1 then
-						-- only intersection 1 is on the arc
-						return (ONE_EXISTS, vi.intersection_1, SECANT);
-						
-					elsif oa_2 then
-						-- only intersection 2 is on the arc
-						return (ONE_EXISTS, vi.intersection_2, SECANT);
-						
-					else
-						-- none intersection is on the arc
-						return (status => NONE_EXIST);
-					end if;
-				end;
-		end case;
-		
-	end get_intersection;
 
 
 	
+
+	
+
 
 	
 
@@ -2351,514 +2210,27 @@ package body et_geometry_2a is
 		point	: in type_vector_model)
 		return type_distance_polar
 	is
-		-- debug : boolean := false;
-		debug : boolean := true;
-		
-		result : type_distance_polar;
-
-		radius : constant type_float_positive := get_radius_start (arc);
-		
-		
-		procedure do_it is 
-			-- Build a line that runs from the given point to the center of the arc:
-			line : constant type_line_vector := 
-				et_geometry_2a.to_line_vector (line => (point, arc.center, others => <>));
-			-- IMPORTANT NOTE: Function to_line_vector computes the direction vector 
-			-- of line as:
-			--  arc.center.x - point.x and arc.center.y - point.y.
-			--  Function after_center (see below) bases on this fact. Otherwise its result
-			--  will be nonsense !!
-
-			-- Get the intersection(s) of the line with the arc:
-			ILC : constant type_intersection_of_line_and_circle := 
-				get_intersection (arc, line);
-
-			DPC : constant type_distance_polar := 
-				get_distance (point, arc.center);
-
-			
-			-- Assigns to the result either the start or the end point of
-			-- the arc, depending on which one is closer.
-			procedure compare_start_and_end_point is 
-				d_to_start, d_to_end : type_distance_polar;
-			begin
-				d_to_start := get_distance (point, arc.start_point);
-				d_to_end   := get_distance (point, arc.end_point);
-
-				if get_absolute (d_to_start) < get_absolute (d_to_end) then
-					result := d_to_start;
-				else
-					result := d_to_end;
-				end if;
-			end compare_start_and_end_point;
-
-			
-			-- Compute the distance of point to circle:
-			procedure like_circle is begin
-				-- The arc can be treated like a circle.
-				result := DPC;
-				set_absolute (result, get_absolute (DPC) - radius);
-			end like_circle;
-
-			
-			-- Detects whether the given location vector i is after the
-			-- center of the arc on "line".
-			-- 1. It bases on the well known vector formula:
-			--    i = start_vector + lambda * direction_vector
-			--    This formula is solved by lambda.
-			-- 2. It bases on the assumption that the direction_vector of line is
-			--    already properly set (see comment above):
-			function after_center (i : in type_vector) return boolean is
-				lambda : type_float;
-			begin
-				-- the start_vector is where "line" starts: the given point
-				-- the direction vector is the direction of "line": towards the 
-				-- center of the arc:
-				lambda := divide ((subtract (i, line.v_start)), line.v_direction);
-				--put_line ("lambda" & to_string (lambda));
-				if lambda > 1.0 then
-					return true; -- i is after center of arc
-				else 
-					return false; -- i is on or before center of arc
-				end if;
-			end after_center;
-
-			
-		begin -- do_it
-			--log (text => "DPC" & to_string (get_absolute (DPC)));
-			
-			if get_absolute (DPC) >= radius then
-				-- point outside or on virtual circle
-				--put_line ("outside");
-				--log (text => "outside");
-				
-				case ILC.status is
-					when NONE_EXIST =>
-						--put_line ("none");
-						-- line travels past the arc. no intersections
-						compare_start_and_end_point;
-
-					when ONE_EXISTS =>
-						--put_line ("one");
-						
-						if ILC.tangent_status = SECANT then
-						-- line intersects the arc only once
-
-							--log (text => "a: " & to_string (arc));
-							--log (text => "l: " & to_string (line));
-							--log (text => "i: " & to_string (ILC.intersection.point));
-							
-							if after_center (ILC.intersection) then
-								-- intersection after center of arc
-								--log (text => "i after center");
-								compare_start_and_end_point;
-							else
-								-- intersection on circumfence between point and center of arc
-								--put_line ("i before center");
-								--put_line ("p betweeen circumfence and center");
-								like_circle;
-							end if;
-							
-						else
-							-- a tangent should never be the case
-							raise constraint_error;
-						end if;
-
-					when TWO_EXIST =>
-						--put_line ("two");
-						
-						-- line intersects the virtual circle twice on
-						-- its circumfence. But the intersection nearest
-						-- to point is relevant:
-						like_circle;
-						
-				end case;
-
-				
-			else -- point is inside the virtual circle
-				--put_line ("inside");
-				--log (text => "inside");
-				
-				case ILC.status is
-					when NONE_EXIST =>
-						-- line travels past the arc
-						--put_line ("none");
-						compare_start_and_end_point;
-
-					when ONE_EXISTS =>
-						--put_line ("one");
-						
-						if ILC.tangent_status = SECANT then
-						-- line intersects the arc only once
-
-							--put_line ("i: " & to_string (ILC.intersection.point));
-							
-							if after_center (ILC.intersection) then
-								-- intersection after center of arc
-								--put_line ("i after center");
-								compare_start_and_end_point;
-							else
-								-- point is between circumfence and center of arc
-								--put_line ("i before center");
-								
-								result := DPC;
-								set_absolute (result, radius - get_absolute (DPC));
-								--set_angle (result, add (get_angle (DPC), 180.0));
-								reverse_angle (result);
-							end if;
-
-						else
-							-- a tangent should never be the case
-							raise constraint_error;
-						end if;
-
-					when TWO_EXIST =>
-						-- treat the arc like a circle and compute distance point to circle:
-						--result := get_distance_to_circumfence (point, (arc.center, radius));
-						result := get_distance_to_circumfence (
-							circle	=> (arc.center, to_distance (radius), others => <>),
-							point	=> point);
-						
-				end case;				
-			end if;				
-		end do_it;
-
-		
+		A : type_arc_fine := to_arc_fine (arc);
+		P : type_vector := to_vector (point);
 	begin
-		if debug then
-			put_line ("get_shortest_distance");
-			put_line (" P " & to_string (point)); 
-			put_line ("   " & to_string (arc));
-			put_line ("   " & to_string (to_arc_angles (arc)));
-		end if;
-		
-		if point = arc.center then
-			-- If the given point is right on the center of the arc,
-			-- then return zero distance and zero angle:
-
-			set_absolute (result, radius);
-			set_angle (result, to_arc_angles (arc).angle_start);
-		else
-			do_it;
-		end if;
-
-		--put_line (to_string (result));
-		
-		return result;
+		return get_shortest_distance (A, P);		
 	end get_shortest_distance;
 
 
-	
+
 
 	function get_shortest_distance (
 		arc		: in type_arc;
 		point	: in type_vector)
-		return type_float
+		return type_float_positive
 	is
-		result : type_float := 0.0;
-
-		--procedure do_it is 
-			---- Build a line that runs from the given point to the center of the arc:
-			--line : constant type_line_vector := to_line_vector (line => (point, arc.center));
-			---- IMPORTANT NOTE: Function to_line_vector computes the direction vector of line as:
-			----  arc.center.x - point.x and arc.center.y - point.y.
-			----  Function after_center (see below) bases on this fact. Otherwise its result
-			----  will be nonsense !!
-
-			---- Get the intersection(s) of the line with the arc:
-			--ILC : constant type_intersection_of_line_and_circle := get_intersection (line, arc);
-
-			--DPC : constant type_distance_polar := get_distance (point, arc.center);
-			--radius : constant type_distance_positive := get_radius_start (arc);
-
-			---- Assigns to the result either the start or the end point of
-			---- the arc, depending on which one is closer.
-			--procedure compare_start_and_end_point is 
-				--d_to_start, d_to_end : type_distance_polar;
-			--begin
-				--d_to_start := get_distance (point, arc.start_point);
-				--d_to_end   := get_distance (point, arc.end_point);
-
-				--if get_absolute (d_to_start) < get_absolute (d_to_end) then
-					--result := d_to_start;
-				--else
-					--result := d_to_end;
-				--end if;
-			--end compare_start_and_end_point;
-
-			---- Compute the distance of point to circle:
-			--procedure like_circle is begin
-				---- The arc can be treated like a circle.
-				--result := DPC;
-				--set_absolute (result, get_absolute (DPC) - radius);
-			--end like_circle;
-
-			---- Detects whether the given location vector i is after the
-			---- center of the arc on "line".
-			---- 1. It bases on the well known vector formula:
-			----    i = start_vector + lambda * direction_vector
-			----    This formula is solved by lambda.
-			---- 2. It bases on the assumption that the direction_vector of line is
-			----    already properly set (see comment above):
-			--function after_center (i : in type_vector) return boolean is
-				--lambda : type_float;
-			--begin
-				---- the start_vector is where "line" starts: the given point
-				---- the direction vector is the direction of "line": towards the 
-				---- center of the arc:
-				--lambda := divide ((subtract (i, line.v_start)), line.v_direction);
-				----put_line ("lambda" & to_string (lambda));
-				--if lambda > 1.0 then
-					--return true; -- i is after center of arc
-				--else 
-					--return false; -- i is on or before center of arc
-				--end if;
-			--end after_center;
-			
-		--begin -- do_it
-			----log (text => "DPC" & to_string (get_absolute (DPC)));
-			
-			--if get_absolute (DPC) >= radius then
-				---- point outside or on virtual circle
-				----put_line ("outside");
-				----log (text => "outside");
-				
-				--case ILC.status is
-					--when NONE_EXIST =>
-						----put_line ("none");
-						---- line travels past the arc. no intersections
-						--compare_start_and_end_point;
-
-					--when ONE_EXISTS =>
-						----put_line ("one");
-						
-						--if ILC.tangent_status = SECANT then
-						---- line intersects the arc only once
-
-							----log (text => "a: " & to_string (arc));
-							----log (text => "l: " & to_string (line));
-							----log (text => "i: " & to_string (ILC.intersection.point));
-							
-							--if after_center (ILC.intersection.vector) then
-								---- intersection after center of arc
-								----log (text => "i after center");
-								--compare_start_and_end_point;
-							--else
-								---- intersection on circumfence between point and center of arc
-								----put_line ("i before center");
-								----put_line ("p betweeen circumfence and center");
-								--like_circle;
-							--end if;
-							
-						--else
-							---- a tangent should never be the case
-							--raise constraint_error;
-						--end if;
-
-					--when TWO_EXIST =>
-						----put_line ("two");
-						
-						---- line intersects the virtual circle twice on
-						---- its circumfence. But the intersection nearest
-						---- to point is relevant:
-						--like_circle;
-						
-				--end case;
-
-			--else -- point is inside the virtual circle
-				----put_line ("inside");
-				----log (text => "inside");
-				
-				--case ILC.status is
-					--when NONE_EXIST =>
-						---- line travels past the arc
-						----put_line ("none");
-						--compare_start_and_end_point;
-
-					--when ONE_EXISTS =>
-						----put_line ("one");
-						
-						--if ILC.tangent_status = SECANT then
-						---- line intersects the arc only once
-
-							----put_line ("i: " & to_string (ILC.intersection.point));
-							
-							--if after_center (ILC.intersection.vector) then
-								---- intersection after center of arc
-								----put_line ("i after center");
-								--compare_start_and_end_point;
-							--else
-								---- point is between circumfence and center of arc
-								----put_line ("i before center");
-								
-								--result := DPC;
-								--set_absolute (result, radius - get_absolute (DPC));
-								----set_angle (result, add (get_angle (DPC), 180.0));
-								--reverse_angle (result);
-							--end if;
-
-						--else
-							---- a tangent should never be the case
-							--raise constraint_error;
-						--end if;
-
-					--when TWO_EXIST =>
-						---- treat the arc like a circle and compute distance point to circle:
-						--result := get_distance_to_circumfence (point, (arc.center, radius));
-						
-				--end case;				
-			--end if;				
-		--end do_it;
-		
-	begin -- get_shortest_distance
-		--put_line ("point" & to_string (point) & " " & to_string (arc));
-		
-		if to_point (point) = arc.center then
-			-- If the given point is right on the center of the arc,
-			-- then return zero distance and zero angle:
-
-			result := 0.0;
-		else
-			--do_it; -- CS
-			null;
-		end if;
-
-		--put_line (to_string (result));
-		
-		return result;
+		A : type_arc_fine := to_arc_fine (arc);
+		P : type_vector renames point;
+	begin
+		return get_absolute (get_shortest_distance (A, P));
 	end get_shortest_distance;
 
-
-
-
-	function on_arc (
-		arc		: in type_arc;
-		vector	: in type_vector)
-		return boolean 
-	is
-		debug : boolean := true;
-		
-		-- The angle of the given point relative to the
-		-- center of the given arc:
-		P : type_angle_positive;
-
-		-- A representation of the given arc in angles:
-		arc_angles : constant type_arc_angles := to_arc_angles (arc);
-
-		-- CS: The procedure could be simplified if the given arc was
-		-- normalized via function normalize_arc at first.
-		
-		-- make the angles of the arc positive:
-		S : type_angle_positive := to_angle_positive (arc_angles.angle_start);
-		E : type_angle_positive := to_angle_positive (arc_angles.angle_end);
-
-		
-		procedure offset_ccw is 
-			T : type_angle_positive;
-		begin
-			T := 360.0 - S;
-			--log (text => "offset" & to_string (T));
-			
-			S := 0.0;
-			E := E + T;
-			P := add (P, T);
-		end offset_ccw;
-
-		
-		procedure offset_cw is 
-			T : type_angle_positive;
-		begin
-			T := 360.0 - E;
-			E := 0.0;
-			S := S + T;
-			P := add (P, T);
-		end offset_cw;
-
-		
-		distance_center_to_point : constant type_float :=
-			get_distance_total (arc.center, vector);
-
-		d1 : type_float;
-		
-	begin
-		if debug then
-			put_line ("on_arc");
-			put_line (" " & to_string (arc));
-			put_line (" " & to_string (arc_angles));
-			put_line (" P " & to_string (vector));
-			put_line (" distance center to point " & to_string (distance_center_to_point));
-		end if;
-		
-		-- First test whether the given point is on the circumfence of
-		-- a virtual circle. The circle has the same radius as the arc:
-
-		d1 := distance_center_to_point - arc_angles.radius;
-
-		if debug then
-			put_line (" d1 " & to_string (d1));
-		end if;
-		
-		if abs (distance_center_to_point - arc_angles.radius) <= accuracy then
-
-			-- Point is on circumfence of virtual circle.
-			if debug then
-				put_line (" on circumfence of virtual circle");
-				put_line (" S " & to_string (S));
-				put_line (" E " & to_string (E));
-			end if;
-
-			
-			-- Compute the angle of the point relative to the center
-			-- of the given arc:
-			P := to_angle_positive (get_angle (get_distance (arc.center, vector)));
-
-			if debug then
-				put_line (" P " & to_string (P));
-			end if;
-			
-			-- The angle of the point must be between start and end point
-			-- of the arc to be considered as "on the arc".
-			-- Special problem: The arc may run across the ZDG ("zero degree mark").
-			--  In that case the start and end angle and the point angle must first be
-			--  rotated so that the arc no longer crossed the ZDG.
-			case arc.direction is
-				when CW =>
-					if S <= E then -- arc crosses the ZDG
-						offset_cw;
-					end if;
-					
-					if P <= S and P >= E then
-						--log (text => "on cw arc");
-						return true;
-					else
-						--log (text => "not on cw arc");
-						return false;
-					end if;
-
-				when CCW =>
-					if S >= E then -- arc crosses the ZDG
-						offset_ccw;
-					end if;
-
-					--log (text => "start" & to_string (S));
-					--log (text => "end  " & to_string (E));
-					--log (text => "point" & to_string (P));
-
-					
-					if P >= S and P <= E then
-						--log (text => "on ccw arc");
-						return true;
-					else
-						--log (text => "not on ccw arc");
-						return false;
-					end if;
-			end case;
-			
-		else
-			return false; 
-		end if;
-
-	end on_arc;
+	
 
 
 
@@ -2867,7 +2239,7 @@ package body et_geometry_2a is
 		point	: in type_vector_model)
 		return boolean
 	is begin
-		return on_arc (arc, to_vector (point));
+		return on_arc (to_arc_fine (arc), to_vector (point));
 	end on_arc;
 
 
@@ -2896,6 +2268,22 @@ package body et_geometry_2a is
 	
 
 -- CIRCLE:
+
+
+	function to_circle_fine (
+		circle : in type_circle)
+		return type_circle_fine
+	is
+		C : type_circle_fine;
+	begin
+		C.center := to_vector (circle.center);
+		C.radius := type_float_positive (circle.radius);
+
+		return C;
+	end to_circle_fine;
+
+
+	
 	
 	function to_string (circle : in type_circle) return string is begin
 		return
@@ -2904,6 +2292,20 @@ package body et_geometry_2a is
 	end to_string;
 
 
+	
+
+	function get_intersection (
+		circle	: in type_circle;
+		line	: in type_line_vector)
+		return type_intersection_of_line_and_circle
+	is
+		C : type_circle_fine := to_circle_fine (circle);
+	begin
+		return get_intersection (C, line);
+	end get_intersection;
+
+
+	
 
 	function is_selected (
 		circle : in type_circle)
@@ -3094,322 +2496,43 @@ package body et_geometry_2a is
 	end;
 
 
-	function on_circle (
-		circle		: in type_circle;
-		point		: in type_vector_model)
-		return boolean 
-	is
-		-- the distance from center to point:
-		DCP: constant type_float_positive := 
-			get_distance_total (point, circle.center);
-	begin
-		if abs (DCP - type_float_positive (circle.radius)) <= type_float (type_distance'small) then
-
-			-- Point is on circumfence of circle.
-			return true;
-		else
-			return false; 
-		end if;
-	end on_circle;
 
 
 
 	
 
-	function get_tangent_angle (p : in type_vector) 
-		return type_tangent_angle_circle
-	is
-		a : type_angle := get_angle (get_distance (origin, p));
-	begin
-		--put_line (to_string (a));
-
-		-- The angle a ranges from -180 to 180 degrees.
-		
-		case get_quadrant (p) is
-			when ONE	=> a := a - 90.0;
-			when TWO	=> a := a - 90.0;
-			when THREE	=> a := a + 90.0;
-			when FOUR	=> a := a + 90.0;
-		end case;
-		
-		return a;
-	end get_tangent_angle;
-
-
 
 	
-
-	function get_intersection (
-		circle	: in type_circle;
-		line	: in type_line_vector)
-		return type_intersection_of_line_and_circle
-	is
-		-- debug : boolean := true;
-		debug : boolean := false;
-		
-		-- This function bases on the approach by
-		-- Weisstein, Eric W. "Circle-Line Intersection." 
-		-- From MathWorld--A Wolfram Web Resource. 
-		-- <https://mathworld.wolfram.com/Circle-LineIntersection.html>.
-
-		-- The appoach assumes the circle center at 0/0.
-		-- So we must first move the line by
-		-- the given center of the circle. The intersections,
-		-- if any exist, must in the end be moved back by this offset:
-		offset : constant type_offset := to_offset (circle.center);
-
-		-- The circle radius is:
-		r : constant type_float := type_float (circle.radius);
-		
-		-- The line starts here:
-		x1, y1 : type_float;
-
-		-- The line ends here:
-		x2, y2 : type_float;
-		
-		x, y, dx, dy, dr, DI : type_float;
-
-		-- scratch variables:
-		line_moved : type_line_vector;
-		v_end : type_vector;
-		a, b, c, d : type_float;
-
-		-- Due to unavoidable errors this threshold is used
-		-- instead of 0.0 when detecting the distance to the circle:
-		--th : constant type_float := 1.0E-17; -- CS refine
-		th : constant type_float := 1.0E-14; -- CS refine
-
-		s : type_intersection_status_of_line_and_circle;
-		intersection_1, intersection_2 : type_vector;
-		
-		
-	begin
-		if debug then
-			put_line ("get_intersection circle/line");
-			put_line (to_string (line));
-			put_line (to_string (circle));
-		end if;
-		
-		-- Move the line by the offset (which is the center of the given circle):
-		line_moved := move_by (line, invert (offset));
-		v_end := add (line_moved.v_start, line_moved.v_direction);
-		
-		-- compute start and end point of line:
-		x1 := type_float (get_x (line_moved.v_start));
-		y1 := type_float (get_y (line_moved.v_start));
-		
-		x2 := type_float (get_x (v_end));
-		y2 := type_float (get_y (v_end));
-		
-		dx := x2 - x1; -- the delta in x
-		dy := y2 - y1; -- the delta in y
-
-		dr := sqrt (dx ** 2 + dy ** 2);
-
-		-- Compute the discriminant
-		DI := x1 * y2 - x2 * y1;
-		
-		b := dr ** 2;
-		a := r ** 2;
-		c := DI ** 2;
-
-		-- Compute the incidence of line and circle:
-		d := a * b - c;
-
-		-- Theoretically the comparison should be against 0.0. 
-		-- See comments on th above.
-		if debug then
-			put_line ("d:" & to_string (d));
-		end if;
-
-		-- CASE 1: 
-		-- If the incidence is less than zero, then
-		-- there is no intersection at all:
-		if d < (-th) then
-			if debug then
-				put_line ("no intersection");
-			end if;
-			
-			s := NONE_EXIST;
-			
-			return (status => NONE_EXIST);
-
-			
-		-- CASE 2: 
-		-- If the incidence is zero, then
-		-- there is one intersection -> we have a tangent:			
-		elsif abs (d) < th then	
-			if debug then
-				put_line ("one intersection");
-			end if;
-			
-			s := ONE_EXISTS; -- tangent
-
-			x := (DI * dy) / b;
-			y := (-DI * dx) / b;
-
-			intersection_1 := set (x, y);
-
-			-- Move computed intersection back by offset
-			-- (Which is the center of the given circle):
-			move_by (intersection_1, offset);
-			
-			return (ONE_EXISTS, intersection_1, TANGENT);
-
-			
-		-- CASE 3: 
-		-- If the incidence is greater than zero, then
-		-- there are two intersections -> we have a secant:			
-		else
-			if debug then
-				put_line ("two intersections");
-			end if;
-			
-			s := TWO_EXIST; -- secant
-
-			-- COMPUTE 1ST INTERSECTION:
-			x := ( DI * dy + sgn (dy) * dx * sqrt (d)) / b;
-			y := (-DI * dx + abs (dy) * sqrt (d))      / b;
-
-			-- Compose the point of intersection 1:
-			intersection_1 := set (x, y);
-		
-			-- Move computed intersection 1 back by offset
-			-- (Which is the center of the given circle):
-			move_by (intersection_1, offset);
-
-			
-			-- COMPUTE 2ND INTERSECTION:				
-			x := ( DI * dy - sgn (dy) * dx * sqrt (d)) / b;
-			y := (-DI * dx - abs (dy) * sqrt (d))      / b;
-					
-			-- Compose the point of intersection 2:
-			intersection_2 := set (x, y, 0.0);
-			
-			-- Move computed intersection 2 back by offset
-			-- (Which is the center of the given circle):
-			move_by (intersection_2, offset);				
-			
-			return (TWO_EXIST, intersection_1, intersection_2);			
-		end if;
-	end get_intersection;
-
-
-	
-
-
-	function get_distance_to_circumfence (
-		circle	: in type_circle;
-		point	: in type_vector_model)
-		return type_distance_polar
-	is
-		result : type_distance_polar;
-	begin
-		result := get_distance (circle.center, point);
-		set_absolute (result, type_float_positive (circle.radius) - get_absolute (result));
-		return result;
-	end get_distance_to_circumfence;
-
-
 
 	function get_shortest_distance (
 		circle	: in type_circle;
 		point	: in type_vector_model)
 		return type_distance_polar
 	is
-		result : type_distance_polar;
-
-		-- Two cases can exist:
-		-- 1. point is inside the circle
-		-- 2. point is outside the circle
-		
-		-- the polar distance from center to point:
-		d_cp : constant type_distance_polar := get_distance (circle.center, point);
-
-		-- the polar distance from point to center:
-		d_pc : constant type_distance_polar := get_distance (point, circle.center);
-		
-		dd : type_float;
+		C : type_circle_fine := to_circle_fine (circle);
+		P : type_vector := to_vector (point);
 	begin
-		--result := get_distance (point, circle.center);
-		--set_absolute (result, get_absolute (result) - circle.radius);
+		return get_shortest_distance (C, P);
+	end get_shortest_distance;
 
-		--dd := type_distance (round (get_absolute (d_pc) - circle.radius));
-		dd := get_absolute (d_pc) - type_float_positive (circle.radius);
-		
-		if dd > 0.0 then -- point outside of circle
 
-			-- Now the polar distance from point to center matters:
-			result := d_pc;
 
-			-- Since we are interested in the distance to the circumfence
-			-- the radius must be subtracted from the total distance:
-			set_absolute (result, get_absolute (d_pc) - type_float_positive (circle.radius));
-			
-		else -- point inside circle or on circumfence
 
-			-- Now the polar distance from center to point matters:
-			result := d_cp;
-			
-			-- Since we are interested in the distance to the circumfence
-			-- the total distance must be subtracted from the radius:
-			set_absolute (result, type_float_positive (circle.radius) - get_absolute (d_pc));
-		end if;
-		
-		return result;
+	function get_shortest_distance (
+		circle	: in type_circle;
+		point	: in type_vector)
+		return type_float_positive
+	is
+		C : type_circle_fine := to_circle_fine (circle);
+		P : type_vector renames point;
+	begin
+		return get_absolute (get_shortest_distance (C, P));
 	end get_shortest_distance;
 
 
 	
 
-	function get_shortest_distance (
-		point	: in type_vector;
-		circle	: in type_circle)
-		return type_float
-	is
-		result : type_float := 0.0;
-
-		-- Two cases can exist:
-		-- 1. point is inside the circle
-		-- 2. point is outside the circle
-		
-		-- the polar distance from center to point:
-		--d_cp : constant type_distance_polar := get_distance (circle.center, point);
-
-		---- the polar distance from point to center:
-		--d_pc : constant type_distance_polar := get_distance (point, circle.center);
-		
-		--dd : type_distance;
-	begin
-		--result := get_distance (point, circle.center);
-		--set_absolute (result, get_absolute (result) - circle.radius);
-
-		--dd := type_distance (round (get_absolute (d_pc) - circle.radius));
-		--dd := get_absolute (d_pc) - circle.radius;
-		
-		--if dd > zero then -- point outside of circle
-
-			---- Now the polar distance from point to center matters:
-			--result := d_pc;
-
-			---- Since we are interested in the distance to the circumfence
-			---- the radius must be subtracted from the total distance:
-			--set_absolute (result, get_absolute (d_pc) - circle.radius);
-			
-		--else -- point inside circle or on circumfence
-
-			---- Now the polar distance from center to point matters:
-			--result := d_cp;
-			
-			---- Since we are interested in the distance to the circumfence
-			---- the total distance must be subtracted from the radius:
-			--set_absolute (result, circle.radius - get_absolute (d_pc));
-		--end if;
-		
-		return result;
-	end get_shortest_distance;
-
-
+	
 	
 	function get_bounding_box (
 		circle 	: in type_circle;
@@ -3436,45 +2559,6 @@ package body et_geometry_2a is
 	end get_bounding_box;
 
 
-
-	function order_intersections (
-		-- The start point of the line that intersects the circle.
-		-- The start point must be outside the circle and will
-		-- be passed through to the result unchanged.
-		start_point		: in type_vector;
-
-		intersections	: in type_intersection_of_line_and_circle)
-		return type_ordered_line_circle_intersections
-	is
-		result : type_ordered_line_circle_intersections := 
-			(start_point => start_point, others => <>); -- pass start point through
-
-		i : constant type_intersection_of_line_and_circle (TWO_EXIST) := intersections;
-
-		d1, d2 : type_float;
-	begin
-		-- the distance from start point to intersection point 1:
-		d1 := get_distance_total (start_point, i.intersection_1);
-
-		-- the distance from start point to intersection point 2:
-		d2 := get_distance_total (start_point, i.intersection_2);
-
-		if d1 < d2 then -- point ip1 is closer to start point that ip2
-			result.entry_point := i.intersection_1;
-			result.exit_point  := i.intersection_2;
-			
-		elsif d1 > d2 then -- point ip2 is closer to start point than ip1
-			result.entry_point := i.intersection_2;
-			result.exit_point  := i.intersection_1;
-
-		else -- point ip1 has same distance to start point as ip2
-			--put_line (to_string (d1)); put_line (to_string (d2));
-			--put_line (to_string (ip1)); put_line (to_string (ip2));
-			raise constraint_error;
-		end if;
-			
-		return result;
-	end order_intersections;
 
 
 
@@ -3722,7 +2806,8 @@ package body et_geometry_2a is
 		distance : type_float;
 		distance_polar : type_distance_polar;
 	begin
-		distance_polar := get_shortest_distance (arc, get_center (zone));
+		distance_polar := get_shortest_distance (
+			to_arc_fine (arc), to_vector (get_center (zone)));
 		
 		if debug then
 			put_line ("in_catch_zone arc");
@@ -3927,7 +3012,7 @@ package body et_geometry_2a is
 
 		-- Find the index of the segment that is
 		-- nearest to the given point:
-		idx := get_nearest (segments, point);
+		idx := get_nearest (segments, to_vector (point));
 
 		put_line ("idx" & positive'image (idx));
 		

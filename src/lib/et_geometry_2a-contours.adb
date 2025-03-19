@@ -1829,9 +1829,9 @@ package body et_geometry_2a.contours is
 		end query_segment;
 
 		
-	begin -- get_shortest_distance
-		if contour.contour.circular then
-			result := get_shortest_distance (point, contour.contour.circle);
+	begin
+		if is_circular (contour) then
+			result := get_shortest_distance (contour.contour.circle, point);
 		else
 			contour.contour.segments.iterate (query_segment'access);				
 		end if;			

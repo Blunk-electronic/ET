@@ -1097,6 +1097,12 @@ package et_geometry_1 is
 		return type_angle;
 
 
+	-- Returns true if the given point sits on the given arc.
+	function on_arc (
+		arc			: in type_arc_fine;
+		vector		: in type_vector)
+		return boolean; 
+
 
 
 	
@@ -1182,6 +1188,15 @@ package et_geometry_1 is
 		segments : in out type_arc_segments);
 
 
+
+	-- Returns the arc segment that is nearest
+	-- to the given point:
+	function get_nearest (
+		segments	: in type_arc_segments;
+		point		: in type_vector)
+		return positive;
+	
+	
 	-- type type_nearest_arc_segment is record
 	-- 	index : positive;
 	-- 	distance	: type_float_positive);
@@ -1203,7 +1218,176 @@ package et_geometry_1 is
 		return type_arc_segments;
 
 
+	
 
+	-- The angle of a tangent to a circle:
+	subtype type_tangent_angle_circle is type_angle range -90.0 .. 90.0;
+	
+	-- Computes the angle of a tangent that touches a circle
+	-- at the given point. The center of the circle is assumed to be the origin.
+	-- - If the tangent increases in y as it travels from left to right 
+	--   then its angle is positive. 
+	-- - If the tangent decreases in y, then its angle is negative.
+	-- - If it does not change in y, then the tangent runs horizontally and has zero angle.
+	-- - If it is vertical, then its angle is 90 degrees.
+	function get_tangent_angle (p : in type_vector) 
+		return type_tangent_angle_circle;
+
+
+	
+	
+	type type_circle_fine is record
+		center	: type_vector;
+		radius	: type_float_positive;
+	end record;
+
+
+	
+		
+	function to_string (
+		circle	: in type_circle_fine)
+		return string;
+	
+
+
+	-- Returns true if the given point sits on the given circle circumfence.
+	function on_circle (
+		circle		: in type_circle_fine;
+		point		: in type_vector)
+		return boolean;
+
+
+	
+	type type_intersection_status_of_line_and_circle is (
+		NONE_EXIST, -- no intersection at all
+		ONE_EXISTS, -- tangent
+		TWO_EXIST); -- two intersections
+
+
+	-- When finding intersections of a line with a circle (or arc)
+	-- we use this type:
+	type type_tangent_status is (TANGENT, SECANT);
+
+	
+	type type_intersection_of_line_and_circle (
+		status : type_intersection_status_of_line_and_circle)
+	is record
+		case status is
+			when NONE_EXIST => null;
+			
+			when ONE_EXISTS	=> 
+				intersection	: type_vector;
+				tangent_status	: type_tangent_status;
+			
+			when TWO_EXIST	=> 
+				intersection_1	: type_vector;
+				intersection_2	: type_vector;
+				
+		end case;
+	end record;
+
+
+
+
+	type type_ordered_line_circle_intersections is record
+		-- The start point of the line that intersects the circle.
+		-- The start point must be outside the circle.
+		start_point	: type_vector;
+
+		-- The point where the line enters and exits the circle:
+		entry_point	: type_vector;
+		exit_point	: type_vector;
+	end record;
+
+
+
+	-- Sorts the intersections of a line with an arc or a circle in the order
+	-- as they occur as the line crosses the circle or the arc:
+	-- start point of line, entry point, exit point.
+	-- The given intersections must contain two intersections (discrimintant status),
+	-- otherwise a constraint error will be raised.
+	-- If the given intersections have same distance to start point then
+	-- a constraint error will be raised.
+	function order_intersections (
+		-- The start point of the line that intersects the circle.
+		-- The start point must be outside the circle.
+		start_point		: in type_vector;
+
+		intersections	: in type_intersection_of_line_and_circle)
+		return type_ordered_line_circle_intersections;
+
+
+	
+	
+	-- Computes the intersections of a line with a circle.
+	function get_intersection (
+		circle	: in type_circle_fine;
+		line	: in type_line_vector)
+		return type_intersection_of_line_and_circle;
+
+
+
+	-- Returns the distance of point to circumfence of circle.
+	-- Assumes the point is INSIDE the circle or ON the circumfence of the circle.
+	-- The point must not be OUTSIDE the circle !
+	function get_distance_to_circumfence (
+		circle	: in type_circle_fine;
+		point	: in type_vector)
+		return type_distance_polar;
+
+	
+
+	-- Returns the shortest distance from the given point to the
+	-- given circle. The point may be inside or outside the circle.
+	-- However, the return is the distance to the circumfence of the circle.
+	function get_shortest_distance (
+		circle	: in type_circle_fine;
+		point	: in type_vector)
+		return type_distance_polar;
+
+
+	
+	-- Returns the shortest distance between a point and an arc.
+	-- If the point is equal the center of the arc, then the return is
+	-- the radius of the arc and the angle to the start point of the arc:
+	function get_shortest_distance (
+		arc		: in type_arc_fine;
+		point	: in type_vector)
+		return type_distance_polar;
+
+
+	
+
+	-- Computes the intersections of a line with an arc:
+
+	-- - If there is no intersection then it returns NONE_EXIST.
+	-- - If there is only one intersection then the given line is a tangent.
+	--   The return status will then be ONE_EXISTS and the 
+	--   actual intersection (with point and angle).
+	--   The tangent status will be TANGENT.
+	-- - If there are two intersections then the given line is a secant.
+	--   The return status will be TWO_EXIST along with the two intersections
+	--   (with their point and angle).
+	--   NOTE: There is no information about the order of the two intersections
+	--   as the line travels through the arc/circle. Use function order_intersections
+	--   to get the intersections ordered.
+	--
+	-- See details of type type_intersection_of_line_and_circle.
+	--
+	-- IMPORTANT: CONVENTION ON INTERSECTION ANGLE OF A SECANT:
+	-- The angle of intersection is defined as follows:
+	-- The given line enters and leaves the arc/circle at some point and angle.
+	-- As the given line is a line vector, it has a direction. Imagine
+	-- sitting on this line as it enters/leveas the circle. 
+	-- The angle BETWEEN the line and the circle circumfence visible
+	-- on your LEFT is the angle of intersection.
+	-- The angle of intersection is always greater zero and less than 180 degrees.
+	function get_intersection (
+		arc		: in type_arc_fine;
+		line	: in type_line_vector)
+		return type_intersection_of_line_and_circle;
+
+	
 	
 -- DISTANCE LOCATION VECTOR TO LINE
 
@@ -1283,6 +1467,11 @@ package et_geometry_1 is
 	
 	function on_start_point (d : in type_distance_point_line) return boolean;
 	function on_end_point (d : in type_distance_point_line) return boolean;
+	
+
+
+
+	
 	
 
 	
