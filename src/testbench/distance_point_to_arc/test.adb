@@ -47,7 +47,7 @@ with et_geometry_2a;
 with et_primitive_objects;		use et_primitive_objects;
 
 
-procedure split is
+procedure test is
 
 	distance_digits_left  : constant :=  5;
 	--distance_digits_right : constant := 10; -- 0.1pm
@@ -105,125 +105,41 @@ procedure split is
 	use pac_geometry_2;
 
 
+
+	A : type_arc;
 	
-	procedure output_segments (
-		segments	: in type_arc_segments)
-	is begin
-		for i in segments'first .. segments'last loop
-			put_line (to_string (to_arc_angles (segments (i))));
-		end loop;
-	end output_segments;
-	
+	-- A, B : type_arc_angles;
 
-	arc : type_arc_fine;
+	--	P : type_vector_model := set (65.0, 45.0);
+	P : type_vector_model := set (51.0, 25.0);
 
-	subtype type_arcs is type_arc_segments (1 .. 3);
-	segments : type_arcs;
-
-	A, B : type_arc_angles;
-
-	P : type_vector_model := set (-0.5, 1.0);
-
-	Z : type_line_zone;
-	
-	-- R : type_angle := 0.0;
+	D : type_distance_polar;
 begin
-	-- put_line ("split");
-
-
-	-- A.center := set (0.0, 0.0);
-	-- A.radius := 1.0;
-	-- A.angle_start :=  50.0;
-	-- A.angle_end   := -10.0;
-	-- A.direction := CW;
-	-- put_line ("A " & to_string (A));
-
-	-- test rotation:
-	-- for i in 1 .. 10 loop
-	-- 	R := type_angle (i) * 10.0;
-	-- 	B := rotate (A, R);
-	-- 	put_line ("R " & to_string (R));
-	-- 	put_line ("B " & to_string (B));
-	-- end loop;
 
 	-- test 1a:
-	arc.center := 		set (0.0, 0.0);
-	arc.start_point :=	set (0.0, -1.0);
-	arc.end_point :=	set (1.0, 0.0);
-	arc.direction := CW;
+	A.center := 		set (50.0, 25.0);
+	A.start_point :=	set (50.0,  0.0);
+	A.end_point :=	set (50.0, 50.0);
+	A.direction := CCW;
 
 -- goto start_test;	
 	
-	-- test 1b:
-	arc.center := 		set (0.0, 0.0);
-	arc.start_point :=	set (0.0, -1.0);
-	arc.end_point :=	set (1.0, 0.0);
-	arc.direction := CCW;
-
-	-- goto start_test;	
-
-	-- test 2a:
-	A.center := set (0.0, 0.0);
-	A.radius := 1.0;
-	A.angle_start :=  50.0;
-	A.angle_end   := -10.0;
-	A.direction := CCW;
-	arc := to_arc (A);
-
-	-- goto start_test;	
-	
-	
-	-- test 2b:
-	A.center := set (0.0, 0.0);
-	A.radius := 1.0;
-	A.angle_start :=  50.0;
-	A.angle_end   := -10.0;
-	A.direction := CW;
-	arc := to_arc (A);
-
-	-- goto start_test;	
-	
-	
-	-- test 3a:
-	A.center := set (0.0, 0.0);
-	A.radius := 1.0;
-	A.angle_start :=  50.0;
-	A.angle_end   :=  10.0;
-	A.direction := CW;
-	arc := to_arc (A);
-
-	-- goto start_test;
-	
-	-- test 3b:
-	A.center := set (0.0, 0.0);
-	A.radius := 1.0;
-	A.angle_start :=  50.0;
-	A.angle_end   :=  10.0;
-	A.direction := CCW;
-	arc := to_arc (A);
-
-
-	arc.center := 		set (18.0, 10.0);
-	arc.start_point :=	set (16.0, 10.0);
-	arc.end_point :=	set (20.0, 10.0);
-	arc.direction := CW;
-
-	P := set (18.0, 12.0);
-	
 <<start_test>>
 	
-	put_line (to_string (arc));
-	put_line ("P " & to_string (P));
+	put_line (to_string (A));
+	put_line ("P: " & to_string (P));
 
+	D := get_shortest_distance (A, P);
+	
 	-- segments := split_arc (arc, 3);
 
 	-- output_segments (segments);
 
-	Z := get_zone (to_arc_coarse (arc), P);
+	-- Z := get_zone (to_arc_coarse (arc), P);
 
-	put_line ("Z " & to_string (Z));
+	-- put_line ("Z " & to_string (Z));
 	
-end split;
+end test;
 
 -- Soli Deo Gloria
 
