@@ -2801,7 +2801,8 @@ package body et_geometry_2a is
 		width	: in type_distance_positive := 0.0)
 		return boolean
 	is
-		debug : boolean := true;
+		-- debug : boolean := true;
+		debug : boolean := false;
 		
 		distance : type_float;
 		distance_polar : type_distance_polar;
@@ -3033,7 +3034,8 @@ package body et_geometry_2a is
 		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model)
 	is
-		debug : boolean := true;
+		-- debug : boolean := true;
+		debug : boolean := false;
 		
 		zone : type_line_zone;
 		offset : type_distance_relative;
