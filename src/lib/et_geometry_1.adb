@@ -2941,11 +2941,7 @@ package body et_geometry_1 is
 		DCP: constant type_float_positive := 
 			get_distance_total (point, circle.center);
 	begin
-		--if abs (DCP - circle.radius) <= type_float (type_distance'small) then
-		if abs (DCP - circle.radius) <= accuracy then 
-		-- CS compare with zero using the redefined "=" operation ?
-
-			-- Point is on circumfence of circle.
+		if DCP = circle.radius then 
 			return true;
 		else
 			return false; 
