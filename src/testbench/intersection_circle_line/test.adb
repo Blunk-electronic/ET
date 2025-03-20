@@ -125,15 +125,15 @@ begin
 	L.v_direction	:= set ( 2.0, 0.0);
 	
 	-- test 1a:
-	C.center := 	set ( 0.0,  0.0);
+	C.center := 	set ( 0.0,  -1.0 - 1.0E-14);
 	C.radius :=		1.0;
 
 -- goto start_test;	
 	
 <<start_test>>
 	
-	put_line (to_string (C));
-	put_line ("L: " & to_string (L));
+	-- put_line (to_string (C));
+	-- put_line ("L: " & to_string (L));
 
 	do_it;
 	
