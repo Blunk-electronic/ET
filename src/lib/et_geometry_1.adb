@@ -629,6 +629,8 @@ package body et_geometry_1 is
 	end get_absolute;
 
 
+
+	
 -- VECTORS	
 
 	function "=" (
@@ -652,6 +654,8 @@ package body et_geometry_1 is
 	end "=";
 
 
+	
+
 	function get_lower_left (
 		left, right : in type_vector)
 		return boolean 
@@ -671,6 +675,8 @@ package body et_geometry_1 is
 		end if;
 	end get_lower_left;
 
+
+
 	
 	function get_average (
 		v1, v2 : in type_vector)
@@ -684,6 +690,8 @@ package body et_geometry_1 is
 		return result;
 	end get_average;
 
+
+
 	
 	function get_offset (
 		v1, v2 : in type_vector)
@@ -692,6 +700,8 @@ package body et_geometry_1 is
 		return (v2.x - v1.x, v2.y - v1.y);
 	end get_offset;
 
+
+
 	
 	function to_offset (
 		v : in type_vector)
@@ -699,6 +709,8 @@ package body et_geometry_1 is
 	is begin
 		return (v.x, v.y);
 	end to_offset;
+
+
 
 	
 	function to_string (
@@ -717,6 +729,8 @@ package body et_geometry_1 is
 				& to_string (v.y);
 		end if;
 	end to_string;
+
+
 	
 	
 	function get_quadrant (
@@ -1434,9 +1448,9 @@ package body et_geometry_1 is
 		lv : in type_line_vector)
 		return string
 	is begin
-		return "location vector start:" & to_string (lv.v_start) 
-			& " direction vector" & to_string (lv.v_direction)
-			& " angle" & to_string (get_angle (lv));
+		return "line vector start: " & to_string (lv.v_start) 
+			& " direction: " & to_string (lv.v_direction)
+			& " angle: " & to_string (get_angle (lv));
 	end to_string;
 
 
@@ -2988,7 +3002,7 @@ package body et_geometry_1 is
 		line	: in type_line_vector)
 		return type_intersection_of_line_and_circle
 	is
-		-- debug : boolean := true;
+		--debug : boolean := true;
 		debug : boolean := false;
 		
 		-- This function bases on the approach by
@@ -3014,17 +3028,42 @@ package body et_geometry_1 is
 		x, y, dx, dy, dr, DI : type_float;
 
 		-- scratch variables:
-		line_moved : type_line_vector;
-		v_end : type_vector;
-		a, b, c, d : type_float;
-
-		-- Due to unavoidable errors this threshold is used
-		-- instead of 0.0 when detecting the distance to the circle:
-		--th : constant type_float := 1.0E-17; -- CS refine
-		th : constant type_float := 1.0E-14; -- CS refine
+		a, b, c, d	: type_float;
 
 		s : type_intersection_status_of_line_and_circle;
 		intersection_1, intersection_2 : type_vector;
+
+		
+		procedure compute_incidence is 
+			line_moved	: type_line_vector;
+			v_end		: type_vector;
+		begin
+			-- Move the line by the offset (which is the center of the given circle):
+			line_moved := move_by (line, invert (offset));
+			v_end := add (line_moved.v_start, line_moved.v_direction);
+			
+			-- compute start and end point of line:
+			x1 := type_float (get_x (line_moved.v_start));
+			y1 := type_float (get_y (line_moved.v_start));
+			
+			x2 := type_float (get_x (v_end));
+			y2 := type_float (get_y (v_end));
+			
+			dx := x2 - x1; -- the delta in x
+			dy := y2 - y1; -- the delta in y
+
+			dr := sqrt (dx ** 2 + dy ** 2);
+
+			-- Compute the discriminant
+			DI := x1 * y2 - x2 * y1;
+			
+			b := dr ** 2;
+			a := r ** 2;
+			c := DI ** 2;
+
+			-- the incidence finally:
+			d := a * b - c;
+		end compute_incidence;
 		
 		
 	begin
@@ -3033,58 +3072,22 @@ package body et_geometry_1 is
 			put_line (to_string (line));
 			put_line (to_string (circle));
 		end if;
-		
-		-- Move the line by the offset (which is the center of the given circle):
-		line_moved := move_by (line, invert (offset));
-		v_end := add (line_moved.v_start, line_moved.v_direction);
-		
-		-- compute start and end point of line:
-		x1 := type_float (get_x (line_moved.v_start));
-		y1 := type_float (get_y (line_moved.v_start));
-		
-		x2 := type_float (get_x (v_end));
-		y2 := type_float (get_y (v_end));
-		
-		dx := x2 - x1; -- the delta in x
-		dy := y2 - y1; -- the delta in y
 
-		dr := sqrt (dx ** 2 + dy ** 2);
+		compute_incidence;
 
-		-- Compute the discriminant
-		DI := x1 * y2 - x2 * y1;
-		
-		b := dr ** 2;
-		a := r ** 2;
-		c := DI ** 2;
-
-		-- Compute the incidence of line and circle:
-		d := a * b - c;
-
-		-- Theoretically the comparison should be against 0.0. 
-		-- See comments on th above.
 		if debug then
-			put_line ("d:" & to_string (d));
+			put_line (" incidence d: " & to_string (d));
 		end if;
 
+					
 		-- CASE 1: 
-		-- If the incidence is less than zero, then
-		-- there is no intersection at all:
-		if d < (-th) then
-			if debug then
-				put_line ("no intersection");
-			end if;
-			
-			s := NONE_EXIST;
-			
-			return (status => NONE_EXIST);
-
-			
-		-- CASE 2: 
 		-- If the incidence is zero, then
-		-- there is one intersection -> we have a tangent:			
-		elsif abs (d) < th then	
+		-- there is one intersection -> we have a tangent.
+		-- NOTE: The follwing equality test is redefined
+		-- and MUST be executed before "<" and ">":
+		if d = 0.0 then
 			if debug then
-				put_line ("one intersection");
+				put_line (" one intersection -> a tangent");
 			end if;
 			
 			s := ONE_EXISTS; -- tangent
@@ -3097,8 +3100,25 @@ package body et_geometry_1 is
 			-- Move computed intersection back by offset
 			-- (Which is the center of the given circle):
 			move_by (intersection_1, offset);
+
+			if debug then
+				put_line (" at " & to_string (intersection_1));
+			end if;
 			
 			return (ONE_EXISTS, intersection_1, TANGENT);
+
+
+		-- CASE 2: 
+		-- If the incidence is less than zero, then
+		-- there is no intersection at all:
+		elsif d < 0.0 then
+			if debug then
+				put_line (" no intersection");
+			end if;
+			
+			s := NONE_EXIST;
+			
+			return (status => NONE_EXIST);
 
 			
 		-- CASE 3: 
@@ -3106,7 +3126,7 @@ package body et_geometry_1 is
 		-- there are two intersections -> we have a secant:			
 		else
 			if debug then
-				put_line ("two intersections");
+				put_line (" two intersections -> a secant");
 			end if;
 			
 			s := TWO_EXIST; -- secant
@@ -3121,7 +3141,6 @@ package body et_geometry_1 is
 			-- Move computed intersection 1 back by offset
 			-- (Which is the center of the given circle):
 			move_by (intersection_1, offset);
-
 			
 			-- COMPUTE 2ND INTERSECTION:				
 			x := ( DI * dy - sgn (dy) * dx * sqrt (d)) / b;
@@ -3133,6 +3152,11 @@ package body et_geometry_1 is
 			-- Move computed intersection 2 back by offset
 			-- (Which is the center of the given circle):
 			move_by (intersection_2, offset);				
+
+			if debug then
+				put_line (" at " & to_string (intersection_1));
+				put_line (" at " & to_string (intersection_2));
+			end if;
 			
 			return (TWO_EXIST, intersection_1, intersection_2);			
 		end if;
