@@ -2370,8 +2370,8 @@ package body et_geometry_1 is
 		vector	: in type_vector)
 		return boolean 
 	is
-		debug : boolean := true;
-		-- debug : boolean := false;
+		-- debug : boolean := true;
+		debug : boolean := false;
 		
 		-- The angle of the given point relative to the
 		-- center of the given arc:
@@ -3178,8 +3178,8 @@ package body et_geometry_1 is
 		line	: in type_line_vector)
 		return type_intersection_of_line_and_circle
 	is
-		debug : boolean := true;
-		-- debug : boolean := false;
+		--debug : boolean := true;
+		debug : boolean := false;
 		
 
 		function do_it return type_intersection_of_line_and_circle is
