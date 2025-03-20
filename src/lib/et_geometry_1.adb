@@ -3389,8 +3389,8 @@ package body et_geometry_1 is
 		point	: in type_vector)
 		return type_distance_polar
 	is
-		-- debug : boolean := false;
-		debug : boolean := true;
+		debug : boolean := false;
+		-- debug : boolean := true;
 		
 		result : type_distance_polar;
 

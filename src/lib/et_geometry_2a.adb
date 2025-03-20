@@ -3015,7 +3015,7 @@ package body et_geometry_2a is
 		-- nearest to the given point:
 		idx := get_nearest (segments, to_vector (point));
 
-		put_line ("idx" & positive'image (idx));
+		-- put_line ("idx" & positive'image (idx));
 		
 		case idx is
 			when 1 => zone := START_POINT;
