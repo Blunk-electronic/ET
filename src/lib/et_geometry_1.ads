@@ -45,8 +45,6 @@ with ada.numerics.generic_elementary_functions;
 
 with et_primitive_objects;		use et_primitive_objects;
 with et_mirroring;				use et_mirroring;
-with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
 
 
 generic
@@ -63,12 +61,6 @@ package et_geometry_1 is
 		left, right : in type_float) 
 		return boolean;
 
-	
-	--function ">=" (left, right : in type_float) return boolean;
-
-	-- CS: for some reason this redefining causes an exception:
-	-- "raised STORAGE_ERROR : stack overflow or erroneous memory access"
-	--function "<=" (left, right : in type_float) return boolean;
 	
 	
 	function get_average (
@@ -122,24 +114,7 @@ package et_geometry_1 is
 
 	
 
-	
 
-
-	-- The number of decimal places when rounding or type_float
-	-- is required:
-	--subtype type_rounding_accuracy is positive 
-		--range 1 .. type_float'digits;
-	
-	--procedure round (
-		--f : in out type_float;	-- the number to be rounded
-		--a : in type_rounding_accuracy);	-- the accuracy, the number of decimal places
-
-	--function round (
-		--f : in type_float;
-		--a : in type_rounding_accuracy)
-		--return type_float;
-
-	
 
 
 	package pac_float_numbers_functions is new 
@@ -220,11 +195,6 @@ package et_geometry_1 is
 	function to_distance (df : in string)
 		return type_float;
 	
-	--function to_distance (f : in type_float)
-		--return type_distance;
-
-	--function to_rotation (f : in type_float)
-		--return type_rotation;
 
 	
 	
