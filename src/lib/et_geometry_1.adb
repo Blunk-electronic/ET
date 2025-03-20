@@ -560,12 +560,32 @@ package body et_geometry_1 is
 	function to_angle_positive (
 		rotation : in type_angle)
 		return type_angle_positive
-	is begin
-		if rotation < 0.0 then
-			return 360.0 + rotation;
+	is 
+		result : type_angle_positive;
+	begin
+		-- IMPORTANT: The redefined equality test
+		-- must come first:
+		if rotation = 0.0 then
+			result := 0.0;
+
+		elsif rotation = 360.0 then
+			result := 0.0;
+			
+		elsif rotation < 0.0 then
+			result := 360.0 + rotation;
+			-- example: 360 + (-90) = 270
 		else
-			return rotation;
+			-- rotation > 0.0
+			result := rotation;
 		end if;
+
+		return result;
+
+		exception 
+			when others =>
+				put_line ("ERROR: rotation " & to_string (rotation));
+				raise;
+			
 	end to_angle_positive;
 
 
@@ -2358,37 +2378,14 @@ package body et_geometry_1 is
 		P : type_angle_positive;
 
 		-- A representation of the given arc in angles:
-		arc_angles : constant type_arc_angles := to_arc_angles (arc);
+		arc_angles : constant type_arc_angles := normalize_arc (to_arc_angles (arc));
 
-		-- CS: The procedure could be simplified if the given arc was
-		-- normalized via function normalize_arc at first.
 		
 		-- make the angles of the arc positive:
 		S : type_angle_positive := to_angle_positive (arc_angles.angle_start);
 		E : type_angle_positive := to_angle_positive (arc_angles.angle_end);
 
-		
-		procedure offset_ccw is 
-			T : type_angle_positive;
-		begin
-			T := 360.0 - S;
-			--log (text => "offset" & to_string (T));
-			
-			S := 0.0;
-			E := E + T;
-			P := add (P, T);
-		end offset_ccw;
-
-		
-		procedure offset_cw is 
-			T : type_angle_positive;
-		begin
-			T := 360.0 - E;
-			E := 0.0;
-			S := S + T;
-			P := add (P, T);
-		end offset_cw;
-
+		T : type_angle_positive;
 		
 		distance_center_to_point : constant type_float :=
 			get_distance_total (arc.center, vector);
@@ -2428,52 +2425,62 @@ package body et_geometry_1 is
 			-- of the given arc:
 			P := to_angle_positive (get_angle (get_distance (arc.center, vector)));
 
+			-- put_line ("DP " & to_string (get_distance (arc.center, vector)));
+			
 			if debug then
 				put_line (" P " & to_string (P));
 			end if;
 			
-			-- The angle of the point must be between start and end point
+			-- The angle P of the point must be between start S and end point E
 			-- of the arc to be considered as "on the arc".
-			-- Special problem: The arc may run across the ZDG ("zero degree mark").
+			-- Special problem: The arc may run across the ZDM ("zero degree mark").
 			--  In that case the start and end angle and the point angle must first be
-			--  rotated so that the arc no longer crossed the ZDG.
-			case arc.direction is
-				when CW =>
-					if S <= E then -- arc crosses the ZDG
-						offset_cw;
-					end if;
-					
-					if P <= S and P >= E then
-						--log (text => "on cw arc");
-						return true;
-					else
-						--log (text => "not on cw arc");
-						return false;
-					end if;
+			--  rotated so that the arc no longer crossed the ZDM.
 
-				when CCW =>
-					if S >= E then -- arc crosses the ZDG
-						offset_ccw;
-					end if;
+			if S >= E then -- arc crosses the ZDM
+				if debug then
+					put_line (" arc crosses the ZDM -> offset requred");
+				end if;
 
-					--log (text => "start" & to_string (S));
-					--log (text => "end  " & to_string (E));
-					--log (text => "point" & to_string (P));
+				T := 360.0 - S;
+				
+				if debug then
+					put_line (" T:" & to_string (T));
+				end if;
+				
+				S := 0.0;
+				E := E + T;
+				P := add (P, T);
 
-					
-					if P >= S and P <= E then
-						--log (text => "on ccw arc");
-						return true;
-					else
-						--log (text => "not on ccw arc");
-						return false;
-					end if;
-			end case;
+				if debug then
+					put_line (" S " & to_string (S));
+					put_line (" E " & to_string (E));
+					put_line (" P " & to_string (P));
+				end if;
+			end if;
+
+
+			
+			if P >= S and P <= E then
+				if debug then
+					put_line (" P is on arc");
+				end if;
+				return true;
+			else
+				if debug then
+					put_line (" P is NOT on arc");
+				end if;
+				return false;
+			end if;
+
 			
 		else
+			if debug then
+				put_line (" P is NOT on arc (distance differs from radius)");
+			end if;
+
 			return false; 
 		end if;
-
 	end on_arc;
 
 	

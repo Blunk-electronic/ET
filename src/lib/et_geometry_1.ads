@@ -91,7 +91,7 @@ package et_geometry_1 is
 
 
 	
-	subtype type_angle is type_float range -720.0 .. 720.0;
+	subtype type_angle is type_float range -720.0 .. 720.0; -- CS derive new type ?
 	subtype type_angle_positive is type_angle range 0.0 .. 360.0;
 
 	function to_angle (a : in string) return type_angle;
@@ -1099,6 +1099,8 @@ package et_geometry_1 is
 
 
 	-- Returns true if the given point sits on the given arc.
+	-- It is assumed that the distance of the vector is equal to
+	-- the radius of the arc. Otherwise the result is false:
 	function on_arc (
 		arc			: in type_arc_fine;
 		vector		: in type_vector)
@@ -1166,6 +1168,7 @@ package et_geometry_1 is
 	-- have a span of 360 degrees.
 	-- If argument allow_full_circle is false, then such an arc
 	-- will be regarded as having a span of zero degree.
+	-- The direction remains unchanged. Use normalize_arc if required:
 	function to_arc_angles (
 		arc					: in type_arc_fine;
 		allow_full_circle	: in boolean := true) 
