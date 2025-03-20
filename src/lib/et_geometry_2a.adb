@@ -45,7 +45,6 @@ with ada.characters.latin_1;
 with ada.characters.handling;	use ada.characters.handling;
 
 with et_exceptions;						use et_exceptions;
-with et_coordinates_formatting;			use et_coordinates_formatting;
 
 
 package body et_geometry_2a is
@@ -1732,7 +1731,7 @@ package body et_geometry_2a is
 		arc : in type_arc)
 		return pac_geometry_1.type_arc_fine
 	is begin
-		return (
+		return to_arc_fine (
 			center		=> to_vector (arc.center),
 			start_point	=> to_vector (arc.start_point),
 			end_point	=> to_vector (arc.end_point),
@@ -1748,10 +1747,10 @@ package body et_geometry_2a is
 		result : type_arc;
 	begin
 		result := (
-			center		=> to_point (arc.center),
-			start_point	=> to_point (arc.start_point),
-			end_point	=> to_point (arc.end_point),
-			direction	=> arc.direction,
+			center		=> to_point (get_center (arc)),
+			start_point	=> to_point (get_start_point (arc)),
+			end_point	=> to_point (get_end_point (arc)),
+			direction	=> get_direction (arc),
 			others 		=> <>);
 
 		return result;

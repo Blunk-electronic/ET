@@ -45,6 +45,7 @@ with ada.characters.handling;	use ada.characters.handling;
 
 with ada.exceptions;			use ada.exceptions;
 with et_exceptions;				use et_exceptions;
+with et_string_processing;		use et_string_processing;
 
 
 package body et_geometry_1.et_polygons is

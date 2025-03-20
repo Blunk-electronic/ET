@@ -36,21 +36,22 @@
 --   history of changes:
 --
 
-with ada.containers; 			use ada.containers;
+with ada.containers; 				use ada.containers;
 with ada.containers.doubly_linked_lists;
 
 
 with ada.numerics;
 with ada.numerics.generic_elementary_functions;
 
-with et_axes;					use et_axes;
-with et_primitive_objects;		use et_primitive_objects;
+with et_axes;						use et_axes;
+with et_primitive_objects;			use et_primitive_objects;
 with et_geometry_1;
 
-with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
-with et_object_status;			use et_object_status;
-with et_mirroring;				use et_mirroring;
+with et_string_processing;			use et_string_processing;
+with et_logging;					use et_logging;
+with et_object_status;				use et_object_status;
+with et_mirroring;					use et_mirroring;
+with et_coordinates_formatting;		use et_coordinates_formatting;
 
 
 generic
@@ -168,11 +169,6 @@ package et_geometry_2a is
 
 
 
-	type type_output_format is (
-		FORMAT_1,
-		FORMAT_2,
-		FORMAT_3,
-		FORMAT_4);
 		
 	
 	-- This function returns the given distance as string:	

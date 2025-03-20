@@ -42,6 +42,14 @@ with ada.text_io;				use ada.text_io;
 package et_coordinates_formatting is
 	
 
+	type type_output_format is (
+		FORMAT_1,
+		FORMAT_2,
+		FORMAT_3,
+		FORMAT_4);
+
+
+	
 	axis_separator : constant string := "/";
 	point_preamble : constant string := " (x" & axis_separator & "y) ";
 	--point_preamble_with_rotation : constant string := 

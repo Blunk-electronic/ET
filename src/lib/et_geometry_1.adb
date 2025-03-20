@@ -40,9 +40,6 @@
 with ada.strings.unbounded;
 with ada.characters.latin_1;
 
-with et_coordinates_formatting;		use et_coordinates_formatting;
-
-
 
 package body et_geometry_1 is
 
@@ -2204,6 +2201,19 @@ package body et_geometry_1 is
 
 -- ARCS
 
+
+	function to_arc_fine (
+		center		: in type_vector;
+		start_point	: in type_vector;
+		end_point	: in type_vector;
+		direction	: in type_direction_of_rotation)
+		return type_arc_fine
+	is begin
+		return (center, start_point, end_point, direction);
+	end to_arc_fine;
+
+
+	
 	function to_string (
 		arc : in type_arc_fine)
 		return string 
@@ -2216,6 +2226,42 @@ package body et_geometry_1 is
 	end to_string;
 
 
+
+	function get_center (
+		arc : in type_arc_fine)
+		return type_vector
+	is begin
+		return arc.center;
+	end get_center;
+
+
+
+	function get_start_point (
+		arc : in type_arc_fine)
+		return type_vector
+	is begin
+		return arc.start_point;
+	end get_start_point;
+
+
+
+	function get_end_point (
+		arc : in type_arc_fine)
+		return type_vector
+	is begin
+		return arc.end_point;
+	end get_end_point;
+	
+
+
+	function get_direction (
+		arc : in type_arc_fine)
+		return type_direction_of_rotation
+	is begin
+		return arc.direction;
+	end get_direction;
+
+	
 	
 	function get_radius_start (
 		arc : in type_arc_fine) 

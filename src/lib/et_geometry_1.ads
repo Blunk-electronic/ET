@@ -43,8 +43,9 @@ with ada.containers.doubly_linked_lists;
 with ada.numerics;
 with ada.numerics.generic_elementary_functions;
 
-with et_primitive_objects;		use et_primitive_objects;
-with et_mirroring;				use et_mirroring;
+with et_primitive_objects;			use et_primitive_objects;
+with et_mirroring;					use et_mirroring;
+with et_coordinates_formatting;		use et_coordinates_formatting;
 
 
 generic
@@ -1012,21 +1013,43 @@ package et_geometry_1 is
 -- ARC
 
 	arc_direction_default : constant type_direction_of_rotation := CCW;
-	
-	type type_arc_fine is record
-		center		: type_vector;
-		start_point	: type_vector;
-		end_point	: type_vector;
-		direction	: type_direction_of_rotation := CW; 
-		-- CS should be arc_direction_default
-	end record;
 
+	type type_arc_fine is private;
+	
+
+	function to_arc_fine (
+		center		: in type_vector;
+		start_point	: in type_vector;
+		end_point	: in type_vector;
+		direction	: in type_direction_of_rotation)
+		return type_arc_fine;
+	
 
 	function to_string (
 		arc : in type_arc_fine)
 		return string;
 
 
+	function get_center (
+		arc : in type_arc_fine)
+		return type_vector;
+	
+
+	function get_start_point (
+		arc : in type_arc_fine)
+		return type_vector;
+	
+
+	function get_end_point (
+		arc : in type_arc_fine)
+		return type_vector;
+
+
+	function get_direction (
+		arc : in type_arc_fine)
+		return type_direction_of_rotation;
+	
+	
 	-- Returns the distance between the start point and the center of the arc.
 	function get_radius_start (
 		arc : in type_arc_fine) 
@@ -1453,6 +1476,13 @@ private
 	end record;
 
 
+	type type_arc_fine is record
+		center		: type_vector;
+		start_point	: type_vector;
+		end_point	: type_vector;
+		direction	: type_direction_of_rotation := CW; 
+		-- CS should be arc_direction_default
+	end record;
 
 	
 end et_geometry_1;
