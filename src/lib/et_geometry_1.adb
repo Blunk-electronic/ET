@@ -2350,8 +2350,8 @@ package body et_geometry_1 is
 		vector	: in type_vector)
 		return boolean 
 	is
-		--debug : boolean := true;
-		debug : boolean := false;
+		debug : boolean := true;
+		-- debug : boolean := false;
 		
 		-- The angle of the given point relative to the
 		-- center of the given arc:
@@ -3169,104 +3169,138 @@ package body et_geometry_1 is
 	function get_intersection (
 		arc		: in type_arc_fine;
 		line	: in type_line_vector)
-		-- CS optional argument for radius should improve performance
-		-- default radius = zero ?
 		return type_intersection_of_line_and_circle
 	is
 		debug : boolean := true;
 		-- debug : boolean := false;
 		
-		-- We assume the arc is a virtual circle and compute the
-		-- intersections of the line with the virtual circle.
-		
-		-- Build a virtual circle from the given arc:
-		vc : constant type_circle_fine := (
-				center => arc.center, 
-				radius => get_radius_start (arc),
-				others => <>);
 
-		-- Compute the intersections of the line with the virtual circle:
-		vi : constant type_intersection_of_line_and_circle := 
-			get_intersection (vc, line);
-		
+		function do_it return type_intersection_of_line_and_circle is
+			-- We assume the arc is a virtual circle and compute the
+			-- intersections of the line with the virtual circle.
+			-- Build a virtual circle from the given arc:
+			vc : constant type_circle_fine := (
+					center => arc.center, 
+					radius => get_radius_start (arc));
+			
+			-- Compute the intersections of the line with the virtual circle:
+			vi : constant type_intersection_of_line_and_circle := 
+				get_intersection (vc, line);
+		begin
+			if debug then
+				put_line ("virtual " & to_string (vc));
+			end if;
 
+			case vi.status is
+				when NONE_EXIST => 
+					-- line does not meet the virtual circle
+					-- and does not meet the given arc either.
+					
+					if debug then
+						put_line (" no intersection");
+					end if;
+					
+					return (status => NONE_EXIST);
+
+					
+				when ONE_EXISTS => 
+					-- line is a tangent to the virtual circle			
+
+					-- Test whether the tangent touches the arc:
+					if on_arc (arc, vi.intersection) then
+						if debug then
+							put_line (" one intersection");
+							put_line (" at " & to_string (vi.intersection));
+						end if;
+
+						return (ONE_EXISTS, vi.intersection, TANGENT);
+						
+					else
+						if debug then
+							put_line (" no intersection");
+						end if;
+
+						return (status => NONE_EXIST);
+					end if;
+
+					
+				when TWO_EXIST => 
+					-- line is a secant to the virtual circle.				
+					-- Test whether the secant intersects the arc:
+
+					if debug then
+						put_line ("two intersections with virtual circle");
+						put_line (" at " & to_string (vi.intersection_1));
+						put_line (" at " & to_string (vi.intersection_2));
+					end if;
+
+					
+					declare
+						oa_1 : constant boolean := on_arc (arc, vi.intersection_1);
+						oa_2 : constant boolean := on_arc (arc, vi.intersection_2);
+					begin					
+						-- if debug then
+						-- 	put_line (boolean'image (oa_1));
+						-- 	put_line (boolean'image (oa_2));
+						-- end if;
+						
+						if oa_1 and oa_2 then
+							-- both intersections are on the arc
+
+							if debug then
+								put_line ("two intersections");
+								put_line (" at " & to_string (vi.intersection_1));
+								put_line (" at " & to_string (vi.intersection_2));
+							end if;
+							
+							return (TWO_EXIST, vi.intersection_1, vi.intersection_2);
+
+							
+						elsif oa_1 then
+							-- only intersection 1 is on the arc
+
+							if debug then
+								put_line ("one intersection (1)");
+								put_line (" at " & to_string (vi.intersection_1));
+							end if;
+
+							return (ONE_EXISTS, vi.intersection_1, SECANT);
+
+
+							
+						elsif oa_2 then
+							-- only intersection 2 is on the arc
+
+							if debug then
+								put_line ("one intersection (2)");
+								put_line (" at " & to_string (vi.intersection_2));
+							end if;
+
+							return (ONE_EXISTS, vi.intersection_2, SECANT);
+
+							
+						else
+							-- none intersection is on the arc
+
+							if debug then
+								put_line ("no intersections");
+							end if;
+							
+							return (status => NONE_EXIST);
+						end if;
+					end;
+			end case;
+		end do_it;	
+			
+		
 	begin
 		if debug then
 			put_line ("get_intersection arc/line");
 			put_line (to_string (line));
-			put_line (to_string (vc));
 			put_line (to_string (arc));
 		end if;
 
-		
-		case vi.status is
-			when NONE_EXIST => 
-				if debug then
-					put_line ("no intersection");
-				end if;
-				
-				-- line does not meet the virtual circle
-				-- and does not meet the given arc either.
-				return (status => NONE_EXIST);
-
-				
-			when ONE_EXISTS => 
-				-- line is a tangent to the virtual circle
-				
-				if debug then
-					put_line ("one intersection");
-				end if;
-
-				-- Test whether the point where the tangent meets the
-				-- circle is on the given arc:
-				if on_arc (arc, vi.intersection) then
-					return (ONE_EXISTS, vi.intersection, TANGENT);
-				else
-					return (status => NONE_EXIST);
-				end if;
-
-				
-			when TWO_EXIST => 
-				-- line is a secant to the virtual circle:
-				
-				-- Test whether the points where the secant meets the
-				-- circle are on the given arc:
-				
-				if debug then
-					put_line ("two intersections");
-					put_line (" p1 " & to_string (vi.intersection_1));
-					put_line (" p2 " & to_string (vi.intersection_2));
-				end if;
-
-				
-				declare
-					oa_1 : constant boolean := on_arc (arc, vi.intersection_1);
-					oa_2 : constant boolean := on_arc (arc, vi.intersection_2);
-				begin					
-					if debug then
-						put_line (boolean'image (oa_1));
-						put_line (boolean'image (oa_2));
-					end if;
-					
-					if oa_1 and oa_2 then
-						-- both intersections are on the arc
-						return (TWO_EXIST, vi.intersection_1, vi.intersection_2);
-						
-					elsif oa_1 then
-						-- only intersection 1 is on the arc
-						return (ONE_EXISTS, vi.intersection_1, SECANT);
-						
-					elsif oa_2 then
-						-- only intersection 2 is on the arc
-						return (ONE_EXISTS, vi.intersection_2, SECANT);
-						
-					else
-						-- none intersection is on the arc
-						return (status => NONE_EXIST);
-					end if;
-				end;
-		end case;
-		
+		return do_it;
 	end get_intersection;
 
 
