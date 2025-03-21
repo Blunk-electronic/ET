@@ -1649,23 +1649,34 @@ package body et_kicad_libraries is
 				-- #13..14 : end point (x/y)
 
 				use et_coordinates_2.pac_geometry_sch;
+
+				scratch_point : type_vector_model;
+				
 			begin -- to_arc
-				set (arc.center, AXIS_X, mil_to_distance (mil => f (line,2)));
-				set (arc.center, AXIS_Y, mil_to_distance (mil => f (line,3)));
+				
+				-- set (arc.center, AXIS_X, mil_to_distance (mil => f (line, 2)));
+				set (scratch_point, AXIS_X, mil_to_distance (mil => f (line, 2)));
+
+				-- set (arc.center, AXIS_Y, mil_to_distance (mil => f (line,3)));
+				set (scratch_point, AXIS_Y, mil_to_distance (mil => f (line, 3)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
-				mirror (point => arc.center, axis => MIRROR_ALONG_X_AXIS);
+				-- mirror (point => arc.center, axis => MIRROR_ALONG_X_AXIS);
+				mirror (scratch_point, MIRROR_ALONG_X_AXIS);
+				
+				set_center (arc, scratch_point);
+
 
 				arc.radius		:= mil_to_distance (mil => f (line,4));
 
 				arc.start_angle	:= to_angle (f (line,5)); -- CS multiply by -1 ?
 				arc.end_angle	:= to_angle (f (line,6)); -- CS multiply by -1 ?
-				--arc.direction	:= to_direction (arc);
+
 				if arc.start_angle > arc.end_angle then
-					arc.direction := CCW;
+					set_direction (arc, CCW);
 				else
-					arc.direction := CW;
+					set_direction (arc, CW);
 				end if;
 				
 				-- If line width is too small, use a lower limit instead.
@@ -1676,21 +1687,36 @@ package body et_kicad_libraries is
 				end if;
 
 				arc.fill		:= to_fill (f (line,10));
+
 				
-				set (arc.start_point, AXIS_X, mil_to_distance (mil => f (line,11)));
-				set (arc.start_point, AXIS_Y, mil_to_distance (mil => f (line,12)));
+				-- set (arc.start_point, AXIS_X, mil_to_distance (mil => f (line,11)));
+				set (scratch_point, AXIS_X, mil_to_distance (mil => f (line, 11)));
+				
+				-- set (arc.start_point, AXIS_Y, mil_to_distance (mil => f (line,12)));
+				set (scratch_point, AXIS_Y, mil_to_distance (mil => f (line,12)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
-				mirror (point => arc.start_point, axis => MIRROR_ALONG_X_AXIS);
+				-- mirror (point => arc.start_point, axis => MIRROR_ALONG_X_AXIS);
+				mirror (scratch_point, MIRROR_ALONG_X_AXIS);
+				
+				set_start_point (arc, scratch_point);
 
-				set (arc.end_point, AXIS_X, mil_to_distance (mil => f (line,13)));
-				set (arc.end_point, AXIS_Y, mil_to_distance (mil => f (line,14)));
+				
+
+				--set (arc.end_point, AXIS_X, mil_to_distance (mil => f (line,13)));
+				set (scratch_point, AXIS_X, mil_to_distance (mil => f (line, 13)));
+				
+				-- set (arc.end_point, AXIS_Y, mil_to_distance (mil => f (line, 14)));
+				set (scratch_point, AXIS_Y, mil_to_distance (mil => f (line, 14)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
-				mirror (point => arc.end_point, axis => MIRROR_ALONG_X_AXIS);
-				
+				-- mirror (point => arc.end_point, axis => MIRROR_ALONG_X_AXIS);
+				mirror (scratch_point, MIRROR_ALONG_X_AXIS);
+
+				set_end_point (arc, scratch_point);
+								
 				-- CS: log properties
 				return arc;
 			end to_arc;

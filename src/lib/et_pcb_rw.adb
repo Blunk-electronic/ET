@@ -160,10 +160,10 @@ package body et_pcb_rw is
 
 	
 	procedure write_arc (arc : in type_arc'class) is begin
-		write (keyword => keyword_center, parameters => to_string (arc.center));
-		write (keyword => keyword_start, parameters => to_string (arc.start_point));
-		write (keyword => keyword_end, parameters => to_string (arc.end_point));
-		write (keyword => keyword_direction, parameters => to_string (arc.direction));
+		write (keyword => keyword_center, parameters => to_string (get_center (arc)));
+		write (keyword => keyword_start, parameters => to_string (get_start_point (arc)));
+		write (keyword => keyword_end, parameters => to_string (get_end_point (arc)));
+		write (keyword => keyword_direction, parameters => to_string (get_direction (arc)));
 	end write_arc;
 
 	
@@ -472,6 +472,7 @@ package body et_pcb_rw is
 			& to_string (check_layers.deepest_layer) & " !";
 	end signal_layer_invalid;
 
+
 	
 	
 	function to_layers (
@@ -558,13 +559,19 @@ package body et_pcb_rw is
 
 	procedure board_reset_line is begin board_line := (others => <>); end;
 
+	
 	procedure add_polygon_line (l : in out type_line) is begin
 		append_segment (contour, (LINE, l));
 		board_reset_line;
 	end;	
 
+
 	
-	procedure board_reset_arc is begin board_arc := (others => <>); end;
+	procedure board_reset_arc is begin 
+		reset_arc (board_arc);
+	end;
+	
+
 	
 	procedure add_polygon_arc (a : in out type_arc) is begin
 		append_segment (contour, (ARC, a));
@@ -573,6 +580,7 @@ package body et_pcb_rw is
 
 	
 	procedure board_reset_circle is begin board_circle := (others => <>); end;
+
 	
 	procedure add_polygon_circle (c : in out type_circle) is begin
 		-- The global contour variable "mutates" so that the contours
@@ -612,6 +620,9 @@ package body et_pcb_rw is
 		end if;
 	end;
 
+
+
+	
 	function read_board_line (
 		line : type_fields_of_line)
 		return boolean 
@@ -636,6 +647,7 @@ package body et_pcb_rw is
 		end if;
 	end;
 
+
 	
 	procedure board_check_arc (
 		log_threshold	: in type_log_level) is
@@ -649,6 +661,8 @@ package body et_pcb_rw is
 	end board_check_arc;
 
 	
+
+	
 	-- Reads start and end point of the board_arc. If the statement is invalid then an error issued.
 	procedure read_board_arc (line : type_fields_of_line) is
 		kw : constant string := f (line, 1);
@@ -657,30 +671,31 @@ package body et_pcb_rw is
 			expect_field_count (line, 5);
 
 			-- extract the start position starting at field 2 of line
-			board_arc.start_point := to_position (line, 2);
+			set_start_point (board_arc, to_position (line, 2));
 
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
-			board_arc.end_point := to_position (line, 2);
+			set_end_point (board_arc, to_position (line, 2));
 			
 		elsif kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			board_arc.center := to_position (line, 2);
+			set_center (board_arc, to_position (line, 2));
 
 		elsif kw = keyword_direction then -- direction ccw
 			expect_field_count (line, 2);
 
-			board_arc.direction := to_direction (f (line, 2));
+			set_direction (board_arc, to_direction (f (line, 2)));
 			
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_board_arc;
 
+	
 	
 	
 	-- Reads start and end point of the board_arc. If the statement is invalid then it returns a false.
@@ -692,7 +707,7 @@ package body et_pcb_rw is
 			expect_field_count (line, 5);
 
 			-- extract the start position starting at field 2 of line
-			board_arc.start_point := to_position (line, 2);
+			set_start_point (board_arc, to_position (line, 2));
 
 			return true;
 
@@ -700,7 +715,7 @@ package body et_pcb_rw is
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
-			board_arc.end_point := to_position (line, 2);
+			set_end_point (board_arc, to_position (line, 2));
 
 			return true;
 			
@@ -708,23 +723,24 @@ package body et_pcb_rw is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			board_arc.center := to_position (line, 2);
+			set_center (board_arc, to_position (line, 2));
 
 			return true;
 
 		elsif kw = keyword_direction then -- direction ccw
 			expect_field_count (line, 2);
 
-			board_arc.direction := to_direction (f (line, 2));
+			set_direction (board_arc, to_direction (f (line, 2)));
 
 			return true;
 			
 		else
 			return false;
 		end if;
-	end;
+	end read_board_arc;
 
 	
+
 	
 	-- Reads center and radius of the board_circle. If the statement is invalid then an error issued.
 	procedure read_board_circle (line : type_fields_of_line) is
@@ -746,6 +762,7 @@ package body et_pcb_rw is
 		end if;
 	end;
 
+	
 	
 	-- Reads center and radius of the board_circle. If the statement is invalid then it returns false.
 	function read_board_circle (line : type_fields_of_line) return boolean is
@@ -771,6 +788,8 @@ package body et_pcb_rw is
 		end if;
 	end;
 
+
+	
 
 	procedure check_outline (
 		polygon			: in type_contour;

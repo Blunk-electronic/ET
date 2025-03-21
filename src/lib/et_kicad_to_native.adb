@@ -306,11 +306,10 @@ package body et_kicad_to_native is
 
 
 		
-		--procedure move (point : in out et_pcb_coordinates.pac_geometry_brd.type_vector_model'class) is
-		procedure move (point : in out et_pcb_coordinates_2.pac_geometry_2.type_vector_model) is
 		-- Transposes the given point in layout from the kicad frame to the ET native frame.
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
+		procedure move (point : in out et_pcb_coordinates_2.pac_geometry_2.type_vector_model) is
 			use et_pcb_coordinates_2;
 			use pac_geometry_2;
 			new_y : type_position_axis;
@@ -320,6 +319,28 @@ package body et_kicad_to_native is
 		end move;
 
 
+		-- Transposes the given arc in layout from the kicad frame to the ET native frame.
+		-- KiCad frames have the origin in the upper left corner.
+		-- ET frames have the origin in the lower left corner.
+		procedure move (arc : in out et_pcb_coordinates_2.pac_geometry_2.type_arc'class) is 
+			use et_pcb_coordinates_2;
+			use pac_geometry_2;
+			new_y : type_position_axis;
+			S, E, C : type_vector_model;
+		begin
+			C := get_center (arc);
+			new_y := layout_sheet_height - get_y (C);
+			set (C, AXIS_Y, new_y);
+
+			S := get_start_point (arc);
+			new_y := layout_sheet_height - get_y (S);
+			set (S, AXIS_Y, new_y);
+
+			E := get_end_point (arc);
+			new_y := layout_sheet_height - get_y (E);
+			set (E, AXIS_Y, new_y);
+		end move;
+		
 		
 		
 		-- Changes the path and y position of text notes (in schematic):
@@ -730,11 +751,7 @@ package body et_kicad_to_native is
 						log_indentation_up;
 
 						log (text => before & to_string (arc), level => log_threshold + 4);
-
-						move (arc.center);
-						move (arc.start_point);
-						move (arc.end_point);
-
+						move (arc);
 						log (text => now & to_string (arc), level => log_threshold + 4);
 						
 						log_indentation_down;
@@ -805,6 +822,7 @@ package body et_kicad_to_native is
 					end loop;
 					
 				end move_route;
+
 				
 			begin -- query_strands
 
@@ -826,6 +844,7 @@ package body et_kicad_to_native is
 				end if;
 
 			end query_strands;
+
 			
 		begin -- flatten_nets
 			log (text => "nets ...", level => log_threshold + 2);
@@ -848,6 +867,7 @@ package body et_kicad_to_native is
 
 			log_indentation_down;
 		end flatten_nets;
+
 
 		
 		-- Moves y positon of general (non-component related) layout objects from kicad frame to native frame.
@@ -875,6 +895,7 @@ package body et_kicad_to_native is
 				texts_cursor : pac_silk_texts.cursor;
 				
 				board_silk_screen : constant string := "board silk screen ";
+
 				
 				procedure move_line (line : in out type_silk_line) is begin
 					log (text => board_silk_screen & "line", level => log_threshold + log_threshold_add);
@@ -896,11 +917,7 @@ package body et_kicad_to_native is
 					log_indentation_up;
 
 					log (text => before & to_string (arc), level => log_threshold + log_threshold_add);
-
-					move (arc.center);
-					move (arc.start_point);
-					move (arc.end_point);
-					
+					move (arc);
 					log (text => now & to_string (arc), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
@@ -914,9 +931,7 @@ package body et_kicad_to_native is
 					log_indentation_up;
 
 					log (text => before & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
-
 					move (circle.center);
-					
 					log (text => now & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
@@ -1111,9 +1126,7 @@ package body et_kicad_to_native is
 
 					log (text => before & to_string (arc), level => log_threshold + log_threshold_add);
 
-					move (arc.center);
-					move (arc.start_point);
-					move (arc.end_point);
+					move (arc);
 					
 					log (text => now & to_string (arc), level => log_threshold + log_threshold_add);
 							
@@ -1284,6 +1297,7 @@ package body et_kicad_to_native is
 			end move_assembly_documentation;
 
 			
+			
 			procedure move_stencil is
 				use et_stencil;
 				use pac_stencil_lines;
@@ -1325,9 +1339,7 @@ package body et_kicad_to_native is
 
 					log (text => before & to_string (arc), level => log_threshold + log_threshold_add);
 
-					move (arc.center);
-					move (arc.start_point);
-					move (arc.end_point);
+					move (arc);
 					
 					log (text => now & to_string (arc), level => log_threshold + log_threshold_add);
 							
@@ -1356,6 +1368,7 @@ package body et_kicad_to_native is
 					move_polygon (polygon);
 				end move_polygon;
 
+				
 			begin -- move_stencil
 				
 				-- LINES TOP
@@ -1456,6 +1469,7 @@ package body et_kicad_to_native is
 			end move_stencil;
 
 
+			
 			procedure move_stop_mask is
 				use et_stopmask;
 				use pac_stop_lines;
@@ -1500,9 +1514,7 @@ package body et_kicad_to_native is
 
 					log (text => before & to_string (arc), level => log_threshold + log_threshold_add);
 
-					move (arc.center);
-					move (arc.start_point);
-					move (arc.end_point);
+					move (arc);
 					
 					log (text => now & to_string (arc), level => log_threshold + log_threshold_add);
 							
@@ -1744,9 +1756,7 @@ package body et_kicad_to_native is
 
 					log (text => before & to_string (s.segment_arc), level => log_threshold + log_threshold_add);
 
-					move (s.segment_arc.center);
-					move (s.segment_arc.start_point);
-					move (s.segment_arc.end_point);
+					move (s.segment_arc);
 					
 					log (text => now & to_string (s.segment_arc), level => log_threshold + log_threshold_add);
 							
@@ -1808,6 +1818,7 @@ package body et_kicad_to_native is
 				
 			end move_contour;
 
+
 			
 			procedure move_copper is
 				use pac_conductor_lines;
@@ -1860,9 +1871,7 @@ package body et_kicad_to_native is
 
 					log (text => before & to_string (arc), level => log_threshold + log_threshold_add);
 
-					move (arc.center);
-					move (arc.start_point);
-					move (arc.end_point);
+					move (arc);
 					
 					log (text => now & to_string (arc), level => log_threshold + log_threshold_add);
 							

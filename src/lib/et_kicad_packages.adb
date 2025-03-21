@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -292,18 +292,18 @@ package body et_kicad_packages is
 		line_1.end_point := p12;
 
 		-- set right arc
-		arc_2.start_point := p12;
-		arc_2.center := p42;
-		arc_2.end_point := p22;
+		set_start_point (arc_2, p12);
+		set_center (arc_2, p42);
+		set_end_point (arc_2, p22);
 		
 		-- set lower line
 		line_2.start_point := p22;
 		line_2.end_point := p21;
 		
 		-- set left arc
-		arc_1.start_point := p21;
-		arc_1.center := p41;
-		arc_1.end_point := p11;
+		set_start_point (arc_1, p21);
+		set_center (arc_1, p41);
+		set_end_point (arc_1, p11);
 		
 		-- build shape
 		shape.append_segment ((LINE, line_1));
@@ -313,6 +313,7 @@ package body et_kicad_packages is
 		
 		return shape;
 	end to_pad_shape_oval;
+
 
 	
 	function to_pad_milling_contour (
@@ -402,6 +403,7 @@ package body et_kicad_packages is
 	is begin
 		return pac_directory_name.to_string (directory_name);
 	end to_string;
+
 	
 	function to_directory (directory_name : in string) 
 		return pac_directory_name.bounded_string 
@@ -947,6 +949,7 @@ package body et_kicad_packages is
 				raise constraint_error;
 			end invalid_section;
 
+			scratch_point : type_vector_model;
 			
 		begin -- read_arg
 			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
@@ -1160,15 +1163,20 @@ package body et_kicad_packages is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => arc.center, value => to_distance (to_string (arg)));
+									-- set (axis => AXIS_X, point => arc.center, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
+									set_center (arc, scratch_point);
 								when 2 => 
-									set (axis => AXIS_Y, point => arc.center, value => to_distance (to_string (arg)));
+									--set (axis => AXIS_Y, point => arc.center, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
+									set_center (arc, scratch_point);
 								when others => too_many_arguments;
 							end case;
 							
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_END =>
 					case section.parent is
 						when SEC_FP_LINE =>
@@ -1185,9 +1193,13 @@ package body et_kicad_packages is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => arc.start_point, value => to_distance (to_string (arg)));
+									--set (axis => AXIS_X, point => arc.start_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
+									set_start_point (arc, scratch_point);
 								when 2 => 
-									set (axis => AXIS_Y, point => arc.start_point, value => to_distance (to_string (arg)));
+									-- set (axis => AXIS_Y, point => arc.start_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
+									set_start_point (arc, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
@@ -1204,6 +1216,7 @@ package body et_kicad_packages is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_ANGLE =>
 					case section.parent is
 						when SEC_FP_ARC =>
@@ -1215,6 +1228,7 @@ package body et_kicad_packages is
 
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_LAYER =>
 					case section.parent is
@@ -1376,6 +1390,7 @@ package body et_kicad_packages is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_WIDTH =>
 					case section.parent is
 						when SEC_FP_LINE =>
@@ -1405,6 +1420,7 @@ package body et_kicad_packages is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_SIZE =>
 					case section.parent is
 						when SEC_FONT =>
@@ -1441,6 +1457,7 @@ package body et_kicad_packages is
 
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_AT =>
 					case section.parent is
@@ -1474,7 +1491,8 @@ package body et_kicad_packages is
 							
 						when others => invalid_section;
 					end case;
-							
+
+					
 				when SEC_DRILL =>
 					case section.parent is
 						when SEC_PAD =>
@@ -1505,6 +1523,7 @@ package body et_kicad_packages is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_OFFSET =>
 					case section.parent is
 						when SEC_DRILL =>
@@ -1516,7 +1535,8 @@ package body et_kicad_packages is
 							end case;
 						when others => invalid_section;
 					end case;
-							
+
+					
 				when SEC_LAYERS => -- applies for terminals exclusively
 					case section.parent is
 						when SEC_PAD =>
@@ -1564,6 +1584,7 @@ package body et_kicad_packages is
 
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_PAD =>
 					case section.parent is
@@ -1593,6 +1614,7 @@ package body et_kicad_packages is
 
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_EFFECTS =>
 					case section.parent is
@@ -1600,18 +1622,21 @@ package body et_kicad_packages is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_FONT =>
 					case section.parent is
 						when SEC_EFFECTS => null; -- CS currently no direct (non-wrapped) arguments follow
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_FP_LINE | SEC_FP_ARC | SEC_FP_CIRCLE =>
 					case section.parent is
 						when SEC_MODULE => null; -- CS currently no direct (non-wrapped) arguments follow
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_MODEL =>
 					case section.parent is
 						when SEC_MODULE =>
@@ -1622,6 +1647,7 @@ package body et_kicad_packages is
 							end case;
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_ROTATE | SEC_SCALE =>
 					case section.parent is
@@ -1629,6 +1655,7 @@ package body et_kicad_packages is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_XYZ =>
 					case section.parent is
 						when SEC_AT => null; -- CS
@@ -1649,6 +1676,7 @@ package body et_kicad_packages is
 						raise;
 
 		end read_arg;
+
 
 		
 		-- Performs an operation according to the active section and variables that have been
@@ -1682,7 +1710,8 @@ package body et_kicad_packages is
 			procedure insert_fp_arc is begin
 				
 				-- compute end point of arc from center, start_point and angle
-				arc.end_point := type_vector_model (arc_end_point (arc.center, arc.start_point, arc.angle));
+				set_end_point (arc, type_vector_model (arc_end_point (
+					get_center (arc), get_start_point (arc), arc.angle)));
 
 				-- The angle of the arc and its layer are now discarded
 				-- as the arc is converted back to its anchestor

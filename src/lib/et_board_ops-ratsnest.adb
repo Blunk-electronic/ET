@@ -69,8 +69,8 @@ package body et_board_ops.ratsnest is
 		use pac_conductor_arcs;
 		procedure query_arc (a : in pac_conductor_arcs.cursor) is
 		begin
-			append (result, element (a).start_point);
-			append (result, element (a).end_point);
+			append (result, get_start_point (element (a)));
+			append (result, get_end_point (element (a)));
 		end query_arc;
 
 		

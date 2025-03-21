@@ -759,9 +759,9 @@ is
 			while arc_cursor /= pac_conductor_arcs.no_element loop
 				section_mark (section_arc, HEADER);
 
-				write (keyword => keyword_center, parameters => to_string (element (arc_cursor).center));
-				write (keyword => keyword_start , parameters => to_string (element (arc_cursor).start_point));
-				write (keyword => keyword_end   , parameters => to_string (element (arc_cursor).end_point));
+				write (keyword => keyword_center, parameters => to_string (get_center (element (arc_cursor))));
+				write (keyword => keyword_start , parameters => to_string (get_start_point (element (arc_cursor))));
+				write (keyword => keyword_end   , parameters => to_string (get_end_point (element (arc_cursor))));
 				write (keyword => keyword_width , parameters => to_string (element (arc_cursor).width));
 				write (keyword => keyword_layer , parameters => to_string (element (arc_cursor).layer));
 				

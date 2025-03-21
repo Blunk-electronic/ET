@@ -1728,7 +1728,31 @@ package body et_geometry_2a is
 -- ARC:
 
 
+	function to_arc (
+		center		: in type_vector_model;
+		start_point	: in type_vector_model;			
+		end_point	: in type_vector_model;
+		direction	: in type_direction_of_rotation)
+		return type_arc'class
+	is 
+		arc : type_arc;
+	begin
+		arc := (center, start_point, end_point, direction, others => <>);
 
+		-- CS consistence check !!
+		return arc;
+	end to_arc;
+	
+
+	
+	procedure reset_arc (
+		arc		: in out type_arc)
+	is begin
+		arc := (others => <>);
+	end reset_arc;
+
+
+	
 	procedure set_center (
 		arc		: in out type_arc;
 		center	: in type_vector_model)
@@ -1736,6 +1760,7 @@ package body et_geometry_2a is
 		arc.center := center;
 	end set_center;
 
+	
 
 	procedure set_start_point (
 		arc			: in out type_arc;
@@ -1745,6 +1770,7 @@ package body et_geometry_2a is
 	end set_start_point;
 
 	
+	
 	procedure set_end_point (
 		arc			: in out type_arc;
 		end_point	: in type_vector_model)
@@ -1752,6 +1778,7 @@ package body et_geometry_2a is
 		arc.end_point := end_point;
 	end set_end_point;
 
+	
 
 	procedure set_direction (
 		arc			: in out type_arc;

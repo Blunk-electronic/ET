@@ -59,6 +59,9 @@ package et_conductor_segment.boards is
 	end record;
 
 
+	-- CS function get_layer
+	
+	
 	-- Returns the start/end point and layer as string.
 	-- If "width" is true, then the segment width is also output:
 	function to_string (

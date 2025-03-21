@@ -176,14 +176,14 @@ package body et_contour_to_polygon is
 					
 					case mode is
 						when EXPAND =>
-							if s.segment_arc.direction = CW then
+							if get_direction (s.segment_arc) = CW then
 								e_list := to_edges (s.segment_arc, tolerance, SHRINK, debug);
 							else
 								e_list := to_edges (s.segment_arc, tolerance, EXPAND, debug);
 							end if;
 							
 						when SHRINK =>
-							if s.segment_arc.direction = CW then
+							if get_direction (s.segment_arc) = CW then
 								e_list := to_edges (s.segment_arc, tolerance, EXPAND, debug);
 							else
 								e_list := to_edges (s.segment_arc, tolerance, SHRINK, debug);

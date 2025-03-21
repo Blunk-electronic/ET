@@ -909,8 +909,8 @@ package et_geometry_2a is
 	
 -- ARC
 
-	
-	type type_arc_base is abstract tagged record  -- CS should be private ?
+
+	type type_arc_base is abstract tagged record
 		center			: type_vector_model;
 		start_point		: type_vector_model;
 		end_point		: type_vector_model;
@@ -918,9 +918,23 @@ package et_geometry_2a is
 		status			: type_object_status;
 	end record;
 
-	type type_arc is new type_arc_base with null record;
+	
+	type type_arc is tagged private;
 
 
+
+	function to_arc (
+		center		: in type_vector_model;
+		start_point	: in type_vector_model;			
+		end_point	: in type_vector_model;
+		direction	: in type_direction_of_rotation)
+		return type_arc'class;
+	
+
+	procedure reset_arc (
+		arc		: in out type_arc);
+	
+	
 	procedure set_center (
 		arc		: in out type_arc;
 		center	: in type_vector_model);
@@ -963,7 +977,6 @@ package et_geometry_2a is
 
 
 	
-
 	
 	function to_arc_fine (
 		arc : in type_arc)
@@ -1598,6 +1611,10 @@ private
 
 	-- boundaries_default : constant type_boundaries := (others => <>);
 
+
+	type type_arc is new type_arc_base with null record;
+
+	
 
 	type type_catch_zone is record
 		center	: type_vector_model;

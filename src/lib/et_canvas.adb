@@ -3839,7 +3839,7 @@ package body et_canvas is
 		-- object_point_of_attack and the current tool position.
 		-- Otherwise the arc remains unchanged and will be drawn
 		-- as it is:
-		if c.status.moving then
+		if is_moving (c) then
 			attack (c, object_point_of_attack, get_object_tool_position);
 		end if;
 
@@ -3880,7 +3880,7 @@ package body et_canvas is
 			
 			r := to_distance (type_distance_positive (get_radius (a)));
 			
-			m := real_to_canvas (c.center, S);
+			m := real_to_canvas (get_center (c), S);
 
 			-- required to suppress an initial line:
 			-- new_sub_path (context);

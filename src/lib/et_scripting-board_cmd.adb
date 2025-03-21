@@ -580,6 +580,7 @@ is
 				log_threshold	=> log_threshold + 1);
 
 		end build_zone;
+
 		
 	begin
 		-- Convert the contour to a keepout zone
@@ -592,6 +593,7 @@ is
 			-- CS error. only zone allowed here
 		end if;
 	end draw_keepout;
+
 
 	
 	
@@ -676,8 +678,11 @@ is
 		
 		shape : type_shape;
 
+		
 		-- Draws a line, arc or circle:
-		procedure draw_shape is begin
+		procedure draw_shape is 
+			arc_tmp : type_arc;
+		begin
 			case shape is
 				when LINE =>
 					case cmd_field_count is
@@ -705,17 +710,16 @@ is
 				when ARC =>
 					case cmd_field_count is
 						when 14 =>
+							arc_tmp := type_arc (to_arc (
+								center		=> type_vector_model (to_point (f (8), f (9))),
+								start_point	=> type_vector_model (to_point (f (10), f (11))),
+								end_point	=> type_vector_model (to_point (f (12), f (13))),
+								direction	=> to_direction (f (14))));
+							
 							add_arc (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								arc				=> (
-									width	=> to_distance (f (7)),
-									center	=> type_vector_model (to_point (f (8), f (9))),
-									start_point	=> type_vector_model (to_point (f (10), f (11))),
-									end_point	=> type_vector_model (to_point (f (12), f (13))),
-									direction	=> to_direction (f (14)),
-									others		=> <>),
-
+								arc				=> (arc_tmp with width => to_distance (f (7))),
 								log_threshold	=> log_threshold + 1
 								);
 
@@ -793,8 +797,11 @@ is
 		
 		shape : type_shape;
 
+		
 		-- Draws a line, arc or circle:
-		procedure draw_shape is begin
+		procedure draw_shape is 
+			arc_tmp : type_arc;
+		begin
 			case shape is
 				when LINE =>
 					case cmd_field_count is
@@ -822,17 +829,16 @@ is
 				when ARC =>
 					case cmd_field_count is
 						when 14 =>
+							arc_tmp := type_arc (to_arc (
+								center	=> type_vector_model (to_point (f (8), f (9))),
+								start_point	=> type_vector_model (to_point (f (10), f (11))),
+								end_point	=> type_vector_model (to_point (f (12), f (13))),
+								direction	=> to_direction (f (14))));
+															
 							add_arc (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								arc				=> (
-									width	=> to_distance (f (7)),
-									center	=> type_vector_model (to_point (f (8), f (9))),
-									start_point	=> type_vector_model (to_point (f (10), f (11))),
-									end_point	=> type_vector_model (to_point (f (12), f (13))),
-									direction	=> to_direction (f (14)),
-									others		=> <>),
-
+								arc				=> (arc_tmp with width => to_distance (f (7))),
 								log_threshold	=> log_threshold + 1
 								);
 
@@ -908,6 +914,9 @@ is
 		
 		
 		shape : type_shape;
+
+		arc_tmp : type_arc;
+		
 	begin
 		-- put_line ("draw_route_restrict");
 
@@ -951,16 +960,15 @@ is
 					case cmd_field_count is
 						when 13 =>
 							-- board led_driver draw route_restrict [1,3,5-9] arc 50 50 0 50 100 0 cw
+							arc_tmp := type_arc (to_arc (
+								center		=> type_vector_model (to_point (f  (7), f  (8))),
+								start_point	=> type_vector_model (to_point (f  (9), f (10))),
+								end_point	=> type_vector_model (to_point (f (11), f (12))),
+								direction	=> to_direction (f (13))));
+															
 							draw_route_restrict_arc (
 								module_name 	=> module,
-								arc				=> (
-										layers		=> to_layers (f (5)), -- [1,3,5-9]
-										center		=> type_vector_model (to_point (f  (7), f  (8))),
-										start_point	=> type_vector_model (to_point (f  (9), f (10))),
-										end_point	=> type_vector_model (to_point (f (11), f (12))),
-										direction	=> to_direction (f (13)),
-										others		=> <>),
-
+								arc				=> (arc_tmp with layers => to_layers (f (5))), -- [1,3,5-9]
 								log_threshold	=> log_threshold + 1);
 
 						when 14 .. type_field_count'last => too_long;
@@ -1092,7 +1100,9 @@ is
 		shape : type_shape;
 
 		-- Draws a line, arc or circle:
-		procedure draw_shape is begin
+		procedure draw_shape is 
+			arc_tmp : type_arc;
+		begin
 			case shape is
 				when LINE =>
 					case cmd_field_count is
@@ -1117,17 +1127,16 @@ is
 				when ARC =>
 					case cmd_field_count is
 						when 14 =>
+							arc_tmp := type_arc (to_arc (
+								center		=> type_vector_model (to_point (f (8), f (9))),
+								start_point	=> type_vector_model (to_point (f (10), f (11))),
+								end_point	=> type_vector_model (to_point (f (12), f (13))),
+								direction	=> to_direction (f (14))));
+															
 							add_arc (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								arc				=> (
-										width		=> to_distance (f (7)),
-										center		=> type_vector_model (to_point (f (8), f (9))),
-										start_point	=> type_vector_model (to_point (f (10), f (11))),
-										end_point	=> type_vector_model (to_point (f (12), f (13))),
-										direction	=> to_direction (f (14)),
-										others		=> <>),
-
+								arc				=> (arc_tmp with width => to_distance (f (7))),
 								log_threshold	=> log_threshold + 1);
 
 						when 15 .. type_field_count'last => too_long;
@@ -1201,8 +1210,9 @@ is
 		shape : type_shape;
 
 		-- Draws a line, arc or circle:
-		procedure draw_shape is begin
-
+		procedure draw_shape is
+			arc_tmp : type_arc;
+		begin
 			case shape is
 				when LINE =>
 					case cmd_field_count is
@@ -1227,17 +1237,16 @@ is
 				when ARC =>
 					case cmd_field_count is
 						when 14 =>
+							arc_tmp := type_arc (to_arc (
+								center	=> type_vector_model (to_point (f (8), f (9))),
+								start_point	=> type_vector_model (to_point (f (10), f (11))),
+								end_point	=> type_vector_model (to_point (f (12), f (13))),
+								direction	=> to_direction (f (14))));
+															
 							add_arc (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								arc				=> (
-											width	=> to_distance (f (7)),
-											center	=> type_vector_model (to_point (f (8), f (9))),
-											start_point	=> type_vector_model (to_point (f (10), f (11))),
-											end_point	=> type_vector_model (to_point (f (12), f (13))),
-											direction	=> to_direction (f (14)),
-											others		=> <>),
-
+								arc				=> (arc_tmp with width => to_distance (f (7))),
 								log_threshold	=> log_threshold + 1);
 
 						when 15 .. type_field_count'last => too_long;
@@ -2225,6 +2234,8 @@ is
 			end case;
 		end make_fill_zone;
 
+
+		arc_tmp : type_arc;
 		
 	begin -- route_freetrack
 		case shape is
@@ -2256,17 +2267,18 @@ is
 			when ARC =>
 				case cmd_field_count is
 					when 14 =>
+						arc_tmp := type_arc (to_arc (
+							center		=> type_vector_model (to_point (f (8), f (9))),
+							start_point	=> type_vector_model (to_point (f (10), f (11))),
+							end_point	=> type_vector_model (to_point (f (12), f (13))),
+							direction	=> to_direction (f (14))));
+														
 						-- draw a freetrack
 						add_arc (
 							module_name 	=> module,
-							arc			=> (
+							arc			=> (arc_tmp with
 								layer		=> to_signal_layer (f (5)),
-								width		=> to_distance (f (7)),
-								center		=> type_vector_model (to_point (f (8), f (9))),
-								start_point	=> type_vector_model (to_point (f (10), f (11))),
-								end_point	=> type_vector_model (to_point (f (12), f (13))),
-								direction	=> to_direction (f (14)),
-								others		=> <>),
+								width		=> to_distance (f (7))),
 							net_name		=> to_net_name (""),
 
 							log_threshold	=> log_threshold + 1);
@@ -2289,6 +2301,7 @@ is
 				end case;
 			end case;
 	end route_freetrack;
+
 
 	
 	
@@ -2448,6 +2461,8 @@ is
 
 
 		use et_pcb_coordinates_2.pac_grid;
+
+		arc_tmp : type_arc;
 
 		
 	begin -- route_net
@@ -2621,25 +2636,25 @@ is
 			when ARC =>
 				case cmd_field_count is
 					when 15 =>
+						arc_tmp := type_arc (to_arc (
+							center		=> type_vector_model (set (
+								x => to_distance (dd => f (9)),
+								y => to_distance (dd => f (10)))),
+							start_point	=> type_vector_model (set (
+								x => to_distance (dd => f (11)),
+								y => to_distance (dd => f (12)))),
+							end_point	=> type_vector_model (set (
+								x => to_distance (dd => f (13)),
+								y => to_distance (dd => f (14)))),
+							direction	=> to_direction (f (15))));
+														
 						-- draw a named track
 						add_arc (
-							module_name 	=> module,
-							net_name		=> to_net_name (f (5)),
-							arc		=> (
-								layer		=> to_signal_layer (f (6)),
-								width		=> to_distance (f (8)),
-								center		=> type_vector_model (set (
-									x => to_distance (dd => f (9)),
-									y => to_distance (dd => f (10)))),
-								start_point	=> type_vector_model (set (
-									x => to_distance (dd => f (11)),
-									y => to_distance (dd => f (12)))),
-								end_point	=> type_vector_model (set (
-									x => to_distance (dd => f (13)),
-									y => to_distance (dd => f (14)))),
-								direction	=> to_direction (f (15)),
-								others		=> <>),
-
+							module_name => module,
+							net_name	=> to_net_name (f (5)),
+							arc			=> (arc_tmp with
+								layer	=> to_signal_layer (f (6)),
+								width	=> to_distance (f (8))),
 							log_threshold	=> log_threshold + 1
 							);
 						
@@ -2710,8 +2725,7 @@ is
 	-- delete a signal layer:
 	procedure delete_signal_layer is
 
-		procedure do_it is
-		begin
+		procedure do_it is begin
 			update_mode_display;
 			
 			delete_layer (

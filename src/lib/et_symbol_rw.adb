@@ -213,10 +213,10 @@ package body et_symbol_rw is
 			use et_primitive_objects;
 		begin
 			section_mark (section_arc, HEADER);
-			write (keyword => keyword_center, parameters => to_string (element (cursor).center, FORMAT_2));
-			write (keyword => keyword_start , parameters => to_string (element (cursor).start_point, FORMAT_2));
-			write (keyword => keyword_end   , parameters => to_string (element (cursor).end_point, FORMAT_2));
-			write (keyword => keyword_direction, parameters => to_string (element (cursor).direction));
+			write (keyword => keyword_center, parameters => to_string (get_center (element (cursor)), FORMAT_2));
+			write (keyword => keyword_start , parameters => to_string (get_start_point (element (cursor)), FORMAT_2));
+			write (keyword => keyword_end   , parameters => to_string (get_end_point (element (cursor)), FORMAT_2));
+			write (keyword => keyword_direction, parameters => to_string (get_direction (element (cursor))));
 			write (keyword => keyword_width , parameters => to_string (element (cursor).width));
 			section_mark (section_arc, FOOTER);
 		end write_arc;
@@ -644,7 +644,7 @@ package body et_symbol_rw is
 									new_item	=> symbol_arc);
 
 								-- clean up for next arc
-								symbol_arc := (others => <>);
+								reset_arc (symbol_arc);
 								
 							when others => invalid_section;
 						end case;
@@ -884,24 +884,24 @@ package body et_symbol_rw is
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
-										symbol_arc.center := to_position (line,2);
+										set_center (symbol_arc, to_position (line, 2));
 
 									elsif kw = keyword_start then -- start x 1 y 2
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
-										symbol_arc.start_point := to_position (line,2);
+										set_start_point (symbol_arc, to_position (line, 2));
 										
 									elsif kw = keyword_end then -- end x 0.00 y 0.00
 										expect_field_count (line, 5);
 
 										-- extract the end position starting at field 2
-										symbol_arc.end_point := to_position (line,2);
+										set_end_point (symbol_arc, to_position (line, 2));
 
 									elsif kw = keyword_direction then -- direction ccw
 										expect_field_count (line, 2);
 
-										symbol_arc.direction := to_direction (f (line, 2));
+										set_direction (symbol_arc, to_direction (f (line, 2)));
 										
 									elsif kw = keyword_width then
 										expect_field_count (line, 2);

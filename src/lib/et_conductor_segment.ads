@@ -136,6 +136,8 @@ package et_conductor_segment is
 		width	: type_track_width;
 	end record;
 
+
+	-- CS function get_width
 	
 	
 	function to_polygon (

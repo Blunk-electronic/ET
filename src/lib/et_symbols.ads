@@ -115,6 +115,16 @@ package et_symbols is
 	type type_symbol_arc is new pac_geometry_2.type_arc with record
 		width	: type_line_width := line_width_default;
 	end record;
+
+
+	procedure set_width (
+		arc		: in out type_symbol_arc;
+		width	: in type_line_width);
+
+	
+	procedure reset_arc (
+		arc	: in out type_symbol_arc);
+	
 	
 	package pac_symbol_arcs is new doubly_linked_lists (type_symbol_arc);
 

@@ -103,7 +103,25 @@ package body et_symbols is
 	end;
 
 
+
+
+	procedure set_width (
+		arc		: in out type_symbol_arc;
+		width	: in type_line_width)
+	is begin
+		arc.width := width;
+	end set_width;
+
 	
+
+
+	procedure reset_arc (
+		arc	: in out type_symbol_arc)
+	is 
+		a : type_arc;
+	begin
+		arc := (a with type_line_width'first);
+	end reset_arc;
 
 	
 	

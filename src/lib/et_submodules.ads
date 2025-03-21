@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -271,6 +271,7 @@ package et_submodules is
 
 	position_master_port_default : constant type_vector_model := (x =>  10.0, y => 0.0);
 	position_slave_port_default  : constant type_vector_model := (x => -10.0, y => 0.0);
+
 	
 	type type_netchanger_symbol is record
 		master_port	: type_netchanger_port := (
@@ -284,13 +285,13 @@ package et_submodules is
 						rotation	=> 180.0);
 
 		-- the arc that connects the ports
-		arc	: et_symbols.type_symbol_arc := (
-						center		=> (x => 0.0, y => 0.0),
+		arc	: et_symbols.type_symbol_arc := (type_arc (to_arc (
+						center		=> (x =>  0.0, y => 0.0),
 						start_point	=> (x => -5.0, y => 0.0),
 						end_point	=> (x =>  5.0, y => 0.0),
-						direction	=> CW,
-						width		=> port_line_width,
-						others		=> <>);
+						direction	=> CW))
+						with port_line_width);
+
 	end record;
 
 	

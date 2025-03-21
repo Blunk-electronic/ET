@@ -972,6 +972,7 @@ package body et_kicad.pcb is
 		end read_section;
 		
 
+		
 		procedure read_arg is
 		-- Reads the arguments of a section.
 		-- Increments the argument counter after each argument.
@@ -993,12 +994,14 @@ package body et_kicad.pcb is
 				raise constraint_error;
 			end invalid_layer;
 
+			
 			procedure too_many_arguments is begin
 				log (ERROR, "too many arguments in section " & to_string (section.name) & " !", console => true);
 				log (text => "excessive argument reads '" & to_string (arg) & "'", console => true);
 				raise constraint_error;
 			end too_many_arguments;
 
+			
 			procedure invalid_fp_text_keyword is begin
 				log (ERROR, "expect keyword '" & keyword_fp_text_reference 
 					 & "' or '" & keyword_fp_text_value 
@@ -1007,23 +1010,27 @@ package body et_kicad.pcb is
 				raise constraint_error;
 			end invalid_fp_text_keyword;
 
+			
 			procedure invalid_attribute is begin
 				log (ERROR, "invalid attribute !", console => true);
 				raise constraint_error;
 			end invalid_attribute;
 
+			
 			procedure invalid_section is begin
 				log (ERROR, "invalid subsection '" & to_string (section.name) 
 					 & "' in parent section '" & to_string (section.parent) & "' ! (read argument)", console => true);
 				raise constraint_error;
 			end invalid_section;
 
+			
 			procedure invalid_file_format is begin
 				log (ERROR, "invalid file format ! Expect format version " & pcb_file_format_version_4 & " !",
 					 console => true);
 				raise constraint_error;
 			end invalid_file_format;
 
+			
 			procedure to_polygon_pad_connections (connect_style : in string) is
 			-- Sets the connection style of pads.
 			-- It is about entries in the "zone" section like:
@@ -1047,6 +1054,7 @@ package body et_kicad.pcb is
 				end if;
 			end to_polygon_pad_connections;
 
+			
 			procedure to_polygon_hatch_style (hatch_style : in string) is
 			-- Sets the polygon hatch style.
 			begin -- CS use function to_string (hatch_style) or to_hatch_style (hatch_style)
@@ -1059,6 +1067,7 @@ package body et_kicad.pcb is
 				end if;
 			end to_polygon_hatch_style;
 
+			
 			procedure test_pcbnew_version (version : in string) is
 			-- in V4 the line looks like: 
 			--  (kicad_pcb (version 4) (host pcbnew 4.0.7)
@@ -1092,6 +1101,7 @@ package body et_kicad.pcb is
 				end case;
 			end test_pcbnew_version;
 
+			
 			procedure test_hostname (name : in string) is
 			-- in V4 the line looks like: 
 			--  (kicad_pcb (version 4) (host pcbnew 4.0.7)
@@ -1129,6 +1139,7 @@ package body et_kicad.pcb is
 				end case;
 			end test_hostname;
 
+			
 			procedure test_format (format : in string) is
 				use et_import;
 			begin
@@ -1152,6 +1163,9 @@ package body et_kicad.pcb is
 				end case;
 			end test_format;
 						
+
+			scratch_point : type_vector_model;
+			
 			
 		begin -- read_arg
 			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
@@ -1331,6 +1345,7 @@ package body et_kicad.pcb is
 						when others => invalid_section;
 					end case;
 
+					
 				-- parent section
 				when SEC_MODULE =>
 					case section.name is
@@ -1511,6 +1526,7 @@ package body et_kicad.pcb is
 						when others => invalid_section;
 					end case;
 
+					
 				-- parent section
 				when SEC_FP_TEXT =>
 					case section.name is
@@ -1555,6 +1571,7 @@ package body et_kicad.pcb is
 						when others => invalid_section;
 					end case;
 
+					
 				-- parent section
 				when SEC_GR_TEXT =>
 					case section.name is
@@ -1585,6 +1602,7 @@ package body et_kicad.pcb is
 						when others => invalid_section;
 					end case;
 
+					
 				-- parent section
 				when SEC_FONT =>	
 					case section.name is
@@ -1612,6 +1630,7 @@ package body et_kicad.pcb is
 						when others => invalid_section;
 					end case;
 
+					
 				-- parent section
 				when SEC_EFFECTS =>	
 					case section.name is
@@ -1633,6 +1652,7 @@ package body et_kicad.pcb is
 						when others => invalid_section;
 					end case;
 
+					
 				-- parent section
 				when SEC_FP_LINE =>
 					case section.name is
@@ -1708,6 +1728,7 @@ package body et_kicad.pcb is
 						when others => invalid_section;
 					end case;
 
+					
 				-- parent section
 				when SEC_FP_CIRCLE =>
 					case section.name is
@@ -1783,6 +1804,7 @@ package body et_kicad.pcb is
 						when others => invalid_section;
 					end case;
 
+					
 				-- parent section
 				when SEC_FP_ARC =>
 					case section.name is
@@ -1790,29 +1812,40 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => package_arc.center, value => to_distance (to_string (arg)));
+									-- set (axis => AXIS_X, point => package_arc.center, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
+									set_center (package_arc, scratch_point);
 								when 2 => 
-									set (axis => AXIS_Y, point => package_arc.center, value => to_distance (to_string (arg)));
+									--set (axis => AXIS_Y, point => package_arc.center, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
+									set_center (package_arc, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
+							
 						when SEC_END =>
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => package_arc.start_point, value => to_distance (to_string (arg)));
+									--set (axis => AXIS_X, point => package_arc.start_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
+									set_start_point (package_arc, scratch_point);
 								when 2 => 
-									set (axis => AXIS_Y, point => package_arc.start_point, value => to_distance (to_string (arg)));
+									--set (axis => AXIS_Y, point => package_arc.start_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
+									set_start_point (package_arc, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
+							
 						when SEC_ANGLE =>
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => package_arc.angle := to_angle (to_string (arg));
 								when others => too_many_arguments;
 							end case;
-								
+
+							
 						when SEC_LAYER =>
 							case section.arg_counter is
 								when 0 => null;
@@ -1853,6 +1886,7 @@ package body et_kicad.pcb is
 								when others => too_many_arguments;
 							end case;
 
+							
 						when SEC_WIDTH =>
 							case section.arg_counter is
 								when 0 => null;
@@ -1864,6 +1898,7 @@ package body et_kicad.pcb is
 
 						when others => invalid_section;
 					end case;
+
 					
 				-- parent_section
 				when SEC_PAD =>
@@ -1973,6 +2008,7 @@ package body et_kicad.pcb is
 						when others => invalid_section;
 					end case;
 
+					
 				-- parent section
 				when SEC_DRILL =>
 					case section.name is
@@ -1986,6 +2022,7 @@ package body et_kicad.pcb is
 						when others => invalid_section;
 					end case;
 
+					
 				-- parent section
 				when SEC_LAYERS =>
 					case section.name is
@@ -1999,7 +2036,8 @@ package body et_kicad.pcb is
 							end case;
 						when others => invalid_section;
 					end case;
-						
+
+					
 				-- parent section
 				when SEC_SETUP =>
 					case section.name is
@@ -2192,6 +2230,7 @@ package body et_kicad.pcb is
 						when others => invalid_section;
 					end case;
 
+					
 				-- parent section
 				when SEC_PCBPLOTPARAMS =>
 					case section.name is
@@ -2386,7 +2425,8 @@ package body et_kicad.pcb is
 
 						when others => invalid_section;
 					end case;
-							
+
+					
 				-- parent section
 				when SEC_GENERAL =>
 					case section.name is
@@ -2459,6 +2499,7 @@ package body et_kicad.pcb is
 						when others => invalid_section;
 					end case;
 
+					
 				-- parent section
 				when SEC_GR_ARC =>
 					case section.name is
@@ -2466,22 +2507,32 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => board_arc.center, value => to_distance (to_string (arg)));
+									--set (axis => AXIS_X, point => board_arc.center, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
+									set_center (board_arc, scratch_point);
 								when 2 => 
-									set (axis => AXIS_Y, point => board_arc.center, value => to_distance (to_string (arg)));
+									--set (axis => AXIS_Y, point => board_arc.center, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
+									set_center (board_arc, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
+							
 						when SEC_END =>
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => board_arc.start_point, value => to_distance (to_string (arg)));
+									--set (axis => AXIS_X, point => board_arc.start_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
+									set_start_point (board_arc, scratch_point);
 								when 2 => 
-									set (axis => AXIS_Y, point => board_arc.start_point, value => to_distance (to_string (arg)));
+									--set (axis => AXIS_Y, point => board_arc.start_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
+									set_start_point (board_arc, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
+							
 						when SEC_ANGLE =>
 							case section.arg_counter is
 								when 0 => null;
@@ -2489,6 +2540,7 @@ package body et_kicad.pcb is
 								when others => too_many_arguments;
 							end case;
 
+							
 						when SEC_LAYER =>
 							case section.arg_counter is
 								when 0 => null;
@@ -2527,6 +2579,7 @@ package body et_kicad.pcb is
 								when others => too_many_arguments;
 							end case;
 
+							
 						when SEC_WIDTH =>
 							case section.arg_counter is
 								when 0 => null;
@@ -2539,6 +2592,7 @@ package body et_kicad.pcb is
 						when others => null;
 					end case;
 
+					
 				-- parent section
 				when SEC_GR_CIRCLE =>
 					case section.name is
@@ -2610,6 +2664,7 @@ package body et_kicad.pcb is
 							
 						when others => null;
 					end case;
+
 					
 				-- parent section
 				when SEC_GR_LINE =>
@@ -2691,6 +2746,7 @@ package body et_kicad.pcb is
 						when others => null;
 					end case;
 
+					
 				-- parent section
 				when SEC_VIA =>	
 					case section.name is
@@ -2751,7 +2807,8 @@ package body et_kicad.pcb is
 							
 						when others => invalid_section;
 					end case;
-							
+
+					
 				-- parent section
 				when SEC_SEGMENT =>
 					case section.name is
@@ -2821,6 +2878,7 @@ package body et_kicad.pcb is
 
 					end case;
 
+					
 				-- parent section
 				when SEC_ZONE =>
 					case section.name is
@@ -2903,6 +2961,7 @@ package body et_kicad.pcb is
 						when others => invalid_section;
 					end case;
 
+					
 				-- parent section
 				when SEC_CONNECT_PADS =>
 					case section.name is
@@ -2916,6 +2975,7 @@ package body et_kicad.pcb is
 						when others => invalid_section;
 					end case;
 
+					
 				-- parent section
 				when SEC_FILL =>
 					case section.name is
@@ -2971,6 +3031,7 @@ package body et_kicad.pcb is
 						when others => invalid_section;
 					end case;
 
+					
 				-- parent section
 				when SEC_PTS =>
 					case section.name is
@@ -3327,8 +3388,9 @@ package body et_kicad.pcb is
 			begin
 				-- Compute the arc end point from its center, start point and angle.
 				-- Later the angle is discarded.
-				board_arc.end_point := type_vector_model (arc_end_point (
-					board_arc.center, board_arc.start_point, board_arc.angle));
+				set_end_point (board_arc, type_vector_model (arc_end_point (
+					get_center (board_arc), get_start_point (board_arc), board_arc.angle)));
+					
 
 				-- The board_arc is converted back to its anchestor and
 				-- depending on the layer extended with specific properties.
@@ -3598,8 +3660,8 @@ package body et_kicad.pcb is
 			begin
 
 				-- compute end point of arc from center, start_point and angle
-				package_arc.end_point := type_vector_model (
-					arc_end_point (package_arc.center, package_arc.start_point, package_arc.angle));
+				set_end_point (package_arc, type_vector_model (
+					arc_end_point (get_center (package_arc), get_start_point (package_arc), package_arc.angle)));
 
 				-- The angle of the arc and its layer are now discarded
 				-- as the package_arc is converted back to its anchestor
