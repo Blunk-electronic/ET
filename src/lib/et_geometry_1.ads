@@ -1010,7 +1010,10 @@ package et_geometry_1 is
 	-- Move them there so that they can be used by other callers.
 	
 
--- ARC
+
+
+	
+-- ARC (EXPRESSED BY START AND END POINT):
 
 	arc_direction_default : constant type_direction_of_rotation := CCW;
 
@@ -1100,18 +1103,72 @@ package et_geometry_1 is
 		return boolean; 
 
 
+	
+
+-- ARC (EXPRESSED BY START AND END ANGLES):
+	
+	type type_arc_angles is private;
+	
+
+	function to_arc_angles (
+		center		: in type_vector;
+		radius		: in type_float_positive;
+		angle_start	: in type_angle; -- can be negative
+		angle_end	: in type_angle; -- can be negative
+		direction	: in type_direction_of_rotation := arc_direction_default)
+		return type_arc_angles;
+	
+
+	procedure set_center (
+		arc		: in out type_arc_angles;
+		center	: in type_vector);					 
+
+
+	procedure set_angle_start (
+		arc			: in out type_arc_angles;
+		angle_start	: in type_angle);					 
+
+
+	procedure set_angle_end (
+		arc			: in out type_arc_angles;
+		angle_end	: in type_angle);
 
 	
+	procedure set_radius (
+		arc		: in out type_arc_angles;
+		radius	: in type_float_positive);					 
+
+
+	procedure set_direction (
+		arc			: in out type_arc_angles;
+		direction	: in type_direction_of_rotation);					 
 	
-	type type_arc_angles is record -- CS should be private ?
-		center		: type_vector;
-		radius		: type_float_positive;
-		angle_start	: type_angle; -- can be negative
-		angle_end	: type_angle; -- can be negative
-		direction	: type_direction_of_rotation := arc_direction_default;
-	end record;
+	
+	function get_center (
+		arc		: in type_arc_angles)
+		return type_vector;
 
 
+	function get_angle_start (
+		arc		: in type_arc_angles)
+		return type_angle;
+
+
+	function get_angle_end (
+		arc		: in type_arc_angles)
+		return type_angle;
+
+	
+	function get_radius (
+		arc		: in type_arc_angles)
+		return type_float_positive;
+
+
+	function get_direction (
+		arc		: in type_arc_angles)
+		return type_direction_of_rotation;
+
+	
 	function to_string (
 		arc : in type_arc_angles)
 		return string;
@@ -1231,16 +1288,35 @@ package et_geometry_1 is
 		return type_tangent_angle_circle;
 
 
-	
-	
-	type type_circle_fine is record
-		center	: type_vector;
-		radius	: type_float_positive;
-	end record;
-
 
 	
-		
+-- CIRCLE:
+	
+	type type_circle_fine is private;
+
+
+	procedure set_center (
+		circle	: in out type_circle_fine;
+		center	: in type_vector);
+	
+
+	procedure set_radius (
+		circle	: in out type_circle_fine;
+		radius	: in type_float_positive);
+
+
+
+	function get_center (
+		circle	: in type_circle_fine)
+		return type_vector;
+
+
+	function get_radius (
+		circle	: in type_circle_fine)
+		return type_float_positive;
+
+	
+	
 	function to_string (
 		circle	: in type_circle_fine)
 		return string;
@@ -1460,9 +1536,6 @@ package et_geometry_1 is
 	function on_start_point (d : in type_distance_point_line) return boolean;
 	function on_end_point (d : in type_distance_point_line) return boolean;
 	
-
-
-
 	
 	
 
@@ -1476,12 +1549,27 @@ private
 	end record;
 
 
+	type type_circle_fine is record
+		center	: type_vector;
+		radius	: type_float_positive;
+	end record;
+
+	
 	type type_arc_fine is record
 		center		: type_vector;
 		start_point	: type_vector;
 		end_point	: type_vector;
 		direction	: type_direction_of_rotation := CW; 
 		-- CS should be arc_direction_default
+	end record;
+
+
+	type type_arc_angles is record
+		center		: type_vector;
+		radius		: type_float_positive;
+		angle_start	: type_angle; -- can be negative
+		angle_end	: type_angle; -- can be negative
+		direction	: type_direction_of_rotation := arc_direction_default;
 	end record;
 
 	

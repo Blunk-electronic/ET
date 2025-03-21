@@ -2476,6 +2476,106 @@ package body et_geometry_1 is
 
 	
 
+
+	function to_arc_angles (
+		center		: in type_vector;
+		radius		: in type_float_positive;
+		angle_start	: in type_angle; -- can be negative
+		angle_end	: in type_angle; -- can be negative
+		direction	: in type_direction_of_rotation := arc_direction_default)
+		return type_arc_angles
+	is begin
+		return (center, radius, angle_start, angle_end, direction);
+	end to_arc_angles;
+
+
+	
+
+	procedure set_center (
+		arc		: in out type_arc_angles;
+		center	: in type_vector)
+	is begin
+		arc.center := center;
+	end set_center;
+	
+
+
+	procedure set_angle_start (
+		arc			: in out type_arc_angles;
+		angle_start	: in type_angle)
+	is begin
+		arc.angle_start := angle_start;
+	end set_angle_start;
+	
+
+
+	procedure set_angle_end (
+		arc			: in out type_arc_angles;
+		angle_end	: in type_angle)
+	is begin
+		arc.angle_end := angle_end;
+	end set_angle_end;
+
+	
+
+	procedure set_radius (
+		arc		: in out type_arc_angles;
+		radius	: in type_float_positive)
+	is begin
+		arc.radius := radius;
+	end set_radius;
+
+	
+	procedure set_direction (
+		arc			: in out type_arc_angles;
+		direction	: in type_direction_of_rotation)
+	is begin
+		arc.direction := direction;
+	end set_direction;
+	
+
+	function get_center (
+		arc		: in type_arc_angles)
+		return type_vector
+	is begin
+		return arc.center;
+	end get_center;
+
+
+	function get_angle_start (
+		arc		: in type_arc_angles)
+		return type_angle
+	is begin
+		return arc.angle_start;
+	end get_angle_start;
+
+
+	
+	function get_angle_end (
+		arc		: in type_arc_angles)
+		return type_angle
+	is begin
+		return arc.angle_end;
+	end get_angle_end;
+
+
+	
+	function get_radius (
+		arc		: in type_arc_angles)
+		return type_float_positive
+	is begin
+		return arc.radius;
+	end get_radius;
+
+
+
+	function get_direction (
+		arc		: in type_arc_angles)
+		return type_direction_of_rotation
+	is begin
+		return arc.direction;
+	end get_direction;
+
 	
 
 	function to_string (
@@ -2911,6 +3011,42 @@ package body et_geometry_1 is
 
 
 
+
+
+	procedure set_center (
+		circle	: in out type_circle_fine;
+		center	: in type_vector)
+	is begin
+		circle.center := center;
+	end set_center;
+	
+	
+
+	procedure set_radius (
+		circle	: in out type_circle_fine;
+		radius	: in type_float_positive)
+	is begin
+		circle.radius := radius;
+	end set_radius;
+
+
+
+
+	function get_center (
+		circle	: in type_circle_fine)
+		return type_vector
+	is begin
+		return circle.center;
+	end get_center;
+
+
+
+	function get_radius (
+		circle	: in type_circle_fine)
+		return type_float_positive
+	is begin
+		return circle.radius;
+	end get_radius;
 
 	
 	

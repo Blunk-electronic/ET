@@ -908,6 +908,7 @@ package et_geometry_2a is
 
 	
 -- ARC
+
 	
 	type type_arc_base is abstract tagged record  -- CS should be private ?
 		center			: type_vector_model;
@@ -918,8 +919,50 @@ package et_geometry_2a is
 	end record;
 
 	type type_arc is new type_arc_base with null record;
-	-- CS use this type wherever a type_arc is declared unnessecarily.
 
+
+	procedure set_center (
+		arc		: in out type_arc;
+		center	: in type_vector_model);
+
+
+	procedure set_start_point (
+		arc			: in out type_arc;
+		start_point	: in type_vector_model);
+
+	
+	procedure set_end_point (
+		arc			: in out type_arc;
+		end_point	: in type_vector_model);
+
+
+	procedure set_direction (
+		arc			: in out type_arc;
+		direction	: in type_direction_of_rotation);
+
+	
+	
+	function get_center (
+		arc : in type_arc)
+		return type_vector_model;
+	
+
+	function get_start_point (
+		arc : in type_arc)
+		return type_vector_model;
+	
+
+	function get_end_point (
+		arc : in type_arc)
+		return type_vector_model;
+
+
+	function get_direction (
+		arc : in type_arc)
+		return type_direction_of_rotation;
+
+
+	
 
 	
 	function to_arc_fine (
@@ -1033,13 +1076,15 @@ package et_geometry_2a is
 
 	
 	
-	-- Returns the distance between the start point and the center of the arc.
+	-- Returns the distance between the start point 
+	-- and the center of the arc.
 	function get_radius_start (
 		arc : in type_arc) 
 		return type_float_positive;
 	
 	
-	-- Returns the distance between the end point and the center of the arc.
+	-- Returns the distance between the end point 
+	-- and the center of the arc.
 	function get_radius_end (
 		arc : in type_arc) 
 		return type_float_positive;
@@ -1114,7 +1159,6 @@ package et_geometry_2a is
 	
 	type type_circle_base is abstract tagged record
 		center	: type_vector_model;
-		--radius  : type_float_positive := 0.0;
 		radius  : type_distance_positive := 0.0;
 		status	: type_object_status;
 	end record;

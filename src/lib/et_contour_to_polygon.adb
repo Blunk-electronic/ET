@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -131,11 +131,11 @@ package body et_contour_to_polygon is
 		use pac_geometry_brd;
 		arc : type_arc_angles;
 	begin
-		arc.center := to_vector (circle.center);
-		arc.radius := type_float_positive (circle.radius);
-		arc.angle_start := 0.0;
-		arc.angle_end := 360.0;
-		arc.direction := CCW;
+		set_center (arc, to_vector (circle.center));
+		set_radius (arc, type_float_positive (circle.radius));
+		set_angle_start (arc, 0.0);
+		set_angle_end (arc, 360.0);
+		set_direction (arc, CCW);
 
 		return to_edges (
 			arc			=> to_arc (arc), 

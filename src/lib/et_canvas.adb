@@ -3878,7 +3878,7 @@ package body et_canvas is
 			a := to_arc_angles (c);
 			-- put_line ("arc angles" & to_string (a));
 			
-			r := to_distance (type_distance_positive (a.radius));
+			r := to_distance (type_distance_positive (get_radius (a)));
 			
 			m := real_to_canvas (c.center, S);
 
@@ -3886,15 +3886,15 @@ package body et_canvas is
 			-- new_sub_path (context);
 			-- no need. should be removed if really not required.
 
-			if a.direction = CW then
+			if get_direction (a) = CW then
 				
 				-- THIS DRAW OPERATION CONSUMES THE MOST TIME:
 				cairo.arc (context, 
 					to_gdouble_positive (m.x), 
 					to_gdouble_positive (m.y),
 					to_gdouble_positive (r), 
-					- gdouble (to_radians (a.angle_start)),
-					- gdouble (to_radians (a.angle_end)));
+					- gdouble (to_radians (get_angle_start (a))),
+					- gdouble (to_radians (get_angle_end (a))));
 
 			else
 				-- THIS DRAW OPERATION CONSUMES THE MOST TIME:
@@ -3902,8 +3902,8 @@ package body et_canvas is
 					to_gdouble_positive (m.x), 
 					to_gdouble_positive (m.y),
 					to_gdouble_positive (r), 
-					- gdouble (to_radians (a.angle_start)),
-					- gdouble (to_radians (a.angle_end)));
+					- gdouble (to_radians (get_angle_start (a))),
+					- gdouble (to_radians (get_angle_end (a))));
 				
 			end if;
 			

@@ -1727,6 +1727,79 @@ package body et_geometry_2a is
 	
 -- ARC:
 
+
+
+	procedure set_center (
+		arc		: in out type_arc;
+		center	: in type_vector_model)
+	is begin
+		arc.center := center;
+	end set_center;
+
+
+	procedure set_start_point (
+		arc			: in out type_arc;
+		start_point	: in type_vector_model)
+	is begin
+		arc.start_point := start_point;
+	end set_start_point;
+
+	
+	procedure set_end_point (
+		arc			: in out type_arc;
+		end_point	: in type_vector_model)
+	is begin
+		arc.end_point := end_point;
+	end set_end_point;
+
+
+	procedure set_direction (
+		arc			: in out type_arc;
+		direction	: in type_direction_of_rotation)
+	is begin
+		arc.direction := direction;
+	end set_direction;
+
+
+	
+
+	function get_center (
+		arc : in type_arc)
+		return type_vector_model
+	is begin
+		return arc.center;
+	end get_center;
+	
+
+	
+	function get_start_point (
+		arc : in type_arc)
+		return type_vector_model
+	is begin
+		return arc.start_point;
+	end get_start_point;
+
+	
+
+	function get_end_point (
+		arc : in type_arc)
+		return type_vector_model
+	is begin
+		return arc.end_point;
+	end get_end_point;
+
+
+
+	function get_direction (
+		arc : in type_arc)
+		return type_direction_of_rotation
+	is begin
+		return arc.direction;
+	end get_direction;
+
+
+
+	
 	function to_arc_fine (
 		arc : in type_arc)
 		return pac_geometry_1.type_arc_fine
@@ -2147,47 +2220,42 @@ package body et_geometry_2a is
 		move_to (arc_tmp, origin);
 
 		-- the center is not changed:
-		result.center := to_vector (arc.center);
+		set_center (result, to_vector (arc.center));
 		
 		-- calculate the radius of the arc
-		result.radius := get_distance_total (arc_tmp.center, to_vector (arc_tmp.start_point));
-
+		set_radius (result, get_distance_total (
+			arc_tmp.center, to_vector (arc_tmp.start_point)));
+		
 		-- calculate the angles where the arc begins and ends:
 
 		-- NOTE: If x and y are zero then the arctan operation is not possible. 
 		-- In this case we assume the resulting angle is zero.
 		
 		if get_x (arc_tmp.start_point) = zero and get_y (arc_tmp.start_point) = zero then
-			result.angle_start := 0.0;
+			set_angle_start (result, 0.0);
 		else
-			--result.angle_start := to_degrees (type_float (arctan (
-					--y => type_float (get_y (arc_tmp.start_point)),
-					--x => type_float (get_x (arc_tmp.start_point)))));
-			result.angle_start := arctan (
+			set_angle_start (result, arctan (
 					y => type_float (get_y (arc_tmp.start_point)),
 					x => type_float (get_x (arc_tmp.start_point)), 
-					cycle => units_per_cycle);
+					cycle => units_per_cycle));
 		end if;
 
 		if get_x (arc_tmp.end_point) = zero and get_y (arc_tmp.end_point) = zero then
-			result.angle_end := 0.0;
+			set_angle_end (result, 0.0);
 		else
-			--result.angle_end := to_degrees (type_float (arctan (
-					--y => type_float (get_y (arc_tmp.end_point)),
-					--x => type_float (get_x (arc_tmp.end_point)))));
-			result.angle_end := arctan (
+			set_angle_end (result, arctan (
 					y => type_float (get_y (arc_tmp.end_point)),
 					x => type_float (get_x (arc_tmp.end_point)),
-					cycle => units_per_cycle);
+					cycle => units_per_cycle));
 		end if;
 
 		-- make sure start and end angle are not equal
-		if result.angle_start = result.angle_end then
+		if get_angle_start (result) = get_angle_end (result) then
 			raise constraint_error; -- CS warning instead ?
 		end if;
 		
 		-- direction is not changed:
-		result.direction := arc.direction;
+		set_direction (result, arc.direction);
 		
 		return result;
 	end to_arc_angles;
@@ -2275,8 +2343,8 @@ package body et_geometry_2a is
 	is
 		C : type_circle_fine;
 	begin
-		C.center := to_vector (circle.center);
-		C.radius := type_float_positive (circle.radius);
+		set_center (C, to_vector (circle.center));
+		set_radius (C, type_float_positive (circle.radius));
 
 		return C;
 	end to_circle_fine;
