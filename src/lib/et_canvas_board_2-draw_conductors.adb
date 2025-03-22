@@ -582,7 +582,7 @@ procedure draw_conductors is
 			r : in type_restring_width) 
 		is begin
 			linewidth := r;
-			circle.radius := (radius_base + r / 2.0);
+			set_radius (circle, (radius_base + r / 2.0));
 		end set_width_and_radius;
 
 
@@ -619,7 +619,7 @@ procedure draw_conductors is
 			use et_net_names;
 			use pac_net_name;
 			
-			position : type_vector_model := circle.center;
+			position : type_vector_model := get_center (circle);
 
 			use pac_draw_text;
 		begin
@@ -648,7 +648,7 @@ procedure draw_conductors is
 			use et_colors.board;
 			use et_text;
 			use et_alignment;
-			position : type_vector_model := circle.center;
+			position : type_vector_model := get_center (circle);
 			offset : constant type_distance_relative := to_distance_relative (
 				set (zero, + radius_base * text_position_layer_and_drill_factor));
 
@@ -677,7 +677,7 @@ procedure draw_conductors is
 			use et_colors.board;
 			use et_text;
 			use et_alignment;
-			position : type_vector_model := circle.center;
+			position : type_vector_model := get_center (circle);
 			offset : type_distance_relative;
 
 			use pac_draw_text;
@@ -877,7 +877,7 @@ procedure draw_conductors is
 		--put_line ("via.diameter" & to_string (via.diameter));
 		
 		radius_base := via.diameter / 2.0;
-		circle.center := via.position;
+		set_center (circle, via.position);
 
 
 		-- Overwrite the via position (circle.center) if the
@@ -893,10 +893,10 @@ procedure draw_conductors is
 
 						case object_tool is
 							when MOUSE =>
-								circle.center := snap_to_grid (get_mouse_position);
+								set_center (circle, snap_to_grid (get_mouse_position));
 
 							when KEYBOARD =>
-								circle.center := get_cursor_position;
+								set_center (circle, get_cursor_position);
 						end case;
 
 					end if;
@@ -1232,7 +1232,7 @@ procedure draw_conductors is
 
 	
 	
-begin -- draw_conductors
+begin
 -- 	put_line ("draw conductor layers ...");
 	
 	pac_generic_modules.query_element (

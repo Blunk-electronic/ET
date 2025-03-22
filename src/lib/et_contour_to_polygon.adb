@@ -131,8 +131,8 @@ package body et_contour_to_polygon is
 		use pac_geometry_brd;
 		arc : type_arc_angles;
 	begin
-		set_center (arc, to_vector (circle.center));
-		set_radius (arc, type_float_positive (circle.radius));
+		set_center (arc, to_vector (get_center (circle)));
+		set_radius (arc, type_float_positive (get_radius (circle)));
 		set_angle_start (arc, 0.0);
 		set_angle_end (arc, 360.0);
 		set_direction (arc, CCW);

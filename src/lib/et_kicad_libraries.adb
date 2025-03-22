@@ -1591,6 +1591,7 @@ package body et_kicad_libraries is
 			end to_rectangle;
 
 			
+			
 			function to_circle (line : in type_fields_of_line) return type_symbol_circle is
 			-- Returns from the given fields of a circle a type_circle.
 				circle	: type_symbol_circle;
@@ -1605,15 +1606,20 @@ package body et_kicad_libraries is
 				--  #8 : fill style N/F/f no fill/foreground/background
 
 				use et_coordinates_2.pac_geometry_sch;
-			begin -- to_circle
-				set (circle.center, AXIS_X, mil_to_distance (mil => f (line,2)));
-				set (circle.center, AXIS_Y, mil_to_distance (mil => f (line,3)));
+
+				scratch_point : type_vector_model;
+			begin
+				--set (circle.center, AXIS_X, mil_to_distance (mil => f (line,2)));
+				set (scratch_point, AXIS_X, mil_to_distance (mil => f (line, 2)));
+				set (scratch_point, AXIS_Y, mil_to_distance (mil => f (line, 3)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
-				mirror (point => circle.center, axis => MIRROR_ALONG_X_AXIS);
+				mirror (point => scratch_point, axis => MIRROR_ALONG_X_AXIS);
+
+				set_center (circle, scratch_point);
 	
-				circle.radius := mil_to_distance (mil => f (line,4));
+				set_radius (circle, mil_to_distance (mil => f (line, 4)));
 
 				-- If line width is too small, use a lower limit instead.
 				if mil_to_distance (f (line,7)) < type_line_width'first then
@@ -1629,6 +1635,7 @@ package body et_kicad_libraries is
 				return circle;
 			end to_circle;
 
+			
 			
 			function to_arc (line : in type_fields_of_line) return type_symbol_arc is
 			-- Returns from the given fields of an arc a type_arc.
@@ -1720,6 +1727,7 @@ package body et_kicad_libraries is
 				-- CS: log properties
 				return arc;
 			end to_arc;
+
 
 			
 			function to_text (line : in type_fields_of_line) return et_symbols.type_text is

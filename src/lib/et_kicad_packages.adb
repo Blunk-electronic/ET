@@ -66,11 +66,14 @@ package body et_kicad_packages is
 		return "tags '" & type_package_tags.to_string (tags) & "'";
 	end to_string;
 
+
+	
 	function to_package_tags (tags : in string) return type_package_tags.bounded_string is
 	begin
 		return type_package_tags.to_bounded_string (tags);
 	end to_package_tags;
 
+	
 	
 	function to_assembly_technology (tech : in string) return type_assembly_technology is begin
 		if tech = "smd" then return SMT;
@@ -80,15 +83,21 @@ package body et_kicad_packages is
 			raise constraint_error;
 		end if;
 	end to_assembly_technology;
+
+
 	
 	function to_string (shape : in type_pad_shape_tht) return string is begin
 		return space & to_lower (type_pad_shape_tht'image (shape));
 	end to_string;
+
+
 	
 	function to_string (shape : in type_pad_shape_smt) return string is begin
 		return space & to_lower (type_pad_shape_smt'image (shape));
 	end to_string;
 
+
+	
 	function to_pad_shape_tht (shape : in string) return type_pad_shape_tht is begin
 		if shape = "rect" then return RECTANGULAR;
 		elsif shape = "circle" then return CIRCULAR;
@@ -99,6 +108,8 @@ package body et_kicad_packages is
 		end if;
 	end to_pad_shape_tht;
 
+
+	
 	function to_pad_shape_smt (shape : in string) return type_pad_shape_smt is begin
 		if shape = "rect" then return RECTANGULAR;
 		elsif shape = "oval" then return OVAL;
@@ -108,6 +119,7 @@ package body et_kicad_packages is
 			raise constraint_error;
 		end if;
 	end to_pad_shape_smt;
+
 
 	
 	function to_pad_shape_circle (
@@ -121,16 +133,17 @@ package body et_kicad_packages is
 
 		use et_pcb_coordinates_2.pac_geometry_brd;
 	begin
-		c.center := position.place;
+		set_center (c, position.place);
 		--c.radius := type_angle (diameter / 2.0);
-		c.radius := diameter / 2.0;
-		move_by (c.center, offset);
+		set_radius (c, diameter / 2.0);
+		move_by (c, offset);
 
 		shape.set_circle (c);
 		
 		return shape;
 	end to_pad_shape_circle;
 
+	
 	
 	function to_pad_shape_rectangle (
 	-- CS: rework as in to_pad_shape_oval
@@ -212,6 +225,7 @@ package body et_kicad_packages is
 		
 		return shape;
 	end to_pad_shape_rectangle;
+
 
 	
 	function to_pad_shape_oval (
@@ -398,11 +412,13 @@ package body et_kicad_packages is
 	end to_pad_milling_contour;
 
 
+	
 	function to_string (directory_name : in pac_directory_name.bounded_string) 
 		return string 
 	is begin
 		return pac_directory_name.to_string (directory_name);
 	end to_string;
+
 
 	
 	function to_directory (directory_name : in string) 
@@ -412,6 +428,7 @@ package body et_kicad_packages is
 	end to_directory;
 
 
+	
 	
 	function to_package_model (
 		file_name		: in string; -- S_0201.kicad_mod
@@ -739,6 +756,7 @@ package body et_kicad_packages is
 				raise constraint_error;
 			end if;
 		end get_next_line;
+
 		
 		procedure next_character is
 		-- Updates the cursor position to the position of the next
@@ -752,6 +770,7 @@ package body et_kicad_packages is
 			end loop;
 		end next_character;
 
+		
 		procedure read_section is 
 		-- Stores the section name and current argument counter on sections_stack.
 		-- Reads the section name from current cursor position until termination
@@ -950,6 +969,7 @@ package body et_kicad_packages is
 			end invalid_section;
 
 			scratch_point : type_vector_model;
+
 			
 		begin -- read_arg
 			-- We handle an argument that is wrapped in quotation different from a non-wrapped argument:
@@ -1015,6 +1035,7 @@ package body et_kicad_packages is
 
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_DESCR =>
 					case section.parent is
@@ -1031,6 +1052,7 @@ package body et_kicad_packages is
 
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_TAGS =>
 					case section.parent is
@@ -1047,6 +1069,7 @@ package body et_kicad_packages is
 
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_TEDIT =>
 					case section.parent is
@@ -1063,6 +1086,7 @@ package body et_kicad_packages is
 
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_ATTR =>
 					case section.parent is
@@ -1084,7 +1108,8 @@ package body et_kicad_packages is
 
 						when others => invalid_section;
 					end case;
-							
+
+					
 				when SEC_FP_TEXT =>
 					case section.parent is
 						when SEC_MODULE =>
@@ -1132,20 +1157,26 @@ package body et_kicad_packages is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_CENTER =>
 					case section.parent is
 						when SEC_FP_CIRCLE =>
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => circle.center, value => to_distance (to_string (arg)));
+									--set (axis => AXIS_X, point => circle.center, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
+									set_center (circle, scratch_point);
 								when 2 => 
-									set (axis => AXIS_Y, point => circle.center, value => to_distance (to_string (arg)));
+									--set (axis => AXIS_Y, point => circle.center, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
+									set_center (circle, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_START =>
 					case section.parent is
@@ -1690,16 +1721,19 @@ package body et_kicad_packages is
 				log (ERROR, "invalid layer for this object !", console => true);
 				raise constraint_error;
 			end invalid_layer;
-		
+
+			
 			procedure invalid_layer_reference is begin
 				log (ERROR, "reference placeholder must be in a silk screen layer !", console => true);
 				raise constraint_error;
 			end invalid_layer_reference;
 
+			
 			procedure invalid_layer_value is begin
 				log (WARNING, "value placeholder should be in a fabrication layer !");
 			end invalid_layer_value;
 
+			
 			procedure invalid_layer_user is begin
 				log (ERROR, "user text must be in a silk screen or fabrication layer !", console => true);
 				raise constraint_error;
@@ -1767,11 +1801,13 @@ package body et_kicad_packages is
 			end insert_fp_arc;
 			
 
+			
 			-- Append the circle to the container corresponding to the layer. Then log the circle properties.
 			procedure insert_fp_circle is begin
 				
 				-- Compute the circle radius from its center and point at circle:
-				circle.radius := to_distance (get_distance_total (circle.center, circle.point));
+				set_radius (circle, to_distance (
+					get_distance_total (get_center (circle), circle.point)));
 
 				-- The point at the circle and its layer are now discarded
 				-- as the circle is converted back to its anchestor
@@ -1849,6 +1885,7 @@ package body et_kicad_packages is
 			end insert_fp_circle;
 			
 
+			
 			-- Append the line to the container corresponding to the layer. Then log the line properties.
 			procedure insert_fp_line is begin
 				
@@ -2318,6 +2355,7 @@ package body et_kicad_packages is
 		end exec_section;
 
 		
+		
 		-- Checks if there is at least one placeholder for reference and for value.
 		-- CS: validate text sizes and width according to specifications in configuration file
 		procedure check_placeholders is
@@ -2367,6 +2405,7 @@ package body et_kicad_packages is
 			end if;
 			
 		end check_placeholders;
+
 
 		
 		-- If the package is REAL, counts the tht and smd terminals. 

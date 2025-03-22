@@ -752,6 +752,7 @@ package body et_device_rw is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_VARIANT =>
 						case stack.parent is
 							when SEC_VARIANTS =>
@@ -761,6 +762,7 @@ package body et_device_rw is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_TERMINAL_PORT_MAP =>
 						case stack.parent is
 							when SEC_VARIANT =>
@@ -772,6 +774,7 @@ package body et_device_rw is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_UNIT =>
 						case stack.parent is
 							when SEC_UNITS_INTERNAL =>
@@ -783,17 +786,20 @@ package body et_device_rw is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_SYMBOL =>
 						case stack.parent is
 							when SEC_UNIT => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_DRAW =>
 						case stack.parent is
 							when SEC_SYMBOL => null;  -- nothing to do
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_LINE =>
 						case stack.parent is
@@ -810,6 +816,7 @@ package body et_device_rw is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_ARC =>
 						case stack.parent is
 							when SEC_DRAW =>
@@ -824,6 +831,7 @@ package body et_device_rw is
 								
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_CIRCLE =>
 						case stack.parent is
@@ -835,10 +843,11 @@ package body et_device_rw is
 									new_item	=> symbol_circle);
 
 								-- clean up for next circle
-								symbol_circle := (others => <>);
+								reset_circle (symbol_circle);
 								
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_TEXTS =>
 						case stack.parent is
@@ -846,6 +855,7 @@ package body et_device_rw is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_TEXT =>
 						case stack.parent is
 							when SEC_TEXTS =>
@@ -864,12 +874,14 @@ package body et_device_rw is
 								
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_PLACEHOLDERS =>
 						case stack.parent is
 							when SEC_SYMBOL => null; -- nothing to do
 							when others => invalid_section;
 						end case;
+
 						
 					when SEC_PLACEHOLDER =>
 						case stack.parent is
@@ -915,12 +927,14 @@ package body et_device_rw is
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_PORTS =>
 						case stack.parent is 
 							when SEC_SYMBOL => null; -- nothing to do
 							when others => invalid_section;
 						end case;
 
+						
 					when SEC_PORT =>
 						case stack.parent is
 							when SEC_PORTS => insert_port;
@@ -1299,15 +1313,15 @@ package body et_device_rw is
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
-										symbol_circle.center := to_position (line,2);
+										set_center (symbol_circle, to_position (line,2));
 
 									elsif kw = keyword_width then -- widht 0.2
 										expect_field_count (line, 2);
-										symbol_circle.width := to_distance (f (line, 2));
+										set_width (symbol_circle, to_distance (f (line, 2)));
 
 									elsif kw = keyword_radius then -- radius 5
 										expect_field_count (line, 2);
-										symbol_circle.radius := to_radius (f (line, 2));
+										set_radius (symbol_circle, to_radius (f (line, 2)));
 
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);

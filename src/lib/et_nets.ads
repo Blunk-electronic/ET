@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -20,7 +20,7 @@
 -- You should have received a copy of the GNU General Public License and    --
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
--- <http://www.gnu.org/licenses/>.   
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -82,12 +82,11 @@ package et_nets is
 	-- GUI relevant only: In the schematic editor, the junction is drawn as follows:
 	junction_radius : constant type_distance_positive := 0.5;
 	
-	type type_junction_symbol is new type_circle with null record;
-	
-	junction_symbol : type_junction_symbol := (
-			radius 	=> junction_radius,
-			others	=> <>);
 
+	
+	junction_symbol : type_circle := type_circle (to_circle (
+			center	=> origin,
+			radius 	=> junction_radius));
 
 	
 

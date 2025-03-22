@@ -168,8 +168,8 @@ package body et_pcb_rw is
 
 	
 	procedure write_circle (circle : in type_circle'class) is begin
-		write (keyword => keyword_center, parameters => to_string (circle.center));
-		write (keyword => keyword_radius, parameters => to_string (circle.radius));
+		write (keyword => keyword_center, parameters => to_string (get_center (circle)));
+		write (keyword => keyword_radius, parameters => to_string (get_radius (circle)));
 	end write_circle;
 
 
@@ -579,7 +579,9 @@ package body et_pcb_rw is
 	end;
 
 	
-	procedure board_reset_circle is begin board_circle := (others => <>); end;
+	procedure board_reset_circle is begin 
+		reset_circle (board_circle);
+	end;
 
 	
 	procedure add_polygon_circle (c : in out type_circle) is begin
@@ -751,12 +753,12 @@ package body et_pcb_rw is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			board_circle.center := to_position (line, 2);
+			set_center (board_circle, to_position (line, 2));
 			
 		elsif kw = keyword_radius then -- radius 22
 			expect_field_count (line, 2);
 			
-			board_circle.radius := to_radius (f (line, 2));
+			set_radius (board_circle, to_radius (f (line, 2)));
 		else
 			invalid_keyword (kw);
 		end if;
@@ -773,14 +775,14 @@ package body et_pcb_rw is
 			expect_field_count (line, 5);
 
 			-- extract the center position starting at field 2 of line
-			board_circle.center := to_position (line, 2);
+			set_center (board_circle, to_position (line, 2));
 
 			return true;
 			
 		elsif kw = keyword_radius then -- radius 22
 			expect_field_count (line, 2);
 			
-			board_circle.radius := to_radius (f (line, 2));
+			set_radius (board_circle, to_radius (f (line, 2)));
 
 			return true;			
 		else

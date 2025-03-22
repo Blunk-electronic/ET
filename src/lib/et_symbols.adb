@@ -138,6 +138,14 @@ package body et_symbols is
 
 
 
+	procedure set_width (
+		circle	: in out type_symbol_circle;
+		width	: in type_line_width)
+	is begin
+		circle.width := width;
+	end set_width;
+
+	
 
 
 	function to_string (name : in pac_symbol_model_file.bounded_string) 

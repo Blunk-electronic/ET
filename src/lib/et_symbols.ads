@@ -148,6 +148,12 @@ package et_symbols is
 		filled	: type_circle_filled := NO;
 	end record;
 
+
+	procedure set_width (
+		circle	: in out type_symbol_circle;
+		width	: in type_line_width);
+
+	
 	package pac_symbol_circles is new doubly_linked_lists (type_symbol_circle);
 
 

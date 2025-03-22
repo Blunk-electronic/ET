@@ -322,7 +322,9 @@ package body et_kicad_to_native is
 		-- Transposes the given arc in layout from the kicad frame to the ET native frame.
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
-		procedure move (arc : in out et_pcb_coordinates_2.pac_geometry_2.type_arc'class) is 
+		procedure move (
+			arc : in out et_pcb_coordinates_2.pac_geometry_2.type_arc'class) 
+		is 
 			use et_pcb_coordinates_2;
 			use pac_geometry_2;
 			new_y : type_position_axis;
@@ -331,16 +333,37 @@ package body et_kicad_to_native is
 			C := get_center (arc);
 			new_y := layout_sheet_height - get_y (C);
 			set (C, AXIS_Y, new_y);
-
+			set_center (arc, C);
+			
 			S := get_start_point (arc);
 			new_y := layout_sheet_height - get_y (S);
 			set (S, AXIS_Y, new_y);
+			set_start_point (arc, S);
 
 			E := get_end_point (arc);
 			new_y := layout_sheet_height - get_y (E);
 			set (E, AXIS_Y, new_y);
+			set_end_point (arc, E);
 		end move;
 		
+
+		-- Transposes the given circle in layout from the kicad frame to the ET native frame.
+		-- KiCad frames have the origin in the upper left corner.
+		-- ET frames have the origin in the lower left corner.
+		procedure move (
+			circle : in out et_pcb_coordinates_2.pac_geometry_2.type_circle'class) 
+		is 
+			use et_pcb_coordinates_2;
+			use pac_geometry_2;
+			new_y : type_position_axis;
+			C : type_vector_model;
+		begin
+			C := get_center (circle);
+			new_y := layout_sheet_height - get_y (C);
+			set (C, AXIS_Y, new_y);
+			set_center (circle, C);
+		end move;
+
 		
 		
 		-- Changes the path and y position of text notes (in schematic):
@@ -930,9 +953,9 @@ package body et_kicad_to_native is
 					log (text => board_silk_screen & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (text => before & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
-					move (circle.center);
-					log (text => now & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
+					log (text => before & " center" & to_string (circle), level => log_threshold + log_threshold_add);
+					move (circle);
+					log (text => now & " center" & to_string (circle), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_circle;
@@ -1140,11 +1163,9 @@ package body et_kicad_to_native is
 					log (text => doc & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (text => before & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
-
-					move (circle.center);
-					
-					log (text => now & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
+					log (text => before & " center" & to_string (circle), level => log_threshold + log_threshold_add);
+					move (circle);
+					log (text => now & " center" & to_string (circle), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_circle;
@@ -1338,9 +1359,7 @@ package body et_kicad_to_native is
 					log_indentation_up;
 
 					log (text => before & to_string (arc), level => log_threshold + log_threshold_add);
-
-					move (arc);
-					
+					move (arc);					
 					log (text => now & to_string (arc), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
@@ -1353,11 +1372,9 @@ package body et_kicad_to_native is
 					log (text => stencil & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (text => before & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
-
-					move (circle.center);
-					
-					log (text => now & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
+					log (text => before & " center" & to_string (circle), level => log_threshold + log_threshold_add);
+					move (circle);					
+					log (text => now & " center" & to_string (circle), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_circle;
@@ -1528,11 +1545,9 @@ package body et_kicad_to_native is
 					log (text => stop & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (text => before & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
-
-					move (circle.center);
-					
-					log (text => now & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
+					log (text => before & " center" & to_string (circle), level => log_threshold + log_threshold_add);
+					move (circle);
+					log (text => now & " center" & to_string (circle), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_circle;
@@ -1791,13 +1806,13 @@ package body et_kicad_to_native is
 						log_indentation_up;
 
 						log (text => before & " center" 
-							& to_string (module.board.board_contour.outline.contour.circle.center), 
+							& to_string (module.board.board_contour.outline.contour.circle), 
 							level => log_threshold + log_threshold_add);
 
-						move (module.board.board_contour.outline.contour.circle.center);
+						move (module.board.board_contour.outline.contour.circle);
 						
 						log (text => now & " center" 
-							& to_string (module.board.board_contour.outline.contour.circle.center), 
+							& to_string (module.board.board_contour.outline.contour.circle), 
 							level => log_threshold + log_threshold_add);
 								
 						log_indentation_down;
@@ -1885,11 +1900,9 @@ package body et_kicad_to_native is
 					log (text => board_copper & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
-					log (text => before & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
-
-					move (circle.center);
-					
-					log (text => now & " center" & to_string (circle.center), level => log_threshold + log_threshold_add);
+					log (text => before & " center" & to_string (circle), level => log_threshold + log_threshold_add);
+					move (circle);					
+					log (text => now & " center" & to_string (circle), level => log_threshold + log_threshold_add);
 							
 					log_indentation_down;
 				end move_circle;

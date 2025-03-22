@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -87,8 +87,8 @@ package body et_vias is
 				restring := via.restring_inner;
 		end case;
 				
-		circle.center := via.position;
-		circle.radius := 0.5 * via.diameter + restring;
+		set_center (circle, via.position);
+		set_radius (circle, 0.5 * via.diameter + restring);
 		
 		b := get_bounding_box (circle => circle, width => 0.0);
 		return b;
@@ -206,6 +206,7 @@ package body et_vias is
 			& get_misc;
 	end to_string;
 	
+
 	
 	function to_buried_layers (
 		upper, lower	: in string; -- 2, 6
@@ -244,12 +245,14 @@ package body et_vias is
 		return layers;
 	end to_buried_layers;
 
+
 	
 	function to_string (layers : in type_buried_layers) return string is
 	begin
 		return to_string (layers.upper) & space & to_string (layers.lower);
 	end to_string;
 
+	
 	
 	function to_polygon (
 		position	: in type_vector_model;
@@ -263,7 +266,7 @@ package body et_vias is
 	begin
 		return optimize_edges ((
 			edges => (to_edges (
-				circle		=> (position, restring + diameter * 0.5, others => <>),
+				circle		=> type_circle (to_circle (position, restring + diameter * 0.5)),
 				mode		=> EXPAND,				   
 				tolerance	=> tolerance)),
 

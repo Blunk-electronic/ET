@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -179,9 +179,13 @@ package body et_route_restrict is
 		use et_contour_to_polygon;
 		result : type_polygon;
 
+		c : type_circle;
 	begin
+		c := type_circle (to_circle (
+			get_center (circle), get_radius (circle)));
+										
 		result.edges := to_edges (
-			circle		=> (circle.center, circle.radius, others => <>),
+			circle		=> c,
 			tolerance	=> tolerance,
 			mode		=> EXPAND);
 
@@ -199,9 +203,13 @@ package body et_route_restrict is
 		use et_contour_to_polygon;
 		result : type_polygon;
 
+		c : type_circle;
 	begin
+		c := type_circle (to_circle (
+			get_center (circle), get_radius (circle)));
+
 		result.edges := to_edges (
-			circle		=> (circle.center, circle.radius, others => <>),
+			circle		=> c,
 			tolerance	=> tolerance,
 			mode		=> SHRINK);
 

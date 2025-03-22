@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -395,10 +395,10 @@ package body et_conductor_segment is
 		-- 	circle.radius + 0.5 * type_float_positive (circle.width);
 
 		outer_radius : constant type_distance_positive := 
-			circle.radius + 0.5 * circle.width;
+			get_radius (circle) + 0.5 * circle.width;
 	begin
 		result.edges := to_edges (
-			circle		=> (circle.center, outer_radius, others => <>),
+			circle		=> type_circle (to_circle (get_center (circle), outer_radius)),
 			tolerance	=> tolerance,
 			mode		=> EXPAND);
 
@@ -407,6 +407,7 @@ package body et_conductor_segment is
 	end to_polygon_outside;
 
 
+	
 	function to_polygon_inside (
 		circle 		: in type_conductor_circle;
 		tolerance	: in type_distance_positive)							
@@ -419,17 +420,18 @@ package body et_conductor_segment is
 		-- 	circle.radius - 0.5 * type_float_positive (circle.width);
 
 		inner_radius : constant type_distance_positive :=
-			circle.radius - 0.5 * circle.width;
+			get_radius (circle) - 0.5 * circle.width;
 
 	begin
 		result.edges := to_edges (
-			circle		=> (circle.center, inner_radius, others => <>),
+			circle		=> type_circle (to_circle (get_center (circle), inner_radius)),
 			tolerance	=> tolerance,
 			mode		=> SHRINK);
 
 		optimize_edges (result); -- MANDATORY !!
 		return result;
 	end to_polygon_inside;
+
 
 	
 	procedure mirror_circles (
@@ -451,6 +453,7 @@ package body et_conductor_segment is
 	end mirror_circles;
 
 
+	
 	procedure rotate_circles (
 		circles	: in out pac_conductor_circles.list;
 		angle	: in type_rotation_model)

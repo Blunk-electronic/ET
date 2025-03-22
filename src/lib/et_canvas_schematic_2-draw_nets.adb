@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -72,7 +72,7 @@ procedure draw_nets is
 	procedure draw_junctions (
 		s : in pac_net_segments.cursor)
 	is
-		j : type_junction_symbol := junction_symbol;
+		j : type_circle := junction_symbol;
 
 		procedure draw is begin
 			draw_circle (
@@ -86,13 +86,13 @@ procedure draw_nets is
 	begin
 		-- at start point of segment:
 		if element (s).junctions.start_point then
-			j.center := element (s).start_point;
+			set_center (j, element (s).start_point);
 			draw;
 		end if;
 
 		-- at end point of segment:
 		if element (s).junctions.end_point then
-			j.center := element (s).end_point;
+			set_center (j, element (s).end_point);
 			draw;
 		end if;
 
@@ -104,7 +104,7 @@ procedure draw_nets is
 	procedure draw_junctions (
 		s : in type_net_segment)
 	is
-		j : type_junction_symbol := junction_symbol;
+		j : type_circle := junction_symbol;
 
 		procedure draw is begin
 			draw_circle (
@@ -118,13 +118,13 @@ procedure draw_nets is
 	begin
 		-- at start point of segment:
 		if s.junctions.start_point then
-			j.center := s.start_point;
+			set_center (j, s.start_point);
 			draw;
 		end if;
 
 		-- at end point of segment:
 		if s.junctions.end_point then
-			j.center := s.end_point;
+			set_center (j, s.end_point);
 			draw;
 		end if;
 
@@ -279,6 +279,7 @@ procedure draw_nets is
 		end if;		
 	end is_selected;
 
+
 	
 	-- Draws a single net label:
 	procedure draw_label (
@@ -310,6 +311,7 @@ procedure draw_nets is
 		end case;
 	end draw_label;
 
+
 	
 	-- Draws a single net label that is being moved:
 	procedure draw_simple_label_being_moved (
@@ -340,6 +342,7 @@ procedure draw_nets is
 		--end case;
 	end draw_simple_label_being_moved;
 
+
 	
 	-- Draws labels that are NOT selected:
 	procedure draw_labels (
@@ -357,6 +360,7 @@ procedure draw_nets is
 		iterate (segment.labels, draw_fixed'access);
 	end draw_labels;
 
+	
 	
 	-- Draws the net label being moved. If no net label
 	-- is being moved, nothing happens here:
@@ -478,6 +482,7 @@ procedure draw_nets is
 				next (label_cursor);
 			end loop;
 		end query_label;
+
 		
 	begin
 		if not is_empty (proposed_labels) then
@@ -485,6 +490,7 @@ procedure draw_nets is
 		end if;
 	end draw_selected_label;
 
+	
 	
 	
 	-- Returns true if the given segment is selected.
@@ -517,6 +523,7 @@ procedure draw_nets is
 			end if;
 		end if;		
 	end is_selected;
+
 
 	
 	-- We need a list of segments that have been drawn already.
@@ -634,7 +641,8 @@ procedure draw_nets is
 					draw_and_mark;
 				end if;
 			end drag_at_end;
-		
+
+			
 		begin -- query_segment
 			
 			-- Skip original segment. It has been drawn already by caller:
@@ -661,6 +669,7 @@ procedure draw_nets is
 			end if;
 		end query_segment;
 		
+
 	begin
 		-- Iterate all segments of the given strand.
 		-- Skip the original segment:
@@ -669,6 +678,7 @@ procedure draw_nets is
 			process		=> query_segment'access);
 		
 	end draw_secondary_segments;
+
 
 	
 	-- Draws the net segment being moved or dragged.

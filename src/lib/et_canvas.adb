@@ -3761,8 +3761,8 @@ package body et_canvas is
 			end if;
 
 			
-			m := real_to_canvas (c.center, S);
-			r := to_distance (c.radius);
+			m := real_to_canvas (get_center (c), S);
+			r := to_distance (get_radius (c));
 
 			-- required to suppress an initial line:
 			new_sub_path (context);

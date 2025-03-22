@@ -1736,9 +1736,13 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => package_circle.center, value => to_distance (to_string (arg)));
+									--set (axis => AXIS_X, point => package_circle.center, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
+									set_center (package_circle, scratch_point);
 								when 2 => 
-									set (axis => AXIS_Y, point => package_circle.center, value => to_distance (to_string (arg)));
+									-- set (axis => AXIS_Y, point => package_circle.center, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
+									set_center (package_circle, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
@@ -2600,9 +2604,13 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => board_circle.center, value => to_distance (to_string (arg)));
+									-- set (axis => AXIS_X, point => board_circle.center, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
+									set_center (board_circle, scratch_point);
 								when 2 => 
-									set (axis => AXIS_Y, point => board_circle.center, value => to_distance (to_string (arg)));
+									--set (axis => AXIS_Y, point => board_circle.center, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
+									set_center (board_circle, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
@@ -3450,7 +3458,8 @@ package body et_kicad.pcb is
 			begin
 				-- Compute the circle radius from its center and point at circle.
 				-- Later the angle is discarded.
-				board_circle.radius := to_distance (get_distance_total (board_circle.center, board_circle.point));
+				set_radius (board_circle, to_distance (get_distance_total (
+					get_center (board_circle), board_circle.point)));
 
 				-- The point at the circle and its layer are now discarded
 				-- as the circle is converted back to its anchestor
@@ -3716,6 +3725,7 @@ package body et_kicad.pcb is
 				end case;
 			end insert_fp_arc;
 
+
 			
 			-- Append the circle to the container corresponding to the layer. 
 			-- Then log the circle properties.
@@ -3727,10 +3737,9 @@ package body et_kicad.pcb is
 				use et_keepout;
 				use et_conductor_segment;
 			begin
-
 				-- Compute the circle radius from its center and point at circle:
-				package_circle.radius := to_distance (
-					get_distance_total (package_circle.center, package_circle.point));
+				set_radius (package_circle, to_distance (
+					get_distance_total (get_center (package_circle), package_circle.point)));
 
 				-- The point at the circle and its layer are now discarded
 				-- as the circle is converted back to its anchestor
@@ -4189,6 +4198,7 @@ package body et_kicad.pcb is
 					
 			end insert_terminal;
 
+
 			
 			procedure insert_fp_text is 
 				use et_text;
@@ -4283,6 +4293,7 @@ package body et_kicad.pcb is
 			end insert_fp_text;
 
 			
+			
 			procedure insert_segment is begin
 			-- inserts a segment in the list "segments"
 				type_segments.append (
@@ -4300,6 +4311,7 @@ package body et_kicad.pcb is
 				
 			end insert_segment;
 
+			
 			
 			procedure insert_via is begin
 			-- inserts a via in the list "vias"
@@ -4322,6 +4334,7 @@ package body et_kicad.pcb is
 					 -- see -- see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
 					level => log_threshold + 1);
 			end insert_via;
+
 
 			
 			procedure add_polygon_corner_point is

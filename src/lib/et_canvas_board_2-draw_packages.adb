@@ -1444,8 +1444,8 @@ is
 							
 							case drilled_milled is
 								when DRILLED =>									
-									c.center := pad_position.place;
-									c.radius := drill_size * 0.5;
+									set_center (c, pad_position.place);
+									set_radius (c, drill_size * 0.5);
 									
 									---put_line ("pad_pos" & to_string (pad_position));
 
@@ -1633,8 +1633,8 @@ is
 						
 						-- Build a circle that represents
 						-- the restring of inner layers:
-						circle.center := pad_position.place;
-						circle.radius := (drill_size + restring) * 0.5;
+						set_center (circle, pad_position.place);
+						set_radius (circle, (drill_size + restring) * 0.5);
 
 						if flipped then
 							mirror_style := MIRROR_ALONG_Y_AXIS;

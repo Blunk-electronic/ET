@@ -2364,6 +2364,63 @@ package body et_geometry_2a is
 -- CIRCLE:
 
 
+	function to_circle (
+		center	: in type_vector_model;
+		radius	: in type_distance_positive)
+		return type_circle'class
+	is 
+		circle : type_circle;
+	begin
+		circle := (center, radius, others => <>);
+		return circle;
+	end to_circle;
+
+
+
+	procedure reset_circle (
+		c : in out type_circle)
+	is begin
+		c := (others => <>);
+	end reset_circle;
+
+	
+
+	procedure set_center (
+		c : in out type_circle;
+		e : in type_vector_model)
+	is begin
+		c.center := e;
+	end set_center;
+
+	
+	procedure set_radius (
+		c : in out type_circle;
+		r : in type_distance_positive)
+	is begin
+		c.radius := r;
+	end set_radius;
+
+
+
+	function get_center (
+		c : in type_circle)
+		return type_vector_model
+	is begin
+		return c.center;
+	end get_center;
+	
+
+	
+	function get_radius (
+		c : in type_circle)
+		return type_distance_positive
+	is begin
+		return c.radius;
+	end get_radius;
+
+	
+
+	
 	function to_circle_fine (
 		circle : in type_circle)
 		return type_circle_fine
@@ -2555,12 +2612,6 @@ package body et_geometry_2a is
 	end to_radius;
 
 
-	procedure set_radius (
-		c : in out type_circle;
-		r : in type_distance_positive)
-	is begin
-		c.radius := r;
-	end set_radius;
 
 	
 	

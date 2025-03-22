@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -361,7 +361,7 @@ procedure draw_units is
 				-- set color and line width
 				set_color_ports (brightness);
 
-				circle.center := line.start_point;
+				set_center (circle, line.start_point);
 				set_radius (circle, port_circle_radius);
 
 				-- the circle is not filled -> argument "filled" is NO

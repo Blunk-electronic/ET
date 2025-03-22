@@ -1176,10 +1176,42 @@ package et_geometry_2a is
 		status	: type_object_status;
 	end record;
 
-	type type_circle is new type_circle_base with null record;
-	-- CS use this type wherever a type_circle is declared unnessecarily.
+	
+	type type_circle is tagged private;
 
 
+	function to_circle (
+		center	: in type_vector_model;
+		radius	: in type_distance_positive)
+		return type_circle'class;
+
+
+	procedure reset_circle (
+		c : in out type_circle);
+		
+
+	procedure set_center (
+		c : in out type_circle;
+		e : in type_vector_model);
+	
+
+	procedure set_radius (
+		c : in out type_circle;
+		r : in type_distance_positive);
+
+	
+
+	function get_center (
+		c : in type_circle)
+		return type_vector_model;
+	
+
+	function get_radius (
+		c : in type_circle)
+		return type_distance_positive;
+
+	
+		
 	function to_circle_fine (
 		circle : in type_circle)
 		return type_circle_fine;
@@ -1255,12 +1287,7 @@ package et_geometry_2a is
 		r : in type_distance_positive)
 		return type_float_positive;
 
-
-	procedure set_radius (
-		c : in out type_circle;
-		r : in type_distance_positive);
 	
-		
 	-- Moves a circle by the given offset. 
 	procedure move_by (
 		circle	: in out type_circle;
@@ -1612,6 +1639,8 @@ private
 	-- boundaries_default : constant type_boundaries := (others => <>);
 
 
+	type type_circle is new type_circle_base with null record;
+	
 	type type_arc is new type_arc_base with null record;
 
 	

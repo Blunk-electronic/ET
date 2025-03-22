@@ -681,7 +681,8 @@ is
 		
 		-- Draws a line, arc or circle:
 		procedure draw_shape is 
-			arc_tmp : type_arc;
+			arc_tmp		: type_arc;
+			circle_tmp	: type_circle;
 		begin
 			case shape is
 				when LINE =>
@@ -720,8 +721,7 @@ is
 								module_name 	=> module,
 								face			=> to_face (f (5)),
 								arc				=> (arc_tmp with width => to_distance (f (7))),
-								log_threshold	=> log_threshold + 1
-								);
+								log_threshold	=> log_threshold + 1);
 
 						when 15 .. type_field_count'last =>
 							too_long;
@@ -734,14 +734,14 @@ is
 				when CIRCLE =>
 					case cmd_field_count is
 						when 10 =>
+							circle_tmp := type_circle (to_circle (
+								center		=> type_vector_model (to_point (f (8), f (9))),
+								radius		=> to_radius (f (10))));
+													  
 							add_circle (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								circle			=> (
-										width		=> to_distance (f (7)),
-										center		=> type_vector_model (to_point (f (8), f (9))),
-										radius		=> to_radius (f (10)),
-										others		=> <>),
+								circle			=> (circle_tmp with width => to_distance (f (7))),
 								log_threshold	=> log_threshold + 1);
 							
 						when 11 .. type_field_count'last =>
@@ -800,7 +800,8 @@ is
 		
 		-- Draws a line, arc or circle:
 		procedure draw_shape is 
-			arc_tmp : type_arc;
+			arc_tmp		: type_arc;
+			circle_tmp	: type_circle;
 		begin
 			case shape is
 				when LINE =>
@@ -853,14 +854,14 @@ is
 				when CIRCLE =>
 					case cmd_field_count is
 						when 10 =>
+							circle_tmp := type_circle (to_circle (
+								center		=> type_vector_model (to_point (f (8), f (9))),
+								radius		=> to_radius (f (10))));
+										
 							add_circle (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								circle			=> (
-										width		=> to_distance (f (7)),
-										center		=> type_vector_model (to_point (f (8), f (9))),
-										radius		=> to_radius (f (10)),
-										others		=> <>),
+								circle			=> (circle_tmp with width => to_distance (f (7))),
 								log_threshold	=> log_threshold + 1);
 							
 						when 11 .. type_field_count'last =>
@@ -915,7 +916,8 @@ is
 		
 		shape : type_shape;
 
-		arc_tmp : type_arc;
+		arc_tmp		: type_arc;
+		circle_tmp	: type_circle;
 		
 	begin
 		-- put_line ("draw_route_restrict");
@@ -983,14 +985,16 @@ is
 							-- board led_driver draw route_restrict [1,3,5-9] circle 20 50 40
 							-- if is_number (f (7)) then -- 20
 
+							circle_tmp := type_circle (to_circle (
+								center	=> type_vector_model (to_point (f (7), f (8))),
+								radius	=> to_radius (f (9)))); -- 40
+
+																	 
 								-- Circle is not filled.
 								draw_route_restrict_circle (
 									module_name 	=> module,
-									circle			=> (
-										layers	=> to_layers (f (5)), -- [1,3,5-9]
-										center	=> type_vector_model (to_point (f (7), f (8))),
-										radius	=> to_radius (f (9)), -- 40
-										others	=> <>),
+									circle			=> (circle_tmp with 
+												layers	=> to_layers (f (5))), -- [1,3,5-9]
 									log_threshold	=> log_threshold + 1);
 							-- else
 								-- expect_value_center_x (7);
@@ -1101,7 +1105,8 @@ is
 
 		-- Draws a line, arc or circle:
 		procedure draw_shape is 
-			arc_tmp : type_arc;
+			arc_tmp 	: type_arc;
+			circle_tmp	: type_circle;
 		begin
 			case shape is
 				when LINE =>
@@ -1148,17 +1153,16 @@ is
 				when CIRCLE =>
 					case cmd_field_count is
 						when 10 =>
-
+							circle_tmp := type_circle (to_circle (
+								center			=> type_vector_model (to_point (f (8), f (9))),
+								radius			=> to_radius (f (10))));
+																	 
 							add_circle (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								circle			=> (
-									width			=> to_distance (f (7)),
-									center			=> type_vector_model (to_point (f (8), f (9))),
-									radius			=> to_radius (f (10)),
-									others			=> <>),
+								circle			=> (circle_tmp with
+									width			=> to_distance (f (7))),
 								log_threshold	=> log_threshold + 1);
-
 							
 						when 11 .. type_field_count'last => too_long;
 							
@@ -1211,7 +1215,8 @@ is
 
 		-- Draws a line, arc or circle:
 		procedure draw_shape is
-			arc_tmp : type_arc;
+			arc_tmp 	: type_arc;
+			circle_tmp	: type_circle;
 		begin
 			case shape is
 				when LINE =>
@@ -1258,14 +1263,15 @@ is
 				when CIRCLE =>
 					case cmd_field_count is
 						when 10 =>
+							circle_tmp := type_circle (to_circle (
+								center		=> type_vector_model (to_point (f (8), f (9))),
+								radius		=> to_radius (f (10))));
+																	 
 							add_circle (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								circle			=> (
-										width		=> to_distance (f (7)),
-										center		=> type_vector_model (to_point (f (8), f (9))),
-										radius		=> to_radius (f (10)),
-										others		=> <>),
+								circle			=> (circle_tmp with
+										width		=> to_distance (f (7))),
 								log_threshold	=> log_threshold + 1);
 
 						when 11 .. type_field_count'last => too_long;

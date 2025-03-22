@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -227,8 +227,8 @@ package body et_symbol_rw is
 			use et_coordinates_2.pac_geometry_sch;
 		begin
 			section_mark (section_circle, HEADER);
-			write (keyword => keyword_center, parameters => to_string (element (cursor).center, FORMAT_2));
-			write (keyword => keyword_radius, parameters => to_string (element (cursor).radius));
+			write (keyword => keyword_center, parameters => to_string (get_center (element (cursor)), FORMAT_2));
+			write (keyword => keyword_radius, parameters => to_string (get_radius (element (cursor))));
 			write (keyword => keyword_width , parameters => to_string (element (cursor).width));
 			write (keyword => keyword_filled, parameters => to_string (element (cursor).filled));
 			section_mark (section_circle, FOOTER);
@@ -659,7 +659,7 @@ package body et_symbol_rw is
 									new_item	=> symbol_circle);
 
 								-- clean up for next circle
-								symbol_circle := (others => <>);
+								reset_circle (symbol_circle);
 								
 							when others => invalid_section;
 						end case;
@@ -927,15 +927,15 @@ package body et_symbol_rw is
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
-										symbol_circle.center := to_position (line,2);
+										set_center (symbol_circle, to_position (line,2));
 
 									elsif kw = keyword_width then -- widht 0.2
 										expect_field_count (line, 2);
-										symbol_circle.width := to_distance (f (line, 2));
+										set_width (symbol_circle, to_distance (f (line, 2)));
 
 									elsif kw = keyword_radius then -- radius 5
 										expect_field_count (line, 2);
-										symbol_circle.radius := to_radius (f (line, 2));
+										set_radius (symbol_circle, to_radius (f (line, 2)));
 
 									elsif kw = keyword_filled then -- filled yes/no
 										expect_field_count (line, 2);
