@@ -2722,6 +2722,7 @@ package body et_board_ops.silkscreen is
 		result_category 	: type_object_category := CAT_VOID;
 		result_segment  	: type_object_segment;
 		result_line			: type_object_line;
+		result_arc			: type_object_arc;
 		result_text			: type_object_text;
 		result_placeholder	: type_object_placeholder;
 
@@ -2729,6 +2730,7 @@ package body et_board_ops.silkscreen is
 		use pac_segments;
 
 		use pac_silk_lines;
+		use pac_silk_arcs;
 		use pac_silk_texts;
 		use pac_text_placeholders;
 	begin
@@ -2758,9 +2760,23 @@ package body et_board_ops.silkscreen is
 		end if;
 
 		
-		-- Now we search for an arc.
-		-- If there is one, then go to the end of this procedure:
-		-- CS
+		-- SEARCH FOR AN ARC:
+		
+		-- If an arc has been found, then go to the end of this procedure:
+		result_arc := get_first_arc (module_cursor, flag, log_threshold + 1);
+
+		if result_arc.cursor /= pac_silk_arcs.no_element then
+			-- An arc has been found.
+			log (text => to_string (element (result_arc.cursor))
+				 & " face " & to_string (result_arc.face),
+				 level => log_threshold + 1);
+			
+			result_category := CAT_ARC;
+		end if;
+
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
 
 
 		-- Now we search for an circle.
@@ -2832,6 +2848,9 @@ package body et_board_ops.silkscreen is
 			when CAT_LINE =>
 				return (CAT_LINE, result_line);
 
+			when CAT_ARC =>
+				return (CAT_ARC, result_arc);
+				
 			when CAT_ZONE_SEGMENT =>
 				return (CAT_ZONE_SEGMENT, result_segment);
 
@@ -2869,7 +2888,10 @@ package body et_board_ops.silkscreen is
 			use pac_silk_lines;
 			line_cursor : pac_silk_lines.cursor;
 
-			-- CS arcs, circles
+			use pac_silk_arcs;
+			arc_cursor : pac_silk_arcs.cursor;
+			
+			-- CS circles
 			
 			use pac_silk_texts;
 			text_cursor : pac_silk_texts.cursor;
@@ -2920,6 +2942,7 @@ package body et_board_ops.silkscreen is
 			end query_zone;
 			
 
+			
 			procedure query_line (line : in type_silk_line) is 
 
 				procedure collect is begin
@@ -2945,8 +2968,39 @@ package body et_board_ops.silkscreen is
 					when others => null; -- CS
 				end case;
 			end query_line;
-				
 
+			
+
+			
+			procedure query_arc (arc : in type_silk_arc) is 
+
+				procedure collect is begin
+					result.append ((
+						cat	=> CAT_ARC,
+						arc	=> (face, arc_cursor)));
+
+					log (text => to_string (arc), level => log_threshold + 2);
+				end collect;
+				
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (arc) then
+							collect;
+						end if;
+
+					when SELECTED =>
+						if is_selected (arc) then
+							collect;
+						end if;
+
+					when others => null; -- CS
+				end case;
+			end query_arc;
+
+
+
+			
 			procedure query_text (text : in type_silk_text) is 
 
 				procedure collect is begin
@@ -2974,6 +3028,7 @@ package body et_board_ops.silkscreen is
 			end query_text;
 
 
+			
 			procedure query_placeholder (placeholder : in type_text_placeholder) is 
 
 				procedure collect is begin
@@ -3025,8 +3080,22 @@ package body et_board_ops.silkscreen is
 			end loop;
 
 			log_indentation_down;
+
+
 			
-			-- CS arcs, circles
+			log (text => "top arcs", level => log_threshold + 1);
+			log_indentation_up;
+			
+			arc_cursor := module.board.silkscreen.top.arcs.first;
+			while arc_cursor /= pac_silk_arcs.no_element loop
+				query_element (arc_cursor, query_arc'access);
+				next (arc_cursor);
+			end loop;
+
+			log_indentation_down;
+
+			
+			-- CS circles
 
 
 			log (text => "top texts", level => log_threshold + 1);
@@ -3079,7 +3148,21 @@ package body et_board_ops.silkscreen is
 			end loop;
 
 			log_indentation_down;
-			-- CS arcs, circles
+
+
+			log (text => "bottom arcs", level => log_threshold + 1);
+			log_indentation_up;
+			
+			arc_cursor := module.board.silkscreen.bottom.arcs.first;
+			while arc_cursor /= pac_silk_arcs.no_element loop
+				query_element (arc_cursor, query_arc'access);
+				next (arc_cursor);
+			end loop;
+
+			log_indentation_down;
+
+			
+			-- CS circles
 
 			
 			log (text => "bottom texts", level => log_threshold + 1);
@@ -3135,7 +3218,7 @@ package body et_board_ops.silkscreen is
 	is begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of object"
-			-- & to_string (segment.segment) CS output object category ?
+			& type_object_category'image (object.cat)
 			& " / " & to_string (operation),
 			level => log_threshold);
 
@@ -3145,6 +3228,9 @@ package body et_board_ops.silkscreen is
 			when CAT_LINE =>
 				modify_status (module_cursor, object.line, operation, log_threshold + 1);
 
+			when CAT_ARC =>
+				modify_status (module_cursor, object.arc, operation, log_threshold + 1);
+				
 			when CAT_ZONE_SEGMENT =>
 				modify_status (module_cursor, object.segment, operation, log_threshold + 1);
 
@@ -3205,6 +3291,12 @@ package body et_board_ops.silkscreen is
 					point_of_attack, destination,
 					log_threshold + 1);
 
+			when CAT_ARC =>
+				move_arc (module_cursor, object.arc.face, 
+					element (object.arc.cursor),
+					point_of_attack, destination,
+					log_threshold + 1);
+				
 			when CAT_ZONE_SEGMENT =>
 				move_segment (module_cursor,
 					object.segment,
@@ -3245,7 +3337,8 @@ package body et_board_ops.silkscreen is
 		log_indentation_up;
 
 		reset_proposed_lines (module_cursor, log_threshold + 1);
-		-- CS arcs, circles
+		reset_proposed_arcs (module_cursor, log_threshold + 1);
+		-- CS circles
 		
 		reset_proposed_texts (module_cursor, log_threshold + 1);
 		reset_proposed_placeholders (module_cursor, log_threshold + 1);
@@ -3279,7 +3372,15 @@ package body et_board_ops.silkscreen is
 					line			=> element (object.line.cursor),
 					log_threshold	=> log_threshold + 1);					
 
-			-- CS arcs, circles
+				
+			when CAT_ARC =>
+				delete_arc (
+					module_cursor	=> module_cursor, 
+					face			=> object.arc.face,
+					arc				=> element (object.arc.cursor),
+					log_threshold	=> log_threshold + 1);					
+				
+			-- CS circles
 				
 			when CAT_ZONE_SEGMENT =>
 				delete_segment (

@@ -499,12 +499,13 @@ package et_board_ops.silkscreen is
 	-- categories in order to store them in indefinite_doubly_linked_lists:
 	type type_object_category is (
 		CAT_VOID,
-		CAT_LINE, 
+		CAT_LINE,
+		CAT_ARC,
 		CAT_ZONE_SEGMENT,
 		CAT_TEXT,
 		CAT_PLACEHOLDER
 		);
-	-- CS CAT_ARC, CAT_CIRCLE
+	-- CS CAT_CIRCLE
 
 	
 	-- This type wraps segments of zones, lines, arcs, circles, 
@@ -518,6 +519,9 @@ package et_board_ops.silkscreen is
 				
 			when CAT_LINE => 
 				line 		: type_object_line;
+
+			when CAT_ARC => 
+				arc 		: type_object_arc;
 				
 			when CAT_TEXT =>
 				text		: type_object_text;

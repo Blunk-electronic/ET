@@ -97,13 +97,25 @@ is
 	
 	procedure query_arc (c : in pac_silk_arcs.cursor) is 
 		arc : type_silk_arc renames element (c);
+
+		procedure draw is begin
+			draw_arc (
+				arc			=> arc,
+				width		=> arc.width,
+				do_stroke	=> true);	
+		end draw;
+		
 	begin
-		draw_arc (
-			arc			=> arc,
-			width		=> arc.width,
-			do_stroke	=> true);
+		if is_selected (arc) then
+			set_highlight_brightness;
+			draw;
+			set_default_brightness;
+		else
+			draw;
+		end if;
 	end query_arc;
 
+	
 	
 	procedure query_circle (c : in pac_silk_circles.cursor) is 
 		circle : type_silk_circle renames element (c);

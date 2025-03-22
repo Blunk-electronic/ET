@@ -86,6 +86,24 @@ package body et_canvas_board_silkscreen is
 	end show_selected_line;
 
 
+
+	-- Outputs the selected arc in the status bar:
+	procedure show_selected_arc (
+		selected		: in type_object_arc;
+		clarification	: in boolean := false)
+	is 
+		praeamble : constant string := "selected: ";
+	begin
+		if clarification then
+			set_status (praeamble & to_string (element (selected.cursor))
+				& " face" & to_string (selected.face) & ". " 
+				& status_next_object_clarification);
+		else
+			set_status (praeamble & to_string (element (selected.cursor))
+				& " face" & to_string (selected.face) & ". ");
+		end if;		
+	end show_selected_arc;
+
 	
 
 	
@@ -157,6 +175,9 @@ package body et_canvas_board_silkscreen is
 			when CAT_LINE =>
 				show_selected_line (selected.line);
 
+			when CAT_ARC =>
+				show_selected_arc (selected.arc);
+				
 			when CAT_ZONE_SEGMENT =>
 				show_selected_segment (selected.segment);
 
@@ -322,7 +343,14 @@ package body et_canvas_board_silkscreen is
 					count			=> count_total, 
 					log_threshold	=> log_threshold + 2);
 
-				-- CS arcs, circles
+				propose_arcs (
+					module_cursor	=> active_module, 
+					catch_zone		=> catch_zone,
+					face			=> face,
+					count			=> count_total, 
+					log_threshold	=> log_threshold + 2);
+				
+				-- CS circles
 
 				propose_segments (
 					module_cursor	=> active_module, 
