@@ -143,7 +143,7 @@ package et_board_ops.silkscreen is
 -- ARCS:
 	
 	
-	-- Adds an arc to the assembly documentation.
+	-- Adds an arc to the silkscreen:
 	procedure add_arc (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;
@@ -151,11 +151,76 @@ package et_board_ops.silkscreen is
 		log_threshold	: in type_log_level);
 
 
+	-- This composite type is required to distinguish
+	-- between top and bottom arcs when arcs are searched for:
+	type type_object_arc is record
+		face	: type_face := TOP;
+		cursor	: pac_silk_arcs.cursor := pac_silk_arcs.no_element;
+	end record;
+
+
+	
+	-- Modifies the status flag of an arc (see package et_object_status):
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		arc				: in type_object_arc;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+
+	
+	-- Sets the proposed-flag of all arcs which are
+	-- in the given zone around the given place.
+	-- Adds to count the number of arcs that have been found:
+	procedure propose_arcs (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level);
+
+
+	-- Clears the proposed-flag and the selected-flag of all arcs:
+	procedure reset_proposed_arcs (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Returns the first arc according to the given flag.
+	-- If no arc has been found, then the return is 
+	-- TOP and no_element:
+	function get_first_arc (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_arc;
+
 	
 
+	procedure move_arc (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		arc				: in type_silk_arc;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Deletes the given arc in the given module:
+	procedure delete_arc (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		arc				: in type_silk_arc;
+		log_threshold	: in type_log_level);
+
+	
+	
 -- CIRCLES:
 	
-	-- Adds a circle to the assembly documentation.
+	-- Adds a circle to the silkscreen:
 	procedure add_circle (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;	

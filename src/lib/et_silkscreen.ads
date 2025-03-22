@@ -76,7 +76,7 @@ package et_silkscreen is
 		process	: not null access procedure (position : in pac_silk_lines.cursor);
 		proceed	: not null access boolean);
 
-	-- CS likewise iteratator for arcs and circles
+	-- CS likewise iteratator for circles
 
 	
 	-- Returns true if the "proposed-flag" of the given line is set:
@@ -121,6 +121,16 @@ package et_silkscreen is
 	use pac_silk_arcs;
 
 
+	-- Iterates the arcs.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		arcs	: in pac_silk_arcs.list;
+		process	: not null access procedure (position : in pac_silk_arcs.cursor);
+		proceed	: not null access boolean);
+
+	
+
+	
 	-- Returns true if the "proposed-flag" of the given arcis set:
 	function is_proposed (
 		arc_cursor	: in pac_silk_arcs.cursor)
@@ -159,6 +169,15 @@ package et_silkscreen is
 	use pac_silk_circles;
 
 
+	-- Iterates the circles.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		circles	: in pac_silk_circles.list;
+		process	: not null access procedure (position : in pac_silk_circles.cursor);
+		proceed	: not null access boolean);
+
+
+	
 	-- Returns true if the "proposed-flag" of the given circle is set:
 	function is_proposed (
 		circle_cursor	: in pac_silk_circles.cursor)
