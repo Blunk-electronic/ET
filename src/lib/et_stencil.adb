@@ -144,10 +144,26 @@ package body et_stencil is
 
 
 
+
 	
 	
 -- ARCS
 
+	procedure iterate (
+		arcs	: in pac_stencil_arcs.list;
+		process	: not null access procedure (position : in pac_stencil_arcs.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_stencil_arcs.cursor := arcs.first;
+	begin
+		while c /= pac_stencil_arcs.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+	
 	function is_proposed (
 		arc_cursor	: in pac_stencil_arcs.cursor)
 		return boolean
@@ -236,7 +252,21 @@ package body et_stencil is
 	
 -- CIRCLES
 
+	procedure iterate (
+		circles	: in pac_stencil_circles.list;
+		process	: not null access procedure (position : in pac_stencil_circles.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_stencil_circles.cursor := circles.first;
+	begin
+		while c /= pac_stencil_circles.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
 
+
+	
 	function is_proposed (
 		circle_cursor	: in pac_stencil_circles.cursor)
 		return boolean

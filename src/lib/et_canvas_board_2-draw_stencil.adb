@@ -92,12 +92,23 @@ is
 
 	
 	procedure query_arc (c : in pac_stencil_arcs.cursor) is 
-		-- CS use renames
+		arc : type_stencil_arc renames element (c);
+
+		procedure draw is begin
+			draw_arc (
+				arc		=> element (c),
+				width	=> element (c).width,
+				do_stroke => true);
+		end draw;
+
 	begin
-		draw_arc (
-			arc		=> element (c),
-			width	=> element (c).width,
-			do_stroke => true);
+		if is_selected (arc) then
+			set_highlight_brightness;
+			draw;
+			set_default_brightness;
+		else
+			draw;
+		end if;
 	end query_arc;
 
 	

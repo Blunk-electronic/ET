@@ -121,6 +121,16 @@ package et_stencil is
 	use pac_stencil_arcs;
 	
 
+
+	-- Iterates the arcs.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		arcs	: in pac_stencil_arcs.list;
+		process	: not null access procedure (position : in pac_stencil_arcs.cursor);
+		proceed	: not null access boolean);
+
+
+	
 	-- Returns true if the "proposed-flag" of the given arcis set:
 	function is_proposed (
 		arc_cursor	: in pac_stencil_arcs.cursor)
@@ -162,6 +172,16 @@ package et_stencil is
 	package pac_stencil_circles is new doubly_linked_lists (type_stencil_circle);
 	use pac_stencil_circles;	
 
+
+	-- Iterates the circles.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		circles	: in pac_stencil_circles.list;
+		process	: not null access procedure (position : in pac_stencil_circles.cursor);
+		proceed	: not null access boolean);
+
+	
+	
 
 	-- Returns true if the "proposed-flag" of the given circle is set:
 	function is_proposed (
