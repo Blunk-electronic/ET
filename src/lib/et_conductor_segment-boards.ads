@@ -157,6 +157,10 @@ package et_conductor_segment.boards is
 		layer		: in type_signal_layer;
 		line		: in pac_conductor_lines.cursor)
 		return boolean;
+
+
+
+-- ARCS:
 	
 	type type_conductor_arc is new et_conductor_segment.type_conductor_arc with record
 		layer	: type_signal_layer := type_signal_layer'first;
@@ -175,12 +179,37 @@ package et_conductor_segment.boards is
 	use pac_conductor_arcs;
 
 
+	-- Returns the start/end point, center and layer as string.
+	-- If "width" is true, then the segment width is also output:
+	function to_string (
+		arc		: in pac_conductor_arcs.cursor;
+		width	: in boolean)
+		return string;
+
+
+	
 	-- Returns the signal layer of the given arc:
 	function get_layer (
 		arc : in pac_conductor_arcs.cursor)
 		return type_signal_layer;
 
 
+	-- Returns true if the status flag "proposed"
+	-- of a conductor arc is set:
+	function is_proposed (
+		arc : in pac_conductor_arcs.cursor)
+		return boolean;
+	
+
+	-- Returns true if the status flag "selected"
+	-- of a conductor arc is set:
+	function is_selected (
+		arc : in pac_conductor_arcs.cursor)
+		return boolean;
+
+
+
+	
 	
 	-- Extracts those arcs which are in the given layer:
 	function get_arcs_by_layer (
@@ -237,6 +266,21 @@ package et_conductor_segment.boards is
 	function get_layer (
 		circle : in pac_conductor_circles.cursor)
 		return type_signal_layer;
+
+
+	-- Returns true if the status flag "proposed"
+	-- of a conductor circle is set:
+	function is_proposed (
+		circle : in pac_conductor_circles.cursor)
+		return boolean;
+	
+
+	-- Returns true if the status flag "selected"
+	-- of a conductor circle is set:
+	function is_selected (
+		circle : in pac_conductor_circles.cursor)
+		return boolean;
+
 
 	
 	

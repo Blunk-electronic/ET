@@ -89,6 +89,30 @@ package body et_canvas_board_conductors is
 	end show_selected_line_net;
 
 
+	
+
+	-- Outputs the selected arc in the status bar:
+	procedure show_selected_arc_net (
+		selected		: in type_object_arc_net;
+		clarification	: in boolean := false)
+	is 
+		use et_nets;
+		praeamble : constant string := "selected: ";
+	begin
+		if clarification then
+			set_status (praeamble
+				& to_string (selected.arc_cursor, true) -- start/end point/width/layer
+				& " net " & to_string (selected.net_cursor)
+				& ". " & status_next_object_clarification);
+		else
+			set_status (praeamble
+				& to_string (selected.arc_cursor, true) -- start/end point/width/layer
+				& " net " & to_string (selected.net_cursor));
+		end if;		
+	end show_selected_arc_net;
+
+	
+	
 
 	-- Outputs the selected line in the status bar:
 	procedure show_selected_line_floating (
@@ -108,7 +132,28 @@ package body et_canvas_board_conductors is
 		end if;		
 	end show_selected_line_floating;
 
+
 	
+
+	-- Outputs the selected arc in the status bar:
+	procedure show_selected_arc_floating (
+		selected		: in type_object_arc_floating;
+		clarification	: in boolean := false)
+	is 
+		praeamble : constant string := "selected: ";
+	begin
+		if clarification then
+			set_status (praeamble
+				& to_string (selected.arc_cursor, true) -- start/end point/width/layer
+				& " floating. " & status_next_object_clarification);
+		else
+			set_status (praeamble
+				& to_string (selected.arc_cursor, true) -- start/end point/width/layer
+				& " floating.");			
+		end if;		
+	end show_selected_arc_floating;
+
+
 	
 
 	-- Outputs the selected segment in the status bar:
@@ -206,8 +251,14 @@ package body et_canvas_board_conductors is
 			when CAT_LINE_NET =>
 				show_selected_line_net (selected.line_net);
 
+			when CAT_ARC_NET =>
+				show_selected_arc_net (selected.arc_net);
+
 			when CAT_LINE_FLOATING =>
 				show_selected_line_floating (selected.line_floating);
+
+			when CAT_ARC_FLOATING =>
+				show_selected_arc_floating (selected.arc_floating);
 				
 			when CAT_ZONE_SEGMENT_NET =>
 				show_selected_segment_net (selected.segment_net);
@@ -380,6 +431,15 @@ package body et_canvas_board_conductors is
 						freetracks		=> false,
 						log_threshold	=> log_threshold + 2);
 
+					-- Arcs of nets:
+					propose_arcs (
+						module_cursor	=> active_module, 
+						layer			=> layer,
+						catch_zone		=> catch_zone, 
+						count			=> count_total, 
+						freetracks		=> false,
+						log_threshold	=> log_threshold + 2);
+					
 					-- Lines of freetracks (floating):
 					propose_lines (
 						module_cursor	=> active_module, 
@@ -389,9 +449,18 @@ package body et_canvas_board_conductors is
 						freetracks		=> true,
 						log_threshold	=> log_threshold + 2);
 
-					
-					-- CS arcs, circles
+					-- Arcs of freetracks (floating):
+					propose_arcs (
+						module_cursor	=> active_module, 
+						layer			=> layer,
+						catch_zone		=> catch_zone, 
+						count			=> count_total, 
+						freetracks		=> true,
+						log_threshold	=> log_threshold + 2);
+				
+					-- CS circles
 
+					-- Connected zones:
 					propose_segments_net (
 						module_cursor	=> active_module, 
 						catch_zone		=> catch_zone, 

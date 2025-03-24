@@ -902,7 +902,7 @@ package body et_board_ops.conductors is
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
 		catch_zone		: in type_catch_zone;
-		count			: in out natural; -- the number of affected devices
+		count			: in out natural;
 		freetracks		: in boolean;
 		log_threshold	: in type_log_level)
 	is
@@ -941,8 +941,6 @@ package body et_board_ops.conductors is
 					segments.lines.update_element (line_cursor, query_line'access);
 					next (line_cursor);
 				end loop;
-
-				-- CS arcs, circles
 			end process_freetracks;
 
 
@@ -1659,7 +1657,8 @@ package body et_board_ops.conductors is
 
 
 	
-
+	
+-- ARCS:
 	
 	
 	procedure add_arc (
@@ -1749,8 +1748,684 @@ package body et_board_ops.conductors is
 
 	
 
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		arc				: in type_object_arc_net;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+
+				procedure query_arc (l : in out type_conductor_arc) is begin
+					modify_status (l, operation);
+				end query_arc;
+
+				use pac_conductor_arcs;
+			begin
+				update_element (net.route.arcs, arc.arc_cursor, query_arc'access);
+			end query_net;
+			
+		begin
+			update_element (module.nets, arc.net_cursor, query_net'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of "
+			& to_string (arc.arc_cursor, true) -- incl. width
+			& " in net " & to_string (arc.net_cursor)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+	
+
+
+
+	
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		arc				: in type_object_arc_floating;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			procedure query_arc (l : in out type_conductor_arc) is begin
+				modify_status (l, operation);
+			end query_arc;
+
+			use pac_conductor_arcs;
+			
+		begin
+			update_element (module.board.conductors_floating.arcs, arc.arc_cursor, query_arc'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of floating "
+			& to_string (arc.arc_cursor, true) -- incl. width
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+
+
+
+
+	procedure propose_arcs (
+		module_cursor	: in pac_generic_modules.cursor;
+		layer			: in et_pcb_stack.type_signal_layer;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		freetracks		: in boolean;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			use pac_conductor_arcs;
+			
+			procedure query_arc (
+				arc : in out type_conductor_arc)
+			is begin
+				if arc.layer = layer then
+					if in_catch_zone (
+						zone	=> catch_zone,
+						arc	=> arc,
+						width	=> arc.width)
+					then
+						set_proposed (arc);
+						count := count + 1;
+						log (text => to_string (arc, true), level => log_threshold + 2);
+					end if;
+				end if;
+			end query_arc;
+			
+
+
+			procedure process_freetracks is
+				arc_cursor : pac_conductor_arcs.cursor;
+				segments : type_conductors_floating renames module.board.conductors_floating;
+			begin
+				arc_cursor := segments.arcs.first;
+				while arc_cursor /= pac_conductor_arcs.no_element loop
+					segments.arcs.update_element (arc_cursor, query_arc'access);
+					next (arc_cursor);
+				end loop;
+			end process_freetracks;
+
+
+			
+			procedure process_nets is
+
+				procedure query_net (
+					net_name	: in pac_net_name.bounded_string;
+					net			: in out type_net)
+				is
+					use et_nets;				
+					arc_cursor : pac_conductor_arcs.cursor := net.route.arcs.first;
+				begin
+					log (text => "net " & to_string (net_name), level => log_threshold + 1);
+					log_indentation_up;
+					
+					while arc_cursor /= pac_conductor_arcs.no_element loop
+						net.route.arcs.update_element (arc_cursor, query_arc'access);
+						next (arc_cursor);
+					end loop;
+
+					log_indentation_down;
+				end query_net;
+
+
+				net_cursor : pac_nets.cursor := module.nets.first;
+			begin
+				while net_cursor /= pac_nets.no_element loop
+					module.nets.update_element (net_cursor, query_net'access);
+					next (net_cursor);
+				end loop;
+			end process_nets;
+			
+			
+		begin
+			if freetracks then
+				process_freetracks;
+			else
+				process_nets;
+			end if;
+		end query_module;
+		
+		
+	begin
+		log (text => "proposing arcs in signal layer " & to_string (layer)
+			 & to_string (catch_zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_arcs;
+
+
+
+	
+
+
+	procedure reset_proposed_arcs (
+		module_cursor	: in pac_generic_modules.cursor;
+		freetracks		: in boolean;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_conductor_arcs;
+
+			
+			procedure query_arc (
+				arc : in out type_conductor_arc)
+			is 
+				use et_object_status;
+			begin
+				reset_status (arc);
+			end query_arc;
+
+
+			
+			procedure process_nets is
+				
+				procedure query_net (
+					net_name	: in pac_net_name.bounded_string;
+					net			: in out type_net)
+				is
+					use et_nets;					
+					arc_cursor : pac_conductor_arcs.cursor := net.route.arcs.first;
+				begin
+					while arc_cursor /= pac_conductor_arcs.no_element loop
+						net.route.arcs.update_element (arc_cursor, query_arc'access);
+						next (arc_cursor);
+					end loop;
+				end query_net;				
+
+				net_cursor : pac_nets.cursor := module.nets.first;
+			begin			
+				while net_cursor /= pac_nets.no_element loop
+					module.nets.update_element (net_cursor, query_net'access);
+					next (net_cursor);
+				end loop;
+			end process_nets;
+
+
+
+			procedure process_freetracks is
+				arc_cursor : pac_conductor_arcs.cursor := module.board.conductors_floating.arcs.first;
+			begin
+				while arc_cursor /= pac_conductor_arcs.no_element loop
+					module.board.conductors_floating.arcs.update_element (arc_cursor, query_arc'access);
+					next (arc_cursor);
+				end loop;
+			end process_freetracks;
+
+			
+			
+		begin
+			if freetracks then
+				process_freetracks;
+			else
+				process_nets;
+			end if;
+		end query_module;
+	
+
+		
+	begin
+		log (text => "resetting proposed arcs",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_arcs;
+	
+
+	
+	
+
+
+	function get_first_arc_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_arc_net
+	is
+		result : type_object_arc_net;
+
+		use pac_conductor_arcs;
 		
 
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			proceed : aliased boolean := true;
+
+
+			procedure process_nets is
+
+				procedure query_net (net_cursor : in pac_nets.cursor) is
+
+					procedure query_arcs (
+						net_name	: in pac_net_name.bounded_string;
+						net 		: in type_net)
+					is 
+
+						procedure query_arc (l : in pac_conductor_arcs.cursor) is begin
+							case flag is
+								when PROPOSED =>
+									if is_proposed (l) then
+										result.net_cursor := net_cursor;
+										result.arc_cursor := l;
+										proceed := false;  -- no further probing required
+										--log (text => to_string (arc, true), level => log_threshold + 2);
+									end if;
+
+								when SELECTED =>
+									if is_selected (l) then
+										result.net_cursor := net_cursor;
+										result.arc_cursor := l;
+										proceed := false;  -- no further probing required
+										--log (text => to_string (arc, true), level => log_threshold + 2);
+									end if;
+
+								when others =>
+									null; -- CS
+							end case;
+						end query_arc;
+
+
+					begin
+						iterate (net.route.arcs, query_arc'access, proceed'access);
+					end query_arcs;
+					
+				begin
+					log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
+					log_indentation_up;
+					query_element (net_cursor, query_arcs'access);
+					log_indentation_down;
+				end query_net;
+				
+
+			begin
+				iterate (module.nets, query_net'access, proceed'access);
+			end process_nets;
+
+			
+		begin
+			process_nets;
+		end query_module;
+
+
+	begin		
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first arc / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- If a arc has been found, then log it:
+		if has_element (result.arc_cursor) then
+			log (text => "found: " & to_string (element (result.arc_cursor), true),
+				 level => log_threshold + 2);
+		end if;
+
+		log_indentation_down;
+		
+		return result;
+	end get_first_arc_net;
+
+
+
+
+
+
+	function get_first_arc_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_arc_floating
+	is
+		result : type_object_arc_floating;
+
+		use pac_conductor_arcs;
+		
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			proceed : aliased boolean := true;
+
+
+			conductors : type_conductors_floating renames module.board.conductors_floating;
+
+			procedure query_arc (l : in pac_conductor_arcs.cursor) is
+				arc : type_conductor_arc renames element (l);
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (arc) then
+							result.arc_cursor := l;
+							proceed := false;  -- no further probing required
+						end if;
+
+					when SELECTED =>
+						if is_selected (arc) then
+							result.arc_cursor := l;
+							proceed := false;  -- no further probing required
+						end if;
+
+					when others =>
+						null; -- CS
+				end case;
+			end query_arc;
+				
+			
+		begin
+			iterate (conductors.arcs, query_arc'access, proceed'access);
+		end query_module;
+
+
+	begin		
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first floating arc / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		-- If a arc has been found, then log it:
+		if has_element (result.arc_cursor) then
+			log (text => "found: " & to_string (element (result.arc_cursor), true),
+				 level => log_threshold + 2);
+		end if;
+
+		log_indentation_down;
+		
+		return result;
+	end get_first_arc_floating;
+
+
+
+	
+
+	
+	procedure move_arc_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		arc				: in type_object_arc_net;
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+		use pac_conductor_arcs;
+		use et_nets;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			procedure update_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				procedure move (arc : in out type_conductor_arc) is begin
+					attack (arc, point_of_attack, destination);
+				end;
+
+			begin
+				log (text => "net " & to_string (net_name), level => log_threshold + 1);
+				net.route.arcs.update_element (arc.arc_cursor, move'access);
+			end update_net;
+
+			
+		begin
+			module.nets.update_element (arc.net_cursor, update_net'access);			
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving " & to_string (arc.arc_cursor, true)  -- log incl. width
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+
+		update_ratsnest (module_cursor, log_threshold + 1);
+	end move_arc_net;
+
+
+
+
+
+	
+
+	procedure move_arc_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		arc				: in type_object_arc_floating;
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			use pac_conductor_arcs;
+
+			procedure move (arc : in out type_conductor_arc) is begin
+				attack (arc, point_of_attack, destination);
+				log (text => (to_string (arc, true)), level => log_threshold + 1);
+			end;
+	
+		begin
+			module.board.conductors_floating.arcs.update_element (arc.arc_cursor, move'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving floating " & to_string (arc.arc_cursor, true)  -- log incl. width
+			& " point of attack " & to_string (point_of_attack)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end move_arc_floating;
+
+
+
+	
+
+
+	procedure delete_arc_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string; -- reset_n
+		arc				: in type_conductor_arc;
+		log_threshold	: in type_log_level)
+	is
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			-- Locate the given net in the given module::
+			net_cursor : pac_nets.cursor := find (module.nets, net_name);
+
+			use et_nets;
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is
+				-- Locate the given segment in the given net:
+				use pac_conductor_arcs;
+				arc_cursor : pac_conductor_arcs.cursor := net.route.arcs.find (arc);
+			begin
+				if arc_cursor /= pac_conductor_arcs.no_element then
+					delete (net.route.arcs, arc_cursor);
+				else
+					null; -- CS message "segment not found" ?
+				end if;
+			end query_net;
+			
+
+		begin			
+			if net_exists (net_cursor) then
+
+				pac_nets.update_element (
+					container	=> module.nets,
+					position	=> net_cursor,
+					process		=> query_net'access);
+
+			else
+				net_not_found (net_name);
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) &
+			" net " & to_string (net_name) &
+			" deleting segment" & to_string (arc, true), -- log linewidth
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		update_ratsnest (module_cursor, log_threshold + 1);
+	end delete_arc_net;
+
+
+	
+
+
+
+	procedure delete_arc_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		arc				: in type_conductor_arc;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			conductors : type_conductors_floating renames module.board.conductors_floating;
+			use pac_conductor_arcs;
+			l : pac_conductor_arcs.cursor;
+		begin
+			-- Locate the arc:
+			l := find (conductors.arcs, arc);
+
+			-- If the arc exists, then delete it:
+			if l /= pac_conductor_arcs.no_element then
+				delete (conductors.arcs, l);
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) &
+			" deleting segment" & to_string (arc, true), -- log linewidth
+			level => log_threshold);
+
+		update_element (
+			container	=> generic_modules,
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+	end delete_arc_floating;
+
+
+
+
+	
+
+	
 	
 	procedure delete_track (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -4293,6 +4968,9 @@ package body et_board_ops.conductors is
 
 
 
+-- OBJECTS:
+	
+
 	function get_count (
 		objects : in pac_objects.list)
 		return natural
@@ -4318,6 +4996,8 @@ package body et_board_ops.conductors is
 		result_segment_floating : type_object_segment_floating;
 		result_line_net			: type_object_line_net;
 		result_line_floating	: type_object_line_floating;
+		result_arc_net			: type_object_arc_net;
+		result_arc_floating		: type_object_arc_floating;
 		result_text				: type_object_text;
 		result_placeholder		: type_object_placeholder;
 
@@ -4375,10 +5055,44 @@ package body et_board_ops.conductors is
 
 
 
+		-- SEARCH FOR AN ARC OF A NET:
 		
-		-- Now we search for an arc.
-		-- If there is one, then go to the end of this procedure:
-		-- CS
+		-- If an arc has been found, then go to the end of this procedure:
+		result_arc_net := get_first_arc_net (module_cursor, flag, log_threshold + 1);
+		
+		if result_arc_net.arc_cursor /= pac_conductor_arcs.no_element then
+			-- An arc has been found.
+			log (text => to_string (element (result_arc_net.arc_cursor)),
+				 level => log_threshold + 1);
+			
+			result_category := CAT_ARC_NET;
+		end if;
+
+		-- If an object has been found, then the search is done:
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
+
+
+		-- SEARCH FOR A FLOATING ARC (OF A FREETRACK):
+		
+		-- If an arc has been found, then go to the end of this procedure:
+		result_arc_floating := get_first_arc_floating (module_cursor, flag, log_threshold + 1);
+		
+		if result_arc_floating.arc_cursor /= pac_conductor_arcs.no_element then
+			-- An arc has been found.
+			log (text => to_string (element (result_arc_floating.arc_cursor)),
+				 level => log_threshold + 1);
+			
+			result_category := CAT_ARC_FLOATING;
+		end if;
+
+		-- If an object has been found, then the search is done:
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
 
 		
 		-- Now we search for an circle.
@@ -4473,8 +5187,14 @@ package body et_board_ops.conductors is
 			when CAT_LINE_NET =>
 				return (CAT_LINE_NET, result_line_net);
 
+			when CAT_ARC_NET =>
+				return (CAT_ARC_NET, result_arc_net);
+				
 			when CAT_LINE_FLOATING =>
 				return (CAT_LINE_FLOATING, result_line_floating);
+
+			when CAT_ARC_FLOATING =>
+				return (CAT_ARC_FLOATING, result_arc_floating);
 				
 			when CAT_ZONE_SEGMENT_NET =>
 				return (CAT_ZONE_SEGMENT_NET, result_segment_net);
@@ -4528,6 +5248,7 @@ package body et_board_ops.conductors is
 				use pac_segments;
 				
 				use pac_conductor_lines;
+				use pac_conductor_arcs;
 
 
 				-- This procedure queries a line of a net:
@@ -4561,6 +5282,41 @@ package body et_board_ops.conductors is
 				end query_line_net;
 
 
+				
+
+				-- This procedure queries an arc of a net:
+				procedure query_arc_net (arc_cursor : in pac_conductor_arcs.cursor) is 
+
+					procedure collect is begin
+						result.append ((
+							cat		=> CAT_ARC_NET,
+							arc_net	=> (net_cursor, arc_cursor)));
+
+						-- Log the arc and its linewidth:
+						log (text => to_string (arc_cursor, true), level => log_threshold + 2);
+					end collect;
+
+					
+				begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (arc_cursor) then
+								collect;
+							end if;
+
+						when SELECTED =>
+							if is_selected (arc_cursor) then
+								collect;
+							end if;
+
+						when others =>
+							null; -- CS
+					end case;
+				end query_arc_net;
+
+
+				
+				
 				
 				-- This procedure queries a solidly filled zone of a net:
 				procedure query_zone_solid_net (zone : in type_route_solid) is
@@ -4655,7 +5411,9 @@ package body et_board_ops.conductors is
 				-- Iterate the lines of the net:
 				iterate (net.route.lines, query_line_net'access);
 
-				-- CS arcs
+				-- Iterate the arcs of the net:
+				iterate (net.route.arcs, query_arc_net'access);
+
 
 				-- fill zones:
 				-- solid:
@@ -4721,7 +5479,42 @@ package body et_board_ops.conductors is
 				end query_line;
 
 
-				-- CS query_arc
+				
+				
+				-- ARCS
+				use pac_conductor_arcs;
+
+				-- This procedure queries a floating arc:
+				procedure query_arc (c : in pac_conductor_arcs.cursor) is 
+
+					procedure collect is begin
+						result.append ((
+							cat				=> CAT_ARC_FLOATING,
+							arc_floating	=> (arc_cursor => c)));
+     
+						-- Log the arc and its linewidth:
+						log (text => to_string (c, true), level => log_threshold + 2);
+					end collect;
+
+					
+				begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (c) then
+								collect;
+							end if;
+
+						when SELECTED =>
+							if is_selected (c) then
+								collect;
+							end if;
+
+						when others =>
+							null; -- CS
+					end case;
+				end query_arc;
+
+				
 				
 
 				-- FLOATING FILL ZONES SOLID
@@ -4835,6 +5628,7 @@ package body et_board_ops.conductors is
 					end if;
 				end query_text;
 
+				
 
 
 				-- TEXT PLACEHOLDERS:
@@ -4859,7 +5653,10 @@ package body et_board_ops.conductors is
 				-- Iterate all floating lines:
 				iterate (module.board.conductors_floating.lines, query_line'access);
 
-				-- CS arcs, circles
+				-- Iterate all floating arcs:
+				iterate (module.board.conductors_floating.arcs, query_arc'access);
+
+				-- CS circles
 				
 				-- Iterate all texts:
 				iterate (module.board.conductors_floating.texts, query_text'access);
@@ -4943,9 +5740,15 @@ package body et_board_ops.conductors is
 			when CAT_LINE_NET =>
 				modify_status (module_cursor, object.line_net, operation, log_threshold + 1);
 
+			when CAT_ARC_NET =>
+				modify_status (module_cursor, object.arc_net, operation, log_threshold + 1);
+
 			when CAT_LINE_FLOATING =>
 				modify_status (module_cursor, object.line_floating, operation, log_threshold + 1);
 				
+			when CAT_ARC_FLOATING =>
+				modify_status (module_cursor, object.arc_floating, operation, log_threshold + 1);
+
 			when CAT_ZONE_SEGMENT_NET =>
 				modify_status (module_cursor, object.segment_net, operation, log_threshold + 1);
 
@@ -5016,11 +5819,31 @@ package body et_board_ops.conductors is
 					log_threshold	=> log_threshold + 1);
 
 
+			when CAT_ARC_NET =>	
+				
+				move_arc_net (
+					module_cursor	=> module_cursor, 
+					arc				=> object.arc_net,
+					point_of_attack	=> point_of_attack, 
+					destination		=> destination,
+					log_threshold	=> log_threshold + 1);
+
+				
 			when CAT_LINE_FLOATING =>
 
 				move_line_floating (
 					module_cursor	=> module_cursor, 
 					line			=> object.line_floating,
+					point_of_attack	=> point_of_attack, 
+					destination		=> destination,
+					log_threshold	=> log_threshold + 1);
+
+
+			when CAT_ARC_FLOATING =>
+
+				move_arc_floating (
+					module_cursor	=> module_cursor, 
+					arc				=> object.arc_floating,
 					point_of_attack	=> point_of_attack, 
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
@@ -5082,6 +5905,7 @@ package body et_board_ops.conductors is
 	is 
 		use pac_nets;
 		use pac_conductor_lines;
+		use pac_conductor_arcs;
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " deleting conductor object",
@@ -5107,14 +5931,44 @@ package body et_board_ops.conductors is
 							net_name		=> key (object.line_net.net_cursor),
 							log_threshold	=> log_threshold + 1);
 				end case;
-						
-			-- CS arcs, circles
 
+				
+
+			when CAT_ARC_NET =>
+
+				case ripup_mode is
+					when SINGLE_SEGMENT =>
+						delete_arc_net (
+							module_cursor	=> module_cursor, 
+							net_name		=> key (object.arc_net.net_cursor),			
+							arc				=> element (object.arc_net.arc_cursor),
+							log_threshold	=> log_threshold + 1);					
+
+					when WHOLE_NET =>
+						ripup_net (
+							module_cursor	=> active_module,
+							net_name		=> key (object.arc_net.net_cursor),
+							log_threshold	=> log_threshold + 1);
+				end case;
+
+				
+			-- CS circles
+
+				
 			when CAT_LINE_FLOATING =>
 
 				delete_line_floating (
 					module_cursor	=> module_cursor, 
 					line			=> element (object.line_floating.line_cursor),
+					log_threshold	=> log_threshold + 1);					
+
+
+
+			when CAT_ARC_FLOATING =>
+
+				delete_arc_floating (
+					module_cursor	=> module_cursor, 
+					arc				=> element (object.arc_floating.arc_cursor),
 					log_threshold	=> log_threshold + 1);					
 
 				
@@ -5181,17 +6035,32 @@ package body et_board_ops.conductors is
 			freetracks		=> false,
 			log_threshold	=> log_threshold + 1);
 
-		-- Floating lines (freetracks):
+		reset_proposed_arcs (
+			module_cursor	=> active_module, 
+			freetracks		=> false,
+			log_threshold	=> log_threshold + 1);
+
+
+		
+		-- Floating objects (freetracks):
 		reset_proposed_lines (
 			module_cursor	=> active_module, 
 			freetracks		=> true,
 			log_threshold	=> log_threshold + 1);
 
-		-- CS arcs, circles
+		reset_proposed_arcs (
+			module_cursor	=> active_module, 
+			freetracks		=> true,
+			log_threshold	=> log_threshold + 1);
+
 		
+		-- CS circles
+
+		-- zones:
 		reset_proposed_segments_net (module_cursor, log_threshold + 1);
 		reset_proposed_segments_floating (module_cursor, log_threshold + 1);
 
+		-- texts and placeholders.
 		reset_proposed_texts (module_cursor, log_threshold + 1);
 		reset_proposed_placeholders (module_cursor, log_threshold + 1);
 		

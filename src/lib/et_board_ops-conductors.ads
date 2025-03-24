@@ -164,15 +164,13 @@ package et_board_ops.conductors is
 
 
 	-- If line segments of a net are searched, then they can be
-	-- identified additionally by the associated net.
-	-- If the net_cursor is no_element then it is a segment
-	-- of a freetrack CS: ???
+	-- identified additionally by the associated net:
 	type type_object_line_net is record
 		net_cursor	: pac_nets.cursor;
 		line_cursor	: pac_conductor_lines.cursor;
 	end record;
 
-	-- CS do the same for arcs
+
 
 	-- CS do the same for lines, arcs, circles of freetracks
 
@@ -227,7 +225,7 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level)
 		return pac_conductor_lines.list;
 
-	-- CS do the same for arcs and circles
+	-- CS do the same for and circles
 
 	
 
@@ -249,7 +247,6 @@ package et_board_ops.conductors is
 	-- If freetracks is false, then only nets are adressed.
 	-- If freetracks is true, then only freetracks are adressed:
 	-- Adds to count the number of lines that have been found:
-	-- CS extend so that arces are also proposed ?
 	procedure propose_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		layer			: in et_pcb_stack.type_signal_layer;
@@ -263,7 +260,6 @@ package et_board_ops.conductors is
 	-- Clears the proposed-flag and the selected-flag of all lines.
 	-- If freetracks is false, then only nets are adressed.
 	-- If freetracks is true, then only freetracks are adressed:
-	-- CS extend so that arces are also reset ?
 	procedure reset_proposed_lines (
 		module_cursor	: in pac_generic_modules.cursor;
 		freetracks		: in boolean;							   
@@ -363,11 +359,126 @@ package et_board_ops.conductors is
 		log_threshold	: in type_log_level);
 
 	
+	-- If arc segments of a net are searched, then they can be
+	-- identified additionally by the associated net:
+	type type_object_arc_net is record
+		net_cursor	: pac_nets.cursor;
+		arc_cursor	: pac_conductor_arcs.cursor;
+	end record;
 
 
+	-- If arc segments (of a freetrack) are searched, then they can be
+	-- identified by a cursor:
+	type type_object_arc_floating is record
+		arc_cursor	: pac_conductor_arcs.cursor;
+	end record;
+
+
+
+	-- Modifies the status flag of an arc of a net:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		arc				: in type_object_arc_net;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
 
 	
+	-- Modifies the status flag of a floating arc:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		arc				: in type_object_arc_floating;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
 
+
+
+	-- Sets the proposed-flag of all arcs which are
+	-- in the given zone around the given place
+	-- If freetracks is false, then only nets are adressed.
+	-- If freetracks is true, then only freetracks are adressed:
+	-- Adds to count the number of arcs that have been found:
+	procedure propose_arcs (
+		module_cursor	: in pac_generic_modules.cursor;
+		layer			: in et_pcb_stack.type_signal_layer;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural; -- the number of affected arcs
+		freetracks		: in boolean;
+		log_threshold	: in type_log_level);
+
+	
+	
+	-- Clears the proposed-flag and the selected-flag of all arcs.
+	-- If freetracks is false, then only nets are adressed.
+	-- If freetracks is true, then only freetracks are adressed:
+	procedure reset_proposed_arcs (
+		module_cursor	: in pac_generic_modules.cursor;
+		freetracks		: in boolean;							   
+		log_threshold	: in type_log_level);
+
+
+
+	-- Returns the first arc according to the given flag.
+	-- If no arc has been found,
+	-- then the selector arc_cursor in the return is no_element
+	-- and the selector net_cursor is no_element.
+	function get_first_arc_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_arc_net;
+
+
+	-- Returns the first arc according to the given flag.
+	-- If no arc has been found,
+	-- then the selector arc_cursor in the return is no_element:
+	function get_first_arc_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_arc_floating;
+
+
+
+
+	-- Moves a arc of a net:
+	procedure move_arc_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		arc				: in type_object_arc_net;
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+	
+
+	-- Moves a floating arc:
+	procedure move_arc_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		arc				: in type_object_arc_floating;
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Deletes the given arc segment in the given net.
+	-- If the net or the segment does not exist then
+	-- nothing happens and an error message is logged:
+	procedure delete_arc_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string; -- reset_n
+		arc				: in type_conductor_arc;
+		log_threshold	: in type_log_level);
+
+
+	-- Deletes the given freetrack arc.
+	-- If the arc does not exist then
+	-- nothing happens:
+	procedure delete_arc_floating (
+		module_cursor	: in pac_generic_modules.cursor;
+		arc				: in type_conductor_arc;
+		log_threshold	: in type_log_level);
+
+	
+	
 -- TRACKS:
 	
 	-- Deletes the track segment that crosses the given point in given layer.
@@ -757,13 +868,15 @@ package et_board_ops.conductors is
 	type type_object_category is (
 		CAT_VOID,
 		CAT_LINE_NET,
+		CAT_ARC_NET,
 		CAT_LINE_FLOATING,
+		CAT_ARC_FLOATING,
 		CAT_ZONE_SEGMENT_NET,
 		CAT_ZONE_SEGMENT_FLOATING,
 		CAT_TEXT,
 		CAT_PLACEHOLDER
 		);
-	-- CS CAT_ARC, CAT_CIRCLE
+	-- CS CAT_CIRCLE
 
 	
 	-- This type wraps segments of zones, lines, arcs, circles, 
@@ -781,9 +894,15 @@ package et_board_ops.conductors is
 			when CAT_LINE_NET =>
 				line_net			: type_object_line_net;
 				
+			when CAT_ARC_NET =>
+				arc_net				: type_object_arc_net;
+
 			when CAT_LINE_FLOATING =>
 				line_floating		: type_object_line_floating;
 				
+			when CAT_ARC_FLOATING =>
+				arc_floating		: type_object_arc_floating;
+
 			when CAT_TEXT =>
 				text				: type_object_text;
 

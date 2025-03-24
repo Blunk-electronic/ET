@@ -234,6 +234,9 @@ package body et_conductor_segment.boards is
 
 
 
+
+-- ARCS:
+	
 	function to_string (
 		arc		: in type_conductor_arc;
 		width	: in boolean)
@@ -253,6 +256,16 @@ package body et_conductor_segment.boards is
 
 
 
+	function to_string (
+		arc		: in pac_conductor_arcs.cursor;
+		width	: in boolean)
+		return string
+	is begin
+		return to_string (element (arc), width);
+	end to_string;
+
+
+	
 
 	function get_layer (
 		arc : in pac_conductor_arcs.cursor)
@@ -263,6 +276,34 @@ package body et_conductor_segment.boards is
 
 	
 
+	function is_proposed (
+		arc : in pac_conductor_arcs.cursor)
+		return boolean
+	is begin
+		if is_proposed (element (arc)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_proposed;
+
+
+
+
+	function is_selected (
+		arc : in pac_conductor_arcs.cursor)
+		return boolean
+	is begin
+		if is_selected (element (arc)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+
+
+
+	
 	
 	function get_arcs_by_layer (
 		arcs	: in pac_conductor_arcs.list;
@@ -344,7 +385,7 @@ package body et_conductor_segment.boards is
 	end to_string;
 
 
-
+	
 
 	procedure iterate (
 		circles	: in pac_conductor_circles.list;
@@ -369,6 +410,33 @@ package body et_conductor_segment.boards is
 	end get_layer;
 
 
+
+	function is_proposed (
+		circle : in pac_conductor_circles.cursor)
+		return boolean
+	is begin
+		if is_proposed (element (circle)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_proposed;
+
+
+
+
+	function is_selected (
+		circle : in pac_conductor_circles.cursor)
+		return boolean
+	is begin
+		if is_selected (element (circle)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+
+	
 	
 end et_conductor_segment.boards;
 

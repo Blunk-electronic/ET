@@ -192,14 +192,11 @@ procedure draw_conductors is
 -- LINES, ARCS, CIRCLES
 	
 	procedure query_line (c : in pac_conductor_lines.cursor) is
-		use et_canvas_tool;
-		
 		line : type_conductor_line renames element (c);
 
 		procedure draw is begin
 			draw_line (line => line, width => line.width, do_stroke => true);
 		end draw;
-
 		
 	begin
 		-- Draw the line if it is in the current layer:
@@ -223,14 +220,23 @@ procedure draw_conductors is
 	
 	procedure query_arc (c : in pac_conductor_arcs.cursor) is 
 		arc : type_conductor_arc renames element (c);
+
+		procedure draw is begin
+			draw_arc (arc => arc, width => arc.width, do_stroke => true);
+		end draw;
+
 	begin
 		-- Draw the arc if it is in theh current layer:
 		if get_layer (c) = current_layer then
 
-			draw_arc (
-				arc			=> arc,
-				width		=> arc.width,
-				do_stroke	=> true);
+			-- If the segment is selected, then it must be drawn highlighted:
+			if is_selected (arc) then
+				set_highlight_brightness;
+				draw;
+				set_default_brightness;
+			else
+				draw;
+			end if;
 
 		end if;
 	end query_arc;
