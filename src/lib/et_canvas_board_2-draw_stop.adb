@@ -74,35 +74,68 @@ is
 	
 	
 	procedure query_line (c : in pac_stop_lines.cursor) is 
-		-- CS use renames
-	begin
-		draw_line (
-			line	=> element (c),
-			width	=> element (c).width,
-			do_stroke => true);
+		line : type_stop_line renames element (c);
 
+		procedure draw is begin
+			draw_line (
+				line		=> line,
+				width		=> line.width,
+				do_stroke 	=> true);
+		end draw;
+			
+	begin
+		if is_selected (line) then
+			set_highlight_brightness;
+			draw;
+			set_default_brightness;
+		else
+			draw;
+		end if;
 	end query_line;
 
 	
+	
 	procedure query_arc (c : in pac_stop_arcs.cursor) is 
-		-- CS use renames
+		arc : type_stop_arc renames element (c);
+
+		procedure draw is begin
+			draw_arc (
+				arc			=> arc,
+				width		=> arc.width,
+				do_stroke	=> true);
+		end draw;
+	
 	begin		
-		draw_arc (
-			arc		=> element (c),
-			width	=> element (c).width,
-			do_stroke => true);
+		if is_selected (arc) then
+			set_highlight_brightness;
+			draw;
+			set_default_brightness;
+		else
+			draw;
+		end if;
 	end query_arc;
+
 
 	
 	procedure query_circle (c : in pac_stop_circles.cursor) is 
-		-- CS use renames
-	begin
-		draw_circle (
-			circle	=> element (c),
-			filled	=> NO,
-			width	=> element (c).width,
-			do_stroke => true);
+		circle : type_stop_circle renames element (c);
 
+		procedure draw is begin
+			draw_circle (
+				circle		=> circle,
+				filled		=> NO,
+				width		=> circle.width,
+				do_stroke 	=> true);
+		end draw;
+	
+	begin
+		if is_selected (circle) then
+			set_highlight_brightness;
+			draw;
+			set_default_brightness;
+		else
+			draw;
+		end if;
 	end query_circle;
 
 	

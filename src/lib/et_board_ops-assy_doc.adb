@@ -1218,6 +1218,9 @@ package body et_board_ops.assy_doc is
 
 
 
+-- ZONES:
+	
+
 	procedure add_zone (
 		module_cursor	: in pac_generic_modules.cursor;
 		zone			: in type_doc_zone;
@@ -2022,6 +2025,8 @@ package body et_board_ops.assy_doc is
 
 
 
+
+-- TEXT:
 	
 
 	procedure add_text (
@@ -2567,6 +2572,10 @@ package body et_board_ops.assy_doc is
 
 
 
+
+
+-- PLACEHOLDERS:
+	
 
 	procedure add_placeholder (
 		module_cursor	: in pac_generic_modules.cursor;

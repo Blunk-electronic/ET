@@ -1703,6 +1703,8 @@ package body et_board_ops.stencil is
 
 
 
+-- OBJECTS:
+	
 
 
 	function get_count (
@@ -2223,9 +2225,6 @@ package body et_board_ops.stencil is
 		log_indentation_down;
 	end delete_object;
 	
-
-
-
 
 
 

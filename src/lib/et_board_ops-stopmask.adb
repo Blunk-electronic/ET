@@ -512,8 +512,9 @@ package body et_board_ops.stopmask is
 
 
 
-
 	
+
+-- ARCS:
 	
 	
 	procedure add_arc (
@@ -564,6 +565,437 @@ package body et_board_ops.stopmask is
 	
 
 
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		arc				: in type_object_arc;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_arc (
+				arc	: in out type_stop_arc)
+			is begin
+				modify_status (arc, operation);
+			end query_arc;
+
+			
+			procedure query_top is 
+				top : pac_stop_arcs.list renames module.board.stopmask.top.arcs;
+			begin
+				top.update_element (arc.cursor, query_arc'access);
+			end query_top;
+
+			
+			procedure query_bottom is 
+				bottom	: pac_stop_arcs.list renames module.board.stopmask.bottom.arcs;
+			begin
+				bottom.update_element (arc.cursor, query_arc'access);
+			end query_bottom;
+
+			
+		begin
+			case arc.face is
+				when TOP =>
+					query_top;
+
+				when BOTTOM =>
+					query_bottom;
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of "
+			& to_string (element (arc.cursor)) -- CS: log top/bottom			
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+
+
+	
+
+
+
+
+	procedure propose_arcs (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			lc : pac_stop_arcs.cursor;
+
+			procedure query_arc (
+				arc	: in out type_stop_arc)
+			is begin
+				if in_catch_zone (
+					zone	=> catch_zone,
+					arc	=> arc,
+					width	=> arc.width)
+				then
+					set_proposed (arc);
+					count := count + 1;
+					log (text => to_string (arc), level => log_threshold + 1);
+				end if;
+			end query_arc;
+
+			
+			procedure query_top is 
+				top : pac_stop_arcs.list renames module.board.stopmask.top.arcs;
+			begin
+				if not top.is_empty then
+					lc := top.first;
+					while lc /= pac_stop_arcs.no_element loop
+						top.update_element (lc, query_arc'access);
+						next (lc);
+					end loop;
+				end if;
+			end query_top;
+
+			
+			procedure query_bottom is 
+				bottom : pac_stop_arcs.list renames module.board.stopmask.bottom.arcs;
+			begin
+				if not bottom.is_empty then
+					lc := bottom.first;
+					while lc /= pac_stop_arcs.no_element loop
+						bottom.update_element (lc, query_arc'access);
+						next (lc);
+					end loop;
+				end if;
+			end query_bottom;
+
+			
+		begin
+			case face is
+				when TOP	=> query_top;
+				when BOTTOM	=> query_bottom;
+			end case;
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " proposing arcs in " & to_string (catch_zone)
+			 & " face " & to_string (face),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_arcs;
+
+
+	
+	
+
+
+	procedure reset_proposed_arcs (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			top 	: pac_stop_arcs.list renames module.board.stopmask.top.arcs;
+			bottom	: pac_stop_arcs.list renames module.board.stopmask.bottom.arcs;
+
+			
+			procedure query_arc (
+				arc	: in out type_stop_arc)
+			is begin
+				reset_status (arc);
+			end query_arc;
+
+			
+			lc : pac_stop_arcs.cursor;
+			
+			procedure query_top is begin
+				if not top.is_empty then
+					lc := top.first;
+					while lc /= pac_stop_arcs.no_element loop
+						top.update_element (lc, query_arc'access);
+						next (lc);
+					end loop;
+				end if;
+			end query_top;
+
+			
+			procedure query_bottom is begin
+				if not bottom.is_empty then
+					lc := bottom.first;
+					while lc /= pac_stop_arcs.no_element loop
+						bottom.update_element (lc, query_arc'access);
+						next (lc);
+					end loop;
+				end if;
+			end query_bottom;
+
+			
+		begin
+			query_top;
+			query_bottom;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " resetting proposed arcs",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_arcs;
+
+
+	
+
+
+
+	function get_first_arc (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object_arc
+	is
+		result : type_object_arc;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			proceed : aliased boolean := true;
+
+			top_items 		: pac_stop_arcs.list renames module.board.stopmask.top.arcs;
+			bottom_items	: pac_stop_arcs.list renames module.board.stopmask.bottom.arcs;
+
+			
+			procedure query_arc (c : in pac_stop_arcs.cursor) is begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (c) then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when SELECTED =>
+						if is_selected (c) then
+							result.cursor := c;
+							proceed := false;
+						end if;
+
+					when others =>
+						null; -- CS
+				end case;
+			end query_arc;
+			
+
+			
+		begin
+			-- Query the arcs in the top layer first:
+			iterate (top_items, query_arc'access, proceed'access);
+			result.face := top;
+
+			-- If nothing found, then query the bottom layer:
+			if proceed then
+				iterate (bottom_items, query_arc'access, proceed'access);
+				result.face := bottom;
+			end if;
+
+			-- If still nothing found, return TOP and no_element:
+			if proceed then
+				result := (others => <>);	
+			end if;
+		end query_module;
+
+			
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first arc / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+
+		return result;
+	end get_first_arc;
+
+
+	
+
+
+
+
+	
+	procedure move_arc (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		arc				: in type_stop_arc;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			arc_cursor : pac_stop_arcs.cursor;
+
+			
+			procedure query_arc (arc : in out type_stop_arc) is
+			begin
+				-- case coordinates is
+					-- when ABSOLUTE =>
+						attack (arc, point_of_attack, destination);
+						-- null;
+					-- when RELATIVE =>
+						-- null;
+						-- CS
+				-- end case;
+			end query_arc;
+
+			
+		begin
+			case face is
+				when TOP =>
+					arc_cursor := module.board.stopmask.top.arcs.find (arc);
+					module.board.stopmask.top.arcs.update_element (arc_cursor, query_arc'access);
+					
+				when BOTTOM =>
+					arc_cursor := module.board.stopmask.bottom.arcs.find (arc);
+					module.board.stopmask.bottom.arcs.update_element (arc_cursor, query_arc'access);
+			end case;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " face" & to_string (face) 
+			& " moving stopmask " & to_string (arc)
+			& " point of attack " & to_string (point_of_attack)
+			& " to " & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (						
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+	end move_arc;
+
+
+
+	
+
+
+
+	procedure delete_arc (
+		module_cursor	: in pac_generic_modules.cursor;
+		face			: in type_face;
+		arc				: in type_stop_arc;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			use pac_stop_arcs;
+			arc_cursor : pac_stop_arcs.cursor;
+		begin
+			case face is
+				when TOP =>
+					-- Locate the given arc in the top documentation layer:
+					arc_cursor := module.board.stopmask.top.arcs.find (arc);
+
+					-- Delete the arc if it exists:
+					if arc_cursor /= pac_stop_arcs.no_element then
+						module.board.stopmask.top.arcs.delete (arc_cursor); 
+					else
+						null; -- CS message
+					end if;
+
+				when BOTTOM =>
+					-- Locate the given arc in the bottom documentation layer:
+					arc_cursor := module.board.stopmask.bottom.arcs.find (arc);
+
+					-- Delete the arc if it exists:
+					if arc_cursor /= pac_stop_arcs.no_element then
+						module.board.stopmask.bottom.arcs.delete (arc_cursor); 
+					else
+						null; -- CS message
+					end if;
+			end case;
+		end query_module;
+
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " face" & to_string (face) 
+			& " deleting stopmask arc " & to_string (arc),
+			level => log_threshold);
+		
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end delete_arc;
+
+
+	
+
+
+
+-- CIRCLES:
 	
 	
 	procedure add_circle (
@@ -2223,8 +2655,10 @@ package body et_board_ops.stopmask is
 
 
 
+	
 
-
+-- OBJECTS:
+	
 
 
 	function get_count (
@@ -2248,6 +2682,7 @@ package body et_board_ops.stopmask is
 		result_category 	: type_object_category := CAT_VOID;
 		result_segment  	: type_object_segment;
 		result_line			: type_object_line;
+		result_arc			: type_object_arc;
 		result_text			: type_object_text;
 		result_placeholder	: type_object_placeholder;
 
@@ -2255,6 +2690,7 @@ package body et_board_ops.stopmask is
 		use pac_segments;
 
 		use pac_stop_lines;
+		use pac_stop_arcs;
 		use pac_stop_texts;
 		use pac_text_placeholders;
 	begin
@@ -2283,10 +2719,25 @@ package body et_board_ops.stopmask is
 			goto end_of_search;
 		end if;
 
+
 		
-		-- Now we search for an arc.
-		-- If there is one, then go to the end of this procedure:
-		-- CS
+		-- SEARCH FOR AN ARC:
+		
+		-- If an arc has been found, then go to the end of this procedure:
+		result_arc := get_first_arc (module_cursor, flag, log_threshold + 1);
+
+		if result_arc.cursor /= pac_stop_arcs.no_element then
+			-- An arc has been found.
+			log (text => to_string (element (result_arc.cursor))
+				 & " face " & to_string (result_arc.face),
+				 level => log_threshold + 1);
+			
+			result_category := CAT_ARC;
+		end if;
+
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
 
 
 		-- Now we search for an circle.
@@ -2358,6 +2809,9 @@ package body et_board_ops.stopmask is
 			when CAT_LINE =>
 				return (CAT_LINE, result_line);
 
+			when CAT_ARC =>
+				return (CAT_ARC, result_arc);
+				
 			when CAT_ZONE_SEGMENT =>
 				return (CAT_ZONE_SEGMENT, result_segment);
 
@@ -2395,7 +2849,10 @@ package body et_board_ops.stopmask is
 			use pac_stop_lines;
 			line_cursor : pac_stop_lines.cursor;
 
-			-- CS arcs, circles
+			use pac_stop_arcs;
+			arc_cursor : pac_stop_arcs.cursor;
+			
+			-- CS circles
 			
 			use pac_stop_texts;
 			text_cursor : pac_stop_texts.cursor;
@@ -2446,6 +2903,8 @@ package body et_board_ops.stopmask is
 			end query_zone;
 			
 
+
+			
 			procedure query_line (line : in type_stop_line) is 
 
 				procedure collect is begin
@@ -2471,8 +2930,40 @@ package body et_board_ops.stopmask is
 					when others => null; -- CS
 				end case;
 			end query_line;
-				
 
+
+			
+	
+			procedure query_arc (arc : in type_stop_arc) is 
+
+				procedure collect is begin
+					result.append ((
+						cat	=> CAT_ARC,
+						arc	=> (face, arc_cursor)));
+
+					log (text => to_string (arc), level => log_threshold + 2);
+				end collect;
+				
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (arc) then
+							collect;
+						end if;
+
+					when SELECTED =>
+						if is_selected (arc) then
+							collect;
+						end if;
+
+					when others => null; -- CS
+				end case;
+			end query_arc;
+
+
+
+
+			
 			procedure query_text (text : in type_stop_text) is 
 
 				procedure collect is begin
@@ -2499,6 +2990,8 @@ package body et_board_ops.stopmask is
 				end case;
 			end query_text;
 
+
+			
 
 			procedure query_placeholder (placeholder : in type_text_placeholder) is 
 
@@ -2551,8 +3044,22 @@ package body et_board_ops.stopmask is
 			end loop;
 
 			log_indentation_down;
+
+
+			log (text => "top arcs", level => log_threshold + 1);
+			log_indentation_up;
 			
-			-- CS arcs, circles
+			arc_cursor := module.board.stopmask.top.arcs.first;
+			while arc_cursor /= pac_stop_arcs.no_element loop
+				query_element (arc_cursor, query_arc'access);
+				next (arc_cursor);
+			end loop;
+
+			log_indentation_down;
+
+
+			
+			-- CS circles
 
 
 			log (text => "top texts", level => log_threshold + 1);
@@ -2595,6 +3102,7 @@ package body et_board_ops.stopmask is
 			log_indentation_down;
 
 			
+			
 			log (text => "bottom lines", level => log_threshold + 1);
 			log_indentation_up;
 			
@@ -2605,7 +3113,23 @@ package body et_board_ops.stopmask is
 			end loop;
 
 			log_indentation_down;
-			-- CS arcs, circles
+
+
+
+			log (text => "bottom arcs", level => log_threshold + 1);
+			log_indentation_up;
+			
+			arc_cursor := module.board.stopmask.bottom.arcs.first;
+			while arc_cursor /= pac_stop_arcs.no_element loop
+				query_element (arc_cursor, query_arc'access);
+				next (arc_cursor);
+			end loop;
+
+			log_indentation_down;
+
+
+			
+			-- CS circles
 
 			
 			log (text => "bottom texts", level => log_threshold + 1);
@@ -2661,7 +3185,7 @@ package body et_board_ops.stopmask is
 	is begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of object"
-			-- & to_string (segment.segment) CS output object category ?
+			& type_object_category'image (object.cat)
 			& " / " & to_string (operation),
 			level => log_threshold);
 
@@ -2671,6 +3195,9 @@ package body et_board_ops.stopmask is
 			when CAT_LINE =>
 				modify_status (module_cursor, object.line, operation, log_threshold + 1);
 
+			when CAT_ARC =>
+				modify_status (module_cursor, object.arc, operation, log_threshold + 1);
+				
 			when CAT_ZONE_SEGMENT =>
 				modify_status (module_cursor, object.segment, operation, log_threshold + 1);
 
@@ -2731,6 +3258,12 @@ package body et_board_ops.stopmask is
 					point_of_attack, destination,
 					log_threshold + 1);
 
+			when CAT_ARC =>
+				move_arc (module_cursor, object.arc.face, 
+					element (object.arc.cursor),
+					point_of_attack, destination,
+					log_threshold + 1);
+				
 			when CAT_ZONE_SEGMENT =>
 				move_segment (module_cursor,
 					object.segment,
@@ -2771,7 +3304,8 @@ package body et_board_ops.stopmask is
 		log_indentation_up;
 
 		reset_proposed_lines (module_cursor, log_threshold + 1);
-		-- CS arcs, circles
+		reset_proposed_arcs (module_cursor, log_threshold + 1);
+		-- CS circles
 		
 		reset_proposed_texts (module_cursor, log_threshold + 1);
 		reset_proposed_placeholders (module_cursor, log_threshold + 1);
@@ -2804,7 +3338,15 @@ package body et_board_ops.stopmask is
 					line			=> element (object.line.cursor),
 					log_threshold	=> log_threshold + 1);					
 
-			-- CS arcs, circles
+
+			when CAT_ARC =>
+				delete_arc (
+					module_cursor	=> module_cursor, 
+					face			=> object.arc.face,
+					arc				=> element (object.arc.cursor),
+					log_threshold	=> log_threshold + 1);					
+				
+			-- CS circles
 				
 			when CAT_ZONE_SEGMENT =>
 				delete_segment (
@@ -2839,6 +3381,8 @@ package body et_board_ops.stopmask is
 	
 	
 
+
+	
 	procedure delete_object (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		face			: in type_face;

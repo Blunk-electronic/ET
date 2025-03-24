@@ -143,6 +143,24 @@ package body et_stopmask is
 
 
 
+-- ARCS:
+
+
+	procedure iterate (
+		arcs	: in pac_stop_arcs.list;
+		process	: not null access procedure (position : in pac_stop_arcs.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_stop_arcs.cursor := arcs.first;
+	begin
+		while c /= pac_stop_arcs.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+	
+	
+
 
 	function is_proposed (
 		arc_cursor	: in pac_stop_arcs.cursor)
@@ -229,8 +247,25 @@ package body et_stopmask is
 	end move_arcs;
 
 
+	
 
 
+-- CIRCLES:
+
+	procedure iterate (
+		circles	: in pac_stop_circles.list;
+		process	: not null access procedure (position : in pac_stop_circles.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_stop_circles.cursor := circles.first;
+	begin
+		while c /= pac_stop_circles.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+	
+	
 
 	function is_proposed (
 		circle_cursor	: in pac_stop_circles.cursor)

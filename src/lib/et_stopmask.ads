@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -121,6 +121,15 @@ package et_stopmask is
 	use pac_stop_arcs;	
 
 
+	-- Iterates the arcs.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		arcs	: in pac_stop_arcs.list;
+		process	: not null access procedure (position : in pac_stop_arcs.cursor);
+		proceed	: not null access boolean);
+
+
+	
 	-- Returns true if the "proposed-flag" of the given arcis set:
 	function is_proposed (
 		arc_cursor	: in pac_stop_arcs.cursor)
@@ -160,6 +169,15 @@ package et_stopmask is
 	use pac_stop_circles;
 
 
+	-- Iterates the circles.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		circles	: in pac_stop_circles.list;
+		process	: not null access procedure (position : in pac_stop_circles.cursor);
+		proceed	: not null access boolean);
+
+
+	
 
 	-- Returns true if the "proposed-flag" of the given circle is set:
 	function is_proposed (
