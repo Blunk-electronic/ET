@@ -91,6 +91,9 @@ package et_conductor_segment.boards is
 	use pac_conductor_lines;
 
 
+
+
+	
 	-- Returns the start/end point and layer as string.
 	-- If "width" is true, then the segment width is also output:
 	function to_string (
@@ -194,6 +197,7 @@ package et_conductor_segment.boards is
 		process	: not null access procedure (position : in pac_conductor_arcs.cursor);
 		proceed	: not null access boolean);
 
+	
 
 	
 	-- Returns true if the given point sits on the given arc.
@@ -220,6 +224,15 @@ package et_conductor_segment.boards is
 	package pac_conductor_circles is new doubly_linked_lists (type_conductor_circle);
 	use pac_conductor_circles;
 
+
+	-- Iterates the circles.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		circles	: in pac_conductor_circles.list;
+		process	: not null access procedure (position : in pac_conductor_circles.cursor);
+		proceed	: not null access boolean);
+
+	
 	-- Returns the signal layer of the given circle:
 	function get_layer (
 		circle : in pac_conductor_circles.cursor)

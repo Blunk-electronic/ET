@@ -104,6 +104,8 @@ package body et_conductor_segment.boards is
 
 
 
+
+
 	
 	function to_string (
 		line	: in pac_conductor_lines.cursor;
@@ -343,6 +345,22 @@ package body et_conductor_segment.boards is
 
 
 
+
+	procedure iterate (
+		circles	: in pac_conductor_circles.list;
+		process	: not null access procedure (position : in pac_conductor_circles.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_conductor_circles.cursor := circles.first;
+	begin
+		while c /= pac_conductor_circles.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+	
 	function get_layer (
 		circle : in pac_conductor_circles.cursor)
 		return type_signal_layer

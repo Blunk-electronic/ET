@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -94,6 +94,15 @@ package et_conductor_segment is
 	use pac_conductor_lines;
 	
 
+	-- Iterates the lines.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		lines	: in pac_conductor_lines.list;
+		process	: not null access procedure (position : in pac_conductor_lines.cursor);
+		proceed	: not null access boolean);
+
+
+	
 	-- Mirrors a list of lines along the given axis:
 	procedure mirror_lines (
 		lines	: in out pac_conductor_lines.list;
@@ -159,6 +168,15 @@ package et_conductor_segment is
 	use pac_conductor_arcs;
 
 
+	-- Iterates the arcs.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		arcs	: in pac_conductor_arcs.list;
+		process	: not null access procedure (position : in pac_conductor_arcs.cursor);
+		proceed	: not null access boolean);
+
+
+	
 	-- Mirrors a list of arcs along the given axis:
 	procedure mirror_arcs (
 		arcs	: in out pac_conductor_arcs.list;
@@ -219,6 +237,15 @@ package et_conductor_segment is
 	use pac_conductor_circles;
 
 
+	-- Iterates the circles.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		circles	: in pac_conductor_circles.list;
+		process	: not null access procedure (position : in pac_conductor_circles.cursor);
+		proceed	: not null access boolean);
+
+
+	
 	-- Mirrors a list of circles along the given axis:
 	procedure mirror_circles (
 		circles	: in out pac_conductor_circles.list;

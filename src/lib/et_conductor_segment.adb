@@ -62,6 +62,21 @@ package body et_conductor_segment is
 	end to_polygon;
 
 
+
+	procedure iterate (
+		lines	: in pac_conductor_lines.list;
+		process	: not null access procedure (position : in pac_conductor_lines.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_conductor_lines.cursor := lines.first;
+	begin
+		while c /= pac_conductor_lines.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
 	
 
 	--function get_shortest_distance (
@@ -246,6 +261,21 @@ package body et_conductor_segment is
 
 	end to_polygon;
 	
+
+	
+	procedure iterate (
+		arcs	: in pac_conductor_arcs.list;
+		process	: not null access procedure (position : in pac_conductor_arcs.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_conductor_arcs.cursor := arcs.first;
+	begin
+		while c /= pac_conductor_arcs.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
 	
 	--function get_shortest_distance (
 		--point	: in type_point;
@@ -431,6 +461,21 @@ package body et_conductor_segment is
 		optimize_edges (result); -- MANDATORY !!
 		return result;
 	end to_polygon_inside;
+
+
+
+	procedure iterate (
+		circles	: in pac_conductor_circles.list;
+		process	: not null access procedure (position : in pac_conductor_circles.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_conductor_circles.cursor := circles.first;
+	begin
+		while c /= pac_conductor_circles.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
 
 
 	
