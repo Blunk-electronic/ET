@@ -2779,6 +2779,10 @@ package body et_board_ops.stopmask is
 		end if;
 
 
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+		
 		
 		-- SEARCH FOR A PLACEHOLDER:
 

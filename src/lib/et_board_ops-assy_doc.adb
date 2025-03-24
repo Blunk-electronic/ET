@@ -3100,6 +3100,9 @@ package body et_board_ops.assy_doc is
 			result_category := CAT_TEXT;
 		end if;
 
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
 
 		
 		-- SEARCH FOR A PLACEHOLDER:

@@ -5008,6 +5008,121 @@ package body et_board_ops.conductors is
 		use pac_conductor_arcs;
 		use pac_conductor_texts;
 		use pac_text_placeholders_conductors;
+
+
+		
+		procedure search_for_line_of_net is begin
+			result_line_net := get_first_line_net (module_cursor, flag, log_threshold + 1);
+			
+			if result_line_net.line_cursor /= pac_conductor_lines.no_element then
+				-- A line has been found.
+				log (text => to_string (element (result_line_net.line_cursor)),
+					level => log_threshold + 1);
+				
+				result_category := CAT_LINE_NET;
+			end if;
+
+		end search_for_line_of_net;
+
+		
+
+		procedure search_for_floating_line is begin
+			result_line_floating := get_first_line_floating (module_cursor, flag, log_threshold + 1);
+			
+			if result_line_floating.line_cursor /= pac_conductor_lines.no_element then
+				-- A line has been found.
+				log (text => to_string (element (result_line_floating.line_cursor)),
+					level => log_threshold + 1);
+				
+				result_category := CAT_LINE_FLOATING;
+			end if;
+		end search_for_floating_line;
+
+
+		
+		procedure search_for_arc_of_net is begin
+			result_arc_net := get_first_arc_net (module_cursor, flag, log_threshold + 1);
+			
+			if result_arc_net.arc_cursor /= pac_conductor_arcs.no_element then
+				-- An arc has been found.
+				log (text => to_string (element (result_arc_net.arc_cursor)),
+					level => log_threshold + 1);
+				
+				result_category := CAT_ARC_NET;
+			end if;
+
+		end search_for_arc_of_net;
+
+
+		procedure search_for_floating_arc is begin
+			result_arc_floating := get_first_arc_floating (module_cursor, flag, log_threshold + 1);
+			
+			if result_arc_floating.arc_cursor /= pac_conductor_arcs.no_element then
+				-- An arc has been found.
+				log (text => to_string (element (result_arc_floating.arc_cursor)),
+					level => log_threshold + 1);
+				
+				result_category := CAT_ARC_FLOATING;
+			end if;
+		end search_for_floating_arc;
+	
+
+
+		procedure search_for_segment_of_connected_zone is begin
+			result_segment_net := get_first_segment_net (module_cursor, flag, log_threshold + 1);
+
+			if result_segment_net.segment /= pac_segments.no_element then
+				-- A segment has been found.
+				log (text => to_string (result_segment_net.segment),
+					-- CS face
+					level => log_threshold + 1);
+				
+				result_category := CAT_ZONE_SEGMENT_NET;
+			end if;
+		end search_for_segment_of_connected_zone;
+	
+
+
+		procedure search_for_segment_of_floating_zone is begin
+			result_segment_floating := get_first_segment_floating (module_cursor, flag, log_threshold + 1);
+
+			if result_segment_floating.segment /= pac_segments.no_element then
+				-- A segment has been found.
+				log (text => to_string (result_segment_floating.segment),
+					-- CS face
+					level => log_threshold + 1);
+				
+				result_category := CAT_ZONE_SEGMENT_FLOATING;
+			end if;
+		end search_for_segment_of_floating_zone;
+	
+
+		procedure search_for_text is begin
+			result_text := get_first_text (module_cursor, flag, log_threshold + 1);
+			
+			if result_text.cursor /= pac_conductor_texts.no_element then
+				-- A text has been found.
+				log (text => to_string (result_text.cursor),
+					level => log_threshold + 1);
+				
+				result_category := CAT_TEXT;
+			end if;
+		end search_for_text;
+
+
+		procedure search_for_placeholder is begin			
+			result_placeholder := get_first_placeholder (module_cursor, flag, log_threshold + 1);
+			
+			if result_placeholder.cursor /= pac_text_placeholders_conductors.no_element then
+				-- A placeholder has been found.
+				log (text => to_string (result_placeholder.cursor),
+					level => log_threshold + 1);
+				
+				result_category := CAT_PLACEHOLDER;
+			end if;
+		end search_for_placeholder;
+	
+		
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " looking up the first object / " & to_string (flag),
@@ -5015,18 +5130,9 @@ package body et_board_ops.conductors is
 
 		log_indentation_up;
 		
-		-- SEARCH FOR A LINE OF A NET:
-		
+
+		search_for_line_of_net;
 		-- If a line has been found, then go to the end of this procedure:
-		result_line_net := get_first_line_net (module_cursor, flag, log_threshold + 1);
-		
-		if result_line_net.line_cursor /= pac_conductor_lines.no_element then
-			-- A line has been found.
-			log (text => to_string (element (result_line_net.line_cursor)),
-				 level => log_threshold + 1);
-			
-			result_category := CAT_LINE_NET;
-		end if;
 
 		-- If an object has been found, then the search is done:
 		if result_category /= CAT_VOID then
@@ -5034,19 +5140,9 @@ package body et_board_ops.conductors is
 		end if;
 
 
-
-		-- SEARCH FOR A FLOATING LINE (OF A FREETRACK):
 		
+		search_for_floating_line;
 		-- If a line has been found, then go to the end of this procedure:
-		result_line_floating := get_first_line_floating (module_cursor, flag, log_threshold + 1);
-		
-		if result_line_floating.line_cursor /= pac_conductor_lines.no_element then
-			-- A line has been found.
-			log (text => to_string (element (result_line_floating.line_cursor)),
-				 level => log_threshold + 1);
-			
-			result_category := CAT_LINE_FLOATING;
-		end if;
 
 		-- If an object has been found, then the search is done:
 		if result_category /= CAT_VOID then
@@ -5055,18 +5151,8 @@ package body et_board_ops.conductors is
 
 
 
-		-- SEARCH FOR AN ARC OF A NET:
-		
+		search_for_arc_of_net;		
 		-- If an arc has been found, then go to the end of this procedure:
-		result_arc_net := get_first_arc_net (module_cursor, flag, log_threshold + 1);
-		
-		if result_arc_net.arc_cursor /= pac_conductor_arcs.no_element then
-			-- An arc has been found.
-			log (text => to_string (element (result_arc_net.arc_cursor)),
-				 level => log_threshold + 1);
-			
-			result_category := CAT_ARC_NET;
-		end if;
 
 		-- If an object has been found, then the search is done:
 		if result_category /= CAT_VOID then
@@ -5075,18 +5161,8 @@ package body et_board_ops.conductors is
 
 
 
-		-- SEARCH FOR A FLOATING ARC (OF A FREETRACK):
-		
+		search_for_floating_arc;
 		-- If an arc has been found, then go to the end of this procedure:
-		result_arc_floating := get_first_arc_floating (module_cursor, flag, log_threshold + 1);
-		
-		if result_arc_floating.arc_cursor /= pac_conductor_arcs.no_element then
-			-- An arc has been found.
-			log (text => to_string (element (result_arc_floating.arc_cursor)),
-				 level => log_threshold + 1);
-			
-			result_category := CAT_ARC_FLOATING;
-		end if;
 
 		-- If an object has been found, then the search is done:
 		if result_category /= CAT_VOID then
@@ -5100,77 +5176,33 @@ package body et_board_ops.conductors is
 		-- CS
 
 		
-		-- SEARCH FOR A SEGMENT OF A CONNECTED ZONE:
-
-		-- Now search for a segment of a connected zone.
-		-- If there is one, then go to the end  of this procedure:
-		result_segment_net := get_first_segment_net (module_cursor, flag, log_threshold + 1);
-
-		if result_segment_net.segment /= pac_segments.no_element then
-			-- A segment has been found.
-			log (text => to_string (result_segment_net.segment),
-				 -- CS face
-				 level => log_threshold + 1);
-			
-			result_category := CAT_ZONE_SEGMENT_NET;
-		end if;
-
+		search_for_segment_of_connected_zone;
 		-- If an object has been found, then the search is done:
+
 		if result_category /= CAT_VOID then
 			goto end_of_search;
 		end if;
 
 
 
-		-- SEARCH FOR A SEGMENT OF A FLOATING ZONE:
+		search_for_segment_of_floating_zone;
 		
-		-- If there is one, then go to the end  of this procedure:
-		result_segment_floating := get_first_segment_floating (module_cursor, flag, log_threshold + 1);
-
-		if result_segment_floating.segment /= pac_segments.no_element then
-			-- A segment has been found.
-			log (text => to_string (result_segment_floating.segment),
-				 -- CS face
-				 level => log_threshold + 1);
-			
-			result_category := CAT_ZONE_SEGMENT_FLOATING;
-		end if;
-
 		-- If an object has been found, then the search is done:
 		if result_category /= CAT_VOID then
 			goto end_of_search;
 		end if;
 
 
+		
+		search_for_text;
 
-		
-		-- NOW SEARCH FOR A TEXT:
-		
-		result_text := get_first_text (module_cursor, flag, log_threshold + 1);
-		
-		if result_text.cursor /= pac_conductor_texts.no_element then
-			-- A text has been found.
-			log (text => to_string (result_text.cursor),
-				level => log_threshold + 1);
-			
-			result_category := CAT_TEXT;
+		-- If an object has been found, then the search is done:
+		if result_category /= CAT_VOID then
+			goto end_of_search;
 		end if;
-
-
 		
 
-		-- SEARCH FOR A TEXT PLACEHOLDER:
-		
-		result_placeholder := get_first_placeholder (module_cursor, flag, log_threshold + 1);
-		
-		if result_placeholder.cursor /= pac_text_placeholders_conductors.no_element then
-			-- A placeholder has been found.
-			log (text => to_string (result_placeholder.cursor),
-				level => log_threshold + 1);
-			
-			result_category := CAT_PLACEHOLDER;
-		end if;
-
+		search_for_placeholder;
 
 		
 		-- If still nothing has been found then the category is CAT_VOID.
