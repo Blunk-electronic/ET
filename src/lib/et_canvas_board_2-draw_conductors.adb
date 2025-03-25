@@ -265,10 +265,10 @@ procedure draw_conductors is
 	
 -- CONDUCTOR FILL ZONES
 	
-	-- The width of the borders and stripes of a fill zone:
-	fill_line_width : type_track_width;
 	
 	use pac_islands;
+
+
 
 	
 	procedure query_island (i : in pac_islands.cursor) is
@@ -300,7 +300,7 @@ procedure draw_conductors is
 			stripe : type_line_fine renames element (s);
 		begin
 			draw_line (
-				line	=> to_line_coarse (element (s)),
+				line	=> to_line_coarse (stripe),
 				width	=> 0.0); -- don't care
 		end draw_stripe;
 		
@@ -311,27 +311,30 @@ procedure draw_conductors is
 	end query_island;
 
 
+
 	
 	
 	procedure query_fill_zone (c : in pac_floating_solid.cursor) is 
-		-- CS use rename ?
+		zone : type_floating_solid renames element (c);
 		use pac_draw_contours;
 	begin
 		-- Draw the zone if it is in the current layer:
-		if element (c).properties.layer = current_layer then
+		if zone.properties.layer = current_layer then
 
 			-- NOTE: Because this is merely the contour of the zone
 			-- it will not be filled:
 			
 			draw_contour (
-				contour	=> element (c),
+				contour	=> zone,
 				style	=> DASHED,
 				filled	=> NO, 
-				width	=> element (c).linewidth); -- CS should be the dynamically calculated width of the contours
+				width	=> zone.linewidth);
    
-			-- All edges and fill lines have the same linewidth:
-			set_linewidth (element (c).linewidth);
-			iterate (element (c).islands, query_island'access);
+			-- All edges of islands and their fill lines 
+			-- have the same linewidth:
+			set_linewidth (zone.linewidth);
+			
+			iterate (zone.islands, query_island'access);
 			stroke;
 
 		end if;
@@ -339,30 +342,36 @@ procedure draw_conductors is
 
 
 	
+
+	
 	procedure query_fill_zone (c : in pac_floating_hatched.cursor) is 
-		-- CS use rename ?
+		zone : type_floating_hatched renames element (c);
 		use pac_draw_contours;
 	begin
 		-- Draw the zone if it is in the current layer:
-		if element (c).properties.layer = current_layer then
+		if zone.properties.layer = current_layer then
 
 			-- NOTE: Because this is merely the contour of the zone
 			-- it will not be filled:
 			
 			draw_contour (
-				contour	=> element (c),
+				contour	=> zone,
 				style	=> DASHED,
 				filled	=> NO, 
-				width	=> element (c).linewidth); -- CS should be the dynamically calculated width of the contours
+				width	=> zone.linewidth);
    
-			-- All edges and fill lines have the same linewidth:
-			set_linewidth (element (c).linewidth);
-			iterate (element (c).islands, query_island'access);
+			-- All edges of islands and their fill lines 
+			-- have the same linewidth:
+			set_linewidth (zone.linewidth);
+			
+			iterate (zone.islands, query_island'access);
 			stroke;
 
 		end if;
 	end query_fill_zone;
 
+
+	
 
 
 	procedure query_relief (c : in pac_reliefes.cursor) is
@@ -385,11 +394,11 @@ procedure draw_conductors is
 		iterate (relief.spokes, query_spoke'access);
 	end query_relief;
 
+
 	
 	
 	procedure query_fill_zone (c : in pac_route_solid.cursor) is 
 		zone : type_route_solid renames element (c);
-
 		use pac_reliefes;
 		use pac_draw_contours;
 	begin
@@ -400,14 +409,15 @@ procedure draw_conductors is
 			-- it will not be filled:
 			
 			draw_contour (
-				contour	=> element (c),
+				contour	=> zone,
 				style	=> DASHED,
 				filled	=> NO, 
-				width	=> element (c).linewidth); -- CS should be the dynamically calculated width of the contours
+				width	=> zone.linewidth);
    
-			-- All edges and fill lines have the same linewidth:
-			set_linewidth (element (c).linewidth);
-			iterate (element (c).islands, query_island'access);
+			-- All edges of islands and their fill lines 
+			-- have the same linewidth:
+			set_linewidth (zone.linewidth);
+			iterate (zone.islands, query_island'access);
 
 			if zone.connection = THERMAL then
 				iterate (zone.reliefes, query_relief'access);
@@ -417,11 +427,12 @@ procedure draw_conductors is
 		end if;
 	end query_fill_zone;
 
+	
 
+	
 	
 	procedure query_fill_zone (c : in pac_route_hatched.cursor) is
 		zone : type_route_hatched renames element (c);
-
 		use pac_reliefes;
 		use pac_draw_contours;
 	begin		
@@ -432,14 +443,15 @@ procedure draw_conductors is
 			-- it will not be filled:
 			
 			draw_contour (
-				contour	=> element (c),
+				contour	=> zone,
 				style	=> DASHED,
 				filled	=> NO, 
-				width	=> element (c).linewidth); -- CS should be the dynamically calculated width of the contours
+				width	=> zone.linewidth);
    
-			-- All edges and fill lines have the same linewidth:
-			set_linewidth (element (c).linewidth);
-			iterate (element (c).islands, query_island'access);
+			-- All edges of islands and their fill lines 
+			-- have the same linewidth:
+			set_linewidth (zone.linewidth);
+			iterate (zone.islands, query_island'access);
 
 			if zone.connection = THERMAL then
 				iterate (zone.reliefes, query_relief'access);
@@ -450,13 +462,15 @@ procedure draw_conductors is
 	end query_fill_zone;
 
 
+
+	
 	
 	procedure query_cutout (c : in pac_cutouts.cursor) is 
-		-- CS use rename ?
+		cutout : type_cutout renames element (c);
 		use pac_draw_contours;
 	begin
 		-- Draw the zone if it is in the current layer:
-		if element (c).layer = current_layer then
+		if cutout.layer = current_layer then
 
 			-- CS
 			--save (context.cr);
@@ -466,7 +480,7 @@ procedure draw_conductors is
 			-- it will not be filled:
 			
 			draw_contour (
-				contour	=> element (c),
+				contour	=> cutout,
 				style	=> DASHED,
 				filled	=> NO, 
 				width	=> zero);
@@ -1015,7 +1029,7 @@ procedure draw_conductors is
 				-- All airwires of all nets are drawn with the same
 				-- color and width:
 				set_color_ratsnest;
-				set_linewidth (airwire_line_width);
+				set_linewidth (airwire_linewidth);
 				
 				pac_nets.iterate (module.nets, query_net'access);
 

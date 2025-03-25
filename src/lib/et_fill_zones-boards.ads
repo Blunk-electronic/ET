@@ -240,9 +240,7 @@ package et_fill_zones.boards is
 -- CUTOUT ZONES (drawn by the user. areas where a zone is not to be filled).
 -- These zones apply to all fill zones. 	
 	
-	type type_cutout
-		is new type_contour with
-	record
+	type type_cutout is new type_contour with record
 		layer 	: type_signal_layer := type_signal_layer'first;
 	end record;
 

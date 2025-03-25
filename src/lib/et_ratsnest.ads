@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -59,8 +59,6 @@ package et_ratsnest is
 	
 
 	type type_airwire is new type_line_fine;
-	-- CS subtype type_airwire is type_line_fine ?
-	-- or just luse type_line_fine as it is ?
 	
 	
 	package pac_airwires is new doubly_linked_lists (type_airwire);
@@ -119,7 +117,7 @@ package et_ratsnest is
 	status_ratsnest_updated : constant string := "ratsnest updated";
 
 	-- GUI relevant only:
-	airwire_line_width : constant type_distance_positive := 0.1;
+	airwire_linewidth : constant type_distance_positive := 0.1;
 
 
 
