@@ -46,6 +46,7 @@ with ada.numerics.generic_elementary_functions;
 with et_primitive_objects;			use et_primitive_objects;
 with et_mirroring;					use et_mirroring;
 with et_coordinates_formatting;		use et_coordinates_formatting;
+with et_object_status;				use et_object_status;
 
 
 generic
@@ -850,6 +851,7 @@ package et_geometry_1 is
 	type type_line_fine is record
 		start_point	: type_vector;
 		end_point	: type_vector;
+		status		: type_object_status;
 	end record;
 
 
@@ -933,6 +935,39 @@ package et_geometry_1 is
 		line : in type_line_fine)
 		return type_angle;
 
+
+	function is_selected (
+		line : in type_line_fine)
+		return boolean;
+
+	procedure set_selected (
+		line : in out type_line_fine);
+
+	procedure clear_selected (
+		line : in out type_line_fine);
+
+	
+	function is_proposed (
+		line : in type_line_fine)
+		return boolean;
+
+	procedure set_proposed (
+		line : in out type_line_fine);
+
+	procedure clear_proposed (
+		line : in out type_line_fine);
+
+	
+	function is_moving (
+		line : in type_line_fine)
+		return boolean;
+
+	procedure set_moving (
+		line : in out type_line_fine);
+
+	procedure clear_moving (
+		line : in out type_line_fine);
+	
 	
 	-- Returns true if the given two lines run in
 	-- opposide directions. In other words, if the difference

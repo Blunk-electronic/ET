@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -177,7 +177,8 @@ package body et_thermal_relief is
 						
 						relief.spokes.append ((
 							start_point	=> center,
-							end_point	=> move_by (center, angle, D2CA.distance_to_centerline)));
+							end_point	=> move_by (center, angle, D2CA.distance_to_centerline),
+							status		=> <>)); -- default status							
 					end if;
 				end if;
 

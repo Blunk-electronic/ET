@@ -173,7 +173,8 @@ package body et_geometry_1.et_polygons is
 				-- Build an edge and append it to the result:
 				result.append ((
 					start_point => p_walk_previous,
-					end_point	=> p_walk));
+					end_point	=> p_walk,
+					status		=> <>)); -- default status
 				
 				p_walk_previous := p_walk;
 			end loop;

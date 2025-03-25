@@ -453,6 +453,7 @@ package body et_canvas_board_tracks is
 		net_name		: in pac_net_name.bounded_string)
 		return boolean
 	is 
+		use pac_geometry_brd;
 		use pac_airwires;
 		use pac_net_name;
 		airwire : type_airwire renames element (airwire_cursor);
@@ -463,7 +464,8 @@ package body et_canvas_board_tracks is
 		else
 			-- If there is no selected airwire, then there is nothing to do:
 			if selected_airwire /= pac_proposed_airwires.no_element then
-				if element (selected_airwire).net_name = net_name and element (selected_airwire).wire = airwire then
+				if element (selected_airwire).net_name = net_name 
+				and element (selected_airwire).wire = airwire then
 					return true;
 				else 
 					return false;

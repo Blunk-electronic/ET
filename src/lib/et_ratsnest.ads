@@ -58,7 +58,7 @@ package et_ratsnest is
 	use pac_geometry_2;
 	
 
-	type type_airwire is new type_line_fine;
+	subtype type_airwire is type_line_fine;
 	
 	
 	package pac_airwires is new doubly_linked_lists (type_airwire);

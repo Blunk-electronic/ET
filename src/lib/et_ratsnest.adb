@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -712,7 +712,7 @@ package body et_ratsnest is
 				-- The fragment now contains two nodes.
 
 				-- create the first airwire
-				add_airwire ((start, node));
+				add_airwire ((start, node, status => <>));
 			end make_first_fragment;
 
 
@@ -721,12 +721,13 @@ package body et_ratsnest is
 			fragment : pac_isolated_fragments.list;
 			
 			neigbor : type_neigbor;
+
 			
 			procedure extend_fragment (fragment : in out type_fragment) is begin
 				move_to_linked_nodes (fragment.nodes, neigbor.node);
 
 				-- create the airwire
-				add_airwire ((neigbor.origin, neigbor.node));
+				add_airwire ((neigbor.origin, neigbor.node, status => <>));
 			end extend_fragment;
 
 			
@@ -780,7 +781,7 @@ package body et_ratsnest is
 				
 				nearest_fragment := get_nearest_fragment (isolated_fragments, isolated_fragments.first);
 
-				add_airwire ((nearest_fragment.neigbor.origin, nearest_fragment.neigbor.node));
+				add_airwire ((nearest_fragment.neigbor.origin, nearest_fragment.neigbor.node, status => <>));
 				-- put_line (to_string (result.last_element));
 				
 				scratch := element (nearest_fragment.fragment);

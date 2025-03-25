@@ -1004,8 +1004,9 @@ procedure draw_conductors is
 
 					if not skip then
 						draw_line (
-							line	=> to_line_coarse (pac_geometry_1.type_line_fine (airwire)),
-							width	=> 0.0); -- don't care
+							line	=> to_line_coarse (airwire),
+							width	=> 0.0, -- don't care
+							do_stroke	=> true);
 					end if;
 					
 					-- restore normal brightness
@@ -1029,7 +1030,7 @@ procedure draw_conductors is
 				-- All airwires of all nets are drawn with the same
 				-- color and width:
 				set_color_ratsnest;
-				set_linewidth (airwire_linewidth);
+				--set_linewidth (airwire_linewidth);
 				
 				pac_nets.iterate (module.nets, query_net'access);
 

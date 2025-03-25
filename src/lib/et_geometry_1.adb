@@ -1854,7 +1854,7 @@ package body et_geometry_1 is
 		start_point, end_point : in type_vector)
 		return type_line_fine
 	is begin
-		return (start_point, end_point);
+		return (start_point, end_point, others => <>);
 	end make_line;
 
 
@@ -1906,8 +1906,10 @@ package body et_geometry_1 is
 	function reverse_line (
 		line	: in type_line_fine)
 		return type_line_fine
-	is begin
-		return (line.end_point, line.start_point);
+	is 
+		result : type_line_fine := line;
+	begin
+		return (line.end_point, line.start_point, line.status);
 	end reverse_line;
 
 
@@ -1962,6 +1964,85 @@ package body et_geometry_1 is
 		end if;
 	end get_direction;
 
+
+
+	function is_selected (
+		line : in type_line_fine)
+		return boolean
+	is begin
+		if line.status.selected then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+	
+
+	procedure set_selected (
+		line : in out type_line_fine)
+	is begin
+		line.status.selected := true;
+	end;
+
+	
+	procedure clear_selected (
+		line : in out type_line_fine)
+	is begin
+		line.status.selected := false;
+	end;
+
+	
+	function is_proposed (
+		line : in type_line_fine)
+		return boolean
+	is begin
+		if line.status.proposed then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+	
+
+	
+	procedure set_proposed (
+		line : in out type_line_fine)
+	is begin
+		line.status.proposed := true;
+	end;
+
+
+	procedure clear_proposed (
+		line : in out type_line_fine)
+	is begin
+		line.status.proposed := false;
+	end;
+
+	
+	function is_moving (
+		line : in type_line_fine)
+		return boolean
+	is begin
+		if line.status.moving then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+			
+
+	procedure set_moving (
+		line : in out type_line_fine)
+	is begin
+		line.status.moving := true;
+	end set_moving;
+
+
+	procedure clear_moving (
+		line : in out type_line_fine)
+	is begin
+		line.status.moving := false;
+	end clear_moving;
 
 	
 

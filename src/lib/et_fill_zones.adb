@@ -120,7 +120,8 @@ package body et_fill_zones is
 				if stripe_start then
 					island.stripes.append ((
 						start_point	=> set (element (i), start_point.y),
-						end_point	=> set (element (next (i)), start_point.y)));
+						end_point	=> set (element (next (i)), start_point.y),
+						status		=> <>)); -- default status
 
 					stripe_start := false;					
 				else

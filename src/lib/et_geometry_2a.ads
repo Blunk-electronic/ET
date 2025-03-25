@@ -781,7 +781,9 @@ package et_geometry_2a is
 
 	
 	-- Converts a "coarse line" as defined in this package
-	-- to a "fine line" as defined in package pac_geometry_1:
+	-- to a "fine line" as defined in package pac_geometry_1.
+	-- Discards the status of the given line and 
+	-- applies default value to the status of the result:
 	function to_line_fine (
 		line : in type_line)
 		return type_line_fine;

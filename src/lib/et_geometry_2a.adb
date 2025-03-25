@@ -1532,7 +1532,8 @@ package body et_geometry_2a is
 	is begin
 		return (
 			start_point	=> to_vector (line.start_point),
-			end_point	=> to_vector (line.end_point));
+			end_point	=> to_vector (line.end_point),
+			status		=> <>); -- default status
 	end to_line_fine;
 
 
