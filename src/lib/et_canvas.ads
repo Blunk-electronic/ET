@@ -1362,12 +1362,13 @@ package et_canvas is
 	-- 1. If the argument do_stroke is false (default) then
 	--  no setting of linewidth and no stroking will be done. In this
 	--  case it is assumed that the caller has already set a linewidth
-	--  and that the caller will later care for a stroke command. 
+	--  and a color and that the caller will later care for a stroke command. 
 	--  The given linewidth has no meaning in this case. This mode
 	--  requires less time for drawing the line than with do_stroke enabled
 	--  and should be used when many lines of same linewidth have to be drawn.
 	--  An explicit call of the stroke procedure is required finally.
 	-- 2. If do_stroke is true, then the given linewidth is applied,
+	--  the color previously set by the caller is applied,
 	--  the line drawn and finally a stroke command executed.
 	--  If the given linewidth is zero, then a minimum linewidth is
 	--  ensured internally that is independed of the zoom-factor.
