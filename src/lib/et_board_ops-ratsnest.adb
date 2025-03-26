@@ -238,6 +238,306 @@ package body et_board_ops.ratsnest is
 		return result;
 	end get_airwires;
 
+
+
+
+	
+	procedure propose_airwires (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				use et_nets;
+				use pac_airwires;
+				
+				airwire_cursor : pac_airwires.cursor := net.route.airwires.lines.first;
+
+				
+				procedure query_airwire (wire : in out type_airwire) is
+					w_tmp : type_line := type_line (to_line_coarse (wire));
+					use pac_geometry_brd;
+				begin
+					if in_catch_zone (catch_zone, w_tmp) then
+						set_proposed (wire);
+						count := count + 1;
+						log (text => to_string (wire), level => log_threshold + 2);
+					end if;
+				end query_airwire;
+
+				
+			begin
+				log (text => "net " & to_string (net_name), level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate the airwires:
+				while not has_element (airwire_cursor) loop
+					net.route.airwires.lines.update_element (
+						airwire_cursor, query_airwire'access);
+
+					next (airwire_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_net;
+
+
+			net_cursor : pac_nets.cursor := module.nets.first;
+		begin
+			-- Iterate the nets:
+			while net_cursor /= pac_nets.no_element loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+		
+		
+	begin
+		log (text => "proposing airwires in " & to_string (catch_zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_airwires;
+
+
+
+
+
+	procedure reset_proposed_airwires (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				use et_nets;
+				use pac_airwires;
+				
+				airwire_cursor : pac_airwires.cursor := net.route.airwires.lines.first;
+
+				
+				procedure query_airwire (wire : in out type_airwire) is
+					w_tmp : type_line := type_line (to_line_coarse (wire));
+					use pac_geometry_brd;
+				begin
+					reset_status (wire);
+				end query_airwire;
+
+				
+			begin
+				log (text => "net " & to_string (net_name), level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate the airwires:
+				while not has_element (airwire_cursor) loop
+					net.route.airwires.lines.update_element (
+						airwire_cursor, query_airwire'access);
+
+					next (airwire_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_net;
+
+
+			net_cursor : pac_nets.cursor := module.nets.first;
+		begin
+			-- Iterate the nets:
+			while net_cursor /= pac_nets.no_element loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "resetting proposed lines",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_airwires;
+
+
+
+	
+	
+
+	function get_first_airwire (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_airwire
+	is 
+		result : type_object_airwire;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			proceed : aliased boolean := true;
+
+
+			procedure query_net (net_cursor : in pac_nets.cursor) is
+
+				procedure query_airwires (
+					net_name	: in pac_net_name.bounded_string;
+					net 		: in type_net)
+				is 
+
+					procedure query_airwire (w : in pac_airwires.cursor) is begin
+						case flag is
+							when PROPOSED =>
+								if is_proposed (w) then
+									result.net_cursor := net_cursor;
+									result.wire_cursor := w;
+									proceed := false;  -- no further probing required
+									log (text => to_string (w), level => log_threshold + 2);
+								end if;
+      
+							when SELECTED =>
+								if is_selected (w) then
+									result.net_cursor := net_cursor;
+									result.wire_cursor := w;
+									proceed := false;  -- no further probing required
+									log (text => to_string (w), level => log_threshold + 2);
+								end if;
+      
+							when others =>
+								null; -- CS
+						end case;
+					end query_airwire;
+
+
+				begin
+					iterate (net.route.airwires.lines, query_airwire'access, proceed'access);
+				end query_airwires;
+				
+				
+			begin
+				log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
+				log_indentation_up;
+				query_element (net_cursor, query_airwires'access);
+				log_indentation_down;
+			end query_net;
+				
+
+		begin
+			iterate (module.nets, query_net'access, proceed'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first line / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+
+		return result;
+	end get_first_airwire;
+	
+	
+
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		airwire			: in type_object_airwire;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+  
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				use et_nets;
+				use pac_airwires;
+
+				procedure query_airwire (w : in out type_airwire) is 
+					use pac_geometry_brd;
+				begin
+					modify_status (w, operation);
+				end query_airwire;
+
+				
+			begin
+				net.route.airwires.lines.update_element (
+					airwire.wire_cursor, query_airwire'access);
+
+			end query_net;
+			
+			
+			
+		begin
+			update_element (
+				container	=> module.nets,
+				position	=> airwire.net_cursor,
+				process		=> query_net'access);
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of airwire "
+			& to_string (airwire.wire_cursor)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+	
+
+	
 	
 											
 end et_board_ops.ratsnest;

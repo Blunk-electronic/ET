@@ -43,6 +43,44 @@
 
 package body et_ratsnest is
 
+
+
+	function is_proposed (
+		wire : in pac_airwires.cursor)
+		return boolean
+	is begin
+		if is_proposed (element (wire)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_proposed;
+
+
+
+	function is_selected (
+		wire : in pac_airwires.cursor)
+		return boolean
+	is begin
+		if is_selected (element (wire)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+
+
+
+	function to_string (
+		wire : in pac_airwires.cursor)
+		return string
+	is begin
+		return to_string (element (wire));
+	end to_string;
+
+	
+
+	
 	use pac_vectors;
 	
 

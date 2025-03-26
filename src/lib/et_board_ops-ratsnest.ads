@@ -89,7 +89,49 @@ package et_board_ops.ratsnest is
 		log_threshold	: in type_log_level)
 		return pac_proposed_airwires.list;
 
+
+	-- Sets the proposed-flag of all airwires which are
+	-- in the given zone around the given place
+	-- Adds to count the number of airwires that have been found:
+	procedure propose_airwires (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level);
+
+
+	-- Clears the proposed-flag and the selected-flag of all airwires.
+	procedure reset_proposed_airwires (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+	type type_object_airwire is record
+		wire_cursor	: pac_airwires.cursor;
+		net_cursor	: pac_nets.cursor;
+	end record;
+
+
+	-- Returns the first airwire according to the given flag.
+	-- If no airwire has been found,
+	-- then the selector wire_cursor in the return is no_element
+	-- and the selector net_cursor is no_element:
+	function get_first_airwire (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_airwire;
+
+
+	-- Modifies the status flag of an airwire:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		airwire			: in type_object_airwire;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
 	
+											
 end et_board_ops.ratsnest;
 
 -- Soli Deo Gloria

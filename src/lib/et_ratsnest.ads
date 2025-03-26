@@ -65,6 +65,21 @@ package et_ratsnest is
 	use pac_airwires;
 
 
+	function is_proposed (
+		wire : in pac_airwires.cursor)
+		return boolean;
+
+
+	function is_selected (
+		wire : in pac_airwires.cursor)
+		return boolean;
+
+
+	function to_string (
+		wire : in pac_airwires.cursor)
+		return string;
+
+						   
 	-- Returns from the list of airwires the shortes of them:
 	function get_shortest_airwire (
 		wires : in pac_airwires.list)
@@ -111,7 +126,7 @@ package et_ratsnest is
 	
 	type type_airwires is record
 		lines	: pac_airwires.list;
-		hidden	: boolean := false;
+		hidden	: boolean := false; -- CS no need ? remove type_airwires entirely ?
 	end record;
 
 	status_ratsnest_updated : constant string := "ratsnest updated";

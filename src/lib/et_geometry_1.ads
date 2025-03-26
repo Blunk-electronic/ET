@@ -967,6 +967,16 @@ package et_geometry_1 is
 
 	procedure clear_moving (
 		line : in out type_line_fine);
+
+	
+	procedure modify_status (
+		line 		: in out type_line_fine;
+		operation	: in type_status_operation);
+
+	
+
+	procedure reset_status (
+		line : in out type_line_fine);
 	
 	
 	-- Returns true if the given two lines run in
