@@ -264,6 +264,7 @@ package body et_contour_to_polygon is
 
 		procedure query_edge (c : in pac_edges.cursor) is
 			l :  type_edge := element (c); -- CS use rename
+			use pac_geometry_brd;
 		begin
 			if debug then
 				put_line (to_string (l));

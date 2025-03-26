@@ -73,17 +73,11 @@ package et_geometry_1.et_polygons is
 	-- of a given polygon MUST BE CCW !
 
 	
-	type type_edge is new type_line_fine;
-	-- CS subtype type_edge is type_line_fine ?
-	-- or just luse type_line_fine as it is ?
+	subtype type_edge is type_line_fine;
+
 
 	edge_length_min : constant type_float_positive := 0.1;
 	
-	
-	overriding function to_string (
-		edge : in type_edge)
-		return string;
-
 
 
 	

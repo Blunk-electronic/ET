@@ -285,7 +285,7 @@ procedure draw_conductors is
 			edge : type_edge renames element (e);
 		begin
 			draw_line (
-				line	=> to_line_coarse (type_line_fine (edge)),
+				line	=> to_line_coarse (edge),
 				width	=> 0.0, -- don't care
 				style	=> DASHED);
 		end draw_edge;

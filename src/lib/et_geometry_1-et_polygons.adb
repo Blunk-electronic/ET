@@ -51,20 +51,6 @@ with et_string_processing;		use et_string_processing;
 package body et_geometry_1.et_polygons is
 
 	
-	function to_string (
-		edge : in type_edge)
-		return string
-	is begin
-		return "edge: S: " 
-			--& to_string (edge.start_point.x)
-		--& to_string (edge.start_point.y) 
-			& to_string (edge.start_point)
-			& " E: " 
-			& to_string (edge.end_point);
-			--& to_string (edge.end_point.y);
-	end to_string;
-
-	
 	
 	procedure iterate (
 		edges	: in pac_edges.list;
