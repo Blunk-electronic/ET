@@ -116,8 +116,6 @@ package et_ratsnest is
 
 	status_ratsnest_updated : constant string := "ratsnest updated";
 
-	-- GUI relevant only:
-	airwire_linewidth : constant type_distance_positive := 0.1;
 
 
 

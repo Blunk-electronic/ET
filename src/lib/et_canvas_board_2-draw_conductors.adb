@@ -1004,8 +1004,8 @@ procedure draw_conductors is
 
 					if not skip then
 						draw_line (
-							line	=> to_line_coarse (airwire),
-							width	=> 0.0, -- don't care
+							line		=> to_line_coarse (airwire),
+							width		=> 0.0, -- use minimal linewidth
 							do_stroke	=> true);
 					end if;
 					
@@ -1017,7 +1017,7 @@ procedure draw_conductors is
 				end query_airwire;
 
 
-			begin -- query_net
+			begin
 				if not element (n).route.airwires.hidden then
 					iterate (element (n).route.airwires.lines, query_airwire'access);
 				end if;
@@ -1027,14 +1027,10 @@ procedure draw_conductors is
 		begin
 			if ratsnest_enabled then
 				
-				-- All airwires of all nets are drawn with the same
-				-- color and width:
+				-- All airwires of all nets are drawn with the same color:
 				set_color_ratsnest;
-				--set_linewidth (airwire_linewidth);
 				
 				pac_nets.iterate (module.nets, query_net'access);
-
-				stroke;
 			end if;
 		end draw_ratsnest;
 
