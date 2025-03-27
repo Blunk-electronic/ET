@@ -416,7 +416,7 @@ is
 						-- If no clarification is requested, then
 						-- a right click changes the bend style:
 						if clarification_pending then
-							et_canvas_board_tracks.select_airwire;
+							et_canvas_board_tracks.clarify_airwire;
 						else
 							pac_path_and_bend.next_bend_style (live_path);
 						end if;

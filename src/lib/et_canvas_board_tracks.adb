@@ -426,80 +426,166 @@ package body et_canvas_board_tracks is
 
 
 	
-	function get_nearest (
-		airwire	: in pac_proposed_airwires.cursor;
-		point	: in type_vector_model)
-		return type_vector_model
-	is
-		use pac_proposed_airwires;
-		use pac_geometry_brd;
-		wire : type_airwire renames element (airwire).wire;
-	begin
-		return to_point (get_nearest (wire, to_vector (point)));
-	end get_nearest;
+-- 	function get_nearest (
+-- 		airwire	: in pac_proposed_airwires.cursor;
+-- 		point	: in type_vector_model)
+-- 		return type_vector_model
+-- 	is
+-- 		use pac_proposed_airwires;
+-- 		use pac_geometry_brd;
+-- 		wire : type_airwire renames element (airwire).wire;
+-- 	begin
+-- 		return to_point (get_nearest (wire, to_vector (point)));
+-- 	end get_nearest;
+-- 
+-- 
+-- 	
 
-
+	-- procedure reset_airwires is begin
+	-- 	selected_airwire := pac_proposed_airwires.no_element;
+	-- 	proposed_airwires.clear;
+	-- end reset_airwires;
 	
 
-	procedure reset_airwires is begin
-		selected_airwire := pac_proposed_airwires.no_element;
-		proposed_airwires.clear;
-	end reset_airwires;
+	
+-- 	
+-- 	function airwire_is_selected (
+-- 		airwire_cursor	: in pac_airwires.cursor;
+-- 		net_name		: in pac_net_name.bounded_string)
+-- 		return boolean
+-- 	is 
+-- 		use pac_geometry_brd;
+-- 		use pac_airwires;
+-- 		use pac_net_name;
+-- 		airwire : type_airwire renames element (airwire_cursor);
+-- 	begin
+-- 		-- If there are no proposed airwires at all, then there is nothing to do:
+-- 		if is_empty (proposed_airwires) then
+-- 			return false;
+-- 		else
+-- 			-- If there is no selected airwire, then there is nothing to do:
+-- 			if selected_airwire /= pac_proposed_airwires.no_element then
+-- 				if element (selected_airwire).net_name = net_name 
+-- 				and element (selected_airwire).wire = airwire then
+-- 					return true;
+-- 				else 
+-- 					return false;
+-- 				end if;
+-- 			else
+-- 				return false;
+-- 			end if;
+-- 		end if;
+-- 	end airwire_is_selected;
+-- 
 	
 
-	
-	
-	function airwire_is_selected (
-		airwire_cursor	: in pac_airwires.cursor;
-		net_name		: in pac_net_name.bounded_string)
-		return boolean
+-- 	
+-- 	procedure select_airwire is 
+-- 		use pac_net_name;
+-- 	begin
+-- 		-- On every call of this procedure we advance from one
+-- 		-- proposed airwire to the next in a circular manner. So if the end 
+-- 		-- of the list is reached, then the cursor selected_airwire
+-- 		-- moves back to the start of the list of proposed airwires:
+-- 		if next (selected_airwire) /= pac_proposed_airwires.no_element then
+-- 			next (selected_airwire);
+-- 		else
+-- 			selected_airwire := proposed_airwires.first;
+-- 		end if;
+-- 
+-- 		-- show the net name of the selected airwire in the status bar
+-- 		set_status ("selected net " & to_string (element (selected_airwire).net_name) 
+-- 			& ". " & status_next_object_clarification);
+-- 		
+-- 	end select_airwire;
+
+
+
+
+	procedure show_selected_object (
+		selected		: in type_object_airwire;
+		clarification	: in boolean := false)
 	is 
-		use pac_geometry_brd;
-		use pac_airwires;
-		use pac_net_name;
-		airwire : type_airwire renames element (airwire_cursor);
+		praeamble : constant string := "selected: ";
 	begin
-		-- If there are no proposed airwires at all, then there is nothing to do:
-		if is_empty (proposed_airwires) then
-			return false;
+		if clarification then
+			set_status (praeamble & to_string (selected.wire_cursor)
+				& " net " & et_nets.to_string (selected.net_cursor)
+				& ". " & status_next_object_clarification);
 		else
-			-- If there is no selected airwire, then there is nothing to do:
-			if selected_airwire /= pac_proposed_airwires.no_element then
-				if element (selected_airwire).net_name = net_name 
-				and element (selected_airwire).wire = airwire then
-					return true;
-				else 
-					return false;
-				end if;
-			else
-				return false;
-			end if;
-		end if;
-	end airwire_is_selected;
+			set_status (praeamble & to_string (selected.wire_cursor)
+				& " net " & et_nets.to_string (selected.net_cursor));
+		end if;		
+	end show_selected_object;
+
+
 
 	
-
 	
-	procedure select_airwire is 
-		use pac_net_name;
-	begin
-		-- On every call of this procedure we advance from one
-		-- proposed airwire to the next in a circular manner. So if the end 
-		-- of the list is reached, then the cursor selected_airwire
-		-- moves back to the start of the list of proposed airwires:
-		if next (selected_airwire) /= pac_proposed_airwires.no_element then
-			next (selected_airwire);
-		else
-			selected_airwire := proposed_airwires.first;
-		end if;
 
-		-- show the net name of the selected airwire in the status bar
-		set_status ("selected net " & to_string (element (selected_airwire).net_name) 
-			& ". " & status_next_object_clarification);
+	procedure clarify_airwire is
 		
-	end select_airwire;
+		procedure do_it is
+			use et_object_status;
+			use et_board_ops.ratsnest.pac_objects;
+			
+			-- Gather all proposed airwire objects:
+			proposed_objects : constant et_board_ops.ratsnest.pac_objects.list := 
+				get_objects (active_module, PROPOSED, log_threshold + 1);
+
+			proposed_object : et_board_ops.ratsnest.pac_objects.cursor;
+
+			-- We start with the first airwire that is currently selected:
+			selected_object : type_object_airwire := 
+				get_first_object (active_module, SELECTED, log_threshold + 1);
+
+		begin
+			log (text => "proposed airwires total " 
+				& natural'image (get_count (proposed_objects)),
+				level => log_threshold + 2);
+
+			
+			-- Locate the selected object among the proposed objects:
+			proposed_object := proposed_objects.find (selected_object);
+
+			-- Deselect the the proposed object:
+			modify_status (
+				module_cursor	=> active_module, 
+				operation		=> (CLEAR, SELECTED),
+				object_cursor	=> proposed_object, 
+				log_threshold	=> log_threshold + 1);
+
+			-- Advance to the next proposed object:
+			next (proposed_object);
+
+			-- If end of list reached, then proceed at 
+			-- the begin of the list:
+			if proposed_object = et_board_ops.ratsnest.pac_objects.no_element then
+				proposed_object := proposed_objects.first;
+			end if;
+			
+			-- Select the proposed object:
+			modify_status (
+				module_cursor	=> active_module, 
+				operation		=> (SET, SELECTED),
+				object_cursor	=> proposed_object, 
+				log_threshold	=> log_threshold + 1);
+
+			-- Display the object in the status bar:
+			show_selected_object (element (proposed_object));
+		end do_it;
+		
+		
+	begin
+		log (text => "clarify_airwire", level => log_threshold + 1);
+		log_indentation_up;		
+		do_it;		
+		log_indentation_down;
+	end clarify_airwire;
 
 
+	
+	
 
 	
 	procedure make_path (
@@ -508,67 +594,106 @@ package body et_canvas_board_tracks is
 	is
 		line : type_line;
 
-		
-		procedure set_start_point is
-			use et_pcb_coordinates_2.pac_geometry_brd;
-		begin
-			case snap_mode is
-				when NO_SNAP =>
-					-- set start point:
-					live_path.start_point := point;
 
+		-- This procedure sets the start point of the path:
+		procedure set_start_point is
+			use et_object_status;
+			use et_pcb_coordinates_2.pac_geometry_brd;
+
+			
+			procedure arbitrary_start_point is begin
+				live_path.start_point := point;
+
+				-- Allow drawing of the path:
+				object_ready := true;
+			end arbitrary_start_point;
+
+			
+
+			procedure start_with_nearest_airwire is 
+				count : natural := 0; -- the number of proposed airwires
+				aw : type_object_airwire;
+			begin
+				if not clarification_pending then
+
+					-- proposed_airwires := get_airwires (
+					-- 	module_cursor	=> active_module, 
+					-- 	catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+					-- 	log_threshold	=> log_threshold + 1);
+
+					propose_airwires (
+						module_cursor	=> active_module, 
+						catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+						count			=> count,
+						log_threshold	=> log_threshold + 1);
+
+											
+					-- case proposed_airwires.length is
+					case count is	
+						when 0 =>
+							arbitrary_start_point;
+
+						when 1 =>
+							-- live_path.start_point := get_nearest (proposed_airwires.first, point);
+							aw := get_first_object (active_module, PROPOSED, log_threshold + 1);
+
+							live_path.start_point := get_nearest (element (aw.wire_cursor), point);
+						
+							--selected_airwire := proposed_airwires.first;
+							modify_status (active_module, aw, (SET, SELECTED), log_threshold + 1);
+						
+							-- Allow drawing of the path:
+							object_ready := true;
+
+
+						when others =>
+							set_request_clarification;
+							-- selected_airwire := proposed_airwires.first;
+
+							aw := get_first_object (active_module, PROPOSED, log_threshold + 1);
+							modify_status (active_module, aw, (SET, SELECTED), log_threshold + 1);
+															
+					end case;
+					
+
+				else -- clarification_pending
+					--live_path.start_point := get_nearest (selected_airwire, point);
+					aw := get_first_object (active_module, SELECTED, log_threshold + 1);
+
+					live_path.start_point := get_nearest (element (aw.wire_cursor), point);
+					
+					--selected_airwire := proposed_airwires.first;
+					
 					-- Allow drawing of the path:
 					object_ready := true;
 
-				when NEAREST_AIRWIRE =>
-					if not clarification_pending then
+					reset_request_clarification;
+				end if;
 
-						proposed_airwires := get_airwires (
-							module_cursor	=> active_module, 
-							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
-							log_threshold	=> log_threshold + 1);
+			end start_with_nearest_airwire;
 
-						case proposed_airwires.length is
-							when 0 =>
-								-- set start point:
-								live_path.start_point := point;
-
-								-- Allow drawing of the path:
-								object_ready := true;
-
-							when 1 =>
-								live_path.start_point := get_nearest (proposed_airwires.first, point);
-								selected_airwire := proposed_airwires.first;
-								
-								-- Allow drawing of the path:
-								object_ready := true;
-
-							when others =>
-								set_request_clarification;
-								selected_airwire := proposed_airwires.first;
-								
-						end case;
-
-					else
-						live_path.start_point := get_nearest (selected_airwire, point);
-								
-						-- Allow drawing of the path:
-						object_ready := true;
-
-						reset_request_clarification;
-					end if;
-
+			
+			
+		begin
+			case snap_mode is
+				when NO_SNAP =>
+					arbitrary_start_point;
 					
+				when NEAREST_AIRWIRE =>
+					start_with_nearest_airwire;
+
 				when NEAREST_OBJECT =>
 					null; -- CS
 			end case;
 
+			
 			set_status (status_start_point & to_string (live_path.start_point) & ". " &
 				status_press_space & status_set_end_point & status_hint_for_abort);
 
 		end set_start_point;
 		
 
+		
 		
 		procedure add_to_net is
 			use et_board_ops.conductors;
@@ -588,6 +713,7 @@ package body et_canvas_board_tracks is
 			-- Commit the new state of the design:
 			commit (POST, verb, noun, log_threshold + 1);
 		end add_to_net;
+
 
 		
 	begin -- make_path

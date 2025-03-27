@@ -991,7 +991,8 @@ procedure draw_conductors is
 
 				begin
 					-- If the candidate airwire is selected, then draw it highlighted:
-					if airwire_is_selected (c, key (n)) then
+					--if airwire_is_selected (c, key (n)) then
+					if is_selected (c) then
 						set_color_ratsnest (BRIGHT);
 						restore_brightness := true;
 

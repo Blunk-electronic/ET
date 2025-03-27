@@ -183,29 +183,36 @@ package et_canvas_board_tracks is
 
 	
 	-- Resets select_airwire and clears proposed_airwires:
-	procedure reset_airwires;
+	-- procedure reset_airwires;
 	
 	
 	-- Returns true if the given airwire matches the airwire indicated
 	-- by selected_airwire:
-	function airwire_is_selected (
-		airwire_cursor	: in pac_airwires.cursor;
-		net_name		: in pac_net_name.bounded_string)
-		return boolean;
+	-- function airwire_is_selected (
+	-- 	airwire_cursor	: in pac_airwires.cursor;
+	-- 	net_name		: in pac_net_name.bounded_string)
+	-- 	return boolean;
 	
 
 	-- Advances cursor selected_airwire to next airwire
 	-- in list proposed_airwires and sets cursor selected_airwire
 	-- to the candidate airwire:
-	procedure select_airwire;
+	-- procedure select_airwire;
+
+	-- This procedure is required in order to clarify
+	-- which object among the proposed objects is meant.
+	-- On every call of this procedure we advance from one
+	-- proposed airwire to the next in a circular manner
+	-- and set it as "selected":
+	procedure clarify_airwire;
 
 	
-	-- Returns the start or the end point of the given proposed
-	-- airwire, depending on which of them is closer to the given point:
-	function get_nearest (
-		airwire	: in pac_proposed_airwires.cursor;
-		point	: in type_vector_model)
-		return type_vector_model;
+	-- -- Returns the start or the end point of the given proposed
+	-- -- airwire, depending on which of them is closer to the given point:
+	-- function get_nearest (
+	-- 	airwire	: in pac_proposed_airwires.cursor;
+	-- 	point	: in type_vector_model)
+	-- 	return type_vector_model;
 
 
 	-- Builds a live path. This procedure requires to be called twice:

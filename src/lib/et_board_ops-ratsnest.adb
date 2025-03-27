@@ -281,7 +281,7 @@ package body et_board_ops.ratsnest is
 				log_indentation_up;
 
 				-- Iterate the airwires:
-				while not has_element (airwire_cursor) loop
+				while has_element (airwire_cursor) loop
 					net.route.airwires.lines.update_element (
 						airwire_cursor, query_airwire'access);
 
@@ -303,7 +303,7 @@ package body et_board_ops.ratsnest is
 		
 		
 	begin
-		log (text => "proposing airwires in " & to_string (catch_zone),
+		log (text => "proposing airwires in" & to_string (catch_zone),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -352,7 +352,7 @@ package body et_board_ops.ratsnest is
 				log_indentation_up;
 
 				-- Iterate the airwires:
-				while not has_element (airwire_cursor) loop
+				while has_element (airwire_cursor) loop
 					net.route.airwires.lines.update_element (
 						airwire_cursor, query_airwire'access);
 
@@ -389,9 +389,18 @@ package body et_board_ops.ratsnest is
 
 
 	
+
+	function get_count (
+		objects : in pac_objects.list)
+		return natural
+	is begin
+		return natural (objects.length);
+	end get_count;
+
+
 	
 
-	function get_first_airwire (
+	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
@@ -458,7 +467,7 @@ package body et_board_ops.ratsnest is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up the first line / " & to_string (flag),
+			& " looking up the first airwire / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -470,14 +479,14 @@ package body et_board_ops.ratsnest is
 		log_indentation_down;
 
 		return result;
-	end get_first_airwire;
+	end get_first_object;
 	
 	
 
 
 	
 
-	function get_airwires (
+	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
@@ -553,7 +562,7 @@ package body et_board_ops.ratsnest is
 		log_indentation_down;
 
 		return result;
-	end get_airwires;
+	end get_objects;
 	
 
 
@@ -562,7 +571,7 @@ package body et_board_ops.ratsnest is
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		airwire			: in type_object_airwire;
+		object			: in type_object_airwire;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level)
 	is
@@ -589,7 +598,7 @@ package body et_board_ops.ratsnest is
 				
 			begin
 				net.route.airwires.lines.update_element (
-					airwire.wire_cursor, query_airwire'access);
+					object.wire_cursor, query_airwire'access);
 
 			end query_net;
 			
@@ -598,7 +607,7 @@ package body et_board_ops.ratsnest is
 		begin
 			update_element (
 				container	=> module.nets,
-				position	=> airwire.net_cursor,
+				position	=> object.net_cursor,
 				process		=> query_net'access);
 		end query_module;
 		
@@ -606,7 +615,7 @@ package body et_board_ops.ratsnest is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of airwire "
-			& to_string (airwire.wire_cursor)
+			& to_string (object.wire_cursor)
 			& " / " & to_string (operation),
 			level => log_threshold);
 
@@ -620,6 +629,19 @@ package body et_board_ops.ratsnest is
 	end modify_status;
 	
 
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_objects;
+		object : constant type_object_airwire := element (object_cursor);
+	begin
+		modify_status (module_cursor, object, operation, log_threshold);
+	end modify_status;
 	
 	
 											

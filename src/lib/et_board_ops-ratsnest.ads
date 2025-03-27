@@ -114,11 +114,18 @@ package et_board_ops.ratsnest is
 	package pac_objects is new doubly_linked_lists (type_object_airwire);
 	
 
+	-- Returns the number of items stored in the given list:
+	function get_count (
+		objects : in pac_objects.list)
+		return natural;
+
+
+	
 	-- Returns the first airwire according to the given flag.
 	-- If no airwire has been found,
 	-- then the selector wire_cursor in the return is no_element
 	-- and the selector net_cursor is no_element:
-	function get_first_airwire (
+	function get_first_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;
 		log_threshold	: in type_log_level)
@@ -127,7 +134,7 @@ package et_board_ops.ratsnest is
 	
 	-- Collects all airwires
 	-- according to the given flag and returns them in a list:
-	function get_airwires (
+	function get_objects (
 		module_cursor	: in pac_generic_modules.cursor;
 		flag			: in type_flag;								 
 		log_threshold	: in type_log_level)
@@ -137,10 +144,17 @@ package et_board_ops.ratsnest is
 	-- Modifies the status flag of an airwire:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
-		airwire			: in type_object_airwire;
+		object			: in type_object_airwire;
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
+
+	-- Modifies the status flag of an airwire indicated by a cursor:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
 	
 											
 end et_board_ops.ratsnest;

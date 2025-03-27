@@ -67,6 +67,7 @@ with et_board_ops.silkscreen;
 with et_board_ops.stopmask;
 with et_board_ops.stencil;
 with et_board_ops.keepout;
+with et_board_ops.ratsnest;
 with et_board_ops.conductors;
 with et_board_ops.board_contour;
 with et_pcb;
@@ -831,7 +832,7 @@ package body et_canvas_board_2 is
 		reset_preliminary_text; -- after placing a text
 		reset_preliminary_via; -- after placing a via
 		
-		reset_airwires;
+		et_board_ops.ratsnest.reset_proposed_airwires (active_module, log_threshold + 1);
 		reset_ripup_mode;
 
 		reset_preliminary_electrical_device; -- after moving, rotating, flipping a device

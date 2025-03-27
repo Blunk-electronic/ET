@@ -881,7 +881,15 @@ package et_geometry_2a is
 		point	: in type_vector)
 		return type_float_positive;
 
+
+	-- Returns the start or the end point of the given line,
+	-- depending on which of them is closer to the given point:
+	function get_nearest (
+		line	: in type_line_fine;
+		point	: in type_vector_model)
+		return type_vector_model;
 	
+		
 	-- Returns the bounding-box of the given line.
 	-- It respects the linewidth and assumes that the line ends
 	-- have round caps:

@@ -696,7 +696,7 @@ is
 				case noun is
 					when NOUN_NET =>
 						if clarification_pending then
-							select_airwire;
+							clarify_airwire;
 						end if;
 						
 					when others => null;							

@@ -1664,6 +1664,22 @@ package body et_geometry_2a is
 
 
 
+	function get_nearest (
+		line	: in type_line_fine;
+		point	: in type_vector_model)
+		return type_vector_model
+	is
+		result : type_vector_model;
+		v : type_vector;
+	begin
+		v := get_nearest (line, to_vector (point));
+		return to_point (v);
+	end get_nearest;
+
+
+
+	
+
 	function get_bounding_box (
 		line	: in type_line;
 		width	: in type_distance_positive)
