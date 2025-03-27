@@ -448,6 +448,11 @@ Fill Zones in Conductor Layers
 		
 #. Set Linewidth of Border and Fill Stripes
 
+	The border of the zone consists of segments (like lines, arcs, circle)
+	and has a certain linewidth. When the outline
+	of the zone is specified then it must be considered that the actual border
+	runs right in the middle of the segments.
+	
 	.. code-block::
 	
 		set zone linewidth 0.2
