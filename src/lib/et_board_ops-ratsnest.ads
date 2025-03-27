@@ -111,6 +111,8 @@ package et_board_ops.ratsnest is
 		net_cursor	: pac_nets.cursor;
 	end record;
 
+	package pac_objects is new doubly_linked_lists (type_object_airwire);
+	
 
 	-- Returns the first airwire according to the given flag.
 	-- If no airwire has been found,
@@ -122,7 +124,16 @@ package et_board_ops.ratsnest is
 		log_threshold	: in type_log_level)
 		return type_object_airwire;
 
+	
+	-- Collects all airwires
+	-- according to the given flag and returns them in a list:
+	function get_airwires (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return pac_objects.list;
 
+	
 	-- Modifies the status flag of an airwire:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;

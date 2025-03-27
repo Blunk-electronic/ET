@@ -402,6 +402,7 @@ package body et_canvas_board_tracks is
 
 	
 
+	
 
 	procedure next_snap_mode is 
 		i : constant natural := type_snap_mode'pos (snap_mode);

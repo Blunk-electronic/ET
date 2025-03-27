@@ -475,6 +475,89 @@ package body et_board_ops.ratsnest is
 	
 
 
+	
+
+	function get_airwires (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return pac_objects.list
+	is
+		use pac_objects;
+		result : pac_objects.list;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			proceed : aliased boolean := true;
+
+
+			procedure query_net (net_cursor : in pac_nets.cursor) is
+
+				procedure query_airwires (
+					net_name	: in pac_net_name.bounded_string;
+					net 		: in type_net)
+				is 
+
+					procedure query_airwire (w : in pac_airwires.cursor) is begin
+						case flag is
+							when PROPOSED =>
+								if is_proposed (w) then
+									result.append ((w, net_cursor));
+									log (text => to_string (w), level => log_threshold + 2);
+								end if;
+      
+							when SELECTED =>
+								if is_selected (w) then
+									result.append ((w, net_cursor));
+									log (text => to_string (w), level => log_threshold + 2);
+								end if;
+      
+							when others =>
+								null; -- CS
+						end case;
+					end query_airwire;
+
+
+				begin
+					iterate (net.route.airwires.lines, query_airwire'access, proceed'access);
+				end query_airwires;
+				
+				
+			begin
+				log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
+				log_indentation_up;
+				query_element (net_cursor, query_airwires'access);
+				log_indentation_down;
+			end query_net;
+				
+
+		begin
+			iterate (module.nets, query_net'access, proceed'access);
+		end query_module;
+		
+	
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up airwires / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+
+		return result;
+	end get_airwires;
+	
+
+
+	
 
 
 	procedure modify_status (
