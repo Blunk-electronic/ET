@@ -1158,15 +1158,14 @@ procedure draw_conductors is
 
 
 	-- Draws a conducting track path being drawn.
-	-- Uses the parameters in variable preliminary_track.
-	-- Computes the bend point (if required) and sets it accordingly
-	-- in preliminary_track.
+	-- Uses the parameters in global variable live_path.
+	-- Computes the bend point (if required) of live_path
+	-- and sets it accordingly:
 	procedure draw_track is
 		use et_canvas_board_tracks;
 
 		-- Computes the path from given start to given end point.
-		-- Takes the bend style given in preliminary_track into account.
-		-- Draws the path.
+		-- Takes the bend style into account. Draws the path:
 		procedure compute_and_draw (
 			start_point, end_point : in type_vector_model) 
 		is
