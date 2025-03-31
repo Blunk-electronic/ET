@@ -184,60 +184,7 @@ package body et_board_ops.ratsnest is
 	end update_ratsnest;
 
 
-
-
 	
-	function get_airwires (
-		module_cursor	: in pac_generic_modules.cursor;
-		catch_zone		: in type_catch_zone;
-		log_threshold	: in type_log_level)
-		return pac_proposed_airwires.list
-	is
-		result : pac_proposed_airwires.list;
-
-		
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is
-			
-			procedure query_net (nc : in pac_nets.cursor) is
-				net : type_net renames element (nc);
-
-				procedure query_airwire (ac : in pac_airwires.cursor) is
-					use pac_airwires;
-					use pac_geometry_brd;
-					wire : type_airwire renames element (ac);
-					d : type_float_positive;
-				begin
-					d := get_shortest_distance (to_vector (get_center (catch_zone)), wire);
-					if d <= get_radius (catch_zone) then
-						result.append ((wire, key (nc)));
-					end if;
-				end query_airwire;
-				
-			begin
-				net.route.airwires.lines.iterate (query_airwire'access);
-			end query_net;
-			
-		begin
-			module.nets.iterate (query_net'access);
-		end query_module;
-		
-		
-	begin
-		log (text => "looking up airwires in" 
-			 & to_string (catch_zone),
-			 level => log_threshold);
-
-		-- log_indentation_up;
-
-		query_element (module_cursor, query_module'access);
-
-		-- log_indentation_down;
-		return result;
-	end get_airwires;
-
 
 
 

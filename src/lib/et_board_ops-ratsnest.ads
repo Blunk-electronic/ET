@@ -70,24 +70,6 @@ package et_board_ops.ratsnest is
 
 
 
-	-- When airwires are to be collected in the vicinity of a certain 
-	-- point then each airwire can be identified with a net name:
-	
-	type type_proposed_airwire is record
-		wire		: type_airwire;
-		net_name	: pac_net_name.bounded_string; -- RESET_N
-	end record;
-
-	package pac_proposed_airwires is new doubly_linked_lists (type_proposed_airwire);
-	use pac_proposed_airwires;
-	
-
-	-- Returns all airwires in the vicinity of the given point:
-	function get_airwires (
-		module_cursor	: in pac_generic_modules.cursor;
-		catch_zone		: in type_catch_zone;
-		log_threshold	: in type_log_level)
-		return pac_proposed_airwires.list;
 
 
 	-- Sets the proposed-flag of all airwires which are
