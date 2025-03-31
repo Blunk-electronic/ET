@@ -788,25 +788,30 @@ package body et_geometry_1 is
 		return type_float
 	is
 		lambda : type_float;
+
+		debug : boolean := false;
 	begin
+		if debug then
+			put_line ("divide");
+			put_line (" a " & to_string (a));
+			put_line (" b " & to_string (b));
+		end if;
+		
 		-- It does not matter if we use
 		-- the x,y or z component for this calculation.
 		-- But we must skip the case when
 		-- a division by zero is ahead.
 		if b.x /= 0.0 then
-		--if is_not_zero (b.x) then
 			lambda := a.x / b.x;
 			
 		elsif b.y /= 0.0 then
-		--elsif is_not_zero (b.y) then
 			lambda := a.y / b.y;
 			
 		elsif b.z /= 0.0 then
-		--elsif is_not_zero (b.z) then
 			lambda := a.z / b.z;
 			
 		else
-			put_line ("ERROR while vector division ");
+			raise CONSTRAINT_ERROR with "ERROR while vector division !";
 		end if;
 
 		-- CS divide all components and take the average of all lambdas ?
@@ -1133,10 +1138,20 @@ package body et_geometry_1 is
 		v2 : in type_vector)
 		return type_float_positive
 	is 
-		dx : constant type_float := abs (v2.x - v1.x);
-		dy : constant type_float := abs (v2.y - v1.y);
+		dx : type_float;
+		dy : type_float;
 	begin
-		return sqrt (dx ** 2.0 + dy ** 2.0);
+		-- If both location vectors are equally, then 
+		-- a lot of work can be saved:
+		if v1 = v2 then
+			return 0.0;
+		else
+		-- Otherwise a bit more computation is required:
+			dx := abs (v2.x - v1.x);
+			dy := abs (v2.y - v1.y);
+
+			return sqrt (dx ** 2.0 + dy ** 2.0);
+		end if;
 	end get_distance_total;
 
 
@@ -3853,18 +3868,52 @@ package body et_geometry_1 is
 		vector	: in type_vector)
 		return type_float_positive
 	is
-		dv : constant type_vector := to_line_vector (line).v_direction;
-		sv : constant type_vector := line.start_point;
+		dv : type_vector; -- direction vector of the given line
+		sv : type_vector; -- start vector of the given line
 		
-		d1 : constant type_vector := subtract (vector, sv);
+		d1 : type_vector;
 		m, n : type_float;
+
+		result : type_float_positive;
 	begin
-		m := get_absolute (cross_product (dv, d1));
-		n := get_absolute (dv);
+		-- The length of the given line may be zero. In that case
+		-- only the distance between start point and given vector matters:
+		if get_length (line) = 0.0 then
+			result := get_distance_total (line.start_point, vector);			
+
+		-- If the line has a length, then this computation
+		-- must be perfomed:
+		else
+			dv := to_line_vector (line).v_direction;
+			sv := line.start_point;
+			
+			d1 := subtract (vector, sv);			
+			
+			m := get_absolute (cross_product (dv, d1));
+			n := get_absolute (dv);
+			
+			result := (m / n);
+		end if;
+
+		return result;
+
 		
-		return (m / n);
+			
+		exception 
+			when CONSTRAINT_ERROR =>
+				put_line ("get_distance");
+				put_line ("line   " & to_string (line));
+				put_line ("vector " & to_string (vector));
+				put_line ("dv     " & to_string (dv));
+				put_line ("sv     " & to_string (sv));
+				put_line ("d1     " & to_string (d1));
+				put_line ("m      " & to_string (m));
+				put_line ("n      " & to_string (n));
+				raise;
 	end get_distance;
 
+
+	
 
 	
 
@@ -3874,46 +3923,73 @@ package body et_geometry_1 is
 		return type_float_positive
 	is
 		result : type_float_positive := 0.0;
+
+		--debug : boolean := true;
+		debug : boolean := false;
 		
-		d : constant type_distance_point_line := get_distance (
-			vector		=> vector,
-			line		=> line,
-			line_range	=> WITH_END_POINTS);
 
-		d_to_start, d_to_end : type_float;
-	begin
-		-- put_line ("vector" & to_string (vector) & " " & to_string (line));
-		
-		if not out_of_range (d) then
-			-- put_line ("in range");
+		-- Computes the shortest distance in an
+		-- arbitrary direction between vector and line:
+		procedure do_it is 
 			
-			-- An imaginary line can be drawn perpendicular from
-			-- point to line. Both intersect each other.
-			result := get_distance (d);
-		else
-			-- put_line ("out of range");
+			d : constant type_distance_point_line := get_distance (
+				vector		=> vector,
+				line		=> line,
+				line_range	=> WITH_END_POINTS);
+
+			d_to_start, d_to_end : type_float;
 			
-			-- No imaginary line can be drawn perpendicular from
-			-- point to line.
-
-			-- Compare the distances to the end points of the line:
-			d_to_start := get_distance_total (line.start_point, vector);
-			d_to_end   := get_distance_total (line.end_point, vector);
-
-			if d_to_start < d_to_end then
-				result := d_to_start;
+		begin
+			if not out_of_range (d) then
+				-- put_line ("in range");
+				
+				-- An imaginary line can be drawn perpendicular from
+				-- point to line. Both intersect each other.
+				result := get_distance (d);
 			else
-				result := d_to_end;
+				-- put_line ("out of range");
+				
+				-- No imaginary line can be drawn perpendicular from
+				-- point to line.
+
+				-- Compare the distances to the end points of the line:
+				d_to_start := get_distance_total (line.start_point, vector);
+				d_to_end   := get_distance_total (line.end_point, vector);
+
+				if d_to_start < d_to_end then
+					result := d_to_start;
+				else
+					result := d_to_end;
+				end if;
+				
 			end if;
+		end do_it;
+
 			
+	begin
+		if debug then
+			put_line ("get_shortest_distance");
+			put_line (" vector " & to_string (vector));
+			put_line (" line   " & to_string (line));
 		end if;
 
-		-- put_line ("distance" & to_string (result));
+		-- The given line may have zero length. In this case
+		-- only the distance between line start and vector is relevant:
+		if get_length (line) = 0.0 then
+			result := get_distance_total (line.start_point, vector);
+		else
+			do_it;
+		end if;
+
+		if debug then
+			put_line (" result " & to_string (result));
+		end if;
 		
 		return result;
 	end get_shortest_distance;
 	
 
+	
 
 
 	
@@ -3942,6 +4018,7 @@ package body et_geometry_1 is
 
 	
 	
+	
 	function get_distance (
 		vector		: in type_vector;
 		line		: in type_line_fine;
@@ -3949,142 +4026,174 @@ package body et_geometry_1 is
 		debug		: in boolean := false)
 		return type_distance_point_line 
 	is
-		result : type_distance_point_line;
-	
-		-- Imagine a line that starts on the given location vector,
-		-- travels perpendicular towards
-		-- the given line and finally intersects the given line somewhere.
-		-- The intersection may be betweeen the start and end point of the given line.
-		-- The intersection may be virtual, before start or after end point 
-		-- of the given line.
-	
-		line_direction : constant type_vector := to_line_vector (line).v_direction;
-
-		iv : type_vector renames result.intersection;
+		--debug_2 : boolean := true;
+		debug_2 : boolean := false;
 
 
-		-- Computes the point of intersection: The intersection of a line that runs
-		-- from the given location vector perpendicular to the given line:
-		procedure compute_intersection is
-			SE : constant type_vector := get_displacement (line.start_point, line.end_point);
-			SV : constant type_vector := get_displacement (line.start_point, vector);
-			SI : type_vector;
-			dp : type_float;
-			sum : type_float_positive;
-		begin
-			dp := dot_product (SE, SV);
-			sum := get_sum_of_squared_components (SE);
-			result.intersection := add (line.start_point, scale (SE, dp / sum));
-		end compute_intersection;
+		
+		procedure dump is begin
+			put_line ("get_distance");
+			put_line (" vector   " & to_string (vector));
+			put_line (" line     " & to_string (line));
+			-- put_line ("line direction vector: " & to_string (line_direction));
+		end dump;
+		
+			
+
+
+		function do_it
+			return type_distance_point_line
+		is
+			-- Imagine a line that starts on the given location vector,
+			-- travels perpendicular towards
+			-- the given line and finally intersects the given line somewhere.
+			-- The intersection may be betweeen the start and end point of the given line.
+			-- The intersection may be virtual, before start or after end point 
+			-- of the given line.
+
+			result : type_distance_point_line;
+
+
+			-- Computes the point of intersection: The intersection of a line that runs
+			-- from the given location vector perpendicular to the given line:
+			procedure compute_intersection is
+				SE : constant type_vector := get_displacement (line.start_point, line.end_point);
+				SV : constant type_vector := get_displacement (line.start_point, vector);
+				SI : type_vector;
+				dp : type_float;
+				sum : type_float_positive;
+			begin
+				dp := dot_product (SE, SV);
+				sum := get_sum_of_squared_components (SE);
+				result.intersection := add (line.start_point, scale (SE, dp / sum));
+			end compute_intersection;
 
 			
-		lambda_forward, lambda_backward : type_float;
+			iv : type_vector renames result.intersection;
+			lambda_forward, lambda_backward : type_float;
+
+			line_direction : constant type_vector := to_line_vector (line).v_direction;
+			
+		begin
+			-- Compute the distance from the given point to the given line.
+			-- This computation does not care about end or start point of the line.
+			-- It assumes an indefinite long line without start or end point.
+			result.distance := get_distance (line, vector);
+
+			if debug_2 then
+				put_line (" distance " & to_string (result.distance));
+			end if;
+
+			-- Set iv so that it points to the intersection. The
+			-- intersection can be anywhere on that indefinite long line.
+			compute_intersection;
+
+			-- put_line ("iv " & to_string (iv));
+			
+			-- Any point on a line can be computed by this formula (see textbook on vector algebra):
+			-- iv = line.start_point + lambda_forward  * line_direction
+			-- iv = line.end_point   + lambda_backward * line_direction
+
+			-- Using these formula we can calculate whether iv points between 
+			-- (or to) the start and/or end points of the line:
+			
+			lambda_forward := divide (subtract (iv, line.start_point), line_direction);
+
+			--put_line ("lambda forward:" & to_string (lambda_forward));
+
+			
+			if lambda_forward = 0.0 then -- iv points TO start point of line
+				-- put_line ("on start point");
+				case line_range is
+					when BETWEEN_END_POINTS =>
+						result.out_of_range := true;
+						
+					when others => 
+						result.out_of_range := false;
+						result.sits_on_start := true;
+				end case;
+
+				return result; -- no more computations required
+			end if;
+			
+			
+			if lambda_forward < 0.0 then -- iv points BEFORE start of line
+				-- put_line ("before start point");
+				case line_range is
+					when BEYOND_END_POINTS => 
+						result.out_of_range := false;
+						
+					when others => 
+						result.out_of_range := true;
+				end case;
+
+				return result; -- no more computations required
+			end if;
+					
+
+
+			--put_line ("after start point");
+
+			
+			lambda_backward := divide (subtract (iv, line.end_point), line_direction);
+
+			--put_line ("lambda backward:" & to_string (lambda_backward));
+
+			
+			if lambda_backward = 0.0 then -- iv points TO end point of line
+				-- put_line ("on end point");
+				case line_range is
+					when BETWEEN_END_POINTS =>
+						result.out_of_range := true;
+						
+					when others => 
+						result.out_of_range := false;
+						result.sits_on_end := true;
+				end case;
+
+				return result; -- no more computations required
+			end if;
+
+
+			if lambda_backward > 0.0 then -- iv points AFTER end of line
+				-- put_line ("after end point");
+				case line_range is
+					when BEYOND_END_POINTS => 
+						result.out_of_range := false;
+						
+					when others => 
+						result.out_of_range := true;
+				end case;
+
+				return result; -- no more computations required
+			end if;
+
+
+			
+			--put_line ("before end point");
+
+			result.out_of_range := false;
+
+			-- put_line ("distance " & to_string (result.distance));
+			return result;
+		end do_it;
+
+
+		
 	begin
-		-- new_line;
-		-- put_line ("get distance");
-		-- put_line ("v: " & to_string (vector) & " " & to_string (line));
-		-- put_line ("line direction vector: " & to_string (line_direction));
-
-		
-		-- Compute the distance from the given point to the given line.
-		-- This computation does not care about end or start point of the line.
-		-- It assumes an indefinite long line without start or end point.
-		result.distance := get_distance (line, vector);
-
-		-- put_line ("distance " & to_string (result.distance));
-
-		-- Set iv so that it points to the intersection. The
-		-- intersection can be anywhere on that indefinite long line.
-		compute_intersection;
-
-		-- put_line ("iv " & to_string (iv));
-		
-		-- Any point on a line can be computed by this formula (see textbook on vector algebra):
-		-- iv = line.start_point + lambda_forward  * line_direction
-		-- iv = line.end_point   + lambda_backward * line_direction
-
-		-- Using these formula we can calculate whether iv points between 
-		-- (or to) the start and/or end points of the line:
-		
-		lambda_forward := divide (subtract (iv, line.start_point), line_direction);
-
-		--put_line ("lambda forward:" & to_string (lambda_forward));
-
-		
-		if lambda_forward = 0.0 then -- iv points TO start point of line
-			-- put_line ("on start point");
-			case line_range is
-				when BETWEEN_END_POINTS =>
-					result.out_of_range := true;
-					
-				when others => 
-					result.out_of_range := false;
-					result.sits_on_start := true;
-			end case;
-
-			return result; -- no more computations required
-		end if;
-		
-		
-		if lambda_forward < 0.0 then -- iv points BEFORE start of line
-			-- put_line ("before start point");
-			case line_range is
-				when BEYOND_END_POINTS => 
-					result.out_of_range := false;
-					
-				when others => 
-					result.out_of_range := true;
-			end case;
-
-			return result; -- no more computations required
-		end if;
-				
-
-
-		--put_line ("after start point");
-
-		
-		lambda_backward := divide (subtract (iv, line.end_point), line_direction);
-
-		--put_line ("lambda backward:" & to_string (lambda_backward));
-
-		
-		if lambda_backward = 0.0 then -- iv points TO end point of line
-			-- put_line ("on end point");
-			case line_range is
-				when BETWEEN_END_POINTS =>
-					result.out_of_range := true;
-					
-				when others => 
-					result.out_of_range := false;
-					result.sits_on_end := true;
-			end case;
-
-			return result; -- no more computations required
+		if debug_2 then
+			dump;
 		end if;
 
-
-		if lambda_backward > 0.0 then -- iv points AFTER end of line
-			-- put_line ("after end point");
-			case line_range is
-				when BEYOND_END_POINTS => 
-					result.out_of_range := false;
-					
-				when others => 
-					result.out_of_range := true;
-			end case;
-
-			return result; -- no more computations required
+		-- The given line must have a length.
+		-- If it has zero length then an exception must be raised:
+		if get_length (line) > 0.0 then
+			return do_it;
+		else
+			dump;
+			raise CONSTRAINT_ERROR with "Line has zero length !";
 		end if;
-
-
 		
-		--put_line ("before end point");
-
-		result.out_of_range := false;
-
-		-- put_line ("distance " & to_string (result.distance));
-		return result;
 	end get_distance;
 
 	

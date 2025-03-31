@@ -1556,6 +1556,7 @@ package et_geometry_1 is
 	
 	-- Computes the shortest distance (perpendicular) of a
 	-- point to a line. 
+	-- Raises exception if the given line has zero length.
 	-- CS insufficient ! More details !!! especially on the out_of_range flag
 	function get_distance (
 		vector		: in type_vector; 
