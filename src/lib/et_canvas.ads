@@ -1140,9 +1140,9 @@ package et_canvas is
 	-- via mouse or keyboard. This global variable should be used:
 	object_tool : type_tool := MOUSE;
 
-	-- This flag indicates that the object has been
-	-- clarified among the proposed objects:
-	object_ready : boolean := false;
+	-- This flag indicates that the operator has started
+	-- editing an object (moving, deleting, routing, ...):
+	edit_process_running : boolean := false;
 
 	-- When a path, consisting of one or two lines is drawn
 	-- then it is temprarily stored here:

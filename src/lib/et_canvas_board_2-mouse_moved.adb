@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -51,17 +51,17 @@ begin
 		when VERB_DRAW =>
 			case noun is
 				when NOUN_LINE =>
-					if object_ready then
+					if edit_process_running then
 						redraw_board;
 					end if;
 
 				when NOUN_OUTLINE =>
-					if object_ready then
+					if edit_process_running then
 						redraw_board;
 					end if;
 					
 				when NOUN_ZONE =>
-					if object_ready then
+					if edit_process_running then
 						redraw_board;
 					end if;
 					
@@ -72,57 +72,57 @@ begin
 		when VERB_MOVE =>
 			case noun is
 				when NOUN_ASSY =>
-					if object_ready then
+					if edit_process_running then
 						redraw_board;
 					end if;
 
 				when NOUN_SILKSCREEN =>
-					if object_ready then
+					if edit_process_running then
 						redraw_board;
 					end if;
 
 				when NOUN_STOPMASK | NOUN_STENCIL | NOUN_KEEPOUT =>
-					if object_ready then
+					if edit_process_running then
 						redraw_board;
 					end if;
 					
 				when NOUN_CONDUCTORS =>
-					if object_ready then
+					if edit_process_running then
 						redraw_board;
 					end if;
 
 				when NOUN_TRACK =>
-					if object_ready then
+					if edit_process_running then
 						redraw_board;
 					end if;
 					
 				when NOUN_FREETRACK =>
-					if object_ready then
+					if edit_process_running then
 						redraw_board;
 					end if;
 					
 				when NOUN_DEVICE =>
-					if object_ready then
+					if edit_process_running then
 						redraw_board;
 					end if;
 
 				when NOUN_NON_ELECTRICAL_DEVICE =>
-					if object_ready then
+					if edit_process_running then
 						redraw_board;
 					end if;
 
 				when NOUN_OUTLINE =>
-					if object_ready then
+					if edit_process_running then
 						redraw_board;
 					end if;
 					
 				when NOUN_TEXT =>
-					if object_ready then
+					if edit_process_running then
 						redraw_board;
 					end if;
 					
 				when NOUN_VIA =>
-					if object_ready then
+					if edit_process_running then
 						redraw_board;
 					end if;
 					
@@ -133,12 +133,12 @@ begin
 		when VERB_PLACE =>
 			case noun is
 				when NOUN_TEXT =>
-					if object_ready then
+					if edit_process_running then
 						redraw_board;
 					end if;
 
 				when NOUN_VIA =>
-					if object_ready then
+					if edit_process_running then
 						redraw_board;
 					end if;
 					
@@ -149,7 +149,7 @@ begin
 		when VERB_ROUTE =>
 			case noun is
 				when NOUN_NET =>
-					if object_ready then
+					if edit_process_running then
 						redraw_board;
 					end if;
 

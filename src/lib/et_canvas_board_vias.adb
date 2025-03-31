@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -202,7 +202,7 @@ package body et_canvas_board_vias is
 			when GDK_ESCAPE =>
 				reset_preliminary_via; -- CS no need
 				-- instead this should be sufficient:
-				-- object_ready := false;
+				-- edit_process_running := false;
 			
 			when GDK_TAB => 
 				--put_line ("size via tab " & text);
@@ -256,7 +256,7 @@ package body et_canvas_board_vias is
 			when GDK_ESCAPE =>
 				reset_preliminary_via; -- CS no need
 				-- instead this should be sufficient:
-				-- object_ready := false;
+				-- edit_process_running := false;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -310,7 +310,7 @@ package body et_canvas_board_vias is
 			when GDK_ESCAPE =>
 				reset_preliminary_via; -- CS no need
 				-- instead this should be sufficient:
-				-- object_ready := false;
+				-- edit_process_running := false;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -778,7 +778,7 @@ package body et_canvas_board_vias is
 			make_combo_restring_outer;
 
 			-- Signal the GUI to draw the via:
-			object_ready := true;
+			edit_process_running := true;
 				
 			-- Redraw the right box of the window:
 			box_v0.show_all;  -- CS box_v4 ?
@@ -794,7 +794,7 @@ package body et_canvas_board_vias is
 	
 	procedure reset_preliminary_via is begin
 	-- CS: see comments where this procedure is called.
-		object_ready := false;
+		edit_process_running := false;
 		object_tool := MOUSE;
 		clear_proposed_vias;
 
@@ -883,10 +883,10 @@ package body et_canvas_board_vias is
 				reset_preliminary_via; -- CS no need ?
 				-- instead this should be sufficient:
 				-- CS clear_proposed_vias
-				-- CS object_ready := false;
+				-- CS edit_process_running := false;
 				
 			when 1 =>
-				object_ready := true;
+				edit_process_running := true;
 				selected_via := proposed_vias.first;
 				reset_request_clarification;
 				
@@ -913,7 +913,7 @@ package body et_canvas_board_vias is
 	is
 		via : type_via (category => preliminary_via.category);
 	begin
-		if object_ready then
+		if edit_process_running then
 			
 			via.position := preliminary_via.drill.position;
 			via.diameter := preliminary_via.drill.diameter;
@@ -986,13 +986,13 @@ package body et_canvas_board_vias is
 			reset_preliminary_via; -- CS no need. 
 			-- Instead this should be sufficient:
 			-- clear_proposed_vias, 
-			-- object_ready := false
+			-- edit_process_running := false
 		end finalize;
 
 
 	begin
 		-- Initially the preliminary_via is not ready.
-		if not object_ready then
+		if not edit_process_running then
 
 			-- Set the tool being used:
 			object_tool := tool;
@@ -1010,12 +1010,12 @@ package body et_canvas_board_vias is
 				-- Here the clarification procedure ends.
 				-- A via has been selected (indicated by cursor selected_via)
 				-- via procedure select_via.
-				-- By setting object_ready, the selected
+				-- By setting edit_process_running, the selected
 				-- via will be drawn at the tool position
 				-- when conductor objects are drawn on the canvas.
 				-- Furtheron, on the next call of this procedure
 				-- the selected via will be assigned its final position.
-				object_ready := true;
+				edit_process_running := true;
 				reset_request_clarification;
 			end if;
 			
@@ -1058,7 +1058,7 @@ package body et_canvas_board_vias is
 			reset_preliminary_via; -- CS no need
 			-- instead this should be sufficient:
 			-- clear_proposed_vias
-			-- object_ready := false
+			-- edit_process_running := false
 		end finalize;
 		
 
@@ -1076,7 +1076,7 @@ package body et_canvas_board_vias is
 
 			-- If find_vias has found only one via
 			-- then delete that via immediately.
-			if object_ready then
+			if edit_process_running then
 				finalize;
 			end if;
 			

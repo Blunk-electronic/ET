@@ -90,7 +90,7 @@ procedure draw_conductors is
 
 		point : type_vector_model;
 	begin
-		if verb = VERB_PLACE and noun = NOUN_TEXT and object_ready then
+		if verb = VERB_PLACE and noun = NOUN_TEXT and edit_process_running then
 			
 			if object_layer_category = LAYER_CAT_CONDUCTOR 
 			and object_signal_layer = layer then
@@ -909,7 +909,7 @@ procedure draw_conductors is
 
 			case verb is
 				when VERB_MOVE =>
-					if object_ready then
+					if edit_process_running then
 
 						case object_tool is
 							when MOUSE =>
@@ -998,7 +998,7 @@ procedure draw_conductors is
 
 						-- If a path is being drawn, then the selected
 						-- airwire shall not be visible:
-						if object_ready then
+						if edit_process_running then
 							skip := true;
 						end if;
 					end if;
@@ -1097,7 +1097,7 @@ procedure draw_conductors is
 		-- The place where the via shall be placed:
 		position : type_vector_model;
 	begin
-		if object_ready then
+		if edit_process_running then
 
 			-- Set the point where the via is to be drawn:
 			position := get_primary_tool_position;
@@ -1231,7 +1231,7 @@ procedure draw_conductors is
 		
 	begin
 		
-		if verb = VERB_ROUTE and noun = NOUN_NET and object_ready then
+		if verb = VERB_ROUTE and noun = NOUN_NET and edit_process_running then
 			case object_tool is
 				when MOUSE => 
 					compute_and_draw (

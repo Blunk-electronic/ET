@@ -3323,7 +3323,7 @@ package body et_canvas is
 
 
 	procedure reset_object is begin
-		object_ready := false;
+		edit_process_running := false;
 		object_tool := MOUSE;
 		-- CS reset point_of_atttack ?
 		-- CS object_linewidth
@@ -3353,12 +3353,12 @@ package body et_canvas is
 		-- Upon the first calling of this procedure the start point of the
 		-- path will be set.
 		
-		if not object_ready then
+		if not edit_process_running then
 			-- set start point:
 			live_path.start_point := point;
 
 			-- Allow drawing of the path:
-			object_ready := true;
+			edit_process_running := true;
 
 			set_status (status_start_point & to_string (live_path.start_point) & ". " &
 				status_press_space & status_set_end_point & status_hint_for_abort);

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -377,13 +377,13 @@ package body et_scripting_interactive_schematic is
 				find_attached_segments;
 
 				-- Allow drawing the unit:
-				object_ready := true;
+				edit_process_running := true;
 
 				single_cmd_status.finalization_pending := true;
 				
 			when VERB_MOVE => 
 				-- Allow drawing the unit:
-				object_ready := true;
+				edit_process_running := true;
 
 				single_cmd_status.finalization_pending := true;
 				

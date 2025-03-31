@@ -398,7 +398,7 @@ package body et_canvas_board_assy_doc is
 				reset_proposed_objects (active_module, log_threshold + 1);
 				
 			when 1 =>
-				object_ready := true;
+				edit_process_running := true;
 				select_first_proposed;
 
 				if verb = VERB_MOVE then
@@ -472,7 +472,7 @@ package body et_canvas_board_assy_doc is
 		
 	begin
 		-- Initially the preliminary object is not ready.
-		if not object_ready then
+		if not edit_process_running then
 
 			-- Set the tool being used:
 			object_tool := tool;
@@ -487,7 +487,7 @@ package body et_canvas_board_assy_doc is
 				-- clarification is now pending.
 
 				-- If find_objects has found only one object
-				-- then the flag object_ready is set true.
+				-- then the flag edit_process_running is set true.
 
 			else
 				-- Here the clarification procedure ends.
@@ -501,7 +501,7 @@ package body et_canvas_board_assy_doc is
 				-- Furtheron, on the next call of this procedure
 				-- the selected segment will be assigned its final position.
 				
-				object_ready := true;
+				edit_process_running := true;
 				reset_request_clarification;
 			end if;
 			
@@ -568,9 +568,9 @@ package body et_canvas_board_assy_doc is
 			-- clarification is now pending.
 
 			-- If find_objects has found only one object
-			-- then the flag object_ready is set true.
+			-- then the flag edit_process_running is set true.
 
-			if object_ready then
+			if edit_process_running then
 				finalize;
 			end if;
 		else

@@ -473,7 +473,7 @@ package body et_canvas_schematic_nets is
 		-- Upon the first calling of this procedure the start point of the
 		-- path will be set.
 		
-		if not object_ready then
+		if not edit_process_running then
 			-- Set start point:
 			live_path.start_point := point;
 					
@@ -481,7 +481,7 @@ package body et_canvas_schematic_nets is
 			if valid_for_net_segment (live_path.start_point, log_threshold + 3) then
 
 				-- Allow drawing of the path:
-				object_ready := true;
+				edit_process_running := true;
 				
 				set_status (status_start_point & to_string (live_path.start_point) & ". " &
 					status_press_space & status_set_end_point & status_hint_for_abort);
@@ -787,7 +787,7 @@ package body et_canvas_schematic_nets is
 
 	procedure reset_preliminary_segment is 
 	begin
-		object_ready := false;
+		edit_process_running := false;
 		object_tool := MOUSE;
 		-- live_path := (bend_style => live_path.bend_style, -- no change
 					-- others => <>);
@@ -953,7 +953,7 @@ package body et_canvas_schematic_nets is
 								reset_preliminary_segment;
 								
 							when 1 =>
-								object_ready := true;
+								edit_process_running := true;
 								selected_segment := proposed_segments.first;
 
 								reset_request_clarification;
@@ -1110,7 +1110,7 @@ package body et_canvas_schematic_nets is
 
 		
 	begin
-		if not object_ready then
+		if not edit_process_running then
 			
 			-- Set the tool being used for dragging the net segment:
 			object_tool := tool;
@@ -1119,7 +1119,7 @@ package body et_canvas_schematic_nets is
 				find_segments (position);
 				object_point_of_attack := position;
 			else
-				object_ready := true;
+				edit_process_running := true;
 				reset_request_clarification;
 			end if;
 

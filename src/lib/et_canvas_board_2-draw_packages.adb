@@ -1929,7 +1929,7 @@ is
 
 							-- If a move operation is in progress, then the mouse
 							-- or cursor position overwrites the device position:
-							if object_ready then
+							if edit_process_running then
 								draw_being_moved;
 							else
 								draw_fixed;						
@@ -2054,7 +2054,7 @@ is
 
 						-- If a move operation is in progress, then the mouse
 						-- or cursor position overwrites the device position:
-						if object_ready then
+						if edit_process_running then
 							draw_being_moved;
 						else
 							draw_fixed;						

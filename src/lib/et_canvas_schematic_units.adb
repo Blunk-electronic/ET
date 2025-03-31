@@ -474,7 +474,7 @@ package body et_canvas_schematic_units is
 		tool		: in type_tool;
 		position	: in type_vector_model)
 	is begin
-		if not object_ready then
+		if not edit_process_running then
 
 			-- Set the tool being used::
 			object_tool := tool;
@@ -482,7 +482,7 @@ package body et_canvas_schematic_units is
 			if not clarification_pending then
 				find_units_for_move (position);
 			else
-				object_ready := true;
+				edit_process_running := true;
 				reset_request_clarification;
 			end if;
 
@@ -555,7 +555,7 @@ package body et_canvas_schematic_units is
 		tool		: in type_tool;
 		position	: in type_vector_model)
 	is begin
-		if not object_ready then
+		if not edit_process_running then
 			
 			-- Set the tool being used:
 			object_tool := tool;
@@ -564,7 +564,7 @@ package body et_canvas_schematic_units is
 				find_units_for_move (position);
 			else
 				find_attached_segments;
-				object_ready := true;
+				edit_process_running := true;
 				reset_request_clarification;
 			end if;
 
@@ -601,7 +601,7 @@ package body et_canvas_schematic_units is
 				reset_unit_move;
 				
 			when 1 =>
-				object_ready := true;
+				edit_process_running := true;
 				selected_unit := proposed_units.first;
 
 				case verb is

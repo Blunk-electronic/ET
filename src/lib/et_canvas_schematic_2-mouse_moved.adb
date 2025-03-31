@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -64,7 +64,7 @@ begin
 		when VERB_DRAW =>
 			case noun is
 				when NOUN_NET =>
-					if object_ready then
+					if edit_process_running then
 						redraw;
 					end if;
 
@@ -86,12 +86,12 @@ begin
 					end if;
 
 				when NOUN_NET =>
-					if object_ready then
+					if edit_process_running then
 						redraw_schematic;
 					end if;
 
 				when NOUN_UNIT =>
-					if object_ready then
+					if edit_process_running then
 						redraw_schematic;
 					end if;
 

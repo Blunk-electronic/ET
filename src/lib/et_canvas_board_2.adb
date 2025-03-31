@@ -368,7 +368,7 @@ package body et_canvas_board_2 is
 	begin
 		-- put_line ("draw_text_being_placed");
 		
-		if verb = VERB_PLACE and noun = NOUN_TEXT and object_ready then
+		if verb = VERB_PLACE and noun = NOUN_TEXT and edit_process_running then
 
 			if object_layer_category = category and object_face = face then
 
@@ -476,7 +476,7 @@ package body et_canvas_board_2 is
 		-- put_line ("draw_path");
 		
 		
-		if verb = VERB_DRAW and noun = NOUN_LINE and object_ready
+		if verb = VERB_DRAW and noun = NOUN_LINE and edit_process_running
 		and object_layer_category = cat then
 			case object_tool is
 				when MOUSE => 
@@ -566,7 +566,7 @@ package body et_canvas_board_2 is
 	begin
 		-- put_line ("draw_live_zone");		
 		
-		if verb = VERB_DRAW and object_ready
+		if verb = VERB_DRAW and edit_process_running
 		and object_layer_category = cat 
 			
 		-- and (noun = NOUN_ZONE or noun = NOUN_OUTLINE) 

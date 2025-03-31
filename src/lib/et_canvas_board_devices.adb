@@ -63,7 +63,7 @@ package body et_canvas_board_devices is
 	
 
 	procedure reset_preliminary_electrical_device is begin
-		object_ready := false;
+		edit_process_running := false;
 		object_tool := MOUSE;
 		object_device_name := no_name;
 
@@ -73,7 +73,7 @@ package body et_canvas_board_devices is
 
 
 	procedure reset_preliminary_non_electrical_device is begin
-		object_ready := false;
+		edit_process_running := false;
 		object_tool := MOUSE;
 		object_device_name := no_name;
 
@@ -189,7 +189,7 @@ package body et_canvas_board_devices is
 				reset_preliminary_electrical_device;
 				
 			when 1 =>
-				object_ready := true;
+				edit_process_running := true;
 				select_first_proposed;
 				reset_request_clarification;
 				
@@ -246,7 +246,7 @@ package body et_canvas_board_devices is
 				reset_preliminary_non_electrical_device;
 				
 			when 1 =>
-				object_ready := true;
+				edit_process_running := true;
 				select_first_proposed;
 				reset_request_clarification;
 				
@@ -314,7 +314,7 @@ package body et_canvas_board_devices is
 		
 	begin
 		-- Initially the preliminary_electrical_device is not ready.
-		if not object_ready then
+		if not edit_process_running then
 
 			-- Set the tool being used:
 			object_tool := tool;
@@ -332,12 +332,12 @@ package body et_canvas_board_devices is
 				-- Here the clarification procedure ends.
 				-- A device has been selected
 				-- via procedure select_electrical_device.
-				-- By setting object_ready, the selected
+				-- By setting edit_process_running, the selected
 				-- device will be drawn at the tool position
 				-- when packages are drawn on the canvas.
 				-- Furtheron, on the next call of this procedure
 				-- the selected device will be assigned its final position.
-				object_ready := true;
+				edit_process_running := true;
 				reset_request_clarification;
 			end if;
 			
@@ -396,7 +396,7 @@ package body et_canvas_board_devices is
 		
 	begin
 		-- Initially the preliminary_non_electrical_device is not ready.
-		if not object_ready then
+		if not edit_process_running then
 
 			-- Set the tool being used:
 			object_tool := tool;
@@ -408,17 +408,17 @@ package body et_canvas_board_devices is
 				-- clarification is now pending.
 
 				-- If find_non_electrical_devices has found only one device
-				-- then the flag object_ready is set true.
+				-- then the flag edit_process_running is set true.
 			else
 				-- Here the clarification procedure ends.
 				-- A device has been selected
 				-- via procedure select_non_electrical_device.
-				-- By setting object_ready, the selected
+				-- By setting edit_process_running, the selected
 				-- device will be drawn at the tool position
 				-- when packages are drawn on the canvas.
 				-- Furtheron, on the next call of this procedure
 				-- the selected device will be assigned its final position.
-				object_ready := true;
+				edit_process_running := true;
 				reset_request_clarification;
 			end if;
 			
@@ -491,7 +491,7 @@ package body et_canvas_board_devices is
 
 			-- If find_electrical_devices has found only one device
 			-- then rotate that device immediately.
-			if object_ready then
+			if edit_process_running then
 				finalize;
 			end if;
 
@@ -562,7 +562,7 @@ package body et_canvas_board_devices is
 
 			-- If find_non_electrical_devices has found only one device
 			-- then rotate that device immediately.
-			if object_ready then
+			if edit_process_running then
 				finalize;
 			end if;
 
@@ -643,7 +643,7 @@ package body et_canvas_board_devices is
 
 			-- If find_electrical_devices has found only one device
 			-- then flip that device immediately.
-			if object_ready then
+			if edit_process_running then
 				finalize;
 			end if;
 			
@@ -717,7 +717,7 @@ package body et_canvas_board_devices is
 
 			-- If find_non_electrical_devices has found only one device
 			-- then flip that device immediately.
-			if object_ready then
+			if edit_process_running then
 				finalize;
 			end if;
 			
@@ -789,7 +789,7 @@ package body et_canvas_board_devices is
 
 			-- If find_non_electrical_devices has found only one device
 			-- then delete that device immediately.
-			if object_ready then
+			if edit_process_running then
 				finalize;
 			end if;
 

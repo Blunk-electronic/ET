@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -2894,7 +2894,7 @@ is
 											find_attached_segments;
 											
 											-- Allow drawing the unit:
-											object_ready := true;
+											edit_process_running := true;
 
 											single_cmd_status.finalization_pending := true;
 											-- CS redraw;
@@ -3009,7 +3009,7 @@ is
 										object_tool := primary_tool;
 									
 										-- Allow drawing the unit:
-										object_ready := true;
+										edit_process_running := true;
 
 										single_cmd_status.finalization_pending := true;
 										-- CS redraw;

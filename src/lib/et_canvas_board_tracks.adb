@@ -529,7 +529,7 @@ package body et_canvas_board_tracks is
 			
 			procedure arbitrary_start_point is begin
 				live_path.start_point := point;
-				object_ready := true;
+				edit_process_running := true;
 			end arbitrary_start_point;
 
 			
@@ -546,7 +546,7 @@ package body et_canvas_board_tracks is
 				
 					modify_status (active_module, aw, (SET, SELECTED), log_threshold + 1);
 				
-					object_ready := true;
+					edit_process_running := true;
 				end one_airwire_proposed;
 	
 
@@ -587,7 +587,7 @@ package body et_canvas_board_tracks is
 
 					live_path.start_point := get_nearest (element (aw.wire_cursor), point);
 					
-					object_ready := true;
+					edit_process_running := true;
 
 					reset_request_clarification;
 				end if;
@@ -649,7 +649,7 @@ package body et_canvas_board_tracks is
 		-- On the first call of this procedure the start point of the
 		-- path will be set.
 		
-		if not object_ready then
+		if not edit_process_running then
 			set_start_point;
 		else
 
@@ -695,7 +695,7 @@ package body et_canvas_board_tracks is
 				live_path.start_point := point;
 				
 			else -- CASE 2
-				object_ready := false;
+				edit_process_running := false;
 			end if;
 		end if;			
 	end make_path;

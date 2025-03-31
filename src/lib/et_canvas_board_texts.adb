@@ -417,7 +417,7 @@ package body et_canvas_board_texts is
 		
 		if not is_empty (preliminary_text.text.content) then
 			--put_line ("content: " & enclose_in_quotes (to_string (preliminary_text.text.content)));
-			object_ready := true;
+			edit_process_running := true;
 		end if;
 		
 	end button_apply_clicked;
@@ -749,7 +749,7 @@ package body et_canvas_board_texts is
 	procedure place_text (
 		point : in type_vector_model) 
 	is begin
-		if object_ready then
+		if edit_process_running then
 			move_to (preliminary_text.text.position.place, point);
 			
 			case object_layer_category is

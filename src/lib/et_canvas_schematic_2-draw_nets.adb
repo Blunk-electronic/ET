@@ -893,7 +893,7 @@ procedure draw_nets is
 						-- CS test verb and noun ?						
 						if is_selected (net_cursor, strand_cursor, segment_cursor) then
 						
-							if object_ready then
+							if edit_process_running then
 								-- Draw the net segments being moved or dragged.
 								-- If we are dragging a segment, then other attached segments
 								-- will be dragged along.
@@ -1142,7 +1142,7 @@ procedure draw_nets is
 
 		
 	begin -- draw_path
-		if verb = VERB_DRAW and noun = NOUN_NET and object_ready = true then
+		if verb = VERB_DRAW and noun = NOUN_NET and edit_process_running = true then
 
 			-- The route start point has been set eariler by procedures
 			-- key_pressed or button_pressed.
