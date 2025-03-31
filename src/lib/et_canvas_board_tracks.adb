@@ -499,6 +499,9 @@ package body et_canvas_board_tracks is
 
 			-- Display the object in the status bar:
 			show_selected_object (element (proposed_object));
+
+			-- Get the name of the affected net:
+			object_net_name := get_net_name (proposed_object);
 		end do_it;
 		
 		
@@ -544,6 +547,9 @@ package body et_canvas_board_tracks is
 				procedure one_airwire_proposed is begin
 					aw := get_first_object (active_module, PROPOSED, log_threshold + 1);
 
+					-- Get the name of the affected net:
+					object_net_name := et_nets.get_net_name (aw.net_cursor);
+
 					live_path.start_point := get_nearest (element (aw.wire_cursor), point);
 				
 					modify_status (active_module, aw, (SET, SELECTED), log_threshold + 1);
@@ -552,9 +558,14 @@ package body et_canvas_board_tracks is
 				end one_airwire_proposed;
 	
 
+				
 				procedure many_airwires_proposed is begin
 					set_request_clarification;
 					aw := get_first_object (active_module, PROPOSED, log_threshold + 1);
+
+					-- Get the name of the affected net:
+					object_net_name := et_nets.get_net_name (aw.net_cursor);
+					
 					modify_status (active_module, aw, (SET, SELECTED), log_threshold + 1);
 				end many_airwires_proposed;
 	

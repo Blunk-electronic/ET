@@ -303,6 +303,11 @@ package et_nets is
 		element_type	=> type_net);
 
 
+	function get_net_name (
+		net_cursor : in pac_nets.cursor)
+		return pac_net_name.bounded_string;
+	
+
 	-- Returns the name of the net indicated
 	-- by the given net cursor:
 	function to_string (

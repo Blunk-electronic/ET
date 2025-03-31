@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -507,6 +507,18 @@ package body et_nets is
 	end merge_nets;
 
 
+
+
+	function get_net_name (
+		net_cursor : in pac_nets.cursor)
+		return pac_net_name.bounded_string
+	is 
+		use pac_nets;
+	begin
+		return key (net_cursor);
+	end;
+
+	
 
 	
 	function to_string (

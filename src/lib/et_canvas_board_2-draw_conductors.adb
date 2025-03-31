@@ -1004,6 +1004,8 @@ procedure draw_conductors is
 					end if;
 
 					if not skip then
+						 -- put_line (to_string (c));
+						
 						draw_line (
 							line		=> to_line_coarse (airwire),
 							width		=> 0.0, -- use minimal linewidth
@@ -1019,6 +1021,8 @@ procedure draw_conductors is
 
 
 			begin
+				-- put_line ("draw ratsnest net " & to_string (n));				
+				
 				if not element (n).route.airwires.hidden then
 					iterate (element (n).route.airwires.lines, query_airwire'access);
 				end if;

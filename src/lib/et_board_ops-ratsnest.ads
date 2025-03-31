@@ -94,6 +94,11 @@ package et_board_ops.ratsnest is
 	end record;
 
 	package pac_objects is new doubly_linked_lists (type_object_airwire);
+
+
+	function get_net_name (
+		object : in pac_objects.cursor)
+		return pac_net_name.bounded_string;
 	
 
 	-- Returns the number of items stored in the given list:

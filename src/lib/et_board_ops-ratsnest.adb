@@ -335,6 +335,19 @@ package body et_board_ops.ratsnest is
 
 
 
+
+	function get_net_name (
+		object : in pac_objects.cursor)
+		return pac_net_name.bounded_string
+	is 
+		use pac_objects;
+		use pac_nets;
+		aw : type_object_airwire := element (object);
+	begin
+		return get_net_name (aw.net_cursor);
+	end get_net_name;
+
+
 	
 
 	function get_count (
