@@ -537,6 +537,8 @@ package body et_canvas_board_tracks is
 			procedure start_with_nearest_airwire is 
 				count : natural := 0; -- the number of proposed airwires
 				aw : type_object_airwire;
+
+				use pac_airwires;
 				
 
 				procedure one_airwire_proposed is begin

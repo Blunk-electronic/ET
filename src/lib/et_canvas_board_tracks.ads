@@ -159,16 +159,6 @@ package et_canvas_board_tracks is
 
 
 
-	
-	proposed_airwires : pac_proposed_airwires.list;
-	use pac_proposed_airwires;
-	
-	selected_airwire : pac_proposed_airwires.cursor;
-
-
-	use pac_airwires;
-
-
 	-- This procedure is required in order to clarify
 	-- which object among the proposed objects is meant.
 	-- On every call of this procedure we advance from one
