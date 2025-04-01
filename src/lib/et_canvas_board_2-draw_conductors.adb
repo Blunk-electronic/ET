@@ -606,6 +606,7 @@ procedure draw_conductors is
 		end set_width_and_radius;
 
 
+		
 		-- This procedure draws the restring using
 		-- the circle as described above:
 		procedure draw_restring is 
@@ -662,6 +663,7 @@ procedure draw_conductors is
 		end draw_net_name;
 
 		
+		
 		-- Draws the layer numbers above the net name.
 		-- The text size is set automatically with the radius of the drill:
 		procedure draw_numbers (from, to : in string) is 
@@ -689,6 +691,7 @@ procedure draw_conductors is
 				alignment	=> (ALIGN_CENTER, ALIGN_CENTER));
 			
 		end draw_numbers;
+
 
 		
 		-- Draws the drill size below the net name.
@@ -726,6 +729,7 @@ procedure draw_conductors is
 		end draw_drill_size;
 		
 
+		
 		-- Depening on the category of the via, the order in
 		-- which things are to be drawn differs:
 		procedure query_category is 
@@ -987,36 +991,24 @@ procedure draw_conductors is
 					use et_canvas_board_tracks;
 					airwire : type_airwire renames element (c);
 					restore_brightness : boolean := false;
-					skip : boolean := false;
-
 				begin
 					-- If the candidate airwire is selected, then draw it highlighted:
-					--if airwire_is_selected (c, key (n)) then
 					if is_selected (c) then
 						set_color_ratsnest (BRIGHT);
 						restore_brightness := true;
-
-						-- If a path is being drawn, then the selected
-						-- airwire shall not be visible:
-						if edit_process_running then
-							skip := true;
-						end if;
 					end if;
 
-					if not skip then
-						 -- put_line (to_string (c));
-						
-						draw_line (
-							line		=> to_line_coarse (airwire),
-							width		=> 0.0, -- use minimal linewidth
-							do_stroke	=> true);
-					end if;
+					 -- put_line (to_string (c));
+					
+					draw_line (
+						line		=> to_line_coarse (airwire),
+						width		=> 0.0, -- use minimal linewidth
+						do_stroke	=> true);
 					
 					-- restore normal brightness
 					if restore_brightness then
 						set_color_ratsnest;
 					end if;
-
 				end query_airwire;
 
 
