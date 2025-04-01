@@ -70,38 +70,26 @@ package body et_canvas_board_silkscreen is
 
 	-- Outputs the selected line in the status bar:
 	procedure show_selected_line (
-		selected		: in type_object_line;
-		clarification	: in boolean := false)
+		selected : in type_object_line)
 	is 
 		praeamble : constant string := "selected: ";
 	begin
-		if clarification then
-			set_status (praeamble & to_string (element (selected.cursor))
-				& " face" & to_string (selected.face) & ". " 
-				& status_next_object_clarification);
-		else
-			set_status (praeamble & to_string (element (selected.cursor))
-				& " face" & to_string (selected.face) & ". ");
-		end if;		
+		set_status (praeamble & to_string (element (selected.cursor))
+			& " face" & to_string (selected.face) & ". " 
+			& status_next_object_clarification);
 	end show_selected_line;
 
 
 
 	-- Outputs the selected arc in the status bar:
 	procedure show_selected_arc (
-		selected		: in type_object_arc;
-		clarification	: in boolean := false)
+		selected : in type_object_arc)
 	is 
 		praeamble : constant string := "selected: ";
 	begin
-		if clarification then
-			set_status (praeamble & to_string (element (selected.cursor))
-				& " face" & to_string (selected.face) & ". " 
-				& status_next_object_clarification);
-		else
-			set_status (praeamble & to_string (element (selected.cursor))
-				& " face" & to_string (selected.face) & ". ");
-		end if;		
+		set_status (praeamble & to_string (element (selected.cursor))
+			& " face" & to_string (selected.face) & ". " 
+			& status_next_object_clarification);
 	end show_selected_arc;
 
 	
@@ -109,21 +97,15 @@ package body et_canvas_board_silkscreen is
 	
 	-- Outputs the selected segment in the status bar:
 	procedure show_selected_segment (
-		selected		: in type_object_segment;
-		clarification	: in boolean := false)
+		selected : in type_object_segment)
 	is 
 		praeamble : constant string := "selected: ";
 
 		use et_board_shapes_and_text.pac_contours;
 	begin
-		if clarification then
-			set_status (praeamble & to_string (selected.segment)
-				& " face" & to_string (selected.face) & ". " 
-				& status_next_object_clarification);
-		else
-			set_status (praeamble & to_string (selected.segment)
-				& " face" & to_string (selected.face) & ". ");
-		end if;		
+		set_status (praeamble & to_string (selected.segment)
+			& " face" & to_string (selected.face) & ". " 
+			& status_next_object_clarification);
 	end show_selected_segment;
 
 
@@ -131,17 +113,12 @@ package body et_canvas_board_silkscreen is
 
 	-- Outputs the selected text in the status bar:
 	procedure show_selected_text (
-		selected		: in type_object_text;
-		clarification	: in boolean := false)
+		selected : in type_object_text)
 	is 
 		praeamble : constant string := "selected: ";
 	begin
-		if clarification then
-			set_status (praeamble & to_string (selected.cursor)
-				& status_next_object_clarification);
-		else
-			set_status (praeamble & to_string (selected.cursor));
-		end if;		
+		set_status (praeamble & to_string (selected.cursor)
+			& status_next_object_clarification);
 	end show_selected_text;
 
 
@@ -149,27 +126,21 @@ package body et_canvas_board_silkscreen is
 
 	-- Outputs the selected placeholder in the status bar:
 	procedure show_selected_placeholder (
-		selected		: in type_object_placeholder;
-		clarification	: in boolean := false)
+		selected : in type_object_placeholder)
 	is 
 		praeamble : constant string := "selected: ";
 		use et_pcb_placeholders;
 		use pac_text_placeholders;
 	begin
-		if clarification then
-			set_status (praeamble & to_string (selected.cursor)
-				& status_next_object_clarification);
-		else
-			set_status (praeamble & to_string (selected.cursor));
-		end if;		
+		set_status (praeamble & to_string (selected.cursor)
+			& status_next_object_clarification);
 	end show_selected_placeholder;
 
 	
 
 
 	procedure show_selected_object (
-		selected		: in type_object;
-		clarification	: in boolean := false)
+		selected : in type_object)
 	is begin
 		case selected.cat is
 			when CAT_LINE =>
