@@ -58,6 +58,9 @@ package et_ratsnest is
 	use pac_geometry_2;
 	
 
+	-- Airwires are machine made. For this reason
+	-- they are lines whose start and end points are
+	-- specified by floating point numbers:
 	subtype type_airwire is type_line_fine;
 	
 	
@@ -75,6 +78,10 @@ package et_ratsnest is
 		return boolean;
 
 
+	-- Returns the start and end points of an airwire
+	-- as model coordinates (fixed point numbers).
+	-- The reason is that for the operator these numbers
+	-- with a sufficient accuracy are easier to understand:
 	function to_string (
 		wire : in pac_airwires.cursor)
 		return string;

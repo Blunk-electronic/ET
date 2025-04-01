@@ -68,6 +68,7 @@ with et_board_ops.conductors;			use et_board_ops.conductors;
 with et_modes.board;
 
 with et_nets;
+with et_net_names;
 with et_schematic_ops.nets;
 
 with et_display;						use et_display;
@@ -429,19 +430,14 @@ package body et_canvas_board_tracks is
 
 
 	procedure show_selected_object (
-		selected		: in type_object_airwire;
-		clarification	: in boolean := false)
+		selected		: in type_object_airwire)
 	is 
 		praeamble : constant string := "selected: ";
 	begin
-		if clarification then
-			set_status (praeamble & to_string (selected.wire_cursor)
-				& " net " & et_nets.to_string (selected.net_cursor)
-				& ". " & status_next_object_clarification);
-		else
-			set_status (praeamble & to_string (selected.wire_cursor)
-				& " net " & et_nets.to_string (selected.net_cursor));
-		end if;		
+		set_status (praeamble 
+			& "net " & et_nets.to_string (selected.net_cursor)
+			& " " & to_string (selected.wire_cursor) & ". " 
+			& status_next_object_clarification);
 	end show_selected_object;
 
 
@@ -481,6 +477,13 @@ package body et_canvas_board_tracks is
 				object_cursor	=> proposed_object, 
 				log_threshold	=> log_threshold + 1);
 
+			-- The proposed object is no longer moving:
+			modify_status (
+				module_cursor	=> active_module, 
+				operation		=> (CLEAR, MOVING),
+				object_cursor	=> proposed_object, 
+				log_threshold	=> log_threshold + 1);
+			
 			-- Advance to the next proposed object:
 			next (proposed_object);
 
@@ -497,6 +500,14 @@ package body et_canvas_board_tracks is
 				object_cursor	=> proposed_object, 
 				log_threshold	=> log_threshold + 1);
 
+			-- Set the proposed object as moving:
+			modify_status (
+				module_cursor	=> active_module, 
+				operation		=> (SET, MOVING),
+				object_cursor	=> proposed_object, 
+				log_threshold	=> log_threshold + 1);
+
+			
 			-- Display the object in the status bar:
 			show_selected_object (element (proposed_object));
 
@@ -529,9 +540,15 @@ package body et_canvas_board_tracks is
 			use et_object_status;
 			use et_pcb_coordinates_2.pac_geometry_brd;
 
+			use et_nets;
+			use et_net_names;
+			
+			praeamble : constant string := "net ";
+			
 			
 			procedure arbitrary_start_point is begin
 				live_path.start_point := point;
+				status_bar_path_show_start_point (praeamble & net_name_to_string (object_net_name));
 				edit_process_running := true;
 			end arbitrary_start_point;
 
@@ -541,6 +558,7 @@ package body et_canvas_board_tracks is
 				count : natural := 0; -- the number of proposed airwires
 				aw : type_object_airwire;
 
+				
 				use pac_airwires;
 				
 
@@ -548,11 +566,13 @@ package body et_canvas_board_tracks is
 					aw := get_first_object (active_module, PROPOSED, log_threshold + 1);
 
 					-- Get the name of the affected net:
-					object_net_name := et_nets.get_net_name (aw.net_cursor);
+					object_net_name := get_net_name (aw.net_cursor);
 
 					live_path.start_point := get_nearest (element (aw.wire_cursor), point);
-				
+					status_bar_path_show_start_point (praeamble & net_name_to_string (object_net_name));
+					
 					modify_status (active_module, aw, (SET, SELECTED), log_threshold + 1);
+					modify_status (active_module, aw, (SET, MOVING), log_threshold + 1);
 				
 					edit_process_running := true;
 				end one_airwire_proposed;
@@ -564,9 +584,10 @@ package body et_canvas_board_tracks is
 					aw := get_first_object (active_module, PROPOSED, log_threshold + 1);
 
 					-- Get the name of the affected net:
-					object_net_name := et_nets.get_net_name (aw.net_cursor);
+					object_net_name := get_net_name (aw.net_cursor);
 					
 					modify_status (active_module, aw, (SET, SELECTED), log_threshold + 1);
+					modify_status (active_module, aw, (SET, MOVING), log_threshold + 1);
 				end many_airwires_proposed;
 	
 				
@@ -620,10 +641,7 @@ package body et_canvas_board_tracks is
 				when NEAREST_OBJECT =>
 					null; -- CS
 			end case;
-
-			
-			set_status (status_start_point & to_string (live_path.start_point) & ". " &
-				status_press_space & status_set_end_point & status_hint_for_abort);
+		
 
 		end set_start_point;
 		

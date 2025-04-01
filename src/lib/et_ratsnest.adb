@@ -75,7 +75,7 @@ package body et_ratsnest is
 		wire : in pac_airwires.cursor)
 		return string
 	is begin
-		return to_string (element (wire));
+		return to_string (to_line_coarse (element (wire)));
 	end to_string;
 
 	
