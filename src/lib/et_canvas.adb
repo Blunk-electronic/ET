@@ -3286,7 +3286,7 @@ package body et_canvas is
 		request_clarificaton := YES;
 
 		-- show instruction in status bar
-		set_status ("clarify object by right click or page-down key !");
+		set_status ("Clarify object by right click or page-down key !");
 	end set_request_clarification;
 
 	
@@ -3332,6 +3332,26 @@ package body et_canvas is
 
 
 
+
+	procedure status_bar_path_show_start_point (
+		prepend : in string := "")
+	is begin
+		if prepend'length = 0 then
+			
+			set_status (
+				status_start_point & " " & to_string (live_path.start_point) & ". " 
+				& status_press_space & status_set_end_point & status_hint_for_abort);
+
+		else
+			set_status (
+				prepend & " "
+				& status_start_point & " " & to_string (live_path.start_point) & ". " 
+				& status_press_space & status_set_end_point & status_hint_for_abort);
+
+		end if;
+	end;
+
+	
 	
 
 	procedure make_path (
@@ -3360,8 +3380,8 @@ package body et_canvas is
 			-- Allow drawing of the path:
 			edit_process_running := true;
 
-			set_status (status_start_point & to_string (live_path.start_point) & ". " &
-				status_press_space & status_set_end_point & status_hint_for_abort);
+			status_bar_path_show_start_point;
+			
 
 		else -- preliminary_zone IS ready
 

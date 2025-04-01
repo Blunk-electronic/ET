@@ -1184,6 +1184,18 @@ package et_canvas is
 	
 
 
+
+	
+-- LIVE PATH:
+	
+	-- Outputs the start point of the live_path in
+	-- the status bar along with some advises.
+	-- The string given via 'prepend' will be prepended
+	-- to the message:
+	procedure status_bar_path_show_start_point (
+		prepend : in string := "");
+	
+	
 	-- Builds a path. This procedure requires to be called twice:
 	-- first time for the start and the second time for the 
 	-- end point of the path.
