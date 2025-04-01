@@ -6,20 +6,21 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
+-- Copyright (C) 2017 - 2025                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
---    This program is free software: you can redistribute it and/or modify  --
---    it under the terms of the GNU General Public License as published by  --
---    the Free Software Foundation, either version 3 of the License, or     --
---    (at your option) any later version.                                   --
+-- This library is free software;  you can redistribute it and/or modify it --
+-- under terms of the  GNU General Public License  as published by the Free --
+-- Software  Foundation;  either version 3,  or (at your  option) any later --
+-- version. This library is distributed in the hope that it will be useful, --
+-- but WITHOUT ANY WARRANTY;  without even the implied warranty of MERCHAN- --
+-- TABILITY or FITNESS FOR A PARTICULAR PURPOSE.                            --
 --                                                                          --
---    This program is distributed in the hope that it will be useful,       --
---    but WITHOUT ANY WARRANTY; without even the implied warranty of        --
---    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         --
---    GNU General Public License for more details.                          --
---                                                                          --
---    You should have received a copy of the GNU General Public License     --
---    along with this program.  If not, see <http://www.gnu.org/licenses/>. --
+-- You should have received a copy of the GNU General Public License and    --
+-- a copy of the GCC Runtime Library Exception along with this program;     --
+-- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
+-- <http://www.gnu.org/licenses/>.                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your edtior to 4.
@@ -35,8 +36,23 @@
 --   history of changes:
 --
 
+with ada.text_io;				use ada.text_io;
+
+with ada.strings.fixed; 		use ada.strings.fixed;
+
+
 package body et_net_names is
 
+
+	function net_name_to_string (
+		net_name	: in pac_net_name.bounded_string)
+		return string
+	is begin
+		return pac_net_name.to_string (net_name);
+	end net_name_to_string;
+
+
+	
 	
 	procedure check_net_name_length (net : in string) is begin
 		if net'length > net_name_length_max then
@@ -46,6 +62,8 @@ package body et_net_names is
 			raise constraint_error;
 		end if;
 	end check_net_name_length;
+
+
 
 	
 	procedure check_net_name_characters (
@@ -85,6 +103,9 @@ package body et_net_names is
 		
 	end check_net_name_characters;
 
+
+
+	
 	function is_empty (net : in pac_net_name.bounded_string)
 		return boolean
 	is begin
@@ -94,12 +115,18 @@ package body et_net_names is
 			return false;
 		end if;
 	end is_empty;
+
+
+
 	
 	function to_net_name (net_name : in string) return pac_net_name.bounded_string is begin
 		return pac_net_name.to_bounded_string (to_upper (net_name));
 	end to_net_name;
 	
 
+
+
+	
 	function to_anonymous_net_name (index : in type_anonymous_net_index) -- 56
 		return pac_net_name.bounded_string -- N$56
 	is
@@ -108,6 +135,9 @@ package body et_net_names is
 	begin
 		return to_net_name (name); -- N$56
 	end to_anonymous_net_name;
+
+
+
 
 	
 	function anonymous (net_name : in pac_net_name.bounded_string) -- N$456
@@ -143,6 +173,8 @@ package body et_net_names is
 
 		return result;
 	end anonymous;
+
+
 	
 
 	function to_string (
@@ -154,6 +186,8 @@ package body et_net_names is
 		return pac_net_name.to_string (element (net));
 	end to_string;
 
+
+	
 	
 end et_net_names;
 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,17 +36,16 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
+
 with ada.characters.handling;	use ada.characters.handling;
 with ada.strings; 				use ada.strings;
 with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.fixed; 		use ada.strings.fixed;
+
 with ada.strings.bounded;       use ada.strings.bounded;
+
 with ada.containers; 			use ada.containers;
-with ada.containers.vectors;
 with ada.containers.doubly_linked_lists;
 
-with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 
 
@@ -58,59 +57,76 @@ package et_net_names is
 	anonymous_net_name_prefix : constant string := "N$";
 	subtype type_anonymous_net_index is positive range 1 .. 1_000_000;
 	-- CS increase upper limit if necessary.
+
 	
 	-- The name of a net may have 100 characters which seems sufficient for now.
 	net_name_characters : character_set := to_set (ranges => (('A','Z'),('0','9'))) or to_set ("_-#");
 
+	
 	net_inversion_mark : constant string := "#"; 
 	-- CS required ? should not be allowed at all. Operater should write net_name_N
 	-- instead.
 
+	
 	net_name_length_max : constant natural := 100;
 
+	
 	package pac_net_name is new generic_bounded_length (net_name_length_max); 
 	use pac_net_name;
 
+	
 	no_name : constant pac_net_name.bounded_string := to_bounded_string ("");
 
+	
+
+	function net_name_to_string (
+		net_name	: in pac_net_name.bounded_string)
+		return string;
 
 	
 	
-	procedure check_net_name_length (net : in string);
 	-- Tests if the given net name is longer than allowed.
+	procedure check_net_name_length (net : in string);
+
+
 	
+	-- Tests if the given net name contains only valid characters as specified
+	-- by given character set.
 	procedure check_net_name_characters (
 		net			: in pac_net_name.bounded_string;
 		characters	: in character_set := net_name_characters);
-	-- Tests if the given net name contains only valid characters as specified
-	-- by given character set.
 
+
+	
 	-- Returns true if given net name is empty:
 	function is_empty (net : in pac_net_name.bounded_string)
 		return boolean;
+
 	
 	function to_net_name (net_name : in string) return pac_net_name.bounded_string;
 
-	-- CS
-	-- function to_string (
-	-- 	net	: in pac_net_name.bounded_string)
-	-- 	return string;
+
 	
 	
 	-- Returns a name for an anonymous net like N$56
 	function to_anonymous_net_name (index : in type_anonymous_net_index) 
 		return pac_net_name.bounded_string;
+
+
 	
-	function anonymous (net_name : in pac_net_name.bounded_string) return boolean;
 	-- Returns true if the given net name is anonymous.
 	-- CS rename to is_anonymous
+	function anonymous (net_name : in pac_net_name.bounded_string) return boolean;
 
 
+	
 	-- Net names can also be collected in simple lists:
 	package pac_net_names is new doubly_linked_lists (pac_net_name.bounded_string);
+
 	no_net_names : constant pac_net_names.list := pac_net_names.empty_list;
 
 
+	
 	-- Returns the name of the net indicated by the given cursor as string:
 	function to_string (
 		net	: in pac_net_names.cursor)
