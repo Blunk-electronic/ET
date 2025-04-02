@@ -3283,6 +3283,7 @@ package body et_canvas is
 -- EDIT PROCESS STATUS:
 
 	procedure reset_editing_process is begin
+		log (text => "editing_process full RESET", level => log_threshold);
 		editing_process := (others => <>);
 	end;
 	
@@ -3292,13 +3293,15 @@ package body et_canvas is
 
 	procedure set_request_clarification is begin
 		editing_process.request_clarificaton := true;
-
-		-- show instruction in status bar
+		log (text => "editing_process.request_clarificaton SET", level => log_threshold);
+		
+		-- show hints in status bar
 		set_status ("Clarify object by right click or page-down key !");
 	end set_request_clarification;
 
 	
 	procedure reset_request_clarification is begin
+		log (text => "editing_process.request_clarificaton RESET", level => log_threshold);
 		editing_process.request_clarificaton := false;
 	end reset_request_clarification;
 
@@ -3308,33 +3311,43 @@ package body et_canvas is
 	end clarification_pending;
 
 
+	
 
 -- EDIT PROCESS RUNNNING:
 	
 	procedure set_edit_process_running is begin
+		log (text => "editing_process.runnning SET", level => log_threshold);
 		editing_process.running := true;
 	end;
 
+	
 	procedure reset_edit_process_running is begin
+		log (text => "editing_process.runnning RESET", level => log_threshold);
 		editing_process.running := false;
 	end;
 
+	
 	function edit_process_running return boolean is begin
 		return editing_process.running;
 	end;
 
+	
 
 
 -- FINALIZING GRANTED:
 
 	procedure set_finalizing_granted is begin
-		editing_process.finalizing_granted := true;
+		editing_process.finalizing_granted := true;		
+		log (text => "editing_process.finalizing_granted SET", level => log_threshold);
 	end;
 
+	
 	procedure reset_finalizing_granted is begin
 		editing_process.finalizing_granted := false;
+		log (text => "editing_process.finalizing_granted RESET", level => log_threshold);
 	end;
 
+	
 	function finalizing_granted return boolean is begin
 		return editing_process.finalizing_granted;
 	end;
@@ -3345,11 +3358,17 @@ package body et_canvas is
 
 	procedure escape_key_pressed is begin
 		editing_process.escape_counter := editing_process.escape_counter + 1;
+		
+		log (text => "ESC key pressed. editing_process.escape_counter" 
+			& natural'image (editing_process.escape_counter),
+			level => log_threshold);
 	end;
+
 	
 	function get_escape_counter return natural is begin
 		return editing_process.escape_counter;
 	end;
+
 
 
 
