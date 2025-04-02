@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -364,7 +364,7 @@ package et_canvas_schematic_nets is
 		-- is required to do the final placement.
 		-- For a simple label this flag has no meaning because
 		-- a simple net label can be placed anywhere.
-		finalizing_granted	: type_finalizing_granted := false;
+		finalizing_granted	: boolean := false; -- CS use edit_process.finalizing_granted ?
 	end record;
 
 	label : type_label;

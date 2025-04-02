@@ -3277,13 +3277,21 @@ package body et_canvas is
 	end set_up_canvas;
 
 
+
+
+
+-- EDIT PROCESS STATUS:
+
+	procedure reset_editing_process is begin
+		editing_process := (others => <>);
+	end;
 	
 	
 
 -- CLARIFICATION:
 
 	procedure set_request_clarification is begin
-		request_clarificaton := YES;
+		editing_process.request_clarificaton := true;
 
 		-- show instruction in status bar
 		set_status ("Clarify object by right click or page-down key !");
@@ -3291,18 +3299,62 @@ package body et_canvas is
 
 	
 	procedure reset_request_clarification is begin
-		request_clarificaton := NO;
+		editing_process.request_clarificaton := false;
 	end reset_request_clarification;
 
 	
 	function clarification_pending return boolean is begin
-		case request_clarificaton is 
-			when YES => return true;
-			when NO  => return false;
-		end case;
+		return editing_process.request_clarificaton;
 	end clarification_pending;
 
 
+
+-- EDIT PROCESS RUNNNING:
+	
+	procedure set_edit_process_running is begin
+		editing_process.running := true;
+	end;
+
+	procedure reset_edit_process_running is begin
+		editing_process.running := false;
+	end;
+
+	function edit_process_running return boolean is begin
+		return editing_process.running;
+	end;
+
+
+
+-- FINALIZING GRANTED:
+
+	procedure set_finalizing_granted is begin
+		editing_process.finalizing_granted := true;
+	end;
+
+	procedure reset_finalizing_granted is begin
+		editing_process.finalizing_granted := false;
+	end;
+
+	function finalizing_granted return boolean is begin
+		return editing_process.finalizing_granted;
+	end;
+		
+
+
+-- ESCAPE COUNTER:
+
+	procedure escape_key_pressed is begin
+		editing_process.escape_counter := editing_process.escape_counter + 1;
+	end;
+	
+	function get_escape_counter return natural is begin
+		return editing_process.escape_counter;
+	end;
+
+
+
+	
+	
 
 	function get_object_tool_position
 		return type_vector_model
@@ -3323,7 +3375,7 @@ package body et_canvas is
 
 
 	procedure reset_object is begin
-		edit_process_running := false;
+		reset_edit_process_running;
 		object_tool := MOUSE;
 		-- CS reset point_of_atttack ?
 		-- CS object_linewidth
@@ -3377,8 +3429,7 @@ package body et_canvas is
 			-- set start point:
 			live_path.start_point := point;
 
-			-- Allow drawing of the path:
-			edit_process_running := true;
+			set_edit_process_running;
 
 			status_bar_path_show_start_point;
 			

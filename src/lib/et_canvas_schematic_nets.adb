@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -481,7 +481,7 @@ package body et_canvas_schematic_nets is
 			if valid_for_net_segment (live_path.start_point, log_threshold + 3) then
 
 				-- Allow drawing of the path:
-				edit_process_running := true;
+				set_edit_process_running;
 				
 				set_status (status_start_point & to_string (live_path.start_point) & ". " &
 					status_press_space & status_set_end_point & status_hint_for_abort);
@@ -787,14 +787,14 @@ package body et_canvas_schematic_nets is
 
 	procedure reset_preliminary_segment is 
 	begin
-		edit_process_running := false;
+		reset_edit_process_running;
 		object_tool := MOUSE;
 		-- live_path := (bend_style => live_path.bend_style, -- no change
 					-- others => <>);
 
 		object_net_name := no_name;
 		object_point_of_attack := origin;
-		finalizing_granted := false;
+		reset_finalizing_granted;
 		
 		clear_proposed_segments;
 	end reset_preliminary_segment;
@@ -953,7 +953,7 @@ package body et_canvas_schematic_nets is
 								reset_preliminary_segment;
 								
 							when 1 =>
-								edit_process_running := true;
+								set_edit_process_running;
 								selected_segment := proposed_segments.first;
 
 								reset_request_clarification;
@@ -1119,7 +1119,7 @@ package body et_canvas_schematic_nets is
 				find_segments (position);
 				object_point_of_attack := position;
 			else
-				edit_process_running := true;
+				set_edit_process_running;
 				reset_request_clarification;
 			end if;
 

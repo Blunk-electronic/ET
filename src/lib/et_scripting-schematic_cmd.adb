@@ -2893,8 +2893,7 @@ is
 
 											find_attached_segments;
 											
-											-- Allow drawing the unit:
-											edit_process_running := true;
+											set_edit_process_running;
 
 											single_cmd_status.finalization_pending := true;
 											-- CS redraw;
@@ -3008,8 +3007,7 @@ is
 										-- use the current primary tool for moving the unit:
 										object_tool := primary_tool;
 									
-										-- Allow drawing the unit:
-										edit_process_running := true;
+										set_edit_process_running;
 
 										single_cmd_status.finalization_pending := true;
 										-- CS redraw;

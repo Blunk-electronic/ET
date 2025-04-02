@@ -202,7 +202,7 @@ package body et_canvas_board_vias is
 			when GDK_ESCAPE =>
 				reset_preliminary_via; -- CS no need
 				-- instead this should be sufficient:
-				-- edit_process_running := false;
+				-- reset_edit_process_running;
 			
 			when GDK_TAB => 
 				--put_line ("size via tab " & text);
@@ -256,7 +256,7 @@ package body et_canvas_board_vias is
 			when GDK_ESCAPE =>
 				reset_preliminary_via; -- CS no need
 				-- instead this should be sufficient:
-				-- edit_process_running := false;
+				-- reset_edit_process_running;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -310,7 +310,7 @@ package body et_canvas_board_vias is
 			when GDK_ESCAPE =>
 				reset_preliminary_via; -- CS no need
 				-- instead this should be sufficient:
-				-- edit_process_running := false;
+				-- reset_edit_process_running;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -778,7 +778,7 @@ package body et_canvas_board_vias is
 			make_combo_restring_outer;
 
 			-- Signal the GUI to draw the via:
-			edit_process_running := true;
+			set_edit_process_running;
 				
 			-- Redraw the right box of the window:
 			box_v0.show_all;  -- CS box_v4 ?
@@ -794,7 +794,7 @@ package body et_canvas_board_vias is
 	
 	procedure reset_preliminary_via is begin
 	-- CS: see comments where this procedure is called.
-		edit_process_running := false;
+		reset_edit_process_running;
 		object_tool := MOUSE;
 		clear_proposed_vias;
 
@@ -883,10 +883,10 @@ package body et_canvas_board_vias is
 				reset_preliminary_via; -- CS no need ?
 				-- instead this should be sufficient:
 				-- CS clear_proposed_vias
-				-- CS edit_process_running := false;
+				-- CS reset_edit_process_running;
 				
 			when 1 =>
-				edit_process_running := true;
+				set_edit_process_running;
 				selected_via := proposed_vias.first;
 				reset_request_clarification;
 				
@@ -986,7 +986,7 @@ package body et_canvas_board_vias is
 			reset_preliminary_via; -- CS no need. 
 			-- Instead this should be sufficient:
 			-- clear_proposed_vias, 
-			-- edit_process_running := false
+			-- reset_edit_process_running
 		end finalize;
 
 
@@ -1015,7 +1015,7 @@ package body et_canvas_board_vias is
 				-- when conductor objects are drawn on the canvas.
 				-- Furtheron, on the next call of this procedure
 				-- the selected via will be assigned its final position.
-				edit_process_running := true;
+				set_edit_process_running;
 				reset_request_clarification;
 			end if;
 			
@@ -1058,7 +1058,7 @@ package body et_canvas_board_vias is
 			reset_preliminary_via; -- CS no need
 			-- instead this should be sufficient:
 			-- clear_proposed_vias
-			-- edit_process_running := false
+			-- reset_edit_process_running
 		end finalize;
 		
 

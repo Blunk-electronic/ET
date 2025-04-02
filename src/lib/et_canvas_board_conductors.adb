@@ -468,7 +468,7 @@ package body et_canvas_board_conductors is
 
 				
 			when 1 =>
-				edit_process_running := true;
+				set_edit_process_running;
 				select_first_proposed;
 
 				if verb = VERB_MOVE then
@@ -572,7 +572,7 @@ package body et_canvas_board_conductors is
 				-- Furtheron, on the next call of this procedure
 				-- the selected segment will be assigned its final position.
 				
-				edit_process_running := true;
+				set_edit_process_running;
 				reset_request_clarification;
 			end if;
 			

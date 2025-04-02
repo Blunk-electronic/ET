@@ -728,7 +728,7 @@ procedure draw_nets is
 				primary_segment		=> primary_segment,
 				zone				=> zone);
 			
-			finalizing_granted := true;
+			set_finalizing_granted;
 		end move_labels_and_secondary_nets;
 
 		

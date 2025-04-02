@@ -417,7 +417,7 @@ package body et_canvas_board_texts is
 		
 		if not is_empty (preliminary_text.text.content) then
 			--put_line ("content: " & enclose_in_quotes (to_string (preliminary_text.text.content)));
-			edit_process_running := true;
+			set_edit_process_running;
 		end if;
 		
 	end button_apply_clicked;

@@ -1111,27 +1111,57 @@ package et_canvas is
 
 
 	
--- CLARIFICATION, PRELIMINARY OBJECT, PATH:
+-- EDIT PROCESS STATUS:
 
-	-- This is general stuff used for operations on the canvas.
-	-- Things related to schematic, board, symbol, package, device
-	-- or other domains are defined in individual specs like
-	-- et_canvas_board_2 or et_canvas_schematic.
+	type type_editing_process is private;
+
+	procedure reset_editing_process;
 	
-	-- Whenever the operator is required to clarify which object is meant,
-	-- we use this type:
-	type type_request_clarification is (NO, YES);
 
-	-- A global status variable that indicates whether clarification is required or not:
-	request_clarificaton : type_request_clarification := NO;
 
+-- CLARIFICATION:
+	
 	procedure set_request_clarification;
-	procedure reset_request_clarification;
 
-	-- Returns true if the global flag "request_clarificaton" is YES:
+	procedure reset_request_clarification;
+		
+	-- Returns true if the flag "request_clarificaton" is set:
 	function clarification_pending return boolean;
 
 
+
+
+-- EDIT PROCESS RUNNNING:
+	
+	procedure set_edit_process_running;
+
+	procedure reset_edit_process_running;
+	
+	function edit_process_running return boolean;
+
+
+
+-- FINALIZING GRANTED:
+	
+	procedure set_finalizing_granted;
+
+	procedure reset_finalizing_granted;
+
+	function finalizing_granted return boolean;
+
+	
+
+-- ESCAPE COUNTER:
+
+	procedure escape_key_pressed;
+
+	function get_escape_counter return natural;
+	
+
+	
+
+-- OBJECT AND PATH:
+	
 	-- When an object is to be moved or dragged, then
 	-- this global variable should be used:
 	object_point_of_attack : type_vector_model;
@@ -1140,9 +1170,6 @@ package et_canvas is
 	-- via mouse or keyboard. This global variable should be used:
 	object_tool : type_tool := MOUSE;
 
-	-- This flag indicates that the operator has started
-	-- editing an object (moving, deleting, routing, ...):
-	edit_process_running : boolean := false;
 
 	-- When a path, consisting of one or two lines is drawn
 	-- then it is temprarily stored here:
@@ -1159,10 +1186,6 @@ package et_canvas is
 	object_original_position : type_vector_model := origin;
 
 
-	
-	type type_finalizing_granted is new boolean;
-
-	finalizing_granted		: type_finalizing_granted := false;
 	
 	
 	-- This function returns the object tool position
@@ -1513,6 +1536,32 @@ package et_canvas is
 	
 private
 
+
+	type type_editing_process is record
+
+		-- This flag indicates that the operator has started
+		-- editing an object (moving, deleting, routing, ...):
+		running 				: boolean := false;
+
+		-- When the operator is requred to clarify which object
+		-- is meant, then this flag indicates whether clarification is 
+		-- required or not:
+		request_clarificaton	: boolean := false;
+
+		-- If the editing process is allowed to be finalized,
+		-- then this flag should be used:
+		finalizing_granted		: boolean := false;
+
+		-- An editing process can be cancelled partly or
+		-- completely. For this reason we have a counter that
+		-- tells how often the operator has pressed the ESC-key:
+		escape_counter			: natural := 0;
+	end record;
+
+
+	editing_process : type_editing_process;
+	
+	
 -- CALLBACKS:
 
 	-- BUTTONS:

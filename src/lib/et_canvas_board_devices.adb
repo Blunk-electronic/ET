@@ -63,7 +63,7 @@ package body et_canvas_board_devices is
 	
 
 	procedure reset_preliminary_electrical_device is begin
-		edit_process_running := false;
+		reset_edit_process_running;
 		object_tool := MOUSE;
 		object_device_name := no_name;
 
@@ -73,7 +73,7 @@ package body et_canvas_board_devices is
 
 
 	procedure reset_preliminary_non_electrical_device is begin
-		edit_process_running := false;
+		reset_edit_process_running;
 		object_tool := MOUSE;
 		object_device_name := no_name;
 
@@ -189,7 +189,7 @@ package body et_canvas_board_devices is
 				reset_preliminary_electrical_device;
 				
 			when 1 =>
-				edit_process_running := true;
+				set_edit_process_running;
 				select_first_proposed;
 				reset_request_clarification;
 				
@@ -246,7 +246,7 @@ package body et_canvas_board_devices is
 				reset_preliminary_non_electrical_device;
 				
 			when 1 =>
-				edit_process_running := true;
+				set_edit_process_running;
 				select_first_proposed;
 				reset_request_clarification;
 				
@@ -337,7 +337,7 @@ package body et_canvas_board_devices is
 				-- when packages are drawn on the canvas.
 				-- Furtheron, on the next call of this procedure
 				-- the selected device will be assigned its final position.
-				edit_process_running := true;
+				set_edit_process_running;
 				reset_request_clarification;
 			end if;
 			
@@ -418,7 +418,7 @@ package body et_canvas_board_devices is
 				-- when packages are drawn on the canvas.
 				-- Furtheron, on the next call of this procedure
 				-- the selected device will be assigned its final position.
-				edit_process_running := true;
+				set_edit_process_running;
 				reset_request_clarification;
 			end if;
 			

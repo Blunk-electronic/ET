@@ -377,13 +377,13 @@ package body et_scripting_interactive_schematic is
 				find_attached_segments;
 
 				-- Allow drawing the unit:
-				edit_process_running := true;
+				set_edit_process_running;
 
 				single_cmd_status.finalization_pending := true;
 				
 			when VERB_MOVE => 
 				-- Allow drawing the unit:
-				edit_process_running := true;
+				set_edit_process_running;
 
 				single_cmd_status.finalization_pending := true;
 				

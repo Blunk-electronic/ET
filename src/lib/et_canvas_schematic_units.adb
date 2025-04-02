@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -482,7 +482,7 @@ package body et_canvas_schematic_units is
 			if not clarification_pending then
 				find_units_for_move (position);
 			else
-				edit_process_running := true;
+				set_edit_process_running;
 				reset_request_clarification;
 			end if;
 
@@ -564,7 +564,7 @@ package body et_canvas_schematic_units is
 				find_units_for_move (position);
 			else
 				find_attached_segments;
-				edit_process_running := true;
+				set_edit_process_running;
 				reset_request_clarification;
 			end if;
 
@@ -601,7 +601,7 @@ package body et_canvas_schematic_units is
 				reset_unit_move;
 				
 			when 1 =>
-				edit_process_running := true;
+				set_edit_process_running;
 				selected_unit := proposed_units.first;
 
 				case verb is
