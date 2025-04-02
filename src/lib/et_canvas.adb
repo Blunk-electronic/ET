@@ -3318,6 +3318,7 @@ package body et_canvas is
 	procedure set_edit_process_running is begin
 		log (text => "editing_process.runnning SET", level => log_threshold);
 		editing_process.running := true;
+		editing_process.escape_counter := 0;
 	end;
 
 	
@@ -3356,8 +3357,16 @@ package body et_canvas is
 
 -- ESCAPE COUNTER:
 
-	procedure escape_key_pressed is begin
-		editing_process.escape_counter := editing_process.escape_counter + 1;
+	procedure escape_key_pressed is 
+		c : natural renames editing_process.escape_counter;
+	begin
+		-- count the events when the ESC-key was pressed:
+		c := c + 1;
+
+		-- limit the counter to 2:
+		if c > 2 then
+			c := 2;
+		end if;
 		
 		log (text => "ESC key pressed. editing_process.escape_counter" 
 			& natural'image (editing_process.escape_counter),

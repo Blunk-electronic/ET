@@ -794,11 +794,9 @@ package body et_canvas_board_vias is
 	
 	procedure reset_preliminary_via is begin
 	-- CS: see comments where this procedure is called.
-		reset_edit_process_running;
+		reset_edit_process_running; -- CS probable no need ?
 		object_tool := MOUSE;
 		clear_proposed_vias;
-
-		clear_out_properties_box;
 	end reset_preliminary_via;
 
 

@@ -111,7 +111,7 @@ package et_modes.board is
 		NOUN_SCRIPT,
 		NOUN_SILKSCREEN,
 		NOUN_STENCIL, -- solder mask or solder paste
-		NOUN_STOPMASK, -- solder stop mask
+		NOUN_STOPMASK, -- solder stopmask
 		NOUN_SUBMODULE,
 		NOUN_TEXT,
 		NOUN_TEXT_SIZE,
@@ -137,6 +137,7 @@ package et_modes.board is
 	
 	-- Resets verb and noun to default values:
 	procedure reset_verb_and_noun;
+	-- NOTE: Mind updating the mode display afterward.
 	
 
 	expect_entry : type_expect_entry := expect_entry_default;

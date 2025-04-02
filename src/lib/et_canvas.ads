@@ -1115,6 +1115,8 @@ package et_canvas is
 
 	type type_editing_process is private;
 
+	-- Resets all components of the editing_process
+	-- to their default values:
 	procedure reset_editing_process;
 	
 
@@ -1132,7 +1134,8 @@ package et_canvas is
 
 
 -- EDIT PROCESS RUNNNING:
-	
+
+	-- Sets the flag running. Clears the escape_counter:
 	procedure set_edit_process_running;
 
 	procedure reset_edit_process_running;

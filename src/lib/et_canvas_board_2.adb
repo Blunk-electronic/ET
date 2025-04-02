@@ -814,37 +814,53 @@ package body et_canvas_board_2 is
 		use et_ripup;
 	begin
 		-- put_line ("reset");
+		escape_key_pressed;
 
 		expect_entry := expect_entry_default; -- expect a verb
 		
 		-- Verb and noun remain as they are
 		-- so that the mode is unchanged.
-		
-		reset_request_clarification;
-		status_enter_verb;
 
-		-- Reset general and board specific
-		-- properties of the preliminary object:
-		reset_preliminary_object;
-		
-		clear_out_properties_box;
-		
-		reset_preliminary_text; -- after placing a text
-		reset_preliminary_via; -- after placing a via
-		
-		et_board_ops.ratsnest.reset_proposed_airwires (active_module, log_threshold + 1);
-		reset_ripup_mode;
+		case get_escape_counter is
+			when 0 => null;
+			
+			when 1 => 			
+				reset_request_clarification;
 
-		reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
-		reset_preliminary_non_electrical_device;
+				-- Reset general and board specific
+				-- properties of the preliminary object:
+				reset_preliminary_object;
 
-		et_board_ops.assy_doc.reset_proposed_objects (active_module, log_threshold + 1);
-		et_board_ops.silkscreen.reset_proposed_objects (active_module, log_threshold + 1);
-		et_board_ops.stopmask.reset_proposed_objects (active_module, log_threshold + 1);
-		et_board_ops.stencil.reset_proposed_objects (active_module, log_threshold + 1);
-		et_board_ops.keepout.reset_proposed_objects (active_module, log_threshold + 1);
-		et_board_ops.board_contour.reset_proposed_objects (active_module, log_threshold + 1);
-		et_board_ops.conductors.reset_proposed_objects (active_module, log_threshold + 1);
+				reset_preliminary_text; -- after placing a text
+				reset_preliminary_via; -- after placing a via
+				
+				et_board_ops.ratsnest.reset_proposed_airwires (active_module, log_threshold + 1);
+				reset_ripup_mode;
+
+				reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
+				reset_preliminary_non_electrical_device;
+
+				et_board_ops.assy_doc.reset_proposed_objects (active_module, log_threshold + 1);
+				et_board_ops.silkscreen.reset_proposed_objects (active_module, log_threshold + 1);
+				et_board_ops.stopmask.reset_proposed_objects (active_module, log_threshold + 1);
+				et_board_ops.stencil.reset_proposed_objects (active_module, log_threshold + 1);
+				et_board_ops.keepout.reset_proposed_objects (active_module, log_threshold + 1);
+				et_board_ops.board_contour.reset_proposed_objects (active_module, log_threshold + 1);
+				et_board_ops.conductors.reset_proposed_objects (active_module, log_threshold + 1);
+
+				
+			when 2 =>
+				reset_verb_and_noun;
+				update_mode_display;
+				
+				status_enter_verb;
+				clear_out_properties_box;
+				reset_editing_process;
+
+			when others =>
+				reset_editing_process;
+		end case;
+		
 		
 		redraw_board;
 	end reset;
