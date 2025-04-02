@@ -130,10 +130,16 @@ package et_ratsnest is
 		process		: not null access procedure (position : in pac_airwires.cursor);
 		proceed		: not null access boolean);
 
-	
+
+	-- The airwires of a net are just a collection of lines.
+	-- CS: In the future it might be interesting to hide the
+	-- airwires of a net temporarily. This makes laying out tracks easier
+	-- for the operator when too many airwires are confusing
+	-- or obscuring the view. Currently the flag "hidden" is not
+	-- changed by any process:
 	type type_airwires is record
 		lines	: pac_airwires.list;
-		hidden	: boolean := false; -- CS no need ? remove type_airwires entirely ?
+		hidden	: boolean := false;
 	end record;
 
 	status_ratsnest_updated : constant string := "ratsnest updated";
