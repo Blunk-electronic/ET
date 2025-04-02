@@ -165,7 +165,434 @@ package body et_board_ops.vias is
 	end get_vias;
 
 
+
+
+
+
+	procedure propose_vias (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				use et_nets;
+				use pac_vias;
+				
+				via_cursor : pac_vias.cursor := net.route.vias.first;
+
+				
+				procedure query_via (via : in out type_via) is
+					use pac_geometry_brd;
+				begin
+					null;
+					-- if in_catch_zone (catch_zone, via) then
+					-- 	-- CS set_proposed (wire);
+					-- 	count := count + 1;
+					-- 	log (text => to_string (via), level => log_threshold + 2);
+					-- end if;
+				end query_via;
+
+				
+			begin
+				log (text => "net " & to_string (net_name), level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate the vias:
+				while has_element (via_cursor) loop
+					net.route.vias.update_element (
+						via_cursor, query_via'access);
+
+					next (via_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_net;
+
+
+			net_cursor : pac_nets.cursor := module.nets.first;
+		begin
+			-- Iterate the nets:
+			while net_cursor /= pac_nets.no_element loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+		
+		
+	begin
+		log (text => "proposing vias in" & to_string (catch_zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_vias;
+
+
 	
+
+
+	procedure reset_proposed_vias (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				use et_nets;
+				use pac_vias;
+				
+				via_cursor : pac_vias.cursor := net.route.vias.first;
+
+				
+				procedure query_via (via : in out type_via) is
+					use pac_geometry_brd;
+				begin
+					null;
+					--  CS reset_status (wire);
+				end query_via;
+
+				
+			begin
+				log (text => "net " & to_string (net_name), level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate the airwires:
+				while has_element (via_cursor) loop
+					net.route.vias.update_element (via_cursor, query_via'access);
+					next (via_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_net;
+
+
+			net_cursor : pac_nets.cursor := module.nets.first;
+		begin
+			-- Iterate the nets:
+			while net_cursor /= pac_nets.no_element loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "resetting proposed vias",
+			 level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_vias;
+
+
+
+
+
+	function get_net_name (
+		object : in pac_objects.cursor)
+		return pac_net_name.bounded_string
+	is 
+		use pac_objects;
+		use pac_vias;
+		v : type_object_via := element (object);
+	begin
+		return get_net_name (v.net_cursor);
+	end get_net_name;
+
+
+	
+
+	function get_count (
+		objects : in pac_objects.list)
+		return natural
+	is begin
+		return natural (objects.length);
+	end get_count;
+
+
+
+
+
+
+	function get_first_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_via
+	is 
+		result : type_object_via;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			proceed : aliased boolean := true;
+
+
+			procedure query_net (net_cursor : in pac_nets.cursor) is
+
+				procedure query_vias (
+					net_name	: in pac_net_name.bounded_string;
+					net 		: in type_net)
+				is 
+
+					procedure query_via (v : in pac_vias.cursor) is begin
+						null; -- CS
+-- 						case flag is
+-- 							when PROPOSED =>
+-- 								if is_proposed (w) then
+-- 									result.net_cursor := net_cursor;
+-- 									result.wire_cursor := w;
+-- 									proceed := false;  -- no further probing required
+-- 									log (text => to_string (w), level => log_threshold + 2);
+-- 								end if;
+--       
+-- 							when SELECTED =>
+-- 								if is_selected (w) then
+-- 									result.net_cursor := net_cursor;
+-- 									result.wire_cursor := w;
+-- 									proceed := false;  -- no further probing required
+-- 									log (text => to_string (w), level => log_threshold + 2);
+-- 								end if;
+--       
+-- 							when others =>
+-- 								null; -- CS
+-- 						end case;
+					end query_via;
+
+
+				begin
+					iterate (net.route.vias, query_via'access, proceed'access);
+				end query_vias;
+				
+				
+			begin
+				log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
+				log_indentation_up;
+				query_element (net_cursor, query_vias'access);
+				log_indentation_down;
+			end query_net;
+				
+
+		begin
+			iterate (module.nets, query_net'access, proceed'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first via / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+
+		return result;
+	end get_first_object;
+
+	
+
+
+	
+
+	function get_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return pac_objects.list
+	is
+		use pac_objects;
+		result : pac_objects.list;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			proceed : aliased boolean := true;
+
+
+			procedure query_net (net_cursor : in pac_nets.cursor) is
+
+				procedure query_vias (
+					net_name	: in pac_net_name.bounded_string;
+					net 		: in type_net)
+				is 
+
+					procedure query_via (v : in pac_vias.cursor) is begin
+						null; -- CS
+-- 						case flag is
+-- 							when PROPOSED =>
+-- 								if is_proposed (w) then
+-- 									result.append ((w, net_cursor));
+-- 									log (text => to_string (w), level => log_threshold + 2);
+-- 								end if;
+--       
+-- 							when SELECTED =>
+-- 								if is_selected (w) then
+-- 									result.append ((w, net_cursor));
+-- 									log (text => to_string (w), level => log_threshold + 2);
+-- 								end if;
+--       
+-- 							when others =>
+-- 								null; -- CS
+-- 						end case;
+					end query_via;
+
+
+				begin
+					iterate (net.route.vias, query_via'access, proceed'access);
+				end query_vias;
+				
+				
+			begin
+				log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
+				log_indentation_up;
+				query_element (net_cursor, query_vias'access);
+				log_indentation_down;
+			end query_net;
+				
+
+		begin
+			iterate (module.nets, query_net'access, proceed'access);
+		end query_module;
+		
+	
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up vias / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+
+		return result;
+	end get_objects;
+	
+
+
+
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object_via;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+  
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				use et_nets;
+				use pac_vias;
+
+				procedure query_via (v : in out type_via) is 
+					use pac_geometry_brd;
+				begin
+					null; -- CS
+					-- modify_status (w, operation);
+				end query_via;
+
+				
+			begin
+				net.route.vias.update_element (
+					object.via_cursor, query_via'access);
+
+			end query_net;
+			
+			
+			
+		begin
+			update_element (
+				container	=> module.nets,
+				position	=> object.net_cursor,
+				process		=> query_net'access);
+		end query_module;
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of via "
+			& to_string (object.via_cursor)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+	
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_objects;
+		object : constant type_object_via := element (object_cursor);
+	begin
+		modify_status (module_cursor, object, operation, log_threshold);
+	end modify_status;
+
+
+	
+	
+
+
 	
 	
 	procedure place_via (
