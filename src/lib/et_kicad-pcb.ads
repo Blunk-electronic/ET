@@ -35,6 +35,10 @@
 --
 --   history of changes:
 --
+--
+--  To Do:
+--  1. rename package instantiations starting with type_* to pac_*
+--
 with ada.text_io;				use ada.text_io;
 with ada.characters;			use ada.characters;
 with ada.characters.latin_1;
@@ -605,7 +609,7 @@ package et_kicad.pcb is
 		diameter_total	: type_distance_positive; -- drill + 2 * restring
 		layer_start		: type_signal_layer_id;
 		layer_end		: type_signal_layer_id;		
-		status			: type_via_status.bounded_string;  -- holds lock status and differential status
+		status_kicad	: type_via_status.bounded_string;  -- holds lock status and differential status
 	end record;
 	
 	-- vias are stored in lists

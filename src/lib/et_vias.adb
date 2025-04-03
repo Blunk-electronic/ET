@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with ada.text_io;					use ada.text_io;
 with ada.strings;					use ada.strings;
 
 with et_exceptions;					use et_exceptions;
@@ -161,6 +162,30 @@ package body et_vias is
 		
 	
 
+	function is_selected (
+		via : in pac_vias.cursor)
+		return boolean
+	is begin
+		return is_selected (element (via));
+	end;
+
+	
+	function is_proposed (
+		via : in pac_vias.cursor)
+		return boolean
+	is begin
+		return is_proposed (element (via));
+	end;
+
+
+	function is_moving (
+		via : in pac_vias.cursor)
+		return boolean
+	is begin
+		return is_moving (element (via));
+	end;
+
+	
 
 	
 	procedure iterate (

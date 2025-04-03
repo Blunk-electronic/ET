@@ -50,6 +50,7 @@ package et_drills is
 	drill_size_min : constant type_distance_positive := 0.05;
 	drill_size_max : constant type_distance_positive := 10.0;
 	subtype type_drill_size is type_distance_positive range drill_size_min .. drill_size_max;
+
 	
 	-- Checks whether given drill size is in range of type_drill_size
 	procedure validate_drill_size (drill : in type_distance_model);
@@ -58,14 +59,69 @@ package et_drills is
 	type type_drill is tagged record
 		position	: type_vector_model;
 		diameter	: type_drill_size := drill_size_min;
-		-- CS locked : type_locked;
+		status		: type_object_status;
 	end record;
 
+	
 	-- returns the properties of the given drill as string:
 	function to_string (drill : in type_drill) return string;
 
 
+	-- Returns true if the drill is inside the given zone:
+	function in_catch_zone (
+		zone	: in type_catch_zone;
+		drill	: in type_drill)
+		return boolean;
+	
+
+	function is_selected (
+		drill : in type_drill)
+		return boolean;
+
+	procedure set_selected (
+		drill : in out type_drill);
+
+	procedure clear_selected (
+		drill : in out type_drill);
+
+	
+	function is_proposed (
+		drill : in type_drill)
+		return boolean;
+
+	procedure set_proposed (
+		drill : in out type_drill);
+
+	procedure clear_proposed (
+		drill : in out type_drill);
+
+	
+	function is_moving (
+		drill : in type_drill)
+		return boolean;
+
+	procedure set_moving (
+		drill : in out type_drill);
+
+	procedure clear_moving (
+		drill : in out type_drill);
+
+	
+	procedure modify_status (
+		drill 		: in out type_drill;
+		operation	: in type_status_operation);
+
+	
+
+	procedure reset_status (
+		drill : in out type_drill);
+
+
+
+	
+
 	subtype type_drill_size_tht is type_drill_size range 0.8 .. 5.0;
+
 	
 end et_drills;
 

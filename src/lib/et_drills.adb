@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,6 +36,7 @@
 --   history of changes:
 --
 
+with ada.text_io;				use ada.text_io;
 
 
 package body et_drills is
@@ -50,10 +51,159 @@ package body et_drills is
 		end if;
 	end validate_drill_size;
 
+
 	
 	function to_string (drill : in type_drill) return string is begin
 		return ("C:" & to_string (drill.position) & " / D:" & to_string (drill.diameter));
 	end to_string;
+
+	
+
+	function in_catch_zone (
+		zone	: in type_catch_zone;
+		drill	: in type_drill)
+		return boolean
+	is 
+		c : type_circle;
+	begin
+		-- Build a circle from the given drll:
+		set_center (c, drill.position);
+		set_radius (c, drill.diameter * 0.5);
+
+		-- Test whether the circle is in the catch zone:
+		return in_catch_zone (zone, c); 
+	end in_catch_zone;
+
+
+	
+	function is_selected (
+		drill : in type_drill)
+		return boolean
+	is begin
+		if drill.status.selected then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+	
+
+	procedure set_selected (
+		drill : in out type_drill)
+	is begin
+		drill.status.selected := true;
+	end;
+
+	
+	procedure clear_selected (
+		drill : in out type_drill)
+	is begin
+		drill.status.selected := false;
+	end;
+
+	
+	function is_proposed (
+		drill : in type_drill)
+		return boolean
+	is begin
+		if drill.status.proposed then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+	
+
+	
+	procedure set_proposed (
+		drill : in out type_drill)
+	is begin
+		drill.status.proposed := true;
+	end;
+
+
+	procedure clear_proposed (
+		drill : in out type_drill)
+	is begin
+		drill.status.proposed := false;
+	end;
+
+	
+	function is_moving (
+		drill : in type_drill)
+		return boolean
+	is begin
+		if drill.status.moving then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+			
+
+	procedure set_moving (
+		drill : in out type_drill)
+	is begin
+		drill.status.moving := true;
+	end set_moving;
+
+
+	procedure clear_moving (
+		drill : in out type_drill)
+	is begin
+		drill.status.moving := false;
+	end clear_moving;
+
+
+	
+	procedure modify_status (
+		drill 		: in out type_drill;
+		operation	: in type_status_operation)
+	is begin
+		case operation.flag is
+			when SELECTED =>
+				case operation.action is
+					when SET =>
+						set_selected (drill);
+
+					when CLEAR =>
+						clear_selected (drill);
+				end case;
+
+				
+			when PROPOSED =>
+				case operation.action is
+					when SET =>
+						set_proposed (drill);
+
+					when CLEAR =>
+						clear_proposed (drill);
+				end case;
+
+				
+			when MOVING =>
+				case operation.action is
+					when SET =>
+						set_moving (drill);
+
+					when CLEAR =>
+						clear_moving (drill);
+				end case;
+
+				
+			when others =>
+				null; -- CS
+		end case;
+	end modify_status;
+
+	
+
+	
+	procedure reset_status (
+		drill : in out type_drill)
+	is begin
+		drill.status := (others => <>);
+	end reset_status;
 
 	
 end et_drills;

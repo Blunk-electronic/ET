@@ -38,27 +38,15 @@
 --   to do:
 
 
-with ada.text_io;				use ada.text_io;
-with ada.characters;			use ada.characters;
-with ada.characters.handling;	use ada.characters.handling;
-
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
-
-with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
-
-with et_string_processing;		use et_string_processing;
 
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_contour_to_polygon;
-with et_terminals;				use et_terminals;
 with et_drills;					use et_drills;
 with et_pcb_stack;				use et_pcb_stack;
 with et_design_rules_board;		use et_design_rules_board;
-with et_text;					use et_text;
 with et_fonts;					use et_fonts;
 
 
@@ -118,11 +106,15 @@ package et_vias is
 		);
 
 	via_category_default : constant type_via_category := THROUGH;
+
+
 	
 	function to_string (category : in type_via_category) return string;
+
 	function to_via_category (category : in string) return type_via_category;
 	
 
+	
 	type type_via (category : type_via_category) is new type_drill with record
 
 		-- Whatever the via category, there is always a restring 
@@ -206,6 +198,22 @@ package et_vias is
 	function to_string (
 		via : in pac_vias.cursor) 
 		return string;
+
+
+
+	function is_selected (
+		via : in pac_vias.cursor)
+		return boolean;
+
+	
+	function is_proposed (
+		via : in pac_vias.cursor)
+		return boolean;
+
+
+	function is_moving (
+		via : in pac_vias.cursor)
+		return boolean;
 
 	
 	

@@ -2809,7 +2809,7 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 =>
-									via.status := type_via_status.to_bounded_string (to_string (arg));
+									via.status_kicad := type_via_status.to_bounded_string (to_string (arg));
 								when others => too_many_arguments;
 							end case;
 							
@@ -4329,7 +4329,7 @@ package body et_kicad.pcb is
 					" layer_start" & to_string (via.layer_start) &
 					" layer_end" & to_string (via.layer_end) &
 					" net_id" & to_string (via.net_id) &
-					" status " & type_via_status.to_string (via.status),
+					" status " & type_via_status.to_string (via.status_kicad),
 					 -- CS status should be decoded and detailled output. 
 					 -- see -- see https://forum.kicad.info/t/meaning-of-segment-status/10912/1
 					level => log_threshold + 1);

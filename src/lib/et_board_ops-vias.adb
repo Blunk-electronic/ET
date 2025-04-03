@@ -194,12 +194,11 @@ package body et_board_ops.vias is
 				procedure query_via (via : in out type_via) is
 					use pac_geometry_brd;
 				begin
-					null;
-					-- if in_catch_zone (catch_zone, via) then
-					-- 	-- CS set_proposed (wire);
-					-- 	count := count + 1;
-					-- 	log (text => to_string (via), level => log_threshold + 2);
-					-- end if;
+					if in_catch_zone (catch_zone, via) then
+						set_proposed (via);
+						count := count + 1;
+						log (text => to_string (via), level => log_threshold + 2);
+					end if;
 				end query_via;
 
 				
@@ -269,8 +268,7 @@ package body et_board_ops.vias is
 				procedure query_via (via : in out type_via) is
 					use pac_geometry_brd;
 				begin
-					null;
-					--  CS reset_status (wire);
+					reset_status (via);
 				end query_via;
 
 				
@@ -365,27 +363,26 @@ package body et_board_ops.vias is
 				is 
 
 					procedure query_via (v : in pac_vias.cursor) is begin
-						null; -- CS
--- 						case flag is
--- 							when PROPOSED =>
--- 								if is_proposed (w) then
--- 									result.net_cursor := net_cursor;
--- 									result.wire_cursor := w;
--- 									proceed := false;  -- no further probing required
--- 									log (text => to_string (w), level => log_threshold + 2);
--- 								end if;
---       
--- 							when SELECTED =>
--- 								if is_selected (w) then
--- 									result.net_cursor := net_cursor;
--- 									result.wire_cursor := w;
--- 									proceed := false;  -- no further probing required
--- 									log (text => to_string (w), level => log_threshold + 2);
--- 								end if;
---       
--- 							when others =>
--- 								null; -- CS
--- 						end case;
+						case flag is
+							when PROPOSED =>
+								if is_proposed (v) then
+									result.net_cursor := net_cursor;
+									result.via_cursor := v;
+									proceed := false;  -- no further probing required
+									log (text => to_string (v), level => log_threshold + 2);
+								end if;
+      
+							when SELECTED =>
+								if is_selected (v) then
+									result.net_cursor := net_cursor;
+									result.via_cursor := v;
+									proceed := false;  -- no further probing required
+									log (text => to_string (v), level => log_threshold + 2);
+								end if;
+      
+							when others =>
+								null; -- CS
+						end case;
 					end query_via;
 
 
@@ -453,23 +450,22 @@ package body et_board_ops.vias is
 				is 
 
 					procedure query_via (v : in pac_vias.cursor) is begin
-						null; -- CS
--- 						case flag is
--- 							when PROPOSED =>
--- 								if is_proposed (w) then
--- 									result.append ((w, net_cursor));
--- 									log (text => to_string (w), level => log_threshold + 2);
--- 								end if;
---       
--- 							when SELECTED =>
--- 								if is_selected (w) then
--- 									result.append ((w, net_cursor));
--- 									log (text => to_string (w), level => log_threshold + 2);
--- 								end if;
---       
--- 							when others =>
--- 								null; -- CS
--- 						end case;
+						case flag is
+							when PROPOSED =>
+								if is_proposed (v) then
+									result.append ((v, net_cursor));
+									log (text => to_string (v), level => log_threshold + 2);
+								end if;
+      
+							when SELECTED =>
+								if is_selected (v) then
+									result.append ((v, net_cursor));
+									log (text => to_string (v), level => log_threshold + 2);
+								end if;
+      
+							when others =>
+								null; -- CS
+						end case;
 					end query_via;
 
 
@@ -536,8 +532,7 @@ package body et_board_ops.vias is
 				procedure query_via (v : in out type_via) is 
 					use pac_geometry_brd;
 				begin
-					null; -- CS
-					-- modify_status (w, operation);
+					modify_status (v, operation);
 				end query_via;
 
 				

@@ -1110,7 +1110,8 @@ procedure draw_conductors is
 							diameter		=> preliminary_via.drill.diameter,
 							position		=> position,
 							restring_inner	=> preliminary_via.restring_inner,
-							restring_outer	=> preliminary_via.restring_outer));
+							restring_outer	=> preliminary_via.restring_outer,
+							others			=> <>));
 
 				when BLIND_DRILLED_FROM_TOP =>
 					append (
@@ -1121,7 +1122,8 @@ procedure draw_conductors is
 							position		=> position,
 							restring_inner	=> preliminary_via.restring_inner,
 							restring_top	=> preliminary_via.restring_outer,
-							lower			=> preliminary_via.destination_blind));
+							lower			=> preliminary_via.destination_blind,
+							others			=> <>));
 					
 				when BLIND_DRILLED_FROM_BOTTOM =>
 					append (
@@ -1132,7 +1134,8 @@ procedure draw_conductors is
 							position		=> position,
 							restring_inner	=> preliminary_via.restring_inner,
 							restring_bottom	=> preliminary_via.restring_outer,
-							upper			=> preliminary_via.destination_blind));
+							upper			=> preliminary_via.destination_blind,
+							others			=> <>));
 					
 				when BURIED =>
 					append (
@@ -1142,7 +1145,8 @@ procedure draw_conductors is
 							diameter		=> preliminary_via.drill.diameter,
 							position		=> position,
 							layers			=> preliminary_via.layers_buried,
-							restring_inner	=> preliminary_via.restring_inner));
+							restring_inner	=> preliminary_via.restring_inner,
+							others			=> <>));
 					
 			end case;
 
