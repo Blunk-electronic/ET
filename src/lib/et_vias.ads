@@ -200,6 +200,10 @@ package et_vias is
 		return string;
 
 
+	function get_position (
+		via : in pac_vias.cursor)
+		return type_vector_model;
+	
 
 	function is_selected (
 		via : in pac_vias.cursor)

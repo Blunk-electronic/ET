@@ -422,7 +422,7 @@ is
 					-- 	et_canvas_board_texts.move_text (KEYBOARD, point);
 						
 					when NOUN_VIA =>
-						et_canvas_board_vias.move_via (KEYBOARD, point);
+						et_canvas_board_vias.move_object (KEYBOARD, point);
 
 					when others => null;
 				end case;		
@@ -503,7 +503,7 @@ is
 						
 					when NOUN_VIA =>
 						if clarification_pending then
-							et_canvas_board_vias.select_via;
+							et_canvas_board_vias.clarify_object;
 						end if;
 						
 					-- when NOUN_VALUE => 

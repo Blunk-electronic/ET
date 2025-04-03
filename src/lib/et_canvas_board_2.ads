@@ -113,6 +113,7 @@ package et_canvas_board_2 is
 	-- changes. It calls procedures that initialize the values used in property
 	-- bars for vias, tracks, ...
 	procedure init_property_bars;
+	-- CS probably no need anymore ?
 	
 	
 	-- Instantiate the general canvas package:

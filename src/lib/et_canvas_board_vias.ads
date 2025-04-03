@@ -45,30 +45,20 @@ with gtk.combo_box;						use gtk.combo_box;
 with gtk.combo_box_text;				use gtk.combo_box_text;
 with gtk.label;							use gtk.label;
 
-
-with et_net_names;						use et_net_names;
-with et_canvas;
 with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;
-with et_canvas_schematic_2;
 
-with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
+with et_pcb_coordinates_2;
 use et_pcb_coordinates_2.pac_geometry_2;
 
 with et_drills;							use et_drills;
 with et_vias;							use et_vias;
-with et_pcb_stack;						use et_pcb_stack;
 with et_design_rules_board;				use et_design_rules_board;
-with et_pcb;
-with et_board_ops.vias;					use et_board_ops.vias;
-with et_logging;						use et_logging;
-
-with et_canvas_board_tracks;
 
 
 package et_canvas_board_vias is
 
-	use pac_net_name;
+	-- use pac_net_name;
 
 
 	box_net_name,
@@ -146,51 +136,26 @@ package et_canvas_board_vias is
 	procedure show_via_properties;
 	
 
-	-- Clears object_ready, object_tool and
-	-- clears out the via properties bar.
-	-- CS: Probably no longer useful. See comments
-	-- in body of this package:
-	procedure reset_preliminary_via;
-
 	
 
-	
-	use pac_proposed_vias;
-	proposed_vias : pac_proposed_vias.list;
-	selected_via : pac_proposed_vias.cursor;
 
 
-	-- Returns true if the given via matches the via indicated
-	-- by selected_via:
-	function via_is_selected (
-		via_cursor	: in pac_vias.cursor;
-		net_name	: in pac_net_name.bounded_string)
-		return boolean;
-	
+	-- This procedure is required in order to clarify
+	-- which object among the proposed objects is meant.
+	-- On every call of this procedure we advance from one
+	-- proposed object to the next in a circular manner
+	-- and set it as "selected":
+	procedure clarify_object;
 
-	-- Clears the list proposed_vias.
-	-- Resets selected_via to no_element:
-	procedure clear_proposed_vias;
-	
 
-	-- Advances cursor selected_via to next via
-	-- in list proposed_vias and sets cursor selected_via
-	-- to the candidate via:
-	procedure select_via;
-
-	
-	-- Locates all vias in the vicinity of given point.
-	--
-	-- If a single via found: 
-	-- - The single via gets selected (select_via then points there).
-	-- - preliminary_via.ready is set true.
-	-- - clarification request is cleared
-	--
-	-- If more than one via found:
-	-- - The first of them is selected (selected_via points to to the first)
-	-- - preliminary_via.ready remains false.
-	-- - clarification is requested
-	procedure find_vias (
+	-- Locates objects in the vicinity of the given point
+	-- and sets their proposed-flag.
+	-- Only displayed layers are taken into account.
+	-- Depending on how many objects have been found, the behaviour is:
+	-- - If only one object found, then it is selected automatically.
+	-- - If more than one object found, then clarification is requested.
+	--   The first object of them is selected.
+	procedure find_objects (
 		point : in type_vector_model);
 
 	
@@ -237,7 +202,7 @@ package et_canvas_board_vias is
 	--   so that the selected via will be drawn at the tool position.
 	--   The next call of this procedure assigns the final position 
 	--   to the selected_via:
-	procedure move_via (
+	procedure move_object (
 		tool	: in type_tool;
 		point	: in type_vector_model);				   
 

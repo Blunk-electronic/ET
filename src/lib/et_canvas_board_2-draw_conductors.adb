@@ -906,7 +906,7 @@ procedure draw_conductors is
 
 		-- Overwrite the via position (circle.center) if the
 		-- via is selected and being moved:
-		if via_is_selected (via_cursor, net_name) then
+		if is_selected (via_cursor) then
 
 			-- A selected via must be highlighted:
 			brightness := BRIGHT;

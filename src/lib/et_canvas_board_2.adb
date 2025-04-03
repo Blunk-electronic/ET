@@ -69,6 +69,7 @@ with et_board_ops.stencil;
 with et_board_ops.keepout;
 with et_board_ops.ratsnest;
 with et_board_ops.conductors;
+with et_board_ops.vias;
 with et_board_ops.board_contour;
 with et_pcb;
 
@@ -832,7 +833,6 @@ package body et_canvas_board_2 is
 				reset_preliminary_object;
 
 				reset_preliminary_text; -- after placing a text
-				reset_preliminary_via; -- after placing a via
 				
 				et_board_ops.ratsnest.reset_proposed_airwires (active_module, log_threshold + 1);
 				reset_ripup_mode;
@@ -847,7 +847,7 @@ package body et_canvas_board_2 is
 				et_board_ops.keepout.reset_proposed_objects (active_module, log_threshold + 1);
 				et_board_ops.board_contour.reset_proposed_objects (active_module, log_threshold + 1);
 				et_board_ops.conductors.reset_proposed_objects (active_module, log_threshold + 1);
-
+				et_board_ops.vias.reset_proposed_vias (active_module, log_threshold + 1);
 				
 			when 2 =>
 				reset_verb_and_noun;
@@ -1098,7 +1098,8 @@ package body et_canvas_board_2 is
 	procedure init_property_bars is 
 		use et_canvas_board_vias;
 	begin
-		reset_preliminary_via;
+		null;
+		-- CS reset_preliminary_via;
 
 		--  CS init route
 		-- CS init text

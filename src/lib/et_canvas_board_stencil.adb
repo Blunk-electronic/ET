@@ -415,7 +415,7 @@ package body et_canvas_board_stencil is
 				-- clarification is now pending.
 
 				-- If find_objects has found only one object
-				-- then the flag edit_process_running is set true.
+				-- then the flag edit_process.running is set true.
 
 			else
 				-- Here the clarification procedure ends.

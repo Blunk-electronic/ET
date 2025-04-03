@@ -72,7 +72,7 @@ package et_canvas_board_preliminary_object is
 	
 	
 	-- Resets the preliminary object information
-	-- and global stuff like object_tool, object_ready, ...
+	-- and global stuff like object_tool, ...
 	-- (see et_canvas spec):
 	procedure reset_preliminary_object;
 

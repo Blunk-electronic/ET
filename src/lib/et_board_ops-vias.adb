@@ -744,55 +744,56 @@ package body et_board_ops.vias is
 
 	
 
-	procedure move_via (
+
+	
+	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		via				: in type_proposed_via;
+		object			: in type_object_via;
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in type_vector_model; -- x/y
+		destination		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level)
 	is
-		new_position : type_vector_model := via.via.position;
+		new_position : type_vector_model;
 
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
-			net_cursor : pac_nets.cursor := module.nets.find (via.net);
 			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
 			is
-				via_cursor : pac_vias.cursor := net.route.vias.find (via.via);
 				
 				procedure query_via (v : in out type_via) is begin
 					v.position := new_position;
 				end query_via;
 				
 			begin
-				net.route.vias.update_element (via_cursor, query_via'access);
+				net.route.vias.update_element (object.via_cursor, query_via'access);
 			end query_net;
 			
 		begin
-			module.nets.update_element (net_cursor, query_net'access);
+			module.nets.update_element (object.net_cursor, query_net'access);
 		end query_module;
 
 
-	begin -- move_via
-
+		
+	begin
 		case coordinates is
 			when ABSOLUTE =>
-				new_position := point;
+				new_position := destination;
 
 			when RELATIVE =>
-				move_by (new_position, to_distance_relative (point));
+				new_position := get_position (object.via_cursor);
+				move_by (new_position, to_distance_relative (destination));
 		end case;
+
 		
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " net " & to_string (via.net)
-			& " moving via from" & to_string (via.via.position)
+		log (text => "module " & to_string (module_cursor)
+			& " net " & to_string (object.net_cursor)
+			& " moving via from" & to_string (get_position (object.via_cursor))
 			& " to" & to_string (new_position),
 			level => log_threshold);
 
@@ -802,13 +803,16 @@ package body et_board_ops.vias is
 			process		=> query_module'access);
 
 		update_ratsnest (module_cursor, log_threshold + 1);		
-	end move_via;
+	end move_object;
 
 
 
-	procedure delete_via (
+	
+	
+
+	procedure delete_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		via				: in type_proposed_via;
+		object			: in type_object_via;
 		log_threshold	: in type_log_level)
 	is
 
@@ -816,28 +820,25 @@ package body et_board_ops.vias is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
-			net_cursor : pac_nets.cursor := module.nets.find (via.net);
 			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net)
-			is
-				via_cursor : pac_vias.cursor := net.route.vias.find (via.via);
+			is 
+				c : pac_vias.cursor := object.via_cursor;
 			begin
-				net.route.vias.delete (via_cursor);
+				net.route.vias.delete (c);
 			end query_net;
 			
 		begin
-			module.nets.update_element (net_cursor, query_net'access);
+			module.nets.update_element (object.net_cursor, query_net'access);
 		end query_module;
 
 		
 	begin
-
-		log (text => "module " 
-			& enclose_in_quotes (to_string (key (module_cursor)))
-			& " net " & to_string (via.net)
-			& " deleting via at" & to_string (via.via.position),
+		log (text => "module " & to_string (module_cursor)
+			& " net " & to_string (object.net_cursor)
+			& " deleting via at" & to_string (get_position (object.via_cursor)),
 			level => log_threshold);
 
 		update_element (
@@ -846,7 +847,7 @@ package body et_board_ops.vias is
 			process		=> query_module'access);
 
 		update_ratsnest (module_cursor, log_threshold + 1);		
-	end delete_via;
+	end delete_object;
 
 	
 	

@@ -85,7 +85,7 @@ package et_display.board is
 							others => OFF);
 		
 		--vias			: type_vias := (others => OFF);
-		vias			: type_layer_status := ON;
+		vias			: type_layer_status := ON; -- CS really useful ?
 		route_restrict	: type_route_restrict := (others => OFF);
 		via_restrict	: type_via_restrict := (others => OFF);		
 	end record;

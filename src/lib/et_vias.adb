@@ -160,6 +160,16 @@ package body et_vias is
 		return to_string (element (via).position);
 	end to_string;
 		
+
+	
+	function get_position (
+		via : in pac_vias.cursor)
+		return type_vector_model
+	is begin
+		return get_position (element (via));
+	end get_position;
+
+
 	
 
 	function is_selected (

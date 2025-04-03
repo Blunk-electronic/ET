@@ -67,6 +67,11 @@ package et_drills is
 	function to_string (drill : in type_drill) return string;
 
 
+	function get_position (
+		drill : in type_drill)
+		return type_vector_model;
+	
+
 	-- Returns true if the drill is inside the given zone:
 	function in_catch_zone (
 		zone	: in type_catch_zone;

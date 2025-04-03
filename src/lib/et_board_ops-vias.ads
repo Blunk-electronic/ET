@@ -181,19 +181,19 @@ package et_board_ops.vias is
 		return pac_net_name.bounded_string;
 	
 	
-	-- Moves a via:
-	procedure move_via (
+	-- Moves an object:
+	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		via				: in type_proposed_via;
+		object			: in type_object_via;
 		coordinates		: in type_coordinates; -- relative/absolute		
-		point			: in type_vector_model; -- x/y
+		destination		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 
-	-- Deletes a via:
-	procedure delete_via (
+	-- Deletes an object:
+	procedure delete_object (
 		module_cursor	: in pac_generic_modules.cursor;
-		via				: in type_proposed_via; -- incl via and net name
+		object			: in type_object_via;
 		log_threshold	: in type_log_level);
 
 	

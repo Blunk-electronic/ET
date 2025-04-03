@@ -58,7 +58,7 @@ package et_canvas_board_stencil is
 	-- This procedure is required in order to clarify
 	-- which object among the proposed objects is meant.
 	-- On every call of this procedure we advance from one
-	-- proposed segment to the next in a circular manner
+	-- proposed object to the next in a circular manner
 	-- and set it as "selected":
 	procedure clarify_object;
 

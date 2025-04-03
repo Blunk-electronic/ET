@@ -64,14 +64,25 @@ with gtk.text_iter;
 
 with et_generic_module;				use et_generic_module;
 with et_schematic_ops.nets;
+with et_board_ops.vias;				use et_board_ops.vias;
 with et_canvas_board_2;
+with et_canvas_board_tracks;
 
+with et_logging;					use et_logging;
+with et_modes.board;
 with et_display;					use et_display;
 with et_display.board;				use et_display.board;
 
 with et_exceptions;					use et_exceptions;
-
+with et_nets;
+with et_net_names;					use et_net_names;
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
+with et_object_status;				use et_object_status;
+with et_undo_redo;
+with et_commit;
+with et_pcb;
+with et_pcb_stack;					use et_pcb_stack;
+
 
 
 package body et_canvas_board_vias is
@@ -200,9 +211,7 @@ package body et_canvas_board_vias is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_preliminary_via; -- CS no need
-				-- instead this should be sufficient:
-				-- reset_edit_process_running;
+				reset_edit_process_running;
 			
 			when GDK_TAB => 
 				--put_line ("size via tab " & text);
@@ -254,9 +263,7 @@ package body et_canvas_board_vias is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_preliminary_via; -- CS no need
-				-- instead this should be sufficient:
-				-- reset_edit_process_running;
+				reset_edit_process_running;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -308,9 +315,7 @@ package body et_canvas_board_vias is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_preliminary_via; -- CS no need
-				-- instead this should be sufficient:
-				-- reset_edit_process_running;
+				reset_edit_process_running;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -790,115 +795,9 @@ package body et_canvas_board_vias is
 	end show_via_properties;
 
 
-	
-	
-	procedure reset_preliminary_via is begin
-	-- CS: see comments where this procedure is called.
-		reset_edit_process_running; -- CS probable no need ?
-		object_tool := MOUSE;
-		clear_proposed_vias;
-	end reset_preliminary_via;
-
-
-	
-
-	function via_is_selected (
-		via_cursor	: in pac_vias.cursor;
-		net_name	: in pac_net_name.bounded_string)
-		return boolean
-	is 
-		use pac_vias;
-		via : type_via renames element (via_cursor);
-	begin
-		-- If there are no proposed vias at all, then there is nothing to do:
-		if is_empty (proposed_vias) then
-			return false;
-		else
-			-- If there is no selected via, then there is nothing to do:
-			if selected_via /= pac_proposed_vias.no_element then
-				if element (selected_via).net = net_name and element (selected_via).via = via then
-					return true;
-				else 
-					return false;
-				end if;
-			else
-				return false;
-			end if;
-		end if;
-	end via_is_selected;
-
-	
-
-	
-	procedure clear_proposed_vias is begin
-		proposed_vias.clear;
-		selected_via := pac_proposed_vias.no_element;
-	end;
-
 
 	
 	
-	procedure select_via is begin
-		-- On every call of this procedure we advance from one
-		-- proposed via to the next in a circular manner. So if the end 
-		-- of the list is reached, then the cursor selected_via
-		-- moves back to the start of the list of proposed vias:
-		if next (selected_via) /= pac_proposed_vias.no_element then
-			next (selected_via);
-		else
-			selected_via := proposed_vias.first;
-		end if;
-
-		-- show the selected via in the status bar
-		set_status ("selected via " & to_string (selected_via) 
-			& ". " & status_next_object_clarification);
-		
-	end select_via;
-
-
-
-	
-	procedure find_vias (
-		point : in type_vector_model)
-	is 
-		vias : pac_vias.list;
-	begin
-		log (text => "locating vias ...", level => log_threshold);
-		log_indentation_up;
-
-		-- Collect all vias in the vicinity of the given point:
-		proposed_vias := get_vias (
-			module_cursor	=> active_module, 
-			catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
-			log_threshold	=> log_threshold + 1);
-
-		--put_line (count_type'image (proposed_vias.length));
-		
-		-- evaluate the number of vias found here:
-		case length (proposed_vias) is
-			when 0 =>
-				reset_request_clarification;
-				reset_preliminary_via; -- CS no need ?
-				-- instead this should be sufficient:
-				-- CS clear_proposed_vias
-				-- CS reset_edit_process_running;
-				
-			when 1 =>
-				set_edit_process_running;
-				selected_via := proposed_vias.first;
-				reset_request_clarification;
-				
-			when others =>
-				--log (text => "many objects", level => log_threshold + 2);
-				set_request_clarification;
-
-				-- preselect the first via
-				selected_via := proposed_vias.first;
-		end case;
-		
-		log_indentation_down;
-	end find_vias;
-
 	
 	
 
@@ -949,42 +848,250 @@ package body et_canvas_board_vias is
 	
 
 
+
+	
+
+-- OBJECTS:
+
+	procedure show_selected_object (
+		selected : in type_object_via)
+	is 
+		praeamble : constant string := "selected: ";
+	begin
+		set_status (praeamble 
+			& "net " & et_nets.to_string (selected.net_cursor)
+			& " " & to_string (selected.via_cursor) & ". " 
+			& status_next_object_clarification);
+	end show_selected_object;
+
+	
+	
+
+
+	procedure clarify_object is 
+
+		procedure do_it is
+			use pac_objects;
+			
+			-- Gather all proposed objects:
+			proposed_objects : constant pac_objects.list := 
+				get_objects (active_module, PROPOSED, log_threshold + 1);
+
+			proposed_object : pac_objects.cursor;
+
+			-- We start with the first object that is currently selected:
+			selected_object : type_object_via := 
+				get_first_object (active_module, SELECTED, log_threshold + 1);
+
+		begin
+			log (text => "proposed objects total " 
+				& natural'image (get_count (proposed_objects)),
+				level => log_threshold + 2);
+
+			
+			-- Locate the selected object among the proposed objects:
+			proposed_object := proposed_objects.find (selected_object);
+
+			-- Deselect the proposed object:
+			modify_status (
+				module_cursor	=> active_module, 
+				operation		=> (CLEAR, SELECTED),
+				object_cursor	=> proposed_object, 
+				log_threshold	=> log_threshold + 1);
+
+			-- Advance to the next proposed object:
+			next (proposed_object);
+
+			-- If end of list reached, then proceed at 
+			-- the begin of the list:
+			if proposed_object = pac_objects.no_element then
+				proposed_object := proposed_objects.first;
+			end if;
+			
+			-- Select the proposed object:
+			modify_status (
+				module_cursor	=> active_module, 
+				operation		=> (SET, SELECTED),
+				object_cursor	=> proposed_object, 
+				log_threshold	=> log_threshold + 1);
+
+			-- Display the object in the status bar:
+			show_selected_object (element (proposed_object));
+		end do_it;
+		
+		
+	begin
+		log (text => "clarify_object", level => log_threshold + 1);
+
+		log_indentation_up;
+		
+		do_it;
+		
+		log_indentation_down;
+	end clarify_object;
+	
+
+
+
+	
+	
+
+	-- This procedure searches for the first selected object
+	-- and sets its status to "moving":
+	procedure set_first_selected_object_moving is
+		
+		procedure do_it is
+			-- Get the first selected object:
+			selected_object : constant type_object_via := 
+				get_first_object (active_module, SELECTED, log_threshold + 1);
+
+			-- Gather all selected objects:
+			objects : constant pac_objects.list :=
+				get_objects (active_module, SELECTED, log_threshold + 1);
+
+			c : pac_objects.cursor;
+		begin
+			-- Get a cursor to the candidate object
+			-- among all selected objects:
+			c := objects.find (selected_object);
+			
+			modify_status (active_module, c, (SET, MOVING), log_threshold + 1);
+		end do_it;
+		
+		
+	begin
+		log (text => "set_first_selected_object_moving ...", level => log_threshold);
+		log_indentation_up;
+		do_it;
+		log_indentation_down;
+	end set_first_selected_object_moving;
+
+
+
+	
+
+
+	procedure find_objects (
+		point : in type_vector_model)
+	is 
+		use et_modes.board;
+		
+		-- The number of proposed objects:
+		count_total : natural := 0;
+
+		
+		-- This procedure searches for the first proposed
+		-- object and marks it as "selected":
+		procedure select_first_proposed is
+			object : type_object_via := get_first_object (
+						active_module, PROPOSED, log_threshold + 1);
+		begin
+			modify_status (
+				active_module, object, (SET, SELECTED), log_threshold + 1);
+
+			-- If only one object found, then show it in the status bar:
+			if count_total = 1 then
+				show_selected_object (object);
+			end if;
+		end select_first_proposed;
+
+
+		-- This procedure proposes objects in the vicinity of the given point:
+		procedure propose_objects is begin
+
+			-- CS test whether vias are displayed
+			
+			propose_vias (
+				module_cursor	=> active_module, 
+				catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+				count			=> count_total,
+				log_threshold	=> log_threshold + 1);
+			
+		end propose_objects;
+
+		
+	begin		
+		log (text => "locating vias ...", level => log_threshold);
+		log_indentation_up;
+
+		propose_objects;
+
+		log (text => "proposed vias total" & natural'image (count_total),
+			 level => log_threshold + 1);
+
+		
+		-- evaluate the number of vias found here:
+		case count_total is
+			when 0 =>
+				reset_edit_process_running;
+				reset_proposed_vias (active_module, log_threshold + 1);
+				
+			when 1 =>
+				set_edit_process_running;
+				select_first_proposed;
+				
+				if verb = VERB_MOVE then
+					set_first_selected_object_moving;
+				end if;
+				
+				reset_request_clarification;
+				
+			when others =>
+				--log (text => "many objects", level => log_threshold + 2);
+				set_request_clarification;
+				select_first_proposed;
+		end case;
+		
+		log_indentation_down;
+	end find_objects;
+
+
+
+	
+	
 	
 -- MOVE:
 
-	procedure move_via (
+	procedure move_object (
 		tool	: in type_tool;
 		point	: in type_vector_model)
 	is 
 
-		-- Assigns the final position after the move to the selected via.
-		-- Resets variable preliminary_via:
-		procedure finalize is 
-			use pac_proposed_vias;
+		procedure finalize is
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
+
+			object : constant type_object_via := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
 		begin
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
-			if selected_via /= pac_proposed_vias.no_element then
+-- 			if selected_via /= pac_proposed_vias.no_element then
 
-				move_via (
-					module_cursor	=> active_module,
-					via				=> element (selected_via),
-					coordinates		=> ABSOLUTE,
-					point			=> point,
-					log_threshold	=> log_threshold);
-				
-			else
-				log (text => "nothing to do", level => log_threshold);
-			end if;
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold + 1);
+			
+			move_object (
+				module_cursor	=> active_module,
+				object			=> object,
+				coordinates		=> ABSOLUTE,
+				destination		=> point,
+				log_threshold	=> log_threshold);
+			
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold + 1);
+
+-- 			else
+-- 				log (text => "nothing to do", level => log_threshold);
+-- 			end if;
 				
 			log_indentation_down;			
 			set_status (status_move_via);			
 			
-			reset_preliminary_via; -- CS no need. 
-			-- Instead this should be sufficient:
-			-- clear_proposed_vias, 
-			-- reset_edit_process_running
+			reset_proposed_vias (active_module, log_threshold + 1);
+			reset_edit_process_running;
 		end finalize;
 
 
@@ -997,31 +1104,34 @@ package body et_canvas_board_vias is
 			
 			if not clarification_pending then
 				-- Locate all vias in the vicinity of the given point:
-				find_vias (point);
+				find_objects (point);
+				
 				-- NOTE: If many vias have been found, then
 				-- clarification is now pending.
 
-				-- If find_vias has found only one via
-				-- then the flag preliminary_via.read is set true.
+				-- If find_objects has found only one via
+				-- then the flag edit_process.running is set true.
 
 			else
 				-- Here the clarification procedure ends.
-				-- A via has been selected (indicated by cursor selected_via)
-				-- via procedure select_via.
-				-- By setting edit_process_running, the selected
-				-- via will be drawn at the tool position
-				-- when conductor objects are drawn on the canvas.
+				-- A via has been selected via procedure clarify_object.
+				-- By setting the status of the selected
+				-- via as "moving", the selected via
+				-- will be drawn according to the tool position.
+				set_first_selected_object_moving;
+
 				-- Furtheron, on the next call of this procedure
-				-- the selected via will be assigned its final position.
+				-- the selected segment will be assigned its final position.
+				
 				set_edit_process_running;
 				reset_request_clarification;
 			end if;
 			
 		else
-			-- Finally move the selected via:
 			finalize;
 		end if;
-	end move_via;
+	end move_object;
+	
 
 
 	
@@ -1032,31 +1142,37 @@ package body et_canvas_board_vias is
 		tool	: in type_tool;
 		point	: in type_vector_model)
 	is 
-
+		-- Deletes the selected object.
+		-- Resets variable preliminary_object:
 		procedure finalize is 
-			use pac_proposed_vias;
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
+
+			object : constant type_object_via := get_first_object (
+				active_module, SELECTED, log_threshold + 1);
 		begin
-			log (text => "finalizing deletion ...", level => log_threshold);
+			log (text => "finalizing delete ...", level => log_threshold);
 			log_indentation_up;
 
-			if selected_via /= pac_proposed_vias.no_element then
-
-				delete_via (
-					module_cursor	=> active_module,
-					via				=> element (selected_via),
-					log_threshold	=> log_threshold + 1);
 				
-			else
-				log (text => "nothing to do", level => log_threshold);
-			end if;
+			-- Commit the current state of the design:
+			commit (PRE, verb, noun, log_threshold + 1);
+			
+			delete_object (
+				module_cursor	=> active_module, 
+				object			=> object, 
+				log_threshold	=> log_threshold + 1);
+
+			-- Commit the new state of the design:
+			commit (POST, verb, noun, log_threshold + 1);
+
 				
 			log_indentation_down;			
 			set_status (status_delete_via);
 			
-			reset_preliminary_via; -- CS no need
-			-- instead this should be sufficient:
-			-- clear_proposed_vias
-			-- reset_edit_process_running
+			reset_proposed_vias (active_module, log_threshold + 1);
+			reset_edit_process_running;
 		end finalize;
 		
 
@@ -1068,11 +1184,11 @@ package body et_canvas_board_vias is
 		if not clarification_pending then
 
 			-- Locate all vias in the vicinity of the given point:
-			find_vias (point);
+			find_objects (point);
 			-- NOTE: If many vias have been found, then
 			-- clarification is now pending.
 
-			-- If find_vias has found only one via
+			-- If find_objects has found only one via
 			-- then delete that via immediately.
 			if edit_process_running then
 				finalize;
@@ -1080,15 +1196,13 @@ package body et_canvas_board_vias is
 			
 		else
 			-- Here the clarification procedure ends.
-			-- A via has been selected (indicated by cursor selected_via)
-			-- via procedure select_via.
-			reset_request_clarification;
+			-- A via has been selected 
+			-- via procedure clarify_object.
+			
 			finalize;
+			reset_request_clarification;
 		end if;
 	end delete_via;
-
-
-	
 	
 	
 end et_canvas_board_vias;
