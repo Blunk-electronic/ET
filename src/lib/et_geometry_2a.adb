@@ -3000,7 +3000,7 @@ package body et_geometry_2a is
 		width	: in type_distance_positive := 0.0)
 		return boolean
 	is
-		distance : type_distance_positive;
+		distance : type_distance;
 	begin
 		distance := get_distance (circle.center, get_center (zone));
 		distance := distance - circle.radius - width;
