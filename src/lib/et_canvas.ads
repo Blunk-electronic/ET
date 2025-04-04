@@ -1136,7 +1136,7 @@ package et_canvas is
 -- EDIT PROCESS RUNNNING:
 
 	-- Sets the flag running. Clears the escape_counter:
-	procedure set_edit_process_running;
+	procedure set_edit_process_running; -- CS rename to edit_process_running_set
 
 	procedure reset_edit_process_running;
 	
@@ -1146,8 +1146,8 @@ package et_canvas is
 
 -- FINALIZING GRANTED:
 	
-	procedure set_finalizing_granted;
-
+	procedure set_finalizing_granted;  -- CS rename to finalizing_granted_set
+	
 	procedure reset_finalizing_granted;
 
 	function finalizing_granted return boolean;
@@ -1158,7 +1158,7 @@ package et_canvas is
 
 	procedure escape_key_pressed;
 
-	function get_escape_counter return natural;
+	function get_escape_counter return natural; -- CS subtype !!
 	
 
 	
@@ -1188,7 +1188,6 @@ package et_canvas is
 	-- the displacement of other attached objects:
 	object_original_position : type_vector_model := origin;
 
-
 	
 	
 	-- This function returns the object tool position
@@ -1199,14 +1198,12 @@ package et_canvas is
 		return type_vector_model;
 
 
-	-- Resets object_tool and object_ready;
+	-- Resets object_tool, point_of_attack, linewidth, path ... ;
 	procedure reset_object;
-
 	-- CS: It is probably not a good idea to reset all
-	-- properties of the preliminary object at once in a single procedure
+	-- properties of the object at once in a single procedure
 	-- like reset_object. 
-	-- Instead individual small procedures could be useful
-	-- like reset_object_linewidth or reset_object_ready.
+	-- Instead individual small procedures could be useful.
 	
 
 

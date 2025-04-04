@@ -813,6 +813,47 @@ package body et_canvas_board_2 is
 
 		use et_canvas_board_preliminary_object;
 		use et_ripup;
+
+
+		-- Do a level 1 reset. This is a partly reset:
+		procedure level_1 is begin
+			reset_request_clarification;
+
+			-- Reset general and board specific
+			-- properties of the preliminary object:
+			reset_object; -- general
+			reset_preliminary_object; -- board specific
+
+			reset_preliminary_text; -- after placing a text
+			
+			et_board_ops.ratsnest.reset_proposed_airwires (active_module, log_threshold + 1);
+			reset_ripup_mode;
+
+			reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
+			reset_preliminary_non_electrical_device;
+
+			et_board_ops.assy_doc.reset_proposed_objects (active_module, log_threshold + 1);
+			et_board_ops.silkscreen.reset_proposed_objects (active_module, log_threshold + 1);
+			et_board_ops.stopmask.reset_proposed_objects (active_module, log_threshold + 1);
+			et_board_ops.stencil.reset_proposed_objects (active_module, log_threshold + 1);
+			et_board_ops.keepout.reset_proposed_objects (active_module, log_threshold + 1);
+			et_board_ops.board_contour.reset_proposed_objects (active_module, log_threshold + 1);
+			et_board_ops.conductors.reset_proposed_objects (active_module, log_threshold + 1);
+			et_board_ops.vias.reset_proposed_vias (active_module, log_threshold + 1);
+		end level_1;
+
+
+		-- Do a level 2 reset. This is a full reset:
+		procedure level_2 is begin
+			reset_verb_and_noun;
+			update_mode_display;
+			
+			status_enter_verb;
+			clear_out_properties_box;
+			reset_editing_process;
+		end level_2;
+	
+	
 	begin
 		-- put_line ("reset");
 		escape_key_pressed;
@@ -825,37 +866,22 @@ package body et_canvas_board_2 is
 		case get_escape_counter is
 			when 0 => null;
 			
-			when 1 => 			
-				reset_request_clarification;
+			when 1 =>
+				case verb is
+					when VERB_PLACE =>
+						-- case noun is
+							-- when NOUN_VIA => level_1; level_2;
 
-				-- Reset general and board specific
-				-- properties of the preliminary object:
-				reset_preliminary_object;
+							-- when others => level_1;
+						-- end case;
+						level_1;
+						level_2;
 
-				reset_preliminary_text; -- after placing a text
-				
-				et_board_ops.ratsnest.reset_proposed_airwires (active_module, log_threshold + 1);
-				reset_ripup_mode;
-
-				reset_preliminary_electrical_device; -- after moving, rotating, flipping a device
-				reset_preliminary_non_electrical_device;
-
-				et_board_ops.assy_doc.reset_proposed_objects (active_module, log_threshold + 1);
-				et_board_ops.silkscreen.reset_proposed_objects (active_module, log_threshold + 1);
-				et_board_ops.stopmask.reset_proposed_objects (active_module, log_threshold + 1);
-				et_board_ops.stencil.reset_proposed_objects (active_module, log_threshold + 1);
-				et_board_ops.keepout.reset_proposed_objects (active_module, log_threshold + 1);
-				et_board_ops.board_contour.reset_proposed_objects (active_module, log_threshold + 1);
-				et_board_ops.conductors.reset_proposed_objects (active_module, log_threshold + 1);
-				et_board_ops.vias.reset_proposed_vias (active_module, log_threshold + 1);
+					when others => level_1;
+				end case;
 				
 			when 2 =>
-				reset_verb_and_noun;
-				update_mode_display;
-				
-				status_enter_verb;
-				clear_out_properties_box;
-				reset_editing_process;
+				level_2;
 
 			when others =>
 				reset_editing_process;

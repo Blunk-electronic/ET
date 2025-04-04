@@ -46,7 +46,8 @@ package body et_canvas_board_preliminary_object is
 	procedure reset_preliminary_object is
 		use pac_canvas;
 	begin
-		reset_object; -- global stuff
+		-- reset_object; -- global stuff
+		null;
 
 		-- CS reset category, signal_layer, face, ...
 	end reset_preliminary_object;

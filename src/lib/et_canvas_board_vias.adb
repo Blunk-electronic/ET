@@ -211,7 +211,7 @@ package body et_canvas_board_vias is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_edit_process_running;
+				reset_edit_process_running; -- CS
 			
 			when GDK_TAB => 
 				--put_line ("size via tab " & text);
@@ -263,7 +263,7 @@ package body et_canvas_board_vias is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_edit_process_running;
+				reset_edit_process_running; -- CS
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -315,7 +315,7 @@ package body et_canvas_board_vias is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_edit_process_running;
+				reset_edit_process_running; -- CS
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -397,13 +397,13 @@ package body et_canvas_board_vias is
 	end init_preliminary_via;
 
 
+
 	
 
 	procedure show_via_properties is
 		use gtk.gentry;
 		use gtk.cell_renderer_text;
 		use gtk.cell_layout;
-
 		
 
 		-- NET NAME
@@ -782,9 +782,6 @@ package body et_canvas_board_vias is
 			make_combo_restring_inner;
 			make_combo_restring_outer;
 
-			-- Signal the GUI to draw the via:
-			set_edit_process_running;
-				
 			-- Redraw the right box of the window:
 			box_v0.show_all;  -- CS box_v4 ?
 
@@ -810,39 +807,36 @@ package body et_canvas_board_vias is
 	is
 		via : type_via (category => preliminary_via.category);
 	begin
-		if edit_process_running then
-			
-			via.position := preliminary_via.drill.position;
-			via.diameter := preliminary_via.drill.diameter;
-			
-			via.restring_inner := preliminary_via.restring_inner;
-			
-			move_to (via.position, point);
+		via.position := preliminary_via.drill.position;
+		via.diameter := preliminary_via.drill.diameter;
+		
+		via.restring_inner := preliminary_via.restring_inner;
+		
+		move_to (via.position, point);
 
-			case preliminary_via.category is
-				when THROUGH =>
-					via.restring_outer := preliminary_via.restring_outer;
-								  
-				when BURIED =>
-					via.layers := preliminary_via.layers_buried;
-										  
-				when BLIND_DRILLED_FROM_TOP =>
-					via.restring_top := preliminary_via.restring_outer;
-					via.lower := preliminary_via.destination_blind;
-					
-				when BLIND_DRILLED_FROM_BOTTOM =>
-					via.restring_bottom := preliminary_via.restring_outer;
-					via.upper := preliminary_via.destination_blind;
+		case preliminary_via.category is
+			when THROUGH =>
+				via.restring_outer := preliminary_via.restring_outer;
+								
+			when BURIED =>
+				via.layers := preliminary_via.layers_buried;
+										
+			when BLIND_DRILLED_FROM_TOP =>
+				via.restring_top := preliminary_via.restring_outer;
+				via.lower := preliminary_via.destination_blind;
+				
+			when BLIND_DRILLED_FROM_BOTTOM =>
+				via.restring_bottom := preliminary_via.restring_outer;
+				via.upper := preliminary_via.destination_blind;
 
-			end case;
+		end case;
 
-			place_via (
-				module_cursor	=> active_module,
-				net_name		=> object_net_name,
-				via				=> via,
-				log_threshold	=> log_threshold + 1);
+		place_via (
+			module_cursor	=> active_module,
+			net_name		=> object_net_name,
+			via				=> via,
+			log_threshold	=> log_threshold + 1);
 
-		end if;
 	end place_via;
 
 	

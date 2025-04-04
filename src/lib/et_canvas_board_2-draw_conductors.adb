@@ -90,7 +90,7 @@ procedure draw_conductors is
 
 		point : type_vector_model;
 	begin
-		if verb = VERB_PLACE and noun = NOUN_TEXT and edit_process_running then
+		if verb = VERB_PLACE and noun = NOUN_TEXT and edit_process_running then -- CS
 			
 			if object_layer_category = LAYER_CAT_CONDUCTOR 
 			and object_signal_layer = layer then
@@ -1089,8 +1089,8 @@ procedure draw_conductors is
 		-- The place where the via shall be placed:
 		position : type_vector_model;
 	begin
-		-- if verb = VERB_PLACE and noun = NOUN_VIA then
-		if edit_process_running then
+		-- put_line ("draw_via_being_placed");
+		if verb = VERB_PLACE and noun = NOUN_VIA then
 
 			-- Set the point where the via is to be drawn:
 			position := get_primary_tool_position;
@@ -1259,12 +1259,7 @@ begin
 	-- Draw a via that is being placed. 
 	-- If none is being placed,
 	-- nothing happens:
-	-- case verb is
-	-- 	when VERB_PLACE =>
-			draw_via_being_placed;
- -- 
-	-- 	when others => null;
-	-- end case;
+	draw_via_being_placed;
 
 
 	-- Draw a freetrack being drawn. 

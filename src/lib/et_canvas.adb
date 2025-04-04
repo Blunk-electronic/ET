@@ -3403,7 +3403,7 @@ package body et_canvas is
 
 
 	procedure reset_object is begin
-		reset_edit_process_running; -- CS remove
+		-- reset_edit_process_running; -- CS remove
 		object_tool := MOUSE;
 		-- CS reset point_of_atttack ?
 		-- CS object_linewidth
