@@ -757,7 +757,7 @@ package body et_canvas_board_vias is
 		end make_combo_restring_outer;
 
 			
-	begin -- show_via_properties
+	begin
 
 		-- Show the properties bar if there are nets in the module:
 		if et_schematic_ops.nets.get_net_count (active_module) > 0 then
@@ -769,7 +769,9 @@ package body et_canvas_board_vias is
 			-- must be cleared:
 			clear_out_properties_box;
 
-			init_preliminary_via;
+			init_preliminary_via; 
+			-- CS should be skipped after placing the first via
+			-- so that the last settings remain.
 				
 
 			-- Build the elements of the properties bar:
