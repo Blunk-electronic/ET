@@ -586,10 +586,13 @@ procedure draw_conductors is
 		via : type_via renames element (via_cursor);
 
 		brightness : type_brightness := NORMAL;
-
 		
 		-- When the restring is to be drawn then
-		-- we just use a circle with a certain linewidth:
+		-- we just use a circle with a certain linewidth.
+		-- The center of the circle is the position
+		-- of the via.
+		-- If the via is being moved, then the center will
+		-- be overwritten by the tool position:
 		circle : type_circle;
 		linewidth : type_distance_positive;
 		
@@ -899,10 +902,10 @@ procedure draw_conductors is
 		
 	begin -- query_via
 		--put_line ("via.diameter" & to_string (via.diameter));
-		
+
+		-- Set the radius and the center of the circle:
 		radius_base := via.diameter / 2.0;
 		set_center (circle, via.position);
-
 
 		-- Overwrite the via position (circle.center) if the
 		-- via is selected and being moved:
@@ -911,22 +914,16 @@ procedure draw_conductors is
 			-- A selected via must be highlighted:
 			brightness := BRIGHT;
 
-			case verb is
-				when VERB_MOVE =>
-					if edit_process_running then
+			if is_moving (via_cursor) then
+				case object_tool is
+					when MOUSE =>
+						set_center (circle, snap_to_grid (get_mouse_position));
 
-						case object_tool is
-							when MOUSE =>
-								set_center (circle, snap_to_grid (get_mouse_position));
+					when KEYBOARD =>
+						set_center (circle, get_cursor_position);
+				end case;
+			end if;
 
-							when KEYBOARD =>
-								set_center (circle, get_cursor_position);
-						end case;
-
-					end if;
-
-				when others => null;
-			end case;
 		end if;
 
 
@@ -1030,7 +1027,6 @@ procedure draw_conductors is
 				pac_nets.iterate (module.nets, query_net'access);
 			end if;
 		end draw_ratsnest;
-
 		
 		
 	begin -- query_items
@@ -1077,22 +1073,23 @@ procedure draw_conductors is
 		iterate (module.nets, query_net_via'access);
 	end query_items;
 
-	
-	-- CS: Currently this list will contain only the single via
-	-- that is being placed. It could be useful for copy/paste/move of
-	-- groups of vias.
-	vias_being_placed : pac_vias.list;
 
 	
-	-- Draws the via that is attached to the primary tool while the
-	-- operator is placing the via.
-	-- Uses list vias_being_placed as storage place for the single via.
+
+	
+	-- Draws the via that is being placed with the
+	-- properties according to variable preliminary_via:
 	procedure draw_via_being_placed is 
 		use et_canvas_board_vias;
+
+		-- This list will contain only the single via
+		-- that is being placed:
+		vias_being_placed : pac_vias.list;
 		
 		-- The place where the via shall be placed:
 		position : type_vector_model;
 	begin
+		-- if verb = VERB_PLACE and noun = NOUN_VIA then
 		if edit_process_running then
 
 			-- Set the point where the via is to be drawn:
@@ -1231,7 +1228,7 @@ procedure draw_conductors is
 		
 	begin
 		
-		if verb = VERB_ROUTE and noun = NOUN_NET and edit_process_running then
+		if verb = VERB_ROUTE and noun = NOUN_NET and edit_process_running then -- CS
 			case object_tool is
 				when MOUSE => 
 					compute_and_draw (
@@ -1251,29 +1248,34 @@ procedure draw_conductors is
 	
 begin
 -- 	put_line ("draw conductor layers ...");
-	
+
+	-- Draw objects that already exist in the
+	-- database, such as tracks, vias, airwires:
 	pac_generic_modules.query_element (
 		position	=> active_module,
 		process		=> query_items'access);
 
 
-	-- Draw a via that is being placed. If none is being placed,
+	-- Draw a via that is being placed. 
+	-- If none is being placed,
 	-- nothing happens:
-	case verb is
-		when VERB_PLACE =>
+	-- case verb is
+	-- 	when VERB_PLACE =>
 			draw_via_being_placed;
+ -- 
+	-- 	when others => null;
+	-- end case;
 
-		when others => null;
-	end case;
 
-
-	-- Draw a freetrack being drawn. If no freetrack is being drawn,
+	-- Draw a freetrack being drawn. 
+	-- If no freetrack is being drawn,
 	-- nothing happens:
     draw_path (LAYER_CAT_CONDUCTOR);
 
 
+	-- Draw a track that is being drawn. 
+	-- If none is being drawn, nothing happens.
 	-- This is about a track that is connected to a net:
-	-- Draw a track that is being drawn. If none is being drawn, nothing happens:
 	draw_track;
 	
 end draw_conductors;
