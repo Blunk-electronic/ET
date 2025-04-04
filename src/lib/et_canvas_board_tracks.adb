@@ -203,6 +203,7 @@ package body et_canvas_board_tracks is
 
 	
 
+	
 	procedure make_store_for_net_names (
 		store : in out gtk_list_store)
 	is
@@ -244,6 +245,8 @@ package body et_canvas_board_tracks is
 	end make_store_for_net_names;
 									 
 
+
+	
 	
 	
 	procedure show_track_properties is
@@ -731,31 +734,6 @@ package body et_canvas_board_tracks is
 		end if;			
 	end make_path;
 		
-
-
-
-
-	-- Outputs the selected line in the status bar:
-	procedure show_selected_line (
-		selected		: in et_board_ops.conductors.type_object_line_net;
-		clarification	: in boolean := false)
-	is 
-		praeamble : constant string := "selected: net ";
-		use pac_net_name;
-		use et_nets;
-		use pac_nets;
-		use pac_conductor_lines;
-	begin
-		if clarification then
-			set_status (praeamble & to_string (key (selected.net_cursor)) -- RESET_N
-				& " / " & to_string (element (selected.line_cursor), true) -- start/end point/width/layer
-				& ". " & status_next_object_clarification);
-		else
-			set_status (praeamble & to_string (key (selected.net_cursor)) -- RESET_N
-				& " / " & to_string (element (selected.line_cursor), true)); -- start/end point/width/layer
-		end if;		
-	end show_selected_line;
-
 
 	
 end et_canvas_board_tracks;
