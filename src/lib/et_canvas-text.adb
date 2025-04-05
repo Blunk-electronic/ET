@@ -397,28 +397,31 @@ package body et_canvas.text is
 		draw_origin ((pos_final.place, zero_rotation));
 		-- CS draw the origin rotated by 45 degrees 
 		-- if the text is locked ?
-		
-		vectors := vectorize_text (
-			content		=> text.content,
-			size		=> text.size,
-			-- rotation	=> get_rotation (text.position),
-			rotation	=> get_rotation (pos_final),
-			--position	=> text.position.place,
-			position	=> pos_final.place,
-			mirror		=> text.mirror,
-			line_width	=> text.line_width,
-			alignment	=> text.alignment); -- right, bottom
 
-		
-		-- set_line_join (context.cr, cairo_line_join_miter); -- CS
+		if not is_empty (text.content) then
+			
+			vectors := vectorize_text (
+				content		=> text.content,
+				size		=> text.size,
+				-- rotation	=> get_rotation (text.position),
+				rotation	=> get_rotation (pos_final),
+				--position	=> text.position.place,
+				position	=> pos_final.place,
+				mirror		=> text.mirror,
+				line_width	=> text.line_width,
+				alignment	=> text.alignment); -- right, bottom
 
-		-- The linewidth applies to all character lines:
-		set_linewidth (text.line_width);
-		
-		iterate (vectors, query_line'access);
+			
+			-- set_line_join (context.cr, cairo_line_join_miter); -- CS
 
-		-- Do a final stroke:
-		stroke;
+			-- The linewidth applies to all character lines:
+			set_linewidth (text.line_width);
+			
+			iterate (vectors, query_line'access);
+
+			-- Do a final stroke:
+			stroke;
+		end if;
 	end draw_vector_text;
 
 

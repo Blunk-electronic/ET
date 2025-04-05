@@ -128,7 +128,9 @@ package et_canvas.text is
 
 
 	
-	-- Draws a text. Draws the origin and vectorizes the text:
+	-- Draws a text. Draws the origin and vectorizes the text.
+	-- If the text has no content, then only the origin
+	-- will be drawn:
 	procedure draw_vector_text (
 		text	: in pac_text.type_text_fab_with_content'class);
 	
