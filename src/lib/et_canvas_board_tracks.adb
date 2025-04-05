@@ -678,6 +678,8 @@ package body et_canvas_board_tracks is
 		-- Set the tool being used for this path so that procedure
 		-- draw_track (in et_canvas_board_2-draw_conductors)
 		-- knows where to get the end point from.
+		-- Procedure draw_track computes the bend point
+		-- once the edit process has started:
 		object_tool := tool;
 
 		-- On the first call of this procedure the start point of the

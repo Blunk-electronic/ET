@@ -1227,8 +1227,8 @@ procedure draw_conductors is
 		use et_canvas_tool;
 		
 	begin
-		
-		if verb = VERB_ROUTE and noun = NOUN_NET and edit_process_running then -- CS
+		-- Draw the path only after the actual editing process has started:
+		if verb = VERB_ROUTE and noun = NOUN_NET and edit_process_running then
 			case object_tool is
 				when MOUSE => 
 					compute_and_draw (
