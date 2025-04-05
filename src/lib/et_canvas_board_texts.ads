@@ -141,13 +141,13 @@ package et_canvas_board_texts is
 
 	
 	-- The place where preliminary information of
-	-- a text is stored:
+	-- a text is stored as the operator specifies them
+	-- via the GUI (text properties box):
 	preliminary_text : type_preliminary_text;
 
 
-	-- Clears out he text properties bar.
-	-- Clears the flags object_ready and resets
-	-- object_tool to MOUSE:
+	-- Resets parts of the preliminary text.
+	-- CS currently nothing happens here:
 	procedure reset_preliminary_text;
 
 	
@@ -174,7 +174,11 @@ package et_canvas_board_texts is
 
 	-- Builds the final text-to-be-placed from the information
 	-- provided by preliminary_text.
-	-- Places the text at the given point:
+	-- Places the text at the given point.
+	-- This procedure is called when the operator does a
+	-- left mouse click or if he presses the space key
+	-- when finishing the text-placing operation
+	-- (see et_canvas_board_2-key_pressed and et_canvas_board_2.button_pressed):
 	procedure place_text (
 		point : in type_vector_model);
 

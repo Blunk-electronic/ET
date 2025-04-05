@@ -107,15 +107,13 @@ package body et_canvas_board_texts is
 
 	
 
-
-	procedure reset_preliminary_text is begin
-		reset_preliminary_object;
-		-- CS
-		-- Reset everything of the preliminary text:
-		--preliminary_text := (others => <>);
-		-- or reset the content only ?
+	procedure reset_preliminary_text is
+	begin
+		-- CS reset content only ?
+		null;
+		
 	end reset_preliminary_text;
-
+		
 
 	
 	
@@ -256,7 +254,7 @@ package body et_canvas_board_texts is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_preliminary_text;
+				et_canvas_board_2.reset;
 			
 			when GDK_TAB => 
 				--put_line ("size via tab " & text);
@@ -313,7 +311,7 @@ package body et_canvas_board_texts is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_preliminary_text;
+				et_canvas_board_2.reset;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -372,7 +370,7 @@ package body et_canvas_board_texts is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_preliminary_text;
+				et_canvas_board_2.reset;
 				
 			when GDK_TAB => 
 				--put_line ("rotation via tab " & text);
@@ -412,14 +410,7 @@ package body et_canvas_board_texts is
 		get_bounds (text_buffer, lower_bound, upper_bound);
 		--put_line ("content: " & get_text (text_buffer, lower_bound, upper_bound));
 		preliminary_text.text.content := to_content (get_text (text_buffer, lower_bound, upper_bound));
-
-		-- CS check length and characters
-		
-		if not is_empty (preliminary_text.text.content) then
-			--put_line ("content: " & enclose_in_quotes (to_string (preliminary_text.text.content)));
-			set_edit_process_running;
-		end if;
-		
+		-- CS check characters				
 	end button_apply_clicked;
 
 
@@ -516,6 +507,7 @@ package body et_canvas_board_texts is
 		end make_combo_category;
 
 
+
 		
 		procedure make_combo_for_face is
 			storage_model : gtk_list_store;
@@ -567,6 +559,7 @@ package body et_canvas_board_texts is
 		end make_combo_for_face;
 
 		
+
 		
 		procedure make_combo_for_signal_layer is
 			storage_model : gtk_list_store;
@@ -749,49 +742,48 @@ package body et_canvas_board_texts is
 	procedure place_text (
 		point : in type_vector_model) 
 	is begin
-		if edit_process_running then
-			move_to (preliminary_text.text.position.place, point);
-			
-			case object_layer_category is
-				when LAYER_CAT_ASSY =>
+		move_to (preliminary_text.text.position.place, point);
+		
+		case object_layer_category is
+			when LAYER_CAT_ASSY =>
 
-					et_board_ops.assy_doc.add_text (
-						module_cursor 	=> active_module,
-						face			=> object_face,
-						text			=> preliminary_text.text,
-						log_threshold	=> log_threshold + 1);
+				et_board_ops.assy_doc.add_text (
+					module_cursor 	=> active_module,
+					face			=> object_face,
+					text			=> preliminary_text.text,
+					log_threshold	=> log_threshold + 1);
 
-					
-
-				when LAYER_CAT_SILKSCREEN =>
-
-					et_board_ops.silkscreen.add_text (
-						module_cursor 	=> active_module,
-						face			=> object_face,
-						text			=> preliminary_text.text,
-						log_threshold	=> log_threshold + 1);
-
-
-				when LAYER_CAT_STOPMASK =>
-					
-					et_board_ops.stopmask.add_text (
-						module_cursor 	=> active_module,
-						face			=> object_face,
-						text			=> preliminary_text.text,
-						log_threshold	=> log_threshold + 1);
-
-					
-				when LAYER_CAT_CONDUCTOR =>
 				
-					et_board_ops.conductors.add_text (
-						module_cursor 	=> active_module,
-						signal_layer	=> object_signal_layer,
-						text			=> preliminary_text.text,
-						log_threshold	=> log_threshold + 1);
 
-				when others => null; -- CS raise exception ?
-			end case;
-		end if;	
+			when LAYER_CAT_SILKSCREEN =>
+
+				et_board_ops.silkscreen.add_text (
+					module_cursor 	=> active_module,
+					face			=> object_face,
+					text			=> preliminary_text.text,
+					log_threshold	=> log_threshold + 1);
+
+
+			when LAYER_CAT_STOPMASK =>
+				
+				et_board_ops.stopmask.add_text (
+					module_cursor 	=> active_module,
+					face			=> object_face,
+					text			=> preliminary_text.text,
+					log_threshold	=> log_threshold + 1);
+
+				
+			when LAYER_CAT_CONDUCTOR =>
+			
+				et_board_ops.conductors.add_text (
+					module_cursor 	=> active_module,
+					signal_layer	=> object_signal_layer,
+					text			=> preliminary_text.text,
+					log_threshold	=> log_threshold + 1);
+
+			when others => null; -- CS raise exception ?
+		end case;
+
 	end place_text;
 	
 	
