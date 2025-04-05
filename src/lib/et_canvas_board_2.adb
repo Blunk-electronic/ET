@@ -796,10 +796,6 @@ package body et_canvas_board_2 is
 
 	
 
-	-- This procedure resets a lot of stuff and should
-	-- be called when the operator pressed the ESCAPE key.
-	-- Here the commands to abort any pending 
-	-- operations related to the canvas should be placed:
 	procedure reset is 
 		use et_modes;
 		use et_modes.board;

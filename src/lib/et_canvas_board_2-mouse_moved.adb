@@ -138,9 +138,7 @@ begin
 					end if;
 
 				when NOUN_VIA =>
-					-- if edit_process_running then
-						redraw_board;
-					-- end if;
+					redraw_board;
 					
 				when others => null;
 			end case;

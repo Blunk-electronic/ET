@@ -211,7 +211,7 @@ package body et_canvas_board_vias is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_edit_process_running; -- CS
+				et_canvas_board_2.reset;
 			
 			when GDK_TAB => 
 				--put_line ("size via tab " & text);
@@ -263,7 +263,7 @@ package body et_canvas_board_vias is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_edit_process_running; -- CS
+				et_canvas_board_2.reset;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -301,6 +301,7 @@ package body et_canvas_board_vias is
 		et_canvas_board_2.redraw_board;
 	end apply_restring_outer;
 
+
 	
 	
 	function restring_outer_key_pressed (
@@ -313,9 +314,11 @@ package body et_canvas_board_vias is
 		gentry	: gtk_gentry := gtk_gentry (combo_entry);
 		text	: constant string := get_text (gentry);
 	begin
+		-- put_line ("restring_outer_key_pressed");
+		
 		case key is
 			when GDK_ESCAPE =>
-				reset_edit_process_running; -- CS
+				et_canvas_board_2.reset;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -807,6 +810,10 @@ package body et_canvas_board_vias is
 	procedure place_via (
 		point	: in type_vector_model) 
 	is
+		use et_modes.board;
+		use et_undo_redo;
+		use et_commit;
+					
 		via : type_via (category => preliminary_via.category);
 	begin
 		via.position := preliminary_via.drill.position;
@@ -833,12 +840,19 @@ package body et_canvas_board_vias is
 
 		end case;
 
+
+		-- Commit the current state of the design:
+		commit (PRE, verb, noun, log_threshold + 1);
+		
 		place_via (
 			module_cursor	=> active_module,
 			net_name		=> object_net_name,
 			via				=> via,
 			log_threshold	=> log_threshold + 1);
 
+		-- Commit the new state of the design:
+		commit (POST, verb, noun, log_threshold + 1);
+		
 	end place_via;
 
 	
