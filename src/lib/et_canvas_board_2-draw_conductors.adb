@@ -1234,18 +1234,11 @@ procedure draw_conductors is
 	begin
 		-- Draw the path only after the actual editing process has started:
 		if verb = VERB_ROUTE and noun = NOUN_NET and edit_process_running then
-			case object_tool is
-				when MOUSE => 
-					compute_and_draw (
-						start_point	=> live_path.start_point,	-- start of path
-						end_point	=> snap_to_grid (get_mouse_position));	-- end of route
-					
-				when KEYBOARD =>
-					compute_and_draw (
-						start_point	=> live_path.start_point,	-- start of path
-						end_point	=> get_cursor_position);	-- end of path
 
-			end case;
+			compute_and_draw (
+				start_point	=> live_path.start_point,	-- start of path
+				end_point	=> get_object_tool_position);	-- end of route
+
 		end if;
 	end draw_track;
 

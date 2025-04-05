@@ -3500,7 +3500,7 @@ package body et_canvas is
 				live_path.start_point := point;
 
 			else
-				null; -- reset_edit_process_running ?
+				reset_edit_process_running;
 			end if;
 		end if;			
 	end make_path;

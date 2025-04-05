@@ -474,23 +474,16 @@ package body et_canvas_board_2 is
 
 		
 	begin -- draw_path
-		-- put_line ("draw_path");
-		
+		-- put_line ("draw_path");		
 		
 		if verb = VERB_DRAW and noun = NOUN_LINE and edit_process_running
 		and object_layer_category = cat then
-			case object_tool is
-				when MOUSE => 
-					compute_and_draw (
-						start_point	=> live_path.start_point, -- start of path
-						end_point	=> snap_to_grid (get_mouse_position));	-- end of route
+			
+			compute_and_draw (
+				start_point	=> live_path.start_point, -- start of path
+				end_point	=> get_object_tool_position);	-- end of route
 					
-				when KEYBOARD =>
-					compute_and_draw (
-						start_point	=> live_path.start_point, -- start of path
-						end_point	=> get_cursor_position); -- end of path
-
-			end case;
+			
 		end if;
 	end draw_path;
 	
@@ -573,18 +566,10 @@ package body et_canvas_board_2 is
 		-- and (noun = NOUN_ZONE or noun = NOUN_OUTLINE) 
 		
 		then
-			case object_tool is
-				when MOUSE => 
-					compute_and_draw (
-						start_point	=> live_path.start_point, -- start of path
-						end_point	=> snap_to_grid (get_mouse_position));	-- end of route
-					
-				when KEYBOARD =>
-					compute_and_draw (
-						start_point	=> live_path.start_point, -- start of path
-						end_point	=> get_cursor_position); -- end of path
+			compute_and_draw (
+				start_point	=> live_path.start_point, -- start of path
+				end_point	=> get_object_tool_position);	-- end of route
 
-			end case;
 		end if;
 	end draw_live_zone;
 
