@@ -42,9 +42,6 @@ with ada.text_io;						use ada.text_io;
 with ada.strings;						use ada.strings;
 with ada.strings.fixed; 				use ada.strings.fixed;
 
-with ada.containers;
-
-
 with glib.values;
 
 with gdk.types;							use gdk.types;
@@ -62,7 +59,6 @@ with gtk.container;						use gtk.container;
 with gtk.button;						use gtk.button;
 
 with et_generic_module;					use et_generic_module;
-with et_canvas_board_2;
 
 with et_board_ops.conductors;			use et_board_ops.conductors;
 with et_modes.board;
@@ -87,7 +83,8 @@ with et_ripup;
 
 
 package body et_canvas_board_tracks is
-
+	
+	
 
 	function to_string (
 		mode	: in type_snap_mode)
@@ -167,6 +164,8 @@ package body et_canvas_board_tracks is
 		event		: gdk_event_key) 
 		return boolean 
 	is
+		use et_canvas_board_2;
+		
 		event_handled : boolean := false;
 		
 		use gdk.types;
@@ -177,8 +176,7 @@ package body et_canvas_board_tracks is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_object;
-				clear_out_properties_box;
+				reset;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);
@@ -191,6 +189,7 @@ package body et_canvas_board_tracks is
 	end line_width_key_pressed;
 
 
+	
 	
 	
 	procedure line_width_entered (combo_entry : access gtk_entry_record'class) is 
