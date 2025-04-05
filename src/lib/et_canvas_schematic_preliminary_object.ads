@@ -71,17 +71,14 @@ package et_canvas_schematic_preliminary_object is
 	object_sheet_changes : boolean := false;
 
 	
-	-- Resets the preliminary object information
-	-- and global stuff like object_tool, object_ready, ...
-	-- (see et_canvas spec):
-	procedure reset_preliminary_object;
-
 	-- CS: It is probably not a good idea to reset all
 	-- properties of the preliminary object at once in a single procedure
 	-- like reset_preliminary_object. 
 	-- Instead individual small procedures could be useful
 	-- like reset_object_face or reset_object_layer_category.
 
+	
+	procedure dummy;
 	
 end et_canvas_schematic_preliminary_object;
 

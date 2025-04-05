@@ -262,8 +262,7 @@ package body et_canvas_board_lines is
 	begin
 		case key is
 			when GDK_ESCAPE =>
-				reset_preliminary_object;
-				clear_out_properties_box;
+				et_canvas_board_2.reset;
 
 			when GDK_TAB => 
 				--put_line ("line width via tab " & text);

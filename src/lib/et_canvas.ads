@@ -1188,6 +1188,10 @@ package et_canvas is
 	-- the displacement of other attached objects:
 	object_original_position : type_vector_model := origin;
 
+	-- CS: It is probably not a good idea to reset all
+	-- properties of the object at once in a single procedure
+	-- like reset_object. 
+	-- Instead individual small procedures could be useful.
 	
 	
 	-- This function returns the object tool position
@@ -1198,12 +1202,6 @@ package et_canvas is
 		return type_vector_model;
 
 
-	-- Resets object_tool, point_of_attack, linewidth, path ... ;
-	procedure reset_object;
-	-- CS: It is probably not a good idea to reset all
-	-- properties of the object at once in a single procedure
-	-- like reset_object. 
-	-- Instead individual small procedures could be useful.
 	
 
 

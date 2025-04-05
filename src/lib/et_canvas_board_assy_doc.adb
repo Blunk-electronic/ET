@@ -365,7 +365,6 @@ package body et_canvas_board_assy_doc is
 		case count_total is
 			when 0 =>
 				reset_request_clarification;
-				reset_preliminary_object;
 				reset_proposed_objects (active_module, log_threshold + 1);
 				
 			when 1 =>
@@ -436,7 +435,6 @@ package body et_canvas_board_assy_doc is
 			log_indentation_down;			
 			set_status (status_move_object);
 			
-			reset_preliminary_object;
 			reset_proposed_objects (active_module, log_threshold + 1);
 		end finalize;
 			
@@ -525,7 +523,6 @@ package body et_canvas_board_assy_doc is
 			log_indentation_down;			
 			set_status (status_delete_object);
 			
-			reset_preliminary_object;
 			reset_proposed_objects (active_module, log_threshold + 1);
 		end finalize;
 

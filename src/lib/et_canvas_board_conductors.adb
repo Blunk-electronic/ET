@@ -463,7 +463,6 @@ package body et_canvas_board_conductors is
 		case count_total is
 			when 0 =>
 				reset_request_clarification;
-				reset_preliminary_object;
 				reset_proposed_objects (active_module, log_threshold + 1);
 
 				
@@ -536,7 +535,6 @@ package body et_canvas_board_conductors is
 			log_indentation_down;			
 			set_status (status_move_object);
 			
-			reset_preliminary_object;
 			reset_proposed_objects (active_module, log_threshold + 1);
 		end finalize;
 			
@@ -627,7 +625,6 @@ package body et_canvas_board_conductors is
 			log_indentation_down;			
 			set_status (status_delete_object);
 			
-			reset_preliminary_object;
 			reset_proposed_objects (active_module, log_threshold + 1);
 		end finalize;
 
@@ -649,7 +646,7 @@ package body et_canvas_board_conductors is
 		else
 			-- Here the clarification procedure ends.
 			-- An object has been selected (indicated by selected_object)
-			-- via procedure selected_object.
+			-- via procedure clarify_object.
 
 			finalize;
 			reset_request_clarification;

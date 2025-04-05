@@ -815,11 +815,6 @@ package body et_canvas_board_2 is
 		procedure level_1 is begin
 			reset_request_clarification;
 
-			-- Reset general and board specific
-			-- properties of the preliminary object:
-			reset_object; -- general
-			reset_preliminary_object; -- board specific
-
 			reset_preliminary_text; -- after placing a text
 			
 			et_board_ops.ratsnest.reset_proposed_airwires (active_module, log_threshold + 1);
@@ -841,6 +836,8 @@ package body et_canvas_board_2 is
 
 		-- Do a level 2 reset. This is a full reset:
 		procedure level_2 is begin
+			level_1;
+			
 			reset_verb_and_noun;
 			update_mode_display;
 			
@@ -865,12 +862,6 @@ package body et_canvas_board_2 is
 			when 1 =>
 				case verb is
 					when VERB_PLACE =>
-						-- case noun is
-							-- when NOUN_VIA => level_1; level_2;
-
-							-- when others => level_1;
-						-- end case;
-						level_1;
 						level_2;
 
 					when others => level_1;

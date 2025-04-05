@@ -529,7 +529,6 @@ is
 		case key is
 			when key_noun_line =>
 				noun := NOUN_LINE;
-				reset_preliminary_object;				
 				show_line_properties;
 				set_status (status_draw_line);
 

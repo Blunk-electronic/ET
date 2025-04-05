@@ -43,14 +43,7 @@
 package body et_canvas_schematic_preliminary_object is
 
 
-	procedure reset_preliminary_object is
-		use pac_canvas;
-	begin
-		reset_object; -- global stuff
-
-		-- CS reset unit name, device name, ...
-	end reset_preliminary_object;
-
+	procedure dummy is begin null; end;
 	
 	
 end et_canvas_schematic_preliminary_object;

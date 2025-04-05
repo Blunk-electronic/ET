@@ -3402,14 +3402,6 @@ package body et_canvas is
 
 
 
-	procedure reset_object is begin
-		-- reset_edit_process_running; -- CS remove
-		object_tool := MOUSE;
-		-- CS reset point_of_atttack ?
-		-- CS object_linewidth
-		-- CS live_path
-	end reset_object;
-
 
 
 
@@ -3449,9 +3441,8 @@ package body et_canvas is
 		-- knows where to get the end point from.
 		object_tool := tool;
 
-		-- Initally the preliminary_object is NOT ready. Nothing will be drawn.
 		-- Upon the first calling of this procedure the start point of the
-		-- path will be set.
+		-- path will be set and the edit-process marked as "running":
 		
 		if not edit_process_running then
 			-- set start point:
@@ -3459,10 +3450,9 @@ package body et_canvas is
 
 			set_edit_process_running;
 
-			status_bar_path_show_start_point;
-			
+			status_bar_path_show_start_point;			
 
-		else -- preliminary_zone IS ready
+		else
 
 			-- Start a new path only if the given point differs from 
 			-- the start point of the current path:
@@ -3508,9 +3498,9 @@ package body et_canvas is
 				-- Set start point of path so that a new
 				-- path can be drawn:
 				live_path.start_point := point;
-				
+
 			else
-				reset_object;
+				null; -- reset_edit_process_running ?
 			end if;
 		end if;			
 	end make_path;

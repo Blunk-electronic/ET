@@ -417,7 +417,6 @@ package body et_canvas_schematic_units is
 -- MOVE/DRAG/ROTATE UNIT
 
 	procedure reset_unit_move is begin
-		reset_preliminary_object;
 		clear_proposed_units;
 	end reset_unit_move;
 

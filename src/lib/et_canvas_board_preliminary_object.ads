@@ -70,11 +70,7 @@ package et_canvas_board_preliminary_object is
 	
 	object_device_name		: type_device_name := et_device_name.no_name; -- IC45, FD2
 	
-	
-	-- Resets the preliminary object information
-	-- and global stuff like object_tool, ...
-	-- (see et_canvas spec):
-	procedure reset_preliminary_object;
+
 
 	-- CS: It is probably not a good idea to reset all
 	-- properties of the preliminary object at once in a single procedure
@@ -82,6 +78,7 @@ package et_canvas_board_preliminary_object is
 	-- Instead individual small procedures could be useful
 	-- like reset_object_face or reset_object_layer_category.
 
+	procedure dummy;
 	
 end et_canvas_board_preliminary_object;
 

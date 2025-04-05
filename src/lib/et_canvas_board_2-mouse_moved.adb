@@ -133,9 +133,7 @@ begin
 		when VERB_PLACE =>
 			case noun is
 				when NOUN_TEXT =>
-					if edit_process_running then
-						redraw_board;
-					end if;
+					redraw_board;
 
 				when NOUN_VIA =>
 					redraw_board;
