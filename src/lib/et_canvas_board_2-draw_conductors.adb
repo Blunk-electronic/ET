@@ -79,18 +79,23 @@ procedure draw_conductors is
 	
 	-- This procedure draws the text that is being placed in a
 	-- conductor layer.
-	-- The properties are taken from variable et_canvas_board_texts.preliminary_text.
+	-- The properties are taken from variable 
+	-- et_canvas_board_texts.preliminary_text.
 	-- The verb must be VERB_PLACE and the noun must be NOUN_TEXT. 
 	-- Otherwise nothing happens here:
-	procedure draw_text_being_placed_in_conductors (
+	procedure draw_text_being_placed (
 		layer : in et_pcb_stack.type_signal_layer)
 	is 
 		use et_canvas_board_texts;
 		use pac_draw_text;
 
 		point : type_vector_model;
+
+		use et_text;
 	begin
-		if verb = VERB_PLACE and noun = NOUN_TEXT and edit_process_running then -- CS
+		-- put_line ("draw_text_being_placed");
+		
+		if verb = VERB_PLACE and noun = NOUN_TEXT then
 			
 			if object_layer_category = LAYER_CAT_CONDUCTOR 
 			and object_signal_layer = layer then
@@ -106,7 +111,7 @@ procedure draw_conductors is
 				draw_vector_text (preliminary_text.text);
 			end if;
 		end if;
-	end draw_text_being_placed_in_conductors;
+	end draw_text_being_placed;
 
 
 	
@@ -1062,7 +1067,7 @@ procedure draw_conductors is
 				-- tracks:
 				iterate (module.nets, query_net_track'access);
 				
-				draw_text_being_placed_in_conductors (ly);				
+				draw_text_being_placed (ly);				
 			end if;
 		end loop;
 
