@@ -1247,7 +1247,7 @@ procedure draw_conductors is
 	
 	
 begin
--- 	put_line ("draw conductor layers ...");
+	-- put_line ("draw conductors ...");
 
 	-- Draw objects that already exist in the
 	-- database, such as tracks, vias, airwires:
