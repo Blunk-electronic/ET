@@ -1345,7 +1345,7 @@ package body et_geometry_2a is
 		line : in type_line)
 		return boolean
 	is begin
-		if line.status.selected then
+		if is_selected (line.status) then
 			return true;
 		else
 			return false;
@@ -1356,14 +1356,14 @@ package body et_geometry_2a is
 	procedure set_selected (
 		line : in out type_line)
 	is begin
-		line.status.selected := true;
+		set_selected (line.status);
 	end set_selected;
 
 	
 	procedure clear_selected (
 		line : in out type_line)
 	is begin
-		line.status.selected := false;
+		clear_selected (line.status);
 	end clear_selected;
 
 	
@@ -1373,7 +1373,7 @@ package body et_geometry_2a is
 		line : in type_line)
 		return boolean
 	is begin
-		if line.status.proposed then
+		if is_proposed (line.status) then
 			return true;
 		else 
 			return false;
@@ -1384,14 +1384,14 @@ package body et_geometry_2a is
 	procedure set_proposed (
 		line : in out type_line)
 	is begin
-		line.status.proposed := true;
+		set_proposed (line.status);
 	end set_proposed;
 
 	
 	procedure clear_proposed (
 		line : in out type_line)
 	is begin
-		line.status.proposed := false;
+		clear_proposed (line.status);
 	end clear_proposed;
 
 
@@ -1402,7 +1402,7 @@ package body et_geometry_2a is
 		line : in type_line)
 		return boolean
 	is begin
-		if line.status.moving then
+		if is_moving (line.status) then
 			return true;
 		else 
 			return false;
@@ -1413,14 +1413,14 @@ package body et_geometry_2a is
 	procedure set_moving (
 		line : in out type_line)
 	is begin
-		line.status.moving := true;
+		set_moving (line.status);
 	end set_moving;
 
 	
 	procedure clear_moving (
 		line : in out type_line)
 	is begin
-		line.status.moving := false;
+		clear_moving (line.status);
 	end clear_moving;
 
 
@@ -1903,7 +1903,7 @@ package body et_geometry_2a is
 		arc : in type_arc)
 		return boolean
 	is begin
-		if arc.status.selected then
+		if is_selected (arc.status) then
 			return true;
 		else
 			return false;
@@ -1915,14 +1915,14 @@ package body et_geometry_2a is
 	procedure set_selected (
 		arc : in out type_arc)
 	is begin
-		arc.status.selected := true;
+		set_selected (arc.status);
 	end set_selected;
 
 	
 	procedure clear_selected (
 		arc : in out type_arc)
 	is begin
-		arc.status.selected := false;
+		clear_selected (arc.status);
 	end clear_selected;
 
 	
@@ -1932,7 +1932,7 @@ package body et_geometry_2a is
 		arc : in type_arc)
 		return boolean
 	is begin
-		if arc.status.proposed then
+		if is_proposed (arc.status) then
 			return true;
 		else 
 			return false;
@@ -1943,14 +1943,14 @@ package body et_geometry_2a is
 	procedure set_proposed (
 		arc : in out type_arc)
 	is begin
-		arc.status.proposed := true;
+		set_proposed (arc.status);
 	end set_proposed;
 
 	
 	procedure clear_proposed (
 		arc : in out type_arc)
 	is begin
-		arc.status.proposed := false;
+		clear_proposed (arc.status);
 	end clear_proposed;
 
 
@@ -1961,7 +1961,7 @@ package body et_geometry_2a is
 		arc : in type_arc)
 		return boolean
 	is begin
-		if arc.status.moving then
+		if is_moving (arc.status) then
 			return true;
 		else 
 			return false;
@@ -1972,14 +1972,14 @@ package body et_geometry_2a is
 	procedure set_moving (
 		arc : in out type_arc)
 	is begin
-		arc.status.moving := true;
+		set_moving (arc.status);
 	end set_moving;
 
 	
 	procedure clear_moving (
 		arc : in out type_arc)
 	is begin
-		arc.status.moving := false;
+		clear_moving (arc.status);
 	end clear_moving;
 
 
@@ -2480,7 +2480,7 @@ package body et_geometry_2a is
 		circle : in type_circle)
 		return boolean
 	is begin
-		if circle.status.selected then
+		if is_selected (circle.status) then
 			return true;
 		else
 			return false;
@@ -2491,14 +2491,14 @@ package body et_geometry_2a is
 	procedure set_selected (
 		circle : in out type_circle)
 	is begin
-		circle.status.selected := true;
+		set_selected (circle.status);
 	end set_selected;
 
 	
 	procedure clear_selected (
 		circle : in out type_circle)
 	is begin
-		circle.status.selected := false;
+		clear_selected (circle.status);
 	end clear_selected;
 
 	
@@ -2508,7 +2508,7 @@ package body et_geometry_2a is
 		circle : in type_circle)
 		return boolean
 	is begin
-		if circle.status.proposed then
+		if is_proposed (circle.status) then
 			return true;
 		else 
 			return false;
@@ -2519,14 +2519,14 @@ package body et_geometry_2a is
 	procedure set_proposed (
 		circle : in out type_circle)
 	is begin
-		circle.status.proposed := true;
+		set_proposed (circle.status);
 	end set_proposed;
 
 	
 	procedure clear_proposed (
 		circle : in out type_circle)
 	is begin
-		circle.status.proposed := false;
+		clear_proposed (circle.status);
 	end clear_proposed;
 
 
@@ -2537,7 +2537,7 @@ package body et_geometry_2a is
 		circle : in type_circle)
 		return boolean
 	is begin
-		if circle.status.moving then
+		if is_moving (circle.status) then
 			return true;
 		else 
 			return false;
@@ -2548,14 +2548,14 @@ package body et_geometry_2a is
 	procedure set_moving (
 		circle : in out type_circle)
 	is begin
-		circle.status.moving := true;
+		set_moving (circle.status);
 	end set_moving;
 
 	
 	procedure clear_moving (
 		circle : in out type_circle)
 	is begin
-		circle.status.moving := false;
+		clear_moving (circle.status);
 	end clear_moving;
 
 

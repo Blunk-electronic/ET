@@ -50,7 +50,80 @@ with et_device_model;
 
 package body et_schematic is
 	
-				
+
+
+	procedure set_selected (
+		device		: in out type_device_sch)
+	is begin
+		set_selected (device.status);
+	end;
+
+	
+	procedure clear_selected (
+		device		: in out type_device_sch)
+	is begin
+		clear_selected (device.status);
+	end;
+
+
+	function is_selected (
+		device		: in type_device_sch)
+		return boolean
+	is begin
+		if is_selected (device.status) then
+			return true;
+		else
+			return false;
+		end if;
+	end;	
+	
+
+	
+	procedure set_proposed (
+		device		: in out type_device_sch)
+	is begin
+		set_proposed (device.status);
+	end;
+	
+
+	procedure clear_proposed (
+		device		: in out type_device_sch)
+	is begin
+		clear_proposed (device.status);
+	end;
+
+	
+	
+	function is_proposed (
+		device		: in type_device_sch)
+		return boolean
+	is begin
+		if is_proposed (device.status) then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+	
+
+	procedure modify_status (
+		device		: in out type_device_sch;
+		operation	: in type_status_operation)
+	is begin
+		case operation.action is
+			when SET =>
+				null;
+
+			when CLEAR =>
+				null;
+		end case;
+	end modify_status;
+
+	
+	
+
+	
 	function get_first_strand_on_sheet (
 		sheet		: in type_sheet;
 		net_cursor	: in pac_nets.cursor)

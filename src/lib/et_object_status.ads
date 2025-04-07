@@ -49,6 +49,7 @@ package et_object_status is
 
 	type type_locked is new boolean;
 
+	
 	type type_object_status is record
 		proposed	: type_proposed := false;
 		selected	: type_selected := false;
@@ -57,6 +58,65 @@ package et_object_status is
 	end record;
 	
 
+	procedure set_proposed (
+		status	: in out type_object_status);
+
+
+	procedure clear_proposed (
+		status	: in out type_object_status);
+
+
+	function is_proposed (
+		status : in type_object_status)
+		return boolean;
+	
+
+	
+	procedure set_selected (
+		status	: in out type_object_status);
+
+
+	procedure clear_selected (
+		status	: in out type_object_status);
+
+
+	function is_selected (
+		status : in type_object_status)
+		return boolean;
+
+
+	
+
+	procedure set_moving (
+		status	: in out type_object_status);
+
+
+	procedure clear_moving (
+		status	: in out type_object_status);
+
+
+	function is_moving (
+		status : in type_object_status)
+		return boolean;
+
+
+	
+
+	procedure set_locked (
+		status	: in out type_object_status);
+
+
+	procedure clear_locked (
+		status	: in out type_object_status);
+
+
+	function is_locked (
+		status : in type_object_status)
+		return boolean;
+
+
+	
+	
 	type type_action is (SET, CLEAR);
 
 	type type_flag is (PROPOSED, SELECTED, MOVING, LOCKED);

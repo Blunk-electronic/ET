@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -165,6 +165,7 @@ package et_schematic is
 
 				-- CS flags that signal whether partcode, purpose, bom are displayed or not.
 
+				-- The status of the package:
 				status : type_object_status;
 				
 			when APPEARANCE_VIRTUAL => null;
@@ -173,7 +174,38 @@ package et_schematic is
 	end record;
 
 
+
+	procedure set_selected (
+		device		: in out type_device_sch);
 	
+
+	procedure clear_selected (
+		device		: in out type_device_sch);
+	
+
+	function is_selected (
+		device		: in type_device_sch)
+		return boolean;
+	
+
+	
+	procedure set_proposed (
+		device		: in out type_device_sch);
+	
+
+	procedure clear_proposed (
+		device		: in out type_device_sch);
+
+	
+	function is_proposed (
+		device		: in type_device_sch)
+		return boolean;
+
+
+	
+	procedure modify_status (
+		device		: in out type_device_sch;
+		operation	: in type_status_operation);
 	
 	
 	-- Returns a cursor to the strand that is

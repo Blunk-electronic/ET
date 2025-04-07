@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -41,6 +41,120 @@
 
 package body et_object_status is
 
+
+	procedure set_proposed (
+		status	: in out type_object_status)
+	is begin
+		status.proposed := true;
+	end set_proposed;
+
+
+	procedure clear_proposed (
+		status	: in out type_object_status)
+	is begin
+		status.proposed := false;
+	end clear_proposed;
+
+
+
+	function is_proposed (
+		status : in type_object_status)
+		return boolean
+	is begin
+		if status.proposed then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+
+	
+	
+	procedure set_selected (
+		status	: in out type_object_status)
+	is begin
+		status.selected := true;
+	end set_selected;
+
+
+	procedure clear_selected (
+		status	: in out type_object_status)
+	is begin
+		status.selected := false;
+	end clear_selected;
+
+
+	function is_selected (
+		status : in type_object_status)
+		return boolean
+	is begin
+		if status.selected then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+
+	
+
+	procedure set_moving (
+		status	: in out type_object_status)
+	is begin
+		status.moving := true;
+	end set_moving;
+
+
+	procedure clear_moving (
+		status	: in out type_object_status)
+	is begin
+		status.moving := false;
+	end clear_moving;
+
+
+	function is_moving (
+		status : in type_object_status)
+		return boolean
+	is begin
+		if status.moving then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+
+	
+
+	procedure set_locked (
+		status	: in out type_object_status)
+	is begin
+		status.locked := true;
+	end set_locked;
+
+
+	procedure clear_locked (
+		status	: in out type_object_status)
+	is begin
+		status.locked := false;
+	end clear_locked;
+
+	
+	function is_locked (
+		status : in type_object_status)
+		return boolean
+	is begin
+		if status.locked then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+
+	
+	
 	function to_string (
 		flag : in type_flag)
 		return string
