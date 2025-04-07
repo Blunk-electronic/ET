@@ -108,6 +108,7 @@ with et_assy_doc;					use et_assy_doc;
 with et_keepout;					use et_keepout;
 with et_device_placeholders;		use et_device_placeholders;
 with et_schematic_shapes_and_text;
+with et_object_status;
 
 
 package body et_kicad_to_native is
@@ -2608,6 +2609,7 @@ package body et_kicad_to_native is
 				unit_native_real	: et_units.type_unit (APPEARANCE_PCB);
 
 				use pac_unit_name;
+				use et_object_status;
 			begin
 				log_indentation_up;
 				
@@ -2625,6 +2627,7 @@ package body et_kicad_to_native is
 
 							unit_native_virtual := (
 								mirror		=> element (unit_cursor_kicad).mirror,
+								status		=> get_default_status,					   
 								position	=> to_native_coordinates (
 												point		=> element (unit_cursor_kicad).position,
 												rotation 	=> element (unit_cursor_kicad).rotation),
@@ -2641,6 +2644,7 @@ package body et_kicad_to_native is
 
 							unit_native_real := (
 								mirror		=> element (unit_cursor_kicad).mirror,
+								status		=> get_default_status,
 								position	=> to_native_coordinates (
 												point		=> element (unit_cursor_kicad).position,
 												rotation 	=> element (unit_cursor_kicad).rotation),

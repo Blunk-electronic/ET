@@ -130,6 +130,7 @@ with et_units;
 with et_mirroring;						use et_mirroring;
 with et_directory_and_file_ops;
 with et_alignment;						use et_alignment;
+with et_object_status;
 
 
 separate (et_module_ops)
@@ -2942,6 +2943,7 @@ is
 				use et_units;
 				use et_unit_name;
 				use et_device_appearance;
+				use et_object_status;
 			begin
 				log_indentation_up;
 				-- log (text => "unit " & to_string (device_unit_name), log_threshold + 1);
@@ -2957,6 +2959,7 @@ is
 							key			=> device_unit_name,
 							new_item	=> (
 								appearance	=> APPEARANCE_VIRTUAL,
+								status		=> get_default_status,
 								mirror		=> device_unit_mirror,
 								position	=> device_unit_position));
 												
@@ -2967,7 +2970,7 @@ is
 							key			=> device_unit_name,
 							new_item	=> (
 								mirror		=> device_unit_mirror,
-
+								status		=> get_default_status,
 								position	=> device_unit_position,
 								appearance	=> APPEARANCE_PCB,
 
