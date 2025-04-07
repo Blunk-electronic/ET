@@ -325,26 +325,67 @@ package et_pcb is
 	end record;
 
 
+	
+	procedure set_proposed (
+		device : in out type_device_non_electric);
+
+
+	procedure clear_proposed (
+		device : in out type_device_non_electric);
+
+
 	function is_proposed (
 		device : in type_device_non_electric)
 		return boolean;
-	
 
+
+		
+
+	
+	procedure set_selected (
+		device : in out type_device_non_electric);
+
+	
+	procedure clear_selected (
+		device : in out type_device_non_electric);
+
+	
 	function is_selected (
 		device : in type_device_non_electric)
 		return boolean;
 
 
+	
+
+	procedure set_moving (
+		device : in out type_device_non_electric);
+
+
+	procedure clear_moving (
+		device : in out type_device_non_electric);
+
+	
 	function is_moving (
 		device : in type_device_non_electric)
 		return boolean;
+
+
 	
 
+	
+	procedure set_locked (
+		device : in out type_device_non_electric);
+
+
+	procedure clear_locked (
+		device : in out type_device_non_electric);
+
+	
 	function is_locked (
 		device : in type_device_non_electric)
 		return boolean;
 
-	
+
 
 	
 	-- CS: this should be a hashed map:

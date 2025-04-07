@@ -189,6 +189,20 @@ package body et_pcb is
 
 
 
+	procedure set_proposed (
+		device : in out type_device_non_electric)
+	is begin
+		set_proposed (device.status);
+	end;
+
+	
+	procedure clear_proposed (
+		device : in out type_device_non_electric)
+	is begin
+		clear_proposed (device.status);
+	end;
+
+	
 	function is_proposed (
 		device : in type_device_non_electric)
 		return boolean
@@ -201,6 +215,22 @@ package body et_pcb is
 	end;
 	
 
+	
+
+	procedure set_selected (
+		device : in out type_device_non_electric)
+	is begin
+		set_selected (device.status);
+	end;
+
+	
+	procedure clear_selected (
+		device : in out type_device_non_electric)
+	is begin
+		clear_selected (device.status);
+	end;
+	
+	
 	function is_selected (
 		device : in type_device_non_electric)
 		return boolean
@@ -213,6 +243,22 @@ package body et_pcb is
 	end;
 
 
+
+
+	procedure set_moving (
+		device : in out type_device_non_electric)
+	is begin
+		set_moving (device.status);
+	end;
+
+	
+	procedure clear_moving (
+		device : in out type_device_non_electric)
+	is begin
+		clear_moving (device.status);
+	end;
+
+	
 	function is_moving (
 		device : in type_device_non_electric)
 		return boolean
@@ -225,6 +271,22 @@ package body et_pcb is
 	end;
 	
 
+
+
+	procedure set_locked (
+		device : in out type_device_non_electric)
+	is begin
+		set_locked (device.status);
+	end;
+
+	
+	procedure clear_locked (
+		device : in out type_device_non_electric)
+	is begin
+		clear_locked (device.status);
+	end;
+
+	
 	function is_locked (
 		device : in type_device_non_electric)
 		return boolean
