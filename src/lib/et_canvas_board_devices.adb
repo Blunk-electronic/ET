@@ -62,6 +62,7 @@ package body et_canvas_board_devices is
 	use pac_devices_non_electric;
 	
 
+	
 	procedure reset_preliminary_electrical_device is begin
 		reset_edit_process_running;
 		object_tool := MOUSE;
@@ -72,6 +73,7 @@ package body et_canvas_board_devices is
 
 
 
+	
 	procedure reset_preliminary_non_electrical_device is begin
 		reset_edit_process_running;
 		object_tool := MOUSE;
@@ -81,6 +83,7 @@ package body et_canvas_board_devices is
 	end reset_preliminary_non_electrical_device;
 	
 
+	
 
 	-- Outputs the name of a device in the status bar:
 	procedure show_selected_device (
@@ -109,9 +112,11 @@ package body et_canvas_board_devices is
 		end if;
 	end show_selected_device;
 
+
+
 	
 	
-	procedure select_electrical_device is
+	procedure clarify_electrical_device is
 		use et_object_status;
 		use et_schematic;
 		selected_device : pac_devices_sch.cursor;
@@ -126,12 +131,14 @@ package body et_canvas_board_devices is
 		
 		-- Show the selected device in the status bar
 		show_selected_device (name => key (selected_device), electrical => true, clarification => true);		
-	end select_electrical_device;
+	end clarify_electrical_device;
+
 
 
 
 	
-	procedure select_non_electrical_device is 
+	
+	procedure clarify_non_electrical_device is 
 		selected_device : pac_devices_non_electric.cursor;
 		use et_object_status;
 	begin
@@ -145,7 +152,9 @@ package body et_canvas_board_devices is
 		
 		-- Show the selected device in the status bar
 		show_selected_device (name => key (selected_device), electrical => false, clarification => true);		
-	end select_non_electrical_device;
+	end clarify_non_electrical_device;
+
+
 
 	
 
@@ -331,7 +340,7 @@ package body et_canvas_board_devices is
 			else
 				-- Here the clarification procedure ends.
 				-- A device has been selected
-				-- via procedure select_electrical_device.
+				-- via procedure clarify_electrical_device.
 				-- By setting edit_process_running, the selected
 				-- device will be drawn at the tool position
 				-- when packages are drawn on the canvas.
@@ -348,6 +357,8 @@ package body et_canvas_board_devices is
 	end move_electrical_device;
 
 
+
+	
 	
 	procedure move_non_electrical_device (
 		tool	: in type_tool;
@@ -412,7 +423,7 @@ package body et_canvas_board_devices is
 			else
 				-- Here the clarification procedure ends.
 				-- A device has been selected
-				-- via procedure select_non_electrical_device.
+				-- via procedure clarify_non_electrical_device.
 				-- By setting edit_process_running, the selected
 				-- device will be drawn at the tool position
 				-- when packages are drawn on the canvas.
@@ -430,6 +441,7 @@ package body et_canvas_board_devices is
 
 
 
+	
 	
 	
 -- ROTATE:
@@ -498,13 +510,15 @@ package body et_canvas_board_devices is
 		else
 			-- Here the clarification procedure ends.
 			-- A device has been selected
-			-- via procedure select_electrical_device.
+			-- via procedure clarify_electrical_device.
 			reset_request_clarification;
 			finalize;
 		end if;
 	end rotate_electrical_device;
 
 
+
+	
 	
 	procedure rotate_non_electrical_device (
 		tool	: in type_tool;
@@ -569,13 +583,14 @@ package body et_canvas_board_devices is
 		else
 			-- Here the clarification procedure ends.
 			-- A device has been selected (indicated by cursor selected_non_electrical_device)
-			-- via procedure select_non_electrical_device.
+			-- via procedure clarify_non_electrical_device.
 			reset_request_clarification;
 			finalize;
 		end if;
 	end rotate_non_electrical_device;
 
 
+	
 	
 
 -- FLIP / MIRROR:
@@ -650,13 +665,15 @@ package body et_canvas_board_devices is
 		else
 			-- Here the clarification procedure ends.
 			-- A device has been selected
-			-- via procedure select_electrical_device.
+			-- via procedure clarify_electrical_device.
 			reset_request_clarification;
 			finalize;
 		end if;
 	end flip_electrical_device;
 
 
+
+	
 	
 	procedure flip_non_electrical_device (
 		tool	: in type_tool;
@@ -724,7 +741,7 @@ package body et_canvas_board_devices is
 		else
 			-- Here the clarification procedure ends.
 			-- A device has been selected
-			-- via procedure select_non_electrical_device.
+			-- via procedure clarify_non_electrical_device.
 			reset_request_clarification;
 			finalize;
 		end if;
@@ -796,7 +813,7 @@ package body et_canvas_board_devices is
 		else
 			-- Here the clarification procedure ends.
 			-- A device has been selected
-			-- via procedure select_non_electrical_device.
+			-- via procedure clarify_non_electrical_device.
 			reset_request_clarification;
 			finalize;
 		end if;

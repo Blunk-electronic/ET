@@ -1791,6 +1791,7 @@ is
 			element (package_cursor).terminals.iterate (query_terminal'access);
 		end draw_terminals;
 
+
 		
 		procedure draw_package_origin is begin
 			if face = get_face (package_position) then
@@ -1804,6 +1805,7 @@ is
 			end if;
 		end draw_package_origin;
 
+		
 		
 	begin -- draw_package
 		-- put_line ("draw_package");

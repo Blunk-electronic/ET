@@ -225,7 +225,7 @@ is
 						
 -- 					when NOUN_NON_ELECTRICAL_DEVICE =>
 -- 						if clarification_pending then
--- 							select_non_electrical_device;
+-- 							clarify_non_electrical_device;
 -- 						end if;
 -- 
 -- 					when NOUN_VIA =>
@@ -309,12 +309,12 @@ is
 				case noun is
 					when NOUN_DEVICE =>
 						if clarification_pending then
-							select_electrical_device;
+							clarify_electrical_device;
 						end if;
     
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						if clarification_pending then
-							select_non_electrical_device;
+							clarify_non_electrical_device;
 						end if;
     
 					when others => null;							
@@ -483,12 +483,12 @@ is
 						
 					when NOUN_DEVICE =>
 						if clarification_pending then
-							et_canvas_board_devices.select_electrical_device;
+							et_canvas_board_devices.clarify_electrical_device;
 						end if;
 
 					when NOUN_NON_ELECTRICAL_DEVICE =>
 						if clarification_pending then
-							et_canvas_board_devices.select_non_electrical_device;
+							et_canvas_board_devices.clarify_non_electrical_device;
 						end if;
 
 					when NOUN_OUTLINE =>
@@ -630,12 +630,12 @@ is
 -- 				case noun is
 -- 					when NOUN_DEVICE =>
 -- 						if clarification_pending then
--- 							select_electrical_device;
+-- 							clarify_electrical_device;
 -- 						end if;
 -- 
 -- 					when NOUN_NON_ELECTRICAL_DEVICE =>
 -- 						if clarification_pending then
--- 							select_non_electrical_device;
+-- 							clarify_non_electrical_device;
 -- 						end if;
 -- 						
 -- 					when others => null;							

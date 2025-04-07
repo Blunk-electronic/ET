@@ -58,14 +58,14 @@ package et_canvas_board_devices is
 
 	-- This procedure:
 	-- - Resets all proposed electrical devices.
-	-- - flags object_ready, object_tool, object_device_name
+	-- - flags object_tool, object_device_name
 	procedure reset_preliminary_electrical_device;
 
 
 
 	-- This procedure:
 	-- - Resets all proposed non-electrical devices.
-	-- - flags object_ready, object_tool, object_device_name
+	-- - flags object_tool, object_device_name
 	procedure reset_preliminary_non_electrical_device;
 
 	
@@ -75,12 +75,12 @@ package et_canvas_board_devices is
 
 	-- Advances to next proposed electrical device and
 	-- selects it. The previous device is deselected:
-	procedure select_electrical_device;
+	procedure clarify_electrical_device;
 
 	
 	-- Advances to next proposed non-electrical device and
 	-- selects it. The previous device is deselected:
-	procedure select_non_electrical_device;
+	procedure clarify_non_electrical_device;
 	
 
 	
