@@ -41,8 +41,6 @@
 with ada.containers;   			       	use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
 
-with gtk.box;							use gtk.box;
-
 with et_primitive_objects;				use et_primitive_objects;
 with et_pcb_sides;						use et_pcb_sides;
 with et_pcb_coordinates_2;				use et_pcb_coordinates_2;

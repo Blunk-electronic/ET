@@ -42,7 +42,13 @@ with ada.text_io;						use ada.text_io;
 with ada.strings;						use ada.strings;
 with ada.strings.fixed; 				use ada.strings.fixed;
 
+with glib;								use glib;
 with glib.values;
+with gtk.box;							use gtk.box;
+with gtk.label;							use gtk.label;
+with gtk.combo_box;						use gtk.combo_box;
+with gtk.combo_box_text;				use gtk.combo_box_text;
+
 
 with gdk.types;							use gdk.types;
 with gdk.event;							use gdk.event;
@@ -256,7 +262,41 @@ package body et_canvas_board_tracks is
 		use gtk.cell_layout;
 		use gtk.tree_model;
 
+
+
+		box_net_name, box_signal_layer, box_line_width : gtk_vbox;
 		
+		label_net_name, label_signal_layer, label_line_width : gtk_label;
+		
+		cbox_net_name : gtk_combo_box;
+		cbox_signal_layer : gtk_combo_box;
+		-- Operator can choose between fixed menu entries.
+		
+		cbox_line_width : gtk_combo_box_text;
+		-- Operator may enter an additional value in the menu.
+		
+		-- These constants define the minimum and maximum of
+		-- characters that can be entered in the fields for 
+		-- text size and line width:
+		text_size_length_min : constant gint := 1;
+		text_size_length_max : constant gint := 6; 
+		-- CS: adjust if necessary. see parameters 
+		-- of et_board_shapes_and_text.pac_text_fab.
+		
+		line_width_length_min : constant gint := 1;
+		line_width_length_max : constant gint := 5;
+		-- CS: adjust if necessary. see parameters
+		-- of et_board_shapes_and_text.pac_text_fab.
+		
+		rotation_length_min : constant gint := 1;
+		rotation_length_max : constant gint := 5;
+		-- CS: adjust if necessary. see et_pcb_coordinates_2 type_rotation.
+		
+		-- The spacing between the boxes:
+		spacing : constant natural := 5;
+			
+
+	
 
 		procedure make_combo_for_net_name is
 			store : gtk_list_store; -- will contain net names

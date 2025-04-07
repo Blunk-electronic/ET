@@ -43,13 +43,7 @@
 -- stencil, keepout.
 -- This is NOT about zones in conductor layers. 
 -- See package et_canvas_board_zone_conductor.
-
-with glib;								use glib;
-
-with gtk.box;							use gtk.box;
-with gtk.label;							use gtk.label;
-with gtk.combo_box;						use gtk.combo_box;
-with gtk.combo_box_text;				use gtk.combo_box_text;
+-- 
 
 with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;

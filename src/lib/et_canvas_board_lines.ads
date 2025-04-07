@@ -43,13 +43,6 @@
 -- and freetracks in conductor layers.
 -- Conductor segments connected with a net are handled in et_canvas_board_tracks.
 
-with glib;								use glib;
-
-with gtk.box;							use gtk.box;
-with gtk.label;							use gtk.label;
-with gtk.combo_box;						use gtk.combo_box;
-with gtk.combo_box_text;				use gtk.combo_box_text;
-with gtk.button;						use gtk.button;
 
 with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;
@@ -77,48 +70,9 @@ package et_canvas_board_lines is
 	procedure make_affected_layer_categories;
 
 	
-
-
-
-	box_layer_category, box_face, 
-	box_signal_layer, --box_button,
-	box_line_width : gtk_vbox;
-	
-	label_layer_category, label_face, 
-	label_signal_layer, label_line_width : gtk_label;
-	
-	cbox_category, cbox_face, cbox_signal_layer : gtk_combo_box;
-	-- Operator can choose between fixed menu entries.
-	
-	cbox_line_width : gtk_combo_box_text;
-	-- Operator may enter an additional value in the menu.
-	
-	-- button_apply : gtk_button;
-
-	-- These constants define the minimum and maximum of
-	-- characters that can be entered in the fields for 
-	-- text size and line width:
-	text_size_length_min : constant gint := 1;
-	text_size_length_max : constant gint := 6; 
-	-- CS: adjust if necessary. see parameters 
-	-- of et_board_shapes_and_text.pac_text_fab.
-	
-	line_width_length_min : constant gint := 1;
-	line_width_length_max : constant gint := 5;
-	-- CS: adjust if necessary. see parameters
-	-- of et_board_shapes_and_text.pac_text_fab.
-	
-	rotation_length_min : constant gint := 1;
-	rotation_length_max : constant gint := 5;
-	-- CS: adjust if necessary. see et_pcb_coordinates type_rotation.
-	
-	-- The spacing between the boxes:
-	spacing : constant natural := 5;
-
-
-
-	
-
+	-- Creates the properties box where the
+	-- operator can choose the properties of the line
+	-- to be drawn:
 	procedure show_line_properties;
 
 

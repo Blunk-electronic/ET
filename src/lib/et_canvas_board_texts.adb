@@ -44,7 +44,16 @@ with ada.strings.fixed; 			use ada.strings.fixed;
 --with ada.characters;				use ada.characters;
 --with ada.characters.handling;		use ada.characters.handling;
 
+
+with glib;							use glib;
 with glib.values;
+with gtk.box;						use gtk.box;
+with gtk.label;						use gtk.label;
+with gtk.combo_box;					use gtk.combo_box;
+with gtk.combo_box_text;			use gtk.combo_box_text;
+with gtk.button;					use gtk.button;
+
+
 
 with gdk.types;						use gdk.types;
 with gdk.event;						use gdk.event;
@@ -427,6 +436,46 @@ package body et_canvas_board_texts is
 
 		use et_canvas_board_2.pac_canvas;
 		
+
+		box_layer_category, box_face, 
+		box_signal_layer, box_content, box_button,
+		box_size, box_line_width, box_rotation : gtk_vbox;
+
+		label_layer_category, label_face, 
+		label_signal_layer, label_content,
+		label_size, label_line_width, label_rotation : gtk_label;
+		
+		cbox_category, cbox_face, cbox_signal_layer : gtk_combo_box;
+		-- Operator can choose between fixed menu entries.
+		
+		cbox_line_width, cbox_size, cbox_rotation : gtk_combo_box_text;
+		-- Operator may enter an additional value in the menu.
+		
+		button_apply : gtk_button;
+
+
+
+		-- These constants define the minimum and maximum of
+		-- characters that can be entered in the fields for 
+		-- text size and line width:
+		text_size_length_min : constant gint := 1;
+		text_size_length_max : constant gint := 6; 
+		-- CS: adjust if necessary. see parameters 
+		-- of et_board_shapes_and_text.pac_text_fab.
+		
+		line_width_length_min : constant gint := 1;
+		line_width_length_max : constant gint := 5;
+		-- CS: adjust if necessary. see parameters
+		-- of et_board_shapes_and_text.pac_text_fab.
+		
+		rotation_length_min : constant gint := 1;
+		rotation_length_max : constant gint := 5;
+		-- CS: adjust if necessary. see et_pcb_coordinates type_rotation_model.
+		
+		-- The spacing between the boxes:
+		spacing : constant natural := 5;
+
+
 		
 		procedure make_combo_category is
 			storage_model : gtk_list_store;

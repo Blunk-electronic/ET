@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -39,12 +39,6 @@
 -- 
 
 
-with glib;								use glib;
-with gtk.box;							use gtk.box;
-with gtk.combo_box;						use gtk.combo_box;
-with gtk.combo_box_text;				use gtk.combo_box_text;
-with gtk.label;							use gtk.label;
-
 with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;
 
@@ -57,47 +51,6 @@ with et_design_rules_board;				use et_design_rules_board;
 
 
 package et_canvas_board_vias is
-
-	-- use pac_net_name;
-
-
-	box_net_name,
-	box_category, box_destination_blind, 
-	box_buried_upper, box_buried_lower, box_drill,
-	box_restring_inner, box_restring_outer : gtk_vbox;
-
-	label_net_name,
-	label_category, label_destination_blind, 
-	
-	label_buried_upper, label_buried_lower, label_drill,
-	label_restring_inner, label_restring_outer : gtk_label;
-
-	cbox_net_name,
-	cbox_category, cbox_destination_blind,
-	cbox_buried_upper, cbox_buried_lower : gtk_combo_box;
-	-- Operator can choose between fixed menu entries.
-	
-	cbox_drill, cbox_restring_inner, cbox_restring_outer : gtk_combo_box_text;
-	-- Operator may enter an additional value in the menu.
-
-	-- These constants define the minimum and maximum of
-	-- characters that can be entered in the fields for 
-	-- drill size and restring width:
-	
-	drill_size_length_min : constant gint := 1;
-	drill_size_length_max : constant gint := 4; 
-	-- CS: adjust if necessary. see parameters of type_drill_size.
-	
-	restring_size_length_min : constant gint := 1;
-	restring_size_length_max : constant gint := 5;
-	--CS: adjust if necessary. see parameters of type_restring_width.
-	
-	-- The spacing between the boxes:
-	spacing : constant natural := 5;
-
-
-
-
 	
 
 	

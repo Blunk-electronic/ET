@@ -90,7 +90,7 @@ package et_canvas_board_devices is
 	-- of them as "selected".
 	-- If more than one device found, then it requests for clarification.
 	procedure find_electrical_devices (
-										  point : in type_vector_model);
+		point : in type_vector_model);
 	
 
 	-- Locates all devices in the vicinity of given point.
