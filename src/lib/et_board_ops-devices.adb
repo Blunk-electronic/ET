@@ -150,19 +150,19 @@ package body et_board_ops.devices is
 					when SELECTED =>
 						case operation.action is
 							when SET =>
-								device.status.selected := true;
+								set_selected (device.status);
 
 							when CLEAR =>
-								device.status.selected := false;
+								clear_selected (device.status);
 						end case;
 
 					when PROPOSED =>
 						case operation.action is
 							when SET =>
-								device.status.proposed := true;
+								set_proposed (device.status);
 
 							when CLEAR =>
-								device.status.proposed := false;
+								clear_proposed (device.status);
 						end case;
 
 					when others =>
@@ -197,6 +197,53 @@ package body et_board_ops.devices is
 
 
 
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		device			: in type_object_electrical;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_sch)
+			is begin
+				null;
+				--modify_status (device);
+			end query_device;
+
+
+		begin
+			if is_real (device.cursor) then -- ignore virtual devices (like GND symbols)
+				module.devices.update_element (device.cursor, query_device'access);
+			end if;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of "
+			& to_string (device.cursor)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+
+	
 	
 	
 	
@@ -217,7 +264,7 @@ package body et_board_ops.devices is
 				device		: in out type_device_sch)
 			is begin
 				log (text => to_string (device_name), level => log_threshold + 1);
-				device.status.proposed := true;
+				set_proposed (device.status);
 				count := count + 1;
 			end query_device;
 
@@ -289,8 +336,8 @@ package body et_board_ops.devices is
 				use et_object_status;
 			begin
 				log (text => to_string (device_name), level => log_threshold + 1);
-				device.status.proposed := false;
-				device.status.selected := false;
+				clear_proposed (device.status);
+				clear_selected (device.status);
 			end query_device;
 
 			
@@ -350,13 +397,13 @@ package body et_board_ops.devices is
 			while device_cursor /= pac_devices_sch.no_element loop
 				case flag is
 					when PROPOSED =>
-						if is_proposed (device_cursor) then
+						if is_proposed (device_cursor, true) then
 							result := device_cursor;
 							exit; -- no further probing required
 						end if;
 
 					when SELECTED =>
-						if is_selected (device_cursor) then
+						if is_selected (device_cursor, true) then
 							result := device_cursor;
 							exit; -- no further probing required
 						end if;
@@ -417,7 +464,7 @@ package body et_board_ops.devices is
 				-- Exception is raised in case we get stuck here:
 				safety_counter := safety_counter + 1;
 				
-				if is_proposed (dc) then
+				if is_proposed (dc, true) then
 					device_cursor := dc;
 					exit; -- no further probing required
 				end if;
@@ -531,19 +578,19 @@ package body et_board_ops.devices is
 					when SELECTED =>
 						case operation.action is
 							when SET =>
-								device.status.selected := true;
+								set_selected (device.status);
 
 							when CLEAR =>
-								device.status.selected := false;
+								clear_selected (device.status);
 						end case;
 
 					when PROPOSED =>
 						case operation.action is
 							when SET =>
-								device.status.proposed := true;
+								set_proposed (device.status);
 
 							when CLEAR =>
-								device.status.proposed := false;
+								clear_proposed (device.status);
 						end case;
 
 					when others =>
@@ -597,7 +644,7 @@ package body et_board_ops.devices is
 				use et_object_status;
 			begin
 				log (text => to_string (device_name), level => log_threshold + 1);
-				device.status.proposed := true;
+				set_proposed (device.status);
 				count := count + 1;
 			end query_device;
 
@@ -665,8 +712,8 @@ package body et_board_ops.devices is
 				use et_object_status;
 			begin
 				log (text => to_string (device_name), level => log_threshold + 1);
-				device.status.proposed := false;
-				device.status.selected := false;
+				clear_proposed (device.status);
+				clear_selected (device.status);
 			end query_device;
 
 			

@@ -445,7 +445,7 @@ package body et_silkscreen is
 		text_cursor	: in pac_silk_texts.cursor)
 		return boolean
 	is begin
-		if element (text_cursor).status.proposed then
+		if is_proposed (element (text_cursor)) then
 			return true;
 		else
 			return false;
@@ -458,7 +458,7 @@ package body et_silkscreen is
 		text_cursor	: in pac_silk_texts.cursor)
 		return boolean
 	is begin
-		if element (text_cursor).status.selected then
+		if is_selected (element (text_cursor)) then
 			return true;
 		else
 			return false;

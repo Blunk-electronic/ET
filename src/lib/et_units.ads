@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -47,6 +47,7 @@ with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 with et_unit_name;						use et_unit_name;
 with et_mirroring;						use et_mirroring;
 with et_device_appearance;				use et_device_appearance;
+with et_object_status;					use et_object_status;
 
 
 package et_units is
@@ -68,6 +69,7 @@ package et_units is
 	type type_unit (appearance : type_appearance_schematic) is record
 		position	: et_coordinates_2.type_position; -- incl. rotation and sheet number
 		mirror		: type_mirror := MIRROR_NO;
+		status		: type_object_status;
 		case appearance is
 			when APPEARANCE_VIRTUAL => null; -- CS
 			when APPEARANCE_PCB =>

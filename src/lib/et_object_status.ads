@@ -49,13 +49,9 @@ package et_object_status is
 
 	type type_locked is new boolean;
 
+
+	type type_object_status is private;
 	
-	type type_object_status is record
-		proposed	: type_proposed := false;
-		selected	: type_selected := false;
-		moving		: type_moving := false;
-		locked		: type_locked := false;
-	end record;
 	
 
 	procedure set_proposed (
@@ -115,6 +111,13 @@ package et_object_status is
 		return boolean;
 
 
+
+	procedure reset (
+		status : in out type_object_status);
+
+
+	function get_default_status 
+		return type_object_status;
 	
 	
 	type type_action is (SET, CLEAR);
@@ -135,6 +138,17 @@ package et_object_status is
 	function to_string (
 		operation : in type_status_operation)
 		return string;
+
+	
+private
+	type type_object_status is record
+		proposed	: type_proposed := false;
+		selected	: type_selected := false;
+		moving		: type_moving := false;
+		locked		: type_locked := false;
+	end record;
+
+
 	
 end et_object_status;
 

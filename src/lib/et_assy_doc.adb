@@ -39,6 +39,8 @@
 
 
 with ada.strings;	 			use ada.strings;
+with et_object_status;			use et_object_status;
+
 
 package body et_assy_doc is
 

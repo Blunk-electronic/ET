@@ -89,7 +89,7 @@ package body et_drills is
 		drill : in type_drill)
 		return boolean
 	is begin
-		if drill.status.selected then
+		if is_selected (drill.status) then
 			return true;
 		else
 			return false;
@@ -100,14 +100,14 @@ package body et_drills is
 	procedure set_selected (
 		drill : in out type_drill)
 	is begin
-		drill.status.selected := true;
+		set_selected (drill.status);
 	end;
 
 	
 	procedure clear_selected (
 		drill : in out type_drill)
 	is begin
-		drill.status.selected := false;
+		clear_selected (drill.status);
 	end;
 
 	
@@ -115,7 +115,7 @@ package body et_drills is
 		drill : in type_drill)
 		return boolean
 	is begin
-		if drill.status.proposed then
+		if is_proposed (drill.status) then
 			return true;
 		else
 			return false;
@@ -127,14 +127,14 @@ package body et_drills is
 	procedure set_proposed (
 		drill : in out type_drill)
 	is begin
-		drill.status.proposed := true;
+		set_proposed (drill.status);
 	end;
 
 
 	procedure clear_proposed (
 		drill : in out type_drill)
 	is begin
-		drill.status.proposed := false;
+		clear_proposed (drill.status);
 	end;
 
 	
@@ -142,7 +142,7 @@ package body et_drills is
 		drill : in type_drill)
 		return boolean
 	is begin
-		if drill.status.moving then
+		if is_moving (drill.status) then
 			return true;
 		else
 			return false;
@@ -153,14 +153,14 @@ package body et_drills is
 	procedure set_moving (
 		drill : in out type_drill)
 	is begin
-		drill.status.moving := true;
+		set_moving (drill.status);
 	end set_moving;
 
 
 	procedure clear_moving (
 		drill : in out type_drill)
 	is begin
-		drill.status.moving := false;
+		clear_moving (drill.status);
 	end clear_moving;
 
 
@@ -211,7 +211,7 @@ package body et_drills is
 	procedure reset_status (
 		drill : in out type_drill)
 	is begin
-		drill.status := (others => <>);
+		reset (drill.status);
 	end reset_status;
 
 	

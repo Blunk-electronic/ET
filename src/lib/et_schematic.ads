@@ -202,6 +202,10 @@ package et_schematic is
 		return boolean;
 
 
+	-- NOTE: There is no set_moving or clear_moving for the
+	-- whole device. Instead the units of a device can be
+	-- moved.
+
 	
 	procedure modify_status (
 		device		: in out type_device_sch;
@@ -285,7 +289,31 @@ package et_schematic is
 	use pac_devices_sch;
 
 
+	-- Returns true if the given device is proposed.
+	-- If real is true, then the result is true if 
+	-- the device is real AND if it is proposed.
+	-- If real is false, then the result is true
+	-- if the device is proposed (regardless whether
+	-- it is real or not): 
+	function is_proposed (
+		device : in pac_devices_sch.cursor;
+		real   : in boolean)					 
+		return boolean;
+	
 
+	-- Returns true if the given device is selected.
+	-- If real is true, then the result is true if 
+	-- the device is real AND if it is selected.
+	-- If real is false, then the result is true
+	-- if the device is selected (regardless whether
+	-- it is real or not): 
+	function is_selected (
+		device : in pac_devices_sch.cursor;
+		real   : in boolean)
+		return boolean;
+
+	
+	
 	-- Iterates the devices. Aborts the process when the proceed-flag goes false:
 	procedure iterate (
 		devices	: in pac_devices_sch.map;

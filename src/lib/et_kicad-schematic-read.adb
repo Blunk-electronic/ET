@@ -45,6 +45,9 @@
 --			Example: Power symbol "P3V3" must have pin direction power_out.	
 
 
+with et_object_status;				use et_object_status;
+
+
 separate (et_kicad.schematic)
 
 function read (
@@ -2031,6 +2034,8 @@ is
 			text_position : type_vector_model;
 			size : et_kicad_libraries.pac_text.type_text_size;
 			use et_text;
+
+			status : type_object_status;
 		begin
 			-- test if the field content is longer than allowed:
 			check_text_content_length (f (element (line_cursor), 3));
@@ -2050,7 +2055,7 @@ is
 			size := mil_to_distance (f (element (line_cursor), 7));
 
 			return (
-				status		=> (others => <>),
+				status		=> status,
 					   
 				-- read text field meaning
 				meaning 	=> to_text_meaning (line => element (line_cursor), schematic => true),
@@ -2579,6 +2584,7 @@ is
 		-- of meta-data. See procedure insert_component.
 		-- Raises constraint error if unit already in unit list of component.
 		procedure insert_unit is
+			status : type_object_status;
 		begin
 			log_indentation_up;
 			
@@ -2598,7 +2604,7 @@ is
 
 							-- placeholders:
 							reference		=> (
-									status		=> (others => <>),
+									status		=> status,
 									meaning		=> et_device_placeholders.NAME,
 									position	=> field_reference.position,
 									--style		=> field_reference.style,
@@ -2607,7 +2613,7 @@ is
 									alignment	=> field_reference.alignment),
 
 							value			=> (
-									status		=> (others => <>),
+									status		=> status,
 									meaning		=> et_device_placeholders.VALUE,
 									position	=> field_value.position,
 									--style		=> field_value.style,
@@ -2637,7 +2643,7 @@ is
 							-- The kicad placeholders are now converted to ET native placeholders:
 						
 							reference		=> (
-								status		=> (others => <>),
+								status		=> status,
 								meaning		=> et_device_placeholders.NAME,
 								position	=> field_reference.position,
 								--style		=> field_reference.style,
@@ -2646,7 +2652,7 @@ is
 								alignment	=> field_reference.alignment),
 
 							value			=> (
-								status		=> (others => <>),
+								status		=> status,
 								meaning		=> et_device_placeholders.VALUE,
 								position	=> field_value.position,
 								--style		=> field_value.style,

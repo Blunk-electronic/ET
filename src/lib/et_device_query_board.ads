@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -68,7 +68,6 @@ with et_pcb_contour;					use et_pcb_contour;
 
 with et_nets;
 
--- with et_project.modules;				use et_project.modules;
 with et_generic_module;					use et_generic_module;
 with et_object_status;
 
@@ -80,26 +79,7 @@ package et_device_query_board is
 
 	use pac_geometry_2;
 
-
-	function is_proposed (
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
-		return boolean;
-
-	function is_selected (
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
-		return boolean;
-
-
-
-	function is_proposed (
-		device_cursor	: in pac_devices_non_electric.cursor) -- FD1
-		return boolean;
-
-	function is_selected (
-		device_cursor	: in pac_devices_non_electric.cursor) -- FD1
-		return boolean;
-
-
+ 
 
 	-- Maps from a given cursor of a non-electrical device
 	-- to a cursor to the package model:

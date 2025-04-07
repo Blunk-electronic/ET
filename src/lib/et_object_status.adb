@@ -153,6 +153,24 @@ package body et_object_status is
 	end;
 
 
+
+	
+	procedure reset (
+		status : in out type_object_status)
+	is begin
+		status := (others => <>);
+	end reset;
+
+
+
+	function get_default_status 
+		return type_object_status
+	is 
+		s : type_object_status;
+	begin
+		return s;
+	end get_default_status;
+	
 	
 	
 	function to_string (

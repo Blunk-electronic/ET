@@ -54,7 +54,7 @@ with et_logging;				use et_logging;
 with et_logical_pixels;			use et_logical_pixels;
 with et_mirroring;				use et_mirroring;
 with et_alignment;				use et_alignment;
-with et_object_status;
+with et_object_status;			use et_object_status;
 
 
 package et_text is

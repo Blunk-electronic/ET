@@ -1919,37 +1919,33 @@ is
 			
 			
 		begin
-			if is_real (device_cursor) then
+			-- If the device candidate is selected, then we will
+			-- draw it highlighted:
+			if is_selected (device_cursor, true) then
+				brightness := BRIGHT;
 
-				-- If the device candidate is selected, then we will
-				-- draw it highlighted:
-				if is_selected (device_cursor) then
-					brightness := BRIGHT;
+				case verb is
+					when VERB_MOVE =>
 
-					case verb is
-						when VERB_MOVE =>
+						-- If a move operation is in progress, then the mouse
+						-- or cursor position overwrites the device position:
+						if edit_process_running then
+							draw_being_moved;
+						else
+							draw_fixed;						
+						end if;
 
-							-- If a move operation is in progress, then the mouse
-							-- or cursor position overwrites the device position:
-							if edit_process_running then
-								draw_being_moved;
-							else
-								draw_fixed;						
-							end if;
-
-						-- Other operations leave the device position as it is:
-						when others =>
-							draw_fixed;
-					
-					end case;
-
-				else
-					draw_fixed;
-				end if;
+					-- Other operations leave the device position as it is:
+					when others =>
+						draw_fixed;
 				
-				-- CS live update ratsnest
-				
+				end case;
+
+			else
+				draw_fixed;
 			end if;
+			
+			-- CS live update ratsnest
 		end query_device;
 
 		
@@ -2043,11 +2039,10 @@ is
 			end draw_being_moved;
 
 			
-		begin -- query_device
-
+		begin
 			-- If the device candidate is selected, then we will
 			-- draw it highlighted:
-			if is_selected (device_cursor) then
+			if et_pcb.is_selected (device_cursor) then
 				brightness := BRIGHT;
 
 				-- If a move operation is in progress, then the mouse

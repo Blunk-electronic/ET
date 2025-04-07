@@ -1985,7 +1985,7 @@ package body et_geometry_1 is
 		line : in type_line_fine)
 		return boolean
 	is begin
-		if line.status.selected then
+		if is_selected (line.status) then
 			return true;
 		else
 			return false;
@@ -1996,14 +1996,14 @@ package body et_geometry_1 is
 	procedure set_selected (
 		line : in out type_line_fine)
 	is begin
-		line.status.selected := true;
+		set_selected (line.status);
 	end;
 
 	
 	procedure clear_selected (
 		line : in out type_line_fine)
 	is begin
-		line.status.selected := false;
+		clear_selected (line.status);
 	end;
 
 	
@@ -2011,7 +2011,7 @@ package body et_geometry_1 is
 		line : in type_line_fine)
 		return boolean
 	is begin
-		if line.status.proposed then
+		if is_proposed (line.status) then
 			return true;
 		else
 			return false;
@@ -2023,14 +2023,14 @@ package body et_geometry_1 is
 	procedure set_proposed (
 		line : in out type_line_fine)
 	is begin
-		line.status.proposed := true;
+		set_proposed (line.status);
 	end;
 
 
 	procedure clear_proposed (
 		line : in out type_line_fine)
 	is begin
-		line.status.proposed := false;
+		clear_proposed (line.status);
 	end;
 
 	
@@ -2038,7 +2038,7 @@ package body et_geometry_1 is
 		line : in type_line_fine)
 		return boolean
 	is begin
-		if line.status.moving then
+		if is_moving (line.status) then
 			return true;
 		else
 			return false;
@@ -2049,14 +2049,14 @@ package body et_geometry_1 is
 	procedure set_moving (
 		line : in out type_line_fine)
 	is begin
-		line.status.moving := true;
+		set_moving (line.status);
 	end set_moving;
 
 
 	procedure clear_moving (
 		line : in out type_line_fine)
 	is begin
-		line.status.moving := false;
+		clear_moving (line.status);
 	end clear_moving;
 
 
@@ -2107,7 +2107,7 @@ package body et_geometry_1 is
 	procedure reset_status (
 		line : in out type_line_fine)
 	is begin
-		line.status := (others => <>);
+		reset (line.status);
 	end reset_status;
 	
 

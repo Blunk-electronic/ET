@@ -335,6 +335,66 @@ package body et_schematic is
 
 
 
+
+
+	function is_proposed (
+		device : in pac_devices_sch.cursor;
+		real   : in boolean)
+		return boolean
+	is begin
+		case real is
+			when false =>
+				if is_proposed (element (device)) then
+					return true;
+				else
+					return false;
+				end if;
+
+			when true =>
+				if is_real (device) then
+					if is_proposed (element (device)) then
+						return true;
+					else
+						return false;
+					end if;
+				else
+					return false;
+				end if;
+		end case;
+	end is_proposed;
+	
+
+	
+
+	function is_selected (
+		device : in pac_devices_sch.cursor;
+		real   : in boolean)
+		return boolean
+	is begin
+		case real is
+			when false =>
+				if is_selected (element (device)) then
+					return true;
+				else
+					return false;
+				end if;
+
+			when true =>
+				if is_real (device) then
+					if is_selected (element (device)) then
+						return true;
+					else
+						return false;
+					end if;
+				else
+					return false;
+				end if;
+		end case;
+	end is_selected;
+
+	
+
+
 	procedure iterate (
 		devices	: in pac_devices_sch.map;
 		process	: not null access procedure (position : in pac_devices_sch.cursor);

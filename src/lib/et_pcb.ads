@@ -324,6 +324,28 @@ package et_pcb is
 		status : type_object_status;
 	end record;
 
+
+	function is_proposed (
+		device : in type_device_non_electric)
+		return boolean;
+	
+
+	function is_selected (
+		device : in type_device_non_electric)
+		return boolean;
+
+
+	function is_moving (
+		device : in type_device_non_electric)
+		return boolean;
+	
+
+	function is_locked (
+		device : in type_device_non_electric)
+		return boolean;
+
+	
+
 	
 	-- CS: this should be a hashed map:
 	package pac_devices_non_electric is new ordered_maps (
@@ -332,6 +354,28 @@ package et_pcb is
 
 	use pac_devices_non_electric;
 	
+
+	function is_proposed (
+		device : in pac_devices_non_electric.cursor)
+		return boolean;
+	
+
+	function is_selected (
+		device : in pac_devices_non_electric.cursor)
+		return boolean;
+
+
+	function is_moving (
+		device : in pac_devices_non_electric.cursor)
+		return boolean;
+	
+
+	function is_locked (
+		device : in pac_devices_non_electric.cursor)
+		return boolean;
+
+	
+
 	
 	-- COMMITS OF NON-ELECTRICAL DEVICES (required for undo/redo operations via the GUI):
 	use et_commit;

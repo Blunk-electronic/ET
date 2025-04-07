@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -52,70 +52,6 @@ package body et_device_query_board is
 
 	use et_symbols;
 	use pac_geometry_2;
-
-
-	function is_proposed (
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
-		return boolean
-	is 
-		use et_object_status;
-	begin
-		if is_real (device_cursor) then
-			if element (device_cursor).status.proposed = true then
-				return true;
-			end if;
-		end if;
-
-		return false;
-	end is_proposed;
-
-
-	function is_selected (
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
-		return boolean
-	is 
-		use et_object_status;
-	begin
-		if is_real (device_cursor) then
-			if element (device_cursor).status.selected = true then
-				return true;
-			end if;
-		end if;
-
-		return false;
-	end is_selected;
-
-
-
-
-	function is_proposed (
-		device_cursor	: in pac_devices_non_electric.cursor)
-		return boolean
-	is 
-		use et_object_status;
-	begin
-		if element (device_cursor).status.proposed = true then
-			return true;
-		end if;
-
-		return false;
-	end is_proposed;
-
-
-	function is_selected (
-		device_cursor	: in pac_devices_non_electric.cursor)
-		return boolean
-	is 
-		use et_object_status;
-	begin
-		if element (device_cursor).status.selected = true then
-			return true;
-		end if;
-
-		return false;
-	end is_selected;
-
-
 
 
 

@@ -61,6 +61,7 @@ with et_assy_doc;						use et_assy_doc;
 with et_stopmask;						use et_stopmask;
 with et_conductor_text.boards;			use et_conductor_text.boards;
 with et_mirroring;						use et_mirroring;
+with et_object_status;
 
 
 package et_canvas_board_texts is
@@ -81,7 +82,7 @@ package et_canvas_board_texts is
 			line_width	=> 1.0,
 			mirror		=> MIRROR_NO,
 			position	=> origin_zero_rotation,
-			status		=> (others => <>),
+			status		=> et_object_status.get_default_status,
 			alignment	=> text_alignment_default,
 			content		=> empty_text_content);
 		

@@ -52,6 +52,8 @@ package et_board_ops.devices is
 	-- is used instead the module_name.
 
 -- ELECTICAL DEVICES:
+
+	
 	
 	-- Collects all devices in the vicinity of the given point:	
 	function get_devices (
@@ -68,7 +70,19 @@ package et_board_ops.devices is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
+	
+	type type_object_electrical is record
+		cursor : pac_devices_sch.cursor;
+	end record;
 
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		device			: in type_object_electrical;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+	
 	
 	-- Sets the proposed-flag of all real devices which are in the
 	-- given zone around the given place.

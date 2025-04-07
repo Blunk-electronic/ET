@@ -62,7 +62,7 @@ with et_alignment;						use et_alignment;
 with et_port_visibility;
 with et_unit_swap_level;
 with et_unit_add_level;
-
+with et_object_status;					use et_object_status;
 
 
 package body et_kicad_libraries is
@@ -2531,7 +2531,7 @@ package body et_kicad_libraries is
 					-- The kicad placeholders are now converted to ET native placeholders:
 
 					unit.symbol.name := (
-						status		=> (others => <>),
+						status		=> get_default_status,
 						meaning		=> et_device_placeholders.NAME,
 						position	=> field_reference.position,
 						--style		=> field_reference.style,
@@ -2541,7 +2541,7 @@ package body et_kicad_libraries is
 						alignment	=> field_reference.alignment);
 
 					unit.symbol.value := (
-						status		=> (others => <>),
+						status		=> get_default_status,
 						meaning		=> et_device_placeholders.VALUE,
 						position	=> field_value.position,
 						--style		=> field_value.style,

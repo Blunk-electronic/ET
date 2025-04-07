@@ -3713,7 +3713,7 @@ package body et_canvas is
 		-- object_point_of_attack and the current tool position.
 		-- Otherwise the line remains unchanged and will be drawn
 		-- as it is:
-		if l.status.moving then
+		if is_moving (l) then
 			attack (l, object_point_of_attack, get_object_tool_position);
 		end if;
 

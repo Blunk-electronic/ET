@@ -236,7 +236,7 @@ package body et_text is
 			text : in type_text)
 			return boolean
 		is begin
-			if text.status.proposed then
+			if is_proposed (text.status) then
 				return true;
 			else
 				return false;
@@ -246,19 +246,15 @@ package body et_text is
 
 		procedure set_proposed (
 			text : in out type_text)
-		is 
-			use et_object_status;
-		begin
-			text.status.proposed := TRUE;
+		is begin
+			set_proposed (text.status);
 		end set_proposed;
 		
 
 		procedure clear_proposed (
 			text : in out type_text)
-		is 
-			use et_object_status;
-		begin
-			text.status.proposed := FALSE;
+		is begin
+			clear_proposed (text.status);
 		end clear_proposed;
 		
 
@@ -267,7 +263,7 @@ package body et_text is
 			text : in type_text)
 			return boolean
 		is begin
-			if text.status.moving then
+			if is_moving (text.status) then
 				return true;
 			else
 				return false;
@@ -278,20 +274,16 @@ package body et_text is
 		
 		procedure set_moving (
 			text : in out type_text)
-		is
-			use et_object_status;
-		begin
-			text.status.moving := TRUE;
+		is begin
+			set_moving (text.status);
 		end set_moving;
 
 		
 
 		procedure clear_moving (
 			text : in out type_text)
-		is
-			use et_object_status;
-		begin
-			text.status.moving := FALSE;
+		is begin
+			clear_moving (text.status);
 		end clear_moving;
 		
 
@@ -299,7 +291,7 @@ package body et_text is
 			text : in type_text)
 			return boolean
 		is begin
-			if text.status.selected then
+			if is_selected (text.status) then
 				return TRUE;
 			else
 				return FALSE;
@@ -309,19 +301,15 @@ package body et_text is
 
 		procedure set_selected (
 			text : in out type_text)
-		is
-			use et_object_status;
-		begin
-			text.status.selected := TRUE;
+		is begin
+			set_selected (text.status);
 		end set_selected;
 		
 
 		procedure clear_selected (
 			text : in out type_text)
-		is
-			use et_object_status;
-		begin
-			text.status.selected := FALSE;
+		is begin
+			clear_selected (text.status);
 		end clear_selected;
 
 		
@@ -329,9 +317,7 @@ package body et_text is
 		procedure modify_status (
 			text 		: in out type_text;
 			operation	: in et_object_status.type_status_operation)
-		is 
-			use et_object_status;
-		begin
+		is begin
 			case operation.flag is
 				when SELECTED =>
 					case operation.action is
@@ -374,9 +360,7 @@ package body et_text is
 		procedure reset_status (
 			text 		: in out type_text)
 		is begin
-			clear_selected (text);
-			clear_proposed (text);
-			clear_moving (text);
+			reset (text.status);
 		end reset_status;
 
 		

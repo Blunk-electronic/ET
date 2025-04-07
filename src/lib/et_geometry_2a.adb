@@ -1470,9 +1470,7 @@ package body et_geometry_2a is
 	procedure reset_status (
 		line 		: in out type_line)
 	is begin
-		clear_selected (line);
-		clear_proposed (line);
-		clear_moving (line);
+		reset (line.status);
 	end reset_status;
 
 	
@@ -2029,9 +2027,7 @@ package body et_geometry_2a is
 	procedure reset_status (
 		arc 		: in out type_arc)
 	is begin
-		clear_selected (arc);
-		clear_proposed (arc);
-		clear_moving (arc);
+		reset (arc.status);
 	end reset_status;
 
 
@@ -2605,9 +2601,7 @@ package body et_geometry_2a is
 	procedure reset_status (
 		circle 		: in out type_circle)
 	is begin
-		clear_selected (circle);
-		clear_proposed (circle);
-		clear_moving (circle);
+		reset (circle.status);
 	end reset_status;
 
 
