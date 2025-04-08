@@ -1429,40 +1429,7 @@ package body et_geometry_2a is
 		line 		: in out type_line;
 		operation	: in type_status_operation)						
 	is begin
-		case operation.flag is
-			when SELECTED =>
-				case operation.action is
-					when SET =>
-						set_selected (line);
-
-					when CLEAR =>
-						clear_selected (line);
-				end case;
-
-				
-			when PROPOSED =>
-				case operation.action is
-					when SET =>
-						set_proposed (line);
-
-					when CLEAR =>
-						clear_proposed (line);
-				end case;
-
-				
-			when MOVING =>
-				case operation.action is
-					when SET =>
-						set_moving (line);
-
-					when CLEAR =>
-						clear_moving (line);
-				end case;
-
-				
-			when others =>
-				null; -- CS
-		end case;
+		modify_status (line.status, operation);
 	end modify_status;
 
 	
@@ -1470,7 +1437,7 @@ package body et_geometry_2a is
 	procedure reset_status (
 		line 		: in out type_line)
 	is begin
-		reset (line.status);
+		reset_status (line.status);
 	end reset_status;
 
 	
@@ -1986,40 +1953,7 @@ package body et_geometry_2a is
 		arc 		: in out type_arc;
 		operation	: in type_status_operation)						
 	is begin
-		case operation.flag is
-			when SELECTED =>
-				case operation.action is
-					when SET =>
-						set_selected (arc);
-
-					when CLEAR =>
-						clear_selected (arc);
-				end case;
-
-				
-			when PROPOSED =>
-				case operation.action is
-					when SET =>
-						set_proposed (arc);
-
-					when CLEAR =>
-						clear_proposed (arc);
-				end case;
-
-				
-			when MOVING =>
-				case operation.action is
-					when SET =>
-						set_moving (arc);
-
-					when CLEAR =>
-						clear_moving (arc);
-				end case;
-
-				
-			when others =>
-				null; -- CS
-		end case;
+		modify_status (arc.status, operation);
 	end modify_status;
 
 	
@@ -2027,7 +1961,7 @@ package body et_geometry_2a is
 	procedure reset_status (
 		arc 		: in out type_arc)
 	is begin
-		reset (arc.status);
+		reset_status (arc.status);
 	end reset_status;
 
 
@@ -2560,40 +2494,7 @@ package body et_geometry_2a is
 		circle 		: in out type_circle;
 		operation	: in type_status_operation)						
 	is begin
-		case operation.flag is
-			when SELECTED =>
-				case operation.action is
-					when SET =>
-						set_selected (circle);
-
-					when CLEAR =>
-						clear_selected (circle);
-				end case;
-
-				
-			when PROPOSED =>
-				case operation.action is
-					when SET =>
-						set_proposed (circle);
-
-					when CLEAR =>
-						clear_proposed (circle);
-				end case;
-
-				
-			when MOVING =>
-				case operation.action is
-					when SET =>
-						set_moving (circle);
-
-					when CLEAR =>
-						clear_moving (circle);
-				end case;
-
-				
-			when others =>
-				null; -- CS
-		end case;
+		modify_status (circle.status, operation);
 	end modify_status;
 
 	
@@ -2601,7 +2502,7 @@ package body et_geometry_2a is
 	procedure reset_status (
 		circle 		: in out type_circle)
 	is begin
-		reset (circle.status);
+		reset_status (circle.status);
 	end reset_status;
 
 

@@ -318,40 +318,7 @@ package body et_text is
 			text 		: in out type_text;
 			operation	: in et_object_status.type_status_operation)
 		is begin
-			case operation.flag is
-				when SELECTED =>
-					case operation.action is
-						when SET =>
-							set_selected (text);
-
-						when CLEAR =>
-							clear_selected (text);
-					end case;
-
-					
-				when PROPOSED =>
-					case operation.action is
-						when SET =>
-							set_proposed (text);
-
-						when CLEAR =>
-							clear_proposed (text);
-					end case;
-
-					
-				when MOVING =>
-					case operation.action is
-						when SET =>
-							set_moving (text);
-
-						when CLEAR =>
-							clear_moving (text);
-					end case;
-
-					
-				when others =>
-					null; -- CS
-			end case;
+			modify_status (text.status, operation);
 		end modify_status;
 
 
@@ -360,7 +327,7 @@ package body et_text is
 		procedure reset_status (
 			text 		: in out type_text)
 		is begin
-			reset (text.status);
+			reset_status (text.status);
 		end reset_status;
 
 		

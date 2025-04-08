@@ -829,29 +829,7 @@ package body et_board_ops.devices is
 				device_name	: in type_device_name;
 				device		: in out type_device_non_electric)
 			is begin
-				case operation.flag is
-					when SELECTED =>
-						case operation.action is
-							when SET =>
-								set_selected (device.status);
-
-							when CLEAR =>
-								clear_selected (device.status);
-						end case;
-
-					when PROPOSED =>
-						case operation.action is
-							when SET =>
-								set_proposed (device.status);
-
-							when CLEAR =>
-								clear_proposed (device.status);
-						end case;
-
-					when others =>
-						null; -- CS
-				end case;							
-
+				modify_status (device.status, operation);
 			end query_device;
 
 

@@ -195,7 +195,7 @@ package body et_canvas_board_silkscreen is
 			-- Deselect the the proposed object:
 			modify_status (
 				module_cursor	=> active_module, 
-				operation		=> (CLEAR, SELECTED),
+				operation		=> to_operation (CLEAR, SELECTED),
 				object_cursor	=> proposed_object, 
 				log_threshold	=> log_threshold + 1);
 
@@ -211,7 +211,7 @@ package body et_canvas_board_silkscreen is
 			-- Select the proposed object:
 			modify_status (
 				module_cursor	=> active_module, 
-				operation		=> (SET, SELECTED),
+				operation		=> to_operation (SET, SELECTED),
 				object_cursor	=> proposed_object, 
 				log_threshold	=> log_threshold + 1);
 
@@ -254,7 +254,7 @@ package body et_canvas_board_silkscreen is
 			-- among all selected objects:
 			c := objects.find (selected_object);
 			
-			modify_status (active_module, c, (SET, MOVING), log_threshold + 1);
+			modify_status (active_module, c, to_operation (SET, MOVING), log_threshold + 1);
 		end do_it;
 		
 		
@@ -287,7 +287,7 @@ package body et_canvas_board_silkscreen is
 						active_module, PROPOSED, log_threshold + 1);
 		begin
 			modify_status (
-				active_module, object, (SET, SELECTED), log_threshold + 1);
+				active_module, object, to_operation (SET, SELECTED), log_threshold + 1);
 
 			-- If only one object found, then show it in the status bar:
 			if count_total = 1 then

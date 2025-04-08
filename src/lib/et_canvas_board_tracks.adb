@@ -515,14 +515,14 @@ package body et_canvas_board_tracks is
 			-- Deselect the the proposed object:
 			modify_status (
 				module_cursor	=> active_module, 
-				operation		=> (CLEAR, SELECTED),
+				operation		=> to_operation (CLEAR, SELECTED),
 				object_cursor	=> proposed_object, 
 				log_threshold	=> log_threshold + 1);
 
 			-- The proposed object is no longer moving:
 			modify_status (
 				module_cursor	=> active_module, 
-				operation		=> (CLEAR, MOVING),
+				operation		=> to_operation (CLEAR, MOVING),
 				object_cursor	=> proposed_object, 
 				log_threshold	=> log_threshold + 1);
 			
@@ -538,14 +538,14 @@ package body et_canvas_board_tracks is
 			-- Select the proposed object:
 			modify_status (
 				module_cursor	=> active_module, 
-				operation		=> (SET, SELECTED),
+				operation		=> to_operation (SET, SELECTED),
 				object_cursor	=> proposed_object, 
 				log_threshold	=> log_threshold + 1);
 
 			-- Set the proposed object as moving:
 			modify_status (
 				module_cursor	=> active_module, 
-				operation		=> (SET, MOVING),
+				operation		=> to_operation (SET, MOVING),
 				object_cursor	=> proposed_object, 
 				log_threshold	=> log_threshold + 1);
 
@@ -613,8 +613,8 @@ package body et_canvas_board_tracks is
 					live_path.start_point := get_nearest (element (aw.wire_cursor), point);
 					status_bar_path_show_start_point (praeamble & net_name_to_string (object_net_name));
 					
-					modify_status (active_module, aw, (SET, SELECTED), log_threshold + 1);
-					modify_status (active_module, aw, (SET, MOVING), log_threshold + 1);
+					modify_status (active_module, aw, to_operation (SET, SELECTED), log_threshold + 1);
+					modify_status (active_module, aw, to_operation (SET, MOVING), log_threshold + 1);
 				
 					set_edit_process_running;
 				end one_airwire_proposed;
@@ -628,8 +628,8 @@ package body et_canvas_board_tracks is
 					-- Get the name of the affected net:
 					object_net_name := get_net_name (aw.net_cursor);
 					
-					modify_status (active_module, aw, (SET, SELECTED), log_threshold + 1);
-					modify_status (active_module, aw, (SET, MOVING), log_threshold + 1);
+					modify_status (active_module, aw, to_operation (SET, SELECTED), log_threshold + 1);
+					modify_status (active_module, aw, to_operation (SET, MOVING), log_threshold + 1);
 				end many_airwires_proposed;
 	
 				

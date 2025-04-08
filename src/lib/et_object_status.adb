@@ -154,13 +154,6 @@ package body et_object_status is
 
 
 
-	
-	procedure reset (
-		status : in out type_object_status)
-	is begin
-		status := (others => <>);
-	end reset;
-
 
 
 	function get_default_status 
@@ -173,6 +166,14 @@ package body et_object_status is
 	
 
 
+	function to_operation (
+		action	: in type_action;
+		flag	: in type_flag)
+		return type_status_operation
+	is begin 
+		return (action, flag);
+	end;
+	
 	
 
 	procedure modify_status (

@@ -169,40 +169,7 @@ package body et_drills is
 		drill 		: in out type_drill;
 		operation	: in type_status_operation)
 	is begin
-		case operation.flag is
-			when SELECTED =>
-				case operation.action is
-					when SET =>
-						set_selected (drill);
-
-					when CLEAR =>
-						clear_selected (drill);
-				end case;
-
-				
-			when PROPOSED =>
-				case operation.action is
-					when SET =>
-						set_proposed (drill);
-
-					when CLEAR =>
-						clear_proposed (drill);
-				end case;
-
-				
-			when MOVING =>
-				case operation.action is
-					when SET =>
-						set_moving (drill);
-
-					when CLEAR =>
-						clear_moving (drill);
-				end case;
-
-				
-			when others =>
-				null; -- CS
-		end case;
+		modify_status (drill.status, operation);
 	end modify_status;
 
 	
@@ -211,7 +178,7 @@ package body et_drills is
 	procedure reset_status (
 		drill : in out type_drill)
 	is begin
-		reset (drill.status);
+		reset_status (drill.status);
 	end reset_status;
 
 	

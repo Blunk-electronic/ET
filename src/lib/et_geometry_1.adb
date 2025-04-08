@@ -2065,40 +2065,7 @@ package body et_geometry_1 is
 		line 		: in out type_line_fine;
 		operation	: in type_status_operation)
 	is begin
-		case operation.flag is
-			when SELECTED =>
-				case operation.action is
-					when SET =>
-						set_selected (line);
-
-					when CLEAR =>
-						clear_selected (line);
-				end case;
-
-				
-			when PROPOSED =>
-				case operation.action is
-					when SET =>
-						set_proposed (line);
-
-					when CLEAR =>
-						clear_proposed (line);
-				end case;
-
-				
-			when MOVING =>
-				case operation.action is
-					when SET =>
-						set_moving (line);
-
-					when CLEAR =>
-						clear_moving (line);
-				end case;
-
-				
-			when others =>
-				null; -- CS
-		end case;
+		modify_status (line.status, operation);
 	end modify_status;
 
 	
@@ -2107,7 +2074,7 @@ package body et_geometry_1 is
 	procedure reset_status (
 		line : in out type_line_fine)
 	is begin
-		reset (line.status);
+		reset_status (line.status);
 	end reset_status;
 	
 

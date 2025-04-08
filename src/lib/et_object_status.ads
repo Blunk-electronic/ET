@@ -110,10 +110,6 @@ package et_object_status is
 		status : in type_object_status)
 		return boolean;
 
-		
-
-	procedure reset (
-		status : in out type_object_status);
 
 
 	function get_default_status 
@@ -124,12 +120,14 @@ package et_object_status is
 
 	type type_flag is (PROPOSED, SELECTED, MOVING, LOCKED);
 
-	type type_status_operation is record
-		action	: type_action;
-		flag	: type_flag;
-	end record;
+	type type_status_operation is private;
+	
 
-
+	function to_operation (
+		action	: in type_action;
+		flag	: in type_flag)
+		return type_status_operation;
+	
 
 	procedure modify_status (
 		status 		: in out type_object_status;
@@ -160,6 +158,12 @@ private
 	end record;
 
 
+	type type_status_operation is record
+		action	: type_action;
+		flag	: type_flag;
+	end record;
+
+	
 	
 end et_object_status;
 

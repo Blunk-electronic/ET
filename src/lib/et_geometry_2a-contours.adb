@@ -297,39 +297,12 @@ package body et_geometry_2a.contours is
 		segment 	: in out type_segment;
 		operation	: in type_status_operation)						
 	is begin
-		case operation.flag is
-			when SELECTED =>
-				case operation.action is
-					when SET =>
-						set_selected (segment);
+		case segment.shape is
+			when LINE =>
+				modify_status (segment.segment_line, operation);
 
-					when CLEAR =>
-						clear_selected (segment);
-				end case;
-
-				
-			when PROPOSED =>
-				case operation.action is
-					when SET =>
-						set_proposed (segment);
-
-					when CLEAR =>
-						clear_proposed (segment);
-				end case;
-
-				
-			when MOVING =>
-				case operation.action is
-					when SET =>
-						set_moving (segment);
-
-					when CLEAR =>
-						clear_moving (segment);
-				end case;
-
-				
-			when others =>
-				null; -- CS
+			when ARC =>
+				modify_status (segment.segment_arc, operation);
 		end case;
 	end modify_status;
 

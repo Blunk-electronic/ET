@@ -125,9 +125,9 @@ package body et_canvas_board_devices is
 		-- device to the next in a circular manner.
 		selected_device := get_first_device (active_module, SELECTED, log_threshold + 1);
 		
-		modify_status (active_module, selected_device, (CLEAR, SELECTED), log_threshold + 1);
+		modify_status (active_module, selected_device, to_operation (CLEAR, SELECTED), log_threshold + 1);
 		next_proposed_device (active_module, selected_device, log_threshold + 1);
-		modify_status (active_module, selected_device, (SET, SELECTED), log_threshold + 1);
+		modify_status (active_module, selected_device, to_operation (SET, SELECTED), log_threshold + 1);
 		
 		-- Show the selected device in the status bar
 		show_selected_device (name => key (selected_device), electrical => true, clarification => true);		
@@ -146,9 +146,9 @@ package body et_canvas_board_devices is
 		-- device to the next in a circular manner.
 		selected_device := get_first_non_electrical_device (active_module, SELECTED, log_threshold + 1);
 		
-		modify_status (active_module, selected_device, (CLEAR, SELECTED), log_threshold + 1);
+		modify_status (active_module, selected_device, to_operation (CLEAR, SELECTED), log_threshold + 1);
 		next_proposed_non_electrical_device (active_module, selected_device, log_threshold + 1);
-		modify_status (active_module, selected_device, (SET, SELECTED), log_threshold + 1);
+		modify_status (active_module, selected_device, to_operation (SET, SELECTED), log_threshold + 1);
 		
 		-- Show the selected device in the status bar
 		show_selected_device (name => key (selected_device), electrical => false, clarification => true);		
@@ -171,7 +171,7 @@ package body et_canvas_board_devices is
 		begin
 			proposed_device := get_first_device (active_module, PROPOSED, log_threshold + 1);
 
-			modify_status (active_module, proposed_device, (SET, SELECTED), log_threshold + 1);
+			modify_status (active_module, proposed_device, to_operation (SET, SELECTED), log_threshold + 1);
 			
 			-- If only one device found, then show its name in the status bar:
 			if count = 1 then
@@ -228,7 +228,7 @@ package body et_canvas_board_devices is
 		begin
 			proposed_device := get_first_non_electrical_device (active_module, PROPOSED, log_threshold + 1);
 
-			modify_status (active_module, proposed_device, (SET, SELECTED), log_threshold + 1);
+			modify_status (active_module, proposed_device, to_operation (SET, SELECTED), log_threshold + 1);
 			
 			-- If only one device found, then show its name in the status bar:
 			if count = 1 then
