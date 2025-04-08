@@ -211,6 +211,12 @@ package et_schematic is
 		device		: in out type_device_sch;
 		operation	: in type_status_operation);
 	
+
+	
+	procedure reset_status (
+		device		: in out type_device_sch);
+
+	
 	
 	-- Returns a cursor to the strand that is
 	-- on the given sheet and has the lowest x/y position.
@@ -370,7 +376,6 @@ package et_schematic is
 		device : in pac_devices_sch.cursor)
 		return boolean;
 
-	
 	
 	-- Returns the value of the given device.
 	-- The device must be real. Otherwise constraint error is raised.

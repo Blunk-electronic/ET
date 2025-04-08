@@ -136,6 +136,9 @@ package et_units is
 	
 
 
+	procedure reset_status (
+		unit : in out type_unit);
+	
 
 	
 	-- Units of a device are collected in a map.

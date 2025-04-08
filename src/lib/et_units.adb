@@ -134,16 +134,62 @@ package body et_units is
 		unit		: in out type_unit;
 		operation	: in type_status_operation)
 	is begin
-		case operation.action is
-			when SET =>
-				null;
+		case operation.flag is
+			when SELECTED =>
+				case operation.action is
+					when SET =>
+						set_selected (unit.status);
 
-			when CLEAR =>
-				null;
+					when CLEAR =>
+						clear_selected (unit.status);
+				end case;
+
+			when PROPOSED =>
+				case operation.action is
+					when SET =>
+						set_proposed (unit.status);
+
+					when CLEAR =>
+						clear_proposed (unit.status);
+				end case;
+
+			when MOVING =>
+				case operation.action is
+					when SET =>
+						set_moving (unit.status);
+
+					when CLEAR =>
+						clear_moving (unit.status);
+				end case;
+
+			-- when LOCKED =>
+			-- 	case operation.action is
+			-- 		when SET =>
+			-- 			set_locked (unit.status);
+   -- 
+			-- 		when CLEAR =>
+			-- 			clear_locked (unit.status);
+			-- 	end case;
+
+			when others => null; -- CS
+				
 		end case;
 	end modify_status;
 
 	
+
+
+	procedure reset_status (
+		unit : in out type_unit)
+	is begin
+		clear_proposed (unit);
+		clear_selected (unit);
+		clear_moving (unit);
+		-- CS clear_locked (unit);
+	end;
+
+
+
 	
 	
 	function to_string (unit : in pac_units.cursor) return string is

@@ -387,6 +387,16 @@ package et_pcb is
 
 
 
+	procedure modify_status (
+		device		: in out type_device_non_electric;
+		operation	: in type_status_operation);
+
+
+
+	procedure reset_status (
+	   device : in out type_device_non_electric);
+
+	
 	
 	-- CS: this should be a hashed map:
 	package pac_devices_non_electric is new ordered_maps (
@@ -396,6 +406,12 @@ package et_pcb is
 	use pac_devices_non_electric;
 	
 
+	-- Returns the name of the non-electical device:
+	function to_string (
+		device : in pac_devices_non_electric.cursor)
+		return string;
+	
+		
 	function is_proposed (
 		device : in pac_devices_non_electric.cursor)
 		return boolean;

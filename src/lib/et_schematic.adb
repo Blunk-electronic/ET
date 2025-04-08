@@ -111,16 +111,40 @@ package body et_schematic is
 		device		: in out type_device_sch;
 		operation	: in type_status_operation)
 	is begin
-		case operation.action is
-			when SET =>
-				null;
+		case operation.flag is
+			when SELECTED =>
+				case operation.action is
+					when SET =>
+						set_selected (device.status);
 
-			when CLEAR =>
-				null;
+					when CLEAR =>
+						clear_selected (device.status);
+				end case;
+
+			when PROPOSED =>
+				case operation.action is
+					when SET =>
+						set_proposed (device.status);
+
+					when CLEAR =>
+						clear_proposed (device.status);
+				end case;
+
+			when others =>
+				null; -- CS
+
 		end case;
 	end modify_status;
 
 	
+
+	procedure reset_status (
+		device		: in out type_device_sch)
+	is begin
+		clear_proposed (device);
+		clear_selected (device);
+	end;
+
 	
 
 	

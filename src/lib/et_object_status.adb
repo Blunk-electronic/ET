@@ -171,7 +171,65 @@ package body et_object_status is
 		return s;
 	end get_default_status;
 	
+
+
 	
+
+	procedure modify_status (
+		status 		: in out type_object_status;
+		operation	: in type_status_operation)
+	is begin
+		case operation.flag is
+			when SELECTED =>
+				case operation.action is
+					when SET =>
+						set_selected (status);
+
+					when CLEAR =>
+						clear_selected (status);
+				end case;
+
+			when PROPOSED =>
+				case operation.action is
+					when SET =>
+						set_proposed (status);
+
+					when CLEAR =>
+						clear_proposed (status);
+				end case;
+
+			when MOVING =>
+				case operation.action is
+					when SET =>
+						set_moving (status);
+
+					when CLEAR =>
+						clear_moving (status);
+				end case;
+
+			when LOCKED =>
+				case operation.action is
+					when SET =>
+						set_locked (status);
+   
+					when CLEAR =>
+						clear_locked (status);
+				end case;
+			
+		end case;
+	end modify_status;
+	
+
+
+	procedure reset_status (
+		status 		: in out type_object_status)
+	is begin
+		status := get_default_status;
+	end reset_status;
+
+
+	
+
 	
 	function to_string (
 		flag : in type_flag)

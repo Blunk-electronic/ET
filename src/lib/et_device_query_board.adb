@@ -73,6 +73,15 @@ package body et_device_query_board is
 	is begin
 		return element (device_cursor).position;
 	end get_position;
+
+
+	function get_position (
+		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		return type_vector_model
+	is begin
+		return get_position (device_cursor).place;
+	end get_position;
+
 	
 
 	function get_position (
@@ -83,6 +92,14 @@ package body et_device_query_board is
 	end get_position;
 
 
+	function get_position (
+		device_cursor	: in pac_devices_non_electric.cursor) -- FD1
+		return type_vector_model
+	is begin
+		return get_position (device_cursor).place;
+	end get_position;
+
+	
 	
 	function get_face (
 		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45

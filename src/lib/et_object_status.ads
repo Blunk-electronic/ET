@@ -110,7 +110,7 @@ package et_object_status is
 		status : in type_object_status)
 		return boolean;
 
-
+		
 
 	procedure reset (
 		status : in out type_object_status);
@@ -130,6 +130,17 @@ package et_object_status is
 	end record;
 
 
+
+	procedure modify_status (
+		status 		: in out type_object_status;
+		operation	: in type_status_operation);
+
+	
+	procedure reset_status (
+		status 		: in out type_object_status);
+
+	
+	
 	function to_string (
 		flag : in type_flag)
 		return string;

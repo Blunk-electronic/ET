@@ -185,7 +185,7 @@ package body et_canvas_board_devices is
 		log_indentation_up;
 		
 		-- Propose all devices in the vicinity of the given point:
-		propose_devices (
+		propose_electrical_devices (
 			module_cursor	=> active_module,
 			catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
 			count			=> count,

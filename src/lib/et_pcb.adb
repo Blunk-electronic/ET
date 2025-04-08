@@ -302,6 +302,36 @@ package body et_pcb is
 	
 
 
+
+	procedure modify_status (
+		device		: in out type_device_non_electric;
+		operation	: in type_status_operation)						
+	is begin
+		modify_status (device.status, operation);
+	end;
+
+	
+
+
+	procedure reset_status (
+		device : in out type_device_non_electric)
+	is begin
+		reset_status (device.status);
+	end;
+
+
+
+
+	function to_string (
+		device : in pac_devices_non_electric.cursor)
+		return string
+	is begin
+		return to_string (key (device));
+	end to_string;
+
+	
+	
+
 	function is_proposed (
 		device : in pac_devices_non_electric.cursor)
 		return boolean
