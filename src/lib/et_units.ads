@@ -82,6 +82,61 @@ package et_units is
 		-- Via the unit position the sheet number can be obtained.
 	end record;
 
+
+
+
+
+	procedure set_selected (
+		unit : in out type_unit);
+	
+
+	procedure clear_selected (
+		unit : in out type_unit);
+	
+
+	function is_selected (
+		unit : in type_unit)
+		return boolean;
+	
+
+	
+	procedure set_proposed (
+		unit : in out type_unit);
+	
+
+	procedure clear_proposed (
+		unit : in out type_unit);
+
+	
+	function is_proposed (
+		unit : in type_unit)
+		return boolean;
+
+
+
+	
+	procedure set_moving (
+		unit : in out type_unit);
+	
+
+	procedure clear_moving (
+		unit : in out type_unit);
+
+	
+	function is_moving (
+		unit : in type_unit)
+		return boolean;
+
+	
+
+	
+	procedure modify_status (
+		unit 		: in out type_unit;
+		operation	: in type_status_operation);
+	
+
+
+
 	
 	-- Units of a device are collected in a map.
 	-- A unit is accessed by its name like "I/O Bank 3" or "PWR" or "A" or "B" ...	
@@ -89,11 +144,30 @@ package et_units is
 		key_type		=> pac_unit_name.bounded_string,
 		element_type 	=> type_unit);
 
+	use pac_units;
+
 	
 	-- Returns a string that tells the name and position of given unit.
 	function to_string (unit : in pac_units.cursor) return string;
 	
 
+
+	function is_proposed (
+		unit : in pac_units.cursor)
+		return boolean;
+	
+
+	function is_selected (
+		unit : in pac_units.cursor)
+		return boolean;
+
+
+	function is_moving (
+		unit : in pac_units.cursor)
+		return boolean;
+
+	
+	
 	package pac_unit_positions is new ordered_maps (
 		key_type		=> pac_unit_name.bounded_string, -- A, B, IO_BANK_1
 		element_type	=> et_coordinates_2.type_position); -- sheet, x, y

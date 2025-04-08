@@ -44,6 +44,107 @@ with ada.exceptions;
 
 package body et_units is
 
+
+
+	procedure set_selected (
+		unit : in out type_unit)
+	is begin
+		set_selected (unit.status);
+	end;	
+		
+	
+
+	procedure clear_selected (
+		unit : in out type_unit)
+	is begin
+		clear_selected (unit.status);
+	end;	
+
+
+	function is_selected (
+		unit : in type_unit)
+		return boolean
+	is begin
+		if is_selected (unit.status) then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+	
+
+	
+	procedure set_proposed (
+		unit : in out type_unit)
+	is begin
+		set_proposed (unit.status);
+	end;
+
+	
+	procedure clear_proposed (
+		unit : in out type_unit)
+	is begin
+		clear_proposed (unit.status);
+	end;
+
+	
+	function is_proposed (
+		unit : in type_unit)
+		return boolean
+	is begin
+		if is_proposed (unit.status) then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+
+
+	
+	procedure set_moving (
+		unit : in out type_unit)
+	is begin
+		set_moving (unit.status);
+	end;
+
+
+	procedure clear_moving (
+		unit : in out type_unit)
+	is begin
+		clear_moving (unit.status);
+	end;
+
+	
+	function is_moving (
+		unit : in type_unit)
+		return boolean
+	is begin
+		if is_moving (unit.status) then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+	
+
+	
+	procedure modify_status (
+		unit		: in out type_unit;
+		operation	: in type_status_operation)
+	is begin
+		case operation.action is
+			when SET =>
+				null;
+
+			when CLEAR =>
+				null;
+		end case;
+	end modify_status;
+
+	
+	
 	
 	function to_string (unit : in pac_units.cursor) return string is
 		use pac_units;
@@ -56,6 +157,33 @@ package body et_units is
 
 
 
+
+
+	function is_proposed (
+		unit : in pac_units.cursor)
+		return boolean
+	is begin
+		return is_proposed (element (unit));
+	end;
+	
+
+	function is_selected (
+		unit : in pac_units.cursor)
+		return boolean
+	is begin
+		return is_selected (element (unit));
+	end;
+
+
+	
+	function is_moving (
+		unit : in pac_units.cursor)
+		return boolean
+	is begin
+		return is_moving (element (unit));
+	end;
+
+	
 	
 	function unit_positions (
 		units : in pac_units.map)
