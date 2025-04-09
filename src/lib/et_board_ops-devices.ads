@@ -51,11 +51,8 @@ with et_device_name;					use et_device_name;
 
 package et_board_ops.devices is
 
-	-- CS rework procedures so that a module cursor
-	-- is used instead the module_name.
 
 -- ELECTICAL DEVICES:
-
 	
 	
 	-- Collects all devices in the vicinity of the given point:	
@@ -141,7 +138,7 @@ package et_board_ops.devices is
 	-- Moves a device in the board layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
 	procedure move_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_vector_model; -- x/y
@@ -151,7 +148,7 @@ package et_board_ops.devices is
 	-- Rotates a device in the board layout.
 	-- Leaves x/y and face (top/bottom) as it is.
 	procedure rotate_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		rotation		: in et_pcb_coordinates_2.type_rotation_model; -- 90 -- CS default rotation ?
@@ -242,7 +239,7 @@ package et_board_ops.devices is
 
 	-- Adds a non-electrical device to the board:
 	procedure add_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		package_model	: in pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 		position		: in type_package_position; -- x,y,rotation,face
 		prefix			: in pac_device_prefix.bounded_string; -- FD
@@ -255,14 +252,14 @@ package et_board_ops.devices is
 	-- Deletes a non-electric device in the board layout.
 	-- Electric devices must be deleted in the schematic domain !
 	procedure delete_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- FD1 -- CS cursor insted ?
 		log_threshold	: in type_log_level);
 
 	
 	-- Renames a non-electric device in the board layout.
 	procedure rename_device (
-		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor		: in pac_generic_modules.cursor;
 		device_name_before	: in type_device_name; -- FD1
 		device_name_after	: in type_device_name; -- FD3
 		log_threshold		: in type_log_level);
@@ -276,7 +273,7 @@ package et_board_ops.devices is
 	-- Determines whether the given device is electrical or non-electrical
 	-- by its own:
 	procedure flip_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		face			: in type_face; -- top/bottom
 		log_threshold	: in type_log_level);

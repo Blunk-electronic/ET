@@ -303,7 +303,7 @@ package body et_canvas_board_devices is
 				commit (PRE, verb, noun, log_threshold + 1);
 				
 				move_device (
-					module_name		=> key (active_module),
+					module_cursor	=> active_module,
 					device_name		=> key (selected_device),
 					coordinates		=> ABSOLUTE,
 					point			=> point,
@@ -387,7 +387,7 @@ package body et_canvas_board_devices is
 				commit (PRE, verb, noun, log_threshold + 1);
 				
 				move_device (
-					module_name		=> key (active_module),
+					module_cursor	=> active_module,
 					device_name		=> key (selected_device),
 					coordinates		=> ABSOLUTE,
 					point			=> point,
@@ -473,7 +473,7 @@ package body et_canvas_board_devices is
 				commit (PRE, verb, noun, log_threshold + 1);
 				
 				rotate_device (
-					module_name		=> key (active_module),
+					module_cursor	=> active_module,
 					device_name		=> key (selected_device),
 					coordinates		=> RELATIVE,
 					rotation		=> default_rotation,
@@ -546,7 +546,7 @@ package body et_canvas_board_devices is
 				commit (PRE, verb, noun, log_threshold + 1);
 
 				rotate_device (
-					module_name		=> key (active_module),
+					module_cursor	=> active_module,
 					device_name		=> key (selected_device),
 					coordinates		=> RELATIVE,
 					rotation		=> default_rotation,
@@ -629,7 +629,7 @@ package body et_canvas_board_devices is
 				commit (PRE, verb, noun, log_threshold + 1);
 				
 				flip_device (
-					module_name		=> key (active_module),
+					module_cursor	=> active_module,
 					device_name		=> key (selected_device),
 					face			=> face,
 					log_threshold	=> log_threshold);
@@ -705,7 +705,7 @@ package body et_canvas_board_devices is
 				commit (PRE, verb, noun, log_threshold + 1);
 				
 				flip_device (
-					module_name		=> key (active_module),
+					module_cursor	=> active_module,
 					device_name		=> key (selected_device),
 					face			=> face,
 					log_threshold	=> log_threshold);
@@ -778,7 +778,7 @@ package body et_canvas_board_devices is
 				commit (PRE, verb, noun, log_threshold + 1);
 				
 				delete_device (
-					module_name		=> key (active_module),
+					module_cursor	=> active_module,
 					device_name		=> key (selected_device),
 					log_threshold	=> log_threshold);
 

@@ -535,13 +535,12 @@ package body et_board_ops.devices is
 
 	
 	procedure move_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
@@ -619,21 +618,19 @@ package body et_board_ops.devices is
 		end query_devices;
 
 		
-	begin -- move_device
+	begin
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & to_string (module_name) &
+				log (text => "module " & to_string (module_cursor) &
 					" moving device " & to_string (device_name) &
 					" to" & to_string (point), level => log_threshold);
 
 			when RELATIVE =>
-				log (text => "module " & to_string (module_name) &
+				log (text => "module " & to_string (module_cursor) &
 					" moving device " & to_string (device_name) &
 					" by" & to_string (point), level => log_threshold);
 		end case;
 
-		-- locate module
-		module_cursor := locate_module (module_name);
 		
 		update_element (
 			container	=> generic_modules,
@@ -648,13 +645,12 @@ package body et_board_ops.devices is
 	
 	
 	procedure rotate_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		rotation		: in et_pcb_coordinates_2.type_rotation_model; -- 90
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
@@ -689,6 +685,7 @@ package body et_board_ops.devices is
 						rotate_about_itself (position => device.position, offset => rotation); -- preserve x/y and face
 				end case;
 			end;
+
 			
 		begin -- query_devices
 
@@ -728,18 +725,16 @@ package body et_board_ops.devices is
 	begin -- rotate_device
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & to_string (module_name) &
+				log (text => "module " & to_string (module_cursor) &
 					" rotating device " & to_string (device_name) &
 					" to" & to_string (rotation), level => log_threshold);
 
 			when RELATIVE =>
-				log (text => "module " & to_string (module_name) &
+				log (text => "module " & to_string (module_cursor) &
 					" rotating device " & to_string (device_name) &
 					" by" & to_string (rotation), level => log_threshold);
 		end case;
 
-		-- locate module
-		module_cursor := locate_module (module_name);
 		
 		update_element (
 			container	=> generic_modules,
@@ -1226,13 +1221,12 @@ package body et_board_ops.devices is
 
 	
 	procedure add_device ( -- non-electric !
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		package_model	: in pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 		position		: in type_package_position; -- x,y,rotation,face
 		prefix			: in pac_device_prefix.bounded_string; -- FD
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		package_cursor_lib : et_packages.pac_package_models.cursor;
 		
@@ -1270,9 +1264,10 @@ package body et_board_ops.devices is
 
 			log_indentation_down;
 		end add;
+
 		
 	begin -- add_device
-		log (text => "module " & to_string (module_name) &
+		log (text => "module " & to_string (module_cursor) &
 			" adding non-electric device " & to_string (package_model) &
 			" at" &
 			to_string (position),
@@ -1280,9 +1275,6 @@ package body et_board_ops.devices is
 
 		log_indentation_up;
 		
-		-- locate module
-		module_cursor := locate_module (module_name);
-
 		-- Read the package model (like ../libraries/fiducials/crosshair.pac)
 		-- and store it in the rig wide package library et_packages.packages.
 		-- If it s already in the library, nothing happens:
@@ -1309,11 +1301,10 @@ package body et_board_ops.devices is
 
 	
 	procedure delete_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- FD1
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		
 		procedure query_devices (
@@ -1331,13 +1322,10 @@ package body et_board_ops.devices is
 
 		
 	begin -- delete_device
-		log (text => "module " & to_string (module_name) &
+		log (text => "module " & to_string (module_cursor) &
 			 " deleting device (non-electric) " & to_string (device_name),
 			 level => log_threshold);
 
-		-- locate module
-		module_cursor := locate_module (module_name);
-		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -1350,13 +1338,11 @@ package body et_board_ops.devices is
 	
 	
 	procedure rename_device (
-		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name_before	: in type_device_name; -- FD1
 		device_name_after	: in type_device_name; -- FD3
 		log_threshold		: in type_log_level) 
 	is		
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
@@ -1400,13 +1386,11 @@ package body et_board_ops.devices is
 
 		
 	begin
-		log (text => "module " & to_string (module_name) &
+		log (text => "module " & to_string (module_cursor) &
 			 " renaming device (non-electric) " & to_string (device_name_before) & " to " & 
 			to_string (device_name_after),
 			level => log_threshold);
 		
-		-- locate module
-		module_cursor := locate_module (module_name);
 		
 		update_element (
 			container	=> generic_modules,
@@ -1422,12 +1406,11 @@ package body et_board_ops.devices is
 
 	
 	procedure flip_device (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		face			: in type_face; -- top/bottom
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
@@ -1516,18 +1499,14 @@ package body et_board_ops.devices is
 
 		
 	begin
-		log (text => "module " & to_string (module_name) &
+		log (text => "module " & to_string (module_cursor) &
 			" flipping device " & to_string (device_name) &
 			" to" & to_string (face), level => log_threshold);
 
-		-- locate module
-		module_cursor := locate_module (module_name);
-		
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
 			process		=> query_devices'access);
-
 
 		update_ratsnest (module_cursor, log_threshold + 1);		
 	end flip_device;

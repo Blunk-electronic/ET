@@ -2778,7 +2778,7 @@ is
 					update_mode_display;
 					
 					add_device (
-						module_name		=> module,
+						module_cursor	=> active_module,
 						package_model	=> model,
 						position		=> to_package_position
 							(
@@ -2787,11 +2787,12 @@ is
 						prefix			=> prefix,
 						log_threshold	=> log_threshold + 1);
 
+					
 				when 9 =>
 					update_mode_display;
 					
 					add_device (
-						module_name		=> module,
+						module_cursor	=> active_module,
 						package_model	=> model,
 						position		=> to_package_position
 							(
@@ -2801,11 +2802,12 @@ is
 						prefix			=> prefix,
 						log_threshold	=> log_threshold + 1);
 
+					
 				when 10 =>
 					update_mode_display;
 					
 					add_device (
-						module_name		=> module,
+						module_cursor	=> active_module,
 						package_model	=> model,
 						position		=> to_package_position
 							(
@@ -2848,7 +2850,7 @@ is
 			update_mode_display;
 			
 			delete_device (
-				module_name		=> module,
+				module_cursor	=> active_module,
 				device_name		=> to_device_name (f (5)),
 				log_threshold	=> log_threshold + 1);
 		end do_it;
@@ -2865,8 +2867,32 @@ is
 		end case;		
 	end delete_device;
 
+
 	
 
+	procedure move_device is begin
+		case cmd_field_count is
+			when 8 =>
+				et_board_ops.devices.move_device (
+					module_cursor 	=> active_module,
+					device_name		=> to_device_name (f (5)), -- IC1
+					coordinates		=> to_coordinates (f (6)),  -- relative/absolute
+					point			=> type_vector_model (set (
+										x => to_distance (dd => f (7)),
+										y => to_distance (dd => f (8)))),
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 9 .. type_field_count'last =>
+				too_long;
+				
+			when others =>
+				command_incomplete;
+		end case;
+	end move_device;
+
+
+	
 	
 	-- This procedure parses a command to
 	-- rename a non-electrical device:
@@ -2878,7 +2904,7 @@ is
 			update_mode_display;
 			
 			rename_device (
-				module_name			=> module,
+				module_cursor		=> active_module,
 				device_name_before	=> to_device_name (f (5)),
 				device_name_after	=> to_device_name (f (6)),
 				log_threshold		=> log_threshold + 1);
@@ -2898,6 +2924,25 @@ is
 	end rename_device;
 
 
+
+
+	procedure flip_device is begin
+		case cmd_field_count is
+			when 6 =>
+				et_board_ops.devices.flip_device (
+					module_cursor 	=> active_module,
+					device_name		=> to_device_name (f (5)), -- IC1
+					face			=> to_face  (f (6)),  -- top/bottom
+					log_threshold	=> log_threshold + 1
+					);
+
+			when 7 .. type_field_count'last => too_long;
+				
+			when others => command_incomplete;
+		end case;
+	end flip_device;
+
+	
 	
 	
 
@@ -3565,19 +3610,7 @@ is
 			when VERB_FLIP =>
 				case noun is
 					when NOUN_DEVICE =>
-						case cmd_field_count is
-							when 6 =>
-								et_board_ops.devices.flip_device (
-									module_name 	=> module,
-									device_name		=> to_device_name (f (5)), -- IC1
-									face			=> to_face  (f (6)),  -- top/bottom
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 7 .. type_field_count'last => too_long;
-								
-							when others => command_incomplete;
-						end case;
+						flip_device;
 
 					when others => invalid_noun (to_string (noun));
 				end case;
@@ -3613,24 +3646,7 @@ is
 						parse_canvas_command (VERB_MOVE, NOUN_CURSOR);
 						
 					when NOUN_DEVICE =>
-						case cmd_field_count is
-							when 8 =>
-								et_board_ops.devices.move_device (
-									module_name 	=> module,
-									device_name		=> to_device_name (f (5)), -- IC1
-									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
-									point			=> type_vector_model (set (
-														x => to_distance (dd => f (7)),
-														y => to_distance (dd => f (8)))),
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. type_field_count'last =>
-								too_long;
-								
-							when others =>
-								command_incomplete;
-						end case;
+						move_device;
 
 					when NOUN_SUBMODULE =>
 						case cmd_field_count is
@@ -3695,7 +3711,7 @@ is
 						case cmd_field_count is
 							when 7 =>
 								et_board_ops.devices.rotate_device (
-									module_name 	=> module,
+									module_cursor 	=> active_module,
 									device_name		=> to_device_name (f (5)), -- IC1
 									coordinates		=> to_coordinates (f (6)),  -- relative/absolute
 									rotation		=> to_rotation (f (7)),
