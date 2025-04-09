@@ -351,7 +351,7 @@ package body et_canvas_board_stopmask is
 		
 			
 	begin
-		log (text => "locating objects ...", level => log_threshold);
+		log (text => "proposing objects ...", level => log_threshold);
 		log_indentation_up;
 
 		-- Propose objects in the vicinity of the given point:
@@ -365,8 +365,7 @@ package body et_canvas_board_stopmask is
 		-- evaluate the number of objects found here:
 		case count_total is
 			when 0 =>
-				reset_request_clarification;
-				reset_proposed_objects (active_module, log_threshold + 1);
+				null; -- nothing to do
 				
 			when 1 =>
 				set_edit_process_running;
@@ -436,14 +435,17 @@ package body et_canvas_board_stopmask is
 			end if;
 				
 			log_indentation_down;			
+			
 			set_status (status_move_object);
 			
 			reset_proposed_objects (active_module, log_threshold + 1);
+
+			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 			
 		
 	begin
-		-- Initially the preliminary object is not ready.
+		-- Initially the editing process is not running.
 		if not edit_process_running then
 
 			-- Set the tool being used:
@@ -525,9 +527,12 @@ package body et_canvas_board_stopmask is
 			end if;
 				
 			log_indentation_down;			
+			
 			set_status (status_delete_object);
 			
 			reset_proposed_objects (active_module, log_threshold + 1);
+
+			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
 		
@@ -551,7 +556,6 @@ package body et_canvas_board_stopmask is
 			-- via procedure clarify_object.
 
 			finalize;
-			reset_request_clarification;
 		end if;
 	end delete_object;
 	

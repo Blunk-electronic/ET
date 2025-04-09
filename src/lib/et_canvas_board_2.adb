@@ -798,7 +798,13 @@ package body et_canvas_board_2 is
 
 		-- Do a level 1 reset. This is a partly reset:
 		procedure level_1 is begin
+			log (text => "level 1", level => log_threshold + 1);
+			
+			reset_edit_process_running;
 			reset_request_clarification;
+			reset_finalizing_granted;
+
+			status_clear;
 
 			reset_preliminary_text; -- after placing a text
 			
@@ -821,6 +827,8 @@ package body et_canvas_board_2 is
 
 		-- Do a level 2 reset. This is a full reset:
 		procedure level_2 is begin
+			log (text => "level 2", level => log_threshold + 1);
+			
 			level_1;
 			
 			reset_verb_and_noun;
@@ -833,7 +841,9 @@ package body et_canvas_board_2 is
 	
 	
 	begin
-		-- put_line ("reset");
+		log (text => "RESET", level => log_threshold + 1);
+		log_indentation_up;
+		
 		escape_key_pressed;
 
 		expect_entry := expect_entry_default; -- expect a verb
@@ -858,7 +868,8 @@ package body et_canvas_board_2 is
 			when others =>
 				reset_editing_process;
 		end case;
-		
+
+		log_indentation_down;
 		
 		redraw_board;
 	end reset;
