@@ -1154,11 +1154,14 @@ package et_canvas is
 
 	
 
--- ESCAPE COUNTER:
+-- ESCAPE KEY EVENT COUNTER:
 
 	procedure escape_key_pressed;
 
-	function get_escape_counter return natural; -- CS subtype !!
+	-- We count only up to 2:
+	type type_escape_count is new natural range 0 .. 2;
+	
+	function get_escape_counter return type_escape_count;
 	
 
 	
@@ -1533,8 +1536,8 @@ package et_canvas is
 
 	
 private
-
-
+	
+	
 	type type_editing_process is record
 
 		-- This flag indicates that the operator has started
@@ -1553,7 +1556,7 @@ private
 		-- An editing process can be cancelled partly or
 		-- completely. For this reason we have a counter that
 		-- tells how often the operator has pressed the ESC-key:
-		escape_counter			: natural := 0;
+		escape_counter			: type_escape_count := 0;
 	end record;
 
 

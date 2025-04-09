@@ -865,8 +865,6 @@ package body et_canvas_board_2 is
 			when 2 =>
 				level_2;
 
-			when others =>
-				reset_editing_process;
 		end case;
 
 		log_indentation_down;

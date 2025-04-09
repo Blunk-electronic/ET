@@ -3355,26 +3355,24 @@ package body et_canvas is
 		
 
 
--- ESCAPE COUNTER:
+-- ESCAPE KEY EVENT COUNTER:
 
 	procedure escape_key_pressed is 
-		c : natural renames editing_process.escape_counter;
+		c : type_escape_count renames editing_process.escape_counter;
 	begin
-		-- count the events when the ESC-key was pressed:
-		c := c + 1;
-
-		-- limit the counter to 2:
-		if c > 2 then
-			c := 2;
+		-- Count the events when the ESC-key was pressed.
+		-- Limit the counter to 2:
+		if c < 2 then
+			c := c + 1;
 		end if;
-		
+
 		log (text => "ESC key pressed. editing_process.escape_counter" 
-			& natural'image (editing_process.escape_counter),
+			& type_escape_count'image (editing_process.escape_counter),
 			level => log_threshold);
 	end;
 
 	
-	function get_escape_counter return natural is begin
+	function get_escape_counter return type_escape_count is begin
 		return editing_process.escape_counter;
 	end;
 
