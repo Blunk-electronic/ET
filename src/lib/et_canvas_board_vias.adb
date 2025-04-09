@@ -1064,7 +1064,7 @@ package body et_canvas_board_vias is
 
 		
 	begin		
-		log (text => "locating vias ...", level => log_threshold);
+		log (text => "proposing vias ...", level => log_threshold);
 		log_indentation_up;
 
 		propose_objects;
@@ -1076,8 +1076,7 @@ package body et_canvas_board_vias is
 		-- evaluate the number of vias found here:
 		case count_total is
 			when 0 =>
-				reset_edit_process_running;
-				reset_proposed_vias (active_module, log_threshold + 1);
+				null; -- nothing to do
 				
 			when 1 =>
 				set_edit_process_running;
@@ -1114,6 +1113,7 @@ package body et_canvas_board_vias is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+			use pac_vias;
 
 			object : constant type_object_via := get_first_object (
 					active_module, SELECTED, log_threshold + 1);
@@ -1121,35 +1121,39 @@ package body et_canvas_board_vias is
 			log (text => "finalizing move ...", level => log_threshold);
 			log_indentation_up;
 
--- 			if selected_via /= pac_proposed_vias.no_element then
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if has_element (object.via_cursor) then
 
-			-- Commit the current state of the design:
-			commit (PRE, verb, noun, log_threshold + 1);
-			
-			move_object (
-				module_cursor	=> active_module,
-				object			=> object,
-				coordinates		=> ABSOLUTE,
-				destination		=> point,
-				log_threshold	=> log_threshold);
-			
-			-- Commit the new state of the design:
-			commit (POST, verb, noun, log_threshold + 1);
-
--- 			else
--- 				log (text => "nothing to do", level => log_threshold);
--- 			end if;
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
 				
+				move_object (
+					module_cursor	=> active_module,
+					object			=> object,
+					coordinates		=> ABSOLUTE,
+					destination		=> point,
+					log_threshold	=> log_threshold);
+				
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+			
 			log_indentation_down;			
+			
 			set_status (status_move_via);			
 			
 			reset_proposed_vias (active_module, log_threshold + 1);
-			reset_edit_process_running;
+
+			reset_editing_process; -- prepare for a new editing process
 		end finalize;
 
 
 	begin
-		-- Initially the preliminary_via is not ready.
+		-- Initially the editing process is not running.
 		if not edit_process_running then
 
 			-- Set the tool being used:
@@ -1201,6 +1205,7 @@ package body et_canvas_board_vias is
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
+			use pac_vias;
 
 			object : constant type_object_via := get_first_object (
 				active_module, SELECTED, log_threshold + 1);
@@ -1208,24 +1213,32 @@ package body et_canvas_board_vias is
 			log (text => "finalizing delete ...", level => log_threshold);
 			log_indentation_up;
 
-				
-			-- Commit the current state of the design:
-			commit (PRE, verb, noun, log_threshold + 1);
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if has_element (object.via_cursor) then
 			
-			delete_object (
-				module_cursor	=> active_module, 
-				object			=> object, 
-				log_threshold	=> log_threshold + 1);
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+				
+				delete_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					log_threshold	=> log_threshold + 1);
 
-			-- Commit the new state of the design:
-			commit (POST, verb, noun, log_threshold + 1);
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
 
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
 				
 			log_indentation_down;			
+			
 			set_status (status_delete_via);
 			
 			reset_proposed_vias (active_module, log_threshold + 1);
-			reset_edit_process_running;
+
+			reset_editing_process; -- prepare for a new editing process			
 		end finalize;
 		
 
@@ -1253,7 +1266,6 @@ package body et_canvas_board_vias is
 			-- via procedure clarify_object.
 			
 			finalize;
-			reset_request_clarification;
 		end if;
 	end delete_via;
 	
