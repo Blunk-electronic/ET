@@ -4382,13 +4382,18 @@ package body et_board_ops.conductors is
 			procedure query_text (
 				text	: in out type_conductor_text)
 			is begin
-				if in_catch_zone (
-					zone	=> catch_zone,
-					point	=> get_place (text))
-				then
-					set_proposed (text);
-					count := count + 1;
-					log (text => to_string (text), level => log_threshold + 1);
+				-- The candidate text must be in the given signal layer:
+				if get_layer (text) = layer then
+					
+					if in_catch_zone (
+						zone	=> catch_zone,
+						point	=> get_place (text))
+					then
+						set_proposed (text);
+						count := count + 1;
+						log (text => to_string (text), level => log_threshold + 1);
+					end if;
+					
 				end if;
 			end query_text;
 			
