@@ -83,6 +83,24 @@ package et_canvas_board_devices is
 	procedure clarify_non_electrical_device;
 	
 
+	-- This procedure is required in order to clarify
+	-- which object among the proposed objects is meant.
+	-- On every call of this procedure we advance from one
+	-- proposed segment to the next in a circular manner
+	-- and set it as "selected":
+	procedure clarify_object;
+	
+
+	-- Locates objects in the vicinity of the given point
+	-- and sets their proposed-flag.
+	-- Only displayed layers are taken into account.
+	-- Depending on how many objects have been found, the behaviour is:
+	-- - If only one object found, then it is selected automatically.
+	-- - If more than one object found, then clarification is requested.
+	--   The first object of them is selected.
+	procedure find_objects (
+		point : in type_vector_model);
+
 	
 	
 	-- Locates all devices in the vicinity of given point.
@@ -136,6 +154,9 @@ package et_canvas_board_devices is
 		point	: in type_vector_model);
 
 
+	procedure move_object (
+		tool	: in type_tool;
+		point	: in type_vector_model);
 
 	
 -- ROTATION:

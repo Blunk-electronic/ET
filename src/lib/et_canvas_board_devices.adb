@@ -644,7 +644,7 @@ package body et_canvas_board_devices is
 
 	
 
-	procedure move_device (
+	procedure move_object (
 		tool	: in type_tool;
 		point	: in type_vector_model)
 	is 
@@ -728,7 +728,7 @@ package body et_canvas_board_devices is
 			-- Finally move the selected device:
 			finalize;
 		end if;
-	end move_device;
+	end move_object;
 
 	
 	
