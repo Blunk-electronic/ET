@@ -49,7 +49,7 @@ with et_device_query_board;			use et_device_query_board;
 with et_modes.board;
 with et_undo_redo;
 with et_commit;
-with et_object_status;
+with et_object_status;				use et_object_status;
 
 with et_canvas_board_preliminary_object;	use et_canvas_board_preliminary_object;
 
@@ -114,6 +114,26 @@ package body et_canvas_board_devices is
 
 
 
+	procedure show_selected_object (
+		object		: in type_object)
+	is 
+		praeamble_electric     : constant string := "selected device: ";
+		praeamble_non_electric : constant string := "selected non-electrical device: ";
+	begin
+		case object.cat is
+			when CAT_ELECTRICAL_DEVICE =>
+				set_status (praeamble_electric & to_string (object.electrical_device.cursor)
+					& ". " & status_next_object_clarification);
+
+			when CAT_NON_ELECTRICAL_DEVICE =>
+				set_status (praeamble_non_electric & to_string (object.non_electrical_device.cursor)
+					& ". " & status_next_object_clarification);
+
+			when CAT_VOID => null; -- CS
+		end case;
+	end show_selected_object;
+
+	
 	
 	
 	procedure clarify_electrical_device is
@@ -271,6 +291,187 @@ package body et_canvas_board_devices is
 
 
 
+
+
+	
+	procedure clarify_object is 
+
+		procedure do_it is
+			use pac_objects;
+			
+			-- Gather all proposed objects:
+			proposed_objects : constant pac_objects.list := 
+				get_objects (active_module, PROPOSED, log_threshold + 1);
+
+			proposed_object : pac_objects.cursor;
+
+			-- We start with the first object that is currently selected:
+			selected_object : type_object := 
+				get_first_object (active_module, SELECTED, log_threshold + 1);
+
+		begin
+			log (text => "proposed objects total " 
+				& natural'image (get_count (proposed_objects)),
+				level => log_threshold + 2);
+
+			
+			-- Locate the selected object among the proposed objects:
+			proposed_object := proposed_objects.find (selected_object);
+
+			-- Deselect the the proposed object:
+			modify_status (
+				module_cursor	=> active_module, 
+				operation		=> to_operation (CLEAR, SELECTED),
+				object_cursor	=> proposed_object, 
+				log_threshold	=> log_threshold + 1);
+
+			-- Advance to the next proposed object:
+			next (proposed_object);
+
+			-- If end of list reached, then proceed at 
+			-- the begin of the list:
+			if proposed_object = pac_objects.no_element then
+				proposed_object := proposed_objects.first;
+			end if;
+			
+			-- Select the proposed object:
+			modify_status (
+				module_cursor	=> active_module, 
+				operation		=> to_operation (SET, SELECTED),
+				object_cursor	=> proposed_object, 
+				log_threshold	=> log_threshold + 1);
+
+			-- Display the object in the status bar:
+			show_selected_object (element (proposed_object));
+		end do_it;
+		
+		
+	begin
+		log (text => "clarify_object", level => log_threshold + 1);
+
+		log_indentation_up;
+		
+		do_it;
+		
+		log_indentation_down;
+	end clarify_object;
+
+
+
+	
+
+	-- This procedure searches for the first selected object
+	-- and sets its status to "moving":
+	procedure set_first_selected_object_moving is
+		
+		procedure do_it is
+			-- Get the first selected object:
+			selected_object : constant type_object := 
+				get_first_object (active_module, SELECTED, log_threshold + 1);
+
+			-- Gather all selected objects:
+			objects : constant pac_objects.list :=
+				get_objects (active_module, SELECTED, log_threshold + 1);
+
+			c : pac_objects.cursor;
+		begin
+			-- Get a cursor to the candidate object
+			-- among all selected objects:
+			c := objects.find (selected_object);
+			
+			modify_status (active_module, c, to_operation (SET, MOVING), log_threshold + 1);
+		end do_it;
+		
+		
+	begin
+		log (text => "set_first_selected_object_moving ...", level => log_threshold);
+		log_indentation_up;
+		do_it;
+		log_indentation_down;
+	end set_first_selected_object_moving;
+
+
+	
+
+	
+
+	procedure find_objects (
+		point : in type_vector_model)
+	is 
+		use et_modes.board;
+		
+		-- The total number of objects that have
+		-- been proposed:
+		count_total : natural := 0;
+
+
+		-- This procedure searches for the first proposed
+		-- object and marks it as "selected":
+		procedure select_first_proposed is
+			object : type_object := get_first_object (
+						active_module, PROPOSED, log_threshold + 1);
+		begin
+			modify_status (
+				active_module, object, to_operation (SET, SELECTED), log_threshold + 1);
+
+			-- If only one object found, then show it in the status bar:
+			if count_total = 1 then
+				show_selected_object (object);
+			end if;
+		end select_first_proposed;
+
+		
+	begin
+		log (text => "locating non-electrical devices ...", level => log_threshold);
+		log_indentation_up;
+
+		
+		-- Propose electrical devices in the vicinity of the given point:
+		propose_electrical_devices (
+			module_cursor	=> active_module,
+			catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+			count			=> count_total,
+			log_threshold	=> log_threshold + 1);
+
+		-- Propose non-electrical devices in the vicinity of the given point:
+		propose_non_electrical_devices (
+			module_cursor	=> active_module,
+			catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+			count			=> count_total,
+			log_threshold	=> log_threshold + 1);
+
+
+		log (text => "proposed objects total" & natural'image (count_total),
+			 level => log_threshold + 1);
+
+		
+		-- Evaluate the number of objects found here:
+		case count_total is
+			when 0 =>
+				null; -- nothing to do
+				
+			when 1 =>
+				set_edit_process_running;
+				select_first_proposed;
+
+				if verb = VERB_MOVE then
+					set_first_selected_object_moving;
+				end if;
+				
+				reset_request_clarification;
+				
+			when others =>
+				--log (text => "many objects", level => log_threshold + 2);
+				set_request_clarification;
+				select_first_proposed;
+		end case;
+		
+		log_indentation_down;
+	end find_objects;
+
+
+
+	
 	
 	
 -- MOVE:
@@ -406,7 +607,7 @@ package body et_canvas_board_devices is
 
 		
 	begin
-		-- Initially the preliminary_non_electrical_device is not ready.
+		-- Initially the editing process is not running:
 		if not edit_process_running then
 
 			-- Set the tool being used:
@@ -441,6 +642,95 @@ package body et_canvas_board_devices is
 
 
 
+	
+
+	procedure move_device (
+		tool	: in type_tool;
+		point	: in type_vector_model)
+	is 
+		
+		-- Assigns the final position after the move to the selected object.
+		-- Resets variable preliminary_object:
+		procedure finalize is
+			use et_modes.board;
+			use et_undo_redo;
+			use et_commit;
+
+			object : constant type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+		begin
+			log (text => "finalizing move ...", level => log_threshold);
+			log_indentation_up;
+
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+				
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+				
+				move_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					destination		=> point,
+					log_threshold	=> log_threshold + 1);
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			
+			set_status (status_move_device);
+			
+			reset_proposed_objects (active_module, log_threshold + 1);
+
+			reset_editing_process; -- prepare for a new editing process
+		end finalize;
+
+
+		
+	begin
+		-- Initially the editing process is not running:
+		if not edit_process_running then
+
+			-- Set the tool being used:
+			object_tool := tool;
+			
+			if not clarification_pending then
+				-- Locate all devices in the vicinity of the given point:
+				find_objects (point);
+				-- NOTE: If many devices have been found, then
+				-- clarification is now pending.
+
+				-- If find_non_electrical_devices has found only one device
+				-- then the flag edit_process_running is set true.
+			else
+				-- Here the clarification procedure ends.
+				-- An object has been selected via procedure clarify_object.
+				-- By setting the status of the selected object
+				-- as "moving", the selected object
+				-- will be drawn according to the given point and 
+				-- the tool position.
+				set_first_selected_object_moving;
+
+				-- Furtheron, on the next call of this procedure
+				-- the selected object will be assigned its final position.
+				
+				set_edit_process_running;
+				reset_request_clarification;
+			end if;
+			
+		else
+			-- Finally move the selected device:
+			finalize;
+		end if;
+	end move_device;
+
+	
 	
 	
 	

@@ -1826,8 +1826,6 @@ package body et_board_ops.devices is
 	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		point_of_attack	: in type_vector_model;
-		-- coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is begin
