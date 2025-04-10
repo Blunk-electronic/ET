@@ -137,6 +137,8 @@ package et_board_ops.devices is
 
 	-- Moves a device in the board layout in x/y direction.
 	-- Leaves rotation and face (top/bottom) as it is.
+	-- Automatically detects whether the given device is
+	-- electrical or non-electrical:
 	procedure move_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
@@ -147,12 +149,35 @@ package et_board_ops.devices is
 	
 	-- Rotates a device in the board layout.
 	-- Leaves x/y and face (top/bottom) as it is.
+	-- Automatically detects whether the given device is
+	-- electrical or non-electrical:
 	procedure rotate_device (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
 		rotation		: in et_pcb_coordinates_2.type_rotation_model; -- 90 -- CS default rotation ?
 		log_threshold	: in type_log_level);
+
+
+
+	-- Flips a device in the board layout from top to bottom or vice versa.
+	-- Leaves x/y and rotation as it is.
+	-- Warns operator if device already on desired face of board.
+	-- Automatically detects whether the given device is
+	-- electrical or non-electrical:
+	procedure flip_device (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC45
+		face			: in type_face; -- top/bottom
+		log_threshold	: in type_log_level);
+
+
+	-- CS
+	--procedure flip_device (
+		--module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		--device_cursor	: in pac_devices_sch.cursor; -- IC45
+		--face			: in type_face; -- top/bottom
+		--log_threshold	: in type_log_level);
 
 	
 --------------------------------------------------------------------------
@@ -265,27 +290,6 @@ package et_board_ops.devices is
 		log_threshold		: in type_log_level);
 
 
-
-	
-	-- Flips a device in the board layout from top to bottom or vice versa.
-	-- Leaves x/y and rotation as it is.
-	-- Warns operator if device already on desired face of board.
-	-- Determines whether the given device is electrical or non-electrical
-	-- by its own:
-	procedure flip_device (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_device_name; -- IC45
-		face			: in type_face; -- top/bottom
-		log_threshold	: in type_log_level);
-
-
-	-- CS
-	--procedure flip_device (
-		--module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		--device_cursor	: in pac_devices_sch.cursor; -- IC45
-		--face			: in type_face; -- top/bottom
-		--log_threshold	: in type_log_level);
-
 	
 ------------------------------------------------------------------------
 
@@ -360,18 +364,6 @@ package et_board_ops.devices is
 		operation		: in type_status_operation;
 		log_threshold	: in type_log_level);
 
-	
-
--- MOVE:
-	
-	procedure move_object (
-		module_cursor	: in pac_generic_modules.cursor;
-		object			: in type_object;
-		point_of_attack	: in type_vector_model;
-		-- coordinates		: in type_coordinates; -- relative/absolute
-		destination		: in type_vector_model;
-		log_threshold	: in type_log_level);
-
 
 	-- This is a collective procedure that resets
 	-- the proposed-flag and the selected-flag 
@@ -381,12 +373,29 @@ package et_board_ops.devices is
 		log_threshold	: in type_log_level);
 
 	
+
+-- MOVE, DELETE, FLIP:
+	
+	procedure move_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		point_of_attack	: in type_vector_model;
+		-- coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+	
 	
 	procedure delete_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level);
 
+
+	procedure flip_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		face			: in type_face; -- top/bottom
+		log_threshold	: in type_log_level);
 	
 	
 
