@@ -36,6 +36,8 @@
 --   history of changes:
 --
 
+with ada.text_io;				use ada.text_io;
+
 with et_conductor_segment.boards;
 with et_fill_zones.boards;
 with et_vias;
@@ -545,6 +547,161 @@ package body et_nets is
 			next (c);
 		end loop;
 	end iterate;
+
+
+
+
+
+	function get_first_strand (
+		net_cursor	: in pac_nets.cursor)
+		return pac_strands.cursor
+	is
+		use pac_nets;
+		strand_cursor : pac_strands.cursor; -- to be returned
+
+		strand_position : et_coordinates_2.type_position := greatest_position;
+		
+		procedure query_strands (
+			net_name	: in pac_net_name.bounded_string;
+			net			: in type_net)
+		is
+			use pac_strands;
+
+			procedure query_strand (c : in pac_strands.cursor) is begin
+				if element (c).position < strand_position then
+					strand_position := element (c).position;
+					strand_cursor := c;
+				end if;
+			end query_strand;
+			
+		begin			
+			iterate (net.strands, query_strand'access);
+		end query_strands;
+			
+	begin -- get_first_strand
+		query_element (
+			position	=> net_cursor,
+			process		=> query_strands'access);
+	
+		return strand_cursor;
+	end get_first_strand;
+
+
+
+
+	
+
+	function get_first_strand_on_sheet (
+		sheet		: in type_sheet;
+		net_cursor	: in pac_nets.cursor)
+		return pac_strands.cursor
+	is
+		use pac_nets;
+		strand_cursor : pac_strands.cursor; -- to be returned
+
+		strand_position : et_coordinates_2.type_position := greatest_position;
+		
+		procedure query_strands (
+			net_name	: in pac_net_name.bounded_string;
+			net			: in type_net)
+		is
+			use pac_strands;
+
+			c : pac_strands.cursor := net.strands.first;
+		begin			
+			while c /= pac_strands.no_element loop
+
+				-- Probe strands on the given sheet only:
+				if get_sheet (element (c).position) = sheet then
+
+					if element (c).position < strand_position then
+						strand_position := element (c).position;
+						strand_cursor := c;
+					end if;
+
+				end if;
+				
+				next (c); -- advance to next strand
+			end loop;
+		end query_strands;
+
+	begin
+		query_element (
+			position	=> net_cursor,
+			process		=> query_strands'access);
+
+		return strand_cursor;
+	end get_first_strand_on_sheet;
+	
+
+
+
+
+
+	
+	function to_label_rotation (direction : in type_stub_direction) 
+		return type_rotation_model is
+	begin
+		case direction is
+			when RIGHT	=> return zero_rotation;
+			when LEFT	=> return 180.0;
+			when UP		=> return 90.0;
+			when DOWN	=> return -90.0;
+		end case;
+	end to_label_rotation;
+
+
+	
+	
+	function stub_direction (
+		segment	: in pac_net_segments.cursor;
+		point	: in type_vector_model)
+		return type_stub 
+	is
+		use pac_net_segments;
+
+		is_stub : boolean := true;
+		direction : type_stub_direction;
+		orientation : constant type_net_segment_orientation := segment_orientation (segment);
+	begin
+		case orientation is
+			when HORIZONTAL =>
+				if get_x (point) >= get_x (element (segment).start_point) and
+					get_x (point) >= get_x (element (segment).end_point) then
+					direction := RIGHT;
+				end if;
+
+				if get_x (point) <= get_x (element (segment).start_point) and
+					get_x (point) <= get_x (element (segment).end_point) then
+					direction := LEFT;
+				end if;
+				
+			when VERTICAL =>
+				if get_y (point) >= get_y (element (segment).start_point) and
+					get_y (point) >= get_y (element (segment).end_point) then
+					direction := UP;
+				end if;
+
+				if get_y (point) <= get_y (element (segment).start_point) and
+					get_y (point) <= get_y (element (segment).end_point) then
+					direction := DOWN;
+				end if;
+				
+			when SLOPING =>
+				is_stub := false;
+		end case;
+
+		if is_stub then
+			return (is_stub => TRUE, direction => direction);
+		else
+			return (is_stub => FALSE);
+		end if;
+
+	end stub_direction;
+
+
+
+
 
 
 	

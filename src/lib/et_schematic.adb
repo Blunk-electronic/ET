@@ -49,11 +49,6 @@ with et_device_model;
 
 
 package body et_schematic is
-	
-
-	
-
-
 
 	
 	procedure set_selected (
@@ -184,220 +179,6 @@ package body et_schematic is
 
 	
 
-	
-	function get_first_strand_on_sheet (
-		sheet		: in type_sheet;
-		net_cursor	: in pac_nets.cursor)
-		return pac_strands.cursor
-	is
-		use pac_nets;
-		strand_cursor : pac_strands.cursor; -- to be returned
-
-		strand_position : et_coordinates_2.type_position := greatest_position;
-		
-		procedure query_strands (
-			net_name	: in pac_net_name.bounded_string;
-			net			: in type_net)
-		is
-			use pac_strands;
-
-			c : pac_strands.cursor := net.strands.first;
-		begin			
-			while c /= pac_strands.no_element loop
-
-				-- Probe strands on the given sheet only:
-				if get_sheet (element (c).position) = sheet then
-
-					if element (c).position < strand_position then
-						strand_position := element (c).position;
-						strand_cursor := c;
-					end if;
-
-				end if;
-				
-				next (c); -- advance to next strand
-			end loop;
-		end query_strands;
-
-	begin
-		query_element (
-			position	=> net_cursor,
-			process		=> query_strands'access);
-
-		return strand_cursor;
-	end get_first_strand_on_sheet;
-
-
-
-	
-	function get_first_strand (
-		net_cursor	: in pac_nets.cursor)
-		return pac_strands.cursor
-	is
-		use pac_nets;
-		strand_cursor : pac_strands.cursor; -- to be returned
-
-		strand_position : et_coordinates_2.type_position := greatest_position;
-		
-		procedure query_strands (
-			net_name	: in pac_net_name.bounded_string;
-			net			: in type_net)
-		is
-			use pac_strands;
-
-			procedure query_strand (c : in pac_strands.cursor) is begin
-				if element (c).position < strand_position then
-					strand_position := element (c).position;
-					strand_cursor := c;
-				end if;
-			end query_strand;
-			
-		begin			
-			iterate (net.strands, query_strand'access);
-		end query_strands;
-			
-	begin -- get_first_strand
-		query_element (
-			position	=> net_cursor,
-			process		=> query_strands'access);
-	
-		return strand_cursor;
-	end get_first_strand;
-
-
-
-	
-	function to_label_rotation (direction : in type_stub_direction) 
-		return type_rotation_model is
-	begin
-		case direction is
-			when RIGHT	=> return zero_rotation;
-			when LEFT	=> return 180.0;
-			when UP		=> return 90.0;
-			when DOWN	=> return -90.0;
-		end case;
-	end to_label_rotation;
-
-
-	
-	
-	function stub_direction (
-		segment	: in pac_net_segments.cursor;
-		point	: in type_vector_model)
-		return type_stub 
-	is
-		use pac_net_segments;
-
-		is_stub : boolean := true;
-		direction : type_stub_direction;
-		orientation : constant type_net_segment_orientation := segment_orientation (segment);
-	begin
-		case orientation is
-			when HORIZONTAL =>
-				if get_x (point) >= get_x (element (segment).start_point) and
-					get_x (point) >= get_x (element (segment).end_point) then
-					direction := RIGHT;
-				end if;
-
-				if get_x (point) <= get_x (element (segment).start_point) and
-					get_x (point) <= get_x (element (segment).end_point) then
-					direction := LEFT;
-				end if;
-				
-			when VERTICAL =>
-				if get_y (point) >= get_y (element (segment).start_point) and
-					get_y (point) >= get_y (element (segment).end_point) then
-					direction := UP;
-				end if;
-
-				if get_y (point) <= get_y (element (segment).start_point) and
-					get_y (point) <= get_y (element (segment).end_point) then
-					direction := DOWN;
-				end if;
-				
-			when SLOPING =>
-				is_stub := false;
-		end case;
-
-		if is_stub then
-			return (is_stub => TRUE, direction => direction);
-		else
-			return (is_stub => FALSE);
-		end if;
-
-	end stub_direction;
-
-
-	
-	
-	
-	function get_ports (
-		net		: in pac_nets.cursor;
-		variant	: in pac_assembly_variants.cursor := pac_assembly_variants.no_element)
-		return type_ports 
-	is
-		result : type_ports; -- to be returned
-
-		use pac_nets;
-		use pac_strands;
-		use pac_net_segments;
-
-		procedure query_segments (segment_cursor : in pac_net_segments.cursor) is
-			use pac_device_ports;
-
-			use et_netlists;
-			use pac_netchanger_ports;			
-			use pac_submodule_ports;
-			
-			-- Inserts the device/port in result.devices. Skips the device/port
-			-- according to the given assembly variant.
-			procedure query_devices (device_cursor : in pac_device_ports.cursor) is begin
-				if et_assembly_variants.is_mounted (
-					device		=> element (device_cursor).device_name, -- IC4, R101
-					variant		=> variant) 
-				then
-					--put_line (to_string (element (device_cursor)));
-					
-					insert (
-						container	=> result.devices,
-						new_item	=> element (device_cursor));
-				end if;
-
-				exception
-					when event: others =>
-						raise constraint_error with to_string (element (device_cursor))
-						--put_line (to_string (element (device_cursor))
-						& " already in set !";
-						
-			end query_devices;
-
-			
-		begin
-			-- Collect device ports of segment according to given assembly variant.
-			iterate (element (segment_cursor).ports.devices, query_devices'access);
-
-			-- Ports of netchangers and submodules go into the result right away
-			-- because they are not affected by any assembly variants.
-			union (result.netchangers, element (segment_cursor).ports.netchangers);
-			union (result.submodules, element (segment_cursor).ports.submodules);
-		end query_segments;
-
-		
-		procedure query_strands (strand_cursor : in pac_strands.cursor) is begin
-			iterate (element (strand_cursor).segments, query_segments'access);
-		end query_strands;
-
-		
-	begin
-		--put_line ("net " & to_string (key (net)));		
-		iterate (element (net).strands, query_strands'access);
-		return result;
-	end get_ports;
-
-
-
-
-
 
 	function is_real (
 		device : in pac_devices_sch.cursor)
@@ -481,6 +262,76 @@ package body et_schematic is
 
 
 
+	
+
+	function get_ports (
+		net		: in pac_nets.cursor;
+		variant	: in pac_assembly_variants.cursor := pac_assembly_variants.no_element)
+		return type_ports 
+	is
+		result : type_ports; -- to be returned
+
+		use pac_nets;
+		use pac_strands;
+		use pac_net_segments;
+
+		
+		procedure query_segments (segment_cursor : in pac_net_segments.cursor) is
+			use pac_device_ports;
+
+			use et_netlists;
+			use pac_netchanger_ports;			
+			use pac_submodule_ports;
+			
+			-- Inserts the device/port in result.devices. Skips the device/port
+			-- according to the given assembly variant.
+			procedure query_devices (device_cursor : in pac_device_ports.cursor) is begin
+				if et_assembly_variants.is_mounted (
+					device		=> element (device_cursor).device_name, -- IC4, R101
+					variant		=> variant) 
+				then
+					--put_line (to_string (element (device_cursor)));
+					
+					insert (
+						container	=> result.devices,
+						new_item	=> element (device_cursor));
+				end if;
+
+				exception
+					when event: others =>
+						raise constraint_error with to_string (element (device_cursor))
+						--put_line (to_string (element (device_cursor))
+						& " already in set !";
+						
+			end query_devices;
+
+			
+		begin
+			-- Collect device ports of segment according to given assembly variant.
+			iterate (element (segment_cursor).ports.devices, query_devices'access);
+
+			-- Ports of netchangers and submodules go into the result right away
+			-- because they are not affected by any assembly variants.
+			union (result.netchangers, element (segment_cursor).ports.netchangers);
+			union (result.submodules, element (segment_cursor).ports.submodules);
+		end query_segments;
+
+		
+		procedure query_strands (strand_cursor : in pac_strands.cursor) is begin
+			iterate (element (strand_cursor).segments, query_segments'access);
+		end query_strands;
+
+		
+	begin
+		--put_line ("net " & to_string (key (net)));		
+		iterate (element (net).strands, query_strands'access);
+		return result;
+	end get_ports;
+
+
+
+	
+
 	function get_device_model (
 		device : in pac_devices_sch.cursor)
 		return pac_devices_lib.cursor
@@ -493,6 +344,7 @@ package body et_schematic is
 		model_file := pac_devices_sch.element (device).model;
 		return locate_device (model_file);
 	end get_device_model;
+
 
 
 	
@@ -520,6 +372,7 @@ package body et_schematic is
 		
 		return get_package_model (device_cursor_lib, device_variant);
 	end get_package_model;
+
 
 
 	
@@ -739,10 +592,10 @@ package body et_schematic is
 		raise constraint_error;
 	end device_name_in_use;
 
-	
-
-	
+		
 end et_schematic;
+
+
 -- Soli Deo Gloria
 
 -- For God so loved the world that he gave 

@@ -36,11 +36,7 @@
 --   history of changes:
 --
 
-with ada.text_io;				use ada.text_io;
-with ada.characters.handling;	use ada.characters.handling;
-with ada.strings; 				use ada.strings;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.fixed; 		use ada.strings.fixed;
+
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
@@ -51,10 +47,8 @@ with et_module_instance;		use et_module_instance;
 with et_coordinates_2;			use et_coordinates_2;
 with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
-with et_symbols;
 with et_device_name;			use et_device_name;
 with et_unit_name;				use et_unit_name;
-with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_net_names;				use et_net_names;
 with et_net_labels;				use et_net_labels;
@@ -320,6 +314,66 @@ package et_nets is
 		nets	: in pac_nets.map;
 		process	: not null access procedure (position : in pac_nets.cursor);
 		proceed	: not null access boolean);
+
+
+
+
+
+	-- Returns a cursor to the strand that is
+	-- on the lowest sheet and lowest x/y position:
+	function get_first_strand (
+		net_cursor	: in pac_nets.cursor)
+		return pac_strands.cursor;
+
+	
+
+	-- Returns a cursor to the strand that is
+	-- on the given sheet and has the lowest x/y position.
+	-- Returns no_element if the given sheet does not
+	-- contain a strand of the given net.
+	function get_first_strand_on_sheet (
+		sheet		: in type_sheet;
+		net_cursor	: in pac_nets.cursor)
+		return pac_strands.cursor;
+
+
+
+
+
+	-- A stub of a net is modelled this way:
+	type type_stub_direction is (
+		LEFT,	-- dead end points to the left
+		RIGHT,	-- dead end points to the right
+		UP,		-- dead end points up
+		DOWN);	-- dead end points down
+
+	
+	type type_stub (is_stub : boolean) is record
+		case is_stub is
+			when TRUE => direction : type_stub_direction;
+			when FALSE => null;
+		end case;
+	end record;
+
+	
+	-- Maps from stub direction to rotation:
+	function to_label_rotation (direction : in type_stub_direction)
+		return type_rotation_model;
+
+	
+	-- Detects whether the given segment is a stub and if so
+	-- detects the direction of the stub relative to the given point.
+	-- If the segment is neither horizontal or vertical then it is NOT a stub.
+	-- Examples: 
+	-- - If point is right of a horizontal segment then then it is a stub that points to the right.
+	-- - If point is above of a vertical segment then then it is a stub that points up.
+	function stub_direction (
+		segment	: in pac_net_segments.cursor;
+		point	: in type_vector_model)
+		return type_stub;
+		
+
+
 
 
 

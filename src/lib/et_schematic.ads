@@ -42,8 +42,6 @@
 --			- the cons: ordering subprograms required
 --		3. device accessories
 
-
-
 with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers;            use ada.containers;
 with ada.containers.doubly_linked_lists;
@@ -58,9 +56,7 @@ with et_assembly_variants;		use et_assembly_variants;
 with et_assembly_variant_name;	use et_assembly_variant_name;
 
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
-with et_device_placeholders;	--use et_device_placeholders;
 with et_device_placeholders.packages;
-with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;
@@ -112,9 +108,6 @@ package et_schematic is
 	end record;
 		
 	package pac_texts is new doubly_linked_lists (type_text);
-
-
-
 
 
 	
@@ -176,6 +169,13 @@ package et_schematic is
 
 
 
+	-- The devices of a module are collected in a map.
+	-- CS: This must be a hashed map:
+ 	package pac_devices_sch is new indefinite_ordered_maps (
+		key_type		=> type_device_name, -- something like "IC43"
+ 		element_type	=> type_device_sch);
+
+	use pac_devices_sch;
 	
 
 -- DEVICE STATUS OPERATIONS:
@@ -243,83 +243,6 @@ package et_schematic is
 	procedure reset_status (
 		device : in out type_device_sch);
 
-	
-	
-	-- Returns a cursor to the strand that is
-	-- on the given sheet and has the lowest x/y position.
-	-- Returns no_element if the given sheet does not
-	-- contain a strand of the given net.
-	function get_first_strand_on_sheet (
-		sheet		: in type_sheet;
-		net_cursor	: in pac_nets.cursor)
-		return pac_strands.cursor;
-
-	
-	-- Returns a cursor to the strand that is
-	-- on the lowest sheet and lowest x/y position:
-	function get_first_strand (
-		net_cursor	: in pac_nets.cursor)
-		return pac_strands.cursor;
-	
-
-	
-	-- A stub of a net is modelled this way:
-	type type_stub_direction is (
-		LEFT,	-- dead end points to the left
-		RIGHT,	-- dead end points to the right
-		UP,		-- dead end points up
-		DOWN);	-- dead end points down
-
-	
-	type type_stub (is_stub : boolean) is record
-		case is_stub is
-			when TRUE => direction : type_stub_direction;
-			when FALSE => null;
-		end case;
-	end record;
-
-	
-	-- Maps from stub direction to rotation:
-	function to_label_rotation (direction : in type_stub_direction)
-		return type_rotation_model;
-
-	
-	-- Detects whether the given segment is a stub and if so
-	-- detects the direction of the stub relative to the given point.
-	-- If the segment is neither horizontal or vertical then it is NOT a stub.
-	-- Examples: 
-	-- - If point is right of a horizontal segment then then it is a stub that points to the right.
-	-- - If point is above of a vertical segment then then it is a stub that points up.
-	function stub_direction (
-		segment	: in pac_net_segments.cursor;
-		point	: in type_vector_model)
-		return type_stub;
-		
-
-
-	
-	
-	-- Returns the ports of devices, submodules and netchangers in
-	-- the given net. The given assembly variant determines whether certain
-	-- devices should be excluded (because they may not be present in a particular
-	-- assembly variant).
-	-- NOTE: If no variant is given, then the default variant is assumend
-	-- and ALL devices are returned.
-	function get_ports (
-		net		: in pac_nets.cursor;
-		variant	: in pac_assembly_variants.cursor := pac_assembly_variants.no_element)
-		return type_ports;
-
-
-	
-
-	-- The devices of a module are collected in a map.
-	-- CS: This must be a hashed map:
- 	package pac_devices_sch is new indefinite_ordered_maps (
-		key_type		=> type_device_name, -- something like "IC43"
- 		element_type	=> type_device_sch);
-
-	use pac_devices_sch;
 
 
 
@@ -355,6 +278,7 @@ package et_schematic is
 
 	
 
+	
 -- DEVICE QUERY OPERATIONS:
 	
 	
@@ -365,6 +289,21 @@ package et_schematic is
 		return string;
 		
 
+
+	
+	-- Returns the ports of devices, submodules and netchangers in
+	-- the given net. The given assembly variant determines whether certain
+	-- devices should be excluded (because they may not be present in a particular
+	-- assembly variant).
+	-- NOTE: If no variant is given, then the default variant is assumend
+	-- and ALL devices are returned.
+	function get_ports (
+		net		: in pac_nets.cursor;
+		variant	: in pac_assembly_variants.cursor := pac_assembly_variants.no_element)
+		return type_ports;
+
+
+	
 
 	-- Maps from schematic device to device model (in library):
 	function get_device_model (
@@ -493,9 +432,7 @@ package et_schematic is
 	procedure device_name_in_use (
 		name	: in type_device_name;	-- IC1, MH1, ...
 		by_cat	: in type_device_category);	-- electrical/non-electrical
-
 	
-
 		
 end et_schematic;
 
