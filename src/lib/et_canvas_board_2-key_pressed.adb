@@ -364,9 +364,9 @@ is
 				noun := NOUN_DEVICE;
 				set_status (et_canvas_board_devices.status_move_device);
 
-			when key_noun_non_electrical_device =>
-				noun := NOUN_NON_ELECTRICAL_DEVICE;
-				set_status (et_canvas_board_devices.status_move_device);
+			-- when key_noun_non_electrical_device =>
+			-- 	noun := NOUN_NON_ELECTRICAL_DEVICE;
+			-- 	set_status (et_canvas_board_devices.status_move_device);
 
 			when key_noun_outline =>
 				noun := NOUN_OUTLINE;
@@ -410,10 +410,10 @@ is
 						et_canvas_board_conductors.move_object (KEYBOARD, point);
 
 					when NOUN_DEVICE =>		
-						et_canvas_board_devices.move_electrical_device (KEYBOARD, point);
+						et_canvas_board_devices.move_object (KEYBOARD, point);
 						
-					when NOUN_NON_ELECTRICAL_DEVICE =>
-						et_canvas_board_devices.move_non_electrical_device (KEYBOARD, point);
+					-- when NOUN_NON_ELECTRICAL_DEVICE =>
+					-- 	et_canvas_board_devices.move_non_electrical_device (KEYBOARD, point);
 
 					when NOUN_OUTLINE =>
 						et_canvas_board_outline.move_object (KEYBOARD, point);
@@ -483,13 +483,13 @@ is
 						
 					when NOUN_DEVICE =>
 						if clarification_pending then
-							et_canvas_board_devices.clarify_electrical_device;
+							et_canvas_board_devices.clarify_object;
 						end if;
 
-					when NOUN_NON_ELECTRICAL_DEVICE =>
-						if clarification_pending then
-							et_canvas_board_devices.clarify_non_electrical_device;
-						end if;
+					-- when NOUN_NON_ELECTRICAL_DEVICE =>
+					-- 	if clarification_pending then
+					-- 		et_canvas_board_devices.clarify_non_electrical_device;
+					-- 	end if;
 
 					when NOUN_OUTLINE =>
 						if clarification_pending then

@@ -376,13 +376,13 @@ package body et_board_ops.devices is
 			while device_cursor /= pac_devices_sch.no_element loop
 				case flag is
 					when PROPOSED =>
-						if is_proposed (device_cursor, true) then
+						if is_proposed (device_cursor) then
 							result := device_cursor;
 							exit; -- no further probing required
 						end if;
 
 					when SELECTED =>
-						if is_selected (device_cursor, true) then
+						if is_selected (device_cursor) then
 							result := device_cursor;
 							exit; -- no further probing required
 						end if;
@@ -433,13 +433,13 @@ package body et_board_ops.devices is
 			while device_cursor /= pac_devices_sch.no_element loop
 				case flag is
 					when PROPOSED =>
-						if is_proposed (device_cursor, true) then
+						if is_proposed (device_cursor) then
 							result.cursor := device_cursor;
 							exit; -- no further probing required
 						end if;
 
 					when SELECTED =>
-						if is_selected (device_cursor, true) then
+						if is_selected (device_cursor) then
 							result.cursor := device_cursor;
 							exit; -- no further probing required
 						end if;
@@ -500,7 +500,7 @@ package body et_board_ops.devices is
 				-- Exception is raised in case we get stuck here:
 				safety_counter := safety_counter + 1;
 				
-				if is_proposed (dc, true) then
+				if is_proposed (dc) then
 					device_cursor := dc;
 					exit; -- no further probing required
 				end if;

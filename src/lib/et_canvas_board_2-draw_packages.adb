@@ -1921,25 +1921,14 @@ is
 		begin
 			-- If the device candidate is selected, then we will
 			-- draw it highlighted:
-			if is_selected (device_cursor, true) then
+			if is_selected (device_cursor) then
 				brightness := BRIGHT;
 
-				case verb is
-					when VERB_MOVE =>
-
-						-- If a move operation is in progress, then the mouse
-						-- or cursor position overwrites the device position:
-						if edit_process_running then
-							draw_being_moved;
-						else
-							draw_fixed;						
-						end if;
-
-					-- Other operations leave the device position as it is:
-					when others =>
-						draw_fixed;
-				
-				end case;
+				if is_moving (device_cursor) then
+					draw_being_moved;
+				else
+					draw_fixed;						
+				end if;
 
 			else
 				draw_fixed;

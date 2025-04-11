@@ -175,37 +175,64 @@ package et_schematic is
 
 
 
+
+	
+
+-- DEVICE STATUS OPERATIONS:
+	
+	-- NOTE: Operations regarding the status
+	-- apply to the package of the device (in the board domain).
+	-- Status opertions for individual units (in the schematic)
+	-- are specified in the package et_units.
+	-- Regarding set and clear operations: If the device
+	-- is not real (APPEARANCE_PCB) then the operation has no effect.
+	-- Regarding query operations like is_selected or is_moving: If
+	-- the device is not real (APPEARANCE_PCB) then the return is
+	-- always false.
+	
 	procedure set_selected (
-		device		: in out type_device_sch);
+		device : in out type_device_sch);
 	
 
 	procedure clear_selected (
-		device		: in out type_device_sch);
+		device : in out type_device_sch);
 	
 
 	function is_selected (
-		device		: in type_device_sch)
+		device : in type_device_sch)
 		return boolean;
 	
 
 	
 	procedure set_proposed (
-		device		: in out type_device_sch);
+		device : in out type_device_sch);
 	
 
 	procedure clear_proposed (
-		device		: in out type_device_sch);
+		device : in out type_device_sch);
 
 	
 	function is_proposed (
-		device		: in type_device_sch)
+		device : in type_device_sch)
 		return boolean;
 
 
-	-- NOTE: There is no set_moving or clear_moving for the
-	-- whole device. Instead the units of a device can be
-	-- moved.
 
+	
+	procedure set_moving (
+		device : in out type_device_sch);
+	
+
+	procedure clear_moving (
+		device : in out type_device_sch);
+
+	
+	function is_moving (
+		device : in type_device_sch)
+		return boolean;
+
+
+	
 	
 	procedure modify_status (
 		device		: in out type_device_sch;
@@ -214,7 +241,7 @@ package et_schematic is
 
 	
 	procedure reset_status (
-		device		: in out type_device_sch);
+		device : in out type_device_sch);
 
 	
 	
@@ -295,27 +322,27 @@ package et_schematic is
 	use pac_devices_sch;
 
 
-	-- Returns true if the given device is proposed.
-	-- If real is true, then the result is true if 
-	-- the device is real AND if it is proposed.
-	-- If real is false, then the result is true
-	-- if the device is proposed (regardless whether
-	-- it is real or not): 
-	function is_proposed (
-		device : in pac_devices_sch.cursor;
-		real   : in boolean)					 
+
+	-- Returns true if given device is real (means if it has a physical 
+	-- counterpart in the PCB layout). For a resistor it returns true.
+	-- For a GND symbol it returns false:
+	function is_real (
+		device : in pac_devices_sch.cursor) 
 		return boolean;
 	
 
-	-- Returns true if the given device is selected.
-	-- If real is true, then the result is true if 
-	-- the device is real AND if it is selected.
-	-- If real is false, then the result is true
-	-- if the device is selected (regardless whether
-	-- it is real or not): 
+	function is_proposed (
+		device : in pac_devices_sch.cursor)
+		return boolean;
+	
+
 	function is_selected (
-		device : in pac_devices_sch.cursor;
-		real   : in boolean)
+		device : in pac_devices_sch.cursor)
+		return boolean;
+
+	
+	function is_moving (
+		device : in pac_devices_sch.cursor)
 		return boolean;
 
 	
@@ -359,14 +386,6 @@ package et_schematic is
 	function get_package_model (
 		device : in pac_devices_sch.cursor)
 		return pac_package_models.cursor;
-
-	
-	-- Returns true if given device is real (means if it has a physical 
-	-- counterpart in the PCB layout). For a resistor it returns true.
-	-- For a GND symbol it returns false:
-	function is_real (
-		device : in pac_devices_sch.cursor) 
-		return boolean;
 
 
 	-- Returns true if the given device has a real package.

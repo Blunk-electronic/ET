@@ -51,27 +51,39 @@ with et_device_model;
 package body et_schematic is
 	
 
+	
 
+
+
+	
 	procedure set_selected (
-		device		: in out type_device_sch)
+		device : in out type_device_sch)
 	is begin
-		set_selected (device.status);
+		if device.appearance = APPEARANCE_PCB then
+			set_selected (device.status);
+		end if;
 	end;
 
 	
 	procedure clear_selected (
-		device		: in out type_device_sch)
+		device : in out type_device_sch)
 	is begin
-		clear_selected (device.status);
+		if device.appearance = APPEARANCE_PCB then
+			clear_selected (device.status);
+		end if;
 	end;
 
 
 	function is_selected (
-		device		: in type_device_sch)
+		device : in type_device_sch)
 		return boolean
 	is begin
-		if is_selected (device.status) then
-			return true;
+		if device.appearance = APPEARANCE_PCB then
+			if is_selected (device.status) then
+				return true;
+			else
+				return false;
+			end if;
 		else
 			return false;
 		end if;
@@ -80,30 +92,78 @@ package body et_schematic is
 
 	
 	procedure set_proposed (
-		device		: in out type_device_sch)
+		device : in out type_device_sch)
 	is begin
-		set_proposed (device.status);
+		if device.appearance = APPEARANCE_PCB then
+			set_proposed (device.status);
+		end if;
 	end;
 	
 
 	procedure clear_proposed (
-		device		: in out type_device_sch)
+		device : in out type_device_sch)
 	is begin
-		clear_proposed (device.status);
+		if device.appearance = APPEARANCE_PCB then
+			clear_proposed (device.status);
+		end if;
 	end;
 
 	
 	
 	function is_proposed (
-		device		: in type_device_sch)
+		device : in type_device_sch)
 		return boolean
 	is begin
-		if is_proposed (device.status) then
-			return true;
+		if device.appearance = APPEARANCE_PCB then
+			if is_proposed (device.status) then
+				return true;
+			else
+				return false;
+			end if;
 		else
 			return false;
 		end if;
 	end;
+
+
+
+	procedure set_moving (
+		device : in out type_device_sch)
+	is begin
+		if device.appearance = APPEARANCE_PCB then
+			set_moving (device.status);
+		end if;
+	end;
+	
+
+	procedure clear_moving (
+		device : in out type_device_sch)
+	is begin
+		if device.appearance = APPEARANCE_PCB then
+			clear_moving (device.status);
+		end if;
+	end;
+
+	
+	
+	function is_moving (
+		device : in type_device_sch)
+		return boolean
+	is begin
+		if device.appearance = APPEARANCE_PCB then
+			if is_moving (device.status) then
+				return true;
+			else
+				return false;
+			end if;
+		else
+			return false;
+		end if;
+	end;
+
+
+
+
 
 	
 
@@ -117,10 +177,9 @@ package body et_schematic is
 	
 
 	procedure reset_status (
-		device		: in out type_device_sch)
+		device : in out type_device_sch)
 	is begin
-		clear_proposed (device);
-		clear_selected (device);
+		reset_status (device.status);
 	end;
 
 	
@@ -271,6 +330,7 @@ package body et_schematic is
 
 	
 	
+	
 	function get_ports (
 		net		: in pac_nets.cursor;
 		variant	: in pac_assembly_variants.cursor := pac_assembly_variants.no_element)
@@ -339,60 +399,58 @@ package body et_schematic is
 
 
 
+	function is_real (
+		device : in pac_devices_sch.cursor)
+		return boolean 
+	is 
+		use pac_devices_sch;
+	begin
+		case element (device).appearance is
+			when APPEARANCE_PCB		=> return true;
+			when APPEARANCE_VIRTUAL	=> return false;
+		end case;
+	end is_real;
+	
+
+
 	function is_proposed (
-		device : in pac_devices_sch.cursor;
-		real   : in boolean)
+		device : in pac_devices_sch.cursor)
 		return boolean
 	is begin
-		case real is
-			when false =>
-				if is_proposed (element (device)) then
-					return true;
-				else
-					return false;
-				end if;
-
-			when true =>
-				if is_real (device) then
-					if is_proposed (element (device)) then
-						return true;
-					else
-						return false;
-					end if;
-				else
-					return false;
-				end if;
-		end case;
+		if is_proposed (element (device)) then
+			return true;
+		else
+			return false;
+		end if;
 	end is_proposed;
 	
 
 	
 
 	function is_selected (
-		device : in pac_devices_sch.cursor;
-		real   : in boolean)
+		device : in pac_devices_sch.cursor)
 		return boolean
 	is begin
-		case real is
-			when false =>
-				if is_selected (element (device)) then
-					return true;
-				else
-					return false;
-				end if;
-
-			when true =>
-				if is_real (device) then
-					if is_selected (element (device)) then
-						return true;
-					else
-						return false;
-					end if;
-				else
-					return false;
-				end if;
-		end case;
+		if is_selected (element (device)) then
+			return true;
+		else
+			return false;
+		end if;
 	end is_selected;
+
+
+
+
+	function is_moving (
+		device : in pac_devices_sch.cursor)
+		return boolean
+	is begin
+		if is_moving (element (device)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_moving;
 
 	
 
@@ -476,20 +534,6 @@ package body et_schematic is
 		return get_package_model (package_model);
 	end get_package_model;
 
-
-	
-	
-	function is_real (
-		device : in pac_devices_sch.cursor)
-		return boolean 
-	is 
-		use pac_devices_sch;
-	begin
-		case element (device).appearance is
-			when APPEARANCE_PCB		=> return true;
-			when APPEARANCE_VIRTUAL	=> return false;
-		end case;
-	end is_real;
 
 
 
