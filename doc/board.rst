@@ -141,7 +141,7 @@ non-electrical devices (without a representation in the schematic).
 		move device FD1 absolute -14 24
 		move device MH1 relative 1 0
 
-	|VNS| m n
+	|VNS| m d
 
 
 	
