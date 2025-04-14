@@ -118,9 +118,10 @@ package et_pcb_coordinates_2 is
 	package pac_grid is new pac_geometry_2.grid;
 	package pac_path_and_bend is new pac_geometry_2.path;
 	
+
 	
 	type type_package_position is new pac_geometry_2.type_position with private;
-
+	-- CS: Move into a separate package ! like et_package_position ?
 	
 
 	package_position_default : constant type_package_position;
@@ -152,6 +153,10 @@ package et_pcb_coordinates_2 is
 		return type_face;
 
 
+	procedure flip (
+		position : in out type_package_position);
+	
+	
 	-- Returns the location vector of the given
 	-- package position:
 	function get_place (

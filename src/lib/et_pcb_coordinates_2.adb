@@ -97,6 +97,16 @@ package body et_pcb_coordinates_2 is
 	end get_face;
 	
 
+	procedure flip (
+		position : in out type_package_position)
+	is begin
+		case get_face (position) is
+			when TOP => set_face (BOTTOM, position);
+			when BOTTOM => set_face (TOP, position);
+		end case;
+	end;
+
+	
 	function get_place (
 		position : in type_package_position)
 		return type_vector_model
