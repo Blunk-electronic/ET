@@ -120,6 +120,7 @@ package et_schematic is
 
 		-- The link to the device model like ../libraries/devices/transistor/pnp.dev
 		model	: pac_device_model_file.bounded_string;
+		-- CS use a cursor to the model instead ?
 
 		-- The units like PWR, A, B, ...
 		-- Virtual devices have only one unit (like the GND symbol).
@@ -146,7 +147,7 @@ package et_schematic is
 
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders for name, value and purpose.
-				-- The assembly side of a packages is by default TOP.
+				-- The assembly side of a package is by default TOP.
 				-- The flag "flipped" indicates whether the package has been flipped
 				-- in the layout drawing by the operator.
 				-- As a result of a flip operation, position.face changes from top to bottom
