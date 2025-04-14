@@ -308,6 +308,7 @@ package et_pcb is
 	-- This is NOT about accessories of the module !
 	-- These devices do NOT appear in the BOM !
 	-- We collect them in an indefinite ordered map.
+	-- CS: Move into a separate package !
 	
 	type type_device_non_electric is record
 		position			: et_pcb_coordinates_2.type_package_position; -- incl. rotation and face
@@ -323,7 +324,7 @@ package et_pcb is
 
 		status : type_object_status;
 	end record;
-
+	
 
 	
 	procedure set_proposed (
