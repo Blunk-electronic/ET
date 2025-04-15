@@ -62,10 +62,14 @@ with et_schematic;
 
 with et_drills;						use et_drills;
 
+with et_device_library;
+with et_device_model_names;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 
+with et_package_names;
 with et_packages;					use et_packages;
+with et_package_variant;
 with et_terminals;
 
 with et_pcb_contour;
@@ -326,6 +330,8 @@ is
 		end draw_silkscreen;
 
 
+
+		
 		
 	-- ASSEMBLY DOCUMENTATION
 		
@@ -2062,21 +2068,658 @@ is
 		module.devices_non_electric.iterate (query_device'access);
 	end query_non_electrical_devices;
 
+
+
+
+	
+
+	package_position_2 : type_package_position;
+	
+	brightness : type_brightness := NORMAL;
+	
+
+	
+	procedure draw_package_2 (
+		packge 		: in type_package_model; 
+		flipped		: in type_flipped)
+	is
+		-- This flag is set if the package is on the bottom side of the board.
+		-- In that case, EVERYTHING (except the origin
+		-- and text placeholders) must be mirrored along the Y-axis.
+		flip : boolean := false;
+		mirror : type_mirror := MIRROR_NO;
+		
+
+		
+		procedure draw_origin is 
+
+			procedure draw is begin
+				--put_line ("draw origin" & to_string (get_place (package_position));				
+				set_color_origin (brightness);
+				draw_origin ((get_place (package_position_2), 0.0));
+			end;
+
+		begin
+			if flip then
+				if device_origins_enabled (BOTTOM) then
+					draw;
+				end if;
+			else
+				if device_origins_enabled (TOP) then
+					draw;
+				end if;
+			end if;
+		end draw_origin;
+
+
+		
+
+		procedure draw_assy is
+			use et_assy_doc;
+			use pac_doc_lines;
+
+			procedure query_line (c : in pac_doc_lines.cursor) is
+				line : type_doc_line renames element (c);
+			begin
+				draw_line (
+					line		=> line,
+					pos			=> get_position (package_position_2),		  
+					width		=> line.width,
+					mirror		=> mirror,
+					do_stroke	=> true);
+			end query_line;
+						
+		begin
+			if flip then
+				if assy_doc_enabled (TOP) then
+					set_color_assy_doc (TOP, brightness);
+					packge.assy_doc.bottom.lines.iterate (query_line'access);
+				end if;
+
+				if assy_doc_enabled (BOTTOM) then
+					set_color_assy_doc (BOTTOM, brightness);
+					packge.assy_doc.top.lines.iterate (query_line'access);
+				end if;
+
+			else
+				if assy_doc_enabled (TOP) then
+					set_color_assy_doc (TOP, brightness);
+					packge.assy_doc.top.lines.iterate (query_line'access);
+				end if;
+
+				if assy_doc_enabled (BOTTOM) then
+					set_color_assy_doc (BOTTOM, brightness);
+					packge.assy_doc.bottom.lines.iterate (query_line'access);
+				end if;
+
+			end if;
+		end draw_assy;
+
+		
+
+
+		procedure draw_terminals is
+
+			use et_terminals;
+			use pac_terminals;
+
+			
+			procedure query_terminal (c : in pac_terminals.cursor) is
+				-- The name of the terminal (like H5, 5, 3)
+				name : constant string := to_string (key (c));
+				
+				t : type_terminal renames element (c);
+
+				use pac_contours;
+
+
+			
+				-- Translates face (TOP/BOTTOM) to conductor layer 1/bottom_layer.
+				function face_to_layer (f : in type_face) return type_signal_layer is begin
+					case f is
+						when TOP => return type_signal_layer'first;
+						when BOTTOM => return bottom_layer;
+					end case;
+				end face_to_layer;
+
+				
+
+				-- This procedure draws the outer contour of the THT pad and 
+				-- th outer contour of the stopmask:
+				procedure tht_outer_layer (
+					pad_contours	: in type_contour; -- the outline of the solder pad
+					pad_position	: in type_position; -- the center of the pad incl. its rotation
+					drilled_milled	: in type_terminal_tht_hole;
+					drill_size		: in type_drill_size := type_drill_size'first;
+					hole_contours	: in type_contour := plated_millings_default)
+				is
+					use et_board_shapes_and_text;					
+
+					
+					procedure draw_conductor is
+						c : type_circle;
+						use pac_draw_contours;
+					begin
+						set_color_tht_pad (brightness);
+
+						--put_line ("draw_conductor");
+						
+						case drilled_milled is
+							when DRILLED =>									
+								set_center (c, pad_position.place);
+								set_radius (c, drill_size * 0.5);
+								
+								---put_line ("pad_pos" & to_string (pad_position));
+
+								draw_contour_with_circular_cutout (
+									outer_border	=> pad_contours,
+									inner_border	=> c,
+									pos				=> get_position (package_position_2),
+									offset			=> pad_position,
+									mirror			=> mirror);
+
+								
+							when MILLED =>
+
+								draw_contour_with_arbitrary_cutout (
+									outer_border	=> pad_contours,
+									inner_border	=> hole_contours,
+									pos				=> get_position (package_position_2),
+									offset			=> pad_position,
+									mirror			=> mirror);
+
+									
+						end case;
+					end draw_conductor;
+
+					
+				begin
+					draw_conductor;	
+				end tht_outer_layer;
+
+				
+				
+				-- NOTE: THT pads do not have a stencil opening !
+
+
+				procedure draw_stopmask (
+					pad_contours	: in type_contour; -- the outline of the solder pad
+					stopmask		: in et_terminals.type_stop_mask; -- the stopmask in the outer layer
+					pad_position	: in type_position) -- the center of the pad incl. its rotation
+				is
+
+					use pac_geometry_2;	
+					use pac_contours;
+					use pac_polygons;
+					use pac_offsetting;
+
+					use et_board_shapes_and_text;
+
+					polygon_tmp : type_polygon;
+					
+					stopmask_contours : type_stop_mask_contours;
+
+
+					function get_stop_mask_expansion return type_stop_mask_expansion is  -- from DRU
+						use et_canvas_schematic_2;
+						use et_board_ops;
+					begin
+						return get_pcb_design_rules (active_module).stop_mask.expansion_min;
+					end get_stop_mask_expansion;
+
+
+		
+				begin
+					-- put_line ("draw_stopmask");
+					
+					case stopmask.shape is
+						when AS_PAD =>
+							-- Copy solder pad contours to stopmask without
+							-- any modifications:
+							stopmask_contours := (type_contour (pad_contours) with null record);
+
+							
+						when EXPAND_PAD =>
+							-- Copy solder pad contour to stopmask:
+							stopmask_contours := (type_contour (pad_contours) with null record);
+
+							-- Make a temporary polygon from the stopmask contours:
+							polygon_tmp := to_polygon (stopmask_contours, fill_tolerance, EXPAND);
+							-- CS: expand correct ?
+							
+							-- Expand the polygon according to DRU settings:
+							offset_polygon (
+								polygon		=> polygon_tmp,
+								offset		=> type_float (get_stop_mask_expansion));
+
+							-- Convert the temporary polygon back to a contour:
+							stopmask_contours := (to_contour (polygon_tmp) with null record);
+							
+							
+						when USER_SPECIFIC =>										
+							-- Use the stopmask contours as given by the user:
+							stopmask_contours := stopmask.contours;
+
+					end case;
+
+					
+					-- Draw the outer contour of the stopmask opening:
+					pac_draw_contours.draw_contour (
+						contour		=> stopmask_contours,
+						pos			=> get_position (package_position_2),
+						offset		=> pad_position,
+						filled		=> YES,
+						width		=> zero,
+						mirror		=> mirror);
+
+				end draw_stopmask;
+
+				
+				
+					
+				
+			begin -- query_terminal
+
+				-- The terminal can be a through-hole type (THT) or a 
+				-- pad for surface mounting (SMT):
+				case t.technology is
+					
+					when THT =>
+
+						-- The pad can have a circular hole or a 
+						-- hole of arbitrary shape:
+						case t.tht_hole is
+
+							when DRILLED => -- circlular hole
+									
+								-- Draw the conductor shape of outer layers:
+								if flip then
+									if conductor_enabled (face_to_layer (TOP)) or stop_mask_enabled (TOP) then
+									-- CS if conductor_enabled (face_to_layer (TOP)) then ?
+										tht_outer_layer (
+											pad_contours	=> t.pad_shape_tht.bottom,
+											pad_position	=> t.position,
+											drilled_milled	=> t.tht_hole,
+											drill_size		=> t.drill_size);
+									end if;
+
+									if conductor_enabled (face_to_layer (BOTTOM)) or stop_mask_enabled (BOTTOM) then
+										tht_outer_layer (
+											pad_contours	=> t.pad_shape_tht.top,
+											pad_position	=> t.position,
+											drilled_milled	=> t.tht_hole,
+											drill_size		=> t.drill_size);
+									end if;
+
+								else -- no flip
+									if conductor_enabled (face_to_layer (TOP)) or stop_mask_enabled (TOP) then
+										tht_outer_layer (
+											pad_contours	=> t.pad_shape_tht.top,
+											pad_position	=> t.position,
+											drilled_milled	=> t.tht_hole,
+											drill_size		=> t.drill_size);
+									end if;
+
+									if conductor_enabled (face_to_layer (BOTTOM)) or stop_mask_enabled (BOTTOM) then
+										tht_outer_layer (
+											pad_contours	=> t.pad_shape_tht.bottom,
+											pad_position	=> t.position,
+											drilled_milled	=> t.tht_hole,
+											drill_size		=> t.drill_size);
+									end if;
+
+								end if;
+
+								
+								-- Draw the stopmask opening:
+								if flip then
+									if stop_mask_enabled (TOP) then
+										set_color_stop_mask (TOP, brightness);
+				
+										draw_stopmask (
+											pad_contours	=> t.pad_shape_tht.bottom,
+											stopmask		=> t.stop_mask_shape_tht.bottom,
+											pad_position	=> t.position);
+									end if;
+								
+									if stop_mask_enabled (BOTTOM) then
+										set_color_stop_mask (BOTTOM, brightness);
+				
+										draw_stopmask (
+											pad_contours	=> t.pad_shape_tht.top,
+											stopmask		=> t.stop_mask_shape_tht.top,
+											pad_position	=> t.position);
+									end if;
+											
+								else -- not flipped
+									if stop_mask_enabled (TOP) then
+										set_color_stop_mask (TOP, brightness);
+				
+										draw_stopmask (
+											pad_contours	=> t.pad_shape_tht.top,
+											stopmask		=> t.stop_mask_shape_tht.top,
+											pad_position	=> t.position);
+									end if;
+								
+									if stop_mask_enabled (BOTTOM) then
+										set_color_stop_mask (BOTTOM, brightness);
+
+										draw_stopmask (
+											pad_contours	=> t.pad_shape_tht.bottom,
+											stopmask		=> t.stop_mask_shape_tht.bottom,
+											pad_position	=> t.position);
+										
+									end if;
+								end if;
+								
+								-- draw pad outline of inner layer:
+-- 								tht_inner_layer_drilled (
+-- 									drill_size		=> t.drill_size,
+-- 									restring		=> t.width_inner_layers,
+-- 									pad_position	=> t.position);
+-- 
+-- 								
+-- 								-- Draw the name of the terminal:
+-- 								draw_name_tht (t.position);
+
+									
+							when MILLED => -- arbitrary shape of so called "plated millings"
+
+								-- Draw the conductor shape of outer layers:
+								if flip then
+									if conductor_enabled (face_to_layer (TOP)) or stop_mask_enabled (TOP) then
+									-- CS if conductor_enabled (face_to_layer (TOP)) then
+										tht_outer_layer (
+											pad_contours	=> t.pad_shape_tht.bottom,
+											pad_position	=> t.position,
+											drilled_milled	=> t.tht_hole,
+											hole_contours	=> t.millings);
+									end if;
+
+									if conductor_enabled (face_to_layer (BOTTOM)) or stop_mask_enabled (BOTTOM) then										
+										tht_outer_layer (
+											pad_contours	=> t.pad_shape_tht.top,
+											pad_position	=> t.position,
+											drilled_milled	=> t.tht_hole,
+											hole_contours	=> t.millings);
+
+									end if;
+									
+								else
+									if conductor_enabled (face_to_layer (TOP)) or stop_mask_enabled (TOP) then										
+										tht_outer_layer (
+											pad_contours	=> t.pad_shape_tht.top,
+											pad_position	=> t.position,
+											drilled_milled	=> t.tht_hole,
+											hole_contours	=> t.millings);
+									end if;
+
+									if conductor_enabled (face_to_layer (BOTTOM)) or stop_mask_enabled (BOTTOM) then
+										tht_outer_layer (
+											pad_contours	=> t.pad_shape_tht.bottom,
+											pad_position	=> t.position,
+											drilled_milled	=> t.tht_hole,
+											hole_contours	=> t.millings);
+									end if;
+								end if;
+
+
+
+								-- Draw the stopmask opening:
+								if flip then
+									if stop_mask_enabled (TOP) then
+										set_color_stop_mask (TOP, brightness);
+				
+										draw_stopmask (
+											pad_contours	=> t.pad_shape_tht.bottom,
+											stopmask		=> t.stop_mask_shape_tht.bottom,
+											pad_position	=> t.position);
+									end if;
+								
+									if stop_mask_enabled (BOTTOM) then
+										set_color_stop_mask (BOTTOM, brightness);
+				
+										draw_stopmask (
+											pad_contours	=> t.pad_shape_tht.top,
+											stopmask		=> t.stop_mask_shape_tht.top,
+											pad_position	=> t.position);
+									end if;
+											
+								else -- not flipped
+									if stop_mask_enabled (TOP) then
+										set_color_stop_mask (TOP, brightness);
+				
+										draw_stopmask (
+											pad_contours	=> t.pad_shape_tht.top,
+											stopmask		=> t.stop_mask_shape_tht.top,
+											pad_position	=> t.position);
+									end if;
+								
+									if stop_mask_enabled (BOTTOM) then
+										set_color_stop_mask (BOTTOM, brightness);
+
+										draw_stopmask (
+											pad_contours	=> t.pad_shape_tht.bottom,
+											stopmask		=> t.stop_mask_shape_tht.bottom,
+											pad_position	=> t.position);
+										
+									end if;
+								end if;
+
+								
+			
+								-- -- draw pad outline of inner layer:
+								-- tht_inner_layer_milled (
+								-- 	hole_contours	=> t.millings,
+								-- 	restring_width	=> t.width_inner_layers,
+								-- 	pad_position	=> t.position);
+        -- 
+								-- draw_name_tht (t.position);
+						end case;
+
+						
+					when SMT =>
+						-- case t.face is
+						-- 	when TOP	=> set_destination;								
+						-- 	when BOTTOM	=> set_destination (INVERSE);
+						-- end case;
+
+						-- draw_pad_smt (t.pad_shape_smt, 
+						-- 	t.stop_mask_shape_smt, t.stencil_shape, t.position);
+						null;
+				end case;
+				
+			end query_terminal;
+
+			
+		begin
+			packge.terminals.iterate (query_terminal'access);
+		end draw_terminals;
+
+		
+		
+	begin
+		put_line ("draw_package_2");
+
+		-- Set the "flip" flag if the package is on the backside of the board:
+		if get_face (package_position_2) = BOTTOM then
+			flip := true;
+			mirror := MIRROR_ALONG_Y_AXIS;
+		end if;
+		
+		draw_origin;
+		draw_assy;
+		
+		
+--  		draw_conductors; -- NON-TERMINAL RELATED, NON-ELECTRICAL
+		draw_terminals; -- pins, pads, plated millings
+-- 		
+-- 		draw_stop_mask; -- non-terminal related
+-- 		draw_stencil; -- non-terminal related
+-- 
+-- 		draw_assembly_documentation;
+-- 		draw_keepout; 
+-- 
+-- 		draw_route_restrict;
+-- 		draw_via_restrict;
+-- 		
+-- 		draw_holes;
+		
+	end draw_package_2;
+
+
+	
+
+	
+	use et_device_name;
+
+	
+
+
+	
+	procedure query_electrical_device_2 (
+		name	: in type_device_name;
+		device	: in type_device_sch)
+	is
+		-- The cursor to the actual device model:
+		use et_device_library;
+		device_model_cursor : pac_devices_lib.cursor;
+
+		use et_package_names;
+		package_model_name : pac_package_model_file_name.bounded_string;
+	begin
+		-- put_line ("device " & to_string (name));
+		
+		-- Get the cursor to the device model:
+		device_model_cursor := locate_device (device.model);
+
+		-- Get the name of the package model:
+		package_model_name := get_package_model (device_model_cursor, device.variant);
+
+		-- Send the actual package model to the draw procedure:
+		draw_package_2 (
+			packge	=> pac_package_models.element (package_models, package_model_name),
+			flipped	=> device.flipped);
+		
+	end query_electrical_device_2;
+
+
+
+	
+
+	procedure query_non_electrical_device_2 (
+		name	: in type_device_name;
+		device	: in et_pcb.type_device_non_electric)
+	is
+		use et_package_names;
+		package_model_name : pac_package_model_file_name.bounded_string;
+	begin
+		-- put_line ("device " & to_string (name));	
+		
+		-- Send the actual package model to the draw procedure:
+		draw_package_2 (
+			packge	=> pac_package_models.element (package_models, device.package_model),
+			flipped	=> device.flipped);
+	end query_non_electrical_device_2;
+
+
+
+	
+
+	procedure query_module (
+		module_name	: in pac_module_name.bounded_string;
+		module		: in type_generic_module)
+	is
+		debug : boolean := false;
+		
+		use pac_devices_sch;
+		cursor_electrical : pac_devices_sch.cursor := 
+			module.devices.first;
+
+		use et_pcb;
+		use pac_devices_non_electric;
+		cursor_non_electrical : pac_devices_non_electric.cursor := 
+			module.devices_non_electric.first;
+
+	begin
+		-- Iterate electrical devices:
+		if debug then
+			put_line (" electrical devices");
+		end if;
+		
+		while has_element (cursor_electrical) loop
+			-- If the device is selected then draw it highlighted:
+			if is_selected (cursor_electrical) then
+				brightness := BRIGHT;
+			else
+				brightness := NORMAL;
+			end if;
+
+			-- Fetch the complete position of the device
+			-- (incl. x/y/rotaton/face) from the database:
+			package_position_2 := get_position (cursor_electrical);
+
+			if is_moving (cursor_electrical) then
+				-- Override package position by tool position:
+				package_position_2.place := get_object_tool_position;
+			end if;
+
+			query_element (cursor_electrical, query_electrical_device_2'access);
+			next (cursor_electrical);
+		end loop;
+
+
+		-- Iterate non-electrical devices:
+		if debug then
+			put_line (" non electrical devices");
+		end if;
+		
+		while has_element (cursor_non_electrical) loop
+			-- If the device is selected then draw it highlighted:
+			if is_selected (cursor_non_electrical) then
+				brightness := BRIGHT;
+			else
+				brightness := NORMAL;
+			end if;
+
+			-- Fetch the complete position of the device
+			-- (incl. x/y/rotaton/face) from the database:
+			package_position_2 := get_position (cursor_non_electrical);
+			
+			if is_moving (cursor_non_electrical) then
+				-- Override package position by tool position:
+				package_position_2.place := get_object_tool_position;
+			end if;
+			
+			query_element (cursor_non_electrical, query_non_electrical_device_2'access);
+			next (cursor_non_electrical);
+		end loop;
+
+	end query_module;
+
+
+	
 	
 begin -- draw_packages
 -- 	put_line ("draw packages ...");
 
 	-- draw electric devices
+-- 	pac_generic_modules.query_element (
+-- 		position	=> active_module,
+-- 		process		=> query_electrical_devices'access);
+-- 
+-- 	
+-- 	-- draw non-electric devices (like fiducials, mounting holes, ...)
+-- 	pac_generic_modules.query_element (
+-- 		position	=> active_module,
+-- 		process		=> query_non_electrical_devices'access);
+
+
 	pac_generic_modules.query_element (
 		position	=> active_module,
-		process		=> query_electrical_devices'access);
+		process		=> query_module'access);
 
 	
-	-- draw non-electric devices (like fiducials, mounting holes, ...)
-	pac_generic_modules.query_element (
-		position	=> active_module,
-		process		=> query_non_electrical_devices'access);
-			
 end draw_packages;
 
 
