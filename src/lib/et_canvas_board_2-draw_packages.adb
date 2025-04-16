@@ -2158,6 +2158,8 @@ is
 		
 
 
+		
+
 		procedure draw_terminals is
 
 			use et_terminals;
@@ -2182,10 +2184,10 @@ is
 					end case;
 				end face_to_layer;
 
+
 				
 
-				-- This procedure draws the outer contour of the THT pad and 
-				-- th outer contour of the stopmask:
+				-- This procedure draws the outer contour of the THT pad:
 				procedure tht_outer_layer (
 					pad_contours	: in type_contour; -- the outline of the solder pad
 					pad_position	: in type_position; -- the center of the pad incl. its rotation
@@ -2242,12 +2244,235 @@ is
 				-- NOTE: THT pads do not have a stencil opening !
 
 
+
+				procedure draw_tht_outer_layers_drilled is begin
+					-- Draw the conductor shape of outer layers:
+					if flip then
+						if conductor_enabled (face_to_layer (TOP)) or stop_mask_enabled (TOP) then
+						-- CS if conductor_enabled (face_to_layer (TOP)) then ?
+							tht_outer_layer (
+								pad_contours	=> t.pad_shape_tht.bottom,
+								pad_position	=> t.position,
+								drilled_milled	=> t.tht_hole,
+								drill_size		=> t.drill_size);
+						end if;
+
+						if conductor_enabled (face_to_layer (BOTTOM)) or stop_mask_enabled (BOTTOM) then
+							tht_outer_layer (
+								pad_contours	=> t.pad_shape_tht.top,
+								pad_position	=> t.position,
+								drilled_milled	=> t.tht_hole,
+								drill_size		=> t.drill_size);
+						end if;
+
+					else -- no flip
+						if conductor_enabled (face_to_layer (TOP)) or stop_mask_enabled (TOP) then
+							tht_outer_layer (
+								pad_contours	=> t.pad_shape_tht.top,
+								pad_position	=> t.position,
+								drilled_milled	=> t.tht_hole,
+								drill_size		=> t.drill_size);
+						end if;
+
+						if conductor_enabled (face_to_layer (BOTTOM)) or stop_mask_enabled (BOTTOM) then
+							tht_outer_layer (
+								pad_contours	=> t.pad_shape_tht.bottom,
+								pad_position	=> t.position,
+								drilled_milled	=> t.tht_hole,
+								drill_size		=> t.drill_size);
+						end if;
+
+					end if;
+				end draw_tht_outer_layers_drilled;
+				
+
+
+				-- Draws the conductor shape of outer layers:
+				procedure draw_tht_outer_layers_milled is begin
+					if flip then
+						if conductor_enabled (face_to_layer (TOP)) or stop_mask_enabled (TOP) then
+						-- CS if conductor_enabled (face_to_layer (TOP)) then
+							tht_outer_layer (
+								pad_contours	=> t.pad_shape_tht.bottom,
+								pad_position	=> t.position,
+								drilled_milled	=> t.tht_hole,
+								hole_contours	=> t.millings);
+						end if;
+
+						if conductor_enabled (face_to_layer (BOTTOM)) or stop_mask_enabled (BOTTOM) then										
+							tht_outer_layer (
+								pad_contours	=> t.pad_shape_tht.top,
+								pad_position	=> t.position,
+								drilled_milled	=> t.tht_hole,
+								hole_contours	=> t.millings);
+
+						end if;
+						
+					else
+						if conductor_enabled (face_to_layer (TOP)) or stop_mask_enabled (TOP) then										
+							tht_outer_layer (
+								pad_contours	=> t.pad_shape_tht.top,
+								pad_position	=> t.position,
+								drilled_milled	=> t.tht_hole,
+								hole_contours	=> t.millings);
+						end if;
+
+						if conductor_enabled (face_to_layer (BOTTOM)) or stop_mask_enabled (BOTTOM) then
+							tht_outer_layer (
+								pad_contours	=> t.pad_shape_tht.bottom,
+								pad_position	=> t.position,
+								drilled_milled	=> t.tht_hole,
+								hole_contours	=> t.millings);
+						end if;
+					end if;
+				end draw_tht_outer_layers_milled;
+				
+				
+				
+				-- Draws the pad contour of a drilled THT pad:
+				procedure draw_tht_inner_layers_drilled is 
+
+					-- This procedure draws the pad contour of a drilled THT pad
+					-- in an inner conductor layer if any inner conductor layer is enabled. 
+					-- If no inner conductor layer is enabled, nothing happens.
+					procedure do_it (
+						drill_size		: in type_drill_size;
+						restring		: in type_restring_width;
+						pad_position	: in type_position) -- the center of the pad, rotation has no meaning
+					is
+						circle : type_circle;
+						mirror_style : type_mirror := MIRROR_NO;
+						
+					begin
+						if inner_conductors_enabled (bottom_layer) then
+							
+							-- Build a circle that represents
+							-- the restring of inner layers:
+							set_center (circle, pad_position.place);
+							set_radius (circle, (drill_size + restring) * 0.5);
+
+						
+							-- Draw the restring:
+							draw_circle (
+								circle		=> circle, 
+								pos			=> get_position (package_position_2), 
+								filled		=> NO,
+								width		=> restring,
+								mirror		=> mirror,
+								do_stroke	=> true);
+
+
+							-- CS
+							
+							-- Draw the hole:
+							-- set_color_background;
+							
+							-- The cutout area must clear out the outer area:
+							-- set_operator (context, CAIRO_OPERATOR_CLEAR);
+
+							-- circle.radius := drill_size * 0.5;
+		
+							-- draw_circle (
+							-- 	circle		=> circle, 
+							-- 	pos			=> get_position (package_position), 
+							-- 	filled		=> YES,
+							-- 	width		=> zero,
+							-- 	mirror		=> mirror_style,
+							-- 	do_stroke	=> true);
+
+
+							-- restore default compositing operator:
+							-- set_operator (context, CAIRO_OPERATOR_OVER);		
+						end if;
+					end do_it;
+
+				begin
+					do_it (
+						drill_size		=> t.drill_size,
+						restring		=> t.width_inner_layers,
+						pad_position	=> t.position);
+													
+				end draw_tht_inner_layers_drilled;
+
+
+
+				
+				-- Draws the conductor contours of inner layers:
+				procedure draw_tht_inner_layers_milled is 
+
+					-- This procedure draws the pad contour of a milled THT pad
+					-- in an inner conductor layer
+					-- if any inner conductor layer is enabled. If no inner conductor
+					-- layer is enabled, nothing happens.
+					-- The pad contour is derived from the given hole contours:
+					procedure do_it (
+						hole_contours	: in type_contour; -- the contours of the milled hole
+						restring_width	: in type_track_width;
+						pad_position	: in type_position) -- the center of the pad incl. its rotation
+					is
+						use pac_geometry_2;	
+						use pac_contours;
+						use pac_polygons;
+						use pac_offsetting;
+
+						use pac_draw_contours;
+						use et_board_shapes_and_text;
+						
+						polygon_tmp : type_polygon;
+						pad_contours : type_contour;
+					begin
+						if inner_conductors_enabled (bottom_layer) then
+
+							-- Make a temporary polygon from the hole contours:
+							polygon_tmp := to_polygon (hole_contours, fill_tolerance, EXPAND);
+							-- CS: expand correct ?
+
+							-- Offset the polygon so that it extends the given hole outline 
+							-- by the restring_width:
+							offset_polygon (
+								polygon		=> polygon_tmp, 
+								offset		=> type_float (restring_width));
+
+							-- convert the temporary polygon back to a contour
+							pad_contours := to_contour (polygon_tmp);
+
+							draw_contour_with_arbitrary_cutout (
+								outer_border	=> pad_contours,
+								inner_border	=> hole_contours,								   
+								pos				=> get_position (package_position_2),
+								offset			=> pad_position,
+								mirror			=> mirror);
+			
+						end if;
+					end do_it;
+
+
+				begin
+					do_it (
+						hole_contours	=> t.millings,
+						restring_width	=> t.width_inner_layers,
+						pad_position	=> t.position);
+					
+				end draw_tht_inner_layers_milled;
+
+
+				
+				
+				function get_stop_mask_expansion return type_stop_mask_expansion is  -- from DRU
+					use et_canvas_schematic_2;
+					use et_board_ops;
+				begin
+					return get_pcb_design_rules (active_module).stop_mask.expansion_min;
+				end get_stop_mask_expansion;
+
+				
+				
+
 				procedure draw_stopmask (
 					pad_contours	: in type_contour; -- the outline of the solder pad
 					stopmask		: in et_terminals.type_stop_mask; -- the stopmask in the outer layer
 					pad_position	: in type_position) -- the center of the pad incl. its rotation
 				is
-
 					use pac_geometry_2;	
 					use pac_contours;
 					use pac_polygons;
@@ -2258,16 +2483,6 @@ is
 					polygon_tmp : type_polygon;
 					
 					stopmask_contours : type_stop_mask_contours;
-
-
-					function get_stop_mask_expansion return type_stop_mask_expansion is  -- from DRU
-						use et_canvas_schematic_2;
-						use et_board_ops;
-					begin
-						return get_pcb_design_rules (active_module).stop_mask.expansion_min;
-					end get_stop_mask_expansion;
-
-
 		
 				begin
 					-- put_line ("draw_stopmask");
@@ -2315,8 +2530,490 @@ is
 				end draw_stopmask;
 
 				
+
 				
+				-- Draws the stopmask opening:
+				procedure draw_tht_stop_mask is begin
+					if flip then
+						if stop_mask_enabled (TOP) then
+							set_color_stop_mask (TOP, brightness);
+	
+							draw_stopmask (
+								pad_contours	=> t.pad_shape_tht.bottom,
+								stopmask		=> t.stop_mask_shape_tht.bottom,
+								pad_position	=> t.position);
+						end if;
 					
+						if stop_mask_enabled (BOTTOM) then
+							set_color_stop_mask (BOTTOM, brightness);
+	
+							draw_stopmask (
+								pad_contours	=> t.pad_shape_tht.top,
+								stopmask		=> t.stop_mask_shape_tht.top,
+								pad_position	=> t.position);
+						end if;
+								
+					else -- not flipped
+						if stop_mask_enabled (TOP) then
+							set_color_stop_mask (TOP, brightness);
+	
+							draw_stopmask (
+								pad_contours	=> t.pad_shape_tht.top,
+								stopmask		=> t.stop_mask_shape_tht.top,
+								pad_position	=> t.position);
+						end if;
+					
+						if stop_mask_enabled (BOTTOM) then
+							set_color_stop_mask (BOTTOM, brightness);
+
+							draw_stopmask (
+								pad_contours	=> t.pad_shape_tht.bottom,
+								stopmask		=> t.stop_mask_shape_tht.bottom,
+								pad_position	=> t.position);
+							
+						end if;
+					end if;
+				end draw_tht_stop_mask;
+				
+
+
+				
+				-- Draws the name of a THT pad if any conductor layer is enabled 
+				procedure draw_name_tht (
+					pad_position : in type_position)  -- the center of the pad
+				is
+					use et_text;
+					use et_alignment;
+
+					-- Take a copy of the x/y position of the pad:
+					pos_tmp : type_vector_model := pad_position.place;
+
+					use pac_draw_text;
+				begin
+					if conductors_enabled then
+
+						set_color_terminal_name (brightness);
+						
+						-- Rotate the pad POSITION about the origin
+						-- of the package by the rotation of the package:
+						rotate_by (pos_tmp, get_rotation (package_position_2));
+
+						-- If the package is flipped, then the terminal POSITION
+						-- must be mirrored along the Y axis.
+						pac_geometry_2.mirror (pos_tmp, mirror); 
+						
+						-- Now move the pad POSITION by the position
+						-- of the package:
+						add (pos_tmp, package_position_2.place);
+						
+						-- Draw the pad name at pos_tmp:							
+						draw_text (
+							content		=> to_content (name),
+							size		=> terminal_name_size,
+							font		=> terminal_name_font,
+							anchor		=> pos_tmp,
+							origin		=> false, -- no origin required
+							rotation	=> zero_rotation,
+							alignment	=> (ALIGN_CENTER, ALIGN_CENTER));
+
+						-- CS The rotation should be so that the
+						-- name can be read from front and from the right.
+					end if;
+				end draw_name_tht;
+				
+
+
+
+				-- Draws the name of an smt pad.
+				-- The given position is the center of the pad
+				-- relative to the origin of the package:
+				procedure draw_name_smt (
+					pad_position : in type_position)  -- the center of the pad
+				is
+					use et_text;
+					use et_alignment;
+
+					-- Take a copy of the x/y position of the pad:
+					pos_tmp : type_vector_model := pad_position.place;
+
+					use pac_draw_text;
+				begin
+					set_color_terminal_name (brightness);
+
+					-- Rotate the pad POSITION about the origin
+					-- of the package by the rotation of the package:
+					rotate_by (pos_tmp, get_rotation (package_position_2));
+
+					-- If the package is to be flipped then
+					-- mirror the pad POSITION along the Y-axis:
+					pac_geometry_2.mirror (pos_tmp, mirror);
+
+					-- Now move the pad POSITION by the position
+					-- of the package:
+					add (pos_tmp, package_position_2.place);
+
+					-- Draw the pad name at pos_tmp:
+					draw_text (
+						content		=> to_content (name),
+						size		=> terminal_name_size,
+						font		=> terminal_name_font,
+						anchor		=> pos_tmp,
+						origin		=> false, -- no origin required
+						rotation	=> zero_rotation,
+						alignment	=> (ALIGN_CENTER, ALIGN_CENTER));
+
+						-- CS The rotation should be so that the
+						-- name can be read from front and from the right.
+					
+				end draw_name_smt;
+				
+
+				
+
+				-- This procedure draws the SMT pad, the stopmask, the stencil and 
+				-- the terminal name. The terminal name will be drawn only if
+				-- the signal layer is enabled.
+				procedure draw_pad_smt (
+					pad_contours	: in type_contour; -- the outline of the solder pad (copper)
+					stopmask		: in type_stop_mask_smt; -- the stopmask of the pad
+					stencil			: in type_stencil_shape; -- the solder cream mask of the pad
+
+					-- The position of the center of the pad (relative to the package position)
+					pad_position	: in type_position; -- incl. pad rotation about itself
+					f				: in type_face) -- the face where the pad is
+				is
+					use pac_draw_contours;
+					
+	
+					
+					-- Draws the conductor area of the pad:
+					procedure draw_conductor is begin
+						if flip then
+							if conductor_enabled (face_to_layer (TOP)) then
+
+								set_color_conductor (face_to_layer (TOP), brightness);
+
+								if f = BOTTOM then
+									draw_contour (
+										contour	=> pad_contours,
+										pos		=> get_position (package_position_2),
+										offset	=> pad_position,
+										filled	=> YES,
+										mirror	=> mirror,
+										width	=> zero);
+								end if;
+													
+								-- draw the terminal name
+								draw_name_smt (pad_position);
+							end if;
+
+
+							if conductor_enabled (face_to_layer (BOTTOM)) then
+
+								set_color_conductor (face_to_layer (BOTTOM), brightness);
+
+								if f = TOP then
+									draw_contour (
+										contour	=> pad_contours,
+										pos		=> get_position (package_position_2),
+										offset	=> pad_position,
+										filled	=> YES,
+										mirror	=> mirror,
+										width	=> zero);
+								end if;
+													
+								-- draw the terminal name
+								draw_name_smt (pad_position);
+							end if;
+
+							
+						else -- not flipped
+
+							if conductor_enabled (face_to_layer (TOP)) then
+
+								set_color_conductor (face_to_layer (TOP), brightness);
+
+								if f = TOP then
+									draw_contour (
+										contour	=> pad_contours,
+										pos		=> get_position (package_position_2),
+										offset	=> pad_position,
+										filled	=> YES,
+										mirror	=> mirror,
+										width	=> zero);
+								end if;
+													
+								-- draw the terminal name
+								draw_name_smt (pad_position);
+							end if;
+
+
+							if conductor_enabled (face_to_layer (BOTTOM)) then
+
+								set_color_conductor (face_to_layer (BOTTOM), brightness);
+
+								if f = BOTTOM then
+									draw_contour (
+										contour	=> pad_contours,
+										pos		=> get_position (package_position_2),
+										offset	=> pad_position,
+										filled	=> YES,
+										mirror	=> mirror,
+										width	=> zero);
+								end if;
+													
+								-- draw the terminal name
+								draw_name_smt (pad_position);
+							end if;
+							
+						end if;
+					end draw_conductor;
+					
+
+					
+					-- Draws the stopmask of the pad:
+					procedure draw_stopmask is 
+						use pac_geometry_2;	
+						use pac_contours;
+						use pac_polygons;
+						use pac_offsetting;
+
+						use et_board_shapes_and_text;
+						
+						stopmask_contours	: type_stop_mask_contours;
+						polygon_tmp : type_polygon;
+					begin						
+						case stopmask.shape is
+							when AS_PAD =>
+								-- Copy pad contours to stopmask without
+								-- any modification:
+								stopmask_contours := (type_contour (pad_contours) with null record);
+
+								
+							when EXPAND_PAD =>
+								-- Copy pad contours to stopmask:
+								stopmask_contours := (type_contour (pad_contours) with null record);
+
+								-- Now the stopmask must be expanded according to the DRU settings.
+
+								-- Make a temporary polygon from the stopmask contours:
+								polygon_tmp := to_polygon (stopmask_contours, fill_tolerance, EXPAND);
+								-- CS: expand correct ?
+
+								-- Offset the temporary polygon:
+								offset_polygon (
+									polygon		=> polygon_tmp,
+									offset		=> type_float (get_stop_mask_expansion)); -- from DRU
+
+								-- Convert the temporary polygon back to a contour:
+								stopmask_contours := (to_contour (polygon_tmp) with null record);
+								
+								
+							when USER_SPECIFIC =>
+								-- Set the stopmask contour as given by the user settings:
+								stopmask_contours := stopmask.contours;
+						end case;
+
+
+						if flip then
+							if stop_mask_enabled (TOP) then
+								set_color_stop_mask (TOP, brightness);
+
+								if f = BOTTOM then
+									draw_contour (
+										contour	=> stopmask_contours,
+										pos		=> get_position (package_position_2),
+										offset	=> pad_position,
+										filled	=> YES,
+										mirror	=> mirror,
+										width	=> zero);
+
+								end if;
+							end if;
+
+							
+							if stop_mask_enabled (BOTTOM) then
+								set_color_stop_mask (BOTTOM, brightness);
+
+								if f = TOP then
+									draw_contour (
+										contour	=> stopmask_contours,
+										pos		=> get_position (package_position_2),
+										offset	=> pad_position,
+										filled	=> YES,
+										mirror	=> mirror,
+										width	=> zero);
+
+								end if;								
+							end if;
+
+							
+						else -- not flipped
+							
+							if stop_mask_enabled (TOP) then
+								set_color_stop_mask (TOP, brightness);
+
+								if f = TOP then
+									draw_contour (
+										contour	=> stopmask_contours,
+										pos		=> get_position (package_position_2),
+										offset	=> pad_position,
+										filled	=> YES,
+										mirror	=> mirror,
+										width	=> zero);
+
+								end if;								
+							end if;
+
+							
+							if stop_mask_enabled (BOTTOM) then
+								set_color_stop_mask (BOTTOM, brightness);
+
+								if f = BOTTOM then
+									draw_contour (
+										contour	=> stopmask_contours,
+										pos		=> get_position (package_position_2),
+										offset	=> pad_position,
+										filled	=> YES,
+										mirror	=> mirror,
+										width	=> zero);
+
+								end if;								
+							end if;
+							
+						end if;
+					end draw_stopmask;
+
+
+
+					-- Draws the stencil (or solder paste mask) of the pad:					
+					procedure draw_stencil is 
+						use pac_geometry_2;	
+						use pac_contours;
+						use pac_polygons;
+						use pac_offsetting;
+
+						use et_board_shapes_and_text;
+						
+						stencil_contours : type_stencil_contours;
+						polygon_tmp : type_polygon;
+					begin
+						case stencil.shape is
+							
+							when AS_PAD =>
+								-- Copy pad contours to stencil without
+								-- any modification:
+								stencil_contours := (type_contour (pad_contours) with null record);
+
+								
+							when SHRINK_PAD =>
+								-- Copy pad contours to stencil:
+								stencil_contours := (type_contour (pad_contours) with null record);
+
+								-- Now the stencil must be shrinked according to shrink_factor:
+								
+								-- Make a temporary polygon from the stencil contour
+								polygon_tmp := to_polygon (stencil_contours, fill_tolerance, EXPAND);
+								-- CS: expand correct ?
+								
+								--scale_polygon (
+									--polygon		=> stencil_contours,
+									--scale		=> stencil.shrink_factor);
+
+								-- Offset the temporary polygon
+								offset_polygon (
+									polygon		=> polygon_tmp,
+									offset		=> type_float (stencil.shrink_factor));
+
+								-- Convert the temporary polygon back to a contour:
+								stencil_contours := (to_contour (polygon_tmp) with null record);
+								
+								
+							when USER_SPECIFIC =>
+								-- Set the stencil contour as given by the user settings:
+								stencil_contours := stencil.contours;
+								
+						end case;
+
+						
+						if flip then
+							if stencil_enabled (TOP) then
+								set_color_stencil (TOP, brightness);
+
+								if f = BOTTOM then
+									draw_contour (
+										contour	=> stencil_contours,
+										pos		=> get_position (package_position_2),
+										offset	=> pad_position,
+										filled	=> YES,
+										mirror	=> mirror,
+										width	=> zero);
+
+								end if;
+							end if;
+
+							
+							if stencil_enabled (BOTTOM) then
+								set_color_stencil (BOTTOM, brightness);
+
+								if f = TOP then
+									draw_contour (
+										contour	=> stencil_contours,
+										pos		=> get_position (package_position_2),
+										offset	=> pad_position,
+										filled	=> YES,
+										mirror	=> mirror,
+										width	=> zero);
+
+								end if;								
+							end if;
+
+							
+						else -- not flipped
+							
+							if stencil_enabled (TOP) then
+								set_color_stencil (TOP, brightness);
+
+								if f = TOP then
+									draw_contour (
+										contour	=> stencil_contours,
+										pos		=> get_position (package_position_2),
+										offset	=> pad_position,
+										filled	=> YES,
+										mirror	=> mirror,
+										width	=> zero);
+
+								end if;								
+							end if;
+
+							
+							if stencil_enabled (BOTTOM) then
+								set_color_stencil (BOTTOM, brightness);
+
+								if f = BOTTOM then
+									draw_contour (
+										contour	=> stencil_contours,
+										pos		=> get_position (package_position_2),
+										offset	=> pad_position,
+										filled	=> YES,
+										mirror	=> mirror,
+										width	=> zero);
+
+								end if;								
+							end if;
+							
+						end if;				
+					end draw_stencil;
+					
+					
+				begin
+					draw_conductor;
+					draw_stopmask;
+					draw_stencil;
+				end draw_pad_smt;
+
+
+				
 				
 			begin -- query_terminal
 
@@ -2331,202 +3028,40 @@ is
 						case t.tht_hole is
 
 							when DRILLED => -- circlular hole
-									
-								-- Draw the conductor shape of outer layers:
-								if flip then
-									if conductor_enabled (face_to_layer (TOP)) or stop_mask_enabled (TOP) then
-									-- CS if conductor_enabled (face_to_layer (TOP)) then ?
-										tht_outer_layer (
-											pad_contours	=> t.pad_shape_tht.bottom,
-											pad_position	=> t.position,
-											drilled_milled	=> t.tht_hole,
-											drill_size		=> t.drill_size);
-									end if;
 
-									if conductor_enabled (face_to_layer (BOTTOM)) or stop_mask_enabled (BOTTOM) then
-										tht_outer_layer (
-											pad_contours	=> t.pad_shape_tht.top,
-											pad_position	=> t.position,
-											drilled_milled	=> t.tht_hole,
-											drill_size		=> t.drill_size);
-									end if;
+								-- Set the color for conductors
+								-- of outer an inner layers:
+								set_color_tht_pad (brightness);
 
-								else -- no flip
-									if conductor_enabled (face_to_layer (TOP)) or stop_mask_enabled (TOP) then
-										tht_outer_layer (
-											pad_contours	=> t.pad_shape_tht.top,
-											pad_position	=> t.position,
-											drilled_milled	=> t.tht_hole,
-											drill_size		=> t.drill_size);
-									end if;
+								draw_tht_outer_layers_drilled;
+								draw_tht_inner_layers_drilled;
 
-									if conductor_enabled (face_to_layer (BOTTOM)) or stop_mask_enabled (BOTTOM) then
-										tht_outer_layer (
-											pad_contours	=> t.pad_shape_tht.bottom,
-											pad_position	=> t.position,
-											drilled_milled	=> t.tht_hole,
-											drill_size		=> t.drill_size);
-									end if;
+								draw_tht_stop_mask;
 
-								end if;
-
-								
-								-- Draw the stopmask opening:
-								if flip then
-									if stop_mask_enabled (TOP) then
-										set_color_stop_mask (TOP, brightness);
-				
-										draw_stopmask (
-											pad_contours	=> t.pad_shape_tht.bottom,
-											stopmask		=> t.stop_mask_shape_tht.bottom,
-											pad_position	=> t.position);
-									end if;
-								
-									if stop_mask_enabled (BOTTOM) then
-										set_color_stop_mask (BOTTOM, brightness);
-				
-										draw_stopmask (
-											pad_contours	=> t.pad_shape_tht.top,
-											stopmask		=> t.stop_mask_shape_tht.top,
-											pad_position	=> t.position);
-									end if;
-											
-								else -- not flipped
-									if stop_mask_enabled (TOP) then
-										set_color_stop_mask (TOP, brightness);
-				
-										draw_stopmask (
-											pad_contours	=> t.pad_shape_tht.top,
-											stopmask		=> t.stop_mask_shape_tht.top,
-											pad_position	=> t.position);
-									end if;
-								
-									if stop_mask_enabled (BOTTOM) then
-										set_color_stop_mask (BOTTOM, brightness);
-
-										draw_stopmask (
-											pad_contours	=> t.pad_shape_tht.bottom,
-											stopmask		=> t.stop_mask_shape_tht.bottom,
-											pad_position	=> t.position);
-										
-									end if;
-								end if;
-								
-								-- draw pad outline of inner layer:
--- 								tht_inner_layer_drilled (
--- 									drill_size		=> t.drill_size,
--- 									restring		=> t.width_inner_layers,
--- 									pad_position	=> t.position);
--- 
--- 								
--- 								-- Draw the name of the terminal:
--- 								draw_name_tht (t.position);
+								-- Draw the name of the terminal:
+								draw_name_tht (t.position);
 
 									
 							when MILLED => -- arbitrary shape of so called "plated millings"
 
-								-- Draw the conductor shape of outer layers:
-								if flip then
-									if conductor_enabled (face_to_layer (TOP)) or stop_mask_enabled (TOP) then
-									-- CS if conductor_enabled (face_to_layer (TOP)) then
-										tht_outer_layer (
-											pad_contours	=> t.pad_shape_tht.bottom,
-											pad_position	=> t.position,
-											drilled_milled	=> t.tht_hole,
-											hole_contours	=> t.millings);
-									end if;
+								-- Set the color for conductors
+								-- of outer an inner layers:
+								set_color_tht_pad (brightness);
 
-									if conductor_enabled (face_to_layer (BOTTOM)) or stop_mask_enabled (BOTTOM) then										
-										tht_outer_layer (
-											pad_contours	=> t.pad_shape_tht.top,
-											pad_position	=> t.position,
-											drilled_milled	=> t.tht_hole,
-											hole_contours	=> t.millings);
-
-									end if;
-									
-								else
-									if conductor_enabled (face_to_layer (TOP)) or stop_mask_enabled (TOP) then										
-										tht_outer_layer (
-											pad_contours	=> t.pad_shape_tht.top,
-											pad_position	=> t.position,
-											drilled_milled	=> t.tht_hole,
-											hole_contours	=> t.millings);
-									end if;
-
-									if conductor_enabled (face_to_layer (BOTTOM)) or stop_mask_enabled (BOTTOM) then
-										tht_outer_layer (
-											pad_contours	=> t.pad_shape_tht.bottom,
-											pad_position	=> t.position,
-											drilled_milled	=> t.tht_hole,
-											hole_contours	=> t.millings);
-									end if;
-								end if;
-
-
-
-								-- Draw the stopmask opening:
-								if flip then
-									if stop_mask_enabled (TOP) then
-										set_color_stop_mask (TOP, brightness);
-				
-										draw_stopmask (
-											pad_contours	=> t.pad_shape_tht.bottom,
-											stopmask		=> t.stop_mask_shape_tht.bottom,
-											pad_position	=> t.position);
-									end if;
+								draw_tht_outer_layers_milled;
+								draw_tht_inner_layers_milled;
 								
-									if stop_mask_enabled (BOTTOM) then
-										set_color_stop_mask (BOTTOM, brightness);
-				
-										draw_stopmask (
-											pad_contours	=> t.pad_shape_tht.top,
-											stopmask		=> t.stop_mask_shape_tht.top,
-											pad_position	=> t.position);
-									end if;
-											
-								else -- not flipped
-									if stop_mask_enabled (TOP) then
-										set_color_stop_mask (TOP, brightness);
-				
-										draw_stopmask (
-											pad_contours	=> t.pad_shape_tht.top,
-											stopmask		=> t.stop_mask_shape_tht.top,
-											pad_position	=> t.position);
-									end if;
-								
-									if stop_mask_enabled (BOTTOM) then
-										set_color_stop_mask (BOTTOM, brightness);
+								draw_tht_stop_mask;
 
-										draw_stopmask (
-											pad_contours	=> t.pad_shape_tht.bottom,
-											stopmask		=> t.stop_mask_shape_tht.bottom,
-											pad_position	=> t.position);
-										
-									end if;
-								end if;
-
-								
-			
-								-- -- draw pad outline of inner layer:
-								-- tht_inner_layer_milled (
-								-- 	hole_contours	=> t.millings,
-								-- 	restring_width	=> t.width_inner_layers,
-								-- 	pad_position	=> t.position);
-        -- 
-								-- draw_name_tht (t.position);
+								-- Draw the name of the terminal:
+								draw_name_tht (t.position);
 						end case;
 
 						
 					when SMT =>
-						-- case t.face is
-						-- 	when TOP	=> set_destination;								
-						-- 	when BOTTOM	=> set_destination (INVERSE);
-						-- end case;
 
-						-- draw_pad_smt (t.pad_shape_smt, 
-						-- 	t.stop_mask_shape_smt, t.stencil_shape, t.position);
-						null;
+						draw_pad_smt (t.pad_shape_smt, t.stop_mask_shape_smt,
+							t.stencil_shape, t.position, t.face);
 				end case;
 				
 			end query_terminal;
@@ -2539,7 +3074,7 @@ is
 		
 		
 	begin
-		put_line ("draw_package_2");
+		--put_line ("draw_package_2");
 
 		-- Set the "flip" flag if the package is on the backside of the board:
 		if get_face (package_position_2) = BOTTOM then
