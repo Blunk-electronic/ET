@@ -66,6 +66,8 @@ with et_device_library;
 with et_device_model_names;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
+with et_device_value;
+with et_device_purpose;
 
 with et_package_names;
 with et_packages;					use et_packages;
@@ -2076,8 +2078,11 @@ is
 	package_position_2 : type_package_position;
 	
 	brightness : type_brightness := NORMAL;
-	
 
+	device_name 	: et_device_name.type_device_name;
+	device_value	: et_device_value.pac_device_value.bounded_string;
+	device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;
+	
 	
 	procedure draw_package_2 (
 		packge 		: in type_package_model; 
@@ -2112,7 +2117,31 @@ is
 		end draw_origin;
 
 
+
+		-- This function returns for a given text placeholder
+		-- the related content:
+		function placeholder_to_content (
+			placeholder : in type_placeholder)
+			return et_text.pac_text_content.bounded_string
+		is 
+			use et_text;
+			result : pac_text_content.bounded_string;
+
+			use et_device_name;
+			use et_device_value;
+			use et_device_purpose;
+		begin
+			case placeholder.meaning is
+				when NAME 		=> result := to_content (to_string (device_name));
+				when VALUE		=> result := to_content (to_string (device_value));
+				when PURPOSE	=> result := to_content (to_string (device_purpose));
+			end case;
+			
+			return result;
+		end placeholder_to_content;
+
 		
+			
 
 		procedure draw_assy is
 			use et_assy_doc;
@@ -2128,12 +2157,32 @@ is
 					mirror		=> mirror,
 					do_stroke	=> true);
 			end query_line;
-						
+
+
+
+			
+			use pac_placeholders;
+
+			procedure query_placeholder (c : in pac_placeholders.cursor) is
+				ph : type_placeholder renames element (c);
+
+				use pac_text;
+				text : type_doc_text := (type_text_fab (ph) with others => <>);
+
+				use pac_draw_text;
+			begin
+				text.content := placeholder_to_content (ph);
+				draw_vector_text (text);
+			end query_placeholder;
+
+			
+			
 		begin
 			if flip then
 				if assy_doc_enabled (TOP) then
 					set_color_assy_doc (TOP, brightness);
 					packge.assy_doc.bottom.lines.iterate (query_line'access);
+					-- CS arcs, circles, zones
 				end if;
 
 				if assy_doc_enabled (BOTTOM) then
@@ -2145,6 +2194,8 @@ is
 				if assy_doc_enabled (TOP) then
 					set_color_assy_doc (TOP, brightness);
 					packge.assy_doc.top.lines.iterate (query_line'access);
+
+					packge.assy_doc.top.placeholders.iterate (query_placeholder'access);
 				end if;
 
 				if assy_doc_enabled (BOTTOM) then
@@ -2155,8 +2206,77 @@ is
 			end if;
 		end draw_assy;
 
+
+
 		
 
+
+		procedure draw_silkscreen is
+			use et_silkscreen;
+			use pac_silk_lines;
+
+			procedure query_line (c : in pac_silk_lines.cursor) is
+				line : type_silk_line renames element (c);
+			begin
+				draw_line (
+					line		=> line,
+					pos			=> get_position (package_position_2),		  
+					width		=> line.width,
+					mirror		=> mirror,
+					do_stroke	=> true);
+			end query_line;
+
+
+
+			
+			use pac_placeholders;
+
+			procedure query_placeholder (c : in pac_placeholders.cursor) is
+				ph : type_placeholder renames element (c);
+
+				use pac_text;
+				text : type_silk_text := (type_text_fab (ph) with others => <>);
+
+				use pac_draw_text;
+			begin
+				text.content := placeholder_to_content (ph);
+				draw_vector_text (text);
+			end query_placeholder;
+
+			
+			
+		begin
+			-- put_line ("draw_silkscreen");
+			
+			if flip then
+				if silkscreen_enabled (TOP) then
+					set_color_silkscreen (TOP, brightness);
+					packge.silkscreen.bottom.lines.iterate (query_line'access);
+					-- CS arcs, circles, zones
+				end if;
+
+				if silkscreen_enabled (BOTTOM) then
+					set_color_silkscreen (BOTTOM, brightness);
+					packge.silkscreen.top.lines.iterate (query_line'access);
+				end if;
+
+			else
+				if silkscreen_enabled (TOP) then
+					set_color_silkscreen (TOP, brightness);
+					packge.silkscreen.top.lines.iterate (query_line'access);
+
+					packge.silkscreen.top.placeholders.iterate (query_placeholder'access);
+				end if;
+
+				if silkscreen_enabled (BOTTOM) then
+					set_color_silkscreen (BOTTOM, brightness);
+					packge.silkscreen.bottom.lines.iterate (query_line'access);
+				end if;
+
+			end if;
+		end draw_silkscreen;
+
+		
 
 		
 		-- This procedure draws the terminals of the package.
@@ -2251,8 +2371,7 @@ is
 				procedure draw_tht_outer_layers_drilled is begin
 					-- Draw the conductor shape of outer layers:
 					if flip then
-						if conductor_enabled (face_to_layer (TOP)) or stop_mask_enabled (TOP) then
-						-- CS if conductor_enabled (face_to_layer (TOP)) then ?
+						if conductor_enabled (face_to_layer (TOP)) then
 							tht_outer_layer (
 								pad_contours	=> t.pad_shape_tht.bottom,
 								pad_position	=> t.position,
@@ -2260,7 +2379,7 @@ is
 								drill_size		=> t.drill_size);
 						end if;
 
-						if conductor_enabled (face_to_layer (BOTTOM)) or stop_mask_enabled (BOTTOM) then
+						if conductor_enabled (face_to_layer (BOTTOM)) then
 							tht_outer_layer (
 								pad_contours	=> t.pad_shape_tht.top,
 								pad_position	=> t.position,
@@ -2269,7 +2388,7 @@ is
 						end if;
 
 					else -- no flip
-						if conductor_enabled (face_to_layer (TOP)) or stop_mask_enabled (TOP) then
+						if conductor_enabled (face_to_layer (TOP)) then
 							tht_outer_layer (
 								pad_contours	=> t.pad_shape_tht.top,
 								pad_position	=> t.position,
@@ -2277,7 +2396,7 @@ is
 								drill_size		=> t.drill_size);
 						end if;
 
-						if conductor_enabled (face_to_layer (BOTTOM)) or stop_mask_enabled (BOTTOM) then
+						if conductor_enabled (face_to_layer (BOTTOM)) then
 							tht_outer_layer (
 								pad_contours	=> t.pad_shape_tht.bottom,
 								pad_position	=> t.position,
@@ -2293,8 +2412,7 @@ is
 				-- Draws the conductor shape of outer layers:
 				procedure draw_tht_outer_layers_milled is begin
 					if flip then
-						if conductor_enabled (face_to_layer (TOP)) or stop_mask_enabled (TOP) then
-						-- CS if conductor_enabled (face_to_layer (TOP)) then
+						if conductor_enabled (face_to_layer (TOP)) then
 							tht_outer_layer (
 								pad_contours	=> t.pad_shape_tht.bottom,
 								pad_position	=> t.position,
@@ -2302,7 +2420,7 @@ is
 								hole_contours	=> t.millings);
 						end if;
 
-						if conductor_enabled (face_to_layer (BOTTOM)) or stop_mask_enabled (BOTTOM) then										
+						if conductor_enabled (face_to_layer (BOTTOM)) then
 							tht_outer_layer (
 								pad_contours	=> t.pad_shape_tht.top,
 								pad_position	=> t.position,
@@ -2312,7 +2430,7 @@ is
 						end if;
 						
 					else
-						if conductor_enabled (face_to_layer (TOP)) or stop_mask_enabled (TOP) then										
+						if conductor_enabled (face_to_layer (TOP)) then
 							tht_outer_layer (
 								pad_contours	=> t.pad_shape_tht.top,
 								pad_position	=> t.position,
@@ -2320,7 +2438,7 @@ is
 								hole_contours	=> t.millings);
 						end if;
 
-						if conductor_enabled (face_to_layer (BOTTOM)) or stop_mask_enabled (BOTTOM) then
+						if conductor_enabled (face_to_layer (BOTTOM)) then
 							tht_outer_layer (
 								pad_contours	=> t.pad_shape_tht.bottom,
 								pad_position	=> t.position,
@@ -3011,8 +3129,8 @@ is
 				
 			begin -- query_terminal
 
-				-- The terminal can be a through-hole type (THT) or a 
-				-- pad for surface mounting (SMT):
+				-- The terminal can be a through-hole technology type (THT) 
+				-- or a terminal for surface mounting technology (SMT):
 				case t.technology is
 					
 					when THT =>
@@ -3077,6 +3195,7 @@ is
 		end if;
 		
 		draw_origin;
+		draw_silkscreen;
 		draw_assy;
 		
 		
@@ -3118,6 +3237,11 @@ is
 		package_model_name : pac_package_model_file_name.bounded_string;
 	begin
 		-- put_line ("device " & to_string (name));
+
+		device_name := name;
+		device_value := device.value;
+		device_purpose := device.purpose;
+
 		
 		-- Get the cursor to the device model:
 		device_model_cursor := locate_device (device.model);
@@ -3144,6 +3268,12 @@ is
 		package_model_name : pac_package_model_file_name.bounded_string;
 	begin
 		-- put_line ("device " & to_string (name));	
+
+		device_name := name;
+		-- CS
+		-- device_value := device.value;
+		-- device_purpose := device.purpose;
+
 		
 		-- Send the actual package model to the draw procedure:
 		draw_package_2 (
