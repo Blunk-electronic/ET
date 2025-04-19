@@ -358,7 +358,9 @@ package body et_canvas.text is
 
 	
 	procedure draw_vector_text (
-		text	: in pac_text.type_text_fab_with_content'class) 
+		text	: in pac_text.type_text_fab_with_content'class;
+		pos		: in pac_geometry.type_position := origin_zero_rotation;
+		mirror	: in type_mirror := MIRROR_NO)
 	is
 		use pac_text;
 		use pac_character_lines;
@@ -386,14 +388,21 @@ package body et_canvas.text is
 		
 
 		vectors	: pac_text.type_vector_text;
+
 		pos_final : type_position := text.position;
 		
 	begin
+		-- Add the text position and the position of the
+		-- parent object:
+		add (position => pos_final, offset => pos, mirror => mirror);
+
+		-- If the text is being moved, then pos_final will
+		-- be overwritten by the tool position:
 		if is_moving (text) then
 			pos_final.place := get_object_tool_position;
 		end if;
-		
-		--draw_origin (text.position);
+
+		-- Draw the origin of the text:
 		draw_origin ((pos_final.place, zero_rotation));
 		-- CS draw the origin rotated by 45 degrees 
 		-- if the text is locked ?
@@ -403,11 +412,9 @@ package body et_canvas.text is
 			vectors := vectorize_text (
 				content		=> text.content,
 				size		=> text.size,
-				-- rotation	=> get_rotation (text.position),
 				rotation	=> get_rotation (pos_final),
-				--position	=> text.position.place,
 				position	=> pos_final.place,
-				mirror		=> text.mirror,
+				mirror		=> mirror,
 				line_width	=> text.line_width,
 				alignment	=> text.alignment); -- right, bottom
 
