@@ -240,8 +240,14 @@ package et_geometry_2a is
 		left, right : in type_rotation) 
 		return type_rotation;
 
+
+	-- See comments of function add above:
+	procedure add (
+		rotation	: in out type_rotation;
+		offset		: in type_rotation);
 	
 
+	
 -- RELATIVE DISTANCE:
 	
 	type type_distance_relative is record
@@ -1419,6 +1425,29 @@ package et_geometry_2a is
 		position	: in out type_position;
 		offset		: in type_rotation);
 
+
+
+	-- This is more than just adding 
+	-- location vectors (place) and rotation.
+	-- This function does the follwing:
+	-- If mirror is MIRROR_NO, then
+	--  1. Rotates the given position.place about its 
+	--     own origin by the offset.rotation.
+	--  2. Adds position.place and offset.place.
+	--  3. Adds position.rotation and offset.rotation.
+	--
+	-- If mirror is MIRROR_ALONG_Y_AXIS, then
+	--  1. Mirrors position.place along Y-axis.
+	--  2. Rotates the given position.place about its 
+	--     own origin by the negative offset.rotation.
+	--  3. Adds position.place and offset.place.
+	--  4. Adds position.rotation and offset.rotation.
+	-- 
+	-- If mirror is something else, then nothing happens:
+	procedure add (
+		position	: in out type_position;
+		offset		: in type_position;
+		mirror		: in type_mirror := MIRROR_NO);
 
 	
 	

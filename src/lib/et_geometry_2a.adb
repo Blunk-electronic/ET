@@ -411,6 +411,18 @@ package body et_geometry_2a is
 	end;
 
 
+
+
+	procedure add (
+		rotation	: in out type_rotation;
+		offset		: in type_rotation)
+	is begin
+		rotation := add (rotation, offset);
+	end add;
+
+
+
+	
 	
 
 -- RELATIVE DISTANCE:
@@ -2718,6 +2730,35 @@ package body et_geometry_2a is
 	end;
 
 
+	
+
+	procedure add (
+		position	: in out type_position;
+		offset		: in type_position;
+		mirror		: in type_mirror := MIRROR_NO)
+	is
+	begin
+		case mirror is
+			when MIRROR_NO =>
+				rotate_by (position.place, get_rotation (offset));
+				
+				add (position.place, offset.place);				
+				add (position.rotation, offset.rotation);
+
+			when MIRROR_ALONG_Y_AXIS =>
+				et_geometry_2a.mirror (position.place, MIRROR_ALONG_Y_AXIS);
+
+				rotate_by (position.place, - get_rotation (offset));
+				
+				add (position.place, offset.place);				
+				add (position.rotation, offset.rotation);
+
+			when others =>
+				null; -- CS
+		end case;
+	end add;
+
+	
 	
 
 	
