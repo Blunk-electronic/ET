@@ -620,7 +620,7 @@ package body et_canvas_board_2 is
 		
 
 		procedure draw_packages is begin
-			draw_packages (BOTTOM);
+			-- draw_packages (BOTTOM);
 			draw_packages (TOP);
 		end draw_packages;
 
