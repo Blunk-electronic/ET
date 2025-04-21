@@ -168,13 +168,6 @@ package body et_canvas_board_texts is
 		object_face := to_face (values.get_string (item_text));
 		--put_line ("face " & to_string (object_face));
 
-		case object_face is
-			when TOP =>
-				preliminary_text.text.mirror := MIRROR_NO;
-
-			when BOTTOM =>
-				preliminary_text.text.mirror := MIRROR_ALONG_Y_AXIS;
-		end case;
 		
 		-- Auto-enable the selected layer category:
 		case object_layer_category is
@@ -217,10 +210,6 @@ package body et_canvas_board_texts is
 		object_signal_layer := to_signal_layer (values.get_string (item_text));
 		--put_line ("signal layer " & to_string (object_signal_layer));
 
-		-- Set the mirror mode according to the selected signal layer:
-		preliminary_text.text.mirror := et_pcb.signal_layer_to_mirror (
-			object_signal_layer, get_deepest_conductor_layer (active_module));
-		
 		-- Auto-enable the selected conductor layer:
 		enable_conductor (object_signal_layer);
 		

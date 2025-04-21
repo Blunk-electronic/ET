@@ -1383,44 +1383,22 @@ is
 				text.content := to_content (f (12));
 				-- CS check length
 
-
 				
 				if characters_valid (content) then
 
 					case layer_category is
 						when LAYER_CAT_ASSY =>
 							face := to_face (f (6)); -- top/bottom
-							
-							if face = BOTTOM then
-								text.mirror := MIRROR_ALONG_Y_AXIS;
-							else
-								text.mirror := MIRROR_NO;
-							end if;
-							
 							place_in_assy_doc;
 
 							
 						when LAYER_CAT_SILKSCREEN =>
 							face := to_face (f (6)); -- top/bottom
-							
-							if face = BOTTOM then
-								text.mirror := MIRROR_ALONG_Y_AXIS;
-							else
-								text.mirror := MIRROR_NO;
-							end if;
-							
 							place_in_silkscreen;
 
 							
 						when LAYER_CAT_STOPMASK =>						
 							face := to_face (f (6)); -- top/bottom
-							
-							if face = BOTTOM then
-								text.mirror := MIRROR_ALONG_Y_AXIS;
-							else
-								text.mirror := MIRROR_NO;
-							end if;
-							
 							place_in_stopmask;
 
 							
@@ -1462,7 +1440,6 @@ is
 		linewidth		: type_distance;
 		layer_category	: type_layer_category;
 		face			: type_face;
-		mirror			: type_mirror := MIRROR_NO;
 
 		
 		procedure place_in_assy_doc is
@@ -1473,7 +1450,6 @@ is
 			ph.position := type_position (to_position (pos_xy, rotation));
 			ph.line_width := linewidth;
 			ph.size := size;
-			ph.mirror := mirror;
 			
 			add_placeholder (
 				module_cursor 	=> module_cursor,
@@ -1493,7 +1469,6 @@ is
 			ph.position := type_position (to_position (pos_xy, rotation));
 			ph.line_width := linewidth;
 			ph.size := size;
-			ph.mirror := mirror;
 
 			add_placeholder (
 				module_cursor 	=> module_cursor,
@@ -1513,7 +1488,6 @@ is
 			ph.position := type_position (to_position (pos_xy, rotation));
 			ph.line_width := linewidth;
 			ph.size := size;
-			ph.mirror := mirror;
 
 			add_placeholder (
 				module_cursor 	=> module_cursor,
@@ -1529,19 +1503,6 @@ is
 			ph : type_text_placeholder_conductors; -- conductor layers
 		begin
 			ph.layer := to_signal_layer (f (6));  -- 5 
-
-			-- Set the mirror status according to the signal layer:
-			ph.mirror := signal_layer_to_mirror (
-				get_layer (ph), get_deepest_conductor_layer (module_cursor));
-
-			-- if ph.mirror = MIRROR_ALONG_Y_AXIS then
-			-- 	log (text => "Placeholder is in deepest signal layer -> will be mirrored",
-			-- 		level => log_threshold + 1);
-			-- else
-			-- 	log (text => "Placeholder is not in deepest signal layer -> no mirroring",
-			-- 		level => log_threshold + 1);
-			-- end if;
-
 			ph.meaning := to_meaning (f (12));
 			ph.position := type_position (to_position (pos_xy, rotation));
 			ph.line_width := linewidth;
@@ -1584,30 +1545,18 @@ is
 					when LAYER_CAT_ASSY =>
 
 						face := to_face (f (6)); -- top/bottom
-						if face = BOTTOM then
-							mirror := MIRROR_ALONG_Y_AXIS;
-						end if;
-
 						place_in_assy_doc;
 
 
 					when LAYER_CAT_SILKSCREEN =>
 
 						face := to_face (f (6)); -- top/bottom
-						if face = BOTTOM then
-							mirror := MIRROR_ALONG_Y_AXIS;
-						end if;
-
 						place_in_silkscreen;
 
 
 					when LAYER_CAT_STOPMASK =>
 
 						face := to_face (f (6)); -- top/bottom
-						if face = BOTTOM then
-							mirror := MIRROR_ALONG_Y_AXIS;
-						end if;
-
 						place_in_stopmask;
 
 					
