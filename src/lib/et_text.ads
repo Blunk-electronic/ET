@@ -243,7 +243,7 @@ package et_text is
 		type type_text_fab is new type_text with record
 			position	: pac_geometry.type_position; -- x/y/rotation
 			line_width	: type_text_line_width := type_text_line_width'first; -- CS rename to linewidth
-			mirror		: type_mirror := MIRROR_NO;
+			mirror		: type_mirror := MIRROR_NO; -- CS required ?
 		end record;
 
 
