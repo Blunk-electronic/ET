@@ -768,21 +768,23 @@ package body et_board_ops.devices is
 				device_name	: in type_device_name;
 				device		: in out type_device_sch) 
 			is				
-				face_before : constant type_face := get_face (device.position);
+				-- face_before : constant type_face := get_face (device.position);
 			begin
-				if face_before /= face then
-					set_face (position => device.position, face => face); -- preserve x/y and rotation
-
-					-- toggle the flipped flag
-					if device.flipped = NO then
-						device.flipped := YES;
-					else
-						device.flipped := NO;
-					end if;
-					
-				else
-					log (WARNING, "package already on " & to_string (face) & " !");
-				end if;
+				flip (device.position);
+				
+-- 				if face_before /= face then
+-- 					set_face (position => device.position, face => face); -- preserve x/y and rotation
+-- 
+-- 					-- toggle the flipped flag
+-- 					if device.flipped = NO then
+-- 						device.flipped := YES;
+-- 					else
+-- 						device.flipped := NO;
+-- 					end if;
+-- 					
+-- 				else
+-- 					log (WARNING, "package already on " & to_string (face) & " !");
+-- 				end if;
 			end flip;
 
 			
