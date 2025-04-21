@@ -2082,6 +2082,17 @@ is
 	device_name 	: et_device_name.type_device_name;
 	device_value	: et_device_value.pac_device_value.bounded_string;
 	device_purpose	: et_device_purpose.pac_device_purpose.bounded_string;
+
+
+	-- Translates face (TOP/BOTTOM) to conductor layer 1/bottom_layer.
+	function face_to_layer (f : in type_face) return type_signal_layer is begin
+		case f is
+			when TOP => return type_signal_layer'first;
+			when BOTTOM => return bottom_layer;
+		end case;
+	end face_to_layer;
+
+
 	
 	
 	procedure draw_package_2 (
@@ -2117,6 +2128,7 @@ is
 		end draw_origin;
 
 
+		
 
 		-- This function returns for a given text placeholder
 		-- the related content:
@@ -2141,7 +2153,8 @@ is
 		end placeholder_to_content;
 
 		
-			
+
+		
 
 		procedure draw_assy is
 			use et_assy_doc;
@@ -2172,7 +2185,7 @@ is
 				use pac_draw_text;
 			begin
 				text.content := placeholder_to_content (ph);
-				draw_vector_text (text);
+				draw_vector_text (text, get_position (package_position_2), mirror);
 			end query_placeholder;
 
 			
@@ -2183,14 +2196,18 @@ is
 					set_color_assy_doc (TOP, brightness);
 					packge.assy_doc.bottom.lines.iterate (query_line'access);
 					-- CS arcs, circles, zones
+
+					packge.assy_doc.bottom.placeholders.iterate (query_placeholder'access);
 				end if;
 
 				if assy_doc_enabled (BOTTOM) then
 					set_color_assy_doc (BOTTOM, brightness);
 					packge.assy_doc.top.lines.iterate (query_line'access);
+
+					packge.assy_doc.top.placeholders.iterate (query_placeholder'access);
 				end if;
 
-			else
+			else -- not flipped
 				if assy_doc_enabled (TOP) then
 					set_color_assy_doc (TOP, brightness);
 					packge.assy_doc.top.lines.iterate (query_line'access);
@@ -2201,6 +2218,8 @@ is
 				if assy_doc_enabled (BOTTOM) then
 					set_color_assy_doc (BOTTOM, brightness);
 					packge.assy_doc.bottom.lines.iterate (query_line'access);
+
+					packge.assy_doc.bottom.placeholders.iterate (query_placeholder'access);
 				end if;
 
 			end if;
@@ -2240,7 +2259,7 @@ is
 				use pac_draw_text;
 			begin
 				text.content := placeholder_to_content (ph);
-				draw_vector_text (text);
+				draw_vector_text (text, get_position (package_position_2), mirror);
 			end query_placeholder;
 
 			
@@ -2253,14 +2272,19 @@ is
 					set_color_silkscreen (TOP, brightness);
 					packge.silkscreen.bottom.lines.iterate (query_line'access);
 					-- CS arcs, circles, zones
+
+					packge.silkscreen.bottom.placeholders.iterate (query_placeholder'access);
 				end if;
 
 				if silkscreen_enabled (BOTTOM) then
 					set_color_silkscreen (BOTTOM, brightness);
 					packge.silkscreen.top.lines.iterate (query_line'access);
+
+					packge.silkscreen.top.placeholders.iterate (query_placeholder'access);
+					
 				end if;
 
-			else
+			else -- not flipped
 				if silkscreen_enabled (TOP) then
 					set_color_silkscreen (TOP, brightness);
 					packge.silkscreen.top.lines.iterate (query_line'access);
@@ -2271,13 +2295,95 @@ is
 				if silkscreen_enabled (BOTTOM) then
 					set_color_silkscreen (BOTTOM, brightness);
 					packge.silkscreen.bottom.lines.iterate (query_line'access);
+
+					packge.silkscreen.bottom.placeholders.iterate (query_placeholder'access);
 				end if;
 
 			end if;
 		end draw_silkscreen;
 
+
 		
 
+		
+
+		procedure draw_conductors is
+			use et_conductor_segment;
+			use pac_conductor_lines;
+
+			procedure query_line (c : in pac_conductor_lines.cursor) is
+				line : type_conductor_line renames element (c);
+			begin
+				draw_line (
+					line		=> line,
+					pos			=> get_position (package_position_2),		  
+					width		=> line.width,
+					mirror		=> mirror,
+					do_stroke	=> true);
+			end query_line;
+
+
+			
+
+			use et_conductor_text.packages;
+			use pac_conductor_texts;
+
+			procedure query_text (c : in pac_conductor_texts.cursor) is
+				use et_conductor_text;
+				t : type_conductor_text renames element (c);
+
+				use pac_draw_text;
+			begin
+				draw_vector_text (t, get_position (package_position_2), mirror);
+			end query_text;
+
+			
+		begin
+			-- put_line ("draw_conductors");
+			
+			if flip then
+				if conductor_enabled (face_to_layer (TOP)) then
+					set_color_conductor (face_to_layer (TOP), brightness);
+
+					packge.conductors.bottom.lines.iterate (query_line'access);
+					-- CS arcs, circles, zones
+
+					packge.conductors.bottom.texts.iterate (query_text'access);
+				end if;
+
+				if conductor_enabled (face_to_layer (BOTTOM)) then
+					set_color_conductor (face_to_layer (BOTTOM), brightness);
+
+					packge.conductors.top.lines.iterate (query_line'access);
+					-- CS arcs, circles, zones
+
+					packge.conductors.top.texts.iterate (query_text'access);					
+				end if;
+
+			else -- not flipped
+				if conductor_enabled (face_to_layer (TOP)) then
+					set_color_conductor (face_to_layer (TOP), brightness);
+					
+					packge.conductors.top.lines.iterate (query_line'access);
+					-- CS arcs, circles, zones
+
+					packge.conductors.top.texts.iterate (query_text'access);					
+				end if;
+
+				if conductor_enabled (face_to_layer (BOTTOM)) then
+					set_color_conductor (face_to_layer (BOTTOM), brightness);
+
+					packge.conductors.bottom.lines.iterate (query_line'access);
+					-- CS arcs, circles, zones
+
+					packge.conductors.bottom.texts.iterate (query_text'access);
+				end if;
+
+			end if;
+		end draw_conductors;
+		
+
+		
 		
 		-- This procedure draws the terminals of the package.
 		-- It draws:
@@ -2301,16 +2407,7 @@ is
 
 				use pac_contours;
 
-
-			
-				-- Translates face (TOP/BOTTOM) to conductor layer 1/bottom_layer.
-				function face_to_layer (f : in type_face) return type_signal_layer is begin
-					case f is
-						when TOP => return type_signal_layer'first;
-						when BOTTOM => return bottom_layer;
-					end case;
-				end face_to_layer;
-
+		
 
 				
 
@@ -3198,8 +3295,7 @@ is
 		draw_silkscreen;
 		draw_assy;
 		
-		
---  		draw_conductors; -- NON-TERMINAL RELATED, NON-ELECTRICAL
+ 		draw_conductors; -- NON-TERMINAL RELATED, NON-ELECTRICAL
 		draw_terminals; -- pins, pads, plated millings
 -- 		
 -- 		draw_stop_mask; -- non-terminal related
