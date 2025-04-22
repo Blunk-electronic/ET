@@ -81,6 +81,7 @@ with et_device_rw;
 with et_frames;
 with et_frame_rw;
 with et_sheets;
+with et_devices_non_electrical;
 with et_pcb;
 with et_pcb_stack;
 with et_pcb_rw;
@@ -1100,7 +1101,7 @@ is
 	end read_unit;
 	
 
-	device_non_electric			: et_pcb.type_device_non_electric;
+	device_non_electric			: et_devices_non_electrical.type_device_non_electric;
 	device_non_electric_model	: et_package_names.pac_package_model_file_name.bounded_string; -- ../libraries/misc/fiducials/crosshair.pac
 
 
@@ -3227,6 +3228,7 @@ is
 				use et_pcb_sides;
 				use et_package_names;
 				use et_pcb_stack;
+				use et_devices_non_electrical;
 				
 				device_cursor : pac_devices_non_electric.cursor;
 				inserted : boolean;

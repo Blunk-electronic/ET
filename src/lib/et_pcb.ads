@@ -53,10 +53,6 @@ with et_board_shapes_and_text;			use et_board_shapes_and_text;
 with et_text;							use et_text;
 with et_drills;							use et_drills;
 with et_vias;							use et_vias;
-with et_device_placeholders.packages; -- use et_device_placeholders.packages;
-with et_packages;						use et_packages;
-with et_package_names;					use et_package_names;
-with et_device_name;					use et_device_name;
 with et_pcb_stack;						use et_pcb_stack;
 with et_frames;
 with et_design_rules_board;				use et_design_rules_board;
@@ -298,168 +294,6 @@ package et_pcb is
 
 	
 
-
--- NON-ELECTICAL DEVICES:
-
-	-- Devices which do not have a counterpart in the schematic 
-	-- (like fiducials, mounting holes, ...). They can have
-	-- terminals. But the terminals are not connected with any net.
-	-- They have names like H1 (hole) or FD (fiducial).
-	-- This is NOT about accessories of the module !
-	-- These devices do NOT appear in the BOM !
-	-- We collect them in an indefinite ordered map.
-	-- CS: Move into a separate package !
-	
-	type type_device_non_electric is record
-		position			: et_pcb_coordinates_2.type_package_position; -- incl. rotation and face
-		text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
-		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
-		-- CS cursor to package model instead ?
-
-		-- CS ?
-		--value		: pac_device_value.bounded_string; -- 470R
-		--partcode	: pac_device_partcode.bounded_string; -- R_PAC_S_0805_VAL_100R
-		--purpose		: pac_device_purpose.bounded_string; -- brightness_control
-
-		status : type_object_status;
-	end record;
-	
-
-	
-	procedure set_proposed (
-		device : in out type_device_non_electric);
-
-
-	procedure clear_proposed (
-		device : in out type_device_non_electric);
-
-
-	function is_proposed (
-		device : in type_device_non_electric)
-		return boolean;
-
-
-		
-
-	
-	procedure set_selected (
-		device : in out type_device_non_electric);
-
-	
-	procedure clear_selected (
-		device : in out type_device_non_electric);
-
-	
-	function is_selected (
-		device : in type_device_non_electric)
-		return boolean;
-
-
-	
-
-	procedure set_moving (
-		device : in out type_device_non_electric);
-
-
-	procedure clear_moving (
-		device : in out type_device_non_electric);
-
-	
-	function is_moving (
-		device : in type_device_non_electric)
-		return boolean;
-
-
-	
-
-	
-	procedure set_locked (
-		device : in out type_device_non_electric);
-
-
-	procedure clear_locked (
-		device : in out type_device_non_electric);
-
-	
-	function is_locked (
-		device : in type_device_non_electric)
-		return boolean;
-
-
-
-	procedure modify_status (
-		device		: in out type_device_non_electric;
-		operation	: in type_status_operation);
-
-
-
-	procedure reset_status (
-	   device : in out type_device_non_electric);
-
-	
-	
-	-- CS: this should be a hashed map:
-	package pac_devices_non_electric is new ordered_maps (
-		key_type		=> type_device_name, -- H1, FD2, ...
-		element_type	=> type_device_non_electric);
-
-	use pac_devices_non_electric;
-	
-
-	-- Returns the name of the non-electical device:
-	function to_string (
-		device : in pac_devices_non_electric.cursor)
-		return string;
-	
-		
-	function is_proposed (
-		device : in pac_devices_non_electric.cursor)
-		return boolean;
-	
-
-	function is_selected (
-		device : in pac_devices_non_electric.cursor)
-		return boolean;
-
-
-	function is_moving (
-		device : in pac_devices_non_electric.cursor)
-		return boolean;
-	
-
-	function is_locked (
-		device : in pac_devices_non_electric.cursor)
-		return boolean;
-
-	
-
-	
-	-- COMMITS OF NON-ELECTRICAL DEVICES (required for undo/redo operations via the GUI):
-	use et_commit;
-	
-	package pac_non_electrical_device_commit is new pac_commit (pac_devices_non_electric.map);
-	use pac_non_electrical_device_commit;
-	
-	package pac_non_electrical_device_commits is new doubly_linked_lists (
-		element_type	=> pac_non_electrical_device_commit.type_commit);
-
-	type type_non_electrical_devices_undo_redo_stack is record
-		dos		: pac_non_electrical_device_commits.list;
-		redos	: pac_non_electrical_device_commits.list;
-	end record;
-	
-
-
-	
-	-- Iterates the non-electric devices. Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		devices	: in pac_devices_non_electric.map;
-		process	: not null access procedure (position : in pac_devices_non_electric.cursor);
-		proceed	: not null access boolean);
-
-
-	
-
 	
 -- BOARD / LAYOUT:
 
@@ -488,6 +322,8 @@ package et_pcb is
 
 
 	-- BOARD COMMITS (required for undo/redo operations via the GUI):
+	use et_commit;
+	
 	package pac_board_commit is new pac_commit (type_board);
 	use pac_board_commit;
 	

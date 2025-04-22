@@ -75,6 +75,7 @@ with et_device_rw;
 with et_frame_rw;
 with et_frames;
 with et_sheets;
+with et_devices_non_electrical;
 with et_pcb;
 with et_pcb_stack;
 with et_pcb_rw;
@@ -1445,6 +1446,8 @@ is
 	
 	
 	procedure query_board is
+		use et_devices_non_electrical;
+		
 		--use et_terminals;
 		use et_board_shapes_and_text;
 		use pac_text_board;
@@ -1621,11 +1624,11 @@ is
 		use pac_keepout_cutouts;
 		use pac_route_restrict_cutouts;
 		use pac_via_restrict_cutouts;
-		use et_pcb.pac_devices_non_electric;
+		use pac_devices_non_electric;
 
 		
 		procedure query_devices_non_electric (
-			c : in et_pcb.pac_devices_non_electric.cursor) 
+			c : in pac_devices_non_electric.cursor) 
 		is
 			use et_pcb;
 			use et_package_names;

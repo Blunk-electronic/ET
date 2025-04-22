@@ -53,6 +53,7 @@ with et_frames;
 with et_schematic;
 with et_nets;
 with et_pcb;
+with et_devices_non_electrical;
 with et_packages;
 with et_terminals;
 with et_pcb_stack;
@@ -788,7 +789,7 @@ is
 		-- This procedure parses the packages of devices:
 		procedure process_devices is
 			use et_schematic;
-			use et_pcb;
+			use et_devices_non_electrical;
 
 
 			-- This procedure parses a given package, indicated
@@ -1649,7 +1650,7 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in type_generic_module) 
 				is
-					use et_pcb;
+					use et_devices_non_electrical;
 					use pac_devices_non_electric;
 
 					procedure query_device (

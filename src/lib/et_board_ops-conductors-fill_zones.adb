@@ -49,7 +49,7 @@ with et_board_ops.devices;
 with et_board_ops.board_contour;	use et_board_ops.board_contour;
 with et_thermal_relief;				use et_thermal_relief;
 with et_device_query_board;			use et_device_query_board;
-
+with et_devices_non_electrical;		use et_devices_non_electrical;
 
 
 separate (et_board_ops.conductors)

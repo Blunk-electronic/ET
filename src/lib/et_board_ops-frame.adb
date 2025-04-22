@@ -42,12 +42,6 @@ with et_canvas_board_2;
 
 package body et_board_ops.frame is
 
-
-	use pac_devices_sch;
-	use pac_devices_non_electric;
-	use pac_nets;
-
-
 	
 	procedure move_drawing_frame (
 		module_cursor	: in pac_generic_modules.cursor;

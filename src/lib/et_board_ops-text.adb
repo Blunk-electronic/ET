@@ -46,12 +46,7 @@ with et_mirroring;
 
 package body et_board_ops.text is
 
-	use pac_devices_sch;
-	use pac_devices_non_electric;
-	use pac_nets;
-
-
-
+	
 	-- Maps from the meaning of a text to its actutal content.
 	function to_placeholder_content (
 		module_cursor	: in pac_generic_modules.cursor;

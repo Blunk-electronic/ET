@@ -74,6 +74,7 @@ with et_packages;					use et_packages;
 with et_package_variant;
 with et_terminals;
 
+with et_devices_non_electrical;		use et_devices_non_electrical;
 with et_pcb_contour;
 with et_pcb_stack;					use et_pcb_stack;
 
@@ -131,7 +132,7 @@ is
 	procedure draw_package (
 		electric			: in boolean;
 		device_electric		: in et_schematic.pac_devices_sch.cursor;
-		device_non_electric	: in et_pcb.pac_devices_non_electric.cursor;					   
+		device_non_electric	: in pac_devices_non_electric.cursor;					   
 		flip				: in type_flipped;
 		brightness			: in type_brightness)
 	is
@@ -2042,7 +2043,7 @@ is
 		begin
 			-- If the device candidate is selected, then we will
 			-- draw it highlighted:
-			if et_pcb.is_selected (device_cursor) then
+			if is_selected (device_cursor) then
 				brightness := BRIGHT;
 
 				-- If a move operation is in progress, then the mouse
@@ -3359,7 +3360,7 @@ is
 
 	procedure query_non_electrical_device_2 (
 		name	: in type_device_name;
-		device	: in et_pcb.type_device_non_electric)
+		device	: in type_device_non_electric)
 	is
 		use et_package_names;
 		package_model_name : pac_package_model_file_name.bounded_string;

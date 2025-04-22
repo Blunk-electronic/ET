@@ -59,7 +59,7 @@ package body et_board_ops is
 
 
 	use pac_devices_sch;
-	use pac_devices_non_electric;
+	-- use pac_devices_non_electric;
 	use pac_nets;
 
 

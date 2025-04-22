@@ -113,7 +113,7 @@ package body et_device_query_board is
 
 
 	function get_face (
-		device_cursor	: in et_pcb.pac_devices_non_electric.cursor)
+		device_cursor	: in pac_devices_non_electric.cursor)
 		return type_face
 	is 
 		position : type_package_position;

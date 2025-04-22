@@ -59,6 +59,7 @@ with et_assy_doc.packages;
 with et_symbols;	
 with et_schematic;						use et_schematic;
 with et_pcb;							use et_pcb;
+with et_devices_non_electrical;			use et_devices_non_electrical;
 with et_pcb_stack;						use et_pcb_stack;
 with et_packages;						use et_packages;
 with et_pcb_sides;						use et_pcb_sides;
@@ -125,7 +126,7 @@ package et_device_query_board is
 
 	-- Returns the current face of the given non-electrical device:
 	function get_face (
-		device_cursor	: in et_pcb.pac_devices_non_electric.cursor) -- FD1
+		device_cursor	: in pac_devices_non_electric.cursor) -- FD1
 		return type_face; -- top/bottom
 
 

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,20 +42,21 @@ with ada.containers;
 with ada.containers.ordered_maps;
 
 with et_coordinates_2;			--use et_coordinates_2;
-with et_schematic;				use et_schematic;
+with et_schematic;					use et_schematic;
 with et_nets;
 with et_submodules;
 with et_pcb;
-with et_assembly_variants;		use et_assembly_variants;
-with et_assembly_variant_name;	use et_assembly_variant_name;
-with et_module_names;			use et_module_names;
+with et_assembly_variants;			use et_assembly_variants;
+with et_assembly_variant_name;		use et_assembly_variant_name;
+with et_module_names;				use et_module_names;
 with et_meta;
 with et_commit;
 with et_text;
 with et_frames;
 with et_numbering;
 with et_design_rules;
-with et_net_class;				use et_net_class;
+with et_net_class;					use et_net_class;
+with et_devices_non_electrical;		use et_devices_non_electrical;
 
 
 package et_generic_module is
@@ -122,8 +123,8 @@ package et_generic_module is
 		netlists		: pac_netlists.map; -- variant name and netlist
 
 		-- Devices which do not have a counterpart in the schematic:
-		devices_non_electric : et_pcb.pac_devices_non_electric.map; -- fiducials, mounting holes, ...
-		devices_non_electric_commits : et_pcb.type_non_electrical_devices_undo_redo_stack;
+		devices_non_electric			: pac_devices_non_electric.map; -- fiducials, mounting holes, ...
+		devices_non_electric_commits	: type_non_electrical_devices_undo_redo_stack;
 		
 		-- CS: images
 		-- CS: latest view: sheet number, displayed objects, zoom, cursor position, ...

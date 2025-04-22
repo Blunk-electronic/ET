@@ -48,6 +48,7 @@ with et_conventions;
 with et_pcb_sides;
 with et_pcb_coordinates_2;
 with et_pcb;
+with et_devices_non_electrical;
 with et_port_direction;
 with et_terminals;
 with et_packages;
@@ -2723,7 +2724,7 @@ package body et_schematic_ops is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			use et_pcb;
+			use et_devices_non_electrical;
 			use pac_devices_non_electric;
 			device_cursor : pac_devices_non_electric.cursor := module.devices_non_electric.first;
 
