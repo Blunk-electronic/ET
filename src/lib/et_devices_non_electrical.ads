@@ -178,6 +178,16 @@ package et_devices_non_electrical is
 	use pac_devices_non_electric;
 	
 
+	
+	-- Iterates the non-electric devices. Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		devices	: in pac_devices_non_electric.map;
+		process	: not null access procedure (position : in pac_devices_non_electric.cursor);
+		proceed	: not null access boolean);
+
+	
+
+	
 	-- Returns the name of the non-electical device:
 	function to_string (
 		device : in pac_devices_non_electric.cursor)
@@ -203,6 +213,13 @@ package et_devices_non_electrical is
 		device : in pac_devices_non_electric.cursor)
 		return boolean;
 
+
+
+
+
+
+
+
 	
 
 	
@@ -222,12 +239,6 @@ package et_devices_non_electrical is
 	
 
 
-	
-	-- Iterates the non-electric devices. Aborts the process when the proceed-flag goes false:
-	procedure iterate (
-		devices	: in pac_devices_non_electric.map;
-		process	: not null access procedure (position : in pac_devices_non_electric.cursor);
-		proceed	: not null access boolean);
 
 
 

@@ -191,6 +191,25 @@ package body et_devices_non_electrical is
 
 
 
+	
+	procedure iterate (
+		devices	: in pac_devices_non_electric.map;
+		process	: not null access procedure (position : in pac_devices_non_electric.cursor);
+		proceed	: not null access boolean)
+	is
+		use pac_devices_non_electric;
+		c : pac_devices_non_electric.cursor := devices.first;
+	begin
+		while c /= no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+	
+
+	
 	function to_string (
 		device : in pac_devices_non_electric.cursor)
 		return string
@@ -249,23 +268,11 @@ package body et_devices_non_electrical is
 			return false;
 		end if;
 	end;
-
-
 		
-	
-	procedure iterate (
-		devices	: in pac_devices_non_electric.map;
-		process	: not null access procedure (position : in pac_devices_non_electric.cursor);
-		proceed	: not null access boolean)
-	is
-		use pac_devices_non_electric;
-		c : pac_devices_non_electric.cursor := devices.first;
-	begin
-		while c /= no_element and proceed.all = TRUE loop
-			process (c);
-			next (c);
-		end loop;
-	end iterate;
+
+
+
+
 
 	
 	
