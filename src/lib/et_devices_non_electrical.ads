@@ -45,20 +45,31 @@ with ada.containers.ordered_maps;
 
 with et_pcb_sides;						use et_pcb_sides;
 with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
+with et_board_shapes_and_text;			use et_board_shapes_and_text;
+with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
 with et_packages;						use et_packages;
 with et_package_names;					use et_package_names;
 with et_device_name;					use et_device_name;
 with et_pcb_stack;						use et_pcb_stack;
+with et_pcb_contour;					use et_pcb_contour;
 with et_commit;
 with et_object_status;					use et_object_status;
 with et_mirroring;						use et_mirroring;
+with et_route_restrict.packages;
+with et_via_restrict.packages;
+with et_keepout;						use et_keepout;
+with et_stencil;						use et_stencil;
+with et_stopmask;						use et_stopmask;
+with et_silkscreen;						use et_silkscreen;
+with et_assy_doc;						use et_assy_doc;
+with et_text;
 
 
 package et_devices_non_electrical is
 	
 	use pac_geometry_2;
-
+	use pac_polygons;
 
 
 	-- In this world, if a package is flipped, then it is
@@ -247,8 +258,172 @@ package et_devices_non_electrical is
 		return type_face; -- top/bottom
 
 	
+
+
+
+	
+	-- Returns the conductor objects of the given non-electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:
+	function get_conductor_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		layer_category	: in type_signal_layer_category)
+		return type_conductor_objects;
+
 	
 
+
+	-- Returns the outlines of conductor objects of the non-electrical
+	-- device (according to its position and rotation in the board) 
+	-- as a list of polygons.
+	-- Conductor objects are: terminals, texts, lines, arcs, circles.
+	-- NOTE regarding circles: The inside of circles is ignored. Only the outer
+	--  edge of a conductor circle is converted to a polygon.
+	-- Adresses only those objects which are affected by
+	-- the given layer category:
+	function get_conductor_polygons (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		layer_category	: in type_signal_layer_category) -- outer top, inner, outer bottom 
+		return pac_polygon_list.list;
+
+
+
+	
+
+	-- Returns the route restrict objects of the given electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:	
+	function get_route_restrict_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		layer_category	: in type_signal_layer_category)
+		return et_route_restrict.packages.type_one_side;
+
+	
+
+
+	-- Returns the outlines of route restrict objects of the non-electrical
+	-- device (according to its position and rotation in the board) 
+	-- as a list of polygons.
+	-- NOTE regarding circles: The inside of circles is ignored. Only the outer
+	--  edge of a circle is converted to a polygon.
+	-- Adresses only those objects which are affected by
+	-- the given layer category:
+	function get_route_restrict_polygons (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		layer_category	: in type_signal_layer_category)
+		return pac_polygon_list.list;
+
+	
+
+
+	-- Returns the via restrict objects of the given electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:	
+	function get_via_restrict_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		layer_category	: in type_signal_layer_category)
+		return et_via_restrict.packages.type_one_side;
+
+	
+
+
+	-- Returns the keepout objects of the given device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:
+	function get_keepout_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		face			: in type_face)
+		return type_keepout;
+
+	
+
+
+	-- Returns the stencil objects of the given non-electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:
+	function get_stencil_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		face			: in type_face)
+		return type_stencil;
+
+
+
+	-- Returns the stopmask objects of the given non-electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face:
+	function get_stopmask_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		face			: in type_face)
+		return type_stopmask;
+
+
+
+	-- Maps from meaning of given placeholder to a text content:
+	function to_placeholder_content (
+		device_cursor	: in pac_devices_non_electric.cursor; -- non-electrical device
+		placeholder		: in type_placeholder)
+		return et_text.pac_text_content.bounded_string;
+
+	
+
+
+	-- Returns the silkscreen objects of the given non-electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face.
+	-- Replaces text placeholders by regular texts in silkscreen.
+	-- The text placeholders specified in the board overwrite
+	-- the default placeholders (as specified in the package model).
+	-- CS: In the future there could be an option to keep the
+	-- properties of the default placeholders or to use the properties 
+	-- as specified in the board.
+	-- This behaviour would be similar to the "smash"-function implemented
+	-- in other CAE systems:
+	function get_silkscreen_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		face			: in type_face)
+		return type_silkscreen;
+	
+
+
+	-- Returns the assy_doc objects of the given non-electrical device
+	-- (according to its flip status, position and rotation in the board) 
+	-- Adresses only those objects affected by the given face.
+	-- Replaces text placeholders by regular texts in assy_doc.
+	-- The text placeholders specified in the board overwrite
+	-- the default placeholders (as specified in the package model).
+	-- CS: In the future there could be an option to keep the
+	-- properties of the default placeholders or to use the properties 
+	-- as specified in the board.
+	-- This behaviour would be similar to the "smash"-function implemented
+	-- in other CAE systems:
+	function get_assy_doc_objects (
+		device_cursor	: in pac_devices_non_electric.cursor;
+		face			: in type_face)
+		return type_assy_doc;
+
+
+
+
+
+
+	-- Returns the outlines of holes of the non-electrical device
+	-- (according to its position and rotation in the board):
+	function get_holes (
+		device_cursor	: in pac_devices_non_electric.cursor)
+		return pac_holes.list;
+
+	
+	-- Returns the outlines of holes of the non-electrical device
+	-- (according to its position and rotation in the board) as
+	-- a list of polygon:
+	function get_hole_polygons (
+		device_cursor	: in pac_devices_non_electric.cursor)
+		return pac_polygon_list.list;
+
+
+	
+	
+	
 	
 	-- COMMITS OF NON-ELECTRICAL DEVICES (required for undo/redo operations via the GUI):
 	use et_commit;

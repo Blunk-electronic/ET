@@ -530,103 +530,7 @@ package body et_device_query_board is
 
 	
 	
-	function get_conductor_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
-		layer_category	: in type_signal_layer_category)
-		return type_conductor_objects
-	is
-		conductors : type_conductor_objects; -- to be returned
-		
-		device : type_device_non_electric renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
-		
-		offset : constant type_distance_relative := to_distance_relative (device.position.place);
-	begin
-		-- lines, arcs, circles, texts
-		if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
-			case get_face (device_cursor) is
-				when TOP =>
-					conductors := get_conductor_objects (packge, layer_category);
-					rotate_conductor_objects (conductors, + device.position.rotation);
 
-				when BOTTOM =>
-					conductors := get_conductor_objects (packge, invert_category (layer_category));
-					mirror_conductor_objects (conductors);
-					rotate_conductor_objects (conductors, - device.position.rotation);
-			end case;
-
-			move_conductor_objects (conductors, offset);
-		end if;
-
-		return conductors;
-	end get_conductor_objects;
-
-
-	
-
-	function get_conductor_polygons (
-		device_cursor	: in pac_devices_non_electric.cursor;
-		layer_category	: in type_signal_layer_category)
-		return pac_polygon_list.list
-	is
-		result : pac_polygon_list.list;
-		
-		device : type_device_non_electric renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
-		
-		offset : constant type_distance_relative := to_distance_relative (device.position.place);
-
-		use pac_contours;
-		terminals	: pac_contour_list.list;
-		
-		conductors	: type_conductor_objects; -- non-electrical
-		conductor_polygons : pac_polygon_list.list;
-
-		use et_contour_to_polygon;
-	begin
-		-- TERMINALS:
-		case get_face (device_cursor) is
-			when TOP =>
-				terminals := get_terminal_contours (packge, layer_category);
-				rotate_contours (terminals, device.position.rotation);
-			when BOTTOM =>
-				terminals := get_terminal_contours (packge, invert_category (layer_category));
-				mirror_contours (terminals);
-				rotate_contours (terminals, - device.position.rotation);
-		end case;
-
-		move_contours (terminals, offset);
-		
-		result := to_polygons (
-			contours	=> terminals,
-			tolerance	=> fill_tolerance,
-			mode		=> EXPAND,
-			debug		=> false);
-
-
-		-- CONDUCTOR OBJECTS (lines, arcs, circles, texts)
-		if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
-			case get_face (device_cursor) is
-				when TOP =>
-					conductors := get_conductor_objects (packge, layer_category);
-					rotate_conductor_objects (conductors, + device.position.rotation);
-					
-				when BOTTOM =>
-					conductors := get_conductor_objects (packge, invert_category (layer_category));
-					mirror_conductor_objects (conductors);
-					rotate_conductor_objects (conductors, - device.position.rotation);
-			end case;
-
-			move_conductor_objects (conductors, offset);
-
-			-- convert conductor objects to polygons:
-			conductor_polygons := to_polygons (conductors, fill_tolerance);
-		end if;
-		
-		result.splice (before => pac_polygon_list.no_element, source => conductor_polygons);
-
-		return result;
-	end get_conductor_polygons;
 	
 
 
@@ -707,73 +611,6 @@ package body et_device_query_board is
 
 	
 
-	function get_route_restrict_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
-		layer_category	: in type_signal_layer_category)
-		return et_route_restrict.packages.type_one_side
-	is
-		use et_route_restrict.packages;
-		restrict : type_one_side; -- to be returned
-		device : type_device_non_electric renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
-
-		rotation : type_rotation_model renames device.position.rotation;
-	begin
-		if layer_category /= INNER then -- route restrict objects exist in outer layers only
-			case get_face (device_cursor) is
-				when TOP =>
-					restrict := get_route_restrict_objects (packge, layer_category);
-					rotate_route_restrict_objects (restrict, + device.position.rotation);
-
-				when BOTTOM =>
-					restrict := get_route_restrict_objects (packge, invert_category (layer_category));
-					mirror_route_restrict_objects (restrict);
-					rotate_route_restrict_objects (restrict, - device.position.rotation);
-			end case;
-
-			move_route_restrict_objects (restrict, to_distance_relative (device.position.place));
-		end if;
-
-		return restrict;
-	end get_route_restrict_objects;
-
-
-	
-	
-	function get_route_restrict_polygons (
-		device_cursor	: in pac_devices_non_electric.cursor;
-		layer_category	: in type_signal_layer_category)
-		return pac_polygon_list.list
-	is
-		result : pac_polygon_list.list;
-		
-		device : type_device_non_electric renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
-		
-		use et_route_restrict.packages;
-		restrict : type_one_side;
-	begin
-		if layer_category /= INNER then -- route restrict objects exist in outer layers only
-			case get_face (device_cursor) is
-				when TOP =>
-					restrict := get_route_restrict_objects (packge, layer_category);
-					rotate_route_restrict_objects (restrict, + device.position.rotation);
-
-				when BOTTOM =>
-					restrict := get_route_restrict_objects (packge, invert_category (layer_category));
-					mirror_route_restrict_objects (restrict);
-					rotate_route_restrict_objects (restrict, - device.position.rotation);
-			end case;
-
-			move_route_restrict_objects (restrict, to_distance_relative (device.position.place));
-
-			-- convert restrict objects to polygons:
-			result := to_polygons (restrict, fill_tolerance);
-		end if;
-
-		return result;
-	end get_route_restrict_polygons;
-	
 
 	
 
@@ -816,37 +653,6 @@ package body et_device_query_board is
 
 	
 
-	function get_via_restrict_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
-		layer_category	: in type_signal_layer_category)
-		return et_via_restrict.packages.type_one_side
-	is
-		use et_via_restrict.packages;		
-		restrict : type_one_side; -- to be returned
-		
-		device : type_device_non_electric renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
-
-		rotation : type_rotation_model renames device.position.rotation;
-	begin
-		if layer_category /= INNER then -- via restrict objects exist in outer layers only
-			case get_face (device_cursor) is
-				when TOP =>
-					restrict := get_via_restrict_objects (packge, layer_category);
-					rotate_via_restrict_objects (restrict, + device.position.rotation);
-
-				when BOTTOM =>
-					restrict := get_via_restrict_objects (packge, invert_category (layer_category));
-					mirror_via_restrict_objects (restrict);
-					rotate_via_restrict_objects (restrict, - device.position.rotation);
-			end case;
-
-			move_via_restrict_objects (restrict, to_distance_relative (device.position.place));
-		end if;
-
-		return restrict;
-	end get_via_restrict_objects;
-	
 
 
 	
@@ -901,49 +707,6 @@ package body et_device_query_board is
 
 
 	
-	function get_keepout_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
-		face			: in type_face)
-		return type_keepout
-	is
-		result : type_keepout;
-
-		device : type_device_non_electric renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
-
-		rotation : type_rotation_model renames device.position.rotation;
-	begin
-		case face is
-			when TOP =>
-				case get_face (device_cursor) is
-					when TOP =>
-						result := get_keepout_objects (packge, TOP);
-						rotate_keepout_objects (result, + rotation);
-
-					when BOTTOM =>
-						result := get_keepout_objects (packge, BOTTOM);
-						mirror_keepout_objects (result);
-						rotate_keepout_objects (result, - rotation);
-				end case;
-
-			when BOTTOM =>
-				case get_face (device_cursor) is
-					when TOP =>
-						result := get_keepout_objects (packge, BOTTOM);
-						rotate_keepout_objects (result, + rotation);
-
-					when BOTTOM =>
-						result := get_keepout_objects (packge, TOP);
-						mirror_keepout_objects (result);
-						rotate_keepout_objects (result, - rotation);
-				end case;
-		end case;
-
-		move_keepout_objects (result, to_distance_relative (device.position.place));
-		
-		return result;
-	end get_keepout_objects;
-
 
 
 	
@@ -996,48 +759,6 @@ package body et_device_query_board is
 	
 
 	
-
-	function get_stencil_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
-		face			: in type_face)
-		return type_stencil
-	is
-		result : type_stencil;
-
-		device : type_device_non_electric renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
-
-		rotation : type_rotation_model renames device.position.rotation;
-	begin
-		case face is
-			when TOP =>
-				case get_face (device_cursor) is
-					when TOP =>
-						result := get_stencil_objects (packge, TOP);
-						rotate_stencil_objects (result, + rotation);
-
-					when BOTTOM =>
-						result := get_stencil_objects (packge, BOTTOM);
-						mirror_stencil_objects (result);
-						rotate_stencil_objects (result, - rotation);
-				end case;
-
-			when BOTTOM =>
-				case get_face (device_cursor) is
-					when TOP =>
-						result := get_stencil_objects (packge, BOTTOM);
-						rotate_stencil_objects (result, + rotation);
-						
-					when BOTTOM =>
-						result := get_stencil_objects (packge, TOP);
-						mirror_stencil_objects (result);
-						rotate_stencil_objects (result, - rotation);
-				end case;
-		end case;
-		
-		move_stencil_objects (result, to_distance_relative (device.position.place));
-		return result;
-	end get_stencil_objects;
 
 
 
@@ -1096,51 +817,6 @@ package body et_device_query_board is
 
 
 
-	
-	function get_stopmask_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
-		face			: in type_face)
-		return type_stopmask
-	is
-		result : type_stopmask;
-
-		device : type_device_non_electric renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
-
-		rotation : type_rotation_model renames device.position.rotation;
-
-		use et_stopmask.packages;
-	begin
-		case face is
-			when TOP =>
-				case get_face (device_cursor) is
-					when TOP =>
-						result := get_stopmask_objects (packge, TOP);
-						rotate_stopmask_objects (result, + rotation);
-
-					when BOTTOM =>
-						result := get_stopmask_objects (packge, BOTTOM);
-						mirror_stopmask_objects (result);
-						rotate_stopmask_objects (result, - rotation);
-				end case;
-
-			when BOTTOM =>
-				case get_face (device_cursor) is
-					when TOP =>
-						result := get_stopmask_objects (packge, BOTTOM);
-						rotate_stopmask_objects (result, + rotation);
-
-					when BOTTOM =>
-						result := get_stopmask_objects (packge, TOP);
-						mirror_stopmask_objects (result);
-						rotate_stopmask_objects (result, - rotation);
-				end case;
-		end case;
-		
-		move_stopmask_objects (result, to_distance_relative (device.position.place));
-		return result;
-	end get_stopmask_objects;
-
 
 
 	
@@ -1169,27 +845,7 @@ package body et_device_query_board is
 
 
 
-	
-	function to_placeholder_content (
-		device_cursor	: in pac_devices_non_electric.cursor;
-		placeholder		: in type_placeholder)
-		return et_text.pac_text_content.bounded_string 
-	is
-		device : type_device_non_electric renames element (device_cursor);
 
-		use et_text;
-		result : pac_text_content.bounded_string;
-	begin
-		case placeholder.meaning is
-			when NAME 		=> result := to_content (to_string (key (device_cursor)));
-			-- CS
-			--when VALUE		=> result := to_content (to_string (device.value));
-			--when PURPOSE	=> result := to_content (to_string (device.purpose));
-			when others => null;
-		end case;
-		
-		return result;
-	end to_placeholder_content;
 	
 
 	
@@ -1293,94 +949,6 @@ package body et_device_query_board is
 
 	
 	
-	function get_silkscreen_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
-		face			: in type_face)
-		return type_silkscreen
-	is
-		result : type_silkscreen;		
-
-		device : type_device_non_electric renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
-
-		rotation : type_rotation_model renames device.position.rotation;
-
-		use et_silkscreen.packages;
-		silkscreen : et_silkscreen.packages.type_silkscreen_package;
-
-		
-		-- Converts the placeholders to a list of regular texts
-		-- and appends them to the silkscreen.texts:
-		procedure convert_placeholders_to_texts is
-			use pac_placeholders;
-
-			procedure query_placeholder (c : in pac_placeholders.cursor) is
-				ph : type_placeholder renames element (c);
-				use pac_text_board;
-				text : type_silk_text := (type_text_fab (ph) with others => <>);
-			begin
-				text.content := to_placeholder_content (device_cursor, ph); -- map from meaning to content
-
-				-- Ignore the text if it has no content:
-				if not is_empty (text.content) then
-					silkscreen.texts.append (text);
-				end if;
-			end query_placeholder;
-			
-		begin
-			silkscreen.placeholders.iterate (query_placeholder'access);		
-		end convert_placeholders_to_texts;
-	
-		
-	begin -- get_silkscreen_objects
-		case face is
-			when TOP =>
-				case get_face (device_cursor) is
-					when TOP =>
-						silkscreen := get_silkscreen_objects (packge, TOP);
-						
-						-- overwrite the default placeholders: -- CS see spec of this function
-						silkscreen.placeholders := device.text_placeholders.silkscreen.top;
-						convert_placeholders_to_texts;
-						rotate_silkscreen_objects (silkscreen, + rotation);
-						
-					when BOTTOM =>
-						silkscreen := get_silkscreen_objects (packge, BOTTOM);
-						
-						-- overwrite the default placeholders: -- CS see spec of this function
-						silkscreen.placeholders := device.text_placeholders.silkscreen.bottom;
-						convert_placeholders_to_texts;
-						mirror_silkscreen_objects (silkscreen);
-						rotate_silkscreen_objects (silkscreen, - rotation);
-				end case;
-
-				
-			when BOTTOM =>
-				case get_face (device_cursor) is
-					when TOP =>
-						silkscreen := get_silkscreen_objects (packge, BOTTOM);
-						
-						-- overwrite the default placeholders: -- CS see spec of this function
-						silkscreen.placeholders := device.text_placeholders.silkscreen.bottom;
-						convert_placeholders_to_texts;
-						rotate_silkscreen_objects (silkscreen, + rotation);
-
-					when BOTTOM =>
-						silkscreen := get_silkscreen_objects (packge, TOP);
-						
-						-- overwrite the default placeholders: -- CS see spec of this function
-						silkscreen.placeholders := device.text_placeholders.silkscreen.top;
-						convert_placeholders_to_texts;
-						mirror_silkscreen_objects (silkscreen);
-						rotate_silkscreen_objects (silkscreen, - rotation);
-				end case;
-		end case;
-		
-		move_silkscreen_objects (silkscreen, to_distance_relative (device.position.place));
-
-		result := type_silkscreen (silkscreen);
-		return result;
-	end get_silkscreen_objects;
 
 
 
@@ -1483,107 +1051,6 @@ package body et_device_query_board is
 
 	
 
-	
-	function get_assy_doc_objects (
-		device_cursor	: in pac_devices_non_electric.cursor;
-		face			: in type_face)
-		return type_assy_doc
-	is
-		result : type_assy_doc;		
-
-		device : type_device_non_electric renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
-
-		rotation : type_rotation_model renames device.position.rotation;
-
-		use et_assy_doc.packages;
-		assy_doc : et_assy_doc.packages.type_assy_doc_package;
-
-
-		-- Converts the placeholders to a list of regular texts
-		-- and appends them to the assy_doc.texts:
-		procedure convert_placeholders_to_texts is
-			use pac_placeholders;
-
-			procedure query_placeholder (c : in pac_placeholders.cursor) is
-				ph : type_placeholder renames element (c);
-				use pac_text_board;
-				text : type_doc_text := (type_text_fab (ph) with others => <>);
-			begin
-				text.content := to_placeholder_content (device_cursor, ph); -- map from meaning to content
-
-				-- Ignore the text if it has no content:
-				if not is_empty (text.content) then
-					
-					-- Vectorize the content of the placeholder:
-					-- text.vectors := vectorize_text (
-					-- 	content		=> text.content,
-					-- 	size		=> ph.size,
-					-- 	--rotation	=> add (get_rotation (ph.position), get_rotation (package_position)),
-					-- 	rotation	=> get_rotation (ph.position),
-					-- 	position	=> ph.position.place,
-					-- 	mirror		=> MIRROR_NO,
-					-- 	line_width	=> ph.line_width,
-					-- 	alignment	=> ph.alignment); -- right, bottom
-
-					assy_doc.texts.append (text);
-				end if;
-			end query_placeholder;
-			
-		begin
-			assy_doc.placeholders.iterate (query_placeholder'access);		
-		end convert_placeholders_to_texts;
-
-		
-	begin -- get_assy_doc_objects
-		case face is
-			when TOP =>
-				case get_face (device_cursor) is
-					when TOP =>
-						assy_doc := get_assy_doc_objects (packge, TOP);
-						
-						-- overwrite the default placeholders: -- CS see spec of this function
-						assy_doc.placeholders := device.text_placeholders.assy_doc.top;
-						convert_placeholders_to_texts;
-						rotate_assy_doc_objects (assy_doc, + rotation);
-
-					when BOTTOM =>
-						assy_doc := get_assy_doc_objects (packge, BOTTOM);
-						
-						-- overwrite the default placeholders: -- CS see spec of this function
-						assy_doc.placeholders := device.text_placeholders.assy_doc.bottom;
-						convert_placeholders_to_texts;
-						mirror_assy_doc_objects (assy_doc);
-						rotate_assy_doc_objects (assy_doc, - rotation);
-				end case;
-
-			when BOTTOM =>
-				case get_face (device_cursor) is
-					when TOP =>
-						assy_doc := get_assy_doc_objects (packge, BOTTOM);
-
-						-- overwrite the default placeholders: -- CS see spec of this function
-						assy_doc.placeholders := device.text_placeholders.assy_doc.bottom;
-						convert_placeholders_to_texts;
-						rotate_assy_doc_objects (assy_doc, + rotation);
-
-					when BOTTOM =>
-						assy_doc := get_assy_doc_objects (packge, TOP);
-
-						-- overwrite the default placeholders: -- CS see spec of this function
-						assy_doc.placeholders := device.text_placeholders.assy_doc.top;
-						convert_placeholders_to_texts;
-						mirror_assy_doc_objects (assy_doc);
-						rotate_assy_doc_objects (assy_doc, - rotation);
-				end case;
-		end case;
-		
-		move_assy_doc_objects (assy_doc, to_distance_relative (device.position.place));
-
-		result := type_assy_doc (assy_doc);
-		return result;
-	end get_assy_doc_objects;
-
 
 
 	
@@ -1662,65 +1129,6 @@ package body et_device_query_board is
 
 
 	
-	function get_holes (
-		device_cursor	: in pac_devices_non_electric.cursor)
-		return pac_holes.list
-	is
-		holes : pac_holes.list; -- to be returned
-		
-		device : type_device_non_electric renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
-
-		rotation : type_rotation_model renames device.position.rotation;
-	begin
-		holes := get_hole_contours (packge);
-				
-		case get_face (device_cursor) is
-			when TOP =>
-				mirror_holes (holes);
-				rotate_holes (holes, - rotation);
-				
-			when BOTTOM =>
-				rotate_holes (holes, + rotation);
-		end case;
-		
-		move_holes (holes, to_distance_relative (device.position.place));
-		return holes;
-	end get_holes;
-
-
-	
-	
-	function get_hole_polygons (
-		device_cursor	: in pac_devices_non_electric.cursor)
-		return pac_polygon_list.list
-	is
-		result : pac_polygon_list.list;
-		holes : pac_holes.list;
-		
-		device : type_device_non_electric renames element (device_cursor);
-		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
-		
-		rotation : type_rotation_model renames device.position.rotation;
-	begin
-		holes := get_hole_contours (packge);
-		
-		case get_face (device_cursor) is
-			when TOP =>
-				mirror_holes (holes);
-				rotate_holes (holes, - rotation);
-
-			when BOTTOM =>
-				rotate_holes (holes, + rotation);
-				
-		end case;
-		
-		move_holes (holes, to_distance_relative (device.position.place));
-		
-		result := to_polygons (holes, fill_tolerance);
-		return result;
-	end get_hole_polygons;
-
 	
 	
 end et_device_query_board;
