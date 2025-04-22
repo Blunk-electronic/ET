@@ -2028,12 +2028,13 @@ is
 				m_tmp.update_element (dev_copy, set_position'access);
 
 				-- Draw the copy of the candidate device:
-				draw_package (
-					electric			=> false,
-					device_electric		=> pac_devices_sch.no_element,
-					device_non_electric	=> dev_copy,
-					flip				=> device.flipped,
-					brightness			=> brightness);
+				null;
+				-- draw_package (
+				-- 	electric			=> false,
+				-- 	device_electric		=> pac_devices_sch.no_element,
+				-- 	device_non_electric	=> dev_copy,
+				-- 	flip				=> device.flipped,
+				-- 	brightness			=> brightness);
 
 			end draw_being_moved;
 

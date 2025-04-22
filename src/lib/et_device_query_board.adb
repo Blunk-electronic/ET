@@ -579,14 +579,16 @@ package body et_device_query_board is
 	begin
 		-- lines, arcs, circles, texts
 		if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
-			if device.flipped = NO then
-				conductors := get_conductor_objects (packge, layer_category);
-				rotate_conductor_objects (conductors, + device.position.rotation);
-			else
-				conductors := get_conductor_objects (packge, invert_category (layer_category));
-				mirror_conductor_objects (conductors);
-				rotate_conductor_objects (conductors, - device.position.rotation);
-			end if;
+			case get_face (device_cursor) is
+				when TOP =>
+					conductors := get_conductor_objects (packge, layer_category);
+					rotate_conductor_objects (conductors, + device.position.rotation);
+
+				when BOTTOM =>
+					conductors := get_conductor_objects (packge, invert_category (layer_category));
+					mirror_conductor_objects (conductors);
+					rotate_conductor_objects (conductors, - device.position.rotation);
+			end case;
 
 			move_conductor_objects (conductors, offset);
 		end if;
@@ -618,14 +620,15 @@ package body et_device_query_board is
 		use et_contour_to_polygon;
 	begin
 		-- TERMINALS:
-		if device.flipped = NO then
-			terminals := get_terminal_contours (packge, layer_category);
-			rotate_contours (terminals, device.position.rotation);
-		else
-			terminals := get_terminal_contours (packge, invert_category (layer_category));
-			mirror_contours (terminals);
-			rotate_contours (terminals, - device.position.rotation);
-		end if;
+		case get_face (device_cursor) is
+			when TOP =>
+				terminals := get_terminal_contours (packge, layer_category);
+				rotate_contours (terminals, device.position.rotation);
+			when BOTTOM =>
+				terminals := get_terminal_contours (packge, invert_category (layer_category));
+				mirror_contours (terminals);
+				rotate_contours (terminals, - device.position.rotation);
+		end case;
 
 		move_contours (terminals, offset);
 		
@@ -638,14 +641,16 @@ package body et_device_query_board is
 
 		-- CONDUCTOR OBJECTS (lines, arcs, circles, texts)
 		if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
-			if device.flipped = NO then
-				conductors := get_conductor_objects (packge, layer_category);
-				rotate_conductor_objects (conductors, + device.position.rotation);
-			else
-				conductors := get_conductor_objects (packge, invert_category (layer_category));
-				mirror_conductor_objects (conductors);
-				rotate_conductor_objects (conductors, - device.position.rotation);
-			end if;
+			case get_face (device_cursor) is
+				when TOP =>
+					conductors := get_conductor_objects (packge, layer_category);
+					rotate_conductor_objects (conductors, + device.position.rotation);
+					
+				when BOTTOM =>
+					conductors := get_conductor_objects (packge, invert_category (layer_category));
+					mirror_conductor_objects (conductors);
+					rotate_conductor_objects (conductors, - device.position.rotation);
+			end case;
 
 			move_conductor_objects (conductors, offset);
 
@@ -750,14 +755,16 @@ package body et_device_query_board is
 		rotation : type_rotation_model renames device.position.rotation;
 	begin
 		if layer_category /= INNER then -- route restrict objects exist in outer layers only
-			if device.flipped = NO then
-				restrict := get_route_restrict_objects (packge, layer_category);
-				rotate_route_restrict_objects (restrict, + device.position.rotation);
-			else
-				restrict := get_route_restrict_objects (packge, invert_category (layer_category));
-				mirror_route_restrict_objects (restrict);
-				rotate_route_restrict_objects (restrict, - device.position.rotation);
-			end if;
+			case get_face (device_cursor) is
+				when TOP =>
+					restrict := get_route_restrict_objects (packge, layer_category);
+					rotate_route_restrict_objects (restrict, + device.position.rotation);
+
+				when BOTTOM =>
+					restrict := get_route_restrict_objects (packge, invert_category (layer_category));
+					mirror_route_restrict_objects (restrict);
+					rotate_route_restrict_objects (restrict, - device.position.rotation);
+			end case;
 
 			move_route_restrict_objects (restrict, to_distance_relative (device.position.place));
 		end if;
@@ -782,14 +789,16 @@ package body et_device_query_board is
 		restrict : type_one_side;
 	begin
 		if layer_category /= INNER then -- route restrict objects exist in outer layers only
-			if device.flipped = NO then
-				restrict := get_route_restrict_objects (packge, layer_category);
-				rotate_route_restrict_objects (restrict, + device.position.rotation);
-			else
-				restrict := get_route_restrict_objects (packge, invert_category (layer_category));
-				mirror_route_restrict_objects (restrict);
-				rotate_route_restrict_objects (restrict, - device.position.rotation);
-			end if;
+			case get_face (device_cursor) is
+				when TOP =>
+					restrict := get_route_restrict_objects (packge, layer_category);
+					rotate_route_restrict_objects (restrict, + device.position.rotation);
+
+				when BOTTOM =>
+					restrict := get_route_restrict_objects (packge, invert_category (layer_category));
+					mirror_route_restrict_objects (restrict);
+					rotate_route_restrict_objects (restrict, - device.position.rotation);
+			end case;
 
 			move_route_restrict_objects (restrict, to_distance_relative (device.position.place));
 
@@ -856,14 +865,16 @@ package body et_device_query_board is
 		rotation : type_rotation_model renames device.position.rotation;
 	begin
 		if layer_category /= INNER then -- via restrict objects exist in outer layers only
-			if device.flipped = NO then
-				restrict := get_via_restrict_objects (packge, layer_category);
-				rotate_via_restrict_objects (restrict, + device.position.rotation);
-			else
-				restrict := get_via_restrict_objects (packge, invert_category (layer_category));
-				mirror_via_restrict_objects (restrict);
-				rotate_via_restrict_objects (restrict, - device.position.rotation);
-			end if;
+			case get_face (device_cursor) is
+				when TOP =>
+					restrict := get_via_restrict_objects (packge, layer_category);
+					rotate_via_restrict_objects (restrict, + device.position.rotation);
+
+				when BOTTOM =>
+					restrict := get_via_restrict_objects (packge, invert_category (layer_category));
+					mirror_via_restrict_objects (restrict);
+					rotate_via_restrict_objects (restrict, - device.position.rotation);
+			end case;
 
 			move_via_restrict_objects (restrict, to_distance_relative (device.position.place));
 		end if;
@@ -939,24 +950,28 @@ package body et_device_query_board is
 	begin
 		case face is
 			when TOP =>
-				if device.flipped = NO then
-					result := get_keepout_objects (packge, TOP);
-					rotate_keepout_objects (result, + rotation);
-				else
-					result := get_keepout_objects (packge, BOTTOM);
-					mirror_keepout_objects (result);
-					rotate_keepout_objects (result, - rotation);
-				end if;
+				case get_face (device_cursor) is
+					when TOP =>
+						result := get_keepout_objects (packge, TOP);
+						rotate_keepout_objects (result, + rotation);
+
+					when BOTTOM =>
+						result := get_keepout_objects (packge, BOTTOM);
+						mirror_keepout_objects (result);
+						rotate_keepout_objects (result, - rotation);
+				end case;
 
 			when BOTTOM =>
-				if device.flipped = NO then
-					result := get_keepout_objects (packge, BOTTOM);
-					rotate_keepout_objects (result, + rotation);
-				else
-					result := get_keepout_objects (packge, TOP);
-					mirror_keepout_objects (result);
-					rotate_keepout_objects (result, - rotation);
-				end if;
+				case get_face (device_cursor) is
+					when TOP =>
+						result := get_keepout_objects (packge, BOTTOM);
+						rotate_keepout_objects (result, + rotation);
+
+					when BOTTOM =>
+						result := get_keepout_objects (packge, TOP);
+						mirror_keepout_objects (result);
+						rotate_keepout_objects (result, - rotation);
+				end case;
 		end case;
 
 		move_keepout_objects (result, to_distance_relative (device.position.place));
@@ -1015,6 +1030,7 @@ package body et_device_query_board is
 
 	
 
+	
 
 	function get_stencil_objects (
 		device_cursor	: in pac_devices_non_electric.cursor;
@@ -1030,24 +1046,28 @@ package body et_device_query_board is
 	begin
 		case face is
 			when TOP =>
-				if device.flipped = NO then
-					result := get_stencil_objects (packge, TOP);
-					rotate_stencil_objects (result, + rotation);
-				else
-					result := get_stencil_objects (packge, BOTTOM);
-					mirror_stencil_objects (result);
-					rotate_stencil_objects (result, - rotation);
-				end if;
+				case get_face (device_cursor) is
+					when TOP =>
+						result := get_stencil_objects (packge, TOP);
+						rotate_stencil_objects (result, + rotation);
+
+					when BOTTOM =>
+						result := get_stencil_objects (packge, BOTTOM);
+						mirror_stencil_objects (result);
+						rotate_stencil_objects (result, - rotation);
+				end case;
 
 			when BOTTOM =>
-				if device.flipped = NO then
-					result := get_stencil_objects (packge, BOTTOM);
-					rotate_stencil_objects (result, + rotation);
-				else
-					result := get_stencil_objects (packge, TOP);
-					mirror_stencil_objects (result);
-					rotate_stencil_objects (result, - rotation);
-				end if;
+				case get_face (device_cursor) is
+					when TOP =>
+						result := get_stencil_objects (packge, BOTTOM);
+						rotate_stencil_objects (result, + rotation);
+						
+					when BOTTOM =>
+						result := get_stencil_objects (packge, TOP);
+						mirror_stencil_objects (result);
+						rotate_stencil_objects (result, - rotation);
+				end case;
 		end case;
 		
 		move_stencil_objects (result, to_distance_relative (device.position.place));
@@ -1128,24 +1148,28 @@ package body et_device_query_board is
 	begin
 		case face is
 			when TOP =>
-				if device.flipped = NO then
-					result := get_stopmask_objects (packge, TOP);
-					rotate_stopmask_objects (result, + rotation);
-				else
-					result := get_stopmask_objects (packge, BOTTOM);
-					mirror_stopmask_objects (result);
-					rotate_stopmask_objects (result, - rotation);
-				end if;
+				case get_face (device_cursor) is
+					when TOP =>
+						result := get_stopmask_objects (packge, TOP);
+						rotate_stopmask_objects (result, + rotation);
+
+					when BOTTOM =>
+						result := get_stopmask_objects (packge, BOTTOM);
+						mirror_stopmask_objects (result);
+						rotate_stopmask_objects (result, - rotation);
+				end case;
 
 			when BOTTOM =>
-				if device.flipped = NO then
-					result := get_stopmask_objects (packge, BOTTOM);
-					rotate_stopmask_objects (result, + rotation);
-				else
-					result := get_stopmask_objects (packge, TOP);
-					mirror_stopmask_objects (result);
-					rotate_stopmask_objects (result, - rotation);
-				end if;
+				case get_face (device_cursor) is
+					when TOP =>
+						result := get_stopmask_objects (packge, BOTTOM);
+						rotate_stopmask_objects (result, + rotation);
+
+					when BOTTOM =>
+						result := get_stopmask_objects (packge, TOP);
+						mirror_stopmask_objects (result);
+						rotate_stopmask_objects (result, - rotation);
+				end case;
 		end case;
 		
 		move_stopmask_objects (result, to_distance_relative (device.position.place));
@@ -1204,6 +1228,7 @@ package body et_device_query_board is
 	
 
 	
+
 	
 -- SILKSCREEN
 
@@ -1345,40 +1370,45 @@ package body et_device_query_board is
 	begin -- get_silkscreen_objects
 		case face is
 			when TOP =>
-				if device.flipped = NO then
-					silkscreen := get_silkscreen_objects (packge, TOP);
-					
-					-- overwrite the default placeholders: -- CS see spec of this function
-					silkscreen.placeholders := device.text_placeholders.silkscreen.top;
-					convert_placeholders_to_texts;
-					rotate_silkscreen_objects (silkscreen, + rotation);
-				else
-					silkscreen := get_silkscreen_objects (packge, BOTTOM);
-					
-					-- overwrite the default placeholders: -- CS see spec of this function
-					silkscreen.placeholders := device.text_placeholders.silkscreen.bottom;
-					convert_placeholders_to_texts;
-					mirror_silkscreen_objects (silkscreen);
-					rotate_silkscreen_objects (silkscreen, - rotation);
-				end if;
+				case get_face (device_cursor) is
+					when TOP =>
+						silkscreen := get_silkscreen_objects (packge, TOP);
+						
+						-- overwrite the default placeholders: -- CS see spec of this function
+						silkscreen.placeholders := device.text_placeholders.silkscreen.top;
+						convert_placeholders_to_texts;
+						rotate_silkscreen_objects (silkscreen, + rotation);
+						
+					when BOTTOM =>
+						silkscreen := get_silkscreen_objects (packge, BOTTOM);
+						
+						-- overwrite the default placeholders: -- CS see spec of this function
+						silkscreen.placeholders := device.text_placeholders.silkscreen.bottom;
+						convert_placeholders_to_texts;
+						mirror_silkscreen_objects (silkscreen);
+						rotate_silkscreen_objects (silkscreen, - rotation);
+				end case;
 
+				
 			when BOTTOM =>
-				if device.flipped = NO then
-					silkscreen := get_silkscreen_objects (packge, BOTTOM);
-					
-					-- overwrite the default placeholders: -- CS see spec of this function
-					silkscreen.placeholders := device.text_placeholders.silkscreen.bottom;
-					convert_placeholders_to_texts;
-					rotate_silkscreen_objects (silkscreen, + rotation);
-				else
-					silkscreen := get_silkscreen_objects (packge, TOP);
-					
-					-- overwrite the default placeholders: -- CS see spec of this function
-					silkscreen.placeholders := device.text_placeholders.silkscreen.top;
-					convert_placeholders_to_texts;
-					mirror_silkscreen_objects (silkscreen);
-					rotate_silkscreen_objects (silkscreen, - rotation);
-				end if;
+				case get_face (device_cursor) is
+					when TOP =>
+						silkscreen := get_silkscreen_objects (packge, BOTTOM);
+						
+						-- overwrite the default placeholders: -- CS see spec of this function
+						silkscreen.placeholders := device.text_placeholders.silkscreen.bottom;
+						convert_placeholders_to_texts;
+						rotate_silkscreen_objects (silkscreen, + rotation);
+
+					when BOTTOM =>
+						silkscreen := get_silkscreen_objects (packge, TOP);
+						
+						-- overwrite the default placeholders: -- CS see spec of this function
+						silkscreen.placeholders := device.text_placeholders.silkscreen.top;
+						convert_placeholders_to_texts;
+						mirror_silkscreen_objects (silkscreen);
+						rotate_silkscreen_objects (silkscreen, - rotation);
+				end case;
 		end case;
 		
 		move_silkscreen_objects (silkscreen, to_distance_relative (device.position.place));
@@ -1543,40 +1573,44 @@ package body et_device_query_board is
 	begin -- get_assy_doc_objects
 		case face is
 			when TOP =>
-				if device.flipped = NO then
-					assy_doc := get_assy_doc_objects (packge, TOP);
-					
-					-- overwrite the default placeholders: -- CS see spec of this function
-					assy_doc.placeholders := device.text_placeholders.assy_doc.top;
-					convert_placeholders_to_texts;
-					rotate_assy_doc_objects (assy_doc, + rotation);
-				else
-					assy_doc := get_assy_doc_objects (packge, BOTTOM);
-					
-					-- overwrite the default placeholders: -- CS see spec of this function
-					assy_doc.placeholders := device.text_placeholders.assy_doc.bottom;
-					convert_placeholders_to_texts;
-					mirror_assy_doc_objects (assy_doc);
-					rotate_assy_doc_objects (assy_doc, - rotation);
-				end if;
+				case get_face (device_cursor) is
+					when TOP =>
+						assy_doc := get_assy_doc_objects (packge, TOP);
+						
+						-- overwrite the default placeholders: -- CS see spec of this function
+						assy_doc.placeholders := device.text_placeholders.assy_doc.top;
+						convert_placeholders_to_texts;
+						rotate_assy_doc_objects (assy_doc, + rotation);
+
+					when BOTTOM =>
+						assy_doc := get_assy_doc_objects (packge, BOTTOM);
+						
+						-- overwrite the default placeholders: -- CS see spec of this function
+						assy_doc.placeholders := device.text_placeholders.assy_doc.bottom;
+						convert_placeholders_to_texts;
+						mirror_assy_doc_objects (assy_doc);
+						rotate_assy_doc_objects (assy_doc, - rotation);
+				end case;
 
 			when BOTTOM =>
-				if device.flipped = NO then
-					assy_doc := get_assy_doc_objects (packge, BOTTOM);
+				case get_face (device_cursor) is
+					when TOP =>
+						assy_doc := get_assy_doc_objects (packge, BOTTOM);
 
-					-- overwrite the default placeholders: -- CS see spec of this function
-					assy_doc.placeholders := device.text_placeholders.assy_doc.bottom;
-					convert_placeholders_to_texts;
-					rotate_assy_doc_objects (assy_doc, + rotation);
-				else
-					assy_doc := get_assy_doc_objects (packge, TOP);
+						-- overwrite the default placeholders: -- CS see spec of this function
+						assy_doc.placeholders := device.text_placeholders.assy_doc.bottom;
+						convert_placeholders_to_texts;
+						rotate_assy_doc_objects (assy_doc, + rotation);
 
-					-- overwrite the default placeholders: -- CS see spec of this function
-					assy_doc.placeholders := device.text_placeholders.assy_doc.top;
-					convert_placeholders_to_texts;
-					mirror_assy_doc_objects (assy_doc);
-					rotate_assy_doc_objects (assy_doc, - rotation);
-				end if;
+					when BOTTOM =>
+						assy_doc := get_assy_doc_objects (packge, TOP);
+
+						-- overwrite the default placeholders: -- CS see spec of this function
+						assy_doc.placeholders := device.text_placeholders.assy_doc.top;
+						convert_placeholders_to_texts;
+						mirror_assy_doc_objects (assy_doc);
+						rotate_assy_doc_objects (assy_doc, - rotation);
+				end case;
 		end case;
 		
 		move_assy_doc_objects (assy_doc, to_distance_relative (device.position.place));
@@ -1676,12 +1710,14 @@ package body et_device_query_board is
 	begin
 		holes := get_hole_contours (packge);
 				
-		if device.flipped = YES then
-			mirror_holes (holes);
-			rotate_holes (holes, - rotation);
-		else
-			rotate_holes (holes, + rotation);
-		end if;
+		case get_face (device_cursor) is
+			when TOP =>
+				mirror_holes (holes);
+				rotate_holes (holes, - rotation);
+				
+			when BOTTOM =>
+				rotate_holes (holes, + rotation);
+		end case;
 		
 		move_holes (holes, to_distance_relative (device.position.place));
 		return holes;
@@ -1704,12 +1740,15 @@ package body et_device_query_board is
 	begin
 		holes := get_hole_contours (packge);
 		
-		if device.flipped = YES then
-			mirror_holes (holes);
-			rotate_holes (holes, - rotation);
-		else
-			rotate_holes (holes, + rotation);
-		end if;
+		case get_face (device_cursor) is
+			when TOP =>
+				mirror_holes (holes);
+				rotate_holes (holes, - rotation);
+
+			when BOTTOM =>
+				rotate_holes (holes, + rotation);
+				
+		end case;
 		
 		move_holes (holes, to_distance_relative (device.position.place));
 		

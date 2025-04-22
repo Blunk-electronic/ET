@@ -1680,7 +1680,6 @@ is
 			section_mark (section_device, HEADER);
 
 			write (keyword => keyword_name, parameters => to_string (key (c))); -- name FD1
-			write (keyword => keyword_flipped, parameters => to_string (element (c).flipped));
 			write (keyword => keyword_position, parameters => position (element (c).position));
 			write (keyword => keyword_model, parameters => to_string (element (c).package_model));
 
