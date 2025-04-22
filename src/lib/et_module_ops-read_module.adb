@@ -1941,8 +1941,8 @@ is
 
 	
 	device_position	: et_pcb_coordinates_2.type_package_position; -- in the layout ! incl. angle and face
-	device_flipped	: et_pcb_sides.type_flipped := et_pcb_sides.flipped_default;
 
+	
 	
 	procedure read_package is
 		use et_pcb_sides;
@@ -1955,10 +1955,6 @@ is
 			-- extract package position starting at field 2
 			device_position := to_position (line, 2);
 
-		elsif kw = keyword_flipped then -- flipped no/yes
-			expect_field_count (line, 2);
-
-			device_flipped := to_flipped (f (line, 2));
 		else
 			invalid_keyword (kw);
 		end if;
@@ -2310,6 +2306,7 @@ is
 	end read_device;
 
 
+
 	
 	procedure read_device_non_electric is
 		use et_device_model;
@@ -2322,16 +2319,13 @@ is
 			expect_field_count (line, 2);
 			device_name := to_device_name (f (line, 2));
 
+			
 		elsif kw = keyword_position then -- position x 163.500 y 92.500 rotation 0.00 face top
 			expect_field_count (line, 9);
 
 			-- extract device position (in the layout) starting at field 2
 			device_position := to_position (line, 2);
-			
-		elsif kw = keyword_flipped then -- flipped no/yes
-			expect_field_count (line, 2);
-
-			device_flipped := to_flipped (f (line, 2));
+		
 			
 		elsif kw = keyword_model then -- model /lib/fiducials/crosshair.pac
 			expect_field_count (line, 2);
@@ -3249,7 +3243,6 @@ is
 				end if;					
 
 				device_non_electric.position := device_position;
-				device_non_electric.flipped := device_flipped;
 				device_non_electric.package_model := device_non_electric_model;
 -- 					device_non_electric.text_placeholders := device_text_placeholders;
 
@@ -3285,7 +3278,6 @@ is
 				device_non_electric 		:= (others => <>);
 				device_name					:= (others => <>);
 				device_position				:= package_position_default;
-				device_flipped				:= flipped_default;
 				device_text_placeholders	:= (others => <>);
 				device_model				:= to_file_name ("");
 
@@ -5720,14 +5712,8 @@ is
 							-- issue warning and skip this statement in this case:
 							device.position := device_position;
 
-							-- Assign flipped flag
-							device.flipped := device_flipped;
-
 							-- reset device package position for next device
 							device_position := et_pcb_coordinates_2.package_position_default;
-
-							-- reset flip flag for next device
-							device_flipped := et_pcb_sides.flipped_default;
 
 						when others => invalid_section;
 					end case;

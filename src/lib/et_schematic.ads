@@ -145,16 +145,14 @@ package et_schematic is
 				-- The package variant:
 				variant		: pac_package_variant_name.bounded_string; -- D, N
 
-				-- This is layout related. In the layout the package has a position
+				-- This is layout related. In the layout, the package has a position
 				-- and placeholders for name, value and purpose.
 				-- The assembly side of a package is by default TOP.
-				-- The flag "flipped" indicates whether the package has been flipped
-				-- in the layout drawing by the operator.
 				-- As a result of a flip operation, position.face changes from top to bottom
 				-- or vice versa.
-				-- Flipping a device to top or bottom means to mirror it along its Y-axis.
+				-- Flipping a device to top or bottom means it will be drawn
+				-- mirrored along its Y-axis.
 				position			: et_pcb_coordinates_2.type_package_position; -- incl. rotation and face
-				flipped				: type_flipped := flipped_default; -- CS remove ?
 				text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 
 				-- CS flags that signal whether partcode, purpose, bom are displayed or not.

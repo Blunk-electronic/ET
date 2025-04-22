@@ -790,12 +790,20 @@ is
 			use et_schematic;
 			use et_pcb;
 
-			
+
+			-- This procedure parses a given package, indicated
+			-- by a cursor, either to an electical or to a
+			-- non-electrical device.
+			-- The flag "electrical" determines whether an electrical
+			-- or a non-electrical devcie is to be processed.
+			-- The flag "mirror" indicates that the package is on
+			-- the bottom side of the board and thus all objects must
+			-- be processed as mirrored along the y-axis:
 			procedure process_package (
 				electric			: in boolean;
 				device_electric		: in pac_devices_sch.cursor;
-				device_non_electric	: in pac_devices_non_electric.cursor;					   
-				flip				: in type_flipped)
+				device_non_electric	: in pac_devices_non_electric.cursor;
+				mirror 				: in type_mirror)
 			is
 				use et_device_query_board;
 				use et_packages;
@@ -837,7 +845,7 @@ is
 							offset_1	=> package_position,
 							offset_2	=> origin,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 						
 						merge_areas (bbox_new, b);
 					end query_line;
@@ -852,7 +860,7 @@ is
 							offset_1	=> package_position,
 							offset_2	=> origin,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_arc;
@@ -867,7 +875,7 @@ is
 							offset_1	=> package_position,
 							offset_2	=> origin,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_circle;
@@ -918,7 +926,7 @@ is
 							width		=> line.width,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 						
 						merge_areas (bbox_new, b);
 					end query_line;
@@ -932,7 +940,7 @@ is
 							width		=> arc.width,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_arc;
@@ -946,7 +954,7 @@ is
 							width		=> circle.width,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_circle;
@@ -959,7 +967,7 @@ is
 							contour		=> contour,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_contour;
@@ -992,6 +1000,8 @@ is
 					
 					packge.silkscreen.top.texts.iterate (query_text'access);
 					packge.silkscreen.bottom.texts.iterate (query_text'access);
+
+					-- CS placeholders
 				end process_silkscreen;
 				
 
@@ -1013,7 +1023,7 @@ is
 							width		=> line.width,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 						
 						merge_areas (bbox_new, b);
 					end query_line;
@@ -1027,7 +1037,7 @@ is
 							width		=> arc.width,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_arc;
@@ -1041,7 +1051,7 @@ is
 							width		=> circle.width,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_circle;
@@ -1054,7 +1064,7 @@ is
 							contour		=> contour,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_contour;
@@ -1087,6 +1097,8 @@ is
 					
 					packge.assy_doc.top.texts.iterate (query_text'access);
 					packge.assy_doc.bottom.texts.iterate (query_text'access);
+
+					-- CS placeholders
 				end process_assembly_doc;
 
 
@@ -1104,7 +1116,7 @@ is
 							contour		=> zone,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_zone;
@@ -1146,7 +1158,7 @@ is
 							width		=> line.width,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 						
 						merge_areas (bbox_new, b);
 					end query_line;
@@ -1160,7 +1172,7 @@ is
 							width		=> arc.width,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_arc;
@@ -1174,7 +1186,7 @@ is
 							width		=> circle.width,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_circle;
@@ -1187,7 +1199,7 @@ is
 							contour		=> contour,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_contour;
@@ -1220,6 +1232,8 @@ is
 					
 					packge.stop_mask.top.texts.iterate (query_text'access);
 					packge.stop_mask.bottom.texts.iterate (query_text'access);
+
+					-- CS placeholders
 				end process_stopmask;
 
 				
@@ -1243,7 +1257,7 @@ is
 							width		=> line.width,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 						
 						merge_areas (bbox_new, b);
 					end query_line;
@@ -1257,7 +1271,7 @@ is
 							width		=> arc.width,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_arc;
@@ -1271,7 +1285,7 @@ is
 							width		=> circle.width,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_circle;
@@ -1284,7 +1298,7 @@ is
 							contour		=> contour,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_contour;
@@ -1329,7 +1343,7 @@ is
 							width		=> zero,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 						
 						merge_areas (bbox_new, b);
 					end query_line;
@@ -1343,7 +1357,7 @@ is
 							width		=> zero,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_arc;
@@ -1357,7 +1371,7 @@ is
 							width		=> zero,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_circle;
@@ -1370,7 +1384,7 @@ is
 							contour		=> zone,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_zone;
@@ -1418,7 +1432,7 @@ is
 							contour		=> zone,
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_zone;
@@ -1452,7 +1466,7 @@ is
 							contour		=> element (c),
 							offset_1	=> package_position,
 							rotation	=> package_rotation,
-							mirror		=> to_mirror_along_y_axis (flip));
+							mirror		=> mirror);
 
 						merge_areas (bbox_new, b);
 					end query_hole;
@@ -1489,7 +1503,7 @@ is
 									offset_1	=> t.position.place,
 									offset_2	=> package_position,
 									rotation	=> package_rotation,
-									mirror		=> to_mirror_along_y_axis (flip));
+									mirror		=> mirror);
 			  
 								merge_areas (bbox_new, b);
 								
@@ -1498,7 +1512,7 @@ is
 									offset_1	=> t.position.place,
 									offset_2	=> package_position,
 									rotation	=> package_rotation,
-									mirror		=> to_mirror_along_y_axis (flip));
+									mirror		=> mirror);
 			  
 								merge_areas (bbox_new, b);
 								
@@ -1513,7 +1527,7 @@ is
 									offset_1	=> t.position.place,
 									offset_2	=> package_position,
 									rotation	=> package_rotation,
-									mirror		=> to_mirror_along_y_axis (flip));
+									mirror		=> mirror);
 										
 								merge_areas (bbox_new, b);
 
@@ -1578,7 +1592,8 @@ is
 
 
 			
-			
+			-- This procedure iterates all electrical devices
+			-- and sends the packages to the procedure process_package:
 			procedure process_electrical_devices is
 
 				procedure query_module (
@@ -1591,13 +1606,20 @@ is
 						device_cursor : in pac_devices_sch.cursor) 
 					is
 						device : type_device_sch renames element (device_cursor);
-					begin
+						mirror : type_mirror;
+					begin						
 						if is_real (device_cursor) then
+
+							case get_face (device.position) is
+								when TOP	=> mirror := MIRROR_NO;
+								when BOTTOM => mirror := MIRROR_ALONG_Y_AXIS;
+							end case;
+							
 							process_package (
 								electric			=> true,
 								device_electric		=> device_cursor,
 								device_non_electric	=> pac_devices_non_electric.no_element,
-								flip				=> device.flipped);
+								mirror				=> mirror);
 							
 						end if;
 					end query_device;
@@ -1619,6 +1641,8 @@ is
 
 
 			
+			-- This procedure iterates all non-electrical devices
+			-- and sends the packages to the procedure process_package:
 			procedure process_non_electrical_devices is
 
 				procedure query_module (
@@ -1632,12 +1656,18 @@ is
 						device_cursor : in pac_devices_non_electric.cursor) 
 					is 
 						device : type_device_non_electric renames element (device_cursor);
+						mirror : type_mirror;
 					begin
+						case get_face (device.position) is
+							when TOP	=> mirror := MIRROR_NO;
+							when bottom	=> mirror := MIRROR_ALONG_Y_AXIS;
+						end case;
+						
 						process_package (
 							electric			=> false,
 							device_electric		=> pac_devices_sch.no_element,
 							device_non_electric	=> device_cursor,
-							flip				=> device.flipped);
+							mirror				=> mirror);
 					end query_device;
 					
 				begin
@@ -1667,7 +1697,7 @@ is
 
 
 
-		
+
 		procedure process_nets is
 
 			procedure query_module (

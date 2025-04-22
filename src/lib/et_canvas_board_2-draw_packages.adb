@@ -1870,12 +1870,13 @@ is
 			
 			-- Draws the device package at the position as it is in the board:
 			procedure draw_fixed is begin
-				draw_package (
-					electric			=> true,
-					device_electric		=> device_cursor,
-					device_non_electric	=> pac_devices_non_electric.no_element,
-					flip				=> device.flipped,
-					brightness			=> brightness);
+				null;
+				-- draw_package (
+				-- 	electric			=> true,
+				-- 	device_electric		=> device_cursor,
+				-- 	device_non_electric	=> pac_devices_non_electric.no_element,
+				-- 	flip				=> device.flipped,
+				-- 	brightness			=> brightness);
 			end draw_fixed;
 
 
@@ -1916,12 +1917,12 @@ is
 				m_tmp.update_element (dev_copy, set_position'access);
 
 				-- Draw the copy of the candidate device:
-				draw_package (
-					electric			=> true,
-					device_electric		=> dev_copy,
-					device_non_electric	=> pac_devices_non_electric.no_element,
-					flip				=> device.flipped,
-					brightness			=> brightness);
+				-- draw_package (
+				-- 	electric			=> true,
+				-- 	device_electric		=> dev_copy,
+				-- 	device_non_electric	=> pac_devices_non_electric.no_element,
+				-- 	flip				=> device.flipped,
+				-- 	brightness			=> brightness);
 
 			end draw_being_moved;
 			
@@ -1977,13 +1978,14 @@ is
 			procedure draw_fixed is 
 			begin
 				-- put_line (to_string (key (device_cursor)));
-				
-				draw_package (
-					electric			=> false,
-					device_electric		=> pac_devices_sch.no_element,
-					device_non_electric	=> device_cursor,
-					flip				=> device.flipped,
-					brightness 			=> brightness);
+
+				null;
+				-- draw_package (
+				-- 	electric			=> false,
+				-- 	device_electric		=> pac_devices_sch.no_element,
+				-- 	device_non_electric	=> device_cursor,
+				-- 	flip				=> device.flipped,
+				-- 	brightness 			=> brightness);
 			end draw_fixed;
 
 			
@@ -2096,8 +2098,7 @@ is
 	
 	
 	procedure draw_package_2 (
-		packge 		: in type_package_model; 
-		flipped		: in type_flipped)
+		packge 		: in type_package_model)
 	is
 		-- This flag is set if the package is on the bottom side of the board.
 		-- In that case, EVERYTHING (except the origin
@@ -3347,8 +3348,7 @@ is
 
 		-- Send the actual package model to the draw procedure:
 		draw_package_2 (
-			packge	=> pac_package_models.element (package_models, package_model_name),
-			flipped	=> device.flipped);
+			packge	=> pac_package_models.element (package_models, package_model_name));
 		
 	end query_electrical_device_2;
 
@@ -3373,8 +3373,7 @@ is
 		
 		-- Send the actual package model to the draw procedure:
 		draw_package_2 (
-			packge	=> pac_package_models.element (package_models, device.package_model),
-			flipped	=> device.flipped);
+			packge	=> pac_package_models.element (package_models, device.package_model));
 	end query_non_electrical_device_2;
 
 

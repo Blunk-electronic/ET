@@ -312,7 +312,7 @@ package et_pcb is
 	
 	type type_device_non_electric is record
 		position			: et_pcb_coordinates_2.type_package_position; -- incl. rotation and face
-		flipped				: type_flipped := flipped_default;
+		flipped				: type_flipped := flipped_default; -- CS remove ?
 		text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 		-- CS cursor to package model instead ?
