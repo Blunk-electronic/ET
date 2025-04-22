@@ -58,6 +58,7 @@ with et_assy_doc.packages;
 
 with et_symbols;	
 with et_schematic;						use et_schematic;
+with et_devices_electrical;				use et_devices_electrical;
 with et_pcb;							use et_pcb;
 with et_pcb_stack;						use et_pcb_stack;
 with et_packages;						use et_packages;
@@ -84,21 +85,21 @@ package et_device_query_board is
 	-- Returns the current position (x/y/rotation/face) of the 
 	-- given electrical device:
 	function get_position (
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		device_cursor	: in pac_devices_sch.cursor) -- IC45
 		return type_package_position;
 
 
 	-- Returns the current position (x/y) of the 
 	-- given electrical device:
 	function get_position (
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		device_cursor	: in pac_devices_sch.cursor) -- IC45
 		return type_vector_model;
 
 	
 	
 	-- Returns the current face of the given electrical device:
 	function get_face (
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		device_cursor	: in pac_devices_sch.cursor) -- IC45
 		return type_face; -- top/bottom
 
 
@@ -108,7 +109,7 @@ package et_device_query_board is
 	-- The device must be real (appearance SCH_PCB).
 	function get_terminal_position (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in et_schematic.pac_devices_sch.cursor; -- IC45
+		device_cursor	: in pac_devices_sch.cursor; -- IC45
 		terminal_name	: in pac_terminal_name.bounded_string) -- H7, 14
 		return type_terminal_position_fine;
 
@@ -126,7 +127,7 @@ package et_device_query_board is
 	-- This query assumes the default assembly
 	-- variant, means the device of interest exists in any case:
 	function get_all_terminals (
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		device_cursor	: in pac_devices_sch.cursor) -- IC45
 		return pac_terminals.map;
 
 
@@ -136,7 +137,7 @@ package et_device_query_board is
 	-- variant, means the device of interest exists in any case:
 	function get_unconnected_terminals (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		device_cursor	: in pac_devices_sch.cursor) -- IC45
 		return pac_terminals.map;
 
 	

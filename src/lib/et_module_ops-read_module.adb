@@ -81,6 +81,7 @@ with et_device_rw;
 with et_frames;
 with et_frame_rw;
 with et_sheets;
+with et_devices_electrical;
 with et_devices_non_electrical;
 with et_pcb;
 with et_pcb_stack;
@@ -1049,7 +1050,7 @@ is
 	schematic_text : et_schematic.type_text;
 
 	-- The temporarily device will exist where "device" points at:
-	device					: access et_schematic.type_device_sch;
+	device					: access et_devices_electrical.type_device_sch;
 	
 	device_name				: et_device_name.type_device_name; -- C12
 	device_model			: et_device_model_names.pac_device_model_file.bounded_string; -- ../libraries/transistor/pnp.dev
@@ -2244,7 +2245,7 @@ is
 		use et_device_model;
 		use et_device_purpose;
 		use et_device_model_names;
-		use et_schematic;
+		use et_devices_electrical;
 		use et_device_appearance;
 		use et_device_value;
 		use et_device_partcode;
@@ -3033,6 +3034,7 @@ is
 				module		: in out type_generic_module) 
 			is
 				use et_schematic;
+				use et_devices_electrical;
 				use et_symbols;
 				use et_device_model;
 				use et_device_model_names;

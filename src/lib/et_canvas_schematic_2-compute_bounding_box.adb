@@ -53,7 +53,7 @@ with ada.containers;
 
 with et_frames;
 with et_units;						use et_units;
-with et_schematic;					use et_schematic;
+with et_devices_electrical;			use et_devices_electrical;
 with et_nets;
 with et_net_labels;
 

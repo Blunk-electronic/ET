@@ -51,7 +51,7 @@ package body et_routing is
 
 	function get_clearance (
 		module	: in pac_generic_modules.cursor;
-		device	: in et_schematic.pac_devices_sch.cursor;
+		device	: in et_devices_electrical.pac_devices_sch.cursor;
 		terminal: in pac_terminals.cursor)
 		return type_get_terminal_clearance_result
 	is 

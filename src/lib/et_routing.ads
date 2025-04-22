@@ -47,7 +47,7 @@ with et_design_rules_board;			use et_design_rules_board;
 with et_net_names;					use et_net_names;
 with et_vias;						use et_vias;
 with et_terminals;					use et_terminals;
-with et_schematic;
+with et_devices_electrical;
 with et_nets;						use et_nets;
 
 with et_schematic_ops;
@@ -99,7 +99,7 @@ package et_routing is
 	-- no clearance:
 	function get_clearance (
 		module	: in pac_generic_modules.cursor;
-		device	: in et_schematic.pac_devices_sch.cursor;
+		device	: in et_devices_electrical.pac_devices_sch.cursor;
 		terminal: in pac_terminals.cursor)
 		return type_get_terminal_clearance_result;
 

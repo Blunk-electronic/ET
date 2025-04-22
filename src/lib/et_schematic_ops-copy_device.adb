@@ -59,8 +59,9 @@ is
 		module		: in out type_generic_module) 
 	is
 		use et_device_appearance;
-		use et_schematic.pac_devices_sch;
-		device_cursor_sch : et_schematic.pac_devices_sch.cursor;
+		use et_devices_electrical;
+		use pac_devices_sch;
+		device_cursor_sch : pac_devices_sch.cursor;
 
 		use et_symbols;
 		use pac_devices_lib;
@@ -194,7 +195,7 @@ is
 			-- The unit list is empty for the time being:
 			case element (device_cursor_sch).appearance is
 				when APPEARANCE_VIRTUAL =>
-					et_schematic.pac_devices_sch.insert (
+					pac_devices_sch.insert (
 						container	=> module.devices,
 						inserted	=> inserted,
 						position	=> device_cursor_sch,
@@ -206,7 +207,7 @@ is
 							));
 
 				when APPEARANCE_PCB =>
-					et_schematic.pac_devices_sch.insert (
+					pac_devices_sch.insert (
 						container	=> module.devices,
 						inserted	=> inserted,
 						position	=> device_cursor_sch,
@@ -236,7 +237,7 @@ is
 			-- whether an internal or external unit is placed.
 			if unit_cursors.int /= pac_units_internal.no_element then
 
-				et_schematic.pac_devices_sch.update_element (
+				pac_devices_sch.update_element (
 					container	=> module.devices,
 					position	=> device_cursor_sch,
 					process		=> add_unit_internal'access);
@@ -255,7 +256,7 @@ is
 			-- no internal unit available -> add external unit
 			elsif unit_cursors.ext /= pac_units_external.no_element then
 				
-				et_schematic.pac_devices_sch.update_element (
+				pac_devices_sch.update_element (
 					container	=> module.devices,
 					position	=> device_cursor_sch,
 					process		=> add_unit_external'access);

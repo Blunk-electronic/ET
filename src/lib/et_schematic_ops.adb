@@ -48,6 +48,7 @@ with et_conventions;
 with et_pcb_sides;
 with et_pcb_coordinates_2;
 with et_pcb;
+with et_devices_electrical;
 with et_devices_non_electrical;
 with et_port_direction;
 with et_terminals;

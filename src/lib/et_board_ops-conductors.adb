@@ -52,6 +52,7 @@ with et_device_query_board;			use et_device_query_board;
 with et_fill_zones.boards;			use et_fill_zones.boards;
 with et_object_status;
 
+with et_devices_electrical;
 
 
 package body et_board_ops.conductors is
@@ -303,7 +304,8 @@ package body et_board_ops.conductors is
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
 		line : type_conductor_line;
-		
+
+		use et_devices_electrical;		
 		device_cursor : pac_devices_sch.cursor;
 
 		
@@ -378,7 +380,8 @@ package body et_board_ops.conductors is
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
 		line : type_conductor_line;
-		
+
+		use et_devices_electrical;		
 		device_cursor : pac_devices_sch.cursor;
 
 		
@@ -446,7 +449,8 @@ package body et_board_ops.conductors is
 		-- Finally it will be added to the list of line segments (via procedure add_named_track)
 		-- to the given net.
 		line : type_conductor_line;
-		
+
+		use et_devices_electrical;		
 		device_cursor : pac_devices_sch.cursor;
 
 		
@@ -512,6 +516,7 @@ package body et_board_ops.conductors is
 		-- to the given net.
 		line : type_conductor_line;
 		
+		use et_devices_electrical;
 		device_cursor : pac_devices_sch.cursor;
 		
 		procedure make_line (terminal_position : in type_terminal_position_fine) is begin

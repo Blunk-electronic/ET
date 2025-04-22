@@ -74,6 +74,7 @@ with et_packages;					use et_packages;
 with et_package_variant;
 with et_terminals;
 
+with et_devices_electrical;			use et_devices_electrical;
 with et_devices_non_electrical;		use et_devices_non_electrical;
 with et_pcb_contour;
 with et_pcb_stack;					use et_pcb_stack;
@@ -131,7 +132,7 @@ is
 	
 	procedure draw_package (
 		electric			: in boolean;
-		device_electric		: in et_schematic.pac_devices_sch.cursor;
+		device_electric		: in pac_devices_sch.cursor;
 		device_non_electric	: in pac_devices_non_electric.cursor;					   
 		flip				: in type_flipped;
 		brightness			: in type_brightness)

@@ -70,6 +70,7 @@ with et_device_partcode;
 with et_package_variant;
 with et_symbol_rw;
 with et_schematic;
+with et_devices_electrical;
 with et_schematic_rw;
 with et_device_rw;
 with et_frame_rw;
@@ -891,7 +892,7 @@ is
 
 	
 	procedure query_devices is
-		use et_schematic;
+		use et_devices_electrical;
 		use et_symbols;
 		use et_device_placeholders.symbols;
 		use pac_devices_sch;

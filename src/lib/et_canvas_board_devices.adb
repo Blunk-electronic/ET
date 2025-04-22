@@ -45,6 +45,7 @@ with et_canvas_board_2;
 with et_board_ops.devices;			use et_board_ops.devices;
 with et_device_query_board;			use et_device_query_board;
 
+with et_devices_electrical;			use et_devices_electrical;
 with et_devices_non_electrical;		use et_devices_non_electrical;
 with et_modes.board;
 with et_undo_redo;

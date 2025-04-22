@@ -53,7 +53,7 @@ with et_device_library;					use et_device_library;
 with et_device_model_names;
 with et_device_value;					use et_device_value;
 with et_device_name;					use et_device_name;
-with et_schematic;
+with et_devices_electrical;				use et_devices_electrical;
 
 with et_terminals;
 
@@ -565,7 +565,6 @@ procedure draw_units is
 
 
 
-	use et_schematic;
 	use pac_devices_sch;
 	use pac_units;
 	

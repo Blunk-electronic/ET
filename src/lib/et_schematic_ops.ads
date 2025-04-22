@@ -91,7 +91,7 @@ with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_unit_name;						use et_unit_name;
 with et_units;							use et_units;
 with et_device_library;					use et_device_library;
-
+with et_devices_electrical;				use et_devices_electrical;
 
 package et_schematic_ops is
 

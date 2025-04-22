@@ -58,8 +58,9 @@ is
 	is
 		use et_symbols;
 		use et_device_appearance;
-		use et_schematic.pac_devices_sch;
-		device_cursor_sch : et_schematic.pac_devices_sch.cursor;
+		use et_devices_electrical;
+		use pac_devices_sch;
+		device_cursor_sch : pac_devices_sch.cursor;
 
 		
 		
@@ -216,7 +217,7 @@ is
 			-- If the unit is internal, add it to the device in the schematic:
 			if unit_cursors.int /= pac_units_internal.no_element then
 
-				et_schematic.pac_devices_sch.update_element (
+				pac_devices_sch.update_element (
 					container	=> module.devices,
 					position	=> device_cursor_sch,
 					process		=> add_unit_internal'access);
@@ -233,7 +234,7 @@ is
 			-- Unit is external -> add external unit to device in schematic:
 			elsif unit_cursors.ext /= pac_units_external.no_element then
 				
-				et_schematic.pac_devices_sch.update_element (
+				pac_devices_sch.update_element (
 					container	=> module.devices,
 					position	=> device_cursor_sch,
 					process		=> add_unit_external'access);

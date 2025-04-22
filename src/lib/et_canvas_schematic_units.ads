@@ -56,6 +56,7 @@ with et_nets;						use et_nets;
 with et_unit_name;					use et_unit_name;
 with et_units;						use et_units;
 with et_schematic;					
+with et_devices_electrical;			use et_devices_electrical;
 with et_schematic_ops;				use et_schematic_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;
 with et_string_processing;			use et_string_processing;
@@ -79,7 +80,7 @@ package et_canvas_schematic_units is
 	-- is already placed in the schematic. So we use it
 	-- for example for moving, dragging or rotating of a unit.
 	type type_selected_unit is record
-		device	: et_schematic.pac_devices_sch.cursor;
+		device	: pac_devices_sch.cursor;
 
 		-- If the cursor to the actual unit is no_element then
 		-- the whole device is regarded as selected:

@@ -56,6 +56,7 @@ with et_frames;
 with et_numbering;
 with et_design_rules;
 with et_net_class;					use et_net_class;
+with et_devices_electrical;			use et_devices_electrical;
 with et_devices_non_electrical;		use et_devices_non_electrical;
 
 

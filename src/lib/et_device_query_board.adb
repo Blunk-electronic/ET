@@ -56,7 +56,7 @@ package body et_device_query_board is
 	
 	
 	function get_position (
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		device_cursor	: in pac_devices_sch.cursor) -- IC45
 		return type_package_position
 	is begin
 		return element (device_cursor).position;
@@ -64,7 +64,7 @@ package body et_device_query_board is
 
 
 	function get_position (
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		device_cursor	: in pac_devices_sch.cursor) -- IC45
 		return type_vector_model
 	is begin
 		return get_position (device_cursor).place;
@@ -75,7 +75,7 @@ package body et_device_query_board is
 	
 	
 	function get_face (
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		device_cursor	: in pac_devices_sch.cursor) -- IC45
 		return type_face
 	is 
 		position : type_package_position;
@@ -212,7 +212,7 @@ package body et_device_query_board is
 	
 
 	function get_all_terminals (
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		device_cursor	: in pac_devices_sch.cursor) -- IC45
 		return pac_terminals.map
 	is
 		use pac_package_models;
@@ -226,7 +226,7 @@ package body et_device_query_board is
 
 	function get_unconnected_terminals (
 		module_cursor	: in pac_generic_modules.cursor;
-		device_cursor	: in et_schematic.pac_devices_sch.cursor) -- IC45
+		device_cursor	: in pac_devices_sch.cursor) -- IC45
 		return pac_terminals.map
 	is
 		use pac_generic_modules;
