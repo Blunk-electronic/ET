@@ -80,13 +80,6 @@ package et_device_query_board is
 
 	use pac_geometry_2;
 
- 
-
-	-- Maps from a given cursor of a non-electrical device
-	-- to a cursor to the package model:
-	function get_package_model (
-		device_cursor	: in pac_devices_non_electric.cursor)
-		return pac_package_models.cursor;
 
 	
 	
@@ -104,19 +97,6 @@ package et_device_query_board is
 		return type_vector_model;
 
 	
-	-- Returns the current position (x/y/rotation/face) of the 
-	-- given non-electrical device:
-	function get_position (
-		device_cursor	: in pac_devices_non_electric.cursor) -- FD1
-		return type_package_position;
-
-
-	-- Returns the current position (x/y) of the 
-	-- given non-electrical device:
-	function get_position (
-		device_cursor	: in pac_devices_non_electric.cursor) -- FD1
-		return type_vector_model;
-
 	
 	-- Returns the current face of the given electrical device:
 	function get_face (
@@ -124,10 +104,6 @@ package et_device_query_board is
 		return type_face; -- top/bottom
 
 
-	-- Returns the current face of the given non-electrical device:
-	function get_face (
-		device_cursor	: in pac_devices_non_electric.cursor) -- FD1
-		return type_face; -- top/bottom
 
 
 	-- Returns the position of a terminal of the given device in the board.

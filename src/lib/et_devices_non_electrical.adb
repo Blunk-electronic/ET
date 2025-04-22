@@ -272,8 +272,49 @@ package body et_devices_non_electrical is
 
 
 
+	function get_package_model (
+		device_cursor	: in pac_devices_non_electric.cursor)
+		return pac_package_models.cursor
+	is 
+		result : pac_package_models.cursor;
+	begin
+		result := get_package_model (element (device_cursor).package_model);
+		return result;
+	end get_package_model;
 
 
+
+
+
+	function get_position (
+		device_cursor	: in pac_devices_non_electric.cursor) -- FD1
+		return type_package_position
+	is begin
+		return element (device_cursor).position;
+	end get_position;
+
+
+	
+
+	function get_position (
+		device_cursor	: in pac_devices_non_electric.cursor) -- FD1
+		return type_vector_model
+	is begin
+		return get_position (device_cursor).place;
+	end get_position;
+
+
+
+	
+	function get_face (
+		device_cursor	: in pac_devices_non_electric.cursor)
+		return type_face
+	is 
+		position : type_package_position;
+	begin
+		position := element (device_cursor).position;
+		return get_face (position);
+	end get_face;
 	
 	
 end et_devices_non_electrical;
