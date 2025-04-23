@@ -102,14 +102,8 @@ package et_device_query_board is
 		--return type_terminal_position_fine;
 
 
-	-- Returns ALL terminals of the given device.
-	-- This query assumes the default assembly
-	-- variant, means the device of interest exists in any case:
-	function get_all_terminals (
-		device_cursor	: in pac_devices_sch.cursor) -- IC45
-		return pac_terminals.map;
 
-
+	
 
 	-- Returns the unconnected terminals of the given device
 	-- in the given module. This query assumes the default assembly
@@ -149,28 +143,6 @@ package et_device_query_board is
 	
 -- CONDUCTORS
 	
-	-- Returns the conductor objects of the given electrical device
-	-- (according to its flip status, position and rotation in the board) 
-	-- Adresses only those objects affected by the given face:
-	function get_conductor_objects (
-		device_cursor	: in pac_devices_sch.cursor;
-		layer_category	: in type_signal_layer_category)
-		return type_conductor_objects;
-
-	
-	-- Returns the outlines of conductor objects of the electrical
-	-- device (according to its position and rotation in the board) 
-	-- as a list of polygons.
-	-- Conductor objects are: texts, lines, arcs, circles.
-	-- NOTE regarding circles: The inside of circles is ignored. Only the outer
-	--  edge of a conductor circle is converted to a polygon.
-	-- Adresses only those objects which are affected by
-	-- the given layer category.
-	-- If the device is virtual, then the returned list is empty:
-	function get_conductor_polygons (
-		device_cursor	: in pac_devices_sch.cursor;
-		layer_category	: in type_signal_layer_category) -- outer top, inner, outer bottom 
-		return pac_polygon_list.list;
 
 
 

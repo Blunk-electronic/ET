@@ -37,6 +37,12 @@
 --
 --   to do:
 --
+-- 
+-- DESCRIPTION:
+-- 
+-- This package is about basic properties and subprograms related
+-- to so called "non-electrical devices". 
+-- These devices have a representation in the board domain only.
 
 
 with ada.containers; 					use ada.containers;

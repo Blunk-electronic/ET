@@ -41,6 +41,8 @@ with ada.exceptions;
 
 with et_logging;				use et_logging;
 with et_device_model;
+with et_contour_to_polygon;
+
 
 
 package body et_devices_electrical is
@@ -82,11 +84,107 @@ package body et_devices_electrical is
 
 
 
+	function get_all_terminals (
+		device_cursor	: in pac_devices_sch.cursor) -- IC45
+		return pac_terminals.map
+	is
+		use pac_package_models;
+		package_model : constant pac_package_models.cursor := 
+			get_package_model (device_cursor);
+	begin
+		return element (package_model).terminals;
+	end get_all_terminals;
 
 
 	
 
 
+	function get_conductor_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		layer_category	: in type_signal_layer_category)
+		return type_conductor_objects
+	is
+		conductors : type_conductor_objects; -- to be returned
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+
+		use et_pcb_coordinates_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
+	begin
+		if device.appearance = APPEARANCE_PCB then
+			packge := get_package_model (device_cursor);
+
+			if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
+				case get_face (device_cursor) is
+					when TOP =>
+						conductors := get_conductor_objects (packge, layer_category);
+						rotate_conductor_objects (conductors, + device.position.rotation);
+
+					when BOTTOM =>
+						conductors := get_conductor_objects (packge, invert_category (layer_category));
+						mirror_conductor_objects (conductors);
+						rotate_conductor_objects (conductors, - device.position.rotation);
+				end case;
+
+				move_conductor_objects (conductors, to_distance_relative (device.position.place));
+			end if;
+		end if;
+		
+		return conductors;
+	end get_conductor_objects;
+	
+
+	
+
+
+
+
+	function get_conductor_polygons (
+		device_cursor	: in pac_devices_sch.cursor;
+		layer_category	: in type_signal_layer_category)
+		return et_board_shapes_and_text.pac_polygons.pac_polygon_list.list
+	is
+		use et_board_shapes_and_text;
+		use pac_polygons;
+		result : pac_polygon_list.list;
+		use et_contour_to_polygon;
+		
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+		conductors : type_conductor_objects; -- non-electrical
+
+		use et_pcb_coordinates_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
+
+	begin
+		if device.appearance = APPEARANCE_PCB then
+			packge := get_package_model (device_cursor);
+
+			if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
+				case get_face (device_cursor) is
+					when TOP =>
+						conductors := get_conductor_objects (packge, layer_category);
+						rotate_conductor_objects (conductors, + device.position.rotation);
+
+					when BOTTOM =>
+						conductors := get_conductor_objects (packge, invert_category (layer_category));
+						mirror_conductor_objects (conductors);
+						rotate_conductor_objects (conductors, - device.position.rotation);
+				end case;
+
+				move_conductor_objects (conductors, to_distance_relative (device.position.place));
+
+				-- convert conductor objects to polygons:
+				result := to_polygons (conductors, fill_tolerance);
+			end if;
+		end if;
+		
+		return result;
+	end get_conductor_polygons;
+
+
+	
+	
 	
 
 	
