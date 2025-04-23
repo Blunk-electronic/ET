@@ -45,6 +45,50 @@ with et_device_model;
 
 package body et_devices_electrical is
 
+
+	function get_position (
+		device_cursor	: in pac_devices_sch.cursor) -- IC45
+		return et_pcb_coordinates_2.type_package_position
+	is begin
+		return element (device_cursor).position;
+	end get_position;
+
+
+	
+	function get_position (
+		device_cursor	: in pac_devices_sch.cursor) -- IC45
+		return et_pcb_coordinates_2.pac_geometry_2.type_vector_model
+	is begin
+		return get_position (device_cursor).place;
+	end get_position;
+
+	
+
+	
+	
+	function get_face (
+		device_cursor	: in pac_devices_sch.cursor) -- IC45
+		return type_face
+	is 
+		position : et_pcb_coordinates_2.type_package_position;
+		face : type_face;
+	begin
+		position := element (device_cursor).position;
+		face := et_pcb_coordinates_2.get_face (position);
+		return face;
+	end get_face;
+
+
+
+
+
+
+
+	
+
+
+	
+
 	
 	procedure set_selected (
 		device : in out type_device_sch)

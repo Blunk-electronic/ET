@@ -81,27 +81,6 @@ package et_device_query_board is
 
 
 	
-	
-	-- Returns the current position (x/y/rotation/face) of the 
-	-- given electrical device:
-	function get_position (
-		device_cursor	: in pac_devices_sch.cursor) -- IC45
-		return type_package_position;
-
-
-	-- Returns the current position (x/y) of the 
-	-- given electrical device:
-	function get_position (
-		device_cursor	: in pac_devices_sch.cursor) -- IC45
-		return type_vector_model;
-
-	
-	
-	-- Returns the current face of the given electrical device:
-	function get_face (
-		device_cursor	: in pac_devices_sch.cursor) -- IC45
-		return type_face; -- top/bottom
-
 
 
 

@@ -144,6 +144,34 @@ package et_devices_electrical is
 	use pac_devices_sch;
 	
 
+
+	
+	-- Returns the current position (x/y/rotation/face) of the 
+	-- given electrical device:
+	function get_position (
+		device_cursor	: in pac_devices_sch.cursor) -- IC45
+		return et_pcb_coordinates_2.type_package_position;
+
+
+	-- Returns the current position (x/y) of the 
+	-- given electrical device:
+	function get_position (
+		device_cursor	: in pac_devices_sch.cursor) -- IC45
+		return et_pcb_coordinates_2.pac_geometry_2.type_vector_model;
+
+	
+	
+	-- Returns the current face of the given electrical device:
+	function get_face (
+		device_cursor	: in pac_devices_sch.cursor) -- IC45
+		return type_face; -- top/bottom
+
+
+
+
+	
+
+	
 -- DEVICE STATUS OPERATIONS:
 	
 	-- NOTE: Operations regarding the status
