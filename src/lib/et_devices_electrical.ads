@@ -53,7 +53,6 @@ with et_coordinates_2;
 with et_assembly_variants;				use et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
 
-with et_schematic_shapes_and_text;
 with et_device_placeholders.packages;
 
 with et_silkscreen;						use et_silkscreen;

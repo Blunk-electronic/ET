@@ -41,8 +41,6 @@
 with et_sheets;							use et_sheets;
 with et_coordinates_2;					use et_coordinates_2;
 
-with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
-
 with ada.containers; 					use ada.containers;
 with ada.containers.doubly_linked_lists;
 
