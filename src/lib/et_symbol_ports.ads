@@ -41,7 +41,7 @@ with ada.strings.bounded; 				use ada.strings.bounded;
 with ada.containers; 					use ada.containers;
 with ada.containers.indefinite_ordered_maps;
 
-with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+with et_schematic_text;					use et_schematic_text;
 with et_coordinates_2;					use et_coordinates_2;
 with et_port_names;
 with et_port_direction;					use et_port_direction;

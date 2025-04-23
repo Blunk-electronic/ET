@@ -72,7 +72,7 @@ with et_device_name;			use et_device_name;
 with et_unit_name;				use et_unit_name;
 with et_package_variant;		use et_package_variant;
 
-with et_schematic_shapes_and_text;
+with et_schematic_text;
 
 with et_device_placeholders;
 with et_device_placeholders.packages;
@@ -440,8 +440,8 @@ package et_kicad.schematic is
 		coordinates	: type_vector_model;
 		rotation	: et_coordinates_2.type_rotation_model;
         text		: pac_net_name.bounded_string;
-        size		: et_schematic_shapes_and_text.pac_text_schematic.type_text_size;
-        width		: et_schematic_shapes_and_text.type_text_line_width;
+        size		: et_schematic_text.pac_text_schematic.type_text_size;
+        width		: et_schematic_text.type_text_line_width;
 		processed	: boolean := false; -- used for associating label with net segment
 		case label_appearance is
 			when TAG => 
@@ -826,7 +826,7 @@ package et_kicad.schematic is
 	-- It serves as link between a hierachical net and the parent module.
 	type type_hierarchic_sheet_port is record
 		direction	: et_kicad_libraries.type_port_direction;
-		text_size	: et_schematic_shapes_and_text.pac_text_schematic.type_text_size;
+		text_size	: et_schematic_text.pac_text_schematic.type_text_size;
 		coordinates	: type_vector_model;
         orientation	: et_coordinates_2.type_rotation_model;
         processed   : boolean; -- used when linking hierarchic nets
@@ -845,8 +845,8 @@ package et_kicad.schematic is
 	end record;
 	
 	type type_hierarchic_sheet is record
-        text_size_of_name   : et_schematic_shapes_and_text.pac_text_schematic.type_text_size;
-        text_size_of_file   : et_schematic_shapes_and_text.pac_text_schematic.type_text_size;
+        text_size_of_name   : et_schematic_text.pac_text_schematic.type_text_size;
+        text_size_of_file   : et_schematic_text.pac_text_schematic.type_text_size;
 		coordinates		    : et_kicad_coordinates.type_position;
         size_x, size_y      : et_coordinates_2.type_distance_model; -- size x/y of the box
 		timestamp           : type_timestamp;

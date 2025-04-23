@@ -80,7 +80,7 @@ with et_modes.schematic;			use et_modes.schematic;
 
 with et_canvas_schematic_2;			use et_canvas_schematic_2;
 
-with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+with et_schematic_text;				use et_schematic_text;
 
 with et_commit;
 with et_undo_redo;

@@ -45,10 +45,10 @@ with ada.strings;				use ada.strings;
 with ada.strings.fixed; 		use ada.strings.fixed;
 with ada.strings.maps;			use ada.strings.maps;
 
-with et_text;						use et_text;
-with et_coordinates_2;				use et_coordinates_2;
-with et_schematic_shapes_and_text;	use et_schematic_shapes_and_text;
-with et_logging;					use et_logging;
+with et_text;					use et_text;
+with et_coordinates_2;			use et_coordinates_2;
+with et_schematic_text;			use et_schematic_text;
+with et_logging;				use et_logging;
 
 with cairo;
 

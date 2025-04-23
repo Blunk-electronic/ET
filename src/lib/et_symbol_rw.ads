@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -43,7 +43,7 @@ with et_logging;						use et_logging;
 with et_coordinates_2;					use et_coordinates_2;
 with et_symbols;						use et_symbols;
 with et_device_appearance;				use et_device_appearance;
-with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+with et_schematic_text;					use et_schematic_text;
 
 
 package et_symbol_rw is

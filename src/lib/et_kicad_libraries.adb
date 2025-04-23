@@ -56,7 +56,7 @@ with ada.environment_variables;
 with et_primitive_objects;				use et_primitive_objects;
 with et_axes;							use et_axes;
 with et_mirroring;						use et_mirroring;
-with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+with et_schematic_text;					use et_schematic_text;
 with et_conventions;
 with et_alignment;						use et_alignment;
 with et_port_visibility;

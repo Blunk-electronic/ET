@@ -94,7 +94,7 @@ with et_board_ops;
 with et_board_ops.grid;
 with et_board_ops.frame;
 
-with et_schematic_shapes_and_text;
+with et_schematic_text;
 with et_board_shapes_and_text;
 
 with et_device_placeholders;
@@ -480,7 +480,7 @@ is
 	
 	
 	procedure query_nets is
-		use et_schematic_shapes_and_text;
+		use et_schematic_text;
 		use pac_text_schematic;
 		use et_nets;
 		use pac_nets;
@@ -1398,7 +1398,7 @@ is
 
 	
 	procedure query_texts is	
-		use et_schematic_shapes_and_text;
+		use et_schematic_text;
 		use pac_text_schematic;
 		use et_coordinates_2;
 		use et_coordinates_2.pac_geometry_2;

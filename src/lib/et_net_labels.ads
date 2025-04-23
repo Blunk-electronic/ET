@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -43,7 +43,7 @@ with cairo;
 
 with et_coordinates_2;					use et_coordinates_2;
 with et_text;							use et_text;
-with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+with et_schematic_text;					use et_schematic_text;
 
 with et_alignment;						use et_alignment;
 with et_fonts;
@@ -81,7 +81,7 @@ package et_net_labels is
 		position	: type_vector_model;
 		
         size		: type_text_size := text_size_default;
-		width		: et_schematic_shapes_and_text.type_text_line_width := et_schematic_shapes_and_text.type_text_line_width'first;
+		width		: et_schematic_text.type_text_line_width := et_schematic_text.type_text_line_width'first;
 	end record;
 
 	

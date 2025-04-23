@@ -86,7 +86,7 @@ with et_conventions;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;
 
-with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+with et_schematic_text;					use et_schematic_text;
 with et_unit_name;						use et_unit_name;
 with et_units;							use et_units;
 with et_device_library;					use et_device_library;

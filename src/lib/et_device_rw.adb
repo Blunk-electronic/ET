@@ -77,7 +77,7 @@ with et_symbols;					use et_symbols;
 with et_package_names;				use et_package_names;
 with et_device_placeholders;		use et_device_placeholders;
 with et_device_partcode;			use et_device_partcode;
-with et_schematic_shapes_and_text;	use et_schematic_shapes_and_text;
+with et_schematic_text;
 with et_system_info;
 with et_device_value;
 with et_device_prefix;
@@ -474,7 +474,7 @@ package body et_device_rw is
 		symbol_line			: type_symbol_line;
 		symbol_arc			: type_symbol_arc;
 		symbol_circle		: type_symbol_circle;
-		symbol_text_base	: type_text_basic;
+		symbol_text_base	: et_schematic_text.type_text_basic;
 		
 		symbol_text_position		: type_vector_model;
 		symbol_text_content			: et_text.pac_text_content.bounded_string;
@@ -1368,7 +1368,7 @@ package body et_device_rw is
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
-										symbol_text_base.rotation := pac_text_schematic.to_rotation_doc (f (line, 2));
+										symbol_text_base.rotation := et_schematic_text.pac_text_schematic.to_rotation_doc (f (line, 2));
 										
 -- 									elsif kw = keyword_style then -- style italic
 -- 										expect_field_count (line, 2);
@@ -1419,7 +1419,7 @@ package body et_device_rw is
 
 									elsif kw = keyword_rotation then -- rotation 90.0
 										expect_field_count (line, 2);
-										symbol_text_base.rotation := pac_text_schematic.to_rotation_doc (f (line, 2));
+										symbol_text_base.rotation := et_schematic_text.pac_text_schematic.to_rotation_doc (f (line, 2));
 
 									elsif kw = keyword_alignment then -- alignment horizontal center vertical center
 										expect_field_count (line, 5);

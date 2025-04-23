@@ -102,7 +102,7 @@ procedure draw_units is
 		use pac_symbol_arcs;
 		use pac_symbol_circles;
 		use pac_ports;
-		use pac_texts;
+		use et_symbols.pac_texts;
 		
 		
 		procedure draw_line (c : in pac_symbol_lines.cursor) is 
@@ -405,7 +405,7 @@ procedure draw_units is
 		-- are frequently placed inside symbols.
 		-- Call this procedure after drawing the symbol body because it
 		-- does not change the color to symbol color.
-		procedure draw_text (c : in pac_texts.cursor) is 
+		procedure draw_text (c : in et_symbols.pac_texts.cursor) is 
 			p : type_vector_model := element (c).position;
 
 			use pac_draw_text;

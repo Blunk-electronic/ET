@@ -107,7 +107,7 @@ with et_silkscreen;					use et_silkscreen;
 with et_assy_doc;					use et_assy_doc;
 with et_keepout;					use et_keepout;
 with et_device_placeholders;		use et_device_placeholders;
-with et_schematic_shapes_and_text;
+with et_schematic_text;
 with et_object_status;
 with et_devices_electrical;
 
@@ -2466,7 +2466,7 @@ package body et_kicad_to_native is
 		function to_texts (texts_in : et_kicad.schematic.type_texts.list) 
 			return et_schematic_text.pac_texts.list 
 		is
-			use et_schematic_shapes_and_text;
+			use et_schematic_text;
 			use pac_text_schematic;
 			texts_out : et_schematic_text.pac_texts.list;
 
@@ -2811,7 +2811,7 @@ package body et_kicad_to_native is
 				-- cause the labels to shift to the right or up.
 					return et_net_labels.pac_net_labels.list 
 				is
-					use et_schematic_shapes_and_text;
+					use et_schematic_text;
 					use pac_text_schematic;
 					
 					labels : et_net_labels.pac_net_labels.list; -- to be returned

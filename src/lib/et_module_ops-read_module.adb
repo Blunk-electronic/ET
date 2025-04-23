@@ -101,7 +101,7 @@ with et_schematic_ops;
 with et_schematic_ops.submodules;
 with et_board_ops;
 
-with et_schematic_shapes_and_text;
+with et_schematic_text;
 with et_board_shapes_and_text;
 with et_board_layer_category;
 
@@ -1356,7 +1356,7 @@ is
 	device_text_placeholders	: et_device_placeholders.packages.type_text_placeholders; -- silk screen, assy doc, top, bottom
 
 	-- temporarily placeholders of unit name (IC12), value (7400) and purpose (clock buffer)
-	unit_placeholder			: et_schematic_shapes_and_text.type_text_basic;
+	unit_placeholder			: et_schematic_text.type_text_basic;
 	unit_placeholder_position	: et_coordinates_2.pac_geometry_2.type_vector_model;
 	unit_placeholder_meaning	: et_device_placeholders.type_placeholder_meaning := et_device_placeholders.placeholder_meaning_default;
 	unit_placeholder_reference	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.NAME);
@@ -1366,7 +1366,7 @@ is
 	
 	procedure read_unit_placeholder is
 		use et_device_placeholders;
-		use et_schematic_shapes_and_text;
+		use et_schematic_text;
 		use et_symbol_rw;
 		use et_coordinates_2.pac_geometry_2;
 		kw : constant string := f (line, 1);
@@ -2017,7 +2017,7 @@ is
 
 	
 	procedure read_schematic_text is
-		use et_schematic_shapes_and_text;
+		use et_schematic_text;
 		use et_coordinates_2;	
 		use pac_geometry_2;
 		kw : constant string := f (line, 1);
@@ -5018,7 +5018,7 @@ is
 
 			
 			procedure build_net_label is
-				use et_schematic_shapes_and_text;
+				use et_schematic_text;
 				use pac_text_schematic;
 				use et_net_labels;
 			begin

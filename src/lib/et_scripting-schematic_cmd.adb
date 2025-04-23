@@ -54,7 +54,7 @@ with et_sheets;
 with et_net_labels;						use et_net_labels;
 with et_nets;							use et_nets;
 with et_net_class;						use et_net_class;
-with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+with et_schematic_text;					use et_schematic_text;
 with et_schematic_ops.nets;
 with et_schematic_ops.units;
 with et_submodules;

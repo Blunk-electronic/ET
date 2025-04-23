@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -50,7 +50,7 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 
 with ada.exceptions;
 
-with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
+with et_schematic_text;					use et_schematic_text;
 with et_system_info;
 with et_time;							use et_time;
 with et_project;
@@ -2576,9 +2576,9 @@ package body et_conventions is
 		put_line (comment & "category" & latin_1.space & "mm");
 		new_line;		
 		put_line (to_string (NET_LABEL)	& to_string (net_label_text_size_default));
-		put_line (to_string (PORT_NAME) & to_string (et_schematic_shapes_and_text.text_size_default));
-		put_line (to_string (TERMINAL_NAME) & to_string (et_schematic_shapes_and_text.text_size_default));
-		put_line (to_string (COMPONENT_ATTRIBUTE) & to_string (et_schematic_shapes_and_text.text_size_default));
+		put_line (to_string (PORT_NAME) & to_string (et_schematic_text.text_size_default));
+		put_line (to_string (TERMINAL_NAME) & to_string (et_schematic_text.text_size_default));
+		put_line (to_string (COMPONENT_ATTRIBUTE) & to_string (et_schematic_text.text_size_default));
 -- 		put_line (to_string (SHEET_NAME) & to_string (et_project.sheet_name_text_size_default)); -- CS no longer required ?
 -- 		put_line (to_string (FILE_NAME) & to_string (et_project.modules.file_name_text_size_default));
 		
@@ -2689,7 +2689,7 @@ package body et_conventions is
 			unit		: type_unit_of_measurement;
 
 			text		: type_text_schematic;
-			size		: et_schematic_shapes_and_text.pac_text_schematic.type_text_size;
+			size		: et_schematic_text.pac_text_schematic.type_text_size;
 
 			partcode_keyword	: type_partcode_keyword.bounded_string;
 			partcode_section	: type_partcode_section;

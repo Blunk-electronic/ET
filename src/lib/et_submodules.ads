@@ -60,7 +60,7 @@ with et_pcb_stack;
 with et_pcb_coordinates_2;
 with et_symbol_ports;				use et_symbol_ports;
 with et_symbols;
-with et_schematic_shapes_and_text;	use et_schematic_shapes_and_text;
+with et_schematic_text;				use et_schematic_text;
 with et_module_names;				use et_module_names;
 with et_module_instance;			use et_module_instance;
 with et_fonts;						use et_fonts;
