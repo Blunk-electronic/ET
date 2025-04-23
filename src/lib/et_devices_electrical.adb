@@ -96,8 +96,12 @@ package body et_devices_electrical is
 	end get_all_terminals;
 
 
+
+
 	
 
+-- CONDUCTOR OBJECTS:
+	
 
 	function get_conductor_objects (
 		device_cursor	: in pac_devices_sch.cursor;
@@ -187,6 +191,641 @@ package body et_devices_electrical is
 	
 	
 
+
+	
+-- ROUTE RESTRICT
+	
+	function get_route_restrict_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		layer_category	: in type_signal_layer_category)
+		return et_route_restrict.packages.type_one_side
+	is	
+		use et_route_restrict.packages;
+		restrict : type_one_side; -- to be returned
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+
+		use et_pcb_coordinates_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
+	begin
+		if device.appearance = APPEARANCE_PCB then
+			packge := get_package_model (device_cursor);
+				
+			if layer_category /= INNER then -- route restrict objects exist in outer layers only
+				case get_face (device_cursor) is
+					when TOP =>
+						restrict := get_route_restrict_objects (packge, layer_category);
+						rotate_route_restrict_objects (restrict, + device.position.rotation);
+					when BOTTOM =>
+						restrict := get_route_restrict_objects (packge, invert_category (layer_category));
+						mirror_route_restrict_objects (restrict);
+						rotate_route_restrict_objects (restrict, - device.position.rotation);
+				end case;
+
+				move_route_restrict_objects (restrict, to_distance_relative (device.position.place));
+			end if;
+		end if;
+
+		return restrict;
+	end get_route_restrict_objects;
+
+
+	
+	
+
+	function get_route_restrict_polygons (
+		device_cursor	: in pac_devices_sch.cursor;
+		layer_category	: in type_signal_layer_category)
+		return et_board_shapes_and_text.pac_polygons.pac_polygon_list.list
+	is
+		use et_board_shapes_and_text;
+		use pac_polygons;
+		
+		result : pac_polygon_list.list;
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+
+		use et_route_restrict.packages;
+		restrict : type_one_side;
+
+		use et_pcb_coordinates_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
+
+	begin
+		if device.appearance = APPEARANCE_PCB then
+			packge := get_package_model (device_cursor);
+				
+			if layer_category /= INNER then -- route restrict objects exist in outer layers only
+				case get_face (device_cursor) is
+					when TOP =>
+						restrict := get_route_restrict_objects (packge, layer_category);
+						rotate_route_restrict_objects (restrict, + device.position.rotation);
+					when BOTTOM =>
+						restrict := get_route_restrict_objects (packge, invert_category (layer_category));
+						mirror_route_restrict_objects (restrict);
+						rotate_route_restrict_objects (restrict, - device.position.rotation);
+				end case;
+
+				move_route_restrict_objects (restrict, to_distance_relative (device.position.place));
+
+				-- convert restrict objects to polygons:
+				result := to_polygons (restrict, fill_tolerance);
+			end if;
+		end if;
+		
+		return result;
+	end get_route_restrict_polygons;
+	
+
+
+
+
+
+	
+-- VIA RESTRICT
+	
+	function get_via_restrict_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		layer_category	: in type_signal_layer_category)
+		return et_via_restrict.packages.type_one_side
+	is		
+		use et_via_restrict.packages;
+		restrict : type_one_side; -- to be returned
+		
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+
+		use et_pcb_coordinates_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
+
+	begin
+		if device.appearance = APPEARANCE_PCB then
+			packge := get_package_model (device_cursor);
+				
+			if layer_category /= INNER then -- via restrict objects exist in outer layers only
+				case get_face (device_cursor) is
+					when TOP =>
+						restrict := get_via_restrict_objects (packge, layer_category);
+						rotate_via_restrict_objects (restrict, + device.position.rotation);
+
+					when BOTTOM =>
+						restrict := get_via_restrict_objects (packge, invert_category (layer_category));
+						mirror_via_restrict_objects (restrict);
+						rotate_via_restrict_objects (restrict, - device.position.rotation);
+				end case;
+
+				move_via_restrict_objects (restrict, to_distance_relative (device.position.place));
+			end if;
+		end if;
+
+		return restrict;
+	end get_via_restrict_objects;
+
+
+	
+
+
+
+	
+-- KEEPOUT
+	
+	function get_keepout_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		face			: in type_face)
+		return type_keepout
+	is
+		use et_pcb_coordinates_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
+
+		result : type_keepout;
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+		rotation : type_rotation_model;
+
+	begin
+		if device.appearance = APPEARANCE_PCB then
+			packge := get_package_model (device_cursor);
+			rotation := device.position.rotation;
+			
+			case face is
+				when TOP =>
+					case get_face (device_cursor) is
+						when TOP =>
+							result := get_keepout_objects (packge, TOP);
+							rotate_keepout_objects (result, + rotation);
+
+						when BOTTOM =>
+							result := get_keepout_objects (packge, BOTTOM);
+							mirror_keepout_objects (result);
+							rotate_keepout_objects (result, - rotation);
+					end case;
+
+				when BOTTOM =>
+					case get_face (device_cursor) is
+						when TOP =>
+							result := get_keepout_objects (packge, BOTTOM);
+							rotate_keepout_objects (result, + rotation);
+
+						when BOTTOM =>
+							result := get_keepout_objects (packge, TOP);
+							mirror_keepout_objects (result);
+							rotate_keepout_objects (result, - rotation);
+					end case;
+			end case;
+		end if;
+		
+		move_keepout_objects (result, to_distance_relative (device.position.place));
+		return result;
+	end get_keepout_objects;
+
+
+
+
+	
+
+
+	
+	
+-- STENCIL
+	
+	function get_stencil_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		face			: in type_face)
+		return type_stencil
+	is
+		use et_pcb_coordinates_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
+		
+		result : type_stencil;
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+		rotation : type_rotation_model;
+	begin
+		if device.appearance = APPEARANCE_PCB then
+			packge := get_package_model (device_cursor);
+			rotation := device.position.rotation;
+			
+			case face is
+				when TOP =>
+					case get_face (device_cursor) is
+						when TOP =>
+							result := get_stencil_objects (packge, TOP);
+							rotate_stencil_objects (result, + rotation);
+						when BOTTOM =>
+							result := get_stencil_objects (packge, BOTTOM);
+							mirror_stencil_objects (result);
+							rotate_stencil_objects (result, - rotation);
+					end case;
+
+				when BOTTOM =>
+					case get_face (device_cursor) is
+						when TOP =>
+							result := get_stencil_objects (packge, BOTTOM);
+							rotate_stencil_objects (result, + rotation);
+						when BOTTOM =>
+							result := get_stencil_objects (packge, TOP);
+							mirror_stencil_objects (result);
+							rotate_stencil_objects (result, - rotation);
+					end case;
+			end case;
+		end if;
+		
+		move_stencil_objects (result, to_distance_relative (device.position.place));
+		return result;
+	end get_stencil_objects;
+
+	
+
+	
+
+
+
+	
+
+-- STOPMASK:
+
+	function get_stopmask_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		face			: in type_face)
+		return type_stopmask
+	is
+		use et_pcb_coordinates_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
+		
+		result : type_stopmask;
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+		rotation : type_rotation_model;
+
+		use et_stopmask.packages;
+	begin
+		if device.appearance = APPEARANCE_PCB then
+			packge := get_package_model (device_cursor);
+			rotation := device.position.rotation;
+
+			case face is
+				when TOP =>
+					case get_face (device_cursor) is
+						when TOP =>
+							result := get_stopmask_objects (packge, TOP);
+							rotate_stopmask_objects (result, + rotation);
+							
+						when BOTTOM =>
+							result := get_stopmask_objects (packge, BOTTOM);
+							mirror_stopmask_objects (result);
+							rotate_stopmask_objects (result, - rotation);
+					end case;
+
+				when BOTTOM =>
+					case get_face (device_cursor) is
+						when TOP =>
+							result := get_stopmask_objects (packge, BOTTOM);
+							rotate_stopmask_objects (result, + rotation);
+
+						when BOTTOM =>
+							result := get_stopmask_objects (packge, TOP);
+							mirror_stopmask_objects (result);
+							rotate_stopmask_objects (result, - rotation);
+					end case;
+			end case;
+
+			move_stopmask_objects (result, to_distance_relative (device.position.place));			
+		end if;
+
+		return result;
+	end get_stopmask_objects;
+
+
+
+
+
+
+-- PLACEHOLDERS
+	
+
+	function to_placeholder_content (
+		device_cursor	: in pac_devices_sch.cursor;
+		placeholder		: in et_device_placeholders.packages.type_placeholder)
+		return et_text.pac_text_content.bounded_string 
+	is
+		device : type_device_sch renames element (device_cursor);
+
+		use et_text;
+		result : pac_text_content.bounded_string;
+
+		use et_device_placeholders;
+	begin
+		case placeholder.meaning is
+			when NAME 		=> result := to_content (to_string (key (device_cursor)));
+			when VALUE		=> result := to_content (to_string (device.value));
+			when PURPOSE	=> result := to_content (to_string (device.purpose));
+		end case;
+		
+		return result;
+	end to_placeholder_content;
+
+
+	
+
+	
+-- SILKSCREEN
+
+	function get_silkscreen_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		face			: in type_face)
+		return type_silkscreen
+	is
+		use et_pcb_coordinates_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
+		use et_board_shapes_and_text;
+		
+		result : type_silkscreen;
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+		rotation : type_rotation_model;
+
+		use et_silkscreen.packages;
+		silkscreen : et_silkscreen.packages.type_silkscreen_package;
+
+		
+		-- Converts the placeholders to a list of regular texts
+		-- and appends them to the silkscreen.texts:
+		procedure convert_placeholders_to_texts is
+			use et_device_placeholders.packages;
+			use pac_placeholders;
+
+			procedure query_placeholder (c : in pac_placeholders.cursor) is
+				ph : type_placeholder renames element (c);
+				use pac_text_board;
+				text : type_silk_text := (type_text_fab (ph) with others => <>);
+				use et_text;
+			begin
+				text.content := to_placeholder_content (device_cursor, ph); -- map from meaning to content
+
+				-- Ignore the text if it has no content:
+				if not is_empty (text.content) then
+					silkscreen.texts.append (text);
+				end if;
+			end query_placeholder;
+			
+		begin
+			silkscreen.placeholders.iterate (query_placeholder'access);		
+		end convert_placeholders_to_texts;
+
+		
+	begin -- get_silkscreen_objects
+		if device.appearance = APPEARANCE_PCB then
+			packge := get_package_model (device_cursor);
+			rotation := device.position.rotation;
+
+			case face is
+				when TOP =>
+					case get_face (device_cursor) is
+						when TOP =>
+							silkscreen := get_silkscreen_objects (packge, TOP);
+
+							-- overwrite the default placeholders: -- CS see spec of this function
+							silkscreen.placeholders := device.text_placeholders.silkscreen.top;
+							convert_placeholders_to_texts;
+							rotate_silkscreen_objects (silkscreen, + rotation);
+							
+						when BOTTOM =>
+							silkscreen := get_silkscreen_objects (packge, BOTTOM);
+							
+							-- overwrite the default placeholders: -- CS see spec of this function
+							silkscreen.placeholders := device.text_placeholders.silkscreen.bottom;
+							convert_placeholders_to_texts;
+							mirror_silkscreen_objects (silkscreen);
+							rotate_silkscreen_objects (silkscreen, - rotation);
+					end case;
+
+					
+				when BOTTOM =>
+					case get_face (device_cursor) is
+						when TOP =>
+						   silkscreen := get_silkscreen_objects (packge, BOTTOM);
+						
+							-- overwrite the default placeholders: -- CS see spec of this function
+							silkscreen.placeholders := device.text_placeholders.silkscreen.bottom;
+							convert_placeholders_to_texts;
+							rotate_silkscreen_objects (silkscreen, + rotation);
+							
+						when BOTTOM =>
+							silkscreen := get_silkscreen_objects (packge, TOP);
+							
+							-- overwrite the default placeholders: -- CS see spec of this function
+							silkscreen.placeholders := device.text_placeholders.silkscreen.top;
+							convert_placeholders_to_texts;
+							mirror_silkscreen_objects (silkscreen);
+							rotate_silkscreen_objects (silkscreen, - rotation);
+					end case;
+			end case;
+
+			move_silkscreen_objects (silkscreen, to_distance_relative (device.position.place));			
+		end if;
+
+		result := type_silkscreen (silkscreen);		
+		return result;
+	end get_silkscreen_objects;
+	
+
+
+	
+	
+
+
+
+	
+
+	
+-- ASSEMBLY DOCUMENTATION:
+	
+	function get_assy_doc_objects (
+		device_cursor	: in pac_devices_sch.cursor;
+		face			: in type_face)
+		return type_assy_doc
+	is
+		use et_pcb_coordinates_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
+		use et_board_shapes_and_text;
+
+		result : type_assy_doc;
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+		rotation : type_rotation_model;
+
+		use et_assy_doc.packages;
+		assy_doc : et_assy_doc.packages.type_assy_doc_package;
+
+
+		-- Converts the placeholders to a list of regular texts
+		-- and appends them to the assy_doc.texts:
+		procedure convert_placeholders_to_texts is
+			use et_device_placeholders.packages;
+			use pac_placeholders;
+
+			procedure query_placeholder (c : in pac_placeholders.cursor) is
+				ph : type_placeholder renames element (c);
+				use pac_text_board;
+				text : type_doc_text := (type_text_fab (ph) with others => <>);
+				use et_text;
+			begin
+				text.content := to_placeholder_content (device_cursor, ph); -- map from meaning to content
+
+				-- Ignore the text if it has no content:
+				if not is_empty (text.content) then
+					assy_doc.texts.append (text);
+				end if;
+			end query_placeholder;
+			
+		begin
+			assy_doc.placeholders.iterate (query_placeholder'access);		
+		end convert_placeholders_to_texts;
+
+		
+	begin -- get_assy_doc_objects
+		if device.appearance = APPEARANCE_PCB then
+			packge := get_package_model (device_cursor);
+			rotation := device.position.rotation;
+
+			case face is
+				when TOP =>
+					case get_face (device_cursor) is
+						when TOP =>
+							assy_doc := get_assy_doc_objects (packge, TOP);
+							
+							-- overwrite the default placeholders: -- CS see spec of this function
+							assy_doc.placeholders := device.text_placeholders.assy_doc.top;
+							convert_placeholders_to_texts;
+							rotate_assy_doc_objects (assy_doc, + rotation);
+
+						when BOTTOM =>
+							assy_doc := get_assy_doc_objects (packge, BOTTOM);
+							
+							-- overwrite the default placeholders: -- CS see spec of this function
+							assy_doc.placeholders := device.text_placeholders.assy_doc.bottom;
+							convert_placeholders_to_texts;
+							mirror_assy_doc_objects (assy_doc);
+							rotate_assy_doc_objects (assy_doc, - rotation);
+					end case;
+
+				when BOTTOM =>
+					case get_face (device_cursor) is
+						when TOP =>
+							assy_doc := get_assy_doc_objects (packge, BOTTOM);
+
+							-- overwrite the default placeholders: -- CS see spec of this function
+							assy_doc.placeholders := device.text_placeholders.assy_doc.bottom;
+							convert_placeholders_to_texts;
+							rotate_assy_doc_objects (assy_doc, + rotation);
+
+						when BOTTOM =>
+							assy_doc := get_assy_doc_objects (packge, TOP);
+
+							-- overwrite the default placeholders: -- CS see spec of this function
+							assy_doc.placeholders := device.text_placeholders.assy_doc.top;
+							convert_placeholders_to_texts;
+							mirror_assy_doc_objects (assy_doc);
+							rotate_assy_doc_objects (assy_doc, - rotation);
+					end case;
+			end case;
+
+			move_assy_doc_objects (assy_doc, to_distance_relative (device.position.place));			
+		end if;
+
+		result := type_assy_doc (assy_doc);
+		return result;
+	end get_assy_doc_objects;
+	
+
+
+
+
+-- HOLES
+	
+	function get_holes (
+		device_cursor	: in pac_devices_sch.cursor)
+		return pac_holes.list
+	is
+		use et_pcb_coordinates_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
+		
+		holes : pac_holes.list; -- to be returned
+		
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+
+		rotation : type_rotation_model;
+	begin
+		if device.appearance = APPEARANCE_PCB then
+			packge := get_package_model (device_cursor);
+			rotation := device.position.rotation;
+			
+			holes := get_hole_contours (packge);
+					
+			case get_face (device_cursor) is
+				when TOP =>
+					mirror_holes (holes);
+					rotate_holes (holes, - rotation);
+					
+				when BOTTOM =>
+					rotate_holes (holes, + rotation);
+			end case;
+		
+			move_holes (holes, to_distance_relative (device.position.place));
+		end if;
+		
+		return holes;		
+	end get_holes;
+
+
+	
+	
+	function get_hole_polygons (
+		device_cursor	: in pac_devices_sch.cursor)
+		return et_board_shapes_and_text.pac_polygons.pac_polygon_list.list
+	is
+		use et_board_shapes_and_text;
+		use pac_polygons;
+
+		result : pac_polygon_list.list;
+		holes : pac_holes.list;
+		
+		device : type_device_sch renames element (device_cursor);
+		packge : pac_package_models.cursor;
+		
+		use et_pcb_coordinates_2;
+		use et_pcb_coordinates_2.pac_geometry_2;
+
+		rotation : type_rotation_model;
+		
+	begin
+		if device.appearance = APPEARANCE_PCB then
+			packge := get_package_model (device_cursor);
+			rotation := device.position.rotation;
+			
+			holes := get_hole_contours (packge);
+		
+			case get_face (device_cursor) is
+				when TOP =>
+					mirror_holes (holes);
+					rotate_holes (holes, - rotation);
+
+				when BOTTOM =>
+					rotate_holes (holes, + rotation);
+			end case;
+			
+			move_holes (holes, to_distance_relative (device.position.place));
+		
+			result := to_polygons (holes, fill_tolerance);
+		end if;
+		return result;
+	end get_hole_polygons;
+	
+
+	
+
+	
 	
 	procedure set_selected (
 		device : in out type_device_sch)
