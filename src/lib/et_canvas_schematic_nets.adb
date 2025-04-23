@@ -47,7 +47,6 @@ with gtk.label;
 with gtk.gentry;
 
 with et_canvas_schematic_2;			use et_canvas_schematic_2;
-with et_schematic;					use et_schematic;
 with et_module_names;				use et_module_names;
 with et_modes.schematic;			use et_modes.schematic;
 with et_netlists;
@@ -410,7 +409,6 @@ package body et_canvas_schematic_nets is
 
 	
 	procedure clarify_net_segment is
-		use et_schematic;
 		s : pac_net_segments.cursor;
 		n : pac_net_name.bounded_string;
 	begin
@@ -580,7 +578,6 @@ package body et_canvas_schematic_nets is
 		start_point : constant et_coordinates_2.type_position := to_position (segment.start_point, sheet);
 		end_point	: constant et_coordinates_2.type_position := to_position (segment.end_point, sheet);
 
-		use et_schematic;
 		use et_schematic_ops.nets;
 		segments_at_start_point : pac_proposed_segments.list;
 		segments_at_end_point	: pac_proposed_segments.list;
@@ -1458,7 +1455,6 @@ package body et_canvas_schematic_nets is
 	
 
 	procedure clarify_label is
-		use et_schematic;
 		use pac_net_labels;
 
 		s : pac_net_segments.cursor;

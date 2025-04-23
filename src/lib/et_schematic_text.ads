@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                              SCHEMATIC                                   --
+--                            SCHEMATIC TEXT                                --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -36,59 +36,23 @@
 --   history of changes:
 --
 --   ToDo: 
---		1. Objects like net segments, net labels, notes ... 
---		   should be collected in ordered sets instead of doubly_linked_lists
---			- the benefits: placing identical objects at the same position would be impossible
---			- the cons: ordering subprograms required
---		3. device accessories
+--
 
-with ada.strings.bounded;       use ada.strings.bounded;
-with ada.containers;            use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.ordered_maps;
-with ada.containers.indefinite_ordered_maps;
-
-with et_nets;					use et_nets;
-with et_net_names;				use et_net_names;
-with et_sheets;					use et_sheets;
-with et_coordinates_2;			use et_coordinates_2;
-with et_assembly_variants;		use et_assembly_variants;
-with et_assembly_variant_name;	use et_assembly_variant_name;
+with et_sheets;							use et_sheets;
+with et_coordinates_2;					use et_coordinates_2;
 
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
-with et_device_placeholders.packages;
 
--- with et_pcb_sides;				use et_pcb_sides;
-with et_pcb_coordinates_2;
--- with et_submodules;
--- with et_material;
-with et_netlists;
-with et_text;
-with et_symbols;						use et_symbols;
-with et_port_names;						use et_port_names;
-with et_device_appearance;				use et_device_appearance;
-with et_device_purpose;					use et_device_purpose;
-with et_device_model_names;				use et_device_model_names;
-with et_device_value;					use et_device_value;
-with et_device_name;					use et_device_name;
-with et_device_partcode;				use et_device_partcode;
-with et_device_library;					use et_device_library;
-with et_package_names;					use et_package_names;
-with et_package_variant;				use et_package_variant;
-with et_terminals;						use et_terminals;
-with et_packages;						use et_packages;
-with et_commit;
-with et_object_status;					use et_object_status;
-with et_unit_name;						use et_unit_name;
-with et_units;							use et_units;
+with ada.containers; 					use ada.containers;
+with ada.containers.doubly_linked_lists;
+
+with et_text;							use et_text;
 with et_fonts;							use et_fonts;
 
 
-package et_schematic is
+package et_schematic_text is
 
-	use pac_net_name;
-	use pac_unit_name;
-	
+
 	use pac_geometry_2;
 
 
@@ -101,9 +65,9 @@ package et_schematic is
 	-- A text/note in the schematic:
 	type type_text is new pac_text_schematic.type_text with record
 		position	: type_vector_model;
-		rotation	: et_text.type_rotation_documentation := et_text.HORIZONTAL;
+		rotation	: type_rotation_documentation := et_text.HORIZONTAL;
 		sheet		: type_sheet := type_sheet'first;
-		content		: et_text.pac_text_content.bounded_string;
+		content		: pac_text_content.bounded_string;
 		--font		: et_text.type_font;
 	end record;
 		
@@ -114,7 +78,7 @@ package et_schematic is
 	procedure dummy;
 
 
-end et_schematic;
+end et_schematic_text;
 
 -- Soli Deo Gloria
 

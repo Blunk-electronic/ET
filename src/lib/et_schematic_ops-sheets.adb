@@ -52,7 +52,6 @@ package body et_schematic_ops.sheets is
 		use pac_schematic_descriptions;
 		cursor : pac_schematic_descriptions.cursor;
 
-		use et_schematic;
 
 		
 		procedure query_descriptions (

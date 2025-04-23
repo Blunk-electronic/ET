@@ -37,7 +37,6 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with et_schematic;
 
 with et_pcb_contour;			use et_pcb_contour;
 with et_colors.board;			use et_colors.board;

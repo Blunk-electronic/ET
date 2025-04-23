@@ -42,7 +42,6 @@ with ada.text_io;						use ada.text_io;
 with ada.containers;					use ada.containers;
 
 with et_domains;						use et_domains;
-with et_schematic;						use et_schematic;
 with et_nets;
 with et_pcb;
 with et_modes.schematic;

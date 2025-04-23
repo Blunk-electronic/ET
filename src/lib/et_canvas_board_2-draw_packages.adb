@@ -58,7 +58,6 @@ with et_mirroring;					use et_mirroring;
 
 with et_symbols;
 with et_device_name;
-with et_schematic;
 
 with et_drills;						use et_drills;
 
@@ -1787,7 +1786,7 @@ is
 
 			use et_pcb;
 			use pac_devices_non_electric;
-			use et_schematic;
+
 		begin
 			-- locate the package model in the package library:
 			if electric then
@@ -1847,8 +1846,6 @@ is
 	
 
 	
-	use et_schematic;
-
 
 	-- Draws the packages of electrical devices:
 	procedure query_electrical_devices (

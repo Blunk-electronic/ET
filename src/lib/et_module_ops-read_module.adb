@@ -75,7 +75,7 @@ with et_device_partcode;
 with et_package_variant;
 with et_symbols;
 with et_symbol_rw;
-with et_schematic;
+with et_schematic_text;
 with et_schematic_rw;
 with et_device_rw;
 with et_frames;
@@ -401,7 +401,6 @@ is
 	
 	-- Assigns the temporarily rules to the module:
 	procedure set_rules is
-		use et_schematic;
 		
 		procedure do_it (
 			module_name	: in pac_module_name.bounded_string;
@@ -1047,7 +1046,7 @@ is
 
 	
 
-	schematic_text : et_schematic.type_text;
+	schematic_text : et_schematic_text.type_text;
 
 	-- The temporarily device will exist where "device" points at:
 	device					: access et_devices_electrical.type_device_sch;
@@ -2879,7 +2878,7 @@ is
 				module		: in out type_generic_module) 
 			is begin
 				-- append schematic note to collection of notes
-				et_schematic.pac_texts.append (module.texts, schematic_text);
+				et_schematic_text.pac_texts.append (module.texts, schematic_text);
 
 				-- clean up for next note
 				schematic_text := (others => <>);
@@ -3033,7 +3032,6 @@ is
 				module_name	: in pac_module_name.bounded_string;
 				module		: in out type_generic_module) 
 			is
-				use et_schematic;
 				use et_devices_electrical;
 				use et_symbols;
 				use et_device_model;
@@ -3223,7 +3221,6 @@ is
 			is				
 				use et_pcb_coordinates_2;
 				use et_pcb;
-				use et_schematic;
 				
 				use et_device_model;
 				use et_device_model_names;

@@ -42,7 +42,6 @@ with et_assy_doc;				use et_assy_doc;
 with ada.text_io;				use ada.text_io;
 with et_colors;					use et_colors;
 with et_board_ops.text;			use et_board_ops.text;
-with et_schematic;
 with et_pcb_placeholders;		use et_pcb_placeholders;
 
 

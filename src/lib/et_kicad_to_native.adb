@@ -50,7 +50,7 @@ with et_nets;
 with et_net_labels;
 with et_net_class;
 with et_units;
-with et_schematic;
+with et_schematic_text;
 
 with et_mirroring;					use et_mirroring;
 with et_axes;						use et_axes;
@@ -2464,15 +2464,15 @@ package body et_kicad_to_native is
 		
 		-- Converts kicad texts to native texts:
 		function to_texts (texts_in : et_kicad.schematic.type_texts.list) 
-			return et_schematic.pac_texts.list 
+			return et_schematic_text.pac_texts.list 
 		is
 			use et_schematic_shapes_and_text;
 			use pac_text_schematic;
-			texts_out : et_schematic.pac_texts.list;
+			texts_out : et_schematic_text.pac_texts.list;
 
 			procedure query_texts (cursor : in et_kicad.schematic.type_texts.cursor) is
 				text_kicad : et_kicad.schematic.type_text := et_kicad.schematic.type_texts.element (cursor);
-				text_native : et_schematic.type_text;
+				text_native : et_schematic_text.type_text;
 			begin
 				-- copy the coordinates x/y, sheet and rotation from kicad text to native text
 				--text_native.position := to_native_coordinates (text_kicad.position);
@@ -2485,7 +2485,7 @@ package body et_kicad_to_native is
 				text_native.content := text_kicad.content;
 
 				-- append native text to list of native texts
-				et_schematic.pac_texts.append (
+				et_schematic_text.pac_texts.append (
 					container	=> texts_out,
 					new_item	=> text_native);
 
@@ -2620,7 +2620,7 @@ package body et_kicad_to_native is
 					-- depending on the appearance of the kicad component, we create a virtual or real 
 					-- unit in the native schematic module:
 
-					-- The units can be obtained by converting the kicad unit to the base unit (see et_schematic.type_unit_base)
+					-- The units can be obtained by converting the kicad unit to the base unit
 					-- and adding stuff of real components (if real device).
 					-- Kicad stuff like "alternative representation", package name, datasheet is discarded.
 					case element (component_cursor_kicad).appearance is
@@ -2767,7 +2767,6 @@ package body et_kicad_to_native is
 		
 		
 		procedure copy_nets is
-			use et_schematic;
 			
 			use et_kicad.schematic.type_nets;
 			use et_kicad.schematic.type_strands;

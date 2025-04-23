@@ -71,7 +71,6 @@ with et_device_purpose;				use et_device_purpose;
 with et_device_partcode;			use et_device_partcode;
 with et_device_model_names;			use et_device_model_names;
 with et_device_value;				use et_device_value;
-with et_schematic;					use et_schematic;
 with et_board_ops.ratsnest;
 
 with et_material;
@@ -193,7 +192,6 @@ package body et_canvas_schematic_units is
 
 	
 	procedure clarify_unit is
-		use et_schematic;
 		use et_schematic_ops.units;
 		u : pac_units.cursor;
 	begin

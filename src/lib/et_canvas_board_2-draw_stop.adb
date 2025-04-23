@@ -42,7 +42,6 @@ with et_stopmask;				use et_stopmask;
 with et_colors;					use et_colors;
 with et_board_ops.text;			use et_board_ops.text;
 with et_canvas_tool;
-with et_schematic;
 with et_pcb_placeholders;		use et_pcb_placeholders;
 
 

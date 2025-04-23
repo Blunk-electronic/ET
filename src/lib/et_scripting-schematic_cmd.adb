@@ -50,7 +50,6 @@ with et_coordinates_2;
 with et_module_instance;				use et_module_instance;
 with et_unit_name;						use et_unit_name;
 with et_units;
-with et_schematic;
 with et_sheets;
 with et_net_labels;						use et_net_labels;
 with et_nets;							use et_nets;
@@ -1070,7 +1069,6 @@ is
 		net		: in pac_net_name.bounded_string; -- RESET_N
 		mode	: in type_show_net)
 	is
-		use et_schematic;
 		use pac_nets;
 		
 		use pac_strands;
@@ -2369,7 +2367,6 @@ is
 						case cmd_field_count is
 							when 6 =>
 								declare
-									use et_schematic;
 									purpose : pac_device_purpose.bounded_string; -- brightness_control
 								begin
 									purpose := to_purpose (f (6));

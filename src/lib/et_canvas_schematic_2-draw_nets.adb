@@ -49,7 +49,6 @@ with et_alignment;
 with et_nets;								use et_nets;
 with et_net_labels;							use et_net_labels;
 with et_net_names;							use et_net_names;
-with et_schematic;							use et_schematic;
 
 
 with et_schematic_ops.nets;

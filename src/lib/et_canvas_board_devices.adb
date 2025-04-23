@@ -39,7 +39,6 @@
 -- 
 
 
-with et_schematic;					use et_schematic;
 with et_generic_module;				use et_generic_module;
 with et_canvas_board_2;
 with et_board_ops.devices;			use et_board_ops.devices;
@@ -138,7 +137,6 @@ package body et_canvas_board_devices is
 	
 	procedure clarify_electrical_device is
 		use et_object_status;
-		use et_schematic;
 		selected_device : pac_devices_sch.cursor;
 	begin
 		-- On every call of this procedure we advance from one proposed
@@ -485,7 +483,6 @@ package body et_canvas_board_devices is
 		-- electrical device.
 		-- Resets global variable preliminary_electrical_device:
 		procedure finalize is
-			use et_schematic;
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
@@ -744,7 +741,6 @@ package body et_canvas_board_devices is
 		-- Rotates the selected electrical device by default_rotation.
 		-- Resets global variable preliminary_electrical_device:
 		procedure finalize is
-			use et_schematic;
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;
@@ -897,7 +893,6 @@ package body et_canvas_board_devices is
 		-- Resets global variable preliminary_electrical_device:
 		procedure finalize is
 			face : type_face;
-			use et_schematic;
 			use et_modes.board;
 			use et_undo_redo;
 			use et_commit;

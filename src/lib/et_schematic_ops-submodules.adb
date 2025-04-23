@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -92,7 +92,6 @@ package body et_schematic_ops.submodules is
 		result : boolean := false; -- to be returned. goes true on the first (and only) match.
 
 		use et_nets;
-		use et_schematic;
 		
 
 		procedure query_nets (
@@ -190,7 +189,6 @@ package body et_schematic_ops.submodules is
 		-- suitable netchanger found.
 
 		use et_nets;
-		use et_schematic;
 		
 		procedure query_strands (
 			net_name	: in pac_net_name.bounded_string;
@@ -279,7 +277,7 @@ package body et_schematic_ops.submodules is
 		
 		use et_string_processing;
 		use et_submodules;
-		use et_schematic;
+
 		
 		submodule_file : pac_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
 		module_name : pac_module_name.bounded_string; 

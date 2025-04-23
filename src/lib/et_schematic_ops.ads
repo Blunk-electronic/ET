@@ -60,7 +60,6 @@ with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_nets;					use et_nets;
 with et_net_labels;				use et_net_labels;
-with et_schematic;				use et_schematic;
 with et_project;				use et_project;
 with et_generic_module;			use et_generic_module;
 with et_text;

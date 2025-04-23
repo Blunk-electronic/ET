@@ -48,8 +48,6 @@ with ada.containers;
 
 -- with et_pcb_coordinates;
 -- with et_terminals;
--- with et_devices;					use et_devices;
--- 
 
 with et_frames;
 with et_units;						use et_units;

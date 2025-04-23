@@ -38,13 +38,15 @@
 --
 
 
-with et_schematic;							use et_schematic;
-use et_schematic.pac_texts;
+with et_schematic_text;					use et_schematic_text;
+
 
 separate (et_canvas_schematic_2)
 
 procedure draw_texts is
 
+	use pac_texts;
+	
 	use et_colors;
 	use et_colors.schematic;
 

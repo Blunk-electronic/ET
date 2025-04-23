@@ -50,7 +50,6 @@ with ada.exceptions;				use ada.exceptions;
 with ada.containers;
 
 with et_frames;
-with et_schematic;
 with et_devices_electrical;
 with et_nets;
 with et_pcb;

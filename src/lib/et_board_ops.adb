@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -43,7 +43,6 @@ with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_schematic_ops.submodules;
 with et_schematic_ops;				use et_schematic_ops;
 
-with et_schematic;					use et_schematic;
 with et_devices_electrical;			use et_devices_electrical;
 with et_submodules;
 with et_numbering;
@@ -879,7 +878,6 @@ package body et_board_ops is
 			use pac_net_classes;
 			use pac_net_class_name;
 
-			use et_schematic;
 			use et_nets;
 			use pac_nets;
 		begin

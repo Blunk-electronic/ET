@@ -42,7 +42,6 @@ with et_display.board;			use et_display.board;
 with et_colors;					use et_colors;
 -- with et_conductor_text.boards;	use et_conductor_text.boards;
 with et_via_restrict.boards;	use et_via_restrict.boards;
-with et_schematic;
 with et_pcb_stack;
 
 

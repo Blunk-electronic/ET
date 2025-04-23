@@ -41,8 +41,8 @@
 with ada.containers;
 with ada.containers.ordered_maps;
 
-with et_coordinates_2;			--use et_coordinates_2;
-with et_schematic;					use et_schematic;
+with et_coordinates_2;
+with et_schematic_text;
 with et_nets;
 with et_netlists;
 with et_submodules;
@@ -93,7 +93,7 @@ package et_generic_module is
 		submods			: et_submodules.pac_submodules.map;	-- instances of submodules (boxes)
 		netchangers		: et_submodules.pac_netchangers.map;-- netchangers
 		
-		texts       	: pac_texts.list; -- general notes in schematic, not related to drawing frames !
+		texts       	: et_schematic_text.pac_texts.list; -- general notes in schematic, not related to drawing frames !
 
 		-- The nets of the module (incl. routing information for the board)
 		-- containing:

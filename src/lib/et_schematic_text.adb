@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                              SCHEMATIC                                   --
+--                          SCHEMATIC TEXT                                  --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -37,46 +37,22 @@
 --
 
 with ada.text_io;				use ada.text_io;
-with ada.strings.maps;			use ada.strings.maps;
-
-with ada.characters.handling;	use ada.characters.handling;
-with ada.exceptions;
-
-with et_string_processing;		use et_string_processing;
-with et_logging;				use et_logging;
-
-with et_device_model;
+-- with ada.strings.maps;			use ada.strings.maps;
+-- 
+-- with ada.characters.handling;	use ada.characters.handling;
+-- with ada.exceptions;
+-- 
+-- with et_string_processing;		use et_string_processing;
 
 
-package body et_schematic is
+
+package body et_schematic_text is
 
 	
-
 	procedure dummy is begin null; end;
 	
-
--- 	
--- 	procedure device_name_in_use (
--- 		name	: in type_device_name;	-- IC1, MH1, ...
--- 		by_cat	: in type_device_category)	-- electrical/non-electrical
--- 	is begin
--- 		case by_cat is
--- 			when NON_ELECTRICAL =>
--- 				log (ERROR, "Name " & enclose_in_quotes (to_string (name)) &
--- 					 " already used by another non-electrical device !",
--- 					 console => true);
--- 
--- 			when ELECTRICAL =>
--- 				log (ERROR, "Name " & enclose_in_quotes (to_string (name)) &
--- 					 " already used by another electrical device !",
--- 					 console => true);
--- 		end case;
--- 		
--- 		raise constraint_error;
--- 	end device_name_in_use;
-
 		
-end et_schematic;
+end et_schematic_text;
 
 
 -- Soli Deo Gloria

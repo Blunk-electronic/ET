@@ -37,7 +37,6 @@
 --
 --   ToDo: 
 
-with et_schematic;						use et_schematic;
 with et_conductor_segment.boards;
 with et_string_processing;				use et_string_processing;
 with et_board_ops.devices;				use et_board_ops.devices;

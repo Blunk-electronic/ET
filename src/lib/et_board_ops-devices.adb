@@ -71,7 +71,6 @@ package body et_board_ops.devices is
 		log_threshold	: in type_log_level)
 		return pac_devices_sch.map
 	is
-		use et_schematic;
 		use pac_devices_sch;
 		result : pac_devices_sch.map;
 

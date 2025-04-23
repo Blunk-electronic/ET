@@ -69,7 +69,7 @@ with et_device_value;
 with et_device_partcode;
 with et_package_variant;
 with et_symbol_rw;
-with et_schematic;
+with et_schematic_text;
 with et_devices_electrical;
 with et_schematic_rw;
 with et_device_rw;
@@ -494,7 +494,6 @@ is
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net) 
 		is
-			use et_schematic;
 			use pac_strands;
 			use et_coordinates_2.pac_geometry_2;
 			
@@ -1342,7 +1341,6 @@ is
 	
 	procedure query_submodules is		
 		use et_coordinates_2.pac_geometry_2;
-		use et_schematic;
 		use et_submodules;
 		use pac_submodules;
 		use et_net_names;
@@ -1404,7 +1402,7 @@ is
 		use pac_text_schematic;
 		use et_coordinates_2;
 		use et_coordinates_2.pac_geometry_2;
-		use et_schematic;
+		use et_schematic_text;
 		use pac_texts;
 		
 		
