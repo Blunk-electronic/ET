@@ -44,7 +44,7 @@ with et_mirroring;					use et_mirroring;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_schematic_ops;				use et_schematic_ops;
 with et_exceptions;					use et_exceptions;
-with et_board_ops.devices;
+with et_board_ops.devices;			use et_board_ops.devices;
 with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 
 with et_device_query_board;			use et_device_query_board;
@@ -334,7 +334,7 @@ package body et_board_ops.conductors is
 			
 		end make_line;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_name) &
 			" " & to_string (net_name) &
@@ -403,7 +403,7 @@ package body et_board_ops.conductors is
 			
 		end make_line;
 
-		
+
 	begin
 		log (text => "module " & to_string (module_name) &
 			" " & to_string (net_name) &
