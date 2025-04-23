@@ -43,6 +43,7 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_sets;
 with ada.containers.ordered_maps;
 
+with et_assembly_variants;		use et_assembly_variants;
 with et_module_instance;		use et_module_instance;
 with et_coordinates_2;			use et_coordinates_2;
 with et_port_names;				use et_port_names;
@@ -138,6 +139,9 @@ package et_nets is
 		submodules	: pac_submodule_ports.set;
 		netchangers	: et_netlists.pac_netchanger_ports.set;
 	end record;
+
+
+
 	
 	
 	type type_net_segment is new type_line with record
@@ -158,9 +162,9 @@ package et_nets is
 
 
 	
-		
 	-- Returns a string that tells about start and end coordinates of the net segment.
 	function to_string (segment : in pac_net_segments.cursor) return string;
+		
 
 	
 	-- A net segment may run in those directions:
@@ -317,6 +321,18 @@ package et_nets is
 
 
 
+	-- Returns the ports of devices, submodules and netchangers in
+	-- the given net. The given assembly variant determines whether certain
+	-- devices should be excluded (because they may not be present in a particular
+	-- assembly variant).
+	-- NOTE: If no variant is given, then the default variant is assumend
+	-- and ALL devices are returned.
+	function get_ports (
+		net		: in pac_nets.cursor;
+		variant	: in pac_assembly_variants.cursor := pac_assembly_variants.no_element)
+		return type_ports;
+
+	
 
 
 	-- Returns a cursor to the strand that is
