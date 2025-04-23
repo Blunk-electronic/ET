@@ -298,6 +298,18 @@ package et_netlists is
 		write_file		: in boolean;
 		log_threshold	: in type_log_level)
 		return pac_netlist.tree;
+
+
+
+	-- As there are assembly variants, for each of them a dedicated netlist must be generated.
+	package pac_netlists is new ordered_maps (
+		key_type		=> pac_assembly_variant_name.bounded_string, -- low_cost, empty if default variant
+		"<"				=> pac_assembly_variant_name."<",
+		element_type	=> pac_netlist.tree, -- provides info on primary and secondary net dependencies
+		"="				=> pac_netlist."=");
+
+
+	
 	
 end et_netlists;
 

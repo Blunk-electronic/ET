@@ -58,10 +58,10 @@ with et_assembly_variant_name;	use et_assembly_variant_name;
 with et_schematic_shapes_and_text;		use et_schematic_shapes_and_text;
 with et_device_placeholders.packages;
 
-with et_pcb_sides;				use et_pcb_sides;
+-- with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;
-with et_submodules;
-with et_material;
+-- with et_submodules;
+-- with et_material;
 with et_netlists;
 with et_text;
 with et_symbols;						use et_symbols;
@@ -129,13 +129,6 @@ package et_schematic is
 	
 	-- For designs which have only a schematic, this flag goes false.
 	type type_board_available is new boolean;
-
-	-- As there are assembly variants, for each of them a dedicated netlist must be generated.
-	package pac_netlists is new ordered_maps (
-		key_type		=> pac_assembly_variant_name.bounded_string, -- low_cost, empty if default variant
-		"<"				=> pac_assembly_variant_name."<",
-		element_type	=> et_netlists.pac_netlist.tree, -- provides info on primary and secondary net dependencies
-		"="				=> et_netlists.pac_netlist."=");
 
 
 

@@ -44,6 +44,7 @@ with ada.containers.ordered_maps;
 with et_coordinates_2;			--use et_coordinates_2;
 with et_schematic;					use et_schematic;
 with et_nets;
+with et_netlists;
 with et_submodules;
 with et_pcb;
 with et_assembly_variants;			use et_assembly_variants;
@@ -121,7 +122,7 @@ package et_generic_module is
 		-- The netlists containing nets of top module and submodule instances:
 		-- Provide information on primary nets and their subordinated secondary nets per 
 		-- assembly variant.
-		netlists		: pac_netlists.map; -- variant name and netlist
+		netlists		: et_netlists.pac_netlists.map; -- variant name and netlist
 
 		-- Devices which do not have a counterpart in the schematic:
 		devices_non_electric			: pac_devices_non_electric.map; -- fiducials, mounting holes, ...
