@@ -47,8 +47,6 @@ with et_exceptions;					use et_exceptions;
 with et_board_ops.devices;			use et_board_ops.devices;
 with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 
-with et_device_query_board;			use et_device_query_board;
-
 with et_fill_zones.boards;			use et_fill_zones.boards;
 with et_object_status;
 

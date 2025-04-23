@@ -81,8 +81,6 @@ with et_pcb_stack;					use et_pcb_stack;
 
 with et_board_shapes_and_text;
 
-with et_device_query_board;			use et_device_query_board;
-
 with et_modes.board;
 with et_canvas_board_devices;
 with et_canvas_tool;

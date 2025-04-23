@@ -62,7 +62,6 @@ with et_conductor_segment;
 with et_conductor_segment.boards;
 with et_conductor_text.packages;
 with et_pcb_contour;
-with et_device_query_board;
 with et_mirroring;					use et_mirroring;
 with et_text;
 with et_silkscreen;
@@ -807,7 +806,6 @@ is
 				device_non_electric	: in pac_devices_non_electric.cursor;
 				mirror 				: in type_mirror)
 			is
-				use et_device_query_board;
 				use et_packages;
 				use pac_package_models;
 

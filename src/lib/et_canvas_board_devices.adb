@@ -43,7 +43,6 @@ with et_schematic;					use et_schematic;
 with et_generic_module;				use et_generic_module;
 with et_canvas_board_2;
 with et_board_ops.devices;			use et_board_ops.devices;
-with et_device_query_board;			use et_device_query_board;
 
 with et_devices_electrical;			use et_devices_electrical;
 with et_devices_non_electrical;		use et_devices_non_electrical;
