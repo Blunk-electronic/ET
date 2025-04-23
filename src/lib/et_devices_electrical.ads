@@ -162,7 +162,12 @@ package et_devices_electrical is
 	use pac_devices_sch;
 	
 
+	
+	procedure device_name_in_use (
+		name : in type_device_name); -- IC1, R1, ...
+	
 
+	
 	
 	-- Returns the current position (x/y/rotation/face) of the 
 	-- given electrical device:

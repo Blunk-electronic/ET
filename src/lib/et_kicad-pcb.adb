@@ -5548,7 +5548,7 @@ package body et_kicad.pcb is
 			module_name	: in et_kicad_coordinates.type_submodule_name.bounded_string;
 			module		: in out type_module) is
 		begin
-			module.board_available := et_schematic.TRUE;
+			module.board_available := et_generic_module.TRUE;
 		end set_board_available_flag;
 
 		

@@ -3170,12 +3170,12 @@ is
 
 				-- The device name must not be in use by any electrical device:
 				if not inserted then
-					device_name_in_use (device_name, ELECTRICAL);
+					et_devices_electrical.device_name_in_use (device_name);
 				end if;
 
 				-- The device name must not be in use by any non-electrical device:
 				if module.devices_non_electric.contains (device_name) then
-					device_name_in_use (device_name, NON_ELECTRICAL);
+					et_devices_non_electrical.device_name_in_use (device_name);
 				end if;
 
 				
@@ -3263,12 +3263,12 @@ is
 
 				-- The device name must not be in use by any non-electrical device:
 				if not inserted then
-					device_name_in_use (device_name, NON_ELECTRICAL);
+					et_devices_non_electrical.device_name_in_use (device_name);
 				end if;
 
 				-- The device name must not be in use by an electrical device:
 				if module.devices.contains (device_name) then
-					device_name_in_use (device_name, ELECTRICAL);
+					et_devices_electrical.device_name_in_use (device_name);
 				end if;
 
 					

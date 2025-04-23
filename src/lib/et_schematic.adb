@@ -52,28 +52,28 @@ package body et_schematic is
 
 	
 
-	
+	procedure dummy is begin null; end;
 	
 
-	
-	procedure device_name_in_use (
-		name	: in type_device_name;	-- IC1, MH1, ...
-		by_cat	: in type_device_category)	-- electrical/non-electrical
-	is begin
-		case by_cat is
-			when NON_ELECTRICAL =>
-				log (ERROR, "Name " & enclose_in_quotes (to_string (name)) &
-					 " already used by another non-electrical device !",
-					 console => true);
-
-			when ELECTRICAL =>
-				log (ERROR, "Name " & enclose_in_quotes (to_string (name)) &
-					 " already used by another electrical device !",
-					 console => true);
-		end case;
-		
-		raise constraint_error;
-	end device_name_in_use;
+-- 	
+-- 	procedure device_name_in_use (
+-- 		name	: in type_device_name;	-- IC1, MH1, ...
+-- 		by_cat	: in type_device_category)	-- electrical/non-electrical
+-- 	is begin
+-- 		case by_cat is
+-- 			when NON_ELECTRICAL =>
+-- 				log (ERROR, "Name " & enclose_in_quotes (to_string (name)) &
+-- 					 " already used by another non-electrical device !",
+-- 					 console => true);
+-- 
+-- 			when ELECTRICAL =>
+-- 				log (ERROR, "Name " & enclose_in_quotes (to_string (name)) &
+-- 					 " already used by another electrical device !",
+-- 					 console => true);
+-- 		end case;
+-- 		
+-- 		raise constraint_error;
+-- 	end device_name_in_use;
 
 		
 end et_schematic;

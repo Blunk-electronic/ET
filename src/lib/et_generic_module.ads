@@ -63,7 +63,12 @@ with et_devices_non_electrical;		use et_devices_non_electrical;
 
 package et_generic_module is
 
-												 
+
+	-- For designs which have only a schematic, this flag goes false.
+	type type_board_available is new boolean;
+
+	
+	
 	type type_generic_module is record
 		commit_index	: et_commit.type_commit_index_zero_based := 0;
 		

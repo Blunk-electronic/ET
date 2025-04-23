@@ -78,6 +78,11 @@ package et_devices_non_electrical is
 	use pac_polygons;
 
 
+	procedure device_name_in_use (
+		name : in type_device_name); -- FD1, MH1, ...
+
+	
+
 	-- In this world, if a package is flipped, then it is
 	-- mirrored along the Y-axis.
 	-- This function maps from flip status to mirror along y-axis.

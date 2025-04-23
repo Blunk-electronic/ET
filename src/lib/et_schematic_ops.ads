@@ -464,6 +464,11 @@ package et_schematic_ops is
 	
 
 
+	-- To distinguish between electrical and non-electrical devices
+	-- use this type:
+	type type_device_category is (ELECTRICAL, NON_ELECTRICAL);
+	-- CS: This type and the function get_next_device_name (see below)
+	-- seem misplaced here.	
 	
 	-- Returns for the given device prefix the next available device name in the module.
 	-- Example: prefix is C. If there are C1, C12, C1034 and C1035 the return will be C2.

@@ -111,30 +111,9 @@ package et_schematic is
 
 	
 
-	
+	procedure dummy;
 
 
-
-	
-	
-	-- For designs which have only a schematic, this flag goes false.
-	type type_board_available is new boolean;
-
-
-
-
-
-	-- To distinguish between electrical and non-electrical devices
-	-- use this type:
-	type type_device_category is (ELECTRICAL, NON_ELECTRICAL);
-	
-
-	
-	procedure device_name_in_use (
-		name	: in type_device_name;	-- IC1, MH1, ...
-		by_cat	: in type_device_category);	-- electrical/non-electrical
-	
-		
 end et_schematic;
 
 -- Soli Deo Gloria

@@ -42,11 +42,27 @@ with et_contour_to_polygon;
 with et_stopmask.packages;
 with et_silkscreen.packages;
 with et_assy_doc.packages;
-
+with et_logging;
+with et_string_processing;			use et_string_processing;
 
 package body et_devices_non_electrical is
 
 
+	procedure device_name_in_use (
+		name : in type_device_name)
+	is 
+		use et_logging;
+	begin
+		log (ERROR, "Name " & enclose_in_quotes (to_string (name)) &
+			 " already used by another non-electrical device !",
+			 console => true);
+		
+		raise constraint_error;
+	end device_name_in_use;
+
+
+
+	
 	function to_mirror_along_y_axis (
 		flipped : in type_flipped)
 		return type_mirror

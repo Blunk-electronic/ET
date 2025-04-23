@@ -42,12 +42,27 @@ with ada.exceptions;
 with et_logging;				use et_logging;
 with et_device_model;
 with et_contour_to_polygon;
-
-
+with et_logging;
+with et_string_processing;			use et_string_processing;
 
 package body et_devices_electrical is
 
 
+	procedure device_name_in_use (
+		name : in type_device_name)
+	is 
+		use et_logging;
+	begin
+		log (ERROR, "Name " & enclose_in_quotes (to_string (name)) &
+			 " already used by another electrical device !",
+			 console => true);
+		
+		raise constraint_error;
+	end device_name_in_use;
+
+	
+
+	
 	function get_position (
 		device_cursor	: in pac_devices_sch.cursor) -- IC45
 		return et_pcb_coordinates_2.type_package_position

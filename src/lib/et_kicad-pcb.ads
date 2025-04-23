@@ -97,6 +97,7 @@ with et_keepout;				use et_keepout;
 with et_stopmask;				use et_stopmask;
 with et_stopmask.packages;
 
+with et_generic_module;
 
 with et_kicad.schematic;
 with et_kicad_libraries;		--use et_kicad_libraries;
@@ -757,7 +758,7 @@ package et_kicad.pcb is
 
 	
 	type type_module is record
-		board_available	: et_schematic.type_board_available := et_schematic.false;
+		board_available	: et_generic_module.type_board_available := et_generic_module.false;
 
 		-- V4 uses search lists:
 		-- The search list of project library directories and names:
