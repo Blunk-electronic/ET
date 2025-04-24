@@ -2300,6 +2300,167 @@ is
 
 		
 
+		procedure draw_stopmask is
+			use et_stopmask;
+			use pac_stop_lines;
+
+			
+			procedure query_line (c : in pac_stop_lines.cursor) is
+				line : type_stop_line renames element (c);
+			begin
+				draw_line (
+					line		=> line,
+					pos			=> get_position (package_position_2),		  
+					width		=> line.width,
+					mirror		=> mirror,
+					do_stroke	=> true);
+			end query_line;
+			
+		begin
+			-- put_line ("draw_stopmask");
+			
+			if flip then
+				if stop_mask_enabled (TOP) then
+					set_color_stop_mask (TOP, brightness);
+					packge.stop_mask.bottom.lines.iterate (query_line'access);
+					-- CS arcs, circles, zones, texts
+
+				end if;
+
+				if stop_mask_enabled (BOTTOM) then
+					set_color_stop_mask (BOTTOM, brightness);
+					packge.stop_mask.top.lines.iterate (query_line'access);
+			
+				end if;
+
+			else -- not flipped
+				if stop_mask_enabled (TOP) then
+					set_color_stop_mask (TOP, brightness);
+					packge.stop_mask.top.lines.iterate (query_line'access);
+				end if;
+
+				if stop_mask_enabled (BOTTOM) then
+					set_color_stop_mask (BOTTOM, brightness);
+					packge.stop_mask.bottom.lines.iterate (query_line'access);
+
+				end if;
+
+			end if;
+		end draw_stopmask;
+
+
+
+
+
+		procedure draw_stencil is
+			use et_stencil;
+			use pac_stencil_lines;
+
+			
+			procedure query_line (c : in pac_stencil_lines.cursor) is
+				line : type_stencil_line renames element (c);
+			begin
+				draw_line (
+					line		=> line,
+					pos			=> get_position (package_position_2),		  
+					width		=> line.width,
+					mirror		=> mirror,
+					do_stroke	=> true);
+			end query_line;
+			
+		begin
+			-- put_line ("draw_stencil");
+			
+			if flip then
+				if stencil_enabled (TOP) then
+					set_color_stencil (TOP, brightness);
+					packge.stencil.bottom.lines.iterate (query_line'access);
+					-- CS arcs, circles, zones
+
+				end if;
+
+				if stencil_enabled (BOTTOM) then
+					set_color_stencil (BOTTOM, brightness);
+					packge.stencil.top.lines.iterate (query_line'access);
+			
+				end if;
+
+			else -- not flipped
+				if stencil_enabled (TOP) then
+					set_color_stencil (TOP, brightness);
+					packge.stencil.top.lines.iterate (query_line'access);
+				end if;
+
+				if stencil_enabled (BOTTOM) then
+					set_color_stencil (BOTTOM, brightness);
+					packge.stencil.bottom.lines.iterate (query_line'access);
+
+				end if;
+
+			end if;
+		end draw_stencil;
+
+		
+		
+
+
+
+		procedure draw_keepout is
+			use et_keepout;
+			use pac_keepout_zones;
+			use pac_draw_contours;
+
+			
+			procedure query_zone (c : in pac_keepout_zones.cursor) is
+				zone : type_keepout_zone renames element (c);
+			begin
+				draw_contour (
+					contour	=> zone,
+					pos		=> get_position (package_position_2),		  
+					filled	=> NO,
+					width	=> zero,
+					mirror	=> mirror);
+
+			end query_zone;
+
+			
+		begin
+			-- put_line ("draw_keepout");
+			
+			if flip then
+				if keepout_enabled (TOP) then
+					set_color_keepout (TOP, brightness);
+					packge.keepout.bottom.zones.iterate (query_zone'access);
+					-- CS cutouts
+
+				end if;
+
+				if keepout_enabled (BOTTOM) then
+					set_color_keepout (BOTTOM, brightness);
+					packge.keepout.top.zones.iterate (query_zone'access);
+			
+				end if;
+
+			else -- not flipped
+				if keepout_enabled (TOP) then
+					set_color_keepout (TOP, brightness);
+					packge.keepout.top.zones.iterate (query_zone'access);
+				end if;
+
+				if keepout_enabled (BOTTOM) then
+					set_color_keepout (BOTTOM, brightness);
+					packge.keepout.bottom.zones.iterate (query_zone'access);
+
+				end if;
+
+			end if;
+		end draw_keepout;
+
+		
+
+		
+		
+
 		procedure draw_conductors is
 			use et_conductor_segment;
 			use pac_conductor_lines;
@@ -3278,16 +3439,13 @@ is
 		draw_origin;
 		draw_silkscreen;
 		draw_assy;
+		draw_stopmask; -- non-terminal related
+		draw_stencil; -- non-terminal related
+		draw_keepout; 
 		
  		draw_conductors; -- NON-TERMINAL RELATED, NON-ELECTRICAL
 		draw_terminals; -- pins, pads, plated millings
--- 		
--- 		draw_stop_mask; -- non-terminal related
--- 		draw_stencil; -- non-terminal related
--- 
--- 		draw_assembly_documentation;
--- 		draw_keepout; 
--- 
+		
 -- 		draw_route_restrict;
 -- 		draw_via_restrict;
 -- 		
