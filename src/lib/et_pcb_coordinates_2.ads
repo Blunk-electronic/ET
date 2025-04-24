@@ -38,6 +38,7 @@
 
 with et_geometry_1;
 with et_geometry_2a;
+with et_geometry_2a.contours;
 with et_geometry_2a.grid;
 with et_geometry_2a.path;
 
@@ -114,7 +115,9 @@ package et_pcb_coordinates_2 is
 	accuracy_default : constant type_zone_radius := 2.0; 
 	-- CS: should be a general setting for board and package editor in the future
 	
-	
+
+
+	package pac_contours is new pac_geometry_2.contours;
 	package pac_grid is new pac_geometry_2.grid;
 	package pac_path_and_bend is new pac_geometry_2.path;
 	

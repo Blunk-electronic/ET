@@ -51,6 +51,7 @@ with et_canvas_board_2;
 with et_pcb_sides;						use et_pcb_sides;
 with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
 use et_pcb_coordinates_2.pac_geometry_2;
+use et_pcb_coordinates_2.pac_contours;
 use et_pcb_coordinates_2.pac_path_and_bend;
 
 with et_board_layer_category;			use et_board_layer_category;

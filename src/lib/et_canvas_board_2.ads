@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -124,7 +124,7 @@ package et_canvas_board_2 is
 		pac_path		=> et_pcb_coordinates_2.pac_path_and_bend,
 		pac_polygons	=> et_board_shapes_and_text.pac_polygons,
 		pac_offsetting	=> et_board_shapes_and_text.pac_polygon_offsetting,
-		pac_contours	=> et_board_shapes_and_text.pac_contours,
+		pac_contours	=> et_pcb_coordinates_2.pac_contours,
 		pac_text		=> et_board_shapes_and_text.pac_text_board		
 		);
 

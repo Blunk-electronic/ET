@@ -47,7 +47,6 @@ with et_drills;
 with et_terminals;				use et_terminals;
 
 with et_board_shapes_and_text;	use et_board_shapes_and_text;
-use et_board_shapes_and_text.pac_contours;
 use et_board_shapes_and_text.pac_text_board;
 
 
@@ -72,6 +71,7 @@ with et_kicad_general;			use et_kicad_general;
 with et_import;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 use et_pcb_coordinates_2.pac_geometry_2;
+use et_pcb_coordinates_2.pac_contours;
 
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;

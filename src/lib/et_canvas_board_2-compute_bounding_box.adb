@@ -709,7 +709,7 @@ is
 		-- and the holes (which can be regarded as inner contour):
 		procedure process_board_outline is
 			use et_pcb_contour;
-			use pac_contours; -- instance of generic package
+			use et_pcb_coordinates_2.pac_contours; -- instance of generic package
 			use pac_segments;
 
 
@@ -1488,7 +1488,7 @@ is
 						c : in pac_terminals.cursor)
 					is 
 						t : type_terminal renames element (c);
-						use pac_contours;						
+						use et_pcb_coordinates_2.pac_contours;						
 					begin
 						case t.technology is
 							when THT =>

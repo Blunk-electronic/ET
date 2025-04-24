@@ -137,7 +137,7 @@ is
 		package_position : type_package_position;  -- incl. rotation and face
 
 		use pac_geometry_2;	
-		use pac_contours;
+		use et_pcb_coordinates_2.pac_contours;
 		use pac_polygons;
 		use pac_offsetting;
 
@@ -2404,7 +2404,7 @@ is
 				
 				t : type_terminal renames element (c);
 
-				use pac_contours;
+				use et_pcb_coordinates_2.pac_contours;
 
 		
 
@@ -2628,7 +2628,7 @@ is
 						pad_position	: in type_position) -- the center of the pad incl. its rotation
 					is
 						use pac_geometry_2;	
-						use pac_contours;
+						use et_pcb_coordinates_2.pac_contours;
 						use pac_polygons;
 						use pac_offsetting;
 
@@ -2704,7 +2704,7 @@ is
 						-- Builds the stopmask contour from the pad contour:
 						procedure build_contour is
 							use pac_geometry_2;	
-							use pac_contours;
+							use et_pcb_coordinates_2.pac_contours;
 							use pac_polygons;
 							use pac_offsetting;
 
@@ -2996,7 +2996,7 @@ is
 						-- Builds the stopmask contour from the pad contour:
 						procedure build_contour is
 							use pac_geometry_2;	
-							use pac_contours;
+							use et_pcb_coordinates_2.pac_contours;
 							use pac_polygons;
 							use pac_offsetting;
 
@@ -3109,7 +3109,7 @@ is
 						-- Builds the stencil contour from the pad contour:
 						procedure build_contour is 
 							use pac_geometry_2;	
-							use pac_contours;
+							use et_pcb_coordinates_2.pac_contours;
 							use pac_polygons;
 							use pac_offsetting;
 							use et_board_shapes_and_text;

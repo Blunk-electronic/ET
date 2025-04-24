@@ -3802,7 +3802,7 @@ is
 
 			
 			procedure insert_cutout_via_restrict is
-				use et_board_shapes_and_text;
+				use et_pcb_coordinates_2;
 				use pac_contours;				
 				use et_via_restrict.boards;
 				use et_pcb_stack;
@@ -3835,7 +3835,7 @@ is
 			
 			
 			procedure insert_cutout_route_restrict is
-				use et_board_shapes_and_text;
+				use et_pcb_coordinates_2;
 				use pac_contours;
 				use et_route_restrict.boards;
 				use et_pcb_stack;
@@ -3871,7 +3871,7 @@ is
 			-- This is about cutout zones to trim floating contours in 
 			-- signal layers. No connection to any net.
 			procedure insert_cutout_conductor is
-				use et_board_shapes_and_text;
+				use et_pcb_coordinates_2;
 				use pac_contours;
 				use et_pcb;
 				use et_fill_zones.boards;
@@ -4085,9 +4085,9 @@ is
 			
 			procedure insert_polygon_route_restrict is
 				use et_pcb_coordinates_2;
-				use pac_geometry_2;
+				use pac_geometry_2;				
+				use pac_contours;
 				
-				use et_board_shapes_and_text.pac_contours;
 				use et_route_restrict.boards;
 				use pac_route_restrict_contours;
 				
@@ -4121,7 +4121,7 @@ is
 			procedure insert_zone_via_restrict is
 				use et_pcb_coordinates_2;
 				use pac_geometry_2;
-				use et_board_shapes_and_text.pac_contours;
+				use pac_contours;
 				use et_via_restrict.boards;
 				use pac_via_restrict_contours;
 				use et_pcb_stack;
@@ -4154,7 +4154,7 @@ is
 			
 			-- This is about floating contours in signal layers. No connection to any net.
 			procedure insert_polygon_conductor is
-				use et_board_shapes_and_text;
+				use et_pcb_coordinates_2;
 				use pac_contours;
 				use et_fill_zones;
 				use et_fill_zones.boards;
@@ -4706,7 +4706,7 @@ is
 			
 			procedure build_route_polygon is
 				use et_pcb_coordinates_2.pac_geometry_2;
-				use et_board_shapes_and_text.pac_contours;
+				use et_pcb_coordinates_2.pac_contours;
 				use et_fill_zones;
 				use et_fill_zones.boards;
 				use et_thermal_relief;

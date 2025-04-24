@@ -54,10 +54,7 @@ package et_board_shapes_and_text is
 
 	use pac_geometry_brd;
 	use pac_geometry_2;
-		
 
-	package pac_contours is new pac_geometry_2.contours;
-	use pac_contours;
 
 	
 	package pac_polygons is new pac_geometry_1.et_polygons;

@@ -105,7 +105,6 @@ is
 	use et_board_ops.conductors;
 	use et_board_ops.vias;
 	use et_board_shapes_and_text;
-	use pac_contours;
 	use et_drills;
 	use et_vias;
 	use et_pcb;
@@ -113,6 +112,7 @@ is
 	use et_pcb_sides;
 	use et_pcb_coordinates_2;
 	use pac_geometry_2;
+	use pac_contours;
 
 	use et_pcb_stack;
 	use et_canvas_board_2;

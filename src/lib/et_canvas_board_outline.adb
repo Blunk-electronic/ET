@@ -87,7 +87,6 @@ package body et_canvas_board_outline is
 	procedure show_selected_outer_contour_segment (
 		selected : in type_object_outer_contour_segment)
 	is 
-		use pac_contours;
 		use pac_segments;
 		praeamble : constant string := "selected: ";
 	begin
@@ -101,7 +100,6 @@ package body et_canvas_board_outline is
 	procedure show_selected_hole_segment (
 		selected : in type_object_hole_segment)
 	is 
-		use pac_contours;
 		use pac_segments;
 		praeamble : constant string := "selected: ";
 	begin

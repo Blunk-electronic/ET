@@ -46,7 +46,7 @@ separate (et_canvas_board_2)
 
 procedure draw_outline is
 	
-	use pac_contours;
+	use et_pcb_coordinates_2.pac_contours;
 	use pac_segments;
 
 	use pac_draw_contours;

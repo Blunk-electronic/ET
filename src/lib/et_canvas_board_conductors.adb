@@ -135,7 +135,7 @@ package body et_canvas_board_conductors is
 		praeamble : constant string := "selected: ";
 
 		use et_nets;
-		use et_board_shapes_and_text.pac_contours;
+		use et_pcb_coordinates_2.pac_contours;
 	begin
 		set_status (praeamble & to_string (selected.segment)
 			& " net " & to_string (selected.net)
@@ -154,7 +154,7 @@ package body et_canvas_board_conductors is
 		praeamble : constant string := "selected: ";
 
 		use et_nets;
-		use et_board_shapes_and_text.pac_contours;
+		use et_pcb_coordinates_2.pac_contours;
 	begin
 		set_status (praeamble & to_string (selected.segment)
 			-- & " layer" & to_string (selected.laface) & ". " 

@@ -107,7 +107,7 @@ package et_kicad.pcb is
 	use pac_geometry_brd;
 	use pac_geometry_2;
 	
-	use et_board_shapes_and_text.pac_contours;
+	use et_pcb_coordinates_2.pac_contours;
 	use et_board_shapes_and_text.pac_text_board;
 
 	use pac_net_name;

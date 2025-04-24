@@ -71,7 +71,7 @@ package body et_canvas_board_keepout is
 	is 
 		praeamble : constant string := "selected: ";
 
-		use et_board_shapes_and_text.pac_contours;
+		use et_pcb_coordinates_2.pac_contours;
 	begin
 		set_status (praeamble & to_string (selected.segment)
 			& " face" & to_string (selected.face) & ". " 

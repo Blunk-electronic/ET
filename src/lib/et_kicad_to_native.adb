@@ -801,7 +801,7 @@ package body et_kicad_to_native is
 					
 					procedure move_polygon (polygon : in out type_route_solid) is begin
 						log (text => "polygon segments", level => log_threshold + 4);
-						et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
+						et_pcb_coordinates_2.pac_contours.transpose_contour (polygon, layout_sheet_height);
 					end move_polygon;
 
 					
@@ -965,7 +965,7 @@ package body et_kicad_to_native is
 				
 				procedure move_polygon (polygon : in out type_silk_zone) is begin
 					log (text => board_silk_screen & "zone segments", level => log_threshold + log_threshold_add);
-					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
+					et_pcb_coordinates_2.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end;
 
 				
@@ -1175,7 +1175,7 @@ package body et_kicad_to_native is
 				
 				procedure move_polygon (polygon : in out type_doc_zone) is begin
 					log (text => doc & "polygon segments", level => log_threshold + log_threshold_add);
-					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
+					et_pcb_coordinates_2.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end;
 
 				
@@ -1557,7 +1557,7 @@ package body et_kicad_to_native is
 				
 				procedure move_polygon (polygon : in out type_stop_zone) is begin
 					log (text => stop & "zone corner points", level => log_threshold + log_threshold_add);
-					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
+					et_pcb_coordinates_2.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end move_polygon;
 
 				
@@ -1710,7 +1710,7 @@ package body et_kicad_to_native is
 							
 				procedure move_polygon (polygon : in out type_keepout_zone) is begin
 					log (text => keepout & "zone segments", level => log_threshold + log_threshold_add);
-					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
+					et_pcb_coordinates_2.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end move_polygon;
 
 				
@@ -1912,13 +1912,13 @@ package body et_kicad_to_native is
 				
 				procedure move_polygon (polygon : in out type_floating_solid) is begin
 					log (text => board_copper & "solid polygon segments", level => log_threshold + log_threshold_add);
-					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
+					et_pcb_coordinates_2.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end move_polygon;
 
 				
 				procedure move_polygon (polygon : in out type_floating_hatched) is begin
 					log (text => board_copper & "hatched polygon segments", level => log_threshold + log_threshold_add);
-					et_board_shapes_and_text.pac_contours.transpose_contour (polygon, layout_sheet_height);
+					et_pcb_coordinates_2.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end move_polygon;
 
 				

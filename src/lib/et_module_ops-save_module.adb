@@ -674,7 +674,7 @@ is
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net) 
 		is
-			use et_board_shapes_and_text;
+			use et_pcb_coordinates_2;
 			use pac_contours;
 
 			use et_terminals;
@@ -1450,7 +1450,7 @@ is
 		--use et_terminals;
 		use et_board_shapes_and_text;
 		use pac_text_board;
-		use pac_contours;
+		use et_pcb_coordinates_2.pac_contours;
 		use et_pcb;
 		use et_pcb_stack;
 		use et_pcb_coordinates_2.pac_geometry_2;
