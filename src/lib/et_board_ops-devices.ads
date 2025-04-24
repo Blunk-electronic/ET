@@ -443,7 +443,7 @@ package et_board_ops.devices is
 	type type_terminal_polygon (exists : boolean) is record
 		case exists is
 			when TRUE	=> 
-				polygon		: et_board_shapes_and_text.pac_polygons.type_polygon;
+				polygon		: et_pcb_coordinates_2.pac_polygons.type_polygon;
 				position	: type_terminal_position_fine;
 				
 			when FALSE	=> null;

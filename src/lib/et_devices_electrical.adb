@@ -161,9 +161,9 @@ package body et_devices_electrical is
 	function get_conductor_polygons (
 		device_cursor	: in pac_devices_sch.cursor;
 		layer_category	: in type_signal_layer_category)
-		return et_board_shapes_and_text.pac_polygons.pac_polygon_list.list
+		return et_pcb_coordinates_2.pac_polygons.pac_polygon_list.list
 	is
-		use et_board_shapes_and_text;
+		use et_pcb_coordinates_2;
 		use pac_polygons;
 		result : pac_polygon_list.list;
 		use et_contour_to_polygon;
@@ -251,12 +251,9 @@ package body et_devices_electrical is
 	function get_route_restrict_polygons (
 		device_cursor	: in pac_devices_sch.cursor;
 		layer_category	: in type_signal_layer_category)
-		return et_board_shapes_and_text.pac_polygons.pac_polygon_list.list
+		return et_pcb_coordinates_2.pac_polygons.pac_polygon_list.list
 	is
-		use et_board_shapes_and_text;
-		use pac_polygons;
 		
-		result : pac_polygon_list.list;
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
 
@@ -265,7 +262,9 @@ package body et_devices_electrical is
 
 		use et_pcb_coordinates_2;
 		use et_pcb_coordinates_2.pac_geometry_2;
+		use pac_polygons;
 
+		result : pac_polygon_list.list;
 	begin
 		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
@@ -798,12 +797,8 @@ package body et_devices_electrical is
 	
 	function get_hole_polygons (
 		device_cursor	: in pac_devices_sch.cursor)
-		return et_board_shapes_and_text.pac_polygons.pac_polygon_list.list
+		return et_pcb_coordinates_2.pac_polygons.pac_polygon_list.list
 	is
-		use et_board_shapes_and_text;
-		use pac_polygons;
-
-		result : pac_polygon_list.list;
 		holes : pac_holes.list;
 		
 		device : type_device_sch renames element (device_cursor);
@@ -811,9 +806,11 @@ package body et_devices_electrical is
 		
 		use et_pcb_coordinates_2;
 		use et_pcb_coordinates_2.pac_geometry_2;
+		use pac_polygons;
 
 		rotation : type_rotation_model;
 		
+		result : pac_polygon_list.list;
 	begin
 		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);

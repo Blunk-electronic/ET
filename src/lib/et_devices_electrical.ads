@@ -226,7 +226,7 @@ package et_devices_electrical is
 	function get_conductor_polygons (
 		device_cursor	: in pac_devices_sch.cursor;
 		layer_category	: in type_signal_layer_category) -- outer top, inner, outer bottom 
-		return et_board_shapes_and_text.pac_polygons.pac_polygon_list.list;
+		return et_pcb_coordinates_2.pac_polygons.pac_polygon_list.list;
 
 
 
@@ -252,7 +252,7 @@ package et_devices_electrical is
 	function get_route_restrict_polygons (
 		device_cursor	: in pac_devices_sch.cursor;
 		layer_category	: in type_signal_layer_category)
-		return et_board_shapes_and_text.pac_polygons.pac_polygon_list.list;
+		return et_pcb_coordinates_2.pac_polygons.pac_polygon_list.list;
 
 
 
@@ -382,7 +382,7 @@ package et_devices_electrical is
 	-- If the device is virtual, then the returned list is empty:
 	function get_hole_polygons (
 		device_cursor	: in pac_devices_sch.cursor)
-		return et_board_shapes_and_text.pac_polygons.pac_polygon_list.list;
+		return et_pcb_coordinates_2.pac_polygons.pac_polygon_list.list;
 
 	
 

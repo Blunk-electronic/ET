@@ -138,7 +138,7 @@ is
 
 		use pac_geometry_2;	
 		use et_pcb_coordinates_2.pac_contours;
-		use pac_polygons;
+		use et_pcb_coordinates_2.pac_polygons;
 		use pac_offsetting;
 
 		use pac_package_models;
@@ -2629,7 +2629,7 @@ is
 					is
 						use pac_geometry_2;	
 						use et_pcb_coordinates_2.pac_contours;
-						use pac_polygons;
+						use et_pcb_coordinates_2.pac_polygons;
 						use pac_offsetting;
 
 						use pac_draw_contours;
@@ -2705,7 +2705,7 @@ is
 						procedure build_contour is
 							use pac_geometry_2;	
 							use et_pcb_coordinates_2.pac_contours;
-							use pac_polygons;
+							use et_pcb_coordinates_2.pac_polygons;
 							use pac_offsetting;
 
 							use et_board_shapes_and_text;
@@ -2997,7 +2997,7 @@ is
 						procedure build_contour is
 							use pac_geometry_2;	
 							use et_pcb_coordinates_2.pac_contours;
-							use pac_polygons;
+							use et_pcb_coordinates_2.pac_polygons;
 							use pac_offsetting;
 
 							use et_board_shapes_and_text;
@@ -3110,7 +3110,7 @@ is
 						procedure build_contour is 
 							use pac_geometry_2;	
 							use et_pcb_coordinates_2.pac_contours;
-							use pac_polygons;
+							use et_pcb_coordinates_2.pac_polygons;
 							use pac_offsetting;
 							use et_board_shapes_and_text;
 

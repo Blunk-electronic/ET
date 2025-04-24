@@ -37,6 +37,12 @@
 --
 
 with et_geometry_1;
+with et_geometry_1.et_polygons;
+with et_geometry_1.et_polygons.clipping;
+with et_geometry_1.et_polygons.cropping;
+with et_geometry_1.et_polygons.union;
+with et_geometry_1.et_polygons.offsetting;
+
 with et_geometry_2a;
 with et_geometry_2a.contours;
 with et_geometry_2a.grid;
@@ -97,6 +103,21 @@ package et_pcb_coordinates_2 is
 	use pac_geometry_brd;
 
 
+	
+
+	package pac_polygons is new pac_geometry_brd.et_polygons;
+	-- use pac_polygons;
+	
+	package pac_polygon_clipping is new pac_polygons.clipping;
+	package pac_polygon_cropping is new pac_polygons.cropping;
+	package pac_polygon_union is new pac_polygons.union;
+	package pac_polygon_offsetting is new pac_polygons.offsetting;
+
+
+
+	
+	
+	
 
 	-- instantiation of the geometry_2 package:
 	package pac_geometry_2 is new et_geometry_2a (
@@ -108,6 +129,17 @@ package et_pcb_coordinates_2 is
 		);
 	
 	use pac_geometry_2;
+
+
+	
+-- FAB RELEVANT
+
+	--fab_tolerance : constant type_distance_positive := 0.001;
+	--fab_tolerance : constant type_distance_positive := 0.01;
+	fill_tolerance : constant type_distance_positive := 0.05;
+
+	
+
 	
 
 	-- In headless mode this accuracy should be used

@@ -2399,7 +2399,7 @@ package body et_board_ops.devices is
 		-- Optionally, if required by the caller, offsets the polygon edges
 		-- by the width of the inner signal layer:
 		procedure finalize (do_offset : in boolean := false) is
-			use et_board_shapes_and_text.pac_polygon_offsetting;
+			use et_pcb_coordinates_2.pac_polygon_offsetting;
 		begin
 			move_by (contour, terminal_displacement);
 			make_polygon;

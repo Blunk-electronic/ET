@@ -36,42 +36,17 @@
 --   history of changes:
 --
 --   to do:
---   1. find a more suitable name for this package
+--
 
 
 with et_text;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
-with et_geometry_2a;
-with et_geometry_2a.contours;
-with et_geometry_1.et_polygons;
-with et_geometry_1.et_polygons.clipping;
-with et_geometry_1.et_polygons.cropping;
-with et_geometry_1.et_polygons.union;
-with et_geometry_1.et_polygons.offsetting;
 
 
 package et_board_shapes_and_text is
 
-	use pac_geometry_brd;
 	use pac_geometry_2;
 
-
-	
-	package pac_polygons is new pac_geometry_1.et_polygons;
-	use pac_polygons;
-	
-	package pac_polygon_clipping is new pac_polygons.clipping;
-	package pac_polygon_cropping is new pac_polygons.cropping;
-	package pac_polygon_union is new pac_polygons.union;
-	package pac_polygon_offsetting is new pac_polygons.offsetting;
-
-
-
--- FAB RELEVANT
-
-	--fab_tolerance : constant type_distance_positive := 0.001;
-	--fab_tolerance : constant type_distance_positive := 0.01;
-	fill_tolerance : constant type_distance_positive := 0.05;
 
 
 	linewidth_fab_min : constant type_distance_positive := 0.005;
@@ -88,6 +63,8 @@ package et_board_shapes_and_text is
 		line_width_max		=> linewidth_fab_max,
 		line_width_default	=> 0.005);
 
+
+	-- CS fonts for non-vector text ?
 	
 end et_board_shapes_and_text;
 

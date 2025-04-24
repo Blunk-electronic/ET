@@ -120,7 +120,7 @@ procedure draw_conductors is
 	
 	use pac_nets;
 
-	use pac_polygons;
+	use et_pcb_coordinates_2.pac_polygons;
 	
 	use pac_conductor_lines;
 	use pac_conductor_arcs;
