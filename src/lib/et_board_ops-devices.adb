@@ -2403,7 +2403,7 @@ package body et_board_ops.devices is
 			move_by (contour, terminal_displacement);
 			make_polygon;
 			if do_offset then
-				offset_polygon (result, type_float (terminal.width_inner_layers));
+				offset_polygon (result, type_float_model (terminal.width_inner_layers));
 			end if;
 		end finalize;
 				

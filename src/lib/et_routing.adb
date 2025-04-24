@@ -93,7 +93,7 @@ package body et_routing is
 		lth				: in type_log_level)
 		return type_float_positive
 	is
-		result : type_float_positive := type_float'last;
+		result : type_float_positive := type_float_positive'last;
 
 		procedure update (d : in type_float_positive) is begin
 			--log (text => " dh" & to_string (get_absolute (d)), level => lth + 1);

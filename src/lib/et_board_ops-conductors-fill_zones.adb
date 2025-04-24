@@ -1380,7 +1380,7 @@ begin -- fill_zones
 		& to_string (- clearance_conductor_to_edge),
 		level => log_threshold + 1);
 	
-	offset_polygon (board_outer_contour_master, type_float (- clearance_conductor_to_edge));
+	offset_polygon (board_outer_contour_master, type_float_model (- clearance_conductor_to_edge));
 
 
 

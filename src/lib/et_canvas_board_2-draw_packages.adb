@@ -1294,7 +1294,7 @@ is
 									-- Offset the temporary polygon:
 									offset_polygon (
 										polygon		=> polygon_tmp,
-										offset		=> type_float (get_stop_mask_expansion)); -- from DRU
+										offset		=> type_float_model (get_stop_mask_expansion)); -- from DRU
 
 									-- Convert the temporary polygon back to a contour:
 									stopmask_contours := (to_contour (polygon_tmp) with null record);
@@ -1366,7 +1366,7 @@ is
 									-- Offset the temporary polygon
 									offset_polygon (
 										polygon		=> polygon_tmp,
-										offset		=> type_float (stencil.shrink_factor));
+										offset		=> type_float_model (stencil.shrink_factor));
 
 									-- Convert the temporary polygon back to a contour:
 									stencil_contours := (to_contour (polygon_tmp) with null record);
@@ -1519,7 +1519,7 @@ is
 									-- Expand the polygon according to DRU settings:
 									offset_polygon (
 										polygon		=> polygon_tmp,
-										offset		=> type_float (get_stop_mask_expansion));
+										offset		=> type_float_model (get_stop_mask_expansion));
 
 									-- Convert the temporary polygon back to a contour:
 									stopmask_contours := (to_contour (polygon_tmp) with null record);
@@ -1593,7 +1593,7 @@ is
 						-- by the restring_width:
 						offset_polygon (
 							polygon		=> polygon_tmp, 
-							offset		=> type_float (restring_width));
+							offset		=> type_float_model (restring_width));
 
 						-- convert the temporary polygon back to a contour
 						pad_contours := to_contour (polygon_tmp);
@@ -2638,7 +2638,7 @@ is
 							-- by the restring_width:
 							offset_polygon (
 								polygon		=> polygon_tmp, 
-								offset		=> type_float (restring_width));
+								offset		=> type_float_model (restring_width));
 
 							-- convert the temporary polygon back to a contour
 							pad_contours := to_contour (polygon_tmp);
@@ -2718,7 +2718,7 @@ is
 									-- Expand the polygon according to DRU settings:
 									offset_polygon (
 										polygon		=> polygon_tmp,
-										offset		=> type_float (get_stop_mask_expansion));
+										offset		=> type_float_model (get_stop_mask_expansion));
 
 									-- Convert the temporary polygon back to a contour:
 									stopmask_contours := (to_contour (polygon_tmp) with null record);
@@ -3010,7 +3010,7 @@ is
 									-- Offset the temporary polygon:
 									offset_polygon (
 										polygon		=> polygon_tmp,
-										offset		=> type_float (get_stop_mask_expansion)); -- from DRU
+										offset		=> type_float_model (get_stop_mask_expansion)); -- from DRU
 
 									-- Convert the temporary polygon back to a contour:
 									stopmask_contours := (to_contour (polygon_tmp) with null record);
@@ -3126,7 +3126,7 @@ is
 									-- Offset the temporary polygon
 									offset_polygon (
 										polygon		=> polygon_tmp,
-										offset		=> type_float (stencil.shrink_factor));
+										offset		=> type_float_model (stencil.shrink_factor));
 
 									-- Convert the temporary polygon back to a contour:
 									stencil_contours := (to_contour (polygon_tmp) with null record);

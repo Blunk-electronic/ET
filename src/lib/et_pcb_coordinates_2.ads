@@ -84,14 +84,14 @@ package et_pcb_coordinates_2 is
 		
 
 
-	type type_float is digits 18;
+	type type_float_model is digits 18;
 	-- CS reduce digits. adapt accuracy
 	-- when instantiating geometry package. See below.
 
 	
 	-- instantiation of the geometry 1 package:	
 	package pac_geometry_brd is new et_geometry_1 (
-		type_float	=> type_float,
+		type_float	=> type_float_model,
  
 		-- For assumed greatest numbers of 9999.999..
 		-- we have 4 digits left and 14 digits right of comma.
