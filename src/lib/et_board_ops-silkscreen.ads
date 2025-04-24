@@ -50,7 +50,7 @@ package et_board_ops.silkscreen is
 	-- CS rework procedures so that a module cursor
 	-- is used instead the module_name.
 	
-	use et_board_shapes_and_text;
+	use et_board_text;
 	use pac_text_board;
 
 

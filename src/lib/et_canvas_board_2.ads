@@ -67,7 +67,7 @@ with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
 -- use et_pcb_coordinates.pac_geometry_brd;
 -- use et_pcb_coordinates.pac_geometry_2;
 
-with et_board_shapes_and_text;
+with et_board_text;
 with et_board_layer_category;			use et_board_layer_category;
 -- with et_vias;						use et_vias;
 -- with et_terminals;					use et_terminals;
@@ -125,7 +125,7 @@ package et_canvas_board_2 is
 		pac_polygons	=> et_pcb_coordinates_2.pac_polygons,
 		pac_offsetting	=> et_pcb_coordinates_2.pac_polygon_offsetting,
 		pac_contours	=> et_pcb_coordinates_2.pac_contours,
-		pac_text		=> et_board_shapes_and_text.pac_text_board		
+		pac_text		=> et_board_text.pac_text_board		
 		);
 
 	

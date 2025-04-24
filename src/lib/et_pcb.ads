@@ -49,7 +49,7 @@ with et_logging;						use et_logging;
 
 with et_pcb_sides;						use et_pcb_sides;
 with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
-with et_board_shapes_and_text;			use et_board_shapes_and_text;
+with et_board_text;						use et_board_text;
 with et_text;							use et_text;
 with et_drills;							use et_drills;
 with et_vias;							use et_vias;

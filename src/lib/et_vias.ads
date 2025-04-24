@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,7 +42,6 @@ with ada.containers; 			use ada.containers;
 with ada.containers.indefinite_doubly_linked_lists;
 
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_contour_to_polygon;
 with et_drills;					use et_drills;
 with et_pcb_stack;				use et_pcb_stack;

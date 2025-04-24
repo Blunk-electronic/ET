@@ -392,7 +392,6 @@ package body et_canvas_board_2 is
 	procedure draw_path (
 		cat : in type_layer_category) 
 	is
-		use et_board_shapes_and_text;
 		use et_canvas_board_lines;
 		use et_colors.board;
 		use pac_path_and_bend;
@@ -495,7 +494,6 @@ package body et_canvas_board_2 is
 	procedure draw_live_zone (
 		cat : in type_layer_category) 
 	is
-		use et_board_shapes_and_text;
 		use pac_path_and_bend;
 		use et_modes.board;
 		use et_canvas_tool;

@@ -78,7 +78,7 @@ with et_devices_non_electrical;		use et_devices_non_electrical;
 with et_pcb_contour;
 with et_pcb_stack;					use et_pcb_stack;
 
-with et_board_shapes_and_text;
+with et_board_text;
 
 with et_modes.board;
 with et_canvas_board_devices;
@@ -1232,8 +1232,6 @@ is
 					pad_position	: in type_position; -- incl. pad rotation about itself
 					f				: in type_face) 
 				is
-					use et_board_shapes_and_text;
-					
 					ly : constant type_signal_layer := face_to_layer (f);
 
 					
@@ -1436,8 +1434,6 @@ is
 					drill_size		: in type_drill_size := type_drill_size'first;
 					hole_contours	: in type_contour := plated_millings_default)
 				is
-					use et_board_shapes_and_text;					
-										
 					ly : constant type_signal_layer := face_to_layer (f);
 
 					
@@ -1584,8 +1580,6 @@ is
 					restring_width	: in type_track_width;
 					pad_position	: in type_position) -- the center of the pad incl. its rotation
 				is
-					use et_board_shapes_and_text;
-					
 					polygon_tmp : type_polygon;
 					pad_contours : type_contour;
 				begin
@@ -2418,9 +2412,6 @@ is
 					drill_size		: in type_drill_size := type_drill_size'first;
 					hole_contours	: in type_contour := plated_millings_default)
 				is
-					use et_board_shapes_and_text;					
-
-					
 					procedure draw_conductor is
 						c : type_circle;
 						use pac_draw_contours;
@@ -2633,7 +2624,6 @@ is
 						use pac_offsetting;
 
 						use pac_draw_contours;
-						use et_board_shapes_and_text;
 						
 						polygon_tmp : type_polygon;
 						pad_contours : type_contour;
@@ -2707,8 +2697,6 @@ is
 							use et_pcb_coordinates_2.pac_contours;
 							use et_pcb_coordinates_2.pac_polygons;
 							use pac_offsetting;
-
-							use et_board_shapes_and_text;
 
 							polygon_tmp : type_polygon;
 						begin
@@ -3000,8 +2988,6 @@ is
 							use et_pcb_coordinates_2.pac_polygons;
 							use pac_offsetting;
 
-							use et_board_shapes_and_text;
-
 							polygon_tmp : type_polygon;
 						begin
 							case stopmask.shape is
@@ -3112,7 +3098,6 @@ is
 							use et_pcb_coordinates_2.pac_contours;
 							use et_pcb_coordinates_2.pac_polygons;
 							use pac_offsetting;
-							use et_board_shapes_and_text;
 
 							polygon_tmp : type_polygon;
 						begin

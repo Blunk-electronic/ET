@@ -1244,7 +1244,6 @@ package body et_board_ops.assy_doc is
 			-- to merge the given zone into z. If the merge operation
 			-- succeedes then no more zones are iterated (flag proceed):
 			procedure query_zone (z : in out type_doc_zone) is
-				use et_board_shapes_and_text;
 				use pac_contours;
 				mr : type_merge_result;
 			begin

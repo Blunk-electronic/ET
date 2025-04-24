@@ -67,7 +67,6 @@ with gtk.container;						use gtk.container;
 
 with et_generic_module;					use et_generic_module;
 with et_canvas_board_2;
-with et_board_shapes_and_text;
 
 with et_board_ops;						use et_board_ops;
 with et_board_ops.board_contour;
@@ -327,13 +326,9 @@ package body et_canvas_board_lines is
 		-- text size and line width:
 		text_size_length_min : constant gint := 1;
 		text_size_length_max : constant gint := 6; 
-		-- CS: adjust if necessary. see parameters 
-		-- of et_board_shapes_and_text.pac_text_fab.
 		
 		line_width_length_min : constant gint := 1;
 		line_width_length_max : constant gint := 5;
-		-- CS: adjust if necessary. see parameters
-		-- of et_board_shapes_and_text.pac_text_fab.
 		
 		rotation_length_min : constant gint := 1;
 		rotation_length_max : constant gint := 5;

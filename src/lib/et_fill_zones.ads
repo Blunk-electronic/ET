@@ -58,7 +58,6 @@ with et_string_processing;		use et_string_processing;
 
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_pcb_stack;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
 with et_design_rules_board;		use et_design_rules_board;
 
 package et_fill_zones is

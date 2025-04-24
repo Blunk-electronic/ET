@@ -2,11 +2,11 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                       BOARD SHAPES AND TEXT                              --
+--                            BOARD TEXT                                    --
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -43,7 +43,7 @@ with et_text;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 
 
-package et_board_shapes_and_text is
+package et_board_text is
 
 	use pac_geometry_2;
 
@@ -66,7 +66,7 @@ package et_board_shapes_and_text is
 
 	-- CS fonts for non-vector text ?
 	
-end et_board_shapes_and_text;
+end et_board_text;
 
 -- Soli Deo Gloria
 

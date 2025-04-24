@@ -47,7 +47,7 @@ with et_pcb_contour;				use et_pcb_contour;
 
 package et_board_ops.board_contour is
 
-	use et_board_shapes_and_text;
+	use et_board_text;
 	use pac_contours;
 	
 

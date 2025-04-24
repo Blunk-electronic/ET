@@ -43,7 +43,6 @@ with ada.text_io;						use ada.text_io;
 with et_generic_module;					use et_generic_module;
 with et_canvas_board_2;
 with et_pcb_sides;						use et_pcb_sides;
-with et_board_shapes_and_text;			use et_board_shapes_and_text;
 
 with et_keepout;						use et_keepout;
 with et_board_ops.keepout;				use et_board_ops.keepout;

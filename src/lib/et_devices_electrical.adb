@@ -551,7 +551,7 @@ package body et_devices_electrical is
 	is
 		use et_pcb_coordinates_2;
 		use et_pcb_coordinates_2.pac_geometry_2;
-		use et_board_shapes_and_text;
+		use et_board_text;
 		
 		result : type_silkscreen;
 		device : type_device_sch renames element (device_cursor);
@@ -661,7 +661,7 @@ package body et_devices_electrical is
 	is
 		use et_pcb_coordinates_2;
 		use et_pcb_coordinates_2.pac_geometry_2;
-		use et_board_shapes_and_text;
+		use et_board_text;
 
 		result : type_assy_doc;
 		device : type_device_sch renames element (device_cursor);

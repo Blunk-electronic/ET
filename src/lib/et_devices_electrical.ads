@@ -66,7 +66,7 @@ with et_via_restrict.packages;
 
 with et_pcb_contour;					use et_pcb_contour;
 
-with et_board_shapes_and_text;
+with et_board_text;
 with et_keepout;						use et_keepout;
 with et_stopmask;						use et_stopmask;
 with et_stopmask.packages;

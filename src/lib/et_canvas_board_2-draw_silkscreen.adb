@@ -51,7 +51,7 @@ procedure draw_silkscreen (
 	face : in type_face)
 is
 	use et_colors.board;
-	use et_board_shapes_and_text;
+	use et_board_text;
 
 	use et_canvas_board_silkscreen;
 	use pac_silk_lines;

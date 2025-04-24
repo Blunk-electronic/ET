@@ -64,7 +64,7 @@ with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_kicad_general;			use et_kicad_general;
 with et_text;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_board_text;				use et_board_text;
 with et_vias;					use et_vias;
 with et_drills;					use et_drills;
 
@@ -108,7 +108,7 @@ package et_kicad.pcb is
 	use pac_geometry_2;
 	
 	use et_pcb_coordinates_2.pac_contours;
-	use et_board_shapes_and_text.pac_text_board;
+	use et_board_text.pac_text_board;
 
 	use pac_net_name;
 	

@@ -52,8 +52,6 @@ with et_primitive_objects;				use et_primitive_objects;
 with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
 use et_pcb_coordinates_2.pac_geometry_2;
 
-with et_board_shapes_and_text;			use et_board_shapes_and_text;
-
 with et_conductor_segment.boards;		use et_conductor_segment.boards;
 
 with et_pcb_stack;						use et_pcb_stack;

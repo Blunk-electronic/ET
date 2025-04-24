@@ -102,7 +102,7 @@ with et_schematic_ops.submodules;
 with et_board_ops;
 
 with et_schematic_text;
-with et_board_shapes_and_text;
+with et_board_text;
 with et_board_layer_category;
 
 with et_device_placeholders;
@@ -1411,7 +1411,7 @@ is
 	
 	
 	-- general board stuff
-	use et_board_shapes_and_text.pac_text_board;
+	use et_board_text.pac_text_board;
 	board_text : type_text_fab_with_content;
 	board_text_placeholder : et_pcb_placeholders.type_text_placeholder;
 
@@ -1539,7 +1539,6 @@ is
 	
 	
 	procedure read_cutout_route is
-		use et_board_shapes_and_text;
 		use et_pcb_coordinates_2.pac_geometry_2;
 		use et_pcb_stack;
 		use et_fill_zones;
@@ -1568,7 +1567,6 @@ is
 	
 	
 	procedure read_cutout_non_conductor is
-		use et_board_shapes_and_text;
 		use et_pcb_coordinates_2.pac_geometry_2;
 		use et_fill_zones;
 		use et_pcb_rw;
@@ -1615,7 +1613,6 @@ is
 	-- do with nets and routes.
 	procedure read_cutout_conductor_non_electric is
 		use et_pcb_rw;
-		use et_board_shapes_and_text;
 		use et_pcb_stack;
 		use et_pcb_coordinates_2.pac_geometry_2;
 		use et_fill_zones;
@@ -1644,7 +1641,6 @@ is
 	
 	-- Reads parameters of a conductor fill zone connected with a net:
 	procedure read_fill_zone_route is
-		use et_board_shapes_and_text;
 		use et_pcb_coordinates_2.pac_geometry_2;
 		use et_fill_zones;
 		use et_fill_zones.boards;
@@ -1711,7 +1707,6 @@ is
 
 	
 	procedure read_fill_zone_non_conductor is
-		use et_board_shapes_and_text;
 		use et_pcb_coordinates_2.pac_geometry_2;
 		use et_fill_zones;
 		use et_pcb_rw;
@@ -1772,7 +1767,6 @@ is
 
 	
 	procedure read_fill_zone_conductor_non_electric is
-		use et_board_shapes_and_text;
 		use et_pcb_stack;
 		use et_pcb_rw;
 		use et_fill_zones;
@@ -2519,7 +2513,6 @@ is
 
 	
 	procedure read_user_settings_fill_zones_conductor is
-		use et_board_shapes_and_text;
 		use et_fill_zones;
 		use et_fill_zones.boards;		
 		use et_thermal_relief;
@@ -3298,8 +3291,6 @@ is
 			-- Depending on the layer and the side of the board (face) the board_line
 			-- is now assigned to the board where it belongs to.
 
-				use et_board_shapes_and_text;
-				
 				use et_pcb_coordinates_2;
 				use pac_geometry_2;
 				
@@ -3392,8 +3383,6 @@ is
 			-- The board_arc and its board_line_width have been general things until now. 
 			-- Depending on the layer and the side of the board (face) the board_arc
 			-- is now assigned to the board where it belongs to.
-
-				use et_board_shapes_and_text;
 
 				use et_pcb_coordinates_2;
 				use pac_geometry_2;
@@ -3489,7 +3478,6 @@ is
 			-- Depending on the layer and the side of the board (face) the board_circle
 			-- is now assigned to the board where it belongs to.
 
-				use et_board_shapes_and_text;
 				use et_pcb_coordinates_2;
 				use pac_geometry_2;
 				
@@ -3599,7 +3587,6 @@ is
 					module_name	: in pac_module_name.bounded_string;
 					module		: in out type_generic_module)
 				is
-					use et_board_shapes_and_text;
 					use pac_contours;
 					use et_pcb_sides;
 					
@@ -3748,7 +3735,6 @@ is
 				is
 					use et_pcb_sides;
 					use et_pcb_coordinates_2;
-					use et_board_shapes_and_text;
 					use pac_contours;
 					use et_stopmask;
 					use et_keepout;
@@ -3915,7 +3901,7 @@ is
 					use et_pcb_sides;
 					use et_pcb_coordinates_2;
 					use et_pcb;
-					use et_board_shapes_and_text;
+					use et_board_text;
 					use et_pcb_placeholders;
 				begin
 					case face is
@@ -4302,7 +4288,7 @@ is
 			
 			
 			procedure build_conductor_text is
-				use et_board_shapes_and_text;
+				use et_board_text;
 				
 				procedure do_it (
 					module_name	: in pac_module_name.bounded_string;
@@ -4378,7 +4364,6 @@ is
 			
 			
 			procedure insert_line_outline is
-				use et_board_shapes_and_text;
 				use et_pcb_coordinates_2;
 				use pac_geometry_2;
 				use pac_contours;
@@ -4408,7 +4393,6 @@ is
 			
 			
 			procedure insert_arc_outline is
-				use et_board_shapes_and_text;
 				use et_pcb_coordinates_2;
 				use pac_geometry_2;
 				use pac_contours;
@@ -4502,7 +4486,7 @@ is
 				--begin
 					--pac_pcb_contour_circles.append (
 						--container	=> module.board.board_contour.texts,
-						--new_item	=> (et_board_shapes_and_text.pac_geometry_2.type_circle (board_circle) with board_lock_status));
+						--new_item	=> (et_board_text.pac_geometry_2.type_circle (board_circle) with board_lock_status));
 				--end do_it;
 									
 			--begin -- insert_text_contour
@@ -4520,7 +4504,6 @@ is
 			procedure build_non_conductor_line (
 				face : in et_pcb_sides.type_face)
 			is
-				use et_board_shapes_and_text;
 			begin
 				case stack.parent (degree => 2) is
 					when SEC_SILKSCREEN =>
@@ -4557,7 +4540,6 @@ is
 			procedure build_non_conductor_arc (
 				face : in et_pcb_sides.type_face)
 			is
-				use et_board_shapes_and_text;
 				use et_pcb_rw;
 			begin
 				board_check_arc (log_threshold + 1);
@@ -4597,7 +4579,6 @@ is
 			procedure build_non_conductor_circle (
 				face : in et_pcb_sides.type_face)
 			is
-				use et_board_shapes_and_text;
 			begin
 				case stack.parent (degree => 2) is
 					when SEC_SILKSCREEN =>
@@ -4831,7 +4812,6 @@ is
 			-- This is now net specific restrict stuff !
 			-- CS 			
 			--procedure build_route_cutout is
-				--use et_board_shapes_and_text;
 				--use pac_contours;
 				--use et_fill_zones.boards;
 			--begin
@@ -4847,7 +4827,6 @@ is
 			procedure build_non_conductor_cutout (
 				face	: in et_pcb_sides.type_face) 
 			is 
-				use et_board_shapes_and_text;
 			begin
 				case stack.parent (degree => 2) is
 					when SEC_SILKSCREEN =>
@@ -4884,7 +4863,6 @@ is
 			procedure build_non_conductor_fill_zone (
 				face	: in et_pcb_sides.type_face)
 			is
-				use et_board_shapes_and_text;
 			begin
 				case stack.parent (degree => 2) is
 					when SEC_SILKSCREEN =>
@@ -6392,7 +6370,6 @@ is
 									if not read_board_circle (line) then
 									
 										declare -- CS separate procedure
-											use et_board_shapes_and_text;
 											use et_pcb_coordinates_2;
 											use pac_geometry_2;
 											kw : string := f (line, 1);
@@ -6457,7 +6434,6 @@ is
 						when SEC_CONDUCTOR =>
 							if not read_board_circle (line) then
 								declare -- CS separate procdure
-									use et_board_shapes_and_text;
 									use et_pcb_stack;
 									use et_pcb_coordinates_2.pac_geometry_2;
 									kw : string := f (line, 1);

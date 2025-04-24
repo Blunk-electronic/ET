@@ -44,7 +44,7 @@ with ada.strings;				use ada.strings;
 with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
 with et_mirroring;				use et_mirroring;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_board_text;				use et_board_text;
 with et_conductor_segment;
 with et_text;
 

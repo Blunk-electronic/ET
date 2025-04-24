@@ -45,7 +45,7 @@ with ada.containers.indefinite_doubly_linked_lists;
 with et_mirroring;				use et_mirroring;
 with et_pcb_sides;				use et_pcb_sides;
 with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
+with et_board_text;				use et_board_text;
 with et_design_rules_board;		use et_design_rules_board;
 with et_text;					use et_text;
 with et_pcb_stack;				use et_pcb_stack;
@@ -61,7 +61,7 @@ package et_conductor_text is
 	use pac_polygons;
 
 	
-	use et_board_shapes_and_text.pac_text_board;
+	use pac_text_board;
 
 
 

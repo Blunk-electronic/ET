@@ -50,7 +50,7 @@ with et_object_status;				use et_object_status;
 
 
 generic
-	type type_float is digits <>;
+	type type_float is digits <>; -- CS rename to type_float_geo_1 or similar ?
 	accuracy : type_float;
 	
 package et_geometry_1 is

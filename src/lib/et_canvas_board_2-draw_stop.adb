@@ -52,7 +52,7 @@ procedure draw_stop (
 	face : in type_face)
 is
 	use et_colors.board;
-	use et_board_shapes_and_text;
+	use et_board_text;
 	
 	use pac_stop_lines;
 	use pac_stop_arcs;

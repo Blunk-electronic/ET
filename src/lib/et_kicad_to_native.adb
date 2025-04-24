@@ -60,7 +60,7 @@ with et_string_processing;			use et_string_processing;
 with et_project;
 with et_generic_module;				use et_generic_module;
 with et_vias;
-with et_board_shapes_and_text;
+-- with et_board_shapes_and_text;
 with et_package_names;
 with et_packages;
 with et_kicad_general;
@@ -1746,7 +1746,6 @@ package body et_kicad_to_native is
 				use et_pcb_coordinates_2;
 				use pac_geometry_brd;
 				use pac_geometry_2;
-				use et_board_shapes_and_text;
 				use pac_contours;
 				use pac_segments;
 				

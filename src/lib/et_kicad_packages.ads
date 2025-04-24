@@ -46,8 +46,8 @@ with ada.containers.indefinite_ordered_maps;
 with et_drills;
 with et_terminals;				use et_terminals;
 
-with et_board_shapes_and_text;	use et_board_shapes_and_text;
-use et_board_shapes_and_text.pac_text_board;
+with et_board_text;				use et_board_text;
+use et_board_text.pac_text_board;
 
 
 with et_stopmask;				use et_stopmask;

@@ -51,7 +51,7 @@ procedure draw_stencil (
 	face : in type_face) 
 is
 	use et_colors.board;
-	use et_board_shapes_and_text;
+	use et_board_text;
 
 	use pac_stencil_lines;
 	use pac_stencil_arcs;

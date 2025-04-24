@@ -2338,7 +2338,6 @@ package body et_board_ops.devices is
 		tolerance		: in type_distance_positive)
 		return type_terminal_polygon
 	is
-		use et_board_shapes_and_text;
 		use pac_polygons;
 		exists : boolean := false;
 		result : type_polygon; -- to be returned

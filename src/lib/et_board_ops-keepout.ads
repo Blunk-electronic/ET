@@ -46,7 +46,7 @@ with et_keepout;				use et_keepout;
 
 package et_board_ops.keepout is
 
-	use et_board_shapes_and_text;
+	use et_board_text;
 	
 
 -- ZONES:

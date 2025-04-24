@@ -95,7 +95,7 @@ with et_board_ops.grid;
 with et_board_ops.frame;
 
 with et_schematic_text;
-with et_board_shapes_and_text;
+with et_board_text;
 
 with et_device_placeholders;
 with et_device_placeholders.packages;
@@ -1448,7 +1448,7 @@ is
 		use et_devices_non_electrical;
 		
 		--use et_terminals;
-		use et_board_shapes_and_text;
+		use et_board_text;
 		use pac_text_board;
 		use et_pcb_coordinates_2.pac_contours;
 		use et_pcb;

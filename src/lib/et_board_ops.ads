@@ -61,7 +61,7 @@ with et_pcb_sides;					use et_pcb_sides;
 with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
 use et_pcb_coordinates_2.pac_geometry_2;
 
-with et_board_shapes_and_text;
+with et_board_text;
 
 with et_assembly_variant_name;		use et_assembly_variant_name;
 with et_pick_and_place;

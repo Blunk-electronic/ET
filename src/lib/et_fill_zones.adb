@@ -70,6 +70,8 @@ package body et_fill_zones is
 		end loop;
 	end iterate;
 
+
+	
 	
 	procedure make_stripes (
 		island	: in out type_island;
@@ -79,7 +81,7 @@ package body et_fill_zones is
 		boundaries : constant type_boundaries := get_boundaries (island.shore.centerline);
 
 		height : constant type_float_positive := get_height (boundaries);
-		bottom : constant type_float := get_bottom (boundaries);
+		bottom : constant pac_geometry_brd.type_float := get_bottom (boundaries);
 
 		--effective_width : type_float_positive;
 

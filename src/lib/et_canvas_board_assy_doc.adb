@@ -43,7 +43,6 @@ with ada.text_io;						use ada.text_io;
 with et_generic_module;					use et_generic_module;
 with et_canvas_board_2;
 with et_pcb_sides;						use et_pcb_sides;
-with et_board_shapes_and_text;			use et_board_shapes_and_text;
 
 with et_assy_doc;						use et_assy_doc;
 with et_board_ops.assy_doc;				use et_board_ops.assy_doc;
@@ -102,7 +101,7 @@ package body et_canvas_board_assy_doc is
 	is 
 		praeamble : constant string := "selected: ";
 
-		use et_pcb_coordinates_2.pac_contours;
+		use pac_contours;
 	begin
 		set_status (praeamble & to_string (selected.segment)
 			& " face" & to_string (selected.face) & ". " 

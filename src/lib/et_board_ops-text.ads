@@ -52,7 +52,7 @@ with et_exceptions;					use et_exceptions;
 package et_board_ops.text is
 
 
-	use et_board_shapes_and_text;
+	use et_board_text;
 	use pac_text_board;
 
 	
