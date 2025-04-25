@@ -67,6 +67,20 @@ package et_nets is
 
 
 
+	-- This type should be used whenever nets are counted.
+	-- CS: Currently the maximum is a temporarily value and should
+	-- be adjusted if required:
+	type type_net_count is new natural range 0 .. 100_000;
+
+	
+	function to_string (
+		net_count : in type_net_count)
+		return string;
+	
+
+	
+
+
 -- JUNCTIONS:
 	
 	procedure junction_in_sloping_segment (
@@ -499,7 +513,7 @@ package et_nets is
 	-- NOTE: The numbering starts at zero.
 	
 	-- We define a range for the net index. CS extend upper limit if required.
-	subtype type_net_index is natural range 0 .. 10_000;
+	type type_net_index is new natural range 0 .. 10_000;
 
 
 	

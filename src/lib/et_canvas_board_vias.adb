@@ -760,6 +760,7 @@ package body et_canvas_board_vias is
 			gtk_entry (cbox_drill.get_child).on_activate (drill_entered'access);
 		end make_combo_drill;
 
+
 		
 		procedure make_combo_restring_inner is begin
 			gtk_new_vbox (box_restring_inner, homogeneous => false);
@@ -802,7 +803,8 @@ package body et_canvas_board_vias is
 			gtk_entry (cbox_restring_outer.get_child).on_activate (restring_outer_entered'access);
 		end make_combo_restring_outer;
 
-			
+
+		use et_nets;
 	begin
 
 		-- Show the properties bar if there are nets in the module:

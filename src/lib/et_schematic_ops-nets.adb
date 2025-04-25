@@ -60,9 +60,8 @@ package body et_schematic_ops.nets is
 	
 	function get_net_count (
 		module		: in pac_generic_modules.cursor)
-		return et_net_count.type_net_count
+		return type_net_count
 	is
-		use et_net_count;
 		result : type_net_count := 0;
 
 		procedure query_nets (

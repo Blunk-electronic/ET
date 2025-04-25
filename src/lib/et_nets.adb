@@ -47,6 +47,17 @@ with et_module_names;
 package body et_nets is
 
 
+	function to_string (
+		net_count : in type_net_count)
+		return string
+	is begin
+		return type_net_count'image (net_count);
+	end to_string;
+
+
+
+	
+
 	procedure junction_in_sloping_segment (
 		point : in et_coordinates_2.type_position) 
 	is begin

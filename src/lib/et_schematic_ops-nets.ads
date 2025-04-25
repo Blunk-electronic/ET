@@ -40,7 +40,6 @@
 
 with et_net_labels;					use et_net_labels;
 with et_net_class;					use et_net_class;
-with et_net_count;
 
 
 package et_schematic_ops.nets is
@@ -49,7 +48,7 @@ package et_schematic_ops.nets is
 	-- of nets of the given module:
 	function get_net_count (
 		module		: in pac_generic_modules.cursor)
-		return et_net_count.type_net_count;
+		return type_net_count;
 
 
 	
