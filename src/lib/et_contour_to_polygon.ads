@@ -37,7 +37,7 @@
 --
 
 
-with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
+with et_board_coordinates;		use et_board_coordinates;
 
 
 package et_contour_to_polygon is

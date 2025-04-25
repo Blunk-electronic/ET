@@ -42,7 +42,7 @@ with ada.directories;
 with et_directory_and_file_ops;
 
 with et_mirroring;					use et_mirroring;
-with et_pcb_coordinates_2;
+with et_board_coordinates;
 with et_generic_stacks;
 with et_device_appearance;
 with et_package_names;
@@ -3698,7 +3698,7 @@ package body et_schematic_ops.submodules is
 
 				-- Overwrite position in schematic by zero so that the new instance sits at 
 				-- the lower left corner of the layout drawing:
-				submodule.position_in_board := et_pcb_coordinates_2.pac_geometry_2.origin_zero_rotation;
+				submodule.position_in_board := et_board_coordinates.pac_geometry_2.origin_zero_rotation;
 
 				insert (
 					container	=> module.submods,

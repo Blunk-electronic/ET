@@ -507,7 +507,7 @@ package body et_kicad.pcb is
 		-- PACKAGES
 		package_name 			: pac_package_name.bounded_string;
 		package_library_name	: et_kicad_general.type_library_name.bounded_string;
-		package_position		: et_pcb_coordinates_2.type_package_position;
+		package_position		: et_board_coordinates.type_package_position;
 		
 		-- package_path			: et_kicad.type_timestamp; -- like /59F17F64/59F18F3E/5B852A16/5B851D80
 		-- CS: This this the sheet path. Currently it is ignored, because no need for it.
@@ -573,7 +573,7 @@ package body et_kicad.pcb is
 		terminal_net_name	: pac_net_name.bounded_string;
 		terminal_net_id		: type_net_id_terminal;
 	
--- 		terminal_copper_width_outer_layers : et_pcb_coordinates_2.type_distance_model;
+-- 		terminal_copper_width_outer_layers : et_board_coordinates.type_distance_model;
 		terminal_copper_width_inner_layers : type_distance_positive := 1.0; -- CS load from DRU ?
 
 		-- Temporarily these flags hold the solder paste status of an SMT terminal.
@@ -617,7 +617,7 @@ package body et_kicad.pcb is
 
 		procedure set_stop_and_mask is
 		-- From the SMT terminal face, validates the status of stop mask and solder paste.
-			use et_pcb_coordinates_2;
+			use et_board_coordinates;
 			
 			procedure invalid is begin
 				log (ERROR, "contradicting layers in terminal !", console => true);
@@ -984,7 +984,7 @@ package body et_kicad.pcb is
 
 			use type_argument;
 			use et_text.pac_text_content;
-			use et_pcb_coordinates_2;
+			use et_board_coordinates;
 			use pac_geometry_brd;
 			
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
@@ -3101,7 +3101,7 @@ package body et_kicad.pcb is
 		-- set earlier (when processing the arguments. see procedure read_arg).
 		-- Restores the previous section.
 		procedure exec_section is
-			use et_pcb_coordinates_2;
+			use et_board_coordinates;
 
 			procedure invalid_layer_reference is begin
 				log (ERROR, "reference " & to_string (package_reference) & " must be in a silk screen layer !", console => true);
@@ -4810,7 +4810,7 @@ package body et_kicad.pcb is
 				use type_packages_board;
 				package_cursor		: type_packages_board.cursor;
 				package_reference	: type_device_name;
-				package_position	: et_pcb_coordinates_2.type_package_position;
+				package_position	: et_board_coordinates.type_package_position;
 
 				text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 
@@ -4905,7 +4905,7 @@ package body et_kicad.pcb is
 					use type_polygons;
 					polygon_cursor : type_polygons.cursor := board.polygons.first;
 
-					use et_pcb_coordinates_2;
+					use et_board_coordinates;
 				begin
 					log_indentation_up;
 					log (text => "segments, vias and polygons (signal layers in IPC notation (TOP..BOTTOM / 1..n):", level => log_threshold + 3);
@@ -5103,7 +5103,7 @@ package body et_kicad.pcb is
 				-- Returns the placeholders for reference and value of the current package (indicated by package_cursor).
 				-- The return distinguishes them by the face (TOP/BOTTOM), silk screen and assembly documentation.
 					use et_packages;
-					use et_pcb_coordinates_2;
+					use et_board_coordinates;
 					placeholders : type_text_placeholders; -- to be returned
 
 					procedure query_placeholders (

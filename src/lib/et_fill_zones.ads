@@ -56,7 +56,7 @@ with ada.containers.ordered_sets;
 with et_primitive_objects;		use et_primitive_objects;
 with et_string_processing;		use et_string_processing;
 
-with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
+with et_board_coordinates;		use et_board_coordinates;
 with et_pcb_stack;
 with et_design_rules_board;		use et_design_rules_board;
 
@@ -174,8 +174,8 @@ package et_fill_zones is
 -- A FILL ZONE IN GENERAL
 
 
-	hatching_line_width_default : constant et_pcb_coordinates_2.pac_geometry_2.type_distance_positive := 0.2;
-	hatching_spacing_default	: constant et_pcb_coordinates_2.pac_geometry_2.type_distance_positive := 1.0;
+	hatching_line_width_default : constant et_board_coordinates.pac_geometry_2.type_distance_positive := 0.2;
+	hatching_spacing_default	: constant et_board_coordinates.pac_geometry_2.type_distance_positive := 1.0;
 
 
 
@@ -185,9 +185,9 @@ package et_fill_zones is
 	function to_easing_style (easing : in string) return type_easing_style;
 	function to_string (easing : in type_easing_style) return string;
 
-	easing_radius_max : constant et_pcb_coordinates_2.pac_geometry_2.type_distance_positive := 100.0;
-	subtype type_easing_radius is et_pcb_coordinates_2.pac_geometry_2.type_distance_positive 
-		range et_pcb_coordinates_2.pac_geometry_2.type_distance_positive'first .. easing_radius_max;
+	easing_radius_max : constant et_board_coordinates.pac_geometry_2.type_distance_positive := 100.0;
+	subtype type_easing_radius is et_board_coordinates.pac_geometry_2.type_distance_positive 
+		range et_board_coordinates.pac_geometry_2.type_distance_positive'first .. easing_radius_max;
 
 	type type_easing is record
 		style	: type_easing_style := NONE;

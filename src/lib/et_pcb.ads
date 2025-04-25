@@ -48,7 +48,7 @@ with ada.containers.ordered_maps;
 with et_logging;						use et_logging;
 
 with et_pcb_sides;						use et_pcb_sides;
-with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
+with et_board_coordinates;				use et_board_coordinates;
 with et_board_text;						use et_board_text;
 with et_text;							use et_text;
 with et_drills;							use et_drills;

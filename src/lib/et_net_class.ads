@@ -44,7 +44,7 @@ with ada.strings.bounded; 			use ada.strings.bounded;
 with ada.containers; 				use ada.containers;
 with ada.containers.ordered_maps;
 
-with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
+with et_board_coordinates;				use et_board_coordinates;
 with et_drills;							use et_drills;
 with et_design_rules_board;				use et_design_rules_board;
 

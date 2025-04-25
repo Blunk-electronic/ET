@@ -46,7 +46,7 @@ with et_exceptions;					use et_exceptions;
 with et_modes;						use et_modes;
 with et_conventions;
 with et_pcb_sides;
-with et_pcb_coordinates_2;
+with et_board_coordinates;
 with et_pcb;
 with et_devices_electrical;
 with et_devices_non_electrical;
@@ -194,8 +194,8 @@ package body et_schematic_ops is
 		log_threshold	: in type_log_level) 
 	is
 		use et_pcb_sides;
-		use et_pcb_coordinates_2;
-		use et_pcb_coordinates_2.pac_geometry_2;
+		use et_board_coordinates;
+		use et_board_coordinates.pac_geometry_2;
 		use pac_devices_sch;
 		use et_symbols;
 		use et_device_appearance;

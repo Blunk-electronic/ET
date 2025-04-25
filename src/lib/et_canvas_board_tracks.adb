@@ -291,7 +291,7 @@ package body et_canvas_board_tracks is
 		
 		rotation_length_min : constant gint := 1;
 		rotation_length_max : constant gint := 5;
-		-- CS: adjust if necessary. see et_pcb_coordinates_2 type_rotation.
+		-- CS: adjust if necessary. see et_board_coordinates type_rotation.
 		
 		-- The spacing between the boxes:
 		spacing : constant natural := 5;
@@ -581,7 +581,7 @@ package body et_canvas_board_tracks is
 		-- This procedure sets the start point of the path:
 		procedure set_start_point is
 			use et_object_status;
-			use et_pcb_coordinates_2.pac_geometry_brd;
+			use et_board_coordinates.pac_geometry_brd;
 
 			use et_nets;
 			use et_net_names;

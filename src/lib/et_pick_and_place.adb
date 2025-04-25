@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -124,7 +124,7 @@ package body et_pick_and_place is
 
 			procedure query_device (cursor : in pac_devices.cursor) is
 				use pac_devices;
-				use et_pcb_coordinates_2.pac_geometry_2;
+				use et_board_coordinates.pac_geometry_2;
 			begin
 				put_field (file => pnp_handle); -- CS item number
 				put_field (file => pnp_handle, text => to_string (key (cursor))); -- R4

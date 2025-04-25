@@ -173,7 +173,7 @@ package body et_terminals is
 		name			: in pac_terminal_name.bounded_string;
 		log_threshold 	: in type_log_level)
 	is
-		use et_pcb_coordinates_2;
+		use et_board_coordinates;
 		log_threshold_1 : type_log_level := log_threshold + 1;
 
 -- 		use type_pad_lines;

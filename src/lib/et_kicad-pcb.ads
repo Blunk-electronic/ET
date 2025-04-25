@@ -61,7 +61,7 @@ with et_terminals;				use et_terminals;
 with et_package_names;			use et_package_names;
 with et_pcb;
 with et_pcb_sides;				use et_pcb_sides;
-with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
+with et_board_coordinates;		use et_board_coordinates;
 with et_kicad_general;			use et_kicad_general;
 with et_text;
 with et_board_text;				use et_board_text;
@@ -107,7 +107,7 @@ package et_kicad.pcb is
 	use pac_geometry_brd;
 	use pac_geometry_2;
 	
-	use et_pcb_coordinates_2.pac_contours;
+	use et_board_coordinates.pac_contours;
 	use et_board_text.pac_text_board;
 
 	use pac_net_name;
@@ -434,10 +434,10 @@ package et_kicad.pcb is
 	type type_general_board_info is record
 		links		: type_general_links;
 		no_connects	: type_general_no_connects;
-		area_x1		: et_pcb_coordinates_2.type_distance_model; -- CS meaning not clear yet. unit mm ?
-		area_y1		: et_pcb_coordinates_2.type_distance_model; -- CS meaning not clear yet. unit mm ?
-		area_x2		: et_pcb_coordinates_2.type_distance_model; -- CS meaning not clear yet. unit mm ?
-		area_y2		: et_pcb_coordinates_2.type_distance_model; -- CS meaning not clear yet. unit mm ?
+		area_x1		: et_board_coordinates.type_distance_model; -- CS meaning not clear yet. unit mm ?
+		area_y1		: et_board_coordinates.type_distance_model; -- CS meaning not clear yet. unit mm ?
+		area_x2		: et_board_coordinates.type_distance_model; -- CS meaning not clear yet. unit mm ?
+		area_y2		: et_board_coordinates.type_distance_model; -- CS meaning not clear yet. unit mm ?
 		thickness	: type_pcb_thickness;
 		drawings	: type_general_drawings;
 		tracks		: type_general_tracks;
@@ -553,7 +553,7 @@ package et_kicad.pcb is
 		terminals				: pac_terminals.map; -- terminals with net names
 		time_edit				: type_timestamp;
 		value					: pac_device_value.bounded_string;
-		position				: et_pcb_coordinates_2.type_package_position; -- incl. angle, face
+		position				: et_board_coordinates.type_package_position; -- incl. angle, face
 	end record;
 
 	-- Lots of packages (in a board) can be collected in a map:

@@ -40,7 +40,7 @@
 
 with et_module_instance;			use et_module_instance;
 with et_pcb_sides;
-with et_pcb_coordinates_2;
+with et_board_coordinates;
 with et_board_text;
 with et_board_layer_category;		use et_board_layer_category;
 with et_board_ops.conductors;
@@ -110,7 +110,7 @@ is
 	use et_pcb;
 
 	use et_pcb_sides;
-	use et_pcb_coordinates_2;
+	use et_board_coordinates;
 	use pac_geometry_2;
 	use pac_contours;
 
@@ -2415,7 +2415,7 @@ is
 		end make_fill_zone;
 
 
-		use et_pcb_coordinates_2.pac_grid;
+		use et_board_coordinates.pac_grid;
 
 		arc_tmp : type_arc;
 

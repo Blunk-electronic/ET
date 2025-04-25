@@ -40,7 +40,7 @@
 
 
 with et_text;
-with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
+with et_board_coordinates;		use et_board_coordinates;
 
 
 package et_board_text is

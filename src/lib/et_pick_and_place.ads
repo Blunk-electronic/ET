@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -47,7 +47,7 @@ with et_module_names;			use et_module_names;
 with et_assembly_variant_name;	use et_assembly_variant_name;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
-with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
+with et_board_coordinates;		use et_board_coordinates;
 with et_device_name;			use et_device_name;
 
 package et_pick_and_place is
@@ -63,7 +63,7 @@ package et_pick_and_place is
 	function to_file_name (name : in string) return pac_pnp_file_name.bounded_string;
 
 	type type_device is record
-		position : et_pcb_coordinates_2.type_package_position; -- x/y, rotation and face
+		position : et_board_coordinates.type_package_position; -- x/y, rotation and face
 		-- CS value and partcode ?
 	end record;
 

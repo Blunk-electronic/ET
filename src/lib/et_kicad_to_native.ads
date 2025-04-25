@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -52,7 +52,7 @@ with et_project_name;				use et_project_name;
 with et_schematic_coordinates;
 with et_logging;					use et_logging;
 with et_pcb;
-with et_pcb_coordinates_2;
+with et_board_coordinates;
 
 
 package et_kicad_to_native is

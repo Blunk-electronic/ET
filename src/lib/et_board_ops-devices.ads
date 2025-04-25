@@ -157,7 +157,7 @@ package et_board_ops.devices is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		coordinates		: in type_coordinates; -- relative/absolute		
-		rotation		: in et_pcb_coordinates_2.type_rotation_model; -- 90 -- CS default rotation ?
+		rotation		: in et_board_coordinates.type_rotation_model; -- 90 -- CS default rotation ?
 		log_threshold	: in type_log_level);
 
 
@@ -443,7 +443,7 @@ package et_board_ops.devices is
 	type type_terminal_polygon (exists : boolean) is record
 		case exists is
 			when TRUE	=> 
-				polygon		: et_pcb_coordinates_2.pac_polygons.type_polygon;
+				polygon		: et_board_coordinates.pac_polygons.type_polygon;
 				position	: type_terminal_position_fine;
 				
 			when FALSE	=> null;

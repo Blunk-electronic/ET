@@ -58,8 +58,8 @@ with et_terminals;					use et_terminals;
 with et_pcb;						use et_pcb;
 with et_pcb_stack;					use et_pcb_stack;
 with et_pcb_sides;					use et_pcb_sides;
-with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
-use et_pcb_coordinates_2.pac_geometry_2;
+with et_board_coordinates;			use et_board_coordinates;
+use et_board_coordinates.pac_geometry_2;
 
 with et_board_text;
 

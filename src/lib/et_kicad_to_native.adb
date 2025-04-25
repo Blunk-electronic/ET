@@ -136,7 +136,7 @@ package body et_kicad_to_native is
 
 		-- Here the height of the layout sheet is kept. It is required for move ops of 
 		-- layout objects from the kicad frame to the native frame.
-		layout_sheet_height : et_pcb_coordinates_2.pac_geometry_2.type_distance_positive;
+		layout_sheet_height : et_board_coordinates.pac_geometry_2.type_distance_positive;
 
 		
 		-- Returns true if the current kicad module has a layout file.
@@ -282,7 +282,7 @@ package body et_kicad_to_native is
 		-- Sets the layout_sheet_height depending on the paper size
 		-- of the layout sheet.
 		procedure prepare_layout_y_movements is
-			use et_pcb_coordinates_2;
+			use et_board_coordinates;
 			use pac_geometry_2;
 			use et_frames;
 			
@@ -311,8 +311,8 @@ package body et_kicad_to_native is
 		-- Transposes the given point in layout from the kicad frame to the ET native frame.
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
-		procedure move (point : in out et_pcb_coordinates_2.pac_geometry_2.type_vector_model) is
-			use et_pcb_coordinates_2;
+		procedure move (point : in out et_board_coordinates.pac_geometry_2.type_vector_model) is
+			use et_board_coordinates;
 			use pac_geometry_2;
 			new_y : type_position_axis;
 		begin
@@ -325,9 +325,9 @@ package body et_kicad_to_native is
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
 		procedure move (
-			arc : in out et_pcb_coordinates_2.pac_geometry_2.type_arc'class) 
+			arc : in out et_board_coordinates.pac_geometry_2.type_arc'class) 
 		is 
-			use et_pcb_coordinates_2;
+			use et_board_coordinates;
 			use pac_geometry_2;
 			new_y : type_position_axis;
 			S, E, C : type_vector_model;
@@ -353,9 +353,9 @@ package body et_kicad_to_native is
 		-- KiCad frames have the origin in the upper left corner.
 		-- ET frames have the origin in the lower left corner.
 		procedure move (
-			circle : in out et_pcb_coordinates_2.pac_geometry_2.type_circle'class) 
+			circle : in out et_board_coordinates.pac_geometry_2.type_circle'class) 
 		is 
-			use et_pcb_coordinates_2;
+			use et_board_coordinates;
 			use pac_geometry_2;
 			new_y : type_position_axis;
 			C : type_vector_model;
@@ -505,8 +505,8 @@ package body et_kicad_to_native is
 				-- moves the position of the package in layout
 				procedure move_package is
 					use et_device_appearance;
-					use et_pcb_coordinates_2;
-					use et_pcb_coordinates_2.pac_geometry_2;
+					use et_board_coordinates;
+					use et_board_coordinates.pac_geometry_2;
 				begin
 					if component.appearance = APPEARANCE_PCB then
 						log_indentation_up;
@@ -784,7 +784,7 @@ package body et_kicad_to_native is
 
 					
 					procedure move_via (via : in out type_via) is
-						use et_pcb_coordinates_2.pac_geometry_2;
+						use et_board_coordinates.pac_geometry_2;
 					begin
 						log (text => board_track & "via", level => log_threshold + 4);
 						log_indentation_up;
@@ -801,7 +801,7 @@ package body et_kicad_to_native is
 					
 					procedure move_polygon (polygon : in out type_route_solid) is begin
 						log (text => "polygon segments", level => log_threshold + 4);
-						et_pcb_coordinates_2.pac_contours.transpose_contour (polygon, layout_sheet_height);
+						et_board_coordinates.pac_contours.transpose_contour (polygon, layout_sheet_height);
 					end move_polygon;
 
 					
@@ -950,7 +950,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_circle (circle : in out type_silk_circle) is 
-					use et_pcb_coordinates_2.pac_geometry_2;
+					use et_board_coordinates.pac_geometry_2;
 				begin
 					log (text => board_silk_screen & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -965,12 +965,12 @@ package body et_kicad_to_native is
 				
 				procedure move_polygon (polygon : in out type_silk_zone) is begin
 					log (text => board_silk_screen & "zone segments", level => log_threshold + log_threshold_add);
-					et_pcb_coordinates_2.pac_contours.transpose_contour (polygon, layout_sheet_height);
+					et_board_coordinates.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end;
 
 				
 				procedure move_text (text : in out type_silk_text) is
-					use et_pcb_coordinates_2.pac_geometry_2;
+					use et_board_coordinates.pac_geometry_2;
 				begin
 					log (text => board_silk_screen & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1160,7 +1160,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_circle (circle : in out type_doc_circle) is 
-					use et_pcb_coordinates_2.pac_geometry_2;
+					use et_board_coordinates.pac_geometry_2;
 				begin
 					log (text => doc & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1175,13 +1175,13 @@ package body et_kicad_to_native is
 				
 				procedure move_polygon (polygon : in out type_doc_zone) is begin
 					log (text => doc & "polygon segments", level => log_threshold + log_threshold_add);
-					et_pcb_coordinates_2.pac_contours.transpose_contour (polygon, layout_sheet_height);
+					et_board_coordinates.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end;
 
 				
 				procedure move_text (text : in out type_doc_text) is
-					use et_pcb_coordinates_2;
-					use et_pcb_coordinates_2.pac_geometry_2;
+					use et_board_coordinates;
+					use et_board_coordinates.pac_geometry_2;
 				begin
 					log (text => doc & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1369,7 +1369,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_circle (circle : in out type_stencil_circle) is
-					use et_pcb_coordinates_2.pac_geometry_2;
+					use et_board_coordinates.pac_geometry_2;
 				begin
 					log (text => stencil & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1542,7 +1542,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_circle (circle : in out type_stop_circle) is
-					use et_pcb_coordinates_2.pac_geometry_2;
+					use et_board_coordinates.pac_geometry_2;
 				begin
 					log (text => stop & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1557,13 +1557,13 @@ package body et_kicad_to_native is
 				
 				procedure move_polygon (polygon : in out type_stop_zone) is begin
 					log (text => stop & "zone corner points", level => log_threshold + log_threshold_add);
-					et_pcb_coordinates_2.pac_contours.transpose_contour (polygon, layout_sheet_height);
+					et_board_coordinates.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end move_polygon;
 
 				
 				procedure move_text (text : in out type_stop_text) is
-					use et_pcb_coordinates_2;
-					use et_pcb_coordinates_2.pac_geometry_2;
+					use et_board_coordinates;
+					use et_board_coordinates.pac_geometry_2;
 				begin
 					log (text => stop & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1710,7 +1710,7 @@ package body et_kicad_to_native is
 							
 				procedure move_polygon (polygon : in out type_keepout_zone) is begin
 					log (text => keepout & "zone segments", level => log_threshold + log_threshold_add);
-					et_pcb_coordinates_2.pac_contours.transpose_contour (polygon, layout_sheet_height);
+					et_board_coordinates.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end move_polygon;
 
 				
@@ -1743,7 +1743,7 @@ package body et_kicad_to_native is
 
 			
 			procedure move_contour is
-				use et_pcb_coordinates_2;
+				use et_board_coordinates;
 				use pac_geometry_brd;
 				use pac_geometry_2;
 				use pac_contours;
@@ -1896,7 +1896,7 @@ package body et_kicad_to_native is
 
 				
 				procedure move_circle (circle : in out type_conductor_circle) is
-					use et_pcb_coordinates_2.pac_geometry_2;
+					use et_board_coordinates.pac_geometry_2;
 				begin
 					log (text => board_copper & "circle", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1911,19 +1911,19 @@ package body et_kicad_to_native is
 				
 				procedure move_polygon (polygon : in out type_floating_solid) is begin
 					log (text => board_copper & "solid polygon segments", level => log_threshold + log_threshold_add);
-					et_pcb_coordinates_2.pac_contours.transpose_contour (polygon, layout_sheet_height);
+					et_board_coordinates.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end move_polygon;
 
 				
 				procedure move_polygon (polygon : in out type_floating_hatched) is begin
 					log (text => board_copper & "hatched polygon segments", level => log_threshold + log_threshold_add);
-					et_pcb_coordinates_2.pac_contours.transpose_contour (polygon, layout_sheet_height);
+					et_board_coordinates.pac_contours.transpose_contour (polygon, layout_sheet_height);
 				end move_polygon;
 
 				
 				procedure move_text (text : in out et_conductor_text.boards.type_conductor_text) is
-					use et_pcb_coordinates_2;
-					use et_pcb_coordinates_2.pac_geometry_2;
+					use et_board_coordinates;
+					use et_board_coordinates.pac_geometry_2;
 				begin
 					log (text => board_copper & "text", level => log_threshold + log_threshold_add);
 					log_indentation_up;
@@ -1939,8 +1939,8 @@ package body et_kicad_to_native is
 
 				
 				procedure move_placeholder (text : in out type_text_placeholder_conductors) is
-					use et_pcb_coordinates_2;
-					use et_pcb_coordinates_2.pac_geometry_2;
+					use et_board_coordinates;
+					use et_board_coordinates.pac_geometry_2;
 				begin
 					log (text => board_copper & "text placeholder", level => log_threshold + log_threshold_add);
 					log_indentation_up;

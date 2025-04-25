@@ -131,7 +131,7 @@ package body et_kicad_packages is
 		shape : type_contour; -- to be returned
 		c : type_circle;
 
-		use et_pcb_coordinates_2.pac_geometry_brd;
+		use et_board_coordinates.pac_geometry_brd;
 	begin
 		set_center (c, position.place);
 		--c.radius := type_angle (diameter / 2.0);
@@ -153,7 +153,7 @@ package body et_kicad_packages is
 		offset		: in type_distance_relative)	-- the offset of the pad from the center
 		return type_contour 
 	is
-		use et_pcb_coordinates_2;
+		use et_board_coordinates;
 		use pac_geometry_brd;
 
 		shape : type_contour; -- to be returned
@@ -235,7 +235,7 @@ package body et_kicad_packages is
 		offset	: in type_distance_relative)	-- the offset of the pad from the center
 		return type_contour 
 	is
-		use et_pcb_coordinates_2;
+		use et_board_coordinates;
 		use pac_geometry_brd;
 
 		shape : type_contour; -- to be returned
@@ -337,7 +337,7 @@ package body et_kicad_packages is
 		offset	: in type_distance_relative)	-- the offset of the pad from the center
 		return pac_segments.list 
 	is
-		use et_pcb_coordinates_2;
+		use et_board_coordinates;
 		use pac_geometry_brd;
 
 		use pac_segments;
@@ -439,8 +439,8 @@ package body et_kicad_packages is
 		use pac_lines_of_file;
 		use et_drills;
 		use et_terminals;
-		use et_pcb_coordinates_2;
-		use et_pcb_coordinates_2.pac_geometry_brd;
+		use et_board_coordinates;
+		use et_board_coordinates.pac_geometry_brd;
 
 		-- Extract the actual package name (like S_0201) from the given file name:
 		package_name : pac_package_name.bounded_string :=
@@ -602,7 +602,7 @@ package body et_kicad_packages is
 		pad_size_x : type_pad_size;  -- CS use a composite instead ?
 		pad_size_y : type_pad_size;
 
--- 		terminal_copper_width_outer_layers : et_pcb_coordinates_2.type_distance_model;
+-- 		terminal_copper_width_outer_layers : et_board_coordinates.type_distance_model;
 		terminal_copper_width_inner_layers : type_distance_positive := 1.0; -- CS load from DRU ?
 
 		-- Temporarily these flags hold the solder paste status of an SMT terminal.
@@ -675,7 +675,7 @@ package body et_kicad_packages is
 		-- stopmask and solder paste:
 		procedure set_stop_and_mask is
 			use et_pcb_sides;
-			use et_pcb_coordinates_2;
+			use et_board_coordinates;
 			
 			procedure invalid is begin
 				log (ERROR, "contradicting layers in terminal !", console => true);
@@ -897,7 +897,7 @@ package body et_kicad_packages is
 			use type_argument;
 			use et_text.pac_text_content;
 			use et_pcb_sides;
-			use et_pcb_coordinates_2;
+			use et_board_coordinates;
 			use pac_geometry_brd;
 		
 			arg : type_argument.bounded_string; -- here the argument goes temporarily
@@ -1715,7 +1715,7 @@ package body et_kicad_packages is
 		-- Restores the previous section.
 		procedure exec_section is
 			use et_pcb_sides;
-			use et_pcb_coordinates_2;
+			use et_board_coordinates;
 
 			procedure invalid_layer is begin
 				log (ERROR, "invalid layer for this object !", console => true);
@@ -2360,7 +2360,7 @@ package body et_kicad_packages is
 		-- CS: validate text sizes and width according to specifications in configuration file
 		procedure check_placeholders is
 			use et_pcb_sides;
-			use et_pcb_coordinates_2;
+			use et_board_coordinates;
 			use pac_placeholders;
 			cursor 		: pac_placeholders.cursor;
 			placeholder : type_placeholder;

@@ -2,7 +2,7 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                            PCB COORDINATES                               --
+--                           BOARD COORDINATE                               --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -51,7 +51,7 @@ with et_geometry_2a.path;
 with et_pcb_sides;				use et_pcb_sides;
 
 
-package et_pcb_coordinates_2 is
+package et_board_coordinates is
 
 	
 
@@ -228,7 +228,7 @@ package et_pcb_coordinates_2 is
 			pac_geometry_2.origin_zero_rotation with face => TOP);
 
 		
-end et_pcb_coordinates_2;
+end et_board_coordinates;
 
 -- Soli Deo Gloria
 

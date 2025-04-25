@@ -379,10 +379,10 @@ package body et_board_ops is
 					inserted : boolean;
 
 					function apply_position_in_board (position_generic : in type_package_position) return
-						et_pcb_coordinates_2.type_package_position 
+						et_board_coordinates.type_package_position 
 					is 
 						-- Get the device position in the generic submodule:.
-						device_position : et_pcb_coordinates_2.type_package_position := position_generic;
+						device_position : et_board_coordinates.type_package_position := position_generic;
 					begin
 						-- Then move it according
 						-- to the position of the submodule instance in the parent module:

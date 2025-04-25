@@ -43,7 +43,7 @@ with et_canvas_schematic_2;
 with et_schematic_coordinates;
 
 with et_canvas_board_2;
-with et_pcb_coordinates_2;
+with et_board_coordinates;
 
 with et_schematic_ops.grid;
 with et_board_ops.grid;
@@ -184,7 +184,7 @@ package body et_gui_2 is
 	is
 		use et_canvas_board_2;
 		use et_canvas_board_2.pac_canvas;
-		use et_pcb_coordinates_2.pac_geometry_2;
+		use et_board_coordinates.pac_geometry_2;
 	begin
 		-- Set the log threshold. Everything that happens in the gui may be logged
 		-- using the gui wide variable log_threshold:

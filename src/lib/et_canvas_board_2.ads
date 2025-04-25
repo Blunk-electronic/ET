@@ -63,7 +63,7 @@ with et_script_names;				use et_script_names;
 with et_logical_pixels;				use et_logical_pixels;
 
 with et_pcb_sides;					use et_pcb_sides;
-with et_pcb_coordinates_2;			use et_pcb_coordinates_2;
+with et_board_coordinates;			use et_board_coordinates;
 -- use et_pcb_coordinates.pac_geometry_brd;
 -- use et_pcb_coordinates.pac_geometry_2;
 
@@ -119,18 +119,18 @@ package et_canvas_board_2 is
 	-- Instantiate the general canvas package:
 	package pac_canvas is new et_canvas (
 		canvas_name		=> "board", -- CS provide domain name like scripting.type_domain
-		pac_geometry	=> et_pcb_coordinates_2.pac_geometry_2,
-		pac_grid		=> et_pcb_coordinates_2.pac_grid,
-		pac_path		=> et_pcb_coordinates_2.pac_path_and_bend,
-		pac_polygons	=> et_pcb_coordinates_2.pac_polygons,
-		pac_offsetting	=> et_pcb_coordinates_2.pac_polygon_offsetting,
-		pac_contours	=> et_pcb_coordinates_2.pac_contours,
+		pac_geometry	=> et_board_coordinates.pac_geometry_2,
+		pac_grid		=> et_board_coordinates.pac_grid,
+		pac_path		=> et_board_coordinates.pac_path_and_bend,
+		pac_polygons	=> et_board_coordinates.pac_polygons,
+		pac_offsetting	=> et_board_coordinates.pac_polygon_offsetting,
+		pac_contours	=> et_board_coordinates.pac_contours,
 		pac_text		=> et_board_text.pac_text_board		
 		);
 
 	
 	use pac_canvas;	
-	use et_pcb_coordinates_2.pac_geometry_2;
+	use et_board_coordinates.pac_geometry_2;
 
 	package pac_drawing_frame is new pac_canvas.drawing_frame;
 	

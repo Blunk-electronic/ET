@@ -50,7 +50,7 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 
 with et_pcb_sides;						use et_pcb_sides;
-with et_pcb_coordinates_2;				use et_pcb_coordinates_2;
+with et_board_coordinates;				use et_board_coordinates;
 with et_board_text;						use et_board_text;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.packages;	use et_device_placeholders.packages;
@@ -105,7 +105,7 @@ package et_devices_non_electrical is
 	-- CS: Move into a separate package !
 	
 	type type_device_non_electric is record
-		position			: et_pcb_coordinates_2.type_package_position; -- incl. rotation and face
+		position			: et_board_coordinates.type_package_position; -- incl. rotation and face
 		text_placeholders	: type_text_placeholders;
 		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/packages/fiducial.pac
 		-- CS cursor to package model instead ?

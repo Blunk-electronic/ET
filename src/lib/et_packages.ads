@@ -43,7 +43,7 @@ with ada.containers.indefinite_ordered_maps;
 
 with et_mirroring;				use et_mirroring;
 with et_pcb_sides;				use et_pcb_sides;
-with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
+with et_board_coordinates;		use et_board_coordinates;
 with et_pcb_stack;				use et_pcb_stack;
 with et_board_text;				use et_board_text;
 with et_drills;					use et_drills;

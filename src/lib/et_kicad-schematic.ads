@@ -60,7 +60,7 @@ with et_schematic_coordinates;	use et_schematic_coordinates;
 use et_schematic_coordinates.pac_geometry_sch;
 use et_schematic_coordinates.pac_geometry_2;
 
-with et_pcb_coordinates_2;
+with et_board_coordinates;
 with et_text;
 with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
@@ -274,7 +274,7 @@ package et_kicad.schematic is
 
 				-- This is layout related. In the layout the package has a position
 				-- and placeholders for reference and value.
-				position			: et_pcb_coordinates_2.type_package_position; -- incl. angle and face
+				position			: et_board_coordinates.type_package_position; -- incl. angle and face
 				text_placeholders	: et_device_placeholders.packages.type_text_placeholders;
 				
 			-- If a component appears in the schematic only, it does not have any package variants.

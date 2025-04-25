@@ -45,7 +45,7 @@ with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_general_rw;				use et_general_rw;
 with et_pcb_sides;				use et_pcb_sides;
-with et_pcb_coordinates_2;		use et_pcb_coordinates_2;
+with et_board_coordinates;		use et_board_coordinates;
 with et_board_text;				use et_board_text;
 with et_drills;					use et_drills;
 with et_pcb;

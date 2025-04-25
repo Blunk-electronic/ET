@@ -2,11 +2,11 @@
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
---                            PCB COORDINATES                               --
+--                          BOARD COORDINATES                               --
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -44,7 +44,7 @@ with ada.exceptions;
 with et_coordinates_formatting;			use et_coordinates_formatting;
 
 
-package body et_pcb_coordinates_2 is
+package body et_board_coordinates is
 
 	
 	function to_string (
@@ -137,7 +137,7 @@ package body et_pcb_coordinates_2 is
 		return pos;
 	end to_terminal_position;
 	
-end et_pcb_coordinates_2;
+end et_board_coordinates;
 
 -- Soli Deo Gloria
 

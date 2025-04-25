@@ -38,8 +38,8 @@
 -- DESCRIPTION:
 -- 
 
-with et_pcb_coordinates_2;
-use et_pcb_coordinates_2.pac_geometry_2;
+with et_board_coordinates;
+use et_board_coordinates.pac_geometry_2;
 
 with et_canvas_tool;					use et_canvas_tool;
 with et_canvas_messages;				use et_canvas_messages;

@@ -47,7 +47,7 @@ with et_submodules;				use et_submodules;
 with et_module_instance;		use et_module_instance;
 with et_display.schematic;
 
-with et_pcb_coordinates_2;
+with et_board_coordinates;
 
 
 separate (et_canvas_schematic_2)
@@ -144,7 +144,7 @@ procedure draw_submodules is
 					x => zero,
 					y => - (3.0 * text_spacing + instance_font_size + file_font_size)));
 
-			use et_pcb_coordinates_2.pac_geometry_2;
+			use et_board_coordinates.pac_geometry_2;
 			
 			pos_x : constant string := to_string (get_x (element (cursor).position_in_board));
 			pos_y : constant string := to_string (get_y (element (cursor).position_in_board));

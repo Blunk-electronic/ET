@@ -2546,7 +2546,7 @@ is
 													log_threshold		=> log_threshold + 2),
 
 							-- This is layout related and will be filled on layout import later (much later):
-							position			=> et_pcb_coordinates_2.package_position_default, -- the position of the package in the layout
+							position			=> et_board_coordinates.package_position_default, -- the position of the package in the layout
 							text_placeholders	=> (others => <>),  -- placeholders for reference, value, purpose in the layout
 							
 							-- At this stage we do not know if and how many units there are. So the unit list is empty for the moment.

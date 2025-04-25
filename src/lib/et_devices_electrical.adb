@@ -65,7 +65,7 @@ package body et_devices_electrical is
 	
 	function get_position (
 		device_cursor	: in pac_devices_sch.cursor) -- IC45
-		return et_pcb_coordinates_2.type_package_position
+		return et_board_coordinates.type_package_position
 	is begin
 		return element (device_cursor).position;
 	end get_position;
@@ -74,7 +74,7 @@ package body et_devices_electrical is
 	
 	function get_position (
 		device_cursor	: in pac_devices_sch.cursor) -- IC45
-		return et_pcb_coordinates_2.pac_geometry_2.type_vector_model
+		return et_board_coordinates.pac_geometry_2.type_vector_model
 	is begin
 		return get_position (device_cursor).place;
 	end get_position;
@@ -87,11 +87,11 @@ package body et_devices_electrical is
 		device_cursor	: in pac_devices_sch.cursor) -- IC45
 		return type_face
 	is 
-		position : et_pcb_coordinates_2.type_package_position;
+		position : et_board_coordinates.type_package_position;
 		face : type_face;
 	begin
 		position := element (device_cursor).position;
-		face := et_pcb_coordinates_2.get_face (position);
+		face := et_board_coordinates.get_face (position);
 		return face;
 	end get_face;
 
@@ -127,8 +127,8 @@ package body et_devices_electrical is
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
 
-		use et_pcb_coordinates_2;
-		use et_pcb_coordinates_2.pac_geometry_2;
+		use et_board_coordinates;
+		use et_board_coordinates.pac_geometry_2;
 	begin
 		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
@@ -161,9 +161,9 @@ package body et_devices_electrical is
 	function get_conductor_polygons (
 		device_cursor	: in pac_devices_sch.cursor;
 		layer_category	: in type_signal_layer_category)
-		return et_pcb_coordinates_2.pac_polygons.pac_polygon_list.list
+		return et_board_coordinates.pac_polygons.pac_polygon_list.list
 	is
-		use et_pcb_coordinates_2;
+		use et_board_coordinates;
 		use pac_polygons;
 		result : pac_polygon_list.list;
 		use et_contour_to_polygon;
@@ -172,8 +172,8 @@ package body et_devices_electrical is
 		packge : pac_package_models.cursor;
 		conductors : type_conductor_objects; -- non-electrical
 
-		use et_pcb_coordinates_2;
-		use et_pcb_coordinates_2.pac_geometry_2;
+		use et_board_coordinates;
+		use et_board_coordinates.pac_geometry_2;
 
 	begin
 		if device.appearance = APPEARANCE_PCB then
@@ -220,8 +220,8 @@ package body et_devices_electrical is
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
 
-		use et_pcb_coordinates_2;
-		use et_pcb_coordinates_2.pac_geometry_2;
+		use et_board_coordinates;
+		use et_board_coordinates.pac_geometry_2;
 	begin
 		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
@@ -251,7 +251,7 @@ package body et_devices_electrical is
 	function get_route_restrict_polygons (
 		device_cursor	: in pac_devices_sch.cursor;
 		layer_category	: in type_signal_layer_category)
-		return et_pcb_coordinates_2.pac_polygons.pac_polygon_list.list
+		return et_board_coordinates.pac_polygons.pac_polygon_list.list
 	is
 		
 		device : type_device_sch renames element (device_cursor);
@@ -260,8 +260,8 @@ package body et_devices_electrical is
 		use et_route_restrict.packages;
 		restrict : type_one_side;
 
-		use et_pcb_coordinates_2;
-		use et_pcb_coordinates_2.pac_geometry_2;
+		use et_board_coordinates;
+		use et_board_coordinates.pac_geometry_2;
 		use pac_polygons;
 
 		result : pac_polygon_list.list;
@@ -309,8 +309,8 @@ package body et_devices_electrical is
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
 
-		use et_pcb_coordinates_2;
-		use et_pcb_coordinates_2.pac_geometry_2;
+		use et_board_coordinates;
+		use et_board_coordinates.pac_geometry_2;
 
 	begin
 		if device.appearance = APPEARANCE_PCB then
@@ -348,8 +348,8 @@ package body et_devices_electrical is
 		face			: in type_face)
 		return type_keepout
 	is
-		use et_pcb_coordinates_2;
-		use et_pcb_coordinates_2.pac_geometry_2;
+		use et_board_coordinates;
+		use et_board_coordinates.pac_geometry_2;
 
 		result : type_keepout;
 		device : type_device_sch renames element (device_cursor);
@@ -407,8 +407,8 @@ package body et_devices_electrical is
 		face			: in type_face)
 		return type_stencil
 	is
-		use et_pcb_coordinates_2;
-		use et_pcb_coordinates_2.pac_geometry_2;
+		use et_board_coordinates;
+		use et_board_coordinates.pac_geometry_2;
 		
 		result : type_stencil;
 		device : type_device_sch renames element (device_cursor);
@@ -463,8 +463,8 @@ package body et_devices_electrical is
 		face			: in type_face)
 		return type_stopmask
 	is
-		use et_pcb_coordinates_2;
-		use et_pcb_coordinates_2.pac_geometry_2;
+		use et_board_coordinates;
+		use et_board_coordinates.pac_geometry_2;
 		
 		result : type_stopmask;
 		device : type_device_sch renames element (device_cursor);
@@ -549,8 +549,8 @@ package body et_devices_electrical is
 		face			: in type_face)
 		return type_silkscreen
 	is
-		use et_pcb_coordinates_2;
-		use et_pcb_coordinates_2.pac_geometry_2;
+		use et_board_coordinates;
+		use et_board_coordinates.pac_geometry_2;
 		use et_board_text;
 		
 		result : type_silkscreen;
@@ -659,8 +659,8 @@ package body et_devices_electrical is
 		face			: in type_face)
 		return type_assy_doc
 	is
-		use et_pcb_coordinates_2;
-		use et_pcb_coordinates_2.pac_geometry_2;
+		use et_board_coordinates;
+		use et_board_coordinates.pac_geometry_2;
 		use et_board_text;
 
 		result : type_assy_doc;
@@ -761,8 +761,8 @@ package body et_devices_electrical is
 		device_cursor	: in pac_devices_sch.cursor)
 		return pac_holes.list
 	is
-		use et_pcb_coordinates_2;
-		use et_pcb_coordinates_2.pac_geometry_2;
+		use et_board_coordinates;
+		use et_board_coordinates.pac_geometry_2;
 		
 		holes : pac_holes.list; -- to be returned
 		
@@ -797,15 +797,15 @@ package body et_devices_electrical is
 	
 	function get_hole_polygons (
 		device_cursor	: in pac_devices_sch.cursor)
-		return et_pcb_coordinates_2.pac_polygons.pac_polygon_list.list
+		return et_board_coordinates.pac_polygons.pac_polygon_list.list
 	is
 		holes : pac_holes.list;
 		
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
 		
-		use et_pcb_coordinates_2;
-		use et_pcb_coordinates_2.pac_geometry_2;
+		use et_board_coordinates;
+		use et_board_coordinates.pac_geometry_2;
 		use pac_polygons;
 
 		rotation : type_rotation_model;
