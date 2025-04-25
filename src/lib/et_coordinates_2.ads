@@ -86,14 +86,14 @@ package et_coordinates_2 is
 		-- CS range -360.0 + rotation_smallest .. +360.0 - rotation_smallest ?
  
  
-	type type_float is digits 12;
+	type type_float_model is digits 12;
 	-- CS reduce digits. adapt accuracy
 	-- when instantiating geometry package. See below.
 
 	
 	-- instantiation of the geometry 1 package:
 	package pac_geometry_sch is new et_geometry_1 (
-		type_float	=> type_float,
+		type_float	=> type_float_model,
 
 		-- For assumed greatest numbers of 999.999..
 		-- we have 3 digits left and 9 digits right of comma.
