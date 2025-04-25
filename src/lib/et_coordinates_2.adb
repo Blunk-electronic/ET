@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -36,10 +36,10 @@
 --   history of changes:
 --
 
-with system.assertions;
+with ada.text_io;						use ada.text_io;
 with ada.exceptions;
-
-with ada.numerics.generic_elementary_functions;
+-- with ada.characters.handling;		use ada.characters.handling;
+with ada.strings;						use ada.strings;
 
 with et_coordinates_formatting;			use et_coordinates_formatting;
 with et_axes;							use et_axes;
@@ -47,40 +47,6 @@ with et_keywords;						use et_keywords;
 
 
 package body et_coordinates_2 is
--- 	pragma assertion_policy (check);
-
-
-	
--- 	function to_angle (angle : in string) return type_rotation is 
--- 		r : type_rotation;
--- 	begin
--- 		r := type_rotation'value (angle);
--- 		return r;
--- 
--- 		exception 
--- 			when constraint_error => 
--- 				log (ERROR, "Rotation " & angle & " outside range" & 
--- 					 to_string (type_rotation'first) &
--- 					 " .." & 
--- 					 to_string (type_rotation'last) &
--- 					 " (must be an integer) !",
--- 					 console => true
--- 					);
--- 				raise;
--- 
--- 			-- CS check for multiple of 90 degree
--- 			when system.assertions.assert_failure =>
--- 				log (ERROR, "Rotation " & angle & " is not a multiple of" &
--- 					 to_string (rotation => type_rotation'small) & " !",
--- 					 console => true
--- 					);
--- 				raise;
--- 				
--- 			when others =>
--- 				raise;
--- 	end to_angle;
--- 	
-
 
 
 	
@@ -89,8 +55,6 @@ package body et_coordinates_2 is
 		return boolean 
 	is
 		result : boolean := false;
-
-		use et_sheets;
 	begin
 		if left.sheet < right.sheet then
 			result := true;
@@ -129,13 +93,13 @@ package body et_coordinates_2 is
 		return result;
 	end;
 
+
+
 	
 	procedure move (
 		position	: in out type_object_position'class;
 		offset		: in type_object_position_relative) 
-	is
-		use et_sheets;
-	begin
+	is begin
 		position.set (AXIS_X, get_x (position) + get_x (offset));
 		position.set (AXIS_Y, get_y (position) + get_y (offset));
 
@@ -147,7 +111,7 @@ package body et_coordinates_2 is
 	
 	function to_position (
 		point 		: in type_vector_model;
-		sheet		: in et_sheets.type_sheet;
+		sheet		: in type_sheet;
 		rotation	: in type_rotation_model := zero_rotation)
 		return type_object_position 
 	is
@@ -159,10 +123,12 @@ package body et_coordinates_2 is
 		return p;
 	end;
 
+
+
 	
 	function to_position_relative (
 		point 		: in type_vector_model;
-		sheet		: in et_sheets.type_sheet_relative;
+		sheet		: in type_sheet_relative;
 		rotation	: in type_rotation_model := zero_rotation)
 		return type_object_position_relative 
 	is
@@ -176,12 +142,11 @@ package body et_coordinates_2 is
 
 
 	
+	
 	function to_string (
 		position : in type_object_position) 
 		return string
 	is
-		use et_sheets;
-		
 		coordinates_preamble_sheet : constant string := " pos "
 			& "(sheet"
 			& axis_separator
@@ -199,14 +164,13 @@ package body et_coordinates_2 is
 	end to_string;
 
 
+	
 
 
 	function get_position (
 		pos : in type_object_position) 
 		return string 
 	is
-		use et_sheets;
-		
 		function text return string is begin return 
 			space & keyword_x & to_string (get_x (pos.place)) 
 			& space & keyword_y & to_string (get_y (pos.place));
@@ -223,7 +187,7 @@ package body et_coordinates_2 is
 	
 	function get_sheet (
 		position	: in type_object_position) 
-		return et_sheets.type_sheet 
+		return type_sheet 
 	is begin
 		return position.sheet;
 	end get_sheet;
@@ -233,7 +197,7 @@ package body et_coordinates_2 is
 	
 	procedure set_sheet (
 		position	: in out type_object_position;
-		sheet		: in et_sheets.type_sheet) 
+		sheet		: in type_sheet) 
 	is begin
 		position.sheet := sheet;
 	end set_sheet;

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -35,16 +35,8 @@
 --
 --   history of changes:
 --
-with ada.text_io;				use ada.text_io;
+
 with ada.characters;			use ada.characters;
-with ada.characters.handling;	use ada.characters.handling;
-
-with ada.strings;				use ada.strings;
-with ada.strings.maps;			use ada.strings.maps;
-with ada.strings.bounded; 		use ada.strings.bounded;
-with ada.containers; 			use ada.containers;
-
-with ada.containers.doubly_linked_lists;
 
 with et_geometry_1;
 with et_geometry_1.et_polygons;
@@ -55,10 +47,13 @@ with et_geometry_2a.grid;
 with et_geometry_2a.path;
 with et_geometry_2a.contours;
 
-with et_sheets;
+with et_sheets;						use et_sheets;
+
+-- with system.assertions;
 
 
 package et_coordinates_2 is
+	
 -- 	pragma assertion_policy (check);
 
 
@@ -160,13 +155,6 @@ package et_coordinates_2 is
 
 
 	
--- SHEETS:
-	
-	
-	-- The whole schematic may have a total of x pages.
-	schematic_page_count_max : constant positive := 100;
-	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not used yet
-
 
 
 
@@ -192,14 +180,14 @@ package et_coordinates_2 is
 	
 	function to_position (
 		point 		: in type_vector_model;
-		sheet		: in et_sheets.type_sheet;
+		sheet		: in type_sheet;
 		rotation	: in type_rotation_model := zero_rotation)
 		return type_object_position;
 
 	
 	function to_position_relative (
 		point 		: in type_vector_model;
-		sheet		: in et_sheets.type_sheet_relative;
+		sheet		: in type_sheet_relative;
 		rotation	: in type_rotation_model := zero_rotation)		
 		return type_object_position_relative;
 	
@@ -222,13 +210,13 @@ package et_coordinates_2 is
 	-- Returns the sheet number of the given position:
 	function get_sheet (
 		position	: in type_object_position) 
-		return et_sheets.type_sheet;
+		return type_sheet;
 
 
 	-- Sets the sheet number in given position:
 	procedure set_sheet (
 		position	: in out type_object_position;
-		sheet		: in et_sheets.type_sheet);
+		sheet		: in type_sheet);
 
 
 
@@ -236,23 +224,23 @@ package et_coordinates_2 is
 	private 
 
 		type type_object_position is new pac_geometry_2.type_position with record
-			sheet : et_sheets.type_sheet := et_sheets.type_sheet'first;
+			sheet : type_sheet := type_sheet'first;
 		end record;
 
 		type type_object_position_relative is new pac_geometry_2.type_position with record
-			sheet : et_sheets.type_sheet_relative := 0;
+			sheet : type_sheet_relative := 0;
 		end record;
 
 		
 		zero_position : constant type_object_position := (
-			origin_zero_rotation with sheet => et_sheets.type_sheet'first);
+			origin_zero_rotation with sheet => type_sheet'first);
 
 		
 		-- A position in a schematic which is on the
 		-- last possible sheet and the greatest distance in
 		-- x and y from the origin:
 		greatest_position : constant type_object_position := (
-			far_upper_right_zero_rotation with sheet => et_sheets.type_sheet'last);
+			far_upper_right_zero_rotation with sheet => type_sheet'last);
 
 		
 end et_coordinates_2;
