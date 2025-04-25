@@ -78,7 +78,7 @@ package body et_device_model is
 		return type_rotated_placeholders
 	is
 		use pac_units_internal;
-		use et_coordinates_2.pac_geometry_sch;
+		use et_schematic_coordinates.pac_geometry_sch;
 
 		r : type_rotated_placeholders; -- to be returned
 	begin

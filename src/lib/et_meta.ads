@@ -50,7 +50,7 @@ with ada.containers.ordered_sets;
 
 with ada.calendar;				use ada.calendar;
 
-with et_coordinates_2;			use et_coordinates_2;
+with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_string_processing;
 with et_time;					use et_time;
 with et_logging;				use et_logging;

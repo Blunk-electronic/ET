@@ -174,7 +174,7 @@ package body et_schematic_ops is
 			log (text => 
 				"unit " &
 				to_string (pac_unit_positions.key (cursor)) & -- unit name
-				et_coordinates_2.to_string (position => pac_unit_positions.element (cursor)), -- sheet x y
+				et_schematic_coordinates.to_string (position => pac_unit_positions.element (cursor)), -- sheet x y
 				level => log_threshold);
 		end;
 		
@@ -633,7 +633,7 @@ package body et_schematic_ops is
 						unit_position := element (unit_cursor).position; -- unit pos. in schematic
 
 						port_cursor := find (ports, port_name);
-						port_position := et_coordinates_2.to_position (
+						port_position := et_schematic_coordinates.to_position (
 							sheet	=> get_sheet (unit_position), -- the sheet where the unit is
 							point	=> element (port_cursor).position -- default xy pos of port
 							);														 
@@ -1020,7 +1020,7 @@ package body et_schematic_ops is
 	
 	procedure rotate_ports (
 		ports	: in out pac_ports.map; -- the portlist
-		angle	: in et_coordinates_2.type_rotation_model)  -- 90
+		angle	: in et_schematic_coordinates.type_rotation_model)  -- 90
 	is
 		use pac_ports;
 

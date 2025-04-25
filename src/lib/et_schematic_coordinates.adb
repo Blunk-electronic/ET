@@ -46,7 +46,7 @@ with et_axes;							use et_axes;
 with et_keywords;						use et_keywords;
 
 
-package body et_coordinates_2 is
+package body et_schematic_coordinates is
 
 
 	
@@ -204,7 +204,7 @@ package body et_coordinates_2 is
 
 
 	
-end et_coordinates_2;
+end et_schematic_coordinates;
 
 -- Soli Deo Gloria
 

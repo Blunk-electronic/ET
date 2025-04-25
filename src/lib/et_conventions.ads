@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -46,7 +46,7 @@ with ada.containers.ordered_sets;
 
 with ada.directories;			use ada.directories;
 
-with et_coordinates_2;
+with et_schematic_coordinates;
 -- with et_import;
 with et_material;
 with et_device_partcode;		use et_device_partcode;
@@ -188,7 +188,7 @@ package et_conventions is
 -- 	-- Tests if module interconnections at net level make sense.
 -- 	-- NOTE: call AFTER modules have been imported !
 
-	subtype type_net_label_text_size is et_coordinates_2.type_distance_model range 1.0 .. 5.0; -- unit is mm
+	subtype type_net_label_text_size is et_schematic_coordinates.type_distance_model range 1.0 .. 5.0; -- unit is mm
 	net_label_text_size_default : constant type_net_label_text_size := 1.3;
 	
 	function to_net_label_text_size (text : in string) return type_net_label_text_size;
@@ -224,7 +224,7 @@ package et_conventions is
 	-- found, returns category UNKNOWN.
 
 -- 	function ports_in_net (
--- 		module 			: in et_coordinates_2.type_submodule_name.bounded_string;	-- led_matrix_2
+-- 		module 			: in et_schematic_coordinates.type_submodule_name.bounded_string;	-- led_matrix_2
 -- 		net				: in et_schematic.pac_net_name.bounded_string;			-- motor_on_off
 -- 		category		: in type_device_category;				-- netchanger, connector
 -- 		log_threshold	: in type_log_level)
@@ -234,7 +234,7 @@ package et_conventions is
 
 -- 	-- Handling routing information requires this type:
 -- 	type type_net is record
--- 		module	: et_coordinates_2.type_submodule_name.bounded_string;
+-- 		module	: et_schematic_coordinates.type_submodule_name.bounded_string;
 -- 		net		: et_schematic.pac_net_name.bounded_string;
 -- 	end record;
 -- 
@@ -386,8 +386,8 @@ package et_conventions is
 	-- Text sizes of various categories are collected in a map:
 	package type_text_sizes_schematic is new ordered_maps (
 		key_type		=> type_text_schematic,
-		element_type	=> et_coordinates_2.pac_geometry_2.type_distance_positive,
-		"="				=> et_coordinates_2."=");
+		element_type	=> et_schematic_coordinates.pac_geometry_2.type_distance_positive,
+		"="				=> et_schematic_coordinates."=");
 
 	
 	-- After reading the conventions file, text sizes are collected here:
@@ -402,7 +402,7 @@ package et_conventions is
 	-- specified in configuration file in section TEXT_SIZES_SCHEMATIC.
 	procedure check_schematic_text_size (
 		category 	: in type_text_schematic;
-		size		: in et_coordinates_2.pac_geometry_2.type_distance_positive);
+		size		: in et_schematic_coordinates.pac_geometry_2.type_distance_positive);
 
 
 

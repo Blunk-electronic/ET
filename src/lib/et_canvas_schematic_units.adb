@@ -732,7 +732,7 @@ package body et_canvas_schematic_units is
 		unit			: in out type_selected_unit;
 		log_threshold	: in type_log_level)
 	is
-		rotation : constant et_coordinates_2.type_rotation_model := 90.0;
+		rotation : constant et_schematic_coordinates.type_rotation_model := 90.0;
 
 		use pac_devices_sch;
 		use pac_units;
@@ -748,7 +748,7 @@ package body et_canvas_schematic_units is
 			device_cursor : pac_devices_sch.cursor;
 
 			position_of_unit : type_object_position;
-			rotation_before : et_coordinates_2.type_rotation_model;
+			rotation_before : et_schematic_coordinates.type_rotation_model;
 
 			ports_lib, ports_scratch : pac_ports.map;
 
@@ -1450,7 +1450,7 @@ package body et_canvas_schematic_units is
 		push_in : out boolean)
 	is
 		use glib;
-		--use et_coordinates_2.pac_geometry_sch;
+		--use et_schematic_coordinates.pac_geometry_sch;
 
 		--cp : type_vector_model := cursor_main.position;
 		--mp : type_vector_model := canvas.drawing_to_model (cursor_main.position);
@@ -1981,7 +1981,7 @@ package body et_canvas_schematic_units is
 		category		: in type_placeholder_meaning;
 		log_threshold	: in type_log_level)
 	is
-		rotation : constant et_coordinates_2.type_rotation_model := 90.0;
+		rotation : constant et_schematic_coordinates.type_rotation_model := 90.0;
 
 		use pac_devices_sch;
 		use pac_units;

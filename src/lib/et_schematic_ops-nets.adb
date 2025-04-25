@@ -2703,7 +2703,7 @@ package body et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		segment_position: in type_object_position; -- sheet/x/y
 		label_position	: in type_vector_model := origin; -- x/y
-		rotation		: in et_coordinates_2.type_rotation_model := zero_rotation; -- 0, 90, 180. Relevant for simple labels only.
+		rotation		: in et_schematic_coordinates.type_rotation_model := zero_rotation; -- 0, 90, 180. Relevant for simple labels only.
 		appearance 		: in type_net_label_appearance; -- simple/tag label
 		direction		: in type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level) 
@@ -2713,7 +2713,7 @@ package body et_schematic_ops.nets is
 
 		
 		function no_label_placed return string is begin
-			return (et_coordinates_2.to_string (position => segment_position) & " !" &
+			return (et_schematic_coordinates.to_string (position => segment_position) & " !" &
 				" No label placed ! Specify another position and try again.");
 		end;
 		
@@ -2964,7 +2964,7 @@ package body et_schematic_ops.nets is
 	begin -- delete_net_label
 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
 			" deleting net label at" &
-			et_coordinates_2.to_string (position => position),
+			et_schematic_coordinates.to_string (position => position),
 			level => log_threshold);
 		
 		log_indentation_up;

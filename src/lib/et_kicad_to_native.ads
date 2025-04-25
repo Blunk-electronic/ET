@@ -49,7 +49,7 @@ with ada.containers.ordered_sets;
 
 with et_net_names;					use et_net_names;
 with et_project_name;				use et_project_name;
-with et_coordinates_2;
+with et_schematic_coordinates;
 with et_logging;					use et_logging;
 with et_pcb;
 with et_pcb_coordinates_2;

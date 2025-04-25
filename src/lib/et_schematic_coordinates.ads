@@ -52,7 +52,7 @@ with et_sheets;						use et_sheets;
 -- with system.assertions;
 
 
-package et_coordinates_2 is
+package et_schematic_coordinates is
 	
 -- 	pragma assertion_policy (check);
 
@@ -243,7 +243,7 @@ package et_coordinates_2 is
 			far_upper_right_zero_rotation with sheet => type_sheet'last);
 
 		
-end et_coordinates_2;
+end et_schematic_coordinates;
 
 -- Soli Deo Gloria
 

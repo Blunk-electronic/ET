@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -613,7 +613,7 @@ package body et_kicad_libraries is
 	
 	function to_field_orientation (
 		text : in string) 
-		return et_coordinates_2.type_rotation_model 
+		return et_schematic_coordinates.type_rotation_model 
 	is
 	-- Converts a kicad field text orientation character (H/V) to type_rotation.
 	begin	
@@ -840,7 +840,7 @@ package body et_kicad_libraries is
 	
 	function to_degrees (
 		angle : in string) 
-		return et_coordinates_2.type_rotation_model 
+		return et_schematic_coordinates.type_rotation_model 
 	is
 	-- Converts a given angle as string to type_rotation.
 		
@@ -860,7 +860,7 @@ package body et_kicad_libraries is
 		a_tmp := type_angle_real (a_in); -- -3599.0 .. 3599.0
 
 		-- convert given angle to et_coordinates.type_rotation.
-		return et_coordinates_2.type_rotation_model (a_tmp / 10.0); -- -359.9 .. 359.9
+		return et_schematic_coordinates.type_rotation_model (a_tmp / 10.0); -- -359.9 .. 359.9
 		-- CS multiply by -1 ? If yes, remove - before all calls of this function.
 
 		-- CS: exception handler
@@ -1300,7 +1300,7 @@ package body et_kicad_libraries is
 
 			tmp_port_name_visible		: et_port_visibility.type_port_name_visible;
 			tmp_terminal_name_visible	: et_port_visibility.type_terminal_name_visible;
-			tmp_port_name_offset		: et_coordinates_2.type_distance_model; -- CS: rename to port_name_offset
+			tmp_port_name_offset		: et_schematic_coordinates.type_distance_model; -- CS: rename to port_name_offset
 			tmp_terminal_name			: et_terminals.pac_terminal_name.bounded_string;
 			
 			tmp_units_total		: type_units_total; -- see spec for range -- CS rename to units_total	
@@ -1605,7 +1605,7 @@ package body et_kicad_libraries is
 				--  #7 : line width (23)
 				--  #8 : fill style N/F/f no fill/foreground/background
 
-				use et_coordinates_2.pac_geometry_sch;
+				use et_schematic_coordinates.pac_geometry_sch;
 
 				scratch_point : type_vector_model;
 			begin
@@ -1655,7 +1655,7 @@ package body et_kicad_libraries is
 				-- #11..12 : start point (x/y)
 				-- #13..14 : end point (x/y)
 
-				use et_coordinates_2.pac_geometry_sch;
+				use et_schematic_coordinates.pac_geometry_sch;
 
 				scratch_point : type_vector_model;
 				
@@ -1796,7 +1796,7 @@ package body et_kicad_libraries is
 					return et_text.pac_text_content.to_bounded_string (t);
 				end to_content;
 
-				use et_coordinates_2.pac_geometry_sch;
+				use et_schematic_coordinates.pac_geometry_sch;
 				
 			begin -- to_text
 				text.rotation := snap (- to_degrees (f (line,2)));
@@ -1925,10 +1925,10 @@ package body et_kicad_libraries is
 
 				-- Translates orientation up/down/left/right (U/D/L/R) to rotation:
 				function to_rotation (orientation : in string) 
-					return et_coordinates_2.type_rotation_relative 
+					return et_schematic_coordinates.type_rotation_relative 
 				is
 					orient : constant character := orientation (orientation'first);
-					rot : et_coordinates_2.type_rotation_relative := 0.0;
+					rot : et_schematic_coordinates.type_rotation_relative := 0.0;
 				begin
 					case orient is
 						when 'D' => rot :=  90.0; -- to be connected with a net from above,
@@ -1943,7 +1943,7 @@ package body et_kicad_libraries is
 				end to_rotation;
 
 				use et_conventions;
-				use et_coordinates_2.pac_geometry_sch;
+				use et_schematic_coordinates.pac_geometry_sch;
 				
 			begin -- to_port
 				log_indentation_up;
@@ -1996,7 +1996,7 @@ package body et_kicad_libraries is
 				-- port name offset
 				port.port_name_offset := tmp_port_name_offset;
 
-				--log (text => text => et_coordinates_2.to_string (point => port.coordinates), level => 1);
+				--log (text => text => et_schematic_coordinates.to_string (point => port.coordinates), level => 1);
 
 				-- CS: log other port properties
 
@@ -2018,7 +2018,7 @@ package body et_kicad_libraries is
 			-- NOTE: The contextual validation takes place in procedure check_text_fields.
 				use et_text;
 				use et_text.pac_text_content;
-				use et_coordinates_2.pac_geometry_sch;
+				use et_schematic_coordinates.pac_geometry_sch;
 				
 				-- instantiate a text field as speficied by given parameter meaning
 				text : type_text_placeholder (meaning);

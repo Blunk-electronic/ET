@@ -49,7 +49,7 @@ with gtk.gentry;					use gtk.gentry;
 with ada.text_io;					use ada.text_io;
 with ada.containers;				use ada.containers;
 
-with et_coordinates_2;				use et_coordinates_2;
+with et_schematic_coordinates;		use et_schematic_coordinates;
 with et_generic_module;				use et_generic_module;
 with et_scripting;					use et_scripting;
 with et_modes.schematic;			use et_modes.schematic;
@@ -60,7 +60,7 @@ use et_canvas_schematic_2.pac_canvas;
 
 with et_canvas_schematic_units;		use et_canvas_schematic_units;
 
-with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders;		use et_device_placeholders;
 
 with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
 

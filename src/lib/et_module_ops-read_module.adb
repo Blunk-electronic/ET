@@ -40,7 +40,7 @@
 with ada.text_io;					use ada.text_io;
 with ada.containers;
 
-with et_coordinates_2;
+with et_schematic_coordinates;
 
 with et_section_headers;			use et_section_headers;
 with et_keywords;					use et_keywords;
@@ -442,9 +442,9 @@ is
 	function to_position (
 		line : in type_fields_of_line; -- "position sheet 3 x 44.5 y 53.5"
 		from : in type_field_count_positive)
-		return et_coordinates_2.type_object_position
+		return et_schematic_coordinates.type_object_position
 	is		
-		use et_coordinates_2;
+		use et_schematic_coordinates;
 		use pac_geometry_2;
 		use et_sheets;
 		use ada.containers;
@@ -487,7 +487,7 @@ is
 		from : in type_field_count_positive)
 		return et_submodules.type_submodule_size 
 	is
-		use et_coordinates_2.pac_geometry_2;
+		use et_schematic_coordinates.pac_geometry_2;
 		use ada.containers;
 		
 		size : et_submodules.type_submodule_size; -- to be returned
@@ -566,14 +566,14 @@ is
 	-- VARIABLES FOR TEMPORARILY STORAGE AND ASSOCIATED HOUSEKEEPING SUBPROGRAMS:
 
 	-- drawing grid
-	grid_schematic : et_coordinates_2.pac_grid.type_grid; -- CS rename to schematic_grid
+	grid_schematic : et_schematic_coordinates.pac_grid.type_grid; -- CS rename to schematic_grid
 	grid_board : et_pcb_coordinates_2.pac_grid.type_grid; -- CS rename to board_grid
 
 	
 	
 	procedure read_drawing_grid_schematic is 
 		use et_symbol_rw;
-		use et_coordinates_2.pac_grid;
+		use et_schematic_coordinates.pac_grid;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -799,7 +799,7 @@ is
 	
 	net_labels				: et_net_labels.pac_net_labels.list;
 	net_label 				: et_net_labels.type_net_label_base;
-	net_label_rotation		: et_coordinates_2.type_rotation_model := 0.0;
+	net_label_rotation		: et_schematic_coordinates.type_rotation_model := 0.0;
 	net_label_appearance	: et_net_labels.type_net_label_appearance := et_net_labels.type_net_label_appearance'first;
 
 	-- The net label direction is relevant if appearance is TAG:
@@ -808,7 +808,7 @@ is
 	
 	procedure read_label is
 		use et_symbol_rw;
-		use et_coordinates_2;	
+		use et_schematic_coordinates;	
 		use pac_geometry_2;
 		use et_net_labels;
 		kw : constant string := f (line, 1);
@@ -970,7 +970,7 @@ is
 	sheet_description_number	: et_sheets.type_sheet := et_sheets.type_sheet'first; -- 1, 2. 3, ...
 	sheet_description_text		: et_text.pac_text_content.bounded_string;		-- "voltage regulator"
 
-	-- CS frame_count_schematic		: et_coordinates_2.type_submodule_sheet_number := et_coordinates_2.type_submodule_sheet_number'first; -- 10 frames
+	-- CS frame_count_schematic		: et_schematic_coordinates.type_submodule_sheet_number := et_schematic_coordinates.type_submodule_sheet_number'first; -- 10 frames
 	frame_template_schematic	: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_1.frs
 	frame_template_board		: et_frames.pac_template_name.bounded_string;	-- $ET_FRAMES/drawing_frame_version_2.frb
 	frame_board_position		: et_frames.type_position; -- x 0 y 0
@@ -1019,7 +1019,7 @@ is
 	
 	-- Reads the description of a schematic sheet:
 	procedure read_sheet_description is
-		use et_coordinates_2;	
+		use et_schematic_coordinates;	
 		use et_frames;
 		use et_sheets;
 		kw : constant string := f (line, 1);
@@ -1057,17 +1057,17 @@ is
 	device_value			: et_device_value.pac_device_value.bounded_string; -- 470R
 	device_appearance		: et_units.type_appearance_schematic;
 	--device_unit				: et_schematic.type_unit;
-	--device_unit_rotation	: et_coordinates_2.type_rotation_model := geometry.zero_rotation;
+	--device_unit_rotation	: et_schematic_coordinates.type_rotation_model := geometry.zero_rotation;
 
 	device_unit_mirror		: type_mirror := MIRROR_NO;
 	device_unit_name		: et_unit_name.pac_unit_name.bounded_string; -- GPIO_BANK_1
-	device_unit_position	: et_coordinates_2.type_object_position; -- x,y,sheet,rotation
+	device_unit_position	: et_schematic_coordinates.type_object_position; -- x,y,sheet,rotation
 
 
 
 	
 	procedure read_unit is
-		use et_coordinates_2;	
+		use et_schematic_coordinates;	
 		use pac_geometry_2;
 		use et_units;
 		use et_unit_name;
@@ -1357,7 +1357,7 @@ is
 
 	-- temporarily placeholders of unit name (IC12), value (7400) and purpose (clock buffer)
 	unit_placeholder			: et_schematic_text.type_text_basic;
-	unit_placeholder_position	: et_coordinates_2.pac_geometry_2.type_vector_model;
+	unit_placeholder_position	: et_schematic_coordinates.pac_geometry_2.type_vector_model;
 	unit_placeholder_meaning	: et_device_placeholders.type_placeholder_meaning := et_device_placeholders.placeholder_meaning_default;
 	unit_placeholder_reference	: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.NAME);
 	unit_placeholder_value		: et_device_placeholders.symbols.type_text_placeholder (meaning => et_device_placeholders.VALUE);
@@ -1368,7 +1368,7 @@ is
 		use et_device_placeholders;
 		use et_schematic_text;
 		use et_symbol_rw;
-		use et_coordinates_2.pac_geometry_2;
+		use et_schematic_coordinates.pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
@@ -1499,7 +1499,7 @@ is
 
 	
 	procedure read_netchanger is
-		use et_coordinates_2;	
+		use et_schematic_coordinates;	
 		kw : constant string := f (line, 1);
 		use et_pcb_stack;
 		use et_pcb_rw;
@@ -2012,7 +2012,7 @@ is
 	
 	procedure read_schematic_text is
 		use et_schematic_text;
-		use et_coordinates_2;	
+		use et_schematic_coordinates;	
 		use pac_geometry_2;
 		kw : constant string := f (line, 1);
 	begin
@@ -2666,7 +2666,7 @@ is
 				is
 
 					procedure schematic is
-						use et_coordinates_2;
+						use et_schematic_coordinates;
 						use pac_geometry_2;
 						use pac_grid;
 					begin
@@ -2819,7 +2819,7 @@ is
 
 			
 			procedure add_sheet_description is 
-				use et_coordinates_2;	
+				use et_schematic_coordinates;	
 				use et_frames;
 				use et_sheets;
 				use pac_schematic_descriptions;
@@ -2926,7 +2926,7 @@ is
 
 			
 			procedure insert_unit is 
-				use et_coordinates_2;
+				use et_schematic_coordinates;
 				use et_symbols;
 				use et_units;
 				use et_unit_name;
@@ -2988,7 +2988,7 @@ is
 			-- for the reference (like R4), the value (like 100R) or the purpose (like "brightness control").
 			procedure build_unit_placeholder is
 				use et_device_placeholders;
-				use et_coordinates_2;	
+				use et_schematic_coordinates;	
 				use et_symbols;
 			begin
 				case unit_placeholder_meaning is
@@ -5034,7 +5034,7 @@ is
 
 						-- clean up for next label
 						net_label := (others => <>);
-						net_label_rotation := et_coordinates_2.pac_geometry_2.zero_rotation;
+						net_label_rotation := et_schematic_coordinates.pac_geometry_2.zero_rotation;
 						net_label_appearance := type_net_label_appearance'first;
 						net_label_direction := type_net_label_direction'first;
 
@@ -5147,7 +5147,7 @@ is
 						when SEC_STRANDS => -- CS clean up. separate procedures required 
 
 							declare
-								use et_coordinates_2;
+								use et_schematic_coordinates;
 								use pac_geometry_2;
 								use et_sheets;
 								use pac_net_name;

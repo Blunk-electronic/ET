@@ -45,7 +45,7 @@ with ada.containers.ordered_maps;
 
 with et_assembly_variants;		use et_assembly_variants;
 with et_module_instance;		use et_module_instance;
-with et_coordinates_2;			use et_coordinates_2;
+with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_port_names;				use et_port_names;
 with et_symbol_ports;			use et_symbol_ports;
 with et_device_name;			use et_device_name;

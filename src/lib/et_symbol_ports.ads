@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,7 +42,7 @@ with ada.containers; 					use ada.containers;
 with ada.containers.indefinite_ordered_maps;
 
 with et_schematic_text;					use et_schematic_text;
-with et_coordinates_2;					use et_coordinates_2;
+with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_port_names;
 with et_port_direction;					use et_port_direction;
 with et_port_visibility;				use et_port_visibility;
@@ -108,8 +108,8 @@ package et_symbol_ports is
 		position	: type_vector_model; -- this is the point of connection with a net
 		length		: type_port_length := port_length_default; 
 		
-		--rotation	: et_coordinates_2.type_rotation_model := 0.0; -- CS use type_rotation_model_relative ?
-		rotation	: et_coordinates_2.type_rotation_relative := 0.0;
+		--rotation	: et_schematic_coordinates.type_rotation_model := 0.0; -- CS use type_rotation_model_relative ?
+		rotation	: et_schematic_coordinates.type_rotation_relative := 0.0;
 		--  90.0 -- to be connected with a net from above,
 		-- -90.0 -- from below,
 		-- 180.0 -- from the left,

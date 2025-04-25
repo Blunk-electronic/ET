@@ -253,7 +253,7 @@ package et_schematic_ops.nets is
 		-- Whatever angle you provide here, the final roation will be either 0 or 90 degrees.
 		-- If the labe is a tag then this parameter has no meaning. The rotation of a tag
 		-- label will be automatically determined by the direction of the stub it will be attached to.
-		rotation		: in et_coordinates_2.type_rotation_model := zero_rotation;
+		rotation		: in et_schematic_coordinates.type_rotation_model := zero_rotation;
 		
 		appearance 		: in type_net_label_appearance; -- simple/tag label		
 

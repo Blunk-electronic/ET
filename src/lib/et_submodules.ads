@@ -54,7 +54,7 @@ with et_logging;				use et_logging;
 with et_net_names;				use et_net_names;
 with et_text;
 with et_primitive_objects;		use et_primitive_objects;
-with et_coordinates_2;			use et_coordinates_2;
+with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_pcb;
 with et_pcb_stack;
 with et_pcb_coordinates_2;
@@ -334,7 +334,7 @@ package et_submodules is
 -- 		internal	: type_port := (
 -- 						
 -- 						-- the position is somewhere in the submodule:
--- 						position	=> et_coordinates_2.type_coordinates_2, -- x,y,sheet
+-- 						position	=> et_schematic_coordinates.type_coordinates_2, -- x,y,sheet
 -- 						length		=> 5.0,
 -- 						rotation	=> 0.0);
 -- 		

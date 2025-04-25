@@ -224,7 +224,7 @@ package body et_symbol_rw is
 		
 		procedure write_circle (cursor : in pac_symbol_circles.cursor) is 
 			use et_primitive_objects;
-			use et_coordinates_2.pac_geometry_sch;
+			use et_schematic_coordinates.pac_geometry_sch;
 		begin
 			section_mark (section_circle, HEADER);
 			write (keyword => keyword_center, parameters => to_string (get_center (element (cursor)), FORMAT_2));

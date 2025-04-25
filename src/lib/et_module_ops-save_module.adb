@@ -36,7 +36,7 @@
 
 with ada.text_io;					use ada.text_io;
 
-with et_coordinates_2;
+with et_schematic_coordinates;
 
 with et_section_headers;			use et_section_headers;
 with et_keywords;					use et_keywords;
@@ -375,7 +375,7 @@ is
 	procedure query_drawing_grid is 
 
 		procedure schematic is
-			use et_coordinates_2;
+			use et_schematic_coordinates;
 			use pac_geometry_2;
 			use pac_grid;
 			use et_schematic_ops.grid;
@@ -495,7 +495,7 @@ is
 			net			: in type_net) 
 		is
 			use pac_strands;
-			use et_coordinates_2.pac_geometry_2;
+			use et_schematic_coordinates.pac_geometry_2;
 			
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
@@ -656,7 +656,7 @@ is
 			while strand_cursor /= pac_strands.no_element loop
 				section_mark (section_strand, HEADER);
 
-				write (keyword => keyword_position, parameters => et_coordinates_2.get_position (element (strand_cursor).position));
+				write (keyword => keyword_position, parameters => et_schematic_coordinates.get_position (element (strand_cursor).position));
 
 				query_element (strand_cursor, query_segments'access);
 				
@@ -901,13 +901,13 @@ is
 			device_name	: in type_device_name;
 			device		: in type_device_sch) 
 		is
-			use et_coordinates_2;
+			use et_schematic_coordinates;
 			use et_units;
 			use pac_units;
 						
 			unit_cursor : pac_units.cursor := device.units.first;
 
-			use et_coordinates_2.pac_geometry_2;
+			use et_schematic_coordinates.pac_geometry_2;
 
 			
 			procedure write_placeholder (
@@ -937,7 +937,7 @@ is
 				
 				write (
 					keyword => keyword_position, 
-					parameters => et_coordinates_2.get_position (element (unit_cursor).position)); -- position sheet 1 x 147.32 y 96.97
+					parameters => et_schematic_coordinates.get_position (element (unit_cursor).position)); -- position sheet 1 x 147.32 y 96.97
 				
 				write (
 					keyword => keyword_rotation, 
@@ -1202,7 +1202,7 @@ is
 	
 	-- writes the netchangers in the module file
 	procedure query_netchangers is
-		use et_coordinates_2;	
+		use et_schematic_coordinates;	
 		use et_submodules;
 		use pac_netchangers;
 
@@ -1253,7 +1253,7 @@ is
 
 				
 				procedure query_sheet (s : in pac_schematic_descriptions.cursor) is
-					use et_coordinates_2;	
+					use et_schematic_coordinates;	
 					use et_sheets;
 				begin
 					section_mark (section_sheet, HEADER);
@@ -1340,7 +1340,7 @@ is
 
 	
 	procedure query_submodules is		
-		use et_coordinates_2.pac_geometry_2;
+		use et_schematic_coordinates.pac_geometry_2;
 		use et_submodules;
 		use pac_submodules;
 		use et_net_names;
@@ -1362,7 +1362,7 @@ is
 
 		
 		procedure write (submodule_cursor : in pac_submodules.cursor) is 
-			use et_coordinates_2.pac_geometry_2;
+			use et_schematic_coordinates.pac_geometry_2;
 			use et_pcb_rw;
 			use et_module_instance;
 		begin
@@ -1370,7 +1370,7 @@ is
 			write (keyword => keyword_name, parameters => to_string (key (submodule_cursor))); -- name stepper_driver_1
 			write (keyword => keyword_file, parameters => pac_submodule_path.to_string (element (submodule_cursor).file)); -- file $ET_TEMPLATES/motor_driver.mod
 
-			write (keyword => keyword_position, parameters => et_coordinates_2.get_position (element (submodule_cursor).position));
+			write (keyword => keyword_position, parameters => et_schematic_coordinates.get_position (element (submodule_cursor).position));
 			write (keyword => keyword_size, parameters => 
 				space & keyword_x & to_string (element (submodule_cursor).size.x) &
 				space & keyword_y & to_string (element (submodule_cursor).size.y)); -- size x 50 y 70
@@ -1400,8 +1400,8 @@ is
 	procedure query_texts is	
 		use et_schematic_text;
 		use pac_text_schematic;
-		use et_coordinates_2;
-		use et_coordinates_2.pac_geometry_2;
+		use et_schematic_coordinates;
+		use et_schematic_coordinates.pac_geometry_2;
 		use et_schematic_text;
 		use pac_texts;
 		

@@ -74,7 +74,7 @@ package body et_kicad.schematic is
 
 	-- Here we append a sheet name to the path_to_sheet.
 	-- CS: unify with procedure delete_last_module_name_from_path
-	--procedure append_name_of_parent_module_to_path (submodule : in et_coordinates_2.type_submodule_name.bounded_string) is
+	--procedure append_name_of_parent_module_to_path (submodule : in et_schematic_coordinates.type_submodule_name.bounded_string) is
 	procedure append_sheet_name_to_path (sheet : in type_submodule_name.bounded_string) is
 		use et_string_processing;
 		use ada.directories;
@@ -150,7 +150,7 @@ package body et_kicad.schematic is
 	function orientation_of_unit (
 		name	: in pac_unit_name.bounded_string; -- the unit being inquired
 		units	: in type_units_schematic.map) -- the list of units
-		return et_coordinates_2.type_rotation_model 
+		return et_schematic_coordinates.type_rotation_model 
 	is
 		unit_cursor : type_units_schematic.cursor;
 	begin
@@ -676,7 +676,7 @@ package body et_kicad.schematic is
 		
 	end to_text_meaning;
 								 
-	function to_field_orientation (text : in string) return et_coordinates_2.type_rotation_model is
+	function to_field_orientation (text : in string) return et_schematic_coordinates.type_rotation_model is
 	-- Converts a kicad field text orientation character (H/V) to type_rotation_model.
 	begin	
 		case type_field_orientation'value (text) is
@@ -904,7 +904,7 @@ package body et_kicad.schematic is
 		
 	end to_alternative_representation;
 
-	function to_degrees (angle : in string) return et_coordinates_2.type_rotation_model is
+	function to_degrees (angle : in string) return et_schematic_coordinates.type_rotation_model is
 	-- Converts a given angle as string to type_rotation_model.
 		
 		a_in  : type_angle; -- unit is tenth of degrees -3599 .. 3599
@@ -922,8 +922,8 @@ package body et_kicad.schematic is
 		-- Convert given angle to a real type
 		a_tmp := type_angle_real (a_in); -- -3599.0 .. 3599.0
 
-		-- convert given angle to et_coordinates_2.type_rotation_model.
-		return et_coordinates_2.type_rotation_model (a_tmp / 10.0); -- -359.9 .. 359.9
+		-- convert given angle to et_schematic_coordinates.type_rotation_model.
+		return et_schematic_coordinates.type_rotation_model (a_tmp / 10.0); -- -359.9 .. 359.9
 		-- CS multiply by -1 ? If yes, remove - before all calls of this function.
 
 		-- CS: exception handler
@@ -1274,30 +1274,30 @@ package body et_kicad.schematic is
 					-- in order to get something like "driver.GND" :
 
 -- 					net_name := pac_net_name.to_bounded_string (
--- 						et_coordinates_2.to_string (et_coordinates_2.path (element (strand).coordinates), top_module => false)
--- 							& et_coordinates_2.to_string (et_coordinates_2.module (element (strand).coordinates))
--- 							& et_coordinates_2.hierarchy_separator & et_schematic.to_string (element (strand).name));
+-- 						et_schematic_coordinates.to_string (et_schematic_coordinates.path (element (strand).coordinates), top_module => false)
+-- 							& et_schematic_coordinates.to_string (et_schematic_coordinates.module (element (strand).coordinates))
+-- 							& et_schematic_coordinates.hierarchy_separator & et_schematic.to_string (element (strand).name));
 
--- 					if ada.directories.base_name (to_string (top_level_schematic)) = to_string (et_coordinates_2.module (element (strand).coordinates)) then -- CS: make function and use it in procedure write_strands too
+-- 					if ada.directories.base_name (to_string (top_level_schematic)) = to_string (et_schematic_coordinates.module (element (strand).coordinates)) then -- CS: make function and use it in procedure write_strands too
 -- 						net_name := pac_net_name.to_bounded_string (hierarchy_separator 
 -- 							& et_schematic.to_string (element (strand).name));
 -- 					else
 -- 						net_name := pac_net_name.to_bounded_string (
--- 							et_coordinates_2.to_string (et_coordinates_2.path (element (strand).coordinates))
--- 							& et_coordinates_2.to_string (et_coordinates_2.module (element (strand).coordinates))
--- 							& et_coordinates_2.hierarchy_separator & et_schematic.to_string (element (strand).name));
+-- 							et_schematic_coordinates.to_string (et_schematic_coordinates.path (element (strand).coordinates))
+-- 							& et_schematic_coordinates.to_string (et_schematic_coordinates.module (element (strand).coordinates))
+-- 							& et_schematic_coordinates.hierarchy_separator & et_schematic.to_string (element (strand).name));
 -- 					end if;
 
 					-- if strand is in top module form a net name like "/MASTER_RESET"
 					if type_path_to_submodule.is_empty (path (element (strand).position)) then
 						net_name := to_net_name (
-							et_coordinates_2.hierarchy_separator
+							et_schematic_coordinates.hierarchy_separator
 							& to_string (element (strand).name));
 
 					else -- strand is in any submodule. form a net name like "/SENSOR/RESET"
 						net_name := to_net_name (
 							to_string (path (element (strand).position))
-							& et_coordinates_2.hierarchy_separator 
+							& et_schematic_coordinates.hierarchy_separator 
 							& to_string (element (strand).name));
 					end if;
 				
@@ -1922,10 +1922,10 @@ package body et_kicad.schematic is
 	
 	-- Converts the rotaton of a label or a text to a relative rotation.
 	function to_relative_rotation (text_in : in string) 
-		return et_coordinates_2.type_rotation_relative is
+		return et_schematic_coordinates.type_rotation_relative is
 	-- CS: use a dedicated type for input parameter.
 		o_in	: type_label_orientation := type_label_orientation'value (text_in);
-		o_out	: et_coordinates_2.type_rotation_relative;
+		o_out	: et_schematic_coordinates.type_rotation_relative;
 	begin
 		case o_in is
 			when 0 => o_out := 180.0;
@@ -3470,7 +3470,7 @@ package body et_kicad.schematic is
 -- 	function purpose ( -- CS move to et_schematic or et_project
 -- 	-- Returns the purpose of the given component in the given module.
 -- 	-- If no purpose specified for the component, an empty string is returned.
--- 		module_name		: in et_coordinates_2.type_submodule_name.bounded_string; -- led_matrix_2
+-- 		module_name		: in et_schematic_coordinates.type_submodule_name.bounded_string; -- led_matrix_2
 -- 		reference		: in type_device_name; -- X701
 -- 		log_threshold	: in type_log_level)
 -- 		return et_libraries.type_component_purpose.bounded_string is
@@ -3484,7 +3484,7 @@ package body et_kicad.schematic is
 -- 	
 -- 		procedure query_components (
 -- 		-- Searches the components of the module for the given reference.
--- 			module_name : in et_coordinates_2.type_submodule_name.bounded_string;
+-- 			module_name : in et_schematic_coordinates.type_submodule_name.bounded_string;
 -- 			module		: in type_module) is
 -- 			use type_components_schematic;
 -- 			component_cursor : type_components_schematic.cursor := module.components.first;
@@ -3507,7 +3507,7 @@ package body et_kicad.schematic is
 -- 		end query_components;
 -- 			
 -- 	begin -- purpose
--- 		log (text => "module " & et_coordinates_2.to_string (module_name) 
+-- 		log (text => "module " & et_schematic_coordinates.to_string (module_name) 
 -- 			 & " looking up purpose of " 
 -- 			 & et_libraries.to_string (reference) & " ...", level => log_threshold);
 -- 		log_indentation_up;
@@ -3796,7 +3796,7 @@ package body et_kicad.schematic is
 			end query_strands;
 		
 		begin -- another_segment_here
-			--log (text => "probing for other segment at " & to_string (port.coordinates, et_coordinates_2.module));
+			--log (text => "probing for other segment at " & to_string (port.coordinates, et_schematic_coordinates.module));
 		
 			type_modules.query_element (
 				position	=> module_cursor,
@@ -4265,8 +4265,8 @@ package body et_kicad.schematic is
 							-- and exit prematurely with "open" set to true.
 							while flag_cursor /= type_no_connection_flags.no_element loop
 
--- 								log (text => "probing port at         " & to_string (port_coordinates, et_coordinates_2.module));
--- 								log (text => "probing no-connect-flag " & to_string (element (flag_cursor), et_coordinates_2.module));
+-- 								log (text => "probing port at         " & to_string (port_coordinates, et_schematic_coordinates.module));
+-- 								log (text => "probing no-connect-flag " & to_string (element (flag_cursor), et_schematic_coordinates.module));
 
 								-- CS: to improve performance, test if flag has not been processed yet
 								-- But first implement a test that raises error if more than one port 
@@ -5771,7 +5771,7 @@ package body et_kicad.schematic is
 				end query_strands;
 			
 			begin -- segment_here
-				--log (text => "probing for other segment at " & to_string (port.coordinates, et_coordinates_2.module));
+				--log (text => "probing for other segment at " & to_string (port.coordinates, et_schematic_coordinates.module));
 			
 				type_modules.query_element (
 					position	=> module_cursor,
@@ -6360,14 +6360,14 @@ package body et_kicad.schematic is
 	
 	-- Returns the length of the given net segment.
 	function length (segment : in type_net_segment_base) 
-		return et_coordinates_2.type_distance_model 
+		return et_schematic_coordinates.type_distance_model 
 	is
 		len : type_distance_model;
 		--use et_string_processing;
 	begin
 		len := to_distance (get_distance_total (
 			get_point (segment.coordinates_start), get_point (segment.coordinates_end)));
-		--log (text => "segment length " & et_coordinates_2.to_string (len) & "mm", level => 3);
+		--log (text => "segment length " & et_schematic_coordinates.to_string (len) & "mm", level => 3);
 		return len;
 	end length;
 

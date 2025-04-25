@@ -49,7 +49,7 @@ with ada.containers;           			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_ordered_maps;
 
-with et_coordinates_2;
+with et_schematic_coordinates;
 with et_assembly_variants;				use et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
 

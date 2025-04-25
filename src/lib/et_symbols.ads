@@ -47,7 +47,7 @@ with et_schematic_text;					use et_schematic_text;
 with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
-with et_coordinates_2;					use et_coordinates_2;
+with et_schematic_coordinates;			use et_schematic_coordinates;
 
 with et_text;
 with et_fonts;							use et_fonts;
@@ -292,7 +292,7 @@ package et_symbols is
 	-- rotating of placeholders of a symbol.
 	procedure rotate (
 		phs			: in out type_rotated_placeholders;
-		rotation	: in et_coordinates_2.type_rotation_model); -- the rotation of the unit
+		rotation	: in et_schematic_coordinates.type_rotation_model); -- the rotation of the unit
 
 	
 	-- Use this function to adopt placeholder position and rotation 

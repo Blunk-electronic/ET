@@ -35,8 +35,8 @@
 --   history of changes:
 --
 
-with et_coordinates_2;			use et_coordinates_2;
-use et_coordinates_2.pac_geometry_2;
+with et_schematic_coordinates;			use et_schematic_coordinates;
+use et_schematic_coordinates.pac_geometry_2;
 
 
 package et_schematic_rw is

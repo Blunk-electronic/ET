@@ -528,7 +528,7 @@ package body et_canvas_schematic_2 is
 
 		-- Advances to next grid density up or down:
 		procedure set_grid is
-			use et_coordinates_2.pac_grid;
+			use et_schematic_coordinates.pac_grid;
 		begin
 			case key is
 				when GDK_Shift_L =>
@@ -1080,7 +1080,7 @@ package body et_canvas_schematic_2 is
 	
 	procedure reset_grid_and_cursor	is 
 	begin
-		-- CS et_coordinates_2.pac_grid.reset_grid_density (grid);
+		-- CS et_schematic_coordinates.pac_grid.reset_grid_density (grid);
 		-- CS update_grid_display;
 		
 		move_cursor (snap_to_grid (get_cursor_position));

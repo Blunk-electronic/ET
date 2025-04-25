@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -44,7 +44,7 @@ with ada.containers.ordered_maps;
 
 with et_string_processing;
 with et_logging;				use et_logging;
-with et_coordinates_2;
+with et_schematic_coordinates;
 with et_text;
 with et_frames;					use et_frames;
 

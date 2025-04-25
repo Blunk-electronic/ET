@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -1407,16 +1407,16 @@ is
 		end to_direction;
 
 		
-		function to_orientation (or_in : in string) return et_coordinates_2.type_rotation_model is
+		function to_orientation (or_in : in string) return et_schematic_coordinates.type_rotation_model is
 		-- Converts a string to type_rotation
-			result : et_coordinates_2.type_rotation_model;
+			result : et_schematic_coordinates.type_rotation_model;
 			orientation : type_sheet_port_orientation; -- see et_kicad.ads
 		begin
 			orientation := type_sheet_port_orientation'value (or_in);
 
 			case orientation is
-				when R => result := et_coordinates_2.type_rotation_model (0.0);
-				when L => result := et_coordinates_2.type_rotation_model (180.0);
+				when R => result := et_schematic_coordinates.type_rotation_model (0.0);
+				when L => result := et_schematic_coordinates.type_rotation_model (180.0);
 			end case;
 			
 			return result;
@@ -1862,7 +1862,7 @@ is
 		-- "ERC32 Test Board" is read here. It contains the actual text.
 		
 		note : type_text; -- the text note being built
-		rotation : et_coordinates_2.type_rotation_relative;
+		rotation : et_schematic_coordinates.type_rotation_relative;
 
 		procedure warn is begin 
 			log (WARNING, " text note at " 
@@ -2009,7 +2009,7 @@ is
 		alternative_references		: type_alternative_references.list;
 		unit_name					: pac_unit_name.bounded_string; -- A, B, PWR, CT, IO-BANK1 ...
 		unit_position				: et_kicad_coordinates.type_position;
-		orientation					: et_coordinates_2.type_rotation_model;
+		orientation					: et_schematic_coordinates.type_rotation_model;
 		mirror						: type_mirror;
 		timestamp					: type_timestamp; -- 59F202F2
 		alternative_representation	: type_de_morgan_representation;

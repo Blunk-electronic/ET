@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -51,8 +51,8 @@ with et_logging;				use et_logging;
 with et_axes;					use et_axes;
 with et_sheets;					use et_sheets;
 with et_mirroring;				use et_mirroring;
-with et_coordinates_2;			use et_coordinates_2;
-use et_coordinates_2.pac_geometry_2;
+with et_schematic_coordinates;	use et_schematic_coordinates;
+use et_schematic_coordinates.pac_geometry_2;
 
 
 package et_kicad_coordinates is

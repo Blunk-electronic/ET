@@ -41,7 +41,7 @@ with ada.containers;    		        use ada.containers;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 
-with et_coordinates_2;					use et_coordinates_2;
+with et_schematic_coordinates;			use et_schematic_coordinates;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_unit_name;						use et_unit_name;

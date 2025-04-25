@@ -44,7 +44,7 @@ with ada.containers.multiway_trees;
 
 with et_module_names;			use et_module_names;
 with et_module_instance;		use et_module_instance;
-with et_coordinates_2;			use et_coordinates_2;
+with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_string_processing;		use et_string_processing;
 
 with et_device_name;			use et_device_name;

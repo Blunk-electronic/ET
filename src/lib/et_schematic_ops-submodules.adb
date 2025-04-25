@@ -2768,7 +2768,7 @@ package body et_schematic_ops.submodules is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		coordinates		: in type_coordinates; -- relative/absolute
-		rotation		: in et_coordinates_2.type_rotation_model; -- 90
+		rotation		: in et_schematic_coordinates.type_rotation_model; -- 90
 		log_threshold	: in type_log_level) 
 	is
 		use et_submodules;
@@ -2781,7 +2781,7 @@ package body et_schematic_ops.submodules is
 		is
 			cursor : pac_netchangers.cursor;
 			location : type_object_position;
-			rotation : et_coordinates_2.type_rotation_model;
+			rotation : et_schematic_coordinates.type_rotation_model;
 			ports_old : type_netchanger_ports;
 			ports_new : type_netchanger_ports;
 
@@ -3737,7 +3737,7 @@ package body et_schematic_ops.submodules is
 		log (text => "module " & to_string (module_name) &
 			 " copying submodule instance " & enclose_in_quotes (to_string (instance_origin)) &
 			 " to instance " & enclose_in_quotes (to_string (instance_new)) &
-			" at" & et_coordinates_2.to_string (position => destination), level => log_threshold);
+			" at" & et_schematic_coordinates.to_string (position => destination), level => log_threshold);
 
 		-- locate module
 		module_cursor := locate_module (module_name);

@@ -41,7 +41,7 @@
 with ada.containers;
 with ada.containers.ordered_maps;
 
-with et_coordinates_2;
+with et_schematic_coordinates;
 with et_schematic_text;
 with et_nets;
 with et_netlists;
@@ -81,7 +81,7 @@ package et_generic_module is
 		-- schematic frame template and descriptions of individual schematic frames:
 		frames			: et_frames.type_frames_schematic;
 		
-		grid			: et_coordinates_2.pac_grid.type_grid; -- the drawing grid of the schematic
+		grid			: et_schematic_coordinates.pac_grid.type_grid; -- the drawing grid of the schematic
 
 		board_available	: type_board_available := FALSE;
 

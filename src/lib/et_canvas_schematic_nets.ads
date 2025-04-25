@@ -47,9 +47,9 @@ with et_net_names;					use et_net_names;
 with et_canvas_messages;			use et_canvas_messages;
 with et_canvas_tool;				use et_canvas_tool;
 with et_sheets;						use et_sheets;
-with et_coordinates_2;				use et_coordinates_2;
-use et_coordinates_2.pac_geometry_2;
-use et_coordinates_2.pac_path_and_bend;
+with et_schematic_coordinates;		use et_schematic_coordinates;
+use et_schematic_coordinates.pac_geometry_2;
+use et_schematic_coordinates.pac_path_and_bend;
 
 with et_text;
 with et_generic_module;				use et_generic_module;

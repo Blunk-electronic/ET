@@ -45,7 +45,7 @@ procedure fetch_unit (
 	destination		: in type_object_position; -- sheet/x/y/rotation
 	log_threshold	: in type_log_level) 
 is
-	use et_coordinates_2;
+	use et_schematic_coordinates;
 	
 	module_cursor : pac_generic_modules.cursor; -- points to the targeted module
 

@@ -46,7 +46,7 @@ with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 
-with et_coordinates_2;			use et_coordinates_2;
+with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_logging;				use et_logging;
 with et_port_direction;			use et_port_direction;
 with et_port_names;				use et_port_names;

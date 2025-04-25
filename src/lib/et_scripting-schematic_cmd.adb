@@ -46,7 +46,7 @@ with et_schematic_ops.grid;
 with et_schematic_ops.submodules;
 with et_board_ops.grid;
 
-with et_coordinates_2;
+with et_schematic_coordinates;
 with et_module_instance;				use et_module_instance;
 with et_unit_name;						use et_unit_name;
 with et_units;
@@ -87,7 +87,7 @@ is
 	use et_schematic_ops.units;
 	use et_schematic_ops.netlists;
 
-	use et_coordinates_2;
+	use et_schematic_coordinates;
 	use pac_geometry_2;
 
 	use pac_text_schematic;

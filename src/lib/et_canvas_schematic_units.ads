@@ -43,8 +43,8 @@ with ada.containers.doubly_linked_lists;
 
 with gtk.window;					use gtk.window;
 
-with et_coordinates_2;				use et_coordinates_2;
-use et_coordinates_2.pac_geometry_2;
+with et_schematic_coordinates;		use et_schematic_coordinates;
+use et_schematic_coordinates.pac_geometry_2;
 
 with et_generic_module;				use et_generic_module;
 with et_symbols;					use et_symbols;

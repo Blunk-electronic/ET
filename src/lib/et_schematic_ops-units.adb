@@ -232,7 +232,7 @@ package body et_schematic_ops.units is
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit) 
 				is
-					use et_coordinates_2;
+					use et_schematic_coordinates;
 				begin
 					case coordinates is
 						when ABSOLUTE =>
@@ -275,7 +275,7 @@ package body et_schematic_ops.units is
 					-- log old unit position
 					log_unit_positions (position_of_unit_old, log_threshold + 1); -- there is only one unit
 -- 					log (text => "position before " & 
--- 						 et_coordinates_2.to_string (
+-- 						 et_schematic_coordinates.to_string (
 -- 							type_ports.first_element (positions)), level => log_threshold + 1);
 
 					update_element (
@@ -397,7 +397,7 @@ package body et_schematic_ops.units is
 				procedure query_strands (
 					net_name	: in pac_net_name.bounded_string;
 					net			: in out type_net) is
-					use et_coordinates_2;
+					use et_schematic_coordinates;
 					
 					use pac_strands;
 					strand_cursor : pac_strands.cursor;
@@ -830,7 +830,7 @@ package body et_schematic_ops.units is
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit) 
 				is
-					use et_coordinates_2;
+					use et_schematic_coordinates;
 
 					-- Load the current sheet number where the unit is.
 					-- NOTE: The sheet number does not change in drag operations.
@@ -984,7 +984,7 @@ package body et_schematic_ops.units is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
-		rotation		: in et_coordinates_2.type_rotation_model; -- 90
+		rotation		: in et_schematic_coordinates.type_rotation_model; -- 90
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -998,7 +998,7 @@ package body et_schematic_ops.units is
 			device_cursor : pac_devices_sch.cursor;
 
 			position_of_unit : type_object_position;
-			rotation_before : et_coordinates_2.type_rotation_model;
+			rotation_before : et_schematic_coordinates.type_rotation_model;
 
 			ports_lib, ports_scratch : pac_ports.map;
 
