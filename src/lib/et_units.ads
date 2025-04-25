@@ -67,7 +67,7 @@ package et_units is
 	-- A unit is a subset of a device.
 	-- Placeholders are available if the device appears in both schematic and layout:
 	type type_unit (appearance : type_appearance_schematic) is record
-		position	: et_coordinates_2.type_position; -- incl. rotation and sheet number
+		position	: type_object_position; -- incl. rotation and sheet number
 		mirror		: type_mirror := MIRROR_NO;
 		status		: type_object_status;
 		case appearance is
@@ -173,7 +173,7 @@ package et_units is
 	
 	package pac_unit_positions is new ordered_maps (
 		key_type		=> pac_unit_name.bounded_string, -- A, B, IO_BANK_1
-		element_type	=> et_coordinates_2.type_position); -- sheet, x, y
+		element_type	=> type_object_position); -- sheet, x, y
 
 
 	

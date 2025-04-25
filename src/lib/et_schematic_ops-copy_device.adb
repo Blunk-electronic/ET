@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -48,7 +48,7 @@ separate (et_schematic_ops)
 procedure copy_device (
 	module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 	device_name		: in type_device_name; -- IC45
-	destination		: in et_coordinates_2.type_position; -- sheet/x/y/rotation
+	destination		: in type_object_position; -- sheet/x/y/rotation
 	log_threshold	: in type_log_level)
 is
 	module_cursor : pac_generic_modules.cursor; -- points to the module being modified

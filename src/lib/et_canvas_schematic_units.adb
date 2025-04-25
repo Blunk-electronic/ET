@@ -103,7 +103,7 @@ package body et_canvas_schematic_units is
 	
 	function collect_units (
 		module			: in pac_generic_modules.cursor;
-		place			: in et_coordinates_2.type_position; -- sheet/x/y
+		place			: in type_object_position; -- sheet/x/y
 		zone			: in type_zone_radius; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_units.list
@@ -642,7 +642,7 @@ package body et_canvas_schematic_units is
 
 		-- The initial position of the selected unit before 
 		-- the drag:
-		unit_position : et_coordinates_2.type_position;
+		unit_position : type_object_position;
 		
 		procedure get_ports (su : in type_selected_unit) is 
 			use pac_units;
@@ -747,7 +747,7 @@ package body et_canvas_schematic_units is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
 
-			position_of_unit : et_coordinates_2.type_position;
+			position_of_unit : type_object_position;
 			rotation_before : et_coordinates_2.type_rotation_model;
 
 			ports_lib, ports_scratch : pac_ports.map;
@@ -1798,7 +1798,7 @@ package body et_canvas_schematic_units is
 	
 	function collect_placeholders (
 		module			: in pac_generic_modules.cursor;
-		place			: in et_coordinates_2.type_position; -- sheet/x/y
+		place			: in type_object_position; -- sheet/x/y
 		zone			: in type_zone_radius; -- the circular area around the place
 		category		: in type_placeholder_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level)
@@ -1828,7 +1828,7 @@ package body et_canvas_schematic_units is
 
 				
 				procedure test_placeholder_position is 
-					pos_abs : et_coordinates_2.type_position;
+					pos_abs : type_object_position;
 				begin
 					-- The current placeholder_position is relative to the unit position.
 					-- It must be moved by the unit position in order to get the absolute position:

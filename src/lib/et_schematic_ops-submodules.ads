@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -97,7 +97,7 @@ package et_schematic_ops.submodules is
 		submod_name		: in pac_module_instance_name.bounded_string; -- MOT_DRV_3
 		port_name		: in pac_net_name.bounded_string; -- RESET
 		log_threshold	: in type_log_level)
-		return et_coordinates_2.type_position;
+		return type_object_position;
 
 	
 	
@@ -170,14 +170,14 @@ package et_schematic_ops.submodules is
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		port			: in et_submodules.type_netchanger_port_name; -- SLAVE/MASTER
 		log_threshold	: in type_log_level)
-		return et_coordinates_2.type_position;
+		return type_object_position;
 
 	
 
 	-- Adds a netchanger to the schematic.
 	procedure add_netchanger (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		place			: in et_coordinates_2.type_position; -- sheet/x/y
+		place			: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 	
 
@@ -232,7 +232,7 @@ package et_schematic_ops.submodules is
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		file			: in et_submodules.pac_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		position		: in et_coordinates_2.type_position; -- sheet, lower left corner x/y 
+		position		: in type_object_position; -- sheet, lower left corner x/y 
 		size			: in et_submodules.type_submodule_size; -- the size of the box in x and y
 		log_threshold	: in type_log_level);
 
@@ -275,7 +275,7 @@ package et_schematic_ops.submodules is
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance_origin	: in pac_module_instance_name.bounded_string; -- OSC1
 		instance_new	: in pac_module_instance_name.bounded_string; -- CLOCK_GENERATOR
-		destination		: in et_coordinates_2.type_position; -- sheet/x/y
+		destination		: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
 	

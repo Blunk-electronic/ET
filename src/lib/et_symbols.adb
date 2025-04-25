@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -214,7 +214,7 @@ package body et_symbols is
 	-- their own origin according to rotation given by destination:
 	function rotate_placeholders (
 		symbol_cursor	: in pac_symbols.cursor;
-		destination		: in et_coordinates_2.type_position)
+		destination		: in type_object_position)
 		return type_rotated_placeholders
 	is
 		use pac_symbols;

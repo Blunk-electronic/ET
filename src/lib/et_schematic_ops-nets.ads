@@ -72,7 +72,7 @@ package et_schematic_ops.nets is
 		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
 		scope			: in type_net_scope; -- strand, sheet, everywhere
-		place			: in et_coordinates_2.type_position; -- sheet/x/y
+		place			: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
 
@@ -87,7 +87,7 @@ package et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in type_net_scope; -- strand, sheet, everywhere
-		place			: in et_coordinates_2.type_position; -- sheet/x/y
+		place			: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
 
@@ -97,7 +97,7 @@ package et_schematic_ops.nets is
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		place			: in et_coordinates_2.type_position; -- sheet/x/y
+		place			: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
 
@@ -110,7 +110,7 @@ package et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_net_segment;
 		zone			: in type_line_zone;
-		point_of_attack	: in et_coordinates_2.type_position;
+		point_of_attack	: in type_object_position;
 		log_threshold	: in type_log_level) 
 		return boolean;
 
@@ -124,7 +124,7 @@ package et_schematic_ops.nets is
 	procedure drag_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		point_of_attack	: in et_coordinates_2.type_position; -- sheet/x/y
+		point_of_attack	: in type_object_position; -- sheet/x/y
 		coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
@@ -161,7 +161,7 @@ package et_schematic_ops.nets is
 	-- Returns lists of nets that cross the given place.
 	function get_nets_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in et_coordinates_2.type_position;
+		place			: in type_object_position;
 		log_threshold	: in type_log_level)
 		return pac_net_names.list;
 
@@ -194,7 +194,7 @@ package et_schematic_ops.nets is
 	procedure insert_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		start_point		: in et_coordinates_2.type_position; -- sheet/x/y
+		start_point		: in type_object_position; -- sheet/x/y
 		end_point		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
@@ -223,7 +223,7 @@ package et_schematic_ops.nets is
 	-- If there is no net segment at the given position, no junction is placed and warning issued.
 	procedure place_junction (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in et_coordinates_2.type_position; -- sheet/x/y, rotation doesn't matter
+		place			: in type_object_position; -- sheet/x/y, rotation doesn't matter
 		log_threshold	: in type_log_level);
 
 -- CS
@@ -233,7 +233,7 @@ package et_schematic_ops.nets is
 -- 	-- is split in two new segments with the junction between them.
 -- 	-- If there is no net segment at the given position, no junction is placed and warning issued.
 -- 		module_cursor	: in pac_generic_modules.cursor;
--- 		place			: in et_coordinates_2.type_position; -- sheet/x/y, rotation doesn't matter
+-- 		place			: in type_object_position; -- sheet/x/y, rotation doesn't matter
 -- 		log_threshold	: in type_log_level);
 
 	
@@ -243,7 +243,7 @@ package et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 
 		-- The reference point at the segment:
-		segment_position: in et_coordinates_2.type_position; -- sheet/x/y
+		segment_position: in type_object_position; -- sheet/x/y
 
 		-- The position of the label relative to segment_position:
 		label_position	: in type_vector_model := origin; -- x/y
@@ -266,7 +266,7 @@ package et_schematic_ops.nets is
 	-- Deletes a label.
 	procedure delete_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in et_coordinates_2.type_position; -- sheet/x/y
+		position		: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
 	-- CS procedure move_net_label
@@ -277,7 +277,7 @@ package et_schematic_ops.nets is
 	function query_stub (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		position		: in et_coordinates_2.type_position; -- sheet/x/y
+		position		: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level)
 		return type_stub;
 

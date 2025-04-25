@@ -84,7 +84,7 @@ package et_nets is
 -- JUNCTIONS:
 	
 	procedure junction_in_sloping_segment (
-		point : in et_coordinates_2.type_position);
+		point : in type_object_position);
 	
 	
 	-- A net junction is where segments and ports meet each other.	
@@ -284,7 +284,7 @@ package et_nets is
 	type type_strand is record
 	-- NOTE: ET does not provide a name for a strand.
 	-- As a strand is part of a net, there is no need for individual strand names.
-		position	: et_coordinates_2.type_position; -- sheet and lowest x/y, rotation doesn't matter -> always zero
+		position	: type_object_position; -- sheet and lowest x/y, rotation doesn't matter -> always zero
 		segments	: pac_net_segments.list;
 	end record;		
 
@@ -332,7 +332,7 @@ package et_nets is
 	-- Returns true if the given point is on the given strand:
 	function on_strand (
 		strand_cursor	: in pac_strands.cursor;
-		place			: in et_coordinates_2.type_position)
+		place			: in type_object_position)
 		return boolean;
 	
 
@@ -352,7 +352,7 @@ package et_nets is
 	-- If no strand found then the return is no_element:
 	function get_strand (
 		net		: in type_net;
-		place	: in et_coordinates_2.type_position)
+		place	: in type_object_position)
 		return pac_strands.cursor;
 	
 

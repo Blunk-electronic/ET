@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -61,7 +61,7 @@ package et_numbering is
 
 
 	package pac_devices is new ordered_maps (
-		key_type		=> type_position, -- sheet/x/y
+		key_type		=> type_object_position, -- sheet/x/y
 		element_type	=> type_device);
 
 	type type_index_range is record

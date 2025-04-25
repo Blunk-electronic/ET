@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -125,7 +125,7 @@ package body et_submodules is
 	
 	procedure move_ports (
 		ports	: in out pac_submodule_ports.map; -- the portlist
-		offset	: in et_coordinates_2.type_position) -- the offset (only x/y matters)
+		offset	: in type_object_position) -- the offset (only x/y matters)
 	is
 
 		procedure move (

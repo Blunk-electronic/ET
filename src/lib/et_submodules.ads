@@ -198,14 +198,14 @@ package et_submodules is
 	-- Moves the given submodule ports by the given offset.
 	procedure move_ports (
 		ports	: in out pac_submodule_ports.map; -- the portlist
-		offset	: in et_coordinates_2.type_position); -- the offset (only x/y matters)
+		offset	: in type_object_position); -- the offset (only x/y matters)
 
 	
 	-- THIS IS THE GRAPHICAL REPRESENTATION OF A SUBMODULE ->
 	-- THE RECTANGULAR BOX AT THE SHEET WHERE THE SUBMODULE IS INSTANTIATED.
 	type type_submodule is record
 		file				: pac_submodule_path.bounded_string; -- $ET_TEMPLATES/motor_driver.mod
-		position		    : et_coordinates_2.type_position; -- the lower left corner
+		position		    : type_object_position; -- the lower left corner
 		size				: type_submodule_size; -- CS default ?
 		position_in_board	: et_pcb_coordinates_2.pac_geometry_2.type_position := et_pcb_coordinates_2.pac_geometry_2.origin_zero_rotation;
 		view_mode			: type_submodule_view_mode := ORIGIN;
@@ -296,7 +296,7 @@ package et_submodules is
 
 	
 	type type_netchanger is record
-		position_sch	: et_coordinates_2.type_position; -- x,y,sheet,rotation
+		position_sch	: type_object_position; -- x,y,sheet,rotation
 		--symbol			: type_netchanger_symbol; -- CS for visualisation only
 		
 		position_brd	: et_pcb_coordinates_2.pac_geometry_2.type_vector_model; -- x,y

@@ -442,7 +442,7 @@ is
 	function to_position (
 		line : in type_fields_of_line; -- "position sheet 3 x 44.5 y 53.5"
 		from : in type_field_count_positive)
-		return et_coordinates_2.type_position
+		return et_coordinates_2.type_object_position
 	is		
 		use et_coordinates_2;
 		use pac_geometry_2;
@@ -450,7 +450,7 @@ is
 		use ada.containers;
 		use et_schematic_rw;
 		
-		point : et_coordinates_2.type_position; -- to be returned
+		point : type_object_position; -- to be returned
 		place : type_field_count_positive := from; -- the field being read from given line
 
 		-- CS: flags to detect missing sheet, x or y
@@ -1061,7 +1061,7 @@ is
 
 	device_unit_mirror		: type_mirror := MIRROR_NO;
 	device_unit_name		: et_unit_name.pac_unit_name.bounded_string; -- GPIO_BANK_1
-	device_unit_position	: et_coordinates_2.type_position; -- x,y,sheet,rotation
+	device_unit_position	: et_coordinates_2.type_object_position; -- x,y,sheet,rotation
 
 
 
@@ -2022,7 +2022,7 @@ is
 
 			declare
 				-- extract position of schematic_text starting at field 2
-				pos : constant et_coordinates_2.type_position := to_position (line, 2);
+				pos : constant type_object_position := to_position (line, 2);
 			begin
 				schematic_text.position := pos.place;
 				schematic_text.sheet := get_sheet (pos);

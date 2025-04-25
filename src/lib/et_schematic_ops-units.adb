@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -216,7 +216,7 @@ package body et_schematic_ops.units is
 			-- There will be only one unit in this container.
 			position_of_unit_old : pac_unit_positions.map;
 
-			position_of_unit_new : et_coordinates_2.type_position;
+			position_of_unit_new : type_object_position;
 
 			ports : pac_ports.map;
 			
@@ -569,7 +569,7 @@ package body et_schematic_ops.units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in pac_unit_name.bounded_string;
-		location 		: in et_coordinates_2.type_position; -- only sheet number matters
+		location 		: in type_object_position; -- only sheet number matters
 		unit_ports		: in pac_ports.map;
 		log_threshold	: in type_log_level)
 	is
@@ -578,7 +578,7 @@ package body et_schematic_ops.units is
 
 		
 		procedure test_point (port_cursor : in pac_ports.cursor) is
-			point : et_coordinates_2.type_position; -- the point
+			point : type_object_position; -- the point
 			ports : type_ports;
 			port : type_device_port;
 			use pac_submodule_ports;
@@ -649,7 +649,7 @@ package body et_schematic_ops.units is
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name;
 		unit_name		: in pac_unit_name.bounded_string;
-		location 		: in et_coordinates_2.type_position; -- only sheet number matters
+		location 		: in type_object_position; -- only sheet number matters
 		unit_ports		: in pac_ports.map;
 		log_threshold	: in type_log_level)
 		return boolean
@@ -662,7 +662,7 @@ package body et_schematic_ops.units is
 
 		
 		procedure test_point (port_cursor : in pac_ports.cursor) is
-			point : et_coordinates_2.type_position; -- the point
+			point : type_object_position; -- the point
 			ports : type_ports;
 			port : type_device_port;
 			use pac_submodule_ports;
@@ -795,8 +795,8 @@ package body et_schematic_ops.units is
 			-- temporarily storage of unit coordinates.
 			-- There will be only one unit in this container.
 			--position_of_unit_old : pac_unit_positions.map;
-			position_of_unit_old : et_coordinates_2.type_position;	
-			position_of_unit_new : et_coordinates_2.type_position;
+			position_of_unit_old : type_object_position;	
+			position_of_unit_new : type_object_position;
 
 			ports, ports_old, ports_new : pac_ports.map;
 
@@ -997,7 +997,7 @@ package body et_schematic_ops.units is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
 
-			position_of_unit : et_coordinates_2.type_position;
+			position_of_unit : type_object_position;
 			rotation_before : et_coordinates_2.type_rotation_model;
 
 			ports_lib, ports_scratch : pac_ports.map;

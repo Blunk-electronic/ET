@@ -1080,7 +1080,7 @@ is
 
 		strand_cursor : pac_strands.cursor;
 		
-		pos : et_coordinates_2.type_position;
+		pos : type_object_position;
 	begin
 		if net_cursor /= pac_nets.no_element then
 			
@@ -1140,7 +1140,7 @@ is
 
 
 
-	procedure place_net_label is 
+	procedure place_net_label is
 		use et_sheets;
 	begin
 		case cmd_field_count is

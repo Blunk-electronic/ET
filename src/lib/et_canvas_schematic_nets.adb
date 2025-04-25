@@ -146,7 +146,7 @@ package body et_canvas_schematic_nets is
 	end selected_net;
 
 	
-	function get_strand_position return et_coordinates_2.type_position is
+	function get_strand_position return type_object_position is
 		ss : constant type_selected_segment := element (selected_segment);
 	begin
 		return element (ss.strand).position;
@@ -254,7 +254,7 @@ package body et_canvas_schematic_nets is
 	
 	function collect_segments (
 		module			: in pac_generic_modules.cursor;
-		place			: in et_coordinates_2.type_position; -- sheet/x/y
+		place			: in type_object_position; -- sheet/x/y
 		zone			: in type_zone_radius := type_zone_radius'first; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_segments.list
@@ -575,8 +575,8 @@ package body et_canvas_schematic_nets is
 		segment			: in type_net_segment;
 		log_threshold	: in type_log_level)
 	is 
-		start_point : constant et_coordinates_2.type_position := to_position (segment.start_point, sheet);
-		end_point	: constant et_coordinates_2.type_position := to_position (segment.end_point, sheet);
+		start_point : constant type_object_position := to_position (segment.start_point, sheet);
+		end_point	: constant type_object_position := to_position (segment.end_point, sheet);
 
 		use et_schematic_ops.nets;
 		segments_at_start_point : pac_proposed_segments.list;
@@ -813,7 +813,7 @@ package body et_canvas_schematic_nets is
 		-- CS redraw;
 		end clean_up;
 
-		position : et_coordinates_2.type_position;
+		position : type_object_position;
 		
 	begin -- property_entered
 		case noun is
@@ -1068,7 +1068,7 @@ package body et_canvas_schematic_nets is
 		procedure finalize_drag is
 			net_name : pac_net_name.bounded_string;
 			
-			point_of_attack : et_coordinates_2.type_position := 
+			point_of_attack : type_object_position := 
 				to_position (object_point_of_attack, active_sheet);
 		begin
 			log (text => "finalizing drag ...", level => log_threshold + 1);
@@ -1157,7 +1157,7 @@ package body et_canvas_schematic_nets is
 	-- inside the catch zone around a place.
 	function collect_labels (
 		module			: in pac_generic_modules.cursor;
-		place			: in et_coordinates_2.type_position; -- sheet/x/y
+		place			: in type_object_position; -- sheet/x/y
 		zone			: in type_zone_radius; -- the circular area around the place
 		category		: in type_label_category := BOTH; -- default is: collect all kinds of labels
 		log_threshold	: in type_log_level)

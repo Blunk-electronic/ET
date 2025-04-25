@@ -85,7 +85,7 @@ package body et_coordinates_2 is
 
 	
 	
-	function "<" (left, right : in type_position) 
+	function "<" (left, right : in type_object_position) 
 		return boolean 
 	is
 		result : boolean := false;
@@ -131,8 +131,8 @@ package body et_coordinates_2 is
 
 	
 	procedure move (
-		position	: in out type_position'class;
-		offset		: in type_position_relative) 
+		position	: in out type_object_position'class;
+		offset		: in type_object_position_relative) 
 	is
 		use et_sheets;
 	begin
@@ -149,9 +149,9 @@ package body et_coordinates_2 is
 		point 		: in type_vector_model;
 		sheet		: in et_sheets.type_sheet;
 		rotation	: in type_rotation_model := zero_rotation)
-		return type_position 
+		return type_object_position 
 	is
-		p : type_position;
+		p : type_object_position;
 	begin
 		set (p, point);
 		set_sheet (p, sheet);
@@ -164,9 +164,9 @@ package body et_coordinates_2 is
 		point 		: in type_vector_model;
 		sheet		: in et_sheets.type_sheet_relative;
 		rotation	: in type_rotation_model := zero_rotation)
-		return type_position_relative 
+		return type_object_position_relative 
 	is
-		p : type_position_relative;
+		p : type_object_position_relative;
 	begin
 		set (p, point);
 		p.sheet := sheet;
@@ -177,7 +177,7 @@ package body et_coordinates_2 is
 
 	
 	function to_string (
-		position : in type_position) 
+		position : in type_object_position) 
 		return string
 	is
 		use et_sheets;
@@ -202,7 +202,7 @@ package body et_coordinates_2 is
 
 
 	function get_position (
-		pos : in type_position) 
+		pos : in type_object_position) 
 		return string 
 	is
 		use et_sheets;
@@ -222,7 +222,7 @@ package body et_coordinates_2 is
 	
 	
 	function get_sheet (
-		position	: in type_position) 
+		position	: in type_object_position) 
 		return et_sheets.type_sheet 
 	is begin
 		return position.sheet;
@@ -232,7 +232,7 @@ package body et_coordinates_2 is
 	
 	
 	procedure set_sheet (
-		position	: in out type_position;
+		position	: in out type_object_position;
 		sheet		: in et_sheets.type_sheet) 
 	is begin
 		position.sheet := sheet;

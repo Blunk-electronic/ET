@@ -102,7 +102,7 @@ package et_canvas_schematic_units is
 	-- Collects all units in the vicinity of the given point:
 	function collect_units (
 		module			: in pac_generic_modules.cursor;
-		place			: in et_coordinates_2.type_position; -- sheet/x/y
+		place			: in type_object_position; -- sheet/x/y
 		zone			: in type_zone_radius; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_units.list;

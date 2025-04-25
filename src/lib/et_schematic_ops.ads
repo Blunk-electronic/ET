@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -153,7 +153,7 @@ package et_schematic_ops is
 	-- Moves the given unit ports by given offset.
 	procedure move_ports ( -- CS move to et_symbols ?
 		ports	: in out pac_ports.map; -- the portlist
-		offset	: in et_coordinates_2.type_position); -- the offset (only x/y matters)
+		offset	: in type_object_position); -- the offset (only x/y matters)
 
 	
 	-- Inserts the given device ports in the net segments.
@@ -191,7 +191,7 @@ package et_schematic_ops is
 		device_name		: in type_device_name; -- IC34
 		port_name		: in pac_port_name.bounded_string; -- CE
 		log_threshold	: in type_log_level)
-		return et_coordinates_2.type_position;
+		return type_object_position;
 
 
 	
@@ -274,7 +274,7 @@ package et_schematic_ops is
 	-- Returns lists of device, netchanger and submodule ports at the given place.
 	function ports_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in et_coordinates_2.type_position;
+		place			: in type_object_position;
 		log_threshold	: in type_log_level)		
 		return type_ports;	
 	
@@ -282,13 +282,13 @@ package et_schematic_ops is
 	-- Returns true if at given place a net segment starts or ends.
 	function net_segment_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in et_coordinates_2.type_position)
+		place			: in type_object_position)
 		return boolean;
 	
 
 	procedure dragging_not_possible (
 		port 		: in string;
-		position	: in et_coordinates_2.type_position);
+		position	: in type_object_position);
 
 	
 	-- Renames a device.
@@ -485,7 +485,7 @@ package et_schematic_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
-		destination		: in et_coordinates_2.type_position; -- sheet/x/y/rotation
+		destination		: in type_object_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level);
 
 	-- CS procedure add_device with explicit device name like R12
@@ -497,7 +497,7 @@ package et_schematic_ops is
 	procedure copy_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		destination		: in et_coordinates_2.type_position; -- sheet/x/y
+		destination		: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
 
@@ -575,7 +575,7 @@ package et_schematic_ops is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
 		unit	: in pac_unit_name.bounded_string)
-		return et_coordinates_2.type_position;
+		return type_object_position;
 
 
 	
@@ -584,7 +584,7 @@ package et_schematic_ops is
 	function get_position (
 		device	: in pac_devices_sch.cursor; -- R2
 		unit	: in pac_units.cursor)
-		return et_coordinates_2.type_position;
+		return type_object_position;
 
 	
 	
@@ -612,7 +612,7 @@ package et_schematic_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
-		destination		: in et_coordinates_2.type_position; -- sheet/x/y/rotation
+		destination		: in type_object_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level);
 
 	-- CS procedure invoke_unit that takes module cursor and model cursor
@@ -719,7 +719,7 @@ package et_schematic_ops is
 	-- The result of a unit query is of this type:
 	type type_unit_query (exists : boolean := false) is record
 		case exists is
-			when true => position : et_coordinates_2.type_position; -- x/y, rotation, sheet
+			when true => position : type_object_position; -- x/y, rotation, sheet
 			when false => null;
 		end case;
 	end record;

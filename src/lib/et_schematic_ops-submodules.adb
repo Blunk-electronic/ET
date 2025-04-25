@@ -414,9 +414,9 @@ package body et_schematic_ops.submodules is
 		submod_name		: in pac_module_instance_name.bounded_string; -- MOT_DRV_3
 		port_name		: in pac_net_name.bounded_string; -- RESET
 		log_threshold	: in type_log_level)
-		return et_coordinates_2.type_position
+		return type_object_position
 	is
-		port_position : et_coordinates_2.type_position; -- to be returned		
+		port_position : type_object_position; -- to be returned		
 		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being inquired
 
@@ -428,7 +428,7 @@ package body et_schematic_ops.submodules is
 			use et_submodules;			
 
 			submod_cursor : pac_submodules.cursor;
-			submod_position : et_coordinates_2.type_position;
+			submod_position : type_object_position;
 
 			
 			procedure query_ports (
@@ -527,7 +527,7 @@ package body et_schematic_ops.submodules is
 		module			: in pac_generic_modules.cursor;		-- the module
 		instance		: in pac_module_instance_name.bounded_string; -- OSC
 		port			: in pac_net_name.bounded_string; -- clock_output
-		position		: in et_coordinates_2.type_position; -- the port position
+		position		: in type_object_position; -- the port position
 		log_threshold	: in type_log_level) 
 	is
 
@@ -681,10 +681,10 @@ package body et_schematic_ops.submodules is
 		use et_submodules;
 
 		-- The place where the box is in the parent module:
-		submodule_position : et_coordinates_2.type_position;
+		submodule_position : type_object_position;
 
 		-- Handling the absolute position of the port requires this variable:
-		port_position : et_coordinates_2.type_position;
+		port_position : type_object_position;
 		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
@@ -825,7 +825,7 @@ package body et_schematic_ops.submodules is
 	procedure delete_submodule_port (
 		module			: in pac_generic_modules.cursor;		-- the module
 		port			: in type_submodule_port; -- OSC1 / clock_output
-		position		: in et_coordinates_2.type_position; -- the submodule position (only sheet matters)
+		position		: in type_object_position; -- the submodule position (only sheet matters)
 		log_threshold	: in type_log_level) 
 	is
 
@@ -974,7 +974,7 @@ package body et_schematic_ops.submodules is
 		use et_submodules;
 
 		-- The place where the box is in the parent module:
-		submodule_position : et_coordinates_2.type_position;
+		submodule_position : type_object_position;
 		
 		procedure query_submodules (
 			module_name	: in pac_module_name.bounded_string;
@@ -1067,10 +1067,10 @@ package body et_schematic_ops.submodules is
 		use et_submodules;
 
 		-- The place where the box is in the parent module:
-		submodule_position : et_coordinates_2.type_position;
+		submodule_position : type_object_position;
 
 		-- Handling the absolute position of the port requires this variable:
-		port_position : et_coordinates_2.type_position;
+		port_position : type_object_position;
 		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
@@ -1238,7 +1238,7 @@ package body et_schematic_ops.submodules is
 		module_cursor	: in pac_generic_modules.cursor;
 		instance		: in pac_module_instance_name.bounded_string;
 		port_name		: in pac_net_name.bounded_string;
-		point 			: in et_coordinates_2.type_position;
+		point 			: in type_object_position;
 		log_threshold	: in type_log_level) 
 	is 
 		ports : type_ports;
@@ -1498,8 +1498,8 @@ package body et_schematic_ops.submodules is
 	procedure drag_net_segments (
 		module			: in pac_generic_modules.cursor;				-- the module
 		port			: in type_submodule_port;	-- instance and port name
-		pos_before		: in et_coordinates_2.type_position;	-- the old port position
-		pos_after		: in et_coordinates_2.type_position;	-- the new port position
+		pos_before		: in type_object_position;	-- the old port position
+		pos_after		: in type_object_position;	-- the new port position
 		log_threshold	: in type_log_level) 
 	is
 		procedure query_nets (
@@ -1671,11 +1671,11 @@ package body et_schematic_ops.submodules is
 		use et_submodules;
 
 		-- The place where the box is in the parent module:
-		submodule_position : et_coordinates_2.type_position;
+		submodule_position : type_object_position;
 
 		-- Handling the absolute position of the port requires these variables:
-		port_position_before : et_coordinates_2.type_position;
-		port_position_after  : et_coordinates_2.type_position;
+		port_position_before : type_object_position;
+		port_position_after  : type_object_position;
 		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 	
@@ -2102,10 +2102,10 @@ package body et_schematic_ops.submodules is
 		index			: in et_submodules.type_netchanger_id; -- 1,2,3,...
 		port			: in et_submodules.type_netchanger_port_name; -- SLAVE/MASTER
 		log_threshold	: in type_log_level)
-		return et_coordinates_2.type_position
+		return type_object_position
 	is
 		use et_submodules;
-		port_position : et_coordinates_2.type_position; -- to be returned		
+		port_position : type_object_position; -- to be returned		
 		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being inquired
 
@@ -2114,7 +2114,7 @@ package body et_schematic_ops.submodules is
 			module		: in type_generic_module) 
 		is
 			nc_cursor : pac_netchangers.cursor;
-			nc_position : et_coordinates_2.type_position;
+			nc_position : type_object_position;
 			port_xy : type_vector_model;
 
 			use pac_netchangers;
@@ -2183,7 +2183,7 @@ package body et_schematic_ops.submodules is
 	
 	procedure add_netchanger (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		place			: in et_coordinates_2.type_position; -- sheet/x/y/rotation
+		place			: in type_object_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module
@@ -2274,13 +2274,13 @@ package body et_schematic_ops.submodules is
 		-- are movable. 
 		-- The criteria for movement are: no device, no submodule ports there.
 		-- The ports allowed here are the ports-to-be-dragged itself.
-			location 			: in et_coordinates_2.type_position; -- only sheet number matters
+			location 			: in type_object_position; -- only sheet number matters
 			netchanger_ports	: in et_submodules.type_netchanger_ports) -- x/y of master and slave port
 		is			
 
 			
 			procedure test_point (
-				point		: in et_coordinates_2.type_position; -- sheet/x/y -- the point to be probed
+				point		: in type_object_position; -- sheet/x/y -- the point to be probed
 				port_name	: in et_submodules.type_netchanger_port_name) -- master/slave
 			is 
 				use et_netlists;
@@ -2363,7 +2363,7 @@ package body et_schematic_ops.submodules is
 			module		: in out type_generic_module) 
 		is
 			cursor : pac_netchangers.cursor;
-			location : et_coordinates_2.type_position;
+			location : type_object_position;
 			ports_old : type_netchanger_ports;
 			ports_new : type_netchanger_ports;
 			
@@ -2641,7 +2641,7 @@ package body et_schematic_ops.submodules is
 			module		: in out type_generic_module) 
 		is
 			cursor : pac_netchangers.cursor;
-			location : et_coordinates_2.type_position;
+			location : type_object_position;
 			ports : type_netchanger_ports;
 			
 			procedure move (
@@ -2780,7 +2780,7 @@ package body et_schematic_ops.submodules is
 			module		: in out type_generic_module) 
 		is
 			cursor : pac_netchangers.cursor;
-			location : et_coordinates_2.type_position;
+			location : type_object_position;
 			rotation : et_coordinates_2.type_rotation_model;
 			ports_old : type_netchanger_ports;
 			ports_new : type_netchanger_ports;
@@ -2907,7 +2907,7 @@ package body et_schematic_ops.submodules is
 			module		: in out type_generic_module)
 		is
 			cursor : pac_netchangers.cursor;
-			location : et_coordinates_2.type_position;
+			location : type_object_position;
 
 			use pac_netchangers;
 		begin
@@ -2978,7 +2978,7 @@ package body et_schematic_ops.submodules is
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		file			: in et_submodules.pac_submodule_path.bounded_string; -- the file name of the submodule like templates/oscillator.mod
 		instance		: in pac_module_instance_name.bounded_string; -- OSC1
-		position		: in et_coordinates_2.type_position; -- sheet, lower left corner x/y 
+		position		: in type_object_position; -- sheet, lower left corner x/y 
 		size			: in et_submodules.type_submodule_size; -- the size of the box in x and y
 		log_threshold	: in type_log_level) 
 	is
@@ -3077,7 +3077,7 @@ package body et_schematic_ops.submodules is
 	procedure delete_ports (
 		module_cursor	: in pac_generic_modules.cursor;					-- the module
 		instance		: in pac_module_instance_name.bounded_string; -- the submodule instance
-		position		: in et_coordinates_2.type_position; 		-- the location in the schematic (only sheet matters)
+		position		: in type_object_position; 		-- the location in the schematic (only sheet matters)
 		log_threshold	: in type_log_level)
 	is
 		
@@ -3198,7 +3198,7 @@ package body et_schematic_ops.submodules is
 		use et_submodules;
 
 		-- The place where the box is in the parent module:
-		submodule_position : et_coordinates_2.type_position;
+		submodule_position : type_object_position;
 		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
@@ -3264,8 +3264,8 @@ package body et_schematic_ops.submodules is
 		use et_submodules;
 
 		-- The place where the box is in the parent module BEFORE and AFTER the move:
-		submodule_position_before : et_coordinates_2.type_position;
-		submodule_position_after : et_coordinates_2.type_position;		
+		submodule_position_before : type_object_position;
+		submodule_position_after : type_object_position;		
 		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
@@ -3310,7 +3310,7 @@ package body et_schematic_ops.submodules is
 			procedure insert_ports is 
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor := ports.first;
-				position : et_coordinates_2.type_position;
+				position : type_object_position;
 			begin
 				while port_cursor /= et_submodules.pac_submodule_ports.no_element loop
 
@@ -3424,8 +3424,8 @@ package body et_schematic_ops.submodules is
 		-- This type describes a submodule port before and after the drag operation:
 		type type_drag is record
 			name	: pac_net_name.bounded_string;
-			before	: et_coordinates_2.type_position;
-			after 	: et_coordinates_2.type_position;
+			before	: type_object_position;
+			after 	: type_object_position;
 		end record;
 
 		-- Since there are lots of submodule ports we store the drag points in a simple list:
@@ -3631,7 +3631,7 @@ package body et_schematic_ops.submodules is
 		module_name		: in pac_module_name.bounded_string; -- the parent module like motor_driver (without extension *.mod)
 		instance_origin	: in pac_module_instance_name.bounded_string; -- OSC1
 		instance_new	: in pac_module_instance_name.bounded_string; -- CLOCK_GENERATOR
-		destination		: in et_coordinates_2.type_position; -- sheet/x/y
+		destination		: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level) 
 	is
 		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
@@ -3657,7 +3657,7 @@ package body et_schematic_ops.submodules is
 			procedure insert_ports is 
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor := ports.first;
-				position : et_coordinates_2.type_position;
+				position : type_object_position;
 			begin
 				while port_cursor /= et_submodules.pac_submodule_ports.no_element loop
 
@@ -3779,7 +3779,7 @@ package body et_schematic_ops.submodules is
 			-- from the submodule position.
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor := submodule_old.ports.first;
-				position : et_coordinates_2.type_position;
+				position : type_object_position;
 			begin
 				while port_cursor /= et_submodules.pac_submodule_ports.no_element loop
 

@@ -104,7 +104,7 @@ package et_canvas_schematic_nets is
 
 	
 	-- Returns the position of the strand of the selected segment:
-	function get_strand_position return et_coordinates_2.type_position;
+	function get_strand_position return type_object_position;
 
 	
 	-- Clears the list of proposed segments.
@@ -153,7 +153,7 @@ package et_canvas_schematic_nets is
 	-- Collects all net segments in the vicinity of the given point:
 	function collect_segments (
 		module			: in pac_generic_modules.cursor;
-		place			: in et_coordinates_2.type_position; -- sheet/x/y
+		place			: in type_object_position; -- sheet/x/y
 		zone			: in type_zone_radius := type_zone_radius'first; -- the circular area around the place
 		log_threshold	: in type_log_level)
 		return pac_proposed_segments.list;

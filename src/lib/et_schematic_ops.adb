@@ -149,7 +149,7 @@ package body et_schematic_ops is
 	
 	procedure dragging_not_possible (
 		port 		: in string;
-		position	: in et_coordinates_2.type_position) is
+		position	: in type_object_position) is
 	begin
 		log (ERROR, "port " & enclose_in_quotes (port) &
 			 " is directly connected with other ports at" &
@@ -561,7 +561,7 @@ package body et_schematic_ops is
 	
 	procedure move_ports (
 		ports	: in out pac_ports.map; -- the portlist
-		offset	: in et_coordinates_2.type_position) -- the offset (only x/y matters)
+		offset	: in type_object_position) -- the offset (only x/y matters)
 	is
 		use pac_ports;
 
@@ -591,9 +591,9 @@ package body et_schematic_ops is
 		device_name		: in type_device_name; -- IC34
 		port_name		: in pac_port_name.bounded_string; -- CE
 		log_threshold	: in type_log_level)
-		return et_coordinates_2.type_position 
+		return type_object_position 
 	is
-		port_position : et_coordinates_2.type_position; -- to be returned		
+		port_position : type_object_position; -- to be returned		
 		
 		module_cursor : pac_generic_modules.cursor; -- points to the module being inquired
 
@@ -604,7 +604,7 @@ package body et_schematic_ops is
 		is
 			use pac_devices_sch;
 			device_cursor : pac_devices_sch.cursor;
-			unit_position : et_coordinates_2.type_position;
+			unit_position : type_object_position;
 
 			
 			procedure query_units (
@@ -1452,7 +1452,7 @@ package body et_schematic_ops is
 	function net_segment_at_place (
 	-- Returns true if at given place a net segment starts or ends.
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in et_coordinates_2.type_position)
+		place			: in type_object_position)
 		return boolean is
 
 		-- This flag goes true once a segment has been found.
@@ -1540,7 +1540,7 @@ package body et_schematic_ops is
 	
 	function ports_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in et_coordinates_2.type_position;
+		place			: in type_object_position;
 		log_threshold	: in type_log_level)
 		return type_ports 
 	is
@@ -1560,7 +1560,7 @@ package body et_schematic_ops is
 				procedure query_units (unit_cursor : in pac_units.cursor) is
 					use pac_units;
 					use pac_unit_name;
-					unit_position : et_coordinates_2.type_position;
+					unit_position : type_object_position;
 					ports : pac_ports.map;
 
 					
@@ -1633,7 +1633,7 @@ package body et_schematic_ops is
 
 			
 			procedure query_submodules (submodule_cursor : in et_submodules.pac_submodules.cursor) is
-				submodule_position : et_coordinates_2.type_position;
+				submodule_position : type_object_position;
 				ports : et_submodules.pac_submodule_ports.map;
 
 				
@@ -1684,7 +1684,7 @@ package body et_schematic_ops is
 			
 
 			procedure query_netchangers (netchanger_cursor : in et_submodules.pac_netchangers.cursor) is
-				netchanger_position : et_coordinates_2.type_position;
+				netchanger_position : type_object_position;
 				ports : et_submodules.type_netchanger_ports;
 				use et_netlists;
 			begin -- query_netchangers
@@ -2852,7 +2852,7 @@ package body et_schematic_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_model	: in pac_device_model_file.bounded_string; -- ../libraries/devices/logic_ttl/7400.dev
 		variant			: in pac_package_variant_name.bounded_string; -- N, D, S_0805
-		destination		: in et_coordinates_2.type_position; -- sheet/x/y,rotation
+		destination		: in type_object_position; -- sheet/x/y,rotation
 		log_threshold	: in type_log_level) is separate;
 
 
@@ -2863,7 +2863,7 @@ package body et_schematic_ops is
 	procedure copy_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
-		destination		: in et_coordinates_2.type_position; -- sheet/x/y/rotation
+		destination		: in type_object_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level) is separate;
 
 
@@ -3198,12 +3198,12 @@ package body et_schematic_ops is
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
 		unit	: in pac_unit_name.bounded_string)
-		return et_coordinates_2.type_position
+		return type_object_position
 	is
 		use pac_devices_sch;
 		device_cursor_sch : pac_devices_sch.cursor;
 
-		unit_position : et_coordinates_2.type_position;
+		unit_position : type_object_position;
 		
 		procedure query_unit (
 			device_name	: in type_device_name;
@@ -3235,10 +3235,10 @@ package body et_schematic_ops is
 	function get_position (
 		device	: in pac_devices_sch.cursor; -- R2
 		unit	: in pac_units.cursor)
-		return et_coordinates_2.type_position
+		return type_object_position
 	is
 		use pac_devices_sch;
-		unit_position : et_coordinates_2.type_position;
+		unit_position : type_object_position;
 		
 		procedure query_unit (
 			device_name	: in type_device_name;
@@ -3269,7 +3269,7 @@ package body et_schematic_ops is
 		placeholder_position : type_vector_model; -- to be returned
 
 		use pac_devices_sch;
-		unit_position : et_coordinates_2.type_position;
+		unit_position : type_object_position;
 		
 		procedure query_unit (
 			device_name	: in type_device_name;
@@ -3322,7 +3322,7 @@ package body et_schematic_ops is
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
-		destination		: in et_coordinates_2.type_position; -- sheet/x/y/rotation
+		destination		: in type_object_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level) is separate;
 
 
@@ -3863,7 +3863,7 @@ package body et_schematic_ops is
 					unit_cursor : in pac_units.cursor) 
 				is 
 					unit_name : pac_unit_name.bounded_string := key (unit_cursor);  -- 1, C, IO_BANK1
-					unit_position : et_coordinates_2.type_position := element (unit_cursor).position;
+					unit_position : type_object_position := element (unit_cursor).position;
 					inserted : boolean := false;
 					cursor_sort : et_numbering.pac_devices.cursor;
 
@@ -4018,7 +4018,7 @@ package body et_schematic_ops is
 				cursor_done : et_numbering.pac_devices.cursor := cursor;
 
 				procedure set_done (
-					coordinates : in et_coordinates_2.type_position;
+					coordinates : in type_object_position;
 					device		: in out et_numbering.type_device) is
 				begin
 					device.done := true;
@@ -4356,7 +4356,7 @@ package body et_schematic_ops is
 		return type_unit_query 
 	is
 		exists : boolean := false;
-		pos : et_coordinates_2.type_position; -- x/y, rotation, sheet
+		pos : type_object_position; -- x/y, rotation, sheet
 
 		
 		procedure query_devices (

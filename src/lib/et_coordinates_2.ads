@@ -167,63 +167,67 @@ package et_coordinates_2 is
 	schematic_page_count_max : constant positive := 100;
 	type type_schematic_page_number is new positive range 1..schematic_page_count_max; -- CS: not used yet
 
-	
 
--- POSITION:
-	
-	type type_position is new pac_geometry_2.type_position with private;
-	type type_position_relative is new pac_geometry_2.type_position with private;
 
-	greatest_position : constant type_position;
 
 	
-	function "<" (left, right : in type_position) 
+
+-- POSITION OF AN OBJECT:
+	
+	type type_object_position is new pac_geometry_2.type_position with private;
+	
+	type type_object_position_relative is new pac_geometry_2.type_position with private;
+
+	greatest_position : constant type_object_position;
+
+	
+	function "<" (left, right : in type_object_position) 
 		return boolean;
 
 	
 	procedure move (
-		position	: in out type_position'class;
-		offset		: in type_position_relative);
+		position	: in out type_object_position'class;
+		offset		: in type_object_position_relative);
 
 	
 	function to_position (
 		point 		: in type_vector_model;
 		sheet		: in et_sheets.type_sheet;
 		rotation	: in type_rotation_model := zero_rotation)
-		return type_position;
+		return type_object_position;
 
 	
 	function to_position_relative (
 		point 		: in type_vector_model;
 		sheet		: in et_sheets.type_sheet_relative;
 		rotation	: in type_rotation_model := zero_rotation)		
-		return type_position_relative;
+		return type_object_position_relative;
 	
-	zero_position : constant type_position;
+	zero_position : constant type_object_position;
 
 
 	function to_string (
-		position : in type_position) 
+		position : in type_object_position) 
 		return string;
 
 	-- Returns something like "sheet 3 x 12.34 y 45.0".
 	-- CS: merge this function with the to_string functin above
 	-- using an argument for the desired output format.
 	function get_position (
-		pos : in type_position) 
+		pos : in type_object_position) 
 		return string;
 
 
 	
 	-- Returns the sheet number of the given position:
 	function get_sheet (
-		position	: in type_position) 
+		position	: in type_object_position) 
 		return et_sheets.type_sheet;
 
 
 	-- Sets the sheet number in given position:
 	procedure set_sheet (
-		position	: in out type_position;
+		position	: in out type_object_position;
 		sheet		: in et_sheets.type_sheet);
 
 
@@ -231,23 +235,23 @@ package et_coordinates_2 is
 	
 	private 
 
-		type type_position is new pac_geometry_2.type_position with record
+		type type_object_position is new pac_geometry_2.type_position with record
 			sheet : et_sheets.type_sheet := et_sheets.type_sheet'first;
 		end record;
 
-		type type_position_relative is new pac_geometry_2.type_position with record
+		type type_object_position_relative is new pac_geometry_2.type_position with record
 			sheet : et_sheets.type_sheet_relative := 0;
 		end record;
 
 		
-		zero_position : constant type_position := (
+		zero_position : constant type_object_position := (
 			origin_zero_rotation with sheet => et_sheets.type_sheet'first);
 
 		
 		-- A position in a schematic which is on the
 		-- last possible sheet and the greatest distance in
 		-- x and y from the origin:
-		greatest_position : constant type_position := (
+		greatest_position : constant type_object_position := (
 			far_upper_right_zero_rotation with sheet => et_sheets.type_sheet'last);
 
 		

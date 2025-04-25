@@ -59,7 +59,7 @@ package body et_nets is
 	
 
 	procedure junction_in_sloping_segment (
-		point : in et_coordinates_2.type_position) 
+		point : in type_object_position) 
 	is begin
 		log (ERROR, "Junction not allowed in a sloping net segment at" 
 			 & to_string (point),
@@ -506,7 +506,7 @@ package body et_nets is
 
 	function on_strand (
 		strand_cursor	: in pac_strands.cursor;
-		place			: in et_coordinates_2.type_position)
+		place			: in type_object_position)
 		return boolean
 	is
 		-- This flag goes false if the given point is
@@ -543,7 +543,7 @@ package body et_nets is
 
 	function get_strand (
 		net		: in type_net;
-		place	: in et_coordinates_2.type_position)
+		place	: in type_object_position)
 		return pac_strands.cursor
 	is
 		result : pac_strands.cursor := pac_strands.no_element;
@@ -838,7 +838,7 @@ package body et_nets is
 		return pac_strands.cursor
 	is
 		strand_cursor : pac_strands.cursor; -- to be returned
-		strand_position : et_coordinates_2.type_position := greatest_position;
+		strand_position : type_object_position := greatest_position;
 
 		
 		procedure query_strands (
@@ -878,7 +878,7 @@ package body et_nets is
 	is
 		strand_cursor : pac_strands.cursor; -- to be returned
 
-		strand_position : et_coordinates_2.type_position := greatest_position;
+		strand_position : type_object_position := greatest_position;
 
 		
 		procedure query_strands (

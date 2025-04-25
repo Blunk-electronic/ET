@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,7 +42,7 @@ procedure fetch_unit (
 	module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 	device_name		: in type_device_name; -- IC1
 	unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
-	destination		: in et_coordinates_2.type_position; -- sheet/x/y/rotation
+	destination		: in type_object_position; -- sheet/x/y/rotation
 	log_threshold	: in type_log_level) 
 is
 	use et_coordinates_2;

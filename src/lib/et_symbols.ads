@@ -301,7 +301,7 @@ package et_symbols is
 	-- their own origin according to rotation given by destination:
 	function rotate_placeholders (
 		symbol_cursor	: in pac_symbols.cursor;
-		destination		: in et_coordinates_2.type_position) -- x/y/rotation of the unit
+		destination		: in type_object_position) -- x/y/rotation of the unit
 		return type_rotated_placeholders;
 	
 		

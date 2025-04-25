@@ -124,7 +124,7 @@ package body et_schematic_ops.nets is
 		net_name_before	: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		net_name_after	: in pac_net_name.bounded_string; -- RESET_N, MOTOR_ON_OFF_N	
 		scope			: in type_net_scope; -- strand, sheet, everywhere
-		place			: in et_coordinates_2.type_position; -- sheet/x/y
+		place			: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level) 
 	is
 		net_cursor_old : pac_nets.cursor; -- points to the old net
@@ -408,7 +408,7 @@ package body et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in type_net_scope; -- strand, sheet, everywhere
-		place			: in et_coordinates_2.type_position; -- sheet/x/y
+		place			: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level) 
 	is
 		net_cursor : pac_nets.cursor; -- points to the net
@@ -574,7 +574,7 @@ package body et_schematic_ops.nets is
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		place			: in et_coordinates_2.type_position; -- sheet/x/y
+		place			: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level) 
 	is
 		net_cursor : pac_nets.cursor; -- points to the net
@@ -711,14 +711,14 @@ package body et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_net_segment;
 		zone			: in type_line_zone;
-		point_of_attack	: in et_coordinates_2.type_position;
+		point_of_attack	: in type_object_position;
 		log_threshold	: in type_log_level) 
 		return boolean 
 	is
 		result : boolean := true; -- to be returned. true means the zone is movable.
 		-- Goes false once a port has been found in the given zone.
 
-		point : et_coordinates_2.type_position;
+		point : type_object_position;
 
 		procedure search_ports is
 		-- Searches ports of devices, netchangers and submodules that sit on
@@ -863,7 +863,7 @@ package body et_schematic_ops.nets is
 	procedure drag_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		point_of_attack	: in et_coordinates_2.type_position; -- sheet/x/y
+		point_of_attack	: in type_object_position; -- sheet/x/y
 		coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model; -- x/y, the new position 
 		log_threshold	: in type_log_level) 
@@ -1365,7 +1365,7 @@ package body et_schematic_ops.nets is
 	
 	function get_nets_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in et_coordinates_2.type_position;
+		place			: in type_object_position;
 		log_threshold	: in type_log_level)
 		return pac_net_names.list 
 	is
@@ -1468,11 +1468,11 @@ package body et_schematic_ops.nets is
 		-- and netchangers will be attached to it:
 		segment : type_net_segment := segment_new;
 		
-		point : et_coordinates_2.type_position;
+		point : type_object_position;
 
 		type type_junction is record
 			required	: boolean := false;
-			place		: et_coordinates_2.type_position;
+			place		: type_object_position;
 		end record;
 
 		junction_at_start_point : type_junction;
@@ -1496,7 +1496,7 @@ package body et_schematic_ops.nets is
 		end;
 
 		
-		procedure collision (point : in et_coordinates_2.type_position) is begin
+		procedure collision (point : in type_object_position) is begin
 			raise semantic_error_1 with
 				"ERROR: Net segment collides at" & to_string (position => point) 
 				& " with net(s): " & list_nets & " !";
@@ -1523,7 +1523,7 @@ package body et_schematic_ops.nets is
 
 			-- Issues error message and raises constraint_error if net_names contains
 			-- any foreign net names.
-			procedure evaluate_net_names (point : in et_coordinates_2.type_position) is 
+			procedure evaluate_net_names (point : in type_object_position) is 
 			begin
 				if not is_empty (net_names) then
 					collision (point);
@@ -1624,7 +1624,7 @@ package body et_schematic_ops.nets is
 			-- If net_names contains the given net_name, then the flag attach_to_strand
 			-- is set. The strand will be extended later by the segment specified by 
 			-- start_point and end_point.
-			procedure evaluate_net_names (point : in et_coordinates_2.type_position) is 
+			procedure evaluate_net_names (point : in type_object_position) is 
 			begin
 				if is_empty (net_names) then -- no nets here
 					null;
@@ -1664,7 +1664,7 @@ package body et_schematic_ops.nets is
 			
 			-- Returns a cursor to the strand at place and a flag whether to place
 			-- a junction at the given place.
-			function which_strand (place : in et_coordinates_2.type_position) 
+			function which_strand (place : in type_object_position) 
 				return type_which_strand 
 			is
 				result : type_which_strand; -- to be returned
@@ -2124,7 +2124,7 @@ package body et_schematic_ops.nets is
 	procedure insert_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		start_point		: in et_coordinates_2.type_position; -- sheet/x/y
+		start_point		: in type_object_position; -- sheet/x/y
 		end_point		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) 
 	is		
@@ -2281,7 +2281,7 @@ package body et_schematic_ops.nets is
 	
 	procedure place_junction (
 		module_cursor	: in pac_generic_modules.cursor;
-		place			: in et_coordinates_2.type_position; -- sheet/x/y, rotation doesn't matter
+		place			: in type_object_position; -- sheet/x/y, rotation doesn't matter
 		log_threshold	: in type_log_level) 
 	is
 		segment_found : boolean := false; -- goes true if a net segment has been found to place the junction at
@@ -2701,7 +2701,7 @@ package body et_schematic_ops.nets is
 	
 	procedure place_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
-		segment_position: in et_coordinates_2.type_position; -- sheet/x/y
+		segment_position: in type_object_position; -- sheet/x/y
 		label_position	: in type_vector_model := origin; -- x/y
 		rotation		: in et_coordinates_2.type_rotation_model := zero_rotation; -- 0, 90, 180. Relevant for simple labels only.
 		appearance 		: in type_net_label_appearance; -- simple/tag label
@@ -2880,7 +2880,7 @@ package body et_schematic_ops.nets is
 	
 	procedure delete_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
-		position		: in et_coordinates_2.type_position; -- sheet/x/y
+		position		: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level) 
 	is
 		-- This flag goes true once the targeted net label
@@ -2986,7 +2986,7 @@ package body et_schematic_ops.nets is
 	function query_stub (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		position		: in et_coordinates_2.type_position; -- sheet/x/y		
+		position		: in type_object_position; -- sheet/x/y		
 		log_threshold	: in type_log_level)
 		return type_stub 
 	is
