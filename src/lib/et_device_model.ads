@@ -35,6 +35,10 @@
 --
 --   history of changes:
 --
+-- DESCRIPTION:
+--
+-- This is about device models as they are described in
+-- the device libraries.
 
 
 with ada.containers; 			use ada.containers;
