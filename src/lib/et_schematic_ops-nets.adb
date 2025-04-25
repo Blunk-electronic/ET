@@ -116,78 +116,6 @@ package body et_schematic_ops.nets is
 	
 
 
-	
-	function net_exists (
-		net_cursor : in pac_nets.cursor) 
-		return boolean 
-	is begin
-		if net_cursor = pac_nets.no_element then
-			return false;
-		else 
-			return true;
-		end if;
-	end;
-
-
-	
-	
-	procedure junction_in_sloping_segment (point : in et_coordinates_2.type_position) is begin
-		log (ERROR, "Junction not allowed in a sloping net segment at" & to_string (point),
-			 console => true);
-		raise constraint_error;
-	end;
-
-
-	
-	
-	function between_start_and_end_point (
-		catch_zone	: in type_catch_zone;
-		segment 	: in pac_net_segments.cursor)
-		return boolean 
-	is
-		dist : type_distance_point_line;
-	begin
-		dist := get_distance (
-			point 		=> get_center (catch_zone),
-			line		=> element (segment),
-			line_range	=> BETWEEN_END_POINTS);
-
-		if (not out_of_range (dist)) 
-		and in_radius (get_distance (dist), get_radius (catch_zone)) then
-			return true;
-		else
-			return false;
-		end if;
-	end between_start_and_end_point;
-
-
-	
-	
-	function on_segment (
-		catch_zone	: in type_catch_zone;
-		segment 	: in pac_net_segments.cursor)
-		return boolean 
-	is
-		dist : type_distance_point_line;
-	begin
-		dist := get_distance (
-			point 		=> get_center (catch_zone),
-			line		=> element (segment),
-			line_range	=> WITH_END_POINTS);
-
--- 		log (text => 
--- 			"catch zone" & to_string (catch_zone) 
--- 			& " distance " & to_string (distance (dist))
--- 			& " out of range " & boolean'image (out_of_range (dist))
--- 			);
-		
-		if (not out_of_range (dist)) 
-		and in_radius (get_distance (dist), get_radius (catch_zone)) then
-			return true;
-		else
-			return false;
-		end if;
-	end on_segment;
 
 
 	
@@ -778,26 +706,6 @@ package body et_schematic_ops.nets is
 	end delete_segment;
 
 	
-	function no_ports (ports : in type_ports) return boolean is
-		result : boolean := true;
-		use pac_device_ports;
-		use pac_submodule_ports;
-		use et_netlists.pac_netchanger_ports;
-	begin
-		if length (ports.devices) > 0 then
-			return false;
-		end if;
-
-		if length (ports.submodules) > 0 then
-			result := false;
-		end if;
-
-		if length (ports.netchangers) > 0 then
-			result := false;
-		end if;
-
-		return result;
-	end no_ports;
 
 	
 	function movable (
@@ -946,72 +854,12 @@ package body et_schematic_ops.nets is
 		return result;
 	end movable;
 
+
+
+
+
 	
-	procedure move_net_labels (
-		segment_before	: in type_net_segment;
-		segment_after	: in out type_net_segment;
-		zone			: in type_line_zone)
-	is 
-		-- Calculate the displacement of the start and end point:
-		
-		delta_start : constant type_distance_relative :=
-			get_distance_relative (segment_before.start_point, segment_after.start_point);
-		
-		delta_end	: constant type_distance_relative :=
-			get_distance_relative (segment_before.end_point, segment_after.end_point);
-															
-		use pac_net_labels;
-		label_cursor : pac_net_labels.cursor := segment_after.labels.first;
-
-		procedure move (l : in out type_net_label) is begin
-			-- The position of a net label is absolute.
-			
-			case l.appearance is
-				when TAG => 
-					-- Moving the tag labels is quite simple because
-					-- they are always at start or end point.
-					-- So the label position change is just the displacement
-					-- of the start or end point:
-					case zone is
-						when START_POINT =>
-							if l.position = segment_before.start_point then
-								move_by (l.position, delta_start);
-							end if;
-							
-						when END_POINT => 
-							if l.position = segment_before.end_point then
-								move_by (l.position, delta_end);
-							end if;
-
-						when CENTER =>
-							if l.position = segment_before.start_point then
-								move_by (l.position, delta_start);
-							end if;
-
-							if l.position = segment_before.end_point then
-								move_by (l.position, delta_end);
-							end if;
-							
-					end case;
-
-					-- CS: change rotation of label ?
-					
-				when SIMPLE => null; -- CS
-					-- This requires a bit more math because simple labels
-					-- are mostly between start and end point.
-
-					-- CS: change rotation of label ?
-			end case;
-		end move;
-		
-	begin -- move_net_labels
-		while label_cursor /= pac_net_labels.no_element loop
-			update_element (segment_after.labels, label_cursor, move'access);
-			next (label_cursor);
-		end loop;
-		
-	end move_net_labels;
-
+	
 	
 	procedure drag_segment (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1854,7 +1702,7 @@ package body et_schematic_ops.nets is
 
 									-- It is not allowed to place a junction in a sloped segment,
 									-- because splitting sloping segments seems a rare, difficult and dangerous task.
-									if segment_orientation (segment_cursor) = SLOPING then
+									if get_segment_orientation (segment_cursor) = SLOPING then
 										junction_in_sloping_segment (place);
 									end if;
 									
@@ -2748,7 +2596,7 @@ package body et_schematic_ops.nets is
 
 							-- Backup properties of old segment (it provides information on labels, ports and junctions):
 							old_segment := element (segment_cursor);
-							old_segment_orientation := segment_orientation (segment_cursor);
+							old_segment_orientation := get_segment_orientation (segment_cursor);
 
 							-- It is not allowed to place a junction in a sloped segment,
 							-- because splitting sloping segments seems a rare, difficult and dangerous task.

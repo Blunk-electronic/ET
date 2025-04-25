@@ -46,6 +46,19 @@ with et_module_names;
 
 package body et_nets is
 
+
+	procedure junction_in_sloping_segment (
+		point : in et_coordinates_2.type_position) 
+	is begin
+		log (ERROR, "Junction not allowed in a sloping net segment at" 
+			 & to_string (point),
+			 console => true);
+		raise constraint_error;
+	end;
+
+
+
+
 	
 	function "<" (left, right : in type_device_port) return boolean is
 		use pac_port_name;
@@ -84,6 +97,7 @@ package body et_nets is
 
 
 	
+	
 	function "<" (left, right : in type_submodule_port) return boolean is
 		use et_module_names;
 		use pac_module_instance_name;
@@ -116,6 +130,8 @@ package body et_nets is
 			& " port " & to_string (port.port_name);
 	end to_string;
 
+
+
 	
 	
 	procedure iterate (
@@ -126,7 +142,7 @@ package body et_nets is
 		use pac_device_ports;
 		c : pac_device_ports.cursor := ports.first;
 	begin
-		while c /= no_element and proceed.all = TRUE loop
+		while c /= pac_device_ports.no_element and proceed.all = TRUE loop
 			process (c);
 			next (c);
 		end loop;
@@ -134,15 +150,118 @@ package body et_nets is
 
 
 
+
+	function no_ports (
+		ports : in type_ports) 
+		return boolean 
+	is
+		result : boolean := true;
+		use pac_device_ports;
+		use pac_submodule_ports;
+		use et_netlists.pac_netchanger_ports;
+	begin
+		if length (ports.devices) > 0 then
+			return false;
+		end if;
+
+		if length (ports.submodules) > 0 then
+			result := false;
+		end if;
+
+		if length (ports.netchangers) > 0 then
+			result := false;
+		end if;
+
+		return result;
+	end no_ports;
+
+	
+
+
+
+
+	procedure move_net_labels (
+		segment_before	: in type_net_segment;
+		segment_after	: in out type_net_segment;
+		zone			: in type_line_zone)
+	is 
+		-- Calculate the displacement of the start and end point:
+		
+		delta_start : constant type_distance_relative :=
+			get_distance_relative (segment_before.start_point, segment_after.start_point);
+		
+		delta_end	: constant type_distance_relative :=
+			get_distance_relative (segment_before.end_point, segment_after.end_point);
+															
+		use pac_net_labels;
+		label_cursor : pac_net_labels.cursor := segment_after.labels.first;
+
+		
+		procedure move (l : in out type_net_label) is begin
+			-- The position of a net label is absolute.
+			
+			case l.appearance is
+				when TAG => 
+					-- Moving the tag labels is quite simple because
+					-- they are always at start or end point.
+					-- So the label position change is just the displacement
+					-- of the start or end point:
+					case zone is
+						when START_POINT =>
+							if l.position = segment_before.start_point then
+								move_by (l.position, delta_start);
+							end if;
+							
+						when END_POINT => 
+							if l.position = segment_before.end_point then
+								move_by (l.position, delta_end);
+							end if;
+
+						when CENTER =>
+							if l.position = segment_before.start_point then
+								move_by (l.position, delta_start);
+							end if;
+
+							if l.position = segment_before.end_point then
+								move_by (l.position, delta_end);
+							end if;
+							
+					end case;
+
+					-- CS: change rotation of label ?
+					
+				when SIMPLE => null; -- CS
+					-- This requires a bit more math because simple labels
+					-- are mostly between start and end point.
+
+					-- CS: change rotation of label ?
+			end case;
+		end move;
+
+		
+	begin
+		while label_cursor /= pac_net_labels.no_element loop
+			update_element (segment_after.labels, label_cursor, move'access);
+			next (label_cursor);
+		end loop;
+		
+	end move_net_labels;
+
+
+	
+
+
+	
+
+	
 	procedure iterate (
 		segments	: in pac_net_segments.list;
 		process		: not null access procedure (position : in pac_net_segments.cursor);
 		proceed		: not null access boolean)
 	is
-		use pac_net_segments;
 		c : pac_net_segments.cursor := segments.first;
 	begin
-		while c /= no_element and proceed.all = TRUE loop
+		while c /= pac_net_segments.no_element and proceed.all = TRUE loop
 			process (c);
 			next (c);
 		end loop;
@@ -151,9 +270,10 @@ package body et_nets is
 
 	
 
-	function to_string (segment : in pac_net_segments.cursor) return string is
-		use pac_net_segments;
-	begin
+	function to_string (
+		segment : in pac_net_segments.cursor) 
+		return string 
+	is begin
 		return ("segment start" & 
 			to_string (element (segment).start_point) &
 			" / end" &	
@@ -161,15 +281,43 @@ package body et_nets is
 			);
 	end to_string;
 
+
+
+
 	
-	function segment_orientation (segment : in pac_net_segments.cursor) 
-		return type_net_segment_orientation is
-		use pac_net_segments;
-		
+	function between_start_and_end_point (
+		catch_zone	: in type_catch_zone;
+		segment 	: in pac_net_segments.cursor)
+		return boolean 
+	is
+		use pac_geometry_sch;
+		dist : type_distance_point_line;
+	begin
+		dist := get_distance (
+			point 		=> get_center (catch_zone),
+			line		=> element (segment),
+			line_range	=> BETWEEN_END_POINTS);
+
+		if (not out_of_range (dist)) 
+		and in_radius (get_distance (dist), get_radius (catch_zone)) then
+			return true;
+		else
+			return false;
+		end if;
+	end between_start_and_end_point;
+	
+
+
+	
+	
+	function get_segment_orientation (
+		segment : in pac_net_segments.cursor) 
+		return type_net_segment_orientation 
+	is		
 		result : type_net_segment_orientation;
 		
-		dx : constant et_coordinates_2.type_distance_model := get_x (element (segment).start_point) - get_x (element (segment).end_point);
-		dy : constant et_coordinates_2.type_distance_model := get_y (element (segment).start_point) - get_y (element (segment).end_point);
+		dx : constant type_distance_model := get_x (element (segment).start_point) - get_x (element (segment).end_point);
+		dy : constant type_distance_model := get_y (element (segment).start_point) - get_y (element (segment).end_point);
 	begin
 		if dx = zero then 
 			result := VERTICAL;
@@ -183,8 +331,44 @@ package body et_nets is
 
 		--put_line (type_net_segment_orientation'image (result));
 		return result;
-	end segment_orientation;
+	end get_segment_orientation;
 
+
+
+
+
+
+	
+	function on_segment (
+		catch_zone	: in type_catch_zone;
+		segment 	: in pac_net_segments.cursor)
+		return boolean 
+	is
+		use pac_geometry_sch;
+		dist : type_distance_point_line;
+	begin
+		dist := get_distance (
+			point 		=> get_center (catch_zone),
+			line		=> element (segment),
+			line_range	=> WITH_END_POINTS);
+
+-- 		log (text => 
+-- 			"catch zone" & to_string (catch_zone) 
+-- 			& " distance " & to_string (distance (dist))
+-- 			& " out of range " & boolean'image (out_of_range (dist))
+-- 			);
+		
+		if (not out_of_range (dist)) 
+		and in_radius (get_distance (dist), get_radius (catch_zone)) then
+			return true;
+		else
+			return false;
+		end if;
+	end on_segment;
+
+
+
+	
 
 	
 	procedure iterate (
@@ -192,24 +376,23 @@ package body et_nets is
 		process	: not null access procedure (position : in pac_strands.cursor);
 		proceed	: not null access boolean)
 	is
-		use pac_strands;
 		c : pac_strands.cursor := strands.first;
 	begin
-		while c /= no_element and proceed.all = TRUE loop
+		while c /= pac_strands.no_element and proceed.all = TRUE loop
 			process (c);
 			next (c);
 		end loop;
 	end iterate;
 
 
+
+	
 	
 	procedure set_strand_position (
 		strand : in out type_strand) 
 	is
 		point_1, point_2 : type_vector_model;
 	
-		use pac_net_segments;
-
 		-- CS: usage of intermediate variables for x/Y of start/end points could improve performance
 
 		procedure query_strand (cursor : in pac_net_segments.cursor) is begin
@@ -246,17 +429,16 @@ package body et_nets is
 	end set_strand_position;
 
 
+
+
 	
 	function get_first_segment (
 		strand_cursor	: in pac_strands.cursor)
 		return pac_net_segments.cursor
 	is
-		use pac_strands;
 		segment_cursor : pac_net_segments.cursor; -- to be returned
 
 		procedure query_segments (strand : in type_strand) is
-			use pac_net_segments;
-
 			segment_position : type_vector_model := far_upper_right;
 			
 			procedure query_segment (c : in pac_net_segments.cursor) is begin
@@ -285,28 +467,30 @@ package body et_nets is
 
 
 
+	
+
 	function get_sheet (
 		strand_cursor	: in pac_strands.cursor)
 		return type_sheet
-	is 
-		use pac_strands;
-	begin
+	is begin
 		return get_sheet (element (strand_cursor).position);
 	end get_sheet;
 		
 
+	
 	
 
 	function on_segment (
 		segment_cursor	: in pac_net_segments.cursor;
 		point			: in type_vector_model)
 		return boolean
-	is 
-		use pac_net_segments;
-	begin
+	is begin
 		return element (segment_cursor).on_line (point);
 	end on_segment;
 	
+
+
+
 	
 
 	function on_strand (
@@ -318,9 +502,6 @@ package body et_nets is
 		-- on the given strand:
 		proceed : aliased boolean := true;
 
-		use pac_strands;
-		use pac_net_segments;
-		
 		procedure query_segment (s : in pac_net_segments.cursor) is begin
 			--if on_segment (s, type_vector_model (place)) then
 			if on_segment (s, place.place) then
@@ -345,6 +526,8 @@ package body et_nets is
 		return (not proceed);
 	end on_strand;
 
+
+	
 	
 
 	function get_strand (
@@ -352,7 +535,6 @@ package body et_nets is
 		place	: in et_coordinates_2.type_position)
 		return pac_strands.cursor
 	is
-		use pac_strands;
 		result : pac_strands.cursor := pac_strands.no_element;
 
 		proceed : aliased boolean := true;
@@ -371,13 +553,15 @@ package body et_nets is
 	end get_strand;
 
 
+	
+	
+
 
 	function get_strands (
 		net		: in type_net;
 		sheet	: in type_sheet)
 		return pac_strands.list
 	is
-		use pac_strands;
 		result : pac_strands.list;
 
 		procedure query_strand (s : in pac_strands.cursor) is begin
@@ -394,11 +578,12 @@ package body et_nets is
 
 
 
+	
+
 	procedure delete_strands (
 		net		: in out type_net;
 		strands	: in pac_strands.list)
 	is
-		use pac_strands;
 		c : pac_strands.cursor := strands.first;
 
 		procedure query_strand (s : in pac_strands.cursor) is
@@ -417,38 +602,40 @@ package body et_nets is
 	begin
 		iterate (strands, query_strand'access);
 	end delete_strands;
+
+
+
 	
 
 	procedure merge_strand (
 		net		: in out type_net;
 		strand	: in type_strand)
-	is
-		use pac_strands;
-	begin
+	is begin
 		append (net.strands, strand);
 	end merge_strand;
+
+
 
 	
 
 	procedure merge_strands (
 		net		: in out type_net;
 		strands	: in out pac_strands.list)
-	is 
-		use pac_strands;
-	begin
+	is begin
 		splice (
 			target	=> net.strands,
 			before	=> pac_strands.no_element,
 			source	=> strands);
 	end merge_strands;
+
+
+
 	
 
 	procedure merge_nets (
 		net_1	: in out type_net;
 		net_2	: in out type_net)
 	is
-		use pac_strands;
-
 		use et_conductor_segment.boards;
 		use pac_conductor_lines;
 		use pac_conductor_arcs;
@@ -512,16 +699,16 @@ package body et_nets is
 	end merge_nets;
 
 
+	
 
 
 	function get_net_name (
 		net_cursor : in pac_nets.cursor)
 		return pac_net_name.bounded_string
-	is 
-		use pac_nets;
-	begin
+	is begin
 		return key (net_cursor);
 	end;
+
 
 	
 
@@ -529,12 +716,27 @@ package body et_nets is
 	function to_string (
 		net_cursor : in pac_nets.cursor)
 		return string
-	is 
-		use pac_nets;
-	begin
+	is begin
 		return to_string (key (net_cursor));
 	end to_string;
 
+
+	
+
+
+	function net_exists (
+		net_cursor : in pac_nets.cursor) 
+		return boolean 
+	is begin
+		if net_cursor = pac_nets.no_element then
+			return false;
+		else 
+			return true;
+		end if;
+	end;
+
+
+	
 	
 
 	procedure iterate (
@@ -542,7 +744,6 @@ package body et_nets is
 		process	: not null access procedure (position : in pac_nets.cursor);
 		proceed	: not null access boolean)
 	is
-		use pac_nets;
 		c : pac_nets.cursor := nets.first;
 	begin
 		while c /= pac_nets.no_element and proceed.all = TRUE loop
@@ -563,11 +764,6 @@ package body et_nets is
 		return type_ports 
 	is
 		result : type_ports; -- to be returned
-
-		use pac_nets;
-		use pac_strands;
-		use pac_net_segments;
-
 		
 		procedure query_segments (segment_cursor : in pac_net_segments.cursor) is
 			use pac_device_ports;
@@ -622,6 +818,7 @@ package body et_nets is
 	end get_ports;
 
 
+	
 
 	
 
@@ -629,16 +826,14 @@ package body et_nets is
 		net_cursor	: in pac_nets.cursor)
 		return pac_strands.cursor
 	is
-		use pac_nets;
 		strand_cursor : pac_strands.cursor; -- to be returned
-
 		strand_position : et_coordinates_2.type_position := greatest_position;
+
 		
 		procedure query_strands (
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net)
 		is
-			use pac_strands;
 
 			procedure query_strand (c : in pac_strands.cursor) is begin
 				if element (c).position < strand_position then
@@ -650,7 +845,8 @@ package body et_nets is
 		begin			
 			iterate (net.strands, query_strand'access);
 		end query_strands;
-			
+
+		
 	begin -- get_first_strand
 		query_element (
 			position	=> net_cursor,
@@ -669,17 +865,15 @@ package body et_nets is
 		net_cursor	: in pac_nets.cursor)
 		return pac_strands.cursor
 	is
-		use pac_nets;
 		strand_cursor : pac_strands.cursor; -- to be returned
 
 		strand_position : et_coordinates_2.type_position := greatest_position;
+
 		
 		procedure query_strands (
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net)
 		is
-			use pac_strands;
-
 			c : pac_strands.cursor := net.strands.first;
 		begin			
 			while c /= pac_strands.no_element loop
@@ -698,6 +892,7 @@ package body et_nets is
 			end loop;
 		end query_strands;
 
+		
 	begin
 		query_element (
 			position	=> net_cursor,
@@ -724,6 +919,7 @@ package body et_nets is
 	end to_label_rotation;
 
 
+
 	
 	
 	function stub_direction (
@@ -731,11 +927,10 @@ package body et_nets is
 		point	: in type_vector_model)
 		return type_stub 
 	is
-		use pac_net_segments;
-
 		is_stub : boolean := true;
 		direction : type_stub_direction;
-		orientation : constant type_net_segment_orientation := segment_orientation (segment);
+		orientation : constant type_net_segment_orientation := 
+			get_segment_orientation (segment);
 	begin
 		case orientation is
 			when HORIZONTAL =>
@@ -771,10 +966,6 @@ package body et_nets is
 		end if;
 
 	end stub_direction;
-
-
-
-
 
 
 	

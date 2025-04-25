@@ -63,9 +63,15 @@ with et_sheets;					use et_sheets;
 package et_nets is
 
 	use pac_geometry_2;
+	use pac_net_name;
 
+
+
+-- JUNCTIONS:
 	
-
+	procedure junction_in_sloping_segment (
+		point : in et_coordinates_2.type_position);
+	
 	
 	-- A net junction is where segments and ports meet each other.	
 	type type_junctions is record
@@ -85,6 +91,15 @@ package et_nets is
 
 	
 
+
+-- NETS (basic stuff):
+	
+	type type_net_scope is (
+		STRAND,
+		SHEET,
+		EVERYWHERE
+		);
+	
 	
 
 	type type_net_base is tagged record
@@ -97,6 +112,10 @@ package et_nets is
 
 	
 
+
+-- PORTS:
+	
+	
 	-- This is the port of a device as it appears in a net segment:
 	type type_device_port is record
 		device_name	: type_device_name; -- IC4
@@ -130,10 +149,14 @@ package et_nets is
 		port_name	: pac_net_name.bounded_string; -- CLOCK_GENERATOR_OUT
 	end record;
 
+	
 	function "<" (left, right : in type_submodule_port) return boolean;
+
+	
 	package pac_submodule_ports is new ordered_sets (type_submodule_port);
 
 
+	
 	type type_ports is record
 		devices		: pac_device_ports.set;
 		submodules	: pac_submodule_ports.set;
@@ -141,18 +164,44 @@ package et_nets is
 	end record;
 
 
+	
+	-- Returns true if the given record of ports is completely emtpty.
+	function no_ports (
+		ports : in type_ports) 
+		return boolean;
+
+
 
 	
+	
+-- NET SEGMENTS:
 	
 	type type_net_segment is new type_line with record
 		labels		: pac_net_labels.list;
 		junctions	: type_junctions;
 		ports		: type_ports;
 	end record;
+
+
+	
+	-- Moves the net labels of a segment.
+	-- CS: Currently moves only the tag labels
+	procedure move_net_labels (
+		segment_before	: in type_net_segment;		-- the segment before the move
+		segment_after	: in out type_net_segment;	-- the segment after the move
+		zone			: in type_line_zone);		-- the zone being moved
+
 	
 	package pac_net_segments is new doubly_linked_lists (type_net_segment);
+	use pac_net_segments;
+	
 
 
+
+
+
+	
+	
 	-- Iterates the net segments. 
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
@@ -162,10 +211,24 @@ package et_nets is
 
 
 	
-	-- Returns a string that tells about start and end coordinates of the net segment.
-	function to_string (segment : in pac_net_segments.cursor) return string;
+	-- Returns a string that tells about start 
+	-- and end coordinates of the net segment.
+	function to_string (
+		segment : in pac_net_segments.cursor) 
+		return string;
 		
 
+
+	-- Returns true if given point sits between start and end point of given segment.
+	-- The catch zone is a means of reducing the accuracy. The greater the zone
+	-- the greater can be the distance to the segment:
+	function between_start_and_end_point (
+		catch_zone	: in type_catch_zone;
+		segment		: in pac_net_segments.cursor)
+		return boolean;
+
+
+	
 	
 	-- A net segment may run in those directions:
 	type type_net_segment_orientation is (
@@ -173,10 +236,22 @@ package et_nets is
 		VERTICAL,
 		SLOPING);
 
+
+	
 	-- Returns the orientation of a net segment.
-	function segment_orientation (segment : in pac_net_segments.cursor) 
+	function get_segment_orientation (
+		segment : in pac_net_segments.cursor) 
 		return type_net_segment_orientation;
 
+
+
+	-- Returns true if given center of a zone in on the given segment.
+	-- The catch zone is a means of reducing the accuracy. The greater the zone
+	-- the greater can be the distance to the segment:
+	function on_segment (
+		catch_zone	: in type_catch_zone;
+		segment 	: in pac_net_segments.cursor)
+		return boolean;
 
 	
 
@@ -184,6 +259,9 @@ package et_nets is
 	-- CS rename to net_linewidth ?
 
 
+
+
+-- STRANDS:
 
 	-- A strand is a collection of net segments which belong to each other. 
 	-- Segments belong to each other because their start/end points meet.
@@ -198,7 +276,8 @@ package et_nets is
 
 
 	package pac_strands is new doubly_linked_lists (type_strand);
-
+	use pac_strands;
+	
 
 	-- Iterates the strands. 
 	-- Aborts the process when the proceed-flag goes false:
@@ -243,6 +322,11 @@ package et_nets is
 		return boolean;
 	
 
+
+
+	
+-- NETS:
+	
 	type type_net is new type_net_base with record
 		strands		: pac_strands.list;
 		scope		: et_netlists.type_net_scope := et_netlists.LOCAL;
@@ -293,14 +377,15 @@ package et_nets is
 		net_2	: in out type_net);
 
 
-	use pac_net_name;
 
 	-- Many nets are to be collected in maps:
 	package pac_nets is new ordered_maps (
 		key_type		=> pac_net_name.bounded_string, -- RESET_N
 		element_type	=> type_net);
 
-
+	use pac_nets;
+	
+	
 	function get_net_name (
 		net_cursor : in pac_nets.cursor)
 		return pac_net_name.bounded_string;
@@ -311,6 +396,13 @@ package et_nets is
 	function to_string (
 		net_cursor : in pac_nets.cursor)
 		return string;
+
+
+
+	function net_exists (
+		net_cursor : in pac_nets.cursor) 
+		return boolean;
+
 	
 	
 	-- Iterates the nets. Aborts the process when the proceed-flag goes false:
@@ -390,7 +482,27 @@ package et_nets is
 		
 
 
+	
+-- NET INDEX:
+	
+	-- Nets may require to be indexed (for example with combo boxes)
+	-- in a form like:
+	--
+	--     net       |  index
+	-- ------------------------
+	-- AGND          |      0
+	-- analog_input  |      1
+	-- digital_out   |      2
+	-- gnd           |      3
+	-- zero_pressure |    109
+	--
+	-- NOTE: The numbering starts at zero.
+	
+	-- We define a range for the net index. CS extend upper limit if required.
+	subtype type_net_index is natural range 0 .. 10_000;
 
+
+	
 
 
 	

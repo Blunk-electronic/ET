@@ -224,6 +224,7 @@ package body et_canvas_board_tracks is
 		use gtk.tree_model;
 		iter : gtk_tree_iter;			
 
+		use et_nets;
 		use et_schematic_ops.nets;
 		use pac_net_name;
 		use pac_net_names;

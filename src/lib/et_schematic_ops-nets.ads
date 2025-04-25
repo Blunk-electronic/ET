@@ -51,7 +51,8 @@ package et_schematic_ops.nets is
 		module		: in pac_generic_modules.cursor)
 		return et_net_count.type_net_count;
 
-		
+
+	
 	-- Searches the module for an anonymous net with the lowest index available.
 	-- Example: If the module contains nets like N$2, N$4, N$5 and N$101 then
 	-- the lowest available name would be N$3.
@@ -60,33 +61,6 @@ package et_schematic_ops.nets is
 		return pac_net_name.bounded_string; -- N$3
 
 
-	function net_exists (
-		net_cursor : in pac_nets.cursor) 
-		return boolean;
-
-	
-	type type_net_scope is (
-		STRAND,
-		SHEET,
-		EVERYWHERE
-		);
-
-	-- Returns true if given point sits between start and end point of given segment.
-	-- The catch zone is a means of reducing the accuracy. The greater the zone
-	-- the greater can be the distance to the segment:
-	function between_start_and_end_point (
-		catch_zone	: in type_catch_zone;
-		segment		: in pac_net_segments.cursor)
-		return boolean;
-
-	
-	-- Returns true if given center of a zone in on the given segment.
-	-- The catch zone is a means of reducing the accuracy. The greater the zone
-	-- the greater can be the distance to the segment:
-	function on_segment (
-		catch_zone	: in type_catch_zone;
-		segment 	: in pac_net_segments.cursor)
-		return boolean;
 
 	
 	-- Renames a net. The scope determines whether to rename a certain strand,
@@ -102,6 +76,8 @@ package et_schematic_ops.nets is
 		place			: in et_coordinates_2.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
+
+	
 	
 	-- Deletes a net. The scope determines whether to delete a certain strand,
 	-- all strands on a certain sheet or on all sheets.
@@ -115,6 +91,8 @@ package et_schematic_ops.nets is
 		place			: in et_coordinates_2.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
+
+
 	
 	-- Deletes a segment of a net.
 	procedure delete_segment (
@@ -123,9 +101,8 @@ package et_schematic_ops.nets is
 		place			: in et_coordinates_2.type_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
 
+
 	
-	-- Returns true if the given record of ports is completely emtpty.
-	function no_ports (ports : in type_ports) return boolean;
 
 	
 	-- Tests whether the zone of a net segment is movable.
@@ -139,12 +116,6 @@ package et_schematic_ops.nets is
 		return boolean;
 
 	
-	-- Moves the net labels of a segment.
-	-- CS: Currently moves only the tag labels
-	procedure move_net_labels (
-		segment_before	: in type_net_segment;		-- the segment before the move
-		segment_after	: in out type_net_segment;	-- the segment after the move
-		zone			: in type_line_zone);		-- the zone being moved
 
 	
 	-- Drags a segment of a net.
@@ -159,6 +130,7 @@ package et_schematic_ops.nets is
 		destination		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
+	
 
 	-- Returns the name of the first net of the given module.
 	-- Net names are sorted alphabetically:
@@ -166,7 +138,8 @@ package et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_net_name.bounded_string;
 	
-							   
+
+	
 	-- Returns the names of all nets of the given module
 	-- sorted alphabetically:
 	function get_nets (
@@ -175,21 +148,6 @@ package et_schematic_ops.nets is
 		return pac_net_names.list;
 
 
-	-- Nets may require to be indexed (for example with combo boxes)
-	-- in a form like:
-	--
-	--     net       |  index
-	-- ------------------------
-	-- AGND          |      0
-	-- analog_input  |      1
-	-- digital_out   |      2
-	-- gnd           |      3
-	-- zero_pressure |    109
-	--
-	-- NOTE: The numbering starts at zero.
-	
-	-- We define a range for the net index. CS extend upper limit if required.
-	subtype type_net_index is natural range 0 .. 10_000;
 	
 	-- Returns for the given net a unique index.
 	-- If the given net has not been found, raises exception:
@@ -198,6 +156,7 @@ package et_schematic_ops.nets is
 		net_name		: in pac_net_name.bounded_string;
 		log_threshold	: in type_log_level)
 		return type_net_index;
+
 	
 	
 	-- Returns lists of nets that cross the given place.
@@ -231,6 +190,7 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 	
+	
 	-- See description for procedure insert_segment.
 	procedure insert_net (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -239,6 +199,7 @@ package et_schematic_ops.nets is
 		end_point		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
+	
 
 	-- Sets the net class of a net:
 	procedure set_net_class (
@@ -277,6 +238,7 @@ package et_schematic_ops.nets is
 -- 		log_threshold	: in type_log_level);
 
 	
+	
 	-- Places a label next to a segment at position.
 	procedure place_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -299,6 +261,7 @@ package et_schematic_ops.nets is
 		-- The direction is relevant for tag labels only:
 		direction		: in type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level);
+
 
 	
 	-- Deletes a label.
