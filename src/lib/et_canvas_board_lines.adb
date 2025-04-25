@@ -585,7 +585,7 @@ package body et_canvas_board_lines is
 		use et_modes.board;
 		use et_undo_redo;
 		use et_commit;
-		use et_pcb_coordinates_2.pac_contours;
+		use et_board_coordinates.pac_contours;
 
 		-- A temporary contour consisting of a single segment,
 		-- used in case it is about a contour segment:
