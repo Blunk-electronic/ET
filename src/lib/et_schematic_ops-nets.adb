@@ -79,8 +79,10 @@ package body et_schematic_ops.nets is
 
 	
 
+
 	
-	function lowest_available_anonymous_net (
+	
+	function get_lowest_available_anonymous_net (
 		module		: in pac_generic_modules.cursor)
 		return pac_net_name.bounded_string
 	is
@@ -111,7 +113,7 @@ package body et_schematic_ops.nets is
 		end if;
 		
 		return net;
-	end lowest_available_anonymous_net;
+	end get_lowest_available_anonymous_net;
 	
 
 
@@ -402,6 +404,10 @@ package body et_schematic_ops.nets is
 		log_indentation_down;		
 	end rename_net;
 
+
+
+
+
 	
 	procedure delete_net (
 		-- See comment in procedure locate_strand.
@@ -570,6 +576,10 @@ package body et_schematic_ops.nets is
 		log_indentation_down;		
 	end delete_net;
 
+
+
+	
+
 	
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -704,10 +714,13 @@ package body et_schematic_ops.nets is
 		log_indentation_down;		
 	end delete_segment;
 
+
+
+
 	
 
 	
-	function movable (
+	function is_movable (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_net_segment;
 		zone			: in type_line_zone;
@@ -807,7 +820,7 @@ package body et_schematic_ops.nets is
 		end search_ports;
 
 		
-	begin -- movable
+	begin
 		log_indentation_up;
 		
 		-- The point of interest is on the sheet specified in argument "point_of_attack".
@@ -851,7 +864,7 @@ package body et_schematic_ops.nets is
 		log_indentation_down;
 		
 		return result;
-	end movable;
+	end is_movable;
 
 
 
@@ -1110,7 +1123,7 @@ package body et_schematic_ops.nets is
 								& " at " & type_line_zone'image (zone), level => log_threshold + 1);
 
 							-- Test whether the zone is movable. If not movable, nothing happens.
-							if movable (
+							if is_movable (
 								module_cursor, element (segment_cursor),
 								zone, point_of_attack, log_threshold + 1)
 							then
@@ -1261,6 +1274,9 @@ package body et_schematic_ops.nets is
 	end drag_segment;
 
 
+
+	
+
 	function get_first_net (
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_net_name.bounded_string
@@ -1287,6 +1303,10 @@ package body et_schematic_ops.nets is
 					"ERROR: No net found in module !";
 			
 	end get_first_net;
+
+
+
+
 	
 	
 	function get_nets (
@@ -1326,6 +1346,8 @@ package body et_schematic_ops.nets is
 
 
 
+
+	
 	function get_net_index (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string;
@@ -1360,6 +1382,9 @@ package body et_schematic_ops.nets is
 		
 		return index;
 	end get_net_index;
+
+
+
 
 	
 	
@@ -1453,6 +1478,10 @@ package body et_schematic_ops.nets is
 		return nets;
 	end get_nets_at_place;
 
+
+
+
+	
 	
 	procedure insert_segment (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2120,6 +2149,10 @@ package body et_schematic_ops.nets is
 
 	end insert_segment;
 
+
+
+
+	
 	
 	procedure insert_net (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2157,6 +2190,11 @@ package body et_schematic_ops.nets is
 		log_indentation_down;		
 	end insert_net;
 
+
+
+
+
+	
 
 	procedure set_net_class (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2223,6 +2261,11 @@ package body et_schematic_ops.nets is
 	end set_net_class;
 
 
+
+
+
+
+	
 	
 	procedure set_scope (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2278,6 +2321,11 @@ package body et_schematic_ops.nets is
 	end set_scope;
 
 
+
+
+
+
+	
 	
 	procedure place_junction (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2698,6 +2746,9 @@ package body et_schematic_ops.nets is
 	end place_junction;
 	
 
+
+
+
 	
 	procedure place_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2877,6 +2928,10 @@ package body et_schematic_ops.nets is
 		
 	end place_net_label;
 
+
+
+
+	
 	
 	procedure delete_net_label (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2982,6 +3037,10 @@ package body et_schematic_ops.nets is
 	end delete_net_label;
 	
 
+
+
+
+	
 
 	function query_stub (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3099,6 +3158,9 @@ package body et_schematic_ops.nets is
 		end if;
 
 	end query_stub;
+
+
+
 	
 end et_schematic_ops.nets;
 	

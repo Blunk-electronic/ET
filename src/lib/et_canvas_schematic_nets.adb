@@ -666,7 +666,7 @@ package body et_canvas_schematic_nets is
 			if is_empty (net_name_given) then -- no explicit net name provided
 
 				-- Create a new anonymous net with a name like N$234:
-				net_name_auto_generated := lowest_available_anonymous_net (module); -- N$234
+				net_name_auto_generated := get_lowest_available_anonymous_net (module); -- N$234
 				
 				log (text => "creating new anonymous net " 
 					 & to_string (net_name_auto_generated),

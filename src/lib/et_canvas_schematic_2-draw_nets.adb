@@ -738,7 +738,7 @@ procedure draw_nets is
 		-- as they belong to symbols which are not dragged along.
 		-- If the segment is not movable then it will be drawn as given by
 		-- the module database.
-		if movable (
+		if is_movable (
 			module_cursor	=> active_module,
 			segment			=> element (original_segment),
 			zone			=> zone,

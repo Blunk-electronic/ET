@@ -55,7 +55,7 @@ package et_schematic_ops.nets is
 	-- Searches the module for an anonymous net with the lowest index available.
 	-- Example: If the module contains nets like N$2, N$4, N$5 and N$101 then
 	-- the lowest available name would be N$3.
-	function lowest_available_anonymous_net (
+	function get_lowest_available_anonymous_net (
 		module		: in pac_generic_modules.cursor)
 		return pac_net_name.bounded_string; -- N$3
 
@@ -106,7 +106,7 @@ package et_schematic_ops.nets is
 	
 	-- Tests whether the zone of a net segment is movable.
 	-- Returns true if movable, returns falso otherwise.
-	function movable (
+	function is_movable (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_net_segment;
 		zone			: in type_line_zone;
