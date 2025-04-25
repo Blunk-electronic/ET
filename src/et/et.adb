@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -86,7 +86,7 @@ with et_frames;
 with et_frame_rw;
 
 with et_sheets;
-with et_coordinates_2;
+with et_schematic_coordinates;
 with et_pcb_coordinates_2;
 
 with et_gui_2;
@@ -729,7 +729,7 @@ procedure et is
 	procedure log_sys_info is 
 	begin
 		log (text => et_pcb_coordinates_2.pac_geometry_2.get_info ("layout/board"));
-		log (text => et_coordinates_2.pac_geometry_2.get_info ("schematic"));
+		log (text => et_schematic_coordinates.pac_geometry_2.get_info ("schematic"));
 	end log_sys_info;
 
 
