@@ -36,10 +36,7 @@
 --   history of changes:
 --
 
-with ada.strings;					use ada.strings;
-with ada.exceptions;
-
-with et_exceptions;					use et_exceptions;
+with ada.characters.latin_1;
 
 with et_pcb_contour;				use et_pcb_contour;
 with et_contour_to_polygon;			use et_contour_to_polygon;

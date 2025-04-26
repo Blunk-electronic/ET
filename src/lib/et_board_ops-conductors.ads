@@ -37,13 +37,6 @@
 --
 --   ToDo: 
 
-
-with ada.containers;   			       	use ada.containers;
-with ada.containers.doubly_linked_lists;
-with ada.containers.indefinite_doubly_linked_lists;
-
-
-
 with et_text;
 with et_conductor_segment.boards;		use et_conductor_segment.boards;
 with et_fill_zones;						use et_fill_zones;

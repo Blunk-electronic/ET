@@ -39,8 +39,6 @@
 
 package body et_board_ops.stencil is
 
-	use pac_generic_modules;
-
 	use pac_stencil_lines;
 	use pac_stencil_arcs;
 	use pac_stencil_circles;

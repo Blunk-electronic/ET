@@ -38,9 +38,6 @@
 --   ToDo: 
 
 
-with ada.containers; 					use ada.containers;
-with ada.containers.indefinite_doubly_linked_lists;
-
 with et_package_names;					use et_package_names;
 with et_packages;						use et_packages;
 with et_device_placeholders;			use et_device_placeholders;

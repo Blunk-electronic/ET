@@ -39,9 +39,6 @@
 --   1. rename this package to et_board_ops.outline
 
 
-with ada.containers; 			use ada.containers;
-with ada.containers.indefinite_doubly_linked_lists;
-
 with et_pcb_contour;				use et_pcb_contour;
 
 

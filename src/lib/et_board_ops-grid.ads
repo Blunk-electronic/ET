@@ -38,8 +38,6 @@
 --   ToDo: 
 
 
-with et_logging;					use et_logging;
-
 
 package et_board_ops.grid is
 

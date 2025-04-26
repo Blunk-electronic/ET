@@ -36,26 +36,21 @@
 --   history of changes:
 --
 
-with ada.strings;					use ada.strings;
-with ada.exceptions;
 with ada.tags;
 
 with et_mirroring;					use et_mirroring;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_schematic_ops;				use et_schematic_ops;
-with et_exceptions;					use et_exceptions;
 with et_board_ops.devices;			use et_board_ops.devices;
 with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 
 with et_fill_zones.boards;			use et_fill_zones.boards;
-with et_object_status;
 
 with et_devices_electrical;
 
 
 package body et_board_ops.conductors is
 
-	use pac_generic_modules;
 	use pac_nets;
 
 	

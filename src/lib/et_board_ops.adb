@@ -37,7 +37,6 @@
 --
 
 with et_assembly_variants;
-with et_meta;
 with et_netlists;
 with et_schematic_ops.nets;			use et_schematic_ops.nets;
 with et_schematic_ops.submodules;
@@ -50,9 +49,8 @@ with et_symbols;
 with et_device_appearance;
 with et_device_name;
 with et_conductor_segment.boards;
-with et_exceptions;					use et_exceptions;
 with et_generic_stacks;
-with et_canvas_board_2;
+
 
 
 package body et_board_ops is

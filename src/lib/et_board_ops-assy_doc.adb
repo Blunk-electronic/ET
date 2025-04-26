@@ -36,14 +36,10 @@
 --   history of changes:
 --
 
-with ada.containers;
-with ada.containers.doubly_linked_lists;
 
 
 package body et_board_ops.assy_doc is
 
-	use pac_generic_modules;
-	
 	use pac_doc_lines;
 	use pac_doc_arcs;
 	use pac_doc_circles;

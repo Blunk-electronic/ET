@@ -39,8 +39,6 @@
 
 package body et_board_ops.stopmask is
 
-	use pac_generic_modules;
-
 	use pac_stop_lines;
 	use pac_stop_arcs;
 	use pac_stop_circles;

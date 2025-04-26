@@ -46,8 +46,6 @@ with et_assy_doc;
 with et_text;
 with et_pcb_placeholders;			use et_pcb_placeholders;
 
-with et_exceptions;					use et_exceptions;
-
 
 package et_board_ops.text is
 

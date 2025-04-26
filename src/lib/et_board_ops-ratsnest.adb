@@ -38,7 +38,6 @@
 --   ToDo: 
 
 with et_conductor_segment.boards;
-with et_string_processing;				use et_string_processing;
 with et_board_ops.devices;				use et_board_ops.devices;
 with et_board_ops.vias;					use et_board_ops.vias;
 

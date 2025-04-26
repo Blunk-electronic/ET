@@ -38,10 +38,12 @@
 --   ToDo: 
 
 with ada.text_io;				use ada.text_io;
-with ada.characters.latin_1;
 with ada.strings;				use ada.strings;
-with ada.containers;            use ada.containers;
 with ada.exceptions;			use ada.exceptions;
+
+with ada.containers;			use ada.containers;
+with ada.containers.doubly_linked_lists;
+with ada.containers.indefinite_doubly_linked_lists;
 
 with et_meta;
 with et_nets;						use et_nets;
@@ -69,7 +71,8 @@ with et_design_rules_board;			use et_design_rules_board;
 
 with et_exceptions;					use et_exceptions;
 with et_object_status;				use et_object_status;
-
+with et_logging;					use et_logging;
+with et_exceptions;					use et_exceptions;
 
 
 package et_board_ops is

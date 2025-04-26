@@ -36,12 +36,8 @@
 --   history of changes:
 --
 
-with et_meta;
-
 with et_assembly_variants;
 with et_conductor_text.boards;
-with et_mirroring;
-
 
 
 package body et_board_ops.text is

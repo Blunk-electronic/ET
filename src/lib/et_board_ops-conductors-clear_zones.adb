@@ -36,11 +36,6 @@
 --   history of changes:
 --
 
-with ada.strings;					use ada.strings;
-with ada.exceptions;
-
-with et_exceptions;					use et_exceptions;
-
 
 separate (et_board_ops.conductors)
 

@@ -38,13 +38,10 @@
 --   ToDo: 
 
 
-with et_logging;					use et_logging;
-with et_frames;
+with et_frames;						use et_frames;
 
 
 package et_board_ops.frame is
-
-	use pac_generic_modules;
 
 	
 	-- Moves the lower-left corner (which is the origin)

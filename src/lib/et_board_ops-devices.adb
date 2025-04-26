@@ -36,8 +36,6 @@
 --   history of changes:
 --
 
-with ada.exceptions;
-
 with et_conventions;
 with et_assembly_variants;
 with et_netlists;
@@ -54,12 +52,9 @@ with et_contour_to_polygon;			use et_contour_to_polygon;
 
 with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 with et_mirroring;					use et_mirroring;
-with et_object_status;
 
 
 package body et_board_ops.devices is
-
-	use pac_generic_modules;
 
 	use pac_devices_sch;
 	use pac_devices_non_electric;

@@ -37,9 +37,6 @@
 --
 --   ToDo: 
 
-with ada.containers; 			use ada.containers;
-with ada.containers.indefinite_doubly_linked_lists;
-
 
 with et_stencil;				use et_stencil;
 

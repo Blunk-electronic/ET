@@ -38,8 +38,6 @@
 
 
 package body et_board_ops.silkscreen is
-
-	use pac_generic_modules;
 	
 	use pac_silk_lines;
 	use pac_silk_arcs;

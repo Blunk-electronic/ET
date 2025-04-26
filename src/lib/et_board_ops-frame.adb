@@ -36,9 +36,6 @@
 --   history of changes:
 --
 
-with ada.text_io;					use ada.text_io;
-with et_canvas_board_2;
-
 
 package body et_board_ops.frame is
 
@@ -49,9 +46,6 @@ package body et_board_ops.frame is
 		point			: in et_frames.type_position; -- x/y
 		log_threshold	: in type_log_level) 
 	is
-		use et_canvas_board_2;
-		use pac_drawing_frame;
-
 		
 		procedure set_origin (
 			module_name	: in pac_module_name.bounded_string;

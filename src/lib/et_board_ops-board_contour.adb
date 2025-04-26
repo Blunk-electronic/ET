@@ -39,9 +39,6 @@
 
 package body et_board_ops.board_contour is
 
-	use pac_generic_modules;
-
-
 
 	
 	procedure set_outline (

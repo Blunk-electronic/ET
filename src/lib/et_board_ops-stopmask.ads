@@ -37,8 +37,6 @@
 --
 --   ToDo: 
 
-with ada.containers; 			use ada.containers;
-with ada.containers.indefinite_doubly_linked_lists;
 
 with et_text;
 with et_stopmask;				use et_stopmask;
