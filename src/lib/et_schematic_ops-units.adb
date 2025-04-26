@@ -318,7 +318,7 @@ package body et_schematic_ops.units is
 
 	
 
-	function default_text_positions (
+	function get_default_text_positions (
 		device_cursor	: in pac_devices_sch.cursor;
 		unit_name		: in pac_unit_name.bounded_string)
 		return et_symbols.type_default_text_positions 
@@ -436,7 +436,7 @@ package body et_schematic_ops.units is
 		end query_external_units;
 
 		
-	begin -- default_text_positions
+	begin
 
 		-- Fetch the model name of the given device. 
 		model := pac_devices_sch.element (device_cursor).model;
@@ -470,7 +470,7 @@ package body et_schematic_ops.units is
 				log (text => ada.exceptions.exception_information (event), console => true);
 				raise;
 		
-	end default_text_positions;
+	end get_default_text_positions;
 
 
 
@@ -2386,7 +2386,7 @@ package body et_schematic_ops.units is
 						-- specified in symbol model. The default positions are
 						-- later rotated by the given rotation rot.
 						default_positions : et_symbols.type_default_text_positions := 
-												default_text_positions (device_cursor, name);
+							get_default_text_positions (device_cursor, name);
 						
 						-- Rotates the position by the given rotation rot:
 						function add_rot (p : in type_vector_model) return type_rotation_model is begin
