@@ -37,7 +37,6 @@
 --
 --   ToDo: 
 
-with ada.exceptions;
 
 with et_board_ops.ratsnest;					use et_board_ops.ratsnest;
 with et_port_direction;

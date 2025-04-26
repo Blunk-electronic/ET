@@ -38,9 +38,6 @@
 --   ToDo: 
 
 
-with et_logging;				use et_logging;
-
-
 package et_schematic_ops.grid is
 
 	use pac_generic_modules;

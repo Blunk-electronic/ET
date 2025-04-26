@@ -36,7 +36,6 @@
 --   history of changes:
 --
 
-with et_exceptions;						use et_exceptions;
 with et_device_appearance;				use et_device_appearance;
 
 

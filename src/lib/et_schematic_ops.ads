@@ -41,12 +41,15 @@ with ada.text_io;				use ada.text_io;
 with ada.characters.latin_1;
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded;       use ada.strings.bounded;
+
 with ada.containers;            use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_doubly_linked_lists;
 with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 with ada.containers.ordered_sets;
+
+with ada.exceptions;			use ada.exceptions;
 
 with et_meta;
 with et_net_names;				use et_net_names;
@@ -84,10 +87,13 @@ with et_device_name;			use et_device_name;
 with et_device_partcode;		use et_device_partcode;
 with et_conventions;
 
-with et_schematic_text;					use et_schematic_text;
-with et_unit_name;						use et_unit_name;
-with et_units;							use et_units;
-with et_devices_electrical;				use et_devices_electrical;
+with et_schematic_text;			use et_schematic_text;
+with et_unit_name;				use et_unit_name;
+with et_units;					use et_units;
+with et_devices_electrical;		use et_devices_electrical;
+
+with et_logging;				use et_logging;
+with et_exceptions;				use et_exceptions;
 
 
 package et_schematic_ops is

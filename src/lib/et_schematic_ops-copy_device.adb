@@ -43,6 +43,9 @@
 --		  source unit. From the source unit the positions must then be copied
 --		  to the new unit.
 
+with et_device_model;				use et_device_model;
+
+
 separate (et_schematic_ops)
 
 procedure copy_device (

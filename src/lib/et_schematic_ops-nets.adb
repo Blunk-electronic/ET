@@ -38,14 +38,12 @@
 
 with ada.strings;						use ada.strings;
 with ada.strings.unbounded;				use ada.strings.unbounded;
-with ada.exceptions;
 
 with et_schematic_ops.units;			use et_schematic_ops.units;
 with et_schematic_ops.submodules;
 
 with et_board_ops;						use et_board_ops;
 with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
-with et_exceptions;						use et_exceptions;
 
 
 package body et_schematic_ops.nets is

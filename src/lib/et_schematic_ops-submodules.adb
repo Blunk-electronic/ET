@@ -37,7 +37,6 @@
 --
 --   ToDo: 
 
-with ada.exceptions;
 with ada.directories;
 with et_directory_and_file_ops;
 
@@ -47,7 +46,6 @@ with et_generic_stacks;
 with et_device_appearance;
 with et_package_names;
 with et_module_ops;
-with et_generic_module;				use et_generic_module;
 with et_schematic_ops.units;		use et_schematic_ops.units;
 
 

@@ -36,11 +36,10 @@
 --   history of changes:
 --
 
-with ada.exceptions;				use ada.exceptions;
 with et_schematic_ops.submodules;
 with et_schematic_ops.units;
 with et_generic_stacks;
-with et_netlists;
+
 
 
 package body et_schematic_ops.netlists is

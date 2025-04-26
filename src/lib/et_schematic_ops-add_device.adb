@@ -36,6 +36,10 @@
 --   history of changes:
 --
 
+with et_device_rw;
+with et_device_model;				use et_device_model;
+
+
 separate (et_schematic_ops)
 
 procedure add_device (

@@ -36,27 +36,8 @@
 --   history of changes:
 --
 
-with ada.strings;					use ada.strings;
-with ada.strings.unbounded;			use ada.strings.unbounded;
-with ada.directories;
-with ada.exceptions;				use ada.exceptions;
-
-with et_exceptions;					use et_exceptions;
-
-with et_modes;						use et_modes;
-with et_conventions;
-with et_pcb_sides;
-with et_board_coordinates;
-with et_pcb;
-with et_devices_electrical;
 with et_devices_non_electrical;
-with et_port_direction;
-with et_terminals;
-with et_packages;
-with et_package_names;
 with et_device_appearance;
-with et_device_rw;
-with et_device_model;				use et_device_model;
 with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 
 
