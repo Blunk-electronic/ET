@@ -53,6 +53,7 @@ with et_device_model;				use et_device_model;
 with et_device_library;				use et_device_library;
 with et_device_name;				use et_device_name;
 with et_nets;						use et_nets;
+with et_net_segment;				use et_net_segment;
 with et_unit_name;					use et_unit_name;
 with et_units;						use et_units;
 with et_devices_electrical;			use et_devices_electrical;

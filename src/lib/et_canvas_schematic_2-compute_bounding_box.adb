@@ -53,6 +53,7 @@ with et_frames;
 with et_units;						use et_units;
 with et_devices_electrical;			use et_devices_electrical;
 with et_nets;
+with et_net_segment;
 with et_net_labels;
 
 
@@ -142,6 +143,8 @@ is
 				use et_nets;
 				use pac_nets;
 				use pac_strands;
+				
+				use et_net_segment;
 				use pac_net_segments;
 
 				use et_net_labels;

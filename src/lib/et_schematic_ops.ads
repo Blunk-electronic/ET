@@ -59,6 +59,7 @@ use et_schematic_coordinates.pac_geometry_2;
 with et_string_processing;		use et_string_processing;
 with et_logging;				use et_logging;
 with et_nets;					use et_nets;
+with et_net_segment;			use et_net_segment;
 with et_net_labels;				use et_net_labels;
 with et_project;				use et_project;
 with et_generic_module;			use et_generic_module;

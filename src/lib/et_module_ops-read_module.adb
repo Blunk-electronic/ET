@@ -56,6 +56,7 @@ with et_axes;						use et_axes;
 with et_module_instance;			use et_module_instance;
 with et_nets;
 with et_net_names;					use et_net_names;
+with et_net_segment;
 with et_net_labels;
 with et_net_class;
 with et_port_names;
@@ -754,9 +755,9 @@ is
 	end read_strand;
 	
 	
-	net_segments : et_nets.pac_net_segments.list;
-	net_segment	: et_nets.type_net_segment;
-	net_junctions : et_nets.type_junctions;
+	net_segments : et_net_segment.pac_net_segments.list;
+	net_segment	: et_net_segment.type_net_segment;
+	net_junctions : et_net_segment.type_junctions;
 
 	
 	procedure set_junction (place : in string) is 
@@ -851,11 +852,11 @@ is
 
 
 	
-	net_device_port : et_nets.type_device_port;
-	net_device_ports : et_nets.pac_device_ports.set;
+	net_device_port : et_net_segment.type_device_port;
+	net_device_ports : et_net_segment.pac_device_ports.set;
 
-	net_submodule_port : et_nets.type_submodule_port;
-	net_submodule_ports : et_nets.pac_submodule_ports.set;
+	net_submodule_port : et_net_segment.type_submodule_port;
+	net_submodule_ports : et_net_segment.pac_submodule_ports.set;
 
 	net_netchanger_port : et_netlists.type_port_netchanger;
 	net_netchanger_ports : et_netlists.pac_netchanger_ports.set;
@@ -873,6 +874,7 @@ is
 		use et_port_names;
 		use et_symbol_ports;
 		use et_nets;
+		use et_net_segment;
 		use pac_net_name;
 		kw : constant string := f (line, 1);
 	begin
@@ -5192,7 +5194,7 @@ is
 							strand.segments := net_segments;
 
 							-- clean up for next segment collection
-							et_nets.pac_net_segments.clear (net_segments);
+							et_net_segment.pac_net_segments.clear (net_segments);
 							
 						when others => invalid_section;
 					end case;
@@ -5208,7 +5210,7 @@ is
 							net_junctions := (others => <>);
 							
 							-- insert segment in segment collection
-							et_nets.pac_net_segments.append (
+							et_net_segment.pac_net_segments.append (
 								container	=> net_segments,
 								new_item	=> net_segment);
 
@@ -5253,8 +5255,8 @@ is
 							net_segment.ports.netchangers := net_netchanger_ports;
 							
 							-- clean up for next port collections (of another net segment)
-							et_nets.pac_device_ports.clear (net_device_ports);
-							et_nets.pac_submodule_ports.clear (net_submodule_ports);
+							et_net_segment.pac_device_ports.clear (net_device_ports);
+							et_net_segment.pac_submodule_ports.clear (net_submodule_ports);
 							et_netlists.pac_netchanger_ports.clear (net_netchanger_ports);
 
 						when SEC_SUBMODULE =>

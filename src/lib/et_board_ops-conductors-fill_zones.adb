@@ -50,6 +50,7 @@ with et_board_ops.board_contour;	use et_board_ops.board_contour;
 with et_thermal_relief;				use et_thermal_relief;
 with et_devices_electrical; 		use et_devices_electrical;
 with et_devices_non_electrical;		use et_devices_non_electrical;
+with et_net_segment;
 
 
 separate (et_board_ops.conductors)
@@ -271,9 +272,10 @@ is
 			use et_nets;
 			
 			result : pac_polygon_list.list; -- a list of polygons to be returned
-			ports : et_nets.type_ports;
 
+			use et_net_segment;
 			use pac_device_ports;
+			ports : type_ports;
 
 			
 			-- Converts the terminal, that is linked to the given device port,

@@ -46,6 +46,7 @@ with et_device_library;				use et_device_library;
 with et_schematic_ops;				use et_schematic_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;
 
+with et_net_segment;
 with et_submodules;
 with et_pcb_rw.device_packages;
 
@@ -2099,13 +2100,14 @@ package body et_board_ops.devices is
 		use pac_vectors;
 		result : pac_vectors.list;
 
-		ports : et_nets.type_ports;
+		use et_nets;
+		use et_net_segment;
+		use pac_device_ports;
+		ports : et_net_segment.type_ports;
 
 		use et_device_model;
 		port_properties : type_port_properties_access;
 
-		use et_nets;
-		use pac_device_ports;
 		
 		procedure query_device (d : in pac_device_ports.cursor) is
 			-- CS use rename
@@ -2502,6 +2504,7 @@ package body et_board_ops.devices is
 			-- Get the ports of all devices connected with the given net.
 			-- Since this query is about the default assembly variant,
 			-- we do not pass a specific assembly variant here.
+			use et_net_segment;
 			ports : constant type_ports := get_ports (net_cursor);
 
 			use pac_device_ports;

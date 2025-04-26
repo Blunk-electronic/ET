@@ -2289,7 +2289,7 @@ package body et_schematic_ops.submodules is
 				ports : type_ports;
 				port : type_port_netchanger;
 
-				use et_nets.pac_submodule_ports;
+				use et_net_segment.pac_submodule_ports;
 				use pac_device_ports;
 				use pac_netchanger_ports;
 			begin

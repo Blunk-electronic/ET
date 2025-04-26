@@ -48,6 +48,7 @@ with gnat.source_info;
 
 with et_nets;
 with et_net_labels;
+with et_net_segment;
 with et_net_class;
 with et_units;
 with et_schematic_text;
@@ -60,7 +61,6 @@ with et_string_processing;			use et_string_processing;
 with et_project;
 with et_generic_module;				use et_generic_module;
 with et_vias;
--- with et_board_shapes_and_text;
 with et_package_names;
 with et_packages;
 with et_kicad_general;
@@ -2797,12 +2797,12 @@ package body et_kicad_to_native is
 				strands_native : et_nets.pac_strands.list;
 				strand_native : et_nets.type_strand;
 			
-				use et_nets.pac_net_segments;
-				net_segments_native : et_nets.pac_net_segments.list;
-				net_segment_native : et_nets.type_net_segment;
+				use et_net_segment.pac_net_segments;
+				net_segments_native : et_net_segment.pac_net_segments.list;
+				net_segment_native : et_net_segment.type_net_segment;
 
 				use et_net_labels.pac_net_labels;
-				use et_nets.pac_device_ports;
+				use et_net_segment.pac_device_ports;
 				
 				function tag_and_simple_labels (segment : in et_kicad.schematic.type_net_segment) 
 				-- Copies from the given kicad net segment all simple and tag labels and returns
@@ -2923,9 +2923,9 @@ package body et_kicad_to_native is
 				-- are reduced to a single junction (without warning).
 				-- CS: NOTE: Misleading warnings may be issued here due to improper junction processing
 				-- in procedure et_kicad.schematic.process_junctions.
-					return et_nets.type_junctions 
+					return et_net_segment.type_junctions 
 				is
-					junctions : et_nets.type_junctions; -- to be returned
+					junctions : et_net_segment.type_junctions; -- to be returned
 
 					use et_schematic_coordinates.pac_geometry_2;
 					use et_kicad_coordinates;
@@ -2965,14 +2965,14 @@ package body et_kicad_to_native is
 				
 				-- Returns the component ports connected with the given net segment.
 				function read_ports (segment : in et_kicad.schematic.type_net_segment)
-					return et_nets.pac_device_ports.set 
+					return et_net_segment.pac_device_ports.set 
 				is
 					use et_kicad.schematic;
 					use et_kicad.schematic.type_ports_with_reference;
 					port_cursor_kicad	: type_ports_with_reference.cursor;
 					all_ports_of_net	: type_ports_with_reference.set;
 					
-					ports_of_segment : et_nets.pac_device_ports.set; -- to be returned
+					ports_of_segment : et_net_segment.pac_device_ports.set; -- to be returned
 
 					use et_sheets;
 					use et_schematic_coordinates;
@@ -3047,7 +3047,7 @@ package body et_kicad_to_native is
 											scope		=> et_kicad_coordinates.XY),
 									 level => log_threshold + 5);
 								
-								et_nets.pac_device_ports.insert (
+								et_net_segment.pac_device_ports.insert (
 									container	=> ports_of_segment,
 									new_item	=> (
 										device_name	=> element (port_cursor_kicad).reference,
@@ -3102,10 +3102,10 @@ package body et_kicad_to_native is
 						net_segment_native.ports.devices := read_ports (element (kicad_segment_cursor));
 
 						-- there are no ports of submodules
-						net_segment_native.ports.submodules := et_nets.pac_submodule_ports.empty_set;
+						net_segment_native.ports.submodules := et_net_segment.pac_submodule_ports.empty_set;
 						
 						-- Collect native net segment in list net_segments_native.
-						et_nets.pac_net_segments.append (
+						et_net_segment.pac_net_segments.append (
 							container	=> net_segments_native,
 							new_item	=> net_segment_native);
 
