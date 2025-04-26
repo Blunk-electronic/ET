@@ -4492,7 +4492,7 @@ package body et_schematic_ops.submodules is
 										log (text => "device " & to_string (element (port_cursor).device_name) &
 											 " port " & to_string (element (port_cursor).port_name), level => log_threshold + 4);
 
-										if not exists_device_port (
+										if not device_port_exists (
 											module_cursor	=> module_cursor,
 											device_name		=> element (port_cursor).device_name,
 											port_name		=> element (port_cursor).port_name) then

@@ -609,7 +609,7 @@ package body et_schematic_ops.units is
 
 	
 
-	function deployed (
+	function is_deployed (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
 		unit	: in pac_unit_name.bounded_string)
@@ -625,12 +625,12 @@ package body et_schematic_ops.units is
 		else
 			return true;
 		end if;
-	end deployed;
+	end is_deployed;
 
 	
 	
 
-	function exists_device_port (
+	function device_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		port_name		: in pac_port_name.bounded_string) -- CE
@@ -696,14 +696,14 @@ package body et_schematic_ops.units is
 			process		=> query_devices'access);
 
 		return result;
-	end exists_device_port;
+	end device_port_exists;
 
 
 
 
 	
 
-	function exists_device_unit_port (
+	function device_unit_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string := to_unit_name (""); -- A
@@ -765,19 +765,19 @@ package body et_schematic_ops.units is
 		end query_devices;
 
 		
-	begin -- exists_device_unit_port
+	begin
 		query_element (
 			position	=> module_cursor,
 			process		=> query_devices'access);
 
 		return result;
-	end exists_device_unit_port;
+	end device_unit_port_exists;
 
 
 	
 
 	
-	function available_units (
+	function get_available_units (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
 		log_threshold	: in type_log_level)
@@ -841,7 +841,7 @@ package body et_schematic_ops.units is
 		end get_device_model;
 		
 		
-	begin -- available_units
+	begin
 		log (text => "looking up available units of " 
 			 & to_string (device_name) & " ...",
 			 level => log_threshold);
@@ -871,7 +871,7 @@ package body et_schematic_ops.units is
 			--put_line (exception_information (event));
 
 			--return names_of_available_units;
-	end available_units;
+	end get_available_units;
 
 
 
@@ -937,7 +937,7 @@ package body et_schematic_ops.units is
 
 	
 
-	function units_on_sheet (
+	function get_units_on_sheet (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
 		sheet			: in type_sheet;
@@ -974,7 +974,7 @@ package body et_schematic_ops.units is
 		end query_units;
 
 		
-	begin -- units_on_sheet
+	begin
 		log (text => "looking up units of " 
 			 & to_string (device_name) 
 			 & " on sheet " & to_string (sheet) & " ...",
@@ -995,7 +995,7 @@ package body et_schematic_ops.units is
 		log_indentation_down;
 		
 		return names_of_units;
-	end units_on_sheet;
+	end get_units_on_sheet;
 
 
 
@@ -1650,6 +1650,8 @@ package body et_schematic_ops.units is
 
 	end move_unit;
 
+
+
 	
 	-- Drags the net segments according to the given drag_list of a unit.
 	-- Changes the position of start or end points of segments.
@@ -1838,6 +1840,9 @@ package body et_schematic_ops.units is
 
 		log_indentation_down;
 	end drag_net_segments;
+
+
+
 
 	
 	-- Tests whether the given unit ports at their individual location are movable. 
@@ -2097,6 +2102,8 @@ package body et_schematic_ops.units is
 
 		return result;
 	end is_movable;
+
+
 
 	
 	

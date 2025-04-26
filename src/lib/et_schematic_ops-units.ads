@@ -110,7 +110,7 @@ package et_schematic_ops.units is
 	-- given module has been deployed somewhere.
 	-- If the unit has not been deployed yet, returns false.
 	-- Raises exception if device does not exist.
-	function deployed ( -- CS rename to is_deployed
+	function is_deployed (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name; -- R2
 		unit	: in pac_unit_name.bounded_string)
@@ -119,7 +119,7 @@ package et_schematic_ops.units is
 
 	
 	-- Returns true if given device with the given port exists in module indicated by module_cursor.
-	function exists_device_port ( -- CS rename to device_port_exists
+	function device_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		port_name		: in pac_port_name.bounded_string) -- CE
@@ -129,7 +129,7 @@ package et_schematic_ops.units is
 	
 	-- Returns true if given device exists in module indicated by module_cursor.
 	-- The unit and port names are optionally.
-	function exists_device_unit_port (
+	function device_unit_port_exists (
 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string := to_unit_name (""); -- A
@@ -141,7 +141,7 @@ package et_schematic_ops.units is
 	-- Returns the names of available units of the given device in the 
 	-- given generic module. "Available" means the unit exists and is
 	-- not already placed somewhere in the schematic:
-	function available_units ( -- CS rename to get_available_units
+	function get_available_units (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
 		log_threshold	: in type_log_level)
@@ -162,7 +162,7 @@ package et_schematic_ops.units is
 	
 	-- Returns the names of units of the given device in the 
 	-- given generic module on the given sheet.
-	function units_on_sheet ( -- CS rename to get_units_on_sheet
+	function get_units_on_sheet (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
 		sheet			: in type_sheet;

@@ -2686,7 +2686,7 @@ is
 					
 						menu_propose_units_on_fetch (
 							device			=> device_name,
-							units			=> available_units (
+							units			=> get_available_units (
 												active_module,
 												device_name,
 												log_threshold + 1),
@@ -2785,7 +2785,7 @@ is
 									-- Propose units that are on the current active sheet:
 									menu_propose_units_on_delete (
 										device			=> unit_delete.device,
-										units			=> units_on_sheet (
+										units			=> get_units_on_sheet (
 															active_module,
 															device_name,
 															active_sheet,
@@ -2807,7 +2807,7 @@ is
 
 									-- Test whether the unit is deployed on the current active sheet.
 									-- Deleting is possible if it is deployed and if it is on the current sheet.
-									if deployed (active_module, unit_delete.device, unit_name) then
+									if is_deployed (active_module, unit_delete.device, unit_name) then
 
 										unit_delete.unit := unit_name;
 										
@@ -2855,7 +2855,7 @@ is
 
 									-- Propose units that are on the current active sheet:
 									menu_propose_units_on_move (
-										units			=> units_on_sheet (
+										units			=> get_units_on_sheet (
 															active_module,
 															device_name,
 															active_sheet,
@@ -2878,7 +2878,7 @@ is
 									-- Test whether the unit is deployed on the current active sheet.
 									-- Dragging is possible if it is deployed and if it is on the current sheet.
 									-- It will then be attached to the cursor or mouse pointer.
-									if deployed (active_module, object_device_name, unit_name) then
+									if is_deployed (active_module, object_device_name, unit_name) then
 
 										object_unit_name := unit_name;
 										
@@ -2962,7 +2962,7 @@ is
 
 									-- Propose units that are on the current active sheet:
 									menu_propose_units_on_move (
-										units			=> units_on_sheet (
+										units			=> get_units_on_sheet (
 															active_module,
 															device_name,
 															active_sheet,
@@ -2985,7 +2985,7 @@ is
 									-- Test whether the unit is deployed.
 									-- If it is deployed somewhere (whatever sheet) then it will be 
 									-- attached to the cursor or mouse pointer.
-									if deployed (active_module, object_device_name, unit_name) then
+									if is_deployed (active_module, object_device_name, unit_name) then
 
 										object_unit_name := unit_name;
 										
@@ -3036,7 +3036,7 @@ is
 
 									-- Propose units that are on the current active sheet:
 									menu_propose_units_on_move (
-										units			=> units_on_sheet (
+										units			=> get_units_on_sheet (
 															active_module,
 															device_name,
 															active_sheet,
@@ -3060,7 +3060,7 @@ is
 									-- Moving the placeholder is possible if the unit it is deployed 
 									-- and if it is on the current sheet.
 									-- The placeholder will then be attached to the cursor or mouse pointer.
-									if deployed (active_module, placeholder_move.device, unit_name) then
+									if is_deployed (active_module, placeholder_move.device, unit_name) then
 
 										placeholder_move.unit := unit_name;
 										
@@ -3100,7 +3100,7 @@ is
 
 									-- Propose units that are on the current active sheet:
 									menu_propose_units_on_move (
-										units			=> units_on_sheet (
+										units			=> get_units_on_sheet (
 															active_module,
 															device_name,
 															active_sheet,
@@ -3123,7 +3123,7 @@ is
 									-- Test whether the unit is deployed on the current active sheet.
 									-- Rotating is possible if it is deployed and if it is on the current sheet.
 									-- It will then be attached to the cursor or mouse pointer.
-									if deployed (active_module, object_device_name, unit_name) then
+									if is_deployed (active_module, object_device_name, unit_name) then
 
 										object_unit_name := unit_name;
 										
@@ -3159,7 +3159,7 @@ is
 
 									-- Propose units that are on the current active sheet:
 									menu_propose_units_on_move (
-										units			=> units_on_sheet (
+										units			=> get_units_on_sheet (
 															active_module,
 															device_name,
 															active_sheet,
@@ -3183,7 +3183,7 @@ is
 									-- Rotating the placeholder is possible if the unit it is deployed 
 									-- and if it is on the current sheet.
 									-- The placeholder will then be attached to the cursor or mouse pointer.
-									if deployed (active_module, placeholder_move.device, unit_name) then
+									if is_deployed (active_module, placeholder_move.device, unit_name) then
 
 										placeholder_move.unit := unit_name;
 										
