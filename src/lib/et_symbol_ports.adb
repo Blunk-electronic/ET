@@ -44,6 +44,59 @@ with ada.characters.handling;	use ada.characters.handling;
 package body et_symbol_ports is
 
 
+	procedure move_ports (
+		ports	: in out pac_ports.map; -- the portlist
+		offset	: in type_object_position) -- the offset (only x/y matters)
+	is
+		use pac_ports;
+
+		procedure move (
+			name	: in pac_port_name.bounded_string;
+			port	: in out type_port) 
+		is begin
+			move_by (port.position, to_distance_relative (offset.place));
+		end;
+
+		procedure query_port (cursor : in pac_ports.cursor) is begin
+			update_element (
+				container	=> ports,
+				position	=> cursor,
+				process		=> move'access);
+		end;
+			
+	begin -- move_ports
+		iterate (ports, query_port'access);
+	end move_ports;
+
+
+	
+	
+	procedure rotate_ports (
+		ports	: in out pac_ports.map; -- the portlist
+		angle	: in type_rotation_model)  -- 90
+	is
+		use pac_ports;
+
+		procedure rotate (
+			name	: in pac_port_name.bounded_string;
+			port	: in out type_port) 
+		is begin
+			rotate_by (port.position, angle);
+		end;
+
+		procedure query_port (cursor : in pac_ports.cursor) is begin
+			update_element (
+				container	=> ports,
+				position	=> cursor,
+				process		=> rotate'access);
+		end;
+			
+	begin
+		iterate (ports, query_port'access);
+	end rotate_ports;
+
+
+	
 	procedure dummy is begin null; end;
 
 	

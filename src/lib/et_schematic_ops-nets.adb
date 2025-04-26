@@ -40,6 +40,7 @@ with ada.strings;						use ada.strings;
 with ada.strings.unbounded;				use ada.strings.unbounded;
 with ada.exceptions;
 
+with et_schematic_ops.units;			use et_schematic_ops.units;
 with et_schematic_ops.submodules;
 
 with et_board_ops;						use et_board_ops;
@@ -3015,6 +3016,7 @@ package body et_schematic_ops.nets is
 				next (net_cursor);
 			end loop;
 		end query_nets;
+
 		
 	begin -- delete_net_label
 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &

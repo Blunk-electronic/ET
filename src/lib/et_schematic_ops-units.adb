@@ -52,6 +52,117 @@ package body et_schematic_ops.units is
 	use pac_generic_modules;
 
 
+	function get_position (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC34
+		port_name		: in pac_port_name.bounded_string; -- CE
+		log_threshold	: in type_log_level)
+		return type_object_position 
+	is
+		port_position : type_object_position; -- to be returned		
+		
+		module_cursor : pac_generic_modules.cursor; -- points to the module being inquired
+
+		
+		procedure query_devices (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_devices_sch;
+			device_cursor : pac_devices_sch.cursor;
+			unit_position : type_object_position;
+
+			
+			procedure query_units (
+				device_name	: in type_device_name;
+				device		: in type_device_sch) 
+			is				
+				use pac_units;
+				unit_cursor : pac_units.cursor := device.units.first;
+				unit_name : pac_unit_name.bounded_string;
+				
+				use pac_ports;
+				ports : pac_ports.map;
+				port_cursor : pac_ports.cursor;
+			begin
+				-- Locate unit in schematic device:
+				while unit_cursor /= pac_units.no_element loop
+
+					-- Load the default xy-positions of ports relative to the center of the unit.
+					unit_name := key (unit_cursor);
+					ports := get_ports_of_unit (device_cursor, unit_name);
+
+					-- If the unit has a port named port_name: 
+					if contains (ports, port_name) then -- port found
+						
+						-- calculate the port position in the schematic
+						unit_position := element (unit_cursor).position; -- unit pos. in schematic
+
+						port_cursor := find (ports, port_name);
+						port_position := et_schematic_coordinates.to_position (
+							sheet	=> get_sheet (unit_position), -- the sheet where the unit is
+							point	=> element (port_cursor).position -- default xy pos of port
+							);														 
+
+						-- Calculate the absolute port position in schematic by
+						-- first rotating port_xy, and then moving port_xy:
+						
+						rotate_by (
+							point		=> port_position.place,
+							rotation	=> get_rotation (element (unit_cursor).position));
+						
+						-- CS mirror ?
+						
+						-- Calculate the absolute port position in the schematic:
+						move_by (
+							point 	=> port_position.place,
+							offset	=> to_distance_relative (unit_position.place));
+						
+						exit; -- no need to look at other units
+					end if;
+					
+					next (unit_cursor);
+				end loop;
+			end query_units;
+
+			
+		begin -- query_devices
+			if contains (module.devices, device_name) then
+				device_cursor := find (module.devices, device_name); -- the device should be there
+
+				log_indentation_up;
+				
+				pac_devices_sch.query_element (
+					position	=> device_cursor,
+					process		=> query_units'access);
+
+				log_indentation_down;				
+			else
+				device_not_found (device_name);
+			end if;
+		end query_devices;
+
+		
+	begin
+		log (text => "module " & to_string (module_name) &
+			 " locating device " & to_string (device_name) & 
+			 " port " & to_string (port_name) & " ...", level => log_threshold);
+
+		-- locate module
+		module_cursor := locate_module (module_name);
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_devices'access);
+		
+		return port_position;
+	end get_position;
+
+	
+	
+
+
+	
 	procedure move_unit_placeholder (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC45
@@ -447,7 +558,7 @@ package body et_schematic_ops.units is
 		end query_devices;
 		
 		
-	begin -- rotate_unit_placeholder
+	begin
 		log (text => "module " & to_string (module_name) &
 			" rotating " & to_string (device_name) & " unit " &
 			to_string (unit_name) & " placeholder" & to_string (meaning) & " to" &
@@ -1031,6 +1142,8 @@ package body et_schematic_ops.units is
 
 	
 
+
+	
 	procedure fetch_unit (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
 		device_name		: in type_device_name; -- IC1
@@ -1061,6 +1174,7 @@ package body et_schematic_ops.units is
 		
 	end unit_positions_valid;
 	
+
 
 	
 
@@ -1212,6 +1326,7 @@ package body et_schematic_ops.units is
 
 	
 	
+	
 	procedure delete_unit (
 		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
@@ -1321,8 +1436,7 @@ package body et_schematic_ops.units is
 		end query_devices;
 
 		
-	begin -- delete_unit
-
+	begin
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -1330,6 +1444,8 @@ package body et_schematic_ops.units is
 
 	end delete_unit;
 	
+
+
 	
 	procedure delete_unit (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)

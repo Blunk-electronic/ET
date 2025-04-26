@@ -173,6 +173,20 @@ package et_symbol_ports is
 		element_type	=> type_port);
 
 	
+
+	-- Moves the given ports by given offset.
+	procedure move_ports (
+		ports	: in out pac_ports.map; -- the portlist
+		offset	: in type_object_position); -- the offset (only x/y matters)
+	
+
+	-- Rotates the given ports by given angle about the origin.
+	procedure rotate_ports (
+		ports	: in out pac_ports.map; -- the portlist
+		angle	: in type_rotation_model); -- 90
+
+
+	
 	procedure dummy;
 
 	-- CS procedure that outputs the properties of a port

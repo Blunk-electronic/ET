@@ -42,6 +42,18 @@ package et_schematic_ops.units is
 	use pac_unit_name;
 
 
+	-- Returns the sheet/x/y position of the given device,
+	-- unit and port:
+	function get_position (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC34
+		port_name		: in pac_port_name.bounded_string; -- CE
+		log_threshold	: in type_log_level)
+		return type_object_position;
+
+
+	
+
 	-- Moves the name placeholder of the given unit.
 	procedure move_unit_placeholder (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)

@@ -150,10 +150,6 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level);
 
 	
-	-- Moves the given unit ports by given offset.
-	procedure move_ports ( -- CS move to et_symbols ?
-		ports	: in out pac_ports.map; -- the portlist
-		offset	: in type_object_position); -- the offset (only x/y matters)
 
 	
 	-- Inserts the given device ports in the net segments.
@@ -172,12 +168,6 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level);
 
 	
-	-- Rotates the given unit ports by given angle about the origin.
-	procedure rotate_ports ( -- CS move to et_symbols ?
-		ports	: in out pac_ports.map; -- the portlist
-		angle	: in et_schematic_coordinates.type_rotation_model); -- 90
-
-	
 	
 	procedure delete_device (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -185,16 +175,6 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level);
 
 	
-	-- Returns the sheet/x/y position of the given device and port.
-	function get_position (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC34
-		port_name		: in pac_port_name.bounded_string; -- CE
-		log_threshold	: in type_log_level)
-		return type_object_position;
-
-
-
 	
 	-- Returns a cursor to the requested net in the given module. If the net could
 	-- not be found, returns no_element.
