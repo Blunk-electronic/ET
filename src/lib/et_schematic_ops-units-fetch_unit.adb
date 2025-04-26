@@ -36,7 +36,11 @@
 --   history of changes:
 --
 
-separate (et_schematic_ops)
+with et_exceptions;						use et_exceptions;
+with et_device_appearance;				use et_device_appearance;
+
+
+separate (et_schematic_ops.units)
 
 procedure fetch_unit (
 	module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)

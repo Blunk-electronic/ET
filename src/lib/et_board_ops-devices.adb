@@ -44,6 +44,7 @@ with et_netlists;
 with et_device_model;
 with et_device_library;				use et_device_library;
 with et_schematic_ops;				use et_schematic_ops;
+with et_schematic_ops.units;		use et_schematic_ops.units;
 
 with et_submodules;
 with et_pcb_rw.device_packages;

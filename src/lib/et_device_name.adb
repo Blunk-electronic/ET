@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -321,8 +321,40 @@ package body et_device_name is
 	end;
 
 
+
+
+	
+	procedure apply_offset (
+		device_name		: in out type_device_name; -- IC3
+		offset			: in type_name_index; -- 100
+		log_threshold	: in type_log_level) 
+	is
+		device_name_instance : type_device_name;
+	begin
+		-- apply offset if it is greater zero. If offset is zero, we
+		-- are dealing with the top module.
+		if offset > 0 then
+			device_name_instance := device_name; -- take copy of original name
+			
+			-- apply device name offset
+			offset_index (device_name_instance, offset);
+
+			-- log original name and name in instanciated submodule
+			log (text => "device name origin " & to_string (device_name) &
+				" -> in submodule instance " & to_string (device_name_instance),
+				level => log_threshold);
+
+			device_name := device_name_instance; -- overwrite orignial name
+		else
+			-- no offset to apply:
+			log (text => "device name " & to_string (device_name) & " -> no offset",
+				level => log_threshold);
+		end if;
+	end;
+	
 	
 end et_device_name;
+
 
 -- Soli Deo Gloria
 

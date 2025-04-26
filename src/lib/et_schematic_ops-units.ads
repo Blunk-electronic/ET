@@ -40,7 +40,55 @@
 package et_schematic_ops.units is
 
 	use pac_unit_name;
+
+
+	-- Returns the sheet number of the given unit.
+	-- Raises constraint error if device or unit does not exist.
+	function get_sheet (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name; -- R2
+		unit	: in pac_unit_name.bounded_string)
+		return type_sheet;
+
+
+
 	
+
+	-- Fetches a unit from a device into the schematic.
+	procedure fetch_unit (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC1
+		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
+		destination		: in type_object_position; -- sheet/x/y/rotation
+		log_threshold	: in type_log_level);
+
+	-- CS procedure invoke_unit that takes module cursor and model cursor
+
+
+	
+
+	-- Returns true if no unit sits on top of another.
+	function unit_positions_valid (
+		module_cursor 	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+		return boolean;
+
+
+	
+	-- Returns properties of the given device port in module indicated by module_cursor.
+	-- Properties are things like: terminal name, direction, sensitivity, power level, ...
+	-- Assumes the default assembly variant (means ALL devices are mounted).
+	-- See et_libraries.type_port for detail.
+	-- The device must exist in the module and must be real. Run intergrity check
+	-- in case exception occurs here.
+	function get_port_properties (
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
+		port_name		: in pac_port_name.bounded_string) -- CE
+		return type_port_properties_access;
+
+
 	
 	-- The result of a unit query is of this type:
 	type type_unit_query (exists : boolean := false) is record

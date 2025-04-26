@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -39,6 +39,7 @@
 with ada.strings.maps;			use ada.strings.maps;
 with ada.strings.bounded; 		use ada.strings.bounded;
 with et_device_prefix;			use et_device_prefix;
+with et_logging;				use et_logging;
 
 
 
@@ -49,6 +50,7 @@ package et_device_name is
 
 	
 	subtype type_name_index is natural range natural'first .. 99_999; -- R1..R99999, IC1..IC99999 should be enough
+	-- CS derive new type instead ?
 
 	name_index_default : constant type_name_index := 0;
 
@@ -135,7 +137,15 @@ package et_device_name is
 		name	: in out type_device_name;
 		offset	: in type_name_index);
 
-		
+
+	-- Adds the offset to the device index of the given device_name.
+	procedure apply_offset (
+		device_name		: in out type_device_name; -- IC3
+		offset			: in type_name_index; -- 100
+		log_threshold	: in type_log_level);
+
+
+	
 end et_device_name;
 
 -- Soli Deo Gloria

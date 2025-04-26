@@ -3306,25 +3306,10 @@ package body et_schematic_ops is
 
 	
 
-	
-	function get_sheet (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name; -- R2
-		unit	: in pac_unit_name.bounded_string)
-		return type_sheet
-	is begin		
-		return get_sheet (get_position (module, device, unit));
-	end get_sheet;
+
 		
 
 	
-	procedure fetch_unit (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC1
-		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
-		destination		: in type_object_position; -- sheet/x/y/rotation
-		log_threshold	: in type_log_level) is separate;
-
 
 
 
@@ -3373,6 +3358,11 @@ package body et_schematic_ops is
 			process		=> create'access);
 		
 	end create_assembly_variant;
+
+
+
+
+
 	
 	procedure delete_assembly_variant (
 	-- Deletes an assembly variant.
@@ -3419,6 +3409,10 @@ package body et_schematic_ops is
 		
 	end delete_assembly_variant;
 
+
+
+
+	
 	procedure describe_assembly_variant (
 	-- Describes an assembly variant. Overwrites the previous description.
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
@@ -3477,6 +3471,8 @@ package body et_schematic_ops is
 	end describe_assembly_variant;
 
 
+
+	
 	
 	procedure mount_device (
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
@@ -3584,6 +3580,7 @@ package body et_schematic_ops is
 	end mount_device;
 
 
+	
 
 	
 	procedure unmount_device (
@@ -3630,6 +3627,7 @@ package body et_schematic_ops is
 				   );
 					
 			end insert_device;
+
 			
 		begin -- unmount
 			-- the variant must exists
@@ -3645,9 +3643,9 @@ package body et_schematic_ops is
 			else
 				assembly_variant_not_found (variant_name);
 			end if;
-
 		end unmount;
 
+		
 	begin -- unmount_device
 		log (text => "module " & to_string (module_name) &
 			 " variant " & enclose_in_quotes (to_variant (variant_name)) &
@@ -3671,6 +3669,10 @@ package body et_schematic_ops is
 			
 	end unmount_device;
 
+
+
+
+	
 	procedure remove_device (
 	-- Removes the gvien device from the given assembly variant.
 		module_name		: in pac_module_name.bounded_string; -- the module like motor_driver (without extension *.mod)
@@ -3682,12 +3684,14 @@ package body et_schematic_ops is
 
 		use et_assembly_variants;
 
+		
 		procedure remove (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) is
 			use et_assembly_variants.pac_assembly_variants;
 			cursor : et_assembly_variants.pac_assembly_variants.cursor;
 
+			
 			procedure delete_device (
 				name		: in pac_assembly_variant_name.bounded_string;
 				variant		: in out et_assembly_variants.type_assembly_variant) is
@@ -3709,6 +3713,7 @@ package body et_schematic_ops is
 				end if;
 					
 			end delete_device;
+
 			
 		begin -- remove
 			-- the variant must exist
@@ -3750,6 +3755,8 @@ package body et_schematic_ops is
 		
 	end remove_device;
 
+
+	
 
 	-- Renames the given device. Returns true if device has been renamed.
 	-- Assumes that the device with name device_name_before exists.
@@ -3936,24 +3943,7 @@ package body et_schematic_ops is
 
 
 	
-	function unit_positions_valid (
-	-- Returns true if no unit sits on top of another.
-		module_cursor 	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)
-		return boolean is
-		use et_numbering;
-		devices : et_numbering.pac_devices.map;
-	begin
-		devices := sort_by_coordinates_2 (module_cursor, log_threshold);
-		-- If a unit sits on top of another unit, sort_by_coordinates_2 throws a
-		-- constraint_error which will be catched here.
 
-		return true;
-		
-		exception when event: others => 
-			return false;
-		
-	end unit_positions_valid;
 
 
 
@@ -4159,159 +4149,6 @@ package body et_schematic_ops is
 
 		log_indentation_down;
 	end renumber_devices;
-		
-
-
-	
-
-	
-	procedure apply_offset (
-	-- Adds the offset to the device index of the given device_name.
-		device_name		: in out type_device_name; -- IC3
-		offset			: in type_name_index; -- 100
-		log_threshold	: in type_log_level) 
-	is
-		device_name_instance : type_device_name;
-	begin
-		-- apply offset if it is greater zero. If offset is zero, we
-		-- are dealing with the top module.
-		if offset > 0 then
-			device_name_instance := device_name; -- take copy of original name
-			
-			-- apply device name offset
-			offset_index (device_name_instance, offset);
-
-			-- log original name and name in instanciated submodule
-			log (text => "device name origin " & to_string (device_name) &
-				" -> in submodule instance " & to_string (device_name_instance),
-				level => log_threshold);
-
-			device_name := device_name_instance; -- overwrite orignial name
-		else
-			-- no offset to apply:
-			log (text => "device name " & to_string (device_name) & " -> no offset",
-				level => log_threshold);
-		end if;
-	end;
-
-	
-
-
-	
-	function get_port_properties (
-		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
-		port_name		: in pac_port_name.bounded_string) -- CE
-		return type_port_properties_access
-	is
-		properties : type_port_properties_access; -- to be returned
-		
-		terminal_name : et_terminals.pac_terminal_name.bounded_string;
-
-		use et_port_direction;
-		port_direction : type_port_direction := PASSIVE;
-		port_properties_cursor : pac_ports.cursor;
-
-		
-		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is
-			use pac_devices_sch;
-			device_cursor_sch	: pac_devices_sch.cursor;
-			variant 			: pac_package_variant_name.bounded_string; -- D, N
-			device_cursor_lib	: pac_devices_lib.cursor;
-
-			
-			procedure query_variants (
-				model	: in pac_device_model_file.bounded_string;
-				device	: in type_device_model) 
-			is
-				variant_cursor : pac_variants.cursor;
-
-				
-				procedure query_ports (
-					variant_name	: in pac_package_variant_name.bounded_string;
-					variant			: in type_variant) 
-				is
-					use pac_terminal_port_map;
-					terminal_cursor : pac_terminal_port_map.cursor := variant.terminal_port_map.first;
-					use pac_port_name;
-					use pac_unit_name;
-				begin
-					while terminal_cursor /= pac_terminal_port_map.no_element loop
-						if	element (terminal_cursor).unit = unit_name and then
-							element (terminal_cursor).name = port_name then
-								terminal_name := key (terminal_cursor);
-								exit;
-						end if;
-						next (terminal_cursor);
-					end loop;
-						
-				end query_ports;
-
-				
-			begin -- query_variants
-				variant_cursor := pac_variants.find (device.variants, variant);
-
-				pac_variants.query_element (
-					position	=> variant_cursor,
-					process		=> query_ports'access);
-				
-			end query_variants;
-
-			
-			use pac_ports;
-
-			
-		begin -- query_devices
-			-- locate the device in schematic (default assembly variant):
-			device_cursor_sch := find (module.devices, device_name);
-
--- 			if device_cursor_sch /= pac_devices_sch.no_element then
-			
-				variant := element (device_cursor_sch).variant;
-
-				-- get the name of the device model (or the generic name)
-				device_cursor_lib := locate_device (element (device_cursor_sch).model);
-
-				-- Get the name of the terminal (the pin or pad) according to the device variant.
-				-- Store it in variable terminal_name:
-				pac_devices_lib.query_element (
-					position	=> device_cursor_lib,
-					process		=> query_variants'access);
-
-				-- Get the electrical properties of the port of the current device:
-				port_properties_cursor := get_properties (device_cursor_lib, port_name);
-
-				-- Create the port where pointer "properties" is pointing at.
-				-- It is created with the direction obtained from port_properties_cursor:
-				properties := new type_port_properties (
-					direction 	=> element (port_properties_cursor).direction);
-
-				-- Assign the terminal name:
-				properties.terminal := terminal_name;
-
-				-- Assign electrical properties provided by port_properties_cursor:
-				properties.properties := element (port_properties_cursor);
-
--- 			else
--- 				log (importance => ERROR, text => "Found terminal of device " & enclose_in_quotes (to_string (device_name)) &
--- 					 " , but this device does not exist !");
--- 				raise constraint_error;
--- 			end if;
-			
-		end query_devices;
-
-		
-	begin
-		query_element (
-			position	=> module_cursor,
-			process		=> query_devices'access);
-		
-		return properties;
-	end get_port_properties;
 
 	
 	

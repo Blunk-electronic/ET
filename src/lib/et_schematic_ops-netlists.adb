@@ -37,7 +37,8 @@
 --
 
 with ada.exceptions;				use ada.exceptions;
-with et_schematic_ops.Submodules;
+with et_schematic_ops.submodules;
+with et_schematic_ops.units;
 with et_generic_stacks;
 with et_netlists;
 
@@ -65,6 +66,8 @@ package body et_schematic_ops.netlists is
 			port_sch		: type_device_port := element (port_cursor);
 			more_properties	: type_port_properties_access;
 			device_cursor	: pac_devices_sch.cursor;
+
+			use et_schematic_ops.units;
 		begin
 			device_cursor := locate_device (module_cursor, element (port_cursor).device_name);
 

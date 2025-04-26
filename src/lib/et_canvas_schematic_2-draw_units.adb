@@ -61,6 +61,7 @@ with et_device_placeholders;			use et_device_placeholders;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_schematic_ops;
+with et_schematic_ops.units;
 with et_display.schematic;				use et_display.schematic;
 
 with et_canvas_schematic_preliminary_object; 	use et_canvas_schematic_preliminary_object;
@@ -223,6 +224,7 @@ procedure draw_units is
 				properties : type_port_properties_access;
 
 				use pac_draw_text;
+				use et_schematic_ops.units;
 			begin
 				-- Rotate the position of the terminal name by the unit rotation:
 				rotate_by (pos_terminal_name, unit_rotation);
@@ -256,7 +258,7 @@ procedure draw_units is
 
 				-- Get the properties of the port. Properties is a record that provides
 				-- the terminal name. Other things of properties are not relevant here:
-				properties := et_schematic_ops.get_port_properties (
+				properties := get_port_properties (
 					module_cursor	=> active_module,
 					device_name		=> device_name,
 					unit_name		=> unit_name,

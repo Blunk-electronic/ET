@@ -48,6 +48,8 @@ with et_device_appearance;
 with et_package_names;
 with et_module_ops;
 with et_generic_module;				use et_generic_module;
+with et_schematic_ops.units;
+
 
 
 package body et_schematic_ops.submodules is
@@ -4513,6 +4515,7 @@ package body et_schematic_ops.submodules is
 									log_indentation_down;
 								end query_ports_devices;
 
+								
 								procedure query_ports_submodules (segment : in type_net_segment) is
 									procedure query_port (port_cursor : in pac_submodule_ports.cursor) is begin
 										log (text => "submodule " & to_string (element (port_cursor).module_name) &
@@ -4539,6 +4542,7 @@ package body et_schematic_ops.submodules is
 									log_indentation_down;
 								end query_ports_submodules;
 
+								
 								procedure query_ports_netchangers (segment : in type_net_segment) is
 									use et_netlists;
 									
@@ -4559,11 +4563,13 @@ package body et_schematic_ops.submodules is
 										collect_netchanger_port (port => element (port_cursor), net => net_name);
 									end query_port;
 
+									
 								begin -- query_ports_netchangers
 									log_indentation_up;
 									iterate (segment.ports.netchangers, query_port'access);
 									log_indentation_down;
 								end query_ports_netchangers;
+
 								
 							begin -- query_segment
 								log (text => to_string (segment_cursor), level => log_threshold + 3);
@@ -4587,6 +4593,7 @@ package body et_schematic_ops.submodules is
 									process		=> query_ports_netchangers'access);
 								
 							end query_segment;
+
 							
 						begin -- query_segments
 							iterate (strand.segments, query_segment'access);
@@ -4620,13 +4627,17 @@ package body et_schematic_ops.submodules is
 					process		=> query_strands'access);
 				
 			end query_net;
+
 			
-		begin -- query_nets
+		begin
 			iterate (module.nets, query_net'access);
 		end query_nets;
 
+
+		use et_schematic_ops.units;
+
 		
-	begin -- check_integrity
+	begin
 		log (text => "module " & to_string (module_name) & " integrity check ...", level => log_threshold);
 		log_indentation_up;
 		
@@ -4666,6 +4677,7 @@ package body et_schematic_ops.submodules is
 
 
 
+	
 	procedure dump_tree (
 		module_name		: in pac_module_name.bounded_string;
 		log_threshold	: in type_log_level) 
