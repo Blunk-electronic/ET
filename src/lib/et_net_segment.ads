@@ -37,13 +37,10 @@
 --
 
 
-with ada.strings.bounded;       use ada.strings.bounded;
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.ordered_sets;
-with ada.containers.ordered_maps;
 
-with et_assembly_variants;		use et_assembly_variants;
 with et_module_instance;		use et_module_instance;
 with et_schematic_coordinates;	use et_schematic_coordinates;
 with et_port_names;				use et_port_names;
@@ -53,11 +50,7 @@ with et_unit_name;				use et_unit_name;
 with et_logging;				use et_logging;
 with et_net_names;				use et_net_names;
 with et_net_labels;				use et_net_labels;
-with et_net_class;				use et_net_class;
 with et_netlists;
-with et_pcb;
-with et_commit;
-with et_sheets;					use et_sheets;
 
 
 package et_net_segment is
