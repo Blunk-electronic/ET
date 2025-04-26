@@ -61,6 +61,9 @@ with et_unit_add_level;			use et_unit_add_level;
 with et_package_variant;		use et_package_variant;
 with et_device_model;			use et_device_model;
 
+with et_device_placeholders.packages;	use et_device_placeholders.packages;
+
+
 package et_device_library is
 
 	use pac_geometry_2;
@@ -263,6 +266,15 @@ package et_device_library is
 
 	type type_port_properties_access is access type_port_properties;	
 	
+
+
+	-- Returns the placeholders of the package of a device. The package is indirectly selected
+	-- by the given variant name. The given device is accessed by the given device cursor.
+	function placeholders_of_package ( -- CS rename to get_placeholders_of_package
+		device	: in pac_devices_lib.cursor;
+		variant	: in pac_package_variant_name.bounded_string) -- N, D, S_0805
+		return type_text_placeholders;
+
 	
 		
 end et_device_library;

@@ -45,8 +45,6 @@ with et_netlists;
 
 package body et_schematic_ops.netlists is
 
-	use pac_generic_modules;
-
 	use et_submodules.pac_netchangers;
 	use et_submodules.pac_submodules;
 	

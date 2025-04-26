@@ -39,7 +39,6 @@
 
 
 with et_device_placeholders;			use et_device_placeholders;
-with et_device_placeholders.packages;
 
 
 package et_schematic_ops.units is

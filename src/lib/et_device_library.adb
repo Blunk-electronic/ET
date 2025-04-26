@@ -48,6 +48,7 @@ with ada.strings.fixed; 		use ada.strings.fixed;
 with et_string_processing;		use et_string_processing;
 with et_exceptions;				use et_exceptions;
 
+with et_packages;
 
 
 package body et_device_library is
@@ -652,6 +653,51 @@ package body et_device_library is
 		
 		return port_cursor;
 	end get_properties;
+
+
+
+
+
+
+	function placeholders_of_package (
+		device	: in pac_devices_lib.cursor;
+		variant	: in pac_package_variant_name.bounded_string) -- N, D, S_0805
+		return type_text_placeholders
+	is
+		use pac_variants;
+		placeholders		: type_text_placeholders; -- to be returned
+
+		-- fetch the package variants available for the given device:
+		variants_available	: pac_variants.map := element (device).variants;
+		
+		variant_cursor		: pac_variants.cursor;
+		package_model		: pac_package_model_file_name.bounded_string; -- ../lbr/smd/SO15.pac
+
+		use et_packages;		
+		use pac_package_models;
+		package_cursor		: pac_package_models.cursor;
+
+	begin -- placeholders_of_package
+		
+		-- locate the given variant in the device:
+		variant_cursor := pac_variants.find (variants_available, variant);
+
+		-- get the package model name:
+		package_model := element (variant_cursor).package_model; -- ../lbr/smd/SO15.pac
+
+		-- locate the package model in the package library:
+		package_cursor := pac_package_models.find (package_models, package_model);
+
+		-- fetch the placeholders of silk screen top and bottom
+		placeholders.silkscreen.top := element (package_cursor).silkscreen.top.placeholders;
+		placeholders.silkscreen.bottom := element (package_cursor).silkscreen.bottom.placeholders;
+
+		-- fetch the placeholders of assembly documentation top and bottom
+		placeholders.assy_doc.top := element (package_cursor).assy_doc.top.placeholders;
+		placeholders.assy_doc.bottom := element (package_cursor).assy_doc.bottom.placeholders;
+		
+		return placeholders;
+	end placeholders_of_package;
 
 	
 		
