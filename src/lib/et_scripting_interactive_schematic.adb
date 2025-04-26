@@ -54,7 +54,7 @@ with et_generic_module;				use et_generic_module;
 with et_scripting;					use et_scripting;
 with et_modes.schematic;			use et_modes.schematic;
 with et_schematic_ops;				use et_schematic_ops;
-with et_schematic_ops.units;
+with et_schematic_ops.units;		use et_schematic_ops.units;
 with et_canvas_schematic_2;			use et_canvas_schematic_2;
 use et_canvas_schematic_2.pac_canvas;
 

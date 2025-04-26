@@ -42,6 +42,152 @@ package et_schematic_ops.units is
 	use pac_unit_name;
 
 
+	-- Moves the name placeholder of the given unit.
+	procedure move_unit_placeholder (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in pac_unit_name.bounded_string; -- A
+		coordinates		: in type_coordinates; -- relative/absolute
+		point			: in type_vector_model; -- x/y
+		meaning			: in type_placeholder_meaning; -- name, value, purpose
+		log_threshold	: in type_log_level);
+
+
+	
+	-- Returns the default positions of placeholders and texts of a unit
+	-- as they are defined in the symbol model.
+	function default_text_positions ( -- CS rename to get_default_text_positions
+		device_cursor	: in pac_devices_sch.cursor;
+		unit_name		: in pac_unit_name.bounded_string)
+		return et_symbols.type_default_text_positions;
+
+	
+
+
+
+	
+	-- Rotates the given unit placeholder about its origin.
+	-- The rotation is absolute.										  
+	procedure rotate_unit_placeholder (
+		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in pac_unit_name.bounded_string; -- A
+		rotation		: in et_text.type_rotation_documentation; -- absolute ! -- 90
+		meaning			: in type_placeholder_meaning; -- name, value, purpose		
+		log_threshold	: in type_log_level);
+
+
+
+	
+	-- Locates the given unit of the given device in the 
+	-- given module and returns the cursor to the unit.
+	-- If the unit does not exist, returns no_element.
+	-- Raises exception if device does not exist.
+	function locate_unit (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name; -- R2
+		unit	: in pac_unit_name.bounded_string)
+		return pac_units.cursor;
+	
+
+
+	
+	-- Returns true if the unit of the given device in the 
+	-- given module has been deployed somewhere.
+	-- If the unit has not been deployed yet, returns false.
+	-- Raises exception if device does not exist.
+	function deployed ( -- CS rename to is_deployed
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name; -- R2
+		unit	: in pac_unit_name.bounded_string)
+		return boolean;
+
+
+	
+	-- Returns true if given device with the given port exists in module indicated by module_cursor.
+	function exists_device_port ( -- CS rename to device_port_exists
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		device_name		: in type_device_name; -- IC45
+		port_name		: in pac_port_name.bounded_string) -- CE
+		return boolean;
+
+	
+	
+	-- Returns true if given device exists in module indicated by module_cursor.
+	-- The unit and port names are optionally.
+	function exists_device_unit_port (
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in pac_unit_name.bounded_string := to_unit_name (""); -- A
+		port_name		: in pac_port_name.bounded_string := to_port_name ("")) -- CE		
+		return boolean;						
+
+
+	
+	-- Returns the names of available units of the given device in the 
+	-- given generic module. "Available" means the unit exists and is
+	-- not already placed somewhere in the schematic:
+	function available_units ( -- CS rename to get_available_units
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC1
+		log_threshold	: in type_log_level)
+		return pac_unit_names.list;
+
+
+	
+	-- Returns true if the given unit is available.
+	-- Raises constraint error if device does not exist or
+	-- unit is not defined in device model of given device:
+	function unit_available (
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC1
+		unit_name		: in pac_unit_name.bounded_string)
+		return boolean;
+
+
+	
+	-- Returns the names of units of the given device in the 
+	-- given generic module on the given sheet.
+	function units_on_sheet ( -- CS rename to get_units_on_sheet
+		module_cursor	: in pac_generic_modules.cursor;
+		device_name		: in type_device_name; -- IC1
+		sheet			: in type_sheet;
+		log_threshold	: in type_log_level)
+		return pac_unit_names.list;
+
+
+	
+	-- Returns the position (x/y/sheet) of the given unit.
+	-- Raises constraint error if device or unit does not exist.
+	function get_position (
+		module	: in pac_generic_modules.cursor;
+		device	: in type_device_name; -- R2
+		unit	: in pac_unit_name.bounded_string)
+		return type_object_position;
+
+
+	
+	-- Returns the position (x/y/sheet) of the given unit.
+	-- Raises constraint error if device or unit does not exist.
+	function get_position (
+		device	: in pac_devices_sch.cursor; -- R2
+		unit	: in pac_units.cursor)
+		return type_object_position;
+
+	
+	
+	-- Returns the position (x/y) of the given placeholder
+	-- of the given unit.
+	-- Raises constraint error if device or unit does not exist.
+	function get_position (
+		device		: in pac_devices_sch.cursor; -- R2
+		unit		: in pac_units.cursor;
+		category	: in type_placeholder_meaning)
+		return type_vector_model;
+
+
+
+	
 	-- Returns the sheet number of the given unit.
 	-- Raises constraint error if device or unit does not exist.
 	function get_sheet (

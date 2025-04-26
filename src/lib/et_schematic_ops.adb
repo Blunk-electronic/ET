@@ -864,157 +864,7 @@ package body et_schematic_ops is
 	
 
 	
-	procedure move_unit_placeholder (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- A
-		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_vector_model; -- x/y
-		meaning			: in type_placeholder_meaning; -- name, value, purpose
-		log_threshold	: in type_log_level)
-	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
-		use pac_unit_name;
-
-		
-		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			use pac_devices_sch;
-			device_cursor : pac_devices_sch.cursor;
-
-			procedure query_units (
-				device_name	: in type_device_name;
-				device		: in out type_device_sch)
-			is
-				use pac_units;
-				unit_cursor : pac_units.cursor;
-
-				procedure move_placeholder (
-					unit_name	: in pac_unit_name.bounded_string;
-					unit		: in out type_unit)
-				is
-					-- In case absolute movement is required, calculate the
-					-- new position of the placeholder relative to the unit origin:
-					pos_abs : constant type_vector_model :=
-						to_point (get_distance_relative (unit.position.place, point));
-					
-				begin -- move_placeholder
-					
-					-- The given meaning determines the placeholder to be moved:
-					case meaning is
-						when NAME =>
-							case coordinates is
-								when ABSOLUTE =>
-									--log (text => "pos " & to_string (point));
-									unit.name.position := pos_abs;
-
-								when RELATIVE =>
-									move_by (
-										point	=> unit.name.position,
-										offset	=> to_distance_relative (point));
-							end case;
-							
-						when VALUE =>
-							case coordinates is
-								when ABSOLUTE =>
-									unit.value.position := pos_abs;
-
-								when RELATIVE =>
-									move_by (
-										point	=> unit.value.position,
-										offset	=> to_distance_relative (point));
-							end case;
-							
-						when PURPOSE =>
-							case coordinates is
-								when ABSOLUTE =>
-									unit.purpose.position := pos_abs;
-
-								when RELATIVE =>
-									move_by (
-										point	=> unit.purpose.position,
-										offset	=> to_distance_relative (point));
-							end case;
-
-						when others =>
-							raise constraint_error; -- CS no longer required
-					end case;
-					
-					exception
-						when event: others =>
-							log (ERROR, "coordinates invalid !", console => true); -- CS required more details
-							log (text => ada.exceptions.exception_information (event), console => true);
-							raise;
-					
-				end move_placeholder;
-
-				
-			begin -- query_units
-				if contains (device.units, unit_name) then
-
-					-- locate unit by its name. it should be there.
-					unit_cursor := find (device.units, unit_name);
-
-					update_element (
-						container	=> device.units,
-						position	=> unit_cursor,
-						process		=> move_placeholder'access);
-					
-				else
-					unit_not_found (unit_name);
-				end if;
-			end query_units;
-
-			
-		begin -- query_devices
-			if contains (module.devices, device_name) then
-
-				-- Locate the device. It should be there.
-				device_cursor := find (module.devices, device_name);
-
-				-- locate the unit
-				update_element (
-					container	=> module.devices,
-					position	=> device_cursor,
-					process		=> query_units'access);
-				
-			else
-				device_not_found (device_name);
-			end if;
-		end query_devices;
-
-		
-	begin -- move_unit_placeholder
-		case coordinates is
-			when ABSOLUTE =>
-				log (text => "module " & enclose_in_quotes (to_string (module_name))
-					& " moving " & to_string (device_name) 
-					& " unit " & to_string (unit_name) 
-					& " placeholder " & enclose_in_quotes (to_string (meaning))
-					& " to" & to_string (point),
-					level => log_threshold);
-
-			when RELATIVE =>
-				log (text => "module " & enclose_in_quotes (to_string (module_name))
-					& " moving " & to_string (device_name) 
-					& " unit " & to_string (unit_name) 
-					& " placeholder " & enclose_in_quotes (to_string (meaning))
-					& " by" & to_string (point),
-					level => log_threshold);
-		end case;
-
-		-- locate module
-		module_cursor := locate_module (module_name);
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_devices'access);
-		
-	end move_unit_placeholder;
 
 	
 	
@@ -1044,262 +894,11 @@ package body et_schematic_ops is
 
 
 	
-	-- Returns the default positions of placeholders and texts of a unit
-	-- as they are defined in the symbol model.
-	function default_text_positions (
-		device_cursor	: in pac_devices_sch.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
-		return et_symbols.type_default_text_positions 
-	is		
-		use et_symbols;
-		use et_device_appearance;
-		use pac_devices_sch;
-		use pac_devices_lib;
-
-		-- The positions to be returned depend on the appearance of the requested device:
-		result : type_default_text_positions (element (device_cursor).appearance); -- to be returned
-		
-		model : pac_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
-		device_cursor_lib : pac_devices_lib.cursor;
-		
-		use et_symbols.pac_texts;
-
-		
-		procedure query_text (c : in et_symbols.pac_texts.cursor) is 
-		-- Appends a text position (x/y) the the result.
-			use pac_text_positions;
-		begin
-			append (result.texts, element (c).position);
-		end;
-
-		
-		-- Indicates whether the unit is internal or external:
-		unit_status : type_unit_ext_int := EXT;
-
-		
-		procedure query_internal_units (
-			model	: in pac_device_model_file.bounded_string;
-			device	: in type_device_model) 
-		is
-			use pac_units_internal;			
-			unit_cursor : pac_units_internal.cursor;
-		begin
-			-- locate the given unit among the internal units
-			unit_cursor := find (device.units_internal, unit_name);
-
-			-- if the unit exists among the internal units:
-			if unit_cursor /= pac_units_internal.no_element then
-				unit_status := INT;
-				
-				-- Collect the positions of texts and store them in result.text
-				-- in the same order as they are listed in symbol.texts:
-				iterate (element (unit_cursor).symbol.texts, query_text'access);
-				-- CS: constraint_error arises here if unit can not be located.
-
-				-- If it is about a real device, take a copy of the default 
-				-- placeholders as they are specified in the symbol model:
-				case result.appearance is
-					when APPEARANCE_PCB =>
-						result.name 	:= element (unit_cursor).symbol.name;
-						result.value	:= element (unit_cursor).symbol.value;
-						result.purpose	:= element (unit_cursor).symbol.purpose;
-					when others => null;
-				end case;
-
-			else
-				unit_status := EXT;
-			end if;
-		end query_internal_units;
-
-		
-		procedure query_external_units (
-			model	: in pac_device_model_file.bounded_string;
-			device	: in type_device_model) 
-		is
-			use pac_units_external;
-			unit_cursor : pac_units_external.cursor;
-			sym_model : pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
-
-			
-			procedure query_symbol (
-				symbol_name	: in pac_symbol_model_file.bounded_string;
-				symbol		: in type_symbol ) 
-			is begin
-				-- Collect the positions of texts and store them in result.text
-				-- in the same order as they are listed in symbol.texts:
-				iterate (symbol.texts, query_text'access);
-
-				-- If it is about a real device, take a copy of the default 
-				-- placeholders as they are specified in the symbol model:
-				case result.appearance is
-					when APPEARANCE_PCB =>
-						result.name 	:= symbol.name;
-						result.value	:= symbol.value;
-						result.purpose	:= symbol.purpose;
-					when others => null;
-				end case;
-			end query_symbol;
-
-			
-		begin -- query_external_units
-			-- locate the given unit among the external units
-			unit_cursor := find (device.units_external, unit_name);
-
-			-- Fetch the symbol model file of the external unit.
-			-- If unit could not be located then it must be internal.
-			if unit_cursor /= pac_units_external.no_element then
-				unit_status := EXT;
-				
-				sym_model := element (unit_cursor).model;
-
-				-- Fetch the ports of the external unit.
-				-- CS: constraint_error arises here if symbol model could not be located.
-				pac_symbols.query_element (
-					position	=> pac_symbols.find (symbols, sym_model),
-					process		=> query_symbol'access);
-			else
-				unit_status := INT;
-			end if;
-			
-		end query_external_units;
-
-		
-	begin -- default_text_positions
-
-		-- Fetch the model name of the given device. 
-		model := pac_devices_sch.element (device_cursor).model;
-
-		-- Get cursor to device in device library (the model name is the key into the device library).
-		-- CS: constraint_error will arise here if no associated device exists.
-		device_cursor_lib := find (device_library, model);
-
-		-- Query external units of device (in library). It is most likely that
-		-- the unit is among the external units:
-		query_element (
-			position	=> device_cursor_lib,
-			process		=> query_external_units'access);
-
-		-- If unit could not be found among external units then look up the internal units:
-		if unit_status = INT then
-
-			-- Query internal units of device (in library):
-			query_element (
-				position	=> device_cursor_lib,
-				process		=> query_internal_units'access);
-		end if;
-		
-		-- CS raise error if unit could not be located at all.
-			
-		return result;
-
-		exception
-			when event: others =>
-				log_indentation_reset;
-				log (text => ada.exceptions.exception_information (event), console => true);
-				raise;
-		
-	end default_text_positions;
-
 	
 
 	
 
 	
-	procedure rotate_unit_placeholder (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- A
-		rotation		: in et_text.type_rotation_documentation; -- absolute ! -- 90
-		meaning			: in type_placeholder_meaning; -- name, value, purpose		
-		log_threshold	: in type_log_level) 
-	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-
-		use et_symbols;
-		use pac_unit_name;
-
-		
-		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			use pac_devices_sch;
-			device_cursor : pac_devices_sch.cursor;
-
-			procedure query_units (
-				device_name	: in type_device_name;
-				device		: in out type_device_sch) 
-			is
-				use pac_units;
-				unit_cursor : pac_units.cursor;
-
-				
-				procedure rotate_placeholder (
-					name	: in pac_unit_name.bounded_string; -- A
-					unit	: in out type_unit) 
-				is begin
-					case meaning is
-						when et_device_placeholders.NAME =>
-							unit.name.rotation := rotation;
-							
-						when VALUE =>
-							unit.value.rotation := rotation;
-							
-						when PURPOSE =>
-							unit.purpose.rotation := rotation;
-
-					end case;
-				end rotate_placeholder;
-
-				
-			begin -- query_units
-				if contains (device.units, unit_name) then
-
-					-- locate unit by its name
-					unit_cursor := find (device.units, unit_name);
-
-					pac_units.update_element (
-						container	=> device.units,
-						position	=> unit_cursor,
-						process		=> rotate_placeholder'access);
-				else
-					unit_not_found (unit_name);
-				end if;
-			end query_units;
-
-			
-		begin -- query_devices
-			if contains (module.devices, device_name) then
-
-				-- locate the device. it should be there
-				device_cursor := find (module.devices, device_name);
-
-				update_element (
-					container	=> module.devices,
-					position	=> device_cursor,
-					process		=> query_units'access);
-				
-			else
-				device_not_found (device_name);
-			end if;
-		end query_devices;
-		
-		
-	begin -- rotate_unit_placeholder
-		log (text => "module " & to_string (module_name) &
-			" rotating " & to_string (device_name) & " unit " &
-			to_string (unit_name) & " placeholder" & to_string (meaning) & " to" &
-			to_string (rotation), level => log_threshold);
-		
-		-- locate module
-		module_cursor := locate_module (module_name);
-		
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_devices'access);
-
-	end rotate_unit_placeholder;
 
 
 	
@@ -1326,12 +925,17 @@ package body et_schematic_ops is
 	end locate_net;
 
 
+
+	
+	
 	function get_active_assembly_variant (
 		module_cursor	: in pac_generic_modules.cursor)
 		return pac_assembly_variant_name.bounded_string
 	is begin
 		return element (module_cursor).active_variant;
 	end get_active_assembly_variant;
+
+
 
 	
 
@@ -1366,6 +970,7 @@ package body et_schematic_ops is
 
 	
 
+	
 	function get_net (
 		module		: in pac_generic_modules.cursor;
 		device		: in pac_devices_sch.cursor;
@@ -1476,6 +1081,7 @@ package body et_schematic_ops is
 
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
+					
 					procedure probe_segment (segment : in type_net_segment) is begin
 						-- if place is a start point of a segment
 						if segment.start_point = place.place then
@@ -1489,6 +1095,7 @@ package body et_schematic_ops is
 							segment_found := true;
 						end if;
 					end probe_segment;
+
 					
 				begin -- query_segments
 					while not segment_found and segment_cursor /= pac_net_segments.no_element loop
@@ -1499,6 +1106,7 @@ package body et_schematic_ops is
 						next (segment_cursor);
 					end loop;
 				end query_segments;
+
 				
 			begin -- query_strands
 				while not segment_found and strand_cursor /= pac_strands.no_element loop
@@ -1515,6 +1123,7 @@ package body et_schematic_ops is
 					next (strand_cursor);
 				end loop;
 			end query_strands;
+
 			
 		begin -- query_nets
 			while not segment_found and net_cursor /= pac_nets.no_element loop
@@ -1527,6 +1136,7 @@ package body et_schematic_ops is
 			end loop;
 		end query_nets;
 
+		
 	begin -- net_segment_at_place
 
 		query_element (
@@ -1537,6 +1147,7 @@ package body et_schematic_ops is
 	end net_segment_at_place;
 
 
+	
 	
 	function ports_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -1886,6 +1497,7 @@ package body et_schematic_ops is
 	end rename_ports;
 
 
+
 	
 	procedure rename_device (
 		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
@@ -1992,6 +1604,8 @@ package body et_schematic_ops is
 	end rename_device;
 
 
+
+	
 	
 	-- Sets the value of a device.
 	procedure set_value (
@@ -2308,56 +1922,8 @@ package body et_schematic_ops is
 	end locate_device;
 
 
-	
-	
-	function locate_unit (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name; -- R2
-		unit	: in pac_unit_name.bounded_string)
-		return pac_units.cursor
-	is
-		use pac_devices_sch;
-		use pac_units;
-		
-		device_cursor : pac_devices_sch.cursor;
-		unit_cursor : pac_units.cursor; -- to be returned
-
-		procedure query_units (
-			device_name	: in type_device_name; -- R2
-			device		: in type_device_sch)
-		is begin
-			unit_cursor := find (device.units, unit);
-		end query_units;
-	
-	begin -- locate_unit
-		device_cursor := locate_device (module, device);
-
-		-- locate the unit
-		query_element (device_cursor, query_units'access);
-
-		return unit_cursor;
-	end locate_unit;
 
 	
-
-	function deployed (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name; -- R2
-		unit	: in pac_unit_name.bounded_string)
-		return boolean
-	is
-		use pac_units;
-		unit_cursor : pac_units.cursor;
-	begin
-		unit_cursor := locate_unit (module, device, unit);
-
-		if unit_cursor = pac_units.no_element then
-			return false;
-		else
-			return true;
-		end if;
-	end deployed;
-
 	function device_model_name (
 		module	: in pac_generic_modules.cursor;
 		device	: in type_device_name) -- R2
@@ -2502,147 +2068,6 @@ package body et_schematic_ops is
 
 
 	
-	function exists_device_port (
-		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		device_name		: in type_device_name; -- IC45
-		port_name		: in pac_port_name.bounded_string) -- CE
-		return boolean is
-
-		result : boolean := false; -- to be returned. goes true once the target has been found
-
-		
-		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module)
-		is
-			use pac_unit_name;
-			use pac_devices_sch;
-			device_cursor : pac_devices_sch.cursor;
-
-			
-			procedure query_units (
-				device_name	: in type_device_name;
-				device		: in type_device_sch) 
-			is
-				use pac_units;
-				unit_cursor : pac_units.cursor := device.units.first;
-				use pac_ports;
-				ports : pac_ports.map;
-				use pac_port_name;
-			begin
-				while unit_cursor /= pac_units.no_element loop
-					--log (text => "unit " & pac_unit_name.to_string (key (unit_cursor)));
-					--log (text => "port " & pac_port_name.to_string (port_name));
-					
-					-- fetch the unit ports from the library model
-					ports := get_ports_of_unit (device_cursor, key (unit_cursor));
-
-					-- if the unit has a port named port_name then we have
-					-- a match. no further search required.
-					if contains (ports, port_name) then
-						result := true;
-						exit;
-					end if;
-										
-					next (unit_cursor);
-				end loop;
-			end query_units;
-
-			
-		begin -- query_devices
-			if contains (module.devices, device_name) then -- device found
-
-				device_cursor := find (module.devices, device_name);
-					
-				query_element (
-					position	=> device_cursor,
-					process		=> query_units'access);
-
-			end if;
-		end query_devices;
-
-		
-	begin -- exists_device_port
-		query_element (
-			position	=> module_cursor,
-			process		=> query_devices'access);
-
-		return result;
-	end exists_device_port;
-
-
-
-	
-	function exists_device_unit_port (
-		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string := to_unit_name (""); -- A
-		port_name		: in pac_port_name.bounded_string := to_port_name ("")) -- CE
-		return boolean 
-	is
-		result : boolean := false; -- to be returned, goes true once the target has been found
-		
-		procedure query_devices (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) is
-			use pac_unit_name;
-			use pac_devices_sch;
-			device_cursor : pac_devices_sch.cursor;
-
-			use et_symbols;
-			
-			procedure query_units (
-				device_name	: in type_device_name;
-				device		: in type_device_sch) is
-				use pac_units;
-				use pac_ports;
-				ports : pac_ports.map;
-				use pac_port_name;
-			begin
-				if contains (device.units, unit_name) then
-					if length (port_name) > 0 then -- search for port in unit
-
-						-- fetch the unit ports from the library model
-						ports := get_ports_of_unit (device_cursor, unit_name);
-
-						if contains (ports, port_name) then
-							result := true;
-						end if;
-						
-					else
-						result := true;
-					end if;
-				end if;
-			end query_units;
-
-			
-		begin -- query_devices
-			if contains (module.devices, device_name) then -- device found
-
-				-- If unit name given, search for the unit.
-				if length (unit_name) > 0 then
-					device_cursor := find (module.devices, device_name);
-					
-					query_element (
-						position	=> device_cursor,
-						process		=> query_units'access);
-
-				else
-					result := true;
-				end if;
-				
-			end if;
-		end query_devices;
-
-		
-	begin -- exists_device_unit_port
-		query_element (
-			position	=> module_cursor,
-			process		=> query_devices'access);
-
-		return result;
-	end exists_device_unit_port;
-
 
 
 
@@ -2973,339 +2398,6 @@ package body et_schematic_ops is
 		
 		return cursor;
 	end get_alternative_device;
-
-
-
-
-	
-	
-	function available_units (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_device_name; -- IC1
-		log_threshold	: in type_log_level)
-		return pac_unit_names.list
-	is
-		use pac_devices_sch;
-		device_cursor_sch : pac_devices_sch.cursor;
-
-		device_model : pac_device_model_file.bounded_string;
-		device_cursor_lib : pac_devices_lib.cursor;
-
-		use pac_unit_names;
-		all_unit_names : pac_unit_names.list;
-		names_of_available_units : pac_unit_names.list;
-
-		
-		procedure query_in_use (c : in pac_unit_names.cursor) is 
-			use pac_unit_name;
-			in_use : boolean := false;
-
-			-- Sets the in_use flag if given unit is already in use:
-			procedure query_in_use (
-				device_name	: in type_device_name;
-				device		: in type_device_sch) 
-			is
-				use pac_units;
-			begin
-				if contains (device.units, element (c)) then
-					in_use := true;
-				end if;
-			end query_in_use;
-
-		begin
-			-- Test whether the unit is already in use.
-			query_element (
-				position	=> device_cursor_sch,
-				process		=> query_in_use'access);
-
-			-- If the unit is available then append it to the result:
-			if not in_use then -- unit is available
-				log (text => "unit " & to_string (element (c)) & " available.",
-					 level => log_threshold + 2);
-				
-				names_of_available_units.append (element (c));
-			end if;
-		end query_in_use;
-
-		
-		procedure get_device_model (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module)
-		is begin
-			-- locate the device in the schematic:
-			device_cursor_sch := find (module.devices, device_name);
-
-			device_model := element (device_cursor_sch).model;
-
-			log (text => "device model " & to_string (device_model),
-				level => log_threshold + 1);
-		end get_device_model;
-		
-		
-	begin -- available_units
-		log (text => "looking up available units of " 
-			 & to_string (device_name) & " ...",
-			 level => log_threshold);
-
-		log_indentation_up;
-
-		-- get the device model:
-		query_element (module_cursor, get_device_model'access);
-				
-		-- locate the device in the library
-		device_cursor_lib := locate_device (device_model);
-
-		log_indentation_up;
-		
-		-- get the names of all units of the device
-		all_unit_names := get_all_units (device_cursor_lib);
-
-		-- extract available units
-		all_unit_names.iterate (query_in_use'access);
-
-		log_indentation_down;
-		log_indentation_down;
-		
-		return names_of_available_units;
-
-		--exception when event: others =>
-			--put_line (exception_information (event));
-
-			--return names_of_available_units;
-	end available_units;
-
-
-	
-	function unit_available (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_device_name; -- IC1
-		unit_name		: in pac_unit_name.bounded_string)
-		return boolean
-	is
-		available : boolean := true; -- to be returned
-
-		use pac_devices_sch;
-		device_cursor_sch : pac_devices_sch.cursor;
-		
-		device_cursor_lib : pac_devices_lib.cursor;
-		
-		use pac_unit_names;
-		all_unit_names : pac_unit_names.list;
-
-		
-		-- Clears the "available" flag if given unit is already in use:
-		procedure query_in_use (
-			device_name	: in type_device_name;
-			device		: in type_device_sch) 
-		is
-			use pac_units;
-		begin
-			if contains (device.units, unit_name) then
-				available := false;
-			end if;
-		end query_in_use;
-		
-		
-	begin -- unit_available
-		device_cursor_lib := device_model_cursor (module_cursor, device_name);
-
-		-- get the names of all units of the device
-		all_unit_names := get_all_units (device_cursor_lib);
-
-		-- test whether the given unit is defined in the model:
-		if contains (all_unit_names, unit_name) then
-			
-			-- locate the device in the schematic:
-			device_cursor_sch := locate_device (module_cursor, device_name);
-
-			-- Test whether the unit is already in use.
-			-- If device does not exist, a constraint_error will arise here.
-			query_element (
-				position	=> device_cursor_sch,
-				process		=> query_in_use'access);
-			
-		else
-			raise constraint_error;
-		end if;
-		
-		return available;
-	end unit_available;
-
-	
-
-	function units_on_sheet (
-		module_cursor	: in pac_generic_modules.cursor;
-		device_name		: in type_device_name; -- IC1
-		sheet			: in type_sheet;
-		log_threshold	: in type_log_level)
-		return pac_unit_names.list
-	is
-		use pac_devices_sch;
-		device_cursor_sch : pac_devices_sch.cursor;
-
-		names_of_units : pac_unit_names.list;
-
-		
-		procedure query_units (
-			device_name	: in type_device_name;
-			device		: in type_device_sch)
-		is 
-			procedure query_unit (c : in pac_units.cursor) is 
-				use pac_unit_name;
-				use pac_units;
-				use pac_unit_names;
-			begin
-				-- If the unit is on the given sheet then append it to the result:
-				if get_sheet (element (c).position) = sheet then
-					log (text => "unit " & to_string (key (c)) & " on sheet.",
-						level => log_threshold + 2);
-					
-					names_of_units.append (key (c));
-				end if;
-			end query_unit;
-		begin
-			device.units.iterate (query_unit'access);
-		end query_units;
-
-		
-	begin -- units_on_sheet
-		log (text => "looking up units of " 
-			 & to_string (device_name) 
-			 & " on sheet " & to_string (sheet) & " ...",
-			 level => log_threshold);
-
-		log_indentation_up;
-
-		-- locate the device in the schematic:
-		device_cursor_sch := locate_device (module_cursor, device_name);
-
-		-- Test whether the unit is already in use.
-		-- If device does not exist, a constraint_error will arise here.
-		query_element (
-			position	=> device_cursor_sch,
-			process		=> query_units'access);
-
-
-		log_indentation_down;
-		
-		return names_of_units;
-
-	end units_on_sheet;
-
-
-	
-	function get_position (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name; -- R2
-		unit	: in pac_unit_name.bounded_string)
-		return type_object_position
-	is
-		use pac_devices_sch;
-		device_cursor_sch : pac_devices_sch.cursor;
-
-		unit_position : type_object_position;
-		
-		procedure query_unit (
-			device_name	: in type_device_name;
-			device		: in type_device_sch)
-		is 
-			use pac_units;
-			unit_cursor : pac_units.cursor;
-		begin
-			-- locate the given unit in the given device
-			unit_cursor := find (device.units, unit);
-
-			-- get the coordinates of the unit
-			unit_position := element (unit_cursor).position;
-		end query_unit;
-
-	begin
-		-- locate the device in the schematic:
-		device_cursor_sch := locate_device (module, device);
-
-		query_element (
-			position	=> device_cursor_sch,
-			process		=> query_unit'access);
-
-		return unit_position;
-	end get_position;
-
-
-	
-	function get_position (
-		device	: in pac_devices_sch.cursor; -- R2
-		unit	: in pac_units.cursor)
-		return type_object_position
-	is
-		use pac_devices_sch;
-		unit_position : type_object_position;
-		
-		procedure query_unit (
-			device_name	: in type_device_name;
-			device		: in type_device_sch)
-		is 
-			use pac_units;
-		begin
-			-- get the coordinates of the unit
-			unit_position := element (unit).position;
-		end query_unit;
-	begin
-		query_element (
-			position	=> device,
-			process		=> query_unit'access);
-
-		return unit_position;
-	end get_position;
-
-
-	
-	
-	function get_position (
-		device		: in pac_devices_sch.cursor; -- R2
-		unit		: in pac_units.cursor;
-		category	: in type_placeholder_meaning)
-		return type_vector_model
-	is
-		placeholder_position : type_vector_model; -- to be returned
-
-		use pac_devices_sch;
-		unit_position : type_object_position;
-		
-		procedure query_unit (
-			device_name	: in type_device_name;
-			device		: in type_device_sch)
-		is 
-			use pac_units;
-			use et_symbols;
-		begin
-			-- get the coordinates of the unit
-			unit_position := element (unit).position;
-
-			-- get the coordinates of the placeholder:
-			case category is
-				when NAME =>
-					placeholder_position := element (unit).name.position;
-
-				when PURPOSE =>
-					placeholder_position := element (unit).purpose.position;
-
-				when VALUE =>
-					placeholder_position := element (unit).value.position;
-			end case;
-
-			move_by (placeholder_position, to_distance_relative (unit_position.place));
-			
-		end query_unit;
-	begin
-		query_element (
-			position	=> device,
-			process		=> query_unit'access);
-
-		return placeholder_position;
-	end get_position;
-
-	
-
 
 		
 

@@ -48,7 +48,7 @@ with et_device_appearance;
 with et_package_names;
 with et_module_ops;
 with et_generic_module;				use et_generic_module;
-with et_schematic_ops.units;
+with et_schematic_ops.units;		use et_schematic_ops.units;
 
 
 
@@ -4633,8 +4633,6 @@ package body et_schematic_ops.submodules is
 			iterate (module.nets, query_net'access);
 		end query_nets;
 
-
-		use et_schematic_ops.units;
 
 		
 	begin
