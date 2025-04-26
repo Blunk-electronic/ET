@@ -180,6 +180,10 @@ package et_units is
 	--Returns a list of units and their coordinates in the schematic.	
 	function unit_positions (units : in pac_units.map) return pac_unit_positions.map;
 
+
+
+
+
 	
 end et_units;
 

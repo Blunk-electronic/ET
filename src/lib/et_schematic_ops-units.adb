@@ -48,6 +48,34 @@ package body et_schematic_ops.units is
 	use pac_generic_modules;
 
 
+
+	
+	function to_string (
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in pac_unit_name.bounded_string; -- C
+		query_result	: in type_unit_query)
+		return string 
+	is 
+		use pac_unit_name;
+	begin
+		if query_result.exists then
+			if get_length (unit_name) > 0 then
+				return "Location of device " & to_string (device_name)
+					& " unit " & to_string (unit_name)
+					& " :" & to_string (query_result.position);
+			else
+				return "Location of device " & to_string (device_name)
+					& " :" & to_string (query_result.position);
+			end if;
+		else
+			return "device " & to_string (device_name)
+				& " unit " & to_string (unit_name)
+				& " does not exist !";
+		end if;
+	end to_string;
+
+
+	
 	
 	procedure delete_unit (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -642,6 +670,90 @@ package body et_schematic_ops.units is
 		
 		log_indentation_down;
 	end movable_test;
+
+
+
+
+
+
+	function get_unit_position (
+		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in pac_unit_name.bounded_string) -- C
+		return type_unit_query 
+	is
+		exists : boolean := false;
+		pos : type_object_position; -- x/y, rotation, sheet
+
+		
+		procedure query_devices (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_devices_sch;
+			device_cursor : pac_devices_sch.cursor;
+
+			
+			procedure query_units (
+				device_name	: in type_device_name; -- IC45
+				device		: in type_device_sch) 
+			is
+				use pac_units;
+				unit_cursor : pac_units.cursor;				
+			begin
+				-- If the given unit_name contains something, locate the unit
+				-- by its name. If unit_name is empty, locate the first unit.
+				if pac_unit_name.length (unit_name) > 0 then -- locate by name
+					
+					unit_cursor := pac_units.find (device.units, unit_name);
+
+					if unit_cursor /= pac_units.no_element then -- unit exists
+						exists := true;
+						pos := element (unit_cursor).position;
+					else
+						exists := false; -- unit does not exist
+					end if;
+					
+				else -- locate the first unit:
+					unit_cursor := pac_units.first (device.units);
+					-- There should be at least one unit. Otherwise raise constraint_error.
+
+					if unit_cursor /= pac_units.no_element then -- unit exists
+						exists := true;
+						pos := element (unit_cursor).position;
+					else
+						exists := false; -- unit does not exist
+						raise constraint_error; -- CS do something
+					end if;
+					
+				end if;
+			end query_units;
+			
+			
+		begin -- query_devices
+			-- locate the device:
+			device_cursor := pac_devices_sch.find (module.devices, device_name);
+
+			if device_cursor /= pac_devices_sch.no_element then -- device exists
+				pac_devices_sch.query_element (device_cursor, query_units'access);
+			else
+				exists := false; -- device does not exist
+			end if;
+			
+		end query_devices;
+		
+		
+	begin -- unit_position
+		query_element (module_cursor, query_devices'access);
+
+		if exists then return (exists => true, position => pos);
+		else return (exists => false);
+		end if;
+		
+	end get_unit_position;
+
+
+
 
 	
 	

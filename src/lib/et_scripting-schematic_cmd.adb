@@ -854,7 +854,7 @@ is
 		function locate (unit : in pac_unit_name.bounded_string) 
 			return type_unit_query
 		is begin
-			return unit_position (
+			return get_unit_position (
 				module_cursor	=> active_module,
 				device_name		=> device,
 				unit_name		=> unit);

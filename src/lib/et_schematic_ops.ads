@@ -712,43 +712,6 @@ package et_schematic_ops is
 		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
 		port_name		: in pac_port_name.bounded_string) -- CE
 		return type_port_properties_access;
-	
-	
-
-	
-	-- The result of a unit query is of this type:
-	type type_unit_query (exists : boolean := false) is record
-		case exists is
-			when true => position : type_object_position; -- x/y, rotation, sheet
-			when false => null;
-		end case;
-	end record;
-
-	
-	-- Returns the result of a unit query in human readable form.
-	-- If the unit_name is empty (""), then the result does not contain
-	-- any reference to a unit. This is useful when a device has only one unit.
-	function to_string (
-		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- C
-		query_result	: in type_unit_query)
-		return string;
-	
-	
-	-- Returns the position of given unit. If the unit_name is emtpty ("")
-	-- then the position of the first unit is returned.
-	-- This is useful when a device has only one unit.
-	-- If the given device or unit does not exist, then the return is false.
-	function unit_position ( -- CS rename to get_unit_position
-		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
-		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string) -- C
--- 		port_name		: in et_symbols.pac_port_name.bounded_string) -- CE
-		return type_unit_query;
-
-	-- CS type_port_query
-
-	-- CS function port_position 
 
 
 	
