@@ -85,6 +85,11 @@ package et_units is
 
 
 
+	procedure unit_not_found (
+		name : in pac_unit_name.bounded_string);
+	
+	
+
 
 	procedure set_selected (
 		unit : in out type_unit);

@@ -93,6 +93,8 @@ with et_commit;
 with et_object_status;					use et_object_status;
 with et_unit_name;						use et_unit_name;
 with et_units;							use et_units;
+with et_symbol_ports;					use et_symbol_ports;
+with et_logging;						use et_logging;
 
 
 package et_devices_electrical is
@@ -164,9 +166,42 @@ package et_devices_electrical is
 	
 	procedure device_name_in_use (
 		name : in type_device_name); -- IC1, R1, ...
+
+
+
+	-- Writes the position of the package in the log file. 
+	-- If device is virtual, nothing happens:
+	procedure log_package_position (
+		device_cursor	: in pac_devices_sch.cursor;
+		log_threshold	: in type_log_level);
+
 	
 
 	
+	-- Collects the positions of all units (in schematic) of 
+	-- the given device and returns them in a list.
+	function get_unit_positions (
+		device_cursor : in pac_devices_sch.cursor) 
+		return pac_unit_positions.map ;
+
+
+
+	-- Writes the positions of the device units in the log file.
+	procedure log_unit_positions (
+		positions 		: in pac_unit_positions.map;
+		log_threshold	: in type_log_level);
+
+
+	
+	-- Returns a map of ports of the given device and unit.
+	-- The coordinates of the ports are default xy-positions relative
+	-- to the center of the unit as they are defined in the symbol model.
+	function get_ports_of_unit (
+		device_cursor	: in pac_devices_sch.cursor;
+		unit_name		: in pac_unit_name.bounded_string)
+		return pac_ports.map;
+	
+
 	
 	-- Returns the current position (x/y/rotation/face) of the 
 	-- given electrical device:

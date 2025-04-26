@@ -38,6 +38,7 @@
 --   ToDo: 
 
 with ada.exceptions;
+
 with et_board_ops.ratsnest;					use et_board_ops.ratsnest;
 with et_port_direction;
 with et_device_model;						use et_device_model;
@@ -47,6 +48,7 @@ with et_device_appearance;
 
 package body et_schematic_ops.units is
 
+	use pac_unit_name;
 	use pac_text_schematic;
 	
 	use pac_generic_modules;

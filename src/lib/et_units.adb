@@ -41,10 +41,22 @@ with ada.text_io;						use ada.text_io;
 -- with ada.strings.bounded;   		    use ada.strings.bounded;
 with ada.characters.handling;			use ada.characters.handling;
 with ada.exceptions;
+with et_exceptions;						use et_exceptions;
+
 
 package body et_units is
 
 
+
+	procedure unit_not_found (
+		name : in pac_unit_name.bounded_string) 
+	is begin
+		raise semantic_error_1 with
+			"ERROR: Unit " & to_string (name) & " not found !";
+	end unit_not_found;
+
+	
+	
 
 	procedure set_selected (
 		unit : in out type_unit)

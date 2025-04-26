@@ -123,21 +123,7 @@ package et_schematic_ops is
 	procedure net_not_found (name : in pac_net_name.bounded_string);
 	procedure assembly_variant_not_found (variant : in pac_assembly_variant_name.bounded_string);
 
-	procedure unit_not_found (name : in pac_unit_name.bounded_string);
-	
-	-- Writes the positions of the device units in the log file.
-	procedure log_unit_positions (
-		positions 		: in pac_unit_positions.map;
-		log_threshold	: in type_log_level);
 
-	
-	-- Returns a map of ports of the given device and unit.
-	-- The coordinates of the ports are default xy-positions relative
-	-- to the center of the unit as they are defined in the symbol model.
-	function get_ports_of_unit (
-		device_cursor	: in pac_devices_sch.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
-		return pac_ports.map;
 
 	
 	-- Deletes ports of the given device in module.nets.

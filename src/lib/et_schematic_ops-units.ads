@@ -39,8 +39,6 @@
 
 package et_schematic_ops.units is
 
-	use pac_unit_name;
-
 
 	-- Returns the sheet/x/y position of the given device,
 	-- unit and port:

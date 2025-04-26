@@ -39,10 +39,8 @@
 with ada.text_io;				use ada.text_io;
 with ada.exceptions;
 
-with et_logging;				use et_logging;
 with et_device_model;
 with et_contour_to_polygon;
-with et_logging;
 with et_string_processing;			use et_string_processing;
 
 package body et_devices_electrical is
@@ -60,8 +58,195 @@ package body et_devices_electrical is
 		raise constraint_error;
 	end device_name_in_use;
 
+
+
+
+	procedure log_package_position (
+		device_cursor	: in pac_devices_sch.cursor;
+		log_threshold	: in type_log_level) 
+	is
+		use et_pcb_sides;
+		use et_board_coordinates;
+		use et_board_coordinates.pac_geometry_2;
+		use pac_devices_sch;
+		use et_symbols;
+		use et_device_appearance;
+	begin
+		if element (device_cursor).appearance = APPEARANCE_PCB then
+			log (text => "location in board:" & 
+				to_string (element (device_cursor).position.place) &
+				" face" & 
+				to_string (get_face (element (device_cursor).position)),
+				level => log_threshold);
+		end if;
+	end;
+
 	
 
+
+	function get_unit_positions (
+		device_cursor : in pac_devices_sch.cursor) 
+		return pac_unit_positions.map 
+	is
+		-- temporarily storage of unit coordinates:
+		positions : pac_unit_positions.map;
+		
+		procedure get_positions (
+			device_name : in type_device_name;
+			device		: in type_device_sch) 
+		is begin
+			positions := unit_positions (device.units);
+		end;
+
+	begin
+		pac_devices_sch.query_element (
+			position	=> device_cursor,
+			process		=> get_positions'access);
+
+		return positions;
+	end;
+
+	
+
+
+	
+	procedure log_unit_positions (
+		positions 		: in pac_unit_positions.map;
+		log_threshold	: in type_log_level) 
+	is
+		
+		procedure write (cursor : in pac_unit_positions.cursor) is 
+			use pac_unit_name;
+		begin
+			log (text => 
+				"unit " &
+				to_string (pac_unit_positions.key (cursor)) & -- unit name
+				et_schematic_coordinates.to_string (position => pac_unit_positions.element (cursor)), -- sheet x y
+				level => log_threshold);
+		end;
+		
+	begin
+		log (text => "location(s) in schematic:", level => log_threshold);
+		log_indentation_up;
+		pac_unit_positions.iterate (positions, write'access);
+		log_indentation_down;
+	end;
+
+
+	
+	
+
+	function get_ports_of_unit (
+		device_cursor	: in pac_devices_sch.cursor;
+		unit_name		: in pac_unit_name.bounded_string)
+		return pac_ports.map 
+	is
+		use et_device_model;
+		use et_symbols;
+		ports : pac_ports.map; -- to be returned
+		
+		model : pac_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
+
+		use pac_devices_lib;
+		device_cursor_lib : pac_devices_lib.cursor;
+
+		
+		procedure query_internal_units (
+			model	: in pac_device_model_file.bounded_string;
+			device	: in type_device_model) 
+		is
+			use pac_units_internal;
+			unit_cursor : pac_units_internal.cursor;
+		begin
+			-- locate the given unit among the internal units
+			unit_cursor := find (device.units_internal, unit_name);
+
+			-- Fetch the ports of the internal unit.
+			-- Transfer the ports to the portlist to be returned:			
+			-- CS: constraint_error arises here if unit can not be located.
+			ports := element (unit_cursor).symbol.ports;
+		end query_internal_units;
+
+		
+		procedure query_external_units (
+			model	: in pac_device_model_file.bounded_string;
+			device	: in type_device_model) 
+		is
+			use pac_units_external;
+			unit_cursor : pac_units_external.cursor;
+			sym_model : pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
+
+			procedure query_symbol (
+			-- Appends the ports names of the external unit to the portlist to 
+			-- be returned.
+				symbol_name	: in pac_symbol_model_file.bounded_string;
+				symbol		: in type_symbol ) 
+			is begin
+				ports := symbol.ports;
+			end query_symbol;
+			
+			
+		begin -- query_external_units
+			-- locate the given unit among the external units
+			unit_cursor := find (device.units_external, unit_name);
+
+			-- Fetch the symbol model file of the external unit.
+			-- If unit could not be located, nothing happens -> ports remains empty.
+			if unit_cursor /= pac_units_external.no_element then
+				sym_model := element (unit_cursor).model;
+
+				-- Fetch the ports of the external unit.
+				-- CS: constraint_error arises here if symbol model could not be located.
+				pac_symbols.query_element (
+					position	=> pac_symbols.find (symbols, sym_model),
+					process		=> query_symbol'access);
+			end if;
+			
+		end query_external_units;
+		
+		
+	begin -- get_ports_of_unit
+
+		-- Fetch the model name of the given device. 
+		model := pac_devices_sch.element (device_cursor).model;
+
+		-- Get cursor to device in device library (the model name is the key into the device library).
+		-- CS: constraint_error will arise here if no associated device exists.
+		device_cursor_lib := find (device_library, model);
+
+		-- Query external units of device (in library). It is most likely that
+		-- the unit is among the external units:
+		query_element (
+			position	=> device_cursor_lib,
+			process		=> query_external_units'access);
+
+		-- If unit could not be found among external units then look up the internal units:
+		if pac_ports.length (ports) = 0 then
+
+			-- Query internal units of device (in library):
+			query_element (
+				position	=> device_cursor_lib,
+				process		=> query_internal_units'access);
+		end if;
+
+		-- If still no ports found, we have a problem:
+		if pac_ports.length (ports) = 0 then
+			raise constraint_error;
+		end if;
+		
+		return ports;
+
+		exception
+			when event: others =>
+				log_indentation_reset;
+				log (text => ada.exceptions.exception_information (event), console => true);
+				raise;
+		
+	end get_ports_of_unit;
+
+
+
+	
 	
 	function get_position (
 		device_cursor	: in pac_devices_sch.cursor) -- IC45
