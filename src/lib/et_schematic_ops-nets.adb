@@ -55,7 +55,8 @@ package body et_schematic_ops.nets is
 	use pac_net_segments;
 	use pac_strands;
 	use pac_nets;
-	use pac_generic_modules;
+
+
 
 
 	
@@ -484,6 +485,7 @@ package body et_schematic_ops.nets is
 		is
 			strand_found : boolean := false;
 
+			
 			procedure locate_strand (
 			-- Locates the strand that starts at place.
 				net_name	: in pac_net_name.bounded_string;
@@ -507,7 +509,8 @@ package body et_schematic_ops.nets is
 					next (strand_cursor);
 				end loop;
 			end locate_strand;
-		
+
+			
 		begin -- delete_strand
 
 			-- locate the targeted strand
@@ -596,6 +599,7 @@ package body et_schematic_ops.nets is
 			 ". Check net name and position !");
 		end;
 
+		
 		procedure query_net (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 

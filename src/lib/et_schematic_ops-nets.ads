@@ -44,6 +44,9 @@ with et_net_class;					use et_net_class;
 
 package et_schematic_ops.nets is
 
+
+
+	
 	-- This function returns the total number
 	-- of nets of the given module:
 	function get_net_count (

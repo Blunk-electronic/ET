@@ -83,19 +83,15 @@ with et_device_name;			use et_device_name;
 with et_device_partcode;		use et_device_partcode;
 with et_conventions;
 
-with et_device_placeholders;			use et_device_placeholders;
-with et_device_placeholders.packages;
-
 with et_schematic_text;					use et_schematic_text;
 with et_unit_name;						use et_unit_name;
 with et_units;							use et_units;
-with et_device_library;					use et_device_library;
 with et_devices_electrical;				use et_devices_electrical;
+
 
 package et_schematic_ops is
 
 	use pac_generic_modules;
-	use pac_text_schematic;
 
 	use pac_net_name;
 

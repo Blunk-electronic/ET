@@ -62,6 +62,10 @@ with et_board_ops.ratsnest;			use et_board_ops.ratsnest;
 with et_canvas_schematic_2;
 
 
+with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders.packages;
+
+
 package body et_schematic_ops is
 
 

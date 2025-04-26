@@ -51,8 +51,6 @@ package body et_schematic_ops.units is
 	use pac_unit_name;
 	use pac_text_schematic;
 	
-	use pac_generic_modules;
-
 
 	function get_position (
 		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
