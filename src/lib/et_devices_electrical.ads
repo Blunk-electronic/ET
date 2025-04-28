@@ -40,9 +40,10 @@
 -- 
 -- DESCRIPTION:
 -- 
--- This package is about basic properties and subprograms related
--- to so called "electrical devices". These devices have a representation
--- in both schematic and board domain.
+-- This package is about the type, basic properties and subprograms related
+-- to so called "electrical" devices as they are modelled in the schematic
+-- and in the board.
+-- These devices have a representation in schematic and mostly in the board.
 
 with ada.strings.bounded;       		use ada.strings.bounded;
 with ada.containers;           			use ada.containers;

@@ -35,7 +35,10 @@
 --
 --   history of changes:
 --
-
+-- DESCRIPTION:
+--
+-- This package describes the structure of
+-- the rig-wide library of devices models.
 
 with ada.containers; 			use ada.containers;
 with ada.containers.doubly_linked_lists;
@@ -102,10 +105,14 @@ package et_device_library is
 	
 
 
-	-- HERE RIG WIDE DEVICES ARE KEPT:
+	-- THIS IS THE RIG WIDE LIBRARY OF ELECTRICAL DEVICES:
+	
 	device_library : pac_devices_lib.map;
 
 
+
+
+	
 	-- Returns true if the given device has a physical counterpart in 
 	-- the layout, means if it is not virtual:
 	function is_real (
@@ -170,7 +177,8 @@ package et_device_library is
 
 
 	
-	-- Returns the total number of units the given device provides:
+	-- Returns the total number of units
+	-- that the given device model provides:
 	function get_unit_count (
 		device_cursor	: in pac_devices_lib.cursor)
 		return type_unit_count;

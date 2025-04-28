@@ -70,7 +70,7 @@ package body et_devices_electrical is
 	is 
 		result : type_unit_count := 1;
 	begin
-
+		-- CS
 		return result;
 	end get_unit_count;
 

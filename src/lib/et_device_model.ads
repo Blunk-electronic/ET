@@ -37,8 +37,10 @@
 --
 -- DESCRIPTION:
 --
--- This is about device models as they are described in
--- the device libraries.
+-- This is about so called "electrical" device models.
+-- A device is called "electrical" because it ALWAYS
+-- has a representation in the schematic and mostly 
+-- a representation in the board. 
 
 
 with ada.containers; 			use ada.containers;

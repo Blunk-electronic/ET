@@ -257,11 +257,14 @@ package et_packages is
 		element_type	=> type_package_model);
 
 	use pac_package_models;
-	
-	
-	-- HERE RIG WIDE PACKAGES ARE KEPT:
-	package_models	 : pac_package_models.map;
 
+
+	
+	
+	-- THIS IS THE RIG WIDE PACKAGE (FOOTPRINT) LIBRARY:
+	
+	package_models	 : pac_package_models.map;
+	-- CS rename to library_electrical_devices
 
 
 	

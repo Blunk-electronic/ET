@@ -378,14 +378,8 @@ package body et_device_library is
 	function get_unit_count (
 		device_cursor	: in pac_devices_lib.cursor)
 		return type_unit_count 
-	is
-		use pac_units_external;
-		use pac_units_internal;
-		e, i : count_type;
-	begin
-		e := length (element (device_cursor).units_external);
-		i := length (element (device_cursor).units_internal);
-		return type_unit_count (e + i);
+	is begin
+		return get_unit_count (element (device_cursor));
 	end get_unit_count;
 
 

@@ -40,8 +40,8 @@
 -- 
 -- DESCRIPTION:
 -- 
--- This package is about basic properties and subprograms related
--- to so called "non-electrical devices". 
+-- This package is about the type, basic properties and subprograms related
+-- to so called "non-electrical" devices as they are modelled in the board. 
 -- These devices have a representation in the board domain only.
 
 
