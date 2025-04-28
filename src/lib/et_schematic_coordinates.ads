@@ -211,6 +211,14 @@ package et_schematic_coordinates is
 		position	: in type_object_position)
 		return type_vector_model;
 	
+
+
+	
+-- SHEET:
+
+	-- The current active sheet:
+	active_sheet : type_sheet := type_sheet'first;
+
 	
 	-- Returns the sheet number of the given position:
 	function get_sheet (

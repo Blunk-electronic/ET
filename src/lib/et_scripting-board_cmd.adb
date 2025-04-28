@@ -40,7 +40,10 @@
 
 with et_module_instance;			use et_module_instance;
 with et_pcb_sides;
+
+with et_schematic_coordinates;
 with et_board_coordinates;
+
 with et_board_text;
 with et_board_layer_category;		use et_board_layer_category;
 with et_board_ops.conductors;
@@ -3319,6 +3322,7 @@ is
 		-- Sets the active module and first sheet.
 		procedure module_and_first_sheet is 
 			use et_canvas_schematic_2;
+			use et_schematic_coordinates;
 		begin
 			module := to_module_name (f (5));
 			set_module (module);
@@ -3333,6 +3337,7 @@ is
 		-- Sets the active module and sheet.
 		procedure module_and_random_sheet is 
 			use et_canvas_schematic_2;
+			use et_schematic_coordinates;
 		begin
 			module := to_module_name (f (5));
 			set_module (module);
