@@ -74,6 +74,17 @@ package body et_device_library is
 
 
 
+	function get_device_model_cursor (
+		model : in pac_device_model_file.bounded_string)
+		return pac_devices_lib.cursor 
+	is
+		cursor : pac_devices_lib.cursor := find (device_library, model);
+	begin
+		return cursor;
+	end;
+
+	
+
 	
 
 	
@@ -461,16 +472,8 @@ package body et_device_library is
 	end get_available_variants;
 
 
+
 	
-	
-	function locate_device (
-		model : in pac_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
-		return pac_devices_lib.cursor 
-	is
-		cursor : pac_devices_lib.cursor := find (device_library, model);
-	begin
-		return cursor;
-	end;
 
 
 

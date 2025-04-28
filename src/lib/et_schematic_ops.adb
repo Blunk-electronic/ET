@@ -1510,7 +1510,8 @@ package body et_schematic_ops is
 		
 		procedure query_devices (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) is
+			module		: in type_generic_module) 
+		is
 			use pac_devices_sch;
 		begin
 			result := find (module.devices, device);
@@ -1605,7 +1606,7 @@ package body et_schematic_ops is
 				cursor_lib : pac_devices_lib.cursor;
 				use pac_package_variant_name;
 			begin
-				cursor_lib := locate_device (dev.model);
+				cursor_lib := get_device_model_cursor (dev.model);
 
 				if is_variant_available (cursor_lib, variant) then
 					dev.variant := variant;
@@ -1683,7 +1684,7 @@ package body et_schematic_ops is
 	begin
 		cursor_sch := locate_device (module, device);
 		device_model := pac_devices_sch.element (cursor_sch).model;
-		return locate_device (device_model);
+		return get_device_model_cursor (device_model);
 	end device_model_cursor;
 
 

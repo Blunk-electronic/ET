@@ -111,7 +111,14 @@ package et_device_library is
 
 
 
+	-- Maps from device model file (*.dev) to a
+	-- cursor in the device library:
+	function get_device_model_cursor (
+		model : in pac_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
+		return pac_devices_lib.cursor;
 
+	
+	
 	
 	-- Returns true if the given device has a physical counterpart in 
 	-- the layout, means if it is not virtual:
@@ -210,12 +217,6 @@ package et_device_library is
 		device_cursor	: in pac_devices_lib.cursor)
 		return pac_variants.map;
 
-
-	
-	-- Locates the given generic device in container "devices".
-	function locate_device (
-		model : in pac_device_model_file.bounded_string) -- ../libraries/devices/transistor/pnp.dev
-		return pac_devices_lib.cursor;
 
 
 	

@@ -46,6 +46,43 @@ package body et_devices_electrical is
 
 
 
+	function get_device_model_file (
+		device : type_device_sch)
+		return pac_device_model_file.bounded_string
+	is begin
+		return device.model;
+	end get_device_model_file;
+
+
+	
+
+	function get_device_model_file (
+		device : pac_devices_sch.cursor)
+		return pac_device_model_file.bounded_string
+	is begin
+		return get_device_model_file (element (device));
+	end get_device_model_file;
+
+	
+
+
+	function get_device_model (
+		device : in pac_devices_sch.cursor)
+		return pac_devices_lib.cursor
+	is
+		use et_device_model_names;
+		model_file : pac_device_model_file.bounded_string;
+	begin
+		-- The name of the device model file is THE link
+		-- from device in schematic to device in library:
+		model_file := get_device_model_file (device);
+
+		-- Locate the device model in the library:
+		return get_device_model_cursor (model_file);
+	end get_device_model;
+
+
+	
 	
 	function to_full_name (
 		device		: in type_device_name;
@@ -64,13 +101,22 @@ package body et_devices_electrical is
 
 
 
+	
 	function get_unit_count (
 		device : in pac_devices_sch.cursor)
 		return type_unit_count
 	is 
 		result : type_unit_count := 1;
+		
+		cursor : pac_devices_lib.cursor;
 	begin
-		-- CS
+		-- Get a cursor to the device in the library.
+		-- Map from schematic cursor to libarary cursor:
+		cursor := get_device_model (device);
+
+		-- Get the number of units from the device model:
+		result := get_unit_count (cursor);
+		
 		return result;
 	end get_unit_count;
 
@@ -1279,21 +1325,6 @@ package body et_devices_electrical is
 
 
 
-	
-
-	function get_device_model (
-		device : in pac_devices_sch.cursor)
-		return pac_devices_lib.cursor
-	is
-		use et_device_model_names;
-		model_file : pac_device_model_file.bounded_string;
-	begin
-		-- The name of the device model file is THE link
-		-- from device in schematic to device in library:
-		model_file := pac_devices_sch.element (device).model;
-		return locate_device (model_file);
-	end get_device_model;
-
 
 
 	
@@ -1317,7 +1348,7 @@ package body et_devices_electrical is
 		device_model := pac_devices_sch.element (device).model;
 		
 		-- locate the generic device model in the device library
-		device_cursor_lib := locate_device (device_model);
+		device_cursor_lib := get_device_model_cursor (device_model);
 		
 		return get_package_model (device_cursor_lib, device_variant);
 	end get_package_model;
@@ -1403,7 +1434,7 @@ package body et_devices_electrical is
 
 		-- Get the cursor to the full device model in the library:
 		device_model : constant pac_devices_lib.cursor := 
-			locate_device (pac_devices_sch.element (device).model);
+			get_device_model_cursor (pac_devices_sch.element (device).model);
 
 		-- This is the package variant used by the given device:
 		variant_sch : constant pac_package_variant_name.bounded_string :=

@@ -65,7 +65,9 @@ package body et_device_model is
 		return result;
 	end get_unit_count;
 
+	
 
+	
 	
 	
 	function rotate_placeholders (

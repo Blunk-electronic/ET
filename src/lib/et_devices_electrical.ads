@@ -155,6 +155,10 @@ package et_devices_electrical is
 
 
 
+	function get_device_model_file (
+		device : type_device_sch)
+		return pac_device_model_file.bounded_string; -- *.dev
+
 
 	-- The devices of a module are collected in a map.
 	-- CS: This must be a hashed map:
@@ -165,6 +169,23 @@ package et_devices_electrical is
 	use pac_devices_sch;
 	
 
+	
+	function get_device_model_file (
+		device : pac_devices_sch.cursor)
+		return pac_device_model_file.bounded_string; -- *.dev
+
+
+
+	-- Maps from schematic device cursor to 
+	-- cursor to device model (in library):
+	function get_device_model (
+		device : in pac_devices_sch.cursor)
+		return pac_devices_lib.cursor;
+
+
+	
+	
+	
 	-- Returns the total number of units that the
 	-- given device contains per device model:
 	function get_unit_count (
@@ -567,12 +588,7 @@ package et_devices_electrical is
 	
 -- DEVICE QUERY OPERATIONS:
 
-	
 
-	-- Maps from schematic device to device model (in library):
-	function get_device_model (
-		device : in pac_devices_sch.cursor)
-		return pac_devices_lib.cursor;
 
 
 	-- Returns the name of the package model of the given device

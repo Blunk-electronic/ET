@@ -946,7 +946,7 @@ procedure draw_units is
 					end if;
 				end if;
 
-				device_cursor_lib := locate_device (device_model);
+				device_cursor_lib := get_device_model_cursor (device_model);
 				unit_count := get_unit_count (device_cursor_lib);
 
 				-- locate and draw the symbol:
@@ -990,7 +990,7 @@ procedure draw_units is
 						sch_placeholder_purpose := element (unit_cursor).purpose;		
 					end if;
 
-					device_cursor_lib := locate_device (device_model);
+					device_cursor_lib := get_device_model_cursor (device_model);
 					unit_count := get_unit_count (device_cursor_lib);
 
 					-- locate and draw the symbol:

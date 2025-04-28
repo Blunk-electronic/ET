@@ -1611,7 +1611,7 @@ package body et_canvas_schematic_units is
 		device_model := element (su.device).model;
 		-- put_line ("model " & to_string (device_model));
 		
-		device_cursor_lib := locate_device (device_model);
+		device_cursor_lib := get_device_model_cursor (device_model);
 
 		-- assign the cursor to the device model:
 		-- put_line ("assign model");
