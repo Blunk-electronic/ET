@@ -206,6 +206,11 @@ package et_schematic_coordinates is
 		return string;
 
 
+	-- Returns x and y of a given object position:
+	function get_place (
+		position	: in type_object_position)
+		return type_vector_model;
+	
 	
 	-- Returns the sheet number of the given position:
 	function get_sheet (

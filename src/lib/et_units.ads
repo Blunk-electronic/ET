@@ -42,6 +42,7 @@ with ada.containers.ordered_maps;
 with ada.containers.indefinite_ordered_maps;
 
 with et_schematic_coordinates;			use et_schematic_coordinates;
+with et_sheets;							use et_sheets;
 with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_unit_name;						use et_unit_name;
@@ -84,6 +85,16 @@ package et_units is
 
 
 
+
+	-- Returns true if the given unit is in
+	-- the given catch zone:
+	function in_catch_zone (
+		unit	: in type_unit;
+		zone	: in type_catch_zone;
+		sheet	: in type_sheet)
+		return boolean;
+		
+	
 
 	procedure unit_not_found (
 		name : in pac_unit_name.bounded_string);

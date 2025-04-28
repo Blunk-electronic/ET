@@ -48,6 +48,30 @@ package body et_units is
 
 
 
+	function in_catch_zone (
+		unit	: in type_unit;
+		zone	: in type_catch_zone;
+		sheet	: in type_sheet)
+		return boolean
+	is 
+		result : boolean := false;
+
+		unit_position : type_object_position;
+		-- place : type_vector_model;
+		-- sheet : type_sheet;
+	begin
+		-- point := get_place (unit.position);
+		
+		-- if in_catch_zone (
+		-- 	zone	=> zone,
+		-- 	point	=> ge
+		return result;
+	end in_catch_zone;
+
+	
+
+	
+
 	procedure unit_not_found (
 		name : in pac_unit_name.bounded_string) 
 	is begin

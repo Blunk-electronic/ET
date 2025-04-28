@@ -1355,7 +1355,7 @@ package et_geometry_2a is
 	-- The position of an object is a composite
 	-- of the place (x/y) and the rotation of the object about
 	-- its own center:
-	type type_position is tagged record
+	type type_position is tagged record -- CS make private ?
 		place 		: type_vector_model := origin;
 		rotation	: type_rotation := zero_rotation;
 	end record;

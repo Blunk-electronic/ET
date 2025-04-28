@@ -363,6 +363,18 @@ package et_schematic_ops.units is
 		coordinates		: in type_coordinates; -- relative/absolute		
 		rotation		: in et_schematic_coordinates.type_rotation_model; -- 90
 		log_threshold	: in type_log_level);
+
+
+
+	-- Sets the proposed-flag of all units which are in the
+	-- given zone around the given place on the currently active sheet.
+	-- Adds to count the number of units that have been found:
+	procedure propose_units (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level);
+								
 	
 end et_schematic_ops.units;
 
