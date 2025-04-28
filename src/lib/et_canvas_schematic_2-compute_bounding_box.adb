@@ -245,7 +245,7 @@ is
 					device : type_device_sch renames element (c);					
 				begin
 					if debug then
-						put_line (to_string (c));
+						put_line (get_device_name (c));
 					end if;
 
 					iterate (device.units, query_unit'access);

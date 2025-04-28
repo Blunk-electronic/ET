@@ -207,7 +207,7 @@ package body et_board_ops.devices is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of electrical device "
-			& to_string (device.cursor)
+			& get_device_name (device.cursor)
 			& " / " & to_string (operation),
 			level => log_threshold);
 
@@ -1561,7 +1561,7 @@ package body et_board_ops.devices is
 
 		if result_electrical.cursor /= pac_devices_sch.no_element then
 			-- A device has been found.
-			log (text => to_string (result_electrical.cursor),
+			log (text => get_device_name (result_electrical.cursor),
 				 level => log_threshold + 1);
 			
 			result_category := CAT_ELECTRICAL_DEVICE;
@@ -1581,7 +1581,7 @@ package body et_board_ops.devices is
 
 		if result_non_electrical.cursor /= pac_devices_non_electric.no_element then
 			-- A device has been found.
-			log (text => to_string (result_non_electrical.cursor),
+			log (text => get_device_name (result_non_electrical.cursor),
 				 level => log_threshold + 1);
 			
 			result_category := CAT_NON_ELECTRICAL_DEVICE;
@@ -1648,7 +1648,7 @@ package body et_board_ops.devices is
 						cat					=> CAT_ELECTRICAL_DEVICE,
 						electrical_device	=> (cursor => cursor_electrical)));
 
-					log (text => to_string (cursor_electrical), level => log_threshold + 2);
+					log (text => get_device_name (cursor_electrical), level => log_threshold + 2);
 				end collect;
 				
 			begin
@@ -1681,7 +1681,7 @@ package body et_board_ops.devices is
 						cat						=> CAT_NON_ELECTRICAL_DEVICE,
 						non_electrical_device	=> (cursor => cursor_non_electrical)));
 
-					log (text => to_string (cursor_non_electrical), level => log_threshold + 2);
+					log (text => get_device_name (cursor_non_electrical), level => log_threshold + 2);
 				end collect;
 
 				

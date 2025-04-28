@@ -241,12 +241,22 @@ package body et_units is
 
 
 
+
+	function get_unit_name (
+		unit : in pac_units.cursor)
+		return string
+	is begin
+		return pac_unit_name.to_string (key (unit));
+	end get_unit_name;
+
+
+	
 	
 	
 	function to_string (unit : in pac_units.cursor) return string is
 		use pac_units;
 	begin
-		return to_string (key (unit)) 
+		return get_unit_name (unit) 
 			--& to_string (type_vector_model (element (unit).position));
 			& to_string (element (unit).position.place);
 			-- CS output sheet number and rotation ?

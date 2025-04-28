@@ -197,6 +197,12 @@ package et_units is
 
 	use pac_units;
 
+
+	-- Returns the name of a unit as a string:
+	function get_unit_name (
+		unit : in pac_units.cursor)
+		return string;
+	
 	
 	-- Returns a string that tells the name and position of given unit.
 	function to_string (unit : in pac_units.cursor) return string;

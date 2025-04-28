@@ -121,11 +121,11 @@ package body et_canvas_board_devices is
 	begin
 		case object.cat is
 			when CAT_ELECTRICAL_DEVICE =>
-				set_status (praeamble_electric & to_string (object.electrical_device.cursor)
+				set_status (praeamble_electric & get_device_name (object.electrical_device.cursor)
 					& ". " & status_next_object_clarification);
 
 			when CAT_NON_ELECTRICAL_DEVICE =>
-				set_status (praeamble_non_electric & to_string (object.non_electrical_device.cursor)
+				set_status (praeamble_non_electric & get_device_name (object.non_electrical_device.cursor)
 					& ". " & status_next_object_clarification);
 
 			when CAT_VOID => null; -- CS

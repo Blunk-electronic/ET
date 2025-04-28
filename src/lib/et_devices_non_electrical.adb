@@ -230,12 +230,12 @@ package body et_devices_non_electrical is
 	
 
 	
-	function to_string (
+	function get_device_name (
 		device : in pac_devices_non_electric.cursor)
 		return string
 	is begin
 		return to_string (key (device));
-	end to_string;
+	end get_device_name;
 
 	
 	

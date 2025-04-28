@@ -210,8 +210,9 @@ package et_devices_non_electrical is
 	
 
 	
-	-- Returns the name of the non-electical device:
-	function to_string (
+	-- Returns the name of the non-electical device
+	-- as string:
+	function get_device_name (
 		device : in pac_devices_non_electric.cursor)
 		return string;
 	

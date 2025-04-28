@@ -46,6 +46,17 @@ with et_string_processing;			use et_string_processing;
 package body et_devices_electrical is
 
 
+
+	function get_device_name (
+		device : in pac_devices_sch.cursor)
+		return string
+	is begin
+		return to_string (key (device));
+	end get_device_name;
+
+
+
+	
 	procedure device_name_in_use (
 		name : in type_device_name)
 	is 
@@ -1225,16 +1236,6 @@ package body et_devices_electrical is
 	
 
 	
-
-	function to_string (
-		device_cursor : in pac_devices_sch.cursor)
-		return string
-	is begin
-		return to_string (key (device_cursor));
-	end to_string;
-
-
-
 
 
 

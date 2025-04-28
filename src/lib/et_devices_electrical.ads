@@ -163,6 +163,12 @@ package et_devices_electrical is
 	use pac_devices_sch;
 	
 
+	-- Returns the name of a device as string:
+	function get_device_name (
+		device : in pac_devices_sch.cursor)
+		return string;
+
+	
 	
 	procedure device_name_in_use (
 		name : in type_device_name); -- IC1, R1, ...
@@ -529,14 +535,6 @@ package et_devices_electrical is
 	
 -- DEVICE QUERY OPERATIONS:
 	
-	
-	-- Returns the name of the device indicated by
-	-- the given cursor:
-	function to_string (
-		device_cursor : in pac_devices_sch.cursor)
-		return string;
-		
-
 
 
 	-- Maps from schematic device to device model (in library):
