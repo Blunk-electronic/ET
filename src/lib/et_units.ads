@@ -198,6 +198,12 @@ package et_units is
 	use pac_units;
 
 
+	function get_unit_name (
+		unit : in pac_units.cursor)
+		return pac_unit_name.bounded_string;
+
+	
+
 	-- Returns the name of a unit as a string:
 	function get_unit_name (
 		unit : in pac_units.cursor)

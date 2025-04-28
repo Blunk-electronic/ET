@@ -39,13 +39,53 @@
 with ada.text_io;				use ada.text_io;
 with ada.exceptions;
 
-with et_device_model;
 with et_contour_to_polygon;
 with et_string_processing;			use et_string_processing;
 
 package body et_devices_electrical is
 
 
+
+	
+	function to_full_name (
+		device		: in type_device_name;
+		unit		: in pac_unit_name.bounded_string;
+		unit_count	: in type_unit_count)
+		return string 
+	is begin
+		if unit_count > 1 then
+			return to_string (device) 
+				& device_unit_separator 
+				& pac_unit_name.to_string (unit);
+		else
+			return to_string (device);
+		end if;
+	end to_full_name;
+
+
+
+	function get_unit_count (
+		device : in pac_devices_sch.cursor)
+		return type_unit_count
+	is 
+		result : type_unit_count := 1;
+	begin
+
+		return result;
+	end get_unit_count;
+
+
+	
+
+	function get_device_name (
+		device : in pac_devices_sch.cursor)
+		return type_device_name
+	is begin
+		return key (device);
+	end get_device_name;
+
+
+	
 
 	function get_device_name (
 		device : in pac_devices_sch.cursor)

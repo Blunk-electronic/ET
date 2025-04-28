@@ -2617,6 +2617,83 @@ package body et_schematic_ops.units is
 
 
 
+
+	function get_object_name (
+		object	: in type_object_unit)
+		return string
+	is begin
+		return get_device_name (object.device_cursor) 
+			& device_unit_separator
+			& get_unit_name (object.unit_cursor);
+		-- CS use function to_full_name inestead ?
+	end get_object_name;
+
+	
+	
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		unit			: in type_object_unit;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is			
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_sch)
+			is 
+
+				procedure query_unit (
+					unit_name	: in pac_unit_name.bounded_string;
+					unit		: in out type_unit)
+				is begin
+					modify_status (unit, operation);
+				end query_unit;
+				
+			begin
+				device.units.update_element (unit.unit_cursor, query_unit'access);
+			end query_device;
+			
+		begin
+			module.devices.update_element (unit.device_cursor, query_device'access);
+		end query_module;
+		
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of unit "
+			& get_object_name (unit)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,		   
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
 	procedure propose_units (
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;

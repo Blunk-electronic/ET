@@ -39,6 +39,7 @@
 
 
 with et_device_placeholders;			use et_device_placeholders;
+with et_object_status;					use et_object_status;
 
 
 package et_schematic_ops.units is
@@ -366,6 +367,36 @@ package et_schematic_ops.units is
 
 
 
+
+
+	-- This composite type is meant to identify a unit
+	-- and its parent device in the schematic:
+	type type_object_unit is record
+		device_cursor	: pac_devices_sch.cursor;
+
+		-- If the cursor to the unit is no_element then
+		-- the whole device is addressed:
+		unit_cursor		: pac_units.cursor;
+	end record;
+
+
+	-- Returns the full name of the given object
+	-- as string in the form like "IC12.B":
+	function get_object_name (
+		object	: in type_object_unit)
+		return string;
+
+	
+
+	-- Modifies that status flag of a unit:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		unit			: in type_object_unit;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+	
+	
 	-- Sets the proposed-flag of all units which are in the
 	-- given zone around the given place on the currently active sheet.
 	-- Adds to count the number of units that have been found:

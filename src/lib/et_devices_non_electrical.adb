@@ -228,7 +228,15 @@ package body et_devices_non_electrical is
 
 
 	
+	function get_device_name (
+		device : in pac_devices_non_electric.cursor)
+		return type_device_name
+	is begin
+		return key (device);
+	end get_device_name;
 
+
+	
 	
 	function get_device_name (
 		device : in pac_devices_non_electric.cursor)

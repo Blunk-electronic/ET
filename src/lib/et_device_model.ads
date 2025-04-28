@@ -70,23 +70,9 @@ package et_device_model is
 
 	use pac_geometry_2;
 
-
-	device_unit_separator : constant character := '.';
-
 	
 	-- A device may have up to 1000 units. CS: seems to be reasonable limit
 	subtype type_unit_count is positive range 1 .. 1000;
-
-
-	
-	-- This function concatenates the device name and unit name, separated
-	-- by the device_unit_separator. If the given unit_count is 1 then just
-	-- the device name will be returned as string.
-	function to_full_name (
-		device_name	: in type_device_name; -- IC34
-		symbol_name	: in pac_unit_name.bounded_string; -- PWR
-		unit_count	: in type_unit_count) -- the total number of units
-		return string; -- IC34.PWR
 
 
 	
@@ -168,6 +154,13 @@ package et_device_model is
 
 
 
+	-- Returns the total number of units that the
+	-- given device model contains.
+	-- It is the sum of internal and external units:
+	function get_unit_count (
+		device_model : in type_device_model)
+		return type_unit_count;
+	
 
 	
 	-- Use this function to adopt placeholder position and rotation 

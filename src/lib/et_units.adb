@@ -244,6 +244,17 @@ package body et_units is
 
 	function get_unit_name (
 		unit : in pac_units.cursor)
+		return pac_unit_name.bounded_string
+	is begin
+		return key (unit);
+	end get_unit_name;
+
+
+
+	
+
+	function get_unit_name (
+		unit : in pac_units.cursor)
 		return string
 	is begin
 		return pac_unit_name.to_string (key (unit));

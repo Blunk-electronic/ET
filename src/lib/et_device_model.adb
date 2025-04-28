@@ -51,26 +51,22 @@ with et_exceptions;				use et_exceptions;
 
 package body et_device_model is
 
-	
-	function to_full_name (
-		device_name	: in type_device_name; -- IC34
-		symbol_name	: in pac_unit_name.bounded_string; -- PWR
-		unit_count	: in type_unit_count) -- the total number of units
-		return string is -- IC34.PWR
+
+	function get_unit_count (
+		device_model : in type_device_model)
+		return type_unit_count
+	is
+		result : type_unit_count;
 	begin
-		if unit_count > 1 then
-			return to_string (device_name) 
-				& device_unit_separator 
-				& to_string (symbol_name);
-		else
-			return to_string (device_name);
-		end if;
-	end to_full_name;
+		result := type_unit_count (
+			device_model.units_internal.length +
+			device_model.units_external.length);
+		
+		return result;
+	end get_unit_count;
+
 
 	
-	
-
-
 	
 	function rotate_placeholders (
 		symbol_cursor	: in pac_units_internal.cursor;

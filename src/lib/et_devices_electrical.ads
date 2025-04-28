@@ -78,6 +78,7 @@ with et_material;
 with et_text;
 with et_symbols;						use et_symbols;
 with et_port_names;						use et_port_names;
+with et_device_model;					use et_device_model;
 with et_device_appearance;				use et_device_appearance;
 with et_device_purpose;					use et_device_purpose;
 with et_device_model_names;				use et_device_model_names;
@@ -163,11 +164,41 @@ package et_devices_electrical is
 	use pac_devices_sch;
 	
 
+	-- Returns the total number of units that the
+	-- given device contains per device model:
+	function get_unit_count (
+		device : in pac_devices_sch.cursor)
+		return type_unit_count;
+	
+		
+	
+	function get_device_name (
+		device : in pac_devices_sch.cursor)
+		return type_device_name;
+
+	
 	-- Returns the name of a device as string:
 	function get_device_name (
 		device : in pac_devices_sch.cursor)
 		return string;
 
+
+
+	device_unit_separator : constant character := '.';
+
+
+
+	-- This function concatenates the device name and unit name, separated
+	-- by the device_unit_separator. If the given unit_count is 1 then just
+	-- the device name will be returned as string.
+	function to_full_name (
+		device		: in type_device_name; -- IC34
+		unit		: in pac_unit_name.bounded_string; -- PWR
+		unit_count	: in type_unit_count) -- the total number of units
+		return string; -- IC34.PWR
+
+
+	
 	
 	
 	procedure device_name_in_use (
@@ -534,8 +565,8 @@ package et_devices_electrical is
 
 	
 -- DEVICE QUERY OPERATIONS:
-	
 
+	
 
 	-- Maps from schematic device to device model (in library):
 	function get_device_model (
