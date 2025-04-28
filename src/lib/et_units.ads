@@ -85,6 +85,38 @@ package et_units is
 
 
 
+	function get_position (
+		unit	: in type_unit)
+		return type_object_position;
+
+
+	procedure set_position (
+		unit		: in out type_unit;
+		position	: in type_object_position);
+	
+
+	
+	function get_rotation (
+		unit	: in type_unit)
+		return type_rotation_model;
+
+
+	procedure set_rotation (
+		unit		: in out type_unit;
+		rotation	: in type_rotation_model);
+	
+
+	
+	function get_sheet (
+		unit	: in type_unit)
+		return type_sheet;
+
+
+	procedure set_sheet (
+		unit	: in out type_unit;
+		sheet	: in type_sheet);
+	
+	
 
 	-- Returns true if the given unit is in
 	-- the given catch zone:

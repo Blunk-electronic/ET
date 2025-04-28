@@ -2640,13 +2640,15 @@ package body et_schematic_ops.units is
 				procedure query_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit)
-				is
-				begin
-					-- if in_catch_zone (unit, catch_zone, active_sheet) then
-						null;
-					-- end if;
-					-- set_proposed (device.status);
-					-- count := count + 1;
+				is begin
+					if in_catch_zone (unit, catch_zone, active_sheet) then
+						log_indentation_up;
+						log (text => to_string (unit_name), level => log_threshold + 2);
+						log_indentation_down;
+						
+						set_proposed (unit);
+						count := count + 1;
+					end if;
 				end query_unit;
 
 				
@@ -2670,6 +2672,7 @@ package body et_schematic_ops.units is
 				next (device_cursor);
 			end loop;
 		end query_module;
+		
 
 	begin
 		log (text => "module " & to_string (module_cursor)

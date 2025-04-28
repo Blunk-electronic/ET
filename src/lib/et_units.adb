@@ -47,7 +47,62 @@ with et_exceptions;						use et_exceptions;
 package body et_units is
 
 
+	function get_position (
+		unit	: in type_unit)
+		return type_object_position
+	is begin
+		return unit.position;
+	end get_position;
 
+
+
+	procedure set_position (
+		unit		: in out type_unit;
+		position	: in type_object_position)
+	is begin
+		unit.position := position;
+	end set_position;
+	
+
+	
+
+	function get_rotation (
+		unit	: in type_unit)
+		return type_rotation_model
+	is begin
+		return get_rotation (unit.position);
+	end get_rotation;
+
+
+	procedure set_rotation (
+		unit		: in out type_unit;
+		rotation	: in type_rotation_model)
+	is begin
+		set_rotation (unit.position, rotation);
+	end set_rotation;
+
+
+	
+	
+	function get_sheet (
+		unit	: in type_unit)
+		return type_sheet
+	is begin
+		return get_sheet (unit.position);
+	end get_sheet;
+
+
+	
+	procedure set_sheet (
+		unit	: in out type_unit;
+		sheet	: in type_sheet)
+	is begin
+		set_sheet (unit.position, sheet);
+	end set_sheet;
+	
+
+	
+	
 	function in_catch_zone (
 		unit	: in type_unit;
 		zone	: in type_catch_zone;
@@ -56,15 +111,17 @@ package body et_units is
 	is 
 		result : boolean := false;
 
-		unit_position : type_object_position;
-		-- place : type_vector_model;
-		-- sheet : type_sheet;
+		unit_position : type_object_position := get_position (unit);
 	begin
-		-- point := get_place (unit.position);
+		-- The unit must be on the given sheet and
+		-- in the given catch zone:
+		if 	get_sheet (unit_position) = sheet 
+		and	in_catch_zone (zone, get_place (unit_position)) then
+			result := true;
+		else
+			result := false;
+		end if;
 		
-		-- if in_catch_zone (
-		-- 	zone	=> zone,
-		-- 	point	=> ge
 		return result;
 	end in_catch_zone;
 

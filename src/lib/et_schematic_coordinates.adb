@@ -186,7 +186,7 @@ package body et_schematic_coordinates is
 
 
 	function get_place (
-		position	: in type_object_position)
+		position : in type_object_position)
 		return type_vector_model
 	is 
 		result : type_vector_model;
@@ -195,10 +195,42 @@ package body et_schematic_coordinates is
 		return result;
 	end get_place;
 
+
+
+
+	procedure set_place (
+		position 	: in out type_object_position;
+		place		: in type_vector_model)
+	is begin
+		position.place := place;
+	end set_place;
+
+
+
+	
+	function get_rotation (
+		position : in type_object_position) 
+		return type_rotation_model
+	is begin
+		return position.rotation;
+	end get_rotation;
+
+
+
+
+
+	procedure set_rotation (
+		position 	: in out type_object_position;
+		rotation	: in type_rotation_model)
+	is begin
+		position.rotation := rotation;
+	end set_rotation;
+	
+	
 	
 	
 	function get_sheet (
-		position	: in type_object_position) 
+		position : in type_object_position) 
 		return type_sheet 
 	is begin
 		return position.sheet;

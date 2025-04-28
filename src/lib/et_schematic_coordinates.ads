@@ -166,6 +166,8 @@ package et_schematic_coordinates is
 	
 	type type_object_position_relative is new pac_geometry_2.type_position with private;
 
+
+	
 	greatest_position : constant type_object_position;
 
 	
@@ -198,21 +200,44 @@ package et_schematic_coordinates is
 		position : in type_object_position) 
 		return string;
 
+	
 	-- Returns something like "sheet 3 x 12.34 y 45.0".
-	-- CS: merge this function with the to_string functin above
+	-- CS: merge this function with the to_string function above
 	-- using an argument for the desired output format.
+	-- CS: output rotation
 	function get_position (
 		pos : in type_object_position) 
 		return string;
 
 
-	-- Returns x and y of a given object position:
-	function get_place (
-		position	: in type_object_position)
-		return type_vector_model;
 	
 
+-- PLACE (X/Y):
+	
+	-- Returns x and y of a given object position:
+	function get_place (
+		position : in type_object_position)
+		return type_vector_model;
 
+
+	procedure set_place (
+		position 	: in out type_object_position;
+		place		: in type_vector_model);
+	
+
+	
+-- ROTATION:
+	
+	function get_rotation (
+		position : in type_object_position) 
+		return type_rotation_model;
+
+
+	procedure set_rotation (
+		position 	: in out type_object_position;
+		rotation	: in type_rotation_model);
+
+	
 	
 -- SHEET:
 
@@ -222,7 +247,7 @@ package et_schematic_coordinates is
 	
 	-- Returns the sheet number of the given position:
 	function get_sheet (
-		position	: in type_object_position) 
+		position : in type_object_position) 
 		return type_sheet;
 
 
