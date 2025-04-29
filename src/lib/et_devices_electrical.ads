@@ -203,12 +203,21 @@ package et_devices_electrical is
 	function get_device_name (
 		device : in pac_devices_sch.cursor)
 		return string;
-
-
+	
 
 	device_unit_separator : constant character := '.';
 
 
+	-- This function concatenates the device name and unit name, separated
+	-- by the device_unit_separator like IC4.C.
+	-- If the device has only one unit, then only the device name 
+	-- will be returned as string like IC4:
+	function get_full_name (
+		device	: in pac_devices_sch.cursor;
+		unit	: in pac_units.cursor)
+		return string;
+
+	
 
 	-- This function concatenates the device name and unit name, separated
 	-- by the device_unit_separator. If the given unit_count is 1 then just

@@ -83,22 +83,6 @@ package body et_devices_electrical is
 
 
 	
-	
-	function to_full_name (
-		device		: in type_device_name;
-		unit		: in pac_unit_name.bounded_string;
-		unit_count	: in type_unit_count)
-		return string 
-	is begin
-		if unit_count > 1 then
-			return to_string (device) 
-				& device_unit_separator 
-				& pac_unit_name.to_string (unit);
-		else
-			return to_string (device);
-		end if;
-	end to_full_name;
-
 
 
 	
@@ -121,6 +105,8 @@ package body et_devices_electrical is
 	end get_unit_count;
 
 
+
+	
 	
 
 	function get_device_name (
@@ -139,6 +125,49 @@ package body et_devices_electrical is
 	is begin
 		return to_string (key (device));
 	end get_device_name;
+
+
+
+
+
+	function get_full_name (
+		device	: in pac_devices_sch.cursor;
+		unit	: in pac_units.cursor)
+		return string
+	is
+		d_name : string := get_device_name (device);
+		u_name : string := get_unit_name (unit);
+
+		u_count : type_unit_count;
+	begin
+		u_count := get_unit_count (device);
+
+		if u_count > 1 then
+			return d_name & device_unit_separator & u_name; -- IC3,A
+		else
+			return d_name; -- IC3
+		end if;
+	end get_full_name;
+
+
+	
+
+
+	
+	function to_full_name (
+		device		: in type_device_name;
+		unit		: in pac_unit_name.bounded_string;
+		unit_count	: in type_unit_count)
+		return string 
+	is begin
+		if unit_count > 1 then
+			return to_string (device) 
+				& device_unit_separator 
+				& pac_unit_name.to_string (unit);
+		else
+			return to_string (device);
+		end if;
+	end to_full_name;
 
 
 

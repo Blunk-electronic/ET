@@ -2622,10 +2622,7 @@ package body et_schematic_ops.units is
 		object	: in type_object_unit)
 		return string
 	is begin
-		return get_device_name (object.device_cursor) 
-			& device_unit_separator
-			& get_unit_name (object.unit_cursor);
-		-- CS use function to_full_name inestead ?
+		return get_full_name (object.device_cursor, object.unit_cursor);
 	end get_object_name;
 
 	
@@ -2666,7 +2663,7 @@ package body et_schematic_ops.units is
 
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of unit "
+			& " modifying status of device unit "
 			& get_object_name (unit)
 			& " / " & to_string (operation),
 			level => log_threshold);
