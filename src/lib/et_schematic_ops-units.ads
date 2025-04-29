@@ -406,6 +406,106 @@ package et_schematic_ops.units is
 		count			: in out natural;
 		log_threshold	: in type_log_level);
 								
+
+
+	-- Clears the proposed-flag and the selected-flag of all units:
+	procedure reset_proposed_units (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Returns the first unit according to the given flag.
+	-- If no unit has been found,
+	-- then the return is no_element:
+	function get_first_unit (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_unit;
+
+
+
+------------------------------------------------------------------------------------------
+
+-- OBJECTS:
+
+
+	type type_object_category is (
+		CAT_VOID,
+		CAT_UNIT);
+
+
+	-- This type wraps all kinds of devices into a single type:
+	type type_object (cat : type_object_category) is record
+		case cat is
+			when CAT_VOID => null;
+			
+			when CAT_UNIT =>
+				unit : type_object_unit;
+
+		end case;
+	end record;
+
+
+	
+	
+	package pac_objects is new indefinite_doubly_linked_lists (type_object);
+
+
+	-- Returns the number of items stored in the given list:
+	function get_count (
+		objects : in pac_objects.list)
+		return natural;
+	
+
+
+	-- Returns the first object
+	-- according to the given flag.
+	-- If nothing found, then the return is a void object (CAT_VOID):
+	function get_first_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object;
+
+
+
+	-- Collects all objects 
+	-- according to the given flag and returns them in a list:
+	function get_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return pac_objects.list;
+	
+
+
+	-- Modifies the status flag of an object:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Modifies the status flag of an object indicated by a cursor:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+	
+
+	-- This is a collective procedure that resets
+	-- the proposed-flag and the selected-flag 
+	-- of all objects:
+	procedure reset_proposed_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
 	
 end et_schematic_ops.units;
 

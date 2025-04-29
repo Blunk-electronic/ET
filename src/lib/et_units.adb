@@ -242,6 +242,22 @@ package body et_units is
 
 
 
+	procedure iterate (
+		units	: in pac_units.map;
+		process	: not null access procedure (position : in pac_units.cursor);
+		proceed	: not null access boolean)
+	is
+		c : pac_units.cursor := units.first;
+	begin
+		while c /= pac_units.no_element and proceed.all = TRUE loop
+			process (c);
+			next (c);
+		end loop;
+	end iterate;
+
+
+	
+
 	function get_unit_name (
 		unit : in pac_units.cursor)
 		return pac_unit_name.bounded_string

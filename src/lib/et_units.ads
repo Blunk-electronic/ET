@@ -198,6 +198,15 @@ package et_units is
 	use pac_units;
 
 
+	-- Iterates the units.
+	-- Aborts the process when the proceed-flag goes false:
+	procedure iterate (
+		units	: in pac_units.map;
+		process	: not null access procedure (position : in pac_units.cursor);
+		proceed	: not null access boolean);
+
+
+	
 	function get_unit_name (
 		unit : in pac_units.cursor)
 		return pac_unit_name.bounded_string;

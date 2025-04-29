@@ -2687,9 +2687,6 @@ package body et_schematic_ops.units is
 
 
 
-
-
-
 	
 	procedure propose_units (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -2762,6 +2759,376 @@ package body et_schematic_ops.units is
 		log_indentation_down;
 	end propose_units;
 
+
+
+
+
+
+
+	procedure reset_proposed_units (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in out type_device_sch)
+			is 
+				unit_cursor : pac_units.cursor := device.units.first;
+
+
+				procedure query_unit (
+					unit_name	: in pac_unit_name.bounded_string;
+					unit		: in out type_unit)
+				is begin
+					log (text => to_string (unit_name), level => log_threshold + 2);
+					reset_status (unit);
+				end query_unit;
+
+										 
+			begin
+				log (text => to_string (device_name), level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate through the units:
+				while has_element (unit_cursor) loop
+					device.units.update_element (unit_cursor, query_unit'access);
+					next (unit_cursor);
+				end loop;
+				
+				log_indentation_down;
+			end query_device;
+
+			
+			device_cursor : pac_devices_sch.cursor := module.devices.first;
+			
+		begin
+			-- Iterate through the devices:
+			while has_element (device_cursor) loop
+				module.devices.update_element (device_cursor, query_device'access);
+				next (device_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " resetting proposed units", 
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_units;
+
+
+
+
+
+
+
+	function get_first_unit (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_unit
+	is
+		result : type_object_unit;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			device_cursor : pac_devices_sch.cursor := module.devices.first;
+
+			proceed : aliased boolean := true;
+
+
+			procedure query_device (
+				device_name	: in type_device_name;
+				device 		: in type_device_sch)
+			is 
+
+				procedure query_unit (unit_cursor : in pac_units.cursor) is begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (unit_cursor) then
+								result.device_cursor := device_cursor;
+								result.unit_cursor := unit_cursor;
+								proceed := false; -- no further probing required
+							end if;
+		
+						when SELECTED =>
+							if is_selected (device_cursor) then
+								result.device_cursor := device_cursor;
+								result.unit_cursor := unit_cursor;
+								proceed := false; -- no further probing required
+							end if;
+		
+						when others => null; -- CS
+					end case;
+				end query_unit;
+
+				
+			begin
+				-- Iterate through the units:
+				iterate (device.units, query_unit'access, proceed'access);
+			end query_device;
+			
+			
+		begin
+			-- Iterate through the devices:
+			while has_element (device_cursor) and proceed loop
+				pac_devices_sch.query_element (device_cursor, query_device'access);
+				next (device_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first unit /" & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+
+		return result;
+	end get_first_unit;
+
+
+
+
+------------------------------------------------------------------------------------------
+
+-- OBJECTS:
+	
+
+	function get_count (
+		objects : in pac_objects.list)
+		return natural
+	is begin
+		return natural (objects.length);
+	end get_count;
+	
+	
+
+
+	function get_first_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;								 
+		log_threshold	: in type_log_level)
+		return type_object
+	is
+		result_category : type_object_category := CAT_VOID;
+		result_unit 	: type_object_unit;
+
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first object / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		
+		-- SEARCH FOR A UNIT:
+		
+		-- If a unit has been found, then go to the end of this procedure:
+		result_unit := get_first_unit (module_cursor, flag, log_threshold + 1);
+
+		if has_element (result_unit.unit_cursor) then
+			-- A unit has been found.
+			log (text => get_object_name (result_unit),
+				 level => log_threshold + 1);
+			
+			result_category := CAT_UNIT;
+		end if;
+		
+		-- If nothing has been found then the category is CAT_VOID.
+		log_indentation_down;
+
+		
+		case result_category is
+			when CAT_VOID =>
+				return (cat => CAT_VOID);
+
+			when CAT_UNIT =>
+				return (CAT_UNIT, result_unit);
+
+		end case;
+	end get_first_object;
+
+
+
+
+
+	function get_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return pac_objects.list
+	is
+		use pac_objects;
+
+		-- Here the objects are collected:
+		result : pac_objects.list;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			device_cursor : pac_devices_sch.cursor := module.devices.first;
+			
+
+			procedure query_device (
+				name	: in type_device_name;
+				device	: in type_device_sch) 
+			is 
+				unit_cursor : pac_units.cursor := device.units.first;
+
+
+				-- This procedure appends the matching
+				-- device and unit cursor to the result:
+				procedure collect is begin
+					result.append ((
+						cat		=> CAT_UNIT,
+						unit	=> (device_cursor, unit_cursor)));
+
+				end collect;
+
+				
+				procedure query_unit (c : in pac_units.cursor) is begin
+					case flag is
+						when PROPOSED =>
+							if is_proposed (c) then
+								collect;
+							end if;
+
+						when SELECTED =>
+							if is_selected (c) then
+								collect;
+							end if;
+
+						when others => null; -- CS
+					end case;					
+				end query_unit;
+		
+				
+			begin
+				device.units.iterate (query_unit'access);
+			end query_device;
+
+			
+		begin
+			-- Iterate the units of the module:
+			while has_element (device_cursor) loop
+				query_element (device_cursor, query_device'access);
+				next (device_cursor);
+			end loop;
+		
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up objects / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+		
+		log_indentation_down;
+
+		return result;
+	end get_objects;
+
+
+
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of object"
+			& type_object_category'image (object.cat)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		case object.cat is
+			when CAT_UNIT =>
+				modify_status (module_cursor, object.unit, operation, log_threshold + 1);
+
+			when CAT_VOID =>
+				null; -- CS
+		end case;
+
+		log_indentation_down;
+	end modify_status;
+
+
+
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is 
+		use pac_objects;
+		object : constant type_object := element (object_cursor);
+	begin
+		modify_status (module_cursor, object, operation, log_threshold);
+	end modify_status;
+
+	
+
+
+
+
+	procedure reset_proposed_objects (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor) &
+			" resetting proposed objects",
+			level => log_threshold);
+
+		log_indentation_up;
+		reset_proposed_units (module_cursor, log_threshold + 1);
+		log_indentation_down;
+	end reset_proposed_objects;
+
+
+
+	
 	
 end et_schematic_ops.units;
 
