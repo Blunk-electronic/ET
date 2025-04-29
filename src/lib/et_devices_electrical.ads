@@ -222,7 +222,7 @@ package et_devices_electrical is
 	-- This function concatenates the device name and unit name, separated
 	-- by the device_unit_separator. If the given unit_count is 1 then just
 	-- the device name will be returned as string.
-	function to_full_name (
+	function get_full_name (
 		device		: in type_device_name; -- IC34
 		unit		: in pac_unit_name.bounded_string; -- PWR
 		unit_count	: in type_unit_count) -- the total number of units

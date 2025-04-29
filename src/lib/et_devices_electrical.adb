@@ -154,7 +154,7 @@ package body et_devices_electrical is
 
 
 	
-	function to_full_name (
+	function get_full_name (
 		device		: in type_device_name;
 		unit		: in pac_unit_name.bounded_string;
 		unit_count	: in type_unit_count)
@@ -167,7 +167,7 @@ package body et_devices_electrical is
 		else
 			return to_string (device);
 		end if;
-	end to_full_name;
+	end get_full_name;
 
 
 

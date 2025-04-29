@@ -456,7 +456,7 @@ procedure draw_units is
 				move_by (p, to_distance_relative (unit_position));
 				
 				draw_text (
-					content		=> to_content (to_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
+					content		=> to_content (get_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
 					size		=> symbol.name.size,
 					font		=> name_font,
 					anchor		=> p,
