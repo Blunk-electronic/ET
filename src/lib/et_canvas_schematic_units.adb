@@ -442,7 +442,7 @@ package body et_canvas_schematic_units is
 			commit (PRE, verb, noun, log_threshold);
 			
 			move_unit (
-				module_name		=> pac_generic_modules.key (active_module),
+				module_cursor	=> active_module,
 				device_name		=> key (su.device),
 				unit_name		=> key (su.unit),
 				coordinates		=> ABSOLUTE,
@@ -467,6 +467,9 @@ package body et_canvas_schematic_units is
 	end finalize_move;
 
 
+
+
+	
 	procedure move_unit (
 		tool		: in type_tool;
 		position	: in type_vector_model)
@@ -524,7 +527,7 @@ package body et_canvas_schematic_units is
 			commit (PRE, verb, noun, log_threshold);
 			
 			drag_unit (
-				module_name		=> pac_generic_modules.key (active_module),
+				module_cursor	=> active_module,
 				device_name		=> key (su.device),
 				unit_name		=> key (su.unit),
 				coordinates		=> ABSOLUTE,
@@ -545,6 +548,8 @@ package body et_canvas_schematic_units is
 		
 		reset_unit_move;
 	end finalize_drag;
+
+
 
 	
 
@@ -576,6 +581,8 @@ package body et_canvas_schematic_units is
 	end drag_unit;
 
 	
+
+
 	
 	procedure find_units_for_move (point : in type_vector_model) is 
 		use et_modes.schematic;
@@ -624,6 +631,8 @@ package body et_canvas_schematic_units is
 		
 		log_indentation_down;
 	end find_units_for_move;
+
+
 
 
 	

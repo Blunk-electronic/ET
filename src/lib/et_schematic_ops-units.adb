@@ -1351,8 +1351,8 @@ package body et_schematic_ops.units is
 
 			procedure query_number_of_invoked_units (
 				device_name	: in type_device_name;
-				device		: in type_device_sch) is
-			begin
+				device		: in type_device_sch) 
+			is begin
 				if length (device.units) = 0 then
 					units_invoked := false;
 				end if;
@@ -1408,6 +1408,10 @@ package body et_schematic_ops.units is
 
 		
 	begin
+		log (text => "module " & to_string (module_cursor) &
+			 " deleting " & to_string (device_name) & " unit " & 
+			 to_string (unit_name) & " ...", level => log_threshold);
+
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
@@ -1418,34 +1422,11 @@ package body et_schematic_ops.units is
 
 
 	
-	procedure delete_unit (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- A
-		log_threshold	: in type_log_level) 
-	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
-	begin
-		log (text => "module " & to_string (module_name) &
-			 " deleting " & to_string (device_name) & " unit " & 
-			 to_string (unit_name) & " ...", level => log_threshold);
-
-		-- locate module
-		module_cursor := locate_module (module_name);
-
-		delete_unit (
-			module_cursor	=> module_cursor,
-			device_name		=> device_name,
-			unit_name		=> unit_name,
-			log_threshold	=> log_threshold + 1);
-
-	end delete_unit;
-
 	
 
 	
 	procedure move_unit (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
@@ -1453,7 +1434,6 @@ package body et_schematic_ops.units is
 		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		
 		procedure query_devices (
@@ -1591,10 +1571,10 @@ package body et_schematic_ops.units is
 		end query_devices;
 
 		
-	begin -- move_unit
+	begin
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & enclose_in_quotes (to_string (module_name))
+				log (text => "module " & to_string (module_cursor)
 					& " moving " & enclose_in_quotes (to_string (device_name)) 
 					& " unit " & enclose_in_quotes (to_string (unit_name)) 
 					& " to sheet" & to_string (sheet) 
@@ -1602,7 +1582,7 @@ package body et_schematic_ops.units is
 					level => log_threshold);
 
 			when RELATIVE =>
-				log (text => "module " & enclose_in_quotes (to_string (module_name))
+				log (text => "module " & to_string (module_cursor)
 					& " moving " & enclose_in_quotes (to_string (device_name))
 					& " unit " & enclose_in_quotes (to_string (unit_name)) 
 					& " by " & relative_to_string (sheet) & " sheet(s)" 
@@ -1610,8 +1590,6 @@ package body et_schematic_ops.units is
 					level => log_threshold);
 		end case;
 		
-		-- locate module
-		module_cursor := locate_module (module_name);
 		
 		update_element (
 			container	=> generic_modules,
@@ -1621,6 +1599,8 @@ package body et_schematic_ops.units is
 	end move_unit;
 
 
+
+	
 
 	
 	-- Drags the net segments according to the given drag_list of a unit.
@@ -1662,10 +1642,12 @@ package body et_schematic_ops.units is
 					-- Each time a segment has been dragged, it will be appended to
 					-- this list:
 					already_dragged_segments : pac_net_segments.list;
+
 					
 					procedure query_segments (strand : in out type_strand) is
 						use pac_net_segments;
 
+						
 						procedure query_segment (segment_cursor : in pac_net_segments.cursor) is 
 
 							-- Changes the position of start or end point of a segment 
@@ -1712,6 +1694,7 @@ package body et_schematic_ops.units is
 
 							end change_segment;
 
+							
 						begin -- query_segment
 							-- Probe only those segments which have not been dragged already:
 							if not already_dragged_segments.contains (element (segment_cursor)) then
@@ -1730,6 +1713,7 @@ package body et_schematic_ops.units is
 								
 							end if;
 						end query_segment;
+
 						
 					begin -- query_segments
 						-- Probe segments of this strand. Skip segments that have been
@@ -1741,7 +1725,8 @@ package body et_schematic_ops.units is
 							set_strand_position (strand); 
 						end if;						
 					end query_segments;
-						
+
+					
 				begin -- query_strands
 					-- loop in drag list
 					while drag_cursor /= type_drags_of_ports.no_element loop
@@ -1786,6 +1771,7 @@ package body et_schematic_ops.units is
 					end loop;
 						
 				end query_strands;
+
 				
 			begin -- query_net
 				update_element (
@@ -1793,11 +1779,13 @@ package body et_schematic_ops.units is
 					position	=> net_cursor,
 					process		=> query_strands'access);
 			end query_net;				
+
 			
 		begin -- query_nets
 			pac_nets.iterate (module.nets, query_net'access);
 		end query_nets;
 
+		
 	begin -- drag_net_segments
 		log (text => "dragging net segments with units on sheet" & 
 			 to_string (sheet) & " ...", level => log_threshold);
@@ -1813,6 +1801,7 @@ package body et_schematic_ops.units is
 
 
 
+	
 
 	
 	-- Tests whether the given unit ports at their individual location are movable. 
@@ -2073,17 +2062,17 @@ package body et_schematic_ops.units is
 
 
 
+
 	
 	
 	procedure drag_unit (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor 	: in pac_generic_modules.cursor; -- points to the module being modified
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		point			: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		
 		-- Merges the two maps ports_old and ports_new to a drag list.
@@ -2284,25 +2273,23 @@ package body et_schematic_ops.units is
 		end query_devices;
 
 		
-	begin -- drag_unit
+	begin
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & enclose_in_quotes (to_string (module_name)) 
+				log (text => "module " & to_string (module_cursor)
 					 & " dragging " & enclose_in_quotes (to_string (device_name)) 
 					 & " unit " & enclose_in_quotes	(to_string (unit_name)) 
 					 & " to" & to_string (point), 
 					 level => log_threshold);
 
 			when RELATIVE =>
-				log (text => "module " & enclose_in_quotes (to_string (module_name))
+				log (text => "module " & to_string (module_cursor)
 					 & " dragging " & enclose_in_quotes (to_string (device_name)) 
 					 & " unit " & enclose_in_quotes	(to_string (unit_name)) 
 					 & " by" & to_string (point), 
 					 level => log_threshold);
 		end case;
 		
-		-- locate module
-		module_cursor := locate_module (module_name);
 		
 		update_element (
 			container	=> generic_modules,
@@ -2313,16 +2300,19 @@ package body et_schematic_ops.units is
 	end drag_unit;
 
 
+
+
+	
+
 	
 	procedure rotate_unit (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		rotation		: in et_schematic_coordinates.type_rotation_model; -- 90
 		log_threshold	: in type_log_level) 
 	is
-		module_cursor : pac_generic_modules.cursor; -- points to the module being modified
 
 		
 		procedure query_devices (
@@ -2580,10 +2570,10 @@ package body et_schematic_ops.units is
 		end query_devices;
 
 		
-	begin -- rotate_unit
+	begin
 		case coordinates is
 			when ABSOLUTE =>
-				log (text => "module " & enclose_in_quotes (to_string (module_name))
+				log (text => "module " & to_string (module_cursor)
 					& " rotating " & enclose_in_quotes (to_string (device_name)) 
 					& " unit " & enclose_in_quotes (to_string (unit_name)) 
 					& " to" & to_string (rotation),
@@ -2591,7 +2581,7 @@ package body et_schematic_ops.units is
 
 			when RELATIVE =>
 				if rotation in type_rotation_relative then
-					log (text => "module " & enclose_in_quotes (to_string (module_name))
+					log (text => "module " & to_string (module_cursor)
 						& " rotating " & enclose_in_quotes (to_string (device_name)) 
 						& " unit " & enclose_in_quotes (to_string (unit_name))
 						& " by" & to_string (rotation), 
@@ -2601,8 +2591,6 @@ package body et_schematic_ops.units is
 				end if;
 		end case;
 		
-		-- locate module
-		module_cursor := locate_module (module_name);
 		
 		update_element (
 			container	=> generic_modules,
@@ -2626,6 +2614,7 @@ package body et_schematic_ops.units is
 	end get_object_name;
 
 	
+
 	
 
 

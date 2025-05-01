@@ -986,12 +986,12 @@ is
 
 	
 
-	procedure delete_unit is
-	begin
+	
+	procedure delete_unit is begin
 		case cmd_field_count is
 			when 6 =>
 				delete_unit (
-					module_name 	=> module,
+					module_cursor 	=> active_module,
 					device_name		=> to_device_name (f (5)),
 					unit_name		=> to_unit_name (f (6)),
 					log_threshold	=> log_threshold + 1);
@@ -1004,27 +1004,73 @@ is
 	
 
 
-	procedure drag_unit is
-	begin
+
+	
+	procedure drag_unit is begin
 		case cmd_field_count is
 			when 9 =>
-				drag_unit
-					(
-					module_name 	=> module,
+				drag_unit (
+					module_cursor 	=> active_module,
 					device_name		=> to_device_name (f (5)),
 					unit_name		=> to_unit_name (f (6)),
 					coordinates		=> to_coordinates (f (7)), -- relative/absolute
 					point			=> type_vector_model (set (
 										x => to_distance (f (8)),
 										y => to_distance (f (9)))),
-					log_threshold	=> log_threshold + 1
-					);
+					log_threshold	=> log_threshold + 1);
 
 			when 10 .. type_field_count'last => too_long; 
 				
 			when others => command_incomplete;
 		end case;
 	end drag_unit;
+	
+
+
+
+	procedure move_unit is 
+		use et_sheets;
+	begin
+		case cmd_field_count is
+			when 10 =>
+				move_unit (
+					module_cursor 	=> active_module,
+					device_name		=> to_device_name (f (5)), -- IC1
+					unit_name		=> to_unit_name (f (6)), -- A
+					coordinates		=> to_coordinates (f (7)),  -- relative/absolute
+					sheet			=> to_sheet_relative (f (8)),
+					point			=> type_vector_model (set (
+										x => to_distance (f (9)),
+										y => to_distance (f (10)))),
+						
+					log_threshold	=> log_threshold + 1);
+
+			when 11 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end move_unit;
+	
+
+	
+	
+	procedure rotate_unit is begin
+		case cmd_field_count is
+			when 8 =>
+				rotate_unit (
+					module_cursor 	=> active_module,
+					device_name		=> to_device_name (f (5)), -- IC1
+					unit_name		=> to_unit_name (f (6)), -- A
+					coordinates		=> to_coordinates (f (7)),  -- relative/absolute
+					rotation		=> to_rotation (f (8)), -- 90
+					log_threshold	=> log_threshold + 1);
+
+			when 9 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end rotate_unit;
+		
 	
 
 
@@ -1369,6 +1415,8 @@ is
 
 
 
+
+	
 	procedure create_module is
 		
 		procedure do_it (
@@ -1404,6 +1452,8 @@ is
 	end create_module;
 
 
+
+	
 	
 	-- This procedure extracts from the command the
 	-- name of the generic module and optionally the
@@ -1949,26 +1999,7 @@ is
 
 						
 					when NOUN_UNIT =>
-						case cmd_field_count is
-							when 10 =>
-								move_unit
-									(
-									module_name 	=> module,
-									device_name		=> to_device_name (f (5)), -- IC1
-									unit_name		=> to_unit_name (f (6)), -- A
-									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-									sheet			=> to_sheet_relative (f (8)),
-									point			=> type_vector_model (set (
-														x => to_distance (f (9)),
-														y => to_distance (f (10)))),
-										
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 11 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
+						move_unit;
 								
 					when others => invalid_noun (to_string (noun));
 				end case;
@@ -2219,22 +2250,7 @@ is
 						NULL; -- CS
 
 					when NOUN_UNIT =>
-						case cmd_field_count is
-							when 8 =>
-								rotate_unit
-									(
-									module_name 	=> module,
-									device_name		=> to_device_name (f (5)), -- IC1
-									unit_name		=> to_unit_name (f (6)), -- A
-									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-									rotation		=> to_rotation (f (8)), -- 90
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 9 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
+						rotate_unit;
 								
 					when NOUN_NAME =>
 						case cmd_field_count is 
