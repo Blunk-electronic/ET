@@ -45,12 +45,13 @@
 -- and in the board.
 -- These devices have a representation in schematic and mostly in the board.
 
-with ada.strings.bounded;       		use ada.strings.bounded;
 with ada.containers;           			use ada.containers;
 with ada.containers.doubly_linked_lists;
 with ada.containers.indefinite_ordered_maps;
 
-with et_schematic_coordinates;
+with et_schematic_coordinates;			use et_schematic_coordinates;
+use et_schematic_coordinates.pac_geometry_2;
+
 with et_assembly_variants;				use et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
 
@@ -102,8 +103,8 @@ with et_logging;						use et_logging;
 
 package et_devices_electrical is
 
+	use pac_units;
 
-	-- CS use pac_units; ?
 	
 
 	-- This is a device as it appears in the schematic.
@@ -192,7 +193,7 @@ package et_devices_electrical is
 	type type_unit_query (exists : boolean := false) is record
 		case exists is
 			when true => 
-				position : et_schematic_coordinates.type_object_position;
+				position : type_object_position;
 				-- x/y, rotation, sheet
 				
 			when false => 
@@ -280,7 +281,7 @@ package et_devices_electrical is
 	function get_position (
 		device	: in pac_devices_sch.cursor; -- R2
 		unit	: in pac_units.cursor)
-		return et_schematic_coordinates.type_object_position;
+		return type_object_position;
 
 	
 
@@ -349,7 +350,7 @@ package et_devices_electrical is
 		device		: in pac_devices_sch.cursor; -- R2
 		unit		: in pac_units.cursor;
 		category	: in type_placeholder_meaning)
-		return et_schematic_coordinates.pac_geometry_2.type_vector_model;
+		return type_vector_model;
 
 
 	

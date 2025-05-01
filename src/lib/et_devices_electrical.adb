@@ -42,6 +42,8 @@ with ada.exceptions;
 with et_contour_to_polygon;
 with et_string_processing;			use et_string_processing;
 
+
+
 package body et_devices_electrical is
 
 
@@ -93,7 +95,6 @@ package body et_devices_electrical is
 		query_result	: in type_unit_query)
 		return string 
 	is 
-		use et_schematic_coordinates;
 		use pac_unit_name;
 	begin
 		if query_result.exists then
@@ -245,18 +246,15 @@ package body et_devices_electrical is
 	function get_position (
 		device	: in pac_devices_sch.cursor; -- R2
 		unit	: in pac_units.cursor)
-		return et_schematic_coordinates.type_object_position
+		return type_object_position
 	is
-		use et_schematic_coordinates;
 		unit_position : type_object_position;
 
 		
 		procedure query_unit (
 			device_name	: in type_device_name;
 			device		: in type_device_sch)
-		is 
-			use pac_units;
-		begin
+		is begin
 			-- get the coordinates of the unit
 			unit_position := element (unit).position;
 		end query_unit;
@@ -313,7 +311,7 @@ package body et_devices_electrical is
 			log (text => 
 				"unit " &
 				to_string (pac_unit_positions.key (cursor)) & -- unit name
-				et_schematic_coordinates.to_string (position => pac_unit_positions.element (cursor)), -- sheet x y
+				to_string (position => pac_unit_positions.element (cursor)), -- sheet x y
 				level => log_threshold);
 		end;
 		
@@ -428,11 +426,11 @@ package body et_devices_electrical is
 		
 		return ports;
 
-		exception
-			when event: others =>
-				log_indentation_reset;
-				log (text => ada.exceptions.exception_information (event), console => true);
-				raise;
+		-- exception
+		-- 	when event: others =>
+		-- 		log_indentation_reset;
+		-- 		log (text => ada.exceptions.exception_information (event), console => true);
+		-- 		raise;
 		
 	end get_ports_of_unit;
 
@@ -495,11 +493,8 @@ package body et_devices_electrical is
 		device		: in pac_devices_sch.cursor; -- R2
 		unit		: in pac_units.cursor;
 		category	: in type_placeholder_meaning)
-		return et_schematic_coordinates.pac_geometry_2.type_vector_model
+		return type_vector_model
 	is
-		use et_schematic_coordinates;
-		use et_schematic_coordinates.pac_geometry_2;
-		
 		placeholder_position : type_vector_model; -- to be returned
 
 		unit_position : type_object_position;
@@ -510,7 +505,6 @@ package body et_devices_electrical is
 			device		: in type_device_sch)
 		is 
 			use et_symbols;
-			use pac_units;
 		begin
 			-- get the coordinates of the unit
 			unit_position := element (unit).position;
@@ -594,7 +588,7 @@ package body et_devices_electrical is
 		return et_board_coordinates.pac_polygons.pac_polygon_list.list
 	is
 		use et_board_coordinates;
-		use pac_polygons;
+		use et_board_coordinates.pac_polygons;
 		result : pac_polygon_list.list;
 		use et_contour_to_polygon;
 		
@@ -692,7 +686,7 @@ package body et_devices_electrical is
 
 		use et_board_coordinates;
 		use et_board_coordinates.pac_geometry_2;
-		use pac_polygons;
+		use et_board_coordinates.pac_polygons;
 
 		result : pac_polygon_list.list;
 	begin
@@ -784,7 +778,7 @@ package body et_devices_electrical is
 		result : type_keepout;
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
-		rotation : type_rotation_model;
+		rotation : et_board_coordinates.type_rotation_model;
 
 	begin
 		if device.appearance = APPEARANCE_PCB then
@@ -843,7 +837,7 @@ package body et_devices_electrical is
 		result : type_stencil;
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
-		rotation : type_rotation_model;
+		rotation : et_board_coordinates.type_rotation_model;
 	begin
 		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
@@ -899,7 +893,7 @@ package body et_devices_electrical is
 		result : type_stopmask;
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
-		rotation : type_rotation_model;
+		rotation : et_board_coordinates.type_rotation_model;
 
 		use et_stopmask.packages;
 	begin
@@ -1145,7 +1139,7 @@ package body et_devices_electrical is
 		result : type_silkscreen;
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
-		rotation : type_rotation_model;
+		rotation : et_board_coordinates.type_rotation_model;
 
 		use et_silkscreen.packages;
 		silkscreen : et_silkscreen.packages.type_silkscreen_package;
@@ -1255,7 +1249,7 @@ package body et_devices_electrical is
 		result : type_assy_doc;
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
-		rotation : type_rotation_model;
+		rotation : et_board_coordinates.type_rotation_model;
 
 		use et_assy_doc.packages;
 		assy_doc : et_assy_doc.packages.type_assy_doc_package;
@@ -1358,7 +1352,7 @@ package body et_devices_electrical is
 		device : type_device_sch renames element (device_cursor);
 		packge : pac_package_models.cursor;
 
-		rotation : type_rotation_model;
+		rotation : et_board_coordinates.type_rotation_model;
 	begin
 		if device.appearance = APPEARANCE_PCB then
 			packge := get_package_model (device_cursor);
@@ -1395,9 +1389,9 @@ package body et_devices_electrical is
 		
 		use et_board_coordinates;
 		use et_board_coordinates.pac_geometry_2;
-		use pac_polygons;
+		use et_board_coordinates.pac_polygons;
 
-		rotation : type_rotation_model;
+		rotation : et_board_coordinates.type_rotation_model;
 		
 		result : pac_polygon_list.list;
 	begin
@@ -1621,7 +1615,7 @@ package body et_devices_electrical is
 		use pac_devices_sch;
 		c : pac_devices_sch.cursor := devices.first;
 	begin
-		while c /= no_element and proceed.all = TRUE loop
+		while c /= pac_devices_sch.no_element and proceed.all = TRUE loop
 			process (c);
 			next (c);
 		end loop;
