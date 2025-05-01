@@ -59,7 +59,7 @@ package et_schematic_ops.units is
 
 	-- Moves the name placeholder of the given unit.
 	procedure move_unit_placeholder (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
@@ -84,7 +84,7 @@ package et_schematic_ops.units is
 	-- Rotates the given unit placeholder about its origin.
 	-- The rotation is absolute.										  
 	procedure rotate_unit_placeholder (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		rotation		: in et_text.type_rotation_documentation; -- absolute ! -- 90

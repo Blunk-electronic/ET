@@ -64,7 +64,8 @@ with et_assembly_variant_name;			use et_assembly_variant_name;
 with et_netlists;
 with et_devices_electrical;
 with et_device_library;					use et_device_library;
-with et_device_placeholders;
+with et_device_placeholders;			use et_device_placeholders;
+
 with et_device_purpose;					use et_device_purpose;
 with et_device_partcode;				use et_device_partcode;
 with et_device_model_names;
@@ -1102,6 +1103,101 @@ is
 		end case;
 	end fetch_unit;
 	
+
+	
+
+
+	procedure rotate_unit_placeholder is
+		meaning : type_placeholder_meaning;
+
+		procedure do_it is begin
+			case cmd_field_count is
+				when 7 =>
+					rotate_unit_placeholder (
+						module_cursor 	=> active_module,
+						device_name		=> to_device_name (f (5)), -- IC1
+						unit_name		=> to_unit_name (f (6)), -- A
+						rotation		=> to_rotation_doc (f (7)), -- 90
+						meaning			=> meaning,
+						log_threshold	=> log_threshold + 1);
+
+				when 8 .. type_field_count'last => too_long; 
+					
+				when others => command_incomplete;
+			end case;
+		end do_it;
+		
+		
+	begin
+		case noun is
+			when NOUN_NAME =>
+				meaning := NAME;
+				
+			when NOUN_VALUE =>
+				meaning := VALUE;
+								
+			when NOUN_PURPOSE =>
+				meaning := PURPOSE;
+
+			-- CS partcode ?
+
+			when others => null; -- CS should never happen
+		end case;
+
+		do_it;		
+	end rotate_unit_placeholder;
+	
+
+
+	
+
+	procedure move_unit_placeholder is
+		meaning : type_placeholder_meaning;
+
+		procedure do_it is begin
+			-- schematic led_driver move name R1 1 absolute 10 15
+			case cmd_field_count is
+				when 9 =>
+					move_unit_placeholder (
+						module_cursor 	=> active_module,
+						device_name		=> to_device_name (f (5)), -- IC1
+						unit_name		=> to_unit_name (f (6)), -- A
+						coordinates		=> to_coordinates (f (7)),  -- relative/absolute
+						point			=> type_vector_model (set (
+											x => to_distance (f (8)),
+											y => to_distance (f (9)))),
+						meaning			=> meaning,
+						log_threshold	=> log_threshold + 1);
+
+				when 10 .. type_field_count'last => too_long; 
+					
+				when others => command_incomplete;
+			end case;
+		end do_it;
+
+		
+	begin
+		case noun is
+			when NOUN_NAME =>
+				meaning := NAME;
+				
+			when NOUN_VALUE =>
+				meaning := VALUE;
+								
+			when NOUN_PURPOSE =>
+				meaning := PURPOSE;
+
+			-- CS partcode ?
+
+			when others => null; -- CS should never happen
+		end case;
+
+		do_it;		
+	end move_unit_placeholder;
+	
+
+	
+	
 	
 	
 	-- For showing and finding nets:
@@ -1916,75 +2012,12 @@ is
 						parse_canvas_command (VERB_MOVE, NOUN_CURSOR);
 
 						
-					when NOUN_NAME =>
-						-- schematic led_driver move name R1 1 absolute 10 15
-						case cmd_field_count is
-							when 9 =>
-								move_unit_placeholder
-									(
-									module_name 	=> module,
-									device_name		=> to_device_name (f (5)), -- IC1
-									unit_name		=> to_unit_name (f (6)), -- A
-									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-									point			=> type_vector_model (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-									meaning			=> NAME,
-									log_threshold	=> log_threshold + 1
-									);
+					when NOUN_NAME | NOUN_VALUE | NOUN_PARTCODE | NOUN_PURPOSE =>
+						move_unit_placeholder;
 
-							when 10 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
-
-						
-					when NOUN_VALUE =>
-						case cmd_field_count is
-							when 9 =>
-								move_unit_placeholder
-									(
-									module_name 	=> module,
-									device_name		=> to_device_name (f (5)), -- IC1
-									unit_name		=> to_unit_name (f (6)), -- A
-									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-									point			=> type_vector_model (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-									meaning			=> VALUE,
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
 						
 					when NOUN_PORT =>
 						move_port_of_submodule;
-
-								
-					when NOUN_PURPOSE =>
-						case cmd_field_count is
-							when 9 =>
-								move_unit_placeholder
-									(
-									module_name 	=> module,
-									device_name		=> to_device_name (f (5)), -- IC1
-									unit_name		=> to_unit_name (f (6)), -- A
-									coordinates		=> to_coordinates (f (7)),  -- relative/absolute
-									point			=> type_vector_model (set (
-														x => to_distance (f (8)),
-														y => to_distance (f (9)))),
-									meaning			=> PURPOSE,
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 10 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
-
 						
 					when NOUN_NETCHANGER =>
 						move_netchanger;
@@ -2252,64 +2285,11 @@ is
 					when NOUN_UNIT =>
 						rotate_unit;
 								
-					when NOUN_NAME =>
-						case cmd_field_count is 
-							when 7 =>
-								rotate_unit_placeholder
-									(
-									module_name 	=> module,
-									device_name		=> to_device_name (f (5)), -- IC1
-									unit_name		=> to_unit_name (f (6)), -- A
-									rotation		=> to_rotation_doc (f (7)), -- 90
-									meaning			=> NAME,
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 8 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
-								
-					when NOUN_VALUE =>
-						case cmd_field_count is
-							when 7 =>
-								rotate_unit_placeholder
-									(
-									module_name 	=> module,
-									device_name		=> to_device_name (f (5)), -- IC1
-									unit_name		=> to_unit_name (f (6)), -- A
-									rotation		=> to_rotation_doc (f (7)), -- 90
-									meaning			=> VALUE,
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 8 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
-								
-					when NOUN_PURPOSE =>
-						case cmd_field_count is
-							when 7 =>
-								rotate_unit_placeholder
-									(
-									module_name 	=> module,
-									device_name		=> to_device_name (f (5)), -- IC1
-									unit_name		=> to_unit_name (f (6)), -- A
-									rotation		=> to_rotation_doc (f (7)), -- 90
-									meaning			=> PURPOSE,
-									log_threshold	=> log_threshold + 1
-									);
-
-							when 8 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
-
+					when NOUN_NAME | NOUN_VALUE | NOUN_PURPOSE | NOUN_PARTCODE =>
+						rotate_unit_placeholder;
 						
 					when NOUN_NETCHANGER =>
 						rotate_netchanger;
-
 						
 					when others => invalid_noun (to_string (noun));
 				end case;

@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -58,6 +58,7 @@ package et_device_placeholders is
 		NAME,	-- for things like R301 or X9
 		VALUE,	-- for component values like "200R"
 		PURPOSE	-- for the purpose of the component in the design.
+		-- CS partcode ?
 		);
 
 

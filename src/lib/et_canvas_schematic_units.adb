@@ -1748,7 +1748,7 @@ package body et_canvas_schematic_units is
 			su := element (selected_placeholder);
 
 			move_unit_placeholder (
-				module_name		=> pac_generic_modules.key (active_module),
+				module_cursor	=> active_module,
 				device_name		=> key (su.device),
 				unit_name		=> key (su.unit),
 				coordinates		=> ABSOLUTE,
