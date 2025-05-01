@@ -447,7 +447,7 @@ package body et_canvas_schematic_units is
 				unit_name		=> key (su.unit),
 				coordinates		=> ABSOLUTE,
 				sheet			=> active_sheet,
-				point			=> destination,
+				destination		=> destination,
 				log_threshold	=> log_threshold);
 
 			-- CS write a reduced procedure of move_unit that takes a 
@@ -531,7 +531,7 @@ package body et_canvas_schematic_units is
 				device_name		=> key (su.device),
 				unit_name		=> key (su.unit),
 				coordinates		=> ABSOLUTE,
-				point			=> destination,
+				destination		=> destination,
 				log_threshold	=> log_threshold);
 
 			-- Commit the new state of the design:

@@ -1015,7 +1015,7 @@ is
 					device_name		=> to_device_name (f (5)),
 					unit_name		=> to_unit_name (f (6)),
 					coordinates		=> to_coordinates (f (7)), -- relative/absolute
-					point			=> type_vector_model (set (
+					destination		=> type_vector_model (set (
 										x => to_distance (f (8)),
 										y => to_distance (f (9)))),
 					log_threshold	=> log_threshold + 1);
@@ -1040,7 +1040,7 @@ is
 					unit_name		=> to_unit_name (f (6)), -- A
 					coordinates		=> to_coordinates (f (7)),  -- relative/absolute
 					sheet			=> to_sheet_relative (f (8)),
-					point			=> type_vector_model (set (
+					destination		=> type_vector_model (set (
 										x => to_distance (f (9)),
 										y => to_distance (f (10)))),
 						

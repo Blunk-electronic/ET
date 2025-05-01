@@ -253,7 +253,7 @@ package et_schematic_ops.units is
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
-		point			: in type_vector_model; -- x/y -- CS rename to destination
+		destination		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 
@@ -299,7 +299,7 @@ package et_schematic_ops.units is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_vector_model; -- x/y -- CS rename to destination
+		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
 
 
@@ -312,7 +312,7 @@ package et_schematic_ops.units is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute		
-		rotation		: in et_schematic_coordinates.type_rotation_model; -- 90
+		rotation		: in type_rotation_model; -- 90
 		log_threshold	: in type_log_level);
 
 
@@ -457,6 +457,35 @@ package et_schematic_ops.units is
 		log_threshold	: in type_log_level);
 
 
+	
+	procedure move_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+
+	-- Rotates an object by 90 degrees:
+	procedure rotate_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level);
+
+
+	
+	procedure drag_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+	
+	procedure delete_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level);
+
+	
 	
 end et_schematic_ops.units;
 

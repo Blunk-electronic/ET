@@ -1161,7 +1161,7 @@ package body et_schematic_ops.units is
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
 		sheet			: in type_sheet_relative; -- -3/0/2
-		point			: in type_vector_model; -- x/y
+		destination		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) 
 	is
 
@@ -1197,14 +1197,14 @@ package body et_schematic_ops.units is
 						when ABSOLUTE =>
 							-- build the new position while preserving rotation:
 							unit.position := to_position (
-								point		=> point, 
+								point		=> destination, 
 								sheet		=> type_sheet (sheet),
 								rotation	=> get_rotation (unit.position));
 
 						when RELATIVE =>
 							move (
 								position	=> unit.position,
-								offset		=> to_position_relative (point, sheet));
+								offset		=> to_position_relative (destination, sheet));
 								-- rotation remains as it is
 					end case;
 
@@ -1308,7 +1308,7 @@ package body et_schematic_ops.units is
 					& " moving " & enclose_in_quotes (to_string (device_name)) 
 					& " unit " & enclose_in_quotes (to_string (unit_name)) 
 					& " to sheet" & to_string (sheet) 
-					& to_string (point),
+					& to_string (destination),
 					level => log_threshold);
 
 			when RELATIVE =>
@@ -1316,7 +1316,7 @@ package body et_schematic_ops.units is
 					& " moving " & enclose_in_quotes (to_string (device_name))
 					& " unit " & enclose_in_quotes (to_string (unit_name)) 
 					& " by " & relative_to_string (sheet) & " sheet(s)" 
-					& to_string (point),
+					& to_string (destination),
 					level => log_threshold);
 		end case;
 		
@@ -1800,7 +1800,7 @@ package body et_schematic_ops.units is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
-		point			: in type_vector_model; -- x/y
+		destination		: in type_vector_model;
 		log_threshold	: in type_log_level) 
 	is
 
@@ -1896,14 +1896,14 @@ package body et_schematic_ops.units is
 						when ABSOLUTE =>
 
 							unit.position := to_position (
-								point		=> point, 
+								point		=> destination, 
 								sheet		=> sheet,
 								rotation	=> get_rotation (unit.position));
 							
 						when RELATIVE =>
 							move_by (
 								point	=> unit.position.place,
-								offset	=> to_distance_relative (point));
+								offset	=> to_distance_relative (destination));
 					end case;
 					
 					exception
@@ -2009,14 +2009,14 @@ package body et_schematic_ops.units is
 				log (text => "module " & to_string (module_cursor)
 					 & " dragging " & enclose_in_quotes (to_string (device_name)) 
 					 & " unit " & enclose_in_quotes	(to_string (unit_name)) 
-					 & " to" & to_string (point), 
+					 & " to" & to_string (destination), 
 					 level => log_threshold);
 
 			when RELATIVE =>
 				log (text => "module " & to_string (module_cursor)
 					 & " dragging " & enclose_in_quotes (to_string (device_name)) 
 					 & " unit " & enclose_in_quotes	(to_string (unit_name)) 
-					 & " by" & to_string (point), 
+					 & " by" & to_string (destination), 
 					 level => log_threshold);
 		end case;
 		
@@ -2040,7 +2040,7 @@ package body et_schematic_ops.units is
 		device_name		: in type_device_name; -- IC45
 		unit_name		: in pac_unit_name.bounded_string; -- A
 		coordinates		: in type_coordinates; -- relative/absolute
-		rotation		: in et_schematic_coordinates.type_rotation_model; -- 90
+		rotation		: in type_rotation_model; -- 90
 		log_threshold	: in type_log_level) 
 	is
 
@@ -2681,6 +2681,10 @@ package body et_schematic_ops.units is
 		-- If nothing has been found then the category is CAT_VOID.
 		log_indentation_down;
 
+
+		-- CS placeholders
+
+		
 		
 		case result_category is
 			when CAT_VOID =>
@@ -2760,6 +2764,8 @@ package body et_schematic_ops.units is
 				query_element (device_cursor, query_device'access);
 				next (device_cursor);
 			end loop;
+
+			-- CS query placeholders
 		
 		end query_module;
 
@@ -2803,6 +2809,8 @@ package body et_schematic_ops.units is
 			when CAT_UNIT =>
 				modify_status (module_cursor, object.unit, operation, log_threshold + 1);
 
+			-- CS CAT_NANE, ...
+				
 			when CAT_VOID =>
 				null; -- CS
 		end case;
@@ -2842,10 +2850,164 @@ package body et_schematic_ops.units is
 
 		log_indentation_up;
 		reset_proposed_units (module_cursor, log_threshold + 1);
+		-- CS reset_proposed_placeholders
 		log_indentation_down;
 	end reset_proposed_objects;
 
 
+
+
+
+	
+
+	procedure move_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " moving object " 
+			-- CS & to_string (object)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_UNIT =>
+
+				move_unit (
+					module_cursor	=> module_cursor,
+					device_name		=> key (object.unit.device_cursor),
+					unit_name		=> key (object.unit.unit_cursor),
+					coordinates		=> absolute,
+					sheet			=> 0, -- relative, sheet remains the same
+					destination		=> destination,
+					log_threshold	=> log_threshold + 1);
+
+
+			-- CS CAT_NANE, ...
+				
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end move_object;
+
+
+
+
+	procedure rotate_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " rotating object " 
+			-- CS & to_string (object)
+			& " by 90 degrees",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_UNIT =>
+
+				rotate_unit (
+					module_cursor	=> module_cursor,
+					device_name		=> key (object.unit.device_cursor),
+					unit_name		=> key (object.unit.unit_cursor),
+					coordinates		=> absolute,
+					rotation		=> 90.0,
+					log_threshold	=> log_threshold + 1);
+
+
+			-- CS CAT_NANE, ...
+				
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end rotate_object;
+
+
+	
+
+
+	procedure drag_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " dragging object " 
+			-- CS & to_string (object)
+			& " to" & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_UNIT =>
+
+				drag_unit (
+					module_cursor	=> module_cursor,
+					device_name		=> key (object.unit.device_cursor),
+					unit_name		=> key (object.unit.unit_cursor),
+					coordinates		=> absolute,
+					destination		=> destination,
+					log_threshold	=> log_threshold + 1);
+
+
+			-- CS CAT_NANE, ...
+				
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end drag_object;
+
+
+
+
+	
+
+	procedure delete_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " deleting object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_UNIT =>
+
+				delete_unit (
+					module_cursor	=> module_cursor,
+					device_name		=> key (object.unit.device_cursor),
+					unit_name		=> key (object.unit.unit_cursor),
+					log_threshold	=> log_threshold + 1);
+
+				
+
+			-- CS CAT_NANE, ...
+				
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end delete_object;
 
 	
 	
