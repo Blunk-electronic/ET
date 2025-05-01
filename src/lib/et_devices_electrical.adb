@@ -969,6 +969,165 @@ package body et_devices_electrical is
 	end to_placeholder_content;
 
 
+
+
+
+	function get_default_text_positions (
+		device_cursor	: in pac_devices_sch.cursor;
+		unit_name		: in pac_unit_name.bounded_string)
+		return et_symbols.type_default_text_positions 
+	is		
+		use et_symbols;
+		use et_device_appearance;
+		use pac_devices_lib;
+
+		-- The positions to be returned depend on the appearance of the requested device:
+		result : type_default_text_positions (element (device_cursor).appearance); -- to be returned
+		
+		model : pac_device_model_file.bounded_string; -- ../libraries/devices/transistor/pnp.dev
+		device_cursor_lib : pac_devices_lib.cursor;
+		
+		use et_symbols.pac_texts;
+
+		
+		procedure query_text (c : in et_symbols.pac_texts.cursor) is 
+		-- Appends a text position (x/y) the the result.
+			use pac_text_positions;
+		begin
+			append (result.texts, element (c).position);
+		end;
+
+		
+		-- Indicates whether the unit is internal or external:
+		unit_status : type_unit_ext_int := EXT;
+
+		
+		procedure query_internal_units (
+			model	: in pac_device_model_file.bounded_string;
+			device	: in type_device_model) 
+		is
+			use pac_units_internal;			
+			unit_cursor : pac_units_internal.cursor;
+		begin
+			-- locate the given unit among the internal units
+			unit_cursor := find (device.units_internal, unit_name);
+
+			-- if the unit exists among the internal units:
+			if unit_cursor /= pac_units_internal.no_element then
+				unit_status := INT;
+				
+				-- Collect the positions of texts and store them in result.text
+				-- in the same order as they are listed in symbol.texts:
+				iterate (element (unit_cursor).symbol.texts, query_text'access);
+				-- CS: constraint_error arises here if unit can not be located.
+
+				-- If it is about a real device, take a copy of the default 
+				-- placeholders as they are specified in the symbol model:
+				case result.appearance is
+					when APPEARANCE_PCB =>
+						result.name 	:= element (unit_cursor).symbol.name;
+						result.value	:= element (unit_cursor).symbol.value;
+						result.purpose	:= element (unit_cursor).symbol.purpose;
+					when others => null;
+				end case;
+
+			else
+				unit_status := EXT;
+			end if;
+		end query_internal_units;
+
+		
+		procedure query_external_units (
+			model	: in pac_device_model_file.bounded_string;
+			device	: in type_device_model) 
+		is
+			use pac_units_external;
+			unit_cursor : pac_units_external.cursor;
+			sym_model : pac_symbol_model_file.bounded_string; -- like /libraries/symbols/NAND.sym
+
+			
+			procedure query_symbol (
+				symbol_name	: in pac_symbol_model_file.bounded_string;
+				symbol		: in type_symbol ) 
+			is begin
+				-- Collect the positions of texts and store them in result.text
+				-- in the same order as they are listed in symbol.texts:
+				iterate (symbol.texts, query_text'access);
+
+				-- If it is about a real device, take a copy of the default 
+				-- placeholders as they are specified in the symbol model:
+				case result.appearance is
+					when APPEARANCE_PCB =>
+						result.name 	:= symbol.name;
+						result.value	:= symbol.value;
+						result.purpose	:= symbol.purpose;
+					when others => null;
+				end case;
+			end query_symbol;
+
+			
+		begin -- query_external_units
+			-- locate the given unit among the external units
+			unit_cursor := find (device.units_external, unit_name);
+
+			-- Fetch the symbol model file of the external unit.
+			-- If unit could not be located then it must be internal.
+			if unit_cursor /= pac_units_external.no_element then
+				unit_status := EXT;
+				
+				sym_model := element (unit_cursor).model;
+
+				-- Fetch the ports of the external unit.
+				-- CS: constraint_error arises here if symbol model could not be located.
+				pac_symbols.query_element (
+					position	=> pac_symbols.find (symbols, sym_model),
+					process		=> query_symbol'access);
+			else
+				unit_status := INT;
+			end if;
+			
+		end query_external_units;
+
+		
+	begin
+
+		-- Fetch the model name of the given device. 
+		model := pac_devices_sch.element (device_cursor).model;
+
+		-- Get cursor to device in device library (the model name is the key into the device library).
+		-- CS: constraint_error will arise here if no associated device exists.
+		device_cursor_lib := find (device_library, model);
+
+		-- Query external units of device (in library). It is most likely that
+		-- the unit is among the external units:
+		query_element (
+			position	=> device_cursor_lib,
+			process		=> query_external_units'access);
+
+		-- If unit could not be found among external units then look up the internal units:
+		if unit_status = INT then
+
+			-- Query internal units of device (in library):
+			query_element (
+				position	=> device_cursor_lib,
+				process		=> query_internal_units'access);
+		end if;
+		
+		-- CS raise error if unit could not be located at all.
+			
+		return result;
+
+		exception
+			when event: others =>
+				log_indentation_reset;
+				log (text => ada.exceptions.exception_information (event), console => true);
+				raise;
+		
+	end get_default_text_positions;
+
+
+
+
 	
 
 	

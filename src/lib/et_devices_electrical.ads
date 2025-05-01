@@ -496,6 +496,15 @@ package et_devices_electrical is
 		placeholder		: in et_device_placeholders.packages.type_placeholder)
 		return et_text.pac_text_content.bounded_string;
 
+
+
+	-- Returns the default positions of placeholders and texts of a unit
+	-- as they are defined in the symbol model.
+	function get_default_text_positions (
+		device_cursor	: in pac_devices_sch.cursor;
+		unit_name		: in pac_unit_name.bounded_string)
+		return et_symbols.type_default_text_positions;
+
 	
 	
 	

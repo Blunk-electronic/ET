@@ -48,7 +48,7 @@ package et_schematic_ops.units is
 	-- Returns the sheet/x/y position of the given device,
 	-- unit and port:
 	function get_position (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC34
 		port_name		: in pac_port_name.bounded_string; -- CE
 		log_threshold	: in type_log_level)
@@ -67,16 +67,6 @@ package et_schematic_ops.units is
 		meaning			: in type_placeholder_meaning; -- name, value, purpose
 		log_threshold	: in type_log_level);
 
-
-	
-	-- Returns the default positions of placeholders and texts of a unit
-	-- as they are defined in the symbol model.
-	function get_default_text_positions (
-		device_cursor	: in pac_devices_sch.cursor;
-		unit_name		: in pac_unit_name.bounded_string)
-		return et_symbols.type_default_text_positions;
-
-	
 
 
 
@@ -396,7 +386,7 @@ package et_schematic_ops.units is
 		CAT_UNIT);
 
 
-	-- This type wraps all kinds of devices into a single type:
+	-- This type wraps all kinds of objects into a single type:
 	type type_object (cat : type_object_category) is record
 		case cat is
 			when CAT_VOID => null;
@@ -404,6 +394,7 @@ package et_schematic_ops.units is
 			when CAT_UNIT =>
 				unit : type_object_unit;
 
+			-- CS CAT_PLACEHOLDER_VALUE, NAME, PURPOSE ?
 		end case;
 	end record;
 
