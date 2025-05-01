@@ -42,16 +42,12 @@ with et_device_appearance;				use et_device_appearance;
 separate (et_schematic_ops.units)
 
 procedure fetch_unit (
-	module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+	module_cursor 	: in pac_generic_modules.cursor;
 	device_name		: in type_device_name; -- IC1
 	unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
 	destination		: in type_object_position; -- sheet/x/y/rotation
 	log_threshold	: in type_log_level) 
 is
-	use et_schematic_coordinates;
-	
-	module_cursor : pac_generic_modules.cursor; -- points to the targeted module
-
 	use pac_unit_name;
 	
 	
@@ -280,7 +276,7 @@ is
 
 	
 begin
-	log (text => "module " & to_string (module_name) &
+	log (text => "module " & to_string (module_cursor) &
 		" device " & to_string (device_name) &
 		" invoking unit " & to_string (unit_name) &
 		" at" &
@@ -290,8 +286,6 @@ begin
 
 	log_indentation_up;
 	
-	-- locate module
-	module_cursor := locate_module (module_name);
 
 	update_element (
 		container	=> generic_modules,

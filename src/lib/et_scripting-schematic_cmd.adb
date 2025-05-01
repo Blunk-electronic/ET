@@ -62,6 +62,7 @@ with et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
 -- with et_pick_and_place;
 with et_netlists;
+with et_devices_electrical;
 with et_device_library;					use et_device_library;
 with et_device_placeholders;
 with et_device_purpose;					use et_device_purpose;
@@ -847,7 +848,7 @@ is
 	is
 		use pac_unit_name;
 		use et_units;
-		-- use et_devices;
+		use et_devices_electrical;
 		use et_canvas_schematic_2;
 
 		
@@ -969,8 +970,7 @@ is
 
 
 
-	procedure delete_device is
-	begin
+	procedure delete_device is begin
 		case cmd_field_count is
 			when 5 =>
 				delete_device (
@@ -1080,7 +1080,7 @@ is
 		case cmd_field_count is
 			when 10 =>
 				fetch_unit (
-					module_name		=> module,
+					module_cursor	=> active_module,
 					device_name		=> to_device_name (f (5)),
 					unit_name		=> to_unit_name (f (6)),
 					destination		=> to_position 

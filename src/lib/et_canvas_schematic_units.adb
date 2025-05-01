@@ -1389,7 +1389,7 @@ package body et_canvas_schematic_units is
 			commit (PRE, verb, noun, log_threshold);
 			
 			fetch_unit (
-				module_name		=> key (active_module),
+				module_cursor	=> active_module,
 				device_name		=> unit_add.device_pre,
 				unit_name		=> unit_add.name,
 				destination		=> to_position (position, active_sheet),

@@ -54,7 +54,8 @@ with et_schematic_coordinates;
 with et_assembly_variants;				use et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
 
-with et_device_placeholders.packages;
+with et_device_placeholders;			use et_device_placeholders;
+with et_device_placeholders.packages;	--use et_device_placeholders.packages;
 
 with et_silkscreen;						use et_silkscreen;
 with et_silkscreen.packages;
@@ -102,6 +103,8 @@ with et_logging;						use et_logging;
 package et_devices_electrical is
 
 
+	-- CS use pac_units; ?
+	
 
 	-- This is a device as it appears in the schematic.
 	type type_device_sch (appearance : type_appearance_schematic) is record
@@ -183,6 +186,32 @@ package et_devices_electrical is
 		return pac_devices_lib.cursor;
 
 
+
+
+	-- The result of a unit query is of this type:
+	type type_unit_query (exists : boolean := false) is record
+		case exists is
+			when true => 
+				position : et_schematic_coordinates.type_object_position;
+				-- x/y, rotation, sheet
+				
+			when false => 
+				null;
+		end case;
+	end record;
+
+
+
+	-- Returns the result of a unit query in human readable form.
+	-- If the unit_name is empty (""), then the result does not contain
+	-- any reference to a unit. This is useful when a device has only one unit.
+	function to_string (
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in pac_unit_name.bounded_string; -- C
+		query_result	: in type_unit_query)
+		return string;
+
+
 	
 	
 	
@@ -229,7 +258,8 @@ package et_devices_electrical is
 		return string; -- IC34.PWR
 
 
-	
+
+
 	
 	
 	procedure device_name_in_use (
@@ -242,6 +272,15 @@ package et_devices_electrical is
 	procedure log_package_position (
 		device_cursor	: in pac_devices_sch.cursor;
 		log_threshold	: in type_log_level);
+
+
+
+	-- Returns the position (x/y/sheet) of the given unit.
+	-- Raises constraint error if device or unit does not exist.
+	function get_position (
+		device	: in pac_devices_sch.cursor; -- R2
+		unit	: in pac_units.cursor)
+		return et_schematic_coordinates.type_object_position;
 
 	
 
@@ -301,6 +340,19 @@ package et_devices_electrical is
 		return pac_terminals.map;
 
 
+
+
+	-- Returns the position (x/y) of the given placeholder
+	-- of the given unit.
+	-- Raises constraint error if device or unit does not exist.
+	function get_position (
+		device		: in pac_devices_sch.cursor; -- R2
+		unit		: in pac_units.cursor;
+		category	: in type_placeholder_meaning)
+		return et_schematic_coordinates.pac_geometry_2.type_vector_model;
+
+
+	
 
 	
 -- CONDUCTOR OBJECTS:

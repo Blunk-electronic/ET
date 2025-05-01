@@ -85,6 +85,37 @@ package body et_devices_electrical is
 	
 
 
+
+
+	function to_string (
+		device_name		: in type_device_name; -- IC45
+		unit_name		: in pac_unit_name.bounded_string; -- C
+		query_result	: in type_unit_query)
+		return string 
+	is 
+		use et_schematic_coordinates;
+		use pac_unit_name;
+	begin
+		if query_result.exists then
+			if get_length (unit_name) > 0 then
+				return "Location of device " & to_string (device_name)
+					& " unit " & to_string (unit_name)
+					& " :" & to_string (query_result.position);
+			else
+				return "Location of device " & to_string (device_name)
+					& " :" & to_string (query_result.position);
+			end if;
+		else
+			return "device " & to_string (device_name)
+				& " unit " & to_string (unit_name)
+				& " does not exist !";
+		end if;
+	end to_string;
+
+
+
+	
+
 	
 	function get_unit_count (
 		device : in pac_devices_sch.cursor)
@@ -207,6 +238,41 @@ package body et_devices_electrical is
 		end if;
 	end;
 
+
+	
+
+
+	function get_position (
+		device	: in pac_devices_sch.cursor; -- R2
+		unit	: in pac_units.cursor)
+		return et_schematic_coordinates.type_object_position
+	is
+		use et_schematic_coordinates;
+		unit_position : type_object_position;
+
+		
+		procedure query_unit (
+			device_name	: in type_device_name;
+			device		: in type_device_sch)
+		is 
+			use pac_units;
+		begin
+			-- get the coordinates of the unit
+			unit_position := element (unit).position;
+		end query_unit;
+		
+		
+	begin
+		query_element (
+			position	=> device,
+			process		=> query_unit'access);
+
+		return unit_position;
+	end get_position;
+
+
+
+	
 	
 
 
@@ -424,6 +490,59 @@ package body et_devices_electrical is
 
 
 
+
+	function get_position (
+		device		: in pac_devices_sch.cursor; -- R2
+		unit		: in pac_units.cursor;
+		category	: in type_placeholder_meaning)
+		return et_schematic_coordinates.pac_geometry_2.type_vector_model
+	is
+		use et_schematic_coordinates;
+		use et_schematic_coordinates.pac_geometry_2;
+		
+		placeholder_position : type_vector_model; -- to be returned
+
+		unit_position : type_object_position;
+
+		
+		procedure query_unit (
+			device_name	: in type_device_name;
+			device		: in type_device_sch)
+		is 
+			use et_symbols;
+			use pac_units;
+		begin
+			-- get the coordinates of the unit
+			unit_position := element (unit).position;
+
+			-- get the coordinates of the placeholder:
+			case category is
+				when NAME =>
+					placeholder_position := element (unit).name.position;
+
+				when PURPOSE =>
+					placeholder_position := element (unit).purpose.position;
+
+				when VALUE =>
+					placeholder_position := element (unit).value.position;
+			end case;
+
+			move_by (placeholder_position, to_distance_relative (unit_position.place));
+			
+		end query_unit;
+
+		
+	begin
+		query_element (
+			position	=> device,
+			process		=> query_unit'access);
+
+		return placeholder_position;
+	end get_position;
+
+
+
+	
 	
 
 -- CONDUCTOR OBJECTS:
@@ -1580,7 +1699,9 @@ package body et_devices_electrical is
 		--end loop;
 	--end iterate;
 	
-		
+
+
+	
 end et_devices_electrical;
 
 

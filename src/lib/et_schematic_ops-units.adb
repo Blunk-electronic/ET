@@ -575,9 +575,9 @@ package body et_schematic_ops.units is
 	
 	
 	function locate_unit (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name; -- R2
-		unit	: in pac_unit_name.bounded_string)
+		module_cursor	: in pac_generic_modules.cursor;
+		device			: in type_device_name; -- R2
+		unit			: in pac_unit_name.bounded_string)
 		return pac_units.cursor
 	is
 		device_cursor : pac_devices_sch.cursor;
@@ -591,7 +591,7 @@ package body et_schematic_ops.units is
 		end query_units;
 	
 	begin -- locate_unit
-		device_cursor := locate_device (module, device);
+		device_cursor := locate_device (module_cursor, device);
 
 		-- locate the unit
 		query_element (device_cursor, query_units'access);
@@ -603,14 +603,14 @@ package body et_schematic_ops.units is
 	
 
 	function is_deployed (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name; -- R2
-		unit	: in pac_unit_name.bounded_string)
+		module_cursor	: in pac_generic_modules.cursor;
+		device			: in type_device_name; -- R2
+		unit			: in pac_unit_name.bounded_string)
 		return boolean
 	is
 		unit_cursor : pac_units.cursor;
 	begin
-		unit_cursor := locate_unit (module, device, unit);
+		unit_cursor := locate_unit (module_cursor, device, unit);
 
 		if unit_cursor = pac_units.no_element then
 			return false;
@@ -618,6 +618,8 @@ package body et_schematic_ops.units is
 			return true;
 		end if;
 	end is_deployed;
+
+
 
 	
 	
@@ -985,9 +987,9 @@ package body et_schematic_ops.units is
 	
 	
 	function get_position (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name; -- R2
-		unit	: in pac_unit_name.bounded_string)
+		module_cursor	: in pac_generic_modules.cursor;
+		device			: in type_device_name; -- R2
+		unit			: in pac_unit_name.bounded_string)
 		return type_object_position
 	is
 		device_cursor_sch : pac_devices_sch.cursor;
@@ -1011,7 +1013,7 @@ package body et_schematic_ops.units is
 		
 	begin
 		-- locate the device in the schematic:
-		device_cursor_sch := locate_device (module, device);
+		device_cursor_sch := locate_device (module_cursor, device);
 
 		query_element (
 			position	=> device_cursor_sch,
@@ -1025,94 +1027,17 @@ package body et_schematic_ops.units is
 
 	
 	
-	function get_position (
-		device	: in pac_devices_sch.cursor; -- R2
-		unit	: in pac_units.cursor)
-		return type_object_position
-	is
-		unit_position : type_object_position;
-
-		
-		procedure query_unit (
-			device_name	: in type_device_name;
-			device		: in type_device_sch)
-		is 
-		begin
-			-- get the coordinates of the unit
-			unit_position := element (unit).position;
-		end query_unit;
-		
-		
-	begin
-		query_element (
-			position	=> device,
-			process		=> query_unit'access);
-
-		return unit_position;
-	end get_position;
-
-
-
-	
-	
-	function get_position (
-		device		: in pac_devices_sch.cursor; -- R2
-		unit		: in pac_units.cursor;
-		category	: in type_placeholder_meaning)
-		return type_vector_model
-	is
-		placeholder_position : type_vector_model; -- to be returned
-
-		unit_position : type_object_position;
-
-		
-		procedure query_unit (
-			device_name	: in type_device_name;
-			device		: in type_device_sch)
-		is 
-			use et_symbols;
-		begin
-			-- get the coordinates of the unit
-			unit_position := element (unit).position;
-
-			-- get the coordinates of the placeholder:
-			case category is
-				when NAME =>
-					placeholder_position := element (unit).name.position;
-
-				when PURPOSE =>
-					placeholder_position := element (unit).purpose.position;
-
-				when VALUE =>
-					placeholder_position := element (unit).value.position;
-			end case;
-
-			move_by (placeholder_position, to_distance_relative (unit_position.place));
-			
-		end query_unit;
-
-		
-	begin
-		query_element (
-			position	=> device,
-			process		=> query_unit'access);
-
-		return placeholder_position;
-	end get_position;
-
-
-	
 
 	
 
 	
 	function get_sheet (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name; -- R2
-		unit	: in pac_unit_name.bounded_string)
+		module_cursor	: in pac_generic_modules.cursor;
+		device			: in type_device_name; -- R2
+		unit			: in pac_unit_name.bounded_string)
 		return type_sheet
 	is begin		
-		return get_sheet (get_position (module, device, unit));
+		return get_sheet (get_position (module_cursor, device, unit));
 	end get_sheet;
 
 	
@@ -1120,7 +1045,7 @@ package body et_schematic_ops.units is
 
 	
 	procedure fetch_unit (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor 	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
 		destination		: in type_object_position; -- sheet/x/y/rotation
@@ -1270,33 +1195,6 @@ package body et_schematic_ops.units is
 
 
 	
-	
-
-	
-	function to_string (
-		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- C
-		query_result	: in type_unit_query)
-		return string 
-	is 
-		use pac_unit_name;
-	begin
-		if query_result.exists then
-			if get_length (unit_name) > 0 then
-				return "Location of device " & to_string (device_name)
-					& " unit " & to_string (unit_name)
-					& " :" & to_string (query_result.position);
-			else
-				return "Location of device " & to_string (device_name)
-					& " :" & to_string (query_result.position);
-			end if;
-		else
-			return "device " & to_string (device_name)
-				& " unit " & to_string (unit_name)
-				& " does not exist !";
-		end if;
-	end to_string;
-
 
 	
 	

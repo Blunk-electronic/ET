@@ -99,9 +99,9 @@ package et_schematic_ops.units is
 	-- If the unit does not exist, returns no_element.
 	-- Raises exception if device does not exist.
 	function locate_unit (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name; -- R2
-		unit	: in pac_unit_name.bounded_string)
+		module_cursor	: in pac_generic_modules.cursor;
+		device			: in type_device_name; -- R2
+		unit			: in pac_unit_name.bounded_string)
 		return pac_units.cursor;
 	
 
@@ -112,9 +112,9 @@ package et_schematic_ops.units is
 	-- If the unit has not been deployed yet, returns false.
 	-- Raises exception if device does not exist.
 	function is_deployed (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name; -- R2
-		unit	: in pac_unit_name.bounded_string)
+		module_cursor	: in pac_generic_modules.cursor;
+		device			: in type_device_name; -- R2
+		unit			: in pac_unit_name.bounded_string)
 		return boolean;
 
 
@@ -175,40 +175,22 @@ package et_schematic_ops.units is
 	-- Returns the position (x/y/sheet) of the given unit.
 	-- Raises constraint error if device or unit does not exist.
 	function get_position (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name; -- R2
-		unit	: in pac_unit_name.bounded_string)
+		module_cursor	: in pac_generic_modules.cursor;
+		device			: in type_device_name; -- R2
+		unit			: in pac_unit_name.bounded_string)
 		return type_object_position;
 
 
-	
-	-- Returns the position (x/y/sheet) of the given unit.
-	-- Raises constraint error if device or unit does not exist.
-	function get_position (
-		device	: in pac_devices_sch.cursor; -- R2
-		unit	: in pac_units.cursor)
-		return type_object_position;
 
 	
 	
-	-- Returns the position (x/y) of the given placeholder
-	-- of the given unit.
-	-- Raises constraint error if device or unit does not exist.
-	function get_position (
-		device		: in pac_devices_sch.cursor; -- R2
-		unit		: in pac_units.cursor;
-		category	: in type_placeholder_meaning)
-		return type_vector_model;
-
-
-
 	
 	-- Returns the sheet number of the given unit.
 	-- Raises constraint error if device or unit does not exist.
 	function get_sheet (
-		module	: in pac_generic_modules.cursor;
-		device	: in type_device_name; -- R2
-		unit	: in pac_unit_name.bounded_string)
+		module_cursor	: in pac_generic_modules.cursor;
+		device			: in type_device_name; -- R2
+		unit			: in pac_unit_name.bounded_string)
 		return type_sheet;
 
 
@@ -217,13 +199,13 @@ package et_schematic_ops.units is
 
 	-- Fetches a unit from a device into the schematic.
 	procedure fetch_unit (
-		module_name		: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+		module_cursor 	: in pac_generic_modules.cursor;
 		device_name		: in type_device_name; -- IC1
 		unit_name		: in pac_unit_name.bounded_string; -- A, B, IO_BANK_2
 		destination		: in type_object_position; -- sheet/x/y/rotation
 		log_threshold	: in type_log_level);
 
-	-- CS procedure invoke_unit that takes module cursor and model cursor
+	-- CS procedure fetch_unit that takes module cursor and model cursor ?
 
 
 	
@@ -251,26 +233,13 @@ package et_schematic_ops.units is
 
 
 	
-	-- The result of a unit query is of this type:
-	type type_unit_query (exists : boolean := false) is record
-		case exists is
-			when true => position : type_object_position; -- x/y, rotation, sheet
-			when false => null;
-		end case;
-	end record;
+
 
 	-- CS type_port_query
 
 	-- CS function port_position 
 
-	-- Returns the result of a unit query in human readable form.
-	-- If the unit_name is empty (""), then the result does not contain
-	-- any reference to a unit. This is useful when a device has only one unit.
-	function to_string (
-		device_name		: in type_device_name; -- IC45
-		unit_name		: in pac_unit_name.bounded_string; -- C
-		query_result	: in type_unit_query)
-		return string;
+
 		
 
 	
