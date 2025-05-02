@@ -765,7 +765,7 @@ package body et_canvas_schematic_units is
 				-- NOTE: If many objects have been found, then
 				-- clarification is now pending.
 
-				-- If find_non_electrical_devices has found only one device
+				-- If find_objects has found only one object,				
 				-- then the flag edit_process_running is set true.
 			else
 				-- Here the clarification procedure ends.
