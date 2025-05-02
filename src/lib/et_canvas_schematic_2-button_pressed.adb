@@ -211,7 +211,8 @@ is
 						-- When moving units, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
-						move_unit (MOUSE, snap_point);							
+						--move_unit (MOUSE, snap_point);
+						move_object (MOUSE, snap_point);
 						
 					when others => null;							
 				end case;
@@ -411,7 +412,8 @@ is
 
 					when NOUN_UNIT =>
 						if clarification_pending then
-							clarify_unit;
+							--clarify_unit;
+							clarify_object;
 						end if;
 						
 					when NOUN_VALUE => 

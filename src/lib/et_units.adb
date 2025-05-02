@@ -241,6 +241,15 @@ package body et_units is
 
 
 
+	function get_position (
+		unit	: in pac_units.cursor)
+		return type_object_position
+	is begin
+		return get_position (element (unit));
+	end get_position;
+
+
+	
 
 	procedure iterate (
 		units	: in pac_units.map;

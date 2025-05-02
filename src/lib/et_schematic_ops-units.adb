@@ -1190,9 +1190,7 @@ package body et_schematic_ops.units is
 				procedure move_unit (
 					unit_name	: in pac_unit_name.bounded_string;
 					unit		: in out type_unit) 
-				is
-					use et_schematic_coordinates;
-				begin
+				is begin
 					case coordinates is
 						when ABSOLUTE =>
 							-- build the new position while preserving rotation:
@@ -2369,6 +2367,7 @@ package body et_schematic_ops.units is
 					unit		: in out type_unit)
 				is begin
 					modify_status (unit, operation);
+					-- log (text => "done", level => log_threshold + 1);
 				end query_unit;
 				
 			begin
@@ -2578,20 +2577,26 @@ package body et_schematic_ops.units is
 				device 		: in type_device_sch)
 			is 
 
-				procedure query_unit (unit_cursor : in pac_units.cursor) is begin
+				procedure query_unit (unit_cursor : in pac_units.cursor) is 
+
+					procedure set_result is begin
+						log (text => " found " & get_unit_name (unit_cursor), level => log_threshold + 2);
+						result.device_cursor := device_cursor;
+						result.unit_cursor := unit_cursor;
+						proceed := false; -- no further probing required
+					end set_result;
+
+				begin					
+					log (text => "unit " & get_unit_name (unit_cursor), level => log_threshold + 2);
 					case flag is
 						when PROPOSED =>
 							if is_proposed (unit_cursor) then
-								result.device_cursor := device_cursor;
-								result.unit_cursor := unit_cursor;
-								proceed := false; -- no further probing required
+								set_result;
 							end if;
 		
 						when SELECTED =>
-							if is_selected (device_cursor) then
-								result.device_cursor := device_cursor;
-								result.unit_cursor := unit_cursor;
-								proceed := false; -- no further probing required
+							if is_selected (unit_cursor) then
+								set_result;
 							end if;
 		
 						when others => null; -- CS
@@ -2600,8 +2605,13 @@ package body et_schematic_ops.units is
 
 				
 			begin
+				log (text => "device " & to_string (device_name), level => log_threshold + 1);
+				log_indentation_up;
+
 				-- Iterate through the units:
 				iterate (device.units, query_unit'access, proceed'access);
+
+				log_indentation_down;
 			end query_device;
 			
 			
@@ -2611,12 +2621,16 @@ package body et_schematic_ops.units is
 				pac_devices_sch.query_element (device_cursor, query_device'access);
 				next (device_cursor);
 			end loop;
+
+			if proceed then
+				log (text => "nothing found", level => log_threshold);
+			end if;
 		end query_module;
 
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up the first unit /" & to_string (flag),
+			& " looking up the first unit / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -2729,6 +2743,8 @@ package body et_schematic_ops.units is
 				-- This procedure appends the matching
 				-- device and unit cursor to the result:
 				procedure collect is begin
+					log (text => get_unit_name (unit_cursor), level => log_threshold + 4);
+					
 					result.append ((
 						cat		=> CAT_UNIT,
 						unit	=> (device_cursor, unit_cursor)));
@@ -2754,19 +2770,34 @@ package body et_schematic_ops.units is
 		
 				
 			begin
+				log (text => to_string (name), level => log_threshold + 2);
+				log_indentation_up;
+				log (text => "units", level => log_threshold + 3);
+				log_indentation_up;
 				device.units.iterate (query_unit'access);
+				log_indentation_down;
+				log_indentation_down;
 			end query_device;
 
 			
 		begin
+			log (text => "devices", level => log_threshold + 1);
+			log_indentation_up;
+			
 			-- Iterate the units of the module:
 			while has_element (device_cursor) loop
 				query_element (device_cursor, query_device'access);
 				next (device_cursor);
 			end loop;
 
+			log_indentation_down;
+
+			
+			log (text => "placeholders", level => log_threshold + 1);
+			log_indentation_up;
 			-- CS query placeholders
-		
+			log_indentation_down;
+			
 		end query_module;
 
 		
@@ -2798,7 +2829,7 @@ package body et_schematic_ops.units is
 		log_threshold	: in type_log_level)
 	is begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of object"
+			& " modifying status of object "
 			& type_object_category'image (object.cat)
 			& " / " & to_string (operation),
 			level => log_threshold);
@@ -2882,7 +2913,7 @@ package body et_schematic_ops.units is
 					device_name		=> key (object.unit.device_cursor),
 					unit_name		=> key (object.unit.unit_cursor),
 					coordinates		=> absolute,
-					sheet			=> 0, -- relative, sheet remains the same
+					sheet			=> active_sheet,
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
 

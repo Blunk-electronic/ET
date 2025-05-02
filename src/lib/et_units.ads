@@ -198,6 +198,13 @@ package et_units is
 	use pac_units;
 
 
+
+	function get_position (
+		unit	: in pac_units.cursor)
+		return type_object_position;
+	
+
+		
 	-- Iterates the units.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (

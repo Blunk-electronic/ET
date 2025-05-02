@@ -60,6 +60,10 @@ is
 	use et_canvas_schematic_nets;
 	use et_canvas_schematic_units;
 
+
+	point : type_vector_model renames get_cursor_position;
+
+	
 	
 	procedure delete is begin
 		case key is
@@ -321,12 +325,14 @@ is
 						-- When moving units, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
-						move_unit (KEYBOARD, get_cursor_position);
+						--move_unit (KEYBOARD, get_cursor_position);
+						et_canvas_schematic_units.move_object (KEYBOARD, point);
 
 					when others => null;
 						
 				end case;
 
+				
 			-- If page down pressed, then the operator is clarifying:
 			when GDK_page_down =>
 
@@ -349,7 +355,7 @@ is
 
 					when NOUN_UNIT =>
 						if clarification_pending then
-							clarify_unit;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 						
 					when NOUN_VALUE => 

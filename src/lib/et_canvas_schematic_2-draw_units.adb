@@ -789,8 +789,13 @@ procedure draw_units is
 
 
 		
+		
 		procedure query_units (unit_cursor : in pac_units.cursor) is
 			use et_symbols;
+
+			-- Get the position of the unit candidate as it is
+			-- in the schematic:
+			pos : constant type_object_position := get_position (unit_cursor);
 			
 			device_cursor_lib : pac_devices_lib.cursor;
 		begin
@@ -798,24 +803,23 @@ procedure draw_units is
 			unit_name := key (unit_cursor);
 			-- put_line (to_string (unit_name));
 
-			-- Get the position of the unit (as it is according to the module database).
+			-- Get the x/y-position of the unit.
 			-- If the unit is selected and being moved, then the x/y position
 			-- will be overwritten by the position of the mouse or the cursor.
-			unit_position := element (unit_cursor).position.place;
+			unit_position := get_place (pos);
 
 			-- There are two cases when a unit is to be drawn:
 			-- 1. The unit is on the current active sheet.
 			-- 2. The unit is being moved from one sheet to another sheet.
 			
 			-- CASE 1: We draw units which are on the active sheet:
-			if get_sheet (element (unit_cursor).position) = active_sheet then
+			if get_sheet (pos) = active_sheet then
 				
-				-- The default brightness is NORMAL. If the unit is selected then
-				-- the brightness will be increased:
+				-- The default brightness is NORMAL. If the unit is selected, 
+				-- then the brightness will be increased:
 				brightness := NORMAL;
 
-				-- CS test verb and noun ?
-				if unit_is_selected (device_cursor, unit_cursor) then
+				if is_selected (unit_cursor) then
 
 					-- increase brightness
 					brightness := BRIGHT;
@@ -840,7 +844,7 @@ procedure draw_units is
 				end if;
 
 				-- get the rotation of the unit
-				unit_rotation := get_rotation (element (unit_cursor).position);
+				unit_rotation := get_rotation (pos);
 
 				
 				-- If this is a real device, then get a copy of the 
@@ -1000,7 +1004,6 @@ procedure draw_units is
 
 		end query_units;
 
-		use et_symbols;
 
 
 		
