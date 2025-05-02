@@ -625,58 +625,58 @@ procedure draw_units is
 -- 	end moved_by_operator;
 
 	
-	-- Returns true if the given device matches the device indicated by "selected_unit"
-	-- AND if "selected_unit" does not point to particular unit. This way the whole
-	-- device is regarded as selected.
-	-- Returns true if the given device and unit match the device and unit indicated 
-	-- by variable "selected_unit". This way a single unit of a device is regarded as
-	-- selected:
-	function unit_is_selected (
-		d : in pac_devices_sch.cursor;
-		u : in pac_units.cursor)
-		return boolean
-	is
-		use pac_proposed_units;
-		use pac_unit_name;
-	begin
-		-- If there are no selected units at all, then there is nothing to do:
-		if is_empty (proposed_units) then
-			return false;
-		else
-			if selected_unit /= pac_proposed_units.no_element then
-				
-				-- Compare given device and device name of "selected_unit":
-				if key (d) = key (element (selected_unit).device) then
-
-					-- If "selected_unit" does not point to a specific unit
-					-- then we regard the whole device as selected:
-					if element (selected_unit).unit = pac_units.no_element then
-						return true;
-
-					-- If "selected_unit" points to the given unit then the
-					-- unit is regarded as selected:
-					elsif key (u) = key (element (selected_unit).unit) then
-						return true;
-						
-					else 
-						return false;
-					end if;
-					
-				else
-					return false;
-				end if;
-			else
-				return false;
-			end if;
-		end if;
-
-		--exception
-		--when event: others =>
-			--put_line ("invalid selected unit");
-			--return false;
-			
-	end unit_is_selected;
-
+-- 	-- Returns true if the given device matches the device indicated by "selected_unit"
+-- 	-- AND if "selected_unit" does not point to particular unit. This way the whole
+-- 	-- device is regarded as selected.
+-- 	-- Returns true if the given device and unit match the device and unit indicated 
+-- 	-- by variable "selected_unit". This way a single unit of a device is regarded as
+-- 	-- selected:
+-- 	function unit_is_selected (
+-- 		d : in pac_devices_sch.cursor;
+-- 		u : in pac_units.cursor)
+-- 		return boolean
+-- 	is
+-- 		use pac_proposed_units;
+-- 		use pac_unit_name;
+-- 	begin
+-- 		-- If there are no selected units at all, then there is nothing to do:
+-- 		if is_empty (proposed_units) then
+-- 			return false;
+-- 		else
+-- 			if selected_unit /= pac_proposed_units.no_element then
+-- 				
+-- 				-- Compare given device and device name of "selected_unit":
+-- 				if key (d) = key (element (selected_unit).device) then
+-- 
+-- 					-- If "selected_unit" does not point to a specific unit
+-- 					-- then we regard the whole device as selected:
+-- 					if element (selected_unit).unit = pac_units.no_element then
+-- 						return true;
+-- 
+-- 					-- If "selected_unit" points to the given unit then the
+-- 					-- unit is regarded as selected:
+-- 					elsif key (u) = key (element (selected_unit).unit) then
+-- 						return true;
+-- 						
+-- 					else 
+-- 						return false;
+-- 					end if;
+-- 					
+-- 				else
+-- 					return false;
+-- 				end if;
+-- 			else
+-- 				return false;
+-- 			end if;
+-- 		end if;
+-- 
+-- 		--exception
+-- 		--when event: others =>
+-- 			--put_line ("invalid selected unit");
+-- 			--return false;
+-- 			
+-- 	end unit_is_selected;
+-- 
 
 	
 	
@@ -961,8 +961,7 @@ procedure draw_units is
 			-- CASE 2: The unit being moved changes the sheet:
 			if object_sheet_changes then
 				
-				-- CS test verb and noun ?
-				if unit_is_selected (device_cursor, unit_cursor) then
+				if is_selected (unit_cursor) then
 
 					-- increase brightness
 					brightness := BRIGHT;
