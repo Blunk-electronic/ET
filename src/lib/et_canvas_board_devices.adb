@@ -85,7 +85,7 @@ package body et_canvas_board_devices is
 	
 
 	-- Outputs the name of a device in the status bar:
-	procedure show_selected_device (
+	procedure show_selected_device ( -- CS no need anymore ?
 		name			: in type_device_name;
 		electrical		: in boolean;
 		clarification	: in boolean := false)
