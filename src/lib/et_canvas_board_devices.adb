@@ -135,7 +135,7 @@ package body et_canvas_board_devices is
 	
 	
 	
-	procedure clarify_electrical_device is
+	procedure clarify_electrical_device is -- CS no need anymore ?
 		use et_object_status;
 		selected_device : pac_devices_sch.cursor;
 	begin
@@ -156,7 +156,7 @@ package body et_canvas_board_devices is
 
 	
 	
-	procedure clarify_non_electrical_device is 
+	procedure clarify_non_electrical_device is  -- CS no need anymore ?
 		selected_device : pac_devices_non_electric.cursor;
 		use et_object_status;
 	begin
