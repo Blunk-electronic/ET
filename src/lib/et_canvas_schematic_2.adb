@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -74,6 +74,7 @@ with et_canvas_schematic_units;
 with et_undo_redo;
 
 with et_schematic_ops.grid;
+with et_schematic_ops.units;
 with et_board_ops.grid;
 with et_system_info;
 with et_project_name;
@@ -497,6 +498,8 @@ package body et_canvas_schematic_2 is
 
 		expect_entry := expect_entry_default;
 		reset_selections;
+
+		et_schematic_ops.units.reset_proposed_objects (active_module, log_threshold + 1);
 		status_enter_verb;			
 
 		redraw_schematic;
@@ -1100,7 +1103,7 @@ package body et_canvas_schematic_2 is
 		
 		reset_preliminary_segment; -- after move/drag/draw of a net segment
 		reset_segments_being_dragged; -- after dragging a unit
-		reset_unit_move; -- after moving/dragging a unit
+		-- reset_unit_move; -- after moving/dragging a unit
 		reset_unit_add; -- after adding a device
 		
 		reset_label; -- after placing a label

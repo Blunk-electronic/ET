@@ -415,87 +415,87 @@ package body et_canvas_schematic_units is
 	
 -- MOVE/DRAG/ROTATE UNIT
 
-	procedure reset_unit_move is begin
-		clear_proposed_units;
-	end reset_unit_move;
+-- 	procedure reset_unit_move is begin
+-- 		clear_proposed_units;
+-- 	end reset_unit_move;
+-- 
+-- 	
+-- 	procedure finalize_move (
+-- 		destination		: in type_vector_model;
+-- 		log_threshold	: in type_log_level)
+-- 	is
+-- 		su : type_selected_unit;
+-- 
+-- 		use pac_devices_sch;
+-- 		use pac_units;
+-- 
+-- 		use et_undo_redo;
+-- 		use et_commit;
+-- 	begin
+-- 		log (text => "finalizing move ...", level => log_threshold);
+-- 		log_indentation_up;
+-- 
+-- 		if selected_unit /= pac_proposed_units.no_element then
+-- 
+-- 			su := element (selected_unit);
+-- 
+-- 			-- Commit the current state of the design:
+-- 			commit (PRE, verb, noun, log_threshold);
+-- 			
+-- 			move_unit (
+-- 				module_cursor	=> active_module,
+-- 				device_name		=> key (su.device),
+-- 				unit_name		=> key (su.unit),
+-- 				coordinates		=> ABSOLUTE,
+-- 				sheet			=> active_sheet,
+-- 				destination		=> destination,
+-- 				log_threshold	=> log_threshold);
+-- 
+-- 			-- CS write a reduced procedure of move_unit that takes a 
+-- 			-- module cursor, device cursor and unit cursor instead.
+-- 
+-- 			-- Commit the new state of the design:
+-- 			commit (POST, verb, noun, log_threshold);			
+-- 		else
+-- 			log (text => "nothing to do", level => log_threshold);
+-- 		end if;
+-- 			
+-- 		log_indentation_down;
+-- 
+-- 		set_status (status_move);
+-- 		
+-- 		reset_unit_move;
+-- 	end finalize_move;
+
+
+
 
 	
-	procedure finalize_move (
-		destination		: in type_vector_model;
-		log_threshold	: in type_log_level)
-	is
-		su : type_selected_unit;
-
-		use pac_devices_sch;
-		use pac_units;
-
-		use et_undo_redo;
-		use et_commit;
-	begin
-		log (text => "finalizing move ...", level => log_threshold);
-		log_indentation_up;
-
-		if selected_unit /= pac_proposed_units.no_element then
-
-			su := element (selected_unit);
-
-			-- Commit the current state of the design:
-			commit (PRE, verb, noun, log_threshold);
-			
-			move_unit (
-				module_cursor	=> active_module,
-				device_name		=> key (su.device),
-				unit_name		=> key (su.unit),
-				coordinates		=> ABSOLUTE,
-				sheet			=> active_sheet,
-				destination		=> destination,
-				log_threshold	=> log_threshold);
-
-			-- CS write a reduced procedure of move_unit that takes a 
-			-- module cursor, device cursor and unit cursor instead.
-
-			-- Commit the new state of the design:
-			commit (POST, verb, noun, log_threshold);			
-		else
-			log (text => "nothing to do", level => log_threshold);
-		end if;
-			
-		log_indentation_down;
-
-		set_status (status_move);
-		
-		reset_unit_move;
-	end finalize_move;
-
-
-
-
-	
-	procedure move_unit (
-		tool		: in type_tool;
-		position	: in type_vector_model)
-	is begin
-		if not edit_process_running then
-
-			-- Set the tool being used::
-			object_tool := tool;
-			
-			if not clarification_pending then
-				find_units_for_move (position);
-			else
-				set_edit_process_running;
-				reset_request_clarification;
-			end if;
-
-		else
-			-- Finally assign the pointer position to the
-			-- currently selected unit:
-			finalize_move (
-				destination		=> position,
-				log_threshold	=> log_threshold + 1);
-
-		end if;
-	end move_unit;
+-- 	procedure move_unit (
+-- 		tool		: in type_tool;
+-- 		position	: in type_vector_model)
+-- 	is begin
+-- 		if not edit_process_running then
+-- 
+-- 			-- Set the tool being used::
+-- 			object_tool := tool;
+-- 			
+-- 			if not clarification_pending then
+-- 				find_units_for_move (position);
+-- 			else
+-- 				set_edit_process_running;
+-- 				reset_request_clarification;
+-- 			end if;
+-- 
+-- 		else
+-- 			-- Finally assign the pointer position to the
+-- 			-- currently selected unit:
+-- 			finalize_move (
+-- 				destination		=> position,
+-- 				log_threshold	=> log_threshold + 1);
+-- 
+-- 		end if;
+-- 	end move_unit;
 
 
 
@@ -841,7 +841,7 @@ package body et_canvas_schematic_units is
 
 		reset_segments_being_dragged;
 		
-		reset_unit_move;
+		-- CS reset_unit_move; -- reset_proposed_objects ?
 	end finalize_drag;
 
 
@@ -897,7 +897,8 @@ package body et_canvas_schematic_units is
 		case length (proposed_units) is
 			when 0 =>
 				reset_request_clarification;
-				reset_unit_move;
+				--reset_unit_move;
+				-- CS reset_proposed_objects ?
 				
 			when 1 =>
 				set_edit_process_running;

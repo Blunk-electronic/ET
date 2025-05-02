@@ -177,13 +177,13 @@ package et_canvas_schematic_units is
 	-- - Clears list of proposed units.
 	-- - Sets global variable selected_unit to no_element.
 	-- - resets global variable "unit_move" to its default values
-	procedure reset_unit_move;
-
-	-- Assigns the final position after the move to the selected unit.
-	-- Resets the global variable "unit".
-	procedure finalize_move (
-		destination		: in type_vector_model;
-		log_threshold	: in type_log_level);
+	-- procedure reset_unit_move;
+ -- 
+	-- -- Assigns the final position after the move to the selected unit.
+	-- -- Resets the global variable "unit".
+	-- procedure finalize_move (
+	-- 	destination		: in type_vector_model;
+	-- 	log_threshold	: in type_log_level);
 
 
 	-- This procedure is required in order to clarify
@@ -210,9 +210,9 @@ package et_canvas_schematic_units is
 		point	: in type_vector_model);
 
 	
-	procedure move_unit (
-		tool		: in type_tool;
-		position	: in type_vector_model);
+	-- procedure move_unit (
+	-- 	tool		: in type_tool;
+	-- 	position	: in type_vector_model);
 
 	
 
