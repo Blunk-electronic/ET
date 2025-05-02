@@ -474,7 +474,7 @@ package body et_canvas_board_devices is
 	
 -- MOVE:
 
-	procedure move_electrical_device (
+	procedure move_electrical_device ( -- CS no need anymore ?
 		tool	: in type_tool;
 		point	: in type_vector_model)
 	is 
@@ -558,7 +558,7 @@ package body et_canvas_board_devices is
 
 	
 	
-	procedure move_non_electrical_device (
+	procedure move_non_electrical_device (  -- CS no need anymore ?
 		tool	: in type_tool;
 		point	: in type_vector_model)
 	is 
