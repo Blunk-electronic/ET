@@ -140,11 +140,7 @@ is
 						end if;
 
 					when NOUN_UNIT =>
-						if not clarification_pending then
-							delete_unit (event.point);
-						else
-							delete_selected_unit;
-						end if;
+						et_canvas_schematic_units.delete_object (snap_point);
 						
 					when others => null;
 				end case;
@@ -268,11 +264,12 @@ is
 						end if;
 					
 					when NOUN_UNIT =>
-						if not clarification_pending then
-							rotate_unit (event.point);
-						else
-							rotate_selected_unit;
-						end if;
+						-- if not clarification_pending then
+						-- 	rotate_unit (event.point);
+						-- else
+						-- 	rotate_selected_unit;
+						-- end if;
+						et_canvas_schematic_units.rotate_object (snap_point);
 
 					when NOUN_VALUE =>
 						if not clarification_pending then
@@ -350,7 +347,7 @@ is
 
 					when NOUN_UNIT =>
 						if clarification_pending then
-							clarify_unit;
+							clarify_object;
 						end if;
 						
 					when others => null;							
@@ -412,7 +409,6 @@ is
 
 					when NOUN_UNIT =>
 						if clarification_pending then
-							--clarify_unit;
 							clarify_object;
 						end if;
 						
@@ -464,7 +460,7 @@ is
 
 					when NOUN_UNIT =>
 						if clarification_pending then
-							clarify_unit;
+							clarify_object;
 						end if;
 
 					when others => null;							

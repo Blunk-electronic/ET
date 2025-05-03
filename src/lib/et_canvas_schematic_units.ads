@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -122,18 +122,6 @@ package et_canvas_schematic_units is
 		& "to delete unit." 
 		& status_hint_for_abort;
 	
-	-- Deletes a unit in the vicinity of given point.
-	-- If more than one unit near point found, then it sets the
-	-- cursor selected_unit to the first unit and requests
-	-- for clarification.
-	-- In case the last unit of a device has been deleted, then the device is 
-	-- deleted entirely from the module.
-	procedure delete_unit (point : in type_vector_model);
-
-	
-	-- Deletes the unit being pointed at by cursor selected_unit.
-	-- Call this procedure after a clarification.
-	procedure delete_selected_unit;
 
 	
 	type type_unit_being_deleted is record
@@ -173,18 +161,6 @@ package et_canvas_schematic_units is
 		& "to rotate unit." 
 		& status_hint_for_abort;
 	
-	-- This procedure:
-	-- - Clears list of proposed units.
-	-- - Sets global variable selected_unit to no_element.
-	-- - resets global variable "unit_move" to its default values
-	-- procedure reset_unit_move;
- -- 
-	-- -- Assigns the final position after the move to the selected unit.
-	-- -- Resets the global variable "unit".
-	-- procedure finalize_move (
-	-- 	destination		: in type_vector_model;
-	-- 	log_threshold	: in type_log_level);
-
 
 	-- This procedure is required in order to clarify
 	-- which object among the proposed objects is meant.
@@ -213,11 +189,11 @@ package et_canvas_schematic_units is
 	procedure rotate_object (
 		point	: in type_vector_model);
 
-	
-	-- procedure move_unit (
-	-- 	tool		: in type_tool;
-	-- 	position	: in type_vector_model);
 
+	procedure delete_object (
+		point	: in type_vector_model);
+
+	
 	
 
 -- DRAG:
@@ -267,18 +243,6 @@ package et_canvas_schematic_units is
 	-- cursor selected_unit. Collects the segments in list
 	-- segments_being_dragged (see above):
 	procedure find_attached_segments;
-
-
-	-- Rotates a unit in the vicinity of given point by 90 degree.
-	-- If more than one unit near point found, then it sets the
-	-- cursor selected_unit to the first unit and requests
-	-- for clarification.
-	-- procedure rotate_unit (point : in type_vector_model);
-
-	-- Rotate the unit being pointed at by cursor selected_unit.
-	-- Call this procedure after a clarification.
-	-- procedure rotate_selected_unit;
-
 
 
 	

@@ -98,11 +98,7 @@ is
 						end if;
 
 					when NOUN_UNIT =>
-						if not clarification_pending then
-							delete_unit (get_cursor_position);
-						else
-							delete_selected_unit;
-						end if;
+						et_canvas_schematic_units.delete_object (point);
 						
 					when others => null;							
 				end case;
@@ -122,7 +118,7 @@ is
 
 					when NOUN_UNIT =>
 						if clarification_pending then
-							clarify_unit;
+							clarify_object;
 						end if;
 
 					when others =>
@@ -325,7 +321,6 @@ is
 						-- When moving units, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
-						--move_unit (KEYBOARD, get_cursor_position);
 						et_canvas_schematic_units.move_object (KEYBOARD, point);
 
 					when others => null;
@@ -472,11 +467,7 @@ is
 						end if;
 
 					when NOUN_UNIT =>
-						if not clarification_pending then
-							rotate_unit (get_cursor_position);
-						else
-							rotate_selected_unit;
-						end if;
+						et_canvas_schematic_units.rotate_object (point);
 						
 					when NOUN_VALUE =>
 						if not clarification_pending then
@@ -500,7 +491,7 @@ is
 
 					when NOUN_UNIT =>
 						if clarification_pending then
-							clarify_unit;
+							clarify_object;
 						end if;
 
 					when others => null;

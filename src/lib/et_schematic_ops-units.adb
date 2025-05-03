@@ -2950,7 +2950,7 @@ package body et_schematic_ops.units is
 					module_cursor	=> module_cursor,
 					device_name		=> key (object.unit.device_cursor),
 					unit_name		=> key (object.unit.unit_cursor),
-					coordinates		=> absolute,
+					coordinates		=> relative, -- in order to rotate by 90 degrees
 					rotation		=> 90.0,
 					log_threshold	=> log_threshold + 1);
 
