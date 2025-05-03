@@ -79,6 +79,8 @@ with et_board_ops.grid;
 with et_system_info;
 with et_project_name;
 with et_module_ops;
+with et_canvas_schematic_preliminary_object;
+
 
 
 package body et_canvas_schematic_2 is
@@ -98,6 +100,7 @@ package body et_canvas_schematic_2 is
 	end set_title_bar;
 
 
+	
 	procedure update_mode_display is 
 		use et_modes.schematic;
 		
@@ -111,12 +114,14 @@ package body et_canvas_schematic_2 is
 	end update_mode_display;
 	
 	
+
 	
 	procedure compute_bounding_box (
 		abort_on_first_error	: in boolean := false;
 		ignore_errors			: in boolean := false;
 		test_only				: in boolean := false)		
 	is separate;
+
 
 	
 
@@ -183,6 +188,7 @@ package body et_canvas_schematic_2 is
 	end cb_zoom_to_fit;
 
 
+	
 	
 	procedure cb_zoom_area (
 		button : access gtk_button_record'class)
@@ -328,6 +334,7 @@ package body et_canvas_schematic_2 is
 
 
 
+	
 
 	procedure set_up_main_window is begin
 		log (text => "set_up_main_window (schematic)", level => log_threshold);
@@ -352,6 +359,7 @@ package body et_canvas_schematic_2 is
 
 	procedure draw_submodules is separate;
 	
+
 	
 	
 	function cb_draw (
@@ -410,6 +418,8 @@ package body et_canvas_schematic_2 is
 		return event_handled;
 	end cb_draw;
 
+
+
 	
 
 
@@ -429,6 +439,8 @@ package body et_canvas_schematic_2 is
 		redraw;
 	end undo;
 
+
+
 	
 	procedure redo is 
 		use et_undo_redo;
@@ -447,6 +459,110 @@ package body et_canvas_schematic_2 is
 
 
 
+
+-- RESET:
+	
+	procedure reset_selections is 
+		use et_canvas_schematic_nets;
+		use et_canvas_schematic_units;
+	begin
+		-- Verb and noun remain as they are
+		-- so that the mode is unchanged.
+		
+		reset_request_clarification;
+		
+		reset_preliminary_segment; -- after move/drag/draw of a net segment
+		reset_segments_being_dragged; -- after dragging a unit
+		-- reset_unit_move; -- after moving/dragging a unit
+		reset_unit_add; -- after adding a device
+		
+		reset_label; -- after placing a label
+		
+		reset_placeholder; -- after moving a placeholder
+
+		reset_single_cmd_status;
+		
+		-- reset_activate_counter;
+
+		reset_zoom_area; -- abort zoom-to-area operation
+	end reset_selections;
+
+
+
+	
+	procedure reset is
+		use et_modes;
+		use et_modes.schematic;
+		use et_canvas_schematic_nets;
+
+
+		-- Do a level 1 reset. This is a partly reset:
+		procedure level_1 is begin
+			log (text => "level 1", level => log_threshold + 1);
+			
+			reset_edit_process_running;
+			reset_request_clarification;
+			reset_finalizing_granted;
+
+			status_clear;
+
+			et_schematic_ops.units.reset_proposed_objects (active_module, log_threshold + 1);
+			
+			reset_selections; -- CS
+		end level_1;
+	
+
+		-- Do a level 2 reset. This is a full reset:
+		procedure level_2 is begin
+			log (text => "level 2", level => log_threshold + 1);
+			
+			level_1;
+			
+			reset_verb_and_noun;
+			update_mode_display;
+			
+			status_enter_verb;
+			-- clear_out_properties_box;
+			reset_editing_process;
+		end level_2;
+
+
+		
+	begin
+		log (text => "RESET (schematic)", level => log_threshold + 1);
+		log_indentation_up;
+		
+		escape_key_pressed;
+
+		expect_entry := expect_entry_default; -- expect a verb
+		
+		-- Verb and noun remain as they are
+		-- so that the mode is unchanged.
+
+		case get_escape_counter is
+			when 0 => null;
+			
+			when 1 =>
+				case verb is
+					-- CS
+					
+					when others => level_1;
+				end case;
+				
+			when 2 =>
+				level_2;
+
+		end case;
+
+		log_indentation_down;
+		
+		redraw_schematic;
+	end reset;
+
+	
+
+
+	
 
 	procedure save_module is
 		use ada.directories;
@@ -483,27 +599,7 @@ package body et_canvas_schematic_2 is
 
 
 	
-	
-	-- This procedure resets a lot of stuff and should
-	-- be called when the operator pressed the ESCAPE key.
-	-- Here the commands to abort any pending 
-	-- operations related to the canvas should be placed:
-	procedure reset is
-		use et_modes;
-		use et_modes.schematic;
-		use et_canvas_schematic_nets;
-	begin
-		-- Here the commands to abort any pending 
-		-- operations related to the canvas should be placed:
 
-		expect_entry := expect_entry_default;
-		reset_selections;
-
-		et_schematic_ops.units.reset_proposed_objects (active_module, log_threshold + 1);
-		status_enter_verb;			
-
-		redraw_schematic;
-	end reset;
 	
 
 	
@@ -1092,30 +1188,6 @@ package body et_canvas_schematic_2 is
 
 	
 
-	procedure reset_selections is 
-		use et_canvas_schematic_nets;
-		use et_canvas_schematic_units;
-	begin
-		-- Verb and noun remain as they are
-		-- so that the mode is unchanged.
-		
-		reset_request_clarification;
-		
-		reset_preliminary_segment; -- after move/drag/draw of a net segment
-		reset_segments_being_dragged; -- after dragging a unit
-		-- reset_unit_move; -- after moving/dragging a unit
-		reset_unit_add; -- after adding a device
-		
-		reset_label; -- after placing a label
-		
-		reset_placeholder; -- after moving a placeholder
-
-		reset_single_cmd_status;
-		
-		-- reset_activate_counter;
-
-		reset_zoom_area; -- abort zoom-to-area operation
-	end reset_selections;
 
 
 	

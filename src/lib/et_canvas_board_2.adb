@@ -687,6 +687,7 @@ package body et_canvas_board_2 is
 		-- CS draw_submodules			
 	end draw_board;
 	
+
 	
 
 	function cb_draw (
@@ -734,6 +735,8 @@ package body et_canvas_board_2 is
 
 
 
+
+	
 -- UNDO / REDO:	
 
 	procedure undo is 
@@ -749,6 +752,7 @@ package body et_canvas_board_2 is
 		
 		redraw;
 	end undo;
+
 
 	
 	procedure redo is 
@@ -766,8 +770,12 @@ package body et_canvas_board_2 is
 	end redo;
 
 
+
+
 	
 
+-- RESET:
+	
 	procedure reset is 
 		use et_modes;
 		use et_modes.board;
@@ -779,7 +787,6 @@ package body et_canvas_board_2 is
 		use et_canvas_board_vias;
 		use et_canvas_board_tracks;
 
-		use et_canvas_board_preliminary_object;
 		use et_ripup;
 
 
@@ -828,7 +835,7 @@ package body et_canvas_board_2 is
 	
 	
 	begin
-		log (text => "RESET", level => log_threshold + 1);
+		log (text => "RESET (board)", level => log_threshold + 1);
 		log_indentation_up;
 		
 		escape_key_pressed;
