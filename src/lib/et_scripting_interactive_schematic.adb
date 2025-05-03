@@ -388,7 +388,9 @@ package body et_scripting_interactive_schematic is
 				single_cmd_status.finalization_pending := true;
 				
 			when VERB_ROTATE =>
-				rotate_selected_unit;
+				-- rotate_selected_unit;
+				null;
+				-- CS ?
 				
 			when others => raise constraint_error; -- CS should never happen
 		end case;
