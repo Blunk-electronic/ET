@@ -397,9 +397,19 @@ package body et_canvas_schematic_units is
 				set_edit_process_running;
 				select_first_proposed;
 
-				if verb = VERB_MOVE then
-					set_first_selected_object_moving;
-				end if;
+				case verb is
+					when VERB_MOVE =>
+						set_first_selected_object_moving;
+						-- CS ? set_status (status_move);
+						
+					when VERB_DRAG =>
+						set_first_selected_object_moving;
+						
+						find_attached_segments;
+						-- CS ? set_status (status_drag);
+
+					when others => null; -- CS
+				end case;
 				
 				reset_request_clarification;
 				
@@ -722,85 +732,157 @@ package body et_canvas_schematic_units is
 
 	
 
-	procedure drag_unit (
-		tool		: in type_tool;
-		position	: in type_vector_model)
-	is begin
+	procedure drag_object (
+		tool	: in type_tool;
+		point	: in type_vector_model)
+	is 
+
+		-- Deletes the selected object:
+		procedure finalize is
+			use et_modes.schematic;
+			use et_undo_redo;
+			use et_commit;
+
+			object : constant type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+		begin
+			log (text => "finalizing drag ...", level => log_threshold);
+			log_indentation_up;
+
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+				
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+				
+				drag_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					destination		=> point,
+					log_threshold	=> log_threshold + 1);
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+
+				-- If a unit has been deleted, then the board
+				-- must be redrawn:
+				if object.cat = CAT_UNIT then
+					redraw_board;
+				end if;
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			
+			set_status (status_delete);
+			
+			reset_proposed_objects (active_module, log_threshold + 1);
+
+			reset_editing_process; -- prepare for a new editing process
+		end finalize;
+
+		
+	begin
+		-- Initially the editing process is not running:
 		if not edit_process_running then
 			
 			-- Set the tool being used:
 			object_tool := tool;
 			
 			if not clarification_pending then
-				find_units_for_move (position);
+				-- Locate all objects in the vicinity of the given point:
+				find_objects (point);
+
+				-- NOTE: If many objects have been found, then
+				-- clarification is now pending.
+
+				-- If find_objects has found only one object,				
+				-- then the flag edit_process_running is set true.
 			else
+				-- Here the clarification procedure ends.
+				-- An object has been selected via procedure clarify_object.
+				-- By setting the status of the selected object
+				-- as "moving", the selected object
+				-- will be drawn according to the given point and 
+				-- the tool position.
+				set_first_selected_object_moving;
+				
 				find_attached_segments;
+
+				-- Furtheron, on the next call of this procedure
+				-- the selected object will be assigned its final position.
+
 				set_edit_process_running;
 				reset_request_clarification;
 			end if;
 
 		else
-			-- Finally assign the pointer position to the
-			-- currently selected unit:
-			finalize_drag (
-				destination		=> position,
-				log_threshold	=> log_threshold + 1);
+			finalize;
+			
+			-- -- Finally assign the pointer position to the
+			-- -- currently selected unit:
+			-- finalize_drag (
+			-- 	destination		=> position,
+			-- 	log_threshold	=> log_threshold + 1);
 
 		end if;
-	end drag_unit;
+	end drag_object;
 
 	
 
 
 	
-	procedure find_units_for_move (point : in type_vector_model) is 
-		use et_modes.schematic;
-	begin
-		log (text => "locating units for move/drag ...", level => log_threshold);
-		log_indentation_up;
-		
-		-- Collect all units in the vicinity of the given point:
-		proposed_units := collect_units (
-			module			=> active_module,
-			place			=> to_position (point, active_sheet),
-			zone			=> get_catch_zone (catch_zone_radius_default),
-			log_threshold	=> log_threshold + 1);
-
-		
-		-- evaluate the number of units found here:
-		case length (proposed_units) is
-			when 0 =>
-				reset_request_clarification;
-				--reset_unit_move;
-				-- CS reset_proposed_objects ?
-				
-			when 1 =>
-				set_edit_process_running;
-				selected_unit := proposed_units.first;
-
-				case verb is
-					when VERB_DRAG => 
-						find_attached_segments;
-						set_status (status_drag);
-						
-					when VERB_MOVE => 
-						set_status (status_move);
-						
-					when others => null;
-				end case;
-
-				reset_request_clarification;
-				
-			when others =>
-				--log (text => "many objects", level => log_threshold + 2);
-				set_request_clarification;
-
-				-- preselect the first unit
-				selected_unit := proposed_units.first;
-		end case;
-		
-		log_indentation_down;
-	end find_units_for_move;
+-- 	procedure find_units_for_move (point : in type_vector_model) is 
+-- 		use et_modes.schematic;
+-- 	begin
+-- 		log (text => "locating units for move/drag ...", level => log_threshold);
+-- 		log_indentation_up;
+-- 		
+-- 		-- Collect all units in the vicinity of the given point:
+-- 		proposed_units := collect_units (
+-- 			module			=> active_module,
+-- 			place			=> to_position (point, active_sheet),
+-- 			zone			=> get_catch_zone (catch_zone_radius_default),
+-- 			log_threshold	=> log_threshold + 1);
+-- 
+-- 		
+-- 		-- evaluate the number of units found here:
+-- 		case length (proposed_units) is
+-- 			when 0 =>
+-- 				reset_request_clarification;
+-- 				--reset_unit_move;
+-- 				-- CS reset_proposed_objects ?
+-- 				
+-- 			when 1 =>
+-- 				set_edit_process_running;
+-- 				selected_unit := proposed_units.first;
+-- 
+-- 				case verb is
+-- 					when VERB_DRAG => 
+-- 						find_attached_segments;
+-- 						set_status (status_drag);
+-- 						
+-- 					when VERB_MOVE => 
+-- 						set_status (status_move);
+-- 						
+-- 					when others => null;
+-- 				end case;
+-- 
+-- 				reset_request_clarification;
+-- 				
+-- 			when others =>
+-- 				--log (text => "many objects", level => log_threshold + 2);
+-- 				set_request_clarification;
+-- 
+-- 				-- preselect the first unit
+-- 				selected_unit := proposed_units.first;
+-- 		end case;
+-- 		
+-- 		log_indentation_down;
+-- 	end find_units_for_move;
 
 
 

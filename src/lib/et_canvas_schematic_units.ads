@@ -219,13 +219,13 @@ package et_canvas_schematic_units is
 	
 	-- Assigns the final position after the drag to the selected unit.
 	-- Resets the global variable "unit".
-	procedure finalize_drag (
-		destination		: in type_vector_model;
-		log_threshold	: in type_log_level);
+	-- procedure finalize_drag (
+	-- 	destination		: in type_vector_model;
+	-- 	log_threshold	: in type_log_level);
 
-	procedure drag_unit (
-		tool		: in type_tool;
-		position	: in type_vector_model);
+	procedure drag_object (
+		tool	: in type_tool;
+		point	: in type_vector_model);
 
 	
 
@@ -237,7 +237,7 @@ package et_canvas_schematic_units is
 	-- for clarification.
 	-- If there is only one unite, sets global variable selected_unit accordingly.
 	-- If there is no unit, then selected_unit is set to no_element.
-	procedure find_units_for_move (point : in type_vector_model);
+	-- procedure find_units_for_move (point : in type_vector_model);
 
 	-- Locates net segments attached to the unit indicated by
 	-- cursor selected_unit. Collects the segments in list

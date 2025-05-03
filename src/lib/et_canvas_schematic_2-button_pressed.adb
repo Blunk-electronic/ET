@@ -152,7 +152,7 @@ is
 						-- When dragging units, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
-						drag_unit (MOUSE, snap_point);
+						drag_object (MOUSE, snap_point);
 						
 					when NOUN_NET => 
 						-- When dragging net segments, we enforce the default grid
@@ -357,7 +357,7 @@ is
 				case noun is
 					when NOUN_UNIT =>
 						if clarification_pending then
-							clarify_unit;
+							clarify_object;
 						end if;
 
 					when NOUN_NET => 

@@ -165,7 +165,7 @@ is
 						-- When dragging units, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
-						drag_unit (KEYBOARD, get_cursor_position);
+						drag_object (KEYBOARD, get_cursor_position);
 
 					when others => null;
 						
@@ -176,7 +176,7 @@ is
 				case noun is
 					when NOUN_UNIT =>
 						if clarification_pending then
-							clarify_unit;
+							clarify_object;
 						end if;
 
 					when NOUN_NET => 
