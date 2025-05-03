@@ -209,6 +209,10 @@ package et_canvas_schematic_units is
 		tool	: in type_tool;
 		point	: in type_vector_model);
 
+
+	procedure rotate_object (
+		point	: in type_vector_model);
+
 	
 	-- procedure move_unit (
 	-- 	tool		: in type_tool;
@@ -269,11 +273,11 @@ package et_canvas_schematic_units is
 	-- If more than one unit near point found, then it sets the
 	-- cursor selected_unit to the first unit and requests
 	-- for clarification.
-	procedure rotate_unit (point : in type_vector_model);
+	-- procedure rotate_unit (point : in type_vector_model);
 
 	-- Rotate the unit being pointed at by cursor selected_unit.
 	-- Call this procedure after a clarification.
-	procedure rotate_selected_unit;
+	-- procedure rotate_selected_unit;
 
 
 
