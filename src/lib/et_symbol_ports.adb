@@ -44,6 +44,16 @@ with ada.characters.handling;	use ada.characters.handling;
 package body et_symbol_ports is
 
 
+	function get_position (
+		port	: in pac_ports.cursor)
+		return type_vector_model
+	is begin
+		return element (port).position;
+	end get_position;
+
+
+	
+
 	procedure move_ports (
 		ports	: in out pac_ports.map; -- the portlist
 		offset	: in type_object_position) -- the offset (only x/y matters)

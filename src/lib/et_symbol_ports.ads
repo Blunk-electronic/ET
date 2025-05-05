@@ -172,8 +172,16 @@ package et_symbol_ports is
 		key_type		=> pac_port_name.bounded_string, -- CLOCK, CE, VDD, GND
 		element_type	=> type_port);
 
+	use pac_ports;
 	
 
+	-- Returns the x/y-position of the given port:
+	function get_position (							  
+		port	: in pac_ports.cursor)
+		return type_vector_model;
+
+
+	
 	-- Moves the given ports by given offset.
 	procedure move_ports (
 		ports	: in out pac_ports.map; -- the portlist
