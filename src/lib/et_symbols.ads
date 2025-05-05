@@ -206,6 +206,14 @@ package et_symbols is
 	end record;
 
 
+
+	-- Retrurns x/y-positions the the ports of the given symbol:
+	function get_port_positions (
+		symbol	: in type_symbol)
+		return pac_points.list;
+
+	
+		
 	-- In the schematic, when a unit is rotated to a certain absolute rotation,
 	-- or if the placeholders are to be restored (kind of un-smash),
 	-- the default positions of texts and placeholders are required. For this
@@ -259,7 +267,7 @@ package et_symbols is
 	symbol_library_file_extension : constant string := "sym";
 
 	-- HERE RIG WIDE EXTERNAL SYMBOLS ARE KEPT:	
-	symbols : pac_symbols.map;
+	symbols : pac_symbols.map; -- CS rename to symbol_library ?
 
 	-- NOTE: Devices can use internal or external symbols. An internal symbol
 	-- is modelled inside the device, is fixed to the that device
@@ -275,7 +283,13 @@ package et_symbols is
 	-- Returns true if the given symbol will be part of a real device:
 	function is_real (symbol : in pac_symbols.cursor)
 		return boolean;
-	
+
+
+	-- Returns the x/y-positions of the given symbol:
+	function get_port_positions (
+		symbol	: in pac_symbols.cursor)
+		return pac_points.list;
+
 	
 	-- When placing, copying, invoking units their placeholders must be
 	-- changed according to the rotation of the affected unit. We basically

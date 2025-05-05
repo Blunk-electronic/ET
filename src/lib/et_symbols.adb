@@ -115,6 +115,26 @@ package body et_symbols is
 	
 
 
+	function get_port_positions (
+		symbol	: in type_symbol)
+		return pac_points.list
+	is
+		use pac_points;
+		result : pac_points.list;
+
+		procedure query_port (c : in pac_ports.cursor) is begin
+			result.append (get_position (c));
+		end query_port;
+		
+	begin
+		symbol.ports.iterate (query_port'access);
+		return result;
+	end get_port_positions;
+
+
+
+	
+
 	procedure reset_arc (
 		arc	: in out type_symbol_arc)
 	is 
@@ -181,6 +201,16 @@ package body et_symbols is
 			when APPEARANCE_VIRTUAL	=> return false;
 		end case;
 	end is_real;
+
+
+
+	function get_port_positions (
+		symbol	: in pac_symbols.cursor)
+		return pac_points.list
+	is begin
+		return get_port_positions (element (symbol));
+	end get_port_positions;
+
 
 	
 	
