@@ -55,9 +55,18 @@ package body et_nets is
 	end to_string;
 
 
-
-	use pac_net_segments;
 	
+
+
+	function get_sheet (
+		strand	: in type_strand)
+		return type_sheet
+	is begin
+		return get_sheet (strand.position);
+	end get_sheet;
+
+	
+
 
 	
 	procedure iterate (

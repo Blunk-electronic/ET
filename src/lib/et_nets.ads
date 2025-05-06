@@ -59,6 +59,7 @@ package et_nets is
 	use pac_geometry_2;
 	use pac_net_name;
 
+	use pac_net_segments;
 
 
 	-- This type should be used whenever nets are counted.
@@ -114,6 +115,12 @@ package et_nets is
 	end record;		
 
 
+	-- Returns the sheet number where the given strand is on:
+	function get_sheet (
+		strand	: in type_strand)
+		return type_sheet;
+	
+	
 	package pac_strands is new doubly_linked_lists (type_strand);
 	use pac_strands;
 	
