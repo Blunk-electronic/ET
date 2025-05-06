@@ -356,10 +356,6 @@ package body et_devices_electrical is
 		unit_name : pac_unit_name.bounded_string := key (unit);
 
 
-		-- Here we will store temporarily the port-positions
-		-- if internal and external units:
-		positions_internal, positions_external : pac_points.list;
-
 		
 		procedure query_internal_units (
 			model_name		: in pac_device_model_file.bounded_string;
@@ -374,7 +370,7 @@ package body et_devices_electrical is
 			locate_internal (device_model, unit_name, unit_cursor);
 
 			-- Get the port positions of the internal unit.
-			positions_internal := get_port_positions (unit_cursor);
+			result := get_port_positions (unit_cursor);
 		end query_internal_units;
 
 
@@ -391,10 +387,13 @@ package body et_devices_electrical is
 			-- to the external unit:
 			locate_external (device_model, unit_name, unit_cursor);
 
-			-- Get the port positions of the internal unit.
-			positions_external := get_port_positions (unit_cursor);
+			-- Get the port positions of the external unit.
+			result := get_port_positions (unit_cursor);
 		end query_external_units;
 
+
+		-- Get the position of the given unit in the schematic:
+		unit_position : type_object_position := get_position (unit);
 		
 	begin
 		-- Locate the given unit among the external units 
@@ -402,16 +401,22 @@ package body et_devices_electrical is
 		-- the unit is among the external units, we do this step first:
 		query_element (device_cursor_lib, query_external_units'access);
 
-		-- If unit could not be found among external units then look up the internal units:
-		if pac_points.length (positions_external) = 0 then -- CS
+		-- If no positions found, the the given unit either does not
+		-- exist or is not external. In that case the unit must
+		-- be located among the internal units:
+		if get_length (result) = 0 then
 
-			-- Query internal units of device (in library):
+			-- Query internal units of device model:
 			query_element (device_cursor_lib, query_internal_units'access);
 		end if;
 
-		-- CS rotate, mirror ?
+		-- Rotate the port positions by the rotation of the unit:
+		rotate_points (result, get_rotation (unit_position));
 
-		-- CS move
+		-- CS mirror ?
+		
+		-- Move the port positions by the position of the unit:		
+		move_points (result, to_distance_relative (get_place (unit_position)));
 		
 		return result;
 	end get_port_positions;
