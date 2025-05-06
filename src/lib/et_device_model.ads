@@ -77,6 +77,21 @@ package et_device_model is
 	subtype type_unit_count is positive range 1 .. 1000;
 
 
+
+	-- NOTE: Devices can be composed of internal and/or external units.
+	--
+	-- An internal unit is modelled directly inside the device model, 
+	-- is fixed to the that device model
+	-- and can be used by that device model exclusively.
+	-- For example after importing a KiCad project there will only be 
+	-- internal units.
+	--
+	-- External units in turn provide much more flexibilty as they can 
+	-- be used by many device models. There is no fixed connection between 
+	-- device model and unit..
+
+
+	
 	
 
 -- INTERNAL UNITS:
@@ -100,8 +115,18 @@ package et_device_model is
 		key_type		=> pac_unit_name.bounded_string, -- like "I/O-Bank 3" "A" or "B"
 		element_type	=> type_unit_internal);
 
+	use pac_units_internal;
 
 
+	-- Returns the default x/y-positions of the 
+	-- given internal unit. If the given
+	-- cursor of the unit is no_element then the
+	-- return is an empty list:
+	function get_port_positions (
+		unit	: in pac_units_internal.cursor)
+		return pac_points.list;
+
+	
 
 -- EXTERNAL UNITS:
 	
@@ -113,6 +138,8 @@ package et_device_model is
 		swap_level	: type_swap_level := swap_level_default;
 		add_level	: type_add_level := type_add_level'first;
 	end record;
+
+
 	
 
 	-- External units are collected in a map;
@@ -120,8 +147,21 @@ package et_device_model is
 		key_type		=> pac_unit_name.bounded_string, -- like "I/O-Bank 3"
 		element_type	=> type_unit_external);
 
+	use pac_units_external;
+	
 
+	function get_symbol_model_file (
+		unit	: in pac_units_external.cursor)
+		return pac_symbol_model_file.bounded_string;
+		
 
+	-- Returns the default x/y-positions 
+	-- of the given external unit. If the given
+	-- cursor of the unit is no_element then the
+	-- return is an empty list:
+	function get_port_positions (
+		unit	: in pac_units_external.cursor)
+		return pac_points.list;
 	
 	
 	
@@ -155,6 +195,30 @@ package et_device_model is
 	end record;
 
 
+
+	-- Locates the given unit by its name among the
+	-- internal units of the given device model.
+	-- The result is the cursor set accordingly.
+	-- If the unit does not exist among the internal
+	-- units then the result is no_element:
+	procedure locate_internal (
+		model	: in type_device_model;
+		unit	: in pac_unit_name.bounded_string;
+		cursor	: in out pac_units_internal.cursor);
+	
+
+	-- Locates the given unit by its name among the
+	-- external units of the given device model.
+	-- The result is the cursor set accordingly.
+	-- If the unit does not exist among the external
+	-- units then the result is no_element:
+	procedure locate_external (
+		model	: in type_device_model;
+		unit	: in pac_unit_name.bounded_string;
+		cursor	: in out pac_units_external.cursor);
+
+
+	
 
 	-- Returns the total number of units that the
 	-- given device model contains.

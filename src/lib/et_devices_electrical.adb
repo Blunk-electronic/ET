@@ -323,6 +323,101 @@ package body et_devices_electrical is
 	end;
 
 
+
+
+
+	function get_port_positions (
+		device	: in pac_devices_sch.cursor;
+		unit	: in pac_units.cursor)
+		return pac_points.list
+	is
+		-- This list of location vectors (x/y-positions) 
+		-- will be returned to the caller:
+		result : pac_points.list;
+		
+		-- The given device and unit exist in the schematic.
+		-- Both provide information about the name and position
+		-- of device and unit in the schematic and the associated
+		-- device model. The device model in turn provides information
+		-- about the ports and their default positions.
+		-- So the device model is the link between schematic unit
+		-- and port positions.
+
+		use pac_devices_lib;
+
+		-- This cursor points to the device model in the device library:
+		device_cursor_lib : pac_devices_lib.cursor := get_device_model (device);
+		-- CS: constraint_error will arise here if no associated device exists.
+
+		-- In order to locate a unit inside the device model,
+		-- the actual name of the unit must be known.
+		-- So we translate the given unit cursor to a unit name
+		-- like A, C, IO_BANK_1:
+		unit_name : pac_unit_name.bounded_string := key (unit);
+
+
+		-- Here we will store temporarily the port-positions
+		-- if internal and external units:
+		positions_internal, positions_external : pac_points.list;
+
+		
+		procedure query_internal_units (
+			model_name		: in pac_device_model_file.bounded_string;
+			device_model	: in type_device_model) 
+		is
+			unit_cursor : pac_units_internal.cursor;			
+		begin
+			-- Locate the given unit in the device model
+			-- among the internal units. If it has been found,
+			-- the the unit_cursor will be set so that it points
+			-- to the internal unit:
+			locate_internal (device_model, unit_name, unit_cursor);
+
+			-- Get the port positions of the internal unit.
+			positions_internal := get_port_positions (unit_cursor);
+		end query_internal_units;
+
+
+		
+		procedure query_external_units (
+			model_name		: in pac_device_model_file.bounded_string;
+			device_model	: in type_device_model) 
+		is
+			unit_cursor : pac_units_external.cursor;
+		begin
+			-- Locate the given unit in the device model
+			-- among the external units. If it has been found,
+			-- the the unit_cursor will be set so that it points
+			-- to the external unit:
+			locate_external (device_model, unit_name, unit_cursor);
+
+			-- Get the port positions of the internal unit.
+			positions_external := get_port_positions (unit_cursor);
+		end query_external_units;
+
+		
+	begin
+		-- Locate the given unit among the external units 
+		-- in the device model. Since it is most likely that
+		-- the unit is among the external units, we do this step first:
+		query_element (device_cursor_lib, query_external_units'access);
+
+		-- If unit could not be found among external units then look up the internal units:
+		if pac_points.length (positions_external) = 0 then -- CS
+
+			-- Query internal units of device (in library):
+			query_element (device_cursor_lib, query_internal_units'access);
+		end if;
+
+		-- CS rotate, mirror ?
+
+		-- CS move
+		
+		return result;
+	end get_port_positions;
+
+
+
 	
 	
 

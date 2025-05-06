@@ -52,6 +52,95 @@ with et_exceptions;				use et_exceptions;
 package body et_device_model is
 
 
+
+	function get_port_positions (
+		unit	: in pac_units_internal.cursor)
+		return pac_points.list
+	is
+		result : pac_points.list;
+	begin
+		-- If the given cursor points to a unit, then
+		-- extract the port positions. Otherwise return
+		-- an empty list:		
+		if has_element (unit) then
+			result := get_port_positions (element (unit).symbol);
+		end if;
+		
+		return result;
+	end get_port_positions;
+
+
+
+
+	function get_symbol_model_file (
+		unit	: in pac_units_external.cursor)
+		return pac_symbol_model_file.bounded_string
+	is begin
+		return element (unit).model;
+	end get_symbol_model_file;
+	
+
+	
+
+	function get_port_positions (
+		unit	: in pac_units_external.cursor)
+		return pac_points.list
+	is
+		result : pac_points.list;
+		
+		-- The name of the associated symbol model file:
+		sym_name : pac_symbol_model_file.bounded_string;
+		-- like /libraries/symbols/NAND.sym
+
+		-- The cursor of the actual symbol in
+		-- the symbol library:
+		sym_cursor : pac_symbols.cursor;
+	
+	begin
+		-- If the given cursor points to a unit, then
+		-- extract the port positions. Otherwise return
+		-- an empty list:
+		if has_element (unit) then
+			
+			-- Get the name of the symbol model file
+			-- of the given external unit:
+			sym_name := get_symbol_model_file (unit);
+
+			-- Locate the symbol in the rig wide 
+			-- symbol model library:
+			locate_symbol (sym_name, sym_cursor);
+
+			-- Get the port positions via the symbol cursor:
+			result := get_port_positions (sym_cursor);
+		end if;
+
+		return result;
+	end get_port_positions;
+
+	
+
+	
+	procedure locate_internal (
+		model	: in type_device_model;
+		unit	: in pac_unit_name.bounded_string;
+		cursor	: in out pac_units_internal.cursor)
+	is begin
+		cursor := model.units_internal.find (unit);
+	end locate_internal;
+
+
+
+	procedure locate_external (
+		model	: in type_device_model;
+		unit	: in pac_unit_name.bounded_string;
+		cursor	: in out pac_units_external.cursor)
+	is begin
+		cursor := model.units_external.find (unit);
+	end locate_external;
+
+	
+	
+
 	function get_unit_count (
 		device_model : in type_device_model)
 		return type_unit_count

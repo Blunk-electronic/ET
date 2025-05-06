@@ -300,6 +300,16 @@ package et_devices_electrical is
 		log_threshold	: in type_log_level);
 
 
+	-- Returns the positions of the ports
+	-- of a given unit of a given device in
+	-- the schematic. The position, mirror style and rotation
+	-- the the unit in the schematic is taken into account:
+	function get_port_positions (
+		device	: in pac_devices_sch.cursor;
+		unit	: in pac_units.cursor)
+		return pac_points.list;
+	
+	
 	
 	-- Returns a map of ports of the given device and unit.
 	-- The coordinates of the ports are default xy-positions relative

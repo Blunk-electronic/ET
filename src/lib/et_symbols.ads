@@ -269,17 +269,20 @@ package et_symbols is
 	-- HERE RIG WIDE EXTERNAL SYMBOLS ARE KEPT:	
 	symbols : pac_symbols.map; -- CS rename to symbol_library ?
 
-	-- NOTE: Devices can use internal or external symbols. An internal symbol
-	-- is modelled inside the device, is fixed to the that device
-	-- and can be used by that device exclusively.
-	-- For example after importing a KiCad project there will only be internal
-	-- symbols.
-	--  External symbols provide much more flexibilty as they can be used by many
-	-- devices. There is no fixed connection between device and symbol.
 	
 	function locate (symbol : in pac_symbol_model_file.bounded_string) -- ../libraries/symbols/NAND.sym
-		return pac_symbols.cursor;
+		return pac_symbols.cursor; -- CS remove
 
+
+	-- Locates the symbol model in the rig wide symbol library 
+	-- by the given file name. Set the cursor accordingly.
+	-- If the model has not been found, then the cursor is
+	-- set to no_element:
+	procedure locate_symbol (
+		model_file	: in pac_symbol_model_file.bounded_string;  -- ../libraries/symbols/NAND.sym
+		cursor		: in out pac_symbols.cursor);
+	
+		
 	-- Returns true if the given symbol will be part of a real device:
 	function is_real (symbol : in pac_symbols.cursor)
 		return boolean;
