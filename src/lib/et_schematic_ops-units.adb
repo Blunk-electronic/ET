@@ -39,6 +39,7 @@
 
 
 with et_board_ops.ratsnest;					use et_board_ops.ratsnest;
+with et_schematic_ops.nets;
 with et_port_direction;
 with et_device_model;						use et_device_model;
 with et_numbering;
@@ -2967,6 +2968,73 @@ package body et_schematic_ops.units is
 
 	
 
+
+	procedure set_segments_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			device_cursor : pac_devices_sch.cursor := module.devices.first;
+
+			
+			procedure query_device (
+				device_name	: in type_device_name;
+				device		: in type_device_sch)
+			is 
+
+				procedure query_unit (unit_cursor : in pac_units.cursor) is
+					port_positions : pac_points.list;
+				begin
+					null;
+					port_positions := get_port_positions (device_cursor, unit_cursor);
+					-- CS
+				end query_unit;
+
+										 
+			begin
+				log (text => to_string (device_name), level => log_threshold + 1);
+				log_indentation_up;
+
+				-- Iterate through the units:
+				device.units.iterate (query_unit'access);
+				
+				log_indentation_down;
+			end query_device;
+			
+
+			
+		begin
+			-- Iterate through the devices:
+			while has_element (device_cursor) loop
+				query_element (device_cursor, query_device'access);
+				next (device_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " set net segments (connected with units) moving.",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end set_segments_moving;
+
+
+
+
+	
 
 	procedure drag_object (
 		module_cursor	: in pac_generic_modules.cursor;
