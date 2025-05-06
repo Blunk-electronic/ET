@@ -48,7 +48,6 @@ with et_board_ops.ratsnest;				use et_board_ops.ratsnest;
 
 package body et_schematic_ops.nets is
 
-	use pac_geometry_sch;
 	use pac_text_schematic;
 	use pac_net_segments;
 	use pac_strands;
@@ -80,6 +79,85 @@ package body et_schematic_ops.nets is
 	
 
 
+
+	procedure set_segments_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		position		: in type_object_position;							  
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (
+					strand : in out type_strand)
+				is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure query_segment (
+						segment : in out type_net_segment)
+					is
+					begin
+						null;
+					end query_segment;
+					
+						
+				begin
+					-- Iterate the segments of the strand on the given sheet only.
+					-- All others strands are skipped:
+					if get_sheet (strand) = get_sheet (position) then
+						while has_element (segment_cursor) loop
+							strand.segments.update_element (segment_cursor, query_segment'access);
+							next (segment_cursor);
+						end loop;
+					end if;
+				end query_strand;
+
+				
+			begin
+				while has_element (strand_cursor) loop
+					net.strands.update_element (strand_cursor, query_strand'access);
+					next (strand_cursor);
+				end loop;
+			end query_net;
+
+			
+		begin
+			while has_element (net_cursor) loop
+				module.nets.update_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " set net segments (connected with units) moving.",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end set_segments_moving;
+
+
+	
 	
 	
 	function get_lowest_available_anonymous_net (

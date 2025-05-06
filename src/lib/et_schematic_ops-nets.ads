@@ -52,6 +52,15 @@ package et_schematic_ops.nets is
 		return type_net_count;
 
 
+
+	-- Sets the net segments which start or end
+	-- at the given position to "moving":
+	procedure set_segments_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		position		: in type_object_position;							  
+		log_threshold	: in type_log_level);
+
+
 	
 	-- Searches the module for an anonymous net with the lowest index available.
 	-- Example: If the module contains nets like N$2, N$4, N$5 and N$101 then
