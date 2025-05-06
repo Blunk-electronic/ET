@@ -740,7 +740,7 @@ procedure draw_units is
 					-- If the unit is external, we must fetch the symbol 
 					-- via its model file:
 					symbol_model := element (unit_cursor.external).model;
-					symbol_cursor := locate (symbol_model);
+					locate_symbol (symbol_model, symbol_cursor);
 					draw_symbol (						
 						symbol		=> pac_symbols.element (symbol_cursor),
 
@@ -1097,7 +1097,7 @@ procedure draw_units is
 					-- If the unit is external, we must fetch the symbol and the placeholders
 					-- via its model file:
 					symbol_model := element (unit_cursor.external).model;
-					symbol_cursor := locate (symbol_model);
+					locate_symbol (symbol_model, symbol_cursor);
 
 					fetch_placeholders_ext;
 						

@@ -266,14 +266,10 @@ package et_symbols is
 	
 	symbol_library_file_extension : constant string := "sym";
 
-	-- HERE RIG WIDE EXTERNAL SYMBOLS ARE KEPT:	
+	-- THIS IS THE RIG WIDE LIBRARY OF SYMBOLS:
 	symbols : pac_symbols.map; -- CS rename to symbol_library ?
 
 	
-	function locate (symbol : in pac_symbol_model_file.bounded_string) -- ../libraries/symbols/NAND.sym
-		return pac_symbols.cursor; -- CS remove
-
-
 	-- Locates the symbol model in the rig wide symbol library 
 	-- by the given file name. Set the cursor accordingly.
 	-- If the model has not been found, then the cursor is

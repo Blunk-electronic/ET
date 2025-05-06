@@ -591,16 +591,18 @@ package body et_device_library is
 				unit		: in type_unit_external) 
 			is
 				use pac_symbols;
-				symbol_cursor : pac_symbols.cursor := locate (unit.model);
+				symbol_cursor : pac_symbols.cursor;
 
 				procedure query_ports (
 					file	: in pac_symbol_model_file.bounded_string; -- ../libraries/symbols/NAND.sym
-					symbol	: in type_symbol) is
-				begin
+					symbol	: in type_symbol) 
+				is begin
 					port_cursor := find (symbol.ports, port_name);
 				end;
 				
-			begin -- query_symbols
+			begin
+				locate_symbol (unit.model, symbol_cursor);
+				
 				query_element (
 					position	=> symbol_cursor,
 					process		=> query_ports'access);

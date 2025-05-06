@@ -174,6 +174,7 @@ package body et_symbols is
 		return pac_symbol_model_file.to_string (name);
 	end to_string;
 
+	
 	function to_file_name (name : in string)
 		return pac_symbol_model_file.bounded_string is
 	begin
@@ -183,13 +184,6 @@ package body et_symbols is
 
 
 
-
-
-	function locate (symbol : in pac_symbol_model_file.bounded_string) -- ../libraries/symbols/NAND.sym
-		return pac_symbols.cursor is
-	begin
-		return pac_symbols.find (symbols, symbol);
-	end locate;
 
 
 	procedure locate_symbol (
