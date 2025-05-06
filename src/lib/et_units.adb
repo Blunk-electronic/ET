@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -64,6 +64,25 @@ package body et_units is
 	end set_position;
 	
 
+
+
+	function get_mirror_status (
+		unit	: in type_unit)
+		return type_mirror
+	is begin
+		return unit.mirror;
+	end;
+
+	
+
+	procedure set_mirror_status (
+		unit	: in out type_unit;
+		mirror	: in type_mirror)
+	is begin
+		unit.mirror := mirror;
+	end;
+
+	
 	
 
 	function get_rotation (
@@ -247,6 +266,15 @@ package body et_units is
 	is begin
 		return get_position (element (unit));
 	end get_position;
+
+
+
+	function get_mirror_status (
+		unit	: in pac_units.cursor)
+		return type_mirror
+	is begin
+		return element (unit).mirror;
+	end;
 
 
 	

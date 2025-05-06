@@ -69,7 +69,7 @@ package et_units is
 	-- Placeholders are available if the device appears in both schematic and layout:
 	type type_unit (appearance : type_appearance_schematic) is record
 		position	: type_object_position; -- incl. rotation and sheet number
-		mirror		: type_mirror := MIRROR_NO;
+		mirror		: type_mirror := MIRROR_NO; -- CS rename to mirror_status
 		status		: type_object_status;
 		case appearance is
 			when APPEARANCE_VIRTUAL => null; -- CS
@@ -93,8 +93,19 @@ package et_units is
 	procedure set_position (
 		unit		: in out type_unit;
 		position	: in type_object_position);
-	
 
+
+
+	function get_mirror_status (
+		unit	: in type_unit)
+		return type_mirror;
+
+
+	procedure set_mirror_status (
+		unit	: in out type_unit;
+		mirror	: in type_mirror);
+
+	
 	
 	function get_rotation (
 		unit	: in type_unit)
@@ -104,7 +115,7 @@ package et_units is
 	procedure set_rotation (
 		unit		: in out type_unit;
 		rotation	: in type_rotation_model);
-	
+
 
 	
 	function get_sheet (
@@ -202,6 +213,13 @@ package et_units is
 	function get_position (
 		unit	: in pac_units.cursor)
 		return type_object_position;
+
+
+	function get_mirror_status (
+		unit	: in pac_units.cursor)
+		return type_mirror;
+
+
 	
 
 		
