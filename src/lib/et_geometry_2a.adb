@@ -1063,6 +1063,83 @@ package body et_geometry_2a is
 		-- CS compare absolute distance to origin instead
 	end;
 
+
+
+
+	function get_length (
+		points : in pac_points.list)
+		return natural
+	is
+		use pac_points;
+	begin
+		return natural (points.length);
+	end get_length;
+
+
+
+
+	procedure move_points (
+		points 	: in out pac_points.list;
+		offset	: in type_distance_relative)
+	is
+		use pac_points;
+
+		procedure move (p : in out type_vector_model) is begin
+			move_by (p, offset);
+		end;
+		
+		procedure query_point (c : in pac_points.cursor) is begin
+			points.update_element (c, move'access);
+		end;
+	
+	begin
+		points.iterate (query_point'access); 
+	end move_points;
+
+
+	
+	
+	procedure rotate_points (
+		points 		: in out pac_points.list;
+		rotation	: in type_rotation)
+	is
+		use pac_points;
+
+		procedure rotate (p : in out type_vector_model) is begin
+			rotate_by (p, rotation);
+		end;
+		
+		procedure query_point (c : in pac_points.cursor) is begin
+			points.update_element (c, rotate'access);
+		end;
+	
+	begin
+		points.iterate (query_point'access); 
+	end rotate_points;
+
+
+	
+
+	procedure mirror_points (
+		points 	: in out pac_points.list;
+		mirror	: in type_mirror)
+	is
+		use pac_points;
+
+		procedure mirror_point (p : in out type_vector_model) is begin
+			et_geometry_2a.mirror (p, mirror);
+		end;
+		
+		procedure query_point (c : in pac_points.cursor) is begin
+			points.update_element (c, mirror_point'access);
+		end;
+	
+	begin
+		points.iterate (query_point'access); 
+	end mirror_points;
+
+
+	
 	
 
 	function get_nearest (

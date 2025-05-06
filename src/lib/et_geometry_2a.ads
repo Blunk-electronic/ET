@@ -250,7 +250,7 @@ package et_geometry_2a is
 	
 -- RELATIVE DISTANCE:
 	
-	type type_distance_relative is record
+	type type_distance_relative is record -- CS probably no need anymore ?
 		x, y : type_distance := zero;
 	end record;
 
@@ -544,7 +544,7 @@ package et_geometry_2a is
 	
 	-- If axis is Y then it swaps right x with left x.
 	-- If axis is X then it swaps upper y with lower y.
-	procedure mirror (
+	procedure mirror ( -- CS rename to mirror_point
 		point	: in out type_vector_model;
 		axis	: in type_mirror);	
 
@@ -558,6 +558,28 @@ package et_geometry_2a is
 	package pac_points is new doubly_linked_lists (type_vector_model);
 
 
+	-- Returns the number of points that the given list contains:
+	function get_length (
+		points : in pac_points.list)
+		return natural;
+
+
+	procedure move_points (
+		points 	: in out pac_points.list;
+		offset	: in type_distance_relative);						
+
+	
+	procedure rotate_points (
+		points 		: in out pac_points.list;
+		rotation	: in type_rotation);						
+	
+
+	procedure mirror_points (
+		points 	: in out pac_points.list;
+		mirror	: in type_mirror);						
+
+	
+	
 	-- Returns from a list of point the one that is closest to
 	-- the given reference point:
 	function get_nearest (
