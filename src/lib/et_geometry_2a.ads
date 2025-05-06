@@ -866,19 +866,19 @@ package et_geometry_2a is
 	-- Returns the location vector of the start point of a line:
 	function get_start_vector (
 		line	: in type_line)
-		return type_vector; -- CS should be type_vector_model
+		return type_vector;
 
 	
 	-- Returns the location vector of the end point of a line:
 	function get_end_vector (
 		line	: in type_line)
-		return type_vector; -- CS should be type_vector_model
+		return type_vector;
 
 
 	-- Returns the direction vector of a line:
 	function get_direction_vector (
 		line	: in type_line)
-		return type_vector; -- CS should be type_distance_relative ?
+		return type_vector;
 	
 
 	-- Converts a line (consisting of start and end point)
