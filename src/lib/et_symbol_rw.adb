@@ -160,20 +160,20 @@ package body et_symbol_rw is
 		log (text => "appearance " & to_string (appearance) & " ...", level => log_threshold);
 		
 		-- Test if symbol already exists. If already exists, issue warning and exit.
-		if contains (symbols, symbol_name) then
+		if contains (symbol_library, symbol_name) then
 			log (WARNING, text => "symbol already exists -> skipped", level => log_threshold + 1);
 		else
 			case appearance is
 				when APPEARANCE_PCB =>
 					insert (
-						container	=> symbols,
+						container	=> symbol_library,
 						key			=> symbol_name,
 						new_item	=> (appearance => APPEARANCE_PCB, others => <>)
 						);
 
 				when APPEARANCE_VIRTUAL =>
 					insert (
-						container	=> symbols,
+						container	=> symbol_library,
 						key			=> symbol_name,
 						new_item	=> (appearance => APPEARANCE_VIRTUAL, others => <>)
 						);
@@ -1131,7 +1131,7 @@ package body et_symbol_rw is
 		
 		-- test if container et_symbols.symbols already contains the symbol
 		-- named "file_name". If so, there would be no need to read the file_name again.
-		if pac_symbols.contains (symbols, file_name) then
+		if pac_symbols.contains (symbol_library, file_name) then
 			log (text => "already read -> skipped", level => log_threshold + 1);
 		else
 			
@@ -1172,7 +1172,7 @@ package body et_symbol_rw is
 
 			-- Insert the symbol (accessed by pointer symbol) in et_symbols.symbols:
 			pac_symbols.insert (
-				container	=> symbols, 
+				container	=> symbol_library, 
 				key			=> file_name, -- libraries/symbols/nand.sym
 				position	=> symbol_cursor,
 				inserted	=> symbol_inserted,

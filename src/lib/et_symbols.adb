@@ -190,7 +190,7 @@ package body et_symbols is
 		model_file	: in pac_symbol_model_file.bounded_string;
 		cursor		: in out pac_symbols.cursor)
 	is begin
-		cursor := symbols.find (model_file);
+		cursor := symbol_library.find (model_file);
 	end locate_symbol;
 
 	

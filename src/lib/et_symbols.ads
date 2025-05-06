@@ -266,9 +266,14 @@ package et_symbols is
 	
 	symbol_library_file_extension : constant string := "sym";
 
-	-- THIS IS THE RIG WIDE LIBRARY OF SYMBOLS:
-	symbols : pac_symbols.map; -- CS rename to symbol_library ?
 
+	
+	-- THIS IS THE RIG WIDE LIBRARY OF SYMBOLS:
+	
+	symbol_library : pac_symbols.map;
+
+
+	
 	
 	-- Locates the symbol model in the rig wide symbol library 
 	-- by the given file name. Set the cursor accordingly.

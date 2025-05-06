@@ -157,7 +157,7 @@ is
 					
 					-- Locate the external symbol in container "symbols".
 					-- The key into symbols is the file name (*.sym).
-					symbol_cursor := find (symbols, symbol_file);
+					symbol_cursor := find (symbol_library, symbol_file);
 
 					-- CS: The symbol should be there now. Otherwise symbol_cursor would assume no_element
 					-- and constraint_error would arise here:
