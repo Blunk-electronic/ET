@@ -405,7 +405,7 @@ package body et_canvas_schematic_units is
 					when VERB_DRAG =>
 						set_first_selected_object_moving;
 						
-						find_attached_segments;
+						--find_attached_segments;
 						-- CS ? set_status (status_drag);
 
 					when others => null; -- CS
@@ -681,52 +681,53 @@ package body et_canvas_schematic_units is
 		segments_being_dragged.clear;
 	end reset_segments_being_dragged;
 
-	
-	
-	procedure finalize_drag (
-		destination		: in type_vector_model;
-		log_threshold	: in type_log_level)
-	is
-		su : type_selected_unit;
+-- 	
+-- 	
+-- 	procedure finalize_drag (
+-- 		destination		: in type_vector_model;
+-- 		log_threshold	: in type_log_level)
+-- 	is
+-- 		su : type_selected_unit;
+-- 
+-- 		use pac_devices_sch;
+-- 		use pac_units;
+-- 
+-- 		use et_commit;
+-- 		use et_undo_redo;
+-- 	begin
+-- 		log (text => "finalizing drag ...", level => log_threshold);
+-- 		log_indentation_up;
+-- 
+-- 		if selected_unit /= pac_proposed_units.no_element then
+-- 
+-- 			su := element (selected_unit);
+-- 
+-- 			-- Commit the current state of the design:
+-- 			commit (PRE, verb, noun, log_threshold);
+-- 			
+-- 			drag_unit (
+-- 				module_cursor	=> active_module,
+-- 				device_name		=> key (su.device),
+-- 				unit_name		=> key (su.unit),
+-- 				coordinates		=> ABSOLUTE,
+-- 				destination		=> destination,
+-- 				log_threshold	=> log_threshold);
+-- 
+-- 			-- Commit the new state of the design:
+-- 			commit (POST, verb, noun, log_threshold);			
+-- 		else
+-- 			log (text => "nothing to do", level => log_threshold);
+-- 		end if;
+-- 			
+-- 		log_indentation_down;
+-- 
+-- 		set_status (status_drag);
+-- 
+-- 		reset_segments_being_dragged;
+-- 		
+-- 		-- CS reset_unit_move; -- reset_proposed_objects ?
+-- 	end finalize_drag;
 
-		use pac_devices_sch;
-		use pac_units;
-
-		use et_commit;
-		use et_undo_redo;
-	begin
-		log (text => "finalizing drag ...", level => log_threshold);
-		log_indentation_up;
-
-		if selected_unit /= pac_proposed_units.no_element then
-
-			su := element (selected_unit);
-
-			-- Commit the current state of the design:
-			commit (PRE, verb, noun, log_threshold);
-			
-			drag_unit (
-				module_cursor	=> active_module,
-				device_name		=> key (su.device),
-				unit_name		=> key (su.unit),
-				coordinates		=> ABSOLUTE,
-				destination		=> destination,
-				log_threshold	=> log_threshold);
-
-			-- Commit the new state of the design:
-			commit (POST, verb, noun, log_threshold);			
-		else
-			log (text => "nothing to do", level => log_threshold);
-		end if;
-			
-		log_indentation_down;
-
-		set_status (status_drag);
-
-		reset_segments_being_dragged;
-		
-		-- CS reset_unit_move; -- reset_proposed_objects ?
-	end finalize_drag;
 
 
 
@@ -810,7 +811,7 @@ package body et_canvas_schematic_units is
 				-- the tool position.
 				set_first_selected_object_moving;
 				
-				find_attached_segments;
+				--find_attached_segments;
 
 				-- Furtheron, on the next call of this procedure
 				-- the selected object will be assigned its final position.
