@@ -154,15 +154,15 @@ package body et_pcb_rw is
 
 	
 	procedure write_line (line : in type_line'class) is begin
-		write (keyword => keyword_start, parameters => to_string (line.start_point, FORMAT_2));
-		write (keyword => keyword_end  , parameters => to_string (line.end_point, FORMAT_2));
+		write (keyword => keyword_start, parameters => to_string (line.A, FORMAT_2));
+		write (keyword => keyword_end  , parameters => to_string (line.B, FORMAT_2));
 	end write_line;
 
 	
 	procedure write_arc (arc : in type_arc'class) is begin
 		write (keyword => keyword_center, parameters => to_string (get_center (arc)));
-		write (keyword => keyword_start, parameters => to_string (get_start_point (arc)));
-		write (keyword => keyword_end, parameters => to_string (get_end_point (arc)));
+		write (keyword => keyword_start, parameters => to_string (get_A (arc)));
+		write (keyword => keyword_end, parameters => to_string (get_B (arc)));
 		write (keyword => keyword_direction, parameters => to_string (get_direction (arc)));
 	end write_arc;
 
@@ -609,13 +609,13 @@ package body et_pcb_rw is
 			expect_field_count (line, 5);
 
 			-- extract the start position starting at field 2 of line
-			board_line.start_point := to_position (line, 2);
+			board_line.A := to_position (line, 2);
 			
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
-			board_line.end_point := to_position (line, 2);
+			board_line.B := to_position (line, 2);
 			
 		else
 			invalid_keyword (kw);
@@ -635,14 +635,14 @@ package body et_pcb_rw is
 			expect_field_count (line, 5);
 
 			-- extract the start position starting at field 2 of line
-			board_line.start_point := to_position (line, 2);
+			board_line.A := to_position (line, 2);
 			return true;
 			
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
-			board_line.end_point := to_position (line, 2);
+			board_line.B := to_position (line, 2);
 			return true;
 		else
 			return false;
@@ -673,13 +673,13 @@ package body et_pcb_rw is
 			expect_field_count (line, 5);
 
 			-- extract the start position starting at field 2 of line
-			set_start_point (board_arc, to_position (line, 2));
+			set_A (board_arc, to_position (line, 2));
 
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
-			set_end_point (board_arc, to_position (line, 2));
+			set_B (board_arc, to_position (line, 2));
 			
 		elsif kw = keyword_center then -- center x 22.3 y 23.3
 			expect_field_count (line, 5);
@@ -709,7 +709,7 @@ package body et_pcb_rw is
 			expect_field_count (line, 5);
 
 			-- extract the start position starting at field 2 of line
-			set_start_point (board_arc, to_position (line, 2));
+			set_A (board_arc, to_position (line, 2));
 
 			return true;
 
@@ -717,7 +717,7 @@ package body et_pcb_rw is
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
-			set_end_point (board_arc, to_position (line, 2));
+			set_B (board_arc, to_position (line, 2));
 
 			return true;
 			

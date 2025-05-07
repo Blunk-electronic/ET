@@ -3403,20 +3403,20 @@ package body et_canvas is
 
 
 
-	procedure status_bar_path_show_start_point (
+	procedure status_bar_path_show_A (
 		prepend : in string := "")
 	is begin
 		if prepend'length = 0 then
 			
 			set_status (
-				status_start_point & " " & to_string (live_path.start_point) & ". " 
-				& status_press_space & status_set_end_point & status_hint_for_abort);
+				status_A & " " & to_string (live_path.A) & ". " 
+				& status_press_space & status_set_B & status_hint_for_abort);
 
 		else
 			set_status (
 				prepend & " "
-				& status_start_point & " " & to_string (live_path.start_point) & ". " 
-				& status_press_space & status_set_end_point & status_hint_for_abort);
+				& status_A & " " & to_string (live_path.A) & ". " 
+				& status_press_space & status_set_B & status_hint_for_abort);
 
 		end if;
 	end;
@@ -3444,27 +3444,27 @@ package body et_canvas is
 		
 		if not edit_process_running then
 			-- set start point:
-			live_path.start_point := point;
+			live_path.A := point;
 
 			set_edit_process_running;
 
-			status_bar_path_show_start_point;			
+			status_bar_path_show_A;			
 
 		else
 
 			-- Start a new path only if the given point differs from 
 			-- the start point of the current path:
-			if point /= live_path.start_point then
+			if point /= live_path.A then
 
 				-- Complete the path by setting its end point.
 				-- The the current bend point (if there is one) into account:
 				
 				if live_path.bended = NO then
-					live_path.end_point := point;
+					live_path.B := point;
 
 					-- insert a single line:
-					line.start_point := live_path.start_point;
-					line.end_point   := live_path.end_point;
+					line.A := live_path.A;
+					line.B   := live_path.B;
 
 					-- Process the line further by the procedure given
 					-- by argument "process":
@@ -3476,17 +3476,17 @@ package body et_canvas is
 					-- See for example procedure draw_path in et_canvas_board_2-draw_assy_doc.
 
 					-- insert first line of the path:
-					line.start_point := live_path.start_point;
-					line.end_point   := live_path.bend_point;
+					line.A := live_path.A;
+					line.B   := live_path.bend_point;
 
 					-- Process the line further by the procedure given
 					-- by argument "process":
 					process (line);
 					
 					-- insert second line of the path:
-					live_path.end_point := point;
-					line.start_point := live_path.bend_point;
-					line.end_point   := live_path.end_point;
+					live_path.B := point;
+					line.A := live_path.bend_point;
+					line.B   := live_path.B;
 
 					-- Process the line further by the procedure given
 					-- by argument "process":
@@ -3495,7 +3495,7 @@ package body et_canvas is
 
 				-- Set start point of path so that a new
 				-- path can be drawn:
-				live_path.start_point := point;
+				live_path.A := point;
 
 			else
 				reset_edit_process_running;
@@ -3744,8 +3744,8 @@ package body et_canvas is
 				end if;
 			end if;
 
-			c1 := real_to_canvas (l.start_point, S);
-			c2 := real_to_canvas (l.end_point, S);
+			c1 := real_to_canvas (l.A, S);
+			c2 := real_to_canvas (l.B, S);
 
 			-- THESE DRAW OPERATIONS CONSUME THE MOST TIME:
 			if polyline then
@@ -4027,23 +4027,23 @@ package body et_canvas is
 		set_line_width (context, to_gdouble (to_distance (width)));
 
 		-- lower line from left to right:
-		l.start_point := rectangle.position;
-		l.end_point   := add (rectangle.position, (rectangle.width, 0.0));
+		l.A := rectangle.position;
+		l.B   := add (rectangle.position, (rectangle.width, 0.0));
 		draw_line (l, pos, width); -- no stroke, width doesn't matter
 
 		-- upper line from left to right:
-		l.start_point := add (rectangle.position, (0.0, rectangle.height));
-		l.end_point   := add (rectangle.position, (rectangle.width, rectangle.height));
+		l.A := add (rectangle.position, (0.0, rectangle.height));
+		l.B   := add (rectangle.position, (rectangle.width, rectangle.height));
 		draw_line (l, pos, width);
 
 		-- right line from bottom to top:
-		l.start_point := add (rectangle.position, (rectangle.width, 0.0));
-		l.end_point   := add (rectangle.position, (rectangle.width, rectangle.height));
+		l.A := add (rectangle.position, (rectangle.width, 0.0));
+		l.B   := add (rectangle.position, (rectangle.width, rectangle.height));
 		draw_line (l, pos, width);
 
 		-- left line from bottom to top:
-		l.start_point := rectangle.position;
-		l.end_point   := add (rectangle.position, (0.0, rectangle.height));
+		l.A := rectangle.position;
+		l.B   := add (rectangle.position, (0.0, rectangle.height));
 		draw_line (l, pos, width);
 		
 		stroke;
@@ -4062,14 +4062,14 @@ package body et_canvas is
 	is
 		l : type_line;
 	begin
-		l.start_point := (x => - origin_arm_length, y => 0.0);
-		l.end_point   := (x => + origin_arm_length, y => 0.0);
+		l.A := (x => - origin_arm_length, y => 0.0);
+		l.B   := (x => + origin_arm_length, y => 0.0);
 
 		draw_line (l, position, origin_linewidth, do_stroke => true);
 
 		
-		l.start_point := (x => 0.0, y => - origin_arm_length);
-		l.end_point   := (x => 0.0, y => + origin_arm_length);
+		l.A := (x => 0.0, y => - origin_arm_length);
+		l.B   := (x => 0.0, y => + origin_arm_length);
 
 		draw_line (l, position, origin_linewidth, do_stroke => true);
 	end draw_origin;

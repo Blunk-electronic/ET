@@ -239,7 +239,7 @@ package et_geometry_2a.contours is
 	-- This function does not care whether the contour is
 	-- closed or not. It just returns the place where the contour
 	-- begins:
-	function get_start_point (
+	function get_A (
 		contour : in type_contour)
 		return type_non_circular_vertex;
 
@@ -251,7 +251,7 @@ package et_geometry_2a.contours is
 	-- This function does not care whether the contour is
 	-- closed or not. It just returns the place where the contour
 	-- ends:
-	function get_end_point (
+	function get_B (
 		contour : in type_contour)
 		return type_non_circular_vertex;
 

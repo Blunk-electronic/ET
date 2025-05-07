@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -377,8 +377,8 @@ package body et_canvas.text is
 			lf : type_character_line renames element (c);
 			lc : type_line;
 		begin
-			lc.start_point := to_point (lf.start_point);
-			lc.end_point := to_point (lf.end_point);
+			lc.A := to_point (lf.A);
+			lc.B := to_point (lf.B);
 
 			draw_line (
 				line	=> lc,

@@ -128,8 +128,8 @@ package et_net_segment is
 	
 	-- A net junction is where segments and ports meet each other.	
 	type type_junctions is record
-		start_point	: boolean := false;
-		end_point	: boolean := false;
+		A	: boolean := false;
+		B	: boolean := false;
 	end record;
 
 	
@@ -194,7 +194,7 @@ package et_net_segment is
 	-- Returns true if given point sits between start and end point of given segment.
 	-- The catch zone is a means of reducing the accuracy. The greater the zone
 	-- the greater can be the distance to the segment:
-	function between_start_and_end_point (
+	function between_A_and_B (
 		catch_zone	: in type_catch_zone;
 		segment		: in pac_net_segments.cursor)
 		return boolean;

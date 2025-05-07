@@ -98,11 +98,11 @@ package body et_fill_zones is
 
 		-- The point at which a stripe starts. We will fill the island from bottom to top.
 		-- The lowest left place to start from is outside the island:
-		start_point : type_vector := set (
+		A : type_vector := set (
 			 x => get_left (boundaries) - 1.0, -- left of the island
-			 y => bottom); -- just a default. will be changed while the start_point is moving upward
+			 y => bottom); -- just a default. will be changed while the A is moving upward
 
-		-- The status of the start_point relative to the island:
+		-- The status of the A relative to the island:
 		status : type_point_status (OUTSIDE); -- will/must always be outside
 
 		-- The main collection of x-values where a stripe enters or leaves an outer or inner border:
@@ -121,8 +121,8 @@ package body et_fill_zones is
 
 				if stripe_start then
 					island.stripes.append ((
-						start_point	=> set (element (i), start_point.y),
-						end_point	=> set (element (next (i)), start_point.y),
+						A	=> set (element (i), A.y),
+						B	=> set (element (next (i)), A.y),
 						status		=> <>)); -- default status
 
 					stripe_start := false;					
@@ -140,7 +140,7 @@ package body et_fill_zones is
 		procedure query_lake (l : in pac_lakes.cursor) is
 			lake : type_lake renames element (l);
 		begin			
-			status := get_point_status (lake.centerline, start_point);
+			status := get_point_status (lake.centerline, A);
 
 			splice (
 				target	=> x_main,
@@ -152,7 +152,7 @@ package body et_fill_zones is
 					--put_line ("bottom: " & to_string (bottom));
 					--put_line ("height: " & to_string (height));
 					put_line ("status : " & to_string (
-						get_point_status (lake.centerline, start_point, true)));
+						get_point_status (lake.centerline, A, true)));
 					
 					raise;
 		end query_lake;
@@ -162,7 +162,7 @@ package body et_fill_zones is
 		--new_line;
 		--put_line ("bottom: " & to_string (bottom));
 		--put_line ("height: " & to_string (height));
-		--put_line ("left: " & to_string (start_point.x));
+		--put_line ("left: " & to_string (A.x));
 		
 		case style.style is
 			when SOLID =>
@@ -186,10 +186,10 @@ package body et_fill_zones is
 				-- Compute the rows of stripes from bottom to top:
 				for row in 1 .. stripe_count_natural loop
 				
-					start_point.y := bottom + type_float_positive (row) * stripe_spacing;
+					A.y := bottom + type_float_positive (row) * stripe_spacing;
 					
 					--put_line (to_string (get_point_status (island.outer_border, set (x_start, y))));
-					status := get_point_status (island.shore.centerline, start_point, false); -- debug off
+					status := get_point_status (island.shore.centerline, A, false); -- debug off
 					x_main := status.x_intersections;
 
 					-- Compute the intersections with the lakes:
@@ -214,7 +214,7 @@ package body et_fill_zones is
 				--put_line ("bottom: " & to_string (bottom));
 				--put_line ("height: " & to_string (height));
 				put_line ("boundaries : " & to_string (boundaries));
-				put_line ("start_point: " & to_string (start_point));
+				put_line ("A: " & to_string (A));
 
 				raise;
 		

@@ -763,11 +763,11 @@ is
 	procedure set_junction (place : in string) is 
 	begin
 		if f (line, 2) = keyword_start then
-			net_junctions.start_point := true;
+			net_junctions.A := true;
 		end if;
 		
 		if f (line, 2) = keyword_end then
-			net_junctions.end_point := true;
+			net_junctions.B := true;
 		end if;
 	end set_junction;
 
@@ -781,13 +781,13 @@ is
 			expect_field_count (line, 5);
 
 			-- extract start position starting at field 2
-			net_segment.start_point := to_position (line, from => 2);
+			net_segment.A := to_position (line, from => 2);
 			
 		elsif kw = keyword_end then -- "end x 6 y 4"
 			expect_field_count (line, 5);
 
 			-- extract end position starting at field 2
-			net_segment.end_point := to_position (line, from => 2);
+			net_segment.B := to_position (line, from => 2);
 
 		elsif kw = keyword_junction then -- "junction start/end"
 			expect_field_count (line, 2);

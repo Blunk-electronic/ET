@@ -147,8 +147,8 @@ procedure draw_units is
 
 		
 		procedure draw_port (c : in pac_ports.cursor) is
-			start_point			: type_vector_model := element (c).position;
-			end_point			: type_vector_model := element (c).position;
+			A			: type_vector_model := element (c).position;
+			B			: type_vector_model := element (c).position;
 
 			line : type_line;
 			circle : type_circle;
@@ -232,19 +232,19 @@ procedure draw_units is
 				-- Compute the position of the origin of the terminal name regarding 
 				-- its distance from the line of the port:
 				if rotation_total = 0.0 or rotation_total = 360.0 or rotation_total = -360.0 then
-					set (axis => AXIS_Y, value => get_y (start_point) + terminal_name_spacing_line, point => pos_terminal_name);
+					set (axis => AXIS_Y, value => get_y (A) + terminal_name_spacing_line, point => pos_terminal_name);
 					alignment.horizontal := ALIGN_RIGHT;
 
 				elsif rotation_total = 90.0 or rotation_total = -270.0 then
-					set (axis => AXIS_X, value => get_x (start_point) - terminal_name_spacing_line, point => pos_terminal_name);
+					set (axis => AXIS_X, value => get_x (A) - terminal_name_spacing_line, point => pos_terminal_name);
 					alignment.horizontal := ALIGN_RIGHT;
 					
 				elsif rotation_total = 180.0 or rotation_total = -180.0 then
-					set (axis => AXIS_Y, value => get_y (start_point) + terminal_name_spacing_line, point => pos_terminal_name);
+					set (axis => AXIS_Y, value => get_y (A) + terminal_name_spacing_line, point => pos_terminal_name);
 					alignment.horizontal := ALIGN_LEFT;
 					
 				elsif rotation_total = -90.0 or rotation_total = 270.0 then
-					set (axis => AXIS_X, value => get_x (start_point) - terminal_name_spacing_line, point => pos_terminal_name);
+					set (axis => AXIS_X, value => get_x (A) - terminal_name_spacing_line, point => pos_terminal_name);
 					alignment.horizontal := ALIGN_LEFT;
 					
 				else
@@ -294,60 +294,60 @@ procedure draw_units is
 			-- assume the unit is not rotated. We look at the default rotation of the ports.
 			-- The the final port positions will be computed later.
 			if element (c).rotation = 0.0 then -- end point points to the left
-				set (axis => AXIS_X, value => get_x (start_point) - element (c).length, point => end_point);
+				set (axis => AXIS_X, value => get_x (A) - element (c).length, point => B);
 
 				-- compute the position of the port name:
-				pos_port_name := end_point;
-				set (axis => AXIS_X, value => get_x (end_point) - port_name_spacing, point => pos_port_name);
+				pos_port_name := B;
+				set (axis => AXIS_X, value => get_x (B) - port_name_spacing, point => pos_port_name);
 
 				-- Compute the position of the origin of the terminal name regarding its distance
 				-- from the start point:
-				pos_terminal_name := start_point;				
-				set (axis => AXIS_X, value => get_x (start_point) - terminal_name_spacing_start, point => pos_terminal_name);
+				pos_terminal_name := A;				
+				set (axis => AXIS_X, value => get_x (A) - terminal_name_spacing_start, point => pos_terminal_name);
 				
 			elsif element (c).rotation = 90.0 then -- end point points downwards
-				set (axis => AXIS_Y, value => get_y (start_point) - element (c).length, point => end_point);
+				set (axis => AXIS_Y, value => get_y (A) - element (c).length, point => B);
 
 				-- compute the position of the port name:
-				pos_port_name := end_point;
-				set (axis => AXIS_Y, value => get_y (end_point) - port_name_spacing, point => pos_port_name);
+				pos_port_name := B;
+				set (axis => AXIS_Y, value => get_y (B) - port_name_spacing, point => pos_port_name);
 
 				-- Compute the position of the origin of the terminal name regarding its distance
 				-- from the start point:
-				pos_terminal_name := start_point;				
-				set (axis => AXIS_Y, value => get_y (start_point) - terminal_name_spacing_start, point => pos_terminal_name);
+				pos_terminal_name := A;				
+				set (axis => AXIS_Y, value => get_y (A) - terminal_name_spacing_start, point => pos_terminal_name);
 				
 			elsif element (c).rotation = 180.0 then  -- end point points to the left
-				set (axis => AXIS_X, value => get_x (start_point) + element (c).length, point => end_point);
+				set (axis => AXIS_X, value => get_x (A) + element (c).length, point => B);
 
 				-- compute the position of the port name:
-				pos_port_name := end_point;
-				set (axis => AXIS_X, value => get_x (end_point) + port_name_spacing, point => pos_port_name);
+				pos_port_name := B;
+				set (axis => AXIS_X, value => get_x (B) + port_name_spacing, point => pos_port_name);
 
 				-- Compute the position of the origin of the terminal name regarding its distance
 				-- from the start point:
-				pos_terminal_name := start_point;				
-				set (axis => AXIS_X, value => get_x (start_point) + terminal_name_spacing_start, point => pos_terminal_name);
+				pos_terminal_name := A;				
+				set (axis => AXIS_X, value => get_x (A) + terminal_name_spacing_start, point => pos_terminal_name);
 				
 			elsif element (c).rotation = 270.0 or element (c).rotation = -90.0 then -- end point points upwards
-				set (axis => AXIS_Y, value => get_y (start_point) + element (c).length, point => end_point);
+				set (axis => AXIS_Y, value => get_y (A) + element (c).length, point => B);
 
 				-- compute the position of the port name:
-				pos_port_name := end_point;
-				set (axis => AXIS_Y, value => get_y (end_point) + port_name_spacing, point => pos_port_name);
+				pos_port_name := B;
+				set (axis => AXIS_Y, value => get_y (B) + port_name_spacing, point => pos_port_name);
 
 				-- Compute the position of the origin of the terminal name regarding its distance
 				-- from the start point:
-				pos_terminal_name := start_point;
-				set (axis => AXIS_Y, value => get_y (start_point) + terminal_name_spacing_start, point => pos_terminal_name);
+				pos_terminal_name := A;
+				set (axis => AXIS_Y, value => get_y (A) + terminal_name_spacing_start, point => pos_terminal_name);
 				
 			else
 				raise constraint_error; -- CS do something helpful. should never happen
 			end if;
 
 
-			line.start_point := start_point;
-			line.end_point := end_point;
+			line.A := A;
+			line.B := B;
 			
 			-- Draw the line of the port:
 			set_color_symbols (brightness);
@@ -363,7 +363,7 @@ procedure draw_units is
 				-- set color and line width
 				set_color_ports (brightness);
 
-				set_center (circle, line.start_point);
+				set_center (circle, line.A);
 				set_radius (circle, port_circle_radius);
 
 				-- the circle is not filled -> argument "filled" is NO

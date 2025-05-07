@@ -176,9 +176,9 @@ package body et_thermal_relief is
 						end if;
 						
 						relief.spokes.append ((
-							start_point	=> center,
-							end_point	=> move_by (center, angle, D2CA.distance_to_centerline),
-							status		=> <>)); -- default status							
+							A		=> center,
+							B		=> move_by (center, angle, D2CA.distance_to_centerline),
+							status	=> <>)); -- default status							
 					end if;
 				end if;
 

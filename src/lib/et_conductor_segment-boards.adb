@@ -78,10 +78,10 @@ package body et_conductor_segment.boards is
 		end if;
 
 		-- test start and end points:
-		if line_1.start_point = line_2.start_point
-		or line_1.start_point = line_2.end_point
-		or line_1.end_point   = line_2.start_point
-		or line_1.end_point   = line_2.end_point
+		if line_1.A = line_2.A
+		or line_1.A = line_2.B
+		or line_1.B   = line_2.A
+		or line_1.B   = line_2.B
 		then
 			result := true;
 		else
@@ -90,10 +90,10 @@ package body et_conductor_segment.boards is
 
 		-- test start/end points between start/end points:
 		if result = false then
-			if line_1.on_line (to_vector (line_2.start_point)) 
-			or line_1.on_line (to_vector (line_2.end_point)) 
-			or line_2.on_line (to_vector (line_1.start_point)) 
-			or line_2.on_line (to_vector (line_1.end_point)) 
+			if line_1.on_line (to_vector (line_2.A)) 
+			or line_1.on_line (to_vector (line_2.B)) 
+			or line_2.on_line (to_vector (line_1.A)) 
+			or line_2.on_line (to_vector (line_1.B)) 
 			then
 				result := true;
 			end if;

@@ -651,7 +651,7 @@ package et_geometry_1 is
 	-- A ray has a fixed starting point, a direction and
 	-- no end point:
 	type type_ray is record
-		start_point	: type_vector;
+		A			: type_vector; -- the start point
 		direction	: type_angle;
 	end record;
 
@@ -849,9 +849,8 @@ package et_geometry_1 is
 -- LINE
 	
 	type type_line_fine is record
-		start_point	: type_vector;
-		end_point	: type_vector;
-		status		: type_object_status;
+		A, B 	: type_vector; -- start and end point
+		status	: type_object_status;
 	end record;
 
 
@@ -883,7 +882,7 @@ package et_geometry_1 is
 	
 						   
 	function make_line (
-		start_point, end_point : in type_vector)
+		A, B : in type_vector)
 		return type_line_fine;
 
 
@@ -1067,8 +1066,7 @@ package et_geometry_1 is
 
 	function to_arc_fine (
 		center		: in type_vector;
-		start_point	: in type_vector;
-		end_point	: in type_vector;
+		A, B 		: in type_vector; -- start and end point
 		direction	: in type_direction_of_rotation)
 		return type_arc_fine;
 	
@@ -1083,12 +1081,12 @@ package et_geometry_1 is
 		return type_vector;
 	
 
-	function get_start_point (
+	function get_A (
 		arc : in type_arc_fine)
 		return type_vector;
 	
 
-	function get_end_point (
+	function get_B (
 		arc : in type_arc_fine)
 		return type_vector;
 
@@ -1579,8 +1577,8 @@ package et_geometry_1 is
 		return type_vector;
 
 	
-	function on_start_point (d : in type_distance_point_line) return boolean;
-	function on_end_point (d : in type_distance_point_line) return boolean;
+	function on_A (d : in type_distance_point_line) return boolean;
+	function on_B (d : in type_distance_point_line) return boolean;
 	
 	
 	
@@ -1603,8 +1601,7 @@ private
 	
 	type type_arc_fine is record
 		center		: type_vector;
-		start_point	: type_vector;
-		end_point	: type_vector;
+		A, B		: type_vector; -- start and end point
 		direction	: type_direction_of_rotation := CW; 
 		-- CS should be arc_direction_default
 	end record;

@@ -204,8 +204,8 @@ package et_schematic_ops.nets is
 	procedure insert_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		start_point		: in type_object_position; -- sheet/x/y
-		end_point		: in type_vector_model; -- x/y
+		A				: in type_object_position; -- sheet/x/y
+		B				: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
 	

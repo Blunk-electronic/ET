@@ -696,8 +696,8 @@ is
 								face			=> to_face (f (5)),
 								line			=> (
 										width		=> to_distance (f (7)),
-										start_point	=> type_vector_model (to_point (f (8), f (9))),
-										end_point	=> type_vector_model (to_point (f (10), f (11))),
+										A	=> type_vector_model (to_point (f (8), f (9))),
+										B	=> type_vector_model (to_point (f (10), f (11))),
 										others		=> <>),
 
 								log_threshold	=> log_threshold + 1
@@ -716,8 +716,8 @@ is
 						when 14 =>
 							arc_tmp := type_arc (to_arc (
 								center		=> type_vector_model (to_point (f (8), f (9))),
-								start_point	=> type_vector_model (to_point (f (10), f (11))),
-								end_point	=> type_vector_model (to_point (f (12), f (13))),
+								A	=> type_vector_model (to_point (f (10), f (11))),
+								B	=> type_vector_model (to_point (f (12), f (13))),
 								direction	=> to_direction (f (14))));
 							
 							add_arc (
@@ -815,8 +815,8 @@ is
 								face			=> to_face (f (5)),
 								line			=> (
 										width		=> to_distance (f (7)),
-										start_point	=> type_vector_model (to_point (f (8), f (9))),
-										end_point	=> type_vector_model (to_point (f (10), f (11))),
+										A	=> type_vector_model (to_point (f (8), f (9))),
+										B	=> type_vector_model (to_point (f (10), f (11))),
 										others		=> <>),
 
 								log_threshold	=> log_threshold + 1
@@ -835,8 +835,8 @@ is
 						when 14 =>
 							arc_tmp := type_arc (to_arc (
 								center	=> type_vector_model (to_point (f (8), f (9))),
-								start_point	=> type_vector_model (to_point (f (10), f (11))),
-								end_point	=> type_vector_model (to_point (f (12), f (13))),
+								A	=> type_vector_model (to_point (f (10), f (11))),
+								B	=> type_vector_model (to_point (f (12), f (13))),
 								direction	=> to_direction (f (14))));
 															
 							add_arc (
@@ -949,8 +949,8 @@ is
 								module_name 	=> module,
 								line			=> (
 										layers		=> to_layers (f (5)), -- [1,3,5-9]
-										start_point	=> type_vector_model (to_point (f (7), f  (8))),
-										end_point	=> type_vector_model (to_point (f (9), f (10))),
+										A	=> type_vector_model (to_point (f (7), f  (8))),
+										B	=> type_vector_model (to_point (f (9), f (10))),
 										others		=> <>),
 
 								log_threshold	=> log_threshold + 1);
@@ -967,8 +967,8 @@ is
 							-- board led_driver draw route_restrict [1,3,5-9] arc 50 50 0 50 100 0 cw
 							arc_tmp := type_arc (to_arc (
 								center		=> type_vector_model (to_point (f  (7), f  (8))),
-								start_point	=> type_vector_model (to_point (f  (9), f (10))),
-								end_point	=> type_vector_model (to_point (f (11), f (12))),
+								A	=> type_vector_model (to_point (f  (9), f (10))),
+								B	=> type_vector_model (to_point (f (11), f (12))),
 								direction	=> to_direction (f (13))));
 															
 							draw_route_restrict_arc (
@@ -1120,8 +1120,8 @@ is
 								face			=> to_face (f (5)),
 								line			=> (
 										width		=> to_distance (f (7)),
-										start_point	=> type_vector_model (to_point (f (8), f (9))),
-										end_point	=> type_vector_model (to_point (f (10), f (11))),
+										A	=> type_vector_model (to_point (f (8), f (9))),
+										B	=> type_vector_model (to_point (f (10), f (11))),
 										others		=> <>),
 
 								log_threshold	=> log_threshold + 1);
@@ -1137,8 +1137,8 @@ is
 						when 14 =>
 							arc_tmp := type_arc (to_arc (
 								center		=> type_vector_model (to_point (f (8), f (9))),
-								start_point	=> type_vector_model (to_point (f (10), f (11))),
-								end_point	=> type_vector_model (to_point (f (12), f (13))),
+								A	=> type_vector_model (to_point (f (10), f (11))),
+								B	=> type_vector_model (to_point (f (12), f (13))),
 								direction	=> to_direction (f (14))));
 															
 							add_arc (
@@ -1230,8 +1230,8 @@ is
 								face			=> to_face (f (5)),
 								line			=> (
 										width		=> to_distance (f (7)),
-										start_point	=> type_vector_model (to_point (f (8), f (9))),
-										end_point	=> type_vector_model (to_point (f (10), f (11))),
+										A	=> type_vector_model (to_point (f (8), f (9))),
+										B	=> type_vector_model (to_point (f (10), f (11))),
 										others		=> <>),
 
 								log_threshold	=> log_threshold + 1);
@@ -1247,8 +1247,8 @@ is
 						when 14 =>
 							arc_tmp := type_arc (to_arc (
 								center	=> type_vector_model (to_point (f (8), f (9))),
-								start_point	=> type_vector_model (to_point (f (10), f (11))),
-								end_point	=> type_vector_model (to_point (f (12), f (13))),
+								A	=> type_vector_model (to_point (f (10), f (11))),
+								B	=> type_vector_model (to_point (f (12), f (13))),
 								direction	=> to_direction (f (14))));
 															
 							add_arc (
@@ -2206,8 +2206,8 @@ is
 							net_name		=> to_net_name (""),
 							line	=> (
 								width		=> to_distance (f (7)),
-								start_point	=> type_vector_model (to_point (f (8), f (9))),
-								end_point	=> type_vector_model (to_point (f (10), f (11))),
+								A	=> type_vector_model (to_point (f (8), f (9))),
+								B	=> type_vector_model (to_point (f (10), f (11))),
 								layer		=> to_signal_layer (f (5)),
 								others		=> <>),
 							
@@ -2227,8 +2227,8 @@ is
 					when 14 =>
 						arc_tmp := type_arc (to_arc (
 							center		=> type_vector_model (to_point (f (8), f (9))),
-							start_point	=> type_vector_model (to_point (f (10), f (11))),
-							end_point	=> type_vector_model (to_point (f (12), f (13))),
+							A	=> type_vector_model (to_point (f (10), f (11))),
+							B	=> type_vector_model (to_point (f (12), f (13))),
 							direction	=> to_direction (f (14))));
 														
 						-- draw a freetrack
@@ -2439,10 +2439,10 @@ is
 								line	=> (
 									layer		=> to_signal_layer (f (6)),
 									width		=> to_distance (f (8)),
-									start_point	=> type_vector_model (set (
+									A	=> type_vector_model (set (
 										x => to_distance (dd => f (9)),
 										y => to_distance (dd => f (10)))),
-									end_point	=> type_vector_model (set (
+									B	=> type_vector_model (set (
 										x => to_distance (dd => f (11)),
 										y => to_distance (dd => f (12)))),
 									others		=> <>),
@@ -2598,10 +2598,10 @@ is
 							center		=> type_vector_model (set (
 								x => to_distance (dd => f (9)),
 								y => to_distance (dd => f (10)))),
-							start_point	=> type_vector_model (set (
+							A	=> type_vector_model (set (
 								x => to_distance (dd => f (11)),
 								y => to_distance (dd => f (12)))),
-							end_point	=> type_vector_model (set (
+							B	=> type_vector_model (set (
 								x => to_distance (dd => f (13)),
 								y => to_distance (dd => f (14)))),
 							direction	=> to_direction (f (15))));

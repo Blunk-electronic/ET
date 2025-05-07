@@ -579,7 +579,7 @@ package body et_canvas_board_tracks is
 
 
 		-- This procedure sets the start point of the path:
-		procedure set_start_point is
+		procedure set_A is
 			use et_object_status;
 			use et_board_coordinates.pac_geometry_brd;
 
@@ -589,11 +589,11 @@ package body et_canvas_board_tracks is
 			praeamble : constant string := "net ";
 			
 			
-			procedure arbitrary_start_point is begin
-				live_path.start_point := point;
-				status_bar_path_show_start_point (praeamble & net_name_to_string (object_net_name));
+			procedure arbitrary_A is begin
+				live_path.A := point;
+				status_bar_path_show_A (praeamble & net_name_to_string (object_net_name));
 				set_edit_process_running;
-			end arbitrary_start_point;
+			end arbitrary_A;
 
 			
 
@@ -611,8 +611,8 @@ package body et_canvas_board_tracks is
 					-- Get the name of the affected net:
 					object_net_name := get_net_name (aw.net_cursor);
 
-					live_path.start_point := get_nearest (element (aw.wire_cursor), point);
-					status_bar_path_show_start_point (praeamble & net_name_to_string (object_net_name));
+					live_path.A := get_nearest (element (aw.wire_cursor), point);
+					status_bar_path_show_A (praeamble & net_name_to_string (object_net_name));
 					
 					modify_status (active_module, aw, to_operation (SET, SELECTED), log_threshold + 1);
 					modify_status (active_module, aw, to_operation (SET, MOVING), log_threshold + 1);
@@ -648,7 +648,7 @@ package body et_canvas_board_tracks is
 					-- three cases arise:
 					case count is	
 						when 0 =>
-							arbitrary_start_point;
+							arbitrary_A;
 
 						when 1 =>
 							one_airwire_proposed;
@@ -662,7 +662,7 @@ package body et_canvas_board_tracks is
 				else -- clarification_pending
 					aw := get_first_object (active_module, SELECTED, log_threshold + 1);
 
-					live_path.start_point := get_nearest (element (aw.wire_cursor), point);
+					live_path.A := get_nearest (element (aw.wire_cursor), point);
 					
 					set_edit_process_running;
 
@@ -676,7 +676,7 @@ package body et_canvas_board_tracks is
 		begin
 			case snap_mode is
 				when NO_SNAP =>
-					arbitrary_start_point;
+					arbitrary_A;
 					
 				when NEAREST_AIRWIRE =>
 					start_with_nearest_airwire;
@@ -686,7 +686,7 @@ package body et_canvas_board_tracks is
 			end case;
 		
 
-		end set_start_point;
+		end set_A;
 		
 
 		
@@ -726,7 +726,7 @@ package body et_canvas_board_tracks is
 		-- path will be set.
 		
 		if not edit_process_running then
-			set_start_point;
+			set_A;
 		else
 
 			-- CASE 1: 
@@ -735,17 +735,17 @@ package body et_canvas_board_tracks is
 			-- CASE 2:
 			--  If the given point is the same as the start point of the current path
 			--  then we assume the operator wants to terminate the routing operation.
-			if point /= live_path.start_point then -- CASE 1
+			if point /= live_path.A then -- CASE 1
 
 				-- Complete the path by setting its end point.
 				-- The the current bend point (if there is one) into account:
 				
 				if live_path.bended = NO then
-					live_path.end_point := point;
+					live_path.B := point;
 
 					-- insert a single line:
-					line.start_point := live_path.start_point;
-					line.end_point   := live_path.end_point;
+					line.A := live_path.A;
+					line.B := live_path.B;
 					add_to_net;
 					
 				else
@@ -754,21 +754,21 @@ package body et_canvas_board_tracks is
 					-- See for example procedure draw_path in et_canvas_board_2-draw_assy_doc.
 
 					-- insert first line of the path:
-					line.start_point := live_path.start_point;
-					line.end_point   := live_path.bend_point;
+					line.A := live_path.A;
+					line.B := live_path.bend_point;
 					add_to_net;
 
 					
 					-- insert second line of the path:
-					live_path.end_point := point;
-					line.start_point := live_path.bend_point;
-					line.end_point   := live_path.end_point;
+					live_path.B := point;
+					line.A := live_path.bend_point;
+					line.B := live_path.B;
 					add_to_net;
 				end if;
 
 				-- Set start point of path so that a new
 				-- path can be drawn:
-				live_path.start_point := point;
+				live_path.A := point;
 				
 			else -- CASE 2
 				reset_edit_process_running;

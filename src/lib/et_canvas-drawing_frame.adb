@@ -78,8 +78,8 @@ package body et_canvas.drawing_frame is
 	is
 		result : pac_geometry.type_line;
 	begin
-		result.start_point := to_vector (l.start_point);
-		result.end_point   := to_vector (l.end_point);
+		result.A := to_vector (l.A);
+		result.B   := to_vector (l.B);
 		return result;
 	end to_line;
 
@@ -129,23 +129,23 @@ package body et_canvas.drawing_frame is
 			set_linewidth (linewidth_2);
 
 			-- Assemble the lower line:
-			l.start_point := (0.0, 0.0);
-			l.end_point := (w, 0.0);
+			l.A := (0.0, 0.0);
+			l.B := (w, 0.0);
 			draw_line;
 
 			-- Assemble the right line:
-			l.start_point := (w, 0.0);
-			l.end_point := (w, h);
+			l.A := (w, 0.0);
+			l.B := (w, h);
 			draw_line;
 
 			-- Assemble the upper line:
-			l.start_point := (w, h);
-			l.end_point := (0.0, h);
+			l.A := (w, h);
+			l.B := (0.0, h);
 			draw_line;
 
 			-- Assemble the left line:
-			l.start_point := (0.0, h);
-			l.end_point := (0.0, 0.0);
+			l.A := (0.0, h);
+			l.B := (0.0, 0.0);
 			draw_line;
 
 			stroke;
@@ -156,23 +156,23 @@ package body et_canvas.drawing_frame is
 			set_linewidth (linewidth_2);
 
 			-- Assemble the lower line:
-			l.start_point := (b, b);
-			l.end_point := (w - b, b);
+			l.A := (b, b);
+			l.B := (w - b, b);
 			draw_line;
 
 			-- Assemble the right line:
-			l.start_point := (w - b, b);
-			l.end_point := (w - b, h - b);
+			l.A := (w - b, b);
+			l.B := (w - b, h - b);
 			draw_line;
 
 			-- Assemble the upper line:
-			l.start_point := (w - b, h - b);
-			l.end_point := (b, h - b);
+			l.A := (w - b, h - b);
+			l.B := (b, h - b);
 			draw_line;
 
 			-- Assemble the left line:
-			l.start_point := (b, h - b);
-			l.end_point := (b, b);
+			l.A := (b, h - b);
+			l.B := (b, b);
 			draw_line;
 
 			stroke;
@@ -235,12 +235,12 @@ package body et_canvas.drawing_frame is
 				
 				-- draw the line bottom-up:
 				-- lower end:
-				l.start_point := type_vector_model (set (
+				l.A := type_vector_model (set (
 					x => x,
 					y => zero));
 
 				-- upper end:
-				l.end_point := type_vector_model (set (
+				l.B := type_vector_model (set (
 					x => x,
 					y => b));
 
@@ -251,12 +251,12 @@ package body et_canvas.drawing_frame is
 				-- UPPER BORDER
 				-- draw the line bottom-up:
 				-- lower end:
-				l.start_point := type_vector_model (set (
+				l.A := type_vector_model (set (
 					x => x,
 					y => h - b));
 
 				-- upper end:
-				l.end_point := type_vector_model (set (
+				l.B := type_vector_model (set (
 					x => x,
 					y => h));
 				
@@ -276,12 +276,12 @@ package body et_canvas.drawing_frame is
 				
 				-- draw the line from the left to the right:
 				-- left end:
-				l.start_point := type_vector_model (set (
+				l.A := type_vector_model (set (
 					x => zero,
 					y => y));
 
 				-- right end:
-				l.end_point := type_vector_model (set (
+				l.B := type_vector_model (set (
 					x => b,
 					y => y));
 
@@ -290,12 +290,12 @@ package body et_canvas.drawing_frame is
 				-- RIGHT BORDER
 				-- draw the line from the left to the right:
 				-- left end:
-				l.start_point := type_vector_model (set (
+				l.A := type_vector_model (set (
 					x => w - b,
 					y => y));
 
 				-- right end:
-				l.end_point := type_vector_model (set (
+				l.B := type_vector_model (set (
 					x => w,
 					y => y));
 				

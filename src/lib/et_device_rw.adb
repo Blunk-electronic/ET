@@ -1240,13 +1240,13 @@ package body et_device_rw is
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
-										symbol_line.start_point := to_position (line,2);
+										symbol_line.A := to_position (line,2);
 										
 									elsif kw = keyword_end then -- end x 0.00 y 0.00
 										expect_field_count (line, 5);
 
 										-- extract the end position starting at field 2
-										symbol_line.end_point := to_position (line,2);
+										symbol_line.B := to_position (line,2);
 
 									elsif kw = keyword_width then
 										expect_field_count (line, 2);
@@ -1277,13 +1277,13 @@ package body et_device_rw is
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
-										set_start_point (symbol_arc, to_position (line,2));
+										set_A (symbol_arc, to_position (line,2));
 										
 									elsif kw = keyword_end then -- end x 0.00 y 0.00
 										expect_field_count (line, 5);
 
 										-- extract the end position starting at field 2
-										set_end_point (symbol_arc, to_position (line,2));
+										set_B (symbol_arc, to_position (line,2));
 
 									elsif kw = keyword_direction then -- direction ccw
 										expect_field_count (line, 2);

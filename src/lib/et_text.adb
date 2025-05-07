@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -507,14 +507,14 @@ package body et_text is
 			--for l in char.segments'first .. char.segments'last loop
 			for l in char.segments'first .. char.segments'last loop
 
-				scratch.start_point := set (char.segments (l).start_x, char.segments (l).start_y);
-				scratch.end_point   := set (char.segments (l).end_x,   char.segments (l).end_y);
+				scratch.A := set (char.segments (l).start_x, char.segments (l).start_y);
+				scratch.B   := set (char.segments (l).end_x,   char.segments (l).end_y);
 					
 				--append (result, (
-					----start_point => type_vector_model (set (char (l).start_x, char (l).start_y)),
-					----end_point   => type_vector_model (set (char (l).end_x, char (l).end_y))
-					--start_point => to_vector (set (char (l).start_x, char (l).start_y)),
-					--end_point   => to_vector (set (char (l).end_x, char (l).end_y))
+					----A => type_vector_model (set (char (l).start_x, char (l).start_y)),
+					----B   => type_vector_model (set (char (l).end_x, char (l).end_y))
+					--A => to_vector (set (char (l).start_x, char (l).start_y)),
+					--B   => to_vector (set (char (l).end_x, char (l).end_y))
 					--));
 
 				append (result, scratch);
@@ -531,7 +531,7 @@ package body et_text is
 			left, right : in type_character_line) 
 			return boolean 
 		is begin
-			if left.start_point < right.start_point then
+			if left.A < right.A then
 				return true;
 			else
 				return false;

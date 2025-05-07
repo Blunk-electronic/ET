@@ -1168,7 +1168,7 @@ procedure draw_conductors is
 		-- Computes the path from given start to given end point.
 		-- Takes the bend style into account. Draws the path:
 		procedure compute_and_draw (
-			start_point, end_point : in type_vector_model) 
+			A, B : in type_vector_model) 
 		is
 			use pac_path_and_bend;
 			use et_colors.board;
@@ -1176,7 +1176,7 @@ procedure draw_conductors is
 			line : type_line;
 
 			-- Do the actual path calculation.
-			path : constant type_path := to_path (start_point, end_point, live_path.bend_style);
+			path : constant type_path := to_path (A, B, live_path.bend_style);
 
 			-- Draws the line:
 			procedure draw is begin
@@ -1202,8 +1202,8 @@ procedure draw_conductors is
 			-- from start to end point:
 			if path.bended = NO then
 				
-				line.start_point := path.start_point;
-				line.end_point := path.end_point;
+				line.A := path.A;
+				line.B := path.B;
 
 				draw;
 
@@ -1213,13 +1213,13 @@ procedure draw_conductors is
 			else
 				live_path.bend_point := path.bend_point;
 
-				line.start_point := path.start_point;
-				line.end_point := path.bend_point;
+				line.A := path.A;
+				line.B := path.bend_point;
 				
 				draw;
 
-				line.start_point := path.bend_point;
-				line.end_point := path.end_point;
+				line.A := path.bend_point;
+				line.B := path.B;
 				
 				draw;				
 			end if;
@@ -1235,8 +1235,8 @@ procedure draw_conductors is
 		if verb = VERB_ROUTE and noun = NOUN_NET and edit_process_running then
 
 			compute_and_draw (
-				start_point	=> live_path.start_point,	-- start of path
-				end_point	=> get_object_tool_position);	-- end of route
+				A	=> live_path.A,	-- start of path
+				B	=> get_object_tool_position);	-- end of route
 
 		end if;
 	end draw_track;

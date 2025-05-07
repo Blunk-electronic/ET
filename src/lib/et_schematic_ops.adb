@@ -394,8 +394,8 @@ package body et_schematic_ops is
 							-- If port sits on start OR end point of segment AND if it
 							-- is not already in the segment then append it to segment.ports.devices.
 							-- append it to the portlist of the segment.
-							if 	segment.start_point = element (port_cursor).position or
-								segment.end_point = element (port_cursor).position then
+							if 	segment.A = element (port_cursor).position or
+								segment.B = element (port_cursor).position then
 
 								-- If port not already in segment, append it.
 								-- Otherwise it must not be appended again. constraint_error would arise.
@@ -704,13 +704,13 @@ package body et_schematic_ops is
 					
 					procedure probe_segment (segment : in type_net_segment) is begin
 						-- if place is a start point of a segment
-						if segment.start_point = place.place then
+						if segment.A = place.place then
 							-- signal iterations in upper level to cancel
 							segment_found := true;
 						end if;
 
 						-- if place is an end point of a segment
-						if segment.end_point = place.place then
+						if segment.B = place.place then
 							-- signal iterations in upper level to cancel
 							segment_found := true;
 						end if;

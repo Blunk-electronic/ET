@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -158,8 +158,8 @@ package body et_geometry_1.et_polygons is
 
 				-- Build an edge and append it to the result:
 				result.append ((
-					start_point => p_walk_previous,
-					end_point	=> p_walk,
+					A => p_walk_previous,
+					B	=> p_walk,
 					status		=> <>)); -- default status
 				
 				p_walk_previous := p_walk;
@@ -239,10 +239,10 @@ package body et_geometry_1.et_polygons is
 		
 		if mode = EXPAND then
 			-- The start point of the outer arc:
-			p_start_outside := move_by (arc_origin.start_point, arc_angles.angle_start, tolerance_dyn);
+			p_start_outside := move_by (arc_origin.A, arc_angles.angle_start, tolerance_dyn);
 
 			-- The end point of the outer arc:
-			p_end_outside   := move_by (arc_origin.end_point, arc_angles.angle_end, tolerance_dyn);
+			p_end_outside   := move_by (arc_origin.B, arc_angles.angle_end, tolerance_dyn);
 
 			--if debug then
 				--put_line ("start outside : " & to_string (p_start_outside));
@@ -258,15 +258,15 @@ package body et_geometry_1.et_polygons is
 				N1, N2 : type_line_vector;
 				
 				center_to_start : constant type_line_vector := 
-					(v_start => null_vector, v_direction => arc_origin.start_point);
+					(v_start => null_vector, v_direction => arc_origin.A);
 
 				center_to_end : constant type_line_vector := 
-					(v_start => null_vector, v_direction => arc_origin.end_point);
+					(v_start => null_vector, v_direction => arc_origin.B);
 
 				E1, E2 : type_edge;
 			begin
 				-- Replace the first edge by two new edges:
-				N1 := get_normal_vector (center_to_start, arc_origin.start_point);
+				N1 := get_normal_vector (center_to_start, arc_origin.A);
 				E1 := result.first_element;
 				delete_first (result);
 				I1 := get_intersection (N1, to_line_vector (E1));
@@ -277,18 +277,18 @@ package body et_geometry_1.et_polygons is
 					--put_line ("I1 : " & to_string (I1.intersection.vector));
 				--end if;
 
-				E1.start_point := I1.intersection;
+				E1.A := I1.intersection;
 				--put_line ("prepend B" & to_string (E1));
 				result.prepend (E1);
 
-				E1.end_point := E1.start_point;
-				E1.start_point := arc_origin.start_point;
+				E1.B := E1.A;
+				E1.A := arc_origin.A;
 				--put_line ("prepend A" & to_string (E1));
 				result.prepend (E1);
 
 
 				-- Replace the last edge by two new edges:
-				N2 := get_normal_vector (center_to_end, arc_origin.end_point);
+				N2 := get_normal_vector (center_to_end, arc_origin.B);
 				E2 := result.last_element;
 				delete_last (result);
 				I2 := get_intersection (N2, to_line_vector (E2));
@@ -298,18 +298,18 @@ package body et_geometry_1.et_polygons is
 					--put_line ("I2 : " & to_string (I2.intersection.vector));
 				--end if;
 
-				E2.end_point := I2.intersection;
+				E2.B := I2.intersection;
 				--put_line ("append B" & to_string (E2));
 				result.append (E2);
 
-				E2.start_point := E2.end_point;
-				E2.end_point := arc_origin.end_point;
+				E2.A := E2.B;
+				E2.B := arc_origin.B;
 				--put_line ("append A" & to_string (E2));
 				result.append (E2);
 			end;
 			
 		else -- SHRINK
-			make_edges (arc_origin.start_point);
+			make_edges (arc_origin.A);
 			-- CS snap the end of the last edge to p_end
 		end if;
 
@@ -398,7 +398,7 @@ package body et_geometry_1.et_polygons is
 				-- No change in direction.
 
 				-- Extend scratch edge:
-				scratch.end_point := candidate_edge.end_point;
+				scratch.B := candidate_edge.B;
 
 				-- Special case on last candidate edge:
 				-- The current scratch edge must be appended to the result somehow.
@@ -495,7 +495,7 @@ package body et_geometry_1.et_polygons is
 			next_edge : type_edge;
 			
 			procedure merge (edge : in out type_edge) is begin
-				edge.end_point := next_edge.end_point;
+				edge.B := next_edge.B;
 			end merge;
 			
 		begin
@@ -784,7 +784,7 @@ package body et_geometry_1.et_polygons is
 		result : pac_vectors.list;
 		
 		procedure query_edge (e : in pac_edges.cursor) is begin
-			result.append (element (e).start_point);
+			result.append (element (e).A);
 		end query_edge;
 		
 	begin
@@ -955,15 +955,15 @@ package body et_geometry_1.et_polygons is
 		procedure query_edge (c : in pac_edges.cursor) is
 			x1, x2, y1, y2 : type_float;
 		begin
-			x1 := type_float (get_x (element (c).start_point));
-			y1 := type_float (get_y (element (c).start_point));
+			x1 := type_float (get_x (element (c).A));
+			y1 := type_float (get_y (element (c).A));
 
 			if c /= polygon.edges.last then
-				x2 := type_float (get_x (element (next (c)).start_point));
-				y2 := type_float (get_y (element (next (c)).start_point));
+				x2 := type_float (get_x (element (next (c)).A));
+				y2 := type_float (get_y (element (next (c)).A));
 			else
-				x2 := type_float (get_x (element (polygon.edges.first).start_point));
-				y2 := type_float (get_y (element (polygon.edges.first).start_point));
+				x2 := type_float (get_x (element (polygon.edges.first).A));
+				y2 := type_float (get_y (element (polygon.edges.first).A));
 			end if;
 
 			-- Sum over the edges, (x2 − x1)(y2 + y1).
@@ -1292,7 +1292,7 @@ package body et_geometry_1.et_polygons is
 		proceed : aliased boolean := true;
 
 		procedure query_edge (c : in pac_edges.cursor) is begin
-			if element (c).start_point = point then
+			if element (c).A = point then
 				proceed := false;
 			end if;
 		end query_edge;
@@ -1349,13 +1349,13 @@ package body et_geometry_1.et_polygons is
 		procedure query_edge (c : in pac_edges.cursor) is begin
 			--put_line ("test: " & to_string (element (c)));
 			
-			if element (c).end_point = vertex then
+			if element (c).B = vertex then
 				--put_line ("end");
 				result.edge_1 := c;
 				end_found := true;
 			end if;
 
-			if element (c).start_point = vertex then
+			if element (c).A = vertex then
 				--put_line ("start");
 				result.edge_2 := c;
 				start_found := true;
@@ -1577,14 +1577,14 @@ package body et_geometry_1.et_polygons is
 		begin
 			if	
 				-- edge comes from above
-				greater_or_equal (edge.start_point.y, y_th) and
-				less_than        (edge.end_point.y  , y_th) then
+				greater_or_equal (edge.A.y, y_th) and
+				less_than        (edge.B.y  , y_th) then
 				return true;
 				
 			elsif
 				-- edge comes from below
-				less_than        (edge.start_point.y, y_th) and
-				greater_or_equal (edge.end_point.y  , y_th) then
+				less_than        (edge.A.y, y_th) and
+				greater_or_equal (edge.B.y  , y_th) then
 				return true;
 				
 			else
@@ -1852,8 +1852,8 @@ package body et_geometry_1.et_polygons is
 		result : unbounded_string := to_unbounded_string ("edge to polygon status:" & LF);
 	begin
 		result := result & to_string (status.edge) & LF;
-		result := result & "start: " & to_string (status.start_point) & LF;
-		result := result & "end  : " & to_string (status.end_point);
+		result := result & "start: " & to_string (status.A) & LF;
+		result := result & "end  : " & to_string (status.B);
 
 		-- CS intersections
 		return to_string (result);
@@ -1912,7 +1912,7 @@ package body et_geometry_1.et_polygons is
 	--begin
 		---- look for a start point that is outside:
 		--while c /= pac_edge_status_list.no_element loop			
-			--if element (c).start_point.location = OUTSIDE then
+			--if element (c).A.location = OUTSIDE then
 				--result := c;
 				--exit;
 			--end if;			
@@ -1943,16 +1943,16 @@ package body et_geometry_1.et_polygons is
 			--while c /= pac_edge_status_list.no_element loop
 				--if element (c).intersections.length = 0 then
 
-					--if element (c).start_point.location = ON_EDGE then
-						--center := get_center (element (element (c).start_point.edge));
+					--if element (c).A.location = ON_EDGE then
+						--center := get_center (element (element (c).A.edge));
 						--if get_location (polygon, center) = OUTSIDE then
 							--result := c;
 							--exit;
 						--end if;
 					--end if;
 
-					--if element (c).start_point.location = ON_VERTEX then
-						--center := get_center (element (element (c).start_point.edges.edge_2));
+					--if element (c).A.location = ON_VERTEX then
+						--center := get_center (element (element (c).A.edges.edge_2));
 						--if get_location (polygon, center) = OUTSIDE then
 							--result := c;
 							--exit;
@@ -2047,22 +2047,22 @@ package body et_geometry_1.et_polygons is
 		
 		procedure set_line_start is 
 			PPS : constant type_point_status := 
-				get_point_status (polygon, edge.start_point);
+				get_point_status (polygon, edge.A);
 		begin
 			case PPS.location is
 				when INSIDE => 
-					result.start_point := (location => INSIDE);
+					result.A := (location => INSIDE);
 
 				when OUTSIDE => 
-					result.start_point := (location => OUTSIDE);
+					result.A := (location => OUTSIDE);
 
 				when ON_EDGE => 
-					result.start_point := (
+					result.A := (
 						location	=> ON_EDGE, 
 						edge		=> PPS.edge);
 
 				when ON_VERTEX => 
-					result.start_point := (
+					result.A := (
 						location	=> ON_VERTEX, 
 						edges		=> PPS.edges);
 					
@@ -2072,22 +2072,22 @@ package body et_geometry_1.et_polygons is
 		
 		procedure set_line_end is 
 			PPS : constant type_point_status := 
-				get_point_status (polygon, edge.end_point);
+				get_point_status (polygon, edge.B);
 		begin
 			case PPS.location is
 				when INSIDE => 
-					result.end_point := (location => INSIDE);
+					result.B := (location => INSIDE);
 
 				when OUTSIDE => 
-					result.end_point := (location => OUTSIDE);
+					result.B := (location => OUTSIDE);
 
 				when ON_EDGE => 
-					result.end_point := (
+					result.B := (
 						location	=> ON_EDGE, 
 						edge		=> PPS.edge);
 
 				when ON_VERTEX => 
-					result.end_point := (
+					result.B := (
 						location	=> ON_VERTEX, 
 						edges		=> PPS.edges);
 		
@@ -2106,7 +2106,7 @@ package body et_geometry_1.et_polygons is
 			-- Depending on this constellation and the parity of intersections
 			-- the direction of the first intersection is deduced:
 			procedure set_initial_direction is begin
-				case result.start_point.location is
+				case result.A.location is
 					when OUTSIDE =>
 						initial_direction := ENTERING;
 
@@ -2114,7 +2114,7 @@ package body et_geometry_1.et_polygons is
 						initial_direction := LEAVING;
 
 					when ON_EDGE | ON_VERTEX =>
-						case result.end_point.location is
+						case result.B.location is
 							when OUTSIDE =>
 								if count_is_even then
 									initial_direction := ENTERING;
@@ -2193,21 +2193,21 @@ package body et_geometry_1.et_polygons is
 
 		-- Rotate the given polygon about the start point of the edge.
 		-- Rotate the polygon by the negative edge direction:
-		P_rotated := rotate (polygon, edge.start_point, - edge_direction);
+		P_rotated := rotate (polygon, edge.A, - edge_direction);
 
 		-- Extract the intersections of the probe line between "after" and "before":
 		intersections := get_intersections (
-			status	=> get_point_status (P_rotated, edge.start_point),
-			after	=> edge.start_point.x,
-			before	=> edge.start_point.x + edge_length - accuracy);
+			status	=> get_point_status (P_rotated, edge.A),
+			after	=> edge.A.x,
+			before	=> edge.A.x + edge_length - accuracy);
 			-- CS: Due to unavoidable inaccuracy, intersections very close
 			-- to the end of the range must be ignored. Not sure if this is reasonable
 			-- and whether this solution works in all cases.
 
 		
-		move_by (intersections, invert (to_offset (edge.start_point)));
+		move_by (intersections, invert (to_offset (edge.A)));
 		rotate_by (intersections, edge_direction);
-		move_by (intersections, to_offset (edge.start_point));
+		move_by (intersections, to_offset (edge.A));
 
 		assign_position_and_edge;
 
@@ -2347,7 +2347,7 @@ package body et_geometry_1.et_polygons is
 		-- outside polygon B.
 		procedure query_edge (c : in pac_edges.cursor) is 
 			IPQ : constant type_point_status :=
-				get_point_status (polygon_B, element (c).start_point);
+				get_point_status (polygon_B, element (c).A);
 		begin
 			if IPQ.location = OUTSIDE then
 				proceed := false; -- abort iteration
@@ -2577,14 +2577,14 @@ package body et_geometry_1.et_polygons is
 		begin
 			-- The candidate vertex becomes the end of 
 			-- the edge:
-			edge.end_point := element (v).position;
+			edge.B := element (v).position;
 
 			-- The vertex before the candidate vertex 
 			-- will be the start of the edge:
 			if v = vertices_cleaned_up.first then
-				edge.start_point := element (vertices_cleaned_up.last).position;
+				edge.A := element (vertices_cleaned_up.last).position;
 			else
-				edge.start_point := element (previous (v)).position;
+				edge.A := element (previous (v)).position;
 			end if;
 			
 			append (result.edges, edge);
@@ -2676,22 +2676,22 @@ package body et_geometry_1.et_polygons is
 				-- If start point is on edge of polygon B then build a leaving
 				-- intersection here. The affected edge of polygon B is the
 				-- edge that comes right after the the intersection:
-				if sts.start_point.location = ON_EDGE then
+				if sts.A.location = ON_EDGE then
 					intersections.append ((
-						position	=> sts.edge.start_point,
+						position	=> sts.edge.A,
 						direction	=> LEAVING,
 						edge_A		=> sts.edge,
-						edge_B		=> element (sts.start_point.edge)));
+						edge_B		=> element (sts.A.edge)));
 
 				else
 				-- If start point is on a vertex of polygon B then build a leaving
 				-- intersection here. The affected edge of polygon B is the
 				-- edge that comes right after the the intersection:
 					intersections.append ((
-						position	=> sts.edge.start_point,
+						position	=> sts.edge.A,
 						direction	=> LEAVING,
 						edge_A		=> sts.edge,
-						edge_B		=> element (sts.start_point.edges.edge_2)));
+						edge_B		=> element (sts.A.edges.edge_2)));
 
 				end if;
 
@@ -2705,22 +2705,22 @@ package body et_geometry_1.et_polygons is
 				-- If start point is on edge of polygon B then build an entering
 				-- intersection here. The affected edge of polygon B is the
 				-- edge that comes right after the the intersection:
-				if sts.start_point.location = ON_EDGE then
+				if sts.A.location = ON_EDGE then
 					intersections.append ((
-						position	=> sts.edge.start_point,
+						position	=> sts.edge.A,
 						direction	=> ENTERING,
 						edge_A		=> sts.edge,
-						edge_B		=> element (sts.start_point.edge)));
+						edge_B		=> element (sts.A.edge)));
 
 				else
 				-- If start point is on a vertex of polygon B then build an entering
 				-- intersection here. The affected edge of polygon B is the
 				-- edge that comes right after the the intersection:
 					intersections.append ((
-						position	=> sts.edge.start_point,
+						position	=> sts.edge.A,
 						direction	=> ENTERING,
 						edge_A		=> sts.edge,
-						edge_B		=> element (sts.start_point.edges.edge_2)));
+						edge_B		=> element (sts.A.edges.edge_2)));
 
 				end if;
 
@@ -2737,7 +2737,7 @@ package body et_geometry_1.et_polygons is
 
 			
 			-- Test the location of the start point of the candidate edge:
-			case sts.start_point.location is
+			case sts.A.location is
 				when OUTSIDE | INSIDE =>
 					null; -- no special case. nothing special to do.
 
@@ -3066,7 +3066,7 @@ package body et_geometry_1.et_polygons is
 			
 		begin
 			intersections.iterate (query_intersection'access);
-			sort_by_distance (result, edge.start_point);			
+			sort_by_distance (result, edge.A);			
 			
 			return result;
 		end get_intersections_on_edge;
@@ -3082,7 +3082,7 @@ package body et_geometry_1.et_polygons is
 
 			-- The first vertex to be added to the result is where
 			-- the candidate edge starts:
-			position := element (s).start_point;
+			position := element (s).A;
 			
 			vertices.append (new_item => (
 				category	=> REGULAR,
@@ -3471,9 +3471,9 @@ package body et_geometry_1.et_polygons is
 		reverse_line (edge_left);
 
 		-- Build the cap on the end of the line. The cap is an arc:
-		arc.center := center.end_point;
-		arc.start_point := edge_right.end_point;
-		arc.end_point := edge_left.start_point;
+		arc.center := center.B;
+		arc.A := edge_right.B;
+		arc.B := edge_left.A;
 		arc.direction := arc_direction_default;
 
 		-- Convert the arc to a list of edges and append them to the polygon:
@@ -3485,9 +3485,9 @@ package body et_geometry_1.et_polygons is
 		result.edges.append (edge_left);
 
 		-- Build the cap on the start of the line. The cap is an arc:
-		arc.center := center.start_point;
-		arc.start_point := edge_left.end_point;
-		arc.end_point := edge_right.start_point;
+		arc.center := center.A;
+		arc.A := edge_left.B;
+		arc.B := edge_right.A;
 		arc.direction := arc_direction_default;
 
 		-- Convert the arc to a list of edges and append them to the polygon:
@@ -3550,16 +3550,16 @@ package body et_geometry_1.et_polygons is
 		scratch_i := to_arc (arc_i);
 		
 		-- set cap at start point:		
-		arc_s.start_point := scratch_i.end_point;
-		arc_s.end_point   := scratch_o.start_point;
+		arc_s.A := scratch_i.B;
+		arc_s.B   := scratch_o.A;
 		arc_s.direction   := arc_direction_default;
-		arc_s.center      := arc_n.start_point;
+		arc_s.center      := arc_n.A;
 		
 		-- set cap at end point:
-		arc_e.start_point := scratch_o.end_point;
-		arc_e.end_point   := scratch_i.start_point;
+		arc_e.A := scratch_o.B;
+		arc_e.B   := scratch_i.A;
 		arc_e.direction   := arc_direction_default;
-		arc_e.center      := arc_n.end_point;
+		arc_e.center      := arc_n.B;
 
 
 		--put_line ("start " & to_string (arc_s));

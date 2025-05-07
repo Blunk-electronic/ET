@@ -470,7 +470,7 @@ package body et_geometry_2a.contours is
 	
 
 
-	function get_start_point (
+	function get_A (
 		contour : in type_contour)
 		return type_non_circular_vertex
 	is
@@ -487,10 +487,10 @@ package body et_geometry_2a.contours is
 			
 			case element (s).shape is
 				when LINE =>
-					point := element (s).segment_line.start_point;
+					point := element (s).segment_line.A;
 
 				when ARC =>
-					point := element (s).segment_arc.start_point;
+					point := element (s).segment_arc.A;
 			end case;
 		end if;
 
@@ -500,13 +500,13 @@ package body et_geometry_2a.contours is
 		else
 			return (circular => false, vertex => point);
 		end if;
-	end get_start_point;
+	end get_A;
 	
 
 
 	
 	
-	function get_end_point (
+	function get_B (
 		contour : in type_contour)
 		return type_non_circular_vertex
 	is
@@ -523,10 +523,10 @@ package body et_geometry_2a.contours is
 			
 			case element (s).shape is
 				when LINE =>
-					point := element (s).segment_line.end_point;
+					point := element (s).segment_line.B;
 
 				when ARC =>
-					point := element (s).segment_arc.end_point;
+					point := element (s).segment_arc.B;
 			end case;
 		end if;
 
@@ -536,7 +536,7 @@ package body et_geometry_2a.contours is
 		else
 			return (circular => false, vertex => point);
 		end if;
-	end get_end_point;
+	end get_B;
 
 
 	
@@ -574,21 +574,21 @@ package body et_geometry_2a.contours is
 		-- The place in arguments at which we fetch a field from:
 		p : type_field_count_positive := 1;
 
-		start_point_set : boolean := false;
-		contour_start_point : type_vector_model; -- start point of contour
+		A_set : boolean := false;
+		contour_A : type_vector_model; -- start point of contour
 
-		end_point_previous : type_vector_model;
+		B_previous : type_vector_model;
 
 		
-		procedure update_end_point (s : in out type_segment) is begin
+		procedure update_B (s : in out type_segment) is begin
 			case s.shape is
 				when LINE =>						
-					s.segment_line.end_point := end_point_previous;
+					s.segment_line.B := B_previous;
 					
 				when ARC =>
-					s.segment_arc.end_point := end_point_previous;
+					s.segment_arc.B := B_previous;
 			end case;
-		end update_end_point;
+		end update_B;
 		
 		
 	begin
@@ -626,30 +626,30 @@ package body et_geometry_2a.contours is
 				when LINE => -- line 0 0
 
 					-- assign start point of line
-					--l.start_point := type_vector_model (set (
+					--l.A := type_vector_model (set (
 							--x => to_distance (f (p + 1)),
 							--y => to_distance (f (p + 2))));
 
-					l.start_point := type_vector_model (to_point (
+					l.A := type_vector_model (to_point (
 							x => f (p + 1),
 							y => f (p + 2)));
 
 					
 					-- The start point of the line is also the end point of
 					-- the previous segment:
-					end_point_previous := l.start_point;
+					B_previous := l.A;
 
-					if start_point_set then
+					if A_set then
 						-- assign the end point of the previous segment:
 						update_element (
 							container	=> result.contour.segments,
 							position	=> result.contour.segments.last,
-							process		=> update_end_point'access);
+							process		=> update_B'access);
 					
 					else
 						-- register the start point of the contour
-						contour_start_point := l.start_point;
-						start_point_set := true;
+						contour_A := l.A;
+						A_set := true;
 					end if;
 					
 					result.contour.segments.append (new_item => (LINE, l));
@@ -671,30 +671,30 @@ package body et_geometry_2a.contours is
 
 					
 					-- assign start point of arc
-					--a.start_point := type_vector_model (set (
+					--a.A := type_vector_model (set (
 							--x => to_distance (f (p + 3)),
 							--y => to_distance (f (p + 4))));
 
-					a.start_point := type_vector_model (to_point (
+					a.A := type_vector_model (to_point (
 							x => f (p + 3),
 							y => f (p + 4)));
 
 					
 					-- The start point of the arc is also the end point
 					-- of the previous segment:
-					end_point_previous := a.start_point;
+					B_previous := a.A;
 
-					if start_point_set then
+					if A_set then
 						-- assign the end point of the previous segment:
 						update_element (
 							container	=> result.contour.segments,
 							position	=> result.contour.segments.last,
-							process		=> update_end_point'access);
+							process		=> update_B'access);
 					
 					else
 						-- register the start point of the contour
-						contour_start_point := a.start_point;
-						start_point_set := true;
+						contour_A := a.A;
+						A_set := true;
 					end if;
 
 					-- assign direction of arc
@@ -739,13 +739,13 @@ package body et_geometry_2a.contours is
 		-- CLOSED contour !
 		if shape /= CIRCLE then
 			
-			end_point_previous := contour_start_point;
+			B_previous := contour_A;
 			
 			-- Assign the end point of the last segment:
 			update_element (
 				container	=> result.contour.segments,
 				position	=> result.contour.segments.last,
-				process		=> update_end_point'access);
+				process		=> update_B'access);
 
 		end if;
 			
@@ -795,12 +795,12 @@ package body et_geometry_2a.contours is
 					--result := result & space & to_unbounded_string (to_string (element (c).segment_line));
 					result := result & space
 							& to_unbounded_string ("line start:" 
-							& to_string (element (c).segment_line.start_point));
+							& to_string (element (c).segment_line.A));
 
 					if full then
 						result := result & space
 							& to_unbounded_string ("end:" 
-							& to_string (element (c).segment_line.end_point));
+							& to_string (element (c).segment_line.B));
 					end if;
 					
 					
@@ -808,12 +808,12 @@ package body et_geometry_2a.contours is
 					--result := result & space & to_unbounded_string (to_string (element (c).segment_arc));
 					result := result & space 
 						& to_unbounded_string ("arc center:" & to_string (element (c).segment_arc.center))
-						& to_unbounded_string ("start:" & to_string (element (c).segment_arc.start_point));
+						& to_unbounded_string ("start:" & to_string (element (c).segment_arc.A));
 
 					if full then
 						result := result & space
 							& to_unbounded_string ("end:" 
-							& to_string (element (c).segment_arc.end_point));
+							& to_string (element (c).segment_arc.B));
 					end if;
 
 					
@@ -890,13 +890,13 @@ package body et_geometry_2a.contours is
 			case element (c).shape is
 			
 				when LINE => 
-					if element (c).segment_line.end_point = vertex then
+					if element (c).segment_line.B = vertex then
 						--put_line ("end");
 						result.segment_1 := c;
 						end_found := true;
 					end if;
 
-					if element (c).segment_line.start_point = vertex then
+					if element (c).segment_line.A = vertex then
 						--put_line ("start");
 						result.segment_2 := c;
 						start_found := true;
@@ -1117,11 +1117,11 @@ package body et_geometry_2a.contours is
 				end if;
 				
 				-- Extract start and end points:
-				target_start := get_start_point (target).vertex;
-				target_end   := get_end_point (target).vertex;
+				target_start := get_A (target).vertex;
+				target_end   := get_B (target).vertex;
 	
-				source_start := get_start_point (source).vertex;
-				source_end   := get_end_point (source).vertex;
+				source_start := get_A (source).vertex;
+				source_end   := get_B (source).vertex;
 
 				-- Take a copy of the given source:
 				source_copy := source;
@@ -1175,13 +1175,13 @@ package body et_geometry_2a.contours is
 		procedure move_segment (c : in pac_segments.cursor) is
 
 			procedure do_line (s : in out type_segment) is begin 
-				move (s.segment_line.start_point);
-				move (s.segment_arc.end_point);
+				move (s.segment_line.A);
+				move (s.segment_arc.B);
 			end;
 			
 			procedure do_arc (s : in out type_segment) is begin
-				move (s.segment_arc.start_point);
-				move (s.segment_arc.end_point); 
+				move (s.segment_arc.A);
+				move (s.segment_arc.B); 
 				move (s.segment_arc.center); 
 			end;
 
@@ -1426,11 +1426,11 @@ package body et_geometry_2a.contours is
 		closed : boolean := true;
 
 		-- The point where the contour outline starts:
-		start_point		: type_vector_model;
+		A		: type_vector_model;
 
 		-- The end point of a segment. Once the last segment has been processed,
 		-- this point must match the start point:
-		last_end_point	: type_vector_model;
+		last_B	: type_vector_model;
 
 		-- Goes true once a start point has been set:
 		started : boolean := false;
@@ -1442,32 +1442,32 @@ package body et_geometry_2a.contours is
 		-- Sets the start point of the outline if the start point
 		-- has not been set already.
 		-- Clears the closed-flag if the given point does NOT
-		-- match the last_end_point and appends the last_end_point to
+		-- match the last_B and appends the last_B to
 		-- the list of gaps.
-		procedure set_start_point (p : in type_vector_model) is begin
+		procedure set_A (p : in type_vector_model) is begin
 			if not started then
-				start_point := p;
-				last_end_point := start_point;
+				A := p;
+				last_B := A;
 				started := true;
 			end if;
 
-			if p /= last_end_point then
+			if p /= last_B then
 				closed := false;
-				append (gaps, last_end_point);
+				append (gaps, last_B);
 			end if;
 
-		end set_start_point;
+		end set_A;
 
 		
 		procedure query_segment (c : in pac_segments.cursor) is begin
 			case element (c).shape is
 				when LINE =>
-					set_start_point (element (c).segment_line.start_point);
-					last_end_point := element (c).segment_line.end_point;
+					set_A (element (c).segment_line.A);
+					last_B := element (c).segment_line.B;
 
 				when ARC =>
-					set_start_point (element (c).segment_arc.start_point);
-					last_end_point := element (c).segment_arc.end_point;
+					set_A (element (c).segment_arc.A);
+					last_B := element (c).segment_arc.B;
 					
 			end case;
 		end query_segment;
@@ -1488,9 +1488,9 @@ package body et_geometry_2a.contours is
 
 		
 		-- Start point and end point of contour outline must match:
-		if last_end_point /= start_point then
+		if last_B /= A then
 			closed := false;
-			append (gaps, last_end_point);
+			append (gaps, last_B);
 		end if;
 		
 		-- Return the contour status:
@@ -1707,12 +1707,12 @@ package body et_geometry_2a.contours is
 		begin
 			case element (c).shape is
 				when LINE => 
-					corners.append (s.segment_line.start_point);
-					corners.append (s.segment_line.end_point);
+					corners.append (s.segment_line.A);
+					corners.append (s.segment_line.B);
 					
 				when ARC =>
-					corners.append (s.segment_arc.start_point);
-					corners.append (s.segment_arc.end_point);
+					corners.append (s.segment_arc.A);
+					corners.append (s.segment_arc.B);
 			end case;
 		end query_segment;
 		
@@ -1740,12 +1740,12 @@ package body et_geometry_2a.contours is
 		procedure query_segment (c : in pac_segments.cursor) is begin
 			case element (c).shape is
 				when LINE =>
-					if element (c).segment_line.start_point = point then
+					if element (c).segment_line.A = point then
 						proceed := false;
 					end if;
 					
 				when ARC =>
-					if element (c).segment_arc.start_point = point then
+					if element (c).segment_arc.A = point then
 						proceed := false;
 					end if;
 			
@@ -1937,8 +1937,8 @@ package body et_geometry_2a.contours is
 		--vertex : constant type_vector_model := to_point (point);
 		
 		--line_pre : constant type_line := (
-				--start_point	=> point,
-				--end_point	=> type_vector_model (set (get_x (point) + 1.0, get_y (point))));
+				--A	=> point,
+				--B	=> type_vector_model (set (get_x (point) + 1.0, get_y (point))));
 		
 		--probe_line : constant type_line_vector := to_line_vector (line_pre);
 		probe_line : constant type_line_vector := (
@@ -1956,13 +1956,13 @@ package body et_geometry_2a.contours is
 			return boolean
 		is begin
 			if	
-				type_float (get_y (line.start_point)) >= y_threshold and 
-				type_float (get_y (line.end_point))   <  y_threshold then
+				type_float (get_y (line.A)) >= y_threshold and 
+				type_float (get_y (line.B))   <  y_threshold then
 				return true;
 				
 			elsif
-				type_float (get_y (line.end_point))   >= y_threshold and 
-				type_float (get_y (line.start_point)) <  y_threshold then
+				type_float (get_y (line.B))   >= y_threshold and 
+				type_float (get_y (line.A)) <  y_threshold then
 				return true;
 				
 			else
@@ -1977,13 +1977,13 @@ package body et_geometry_2a.contours is
 			return boolean
 		is begin
 			if	
-				type_float (get_y (arc.start_point)) >= y_threshold and 
-				type_float (get_y (arc.end_point))   <  y_threshold then
+				type_float (get_y (arc.A)) >= y_threshold and 
+				type_float (get_y (arc.B))   <  y_threshold then
 				return true;
 				
 			elsif
-				type_float (get_y (arc.end_point))   >= y_threshold and 
-				type_float (get_y (arc.start_point)) <  y_threshold then
+				type_float (get_y (arc.B))   >= y_threshold and 
+				type_float (get_y (arc.A)) <  y_threshold then
 				return true;
 				
 			else

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -211,8 +211,8 @@ package et_frames is
 -- LINES:
 	
 	type type_line is record
-		start_point	: type_position;
-		end_point	: type_position;
+		A	: type_position;
+		B	: type_position;
 		-- CS line width ?
 	end record;
 

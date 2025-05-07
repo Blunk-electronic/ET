@@ -555,11 +555,11 @@ is
 
 				
 				procedure query_junctions (segment : in type_net_segment) is begin
-					if segment.junctions.start_point then
+					if segment.junctions.A then
 						write (keyword => keyword_junction, parameters => keyword_start);
 					end if;
 
-					if segment.junctions.end_point then
+					if segment.junctions.B then
 						write (keyword => keyword_junction, parameters => keyword_end);
 					end if;
 				end query_junctions;
@@ -625,10 +625,10 @@ is
 					section_mark (section_segment, HEADER);
 
 					write (keyword => keyword_start, 
-						parameters => to_string (element (segment_cursor).start_point, FORMAT_2));
+						parameters => to_string (element (segment_cursor).A, FORMAT_2));
 					
 					write (keyword => keyword_end,
-						parameters => "  " & to_string (element (segment_cursor).end_point, FORMAT_2));
+						parameters => "  " & to_string (element (segment_cursor).B, FORMAT_2));
 
 					query_element (segment_cursor, query_labels'access);
 					query_element (segment_cursor, query_junctions'access);
@@ -750,8 +750,8 @@ is
 			while line_cursor /= pac_conductor_lines.no_element loop
 				section_mark (section_line, HEADER);
 				
-				write (keyword => keyword_start, parameters => to_string (element (line_cursor).start_point));
-				write (keyword => keyword_end  , parameters => to_string (element (line_cursor).end_point));
+				write (keyword => keyword_start, parameters => to_string (element (line_cursor).A));
+				write (keyword => keyword_end  , parameters => to_string (element (line_cursor).B));
 				write (keyword => keyword_layer, parameters => to_string (element (line_cursor).layer));
 				write (keyword => keyword_width, parameters => to_string (element (line_cursor).width));
 
@@ -763,8 +763,8 @@ is
 				section_mark (section_arc, HEADER);
 
 				write (keyword => keyword_center, parameters => to_string (get_center (element (arc_cursor))));
-				write (keyword => keyword_start , parameters => to_string (get_start_point (element (arc_cursor))));
-				write (keyword => keyword_end   , parameters => to_string (get_end_point (element (arc_cursor))));
+				write (keyword => keyword_start , parameters => to_string (get_A (element (arc_cursor))));
+				write (keyword => keyword_end   , parameters => to_string (get_B (element (arc_cursor))));
 				write (keyword => keyword_width , parameters => to_string (element (arc_cursor).width));
 				write (keyword => keyword_layer , parameters => to_string (element (arc_cursor).layer));
 				

@@ -1953,13 +1953,13 @@ is
 									(
 									module_cursor	=> active_module,
 									net_name		=> to_net_name (f (5)), -- RESET
-									start_point		=> to_position (
+									A				=> to_position (
 															point => type_vector_model (set (
 																x => to_distance (f (7)),
 																y => to_distance (f (8)))),
 															sheet => to_sheet (f (6))), -- sheet number
 									
-									end_point		=> type_vector_model (set (
+									B 				=> type_vector_model (set (
 														x => to_distance (f (9)),
 														y => to_distance (f (10)))),
 									

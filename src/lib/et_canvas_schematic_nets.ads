@@ -138,7 +138,7 @@ package et_canvas_schematic_nets is
 	
 	-- Tests if point sits between start and end point of any of the given segments.
 	-- Returns true in that case.
-	function between_start_and_end_point_of_sloping_segment (
+	function between_A_and_B_of_sloping_segment (
 		point		: in type_vector_model;
 		segments	: in pac_proposed_segments.list)
 		return boolean;
@@ -196,7 +196,7 @@ package et_canvas_schematic_nets is
 		status_click_left 
 		& "or "
 		& status_press_space
-		& status_set_start_point 
+		& status_set_A 
 		& status_hint_for_abort;
 
 	

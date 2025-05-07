@@ -165,10 +165,10 @@ is
 
 	begin -- search_for_same_coordinates
 		-- Set E/S flag:
-		-- If we start the search from the end_point of a segment, the e-flag is to be set. This indicates the end_point has been processed.
-		-- If we start the search from the start_point of a segment, the s-flag is to be set. This indicates the start_point has been processed.				
+		-- If we start the search from the B of a segment, the e-flag is to be set. This indicates the B has been processed.
+		-- If we start the search from the A of a segment, the s-flag is to be set. This indicates the A has been processed.				
 		case side is
-			when end_point =>
+			when B =>
 				
 -- 						log (text => "--> origin of search   (END): " 
 -- 							 & type_grid'image(seg_in.coordinates_end.x) & "/" & type_grid'image(seg_in.coordinates_end.y),
@@ -179,7 +179,7 @@ is
 						position => segment_cursor,
 						process => set_e'access);
 				
-			when start_point =>
+			when A =>
 				
 -- 						log (text => "--> origin of search (START): " 
 -- 							 & type_grid'image(seg_in.coordinates_start.x) & "/" & type_grid'image(seg_in.coordinates_start.y),
@@ -192,8 +192,8 @@ is
 		end case;
 
 		-- First, search completely untouched segments (they have both e and s flag cleared).
-		-- If the search starts from the end_point of the given net, find a segment whose start or end point matches.
-		-- If the search starts from the start_point of the given net, find a segment whose start or end point matches.
+		-- If the search starts from the B of the given net, find a segment whose start or end point matches.
+		-- If the search starts from the A of the given net, find a segment whose start or end point matches.
 		-- If suitable segment found, exit and return its ID and a the "valid"-flag set.
 		cursor := wild_segments.first;
 		while cursor /= type_wild_segments.no_element loop
@@ -208,12 +208,12 @@ is
 					--put(et_import.report_handle,"probe untouched segment: ");
 					
 					case side is
-						-- If the search starts from the end_point of the given net, find a segment whose start or end point matches.
-						when end_point =>
+						-- If the search starts from the B of the given net, find a segment whose start or end point matches.
+						when B =>
 							--if line_start.x = seg_in.coordinates_end.x and line_start.y = seg_in.coordinates_end.y then
 							if get_x (line_start) = get_x (seg_in.coordinates_end) and get_y (line_start) = get_y (seg_in.coordinates_end) then
 								sc.valid := true;
-								sc.side := start_point;
+								sc.side := A;
 								sc.cursor := cursor;
 								goto matching_segment_coordinates_found;
 							end if;
@@ -221,17 +221,17 @@ is
 							--if line_end.x = seg_in.coordinates_end.x and line_end.y = seg_in.coordinates_end.y then
 							if get_x (line_end) = get_x (seg_in.coordinates_end) and get_y (line_end) = get_y (seg_in.coordinates_end) then
 								sc.valid := true;
-								sc.side := end_point;
+								sc.side := B;
 								sc.cursor := cursor;
 								goto matching_segment_coordinates_found;
 							end if;
 
-						-- If the search starts from the start_point of the given net, find a segment whose start or end point matches.									
-						when start_point =>
+						-- If the search starts from the A of the given net, find a segment whose start or end point matches.									
+						when A =>
 							--if line_start.x = seg_in.coordinates_start.x and line_start.y = seg_in.coordinates_start.y then
 							if get_x (line_start) = get_x (seg_in.coordinates_start) and get_y (line_start) = get_y (seg_in.coordinates_start) then
 								sc.valid := true;
-								sc.side := start_point;
+								sc.side := A;
 								sc.cursor := cursor;
 								goto matching_segment_coordinates_found;
 							end if;
@@ -239,7 +239,7 @@ is
 							--if line_end.x = seg_in.coordinates_start.x and line_end.y = seg_in.coordinates_start.y then
 							if get_x (line_end) = get_x (seg_in.coordinates_start) and get_y (line_end) = get_y (seg_in.coordinates_start) then
 								sc.valid := true;
-								sc.side := end_point;
+								sc.side := B;
 								sc.cursor := cursor;
 								goto matching_segment_coordinates_found;
 							end if;
@@ -252,8 +252,8 @@ is
 
 		-- No untouched segment found.
 		-- Now, search half_processed segments (they have either e or s flag (BUT NOT BOTH AT THE SAME TIME!) set).
-		-- If the search starts from the end_point of the given net, find a segment whose start or end point matches.
-		-- If the search starts from the start_point of the given net, find a segment whose start or end point matches.
+		-- If the search starts from the B of the given net, find a segment whose start or end point matches.
+		-- If the search starts from the A of the given net, find a segment whose start or end point matches.
 		-- If suitable segment found, exit and return its ID and a the "valid"-flag set.
 		cursor := wild_segments.first;
 		while cursor /= type_wild_segments.no_element loop
@@ -269,12 +269,12 @@ is
 					--write_coordinates_of_segment(type_net_segment(type_wild_segments.element(wild_segments,i)));
 					
 					case side is
-						-- If the search starts from the end_point of the given net, find a segment whose start or end point matches.
-						when end_point =>
+						-- If the search starts from the B of the given net, find a segment whose start or end point matches.
+						when B =>
 							--if line_start.x = seg_in.coordinates_end.x and line_start.y = seg_in.coordinates_end.y then
 							if get_x (line_start) = get_x (seg_in.coordinates_end) and get_y (line_start) = get_y (seg_in.coordinates_end) then
 								sc.valid := true;
-								sc.side := start_point;
+								sc.side := A;
 								sc.cursor := cursor;
 								goto matching_segment_coordinates_found;
 							end if;
@@ -282,17 +282,17 @@ is
 							--if line_end.x = seg_in.coordinates_end.x and line_end.y = seg_in.coordinates_end.y then
 							if get_x (line_end) = get_x (seg_in.coordinates_end) and get_y (line_end) = get_y (seg_in.coordinates_end) then
 								sc.valid := true;
-								sc.side := end_point;
+								sc.side := B;
 								sc.cursor := cursor;
 								goto matching_segment_coordinates_found;
 							end if;
 
-						-- If the search starts from the start_point of the given net, find a segment whose start or end point matches.
-						when start_point =>
+						-- If the search starts from the A of the given net, find a segment whose start or end point matches.
+						when A =>
 							--if line_start.x = seg_in.coordinates_start.x and line_start.y = seg_in.coordinates_start.y then
 							if get_x (line_start) = get_x (seg_in.coordinates_start) and get_y (line_start) = get_y (seg_in.coordinates_start) then
 								sc.valid := true;
-								sc.side := start_point;
+								sc.side := A;
 								sc.cursor := cursor;
 								goto matching_segment_coordinates_found;
 							end if;
@@ -300,7 +300,7 @@ is
 							--if line_end.x = seg_in.coordinates_start.x and line_end.y = seg_in.coordinates_start.y then
 							if get_x (line_end) = get_x (seg_in.coordinates_start) and get_y (line_end) = get_y (seg_in.coordinates_start) then
 								sc.valid := true;
-								sc.side := end_point;
+								sc.side := B;
 								sc.cursor := cursor;
 								goto matching_segment_coordinates_found;
 							end if;
@@ -354,8 +354,8 @@ is
 			-- CS this is a workaround in order to provide a line for function line:
 			type type_line_scratch is new pac_geometry_2.type_line with null record;
 			line : type_line_scratch := (
-				start_point	=> get_point (segment.coordinates_start), 
-				end_point	=> get_point (segment.coordinates_end),
+				A	=> get_point (segment.coordinates_start), 
+				B	=> get_point (segment.coordinates_end),
 				others		=> <>);
 			
 		begin
@@ -957,14 +957,14 @@ is
 				if not type_wild_segments.element (segment_cursor_b).s and 
 					not type_wild_segments.element (segment_cursor_b).e then 
 
-					-- We initiate a new strand and start looking for a matching segment on the end_point:
+					-- We initiate a new strand and start looking for a matching segment on the B:
 					--put_line(et_import.report_handle," anonymous net" & positive'image(seg) & ":"); 
 					log (text => "assembling strand with segments", level => log_threshold + 1);
 					log_indentation_up;
 
 					-- The first segment is to be added to the anonymous strand.
 					add_segment_to_anonymous_strand (segment_cursor_b); 
-					side := end_point;
+					side := B;
 
 					loop -- A
 						--put_line(et_import.report_handle,"  --> A"); -- CS: log ?
@@ -989,12 +989,12 @@ is
 							-- D
 							if type_wild_segments.element (segment_cursor_b).e then
 								-- put_line(et_import.report_handle,"  --> D1"); -- CS: log ?
-								side := start_point;
+								side := A;
 							end if;
 							
 							if type_wild_segments.element (segment_cursor_b).s then
 								-- put_line(et_import.report_handle,"  --> D2"); -- CS: log ?
-								side := end_point;	
+								side := B;	
 							end if;
 
 							-- C
@@ -1038,10 +1038,10 @@ is
 						segment_cursor_b := search_result.cursor;
 						
 						case search_result.side is
-							when end_point => 
-								side := start_point;
-							when start_point =>
-								side := end_point;
+							when B => 
+								side := A;
+							when A =>
+								side := B;
 						end case;
 					end loop;
 

@@ -6,10 +6,9 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
---         Copyright (C) 2017 - 2022 Mario Blunk, Blunk electronic          --
---                                                                          --
---         Bases on the package gtkada.canvas_view written by               --
---         E. Briot, J. Brobecker and A. Charlet, AdaCore                   --
+-- Copyright (C) 2017 - 2025                                                --
+-- Mario Blunk / Blunk electronic                                           --
+-- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
 -- This library is free software;  you can redistribute it and/or modify it --
 -- under terms of the  GNU General Public License  as published by the Free --
@@ -22,7 +21,6 @@
 -- a copy of the GCC Runtime Library Exception along with this program;     --
 -- see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see    --
 -- <http://www.gnu.org/licenses/>.                                          --
---                                                                          --
 ------------------------------------------------------------------------------
 
 --   For correct displaying set tab width in your editor to 4.
@@ -48,14 +46,14 @@
 
 package et_canvas_messages is
 	
-	status_hint_for_abort		: constant string := " Hit ESC to abort.";
-	status_click_left			: constant string := "LEFT click ";
-	status_click_right			: constant string := "RIGHT click ";
-	status_press_space			: constant string := "press SPACE ";
-	status_start_point			: constant string := "start point";
-	status_end_point			: constant string := "end point";
-	status_set_end_point		: constant string := "to set end point.";
-	status_set_start_point		: constant string := "to set start point.";
+	status_hint_for_abort	: constant string := " Hit ESC to abort.";
+	status_click_left		: constant string := "LEFT click ";
+	status_click_right		: constant string := "RIGHT click ";
+	status_press_space		: constant string := "press SPACE ";
+	status_A				: constant string := "start point";
+	status_B				: constant string := "end point";
+	status_set_B			: constant string := "to set end point.";
+	status_set_A			: constant string := "to set start point.";
 
 	status_next_object_clarification : constant string := 
 		"For next object click RIGHT or press page-down.";

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -61,7 +61,7 @@ package et_geometry_2a.path is
 	-- If bended, then we get an extra point where the bending takes place
 	--  which will result in two lines that connect the two points:
 	type type_path (bended : type_bended) is record
-		start_point, end_point : type_vector_model;
+		A, B : type_vector_model;
 		case bended is
 			when NO		=> null; -- no bend
 			when YES	=> bend_point : type_vector_model;
@@ -72,8 +72,8 @@ package et_geometry_2a.path is
 
 	-- Computes a path between two points according to the given bend style:
 	function to_path (
-		start_point, end_point	: in type_vector_model;
-		style					: in type_bend_style)
+		A, B	: in type_vector_model;
+		style	: in type_bend_style)
 		return type_path;
 	
 
@@ -85,8 +85,8 @@ package et_geometry_2a.path is
 	-- This type is required for all kinds of lines (nets, documentation, tracks, ...)
 	-- when being drawn via the GUI.
 	type type_path_live is record
-		start_point	: type_vector_model;
-		end_point	: type_vector_model;
+		A	: type_vector_model;
+		B	: type_vector_model;
 
 		bended		: type_bended := NO;
 		bend_point	: type_vector_model;

@@ -202,8 +202,8 @@ package body et_symbol_rw is
 			use et_primitive_objects;
 		begin
 			section_mark (section_line, HEADER);
-			write (keyword => keyword_start, parameters => to_string (element (cursor).start_point, FORMAT_2));
-			write (keyword => keyword_end  , parameters => to_string (element (cursor).end_point, FORMAT_2));
+			write (keyword => keyword_start, parameters => to_string (element (cursor).A, FORMAT_2));
+			write (keyword => keyword_end  , parameters => to_string (element (cursor).B, FORMAT_2));
 			write (keyword => keyword_width, parameters => to_string (element (cursor).width));
 			section_mark (section_line, FOOTER);
 		end write_line;
@@ -214,8 +214,8 @@ package body et_symbol_rw is
 		begin
 			section_mark (section_arc, HEADER);
 			write (keyword => keyword_center, parameters => to_string (get_center (element (cursor)), FORMAT_2));
-			write (keyword => keyword_start , parameters => to_string (get_start_point (element (cursor)), FORMAT_2));
-			write (keyword => keyword_end   , parameters => to_string (get_end_point (element (cursor)), FORMAT_2));
+			write (keyword => keyword_start , parameters => to_string (get_A (element (cursor)), FORMAT_2));
+			write (keyword => keyword_end   , parameters => to_string (get_B (element (cursor)), FORMAT_2));
 			write (keyword => keyword_direction, parameters => to_string (get_direction (element (cursor))));
 			write (keyword => keyword_width , parameters => to_string (element (cursor).width));
 			section_mark (section_arc, FOOTER);
@@ -852,13 +852,13 @@ package body et_symbol_rw is
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
-										symbol_line.start_point := to_position (line, 2);
+										symbol_line.A := to_position (line, 2);
 										
 									elsif kw = keyword_end then -- end x 0.00 y 0.00
 										expect_field_count (line, 5);
 
 										-- extract the end position starting at field 2
-										symbol_line.end_point := to_position (line,2);
+										symbol_line.B := to_position (line,2);
 
 									elsif kw = keyword_width then
 										expect_field_count (line, 2);
@@ -890,13 +890,13 @@ package body et_symbol_rw is
 										expect_field_count (line, 5);
 
 										-- extract the start position starting at field 2
-										set_start_point (symbol_arc, to_position (line, 2));
+										set_A (symbol_arc, to_position (line, 2));
 										
 									elsif kw = keyword_end then -- end x 0.00 y 0.00
 										expect_field_count (line, 5);
 
 										-- extract the end position starting at field 2
-										set_end_point (symbol_arc, to_position (line, 2));
+										set_B (symbol_arc, to_position (line, 2));
 
 									elsif kw = keyword_direction then -- direction ccw
 										expect_field_count (line, 2);

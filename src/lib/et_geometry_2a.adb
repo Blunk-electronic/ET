@@ -1423,8 +1423,8 @@ package body et_geometry_2a is
 
 	function to_string (line : in type_line) return string is begin
 		return 
-			"line: S:" & to_string (line.start_point) 
-			& " / E:" & to_string (line.end_point);
+			"line: S:" & to_string (line.A) 
+			& " / E:" & to_string (line.B);
 	end;
 
 
@@ -1535,8 +1535,8 @@ package body et_geometry_2a is
 		line	: in out type_line;
 		offset	: in type_distance_relative)
 	is begin
-		move_by (point	=> line.start_point,	offset => offset);
-		move_by (point	=> line.end_point,		offset => offset);
+		move_by (point	=> line.A,	offset => offset);
+		move_by (point	=> line.B,		offset => offset);
 	end move_by;
 
 
@@ -1545,7 +1545,7 @@ package body et_geometry_2a is
 		line	: in out type_line;
 		offset	: in type_distance_relative)
 	is begin
-		move_by (line.start_point, offset);
+		move_by (line.A, offset);
 	end move_start_by;
 
 
@@ -1553,7 +1553,7 @@ package body et_geometry_2a is
 		line	: in out type_line;
 		offset	: in type_distance_relative)
 	is begin
-		move_by (line.end_point, offset);
+		move_by (line.B, offset);
 	end move_end_by;
 
 
@@ -1565,8 +1565,8 @@ package body et_geometry_2a is
 		line		: in out type_line;
 		axis		: in type_mirror)
 	is begin
-		mirror (line.start_point, axis);
-		mirror (line.end_point, axis);
+		mirror (line.A, axis);
+		mirror (line.B, axis);
 	end mirror;
 
 
@@ -1574,8 +1574,8 @@ package body et_geometry_2a is
 		line		: in out type_line;
 		rotation	: in type_rotation) 
 	is begin
-		rotate_by (line.start_point, rotation);
-		rotate_by (line.end_point, rotation);
+		rotate_by (line.A, rotation);
+		rotate_by (line.B, rotation);
 	end rotate_by;
 
 	
@@ -1585,8 +1585,8 @@ package body et_geometry_2a is
 		return type_line_fine
 	is begin
 		return (
-			start_point	=> to_vector (line.start_point),
-			end_point	=> to_vector (line.end_point),
+			A	=> to_vector (line.A),
+			B	=> to_vector (line.B),
 			status		=> line.status);
 	end to_line_fine;
 
@@ -1598,8 +1598,8 @@ package body et_geometry_2a is
 	is
 		l : type_line;
 	begin
-		l.start_point	:= to_point (line.start_point);
-		l.end_point   	:= to_point (line.end_point);
+		l.A	:= to_point (line.A);
+		l.B   	:= to_point (line.B);
 		l.status		:= line.status;
 		return l;
 	end to_line_coarse;
@@ -1657,8 +1657,8 @@ package body et_geometry_2a is
 		return type_vector 
 	is begin
 		return set (
-			x => type_float (line.start_point.x),
-			y => type_float (line.start_point.y),
+			x => type_float (line.A.x),
+			y => type_float (line.A.y),
 			z => 0.0);
 	end get_start_vector;
 
@@ -1668,8 +1668,8 @@ package body et_geometry_2a is
 		return type_vector 
 	is begin
 		return set (
-			x => type_float (line.end_point.x),
-			y => type_float (line.end_point.y),
+			x => type_float (line.B.x),
+			y => type_float (line.B.y),
 			z => 0.0);
 	end get_end_vector;
 
@@ -1679,8 +1679,8 @@ package body et_geometry_2a is
 		return type_vector 
 	is begin
 		return set (
-			x => type_float (line.end_point.x - line.start_point.x),
-			y => type_float (line.end_point.y - line.start_point.y),
+			x => type_float (line.B.x - line.A.x),
+			y => type_float (line.B.y - line.A.y),
 			z => 0.0);
 	end get_direction_vector;
 
@@ -1747,24 +1747,24 @@ package body et_geometry_2a is
 		d : constant type_distance := width / 2.0;
 	begin
 		-- x-axis:
-		w := line.end_point.x - line.start_point.x;
+		w := line.B.x - line.A.x;
 		
 		if w > 0.0 then -- line runs from left to right
-			result.position.x := line.start_point.x;
+			result.position.x := line.A.x;
 			result.width := w;
 		else -- line runs from right to left or vertically
-			result.position.x := line.end_point.x;
+			result.position.x := line.B.x;
 			result.width := -w;
 		end if;
 		
 		-- y-axis:
-		h := line.end_point.y - line.start_point.y;
+		h := line.B.y - line.A.y;
 		
 		if h > 0.0 then -- line runs upwards
-			result.position.y := line.start_point.y;
+			result.position.y := line.A.y;
 			result.height := h;
 		else -- line runs downwards or horizontally
-			result.position.y := line.end_point.y;
+			result.position.y := line.B.y;
 			result.height := -h;
 		end if;
 
@@ -1802,14 +1802,14 @@ package body et_geometry_2a is
 
 	function to_arc (
 		center		: in type_vector_model;
-		start_point	: in type_vector_model;			
-		end_point	: in type_vector_model;
+		A	: in type_vector_model;			
+		B	: in type_vector_model;
 		direction	: in type_direction_of_rotation)
 		return type_arc'class
 	is 
 		arc : type_arc;
 	begin
-		arc := (center, start_point, end_point, direction, others => <>);
+		arc := (center, A, B, direction, others => <>);
 
 		-- CS consistence check !!
 		return arc;
@@ -1834,21 +1834,21 @@ package body et_geometry_2a is
 
 	
 
-	procedure set_start_point (
+	procedure set_A (
 		arc			: in out type_arc;
-		start_point	: in type_vector_model)
+		A	: in type_vector_model)
 	is begin
-		arc.start_point := start_point;
-	end set_start_point;
+		arc.A := A;
+	end set_A;
 
 	
 	
-	procedure set_end_point (
+	procedure set_B (
 		arc			: in out type_arc;
-		end_point	: in type_vector_model)
+		B	: in type_vector_model)
 	is begin
-		arc.end_point := end_point;
-	end set_end_point;
+		arc.B := B;
+	end set_B;
 
 	
 
@@ -1871,21 +1871,21 @@ package body et_geometry_2a is
 	
 
 	
-	function get_start_point (
+	function get_A (
 		arc : in type_arc)
 		return type_vector_model
 	is begin
-		return arc.start_point;
-	end get_start_point;
+		return arc.A;
+	end get_A;
 
 	
 
-	function get_end_point (
+	function get_B (
 		arc : in type_arc)
 		return type_vector_model
 	is begin
-		return arc.end_point;
-	end get_end_point;
+		return arc.B;
+	end get_B;
 
 
 
@@ -1905,8 +1905,8 @@ package body et_geometry_2a is
 	is begin
 		return to_arc_fine (
 			center		=> to_vector (arc.center),
-			start_point	=> to_vector (arc.start_point),
-			end_point	=> to_vector (arc.end_point),
+			A	=> to_vector (arc.A),
+			B	=> to_vector (arc.B),
 			direction	=> arc.direction);
 	end to_arc_fine;
 
@@ -1920,8 +1920,8 @@ package body et_geometry_2a is
 	begin
 		result := (
 			center		=> to_point (get_center (arc)),
-			start_point	=> to_point (get_start_point (arc)),
-			end_point	=> to_point (get_end_point (arc)),
+			A	=> to_point (get_A (arc)),
+			B	=> to_point (get_B (arc)),
 			direction	=> get_direction (arc),
 			others 		=> <>);
 
@@ -1933,8 +1933,8 @@ package body et_geometry_2a is
 	function to_string (arc : in type_arc) return string is begin
 		return "arc: "
 			& "C:" & to_string (arc.center) 
-			& " / S:" & to_string (arc.start_point) 
-			& " / E:" & to_string (arc.end_point)
+			& " / S:" & to_string (arc.A) 
+			& " / E:" & to_string (arc.B)
 			& " / D: " & to_string (arc.direction);
 	end to_string;
 
@@ -2062,8 +2062,8 @@ package body et_geometry_2a is
 	function reverse_arc (arc : in type_arc) return type_arc'class is
 		result : type_arc := arc;
 	begin
-		result.start_point := arc.end_point;
-		result.end_point := arc.start_point;
+		result.A := arc.B;
+		result.B := arc.A;
 
 		case arc.direction is
 			when CW  => result.direction := CCW;
@@ -2076,10 +2076,10 @@ package body et_geometry_2a is
 	
 	
 	procedure reverse_arc (arc : in out type_arc) is
-		scratch : type_vector_model := arc.start_point;
+		scratch : type_vector_model := arc.A;
 	begin
-		arc.start_point := arc.end_point;
-		arc.end_point := scratch;
+		arc.A := arc.B;
+		arc.B := scratch;
 
 		case arc.direction is
 			when CW	 => arc.direction := CCW;
@@ -2101,7 +2101,7 @@ package body et_geometry_2a is
 	
 	function zero_length (arc : in type_arc) return boolean is
 	begin
-		if arc.start_point = arc.end_point then
+		if arc.A = arc.B then
 			return true;
 		else
 			return false;
@@ -2116,8 +2116,8 @@ package body et_geometry_2a is
 		offset	: in type_distance_relative)
 	is begin
 		move_by (point => arc.center,      offset => offset);
-		move_by (point => arc.start_point, offset => offset);
-		move_by (point => arc.end_point,   offset => offset);
+		move_by (point => arc.A, offset => offset);
+		move_by (point => arc.B,   offset => offset);
 	end move_by;
 
 
@@ -2133,8 +2133,8 @@ package body et_geometry_2a is
 		move_to (arc.center, position);
 
 		-- move start and end point of the arc by the computed offset
-		move_by (point => arc.start_point, offset => offset);
-		move_by (point => arc.end_point,   offset => offset);
+		move_by (point => arc.A, offset => offset);
+		move_by (point => arc.B,   offset => offset);
 	end move_to;
 	
 
@@ -2145,8 +2145,8 @@ package body et_geometry_2a is
 		axis		: in type_mirror)
 	is begin
 		mirror (arc.center, axis);
-		mirror (arc.start_point, axis);
-		mirror (arc.end_point, axis);
+		mirror (arc.A, axis);
+		mirror (arc.B, axis);
 		arc.direction := reverse_direction (arc.direction);
 	end mirror;
 
@@ -2157,8 +2157,8 @@ package body et_geometry_2a is
 		rotation	: in type_rotation) 
 	is begin
 		rotate_by (arc.center, rotation);
-		rotate_by (arc.start_point, rotation);
-		rotate_by (arc.end_point, rotation);
+		rotate_by (arc.A, rotation);
+		rotate_by (arc.B, rotation);
 	end;
 	
 
@@ -2167,7 +2167,7 @@ package body et_geometry_2a is
 		arc : in type_arc) 
 		return type_float_positive 
 	is begin
-		return get_distance_total (arc.center, arc.start_point);
+		return get_distance_total (arc.center, arc.A);
 	end get_radius_start;
 
 
@@ -2176,7 +2176,7 @@ package body et_geometry_2a is
 		arc : in type_arc)
 		return type_float_positive
 	is begin
-		return get_distance_total (arc.center, arc.end_point);
+		return get_distance_total (arc.center, arc.B);
 	end get_radius_end;
 
 
@@ -2207,9 +2207,9 @@ package body et_geometry_2a is
 
 	
 
-	function arc_end_point (
+	function arc_B (
 		center		: in type_vector_model;
-		start_point	: in type_vector_model;	
+		A	: in type_vector_model;	
 		angle 		: in type_angle) -- unit is degrees
 		return type_vector_model
 	is						
@@ -2219,13 +2219,13 @@ package body et_geometry_2a is
 		angle_start, angle_end : type_angle; -- CS type_angle_positive ?
 		end_x, end_y : type_float;
 		
-	begin -- arc_end_point
+	begin -- arc_B
 		
 		-- build an arc from the information available
 		arc := (
 			center		=> center,
-			start_point	=> start_point,
-			end_point	=> origin, -- not determined yet
+			A	=> A,
+			B	=> origin, -- not determined yet
 			direction	=> get_direction (angle),
 			others		=> <>);
 		
@@ -2233,18 +2233,18 @@ package body et_geometry_2a is
 		move_to (arc, origin);
 
 		-- calculate the radius of the arc
-		radius := type_float (get_distance_total (arc.center, arc.start_point));
+		radius := type_float (get_distance_total (arc.center, arc.A));
 
 		-- calculate the angle where the arc begins:
 
 		-- NOTE: If x and y are zero then the arctan operation is not possible. 
 		-- In this case we assume the resulting angle is zero.
-		if get_x (arc.start_point) = zero and get_y (arc.start_point) = zero then
+		if get_x (arc.A) = zero and get_y (arc.A) = zero then
 			angle_start := 0.0;
 		else
 			angle_start := arctan (
-					y => type_float (get_y (arc.start_point)),
-					x => type_float (get_x (arc.start_point)),
+					y => type_float (get_y (arc.A)),
+					x => type_float (get_x (arc.A)),
 					cycle => units_per_cycle);
 		end if;
 		
@@ -2261,7 +2261,7 @@ package body et_geometry_2a is
 			x	=> to_distance (end_x),
 			y	=> to_distance (end_y));
 						
-	end arc_end_point;
+	end arc_B;
 
 	
 
@@ -2288,28 +2288,28 @@ package body et_geometry_2a is
 		
 		-- calculate the radius of the arc
 		set_radius (result, get_distance_total (
-			arc_tmp.center, to_vector (arc_tmp.start_point)));
+			arc_tmp.center, to_vector (arc_tmp.A)));
 		
 		-- calculate the angles where the arc begins and ends:
 
 		-- NOTE: If x and y are zero then the arctan operation is not possible. 
 		-- In this case we assume the resulting angle is zero.
 		
-		if get_x (arc_tmp.start_point) = zero and get_y (arc_tmp.start_point) = zero then
+		if get_x (arc_tmp.A) = zero and get_y (arc_tmp.A) = zero then
 			set_angle_start (result, 0.0);
 		else
 			set_angle_start (result, arctan (
-					y => type_float (get_y (arc_tmp.start_point)),
-					x => type_float (get_x (arc_tmp.start_point)), 
+					y => type_float (get_y (arc_tmp.A)),
+					x => type_float (get_x (arc_tmp.A)), 
 					cycle => units_per_cycle));
 		end if;
 
-		if get_x (arc_tmp.end_point) = zero and get_y (arc_tmp.end_point) = zero then
+		if get_x (arc_tmp.B) = zero and get_y (arc_tmp.B) = zero then
 			set_angle_end (result, 0.0);
 		else
 			set_angle_end (result, arctan (
-					y => type_float (get_y (arc_tmp.end_point)),
-					x => type_float (get_x (arc_tmp.end_point)),
+					y => type_float (get_y (arc_tmp.B)),
+					x => type_float (get_x (arc_tmp.B)),
 					cycle => units_per_cycle));
 		end if;
 
@@ -3070,33 +3070,33 @@ package body et_geometry_2a is
 		
 		-- The greater distance from start to end point in X or Y determines 
 		-- whether the line is handled like a horizontal or vertical drawn line.
-		if get_distance_abs (line.start_point, line.end_point, AXIS_X) > 
-			get_distance_abs (line.start_point, line.end_point, AXIS_Y) then
+		if get_distance_abs (line.A, line.B, AXIS_X) > 
+			get_distance_abs (line.A, line.B, AXIS_Y) then
 
 			-- distance in X greater -> decision will be made along the X axis.
 			-- The line will be handled like a horizontal drawn line.
 			
 			-- calculate the zone border. This depends on the line length in X direction.
-			line_length := get_distance_abs (line.start_point, line.end_point, AXIS_X);
+			line_length := get_distance_abs (line.A, line.B, AXIS_X);
 			zone_border := line_length / type_distance (line_zone_division_factor);
 			-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
 			
-			if get_x (line.start_point) < get_x (line.end_point) then 
+			if get_x (line.A) < get_x (line.B) then 
 			-- DRAWN FROM LEFT TO THE RIGHT
-				if get_x (point) < get_x (line.start_point) + zone_border then
-					zone := START_POINT; -- point is in the zone of line.start_point
-				elsif get_x (point) > get_x (line.end_point) - zone_border then
-					zone := END_POINT; -- point is in the zone of line.end_point
+				if get_x (point) < get_x (line.A) + zone_border then
+					zone := START_POINT; -- point is in the zone of line.A
+				elsif get_x (point) > get_x (line.B) - zone_border then
+					zone := END_POINT; -- point is in the zone of line.B
 				else
 					zone := CENTER;
 				end if;
 
 			else 
 			-- DRAWN FROM RIGHT TO THE LEFT
-				if get_x (point) > get_x (line.start_point) - zone_border then
-					zone := START_POINT; -- point is in the zone of line.start_point
-				elsif get_x (point) < get_x (line.end_point) + zone_border then
-					zone := END_POINT; -- point is in the zone of line.end_point
+				if get_x (point) > get_x (line.A) - zone_border then
+					zone := START_POINT; -- point is in the zone of line.A
+				elsif get_x (point) < get_x (line.B) + zone_border then
+					zone := END_POINT; -- point is in the zone of line.B
 				else
 					zone := CENTER;
 				end if;
@@ -3108,26 +3108,26 @@ package body et_geometry_2a is
 			-- The line will be handled like a vertical drawn line.
 
 			-- calculate the zone border. This depends on the line length in Y direction.
-			line_length := get_distance_abs (line.start_point, line.end_point, AXIS_Y);
+			line_length := get_distance_abs (line.A, line.B, AXIS_Y);
 			zone_border := line_length / type_distance (line_zone_division_factor);
 			-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
 			
-			if get_y (line.start_point) < get_y (line.end_point) then 
+			if get_y (line.A) < get_y (line.B) then 
 			-- DRAWN UPWARDS
-				if get_y (point) < get_y (line.start_point) + zone_border then
-					zone := START_POINT; -- point is in the zone of line.start_point
-				elsif get_y (point) > get_y (line.end_point) - zone_border then
-					zone := END_POINT; -- point is in the zone of line.end_point
+				if get_y (point) < get_y (line.A) + zone_border then
+					zone := START_POINT; -- point is in the zone of line.A
+				elsif get_y (point) > get_y (line.B) - zone_border then
+					zone := END_POINT; -- point is in the zone of line.B
 				else
 					zone := CENTER;
 				end if;
 					
 			else 
 			-- DRAWN DOWNWARDS
-				if get_y (point) > get_y (line.start_point) - zone_border then
-					zone := START_POINT; -- point is in the zone of line.start_point
-				elsif get_y (point) < get_y (line.end_point) + zone_border then
-					zone := END_POINT; -- point is in the zone of line.end_point
+				if get_y (point) > get_y (line.A) - zone_border then
+					zone := START_POINT; -- point is in the zone of line.A
+				elsif get_y (point) < get_y (line.B) + zone_border then
+					zone := END_POINT; -- point is in the zone of line.B
 				else
 					zone := CENTER;
 				end if;
@@ -3151,11 +3151,11 @@ package body et_geometry_2a is
 	begin
 		case zone is
 			when START_POINT =>
-				offset := get_distance_relative (line.start_point, destination);
+				offset := get_distance_relative (line.A, destination);
 				move_start_by (line, offset);
 				
 			when END_POINT =>
-				offset := get_distance_relative (line.end_point, destination);
+				offset := get_distance_relative (line.B, destination);
 				move_end_by (line, offset);
 				
 			when CENTER =>

@@ -337,15 +337,15 @@ package body et_kicad_to_native is
 			set (C, AXIS_Y, new_y);
 			set_center (arc, C);
 			
-			S := get_start_point (arc);
+			S := get_A (arc);
 			new_y := layout_sheet_height - get_y (S);
 			set (S, AXIS_Y, new_y);
-			set_start_point (arc, S);
+			set_A (arc, S);
 
-			E := get_end_point (arc);
+			E := get_B (arc);
 			new_y := layout_sheet_height - get_y (E);
 			set (E, AXIS_Y, new_y);
-			set_end_point (arc, E);
+			set_B (arc, E);
 		end move;
 		
 
@@ -761,8 +761,8 @@ package body et_kicad_to_native is
 							 level => log_threshold + 4);
 						
 
-						move (line.start_point);
-						move (line.end_point);
+						move (line.A);
+						move (line.B);
 						
 						log (text => now & to_string (line, true),  -- log incl. width
 							 level => log_threshold + 4);
@@ -928,8 +928,8 @@ package body et_kicad_to_native is
 
 					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
 
-					move (line.start_point);
-					move (line.end_point);
+					move (line.A);
+					move (line.B);
 					
 					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
 							
@@ -1136,8 +1136,8 @@ package body et_kicad_to_native is
 
 					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
 
-					move (line.start_point);
-					move (line.end_point);
+					move (line.A);
+					move (line.B);
 					
 					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
 							
@@ -1345,8 +1345,8 @@ package body et_kicad_to_native is
 
 					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
 
-					move (line.start_point);
-					move (line.end_point);
+					move (line.A);
+					move (line.B);
 					
 					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
 							
@@ -1516,8 +1516,8 @@ package body et_kicad_to_native is
 
 					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
 
-					move (line.start_point);
-					move (line.end_point);
+					move (line.A);
+					move (line.B);
 					
 					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
 							
@@ -1757,8 +1757,8 @@ package body et_kicad_to_native is
 
 					log (text => before & to_string (s.segment_line), level => log_threshold + log_threshold_add);
 
-					move (s.segment_line.start_point);
-					move (s.segment_line.end_point);
+					move (s.segment_line.A);
+					move (s.segment_line.B);
 					
 					log (text => now & to_string (s.segment_line), level => log_threshold + log_threshold_add);
 							
@@ -1871,8 +1871,8 @@ package body et_kicad_to_native is
 					log (text => before & to_string (line, true),  -- log incl. width
 						 level => log_threshold + log_threshold_add);
 
-					move (line.start_point);
-					move (line.end_point);
+					move (line.A);
+					move (line.B);
 					
 					log (text => now & to_string (line, true),  -- log incl. width
 						 level => log_threshold + log_threshold_add);
@@ -2285,12 +2285,12 @@ package body et_kicad_to_native is
 					when TRUE =>
 						-- The point is a start point if another point follows. Otherwise nothing happens.
 						if next (point_cursor) /= type_symbol_points.no_element then
-							line.start_point := element (point_cursor); -- start point
+							line.A := element (point_cursor); -- start point
 							start := false; -- up next: end point
 						end if;
 
 					when FALSE =>
-						line.end_point := element (point_cursor); -- end point
+						line.B := element (point_cursor); -- end point
 						start := true; -- up next: start point
 
 						-- append line to collection of native lines
@@ -2382,23 +2382,23 @@ package body et_kicad_to_native is
 				));
 			
 			-- lower horizontal line
-			line.start_point := rectangle.corner_A;
-			line.end_point := corner_C;
+			line.A := rectangle.corner_A;
+			line.B := corner_C;
 			append_line;
 			
 			-- upper horizontal line	
-			line.start_point := corner_D;
-			line.end_point := rectangle.corner_B;
+			line.A := corner_D;
+			line.B := rectangle.corner_B;
 			append_line;
 
 			-- left vertical line
-			line.start_point := rectangle.corner_A;
-			line.end_point := corner_D;
+			line.A := rectangle.corner_A;
+			line.B := corner_D;
 			append_line;
 
 			-- right vertical line
-			line.start_point := corner_C;
-			line.end_point := rectangle.corner_B;
+			line.A := corner_C;
+			line.B := rectangle.corner_B;
 			append_line;
 
 			log_indentation_down;
@@ -2942,11 +2942,11 @@ package body et_kicad_to_native is
 
 						-- Test if junction sits at start point of segment:
 						if element (junction_cursor).coordinates = segment.coordinates_start then
-							junctions.start_point := true;
+							junctions.A := true;
 
 						-- Test if junction sits at end point of segment:
 						elsif element (junction_cursor).coordinates = segment.coordinates_end then
-							junctions.end_point := true;
+							junctions.B := true;
 
 						-- If junction misplaced, issue warning:
 						else
@@ -3019,8 +3019,8 @@ package body et_kicad_to_native is
 							-- CS this is a workaround in order to provide a line for function distance_point_line:
 							declare
 								line : pac_geometry_2.type_line := (
-									start_point	=> et_kicad_coordinates.get_point (segment.coordinates_start), 
-									end_point	=> et_kicad_coordinates.get_point (segment.coordinates_end),
+									A	=> et_kicad_coordinates.get_point (segment.coordinates_start), 
+									B	=> et_kicad_coordinates.get_point (segment.coordinates_end),
 									others		=> <>);
 							begin
 								dist := pac_geometry_2.get_distance (
@@ -3089,8 +3089,8 @@ package body et_kicad_to_native is
 							level => log_threshold + 4);
 						
 						-- get coordinates from current kicad net segment:
-						net_segment_native.start_point := et_kicad_coordinates.get_point (element (kicad_segment_cursor).coordinates_start);
-						net_segment_native.end_point   := et_kicad_coordinates.get_point (element (kicad_segment_cursor).coordinates_end);
+						net_segment_native.A := et_kicad_coordinates.get_point (element (kicad_segment_cursor).coordinates_start);
+						net_segment_native.B   := et_kicad_coordinates.get_point (element (kicad_segment_cursor).coordinates_end);
 
 						-- get labels from current kicad net segment
 						net_segment_native.labels := tag_and_simple_labels (element (kicad_segment_cursor));

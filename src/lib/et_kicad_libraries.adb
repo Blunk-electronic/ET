@@ -1504,7 +1504,7 @@ package body et_kicad_libraries is
 				pos 		: type_field_count_positive := 2; 
 
 				-- the x position of the last point of the line is here (field #10 in example above)
-				end_point	: constant type_field_count := get_field_count (line) - 2;
+				B	: constant type_field_count := get_field_count (line) - 2;
 
 				-- temporarily we store coordinates of a point here
 				point		: type_vector_model;
@@ -1527,7 +1527,7 @@ package body et_kicad_libraries is
 				-- From the next field (#6) on, we find the coordinates of the 
 				-- start point, the bend point(s) and the end point:
 				pos := 6;
-				loop exit when pos > end_point;
+				loop exit when pos > B;
 					set (point, AXIS_X, mil_to_distance (mil => f (line, pos))); -- set x
 				
 					set (point, AXIS_Y, mil_to_distance (mil => f (line, pos + 1))); -- set y (right after the x-field)
@@ -1696,33 +1696,33 @@ package body et_kicad_libraries is
 				arc.fill		:= to_fill (f (line,10));
 
 				
-				-- set (arc.start_point, AXIS_X, mil_to_distance (mil => f (line,11)));
+				-- set (arc.A, AXIS_X, mil_to_distance (mil => f (line,11)));
 				set (scratch_point, AXIS_X, mil_to_distance (mil => f (line, 11)));
 				
-				-- set (arc.start_point, AXIS_Y, mil_to_distance (mil => f (line,12)));
+				-- set (arc.A, AXIS_Y, mil_to_distance (mil => f (line,12)));
 				set (scratch_point, AXIS_Y, mil_to_distance (mil => f (line,12)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
-				-- mirror (point => arc.start_point, axis => MIRROR_ALONG_X_AXIS);
+				-- mirror (point => arc.A, axis => MIRROR_ALONG_X_AXIS);
 				mirror (scratch_point, MIRROR_ALONG_X_AXIS);
 				
-				set_start_point (arc, scratch_point);
+				set_A (arc, scratch_point);
 
 				
 
-				--set (arc.end_point, AXIS_X, mil_to_distance (mil => f (line,13)));
+				--set (arc.B, AXIS_X, mil_to_distance (mil => f (line,13)));
 				set (scratch_point, AXIS_X, mil_to_distance (mil => f (line, 13)));
 				
-				-- set (arc.end_point, AXIS_Y, mil_to_distance (mil => f (line, 14)));
+				-- set (arc.B, AXIS_Y, mil_to_distance (mil => f (line, 14)));
 				set (scratch_point, AXIS_Y, mil_to_distance (mil => f (line, 14)));
 
 				-- For some unknown reason, kicad saves the y position of library objects inverted.
 				-- It is probably a bug. However, when importing objects we must invert y. 
-				-- mirror (point => arc.end_point, axis => MIRROR_ALONG_X_AXIS);
+				-- mirror (point => arc.B, axis => MIRROR_ALONG_X_AXIS);
 				mirror (scratch_point, MIRROR_ALONG_X_AXIS);
 
-				set_end_point (arc, scratch_point);
+				set_B (arc, scratch_point);
 								
 				-- CS: log properties
 				return arc;

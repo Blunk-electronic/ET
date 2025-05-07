@@ -1,4 +1,4 @@
-------------------------------------------------------------------------------
+	------------------------------------------------------------------------------
 --                                                                          --
 --                              SYSTEM ET                                   --
 --                                                                          --
@@ -713,11 +713,17 @@ package et_geometry_2a is
 
 
 -- LINE
+
+	type type_line_status is record
+		A_moving	: boolean := false;
+		B_moving	: boolean := false;
+	end record;
+	
 	
 	type type_line_base is abstract tagged record
-		start_point	: type_vector_model;
-		end_point	: type_vector_model;
+		A, B 		: type_vector_model; -- start and end point
 		status		: type_object_status;
+		status_AB	: type_line_status;
 	end record;
 
 	
@@ -887,8 +893,8 @@ package et_geometry_2a is
 	-- The start vector of the result will be directly derived 
 	--  from the start point of the given line.
 	-- The direction vector of the result will be computed as:
-	--  dx = line.end_point.x - line.start_point.x
-	--  dy = line.end_point.y - line.start_point.y
+	--  dx = line.B.x - line.A.x
+	--  dy = line.B.y - line.A.y
 	--  dz = zero
 	function to_line_vector (
 		line	: in type_line)
@@ -949,11 +955,10 @@ package et_geometry_2a is
 
 
 	type type_arc_base is abstract tagged record
-		center			: type_vector_model;
-		start_point		: type_vector_model;
-		end_point		: type_vector_model;
-		direction		: type_direction_of_rotation := CW;
-		status			: type_object_status;
+		center		: type_vector_model;
+		A, B		: type_vector_model; -- start and end point
+		direction	: type_direction_of_rotation := CW;
+		status		: type_object_status;
 	end record;
 
 	
@@ -963,8 +968,8 @@ package et_geometry_2a is
 
 	function to_arc (
 		center		: in type_vector_model;
-		start_point	: in type_vector_model;			
-		end_point	: in type_vector_model;
+		A			: in type_vector_model;			
+		B			: in type_vector_model;
 		direction	: in type_direction_of_rotation)
 		return type_arc'class;
 	
@@ -978,14 +983,14 @@ package et_geometry_2a is
 		center	: in type_vector_model);
 
 
-	procedure set_start_point (
-		arc			: in out type_arc;
-		start_point	: in type_vector_model);
+	procedure set_A (
+		arc	: in out type_arc;
+		A	: in type_vector_model);
 
 	
-	procedure set_end_point (
-		arc			: in out type_arc;
-		end_point	: in type_vector_model);
+	procedure set_B (
+		arc	: in out type_arc;
+		B	: in type_vector_model);
 
 
 	procedure set_direction (
@@ -999,12 +1004,12 @@ package et_geometry_2a is
 		return type_vector_model;
 	
 
-	function get_start_point (
+	function get_A (
 		arc : in type_arc)
 		return type_vector_model;
 	
 
-	function get_end_point (
+	function get_B (
 		arc : in type_arc)
 		return type_vector_model;
 
@@ -1153,10 +1158,10 @@ package et_geometry_2a is
 	
 
 	-- Computes the end point of an arc.
-	function arc_end_point (
-		center		: in type_vector_model;
-		start_point	: in type_vector_model;	
-		angle 		: in type_angle) -- CS: type_angle_positive ?
+	function arc_B ( -- CS rename to get_arc_B
+		center	: in type_vector_model;
+		A		: in type_vector_model;	
+		angle 	: in type_angle) -- CS: type_angle_positive ?
 		return type_vector_model;
 
 	
@@ -1189,8 +1194,8 @@ package et_geometry_2a is
 
 
 	function on_arc (
-		arc			: in type_arc;
-		point		: in type_vector_model)
+		arc		: in type_arc;
+		point	: in type_vector_model)
 		return boolean; 
 
 	

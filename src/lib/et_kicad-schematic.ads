@@ -797,7 +797,7 @@ package et_kicad.schematic is
 		picked	: boolean := false; -- flag indicates that the segment has been added to the anonymous net
 	end record;
 
-	type type_segment_side is (START_POINT, END_POINT); -- the end point of a segment	
+	type type_segment_side is (A, B); -- the end point of a segment	
 
 	package type_wild_segments is new doubly_linked_lists (type_wild_net_segment);
 

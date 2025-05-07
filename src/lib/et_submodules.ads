@@ -286,9 +286,9 @@ package et_submodules is
 
 		-- the arc that connects the ports
 		arc	: et_symbols.type_symbol_arc := (type_arc (to_arc (
-						center		=> (x =>  0.0, y => 0.0),
-						start_point	=> (x => -5.0, y => 0.0),
-						end_point	=> (x =>  5.0, y => 0.0),
+						center	=> (x =>  0.0, y => 0.0),
+						A		=> (x => -5.0, y => 0.0),
+						B		=> (x =>  5.0, y => 0.0),
 						direction	=> CW))
 						with port_line_width);
 

@@ -225,7 +225,7 @@ package body et_canvas_schematic_nets is
 	end all_belong_to_same_net;
 
 	
-	function between_start_and_end_point_of_sloping_segment (
+	function between_A_and_B_of_sloping_segment (
 		point		: in type_vector_model;
 		segments	: in pac_proposed_segments.list)
 		return boolean 
@@ -235,7 +235,7 @@ package body et_canvas_schematic_nets is
 		procedure query_segment (c : in pac_proposed_segments.cursor) is 
 			s : type_selected_segment := element (c);
 		begin
-			if between_start_and_end_point (set_catch_zone (point, 0.0), s.segment) then
+			if between_A_and_B (set_catch_zone (point, 0.0), s.segment) then
 
 				if get_segment_orientation (s.segment) = SLOPING then
 					result := true;
@@ -248,7 +248,7 @@ package body et_canvas_schematic_nets is
 		iterate (segments, query_segment'access);
 
 		return result;
-	end between_start_and_end_point_of_sloping_segment;
+	end between_A_and_B_of_sloping_segment;
 	
 
 	
@@ -473,32 +473,32 @@ package body et_canvas_schematic_nets is
 		
 		if not edit_process_running then
 			-- Set start point:
-			live_path.start_point := point;
+			live_path.A := point;
 					
 			-- Before processing the start point further, it must be validated:
-			if valid_for_net_segment (live_path.start_point, log_threshold + 3) then
+			if valid_for_net_segment (live_path.A, log_threshold + 3) then
 
 				-- Allow drawing of the path:
 				set_edit_process_running;
 				
-				set_status (status_start_point & to_string (live_path.start_point) & ". " &
-					status_press_space & status_set_end_point & status_hint_for_abort);
+				set_status (status_A & to_string (live_path.A) & ". " &
+					status_press_space & status_set_B & status_hint_for_abort);
 			end if;
 
 		else -- preliminary_segment IS ready
 
 			-- Start a new path only if the given point differs from 
 			-- the start point of the current path:
-			if point /= live_path.start_point then
+			if point /= live_path.A then
 				
 				-- Complete the path by setting its end point.
 				-- The the current bend point (if there is one) into account:
 
 				if live_path.bended = NO then				
-					live_path.end_point := point;
+					live_path.B := point;
 
 					-- Before processing the end point further, it must be validated:
-					if valid_for_net_segment (live_path.end_point, log_threshold + 3) then
+					if valid_for_net_segment (live_path.B, log_threshold + 3) then
 
 						-- Insert a single net segment:
 						insert_net_segment (
@@ -506,8 +506,8 @@ package body et_canvas_schematic_nets is
 							sheet			=> active_sheet,
 							net_name_given	=> object_net_name, -- RESET_N, or empty
 							segment			=> (
-									start_point	=> live_path.start_point,
-									end_point	=> live_path.end_point,
+									A	=> live_path.A,
+									B	=> live_path.B,
 									others		=> <>), -- no labels and no ports, just a bare segment
 							log_threshold	=>	log_threshold + 1);
 
@@ -527,18 +527,18 @@ package body et_canvas_schematic_nets is
 							sheet			=> active_sheet,
 							net_name_given	=> object_net_name, -- RESET_N, or empty
 							segment			=> (
-									start_point	=> live_path.start_point,
-									end_point	=> live_path.bend_point,
+									A	=> live_path.A,
+									B	=> live_path.bend_point,
 									others		=> <>), -- no labels and no ports, just a bare segment
 							log_threshold	=>	log_threshold + 1);
 
 
 						
 						-- END POINT:
-						live_path.end_point := point;
+						live_path.B := point;
 						
 						-- Before processing the END point further, it must be validated:
-						if valid_for_net_segment (live_path.end_point, log_threshold + 3) then
+						if valid_for_net_segment (live_path.B, log_threshold + 3) then
 
 							-- Insert second segment of the path:
 							insert_net_segment (
@@ -546,8 +546,8 @@ package body et_canvas_schematic_nets is
 								sheet			=> active_sheet,
 								net_name_given	=> object_net_name, -- RESET_N, or empty
 								segment			=> (
-										start_point	=> live_path.bend_point,
-										end_point	=> live_path.end_point,
+										A	=> live_path.bend_point,
+										B	=> live_path.B,
 										others		=> <>), -- no labels and no ports, just a bare segment
 								log_threshold	=>	log_threshold + 1);
 						
@@ -558,7 +558,7 @@ package body et_canvas_schematic_nets is
 
 				-- Set start point of path so that a new
 				-- path can be drawn:			
-				live_path.start_point := point;
+				live_path.A := point;
 
 			else
 				reset_preliminary_segment;
@@ -575,12 +575,12 @@ package body et_canvas_schematic_nets is
 		segment			: in type_net_segment;
 		log_threshold	: in type_log_level)
 	is 
-		start_point : constant type_object_position := to_position (segment.start_point, sheet);
-		end_point	: constant type_object_position := to_position (segment.end_point, sheet);
+		A : constant type_object_position := to_position (segment.A, sheet);
+		B : constant type_object_position := to_position (segment.B, sheet);
 
 		use et_schematic_ops.nets;
-		segments_at_start_point : pac_proposed_segments.list;
-		segments_at_end_point	: pac_proposed_segments.list;
+		segments_at_A : pac_proposed_segments.list;
+		segments_at_B	: pac_proposed_segments.list;
 
 		use pac_nets;
 		net_cursor	: pac_nets.cursor;
@@ -640,24 +640,24 @@ package body et_canvas_schematic_nets is
 		
 
 		-- Look for already existing nets at the start of the segment:
-		segments_at_start_point := collect_segments (
+		segments_at_A := collect_segments (
 			module			=> module,
-			place			=> start_point,
+			place			=> A,
 			log_threshold	=> log_threshold + 2);
 
 		-- We assume there are either no segments at all or 
 		-- segments belonging to the same net at the start point:
-		net_name_start := first_net (segments_at_start_point);
+		net_name_start := first_net (segments_at_A);
 		
 		-- Look for already existing nets at the end of the segment:
-		segments_at_end_point := collect_segments (
+		segments_at_B := collect_segments (
 			module			=> module,
-			place			=> end_point,
+			place			=> B,
 			log_threshold	=> log_threshold + 2);
 
 		-- We assume there are either no segments at all or 
 		-- segments belonging to the same net at the end point:
-		net_name_end := first_net (segments_at_end_point);
+		net_name_end := first_net (segments_at_B);
 		
 		-- If no nets at BOTH start AND end point, then
 		-- an anonymous net or an explicit named net will be generated:
@@ -762,7 +762,7 @@ package body et_canvas_schematic_nets is
 			if all_belong_to_same_net (segments) then 
 
 				-- Test for sloping segments here:
-				if between_start_and_end_point_of_sloping_segment (point, segments) then
+				if between_A_and_B_of_sloping_segment (point, segments) then
 					set_status ("Junction in sloping segment not allowed. " & choose);
 					result := false;
 				else

@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -39,14 +39,14 @@
 package body et_geometry_2a.path is
 	
 	function to_path (
-		start_point, end_point	: in type_vector_model;
+		A, B	: in type_vector_model;
 		style					: in type_bend_style)
 		return type_path
 	is
 		-- The area required for the path is a rectangle.
 		-- We will need to figure out whether it is wider than tall:
-		dx : constant type_distance := get_distance (start_point, end_point, AXIS_X);
-		dy : constant type_distance := get_distance (start_point, end_point, AXIS_Y);
+		dx : constant type_distance := get_distance (A, B, AXIS_X);
+		dy : constant type_distance := get_distance (A, B, AXIS_Y);
 
 		sup_start, sup_end : type_vector_model; -- support points near given start and end point
 
@@ -60,8 +60,8 @@ package body et_geometry_2a.path is
 		-- CS use function get_intersection with S1, R1, S2, R2 as input
 		-- to compute intersection I.
 		procedure compute_bend_point is 
-			first_line	: constant type_line := (start_point, sup_start, others => <>);
-			second_line	: constant type_line := (end_point, sup_end, others => <>);
+			first_line	: constant type_line := (A, sup_start, others => <>);
+			second_line	: constant type_line := (B, sup_end, others => <>);
 
 			-- first line start vector:
 			S1 : constant type_vector := get_start_vector (first_line);
@@ -118,7 +118,7 @@ package body et_geometry_2a.path is
 		
 		-- If start and end point are equally then do nothing
 		-- and return given start and end point as they are:
-		if start_point = end_point then
+		if A = B then
 			bended := NO;
 		else
 		
@@ -138,27 +138,27 @@ package body et_geometry_2a.path is
 							-- The first line must run straight from start point:
 							--if wider_than_tall then
 							if abs (dx) > abs (dy) then -- wider than tall
-								sup_start := set (get_x (start_point) + ds, get_y (start_point));
+								sup_start := set (get_x (A) + ds, get_y (A));
 							else -- taller than wide
-								sup_start := set (get_x (start_point), get_y (start_point) + ds);
+								sup_start := set (get_x (A), get_y (A) + ds);
 							end if;
 
 							-- compute support point near end point:
 							-- The second line must run angled from end point:
 							if dx > zero then -- to the right
 								if dy > zero then -- upwards
-									sup_end := set (get_x (end_point) + ds, get_y (end_point) + ds);
+									sup_end := set (get_x (B) + ds, get_y (B) + ds);
 									--  45 degree
 								else
-									sup_end := set (get_x (end_point) + ds, get_y (end_point) - ds);
+									sup_end := set (get_x (B) + ds, get_y (B) - ds);
 									-- -45 degree
 								end if;
 							else -- to the left
 								if dy > zero then -- upwards
-									sup_end := set (get_x (end_point) - ds, get_y (end_point) + ds);
+									sup_end := set (get_x (B) - ds, get_y (B) + ds);
 									-- 135 degree
 								else
-									sup_end := set (get_x (end_point) - ds, get_y (end_point) - ds);
+									sup_end := set (get_x (B) - ds, get_y (B) - ds);
 									-- 225 degree
 								end if;
 							end if;
@@ -178,18 +178,18 @@ package body et_geometry_2a.path is
 							-- The first line must run angled from start point:
 							if dx > zero then -- to the right
 								if dy > zero then -- upwards
-									sup_start := set (get_x (start_point) + ds, get_y (start_point) + ds);
+									sup_start := set (get_x (A) + ds, get_y (A) + ds);
 									--  45 degree
 								else -- downwards
-									sup_start := set (get_x (start_point) + ds, get_y (start_point) - ds);
+									sup_start := set (get_x (A) + ds, get_y (A) - ds);
 									-- -45 degree
 								end if;
 							else -- to the left
 								if dy > zero then -- upwards
-									sup_start := set (get_x (start_point) - ds, get_y (start_point) + ds);
+									sup_start := set (get_x (A) - ds, get_y (A) + ds);
 									-- 135 degree
 								else -- downwards
-									sup_start := set (get_x (start_point) - ds, get_y (start_point) - ds);
+									sup_start := set (get_x (A) - ds, get_y (A) - ds);
 									-- 225 degree
 								end if;
 							end if;
@@ -197,10 +197,10 @@ package body et_geometry_2a.path is
 							-- compute support point near end point:
 							-- The second line must run straight from end point:
 							if abs (dx) > abs (dy) then -- wider than tall
-								sup_end := set (get_x (end_point) + ds, get_y (end_point));
+								sup_end := set (get_x (B) + ds, get_y (B));
 								-- horizontally
 							else -- taller than wide
-								sup_end := set (get_x (end_point), get_y (end_point) + ds);
+								sup_end := set (get_x (B), get_y (B) + ds);
 								-- vertically
 							end if;
 
@@ -210,11 +210,11 @@ package body et_geometry_2a.path is
 					when VERTICAL_THEN_HORIZONTAL =>
 						-- Compute support point near start point:
 						-- The first line must run vertically from start point:
-						sup_start := set (get_x (start_point), get_y (start_point) + ds);
+						sup_start := set (get_x (A), get_y (A) + ds);
 						-- vertically
 
 						-- The second line must run horizontally from end point:
-						sup_end := set (get_x (end_point) + ds, get_y (end_point));
+						sup_end := set (get_x (B) + ds, get_y (B));
 						-- horizontally
 
 						compute_bend_point;
@@ -222,12 +222,12 @@ package body et_geometry_2a.path is
 					when HORIZONTAL_THEN_VERTICAL =>
 						-- Compute support point near start point:
 						-- The first line must run horizontal from start point:
-						sup_start := set (get_x (start_point) + ds, get_y (start_point));
+						sup_start := set (get_x (A) + ds, get_y (A));
 						-- horizontally
 
 						-- compute support point near end point:
 						-- The second line must run vertically from end point:
-						sup_end := set (get_x (end_point), get_y (end_point) + ds);
+						sup_end := set (get_x (B), get_y (B) + ds);
 						-- vertically
 
 						compute_bend_point;
@@ -238,9 +238,9 @@ package body et_geometry_2a.path is
 		end if;
 			
 		if bended = NO then
-			return (NO, start_point, end_point);
+			return (NO, A, B);
 		else
-			return (YES, start_point, end_point, bend_point);
+			return (YES, A, B, bend_point);
 		end if;
 
 	end to_path;

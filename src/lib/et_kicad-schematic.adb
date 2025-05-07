@@ -1401,8 +1401,8 @@ package body et_kicad.schematic is
 			-- CS this is a workaround in order to provide a line for function on_line:
 			type type_line_scratch is new pac_geometry_2.type_line with null record;
 			line : type_line_scratch := (
-				start_point	=> get_point (segment.coordinates_start), 
-				end_point	=> get_point (segment.coordinates_end),
+				A	=> get_point (segment.coordinates_start), 
+				B	=> get_point (segment.coordinates_end),
 				others		=> <>);
 			
 		begin -- on_segment
@@ -3422,8 +3422,8 @@ package body et_kicad.schematic is
 		-- CS this is a workaround in order to provide a line for function distance_point_line:
 		type type_line_scratch is new pac_geometry_2.type_line with null record;
 		line : type_line_scratch := (
-			start_point	=> get_point (segment.coordinates_start), 
-			end_point	=> get_point (segment.coordinates_end),
+			A	=> get_point (segment.coordinates_start), 
+			B	=> get_point (segment.coordinates_end),
 			others		=> <>);
 		
 	begin
@@ -3820,8 +3820,8 @@ package body et_kicad.schematic is
 		-- CS this is a workaround in order to provide a line for function distance_point_line:
 		type type_line_scratch is new pac_geometry_2.type_line with null record;
 		line : type_line_scratch := (
-			start_point	=> get_point (segment.coordinates_start), 
-			end_point	=> get_point (segment.coordinates_end),
+			A	=> get_point (segment.coordinates_start), 
+			B	=> get_point (segment.coordinates_end),
 			others		=> <>);
 		
 	begin -- port_connected_with_segment
@@ -3843,7 +3843,7 @@ package body et_kicad.schematic is
 				if (not out_of_range (distance_port_segment)) and to_distance (get_distance (distance_port_segment)) = zero then
 
 					-- If point sits on either start or end point of given line
-					if on_start_point (distance_port_segment) or on_end_point (distance_port_segment) then
+					if on_A (distance_port_segment) or on_B (distance_port_segment) then
 
 						-- If another segment meets here a junction is required:
 						if another_segment_here then
@@ -5528,8 +5528,8 @@ package body et_kicad.schematic is
 								declare
 									type type_line_scratch is new pac_geometry_2.type_line with null record;
 									line : type_line_scratch := (
-										start_point	=> get_point (element (segment_cursor_sec).coordinates_start), 
-										end_point	=> get_point (element (segment_cursor_sec).coordinates_end),
+										A	=> get_point (element (segment_cursor_sec).coordinates_start), 
+										B	=> get_point (element (segment_cursor_sec).coordinates_end),
 										others		=> <>);
 								begin
 									-- If START point of primary segment sits BETWEEN start and end point of secondary segment,
@@ -5742,8 +5742,8 @@ package body et_kicad.schematic is
 								declare
 									type type_line_scratch is new pac_geometry_2.type_line with null record;
 									line : type_line_scratch := (
-										start_point	=> get_point (element (segment_cursor).coordinates_start), 
-										end_point	=> get_point (element (segment_cursor).coordinates_end),
+										A	=> get_point (element (segment_cursor).coordinates_start), 
+										B	=> get_point (element (segment_cursor).coordinates_end),
 										others		=> <>);
 								begin
 									if line.on_line (get_point (element (junction_cursor).coordinates)) then
@@ -5862,8 +5862,8 @@ package body et_kicad.schematic is
 								declare
 									type type_line_scratch is new pac_geometry_2.type_line with null record;
 									line : type_line_scratch := (
-										start_point	=> get_point (element (segment_cursor).coordinates_start), 
-										end_point	=> get_point (element (segment_cursor).coordinates_end),
+										A	=> get_point (element (segment_cursor).coordinates_start), 
+										B	=> get_point (element (segment_cursor).coordinates_end),
 										others		=> <>);
 								begin
 									-- count segments
@@ -6047,8 +6047,8 @@ package body et_kicad.schematic is
 								declare
 									type type_line_scratch is new pac_geometry_2.type_line with null record;
 									line : type_line_scratch := (
-										start_point	=> get_point (element (segment_cursor).coordinates_start), 
-										end_point	=> get_point (element (segment_cursor).coordinates_end),
+										A	=> get_point (element (segment_cursor).coordinates_start), 
+										B	=> get_point (element (segment_cursor).coordinates_end),
 										others		=> <>);
 								begin
 									if line.on_line (get_point (element (no_connection_flag_cursor).coordinates)) then

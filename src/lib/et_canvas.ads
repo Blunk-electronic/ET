@@ -1216,7 +1216,7 @@ package et_canvas is
 	-- the status bar along with some advises.
 	-- The string given via 'prepend' will be prepended
 	-- to the message:
-	procedure status_bar_path_show_start_point (
+	procedure status_bar_path_show_A (
 		prepend : in string := "");
 	
 	

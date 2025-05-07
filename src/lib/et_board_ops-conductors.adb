@@ -308,7 +308,7 @@ package body et_board_ops.conductors is
 			-- The start point of the line is always the x/y of the terminal.
 			-- further-on set line width and layer.
 			line := (
-				start_point	=> to_point (terminal_position.place),
+				A	=> to_point (terminal_position.place),
 				width		=> width, -- as given by operator
 				layer		=> layer, -- as given by operator
 				others 		=> <>);
@@ -316,12 +316,12 @@ package body et_board_ops.conductors is
 			check_terminal_face_vs_layer (module_cursor, terminal_position, layer);
 			
 			-- Build the end point of the line. It is the start point moved in direction at given length:
-			--line.end_point := type_vector_model (move (
+			--line.B := type_vector_model (move (
 					--point 		=> terminal_position.place,
 					--direction	=> direction,
 					--distance	=> length));
-			line.end_point := move (
-					point 		=> line.start_point,
+			line.B := move (
+					point 		=> line.A,
 					direction	=> direction,
 					distance	=> length);
 			
@@ -384,7 +384,7 @@ package body et_board_ops.conductors is
 			-- The start point of the line is always the x/y of the terminal.
 			-- further-on set line width and layer.
 			line := (
-				start_point	=> to_point (terminal_position.place),
+				A	=> to_point (terminal_position.place),
 				width		=> width, -- as given by operator
 				layer		=> layer, -- as given by operator
 				others 		=> <>);
@@ -453,11 +453,11 @@ package body et_board_ops.conductors is
 			-- The start point of the line is always the x/y of the terminal.
 			-- further-on set line width and layer.
 			line := (
-				start_point	=> to_point (terminal_position.place),
-				width		=> width, -- as given by operator
-				layer		=> layer, -- as given by operator
-				end_point	=> end_point, -- as given by operator
-				others		=> <>);
+				A		=> to_point (terminal_position.place),
+				width	=> width, -- as given by operator
+				layer	=> layer, -- as given by operator
+				B		=> end_point, -- as given by operator
+				others	=> <>);
 
 			check_terminal_face_vs_layer (module_cursor, terminal_position, layer);
 			
@@ -518,7 +518,7 @@ package body et_board_ops.conductors is
 			-- The start point of the line is always the x/y of the terminal.
 			-- further-on set line width and layer.
 			line := (
-				start_point	=> to_point (terminal_position.place),
+				A	=> to_point (terminal_position.place),
 				width		=> width, -- as given by operator
 				layer		=> layer, -- as given by operator
 				others 		=> <>);

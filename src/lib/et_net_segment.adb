@@ -186,10 +186,10 @@ package body et_net_segment is
 		-- Calculate the displacement of the start and end point:
 		
 		delta_start : constant type_distance_relative :=
-			get_distance_relative (segment_before.start_point, segment_after.start_point);
+			get_distance_relative (segment_before.A, segment_after.A);
 		
 		delta_end	: constant type_distance_relative :=
-			get_distance_relative (segment_before.end_point, segment_after.end_point);
+			get_distance_relative (segment_before.B, segment_after.B);
 															
 		use pac_net_labels;
 		label_cursor : pac_net_labels.cursor := segment_after.labels.first;
@@ -206,21 +206,21 @@ package body et_net_segment is
 					-- of the start or end point:
 					case zone is
 						when START_POINT =>
-							if l.position = segment_before.start_point then
+							if l.position = segment_before.A then
 								move_by (l.position, delta_start);
 							end if;
 							
 						when END_POINT => 
-							if l.position = segment_before.end_point then
+							if l.position = segment_before.B then
 								move_by (l.position, delta_end);
 							end if;
 
 						when CENTER =>
-							if l.position = segment_before.start_point then
+							if l.position = segment_before.A then
 								move_by (l.position, delta_start);
 							end if;
 
-							if l.position = segment_before.end_point then
+							if l.position = segment_before.B then
 								move_by (l.position, delta_end);
 							end if;
 							
@@ -273,9 +273,9 @@ package body et_net_segment is
 		return string 
 	is begin
 		return ("segment start" & 
-			to_string (element (segment).start_point) &
+			to_string (element (segment).A) &
 			" / end" &	
-			to_string (element (segment).end_point)
+			to_string (element (segment).B)
 			);
 	end to_string;
 
@@ -283,7 +283,7 @@ package body et_net_segment is
 
 
 	
-	function between_start_and_end_point (
+	function between_A_and_B (
 		catch_zone	: in type_catch_zone;
 		segment 	: in pac_net_segments.cursor)
 		return boolean 
@@ -302,7 +302,7 @@ package body et_net_segment is
 		else
 			return false;
 		end if;
-	end between_start_and_end_point;
+	end between_A_and_B;
 	
 
 
@@ -314,8 +314,8 @@ package body et_net_segment is
 	is		
 		result : type_net_segment_orientation;
 		
-		dx : constant type_distance_model := get_x (element (segment).start_point) - get_x (element (segment).end_point);
-		dy : constant type_distance_model := get_y (element (segment).start_point) - get_y (element (segment).end_point);
+		dx : constant type_distance_model := get_x (element (segment).A) - get_x (element (segment).B);
+		dy : constant type_distance_model := get_y (element (segment).A) - get_y (element (segment).B);
 	begin
 		if dx = zero then 
 			result := VERTICAL;

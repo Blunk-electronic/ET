@@ -559,8 +559,8 @@ package body et_schematic_ops.submodules is
 						-- If port sits on start OR end point of segment AND if it
 						-- is not already in the segment then append it to the 
 						-- portlist of the segment.
-						if 	segment.start_point = position.place or
-							segment.end_point = position.place
+						if 	segment.A = position.place or
+							segment.B = position.place
 						then
 
 							-- If port not already in segment, append it.
@@ -1343,15 +1343,15 @@ package body et_schematic_ops.submodules is
 						log_indentation_up;
 						
 						-- if port sits on a start point of a segment -> move start point
-						if segment.start_point = port_before then
+						if segment.A = port_before then
 							log (text => "move segment start point from" & 
-								to_string (segment.start_point),
+								to_string (segment.A),
 								level => log_threshold + 3);
 
-							segment.start_point := port_after;
+							segment.A := port_after;
 
 							log (text => "to" & 
-								to_string (segment.start_point),
+								to_string (segment.A),
 								level => log_threshold + 3);
 
 							-- signal iterations in upper level to cancel
@@ -1360,15 +1360,15 @@ package body et_schematic_ops.submodules is
 
 						
 						-- if port sits on an end point of a segment -> move end point
-						if segment.end_point = port_before then
+						if segment.B = port_before then
 							log (text => "move segment end point from" & 
-								to_string (segment.end_point),
+								to_string (segment.B),
 								level => log_threshold + 3);
 
-							segment.end_point := port_after;
+							segment.B := port_after;
 
 							log (text => "to" & 
-								to_string (segment.end_point),
+								to_string (segment.B),
 								level => log_threshold + 3);
 							
 							-- signal iterations in upper level to cancel
@@ -1533,15 +1533,15 @@ package body et_schematic_ops.submodules is
 						log_indentation_up;
 						
 						-- if port sits on a start point of a segment -> move start point
-						if segment.start_point = pos_before.place then
+						if segment.A = pos_before.place then
 							log (text => "move segment start point from" & 
-								to_string (segment.start_point),
+								to_string (segment.A),
 								level => log_threshold + 3);
 
-							segment.start_point := pos_after.place;
+							segment.A := pos_after.place;
 
 							log (text => "to" & 
-								to_string (segment.start_point),
+								to_string (segment.A),
 								level => log_threshold + 3);
 
 							-- signal iterations in upper level to cancel
@@ -1549,15 +1549,15 @@ package body et_schematic_ops.submodules is
 						end if;
 
 						-- if port sits on an end point of a segment -> move end point
-						if segment.end_point = pos_before.place then
+						if segment.B = pos_before.place then
 							log (text => "move segment end point from" & 
-								to_string (segment.end_point),
+								to_string (segment.B),
 								level => log_threshold + 3);
 
-							segment.end_point := pos_after.place;
+							segment.B := pos_after.place;
 
 							log (text => "to" & 
-								to_string (segment.end_point),
+								to_string (segment.B),
 								level => log_threshold + 3);
 							
 							-- signal iterations in upper level to cancel
@@ -1897,8 +1897,8 @@ package body et_schematic_ops.submodules is
 							-- If port sits on start OR end point of segment AND if it
 							-- is not already in the segment then append it to the 
 							-- portlist of the segment.
-							if 	segment.start_point = port or
-								segment.end_point = port then
+							if 	segment.A = port or
+								segment.B = port then
 
 								-- If port not already in segment, append it.
 								-- Otherwise it must not be appended again. constraint_error would arise.

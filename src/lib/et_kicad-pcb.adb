@@ -1660,9 +1660,9 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => package_line.start_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => package_line.A, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => AXIS_Y, point => package_line.start_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => package_line.A, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1670,9 +1670,9 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => package_line.end_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => package_line.B, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => AXIS_Y, point => package_line.end_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => package_line.B, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -1831,13 +1831,13 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									--set (axis => AXIS_X, point => package_arc.start_point, value => to_distance (to_string (arg)));
+									--set (axis => AXIS_X, point => package_arc.A, value => to_distance (to_string (arg)));
 									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
-									set_start_point (package_arc, scratch_point);
+									set_A (package_arc, scratch_point);
 								when 2 => 
-									--set (axis => AXIS_Y, point => package_arc.start_point, value => to_distance (to_string (arg)));
+									--set (axis => AXIS_Y, point => package_arc.A, value => to_distance (to_string (arg)));
 									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
-									set_start_point (package_arc, scratch_point);
+									set_A (package_arc, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
@@ -2526,13 +2526,13 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									--set (axis => AXIS_X, point => board_arc.start_point, value => to_distance (to_string (arg)));
+									--set (axis => AXIS_X, point => board_arc.A, value => to_distance (to_string (arg)));
 									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
-									set_start_point (board_arc, scratch_point);
+									set_A (board_arc, scratch_point);
 								when 2 => 
-									--set (axis => AXIS_Y, point => board_arc.start_point, value => to_distance (to_string (arg)));
+									--set (axis => AXIS_Y, point => board_arc.A, value => to_distance (to_string (arg)));
 									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
-									set_start_point (board_arc, scratch_point);
+									set_A (board_arc, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
@@ -2681,9 +2681,9 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => board_line.start_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => board_line.A, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => AXIS_Y, point => board_line.start_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => board_line.A, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -2691,9 +2691,9 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => board_line.end_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => board_line.B, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => AXIS_Y, point => board_line.end_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => board_line.B, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -2824,9 +2824,9 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => segment.start_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => segment.A, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => AXIS_Y, point => segment.start_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => segment.A, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 					
@@ -2834,9 +2834,9 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => segment.end_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => segment.B, value => to_distance (to_string (arg)));
 								when 2 => 
-									set (axis => AXIS_Y, point => segment.end_point, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => segment.B, value => to_distance (to_string (arg)));
 								when others => too_many_arguments;
 							end case;
 
@@ -3396,8 +3396,8 @@ package body et_kicad.pcb is
 			begin
 				-- Compute the arc end point from its center, start point and angle.
 				-- Later the angle is discarded.
-				set_end_point (board_arc, type_vector_model (arc_end_point (
-					get_center (board_arc), get_start_point (board_arc), board_arc.angle)));
+				set_B (board_arc, type_vector_model (arc_B (
+					get_center (board_arc), get_A (board_arc), board_arc.angle)));
 					
 
 				-- The board_arc is converted back to its anchestor and
@@ -3668,9 +3668,9 @@ package body et_kicad.pcb is
 				use et_conductor_segment;
 			begin
 
-				-- compute end point of arc from center, start_point and angle
-				set_end_point (package_arc, type_vector_model (
-					arc_end_point (get_center (package_arc), get_start_point (package_arc), package_arc.angle)));
+				-- compute end point of arc from center, A and angle
+				set_B (package_arc, type_vector_model (
+					arc_B (get_center (package_arc), get_A (package_arc), package_arc.angle)));
 
 				-- The angle of the arc and its layer are now discarded
 				-- as the package_arc is converted back to its anchestor
@@ -3831,65 +3831,65 @@ package body et_kicad.pcb is
 				case package_line.layer is
 					when TOP_SILK =>
 						package_silk_screen.top.lines.append ((
-							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
 
 						line_silk_screen_properties (TOP, package_silk_screen.top.lines.last, log_threshold + 1);
 
 					when BOT_SILK =>
 						package_silk_screen.bottom.lines.append ((
-							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
 
 						line_silk_screen_properties (BOTTOM, package_silk_screen.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
 						package_assy_doc.top.lines.append ((
-							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
 
 						line_assy_doc_properties (TOP, package_assy_doc.top.lines.last, log_threshold + 1);
 
 					when BOT_ASSY =>
 						package_assy_doc.bottom.lines.append ((
-							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
 
 						line_assy_doc_properties (BOTTOM, package_assy_doc.bottom.lines.last, log_threshold + 1);
 						
 						
 					when TOP_COPPER => 
 						package_copper.top.lines.append ((
-							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
 
 						line_conductor_properties (TOP, package_copper.top.lines.last, log_threshold + 1);
 
 					when BOT_COPPER => 
 						package_copper.bottom.lines.append ((
-							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
 
 						line_conductor_properties (BOTTOM, package_copper.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
 						package_stop_mask.top.lines.append ((
-							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
 						
 						line_stop_mask_properties (TOP, package_stop_mask.top.lines.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						package_stop_mask.bottom.lines.append ((
-							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
 
 						line_stop_mask_properties (BOTTOM, package_stop_mask.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
 						package_stencil.top.lines.append ((
-							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
 
 						line_stencil_properties (TOP, package_stencil.top.lines.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						package_stencil.bottom.lines.append ((
-							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
 
 						line_stencil_properties (BOTTOM, package_stencil.bottom.lines.last, log_threshold + 1);
 
@@ -4670,8 +4670,8 @@ package body et_kicad.pcb is
 
 	begin
 		while corner /= corners.last loop
-			l.start_point := element (corner);
-			l.end_point := element (next (corner));
+			l.A := element (corner);
+			l.B := element (next (corner));
 
 			lines.append ((shape => LINE, segment_line => l));
 			
@@ -4681,10 +4681,10 @@ package body et_kicad.pcb is
 		-- Corner is now pointing to the last point.
 
 		-- The last line starts where corner points at.
-		l.start_point := element (corner);
+		l.A := element (corner);
 
 		-- The last line ends at the first point.
-		l.end_point := element (corners.first);
+		l.B := element (corners.first);
 
 		lines.append ((shape => LINE, segment_line => l));
 		

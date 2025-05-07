@@ -574,11 +574,11 @@ package et_geometry_1.et_polygons is
 		
 	type type_edge_status is record
 		-- The affected edge itself:
-		edge		: type_edge;
+		edge	: type_edge;
 		
 		-- The properties of the start and end point of the line:
-		start_point	: type_line_end;
-		end_point	: type_line_end;
+		A	: type_line_end;
+		B	: type_line_end;
 
 		-- The intersections (incl position, intersected edge and direction)
 		-- with the polygon BETWEEN start and end point of the line.

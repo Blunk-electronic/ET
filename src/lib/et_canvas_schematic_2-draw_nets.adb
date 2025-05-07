@@ -85,14 +85,14 @@ procedure draw_nets is
 		
 	begin
 		-- at start point of segment:
-		if element (s).junctions.start_point then
-			set_center (j, element (s).start_point);
+		if element (s).junctions.A then
+			set_center (j, element (s).A);
 			draw;
 		end if;
 
 		-- at end point of segment:
-		if element (s).junctions.end_point then
-			set_center (j, element (s).end_point);
+		if element (s).junctions.B then
+			set_center (j, element (s).B);
 			draw;
 		end if;
 
@@ -117,14 +117,14 @@ procedure draw_nets is
 		
 	begin
 		-- at start point of segment:
-		if s.junctions.start_point then
-			set_center (j, s.start_point);
+		if s.junctions.A then
+			set_center (j, s.A);
 			draw;
 		end if;
 
 		-- at end point of segment:
-		if s.junctions.end_point then
-			set_center (j, s.end_point);
+		if s.junctions.B then
+			set_center (j, s.B);
 			draw;
 		end if;
 
@@ -610,16 +610,16 @@ procedure draw_nets is
 
 			
 			procedure drag_at_start is begin
-				if element (original_segment).start_point = secondary_segment.start_point then
+				if element (original_segment).A = secondary_segment.A then
 				-- Start point of secondary segment is attached to the start point of the original segment.
-					secondary_segment.start_point := primary_segment.start_point;
+					secondary_segment.A := primary_segment.A;
 
 					draw_and_mark;
 				end if;
 
-				if element (original_segment).start_point = secondary_segment.end_point then
+				if element (original_segment).A = secondary_segment.B then
 				-- end point of secondary net segment is attached to the start point of the original segment
-					secondary_segment.end_point := primary_segment.start_point;
+					secondary_segment.B := primary_segment.A;
 
 					draw_and_mark;
 				end if;
@@ -627,16 +627,16 @@ procedure draw_nets is
 
 			
 			procedure drag_at_end is begin
-				if element (original_segment).end_point = secondary_segment.start_point then
+				if element (original_segment).B = secondary_segment.A then
 				-- Start point of secondary segment is attached to the end point of the original segment.
-					secondary_segment.start_point := primary_segment.end_point;
+					secondary_segment.A := primary_segment.B;
 
 					draw_and_mark;
 				end if;
 
-				if element (original_segment).end_point = secondary_segment.end_point then
+				if element (original_segment).B = secondary_segment.B then
 				-- end point of secondary segment is attached to the end point of the original segment
-					secondary_segment.end_point := primary_segment.end_point;
+					secondary_segment.B := primary_segment.B;
 
 					draw_and_mark;
 				end if;
@@ -807,10 +807,10 @@ procedure draw_nets is
 
 				case element (g).zone is
 					when START_POINT =>
-						move_by (copy_of_original_segment.start_point, displacement);
+						move_by (copy_of_original_segment.A, displacement);
 					
 					when END_POINT =>
-						move_by (copy_of_original_segment.end_point, displacement);
+						move_by (copy_of_original_segment.B, displacement);
 				end case;
 
 				draw_line (
@@ -1116,8 +1116,8 @@ procedure draw_nets is
 			-- from start to end point:
 			if r.bended = NO then
 				
-				line.start_point := r.start_point;
-				line.end_point := r.end_point;
+				line.A := r.A;
+				line.B := r.B;
 
 				draw;
 
@@ -1127,13 +1127,13 @@ procedure draw_nets is
 			else
 				live_path.bend_point := r.bend_point;
 
-				line.start_point := r.start_point;
-				line.end_point := r.bend_point;
+				line.A := r.A;
+				line.B := r.bend_point;
 				
 				draw;
 
-				line.start_point := r.bend_point;
-				line.end_point := r.end_point;
+				line.A := r.bend_point;
+				line.B := r.B;
 				
 				draw;
 				
@@ -1152,12 +1152,12 @@ procedure draw_nets is
 			case object_tool is				
 				when MOUSE => 
 					compute_route (
-						s	=> live_path.start_point,	-- start of route
+						s	=> live_path.A,	-- start of route
 						e	=> snap_to_grid (get_mouse_position));	-- end of route
 					
 				when KEYBOARD =>
 					compute_route (
-						s	=> live_path.start_point,	-- start of route
+						s	=> live_path.A,	-- start of route
 						e	=> get_cursor_position);	-- end of route
 					
 			end case;			

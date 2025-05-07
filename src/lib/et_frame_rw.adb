@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -113,12 +113,12 @@ package body et_frame_rw is
 				-- start point
 				write (
 					keyword		=> keyword_start, 
-					parameters	=> to_string (l.start_point, FORMAT_2)); -- start x 180 x 10
+					parameters	=> to_string (l.A, FORMAT_2)); -- start x 180 x 10
 
 				-- end point
 				write (
 					keyword		=> keyword_end, 
-					parameters	=> to_string (l.end_point, FORMAT_2)); -- end x 180 x 10
+					parameters	=> to_string (l.B, FORMAT_2)); -- end x 180 x 10
 
 				-- CS in the future, if a line has a width, write it here
 				section_mark (section_line, FOOTER);
@@ -579,11 +579,11 @@ package body et_frame_rw is
 			-- CS: In the following: set a corresponding parameter-found-flag
 			if kw = keyword_start then -- start x 220 y 239
 				expect_field_count (line, 5);
-				tb_line.start_point := to_position (line);
+				tb_line.A := to_position (line);
 
 			elsif kw = keyword_end then -- end x 250 y 239
 				expect_field_count (line, 5);
-				tb_line.end_point := to_position (line);
+				tb_line.B := to_position (line);
 			else
 				invalid_keyword (kw);
 			end if;
