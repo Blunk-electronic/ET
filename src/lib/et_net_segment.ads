@@ -169,8 +169,18 @@ package et_net_segment is
 	
 
 
+	-- Returns true if the start point of the 
+	-- given net segment is set as "moving":
+	function is_A_moving (
+		segment	: in pac_net_segments.cursor)
+		return boolean;
 
 
+	-- Returns true if the end point of the 
+	-- given net segment is set as "moving":
+	function is_B_moving (
+		segment	: in pac_net_segments.cursor)
+		return boolean;
 
 	
 	

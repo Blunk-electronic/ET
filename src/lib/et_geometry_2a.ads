@@ -711,19 +711,14 @@ package et_geometry_2a is
 
 	
 
-
+	
 -- LINE
 
-	type type_line_status is record
-		A_moving	: boolean := false;
-		B_moving	: boolean := false;
-	end record;
-	
 	
 	type type_line_base is abstract tagged record
 		A, B 		: type_vector_model; -- start and end point
 		status		: type_object_status;
-		status_AB	: type_line_status;
+		status_AB	: type_AB_moving_status;
 	end record;
 
 	
@@ -776,8 +771,36 @@ package et_geometry_2a is
 		operation	: in type_status_operation);
 
 
+
+	-- Returns true if the start point of the 
+	-- given line is set as "moving":
+	function is_A_moving (
+		line : in type_line)
+		return boolean;
+
+	
+	-- Returns true if the end point of the 
+	-- given line is set as "moving":
+	function is_B_moving (
+		line : in type_line)
+		return boolean;
+
+
+	-- Sets the start point of the 
+	-- given line as "moving":
+	procedure set_A_moving (
+		line	: in out type_line);
+	
+
+	-- Sets the end point of the 
+	-- given line as "moving":
+	procedure set_B_moving (
+		line	: in out type_line);
+
+		
+	-- Resets all status flags to default:
 	procedure reset_status (
-		line 		: in out type_line);
+		line 	: in out type_line);
 	
 	
 	-- Moves a line by the given offset. 
@@ -959,6 +982,7 @@ package et_geometry_2a is
 		A, B		: type_vector_model; -- start and end point
 		direction	: type_direction_of_rotation := CW;
 		status		: type_object_status;
+		-- CS status_AB	: type_AB_moving_status;
 	end record;
 
 	

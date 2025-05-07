@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2023                                                -- 
+-- Copyright (C) 2017 - 2025                                                -- 
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -148,6 +148,46 @@ package et_object_status is
 		operation : in type_status_operation)
 		return string;
 
+
+
+
+	-- This composite type is requred to 
+	-- indicate that the start or end point of a line
+	-- or an arc is set as "moving":
+	type type_AB_moving_status is private;
+
+
+	function is_A_moving (
+		status : in type_AB_moving_status)
+		return boolean;
+
+	
+	function is_B_moving (
+		status : in type_AB_moving_status)
+		return boolean;
+
+
+	
+	procedure set_A_moving (
+		status : in out type_AB_moving_status);
+
+
+	procedure set_B_moving (
+		status : in out type_AB_moving_status);
+	
+
+	procedure clear_A_moving (
+		status : in out type_AB_moving_status);
+
+
+	procedure clear_B_moving (
+		status : in out type_AB_moving_status);
+
+
+	procedure clear_AB_moving (
+		status : in out type_AB_moving_status);
+
+	
 	
 private
 	type type_object_status is record
@@ -161,6 +201,13 @@ private
 	type type_status_operation is record
 		action	: type_action;
 		flag	: type_flag;
+	end record;
+
+
+	
+	type type_AB_moving_status is record
+		A : type_moving := false;
+		B : type_moving := false;
 	end record;
 
 	

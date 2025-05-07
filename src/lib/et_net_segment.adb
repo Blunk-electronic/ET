@@ -249,6 +249,21 @@ package body et_net_segment is
 	
 
 
+	function is_A_moving (
+		segment	: in pac_net_segments.cursor)
+		return boolean
+	is begin
+		return is_A_moving (element (segment));
+	end;
+
+	
+
+	function is_B_moving (
+		segment	: in pac_net_segments.cursor)
+		return boolean
+	is begin
+		return is_B_moving (element (segment));
+	end;
 	
 
 	

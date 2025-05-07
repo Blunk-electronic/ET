@@ -247,6 +247,65 @@ package body et_object_status is
 		return "operation: " & type_action'image (operation.action)
 			& " " & type_flag'image (operation.flag);
 	end to_string;
+
+
+
+
+	function is_A_moving (
+		status : in type_AB_moving_status)
+		return boolean
+	is begin
+		return boolean (status.A);
+	end;
+
+	
+	function is_B_moving (
+		status : in type_AB_moving_status)
+		return boolean
+	is begin
+		return boolean (status.B);
+	end;
+
+
+	
+
+	
+	procedure set_A_moving (
+		status : in out type_AB_moving_status)
+	is begin
+		status.A := true;
+	end;
+
+
+	procedure set_B_moving (
+		status : in out type_AB_moving_status)
+	is begin
+		status.B := true;
+	end;
+
+
+	procedure clear_A_moving (
+		status : in out type_AB_moving_status)
+	is begin
+		status.A := false;
+	end;
+
+
+	procedure clear_B_moving (
+		status : in out type_AB_moving_status)
+	is begin
+		status.B := false;
+	end;
+
+
+	procedure clear_AB_moving (
+		status : in out type_AB_moving_status)
+	is begin
+		status.A := false;
+		status.B := false;
+	end;
+
+	
 	
 end et_object_status;
 

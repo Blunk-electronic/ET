@@ -1521,12 +1521,50 @@ package body et_geometry_2a is
 		modify_status (line.status, operation);
 	end modify_status;
 
+
+
+
+	function is_A_moving (
+		line : in type_line)
+		return boolean
+	is begin
+		return is_A_moving (line.status_AB);
+	end;
+
+	
+	function is_B_moving (
+		line : in type_line)
+		return boolean
+	is begin
+		return is_B_moving (line.status_AB);
+	end;
+
+
+
 	
 
+	procedure set_A_moving (
+		line	: in out type_line)
+	is begin
+		set_A_moving (line.status_AB);
+	end;
+	
+
+	procedure set_B_moving (
+		line	: in out type_line)
+	is begin
+		set_B_moving (line.status_AB);
+	end;
+
+
+	
+	
 	procedure reset_status (
-		line 		: in out type_line)
+		line 	: in out type_line)
 	is begin
 		reset_status (line.status);
+
+		clear_AB_moving (line.status_AB);
 	end reset_status;
 
 	
