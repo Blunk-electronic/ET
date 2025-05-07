@@ -1891,47 +1891,72 @@ package body et_kicad_packages is
 				
 				case line.layer is
 					when TOP_SILK =>
-						silk_screen.top.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
+						silk_screen.top.lines.append ((
+							start_point => line.start_point, end_point => line.end_point, width => line.width, others => <>));
+						
 						line_silk_screen_properties (TOP, silk_screen.top.lines.last, log_threshold + 1);
 
+						
 					when BOT_SILK =>
-						silk_screen.bottom.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
+						silk_screen.bottom.lines.append ((
+							start_point => line.start_point, end_point => line.end_point, width => line.width, others => <>));
+						
 						line_silk_screen_properties (BOTTOM, silk_screen.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						assy_doc.top.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
+						assy_doc.top.lines.append ((
+							start_point => line.start_point, end_point => line.end_point, width => line.width, others => <>));
+
 						line_assy_doc_properties (TOP, assy_doc.top.lines.last, log_threshold + 1);
 
+						
 					when BOT_ASSY =>
-						assy_doc.bottom.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
+						assy_doc.bottom.lines.append ((
+							start_point => line.start_point, end_point => line.end_point, width => line.width, others => <>));
+
 						line_assy_doc_properties (BOTTOM, assy_doc.bottom.lines.last, log_threshold + 1);
 		
 						
 					when TOP_COPPER => 
-						copper.top.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
+						copper.top.lines.append ((
+							start_point => line.start_point, end_point => line.end_point, width => line.width, others => <>));
+						
 						line_conductor_properties (TOP, copper.top.lines.last, log_threshold + 1);
 
+						
 					when BOT_COPPER => 
-						copper.bottom.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
+						copper.bottom.lines.append ((
+							start_point => line.start_point, end_point => line.end_point, width => line.width, others => <>));
+
 						line_conductor_properties (BOTTOM, copper.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_STOP => 
-						stop_mask.top.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
+						stop_mask.top.lines.append ((
+							start_point => line.start_point, end_point => line.end_point, width => line.width, others => <>));
+						
 						line_stop_mask_properties (TOP, stop_mask.top.lines.last, log_threshold + 1);
 
+						
 					when BOT_STOP => 
-						stop_mask.bottom.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
+						stop_mask.bottom.lines.append ((
+							start_point => line.start_point, end_point => line.end_point, width => line.width, others => <>));
+						
 						line_stop_mask_properties (BOTTOM, stop_mask.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_PASTE => 
-						stencil.top.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
+						stencil.top.lines.append ((
+							start_point => line.start_point, end_point => line.end_point, width => line.width, others => <>));
+						
 						line_stencil_properties (TOP, stencil.top.lines.last, log_threshold + 1);
 
+						
 					when BOT_PASTE => 
-						stencil.bottom.lines.append ((start_point => line.start_point, end_point => line.end_point, width => line.width, status => <>));
+						stencil.bottom.lines.append ((
+							start_point => line.start_point, end_point => line.end_point, width => line.width, others => <>));
+						
 						line_stencil_properties (BOTTOM, stencil.bottom.lines.last, log_threshold + 1);
 
 					when others => invalid_layer;
@@ -1940,6 +1965,7 @@ package body et_kicad_packages is
 			end insert_fp_line;
 			
 
+			
 			-- Insert a terminal in the list "terminals".
 			-- This is library related stuff.
 			procedure insert_terminal is 

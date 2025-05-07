@@ -3830,47 +3830,67 @@ package body et_kicad.pcb is
 			-- Append the line to the container corresponding to the layer. Then log the line properties.
 				case package_line.layer is
 					when TOP_SILK =>
-						package_silk_screen.top.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
+						package_silk_screen.top.lines.append ((
+							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+
 						line_silk_screen_properties (TOP, package_silk_screen.top.lines.last, log_threshold + 1);
 
 					when BOT_SILK =>
-						package_silk_screen.bottom.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
+						package_silk_screen.bottom.lines.append ((
+							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+
 						line_silk_screen_properties (BOTTOM, package_silk_screen.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						package_assy_doc.top.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
+						package_assy_doc.top.lines.append ((
+							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+
 						line_assy_doc_properties (TOP, package_assy_doc.top.lines.last, log_threshold + 1);
 
 					when BOT_ASSY =>
-						package_assy_doc.bottom.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
+						package_assy_doc.bottom.lines.append ((
+							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+
 						line_assy_doc_properties (BOTTOM, package_assy_doc.bottom.lines.last, log_threshold + 1);
 						
 						
 					when TOP_COPPER => 
-						package_copper.top.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
+						package_copper.top.lines.append ((
+							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+
 						line_conductor_properties (TOP, package_copper.top.lines.last, log_threshold + 1);
 
 					when BOT_COPPER => 
-						package_copper.bottom.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
+						package_copper.bottom.lines.append ((
+							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+
 						line_conductor_properties (BOTTOM, package_copper.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
-						package_stop_mask.top.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
+						package_stop_mask.top.lines.append ((
+							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+						
 						line_stop_mask_properties (TOP, package_stop_mask.top.lines.last, log_threshold + 1);
 
 					when BOT_STOP =>
-						package_stop_mask.bottom.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
+						package_stop_mask.bottom.lines.append ((
+							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+
 						line_stop_mask_properties (BOTTOM, package_stop_mask.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
-						package_stencil.top.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
+						package_stencil.top.lines.append ((
+							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+
 						line_stencil_properties (TOP, package_stencil.top.lines.last, log_threshold + 1);
 
 					when BOT_PASTE =>
-						package_stencil.bottom.lines.append ((start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, status => <>));
+						package_stencil.bottom.lines.append ((
+							start_point => package_line.start_point, end_point => package_line.end_point, width => package_line.width, others => <>));
+
 						line_stencil_properties (BOTTOM, package_stencil.bottom.lines.last, log_threshold + 1);
 
 					when others => invalid_layer;
