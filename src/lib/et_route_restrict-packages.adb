@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -66,7 +66,7 @@ package body et_route_restrict.packages is
 
 	procedure move_route_restrict_objects (
 		restrict	: in out type_one_side;
-		offset		: in type_distance_relative)
+		offset		: in type_vector_model)
 	is begin
 		move_lines (restrict.lines, offset);
 		move_arcs (restrict.arcs, offset);

@@ -62,7 +62,7 @@ package body et_conductor_text is
 
 	procedure move_text (
 		text	: in out type_conductor_text;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is begin
 		move_by (text.position.place, offset);
 		move_vector_text (text.vectors, offset);

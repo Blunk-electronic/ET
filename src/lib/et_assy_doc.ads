@@ -109,7 +109,7 @@ package et_assy_doc is
 	-- Moves a list of lines by the given offset:
 	procedure move_lines (
 		lines	: in out pac_doc_lines.list;
-		offset	: in type_distance_relative);					
+		offset	: in type_vector_model);					
 
 
 	
@@ -157,7 +157,7 @@ package et_assy_doc is
 	-- Moves a list of arcs by the given offset:
 	procedure move_arcs (
 		arcs	: in out pac_doc_arcs.list;
-		offset	: in type_distance_relative);					
+		offset	: in type_vector_model);					
 
 	
 
@@ -197,7 +197,7 @@ package et_assy_doc is
 	-- Moves a list of circles by the given offset:
 	procedure move_circles (
 		circles	: in out pac_doc_circles.list;
-		offset	: in type_distance_relative);					
+		offset	: in type_vector_model);					
 
 
 	
@@ -236,7 +236,7 @@ package et_assy_doc is
 	-- Moves a list of zones by the given offset:
 	procedure move_zones (
 		zones	: in out pac_doc_zones.list;
-		offset	: in type_distance_relative);					
+		offset	: in type_vector_model);					
 
 	
 	
@@ -290,7 +290,7 @@ package et_assy_doc is
 	-- Moves a list of texts by the given offset:
 	procedure move_texts (
 		texts	: in out pac_doc_texts.list;
-		offset	: in type_distance_relative);					
+		offset	: in type_vector_model);					
 
 	
 	

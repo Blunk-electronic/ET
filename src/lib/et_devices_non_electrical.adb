@@ -359,7 +359,7 @@ package body et_devices_non_electrical is
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 		
-		offset : constant type_distance_relative := to_distance_relative (device.position.place);
+		offset : constant type_vector_model := device.position.place;
 	begin
 		-- lines, arcs, circles, texts
 		if layer_category /= INNER then -- non-electric conductor objects exist in outer layers only
@@ -395,7 +395,7 @@ package body et_devices_non_electrical is
 		device : type_device_non_electric renames element (device_cursor);
 		packge : constant pac_package_models.cursor := get_package_model (device.package_model);
 		
-		offset : constant type_distance_relative := to_distance_relative (device.position.place);
+		offset : constant type_vector_model := device.position.place;
 
 		use pac_contours;
 		terminals	: pac_contour_list.list;
@@ -478,7 +478,7 @@ package body et_devices_non_electrical is
 					rotate_route_restrict_objects (restrict, - device.position.rotation);
 			end case;
 
-			move_route_restrict_objects (restrict, to_distance_relative (device.position.place));
+			move_route_restrict_objects (restrict, device.position.place);
 		end if;
 
 		return restrict;
@@ -513,7 +513,7 @@ package body et_devices_non_electrical is
 					rotate_route_restrict_objects (restrict, - device.position.rotation);
 			end case;
 
-			move_route_restrict_objects (restrict, to_distance_relative (device.position.place));
+			move_route_restrict_objects (restrict, device.position.place);
 
 			-- convert restrict objects to polygons:
 			result := to_polygons (restrict, fill_tolerance);
@@ -550,7 +550,7 @@ package body et_devices_non_electrical is
 					rotate_via_restrict_objects (restrict, - device.position.rotation);
 			end case;
 
-			move_via_restrict_objects (restrict, to_distance_relative (device.position.place));
+			move_via_restrict_objects (restrict, device.position.place);
 		end if;
 
 		return restrict;
@@ -598,7 +598,7 @@ package body et_devices_non_electrical is
 				end case;
 		end case;
 
-		move_keepout_objects (result, to_distance_relative (device.position.place));
+		move_keepout_objects (result, device.position.place);
 		
 		return result;
 	end get_keepout_objects;
@@ -646,7 +646,7 @@ package body et_devices_non_electrical is
 				end case;
 		end case;
 		
-		move_stencil_objects (result, to_distance_relative (device.position.place));
+		move_stencil_objects (result, device.position.place);
 		return result;
 	end get_stencil_objects;
 
@@ -695,7 +695,7 @@ package body et_devices_non_electrical is
 				end case;
 		end case;
 		
-		move_stopmask_objects (result, to_distance_relative (device.position.place));
+		move_stopmask_objects (result, device.position.place);
 		return result;
 	end get_stopmask_objects;
 
@@ -813,7 +813,7 @@ package body et_devices_non_electrical is
 				end case;
 		end case;
 		
-		move_silkscreen_objects (silkscreen, to_distance_relative (device.position.place));
+		move_silkscreen_objects (silkscreen, device.position.place);
 
 		result := type_silkscreen (silkscreen);
 		return result;
@@ -920,7 +920,7 @@ package body et_devices_non_electrical is
 				end case;
 		end case;
 		
-		move_assy_doc_objects (assy_doc, to_distance_relative (device.position.place));
+		move_assy_doc_objects (assy_doc, device.position.place);
 
 		result := type_assy_doc (assy_doc);
 		return result;
@@ -953,7 +953,7 @@ package body et_devices_non_electrical is
 				rotate_holes (holes, + rotation);
 		end case;
 		
-		move_holes (holes, to_distance_relative (device.position.place));
+		move_holes (holes, device.position.place);
 		return holes;
 	end get_holes;
 
@@ -984,7 +984,7 @@ package body et_devices_non_electrical is
 				
 		end case;
 		
-		move_holes (holes, to_distance_relative (device.position.place));
+		move_holes (holes, device.position.place);
 		
 		result := to_polygons (holes, fill_tolerance);
 		return result;

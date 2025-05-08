@@ -84,7 +84,7 @@ package et_device_placeholders.packages is
 	-- Moves a list of placeholders by the given offset:
 	procedure move_placeholders (
 		placeholders	: in out pac_placeholders.list;
-		offset			: in type_distance_relative);
+		offset			: in type_vector_model);
 
 	
 	

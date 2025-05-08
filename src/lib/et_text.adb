@@ -394,13 +394,14 @@ package body et_text is
 		end rotate_text;
 
 
-		procedure move_text (
+		procedure move_text_by (
 			text	: in out type_text_fab;
-			offset	: in type_distance_relative)
+			offset	: in type_vector_model)
 		is begin
 			move_by (text.position.place, offset);
-		end move_text;
+		end move_text_by;
 
+		
 		procedure move_text (
 			text	: in out type_text_fab;
 			point	: in type_vector_model)
@@ -1013,7 +1014,7 @@ package body et_text is
 
 		procedure move_vector_text (
 			text	: in out type_vector_text;
-			offset	: in type_distance_relative)
+			offset	: in type_vector_model)
 		is
 			offset_float : constant type_offset := to_offset (offset);
 			

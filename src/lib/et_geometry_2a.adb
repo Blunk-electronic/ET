@@ -425,36 +425,6 @@ package body et_geometry_2a is
 	
 	
 
--- RELATIVE DISTANCE:
-	
-
-	function to_string (
-		distance : in type_distance_relative)
-		return string
-	is begin
-		return "distance relative: x/y" 
-			& to_string (distance.x)
-			& "/"
-			& to_string (distance.y);
-	end to_string;
-
-
-	function to_distance_relative (
-		x,y : in type_distance)
-		return type_distance_relative
-	is begin
-		return (x, y);
-	end to_distance_relative;
-
-	
-	function to_distance_relative (
-		v : in type_vector)
-		return type_distance_relative
-	is begin
-		return (type_distance (v.x), type_distance (v.y));
-	end to_distance_relative;
-
-
 
 	
 -- POINT / POSITION / LOCATION / LOCATION VECTOR / DISTANCE VECTOR:
@@ -479,6 +449,15 @@ package body et_geometry_2a is
 				return "x/y: " & to_string (v.x) & "/" & to_string (v.y);
 		end case;
 	end to_string;
+
+
+
+	function to_vector_model (
+		x, y : in type_distance)
+		return type_vector_model
+	is begin
+		return (x, y);
+	end to_vector_model;
 
 
 	
@@ -543,9 +522,9 @@ package body et_geometry_2a is
 
 	function subtract (
 		v1, v2 : in type_vector_model)
-		return type_distance_relative
+		return type_vector_model
 	is 
-		r : type_distance_relative;
+		r : type_vector_model;
 	begin
 		r.x := v1.x - v2.x;
 		r.y := v1.y - v2.y;
@@ -835,7 +814,7 @@ package body et_geometry_2a is
 
 
 	function to_point (
-		d 		: in type_distance_relative;
+		d 		: in type_vector_model;
 		clip	: in boolean := false)
 		return type_vector_model
 	is 
@@ -899,27 +878,6 @@ package body et_geometry_2a is
 
 
 
-	function to_offset (
-		distance : in type_distance_relative)
-		return type_offset
-	is begin
-		return (
-			x => type_float (distance.x),
-			y => type_float (distance.y));
-	end to_offset;
-
-
-	
-
-	
-	function to_distance_relative (
-		p : in type_vector_model)
-		return type_distance_relative
-	is begin
-		return (p.x, p.y);
-	end to_distance_relative;
-
-	
 	
 	
 	function get_distance_total (
@@ -934,9 +892,9 @@ package body et_geometry_2a is
 
 	function get_distance_relative (
 		point_one, point_two : in type_vector_model)
-		return type_distance_relative
+		return type_vector_model
 	is
-		d : type_distance_relative;
+		d : type_vector_model;
 	begin
 		d.x := point_two.x - point_one.x;
 		d.y := point_two.y - point_one.y;
@@ -976,14 +934,6 @@ package body et_geometry_2a is
 
 
 	
-
-	procedure move_by (
-		point	: in out type_vector_model;
-		offset	: in type_distance_relative) 
-	is begin
-		point.x := point.x + offset.x;
-		point.y := point.y + offset.y;
-	end move_by;
 
 	
 	
@@ -1080,7 +1030,7 @@ package body et_geometry_2a is
 
 	procedure move_points (
 		points 	: in out pac_points.list;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is
 		use pac_points;
 
@@ -1608,17 +1558,17 @@ package body et_geometry_2a is
 	
 	procedure move_by (
 		line	: in out type_line;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is begin
 		move_by (point	=> line.A,	offset => offset);
-		move_by (point	=> line.B,		offset => offset);
+		move_by (point	=> line.B,	offset => offset);
 	end move_by;
 
 
 
 	procedure move_start_by (
 		line	: in out type_line;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is begin
 		move_by (line.A, offset);
 	end move_start_by;
@@ -1626,7 +1576,7 @@ package body et_geometry_2a is
 
 	procedure move_end_by (
 		line	: in out type_line;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is begin
 		move_by (line.B, offset);
 	end move_end_by;
@@ -2188,11 +2138,11 @@ package body et_geometry_2a is
 	
 	procedure move_by (
 		arc		: in out type_arc;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is begin
-		move_by (point => arc.center,      offset => offset);
+		move_by (point => arc.center, offset => offset);
 		move_by (point => arc.A, offset => offset);
-		move_by (point => arc.B,   offset => offset);
+		move_by (point => arc.B, offset => offset);
 	end move_by;
 
 
@@ -2201,7 +2151,7 @@ package body et_geometry_2a is
 		arc			: in out type_arc;
 		position	: in type_vector_model)
 	is
-		offset : constant type_distance_relative :=
+		offset : constant type_vector_model :=
 			get_distance_relative (arc.center, position);
 	begin
 		-- move the center of the arc to the given position
@@ -2209,7 +2159,7 @@ package body et_geometry_2a is
 
 		-- move start and end point of the arc by the computed offset
 		move_by (point => arc.A, offset => offset);
-		move_by (point => arc.B,   offset => offset);
+		move_by (point => arc.B, offset => offset);
 	end move_to;
 	
 
@@ -2694,9 +2644,9 @@ package body et_geometry_2a is
 	
 	procedure move_by (
 		circle	: in out type_circle;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is begin
-		move_by (point	=> circle.center,	offset => offset);
+		move_by (point	=> circle.center, offset => offset);
 	end move_by;
 
 
@@ -3222,7 +3172,7 @@ package body et_geometry_2a is
 		destination		: in type_vector_model)
 	is
 		zone : constant type_line_zone := get_zone (line, point_of_attack);
-		offset : type_distance_relative;
+		offset : type_vector_model;
 	begin
 		case zone is
 			when START_POINT =>
@@ -3289,7 +3239,7 @@ package body et_geometry_2a is
 		debug : boolean := false;
 		
 		zone : type_line_zone;
-		offset : type_distance_relative;
+		offset : type_vector_model;
 	begin
 		zone := get_zone (arc, point_of_attack);
 
@@ -3342,10 +3292,10 @@ package body et_geometry_2a is
 		end case;
 		
 		-- Move the line by offset_1:
-		move_by (l, to_distance_relative (offset_1));
+		move_by (l, offset_1);
 		
 		-- Move the line by offset_2:
-		move_by (l, to_distance_relative (offset_2));
+		move_by (l, offset_2);
 
 		-- Get the bounding-box of line:
 		b := get_bounding_box (l, width);
@@ -3380,10 +3330,10 @@ package body et_geometry_2a is
 		end case;
 
 		-- Move the arc by offset_1:
-		move_by (c, to_distance_relative (offset_1));
+		move_by (c, offset_1);
 				 
 		-- Move the arc by offset_2:
-		move_by (c, to_distance_relative (offset_2));
+		move_by (c, offset_2);
 
 		-- Get the bounding-box of arc:
 		b := get_bounding_box (c, width);
@@ -3419,10 +3369,10 @@ package body et_geometry_2a is
 		end case;
 		
 		-- Move the circle by offset_1:
-		move_by (c, to_distance_relative (offset_1));
+		move_by (c, offset_1);
 				 
 		-- Move the arc by offset_2:
-		move_by (c, to_distance_relative (offset_2));
+		move_by (c, offset_2);
 
 		-- Get the bounding-box of arc:
 		b := get_bounding_box (c, width);

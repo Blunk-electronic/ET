@@ -447,7 +447,7 @@ package body et_schematic_ops.submodules is
 					-- Calculate the absolute port position:
 					move_by (
 						point	=> port_xy,
-						offset	=> to_distance_relative (submod_position.place));
+						offset	=> submod_position.place);
 
 					-- Now port_xy holds the absolute x/y of the port in the schematic.
 
@@ -798,7 +798,7 @@ package body et_schematic_ops.submodules is
 		-- 2. move port_position by x/y of submodule_position:
 		move_by (
 			point		=> port_position.place,
-			offset		=> to_distance_relative (submodule_position.place));
+			offset		=> submodule_position.place);
 
 		-- x/y of port_position is now absolute
 
@@ -1081,6 +1081,7 @@ package body et_schematic_ops.submodules is
 		is
 			submod_cursor : pac_submodules.cursor;
 
+			
 			procedure query_ports (
 				submod_name	: in pac_module_instance_name.bounded_string;
 				submodule	: in out et_submodules.type_submodule) 
@@ -1088,6 +1089,7 @@ package body et_schematic_ops.submodules is
 				use et_submodules.pac_submodule_ports;
 				port_cursor : et_submodules.pac_submodule_ports.cursor;
 
+				
 				procedure move (
 					port_name	: in pac_net_name.bounded_string;
 					port		: in out et_submodules.type_submodule_port) 
@@ -1106,7 +1108,7 @@ package body et_schematic_ops.submodules is
 							-- Subtract from given point the absolute submodule position:
 							move_by (
 								point	=> point_tmp,
-								offset	=> to_distance_relative (submod_pos_tmp));
+								offset	=> submod_pos_tmp);
 
 							-- assign the new port position
 							port.position := point_tmp;
@@ -1114,7 +1116,7 @@ package body et_schematic_ops.submodules is
 						when RELATIVE =>
 							move_by (
 								point	=> port.position,
-								offset	=> to_distance_relative (point));
+								offset	=> point);
 							
 					end case;
 					
@@ -1131,7 +1133,7 @@ package body et_schematic_ops.submodules is
 
 						move_by (
 							point	=> port_position.place,
-							offset	=> to_distance_relative (submodule_position.place));
+							offset	=> submodule_position.place);
 						-- now port_position contains the absolute port position
 
 					else
@@ -1707,7 +1709,7 @@ package body et_schematic_ops.submodules is
 
 					move_by (
 						point	=> port_position_before.place,
-						offset	=> to_distance_relative (submodule_position.place));
+						offset	=> submodule_position.place);
 					-- Now port_position_before contains the absolute port position of 
 					-- the port BEFORE the drag operation.
 
@@ -1731,7 +1733,7 @@ package body et_schematic_ops.submodules is
 							-- Subtract from given point the absolute submodule position:
 							move_by (
 								point	=> point_tmp,
-								offset	=> to_distance_relative (submod_pos_tmp));
+								offset	=> submod_pos_tmp);
 
 							-- assign the new port position
 							port.position := point_tmp;
@@ -1739,9 +1741,10 @@ package body et_schematic_ops.submodules is
 						when RELATIVE =>
 							move_by (
 								point	=> port.position,
-								offset	=> to_distance_relative (point));
+								offset	=> point);
 							
 					end case;
+
 					
 					-- The port must be somewhere at the edge of the box
 					-- of the submodule. The port position is relative to 
@@ -1756,7 +1759,7 @@ package body et_schematic_ops.submodules is
 
 						move_by (
 							point	=> port_position_after.place,
-							offset	=> to_distance_relative (submodule_position.place));
+							offset	=> submodule_position.place);
 						-- Now port_position_after contains the absolute port position of 
 						-- the port AFTER the drag operation.
 
@@ -2145,7 +2148,7 @@ package body et_schematic_ops.submodules is
 				
 				move_by (
 					point	=> port_xy,
-					offset	=> to_distance_relative (nc_position.place));
+					offset	=> nc_position.place);
 
 				-- Now port_xy holds the absolute x/y of the port in the schematic.
 
@@ -2410,7 +2413,7 @@ package body et_schematic_ops.submodules is
 						-- The sheet number does not change.
 						move_by (
 							point		=> location.place,
-							offset		=> to_distance_relative (point));
+							offset		=> point);
 				end case;
 
 				-- move the netchanger to the new position
@@ -3465,7 +3468,7 @@ package body et_schematic_ops.submodules is
 
 					move_by (
 						point	=> drag.before.place,
-						offset	=> to_distance_relative (port.position));
+						offset	=> port.position);
 			
 					-- Now drag.before contains the absolute port position of 
 					-- the port BEFORE the drag operation.
@@ -3493,13 +3496,13 @@ package body et_schematic_ops.submodules is
 
 							move_by (
 								point	=> drag.after.place,
-								offset	=> to_distance_relative (point));
+								offset	=> point);
 
 					end case;
 
 					move_by (
 						point	=> drag.after.place,
-						offset	=> to_distance_relative (port.position));
+						offset	=> port.position);
 
 					-- Now drag.after contains the absolute port position of 
 					-- the port AFTER the drag operation.
@@ -3534,7 +3537,7 @@ package body et_schematic_ops.submodules is
 					when RELATIVE =>
 						move_by (
 							point	=> submodule.position.place,
-							offset	=> to_distance_relative (point));
+							offset	=> point);
 				end case;
 
 				exception
@@ -3732,6 +3735,7 @@ package body et_schematic_ops.submodules is
 				submodule_not_found (instance_origin);
 			end if;
 		end query_submodules;
+		
 		
 	begin -- copy_submodule
 		log (text => "module " & to_string (module_name) &

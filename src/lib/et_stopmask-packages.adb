@@ -67,7 +67,7 @@ package body et_stopmask.packages is
 
 	procedure move_stopmask_objects (
 		stopmask	: in out type_stopmask;
-		offset		: in type_distance_relative)
+		offset		: in type_vector_model)
 	is begin
 		move_lines (stopmask.lines, offset);
 		move_arcs (stopmask.arcs, offset);

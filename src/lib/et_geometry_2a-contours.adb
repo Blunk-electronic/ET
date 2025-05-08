@@ -1518,7 +1518,7 @@ package body et_geometry_2a.contours is
 
 	procedure move_by (
 		contour	: in out type_contour;
-		offset	: in type_distance_relative) 
+		offset	: in type_vector_model) 
 	is
 
 		procedure move_segment (c : in pac_segments.cursor) is
@@ -2322,7 +2322,7 @@ package body et_geometry_2a.contours is
 
 	procedure move_contours (
 		contours	: in out pac_contour_list.list;
-		offset		: in type_distance_relative)
+		offset		: in type_vector_model)
 	is
 		result : pac_contour_list.list;
 		

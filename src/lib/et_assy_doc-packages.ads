@@ -6,7 +6,7 @@
 --                                                                          --
 --                              S p e c                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -69,7 +69,7 @@ package et_assy_doc.packages is
 	-- Moves a list of assy_doc objects by the given offset:
 	procedure move_assy_doc_objects (
 		assy_doc	: in out type_assy_doc_package;
-		offset		: in type_distance_relative);
+		offset		: in type_vector_model);
 
 
 end et_assy_doc.packages;

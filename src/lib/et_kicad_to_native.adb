@@ -423,6 +423,7 @@ package body et_kicad_to_native is
 			use et_kicad.schematic.type_frames;
 			frame_cursor : et_kicad.schematic.type_frames.cursor := module.frames.first;
 
+			
 			procedure change_path (frame : in out et_kicad.schematic.type_frame) is
 				use et_schematic_coordinates;
 			begin
@@ -439,7 +440,8 @@ package body et_kicad_to_native is
 
 				log_indentation_down;
 			end change_path;
-				
+
+			
 		begin -- flatten_frames
 			log (text => "frames ...", level => log_threshold + 2);
 			log_indentation_up;
@@ -2804,11 +2806,11 @@ package body et_kicad_to_native is
 				use et_net_labels.pac_net_labels;
 				use et_net_segment.pac_device_ports;
 				
-				function tag_and_simple_labels (segment : in et_kicad.schematic.type_net_segment) 
 				-- Copies from the given kicad net segment all simple and tag labels and returns
 				-- them in a single list.
 				-- CS: Labels placed at 180 or 270 degree are rotated to 0 or 90 degree. This might
 				-- cause the labels to shift to the right or up.
+				function tag_and_simple_labels (segment : in et_kicad.schematic.type_net_segment) 
 					return et_net_labels.pac_net_labels.list 
 				is
 					use et_schematic_text;
@@ -2827,8 +2829,7 @@ package body et_kicad_to_native is
 					-- CS: The offset should depend on the direction of the segment.
 					-- Currently this simple minded approach shifts to the right and up
 					-- no matter whether the segment runs horizontally or vertically.
-					offset : constant type_distance_relative := 
-						to_distance_relative (pac_geometry_sch.set (x => 1.0, y => 1.0));
+					offset : constant type_vector_model := to_vector_model (x => 1.0, y => 1.0);
 
 					-- the new label position after applying the offset:
 					simple_label_position : type_vector_model;
@@ -2861,6 +2862,7 @@ package body et_kicad_to_native is
 							return HORIZONTAL;
 						end if;
 					end to_rotation;
+					
 					
 				begin -- tag_and_simple_labels
 					log_indentation_up;
@@ -2931,6 +2933,7 @@ package body et_kicad_to_native is
 					use et_kicad_coordinates;
 					use et_kicad.schematic.type_junctions;
 					junction_cursor : et_kicad.schematic.type_junctions.cursor := segment.junctions.first;
+					
 				begin
 					log_indentation_up;
 					

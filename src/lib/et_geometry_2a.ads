@@ -247,31 +247,7 @@ package et_geometry_2a is
 		offset		: in type_rotation);
 	
 
-	
--- RELATIVE DISTANCE:
-	
-	type type_distance_relative is record -- CS probably no need anymore ?
-		x, y : type_distance := zero;
-	end record;
 
-
-	function to_string (
-		distance : in type_distance_relative)
-		return string;
-
-	
-
-	function to_distance_relative (
-		x,y : in type_distance)
-		return type_distance_relative;
-
-	
-	function to_distance_relative (
-		v : in type_vector)
-		return type_distance_relative;
-	
-
-	
 	
 	
 -- POINT / POSITION / LOCATION / LOCATION VECTOR / DISTANCE VECTOR:
@@ -301,6 +277,11 @@ package et_geometry_2a is
 		return string;
 	-- CS apply this scheme to other to_string functions !
 
+
+	function to_vector_model (
+		x, y : in type_distance)
+		return type_vector_model;
+	
 
 	-- Moves the given point to the origin (0/0).
 	procedure reset (
@@ -335,7 +316,7 @@ package et_geometry_2a is
 	-- Subtracts v2 from v1. Computes v1 - v2:
 	function subtract (
 		v1, v2 : in type_vector_model)
-		return type_distance_relative;
+		return type_vector_model;
 
 	
 	-- Moves a model point by the given offset:
@@ -444,13 +425,13 @@ package et_geometry_2a is
 		return type_vector;
 
 
-	function to_point (
+	function to_point ( -- CS rename to to_vector_model
 		v	: in type_vector)
 		return type_vector_model;
 
 
 	function to_point (
-		d 		: in type_distance_relative;
+		d 		: in type_vector_model;
 		clip	: in boolean := false)
 		return type_vector_model;
 	
@@ -473,17 +454,6 @@ package et_geometry_2a is
 		return type_offset;
 
 
-	function to_offset (
-		distance : in type_distance_relative)
-		return type_offset;
-
-
-
-	function to_distance_relative (
-		p : in type_vector_model)
-		return type_distance_relative;
-
-	
 	
 
 	function get_distance_total ( -- CS rename to get_distance_absolute
@@ -498,7 +468,7 @@ package et_geometry_2a is
 	--			d.y := point_two.y - point_one.y;
 	function get_distance_relative (
 		point_one, point_two : in type_vector_model) -- CS rename to reference and point
-		return type_distance_relative;
+		return type_vector_model;
 
 
 	
@@ -517,12 +487,6 @@ package et_geometry_2a is
 		axis	: in type_axis_2d) 
 		return type_distance_positive;
 	
-	
-
-	-- Moves a point by the given offset.
-	procedure move_by (
-		point	: in out type_vector_model;
-		offset	: in type_distance_relative);
 	
 
 	
@@ -566,7 +530,7 @@ package et_geometry_2a is
 
 	procedure move_points (
 		points 	: in out pac_points.list;
-		offset	: in type_distance_relative);						
+		offset	: in type_vector_model);						
 
 	
 	procedure rotate_points (
@@ -830,20 +794,20 @@ package et_geometry_2a is
 	-- This moves both start and end point by the given offset:
 	procedure move_by (
 		line	: in out type_line;
-		offset	: in type_distance_relative);
+		offset	: in type_vector_model);
 
 
 
 	-- Moves the start point of a line by the given offset. 
 	procedure move_start_by (
 		line	: in out type_line;
-		offset	: in type_distance_relative);
+		offset	: in type_vector_model);
 
 	
 	-- Moves the end point of a line by the given offset. 
 	procedure move_end_by (
 		line	: in out type_line;
-		offset	: in type_distance_relative);
+		offset	: in type_vector_model);
 
 	
 
@@ -1156,7 +1120,7 @@ package et_geometry_2a is
 	-- Moves an arc by the given offset. 
 	procedure move_by (
 		arc		: in out type_arc;
-		offset	: in type_distance_relative);
+		offset	: in type_vector_model);
 
 
 	-- Moves an arc to the given position. 
@@ -1381,7 +1345,7 @@ package et_geometry_2a is
 	-- Moves a circle by the given offset. 
 	procedure move_by (
 		circle	: in out type_circle;
-		offset	: in type_distance_relative);
+		offset	: in type_vector_model);
 
 
 	-- Mirrors the center of a circle along the given axis.

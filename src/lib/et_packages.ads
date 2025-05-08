@@ -160,7 +160,7 @@ package et_packages is
 	-- by the given offset:
 	procedure move_conductor_objects (
 		conductors	: in out type_conductor_objects;
-		offset		: in type_distance_relative);
+		offset		: in type_vector_model);
 
 	
 	-- Converts the given non-electric conductor objects to polygons.

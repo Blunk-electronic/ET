@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -84,7 +84,7 @@ package body et_device_placeholders.packages is
 
 	procedure move_placeholders (
 		placeholders	: in out pac_placeholders.list;
-		offset			: in type_distance_relative)
+		offset			: in type_vector_model)
 	is
 		result : pac_placeholders.list;
 

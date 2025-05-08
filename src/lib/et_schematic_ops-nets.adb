@@ -1022,14 +1022,14 @@ package body et_schematic_ops.nets is
 								--log (text => "move targeted segment relative", level => log_threshold + 3);
 								case zone is
 									when START_POINT =>
-										move_start_by (segment, to_distance_relative (destination));
+										move_start_by (segment, destination);
 
 									when END_POINT =>
-										move_end_by (segment, to_distance_relative (destination));
+										move_end_by (segment, destination);
 										
 									when CENTER =>
-										move_start_by (segment, to_distance_relative (destination));
-										move_end_by (segment, to_distance_relative (destination));
+										move_start_by (segment, destination);
+										move_end_by (segment, destination);
 								end case;										
 						end case;
 
@@ -2894,7 +2894,7 @@ package body et_schematic_ops.nets is
 					begin
 						-- label_position is relative to segment_position
 						label.position := label_position;
-						move_by (label.position, to_distance_relative (segment_position.place));
+						move_by (label.position, segment_position.place);
 						-- now label.position is absolute
 						
 						-- CS: label size, style and line width assume default. could be provided by further

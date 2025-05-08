@@ -1818,7 +1818,7 @@ package body et_canvas_schematic_units is
 				begin
 					-- The current placeholder_position is relative to the unit position.
 					-- It must be moved by the unit position in order to get the absolute position:
-					move_by (placeholder_position, to_distance_relative (element (unit_cursor).position.place));
+					move_by (placeholder_position, element (unit_cursor).position.place);
 
 					-- Add the sheet information to the position:
 					pos_abs := to_position (placeholder_position, get_sheet (place));

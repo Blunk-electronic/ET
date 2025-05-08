@@ -509,7 +509,7 @@ package et_geometry_2a.contours is
 	-- Moves a contour by the given offset. 
 	procedure move_by ( -- CS rename to move_contour
 		contour	: in out type_contour;
-		offset	: in type_distance_relative);
+		offset	: in type_vector_model);
 	
 
 	-- Mirrors a contour along the given axis.
@@ -673,7 +673,7 @@ package et_geometry_2a.contours is
 	-- Moves a list of contours by the given offset:
 	procedure move_contours (
 		contours	: in out pac_contour_list.list;
-		offset		: in type_distance_relative);
+		offset		: in type_vector_model);
 
 	
 	-- Mirrors a list of contours along the given axis:

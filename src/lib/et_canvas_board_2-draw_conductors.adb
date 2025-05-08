@@ -678,8 +678,9 @@ procedure draw_conductors is
 			use et_text;
 			use et_alignment;
 			position : type_vector_model := get_center (circle);
-			offset : constant type_distance_relative := to_distance_relative (
-				set (zero, + radius_base * text_position_layer_and_drill_factor));
+			
+			offset : constant type_vector_model := 
+				set (zero, + radius_base * text_position_layer_and_drill_factor);
 
 			use pac_draw_text;
 		begin
@@ -708,14 +709,13 @@ procedure draw_conductors is
 			use et_text;
 			use et_alignment;
 			position : type_vector_model := get_center (circle);
-			offset : type_distance_relative;
+			offset : type_vector_model;
 
 			use pac_draw_text;
 		begin
 			if not drill_size_drawn then
 
-				offset := to_distance_relative (
-					set (zero, - radius_base * text_position_layer_and_drill_factor));
+				offset := set (zero, - radius_base * text_position_layer_and_drill_factor);
 				
 				move_by (position, offset);
 						

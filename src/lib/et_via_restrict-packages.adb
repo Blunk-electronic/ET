@@ -61,7 +61,7 @@ package body et_via_restrict.packages is
 
 	procedure move_via_restrict_objects (
 		restrict	: in out type_one_side;
-		offset		: in type_distance_relative)
+		offset		: in type_vector_model)
 	is begin
 		null;
 		-- CS zones

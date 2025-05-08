@@ -2048,8 +2048,7 @@ is
 			--text_position := type_vector_model (to_point (
 				--get_distance_relative (text_position, type_vector_model (unit_position))));
 
-			text_position := to_point (
-				get_distance_relative (text_position, get_point (unit_position)));
+			text_position := get_distance_relative (text_position, get_point (unit_position));
 
 			
 			size := mil_to_distance (f (element (line_cursor), 7));

@@ -185,10 +185,10 @@ package body et_net_segment is
 	is 
 		-- Calculate the displacement of the start and end point:
 		
-		delta_start : constant type_distance_relative :=
+		delta_start : constant type_vector_model :=
 			get_distance_relative (segment_before.A, segment_after.A);
 		
-		delta_end	: constant type_distance_relative :=
+		delta_end	: constant type_vector_model :=
 			get_distance_relative (segment_before.B, segment_after.B);
 															
 		use pac_net_labels;

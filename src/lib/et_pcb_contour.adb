@@ -102,7 +102,7 @@ package body et_pcb_contour is
 
 	procedure move_holes (
 		holes	: in out pac_holes.list;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is
 		result : pac_holes.list;
 

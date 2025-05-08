@@ -89,7 +89,7 @@ package et_conductor_text is
 	-- Moves a text by the given offset:
 	procedure move_text (
 		text	: in out type_conductor_text;
-		offset	: in type_distance_relative);
+		offset	: in type_vector_model);
 
 		
 

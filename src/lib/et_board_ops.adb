@@ -273,7 +273,7 @@ package body et_board_ops is
 						set (submodule.position_in_board, point);
 
 					when RELATIVE =>
-						move_by (submodule.position_in_board.place, to_distance_relative (point));
+						move_by (submodule.position_in_board.place, point);
 				end case;
 
 				exception
@@ -385,7 +385,7 @@ package body et_board_ops is
 						-- Then move it according
 						-- to the position of the submodule instance in the parent module:
 						--move_by (device_position, to_distance_relative (position_in_board));
-						move_by (device_position.place, to_distance_relative (position_in_board.place));
+						move_by (device_position.place, position_in_board.place);
 
 						log (text => "generic" & to_string (position_generic) &
 							" -> " & "in instance" & to_string (device_position),
@@ -663,7 +663,7 @@ package body et_board_ops is
 					-- The new position_in_board is a vector sum of the position_in_board of the parent module
 					-- and the position_in_board of the current submodule:
 					--move_by (position_in_board, to_distance_relative (get_position (parent_name, module_instance)));
-					move_by (position_in_board.place, to_distance_relative (get_position (parent_name, module_instance).place));
+					move_by (position_in_board.place, get_position (parent_name, module_instance).place);
 					
 					-- CS position_in_board must be rotated according to rotation specified where
 					-- the submodule has been instanciated. 
@@ -715,7 +715,8 @@ package body et_board_ops is
 						log (text => ada.exceptions.exception_information (event), console => true);
 						raise;
 				
-			end query_submodules;
+				end query_submodules;
+				
 
 		begin -- make_for_variant
 			if is_default (variant_name) then
@@ -761,12 +762,14 @@ package body et_board_ops is
 			
 			log_indentation_down;
 		end make_for_variant;
+
 		
 		procedure query_variant (variant_cursor : in et_assembly_variants.pac_assembly_variants.cursor) is
 			use pac_assembly_variant_name;
 		begin
 			make_for_variant (key (variant_cursor));
 		end query_variant;
+
 		
 	begin -- make_pick_and_place
 		log (text => "generating pick & place data ...", level => log_threshold);

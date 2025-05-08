@@ -70,7 +70,7 @@ package body et_silkscreen.packages is
 
 	procedure move_silkscreen_objects (
 		silkscreen	: in out type_silkscreen_package;
-		offset		: in type_distance_relative)
+		offset		: in type_vector_model)
 	is begin
 		move_lines (silkscreen.lines, offset);
 		move_arcs (silkscreen.arcs, offset);

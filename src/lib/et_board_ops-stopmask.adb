@@ -1816,7 +1816,7 @@ package body et_board_ops.stopmask is
 	is
 		old_position : constant type_vector_model := get_place (text);
 		new_position : type_vector_model;
-		offset : type_distance_relative;
+		offset : type_vector_model;
 
 		
 		procedure query_module (
@@ -1850,7 +1850,7 @@ package body et_board_ops.stopmask is
 
 			when RELATIVE =>
 				new_position := point;
-				offset := to_distance_relative (point);
+				offset := point;
 				move_by (new_position, offset);
 		end case;
 		

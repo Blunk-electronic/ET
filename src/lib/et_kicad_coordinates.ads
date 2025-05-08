@@ -117,7 +117,7 @@ package et_kicad_coordinates is
 
 	procedure move_point (
 		position	: in out type_position;
-		offset		: in type_distance_relative);
+		offset		: in type_vector_model);
 
 	
 	procedure set (

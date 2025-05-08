@@ -111,7 +111,7 @@ package body et_keepout is
 
 	procedure move_zones (
 		zones	: in out pac_keepout_zones.list;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is
 		result : pac_keepout_zones.list;
 
@@ -149,7 +149,7 @@ package body et_keepout is
 
 	procedure move_keepout_objects (
 		keepout	: in out type_keepout;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is begin
 		move_zones (keepout.zones, offset);
 		-- CS move_cutouts (keepout.cutouts, offset);

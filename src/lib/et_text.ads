@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -279,9 +279,9 @@ package et_text is
 			angle	: in type_rotation);
 
 		-- Moves a text by the given offset:
-		procedure move_text (
+		procedure move_text_by (
 			text	: in out type_text_fab;
-			offset	: in type_distance_relative);
+			offset	: in type_vector_model);
 
 		-- Moves a text to the given point:
 		procedure move_text (
@@ -1850,7 +1850,7 @@ package et_text is
 		-- Move a vector text by the given offset:
 		procedure move_vector_text (
 			text	: in out type_vector_text;
-			offset	: in type_distance_relative);
+			offset	: in type_vector_model);
 
 		
 	private

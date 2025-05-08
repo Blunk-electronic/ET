@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 -2024                                                 --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -121,7 +121,7 @@ package body et_packages is
 
 	procedure move_conductor_objects (
 		conductors	: in out type_conductor_objects;
-		offset		: in type_distance_relative)
+		offset		: in type_vector_model)
 	is begin
 		move_lines (conductors.lines, offset);
 		move_arcs (conductors.arcs, offset);
@@ -257,8 +257,7 @@ package body et_packages is
 			use pac_terminals;
 			terminal : type_terminal renames element (t);
 
-			displacement : constant type_distance_relative :=
-				to_distance_relative (terminal.position.place);
+			displacement : constant type_vector_model := terminal.position.place;
 
 			procedure finalize (c : in type_contour) is 
 				contour : type_contour := c;
@@ -477,7 +476,7 @@ package body et_packages is
 		package_pos	: in type_package_position) 
 	is 
 		package_rotation : constant type_rotation_model := get_rotation (package_pos);
-		package_position_relative : constant type_distance_relative := to_distance_relative (package_pos.place);
+		package_position_relative : constant type_vector_model := package_pos.place;
 	begin
 		---- Rotate the given terminal position by the position of the package:
 		--rotate_by (term_pos, package_rotation);
@@ -514,7 +513,7 @@ package body et_packages is
 		end if;
 		
 		-- Move the outline to its final position:
-		move_by (outline, to_distance_relative (term_pos.place));
+		move_by (outline, term_pos.place);
 	end move_contours;
 
 

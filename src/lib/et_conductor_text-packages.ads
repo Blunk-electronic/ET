@@ -68,7 +68,7 @@ package et_conductor_text.packages is
 	-- Moves a list of texts by the given offset:
 	procedure move_texts (
 		texts	: in out pac_conductor_texts.list;
-		offset	: in type_distance_relative);
+		offset	: in type_vector_model);
 
 
 	-- Converts a list of texts to a list of polygons.

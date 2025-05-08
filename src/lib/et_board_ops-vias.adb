@@ -786,7 +786,7 @@ package body et_board_ops.vias is
 
 			when RELATIVE =>
 				new_position := get_position (object.via_cursor);
-				move_by (new_position, to_distance_relative (destination));
+				move_by (new_position, destination);
 		end case;
 
 		

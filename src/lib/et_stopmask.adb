@@ -124,7 +124,7 @@ package body et_stopmask is
 	
 	procedure move_lines (
 		lines	: in out pac_stop_lines.list;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is
 		result : pac_stop_lines.list;
 
@@ -230,7 +230,7 @@ package body et_stopmask is
 	
 	procedure move_arcs (
 		arcs	: in out pac_stop_arcs.list;
-		offset	: in type_distance_relative)		
+		offset	: in type_vector_model)		
 	is
 		result : pac_stop_arcs.list;
 
@@ -335,7 +335,7 @@ package body et_stopmask is
 	
 	procedure move_circles (
 		circles	: in out pac_stop_circles.list;
-		offset	: in type_distance_relative)		
+		offset	: in type_vector_model)		
 	is
 		result : pac_stop_circles.list;
 
@@ -428,7 +428,7 @@ package body et_stopmask is
 	
 	procedure move_contours (
 		contours	: in out pac_stop_zones.list;
-		offset		: in type_distance_relative)		
+		offset		: in type_vector_model)		
 	is
 		result : pac_stop_zones.list;
 
@@ -547,7 +547,7 @@ package body et_stopmask is
 	
 	procedure move_texts (
 		texts	: in out pac_stop_texts.list;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is
 		result : pac_stop_texts.list;
 

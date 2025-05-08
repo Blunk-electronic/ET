@@ -100,7 +100,7 @@ package et_pcb_contour is -- CS rename to et_board_contour ?
 	-- Moves a list of holes by the gvien offset:
 	procedure move_holes (
 		holes	: in out pac_holes.list;
-		offset	: in type_distance_relative);
+		offset	: in type_vector_model);
 
 	
 	-- Converts a list of holes to a list of polygons:

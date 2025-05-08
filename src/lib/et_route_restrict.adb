@@ -85,7 +85,7 @@ package body et_route_restrict is
 
 	procedure move_lines (
 		lines	: in out pac_route_restrict_lines.list;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is
 		result : pac_route_restrict_lines.list;
 
@@ -148,7 +148,7 @@ package body et_route_restrict is
 	
 	procedure move_arcs (
 		arcs	: in out pac_route_restrict_arcs.list;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is
 		result : pac_route_restrict_arcs.list;
 
@@ -261,7 +261,7 @@ package body et_route_restrict is
 
 	procedure move_circles (
 		circles	: in out pac_route_restrict_circles.list;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is
 		result : pac_route_restrict_circles.list;
 

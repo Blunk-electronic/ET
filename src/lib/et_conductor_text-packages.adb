@@ -99,7 +99,7 @@ package body et_conductor_text.packages is
 
 	procedure move_texts (
 		texts	: in out pac_conductor_texts.list;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is
 		result : pac_conductor_texts.list;
 

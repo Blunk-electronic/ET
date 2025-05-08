@@ -117,7 +117,7 @@ package et_conductor_segment is
 	-- Moves a list of lines by the given offset:
 	procedure move_lines (
 		lines	: in out pac_conductor_lines.list;
-		offset	: in type_distance_relative);
+		offset	: in type_vector_model);
 
 
 	-- Converts a list of lines to a list of polygons:
@@ -191,7 +191,7 @@ package et_conductor_segment is
 	-- Moves a list of arcs by the given offset:
 	procedure move_arcs (
 		arcs	: in out pac_conductor_arcs.list;
-		offset	: in type_distance_relative);
+		offset	: in type_vector_model);
 
 
 	-- Converts a list of arcs to a list of polygons:
@@ -260,7 +260,7 @@ package et_conductor_segment is
 	-- Moves a list of circles by the given offset:
 	procedure move_circles (
 		circles	: in out pac_conductor_circles.list;
-		offset	: in type_distance_relative);
+		offset	: in type_vector_model);
 
 
 	-- Converts the outer edges of circles to a list of polygons:

@@ -67,7 +67,7 @@ package et_via_restrict.packages is
 	-- Moves the given via restrict objects by the given offset:
 	procedure move_via_restrict_objects (
 		restrict	: in out type_one_side;
-		offset		: in type_distance_relative);
+		offset		: in type_vector_model);
 
 
 	-- Converts the given restrict objects to a list of polygons.

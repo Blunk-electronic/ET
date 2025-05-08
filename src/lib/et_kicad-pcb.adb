@@ -3657,6 +3657,7 @@ package body et_kicad.pcb is
 			end insert_board_text;
 
 			
+			
 			-- Append the arc to the container corresponding to the layer. 
 			-- Then log the arc properties.
 			procedure insert_fp_arc is 
@@ -3818,6 +3819,7 @@ package body et_kicad.pcb is
 
 			end insert_fp_circle;
 
+
 			
 			procedure insert_fp_line is 
 				use et_silkscreen;
@@ -3898,6 +3900,7 @@ package body et_kicad.pcb is
 
 			end insert_fp_line;
 
+
 			
 			procedure insert_terminal is 
 			-- Insert a terminal in the list "terminals".
@@ -3911,6 +3914,7 @@ package body et_kicad.pcb is
 				--shape : et_terminals.type_pad_outline;
 				shape : pac_contours.type_contour;
 
+				
 				procedure insert_tht is 
 					use et_packages;
 				begin
@@ -3958,7 +3962,7 @@ package body et_kicad.pcb is
 									center	=> terminal_position,
 									size_x	=> terminal_milling_size_x,
 									size_y	=> terminal_milling_size_y,
-									offset	=> to_distance_relative (terminal_pad_drill_offset));
+									offset	=> terminal_pad_drill_offset);
 
 								millings : type_contour;
 
@@ -3999,6 +4003,7 @@ package body et_kicad.pcb is
 							end;
 					end case;
 				end insert_tht;
+
 				
 			begin -- insert_terminal
 
@@ -4012,7 +4017,7 @@ package body et_kicad.pcb is
 								-- Therefore the size in x serves as diameter.
 								shape := to_pad_shape_circle (
 											terminal_position, pad_size_x, 
-											to_distance_relative (terminal_pad_drill_offset));
+											terminal_pad_drill_offset);
 								
 								terminals.insert (
 									key 		=> terminal_name,
@@ -4050,7 +4055,7 @@ package body et_kicad.pcb is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset		=> to_distance_relative (terminal_pad_drill_offset));
+											offset		=> terminal_pad_drill_offset);
 										 
 								insert_tht;
 
@@ -4060,7 +4065,7 @@ package body et_kicad.pcb is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset		=> to_distance_relative (terminal_pad_drill_offset));
+											offset		=> terminal_pad_drill_offset);
 										 
 								insert_tht;
 
@@ -4079,7 +4084,7 @@ package body et_kicad.pcb is
 								-- Therefor the size in x serves as diameter.
 								shape := to_pad_shape_circle (
 											terminal_position, pad_size_x, 
-											to_distance_relative (terminal_pad_drill_offset));
+											terminal_pad_drill_offset);
 								
 								terminals.insert (
 									key 		=> terminal_name, 
@@ -4116,7 +4121,7 @@ package body et_kicad.pcb is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset		=> to_distance_relative (terminal_pad_drill_offset));
+											offset		=> terminal_pad_drill_offset);
 										 
 								terminals.insert (
 									key 		=> terminal_name, 
@@ -4153,7 +4158,7 @@ package body et_kicad.pcb is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset		=> to_distance_relative (terminal_pad_drill_offset));
+											offset		=> terminal_pad_drill_offset);
 								
 								terminals.insert (
 									key 		=> terminal_name, 
@@ -4652,6 +4657,7 @@ package body et_kicad.pcb is
 		return board;
 	end to_board;
 
+
 	
 	-- The polygon in kicad is a list of points. This list is here converted
 	-- to a list of lines. This implies that the kicad polygon must have at least
@@ -4691,6 +4697,7 @@ package body et_kicad.pcb is
 		return lines;
 	end corners_to_lines;
 
+
 	
 	procedure floating_copper_polygon_properties (
 		cursor			: in pac_floating_solid.cursor;
@@ -4724,6 +4731,7 @@ package body et_kicad.pcb is
 		log_indentation_down;
 	end floating_copper_polygon_properties;
 
+
 	
 	-- Reads the board file. Copies general board stuff to the schematic module.
 	-- Global module_cursor is expected to point to the schematic module.
@@ -4741,6 +4749,7 @@ package body et_kicad.pcb is
 		-- CS: If Kicad supports multi boards some day, this must become a list of boards.
 		board : type_board;
 
+		
 		procedure merge_board_and_schematic (log_threshold : in type_log_level) is
 		-- Merges the board with the schematic module.
 		-- The board is specified in et_kicad_pcb.board.
@@ -4773,6 +4782,7 @@ package body et_kicad.pcb is
 				use pac_terminals;
 				terminals : pac_terminals.map;
 				terminal_cursor : pac_terminals.cursor;
+
 				
 			begin -- to_net_name
 				-- Locate the given component in the board. If component does not

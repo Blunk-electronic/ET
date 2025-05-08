@@ -429,7 +429,7 @@ package body et_devices_electrical is
 		-- CS mirror ?
 		
 		-- Move the port positions by the position of the unit:		
-		move_points (result, to_distance_relative (get_place (unit_position)));
+		move_points (result, get_place (unit_position));
 		
 		return result;
 	end get_port_positions;
@@ -634,7 +634,7 @@ package body et_devices_electrical is
 					placeholder_position := element (unit).value.position;
 			end case;
 
-			move_by (placeholder_position, to_distance_relative (unit_position.place));
+			move_by (placeholder_position, unit_position.place);
 			
 		end query_unit;
 
@@ -682,7 +682,7 @@ package body et_devices_electrical is
 						rotate_conductor_objects (conductors, - device.position.rotation);
 				end case;
 
-				move_conductor_objects (conductors, to_distance_relative (device.position.place));
+				move_conductor_objects (conductors, device.position.place);
 			end if;
 		end if;
 		
@@ -728,7 +728,7 @@ package body et_devices_electrical is
 						rotate_conductor_objects (conductors, - device.position.rotation);
 				end case;
 
-				move_conductor_objects (conductors, to_distance_relative (device.position.place));
+				move_conductor_objects (conductors, device.position.place);
 
 				-- convert conductor objects to polygons:
 				result := to_polygons (conductors, fill_tolerance);
@@ -774,7 +774,7 @@ package body et_devices_electrical is
 						rotate_route_restrict_objects (restrict, - device.position.rotation);
 				end case;
 
-				move_route_restrict_objects (restrict, to_distance_relative (device.position.place));
+				move_route_restrict_objects (restrict, device.position.place);
 			end if;
 		end if;
 
@@ -817,7 +817,7 @@ package body et_devices_electrical is
 						rotate_route_restrict_objects (restrict, - device.position.rotation);
 				end case;
 
-				move_route_restrict_objects (restrict, to_distance_relative (device.position.place));
+				move_route_restrict_objects (restrict, device.position.place);
 
 				-- convert restrict objects to polygons:
 				result := to_polygons (restrict, fill_tolerance);
@@ -865,7 +865,7 @@ package body et_devices_electrical is
 						rotate_via_restrict_objects (restrict, - device.position.rotation);
 				end case;
 
-				move_via_restrict_objects (restrict, to_distance_relative (device.position.place));
+				move_via_restrict_objects (restrict, device.position.place);
 			end if;
 		end if;
 
@@ -925,7 +925,7 @@ package body et_devices_electrical is
 			end case;
 		end if;
 		
-		move_keepout_objects (result, to_distance_relative (device.position.place));
+		move_keepout_objects (result, device.position.place);
 		return result;
 	end get_keepout_objects;
 
@@ -981,7 +981,7 @@ package body et_devices_electrical is
 			end case;
 		end if;
 		
-		move_stencil_objects (result, to_distance_relative (device.position.place));
+		move_stencil_objects (result, device.position.place);
 		return result;
 	end get_stencil_objects;
 
@@ -1040,7 +1040,7 @@ package body et_devices_electrical is
 					end case;
 			end case;
 
-			move_stopmask_objects (result, to_distance_relative (device.position.place));			
+			move_stopmask_objects (result, device.position.place);			
 		end if;
 
 		return result;
@@ -1331,7 +1331,7 @@ package body et_devices_electrical is
 					end case;
 			end case;
 
-			move_silkscreen_objects (silkscreen, to_distance_relative (device.position.place));			
+			move_silkscreen_objects (silkscreen, device.position.place);
 		end if;
 
 		result := type_silkscreen (silkscreen);		
@@ -1440,7 +1440,7 @@ package body et_devices_electrical is
 					end case;
 			end case;
 
-			move_assy_doc_objects (assy_doc, to_distance_relative (device.position.place));			
+			move_assy_doc_objects (assy_doc, device.position.place);
 		end if;
 
 		result := type_assy_doc (assy_doc);
@@ -1482,7 +1482,7 @@ package body et_devices_electrical is
 					rotate_holes (holes, + rotation);
 			end case;
 		
-			move_holes (holes, to_distance_relative (device.position.place));
+			move_holes (holes, device.position.place);
 		end if;
 		
 		return holes;		
@@ -1523,7 +1523,7 @@ package body et_devices_electrical is
 					rotate_holes (holes, + rotation);
 			end case;
 			
-			move_holes (holes, to_distance_relative (device.position.place));
+			move_holes (holes, device.position.place);
 		
 			result := to_polygons (holes, fill_tolerance);
 		end if;

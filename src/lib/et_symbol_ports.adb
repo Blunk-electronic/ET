@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -64,7 +64,7 @@ package body et_symbol_ports is
 			name	: in pac_port_name.bounded_string;
 			port	: in out type_port) 
 		is begin
-			move_by (port.position, to_distance_relative (offset.place));
+			move_by (port.position, offset.place);
 		end;
 
 		procedure query_port (cursor : in pac_ports.cursor) is begin

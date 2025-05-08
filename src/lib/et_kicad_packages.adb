@@ -125,7 +125,7 @@ package body et_kicad_packages is
 	function to_pad_shape_circle (
 		position	: in type_position;
 		diameter	: in type_pad_size;
-		offset		: in type_distance_relative)	-- the offset of the pad from the center
+		offset		: in type_vector_model)	-- the offset of the pad from the center
 		return type_contour 
 	is
 		shape : type_contour; -- to be returned
@@ -150,7 +150,7 @@ package body et_kicad_packages is
 		center		: in type_position; -- the pad center position (incl. angle)
 		size_x		: in type_pad_size;	-- the size in x of the pad
 		size_y		: in type_pad_size;	-- the size in y of the pad
-		offset		: in type_distance_relative)	-- the offset of the pad from the center
+		offset		: in type_vector_model)	-- the offset of the pad from the center
 		return type_contour 
 	is
 		use et_board_coordinates;
@@ -232,7 +232,7 @@ package body et_kicad_packages is
 		center	: in type_position;	-- the pad center position (incl. angle)
 		size_x	: in type_pad_size;	-- the size in x of the pad
 		size_y	: in type_pad_size;	-- the size in y of the pad
-		offset	: in type_distance_relative)	-- the offset of the pad from the center
+		offset	: in type_vector_model)	-- the offset of the pad from the center
 		return type_contour 
 	is
 		use et_board_coordinates;
@@ -334,7 +334,7 @@ package body et_kicad_packages is
 		center	: in type_position; -- the terminal position (incl. angle, (z axis ignored))
 		size_x	: in type_pad_size;	-- the size in x of the hole
 		size_y	: in type_pad_size;	-- the size in y of the hole
-		offset	: in type_distance_relative)	-- the offset of the pad from the center
+		offset	: in type_vector_model)	-- the offset of the pad from the center
 		return pac_segments.list 
 	is
 		use et_board_coordinates;
@@ -2023,7 +2023,7 @@ package body et_kicad_packages is
 									center	=> terminal_position,
 									size_x	=> terminal_milling_size_x,
 									size_y	=> terminal_milling_size_y,
-									offset	=> to_distance_relative (terminal_pad_drill_offset));
+									offset	=> terminal_pad_drill_offset);
 
 								millings : type_contour;
 								
@@ -2074,7 +2074,7 @@ package body et_kicad_packages is
 								-- Therefore the size in x serves as diameter.
 								shape := to_pad_shape_circle (
 											terminal_position, pad_size_x, 
-											to_distance_relative (terminal_pad_drill_offset));
+											terminal_pad_drill_offset);
 								
 								terminals.insert (
 									key 		=> terminal_name,
@@ -2109,7 +2109,7 @@ package body et_kicad_packages is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset		=> to_distance_relative (terminal_pad_drill_offset));
+											offset		=> terminal_pad_drill_offset);
 
 								insert_tht;
 
@@ -2119,7 +2119,7 @@ package body et_kicad_packages is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset		=> to_distance_relative (terminal_pad_drill_offset));
+											offset		=> terminal_pad_drill_offset);
 
 								insert_tht;
 
@@ -2138,7 +2138,7 @@ package body et_kicad_packages is
 								-- Therefore the size in x serves as diameter.
 								shape := to_pad_shape_circle (
 											terminal_position, pad_size_x, 
-											to_distance_relative (terminal_pad_drill_offset));
+											terminal_pad_drill_offset);
 								
 								terminals.insert (
 									key 		=> terminal_name, 
@@ -2172,7 +2172,7 @@ package body et_kicad_packages is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset 		=> to_distance_relative (terminal_pad_drill_offset));
+											offset 		=> terminal_pad_drill_offset);
 
 								terminals.insert (
 									key 		=> terminal_name, 
@@ -2207,7 +2207,7 @@ package body et_kicad_packages is
 											center		=> terminal_position,
 											size_x 		=> pad_size_x,
 											size_y 		=> pad_size_y,
-											offset		=> to_distance_relative (terminal_pad_drill_offset));
+											offset		=> terminal_pad_drill_offset);
 
 								terminals.insert (
 									key 		=> terminal_name, 

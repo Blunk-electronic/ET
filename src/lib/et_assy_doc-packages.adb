@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -71,7 +71,7 @@ package body et_assy_doc.packages is
 
 	procedure move_assy_doc_objects (
 		assy_doc	: in out type_assy_doc_package;
-		offset		: in type_distance_relative)
+		offset		: in type_vector_model)
 	is begin
 		move_lines (assy_doc.lines, offset);
 		move_arcs (assy_doc.arcs, offset);

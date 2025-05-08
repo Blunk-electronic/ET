@@ -115,7 +115,7 @@ package body et_schematic_ops.units is
 						-- Calculate the absolute port position in the schematic:
 						move_by (
 							point 	=> port_position.place,
-							offset	=> to_distance_relative (unit_position.place));
+							offset	=> unit_position.place);
 						
 						exit; -- no need to look at other units
 					end if;
@@ -190,7 +190,7 @@ package body et_schematic_ops.units is
 					-- In case absolute movement is required, calculate the
 					-- new position of the placeholder relative to the unit origin:
 					pos_abs : constant type_vector_model :=
-						to_point (get_distance_relative (unit.position.place, point));
+						get_distance_relative (unit.position.place, point);
 					
 				begin -- move_placeholder
 					
@@ -205,7 +205,7 @@ package body et_schematic_ops.units is
 								when RELATIVE =>
 									move_by (
 										point	=> unit.name.position,
-										offset	=> to_distance_relative (point));
+										offset	=> point);
 							end case;
 							
 						when VALUE =>
@@ -216,7 +216,7 @@ package body et_schematic_ops.units is
 								when RELATIVE =>
 									move_by (
 										point	=> unit.value.position,
-										offset	=> to_distance_relative (point));
+										offset	=> point);
 							end case;
 							
 						when PURPOSE =>
@@ -227,7 +227,7 @@ package body et_schematic_ops.units is
 								when RELATIVE =>
 									move_by (
 										point	=> unit.purpose.position,
-										offset	=> to_distance_relative (point));
+										offset	=> point);
 							end case;
 
 						when others =>
@@ -1902,7 +1902,7 @@ package body et_schematic_ops.units is
 						when RELATIVE =>
 							move_by (
 								point	=> unit.position.place,
-								offset	=> to_distance_relative (destination));
+								offset	=> destination);
 					end case;
 					
 					exception

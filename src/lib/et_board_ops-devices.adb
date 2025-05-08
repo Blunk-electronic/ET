@@ -556,7 +556,7 @@ package body et_board_ops.devices is
 						-- preserve angle and face
 
 					when RELATIVE =>
-						move_by (point => device.position.place, offset => to_distance_relative (point));
+						move_by (point => device.position.place, offset => point);
 						-- preserve angle and face
 						
 				end case;
@@ -573,7 +573,7 @@ package body et_board_ops.devices is
 						-- preserve angle and face
 
 					when RELATIVE =>
-						move_by (point => device.position.place, offset => to_distance_relative (point)); 
+						move_by (point => device.position.place, offset => point); 
 						-- preserve angle and face
 						
 				end case;
@@ -2355,8 +2355,8 @@ package body et_board_ops.devices is
 
 		-- The displacement required to move the contour to 
 		-- its final position:
-		terminal_displacement : constant type_distance_relative := 
-			to_distance_relative (terminal_position.place);
+		terminal_displacement : constant type_vector_model := 
+			to_point (terminal_position.place);
 
 		
 		-- intermediate storage place of a contour:

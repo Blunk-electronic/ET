@@ -103,7 +103,7 @@ package et_stencil is
 	-- Moves a list of lines by the given offset:
 	procedure move_lines (
 		lines	: in out pac_stencil_lines.list;
-		offset	: in type_distance_relative);
+		offset	: in type_vector_model);
 
 
 	
@@ -156,7 +156,7 @@ package et_stencil is
 	-- Moves a list of arcs by the given offset:
 	procedure move_arcs (
 		arcs	: in out pac_stencil_arcs.list;
-		offset	: in type_distance_relative);
+		offset	: in type_vector_model);
 
 
 	
@@ -206,7 +206,7 @@ package et_stencil is
 	-- Moves a list of circles by the given offset:
 	procedure move_circles (
 		circles	: in out pac_stencil_circles.list;
-		offset	: in type_distance_relative);
+		offset	: in type_vector_model);
 
 	
 
@@ -265,7 +265,7 @@ package et_stencil is
 	-- Moves a list of contours by the given offset:
 	procedure move_contours (
 		contours	: in out pac_stencil_zones.list;
-		offset		: in type_distance_relative);
+		offset		: in type_vector_model);
 
 
 	
@@ -300,7 +300,7 @@ package et_stencil is
 	-- Moves the given objects by the given offset:
 	procedure move_stencil_objects (
 		stencil	: in out type_stencil;
-		offset	: in type_distance_relative);
+		offset	: in type_vector_model);
 
 	
 

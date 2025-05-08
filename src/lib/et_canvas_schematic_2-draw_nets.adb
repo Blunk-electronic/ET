@@ -786,7 +786,7 @@ procedure draw_nets is
 		s : in pac_net_segments.cursor) -- the original segment as given in database
 	is
 		tool_position : type_vector_model;
-		displacement : type_distance_relative;
+		displacement : type_vector_model;
 
 		use et_canvas_schematic_units;
 		use pac_segments_being_dragged;

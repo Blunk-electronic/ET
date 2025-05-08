@@ -125,7 +125,7 @@ package body et_silkscreen is
 	
 	procedure move_lines (
 		lines	: in out pac_silk_lines.list;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is
 		result : pac_silk_lines.list;
 
@@ -229,7 +229,7 @@ package body et_silkscreen is
 
 	procedure move_arcs (
 		arcs	: in out pac_silk_arcs.list;
-		offset	: in type_distance_relative)		
+		offset	: in type_vector_model)		
 	is
 		result : pac_silk_arcs.list;
 
@@ -331,7 +331,7 @@ package body et_silkscreen is
 
 	procedure move_circles (
 		circles	: in out pac_silk_circles.list;
-		offset	: in type_distance_relative)		
+		offset	: in type_vector_model)		
 	is
 		result : pac_silk_circles.list;
 
@@ -420,7 +420,7 @@ package body et_silkscreen is
 
 	procedure move_contours (
 		contours	: in out pac_silk_zones.list;
-		offset		: in type_distance_relative)		
+		offset		: in type_vector_model)		
 	is
 		result : pac_silk_zones.list;
 
@@ -538,7 +538,7 @@ package body et_silkscreen is
 
 	procedure move_texts (
 		texts	: in out pac_silk_texts.list;
-		offset	: in type_distance_relative)
+		offset	: in type_vector_model)
 	is
 		result : pac_silk_texts.list;
 

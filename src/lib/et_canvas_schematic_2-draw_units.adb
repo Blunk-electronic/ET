@@ -191,7 +191,7 @@ procedure draw_units is
 				rotate_by (pos_port_name, unit_rotation);
 
 				-- Move the name by the unit position:
-				move_by (pos_port_name, to_distance_relative (unit_position));
+				move_by (pos_port_name, unit_position);
 				
 				set_color_symbols (brightness);
 
@@ -252,7 +252,7 @@ procedure draw_units is
 				end if;
 
 				-- Move the name by the unit position:
-				move_by (pos_terminal_name, to_distance_relative (unit_position));
+				move_by (pos_terminal_name, unit_position);
 				
 				set_color_symbols (brightness);
 
@@ -417,7 +417,7 @@ procedure draw_units is
 			rotate_by (p, unit_rotation);
 
 			-- Move text by unit position
-			move_by (p, to_distance_relative (unit_position));
+			move_by (p, unit_position);
 			
 			draw_text (
 				content		=> element (c).content,
@@ -453,7 +453,7 @@ procedure draw_units is
 			if device_names_enabled then
 
 				-- Move placeholder by unit position
-				move_by (p, to_distance_relative (unit_position));
+				move_by (p, unit_position);
 				
 				draw_text (
 					content		=> to_content (get_full_name (device_name, unit_name, unit_count)), -- IC4.PWR
@@ -479,7 +479,7 @@ procedure draw_units is
 					p := sch_placeholder_value.position;
 
 					-- Move text by unit position
-					move_by (p, to_distance_relative (unit_position));
+					move_by (p, unit_position);
 					
 					draw_text (
 						content		=> to_content (to_string (device_value)), -- 100R
@@ -506,7 +506,7 @@ procedure draw_units is
 					p := sch_placeholder_purpose.position;
 
 					-- Move text by unit position
-					move_by (p, to_distance_relative (unit_position));
+					move_by (p, unit_position);
 					
 					draw_text (
 						content		=> to_content (to_string (device_purpose)), -- "brightness control"
@@ -879,7 +879,7 @@ procedure draw_units is
 									-- Calculate the absolute position of the NAME placeholder 
 									-- as it was according to database BEFORE the move:
 									placeholder_move.absolute_position := sch_placeholder_name.position;
-									move_by (placeholder_move.absolute_position, to_distance_relative (unit_position));
+									move_by (placeholder_move.absolute_position, unit_position);
 
 									-- Depending on the tool used, calculate the new position of the 
 									-- placeholder relative to the unit position:
@@ -903,7 +903,7 @@ procedure draw_units is
 									-- Calculate the absolute position of the PURPOSE placeholder 
 									-- as it was according to database BEFORE the move:
 									placeholder_move.absolute_position := sch_placeholder_purpose.position;
-									move_by (placeholder_move.absolute_position, to_distance_relative (unit_position));
+									move_by (placeholder_move.absolute_position, unit_position);
 
 									-- Depending on the tool used, calculate the new position of the 
 									-- placeholder relative to the unit position:
@@ -928,7 +928,7 @@ procedure draw_units is
 									-- Calculate the absolute position of the VALUE placeholder 
 									-- as it was according to database BEFORE the move:
 									placeholder_move.absolute_position := sch_placeholder_value.position;
-									move_by (placeholder_move.absolute_position, to_distance_relative (unit_position));
+									move_by (placeholder_move.absolute_position, unit_position);
 
 									-- Depending on the tool used, calculate the new position of the 
 									-- placeholder relative to the unit position:
