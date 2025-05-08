@@ -97,14 +97,14 @@ package body et_nets is
 			-- Test start point of segment. 
 			-- if closer to orign than point_1 keep start point
 			point_2	:= type_vector_model (element (cursor).A);
-			if get_distance_total (point_2, origin) < get_distance_total (point_1, origin) then
+			if get_distance_absolute (point_2, origin) < get_distance_absolute (point_1, origin) then
 				point_1 := point_2;
 			end if;
 
 			-- Test start point of segment.
 			-- if closer to orign than point_1 keep end point
 			point_2	:= type_vector_model (element (cursor).B);
-			if get_distance_total (point_2, origin) < get_distance_total (point_1, origin) then
+			if get_distance_absolute (point_2, origin) < get_distance_absolute (point_1, origin) then
 				point_1 := point_2;
 			end if;
 		end query_strand;

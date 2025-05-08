@@ -6364,7 +6364,7 @@ package body et_kicad.schematic is
 		len : type_distance_model;
 		--use et_string_processing;
 	begin
-		len := to_distance (get_distance_total (
+		len := to_distance (get_distance_absolute (
 			get_point (segment.coordinates_start), get_point (segment.coordinates_end)));
 		--log (text => "segment length " & et_schematic_coordinates.to_string (len) & "mm", level => 3);
 		return len;

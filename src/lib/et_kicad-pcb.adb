@@ -3458,7 +3458,7 @@ package body et_kicad.pcb is
 			begin
 				-- Compute the circle radius from its center and point at circle.
 				-- Later the angle is discarded.
-				set_radius (board_circle, to_distance (get_distance_total (
+				set_radius (board_circle, to_distance (get_distance_absolute (
 					get_center (board_circle), board_circle.point)));
 
 				-- The point at the circle and its layer are now discarded
@@ -3740,7 +3740,7 @@ package body et_kicad.pcb is
 			begin
 				-- Compute the circle radius from its center and point at circle:
 				set_radius (package_circle, to_distance (
-					get_distance_total (get_center (package_circle), package_circle.point)));
+					get_distance_absolute (get_center (package_circle), package_circle.point)));
 
 				-- The point at the circle and its layer are now discarded
 				-- as the circle is converted back to its anchestor

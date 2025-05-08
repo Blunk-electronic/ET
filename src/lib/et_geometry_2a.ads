@@ -473,8 +473,9 @@ package et_geometry_2a is
 
 
 	
-	-- Computes the total distance between point_one and point_two.
-	function get_distance_total (
+	-- Computes the absolute distance between 
+	-- two location vectors:
+	function get_distance_absolute (
 		point_one, point_two : in type_vector_model)
 		return type_float_positive;
 
@@ -482,7 +483,7 @@ package et_geometry_2a is
 
 	-- Returns the absolute distance along the given axis between the given points.
 	-- NOTE: The result in both x and y is always greater or equal zero.
-	function get_distance_abs (
+	function get_distance_absolute (
 		point_1	: in type_vector_model;
 		point_2	: in type_vector_model;
 		axis	: in type_axis_2d) 

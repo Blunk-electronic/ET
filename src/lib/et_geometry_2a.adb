@@ -918,16 +918,16 @@ package body et_geometry_2a is
 
 
 	
-	function get_distance_total (
+	function get_distance_absolute (
 		point_one, point_two : in type_vector_model) 
 		return type_float_positive 
 	is begin
 		return get_distance_total (to_vector (point_one), to_vector (point_two));
-	end get_distance_total;
+	end get_distance_absolute;
 
 
 
-	function get_distance_abs (
+	function get_distance_absolute (
 		point_1	: in type_vector_model;
 		point_2	: in type_vector_model;
 		axis	: in type_axis_2d) 
@@ -944,7 +944,7 @@ package body et_geometry_2a is
 		end case;
 				
 		return d;
-	end get_distance_abs;
+	end get_distance_absolute;
 
 
 	
@@ -2206,7 +2206,7 @@ package body et_geometry_2a is
 		arc : in type_arc) 
 		return type_float_positive 
 	is begin
-		return get_distance_total (arc.center, arc.A);
+		return get_distance_absolute (arc.center, arc.A);
 	end get_radius_start;
 
 
@@ -2215,7 +2215,7 @@ package body et_geometry_2a is
 		arc : in type_arc)
 		return type_float_positive
 	is begin
-		return get_distance_total (arc.center, arc.B);
+		return get_distance_absolute (arc.center, arc.B);
 	end get_radius_end;
 
 
@@ -2272,7 +2272,7 @@ package body et_geometry_2a is
 		move_to (arc, origin);
 
 		-- calculate the radius of the arc
-		radius := type_float (get_distance_total (arc.center, arc.A));
+		radius := type_float (get_distance_absolute (arc.center, arc.A));
 
 		-- calculate the angle where the arc begins:
 
@@ -2948,7 +2948,7 @@ package body et_geometry_2a is
 		point	: in type_vector_model)
 		return boolean
 	is
-		d : type_float_positive := get_distance_total (zone.center, point);
+		d : type_float_positive := get_distance_absolute (zone.center, point);
 	begin
 		if d <= zone.radius then
 			return true;
@@ -3109,14 +3109,14 @@ package body et_geometry_2a is
 		
 		-- The greater distance from start to end point in X or Y determines 
 		-- whether the line is handled like a horizontal or vertical drawn line.
-		if get_distance_abs (line.A, line.B, AXIS_X) > 
-			get_distance_abs (line.A, line.B, AXIS_Y) then
+		if get_distance_absolute (line.A, line.B, AXIS_X) > 
+			get_distance_absolute (line.A, line.B, AXIS_Y) then
 
 			-- distance in X greater -> decision will be made along the X axis.
 			-- The line will be handled like a horizontal drawn line.
 			
 			-- calculate the zone border. This depends on the line length in X direction.
-			line_length := get_distance_abs (line.A, line.B, AXIS_X);
+			line_length := get_distance_absolute (line.A, line.B, AXIS_X);
 			zone_border := line_length / type_distance (line_zone_division_factor);
 			-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
 			
@@ -3147,7 +3147,7 @@ package body et_geometry_2a is
 			-- The line will be handled like a vertical drawn line.
 
 			-- calculate the zone border. This depends on the line length in Y direction.
-			line_length := get_distance_abs (line.A, line.B, AXIS_Y);
+			line_length := get_distance_absolute (line.A, line.B, AXIS_Y);
 			zone_border := line_length / type_distance (line_zone_division_factor);
 			-- CS ? should be: zone_border := line_length / to_distance (line_zone_division_factor);
 			
