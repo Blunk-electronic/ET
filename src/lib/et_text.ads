@@ -274,7 +274,7 @@ package et_text is
 			axis	: in type_mirror := MIRROR_ALONG_Y_AXIS);
 
 		-- Rotates a text by the given angle about the origin:
-		procedure rotate_text (
+		procedure rotate_text_by (
 			text	: in out type_text_fab;
 			angle	: in type_rotation);
 

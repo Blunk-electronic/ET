@@ -71,7 +71,7 @@ package body et_device_placeholders.packages is
 		procedure query_placeholder (c : in pac_placeholders.cursor) is
 			ph : type_placeholder := element (c);
 		begin
-			rotate_text (ph, angle);
+			rotate_text_by (ph, angle);
 			result.append (ph);
 		end query_placeholder;
 

@@ -385,13 +385,13 @@ package body et_text is
 		end mirror_text;
 
 		
-		procedure rotate_text (
+		procedure rotate_text_by (
 			text	: in out type_text_fab;
 			angle	: in type_rotation)
 		is begin
 			rotate_by (text.position.place, angle);
 			text.position.rotation := add (text.position.rotation, angle);
-		end rotate_text;
+		end rotate_text_by;
 
 
 		procedure move_text_by (

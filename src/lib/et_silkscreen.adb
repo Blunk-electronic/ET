@@ -517,6 +517,7 @@ package body et_silkscreen is
 	end mirror_texts;
 
 
+	
 	procedure rotate_texts (
 		texts	: in out pac_silk_texts.list;
 		angle	: in type_rotation_model)
@@ -526,7 +527,7 @@ package body et_silkscreen is
 		procedure query_text (c : in pac_silk_texts.cursor) is
 			text : type_silk_text := element (c);
 		begin
-			rotate_text (text, angle);
+			rotate_text_by (text, angle);
 			result.append (text);
 		end query_text;
 		
@@ -535,6 +536,7 @@ package body et_silkscreen is
 		texts := result;
 	end rotate_texts;
 
+	
 
 	procedure move_texts (
 		texts	: in out pac_silk_texts.list;

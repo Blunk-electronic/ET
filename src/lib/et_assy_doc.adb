@@ -518,7 +518,7 @@ package body et_assy_doc is
 		procedure query_text (c : in pac_doc_texts.cursor) is
 			text : type_doc_text := element (c);
 		begin
-			rotate_text (text, angle);
+			rotate_text_by (text, angle);
 			result.append (text);
 		end query_text;
 		
