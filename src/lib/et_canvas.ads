@@ -1191,6 +1191,8 @@ package et_canvas is
 	-- the displacement of other attached objects:
 	object_original_position : type_vector_model := origin;
 
+	object_displacement : type_vector_model := origin;
+	
 	-- CS: It is probably not a good idea to reset all
 	-- properties of the object at once in a single procedure
 	-- like reset_object. 

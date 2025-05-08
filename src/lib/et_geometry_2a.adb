@@ -1429,6 +1429,43 @@ package body et_geometry_2a is
 
 
 
+
+	function get_A (
+		line : in type_line)
+		return type_vector_model
+	is begin
+		return line.A;
+	end;
+
+	
+
+	function get_B (
+		line : in type_line)
+		return type_vector_model
+	is begin
+		return line.B;
+	end;
+
+
+
+	procedure set_A (
+		line	: in out type_line;
+		A		: in type_vector_model)
+	is begin
+		line.A := A;
+	end;
+
+
+	procedure set_B (
+		line	: in out type_line;
+		B		: in type_vector_model)
+	is begin
+		line.B := B;
+	end;
+
+
+	
+
 	
 	function is_selected (
 		line : in type_line)

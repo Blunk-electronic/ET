@@ -332,7 +332,7 @@ package et_geometry_2a is
 		v2 : in type_vector_model);
 	
 
-	-- Subtracts v2 from v1. Computes v2 - v2:
+	-- Subtracts v2 from v1. Computes v1 - v2:
 	function subtract (
 		v1, v2 : in type_vector_model)
 		return type_distance_relative;
@@ -729,6 +729,29 @@ package et_geometry_2a is
 	function to_string (line : in type_line) return string;
 
 
+	-- Returns ths start point of the given line:
+	function get_A (
+		line : in type_line)
+		return type_vector_model;
+
+	
+	-- Returns ths end point of the given line:
+	function get_B (
+		line : in type_line)
+		return type_vector_model;
+
+
+	procedure set_A (
+		line	: in out type_line;
+		A		: in type_vector_model);
+
+
+	procedure set_B (
+		line	: in out type_line;
+		B		: in type_vector_model);
+
+	
+	
 	
 	function is_selected (
 		line : in type_line)
@@ -825,7 +848,7 @@ package et_geometry_2a is
 	
 
 	-- Mirrors a line along the given axis.
-	procedure mirror (
+	procedure mirror ( -- CS rename to mirror_line
 		line		: in out type_line;
 		axis		: in type_mirror);
 
@@ -1143,7 +1166,7 @@ package et_geometry_2a is
 	
 
 	-- Mirrors an arc along the given axis.
-	procedure mirror (
+	procedure mirror ( -- CS rename to mirror_arc
 		arc			: in out type_arc;
 		axis		: in type_mirror);
 

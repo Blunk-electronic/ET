@@ -86,6 +86,10 @@ package body et_schematic_ops.nets is
 		log_threshold	: in type_log_level)
 	is
 
+		sheet : constant type_sheet := get_sheet (position);
+		place : constant type_vector_model := get_place (position);
+		
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -108,16 +112,25 @@ package body et_schematic_ops.nets is
 					
 					procedure query_segment (
 						segment : in out type_net_segment)
-					is
-					begin
-						null;
+					is begin
+						-- Test start point of candidate segment:
+						if get_A (segment) = place then
+							log (text => "segment (A): " & to_string (segment), level => log_threshold + 2);
+							set_A_moving (segment);
+						end if;
+
+						-- Test end point of candidate segment:
+						if get_B (segment) = place then
+							log (text => "segment (B): " & to_string (segment), level => log_threshold + 2);
+							set_B_moving (segment);
+						end if;
 					end query_segment;
 					
 						
 				begin
 					-- Iterate the segments of the strand on the given sheet only.
 					-- All others strands are skipped:
-					if get_sheet (strand) = get_sheet (position) then
+					if get_sheet (strand) = sheet then
 						while has_element (segment_cursor) loop
 							strand.segments.update_element (segment_cursor, query_segment'access);
 							next (segment_cursor);
@@ -136,7 +149,10 @@ package body et_schematic_ops.nets is
 			
 		begin
 			while has_element (net_cursor) loop
+				log (text => "net " & to_string (net_cursor), level => log_threshold + 1);
+				log_indentation_up;
 				module.nets.update_element (net_cursor, query_net'access);
+				log_indentation_down;
 				next (net_cursor);
 			end loop;
 		end query_module;
@@ -144,7 +160,8 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " set net segments (connected with units) moving.",
+			 & " set start/end points of net segments as moving."
+			 & " Reference point " & to_string (position),
 			level => log_threshold);
 
 		log_indentation_up;

@@ -53,8 +53,11 @@ package et_schematic_ops.nets is
 
 
 
-	-- Sets the net segments which start or end
-	-- at the given position to "moving":
+	-- Sets the start or end points of
+	-- net segments which start or end
+	-- at the given position to "moving".
+	-- If a segment starts an the given position then A will be set as "moving".
+	-- If a segment ends an the given position then B will be set as "moving".
 	procedure set_segments_moving (
 		module_cursor	: in pac_generic_modules.cursor;
 		position		: in type_object_position;							  

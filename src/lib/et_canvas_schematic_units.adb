@@ -407,6 +407,7 @@ package body et_canvas_schematic_units is
 						
 						--find_attached_segments;
 						-- CS ? set_status (status_drag);
+						set_segments_moving (active_module, log_threshold + 1);
 
 					when others => null; -- CS
 				end case;
@@ -812,6 +813,7 @@ package body et_canvas_schematic_units is
 				set_first_selected_object_moving;
 				
 				--find_attached_segments;
+				set_segments_moving (active_module, log_threshold + 1);
 
 				-- Furtheron, on the next call of this procedure
 				-- the selected object will be assigned its final position.

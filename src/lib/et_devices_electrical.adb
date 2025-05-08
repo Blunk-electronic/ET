@@ -270,6 +270,19 @@ package body et_devices_electrical is
 
 
 
+
+
+	function get_sheet (
+		device	: in pac_devices_sch.cursor; -- R2
+		unit	: in pac_units.cursor) -- A, B, C
+		return type_sheet
+	is 
+		position : type_object_position;
+	begin
+		position := get_position (device, unit);
+		return get_sheet (position);
+	end get_sheet;
+
 	
 	
 

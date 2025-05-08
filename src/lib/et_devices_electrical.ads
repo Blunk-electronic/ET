@@ -51,6 +51,7 @@ with ada.containers.indefinite_ordered_maps;
 
 with et_schematic_coordinates;			use et_schematic_coordinates;
 use et_schematic_coordinates.pac_geometry_2;
+with et_sheets;							use et_sheets;
 
 with et_assembly_variants;				use et_assembly_variants;
 with et_assembly_variant_name;			use et_assembly_variant_name;
@@ -280,8 +281,17 @@ package et_devices_electrical is
 	-- Raises constraint error if device or unit does not exist.
 	function get_position (
 		device	: in pac_devices_sch.cursor; -- R2
-		unit	: in pac_units.cursor)
+		unit	: in pac_units.cursor) -- A, B, C
 		return type_object_position;
+
+
+	
+	-- Returns the sheet of the given unit.
+	-- Raises constraint error if device or unit does not exist.
+	function get_sheet (
+		device	: in pac_devices_sch.cursor; -- R2
+		unit	: in pac_units.cursor) -- A, B, C
+		return type_sheet;
 
 	
 

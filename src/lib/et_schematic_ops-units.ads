@@ -472,8 +472,8 @@ package et_schematic_ops.units is
 		log_threshold	: in type_log_level);
 
 
-	-- Sets the net segments which are connected with
-	-- selected units to "moving":
+	-- Sets the start or end points of net segments which are 
+	-- connected with ports of selected units to "moving":
 	procedure set_segments_moving (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);

@@ -825,12 +825,15 @@ procedure draw_units is
 					brightness := BRIGHT;
 
 					-- overwrite position
-					if edit_process_running then
+					if is_moving (unit_cursor) then
 					
 						-- In case the unit is being dragged, backup original position
-						-- in global variable "unit_move". Procedure draw_nets requires that
+						-- in global variable object_original_position.
+						-- Procedure draw_nets requires that
 						-- to calculate the displacement of attached net segments:
 						object_original_position := unit_position;
+
+						-- CS object_displacement := subtract (unit_position, object_original_position);
 
 						case object_tool is
 							when MOUSE =>
@@ -1006,7 +1009,7 @@ procedure draw_units is
 
 
 		
-	begin -- query_devices
+	begin
 		--put_line ("device " & to_string (key (device_cursor)));
 		
 		-- Get device name, value, purpose and number of units of the current device.
@@ -1019,6 +1022,7 @@ procedure draw_units is
 		
 		-- Iterate the units of the current device:
 		iterate (element (device_cursor).units, query_units'access);
+		-- CS use query_element (device_cursor, query_device'access);
 	end query_devices;
 
 
@@ -1172,6 +1176,7 @@ begin
 	-- 	put_line ("draw units ...");
 	
 	iterate (element (active_module).devices, query_devices'access);
+	-- CS use query_element (active_module, query_module'access);
 
 	-- Draw the unit being added. If no unit is being added, nothing 
 	-- happens here:

@@ -2988,16 +2988,42 @@ package body et_schematic_ops.units is
 			is 
 
 				procedure query_unit (unit_cursor : in pac_units.cursor) is
+					-- Get the sheet where the candidate unit is:
+					sheet : type_sheet := get_sheet (device_cursor, unit_cursor);
+
+					-- This procedure takes a port position (indicated by cursor c)
+					-- and sets start or end points of net segments which are
+					-- at the port position as "moving":
+					procedure query_position (c : in pac_points.cursor) is
+						use pac_points;
+						place : type_vector_model renames element (c);
+						position : type_object_position;
+					begin
+						-- Compose the position of inquiry from port position and sheet number:
+						position := to_position (place, sheet);
+
+						-- Set the connected net segments as "moving":
+						et_schematic_ops.nets.set_segments_moving (module_cursor, position, log_threshold + 3);
+					end query_position;
+
+					
+					-- This list contains all points where a port of 
+					-- the candidate unit is:
 					port_positions : pac_points.list;
+					
 				begin
-					null;
+					log (text => "unit " & to_string (unit_cursor), level => log_threshold + 2);
+
+					-- Get the port positions of the candidate unit:
 					port_positions := get_port_positions (device_cursor, unit_cursor);
-					-- CS
+
+					-- Iterate the port positions:
+					port_positions.iterate (query_position'access);
 				end query_unit;
 
 										 
 			begin
-				log (text => to_string (device_name), level => log_threshold + 1);
+				log (text => "device " & to_string (device_name), level => log_threshold + 1);
 				log_indentation_up;
 
 				-- Iterate through the units:
