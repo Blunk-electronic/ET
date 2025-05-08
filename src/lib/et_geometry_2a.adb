@@ -556,7 +556,7 @@ package body et_geometry_2a is
 			rotation	=> type_angle (rotation),
 			debug		=> false);
 
-		point := to_point (v_tmp);
+		point := to_vector_model (v_tmp);
 	end rotate_by;
 	
 
@@ -783,7 +783,7 @@ package body et_geometry_2a is
 
 	
 
-	function to_point (
+	function to_vector_model (
 		v	: in type_vector)
 		return type_vector_model
 	is begin
@@ -808,7 +808,7 @@ package body et_geometry_2a is
 				raise constraint_error 
 					with "vector component too great:" & to_string (v);
 
-	end to_point;
+	end to_vector_model;
 
 
 
@@ -1623,9 +1623,9 @@ package body et_geometry_2a is
 	is
 		l : type_line;
 	begin
-		l.A	:= to_point (line.A);
-		l.B   	:= to_point (line.B);
-		l.status		:= line.status;
+		l.A	:= to_vector_model (line.A);
+		l.B := to_vector_model (line.B);
+		l.status := line.status;
 		return l;
 	end to_line_coarse;
 	
@@ -1752,7 +1752,7 @@ package body et_geometry_2a is
 		v : type_vector;
 	begin
 		v := get_nearest (line, to_vector (point));
-		return to_point (v);
+		return to_vector_model (v);
 	end get_nearest;
 
 
@@ -1944,9 +1944,9 @@ package body et_geometry_2a is
 		result : type_arc;
 	begin
 		result := (
-			center		=> to_point (get_center (arc)),
-			A	=> to_point (get_A (arc)),
-			B	=> to_point (get_B (arc)),
+			center		=> to_vector_model (get_center (arc)),
+			A			=> to_vector_model (get_A (arc)),
+			B			=> to_vector_model (get_B (arc)),
 			direction	=> get_direction (arc),
 			others 		=> <>);
 

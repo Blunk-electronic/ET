@@ -151,7 +151,7 @@ package body et_terminals is
 	is
 		result : type_contour := (contour => (circular => true, circle => <>));
 	begin
-		set_center (result.contour.circle, to_point (position));
+		set_center (result.contour.circle, to_vector_model (position));
 		set_radius (result.contour.circle, 0.5 * terminal.drill_size + terminal.width_inner_layers);
 		
 		return result;

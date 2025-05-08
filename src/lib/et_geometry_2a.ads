@@ -425,7 +425,7 @@ package et_geometry_2a is
 		return type_vector;
 
 
-	function to_point ( -- CS rename to to_vector_model
+	function to_vector_model (
 		v	: in type_vector)
 		return type_vector_model;
 

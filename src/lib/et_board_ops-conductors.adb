@@ -308,7 +308,7 @@ package body et_board_ops.conductors is
 			-- The start point of the line is always the x/y of the terminal.
 			-- further-on set line width and layer.
 			line := (
-				A	=> to_point (terminal_position.place),
+				A	=> to_vector_model (terminal_position.place),
 				width		=> width, -- as given by operator
 				layer		=> layer, -- as given by operator
 				others 		=> <>);
@@ -384,7 +384,7 @@ package body et_board_ops.conductors is
 			-- The start point of the line is always the x/y of the terminal.
 			-- further-on set line width and layer.
 			line := (
-				A	=> to_point (terminal_position.place),
+				A	=> to_vector_model (terminal_position.place),
 				width		=> width, -- as given by operator
 				layer		=> layer, -- as given by operator
 				others 		=> <>);
@@ -453,7 +453,7 @@ package body et_board_ops.conductors is
 			-- The start point of the line is always the x/y of the terminal.
 			-- further-on set line width and layer.
 			line := (
-				A		=> to_point (terminal_position.place),
+				A		=> to_vector_model (terminal_position.place),
 				width	=> width, -- as given by operator
 				layer	=> layer, -- as given by operator
 				B		=> end_point, -- as given by operator
@@ -518,7 +518,7 @@ package body et_board_ops.conductors is
 			-- The start point of the line is always the x/y of the terminal.
 			-- further-on set line width and layer.
 			line := (
-				A	=> to_point (terminal_position.place),
+				A			=> to_vector_model (terminal_position.place),
 				width		=> width, -- as given by operator
 				layer		=> layer, -- as given by operator
 				others 		=> <>);

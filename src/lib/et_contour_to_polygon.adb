@@ -60,8 +60,8 @@ package body et_contour_to_polygon is
 	is
 		result : type_line;
 	begin
-		result.A := to_point (edge.A);
-		result.B := to_point (edge.B);
+		result.A := to_vector_model (edge.A);
+		result.B := to_vector_model (edge.B);
 		return result;
 	end to_line;
 	

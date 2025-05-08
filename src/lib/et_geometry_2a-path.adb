@@ -111,8 +111,9 @@ package body et_geometry_2a.path is
 				I := add (S1, scale (R1, lambda_1));
 			end if;
 			
-			bend_point := to_point (I);
+			bend_point := to_vector_model (I);
 		end compute_bend_point;
+		
 		
 	begin -- to_path
 		
