@@ -823,7 +823,7 @@ package et_geometry_2a is
 
 
 	-- Rotates a line about the origin by the given rotation.
-	procedure rotate_by (
+	procedure rotate_line_by (
 		line		: in out type_line;
 		rotation	: in type_rotation);
 
@@ -1365,7 +1365,8 @@ package et_geometry_2a is
 		axis		: in type_mirror);
 	
 
-	procedure rotate_by (
+	-- Rotates the center of acirlce about the origin:
+	procedure rotate_circle_by (
 		circle		: in out type_circle;
 		rotation	: in type_rotation);
 

@@ -183,7 +183,7 @@ package body et_conductor_segment is
 		procedure query_line (c : in pac_conductor_lines.cursor) is
 			line : type_conductor_line := element (c);
 		begin
-			rotate_by (line, angle);
+			rotate_line_by (line, angle);
 			result.append (line);
 		end;
 		
@@ -508,7 +508,7 @@ package body et_conductor_segment is
 		procedure query_circle (c : in pac_conductor_circles.cursor) is
 			circle : type_conductor_circle := element (c);
 		begin
-			rotate_by (circle, angle);
+			rotate_circle_by (circle, angle);
 			result.append (circle);
 		end;
 		

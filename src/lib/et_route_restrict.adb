@@ -72,7 +72,7 @@ package body et_route_restrict is
 		procedure query_line (c : in pac_route_restrict_lines.cursor) is
 			line : type_route_restrict_line := element (c);
 		begin
-			rotate_by (line, angle);
+			rotate_line_by (line, angle);
 			result.append (line);
 		end;
 		
@@ -248,7 +248,7 @@ package body et_route_restrict is
 		procedure query_circle (c : in pac_route_restrict_circles.cursor) is
 			circle : type_route_restrict_circle := element (c);
 		begin
-			rotate_by (circle, angle);
+			rotate_circle_by (circle, angle);
 			result.append (circle);
 		end;
 		

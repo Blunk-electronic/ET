@@ -113,7 +113,7 @@ package body et_stencil is
 		procedure query_line (c : in pac_stencil_lines.cursor) is
 			line : type_stencil_line := element (c);
 		begin
-			rotate_by (line, angle);
+			rotate_line_by (line, angle);
 			result.append (line);
 		end query_line;
 		
@@ -321,7 +321,7 @@ package body et_stencil is
 		procedure query_circle (c : in pac_stencil_circles.cursor) is
 			circle : type_stencil_circle := element (c);
 		begin
-			rotate_by (circle, angle);
+			rotate_circle_by (circle, angle);
 			result.append (circle);
 		end query_circle;
 

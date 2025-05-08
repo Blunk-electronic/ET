@@ -3694,7 +3694,7 @@ package body et_canvas is
 		use et_mirroring;
 	begin		
 		-- Rotate the line by pos.rotation
-		rotate_by (l, pos.rotation);
+		rotate_line_by (l, pos.rotation);
 
 		-- Mirror the line:
 		case mirror is
@@ -3804,7 +3804,7 @@ package body et_canvas is
 
 	begin
 		-- Rotate the center of the circle by pos.rotation:
-		rotate_by (c, pos.rotation);
+		rotate_circle_by (c, pos.rotation);
 
 		-- Mirror the circle:
 		case mirror is

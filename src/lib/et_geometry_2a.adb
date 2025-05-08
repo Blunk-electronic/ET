@@ -1610,13 +1610,13 @@ package body et_geometry_2a is
 
 	
 
-	procedure rotate_by (
+	procedure rotate_line_by (
 		line		: in out type_line;
 		rotation	: in type_rotation) 
 	is begin
 		rotate_by (line.A, rotation);
 		rotate_by (line.B, rotation);
-	end rotate_by;
+	end;
 
 	
 	
@@ -2678,7 +2678,7 @@ package body et_geometry_2a is
 
 
 
-	procedure rotate_by (
+	procedure rotate_circle_by (
 		circle		: in out type_circle;
 		rotation	: in type_rotation) 
 	is begin
@@ -3301,7 +3301,7 @@ package body et_geometry_2a is
 
 		b : type_area;
 	begin
-		rotate_by (l, rotation);
+		rotate_line_by (l, rotation);
 
 		case mirror is
 			when MIRROR_NO => null;
@@ -3377,7 +3377,7 @@ package body et_geometry_2a is
 		b, result : type_area;
 	begin
 		-- Rotate the center of the circle:
-		rotate_by (c, rotation);
+		rotate_circle_by (c, rotation);
 
 		-- Mirror the circle:
 		case mirror is
