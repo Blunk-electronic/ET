@@ -381,7 +381,7 @@ package body et_text is
 			text	: in out type_text_fab;
 			axis	: in type_mirror := MIRROR_ALONG_Y_AXIS)
 		is begin
-			mirror (text.position.place, axis);
+			mirror_point (text.position.place, axis);
 		end mirror_text;
 
 		

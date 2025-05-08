@@ -92,7 +92,7 @@ package body et_silkscreen is
 		procedure query_line (c : in pac_silk_lines.cursor) is
 			line : type_silk_line := element (c);
 		begin
-			mirror (line, axis);
+			mirror_line (line, axis);
 			result.append (line);
 		end query_line;
 		

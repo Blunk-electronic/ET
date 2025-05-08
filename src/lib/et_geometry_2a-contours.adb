@@ -1554,7 +1554,7 @@ package body et_geometry_2a.contours is
 		procedure mirror_segment (c : in pac_segments.cursor) is
 
 			procedure do_line (s : in out type_segment) is begin 
-				mirror (s.segment_line, axis);
+				mirror_line (s.segment_line, axis);
 			end;
 			
 			procedure do_arc (s : in out type_segment) is begin

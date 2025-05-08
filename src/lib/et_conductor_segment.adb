@@ -164,7 +164,7 @@ package body et_conductor_segment is
 		procedure query_line (c : in pac_conductor_lines.cursor) is
 			line : type_conductor_line := element (c);
 		begin
-			mirror (line, MIRROR_ALONG_Y_AXIS);
+			mirror_line (line, MIRROR_ALONG_Y_AXIS);
 			result.append (line);
 		end;
 		

@@ -93,7 +93,7 @@ package body et_stencil is
 		procedure query_line (c : in pac_stencil_lines.cursor) is
 			line : type_stencil_line := element (c);
 		begin
-			mirror (line, axis);
+			mirror_line (line, axis);
 			result.append (line);
 		end query_line;
 		

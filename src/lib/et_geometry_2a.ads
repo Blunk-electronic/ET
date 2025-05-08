@@ -510,7 +510,7 @@ package et_geometry_2a is
 	
 	-- If axis is Y then it swaps right x with left x.
 	-- If axis is X then it swaps upper y with lower y.
-	procedure mirror ( -- CS rename to mirror_point
+	procedure mirror_point (
 		point	: in out type_vector_model;
 		axis	: in type_mirror);	
 
@@ -814,9 +814,9 @@ package et_geometry_2a is
 	
 
 	-- Mirrors a line along the given axis.
-	procedure mirror ( -- CS rename to mirror_line
-		line		: in out type_line;
-		axis		: in type_mirror);
+	procedure mirror_line (
+		line : in out type_line;
+		axis : in type_mirror);
 
 
 

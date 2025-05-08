@@ -104,7 +104,7 @@ package body et_assy_doc is
 		procedure query_line (c : in pac_doc_lines.cursor) is
 			line : type_doc_line := element (c);
 		begin
-			mirror (line, axis);
+			mirror_line (line, axis);
 			result.append (line);
 		end query_line;
 		

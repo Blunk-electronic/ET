@@ -3699,8 +3699,8 @@ package body et_canvas is
 		-- Mirror the line:
 		case mirror is
 			when MIRROR_NO => null;
-			when MIRROR_ALONG_X_AXIS => pac_geometry.mirror (l, MIRROR_ALONG_X_AXIS);
-			when MIRROR_ALONG_Y_AXIS => pac_geometry.mirror (l, MIRROR_ALONG_Y_AXIS);
+			when MIRROR_ALONG_X_AXIS => mirror_line (l, MIRROR_ALONG_X_AXIS);
+			when MIRROR_ALONG_Y_AXIS => mirror_line (l, MIRROR_ALONG_Y_AXIS);
 		end case;
 		
 		-- Move the line to the given position:

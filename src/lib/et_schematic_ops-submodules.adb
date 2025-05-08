@@ -1102,8 +1102,8 @@ package body et_schematic_ops.submodules is
 							-- From the given point the absolute submodule position must 
 							-- be subtracted. This requires inversion of x/y of submodule position.
 							-- We accompish that by mirroring along x and y axis.
-							mirror (submod_pos_tmp, MIRROR_ALONG_X_AXIS);
-							mirror (submod_pos_tmp, MIRROR_ALONG_Y_AXIS);
+							mirror_point (submod_pos_tmp, MIRROR_ALONG_X_AXIS);
+							mirror_point (submod_pos_tmp, MIRROR_ALONG_Y_AXIS);
 
 							-- Subtract from given point the absolute submodule position:
 							move_by (
@@ -1727,8 +1727,8 @@ package body et_schematic_ops.submodules is
 							-- From the given point the absolute submodule position must 
 							-- be subtracted. This requires inversion of x/y of submodule position.
 							-- We accompish that by mirroring along x and y axis.
-							mirror (submod_pos_tmp, MIRROR_ALONG_X_AXIS);
-							mirror (submod_pos_tmp, MIRROR_ALONG_Y_AXIS);
+							mirror_point (submod_pos_tmp, MIRROR_ALONG_X_AXIS);
+							mirror_point (submod_pos_tmp, MIRROR_ALONG_Y_AXIS);
 
 							-- Subtract from given point the absolute submodule position:
 							move_by (

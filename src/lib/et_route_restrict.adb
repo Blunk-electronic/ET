@@ -52,7 +52,7 @@ package body et_route_restrict is
 		procedure query_line (c : in pac_route_restrict_lines.cursor) is
 			line : type_route_restrict_line := element (c);
 		begin
-			mirror (line, MIRROR_ALONG_Y_AXIS);
+			mirror_line (line, MIRROR_ALONG_Y_AXIS);
 			result.append (line);
 		end;
 		

@@ -1167,7 +1167,7 @@ procedure draw_packages is
 
 						-- If the package is flipped, then the terminal POSITION
 						-- must be mirrored along the Y axis.
-						pac_geometry_2.mirror (pos_tmp, mirror); 
+						mirror_point (pos_tmp, mirror); 
 						
 						-- Now move the pad POSITION by the position
 						-- of the package:
@@ -1213,7 +1213,7 @@ procedure draw_packages is
 
 					-- If the package is to be flipped then
 					-- mirror the pad POSITION along the Y-axis:
-					pac_geometry_2.mirror (pos_tmp, mirror);
+					mirror_point (pos_tmp, mirror);
 
 					-- Now move the pad POSITION by the position
 					-- of the package:

@@ -152,7 +152,7 @@ package body et_kicad_coordinates is
 		position	: in out type_position;
 		axis		: in type_mirror)
 	is begin
-		mirror (position.point, axis);
+		mirror_point (position.point, axis);
 	end mirror_point;
 
 

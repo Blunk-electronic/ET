@@ -170,10 +170,10 @@ package body et_canvas.contours is
 		
 		case mirror is
 			when MIRROR_ALONG_X_AXIS =>
-				pac_geometry.mirror (offset_tmp, MIRROR_ALONG_X_AXIS);
+				mirror_point (offset_tmp, MIRROR_ALONG_X_AXIS);
 
 			when MIRROR_ALONG_Y_AXIS =>
-				pac_geometry.mirror (offset_tmp, MIRROR_ALONG_X_AXIS);
+				mirror_point (offset_tmp, MIRROR_ALONG_X_AXIS);
 
 			when others => null;
 		end case;

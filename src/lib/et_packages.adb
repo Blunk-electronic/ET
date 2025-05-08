@@ -486,7 +486,7 @@ package body et_packages is
 
 		-- If the package is flipped, then the terminal position
 		-- must be mirrored along the Y axis.
-		if flipped = YES then mirror (term_pos.place, MIRROR_ALONG_Y_AXIS); end if;
+		if flipped = YES then mirror_point (term_pos.place, MIRROR_ALONG_Y_AXIS); end if;
 		
 		-- Move the given terminal position by the position of the package.
 		move_by (term_pos.place, package_position_relative);

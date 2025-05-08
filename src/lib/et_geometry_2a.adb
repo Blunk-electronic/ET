@@ -991,7 +991,7 @@ package body et_geometry_2a is
 
 	
 
-	procedure mirror (
+	procedure mirror_point (
 		point	: in out type_vector_model;
 		axis	: in type_mirror) 
 	is begin
@@ -1005,7 +1005,7 @@ package body et_geometry_2a is
 			when MIRROR_NO =>
 				null;
 		end case;
-	end mirror;
+	end mirror_point;
 
 
 	
@@ -1091,7 +1091,7 @@ package body et_geometry_2a is
 		use pac_points;
 
 		procedure mirror_point (p : in out type_vector_model) is begin
-			et_geometry_2a.mirror (p, mirror);
+			mirror_point (p, mirror);
 		end;
 		
 		procedure query_point (c : in pac_points.cursor) is begin
@@ -1600,14 +1600,15 @@ package body et_geometry_2a is
 
 	
 
-	procedure mirror (
-		line		: in out type_line;
-		axis		: in type_mirror)
+	procedure mirror_line (
+		line : in out type_line;
+		axis : in type_mirror)
 	is begin
-		mirror (line.A, axis);
-		mirror (line.B, axis);
-	end mirror;
+		mirror_point (line.A, axis);
+		mirror_point (line.B, axis);
+	end mirror_line;
 
+	
 
 	procedure rotate_by (
 		line		: in out type_line;
@@ -2183,9 +2184,9 @@ package body et_geometry_2a is
 		arc			: in out type_arc;
 		axis		: in type_mirror)
 	is begin
-		mirror (arc.center, axis);
-		mirror (arc.A, axis);
-		mirror (arc.B, axis);
+		mirror_point (arc.center, axis);
+		mirror_point (arc.A, axis);
+		mirror_point (arc.B, axis);
 		arc.direction := reverse_direction (arc.direction);
 	end mirror;
 
@@ -2669,7 +2670,7 @@ package body et_geometry_2a is
 		circle		: in out type_circle;
 		axis		: in type_mirror) 
 	is begin
-		mirror (circle.center, axis);
+		mirror_point (circle.center, axis);
 	end mirror;
 
 
@@ -2862,7 +2863,7 @@ package body et_geometry_2a is
 				add (position.rotation, offset.rotation);
 
 			when MIRROR_ALONG_Y_AXIS =>
-				et_geometry_2a.mirror (position.place, MIRROR_ALONG_Y_AXIS);
+				mirror_point (position.place, MIRROR_ALONG_Y_AXIS);
 
 				rotate_by (position.place, - get_rotation (offset));
 				
@@ -3301,8 +3302,8 @@ package body et_geometry_2a is
 
 		case mirror is
 			when MIRROR_NO => null;
-			when MIRROR_ALONG_X_AXIS => et_geometry_2a.mirror (l, MIRROR_ALONG_X_AXIS);
-			when MIRROR_ALONG_Y_AXIS => et_geometry_2a.mirror (l, MIRROR_ALONG_Y_AXIS);
+			when MIRROR_ALONG_X_AXIS => mirror_line (l, MIRROR_ALONG_X_AXIS);
+			when MIRROR_ALONG_Y_AXIS => mirror_line (l, MIRROR_ALONG_Y_AXIS);
 		end case;
 		
 		-- Move the line by offset_1:
