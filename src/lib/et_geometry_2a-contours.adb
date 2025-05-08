@@ -626,13 +626,9 @@ package body et_geometry_2a.contours is
 				when LINE => -- line 0 0
 
 					-- assign start point of line
-					--l.A := type_vector_model (set (
-							--x => to_distance (f (p + 1)),
-							--y => to_distance (f (p + 2))));
-
-					l.A := type_vector_model (to_point (
+					l.A := to_vector_model (
 							x => f (p + 1),
-							y => f (p + 2)));
+							y => f (p + 2));
 
 					
 					-- The start point of the line is also the end point of
@@ -661,24 +657,14 @@ package body et_geometry_2a.contours is
 				when ARC => -- arc 50 100 100 100 ccw
 
 					-- assign center of arc
-					--a.center := type_vector_model (set (
-							--x => to_distance (f (p + 1)),
-							--y => to_distance (f (p + 2))));
-
-					a.center := type_vector_model (to_point (
+					a.center := to_vector_model (
 							x => f (p + 1),
-							y => f (p + 2)));
-
+							y => f (p + 2));
 					
 					-- assign start point of arc
-					--a.A := type_vector_model (set (
-							--x => to_distance (f (p + 3)),
-							--y => to_distance (f (p + 4))));
-
-					a.A := type_vector_model (to_point (
+					a.A := to_vector_model (
 							x => f (p + 3),
-							y => f (p + 4)));
-
+							y => f (p + 4));
 					
 					-- The start point of the arc is also the end point
 					-- of the previous segment:
@@ -710,14 +696,9 @@ package body et_geometry_2a.contours is
 				when CIRCLE => -- circle 40 40 10
 
 					-- assign center of circle
-					--c.center := type_vector_model (set (
-							--x => to_distance (f (p + 1)),
-							--y => to_distance (f (p + 2))));
-
-					c.center := type_vector_model (to_point (
+					c.center := to_vector_model (
 							x => f (p + 1),
-							y => f (p + 2)));
-
+							y => f (p + 2));
 					
 					-- assigne radius of circle
 					c.radius := to_distance (f (p + 3));

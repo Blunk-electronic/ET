@@ -284,7 +284,7 @@ package et_text is
 			offset	: in type_vector_model);
 
 		-- Moves a text to the given point:
-		procedure move_text (
+		procedure move_text_to (
 			text	: in out type_text_fab;
 			point	: in type_vector_model);
 

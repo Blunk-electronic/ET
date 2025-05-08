@@ -545,7 +545,7 @@ package body et_silkscreen is
 		procedure query_text (c : in pac_silk_texts.cursor) is
 			text : type_silk_text := element (c);
 		begin
-			move_text (text, offset);
+			move_text_to (text, offset); -- CS should be move_text_by
 			result.append (text);
 		end query_text;
 		

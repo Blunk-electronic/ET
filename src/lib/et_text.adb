@@ -402,12 +402,12 @@ package body et_text is
 		end move_text_by;
 
 		
-		procedure move_text (
+		procedure move_text_to (
 			text	: in out type_text_fab;
 			point	: in type_vector_model)
 		is begin
 			text.position.place := point;
-		end move_text;
+		end move_text_to;
 
 		
 		function text_properties (

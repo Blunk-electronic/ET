@@ -430,13 +430,13 @@ package et_geometry_2a is
 		return type_vector_model;
 
 
-	function to_point (
+	function to_vector_model (
 		d 		: in type_vector_model;
 		clip	: in boolean := false)
 		return type_vector_model;
 	
 	
-	function to_point (
+	function to_vector_model (
 		x,y : in string)
 		return type_vector_model;
 
@@ -456,7 +456,7 @@ package et_geometry_2a is
 
 	
 
-	function get_distance_total ( -- CS rename to get_distance_absolute
+	function get_distance_absolute (
 		point	: in type_vector_model;
 		vector	: in type_vector)
 		return type_float_positive;

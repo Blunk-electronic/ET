@@ -91,7 +91,7 @@ package body et_device_placeholders.packages is
 		procedure query_placeholder (c : in pac_placeholders.cursor) is
 			ph : type_placeholder := element (c);
 		begin
-			move_text (ph, offset);
+			move_text_to (ph, offset); -- CS should be move_text_by ?
 			result.append (ph);
 		end query_placeholder;
 

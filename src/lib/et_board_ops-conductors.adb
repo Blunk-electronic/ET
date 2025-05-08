@@ -4777,7 +4777,7 @@ package body et_board_ops.conductors is
 			procedure query_placeholder (
 				ph : in out type_text_placeholder_conductors) 
 			is begin
-				move_text (ph, destination);
+				move_text_to (ph, destination);
 			end query_placeholder;
 			
 		begin

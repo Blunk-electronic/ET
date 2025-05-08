@@ -540,7 +540,7 @@ package body et_assy_doc is
 		procedure query_text (c : in pac_doc_texts.cursor) is
 			text : type_doc_text := element (c);
 		begin
-			move_text (text, offset);
+			move_text_to (text, offset); -- CS should be move_text_by ?
 			result.append (text);
 		end query_text;
 		

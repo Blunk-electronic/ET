@@ -609,7 +609,7 @@ is
 				-- delete a segment of the outer board contour:
 
 				catch_zone := set_catch_zone (
-					center	=> to_point (f (5), f (6)),
+					center	=> to_vector_model (f (5), f (6)),
 					radius	=> to_zone_radius (f (7)));
 					
 				delete_outer_segment (
@@ -635,7 +635,7 @@ is
 				-- delete a segment of a hole
 
 				catch_zone := set_catch_zone (
-					center	=> to_point (f (5), f (6)),
+					center	=> to_vector_model (f (5), f (6)),
 					radius	=> to_zone_radius (f (7)));
 
 				delete_hole_segment (
@@ -696,8 +696,8 @@ is
 								face			=> to_face (f (5)),
 								line			=> (
 										width		=> to_distance (f (7)),
-										A	=> type_vector_model (to_point (f (8), f (9))),
-										B	=> type_vector_model (to_point (f (10), f (11))),
+										A			=> to_vector_model (f (8), f (9)),
+										B			=> to_vector_model (f (10), f (11)),
 										others		=> <>),
 
 								log_threshold	=> log_threshold + 1
@@ -715,9 +715,9 @@ is
 					case cmd_field_count is
 						when 14 =>
 							arc_tmp := type_arc (to_arc (
-								center		=> type_vector_model (to_point (f (8), f (9))),
-								A	=> type_vector_model (to_point (f (10), f (11))),
-								B	=> type_vector_model (to_point (f (12), f (13))),
+								center		=> to_vector_model (f (8), f (9)),
+								A			=> to_vector_model (f (10), f (11)),
+								B			=> to_vector_model (f (12), f (13)),
 								direction	=> to_direction (f (14))));
 							
 							add_arc (
@@ -738,7 +738,7 @@ is
 					case cmd_field_count is
 						when 10 =>
 							circle_tmp := type_circle (to_circle (
-								center		=> type_vector_model (to_point (f (8), f (9))),
+								center		=> to_vector_model (f (8), f (9)),
 								radius		=> to_radius (f (10))));
 													  
 							add_circle (
@@ -815,8 +815,8 @@ is
 								face			=> to_face (f (5)),
 								line			=> (
 										width		=> to_distance (f (7)),
-										A	=> type_vector_model (to_point (f (8), f (9))),
-										B	=> type_vector_model (to_point (f (10), f (11))),
+										A			=> to_vector_model (f (8), f (9)),
+										B			=> to_vector_model (f (10), f (11)),
 										others		=> <>),
 
 								log_threshold	=> log_threshold + 1
@@ -834,9 +834,9 @@ is
 					case cmd_field_count is
 						when 14 =>
 							arc_tmp := type_arc (to_arc (
-								center	=> type_vector_model (to_point (f (8), f (9))),
-								A	=> type_vector_model (to_point (f (10), f (11))),
-								B	=> type_vector_model (to_point (f (12), f (13))),
+								center	=> to_vector_model (f (8), f (9)),
+								A		=> to_vector_model (f (10), f (11)),
+								B		=> to_vector_model (f (12), f (13)),
 								direction	=> to_direction (f (14))));
 															
 							add_arc (
@@ -858,7 +858,7 @@ is
 					case cmd_field_count is
 						when 10 =>
 							circle_tmp := type_circle (to_circle (
-								center		=> type_vector_model (to_point (f (8), f (9))),
+								center		=> to_vector_model (f (8), f (9)),
 								radius		=> to_radius (f (10))));
 										
 							add_circle (
@@ -949,8 +949,8 @@ is
 								module_name 	=> module,
 								line			=> (
 										layers		=> to_layers (f (5)), -- [1,3,5-9]
-										A	=> type_vector_model (to_point (f (7), f  (8))),
-										B	=> type_vector_model (to_point (f (9), f (10))),
+										A			=> to_vector_model (f (7), f  (8)),
+										B			=> to_vector_model (f (9), f (10)),
 										others		=> <>),
 
 								log_threshold	=> log_threshold + 1);
@@ -966,9 +966,9 @@ is
 						when 13 =>
 							-- board led_driver draw route_restrict [1,3,5-9] arc 50 50 0 50 100 0 cw
 							arc_tmp := type_arc (to_arc (
-								center		=> type_vector_model (to_point (f  (7), f  (8))),
-								A	=> type_vector_model (to_point (f  (9), f (10))),
-								B	=> type_vector_model (to_point (f (11), f (12))),
+								center		=> to_vector_model (f  (7), f  (8)),
+								A			=> to_vector_model (f  (9), f (10)),
+								B			=> to_vector_model (f (11), f (12)),
 								direction	=> to_direction (f (13))));
 															
 							draw_route_restrict_arc (
@@ -989,7 +989,7 @@ is
 							-- if is_number (f (7)) then -- 20
 
 							circle_tmp := type_circle (to_circle (
-								center	=> type_vector_model (to_point (f (7), f (8))),
+								center	=> to_vector_model (f (7), f (8)),
 								radius	=> to_radius (f (9)))); -- 40
 
 																	 
@@ -1015,7 +1015,7 @@ is
 												--(
 												--layers		=> to_layers (f (5)), -- [1,3,5-9]
 												--filled		=> YES,
-												--center	=> type_vector_model (to_point (f (8), f (9))),
+												--center	=> to_vector_model (f (8), f (9))),
 												--radius	=> to_radius (f (10)) -- 40
 												--),
 												
@@ -1120,8 +1120,8 @@ is
 								face			=> to_face (f (5)),
 								line			=> (
 										width		=> to_distance (f (7)),
-										A	=> type_vector_model (to_point (f (8), f (9))),
-										B	=> type_vector_model (to_point (f (10), f (11))),
+										A			=> to_vector_model (f (8), f (9)),
+										B			=> to_vector_model (f (10), f (11)),
 										others		=> <>),
 
 								log_threshold	=> log_threshold + 1);
@@ -1136,9 +1136,9 @@ is
 					case cmd_field_count is
 						when 14 =>
 							arc_tmp := type_arc (to_arc (
-								center		=> type_vector_model (to_point (f (8), f (9))),
-								A	=> type_vector_model (to_point (f (10), f (11))),
-								B	=> type_vector_model (to_point (f (12), f (13))),
+								center		=> to_vector_model (f (8), f (9)),
+								A			=> to_vector_model (f (10), f (11)),
+								B			=> to_vector_model (f (12), f (13)),
 								direction	=> to_direction (f (14))));
 															
 							add_arc (
@@ -1157,7 +1157,7 @@ is
 					case cmd_field_count is
 						when 10 =>
 							circle_tmp := type_circle (to_circle (
-								center			=> type_vector_model (to_point (f (8), f (9))),
+								center			=> to_vector_model (f (8), f (9)),
 								radius			=> to_radius (f (10))));
 																	 
 							add_circle (
@@ -1230,8 +1230,8 @@ is
 								face			=> to_face (f (5)),
 								line			=> (
 										width		=> to_distance (f (7)),
-										A	=> type_vector_model (to_point (f (8), f (9))),
-										B	=> type_vector_model (to_point (f (10), f (11))),
+										A			=> to_vector_model (f (8), f (9)),
+										B			=> to_vector_model (f (10), f (11)),
 										others		=> <>),
 
 								log_threshold	=> log_threshold + 1);
@@ -1246,9 +1246,9 @@ is
 					case cmd_field_count is
 						when 14 =>
 							arc_tmp := type_arc (to_arc (
-								center	=> type_vector_model (to_point (f (8), f (9))),
-								A	=> type_vector_model (to_point (f (10), f (11))),
-								B	=> type_vector_model (to_point (f (12), f (13))),
+								center	=> to_vector_model (f (8), f (9)),
+								A		=> to_vector_model (f (10), f (11)),
+								B		=> to_vector_model (f (12), f (13)),
 								direction	=> to_direction (f (14))));
 															
 							add_arc (
@@ -1267,7 +1267,7 @@ is
 					case cmd_field_count is
 						when 10 =>
 							circle_tmp := type_circle (to_circle (
-								center		=> type_vector_model (to_point (f (8), f (9))),
+								center		=> to_vector_model (f (8), f (9)),
 								radius		=> to_radius (f (10))));
 																	 
 							add_circle (
@@ -1378,7 +1378,7 @@ is
 				text.line_width := to_distance (f (7)); -- 0.15
 				text.size := to_distance (f (8)); -- 1
 				
-				pos_xy := type_vector_model (to_point (f (9), f (10)));
+				pos_xy := to_vector_model (f (9), f (10));
 
 				rotation := to_rotation (f (11)); -- 0
 				text.position := type_position (to_position (pos_xy, rotation));
@@ -1540,7 +1540,7 @@ is
 				validate_text_size (size);
 				
 				-- Get the position of the placeholder:
-				pos_xy := type_vector_model (to_point (f (9), f (10)));
+				pos_xy := to_vector_model (f (9), f (10));
 				rotation := to_rotation (f (11)); -- 0
 				
 				
@@ -1742,7 +1742,7 @@ is
 
 		
 		procedure set_position is begin
-			drill.position := type_vector_model (to_point (f (6), f (7)));
+			drill.position := to_vector_model (f (6), f (7));
 
 			-- CS check position: must be inside board area
 		end set_position;
@@ -2206,8 +2206,8 @@ is
 							net_name		=> to_net_name (""),
 							line	=> (
 								width		=> to_distance (f (7)),
-								A	=> type_vector_model (to_point (f (8), f (9))),
-								B	=> type_vector_model (to_point (f (10), f (11))),
+								A			=> to_vector_model (f (8), f (9)),
+								B			=> to_vector_model (f (10), f (11)),
 								layer		=> to_signal_layer (f (5)),
 								others		=> <>),
 							
@@ -2226,9 +2226,9 @@ is
 				case cmd_field_count is
 					when 14 =>
 						arc_tmp := type_arc (to_arc (
-							center		=> type_vector_model (to_point (f (8), f (9))),
-							A	=> type_vector_model (to_point (f (10), f (11))),
-							B	=> type_vector_model (to_point (f (12), f (13))),
+							center		=> to_vector_model (f (8), f (9)),
+							A			=> to_vector_model (f (10), f (11)),
+							B			=> to_vector_model (f (12), f (13)),
 							direction	=> to_direction (f (14))));
 														
 						-- draw a freetrack
@@ -2909,7 +2909,7 @@ is
 			update_mode_display;
 
 			catch_zone := set_catch_zone (
-				center	=> to_point (f (6), f (7)),
+				center	=> to_vector_model (f (6), f (7)),
 				radius	=> to_zone_radius (f (8)));
 				
 			delete_object (
@@ -2941,7 +2941,7 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> to_point (f (6), f (7)),
+				center	=> to_vector_model (f (6), f (7)),
 				radius	=> to_zone_radius (f (8)));
 				
 			delete_object (
@@ -2983,7 +2983,7 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> to_point (f (6), f (7)),
+				center	=> to_vector_model (f (6), f (7)),
 				radius	=> to_zone_radius (f (8)));
 
 			delete_object (
@@ -3015,7 +3015,7 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> to_point (f (6), f (7)),
+				center	=> to_vector_model (f (6), f (7)),
 				radius	=> to_zone_radius (f (8)));
 				
 			delete_object (
@@ -3047,7 +3047,7 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> to_point (f (5), f (6)),
+				center	=> to_vector_model (f (5), f (6)),
 				radius	=> to_zone_radius (f (7)));
 											 
 			delete_route_restrict (
@@ -3110,7 +3110,7 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> to_point (f (6), f (7)),
+				center	=> to_vector_model (f (6), f (7)),
 				radius	=> to_zone_radius (f (8)));
 				
 			delete_track (
@@ -3142,7 +3142,7 @@ is
 			catch_zone : type_catch_zone;
 		begin
 			catch_zone := set_catch_zone (
-				center	=> to_point (f (7), f (8)),
+				center	=> to_vector_model (f (7), f (8)),
 				radius	=> to_zone_radius (f (9)));
 		
 			delete_track (

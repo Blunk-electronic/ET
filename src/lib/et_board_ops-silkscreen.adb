@@ -1874,7 +1874,7 @@ package body et_board_ops.silkscreen is
 			text_cursor : pac_silk_texts.cursor;
 
 			procedure query_text (text : in out type_silk_text) is begin
-				move_text (text, offset);
+				move_text_to (text, offset); -- CS should be move_text_by ?
 			end query_text;
 			
 		begin
@@ -2066,7 +2066,7 @@ package body et_board_ops.silkscreen is
 		is
 
 			procedure query_text (text : in out type_silk_text) is begin
-				move_text (text, destination);
+				move_text_to (text, destination);
 			end query_text;
 			
 		begin
@@ -2478,7 +2478,7 @@ package body et_board_ops.silkscreen is
 			procedure query_placeholder (
 				ph : in out type_text_placeholder) 
 			is begin
-				move_text (ph, destination);
+				move_text_to (ph, destination);
 			end query_placeholder;
 			
 		begin
