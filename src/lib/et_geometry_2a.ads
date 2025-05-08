@@ -707,11 +707,13 @@ package et_geometry_2a is
 		return type_vector_model;
 
 
+	-- Sets the start point of a line:
 	procedure set_A (
 		line	: in out type_line;
 		A		: in type_vector_model);
 
-
+	
+	-- Sets the end point of a line:
 	procedure set_B (
 		line	: in out type_line;
 		B		: in type_vector_model);
@@ -990,43 +992,50 @@ package et_geometry_2a is
 	procedure reset_arc (
 		arc		: in out type_arc);
 	
-	
+
+	-- Sets the center of the given arc:
 	procedure set_center (
 		arc		: in out type_arc;
 		center	: in type_vector_model);
 
 
+	-- Sets the start point of the given arc:
 	procedure set_A (
 		arc	: in out type_arc;
 		A	: in type_vector_model);
 
 	
+	-- Sets the end point of the given arc:	
 	procedure set_B (
 		arc	: in out type_arc;
 		B	: in type_vector_model);
 
 
+	-- Sets the direction of the given arc:
 	procedure set_direction (
 		arc			: in out type_arc;
 		direction	: in type_direction_of_rotation);
 
 	
-	
+	-- Returns the center of the given arc:
 	function get_center (
 		arc : in type_arc)
 		return type_vector_model;
 	
 
+	-- Returns the start point of the given arc:
 	function get_A (
 		arc : in type_arc)
 		return type_vector_model;
-	
 
+	
+	-- Returns the end point of the given arc:
 	function get_B (
 		arc : in type_arc)
 		return type_vector_model;
 
 
+	-- Returns the direction of the given arc:
 	function get_direction (
 		arc : in type_arc)
 		return type_direction_of_rotation;
@@ -1351,7 +1360,7 @@ package et_geometry_2a is
 
 
 	-- Mirrors the center of a circle along the given axis.
-	procedure mirror (
+	procedure mirror_circle (
 		circle		: in out type_circle;
 		axis		: in type_mirror);
 	

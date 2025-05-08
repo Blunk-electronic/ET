@@ -228,7 +228,7 @@ package body et_route_restrict is
 		procedure query_circle (c : in pac_route_restrict_circles.cursor) is
 			circle : type_route_restrict_circle := element (c);
 		begin
-			mirror (circle, MIRROR_ALONG_Y_AXIS);
+			mirror_circle (circle, MIRROR_ALONG_Y_AXIS);
 			result.append (circle);
 		end;
 		

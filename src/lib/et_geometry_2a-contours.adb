@@ -1561,7 +1561,7 @@ package body et_geometry_2a.contours is
 				mirror_arc (s.segment_arc, axis);
 			end;
 
-		begin -- move_segment
+		begin
 			case element (c).shape is
 				
 				when LINE =>
@@ -1580,11 +1580,11 @@ package body et_geometry_2a.contours is
 		end mirror_segment;
 
 		
-	begin -- mirror
+	begin
 		if contour.contour.circular then
 
 			-- mirror the single circle that forms the contour:
-			mirror (contour.contour.circle, axis);
+			mirror_circle (contour.contour.circle, axis);
 		else
 			-- move lines and arcs:
 			contour.contour.segments.iterate (mirror_segment'access);

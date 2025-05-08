@@ -302,7 +302,7 @@ package body et_stopmask is
 		procedure query_circle (c : in pac_stop_circles.cursor) is
 			circle : type_stop_circle := element (c);
 		begin
-			mirror (circle, axis);
+			mirror_circle (circle, axis);
 			result.append (circle);
 		end query_circle;
 		

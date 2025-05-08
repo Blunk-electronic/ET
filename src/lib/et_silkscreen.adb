@@ -300,7 +300,7 @@ package body et_silkscreen is
 		procedure query_circle (c : in pac_silk_circles.cursor) is
 			circle : type_silk_circle := element (c);
 		begin
-			mirror (circle, axis);
+			mirror_circle (circle, axis);
 			result.append (circle);
 		end query_circle;
 		

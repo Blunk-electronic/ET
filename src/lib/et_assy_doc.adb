@@ -289,7 +289,7 @@ package body et_assy_doc is
 		procedure query_circle (c : in pac_doc_circles.cursor) is
 			circle : type_doc_circle := element (c);
 		begin
-			mirror (circle, axis);
+			mirror_circle (circle, axis);
 			result.append (circle);
 		end query_circle;
 		

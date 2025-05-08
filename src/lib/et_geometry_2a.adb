@@ -1872,6 +1872,9 @@ package body et_geometry_2a is
 		arc.center := center;
 	end set_center;
 
+
+
+
 	
 
 	procedure set_A (
@@ -2666,12 +2669,12 @@ package body et_geometry_2a is
 
 
 
-	procedure mirror (
+	procedure mirror_circle (
 		circle		: in out type_circle;
 		axis		: in type_mirror) 
 	is begin
 		mirror_point (circle.center, axis);
-	end mirror;
+	end mirror_circle;
 
 
 
@@ -3379,8 +3382,8 @@ package body et_geometry_2a is
 		-- Mirror the circle:
 		case mirror is
 			when MIRROR_NO => null;
-			when MIRROR_ALONG_X_AXIS  => et_geometry_2a.mirror (c, MIRROR_ALONG_X_AXIS);
-			when MIRROR_ALONG_Y_AXIS  => et_geometry_2a.mirror (c, MIRROR_ALONG_Y_AXIS);
+			when MIRROR_ALONG_X_AXIS  => mirror_circle (c, MIRROR_ALONG_X_AXIS);
+			when MIRROR_ALONG_Y_AXIS  => mirror_circle (c, MIRROR_ALONG_Y_AXIS);
 		end case;
 		
 		-- Move the circle by offset_1:

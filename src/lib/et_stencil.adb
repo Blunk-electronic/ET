@@ -301,7 +301,7 @@ package body et_stencil is
 		procedure query_circle (c : in pac_stencil_circles.cursor) is
 			circle : type_stencil_circle := element (c);
 		begin
-			mirror (circle, axis);
+			mirror_circle (circle, axis);
 			result.append (circle);
 		end query_circle;
 		
