@@ -217,7 +217,7 @@ package body et_stencil is
 		procedure query_arc (c : in pac_stencil_arcs.cursor) is
 			arc : type_stencil_arc := element (c);
 		begin
-			rotate_by (arc, angle);
+			rotate_arc_by (arc, angle);
 			result.append (arc);
 		end query_arc;
 		

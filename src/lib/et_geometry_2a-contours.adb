@@ -1606,7 +1606,7 @@ package body et_geometry_2a.contours is
 			end;
 			
 			procedure do_arc (s : in out type_segment) is begin
-				rotate_by (s.segment_arc, rotation);
+				rotate_arc_by (s.segment_arc, rotation);
 			end;
 
 		begin -- rotate_segment

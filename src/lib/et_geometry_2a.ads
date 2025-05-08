@@ -1147,7 +1147,7 @@ package et_geometry_2a is
 
 
 	-- Rotates an arc about the origin by the given rotation.
-	procedure rotate_by (
+	procedure rotate_arc_by (
 		arc			: in out type_arc;
 		rotation	: in type_rotation);
 

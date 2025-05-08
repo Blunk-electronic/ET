@@ -3909,7 +3909,7 @@ package body et_canvas is
 		a : type_arc_angles;
 	begin
 		-- Rotate the arc by pos.rotation:
-		rotate_by (c, pos.rotation);
+		rotate_arc_by (c, pos.rotation);
 
 		-- Mirror the arc:
 		case mirror is

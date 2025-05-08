@@ -2195,7 +2195,7 @@ package body et_geometry_2a is
 
 	
 
-	procedure rotate_by (
+	procedure rotate_arc_by (
 		arc			: in out type_arc;
 		rotation	: in type_rotation) 
 	is begin
@@ -3338,7 +3338,7 @@ package body et_geometry_2a is
 
 		b : type_area;
 	begin
-		rotate_by (c, rotation);
+		rotate_arc_by (c, rotation);
 
 		-- Mirror the arc:
 		case mirror is

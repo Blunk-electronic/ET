@@ -351,7 +351,7 @@ package body et_conductor_segment is
 		procedure query_arc (c : in pac_conductor_arcs.cursor) is
 			arc : type_conductor_arc := element (c);
 		begin
-			rotate_by (arc, angle);
+			rotate_arc_by (arc, angle);
 			result.append (arc);
 		end;
 		

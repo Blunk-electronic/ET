@@ -135,7 +135,7 @@ package body et_route_restrict is
 		procedure query_arc (c : in pac_route_restrict_arcs.cursor) is
 			arc : type_route_restrict_arc := element (c);
 		begin
-			rotate_by (arc, angle);
+			rotate_arc_by (arc, angle);
 			result.append (arc);
 		end;
 		
