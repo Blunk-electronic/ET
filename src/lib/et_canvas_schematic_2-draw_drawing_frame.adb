@@ -136,7 +136,7 @@ procedure draw_drawing_frame is
 				content		=> to_content (to_string (des.category)),
 				size		=> to_distance (phs.sheet_category.size),
 				font		=> font_placeholders,
-				anchor		=> add (pos, tb_position.place),
+				anchor		=> pos + tb_position.place,
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -149,7 +149,7 @@ procedure draw_drawing_frame is
 				content		=> to_content (to_string (des.content)),
 				size		=> to_distance (phs.sheet_description.size),
 				font		=> font_placeholders,
-				anchor		=> add (pos, tb_position.place),
+				anchor		=> pos + tb_position.place,
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -165,7 +165,7 @@ procedure draw_drawing_frame is
 				content		=> to_content (to_string (active_sheet)), -- CS complete with "/of total"
 				size		=> to_distance (phs.sheet_number.size),
 				font		=> font_placeholders,
-				anchor		=> add (pos, tb_position.place),
+				anchor		=> pos + tb_position.place,
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));

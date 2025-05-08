@@ -4028,22 +4028,22 @@ package body et_canvas is
 
 		-- lower line from left to right:
 		l.A := rectangle.position;
-		l.B   := add (rectangle.position, (rectangle.width, 0.0));
+		l.B := rectangle.position + (rectangle.width, 0.0);
 		draw_line (l, pos, width); -- no stroke, width doesn't matter
 
 		-- upper line from left to right:
-		l.A := add (rectangle.position, (0.0, rectangle.height));
-		l.B   := add (rectangle.position, (rectangle.width, rectangle.height));
+		l.A := rectangle.position + (0.0, rectangle.height);
+		l.B := rectangle.position + (rectangle.width, rectangle.height);
 		draw_line (l, pos, width);
 
 		-- right line from bottom to top:
-		l.A := add (rectangle.position, (rectangle.width, 0.0));
-		l.B   := add (rectangle.position, (rectangle.width, rectangle.height));
+		l.A := rectangle.position + (rectangle.width, 0.0);
+		l.B := rectangle.position + (rectangle.width, rectangle.height);
 		draw_line (l, pos, width);
 
 		-- left line from bottom to top:
 		l.A := rectangle.position;
-		l.B   := add (rectangle.position, (0.0, rectangle.height));
+		l.B := rectangle.position + (0.0, rectangle.height);
 		draw_line (l, pos, width);
 		
 		stroke;

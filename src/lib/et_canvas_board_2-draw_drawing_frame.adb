@@ -143,7 +143,7 @@ procedure draw_drawing_frame is
 					content		=> to_content (face),
 					size		=> to_distance (aps.face.size),
 					font		=> font_placeholders,
-					anchor		=> add (pos, tb_position.place),
+					anchor		=> pos + tb_position.place,
 					origin		=> false,
 					rotation	=> 0.0,
 					alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -160,7 +160,7 @@ procedure draw_drawing_frame is
 					content		=> to_content (to_string (cms.face.content)), -- "SIDE:"
 					size		=> to_distance (cms.face.size),
 					font		=> font_placeholders,
-					anchor		=> add (pos, tb_position.place),
+					anchor		=> pos + tb_position.place,
 					origin		=> false,
 					rotation	=> 0.0,
 					alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -193,7 +193,7 @@ procedure draw_drawing_frame is
 				content		=> to_content (to_string (cms.silk_screen.content)),
 				size		=> to_distance (cms.silk_screen.size),
 				font		=> font_placeholders,
-				anchor		=> add (pos, tb_position.place),
+				anchor		=> pos + tb_position.place,
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -207,7 +207,7 @@ procedure draw_drawing_frame is
 				content		=> to_content (to_string (cms.assy_doc.content)),
 				size		=> to_distance (cms.assy_doc.size),
 				font		=> font_placeholders,
-				anchor		=> add (pos, tb_position.place),
+				anchor		=> pos + tb_position.place,
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -221,7 +221,7 @@ procedure draw_drawing_frame is
 				content		=> to_content (to_string (cms.keepout.content)),
 				size		=> to_distance (cms.keepout.size),
 				font		=> font_placeholders,
-				anchor		=> add (pos, tb_position.place),
+				anchor		=> pos + tb_position.place,
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -235,7 +235,7 @@ procedure draw_drawing_frame is
 				content		=> to_content (to_string (cms.stop_mask.content)),
 				size		=> to_distance (cms.stop_mask.size),
 				font		=> font_placeholders,
-				anchor		=> add (pos, tb_position.place),
+				anchor		=> pos + tb_position.place,
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -249,7 +249,7 @@ procedure draw_drawing_frame is
 				content		=> to_content (to_string (cms.stencil.content)),
 				size		=> to_distance (cms.stencil.size),
 				font		=> font_placeholders,
-				anchor		=> add (pos, tb_position.place),
+				anchor		=> pos + tb_position.place,
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -263,7 +263,7 @@ procedure draw_drawing_frame is
 				content		=> to_content (to_string (cms.plated_millings.content)),
 				size		=> to_distance (cms.plated_millings.size),
 				font		=> font_placeholders,
-				anchor		=> add (pos, tb_position.place),
+				anchor		=> pos + tb_position.place,
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -277,7 +277,7 @@ procedure draw_drawing_frame is
 				content		=> to_content (to_string (cms.pcb_outline.content)),
 				size		=> to_distance (cms.pcb_outline.size),
 				font		=> font_placeholders,
-				anchor		=> add (pos, tb_position.place),
+				anchor		=> pos + tb_position.place,
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -291,7 +291,7 @@ procedure draw_drawing_frame is
 				content		=> to_content (to_string (cms.route_restrict.content)),
 				size		=> to_distance (cms.route_restrict.size),
 				font		=> font_placeholders,
-				anchor		=> add (pos, tb_position.place),
+				anchor		=> pos + tb_position.place,
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -305,7 +305,7 @@ procedure draw_drawing_frame is
 				content		=> to_content (to_string (cms.via_restrict.content)),
 				size		=> to_distance (cms.via_restrict.size),
 				font		=> font_placeholders,
-				anchor		=> add (pos, tb_position.place),
+				anchor		=> pos + tb_position.place,
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -320,7 +320,7 @@ procedure draw_drawing_frame is
 				content		=> to_content (to_string (cms.signal_layer.content)),
 				size		=> to_distance (cms.signal_layer.size),
 				font		=> font_placeholders,
-				anchor		=> add (pos, tb_position.place),
+				anchor		=> pos + tb_position.place,
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));
@@ -333,7 +333,7 @@ procedure draw_drawing_frame is
 				content		=> to_content (enabled_conductor_layers),
 				size		=> to_distance (aps.signal_layer.size),
 				font		=> font_placeholders,
-				anchor		=> add (pos, tb_position.place),
+				anchor		=> pos + tb_position.place,
 				origin		=> false,
 				rotation	=> 0.0,
 				alignment	=> (ALIGN_LEFT, ALIGN_BOTTOM));

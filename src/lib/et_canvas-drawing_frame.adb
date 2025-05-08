@@ -205,7 +205,7 @@ package body et_canvas.drawing_frame is
 
 					-- The anchor point is offset by the position
 					-- of the frame:
-					anchor		=> add (pos, p.place),
+					anchor		=> pos + p.place,
 					
 					origin		=> false,
 					rotation	=> 0.0,
@@ -399,7 +399,7 @@ package body et_canvas.drawing_frame is
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:
-			anchor		=> add (pos, title_block_position.place),
+			anchor		=> pos + title_block_position.place,
 			
 			origin		=> false,
 			rotation	=> 0.0,
@@ -416,7 +416,7 @@ package body et_canvas.drawing_frame is
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:
-			anchor		=> add (pos, title_block_position.place),
+			anchor		=> pos + title_block_position.place,
 			
 			origin		=> false,
 			rotation	=> 0.0,
@@ -434,7 +434,7 @@ package body et_canvas.drawing_frame is
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:
-			anchor		=> add (pos, title_block_position.place),
+			anchor		=> pos + title_block_position.place,
 			
 			origin		=> false,
 			rotation	=> 0.0,
@@ -470,7 +470,7 @@ package body et_canvas.drawing_frame is
 				font		=> font_placeholders,
 
 				-- The anchor point is offset by the position of the title block:
-				anchor		=> add (pos, title_block_position.place),
+				anchor		=> pos + title_block_position.place,
 				
 				origin		=> false,
 				rotation	=> 0.0,
@@ -509,7 +509,7 @@ package body et_canvas.drawing_frame is
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:
-			anchor		=> add (pos, title_block_position.place),
+			anchor		=> pos + title_block_position.place,
 			
 			origin		=> false,
 			rotation	=> 0.0,
@@ -526,7 +526,7 @@ package body et_canvas.drawing_frame is
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:
-			anchor		=> add (pos, title_block_position.place),
+			anchor		=> pos + title_block_position.place,
 			
 			origin		=> false,
 			rotation	=> 0.0,
@@ -543,7 +543,7 @@ package body et_canvas.drawing_frame is
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:
-			anchor		=> add (pos, title_block_position.place),
+			anchor		=> pos + title_block_position.place,
 			
 			origin		=> false,
 			rotation	=> 0.0,
@@ -560,7 +560,7 @@ package body et_canvas.drawing_frame is
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:
-			anchor		=> add (pos, title_block_position.place),
+			anchor		=> pos + title_block_position.place,
 			
 			origin		=> false,
 			rotation	=> 0.0,
@@ -577,7 +577,7 @@ package body et_canvas.drawing_frame is
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:
-			anchor		=> add (pos, title_block_position.place),
+			anchor		=> pos + title_block_position.place,
 			
 			origin		=> false,
 			rotation	=> 0.0,
@@ -594,7 +594,7 @@ package body et_canvas.drawing_frame is
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:
-			anchor		=> add (pos, title_block_position.place),
+			anchor		=> pos + title_block_position.place,
 			
 			origin		=> false,
 			rotation	=> 0.0,
@@ -611,7 +611,7 @@ package body et_canvas.drawing_frame is
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:
-			anchor		=> add (pos, title_block_position.place),
+			anchor		=> pos + title_block_position.place,
 			
 			origin		=> false,
 			rotation	=> 0.0,
@@ -629,7 +629,7 @@ package body et_canvas.drawing_frame is
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:
-			anchor		=> add (pos, title_block_position.place),
+			anchor		=> pos + title_block_position.place,
 			
 			origin		=> false,
 			rotation	=> 0.0,
@@ -647,7 +647,7 @@ package body et_canvas.drawing_frame is
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:
-			anchor		=> add (pos, title_block_position.place),
+			anchor		=> pos + title_block_position.place,
 			
 			origin		=> false,
 			rotation	=> 0.0,
@@ -665,7 +665,7 @@ package body et_canvas.drawing_frame is
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:
-			anchor		=> add (pos, title_block_position.place),
+			anchor		=> pos + title_block_position.place,
 			
 			origin		=> false,
 			rotation	=> 0.0,
@@ -682,7 +682,7 @@ package body et_canvas.drawing_frame is
 			font		=> font_placeholders,
 
 			-- The anchor point is offset by the position of the title block:
-			anchor		=> add (pos, title_block_position.place),
+			anchor		=> pos + title_block_position.place,
 			
 			origin		=> false,
 			rotation	=> 0.0,

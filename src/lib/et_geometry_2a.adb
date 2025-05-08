@@ -497,17 +497,31 @@ package body et_geometry_2a is
 	end invert;
 
 
-	function add (
-		v1, v2 : in type_vector_model)
+	-- function add (
+	-- 	v1, v2 : in type_vector_model)
+	-- 	return type_vector_model
+	-- is 
+	-- 	r : type_vector_model;
+	-- begin
+	-- 	r.x := v1.x + v2.x;
+	-- 	r.y := v1.y + v2.y;
+	-- 	return r;
+	-- end add;
+
+
+	function "+" (
+		left, right : in type_vector_model)
 		return type_vector_model
-	is 
+	is
 		r : type_vector_model;
 	begin
-		r.x := v1.x + v2.x;
-		r.y := v1.y + v2.y;
+		r.x := left.x + right.x;
+		r.y := left.y + right.y;
 		return r;
-	end add;
+	end;
 
+
+	
 
 	procedure add (
 		v1 : in out type_vector_model;
@@ -519,21 +533,21 @@ package body et_geometry_2a is
 
 
 
-
-	function subtract (
-		v1, v2 : in type_vector_model)
-		return type_vector_model
-	is 
-		r : type_vector_model;
-	begin
-		r.x := v1.x - v2.x;
-		r.y := v1.y - v2.y;
-		
-		return r;
-	end subtract;
-
 	
 
+	function "-" (
+		left, right : in type_vector_model)
+		return type_vector_model
+	is
+		r : type_vector_model;
+	begin
+		r.x := left.x - right.x;
+		r.y := left.y - right.y;
+		return r;
+	end;
+
+
+	
 	
 	procedure move_by (
 		point	: in out type_vector_model;
@@ -3261,7 +3275,7 @@ package body et_geometry_2a is
 			when CENTER =>
 				-- Move the arc without changing
 				-- start, end or radius:
-				offset := subtract (destination, point_of_attack);
+				offset := destination - point_of_attack;
 				move_by (arc, offset);
 		end case;
 	end attack;

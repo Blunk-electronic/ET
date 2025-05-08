@@ -303,8 +303,8 @@ package et_geometry_2a is
 
 
 	-- Adds the given two location vectors:
-	function add (
-		v1, v2 : in type_vector_model)
+	function "+" (
+		left, right : in type_vector_model)
 		return type_vector_model;
 	
 
@@ -313,13 +313,14 @@ package et_geometry_2a is
 		v2 : in type_vector_model);
 	
 
-	-- Subtracts v2 from v1. Computes v1 - v2:
-	function subtract (
-		v1, v2 : in type_vector_model)
+	-- Computes left - right:
+	function "-" (
+		left, right : in type_vector_model)
 		return type_vector_model;
 
 	
-	-- Moves a model point by the given offset:
+	
+	-- Moves a location vector by the given offset:
 	procedure move_by (
 		point	: in out type_vector_model;
 		offset	: in type_vector_model);
