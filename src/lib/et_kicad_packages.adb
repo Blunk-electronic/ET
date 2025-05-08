@@ -1743,9 +1743,8 @@ package body et_kicad_packages is
 			-- Append the arc to the container corresponding to the layer. Then log the arc properties.
 			procedure insert_fp_arc is begin
 				
-				-- compute end point of arc from center, A and angle
-				set_B (arc, type_vector_model (arc_B (
-					get_center (arc), get_A (arc), arc.angle)));
+				-- compute end point of arc from center, start point and angle
+				set_B (arc, get_arc_B (get_center (arc), get_A (arc), arc.angle));
 
 				-- The angle of the arc and its layer are now discarded
 				-- as the arc is converted back to its anchestor

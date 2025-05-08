@@ -3396,8 +3396,8 @@ package body et_kicad.pcb is
 			begin
 				-- Compute the arc end point from its center, start point and angle.
 				-- Later the angle is discarded.
-				set_B (board_arc, type_vector_model (arc_B (
-					get_center (board_arc), get_A (board_arc), board_arc.angle)));
+				set_B (board_arc, get_arc_B (
+					get_center (board_arc), get_A (board_arc), board_arc.angle));
 					
 
 				-- The board_arc is converted back to its anchestor and
@@ -3669,9 +3669,8 @@ package body et_kicad.pcb is
 				use et_conductor_segment;
 			begin
 
-				-- compute end point of arc from center, A and angle
-				set_B (package_arc, type_vector_model (
-					arc_B (get_center (package_arc), get_A (package_arc), package_arc.angle)));
+				-- compute end point of arc from center, start point and angle
+				set_B (package_arc, get_arc_B (get_center (package_arc), get_A (package_arc), package_arc.angle));
 
 				-- The angle of the arc and its layer are now discarded
 				-- as the package_arc is converted back to its anchestor

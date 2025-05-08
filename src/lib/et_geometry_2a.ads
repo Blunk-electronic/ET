@@ -1179,10 +1179,11 @@ package et_geometry_2a is
 
 	
 
-	-- Computes the end point of an arc.
-	function arc_B ( -- CS rename to get_arc_B
+	-- Computes the end point of an arc
+	-- based on a given center and start point:
+	function get_arc_B (
 		center	: in type_vector_model;
-		A		: in type_vector_model;	
+		A		: in type_vector_model;	-- start point
 		angle 	: in type_angle) -- CS: type_angle_positive ?
 		return type_vector_model;
 

@@ -2250,10 +2250,10 @@ package body et_geometry_2a is
 
 	
 
-	function arc_B (
-		center		: in type_vector_model;
-		A	: in type_vector_model;	
-		angle 		: in type_angle) -- unit is degrees
+	function get_arc_B (
+		center	: in type_vector_model;
+		A		: in type_vector_model;	
+		angle 	: in type_angle) -- unit is degrees
 		return type_vector_model
 	is						
 		arc : type_arc;
@@ -2262,8 +2262,7 @@ package body et_geometry_2a is
 		angle_start, angle_end : type_angle; -- CS type_angle_positive ?
 		end_x, end_y : type_float;
 		
-	begin -- arc_B
-		
+	begin		
 		-- build an arc from the information available
 		arc := (
 			center		=> center,
@@ -2304,7 +2303,7 @@ package body et_geometry_2a is
 			x	=> to_distance (end_x),
 			y	=> to_distance (end_y));
 						
-	end arc_B;
+	end get_arc_B;
 
 	
 
@@ -2369,12 +2368,7 @@ package body et_geometry_2a is
 
 
 	
-	
-
-
-	
-
-	
+		
 
 
 	
