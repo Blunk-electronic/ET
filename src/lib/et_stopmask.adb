@@ -197,7 +197,7 @@ package body et_stopmask is
 		procedure query_arc (c : in pac_stop_arcs.cursor) is
 			arc : type_stop_arc := element (c);
 		begin
-			mirror (arc, axis);
+			mirror_arc (arc, axis);
 			result.append (arc);
 		end query_arc;
 		

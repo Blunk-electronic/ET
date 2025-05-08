@@ -1132,7 +1132,7 @@ package et_geometry_2a is
 	
 
 	-- Mirrors an arc along the given axis.
-	procedure mirror ( -- CS rename to mirror_arc
+	procedure mirror_arc (
 		arc			: in out type_arc;
 		axis		: in type_mirror);
 

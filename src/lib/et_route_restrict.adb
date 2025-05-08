@@ -115,7 +115,7 @@ package body et_route_restrict is
 		procedure query_arc (c : in pac_route_restrict_arcs.cursor) is
 			arc : type_route_restrict_arc := element (c);
 		begin
-			mirror (arc, MIRROR_ALONG_Y_AXIS);
+			mirror_arc (arc, MIRROR_ALONG_Y_AXIS);
 			result.append (arc);
 		end;
 		

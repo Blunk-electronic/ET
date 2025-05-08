@@ -1558,7 +1558,7 @@ package body et_geometry_2a.contours is
 			end;
 			
 			procedure do_arc (s : in out type_segment) is begin
-				mirror (s.segment_arc, axis);
+				mirror_arc (s.segment_arc, axis);
 			end;
 
 		begin -- move_segment

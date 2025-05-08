@@ -332,7 +332,7 @@ package body et_conductor_segment is
 		procedure query_arc (c : in pac_conductor_arcs.cursor) is
 			arc : type_conductor_arc := element (c);
 		begin
-			mirror (arc, MIRROR_ALONG_Y_AXIS);
+			mirror_arc (arc, MIRROR_ALONG_Y_AXIS);
 			result.append (arc);
 		end;
 		

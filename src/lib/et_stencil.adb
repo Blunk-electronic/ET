@@ -197,7 +197,7 @@ package body et_stencil is
 		procedure query_arc (c : in pac_stencil_arcs.cursor) is
 			arc : type_stencil_arc := element (c);
 		begin
-			mirror (arc, axis);
+			mirror_arc (arc, axis);
 			result.append (arc);
 		end query_arc;
 		

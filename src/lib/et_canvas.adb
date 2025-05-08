@@ -3914,8 +3914,8 @@ package body et_canvas is
 		-- Mirror the arc:
 		case mirror is
 			when MIRROR_NO => null;
-			when MIRROR_ALONG_X_AXIS  => pac_geometry.mirror (c, MIRROR_ALONG_X_AXIS);
-			when MIRROR_ALONG_Y_AXIS  => pac_geometry.mirror (c, MIRROR_ALONG_Y_AXIS);
+			when MIRROR_ALONG_X_AXIS  => mirror_arc (c, MIRROR_ALONG_X_AXIS);
+			when MIRROR_ALONG_Y_AXIS  => mirror_arc (c, MIRROR_ALONG_Y_AXIS);
 		end case;
 		
 		-- Move the arc to the given position:

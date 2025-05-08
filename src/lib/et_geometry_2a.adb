@@ -2180,7 +2180,7 @@ package body et_geometry_2a is
 
 
 
-	procedure mirror (
+	procedure mirror_arc (
 		arc			: in out type_arc;
 		axis		: in type_mirror)
 	is begin
@@ -2188,7 +2188,7 @@ package body et_geometry_2a is
 		mirror_point (arc.A, axis);
 		mirror_point (arc.B, axis);
 		arc.direction := reverse_direction (arc.direction);
-	end mirror;
+	end mirror_arc;
 
 	
 
@@ -3340,8 +3340,8 @@ package body et_geometry_2a is
 		-- Mirror the arc:
 		case mirror is
 			when MIRROR_NO => null;
-			when MIRROR_ALONG_X_AXIS  => et_geometry_2a.mirror (c, MIRROR_ALONG_X_AXIS);
-			when MIRROR_ALONG_Y_AXIS  => et_geometry_2a.mirror (c, MIRROR_ALONG_Y_AXIS);
+			when MIRROR_ALONG_X_AXIS  => mirror_arc (c, MIRROR_ALONG_X_AXIS);
+			when MIRROR_ALONG_Y_AXIS  => mirror_arc (c, MIRROR_ALONG_Y_AXIS);
 		end case;
 
 		-- Move the arc by offset_1:
