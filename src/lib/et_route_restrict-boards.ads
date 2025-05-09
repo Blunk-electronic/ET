@@ -51,6 +51,11 @@ package et_route_restrict.boards is
 	record
 		layers 	: type_signal_layers.set;
 	end record;
+
+
+	-- CS procedure to set linewidth and layer
+
+
 	
 	package pac_route_restrict_lines is new doubly_linked_lists (type_route_restrict_line);
 

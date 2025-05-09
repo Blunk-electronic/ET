@@ -394,8 +394,8 @@ package body et_schematic_ops is
 							-- If port sits on start OR end point of segment AND if it
 							-- is not already in the segment then append it to segment.ports.devices.
 							-- append it to the portlist of the segment.
-							if 	segment.A = element (port_cursor).position or
-								segment.B = element (port_cursor).position then
+							if 	get_A (segment) = element (port_cursor).position or
+								get_B (segment) = element (port_cursor).position then
 
 								-- If port not already in segment, append it.
 								-- Otherwise it must not be appended again. constraint_error would arise.
@@ -674,18 +674,20 @@ package body et_schematic_ops is
 
 	
 
-	function net_segment_at_place (
 	-- Returns true if at given place a net segment starts or ends.
+	function net_segment_at_place (
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_object_position)
-		return boolean is
+		return boolean 
+	is
 
 		-- This flag goes true once a segment has been found.
 		segment_found : boolean := false; -- to be returned
 		
 		procedure query_nets (
 			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) is
+			module		: in type_generic_module) 
+		is
 
 			use pac_nets;			
 			net_cursor : pac_nets.cursor := module.nets.first;
@@ -704,13 +706,13 @@ package body et_schematic_ops is
 					
 					procedure probe_segment (segment : in type_net_segment) is begin
 						-- if place is a start point of a segment
-						if segment.A = place.place then
+						if get_A (segment) = place.place then
 							-- signal iterations in upper level to cancel
 							segment_found := true;
 						end if;
 
 						-- if place is an end point of a segment
-						if segment.B = place.place then
+						if get_B (segment) = place.place then
 							-- signal iterations in upper level to cancel
 							segment_found := true;
 						end if;

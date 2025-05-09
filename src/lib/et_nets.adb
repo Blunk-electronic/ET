@@ -96,14 +96,14 @@ package body et_nets is
 		procedure query_strand (cursor : in pac_net_segments.cursor) is begin
 			-- Test start point of segment. 
 			-- if closer to orign than point_1 keep start point
-			point_2	:= type_vector_model (element (cursor).A);
+			point_2	:= get_A (cursor);
 			if get_distance_absolute (point_2, origin) < get_distance_absolute (point_1, origin) then
 				point_1 := point_2;
 			end if;
 
 			-- Test start point of segment.
 			-- if closer to orign than point_1 keep end point
-			point_2	:= type_vector_model (element (cursor).B);
+			point_2	:= get_B (cursor);
 			if get_distance_absolute (point_2, origin) < get_distance_absolute (point_1, origin) then
 				point_1 := point_2;
 			end if;
@@ -140,13 +140,13 @@ package body et_nets is
 			segment_position : type_vector_model := far_upper_right;
 			
 			procedure query_segment (c : in pac_net_segments.cursor) is begin
-				if element (c).A < segment_position then
-					segment_position := element (c).A;
+				if get_A (c) < segment_position then
+					segment_position := get_A (c);
 					segment_cursor := c;
 				end if;
 
-				if element (c).B < segment_position then
-					segment_position := element (c).B;
+				if get_B (c) < segment_position then
+					segment_position := get_B (c);
 					segment_cursor := c;
 				end if;
 			end query_segment;
@@ -629,27 +629,31 @@ package body et_nets is
 		direction : type_stub_direction;
 		orientation : constant type_net_segment_orientation := 
 			get_segment_orientation (segment);
+
+		-- Get the start and end point of the segment:
+		A : constant type_vector_model := get_A (segment);
+		B : constant type_vector_model := get_B (segment);
 	begin
 		case orientation is
 			when HORIZONTAL =>
-				if get_x (point) >= get_x (element (segment).A) and
-					get_x (point) >= get_x (element (segment).B) then
+				if get_x (point) >= get_x (A) and
+					get_x (point) >= get_x (B) then
 					direction := RIGHT;
 				end if;
 
-				if get_x (point) <= get_x (element (segment).A) and
-					get_x (point) <= get_x (element (segment).B) then
+				if get_x (point) <= get_x (A) and
+					get_x (point) <= get_x (B) then
 					direction := LEFT;
 				end if;
 				
 			when VERTICAL =>
-				if get_y (point) >= get_y (element (segment).A) and
-					get_y (point) >= get_y (element (segment).B) then
+				if get_y (point) >= get_y (A) and
+					get_y (point) >= get_y (B) then
 					direction := UP;
 				end if;
 
-				if get_y (point) <= get_y (element (segment).A) and
-					get_y (point) <= get_y (element (segment).B) then
+				if get_y (point) <= get_y (A) and
+					get_y (point) <= get_y (B) then
 					direction := DOWN;
 				end if;
 				

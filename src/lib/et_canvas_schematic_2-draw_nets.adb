@@ -86,13 +86,13 @@ procedure draw_nets is
 	begin
 		-- at start point of segment:
 		if element (s).junctions.A then
-			set_center (j, element (s).A);
+			set_center (j, get_A (s));
 			draw;
 		end if;
 
 		-- at end point of segment:
 		if element (s).junctions.B then
-			set_center (j, element (s).B);
+			set_center (j, get_B (s));
 			draw;
 		end if;
 
@@ -118,13 +118,13 @@ procedure draw_nets is
 	begin
 		-- at start point of segment:
 		if s.junctions.A then
-			set_center (j, s.A);
+			set_center (j, get_A (s));
 			draw;
 		end if;
 
 		-- at end point of segment:
 		if s.junctions.B then
-			set_center (j, s.B);
+			set_center (j, get_B (s));
 			draw;
 		end if;
 
@@ -610,16 +610,16 @@ procedure draw_nets is
 
 			
 			procedure drag_at_start is begin
-				if element (original_segment).A = secondary_segment.A then
+				if get_A (original_segment) = get_A (secondary_segment) then
 				-- Start point of secondary segment is attached to the start point of the original segment.
-					secondary_segment.A := primary_segment.A;
+					set_A (secondary_segment, get_A (primary_segment));
 
 					draw_and_mark;
 				end if;
 
-				if element (original_segment).A = secondary_segment.B then
+				if get_A (original_segment) = get_b (secondary_segment) then
 				-- end point of secondary net segment is attached to the start point of the original segment
-					secondary_segment.B := primary_segment.A;
+					set_B (secondary_segment, get_A (primary_segment));
 
 					draw_and_mark;
 				end if;
@@ -627,16 +627,16 @@ procedure draw_nets is
 
 			
 			procedure drag_at_end is begin
-				if element (original_segment).B = secondary_segment.A then
+				if get_B (original_segment) = get_A (secondary_segment) then
 				-- Start point of secondary segment is attached to the end point of the original segment.
-					secondary_segment.A := primary_segment.B;
+					set_A (secondary_segment, get_B (primary_segment));
 
 					draw_and_mark;
 				end if;
 
-				if element (original_segment).B = secondary_segment.B then
+				if get_B (original_segment) = get_B (secondary_segment) then
 				-- end point of secondary segment is attached to the end point of the original segment
-					secondary_segment.B := primary_segment.B;
+					set_B (secondary_segment, get_B (primary_segment));
 
 					draw_and_mark;
 				end if;

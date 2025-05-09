@@ -688,8 +688,17 @@ package et_geometry_2a is
 	end record;
 
 	
-	type type_line is new type_line_base with null record;
-	
+	type type_line is tagged private;
+
+
+	procedure reset_line (
+		line : in out type_line);
+
+
+	function to_line (
+		A, B : in type_vector_model)
+		return type_line'class;
+						 
 	
 	-- Returns the start and end point of the given line as string.
 	function to_string (line : in type_line) return string;
@@ -1728,10 +1737,12 @@ private
 
 	-- boundaries_default : constant type_boundaries := (others => <>);
 
-
-	type type_circle is new type_circle_base with null record;
+	type type_line is new type_line_base with null record;
 	
 	type type_arc is new type_arc_base with null record;
+	
+	type type_circle is new type_circle_base with null record;
+	
 
 	
 

@@ -559,8 +559,8 @@ package body et_schematic_ops.submodules is
 						-- If port sits on start OR end point of segment AND if it
 						-- is not already in the segment then append it to the 
 						-- portlist of the segment.
-						if 	segment.A = position.place or
-							segment.B = position.place
+						if 	get_A (segment) = get_place (position) or
+							get_B (segment) = get_place (position)
 						then
 
 							-- If port not already in segment, append it.
@@ -631,6 +631,7 @@ package body et_schematic_ops.submodules is
 				
 				log_indentation_down;
 			end query_strands;
+
 			
 		begin -- query_nets
 			while not port_processed and net_cursor /= pac_nets.no_element loop
@@ -1345,15 +1346,15 @@ package body et_schematic_ops.submodules is
 						log_indentation_up;
 						
 						-- if port sits on a start point of a segment -> move start point
-						if segment.A = port_before then
+						if get_A (segment) = port_before then
 							log (text => "move segment start point from" & 
-								to_string (segment.A),
+								to_string (get_A (segment)),
 								level => log_threshold + 3);
 
-							segment.A := port_after;
+							set_A (segment, port_after);
 
 							log (text => "to" & 
-								to_string (segment.A),
+								to_string (get_A (segment)),
 								level => log_threshold + 3);
 
 							-- signal iterations in upper level to cancel
@@ -1362,15 +1363,15 @@ package body et_schematic_ops.submodules is
 
 						
 						-- if port sits on an end point of a segment -> move end point
-						if segment.B = port_before then
+						if get_B (segment) = port_before then
 							log (text => "move segment end point from" & 
-								to_string (segment.B),
+								to_string (get_B (segment)),
 								level => log_threshold + 3);
 
-							segment.B := port_after;
+							set_B (segment, port_after);
 
 							log (text => "to" & 
-								to_string (segment.B),
+								to_string (get_B (segment)),
 								level => log_threshold + 3);
 							
 							-- signal iterations in upper level to cancel
@@ -1535,15 +1536,15 @@ package body et_schematic_ops.submodules is
 						log_indentation_up;
 						
 						-- if port sits on a start point of a segment -> move start point
-						if segment.A = pos_before.place then
+						if get_A (segment) = get_place (pos_before) then
 							log (text => "move segment start point from" & 
-								to_string (segment.A),
+								to_string (get_A (segment)),
 								level => log_threshold + 3);
 
-							segment.A := pos_after.place;
+							set_A (segment, get_place (pos_after));
 
 							log (text => "to" & 
-								to_string (segment.A),
+								to_string (get_A (segment)),
 								level => log_threshold + 3);
 
 							-- signal iterations in upper level to cancel
@@ -1551,15 +1552,15 @@ package body et_schematic_ops.submodules is
 						end if;
 
 						-- if port sits on an end point of a segment -> move end point
-						if segment.B = pos_before.place then
+						if get_B (segment) = get_place (pos_before) then
 							log (text => "move segment end point from" & 
-								to_string (segment.B),
+								to_string (get_B (segment)),
 								level => log_threshold + 3);
 
-							segment.B := pos_after.place;
+							set_B (segment, get_place (pos_after));
 
 							log (text => "to" & 
-								to_string (segment.B),
+								to_string (get_B (segment)),
 								level => log_threshold + 3);
 							
 							-- signal iterations in upper level to cancel
@@ -1872,10 +1873,11 @@ package body et_schematic_ops.submodules is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+
 			procedure probe_port (
 				port : in type_vector_model; -- x/y
 				name : in type_netchanger_port_name) -- master/slave
-				is
+			is
 
 				-- This flag goes true on the first match. It signals
 				-- all iterations to cancel prematurely.
@@ -1883,6 +1885,7 @@ package body et_schematic_ops.submodules is
 					
 				use pac_nets;
 				net_cursor : pac_nets.cursor := module.nets.first;
+
 				
 				procedure query_strands (
 					net_name	: in pac_net_name.bounded_string;
@@ -1890,18 +1893,20 @@ package body et_schematic_ops.submodules is
 				is
 					strand_cursor : pac_strands.cursor := net.strands.first;
 
+					
 					procedure query_segments (strand : in out type_strand) is
 						use pac_net_segments;
 						segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
+						
 						procedure change_segment (segment : in out type_net_segment) is
 							use et_netlists;
 						begin
 							-- If port sits on start OR end point of segment AND if it
 							-- is not already in the segment then append it to the 
 							-- portlist of the segment.
-							if 	segment.A = port or
-								segment.B = port then
+							if 	get_A (segment) = port or
+								get_B (segment) = port then
 
 								-- If port not already in segment, append it.
 								-- Otherwise it must not be appended again. constraint_error would arise.
@@ -1921,9 +1926,9 @@ package body et_schematic_ops.submodules is
 								
 								-- signal iterations in upper levels to cancel
 								port_processed := true;
-							end if;
-							
+							end if;							
 						end change_segment;
+						
 
 					begin -- query_segments
 						log_indentation_up;

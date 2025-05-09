@@ -81,7 +81,7 @@ with et_device_placeholders.symbols;
 with et_frames;
 
 with et_kicad_libraries;		use et_kicad_libraries;
-with et_kicad_packages;			use et_kicad_packages;
+with et_kicad_packages;			--use et_kicad_packages;
 
 with et_units;					use et_units;
 with et_mirroring;				use et_mirroring;

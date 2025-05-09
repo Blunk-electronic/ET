@@ -105,6 +105,25 @@ package body et_symbols is
 
 
 
+	function get_A (
+		line : in pac_symbol_lines.cursor)
+		return type_vector_model
+	is begin
+		return get_A (element (line));
+	end;
+
+
+	function get_B (
+		line : in pac_symbol_lines.cursor)
+		return type_vector_model
+	is begin
+		return get_B (element (line));
+	end;
+
+
+	
+
+
 	procedure set_width (
 		arc		: in out type_symbol_arc;
 		width	: in type_line_width)
@@ -114,6 +133,38 @@ package body et_symbols is
 
 	
 
+	function get_A (
+		arc : in pac_symbol_arcs.cursor)
+		return type_vector_model
+	is begin
+		return get_A (element (arc));
+	end;
+
+
+	function get_B (
+		arc : in pac_symbol_arcs.cursor)
+		return type_vector_model
+	is begin
+		return get_B (element (arc));
+	end;
+
+
+	function get_center (
+		arc : in pac_symbol_arcs.cursor)
+		return type_vector_model
+	is begin
+		return get_center (element (arc));
+	end;
+
+
+	function get_direction (
+		arc : in pac_symbol_arcs.cursor)
+		return type_direction_of_rotation
+	is begin
+		return get_direction (element (arc));
+	end;
+	
+	
 
 	function get_port_positions (
 		symbol	: in type_symbol)

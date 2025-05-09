@@ -43,6 +43,7 @@ with ada.strings;			use ada.strings;
 package body et_conductor_segment.boards is
 
 
+	
 	function to_string (
 		line	: in type_conductor_line;
 		width	: in boolean)
@@ -78,10 +79,10 @@ package body et_conductor_segment.boards is
 		end if;
 
 		-- test start and end points:
-		if line_1.A = line_2.A
-		or line_1.A = line_2.B
-		or line_1.B   = line_2.A
-		or line_1.B   = line_2.B
+		if get_A (line_1) = get_A (line_2)
+		or get_A (line_1) = get_B (line_2)
+		or get_B (line_1) = get_A (line_2)
+		or get_B (line_1) = get_B (line_2)
 		then
 			result := true;
 		else
@@ -90,10 +91,10 @@ package body et_conductor_segment.boards is
 
 		-- test start/end points between start/end points:
 		if result = false then
-			if line_1.on_line (to_vector (line_2.A)) 
-			or line_1.on_line (to_vector (line_2.B)) 
-			or line_2.on_line (to_vector (line_1.A)) 
-			or line_2.on_line (to_vector (line_1.B)) 
+			if line_1.on_line (to_vector (get_A (line_2))) 
+			or line_1.on_line (to_vector (get_B (line_2))) 
+			or line_2.on_line (to_vector (get_A (line_1))) 
+			or line_2.on_line (to_vector (get_B (line_1))) 
 			then
 				result := true;
 			end if;
@@ -105,7 +106,23 @@ package body et_conductor_segment.boards is
 
 
 
+	function get_A (
+		line : in pac_conductor_lines.cursor)
+		return type_vector_model
+	is begin
+		return get_A (element (line));
+	end;
 
+
+	function get_B (
+		line : in pac_conductor_lines.cursor)
+		return type_vector_model
+	is begin
+		return get_B (element (line));
+	end;
+
+	
+	
 	
 	function to_string (
 		line	: in pac_conductor_lines.cursor;
@@ -236,6 +253,7 @@ package body et_conductor_segment.boards is
 
 
 -- ARCS:
+
 	
 	function to_string (
 		arc		: in type_conductor_arc;
@@ -255,6 +273,25 @@ package body et_conductor_segment.boards is
 	end to_string;
 
 
+
+	function get_A (
+		arc : in pac_conductor_arcs.cursor)
+		return type_vector_model
+	is begin
+		return get_A (element (arc));
+	end;
+
+	
+	function get_B (
+		arc : in pac_conductor_arcs.cursor)
+		return type_vector_model
+	is begin
+		return get_B (element (arc));
+	end;
+
+
+
+	
 
 	function to_string (
 		arc		: in pac_conductor_arcs.cursor;

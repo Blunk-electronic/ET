@@ -775,19 +775,25 @@ is
 	procedure read_net_segment is
 		use et_symbol_rw;
 		kw : constant string := f (line, 1);
+
+		use et_net_segment;
+		use et_schematic_coordinates.pac_geometry_2;
+		vm : type_vector_model;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_start then -- "start x 3 y 4"
 			expect_field_count (line, 5);
 
 			-- extract start position starting at field 2
-			net_segment.A := to_position (line, from => 2);
+			vm := to_position (line, from => 2);
+			set_A (net_segment, vm);
 			
 		elsif kw = keyword_end then -- "end x 6 y 4"
 			expect_field_count (line, 5);
 
 			-- extract end position starting at field 2
-			net_segment.B := to_position (line, from => 2);
+			vm := to_position (line, from => 2);
+			set_B (net_segment, vm);
 
 		elsif kw = keyword_junction then -- "junction start/end"
 			expect_field_count (line, 2);
@@ -5215,7 +5221,7 @@ is
 								new_item	=> net_segment);
 
 							-- clean up for next segment
-							net_segment := (others => <>);
+							et_net_segment.reset_line (net_segment);
 							
 						when others => invalid_section;
 					end case;

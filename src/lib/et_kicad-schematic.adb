@@ -1392,20 +1392,17 @@ package body et_kicad.schematic is
         end record;
 
 		
+		-- Returns true if given port sits on given segment.
 		function on_segment (
 			port 	: in type_hierarchic_sheet_port;
 			segment : in type_net_segment_base)
-			return boolean is
-		-- Returns true if given port sits on given segment.
-
-			-- CS this is a workaround in order to provide a line for function on_line:
-			type type_line_scratch is new pac_geometry_2.type_line with null record;
-			line : type_line_scratch := (
+			return boolean 
+		is
+			line : type_line := type_line (to_line (
 				A	=> get_point (segment.coordinates_start), 
-				B	=> get_point (segment.coordinates_end),
-				others		=> <>);
+				B	=> get_point (segment.coordinates_end)));
 			
-		begin -- on_segment
+		begin
 			return line.on_line (port.coordinates);
 		end on_segment;
 
@@ -1980,6 +1977,8 @@ package body et_kicad.schematic is
 		project			: in pac_project_name.bounded_string;
 		log_threshold	: in type_log_level)
 	is
+		use et_kicad_packages;
+		
 		-- backup current working directory
 		current_working_directory : constant string := current_directory;
 		
@@ -3145,12 +3144,12 @@ package body et_kicad.schematic is
 				module.component_libraries := tmp_component_libraries;
 			end save_components;
 
-			procedure save_packages (
 			-- Saves the package_libraries in the current module.
+			procedure save_packages (
 				module_name	: in type_submodule_name.bounded_string;
-				module		: in out et_kicad.pcb.type_module) is
-			begin
-				module.footprints := package_libraries;
+				module		: in out et_kicad.pcb.type_module) 
+			is begin
+				module.footprints := et_kicad_packages.package_libraries;
 			end save_packages;
 			
 		begin -- save_libraries
@@ -3409,8 +3408,8 @@ package body et_kicad.schematic is
 	end import_design;
 
 	
-	function junction_sits_on_segment (
 	-- Returns true if the given junction sits on the given net segment.
+	function junction_sits_on_segment (
 		junction	: in type_net_junction;
 		segment		: in type_net_segment_base'class) 
 		return boolean 
@@ -3419,12 +3418,9 @@ package body et_kicad.schematic is
 
 		d : type_distance_point_line;
 
-		-- CS this is a workaround in order to provide a line for function distance_point_line:
-		type type_line_scratch is new pac_geometry_2.type_line with null record;
-		line : type_line_scratch := (
+		line : type_line := type_line (to_line (
 			A	=> get_point (segment.coordinates_start), 
-			B	=> get_point (segment.coordinates_end),
-			others		=> <>);
+			B	=> get_point (segment.coordinates_end)));
 		
 	begin
 		-- calculate the shortes distance of point from line.
@@ -3754,8 +3750,10 @@ package body et_kicad.schematic is
 				use type_strands;
 				strand_cursor : type_strands.cursor := module.strands.first;
 
+				
 				procedure query_segments (
-					strand : in type_strand) is
+					strand : in type_strand) 
+				is
 					use type_net_segments;
 					segment_cursor : type_net_segments.cursor := strand.segments.first;
 				begin
@@ -3782,6 +3780,7 @@ package body et_kicad.schematic is
 						
 					end loop;
 				end query_segments;
+
 				
 			begin -- query_strands
 				-- Once a segment has been found or all strands have been processed:
@@ -3795,7 +3794,7 @@ package body et_kicad.schematic is
 				end loop;
 			end query_strands;
 		
-		begin -- another_segment_here
+		begin
 			--log (text => "probing for other segment at " & to_string (port.coordinates, et_schematic_coordinates.module));
 		
 			type_modules.query_element (
@@ -3805,8 +3804,8 @@ package body et_kicad.schematic is
 			return segment_found;
 		end another_segment_here;
 
-		procedure test_junction is
-		begin
+		
+		procedure test_junction is begin
 			if junction_here then
 				sits_on_segment := true;
 			else
@@ -3817,12 +3816,10 @@ package body et_kicad.schematic is
 			end if;
 		end test_junction;
 
-		-- CS this is a workaround in order to provide a line for function distance_point_line:
-		type type_line_scratch is new pac_geometry_2.type_line with null record;
-		line : type_line_scratch := (
+		
+		line : type_line := type_line (to_line (
 			A	=> get_point (segment.coordinates_start), 
-			B	=> get_point (segment.coordinates_end),
-			others		=> <>);
+			B	=> get_point (segment.coordinates_end)));
 		
 	begin -- port_connected_with_segment
 		-- First make sure the port is to be connected at all. Ports intended to be open
@@ -4911,6 +4908,7 @@ package body et_kicad.schematic is
 			component_sch : type_components_schematic.cursor := module.components.first;
 			library_cursor : type_device_libraries.cursor;
 
+			use et_kicad_packages;
 			use type_libraries;
 			
 			
@@ -5525,11 +5523,9 @@ package body et_kicad.schematic is
 
 								-- CS this is a workaround in order to provide a line for function distance_point_line:
 								declare
-									type type_line_scratch is new pac_geometry_2.type_line with null record;
-									line : type_line_scratch := (
+									line : type_line := type_line (to_line (
 										A	=> get_point (element (segment_cursor_sec).coordinates_start), 
-										B	=> get_point (element (segment_cursor_sec).coordinates_end),
-										others		=> <>);
+										B	=> get_point (element (segment_cursor_sec).coordinates_end)));
 								begin
 									-- If START point of primary segment sits BETWEEN start and end point of secondary segment,
 									-- exit prematurely and return the coordinates of the expected junction.
@@ -5739,11 +5735,9 @@ package body et_kicad.schematic is
 							if same_path_and_sheet (element (segment_cursor).coordinates_start, element (junction_cursor).coordinates) then
 
 								declare
-									type type_line_scratch is new pac_geometry_2.type_line with null record;
-									line : type_line_scratch := (
+									line : type_line := type_line (to_line (
 										A	=> get_point (element (segment_cursor).coordinates_start), 
-										B	=> get_point (element (segment_cursor).coordinates_end),
-										others		=> <>);
+										B	=> get_point (element (segment_cursor).coordinates_end)));
 								begin
 									if line.on_line (get_point (element (junction_cursor).coordinates)) then
 										segment_found := true;
@@ -5859,11 +5853,9 @@ package body et_kicad.schematic is
 							if same_path_and_sheet (element (segment_cursor).coordinates_start, element (junction_cursor).coordinates) then
 
 								declare
-									type type_line_scratch is new pac_geometry_2.type_line with null record;
-									line : type_line_scratch := (
+									line : type_line := type_line (to_line (
 										A	=> get_point (element (segment_cursor).coordinates_start), 
-										B	=> get_point (element (segment_cursor).coordinates_end),
-										others		=> <>);
+										B	=> get_point (element (segment_cursor).coordinates_end)));
 								begin
 									-- count segments
 									if line.on_line (get_point (element (junction_cursor).coordinates)) then
@@ -6044,11 +6036,9 @@ package body et_kicad.schematic is
 								element (segment_cursor).coordinates_start) then
 
 								declare
-									type type_line_scratch is new pac_geometry_2.type_line with null record;
-									line : type_line_scratch := (
+									line : type_line := type_line (to_line (
 										A	=> get_point (element (segment_cursor).coordinates_start), 
-										B	=> get_point (element (segment_cursor).coordinates_end),
-										others		=> <>);
+										B	=> get_point (element (segment_cursor).coordinates_end)));
 								begin
 									if line.on_line (get_point (element (no_connection_flag_cursor).coordinates)) then
 										log (WARNING, "no-connection-flag misplaced on a net at " 

@@ -753,18 +753,27 @@ package body et_kicad_to_native is
 					poly_cursor	: pac_route_solid.cursor := net.route.zones.solid.first;
 
 					board_track : constant string (1..12) := "board track ";
-
 					
-					procedure move_line (line : in out type_conductor_line) is begin
+					
+					procedure move_line (line : in out type_conductor_line) is 
+						p_scratch : et_board_coordinates.pac_geometry_2.type_vector_model;
+					begin
 						log (text => board_track & "line", level => log_threshold + 4);
 						log_indentation_up;
 
 						log (text => before & to_string (line, true), -- log incl. width
 							 level => log_threshold + 4);
 						
+						-- move (line.A);
+						-- move (line.B);
 
-						move (line.A);
-						move (line.B);
+						p_scratch := get_A (line);
+						move (p_scratch);
+						set_A (line, p_scratch);
+
+						p_scratch := get_B (line);
+						move (p_scratch);
+						set_B (line, p_scratch);
 						
 						log (text => now & to_string (line, true),  -- log incl. width
 							 level => log_threshold + 4);
@@ -924,14 +933,24 @@ package body et_kicad_to_native is
 				board_silk_screen : constant string := "board silk screen ";
 
 				
-				procedure move_line (line : in out type_silk_line) is begin
+				procedure move_line (line : in out type_silk_line) is 
+					p_scratch : et_board_coordinates.pac_geometry_2.type_vector_model;
+				begin
 					log (text => board_silk_screen & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
 					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
 
-					move (line.A);
-					move (line.B);
+					-- move (line.A);
+					-- move (line.B);
+
+					p_scratch := get_A (line);
+					move (p_scratch);
+					set_A (line, p_scratch);
+
+					p_scratch := get_B (line);
+					move (p_scratch);
+					set_B (line, p_scratch);
 					
 					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
 							
@@ -1132,14 +1151,24 @@ package body et_kicad_to_native is
 				doc : constant string := "board assembly documentation ";
 
 				
-				procedure move_line (line : in out type_doc_line) is begin
+				procedure move_line (line : in out type_doc_line) is 
+					p_scratch : et_board_coordinates.pac_geometry_2.type_vector_model;
+				begin
 					log (text => doc & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
 					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
 
-					move (line.A);
-					move (line.B);
+					-- move (line.A);
+					-- move (line.B);
+					
+					p_scratch := get_A (line);
+					move (p_scratch);
+					set_A (line, p_scratch);
+
+					p_scratch := get_B (line);
+					move (p_scratch);
+					set_B (line, p_scratch);
 					
 					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
 							
@@ -1341,14 +1370,23 @@ package body et_kicad_to_native is
 				
 				procedure move_line (line : in out type_stencil_line) is
 					use et_pcb;
+					p_scratch : et_board_coordinates.pac_geometry_2.type_vector_model;
 				begin
 					log (text => stencil & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
 					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
+     
+					-- move (line.A);
+					-- move (line.B);
 
-					move (line.A);
-					move (line.B);
+					p_scratch := get_A (line);
+					move (p_scratch);
+					set_A (line, p_scratch);
+     
+					p_scratch := get_B (line);
+					move (p_scratch);
+					set_B (line, p_scratch);
 					
 					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
 							
@@ -1512,14 +1550,23 @@ package body et_kicad_to_native is
 				
 				procedure move_line (line : in out type_stop_line) is
 					use et_pcb;
+					p_scratch : et_board_coordinates.pac_geometry_2.type_vector_model;	
 				begin
 					log (text => stop & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
 					log (text => before & to_string (line), level => log_threshold + log_threshold_add);
 
-					move (line.A);
-					move (line.B);
+					-- move (line.A);
+					-- move (line.B);
+
+					p_scratch := get_A (line);
+					move (p_scratch);
+					set_A (line, p_scratch);
+     
+					p_scratch := get_B (line);
+					move (p_scratch);
+					set_B (line, p_scratch);
 					
 					log (text => now & to_string (line), level => log_threshold + log_threshold_add);
 							
@@ -1753,14 +1800,24 @@ package body et_kicad_to_native is
 				
 				contour : constant string := "board contour ";
 				
-				procedure move_line (s : in out type_segment) is begin
+				procedure move_line (s : in out type_segment) is 
+					p_scratch : et_board_coordinates.pac_geometry_2.type_vector_model;
+				begin
 					log (text => contour & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
 					log (text => before & to_string (s.segment_line), level => log_threshold + log_threshold_add);
 
-					move (s.segment_line.A);
-					move (s.segment_line.B);
+					-- move (s.segment_line.A);
+					-- move (s.segment_line.B);
+
+					p_scratch := get_A (s.segment_line);
+					move (p_scratch);
+					set_A (s.segment_line, p_scratch);
+     
+					p_scratch := get_B (s.segment_line);
+					move (p_scratch);
+					set_B (s.segment_line, p_scratch);
 					
 					log (text => now & to_string (s.segment_line), level => log_threshold + log_threshold_add);
 							
@@ -1866,15 +1923,25 @@ package body et_kicad_to_native is
 				board_copper : constant string := "board copper ";
 
 				
-				procedure move_line (line : in out type_conductor_line) is begin
+				procedure move_line (line : in out type_conductor_line) is 
+					p_scratch : et_board_coordinates.pac_geometry_2.type_vector_model;
+				begin
 					log (text => board_copper & "line", level => log_threshold + log_threshold_add);
 					log_indentation_up;
 
 					log (text => before & to_string (line, true),  -- log incl. width
 						 level => log_threshold + log_threshold_add);
 
-					move (line.A);
-					move (line.B);
+					-- move (line.A);
+					-- move (line.B);
+
+					p_scratch := get_A (line);
+					move (p_scratch);
+					set_A (line, p_scratch);
+     
+					p_scratch := get_B (line);
+					move (p_scratch);
+					set_B (line, p_scratch);
 					
 					log (text => now & to_string (line, true),  -- log incl. width
 						 level => log_threshold + log_threshold_add);
@@ -2274,11 +2341,13 @@ package body et_kicad_to_native is
 			point_cursor : type_symbol_points.cursor := polyline.points.first;
 
 			-- This is the native line that will be appended to native.shapes.lines:
-			line : type_symbol_line := (width => polyline.width, others => <>);
+			line : type_symbol_line;
 
 			-- This flag indicates whether a start or an end point of a line is expected:
 			start : boolean := true; -- when start point -> true, when end point -> false
 		begin
+			line.width := polyline.width;
+				
 			-- Advance through points of polyline and assign line start and and points.
 			-- Then append the line to native.shapes.lines.
 			while point_cursor /= type_symbol_points.no_element loop
@@ -2287,12 +2356,12 @@ package body et_kicad_to_native is
 					when TRUE =>
 						-- The point is a start point if another point follows. Otherwise nothing happens.
 						if next (point_cursor) /= type_symbol_points.no_element then
-							line.A := element (point_cursor); -- start point
+							set_A (line, element (point_cursor)); -- start point
 							start := false; -- up next: end point
 						end if;
 
 					when FALSE =>
-						line.B := element (point_cursor); -- end point
+						set_B (line, element (point_cursor)); -- end point
 						start := true; -- up next: start point
 
 						-- append line to collection of native lines
@@ -2321,11 +2390,13 @@ package body et_kicad_to_native is
 			rectangle : type_symbol_rectangle := type_symbol_rectangles.element (cursor);
 
 			-- This is the native line that will be appended to native_shapes.lines:
-			line : type_symbol_line := (width => rectangle.width, others => <>);
+			line : type_symbol_line;
+			
 			width, height : et_schematic_coordinates.type_distance_model;
 
 			-- These two points are required to form the final rectangle:
 			corner_C, corner_D : pac_geometry_2.type_vector_model;
+
 			
 			procedure append_line is begin
 				et_symbols.pac_symbol_lines.append (
@@ -2337,6 +2408,8 @@ package body et_kicad_to_native is
 
 			
 		begin -- copy_rectangle
+			line.width := rectangle.width;
+			
 			log_indentation_up;
 			log (text => "start " & to_string (rectangle.corner_A) 
 				 & " end" & to_string (rectangle.corner_B),
@@ -2384,23 +2457,23 @@ package body et_kicad_to_native is
 				));
 			
 			-- lower horizontal line
-			line.A := rectangle.corner_A;
-			line.B := corner_C;
+			set_A (line, rectangle.corner_A);
+			set_B (line, corner_C);
 			append_line;
 			
 			-- upper horizontal line	
-			line.A := corner_D;
-			line.B := rectangle.corner_B;
+			set_A (line, corner_D);
+			set_B (line, rectangle.corner_B);
 			append_line;
 
 			-- left vertical line
-			line.A := rectangle.corner_A;
-			line.B := corner_D;
+			set_A (line, rectangle.corner_A);
+			set_B (line, corner_D);
 			append_line;
 
 			-- right vertical line
-			line.A := corner_C;
-			line.B := rectangle.corner_B;
+			set_A (line, corner_C);
+			set_B (line, rectangle.corner_B);
 			append_line;
 
 			log_indentation_down;
@@ -2798,7 +2871,8 @@ package body et_kicad_to_native is
 				use et_nets.pac_strands;
 				strands_native : et_nets.pac_strands.list;
 				strand_native : et_nets.type_strand;
-			
+
+				use et_net_segment;
 				use et_net_segment.pac_net_segments;
 				net_segments_native : et_net_segment.pac_net_segments.list;
 				net_segment_native : et_net_segment.type_net_segment;
@@ -3021,10 +3095,9 @@ package body et_kicad_to_native is
 
 							-- CS this is a workaround in order to provide a line for function distance_point_line:
 							declare
-								line : pac_geometry_2.type_line := (
+								line : pac_geometry_2.type_line := type_line (to_line (
 									A	=> et_kicad_coordinates.get_point (segment.coordinates_start), 
-									B	=> et_kicad_coordinates.get_point (segment.coordinates_end),
-									others		=> <>);
+									B	=> et_kicad_coordinates.get_point (segment.coordinates_end)));
 							begin
 								dist := pac_geometry_2.get_distance (
 									point 		=> et_kicad_coordinates.get_point (element (port_cursor_kicad).coordinates),
@@ -3092,8 +3165,8 @@ package body et_kicad_to_native is
 							level => log_threshold + 4);
 						
 						-- get coordinates from current kicad net segment:
-						net_segment_native.A := et_kicad_coordinates.get_point (element (kicad_segment_cursor).coordinates_start);
-						net_segment_native.B   := et_kicad_coordinates.get_point (element (kicad_segment_cursor).coordinates_end);
+						set_A (net_segment_native, et_kicad_coordinates.get_point (element (kicad_segment_cursor).coordinates_start));
+						set_B (net_segment_native, et_kicad_coordinates.get_point (element (kicad_segment_cursor).coordinates_end));
 
 						-- get labels from current kicad net segment
 						net_segment_native.labels := tag_and_simple_labels (element (kicad_segment_cursor));

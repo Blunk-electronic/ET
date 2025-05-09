@@ -202,20 +202,20 @@ package body et_kicad_packages is
 		move_by (p22, offset);
 
 		-- set left line
-		line_1.A := p11;
-		line_1.B := p12;
+		set_A (line_1, p11);
+		set_B (line_1, p12);
 
 		-- set lower line
-		line_4.A := p12;
-		line_4.B := p22;
+		set_A (line_4, p12);
+		set_B (line_4, p22);
 		
 		-- set right line
-		line_2.A := p22;
-		line_2.B := p21;
+		set_A (line_2, p22);
+		set_B (line_2, p21);
 
 		-- set upper line
-		line_3.A := p21;
-		line_3.B := p11;
+		set_A (line_3, p21);
+		set_B (line_3, p11);
 		
 		-- build shape
 		shape.append_segment ((LINE, line_1));
@@ -302,8 +302,8 @@ package body et_kicad_packages is
 		move_by (p42, offset);		
 		
 		-- set upper line
-		line_1.A := p11;
-		line_1.B := p12;
+		set_A (line_1, p11);
+		set_B (line_1, p12);
 
 		-- set right arc
 		set_A (arc_2, p12);
@@ -311,8 +311,8 @@ package body et_kicad_packages is
 		set_B (arc_2, p22);
 		
 		-- set lower line
-		line_2.A := p22;
-		line_2.B := p21;
+		set_A (line_2, p22);
+		set_B (line_2, p21);
 		
 		-- set left arc
 		set_A (arc_1, p21);
@@ -384,20 +384,20 @@ package body et_kicad_packages is
 		move_by (p22, offset);
 
 		-- set left line
-		line_1.A	:= p11;
-		line_1.B	:= p12;
+		set_A (line_1, p11);
+		set_B (line_1, p12);
 
 		-- set lower line
-		line_4.A	:= p12;
-		line_4.B	:= p22;
+		set_A (line_4, p12);
+		set_B (line_4, p22);
 
 		-- set right line
-		line_2.A	:= p22;
-		line_2.B	:= p21;
+		set_A (line_2, p22);
+		set_B (line_2, p21);
 
 		-- set upper line
-		line_3.A	:= p21;
-		line_3.B	:= p11;
+		set_A (line_3, p21);
+		set_B (line_3, p11);
 
 		
 		-- Assemble milling contour:
@@ -1184,9 +1184,11 @@ package body et_kicad_packages is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => line.A, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
+									set_A (line, scratch_point);
 								when 2 => 
-									set (axis => AXIS_Y, point => line.A, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
+									set_A (line, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
@@ -1214,9 +1216,11 @@ package body et_kicad_packages is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => line.B, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
+									set_B (line, scratch_point);
 								when 2 => 
-									set (axis => AXIS_Y, point => line.B, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
+									set_B (line, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
@@ -1890,72 +1894,47 @@ package body et_kicad_packages is
 				
 				case line.layer is
 					when TOP_SILK =>
-						silk_screen.top.lines.append ((
-							A => line.A, B => line.B, width => line.width, others => <>));
-						
+						silk_screen.top.lines.append ((pac_geometry_2.type_line (line) with line.width));
 						line_silk_screen_properties (TOP, silk_screen.top.lines.last, log_threshold + 1);
-
 						
 					when BOT_SILK =>
-						silk_screen.bottom.lines.append ((
-							A => line.A, B => line.B, width => line.width, others => <>));
-						
+						silk_screen.bottom.lines.append ((pac_geometry_2.type_line (line) with line.width));						
 						line_silk_screen_properties (BOTTOM, silk_screen.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
-						assy_doc.top.lines.append ((
-							A => line.A, B => line.B, width => line.width, others => <>));
-
+						assy_doc.top.lines.append ((pac_geometry_2.type_line (line) with line.width));
 						line_assy_doc_properties (TOP, assy_doc.top.lines.last, log_threshold + 1);
-
 						
 					when BOT_ASSY =>
-						assy_doc.bottom.lines.append ((
-							A => line.A, B => line.B, width => line.width, others => <>));
-
+						assy_doc.bottom.lines.append ((pac_geometry_2.type_line (line) with line.width));
 						line_assy_doc_properties (BOTTOM, assy_doc.bottom.lines.last, log_threshold + 1);
 		
 						
 					when TOP_COPPER => 
-						copper.top.lines.append ((
-							A => line.A, B => line.B, width => line.width, others => <>));
-						
+						copper.top.lines.append ((pac_geometry_2.type_line (line) with line.width));						
 						line_conductor_properties (TOP, copper.top.lines.last, log_threshold + 1);
-
 						
 					when BOT_COPPER => 
-						copper.bottom.lines.append ((
-							A => line.A, B => line.B, width => line.width, others => <>));
-
+						copper.bottom.lines.append ((pac_geometry_2.type_line (line) with line.width));
 						line_conductor_properties (BOTTOM, copper.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_STOP => 
-						stop_mask.top.lines.append ((
-							A => line.A, B => line.B, width => line.width, others => <>));
-						
+						stop_mask.top.lines.append ((pac_geometry_2.type_line (line) with line.width));						
 						line_stop_mask_properties (TOP, stop_mask.top.lines.last, log_threshold + 1);
-
 						
 					when BOT_STOP => 
-						stop_mask.bottom.lines.append ((
-							A => line.A, B => line.B, width => line.width, others => <>));
-						
+						stop_mask.bottom.lines.append ((pac_geometry_2.type_line (line) with line.width));						
 						line_stop_mask_properties (BOTTOM, stop_mask.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_PASTE => 
-						stencil.top.lines.append ((
-							A => line.A, B => line.B, width => line.width, others => <>));
-						
+						stencil.top.lines.append ((pac_geometry_2.type_line (line) with line.width));						
 						line_stencil_properties (TOP, stencil.top.lines.last, log_threshold + 1);
-
 						
 					when BOT_PASTE => 
-						stencil.bottom.lines.append ((
-							A => line.A, B => line.B, width => line.width, others => <>));
-						
+						stencil.bottom.lines.append ((pac_geometry_2.type_line (line) with line.width));						
 						line_stencil_properties (BOTTOM, stencil.bottom.lines.last, log_threshold + 1);
 
 					when others => invalid_layer;

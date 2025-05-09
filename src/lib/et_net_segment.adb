@@ -186,10 +186,10 @@ package body et_net_segment is
 		-- Calculate the displacement of the start and end point:
 		
 		delta_start : constant type_vector_model :=
-			get_distance_relative (segment_before.A, segment_after.A);
+			get_distance_relative (get_A (segment_before), get_A (segment_after));
 		
 		delta_end	: constant type_vector_model :=
-			get_distance_relative (segment_before.B, segment_after.B);
+			get_distance_relative (get_B (segment_before), get_B (segment_after));
 															
 		use pac_net_labels;
 		label_cursor : pac_net_labels.cursor := segment_after.labels.first;
@@ -206,21 +206,21 @@ package body et_net_segment is
 					-- of the start or end point:
 					case zone is
 						when START_POINT =>
-							if l.position = segment_before.A then
+							if l.position = get_A (segment_before) then
 								move_by (l.position, delta_start);
 							end if;
 							
 						when END_POINT => 
-							if l.position = segment_before.B then
+							if l.position = get_B (segment_before) then
 								move_by (l.position, delta_end);
 							end if;
 
 						when CENTER =>
-							if l.position = segment_before.A then
+							if l.position = get_A (segment_before) then
 								move_by (l.position, delta_start);
 							end if;
 
-							if l.position = segment_before.B then
+							if l.position = get_B (segment_before) then
 								move_by (l.position, delta_end);
 							end if;
 							
@@ -244,6 +244,25 @@ package body et_net_segment is
 		end loop;
 		
 	end move_net_labels;
+
+
+
+
+	function get_A (
+		segment : in pac_net_segments.cursor)
+		return type_vector_model
+	is begin
+		return get_A (element (segment));
+	end;
+
+
+
+	function get_B (
+		segment : in pac_net_segments.cursor)
+		return type_vector_model
+	is begin
+		return get_B (element (segment));
+	end;
 
 
 	
@@ -288,9 +307,9 @@ package body et_net_segment is
 		return string 
 	is begin
 		return ("segment start" & 
-			to_string (element (segment).A) &
+			to_string (get_A (segment)) &
 			" / end" &	
-			to_string (element (segment).B)
+			to_string (get_B (segment))
 			);
 	end to_string;
 
@@ -329,8 +348,8 @@ package body et_net_segment is
 	is		
 		result : type_net_segment_orientation;
 		
-		dx : constant type_distance_model := get_x (element (segment).A) - get_x (element (segment).B);
-		dy : constant type_distance_model := get_y (element (segment).A) - get_y (element (segment).B);
+		dx : constant type_distance_model := get_x (get_A (segment)) - get_x (get_B (segment));
+		dy : constant type_distance_model := get_y (get_A (segment)) - get_y (get_B (segment));
 	begin
 		if dx = zero then 
 			result := VERTICAL;

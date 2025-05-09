@@ -183,8 +183,8 @@ package body et_ratsnest is
 			result : pac_vectors.list;
 			
 			procedure query_line (c : in pac_conductor_lines.cursor) is begin
-				result.append (to_vector (element (c).A));
-				result.append (to_vector (element (c).B));
+				result.append (to_vector (get_A (c)));
+				result.append (to_vector (get_B (c)));
 			end query_line;
 				
 		begin

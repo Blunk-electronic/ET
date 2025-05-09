@@ -625,10 +625,10 @@ is
 					section_mark (section_segment, HEADER);
 
 					write (keyword => keyword_start, 
-						parameters => to_string (element (segment_cursor).A, FORMAT_2));
+						parameters => to_string (get_A (segment_cursor), FORMAT_2));
 					
 					write (keyword => keyword_end,
-						parameters => "  " & to_string (element (segment_cursor).B, FORMAT_2));
+						parameters => "  " & to_string (get_B (segment_cursor), FORMAT_2));
 
 					query_element (segment_cursor, query_labels'access);
 					query_element (segment_cursor, query_junctions'access);
@@ -750,8 +750,8 @@ is
 			while line_cursor /= pac_conductor_lines.no_element loop
 				section_mark (section_line, HEADER);
 				
-				write (keyword => keyword_start, parameters => to_string (element (line_cursor).A));
-				write (keyword => keyword_end  , parameters => to_string (element (line_cursor).B));
+				write (keyword => keyword_start, parameters => to_string (get_A (line_cursor)));
+				write (keyword => keyword_end  , parameters => to_string (get_B (line_cursor)));
 				write (keyword => keyword_layer, parameters => to_string (element (line_cursor).layer));
 				write (keyword => keyword_width, parameters => to_string (element (line_cursor).width));
 

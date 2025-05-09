@@ -59,16 +59,16 @@ package body et_board_ops.ratsnest is
 		use pac_conductor_lines;
 		procedure query_line (l : in pac_conductor_lines.cursor) is
 		begin
-			append (result, element (l).A);
-			append (result, element (l).B);
+			append (result, get_A (l));
+			append (result, get_B (l));
 		end query_line;
 
 		
 		use pac_conductor_arcs;
 		procedure query_arc (a : in pac_conductor_arcs.cursor) is
 		begin
-			append (result, get_A (element (a)));
-			append (result, get_B (element (a)));
+			append (result, get_A (a));
+			append (result, get_B (a));
 		end query_arc;
 
 		

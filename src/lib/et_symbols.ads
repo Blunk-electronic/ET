@@ -49,6 +49,7 @@ with et_device_placeholders.symbols;	use et_device_placeholders.symbols;
 
 with et_schematic_coordinates;			use et_schematic_coordinates;
 
+with et_primitive_objects;				use et_primitive_objects;
 with et_text;
 with et_fonts;							use et_fonts;
 with et_logging;						use et_logging;
@@ -105,8 +106,22 @@ package et_symbols is
 	type type_symbol_line is new pac_geometry_2.type_line with record
 		width	: type_line_width := line_width_default;
 	end record;
+
 	
 	package pac_symbol_lines is new doubly_linked_lists (type_symbol_line);
+	use pac_symbol_lines;
+	
+
+	function get_A (
+		line : in pac_symbol_lines.cursor)
+		return type_vector_model;
+
+
+	function get_B (
+		line : in pac_symbol_lines.cursor)
+		return type_vector_model;
+
+	
 
 	
 	
@@ -127,7 +142,30 @@ package et_symbols is
 	
 	
 	package pac_symbol_arcs is new doubly_linked_lists (type_symbol_arc);
+	use pac_symbol_arcs;
+	
+	
+	function get_A (
+		arc : in pac_symbol_arcs.cursor)
+		return type_vector_model;
 
+
+	function get_B (
+		arc : in pac_symbol_arcs.cursor)
+		return type_vector_model;
+
+
+	function get_center (
+		arc : in pac_symbol_arcs.cursor)
+		return type_vector_model;
+
+
+	function get_direction (
+		arc : in pac_symbol_arcs.cursor)
+		return type_direction_of_rotation;
+
+	
+	
 	type type_circle_filled is (NO, YES);
 	
 	function to_string (filled : in type_circle_filled) return string;

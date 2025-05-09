@@ -346,17 +346,16 @@ is
 	
 		strand 		: type_strand;
 		net_name	: pac_net_name.bounded_string;
+
 		
 		function label_sits_on_segment (
 			label	: in type_net_label;
-			segment	: in type_net_segment) return boolean is
-
-			-- CS this is a workaround in order to provide a line for function line:
-			type type_line_scratch is new pac_geometry_2.type_line with null record;
-			line : type_line_scratch := (
+			segment	: in type_net_segment) 
+			return boolean 
+		is
+			line : type_line := type_line (to_line (
 				A	=> get_point (segment.coordinates_start), 
-				B	=> get_point (segment.coordinates_end),
-				others		=> <>);
+				B	=> get_point (segment.coordinates_end)));
 			
 		begin
 			return line.on_line (label.coordinates);

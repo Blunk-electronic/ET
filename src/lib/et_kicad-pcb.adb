@@ -1660,9 +1660,11 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => package_line.A, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
+									set_A (package_line, scratch_point);
 								when 2 => 
-									set (axis => AXIS_Y, point => package_line.A, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
+									set_A (package_line, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
@@ -1670,9 +1672,11 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => package_line.B, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
+									set_B (package_line, scratch_point);
 								when 2 => 
-									set (axis => AXIS_Y, point => package_line.B, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
+									set_B (package_line, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
@@ -2681,9 +2685,11 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => board_line.A, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
+									set_A (board_line, scratch_point);
 								when 2 => 
-									set (axis => AXIS_Y, point => board_line.A, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
+									set_A (board_line, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
@@ -2691,9 +2697,11 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => board_line.B, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
+									set_B (board_line, scratch_point);
 								when 2 => 
-									set (axis => AXIS_Y, point => board_line.B, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
+									set_B (board_line, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
@@ -2824,9 +2832,11 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => segment.A, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
+									set_A (segment, scratch_point);
 								when 2 => 
-									set (axis => AXIS_Y, point => segment.A, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
+									set_A (segment, scratch_point);
 								when others => too_many_arguments;
 							end case;
 					
@@ -2834,9 +2844,11 @@ package body et_kicad.pcb is
 							case section.arg_counter is
 								when 0 => null;
 								when 1 => 
-									set (axis => AXIS_X, point => segment.B, value => to_distance (to_string (arg)));
+									set (axis => AXIS_X, point => scratch_point, value => to_distance (to_string (arg)));
+									set_B (segment, scratch_point);
 								when 2 => 
-									set (axis => AXIS_Y, point => segment.B, value => to_distance (to_string (arg)));
+									set (axis => AXIS_Y, point => scratch_point, value => to_distance (to_string (arg)));
+									set_B (segment, scratch_point);
 								when others => too_many_arguments;
 							end case;
 
@@ -3832,65 +3844,65 @@ package body et_kicad.pcb is
 				case package_line.layer is
 					when TOP_SILK =>
 						package_silk_screen.top.lines.append ((
-							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
-
+							pac_geometry_2.type_line (package_line) with package_line.width));
+						
 						line_silk_screen_properties (TOP, package_silk_screen.top.lines.last, log_threshold + 1);
 
 					when BOT_SILK =>
 						package_silk_screen.bottom.lines.append ((
-							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
+							pac_geometry_2.type_line (package_line) with package_line.width));
 
 						line_silk_screen_properties (BOTTOM, package_silk_screen.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_ASSY =>
 						package_assy_doc.top.lines.append ((
-							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
+							pac_geometry_2.type_line (package_line) with package_line.width));
 
 						line_assy_doc_properties (TOP, package_assy_doc.top.lines.last, log_threshold + 1);
 
 					when BOT_ASSY =>
 						package_assy_doc.bottom.lines.append ((
-							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
+							pac_geometry_2.type_line (package_line) with package_line.width));
 
 						line_assy_doc_properties (BOTTOM, package_assy_doc.bottom.lines.last, log_threshold + 1);
 						
 						
 					when TOP_COPPER => 
 						package_copper.top.lines.append ((
-							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
+							pac_geometry_2.type_line (package_line) with package_line.width));
 
 						line_conductor_properties (TOP, package_copper.top.lines.last, log_threshold + 1);
 
 					when BOT_COPPER => 
 						package_copper.bottom.lines.append ((
-							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
+							pac_geometry_2.type_line (package_line) with package_line.width));
 
 						line_conductor_properties (BOTTOM, package_copper.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_STOP =>
 						package_stop_mask.top.lines.append ((
-							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
+							pac_geometry_2.type_line (package_line) with package_line.width));
 						
 						line_stop_mask_properties (TOP, package_stop_mask.top.lines.last, log_threshold + 1);
 
 					when BOT_STOP =>
 						package_stop_mask.bottom.lines.append ((
-							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
+							pac_geometry_2.type_line (package_line) with package_line.width));
 
 						line_stop_mask_properties (BOTTOM, package_stop_mask.bottom.lines.last, log_threshold + 1);
 
 						
 					when TOP_PASTE =>
 						package_stencil.top.lines.append ((
-							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
+							pac_geometry_2.type_line (package_line) with package_line.width));
 
 						line_stencil_properties (TOP, package_stencil.top.lines.last, log_threshold + 1);
 
 					when BOT_PASTE =>
 						package_stencil.bottom.lines.append ((
-							A => package_line.A, B => package_line.B, width => package_line.width, others => <>));
+							pac_geometry_2.type_line (package_line) with package_line.width));
 
 						line_stencil_properties (BOTTOM, package_stencil.bottom.lines.last, log_threshold + 1);
 
@@ -4675,8 +4687,8 @@ package body et_kicad.pcb is
 
 	begin
 		while corner /= corners.last loop
-			l.A := element (corner);
-			l.B := element (next (corner));
+			set_A (l, element (corner));
+			set_B (l, element (next (corner)));
 
 			lines.append ((shape => LINE, segment_line => l));
 			
@@ -4686,10 +4698,10 @@ package body et_kicad.pcb is
 		-- Corner is now pointing to the last point.
 
 		-- The last line starts where corner points at.
-		l.A := element (corner);
+		set_A (l, element (corner));
 
 		-- The last line ends at the first point.
-		l.B := element (corners.first);
+		set_B (l, element (corners.first));
 
 		lines.append ((shape => LINE, segment_line => l));
 		

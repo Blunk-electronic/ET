@@ -1381,18 +1381,19 @@ package body et_schematic_ops.units is
 
 							-- Changes the position of start or end point of a segment 
 							-- according to the drag point:
-							procedure change_segment (segment : in out type_net_segment) is begin
-								
+							procedure change_segment (
+								segment : in out type_net_segment) 
+							is begin								
 								-- if port sits on a start point of a segment -> move start point
-								if segment.A = element (drag_cursor).before then
+								if get_A (segment) = element (drag_cursor).before then
 									log (text => "move segment start point from" & 
-										to_string (segment.A),
+										to_string (get_A (segment)),
 										level => log_threshold + 3);
 
-									segment.A := element (drag_cursor).after;
+									set_A (segment, element (drag_cursor).after);
 
 									log (text => "to" & 
-										to_string (segment.A),
+										to_string (get_A (segment)),
 										level => log_threshold + 3);
 
 									-- Now the segment has been dragged. Store it
@@ -1403,15 +1404,15 @@ package body et_schematic_ops.units is
 								end if;
 
 								-- if port sits on an end point of a segment -> move end point
-								if segment.B = element (drag_cursor).before then
+								if get_B (segment) = element (drag_cursor).before then
 									log (text => "move segment end point from" & 
-										to_string (segment.B),
+										to_string (get_B (segment)),
 										level => log_threshold + 3);
 
-									segment.B := element (drag_cursor).after;
+									set_B (segment, element (drag_cursor).after);
 
 									log (text => "to" & 
-										to_string (segment.B),
+										to_string (get_B (segment)),
 										level => log_threshold + 3);
 
 									-- Now the segment has been dragged. Store it
@@ -1420,7 +1421,6 @@ package body et_schematic_ops.units is
 									
 									drag_processed := true;
 								end if;
-
 							end change_segment;
 
 							

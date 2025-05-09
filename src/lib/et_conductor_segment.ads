@@ -68,6 +68,9 @@ package et_conductor_segment is
 
 
 
+	-- CS procedure to set linewidth
+		
+
 	-- Converts a line with a given width to a polygon
 	-- with round caps on the line ends:
 	function to_polygon (
@@ -93,6 +96,17 @@ package et_conductor_segment is
 	use pac_conductor_lines;
 	
 
+	function get_A (
+		line : in pac_conductor_lines.cursor)
+		return type_vector_model;
+
+	function get_B (
+		line : in pac_conductor_lines.cursor)
+		return type_vector_model;
+
+
+
+	
 	-- Iterates the lines.
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
@@ -166,6 +180,18 @@ package et_conductor_segment is
 	package pac_conductor_arcs is new doubly_linked_lists (type_conductor_arc);
 	use pac_conductor_arcs;
 
+
+	function get_A (
+		arc : in pac_conductor_arcs.cursor)
+		return type_vector_model;
+
+	
+	function get_B (
+		arc : in pac_conductor_arcs.cursor)
+		return type_vector_model;
+
+
+	
 
 	-- Iterates the arcs.
 	-- Aborts the process when the proceed-flag goes false:

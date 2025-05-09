@@ -58,6 +58,9 @@ package et_conductor_segment.boards is
 	end record;
 
 
+	-- CS procedure to set linewidth and layer
+
+	
 	-- CS function get_layer
 	
 	
@@ -90,7 +93,15 @@ package et_conductor_segment.boards is
 	use pac_conductor_lines;
 
 
+	function get_A (
+		line : in pac_conductor_lines.cursor)
+		return type_vector_model;
 
+	function get_B (
+		line : in pac_conductor_lines.cursor)
+		return type_vector_model;
+
+	
 
 	
 	-- Returns the start/end point and layer as string.
@@ -178,6 +189,17 @@ package et_conductor_segment.boards is
 	use pac_conductor_arcs;
 
 
+	function get_A (
+		arc : in pac_conductor_arcs.cursor)
+		return type_vector_model;
+
+	
+	function get_B (
+		arc : in pac_conductor_arcs.cursor)
+		return type_vector_model;
+
+
+	
 	-- Returns the start/end point, center and layer as string.
 	-- If "width" is true, then the segment width is also output:
 	function to_string (

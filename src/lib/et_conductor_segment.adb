@@ -48,6 +48,7 @@ package body et_conductor_segment is
 -- LINES	
 
 	
+	
 	function to_polygon (
 		line 		: in type_conductor_line;
 		tolerance	: in type_distance_positive)
@@ -63,6 +64,26 @@ package body et_conductor_segment is
 
 
 
+
+	function get_A (
+		line : in pac_conductor_lines.cursor)
+		return type_vector_model
+	is begin
+		return get_A (element (line));
+	end;
+
+
+	function get_B (
+		line : in pac_conductor_lines.cursor)
+		return type_vector_model
+	is begin
+		return get_B (element (line));
+	end;
+
+
+
+
+	
 	procedure iterate (
 		lines	: in pac_conductor_lines.list;
 		process	: not null access procedure (position : in pac_conductor_lines.cursor);
@@ -261,6 +282,24 @@ package body et_conductor_segment is
 
 	end to_polygon;
 	
+
+
+
+	function get_A (
+		arc : in pac_conductor_arcs.cursor)
+		return type_vector_model
+	is begin
+		return get_A (element (arc));
+	end;
+
+	
+	function get_B (
+		arc : in pac_conductor_arcs.cursor)
+		return type_vector_model
+	is begin
+		return get_B (element (arc));
+	end;
+
 
 	
 	procedure iterate (

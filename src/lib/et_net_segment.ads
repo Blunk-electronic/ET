@@ -168,6 +168,16 @@ package et_net_segment is
 	use pac_net_segments;
 	
 
+	function get_A (
+		segment : in pac_net_segments.cursor)
+		return type_vector_model;
+
+
+	function get_B (
+		segment : in pac_net_segments.cursor)
+		return type_vector_model;
+
+	
 
 	-- Returns true if the start point of the 
 	-- given net segment is set as "moving":

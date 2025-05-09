@@ -154,8 +154,8 @@ package body et_pcb_rw is
 
 	
 	procedure write_line (line : in type_line'class) is begin
-		write (keyword => keyword_start, parameters => to_string (line.A, FORMAT_2));
-		write (keyword => keyword_end  , parameters => to_string (line.B, FORMAT_2));
+		write (keyword => keyword_start, parameters => to_string (get_A (line), FORMAT_2));
+		write (keyword => keyword_end  , parameters => to_string (get_B (line), FORMAT_2));
 	end write_line;
 
 	
@@ -557,7 +557,9 @@ package body et_pcb_rw is
 	
 -- BASIC GEOMETRIC OBJECTS USED IN PACKAGES AND BOARDS
 
-	procedure board_reset_line is begin board_line := (others => <>); end;
+	procedure board_reset_line is begin 
+		reset_line (board_line); 
+	end;
 
 	
 	procedure add_polygon_line (l : in out type_line) is begin
@@ -603,19 +605,22 @@ package body et_pcb_rw is
 		line : type_fields_of_line)
 	is
 		kw : constant string := f (line, 1);
+		vm : type_vector_model;
 	begin
 		-- CS: In the following: set a corresponding parameter-found-flag
 		if kw = keyword_start then -- start x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the start position starting at field 2 of line
-			board_line.A := to_position (line, 2);
+			vm := to_position (line, 2);
+			set_A (board_line, vm);
 			
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
-			board_line.B := to_position (line, 2);
+			vm := to_position (line, 2);
+			set_B (board_line, vm);
 			
 		else
 			invalid_keyword (kw);
@@ -630,19 +635,22 @@ package body et_pcb_rw is
 		return boolean 
 	is
 		kw : constant string := f (line, 1);
+		vm : type_vector_model;
 	begin
 		if kw = keyword_start then -- start x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the start position starting at field 2 of line
-			board_line.A := to_position (line, 2);
+			vm := to_position (line, 2);
+			set_A (board_line, vm);
 			return true;
 			
 		elsif kw = keyword_end then -- end x 22.3 y 23.3
 			expect_field_count (line, 5);
 
 			-- extract the end position starting at field 2 of line
-			board_line.B := to_position (line, 2);
+			vm := to_position (line, 2);
+			set_B (board_line, vm);
 			return true;
 		else
 			return false;

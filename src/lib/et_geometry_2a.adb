@@ -1382,9 +1382,33 @@ package body et_geometry_2a is
 	end merge_areas;
 
 
+	
 
 -- LINE:	
 
+	procedure reset_line (
+		line : in out type_line)
+	is begin
+		line := (others => <>);
+	end;
+	
+
+
+
+	function to_line (
+		A, B : in type_vector_model)
+		return type_line'class
+	is 
+		l : type_line;
+	begin
+		l.A := A;
+		l.B := B;
+		return l;
+	end;
+	
+	
+
+	
 	function to_string (line : in type_line) return string is begin
 		return 
 			"line: S:" & to_string (line.A) 

@@ -147,8 +147,8 @@ procedure draw_units is
 
 		
 		procedure draw_port (c : in pac_ports.cursor) is
-			A			: type_vector_model := element (c).position;
-			B			: type_vector_model := element (c).position;
+			A : type_vector_model := element (c).position;
+			B : type_vector_model := element (c).position;
 
 			line : type_line;
 			circle : type_circle;
@@ -345,9 +345,10 @@ procedure draw_units is
 				raise constraint_error; -- CS do something helpful. should never happen
 			end if;
 
+			
+			set_A (line, A);
+			set_B (line, B);
 
-			line.A := A;
-			line.B := B;
 			
 			-- Draw the line of the port:
 			set_color_symbols (brightness);
@@ -363,7 +364,7 @@ procedure draw_units is
 				-- set color and line width
 				set_color_ports (brightness);
 
-				set_center (circle, line.A);
+				set_center (circle, get_A (line));
 				set_radius (circle, port_circle_radius);
 
 				-- the circle is not filled -> argument "filled" is NO
@@ -398,8 +399,7 @@ procedure draw_units is
 				if symbol.appearance = APPEARANCE_PCB and then element (c).terminal_name_visible = YES then
 					draw_terminal_name;
 				end if;
-			end if;
-			
+			end if;			
 		end draw_port;
 
 		

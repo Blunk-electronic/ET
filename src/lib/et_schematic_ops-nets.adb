@@ -927,14 +927,14 @@ package body et_schematic_ops.nets is
 		case zone is
 			when START_POINT =>
 				point := to_position (
-						point => segment.A,
+						point => get_A (segment),
 						sheet => get_sheet (point_of_attack));
 
 				search_ports; -- sets result to false if a port is connected with the start point
 				
 			when END_POINT =>
 				point := to_position (
-						point => segment.B,
+						point => get_B (segment),
 						sheet => get_sheet (point_of_attack));
 
 				search_ports; -- sets result to false if a port is connected with the end point
@@ -944,7 +944,7 @@ package body et_schematic_ops.nets is
 				-- First check the start point of the segment.
 				-- If start point is movable, then the end point must be checked too.
 				point := to_position (
-						point => segment.A,
+						point => get_A (segment),
 						sheet => get_sheet (point_of_attack));
 
 				search_ports; -- sets result to false if a port is connected with the start point
@@ -952,8 +952,8 @@ package body et_schematic_ops.nets is
 				-- If start point is movable, check end point.
 				if result = true then
 					point := to_position (
-							point => segment.B,
-							sheet => get_sheet (point_of_attack));
+						point => get_B (segment),
+						sheet => get_sheet (point_of_attack));
 
 					search_ports; -- sets result to false if a port is connected with the end point
 				end if;
@@ -1050,10 +1050,10 @@ package body et_schematic_ops.nets is
 
 						
 						procedure copy_A is begin
-							if connected_segment.A = target_segment_before.A then
+							if get_A (connected_segment) = get_A (target_segment_before) then
 								
 								-- The connected segment is being dragged at its start point:
-								connected_segment.A := element (segment_cursor_target).A;
+								set_A (connected_segment, get_A (segment_cursor_target));
 
 								move_net_labels (
 									segment_before	=> segment_before,
@@ -1062,10 +1062,10 @@ package body et_schematic_ops.nets is
 
 							end if;
 
-							if connected_segment.B = target_segment_before.A then
+							if get_B (connected_segment)= get_A (target_segment_before) then
 								
 								-- The connected segment is being dragged at its end point:
-								connected_segment.B := element (segment_cursor_target).A;
+								set_B (connected_segment, get_A (segment_cursor_target));
 
 								move_net_labels (
 									segment_before	=> segment_before,
@@ -1077,10 +1077,10 @@ package body et_schematic_ops.nets is
 
 						
 						procedure copy_B is begin
-							if connected_segment.A = target_segment_before.B then
+							if get_A (connected_segment) = get_B (target_segment_before) then
 
 								-- The connected segment is being dragged at its start point:
-								connected_segment.A := element (segment_cursor_target).B;
+								set_A (connected_segment, get_B (segment_cursor_target));
 
 								move_net_labels (
 									segment_before	=> segment_before,
@@ -1089,10 +1089,10 @@ package body et_schematic_ops.nets is
 
 							end if;
 
-							if connected_segment.B = target_segment_before.B then
+							if get_B (connected_segment) = get_B (target_segment_before) then
 								-- The connected segment is being dragged at its end point:
 								
-								connected_segment.B := element (segment_cursor_target).B;
+								set_B (connected_segment, get_B (segment_cursor_target));
 
 								move_net_labels (
 									segment_before	=> segment_before,
@@ -1151,8 +1151,8 @@ package body et_schematic_ops.nets is
 								ports := ports_at_place 
 									(
 									module_cursor	=> module_cursor, 
-									place 		=> to_position (
-													point => segment.A,
+									place 			=> to_position (
+													point => get_A (segment),
 													sheet => get_sheet (point_of_attack)),
 									log_threshold => log_threshold + 1
 									);
@@ -1164,8 +1164,8 @@ package body et_schematic_ops.nets is
 								ports := ports_at_place 
 									(
 									module_cursor	=> module_cursor, 
-									place 		=> to_position (
-													point => segment.B,
+									place 			=> to_position (
+													point => get_B (segment),
 													sheet => get_sheet (point_of_attack)),
 									log_threshold => log_threshold + 1
 									);
@@ -1177,8 +1177,8 @@ package body et_schematic_ops.nets is
 								ports := ports_at_place 
 									(
 									module_cursor	=> module_cursor, 
-									place 		=> to_position (
-													point => segment.A,
+									place 			=> to_position (
+													point => get_A (segment),
 													sheet => get_sheet (point_of_attack)),
 									log_threshold => log_threshold + 1
 									);
@@ -1188,8 +1188,8 @@ package body et_schematic_ops.nets is
 								ports := ports_at_place 
 									(
 									module_cursor	=> module_cursor, 
-									place 		=> to_position (
-													point => segment.B,
+									place 			=> to_position (
+													point => get_B (segment),
 													sheet => get_sheet (point_of_attack)),
 									log_threshold => log_threshold + 1
 									);
@@ -1663,7 +1663,7 @@ package body et_schematic_ops.nets is
 			-- Test whether any foreign nets cross the start point of the segment:
 			point := to_position (
 					sheet => sheet,
-					point => segment_new.A);
+					point => get_A (segment_new));
 			
 			net_names := get_nets_at_place (
 					module_cursor	=> module_cursor,
@@ -1675,7 +1675,7 @@ package body et_schematic_ops.nets is
 			-- Test whether any foreign nets cross the end point of the segment:
 			point := to_position (
 					sheet => sheet,
-					point => segment_new.B);
+					point => get_B (segment_new));
 			
 			net_names := get_nets_at_place (
 					module_cursor	=> module_cursor,
@@ -1694,7 +1694,7 @@ package body et_schematic_ops.nets is
 					module_cursor	=> module_cursor, 
 					place			=> to_position (
 										sheet => sheet,
-										point => segment_new.A),
+										point => get_A (segment_new)),
 					log_threshold	=> log_threshold);
 
 			assign_ports_to_segment;
@@ -1705,7 +1705,7 @@ package body et_schematic_ops.nets is
 					module_cursor	=> module_cursor, 
 					place			=> to_position (
 										sheet => sheet,
-										point => segment_new.B),
+										point => get_B (segment_new)),
 					log_threshold	=> log_threshold);
 
 			assign_ports_to_segment;
@@ -1921,7 +1921,7 @@ package body et_schematic_ops.nets is
 						module_cursor	=> module_cursor, 
 						place			=> to_position (
 											sheet	=> sheet,
-											point	=> segment_new.A),
+											point	=> get_A (segment_new)),
 						log_threshold	=> log_threshold + 2);
 
 				assign_ports_to_segment;
@@ -1931,7 +1931,7 @@ package body et_schematic_ops.nets is
 						module_cursor	=> module_cursor, 
 						place			=> to_position (
 											sheet => sheet,
-											point => segment_new.B),
+											point => get_B (segment_new)),
 						log_threshold	=> log_threshold + 2);
 
 				assign_ports_to_segment;
@@ -2025,7 +2025,7 @@ package body et_schematic_ops.nets is
 			-- Obtain the names of nets that cross the START point of the segment:
 			point := to_position (
 					sheet => sheet,
-					point => segment_new.A);
+					point => get_A (segment_new));
 
 			net_names := get_nets_at_place (
 					module_cursor	=> module_cursor,
@@ -2037,7 +2037,7 @@ package body et_schematic_ops.nets is
 			-- Obtain the names of nets that cross the END point of the segment:
 			point := to_position (
 					sheet => sheet,
-					point => segment_new.B);
+					point => get_B (segment_new));
 			
 			net_names := get_nets_at_place (
 					module_cursor	=> module_cursor,
@@ -2060,13 +2060,13 @@ package body et_schematic_ops.nets is
 				-- Obtain the cursor to the strand that crosses the START point:
 				strand_at_start := which_strand (to_position (
 									sheet	=> sheet,
-									point	=> segment_new.A));
+									point	=> get_A (segment_new)));
 
 				-- The END point of the new segment could join a strand.
 				-- Obtain the cursor to the strand that crosses the END point:
 				strand_at_end := which_strand (to_position (
 									sheet => sheet,
-									point => segment_new.B));
+									point => get_B (segment_new)));
 
 				-- The new segment must not be a redundant connection inside a strand:
 				if not redundant_connection then
@@ -2077,7 +2077,7 @@ package body et_schematic_ops.nets is
 						log (text => "with its start point at " & 
 							to_string (position => to_position (
 														sheet	=> sheet,
-														point	=> segment_new.A)),
+														point	=> get_A (segment_new))),
 							level => log_threshold + 2);
 
 						-- If required, prepare placing a junction at start point of segment.
@@ -2085,8 +2085,8 @@ package body et_schematic_ops.nets is
 						if strand_at_start.junction_required then
 							junction_at_A.required := true;
 							junction_at_A.place := to_position (
-															sheet	=> sheet,
-															point	=> segment_new.A);
+														sheet	=> sheet,
+														point	=> get_A (segment_new));
 						end if;
 					end if;
 
@@ -2098,7 +2098,7 @@ package body et_schematic_ops.nets is
 								module_cursor	=> module_cursor, 
 								place			=> to_position (
 													sheet	=> sheet,
-													point	=> segment_new.A),
+													point	=> get_A (segment_new)),
 								log_threshold	=> log_threshold + 2);
 
 						assign_ports_to_segment;
@@ -2112,7 +2112,7 @@ package body et_schematic_ops.nets is
 						log (text => "with its end point at " & to_string (
 									position => to_position (
 										sheet => sheet,
-										point => segment_new.B)
+										point => get_B (segment_new))
 										),
 							level => log_threshold + 2);
 
@@ -2122,7 +2122,7 @@ package body et_schematic_ops.nets is
 							junction_at_B.required := true;
 							junction_at_B.place := to_position (
 										sheet => sheet,
-										point => segment_new.B);
+										point => get_B (segment_new));
 						end if;
 					end if;
 					
@@ -2134,7 +2134,7 @@ package body et_schematic_ops.nets is
 								module_cursor	=> module_cursor, 
 								place			=> to_position (
 													sheet => sheet,
-													point => segment_new.B),
+													point => get_B (segment_new)),
 								log_threshold	=> log_threshold + 2);
 
 						assign_ports_to_segment;
@@ -2261,8 +2261,7 @@ package body et_schematic_ops.nets is
 	is		
 		net_cursor : pac_nets.cursor; -- points to the net
 		segment : type_net_segment;
-
-	begin -- insert_net
+	begin
 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
 			" inserting net " & enclose_in_quotes (to_string (net_name)) &
 			" segment from" & to_string (position => A) &
@@ -2273,15 +2272,14 @@ package body et_schematic_ops.nets is
 		net_cursor := locate_net (module_cursor, net_name);
 
 		-- build the segment from given start and end point
-		segment.A := A.place;
-		segment.B := B;
+		set_A (segment, A.place);
+		set_B (segment, B);
 		
 		log_indentation_up;
 
 		insert_segment (
 			module_cursor, net_cursor, get_sheet (A),
 			net_name, segment, log_threshold + 1);
-
 
 		update_ratsnest (module_cursor, log_threshold + 2);
 		
@@ -2522,12 +2520,12 @@ package body et_schematic_ops.nets is
 
 								-- If the port was at the start point of the old segment, then
 								-- it goes into segment_1.
-								if port_position = old_segment.A then
+								if port_position = get_A (old_segment) then
 									insert (segment_1.ports.devices, element (cursor));
 
 								-- If the port was at the end point of the old segment, then
 								-- it goes into segment_2.
-								elsif port_position = old_segment.B then
+								elsif port_position = get_B (old_segment) then
 									insert (segment_2.ports.devices, element (cursor));
 
 								-- If port was somewhere else, we have a problem. This should never happen.
@@ -2574,12 +2572,12 @@ package body et_schematic_ops.nets is
 
 								-- If the port was at the start point of the old segment, then
 								-- it goes into segment_1.
-								if port_position = old_segment.A then
+								if port_position = get_A (old_segment) then
 									insert (segment_1.ports.submodules, element (cursor));
 
 								-- If the port was at the end point of the old segment, then
 								-- it goes into segment_2.
-								elsif port_position = old_segment.B then
+								elsif port_position = get_B (old_segment) then
 									insert (segment_2.ports.submodules, element (cursor));
 
 								-- If port was somewhere else, we have a problem. This should never happen.
@@ -2629,12 +2627,12 @@ package body et_schematic_ops.nets is
 
 								-- If the port was at the start point of the old segment, then
 								-- it goes into segment_1.
-								if port_position = old_segment.A then
+								if port_position = get_A (old_segment) then
 									insert (segment_1.ports.netchangers, element (cursor));
 
 								-- If the port was at the end point of the old segment, then
 								-- it goes into segment_2.
-								elsif port_position = old_segment.B then
+								elsif port_position = get_B (old_segment) then
 									insert (segment_2.ports.netchangers, element (cursor));
 
 								-- If port was somewhere else, we have a problem. This should never happen.
@@ -2658,10 +2656,10 @@ package body et_schematic_ops.nets is
 						
 					begin -- insert_two_new_segments
 						-- set start and end points of new segments
-						segment_1.A := old_segment.A;
-						segment_1.B := place.place;
-						segment_2.A := place.place;
-						segment_2.B := old_segment.B;
+						set_A (segment_1, get_A (old_segment));
+						set_B (segment_1, get_place (place));
+						set_A (segment_2, get_place (place));
+						set_B (segment_2, get_B (old_segment));
 
 						-- set junctions
 						segment_1.junctions.A := old_segment.junctions.A;
@@ -2708,7 +2706,7 @@ package body et_schematic_ops.nets is
 						--log_indentation_up;
 						--log (text => "probing " & to_string (segment_cursor), level => log_threshold + 2);
 
-						if place.place = element (segment_cursor).A then
+						if get_place (place) = get_A (segment_cursor) then
 
 							-- place junction at start point of segment
 							update_element (
@@ -2719,7 +2717,7 @@ package body et_schematic_ops.nets is
 							segment_found := true;
 							exit; -- no need to search for other segments
 							
-						elsif place.place = element (segment_cursor).B then
+						elsif get_place (place) = get_B (segment_cursor) then
 
 							-- place junction at end point of segment
 							update_element (
@@ -2810,7 +2808,7 @@ package body et_schematic_ops.nets is
 		
 		
 	begin -- place_junction
-		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) 
+		log (text => "module " & to_string (module_cursor) 
 			& " placing junction at" & to_string (position => place) 
 			& " ...", 
 			level => log_threshold);
@@ -3161,6 +3159,7 @@ package body et_schematic_ops.nets is
 		is			
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
+			
 			procedure query_segments (strand : in type_strand) is
 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
@@ -3180,16 +3179,17 @@ package body et_schematic_ops.nets is
 					-- count the match (regardless if it is a stub or not)
 					segment_counter := segment_counter + 1;
 				end probe_direction;
-					
+
+				
 			begin -- query_segments
 				while segment_cursor /= pac_net_segments.no_element loop
 					
 					-- The given position must be a start or end point of a segment,
-					if element (segment_cursor).A = position.place then
+					if get_A (segment_cursor) = position.place then
 						log (text => "match with start point of a segment", level => log_threshold + 2);
 						probe_direction;
 						
-					elsif element (segment_cursor).B = position.place then
+					elsif get_B (segment_cursor) = position.place then
 						log (text => "match with end point of a segment", level => log_threshold + 2);						
 						probe_direction;
 
@@ -3206,6 +3206,7 @@ package body et_schematic_ops.nets is
 					stub_found := false; -- reset flag
 				end if;
 			end query_segments;
+
 			
 		begin -- query_strands
 			while strand_cursor /= pac_strands.no_element loop
