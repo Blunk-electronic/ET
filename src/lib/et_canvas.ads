@@ -1191,7 +1191,11 @@ package et_canvas is
 	-- the displacement of other attached objects:
 	object_original_position : type_vector_model := origin;
 
+	-- If an object is begin dragged, then other objects
+	-- might be dragged along (like net segments, or track segments)
+	-- These objects are subjected to a certain displacement:
 	object_displacement : type_vector_model := origin;
+
 	
 	-- CS: It is probably not a good idea to reset all
 	-- properties of the object at once in a single procedure

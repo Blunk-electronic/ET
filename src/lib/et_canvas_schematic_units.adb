@@ -407,6 +407,10 @@ package body et_canvas_schematic_units is
 						
 						--find_attached_segments;
 						-- CS ? set_status (status_drag);
+
+						-- Set the net segments which are
+						-- connected with the selected unit
+						-- as "moving":
 						set_segments_moving (active_module, log_threshold + 1);
 
 					when others => null; -- CS
@@ -813,6 +817,10 @@ package body et_canvas_schematic_units is
 				set_first_selected_object_moving;
 				
 				--find_attached_segments;
+
+				-- Set the net segments which are
+				-- connected with the selected unit
+				-- as "moving":
 				set_segments_moving (active_module, log_threshold + 1);
 
 				-- Furtheron, on the next call of this procedure

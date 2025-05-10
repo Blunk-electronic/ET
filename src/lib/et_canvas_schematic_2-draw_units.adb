@@ -829,11 +829,7 @@ procedure draw_units is
 					
 						-- In case the unit is being dragged, backup original position
 						-- in global variable object_original_position.
-						-- Procedure draw_nets requires that
-						-- to calculate the displacement of attached net segments:
 						object_original_position := unit_position;
-
-						-- CS object_displacement := subtract (unit_position, object_original_position);
 
 						case object_tool is
 							when MOUSE =>
@@ -843,6 +839,10 @@ procedure draw_units is
 								unit_position := get_cursor_position;
 						end case;
 
+						-- Calculate the displacement (required for net segments
+						-- which are being dragged along):
+						object_displacement := unit_position - object_original_position;
+						
 					end if;
 				end if;
 
