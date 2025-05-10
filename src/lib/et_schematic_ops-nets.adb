@@ -437,7 +437,7 @@ package body et_schematic_ops.nets is
 
 		
 	begin -- rename_net
-		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
+		log (text => "module " & to_string (module_cursor) &
 			 " renaming net " & enclose_in_quotes (to_string (net_name_before)) &
 			 " to " & enclose_in_quotes (to_string (net_name_after)),
 			level => log_threshold);
@@ -626,7 +626,7 @@ package body et_schematic_ops.nets is
 
 		
 	begin -- delete_net		
-		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor)))
+		log (text => "module " & to_string (module_cursor)
 			& " deleting net " & enclose_in_quotes (to_string (net_name)),
 			level => log_threshold);
 
@@ -735,6 +735,7 @@ package body et_schematic_ops.nets is
 					end if;
 					
 				end query_segments;
+
 				
 			begin -- query_strands
 				
@@ -768,7 +769,8 @@ package body et_schematic_ops.nets is
 				end if;
 				
 			end query_strands;
-		
+
+			
 		begin -- query_net
 
 			-- query the affected strands
@@ -787,7 +789,7 @@ package body et_schematic_ops.nets is
 
 		
 	begin -- delete_segment
-		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) 
+		log (text => "module " & to_string (module_cursor) 
 			& " deleting in net " & enclose_in_quotes (to_string (net_name))
 			& " segment at" & enclose_in_quotes (to_string (position => place)),
 			level => log_threshold);
