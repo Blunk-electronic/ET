@@ -155,6 +155,13 @@ package et_net_segment is
 	end record;
 
 
+	-- Creates a bare net segment without labels, 
+	-- junctions and ports:
+	function to_net_segment (
+		A, B : in type_vector_model)
+		return type_net_segment;
+
+	
 	
 	-- Moves the net labels of a segment.
 	-- CS: Currently moves only the tag labels

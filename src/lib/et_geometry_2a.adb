@@ -1452,6 +1452,23 @@ package body et_geometry_2a is
 	end;
 
 
+
+	procedure move_A_by (
+		line	: in out type_line;
+		offset	: in type_vector_model)
+	is begin
+		move_by (line.A, offset);
+	end;
+	
+
+	
+	procedure move_B_by (
+		line	: in out type_line;
+		offset	: in type_vector_model)
+	is begin
+		move_by (line.B, offset);
+	end;
+
 	
 
 	

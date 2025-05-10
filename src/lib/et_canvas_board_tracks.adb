@@ -744,8 +744,8 @@ package body et_canvas_board_tracks is
 					live_path.B := point;
 
 					-- insert a single line:
-					line.A := live_path.A;
-					line.B := live_path.B;
+					set_A (line, live_path.A);
+					set_B (line, live_path.B);
 					add_to_net;
 					
 				else
@@ -754,15 +754,15 @@ package body et_canvas_board_tracks is
 					-- See for example procedure draw_path in et_canvas_board_2-draw_assy_doc.
 
 					-- insert first line of the path:
-					line.A := live_path.A;
-					line.B := live_path.bend_point;
+					set_A (line, live_path.A);
+					set_B (line, live_path.bend_point);
 					add_to_net;
 
 					
 					-- insert second line of the path:
 					live_path.B := point;
-					line.A := live_path.bend_point;
-					line.B := live_path.B;
+					set_A (line, live_path.bend_point);
+					set_B (line, live_path.B);
 					add_to_net;
 				end if;
 

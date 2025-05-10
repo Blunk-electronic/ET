@@ -807,10 +807,10 @@ procedure draw_nets is
 
 				case element (g).zone is
 					when START_POINT =>
-						move_by (copy_of_original_segment.A, displacement);
+						move_A_by (copy_of_original_segment, displacement);
 					
 					when END_POINT =>
-						move_by (copy_of_original_segment.B, displacement);
+						move_B_by (copy_of_original_segment, displacement);
 				end case;
 
 				draw_line (
@@ -1116,8 +1116,8 @@ procedure draw_nets is
 			-- from start to end point:
 			if r.bended = NO then
 				
-				line.A := r.A;
-				line.B := r.B;
+				set_A (line, r.A);
+				set_B (line, r.B);
 
 				draw;
 
@@ -1127,13 +1127,13 @@ procedure draw_nets is
 			else
 				live_path.bend_point := r.bend_point;
 
-				line.A := r.A;
-				line.B := r.bend_point;
+				set_A (line, r.A);
+				set_B (line, r.bend_point);
 				
 				draw;
 
-				line.A := r.bend_point;
-				line.B := r.B;
+				set_A (line, r.bend_point);
+				set_B (line, r.B);
 				
 				draw;
 				

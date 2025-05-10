@@ -377,8 +377,8 @@ package body et_canvas.text is
 			lf : type_character_line renames element (c);
 			lc : type_line;
 		begin
-			lc.A := to_vector_model (lf.A);
-			lc.B := to_vector_model (lf.B);
+			set_A (lc, to_vector_model (lf.A));
+			set_B (lc, to_vector_model (lf.B));
 
 			draw_line (
 				line	=> lc,

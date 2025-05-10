@@ -177,6 +177,18 @@ package body et_net_segment is
 
 	
 
+	function to_net_segment (
+		A, B : in type_vector_model)
+		return type_net_segment
+	is 
+		segment : type_net_segment;
+	begin
+		set_A (segment, A);
+		set_B (segment, B);
+		return segment;
+	end to_net_segment;
+
+	
 	
 	procedure move_net_labels (
 		segment_before	: in type_net_segment;

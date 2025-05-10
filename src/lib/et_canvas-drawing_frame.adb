@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -78,8 +78,8 @@ package body et_canvas.drawing_frame is
 	is
 		result : pac_geometry.type_line;
 	begin
-		result.A := to_vector (l.A);
-		result.B   := to_vector (l.B);
+		set_A (result, to_vector (l.A));
+		set_B (result, to_vector (l.B));
 		return result;
 	end to_line;
 
@@ -129,23 +129,23 @@ package body et_canvas.drawing_frame is
 			set_linewidth (linewidth_2);
 
 			-- Assemble the lower line:
-			l.A := (0.0, 0.0);
-			l.B := (w, 0.0);
+			set_A (l, (0.0, 0.0));
+			set_B (l, (  w, 0.0));
 			draw_line;
 
 			-- Assemble the right line:
-			l.A := (w, 0.0);
-			l.B := (w, h);
+			set_A (l, (w, 0.0));
+			set_B (l, (w, h));
 			draw_line;
 
 			-- Assemble the upper line:
-			l.A := (w, h);
-			l.B := (0.0, h);
+			set_A (l,   (w, h));
+			set_B (l, (0.0, h));
 			draw_line;
 
 			-- Assemble the left line:
-			l.A := (0.0, h);
-			l.B := (0.0, 0.0);
+			set_A (l, (0.0, h));
+			set_B (l, (0.0, 0.0));
 			draw_line;
 
 			stroke;
@@ -156,23 +156,23 @@ package body et_canvas.drawing_frame is
 			set_linewidth (linewidth_2);
 
 			-- Assemble the lower line:
-			l.A := (b, b);
-			l.B := (w - b, b);
+			set_A (l, (b, b));
+			set_B (l, (w - b, b));
 			draw_line;
 
 			-- Assemble the right line:
-			l.A := (w - b, b);
-			l.B := (w - b, h - b);
+			set_A (l, (w - b, b));
+			set_B (l, (w - b, h - b));
 			draw_line;
 
 			-- Assemble the upper line:
-			l.A := (w - b, h - b);
-			l.B := (b, h - b);
+			set_A (l, (w - b, h - b));
+			set_B (l, (b, h - b));
 			draw_line;
 
 			-- Assemble the left line:
-			l.A := (b, h - b);
-			l.B := (b, b);
+			set_A (l, (b, h - b));
+			set_B (l, (b, b));
 			draw_line;
 
 			stroke;
@@ -235,14 +235,14 @@ package body et_canvas.drawing_frame is
 				
 				-- draw the line bottom-up:
 				-- lower end:
-				l.A := type_vector_model (set (
+				set_A (l, type_vector_model (set (
 					x => x,
-					y => zero));
+					y => zero)));
 
 				-- upper end:
-				l.B := type_vector_model (set (
+				set_B (l, type_vector_model (set (
 					x => x,
-					y => b));
+					y => b)));
 
 				draw_line;
 
@@ -251,14 +251,14 @@ package body et_canvas.drawing_frame is
 				-- UPPER BORDER
 				-- draw the line bottom-up:
 				-- lower end:
-				l.A := type_vector_model (set (
+				set_A (l, type_vector_model (set (
 					x => x,
-					y => h - b));
+					y => h - b)));
 
 				-- upper end:
-				l.B := type_vector_model (set (
+				set_B (l, type_vector_model (set (
 					x => x,
-					y => h));
+					y => h)));
 				
 				draw_line;
 			end loop;
@@ -276,28 +276,28 @@ package body et_canvas.drawing_frame is
 				
 				-- draw the line from the left to the right:
 				-- left end:
-				l.A := type_vector_model (set (
+				set_A (l, type_vector_model (set (
 					x => zero,
-					y => y));
+					y => y)));
 
 				-- right end:
-				l.B := type_vector_model (set (
+				set_B (l, type_vector_model (set (
 					x => b,
-					y => y));
+					y => y)));
 
 				draw_line;
 				
 				-- RIGHT BORDER
 				-- draw the line from the left to the right:
 				-- left end:
-				l.A := type_vector_model (set (
+				set_A (l, type_vector_model (set (
 					x => w - b,
-					y => y));
+					y => y)));
 
 				-- right end:
-				l.B := type_vector_model (set (
+				set_B (l, type_vector_model (set (
 					x => w,
-					y => y));
+					y => y)));
 				
 				draw_line;
 			end loop;
@@ -358,14 +358,11 @@ package body et_canvas.drawing_frame is
 			end loop;
 			
 		end sector_delimiters;
-
 		
 		
 	begin
 		outer_border;
-
 		inner_border;
-
 		sector_delimiters;
 	end draw_frame;
 

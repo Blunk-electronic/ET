@@ -458,6 +458,8 @@ package body et_canvas_schematic_nets is
 
 
 	
+
+	
 	procedure make_path (
 		tool	: in type_tool;
 		point	: in type_vector_model)
@@ -484,6 +486,7 @@ package body et_canvas_schematic_nets is
 				set_status (status_A & to_string (live_path.A) & ". " &
 					status_press_space & status_set_B & status_hint_for_abort);
 			end if;
+			
 
 		else -- preliminary_segment IS ready
 
@@ -505,11 +508,8 @@ package body et_canvas_schematic_nets is
 							module			=> active_module,
 							sheet			=> active_sheet,
 							net_name_given	=> object_net_name, -- RESET_N, or empty
-							segment			=> (
-									A	=> live_path.A,
-									B	=> live_path.B,
-									others		=> <>), -- no labels and no ports, just a bare segment
-							log_threshold	=>	log_threshold + 1);
+							segment			=> to_net_segment (live_path.A, live_path.B),
+							log_threshold	=> log_threshold + 1);
 
 					end if;
 
@@ -526,11 +526,8 @@ package body et_canvas_schematic_nets is
 							module			=> active_module,
 							sheet			=> active_sheet,
 							net_name_given	=> object_net_name, -- RESET_N, or empty
-							segment			=> (
-									A	=> live_path.A,
-									B	=> live_path.bend_point,
-									others		=> <>), -- no labels and no ports, just a bare segment
-							log_threshold	=>	log_threshold + 1);
+							segment			=> to_net_segment (live_path.A, live_path.bend_point),
+							log_threshold	=> log_threshold + 1);
 
 
 						
@@ -545,11 +542,8 @@ package body et_canvas_schematic_nets is
 								module			=> active_module,
 								sheet			=> active_sheet,
 								net_name_given	=> object_net_name, -- RESET_N, or empty
-								segment			=> (
-										A	=> live_path.bend_point,
-										B	=> live_path.B,
-										others		=> <>), -- no labels and no ports, just a bare segment
-								log_threshold	=>	log_threshold + 1);
+								segment			=> to_net_segment (live_path.bend_point, live_path.B),
+								log_threshold	=> log_threshold + 1);
 						
 						end if;
 					end if;
@@ -565,6 +559,8 @@ package body et_canvas_schematic_nets is
 			end if;
 		end if;
 	end make_path;
+
+
 	
 
 
@@ -575,12 +571,12 @@ package body et_canvas_schematic_nets is
 		segment			: in type_net_segment;
 		log_threshold	: in type_log_level)
 	is 
-		A : constant type_object_position := to_position (segment.A, sheet);
-		B : constant type_object_position := to_position (segment.B, sheet);
+		A : constant type_object_position := to_position (get_A (segment), sheet);
+		B : constant type_object_position := to_position (get_B (segment), sheet);
 
 		use et_schematic_ops.nets;
 		segments_at_A : pac_proposed_segments.list;
-		segments_at_B	: pac_proposed_segments.list;
+		segments_at_B : pac_proposed_segments.list;
 
 		use pac_nets;
 		net_cursor	: pac_nets.cursor;
@@ -628,6 +624,7 @@ package body et_canvas_schematic_nets is
 
 		use et_undo_redo;
 		use et_commit;
+
 		
 	begin -- insert_net_segment
 		log (text => "adding net segment on sheet " & to_string (sheet) & to_string (segment), 
@@ -735,6 +732,8 @@ package body et_canvas_schematic_nets is
 	end insert_net_segment;
 
 
+
+	
 	
 	function valid_for_net_segment (
 		point			: in type_vector_model;
@@ -780,6 +779,8 @@ package body et_canvas_schematic_nets is
 		return result;
 	end valid_for_net_segment;
 
+
+
 	
 
 	procedure reset_preliminary_segment is 
@@ -795,6 +796,7 @@ package body et_canvas_schematic_nets is
 		
 		clear_proposed_segments;
 	end reset_preliminary_segment;
+
 
 	
 

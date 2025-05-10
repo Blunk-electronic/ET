@@ -447,8 +447,8 @@ package body et_canvas_board_2 is
 			-- from start to end point:
 			if path.bended = NO then
 				
-				line.A := path.A;
-				line.B := path.B;
+				set_A (line, path.A);
+				set_B (line, path.B);
 
 				draw;
 
@@ -458,13 +458,13 @@ package body et_canvas_board_2 is
 			else
 				live_path.bend_point := path.bend_point;
 
-				line.A := path.A;
-				line.B := path.bend_point;
+				set_A (line, path.A);
+				set_B (line, path.bend_point);
 				
 				draw;
 
-				line.A := path.bend_point;
-				line.B := path.B;
+				set_A (line, path.bend_point);
+				set_B (line, path.B);
 				
 				draw;
 				
@@ -530,8 +530,8 @@ package body et_canvas_board_2 is
 			-- from start to end point:
 			if path.bended = NO then
 				
-				line.A := path.A;
-				line.B := path.B;
+				set_A (line, path.A);
+				set_B (line, path.B);
 
 				draw;
 
@@ -541,13 +541,13 @@ package body et_canvas_board_2 is
 			else
 				live_path.bend_point := path.bend_point;
 
-				line.A := path.A;
-				line.B := path.bend_point;
+				set_A (line, path.A);
+				set_B (line, path.bend_point);
 				
 				draw;
 
-				line.A := path.bend_point;
-				line.B := path.B;
+				set_A (line, path.bend_point);
+				set_B (line, path.B);
 				
 				draw;
 				

@@ -686,20 +686,23 @@ is
 		procedure draw_shape is 
 			arc_tmp		: type_arc;
 			circle_tmp	: type_circle;
+			line_tmp	: type_line;
+			width_tmp	: type_distance_positive;
 		begin
 			case shape is
 				when LINE =>
 					case cmd_field_count is
 						when 11 =>
+							width_tmp := to_distance (f (7));
+							
+							line_tmp := type_line (to_line (
+								A => to_vector_model (f (8), f (9)),
+								B => to_vector_model (f (10), f (11))));
+							
 							add_line (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								line			=> (
-										width		=> to_distance (f (7)),
-										A			=> to_vector_model (f (8), f (9)),
-										B			=> to_vector_model (f (10), f (11)),
-										others		=> <>),
-
+								line			=> (line_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1
 								);
 
@@ -714,6 +717,8 @@ is
 				when ARC =>
 					case cmd_field_count is
 						when 14 =>
+							width_tmp := to_distance (f (7));
+							
 							arc_tmp := type_arc (to_arc (
 								center		=> to_vector_model (f (8), f (9)),
 								A			=> to_vector_model (f (10), f (11)),
@@ -723,7 +728,7 @@ is
 							add_arc (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								arc				=> (arc_tmp with width => to_distance (f (7))),
+								arc				=> (arc_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 
 						when 15 .. type_field_count'last =>
@@ -735,8 +740,10 @@ is
 
 					
 				when CIRCLE =>
-					case cmd_field_count is
+					case cmd_field_count is						
 						when 10 =>
+							width_tmp := to_distance (f (7));
+							
 							circle_tmp := type_circle (to_circle (
 								center		=> to_vector_model (f (8), f (9)),
 								radius		=> to_radius (f (10))));
@@ -744,7 +751,7 @@ is
 							add_circle (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								circle			=> (circle_tmp with width => to_distance (f (7))),
+								circle			=> (circle_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 							
 						when 11 .. type_field_count'last =>
@@ -805,22 +812,24 @@ is
 		procedure draw_shape is 
 			arc_tmp		: type_arc;
 			circle_tmp	: type_circle;
+			line_tmp	: type_line;
+			width_tmp	: type_distance_positive;
 		begin
 			case shape is
 				when LINE =>
 					case cmd_field_count is
 						when 11 =>
+							width_tmp := to_distance (f (7));
+
+							line_tmp := type_line (to_line (
+								A => to_vector_model (f (8), f (9)),
+								B => to_vector_model (f (10), f (11))));
+								
 							add_line (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								line			=> (
-										width		=> to_distance (f (7)),
-										A			=> to_vector_model (f (8), f (9)),
-										B			=> to_vector_model (f (10), f (11)),
-										others		=> <>),
-
-								log_threshold	=> log_threshold + 1
-								);
+								line			=> (line_tmp with width_tmp),
+								log_threshold	=> log_threshold + 1);
 
 						when 12 .. type_field_count'last =>
 							too_long;
@@ -833,6 +842,8 @@ is
 				when ARC =>
 					case cmd_field_count is
 						when 14 =>
+							width_tmp := to_distance (f (7));
+							
 							arc_tmp := type_arc (to_arc (
 								center	=> to_vector_model (f (8), f (9)),
 								A		=> to_vector_model (f (10), f (11)),
@@ -842,7 +853,7 @@ is
 							add_arc (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								arc				=> (arc_tmp with width => to_distance (f (7))),
+								arc				=> (arc_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1
 								);
 
@@ -857,6 +868,8 @@ is
 				when CIRCLE =>
 					case cmd_field_count is
 						when 10 =>
+							width_tmp := to_distance (f (7));
+							
 							circle_tmp := type_circle (to_circle (
 								center		=> to_vector_model (f (8), f (9)),
 								radius		=> to_radius (f (10))));
@@ -864,7 +877,7 @@ is
 							add_circle (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								circle			=> (circle_tmp with width => to_distance (f (7))),
+								circle			=> (circle_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 							
 						when 11 .. type_field_count'last =>
@@ -919,8 +932,10 @@ is
 		
 		shape : type_shape;
 
+		line_tmp	: type_line;
 		arc_tmp		: type_arc;
 		circle_tmp	: type_circle;
+		layers_tmp	: type_signal_layers.set;
 		
 	begin
 		-- put_line ("draw_route_restrict");
@@ -944,15 +959,16 @@ is
 							-- Then validate signal layer.
 							-- Then add the single signal layer to a set.
 							-- Do so with all objects in route and via restrict.
+
+							line_tmp := type_line (to_line (
+								A => to_vector_model (f (7), f  (8)),
+								B => to_vector_model (f (9), f (10))));
+
+							layers_tmp := to_layers (f (5)); -- [1,3,5-9]
 							
 							draw_route_restrict_line (
 								module_name 	=> module,
-								line			=> (
-										layers		=> to_layers (f (5)), -- [1,3,5-9]
-										A			=> to_vector_model (f (7), f  (8)),
-										B			=> to_vector_model (f (9), f (10)),
-										others		=> <>),
-
+								line			=> (line_tmp with layers_tmp),
 								log_threshold	=> log_threshold + 1);
 
 						when 11 .. type_field_count'last => too_long;
@@ -963,8 +979,11 @@ is
 					
 				when ARC =>
 					case cmd_field_count is
-						when 13 =>
+						when 13 =>							
 							-- board led_driver draw route_restrict [1,3,5-9] arc 50 50 0 50 100 0 cw
+
+							layers_tmp := to_layers (f (5)); -- [1,3,5-9]
+							
 							arc_tmp := type_arc (to_arc (
 								center		=> to_vector_model (f  (7), f  (8)),
 								A			=> to_vector_model (f  (9), f (10)),
@@ -973,7 +992,7 @@ is
 															
 							draw_route_restrict_arc (
 								module_name 	=> module,
-								arc				=> (arc_tmp with layers => to_layers (f (5))), -- [1,3,5-9]
+								arc				=> (arc_tmp with layers_tmp),
 								log_threshold	=> log_threshold + 1);
 
 						when 14 .. type_field_count'last => too_long;
@@ -988,17 +1007,18 @@ is
 							-- board led_driver draw route_restrict [1,3,5-9] circle 20 50 40
 							-- if is_number (f (7)) then -- 20
 
+							layers_tmp := to_layers (f (5)); -- [1,3,5-9]
+
 							circle_tmp := type_circle (to_circle (
 								center	=> to_vector_model (f (7), f (8)),
 								radius	=> to_radius (f (9)))); -- 40
-
 																	 
 								-- Circle is not filled.
 								draw_route_restrict_circle (
 									module_name 	=> module,
-									circle			=> (circle_tmp with 
-												layers	=> to_layers (f (5))), -- [1,3,5-9]
+									circle			=> (circle_tmp with layers_tmp),
 									log_threshold	=> log_threshold + 1);
+								
 							-- else
 								-- expect_value_center_x (7);
 							-- end if;
@@ -1108,22 +1128,25 @@ is
 
 		-- Draws a line, arc or circle:
 		procedure draw_shape is 
+			line_tmp	: type_line;
 			arc_tmp 	: type_arc;
 			circle_tmp	: type_circle;
+			width_tmp	: type_distance_positive;
 		begin
 			case shape is
 				when LINE =>
 					case cmd_field_count is
 						when 11 =>
+							width_tmp := to_distance (f (7));
+
+							line_tmp := type_line (to_line (
+								A => to_vector_model (f (8), f (9)),
+								B => to_vector_model (f (10), f (11))));
+															   
 							add_line (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								line			=> (
-										width		=> to_distance (f (7)),
-										A			=> to_vector_model (f (8), f (9)),
-										B			=> to_vector_model (f (10), f (11)),
-										others		=> <>),
-
+								line			=> (line_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 
 						when 12 .. type_field_count'last => too_long;
@@ -1135,6 +1158,8 @@ is
 				when ARC =>
 					case cmd_field_count is
 						when 14 =>
+							width_tmp := to_distance (f (7));
+							
 							arc_tmp := type_arc (to_arc (
 								center		=> to_vector_model (f (8), f (9)),
 								A			=> to_vector_model (f (10), f (11)),
@@ -1144,7 +1169,7 @@ is
 							add_arc (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								arc				=> (arc_tmp with width => to_distance (f (7))),
+								arc				=> (arc_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 
 						when 15 .. type_field_count'last => too_long;
@@ -1156,6 +1181,8 @@ is
 				when CIRCLE =>
 					case cmd_field_count is
 						when 10 =>
+							width_tmp := to_distance (f (7));
+							
 							circle_tmp := type_circle (to_circle (
 								center			=> to_vector_model (f (8), f (9)),
 								radius			=> to_radius (f (10))));
@@ -1163,8 +1190,7 @@ is
 							add_circle (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								circle			=> (circle_tmp with
-									width			=> to_distance (f (7))),
+								circle			=> (circle_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 							
 						when 11 .. type_field_count'last => too_long;
@@ -1218,22 +1244,25 @@ is
 
 		-- Draws a line, arc or circle:
 		procedure draw_shape is
+			line_tmp	: type_line;
 			arc_tmp 	: type_arc;
 			circle_tmp	: type_circle;
+			width_tmp	: type_distance_positive;
 		begin
 			case shape is
 				when LINE =>
 					case cmd_field_count is
 						when 11 =>
+							width_tmp := to_distance (f (7));
+
+							line_tmp := type_line (to_line (
+								A => to_vector_model (f (8), f (9)),
+								B => to_vector_model (f (10), f (11))));
+							
 							add_line (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								line			=> (
-										width		=> to_distance (f (7)),
-										A			=> to_vector_model (f (8), f (9)),
-										B			=> to_vector_model (f (10), f (11)),
-										others		=> <>),
-
+								line			=> (line_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 
 						when 12 .. type_field_count'last => too_long;
@@ -1245,6 +1274,8 @@ is
 				when ARC =>
 					case cmd_field_count is
 						when 14 =>
+							width_tmp := to_distance (f (7));
+							
 							arc_tmp := type_arc (to_arc (
 								center	=> to_vector_model (f (8), f (9)),
 								A		=> to_vector_model (f (10), f (11)),
@@ -1254,7 +1285,7 @@ is
 							add_arc (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								arc				=> (arc_tmp with width => to_distance (f (7))),
+								arc				=> (arc_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 
 						when 15 .. type_field_count'last => too_long;
@@ -1266,6 +1297,8 @@ is
 				when CIRCLE =>
 					case cmd_field_count is
 						when 10 =>
+							width_tmp := to_distance (f (7));
+							
 							circle_tmp := type_circle (to_circle (
 								center		=> to_vector_model (f (8), f (9)),
 								radius		=> to_radius (f (10))));
@@ -1273,8 +1306,7 @@ is
 							add_circle (
 								module_name 	=> module,
 								face			=> to_face (f (5)),
-								circle			=> (circle_tmp with
-										width		=> to_distance (f (7))),
+								circle			=> (circle_tmp with width_tmp),
 								log_threshold	=> log_threshold + 1);
 
 						when 11 .. type_field_count'last => too_long;
@@ -2193,7 +2225,10 @@ is
 		end make_fill_zone;
 
 
-		arc_tmp : type_arc;
+		line_tmp	: type_line;
+		arc_tmp		: type_arc;
+		width_tmp	: type_distance_positive;
+		layer_tmp	: type_signal_layer;
 		
 	begin -- route_freetrack
 		case shape is
@@ -2201,18 +2236,18 @@ is
 				case cmd_field_count is
 					when 11 =>
 						-- draw a freetrack
+						layer_tmp := to_signal_layer (f (5));
+						width_tmp := to_distance (f (7));
+
+						line_tmp := type_line (to_line (
+							A => to_vector_model (f (8), f (9)),
+							B => to_vector_model (f (10), f (11))));
+														   
 						add_line (
 							module_name 	=> module,
 							net_name		=> to_net_name (""),
-							line	=> (
-								width		=> to_distance (f (7)),
-								A			=> to_vector_model (f (8), f (9)),
-								B			=> to_vector_model (f (10), f (11)),
-								layer		=> to_signal_layer (f (5)),
-								others		=> <>),
-							
-							log_threshold	=> log_threshold + 1
-							);
+							line			=> (line_tmp with width_tmp, layer_tmp),							
+							log_threshold	=> log_threshold + 1);
 
 					when 12 .. type_field_count'last =>
 						too_long;
@@ -2225,6 +2260,9 @@ is
 			when ARC =>
 				case cmd_field_count is
 					when 14 =>
+						layer_tmp := to_signal_layer (f (5));
+						width_tmp := to_distance (f (7));
+
 						arc_tmp := type_arc (to_arc (
 							center		=> to_vector_model (f (8), f (9)),
 							A			=> to_vector_model (f (10), f (11)),
@@ -2234,11 +2272,8 @@ is
 						-- draw a freetrack
 						add_arc (
 							module_name 	=> module,
-							arc			=> (arc_tmp with
-								layer		=> to_signal_layer (f (5)),
-								width		=> to_distance (f (7))),
+							arc				=> (arc_tmp with width_tmp, layer_tmp),
 							net_name		=> to_net_name (""),
-
 							log_threshold	=> log_threshold + 1);
 						
 					when 15 .. type_field_count'last =>
@@ -2257,7 +2292,7 @@ is
 					when others =>
 						command_incomplete;
 				end case;
-			end case;
+		end case;
 	end route_freetrack;
 
 
@@ -2420,8 +2455,10 @@ is
 
 		use et_board_coordinates.pac_grid;
 
-		arc_tmp : type_arc;
-
+		line_tmp	: type_line;
+		arc_tmp		: type_arc;
+		width_tmp	: type_distance_positive;
+		layer_tmp	: type_signal_layer;
 		
 	begin -- route_net
 		case shape is
@@ -2433,22 +2470,18 @@ is
 					-- board motor_driver route net NET_1 2 line 0.25 0 0 160 0
 					case cmd_field_count is
 						when 12 =>
+							layer_tmp := to_signal_layer (f (6));
+							width_tmp := to_distance (f (8));
+							
+							line_tmp := type_line (to_line (
+								A => to_vector_model (f  (9), f (10)),
+								B => to_vector_model (f (11), f (12))));
+														   
 							add_line (
 								module_name 	=> module,
 								net_name		=> to_net_name (f (5)),
-								line	=> (
-									layer		=> to_signal_layer (f (6)),
-									width		=> to_distance (f (8)),
-									A	=> type_vector_model (set (
-										x => to_distance (dd => f (9)),
-										y => to_distance (dd => f (10)))),
-									B	=> type_vector_model (set (
-										x => to_distance (dd => f (11)),
-										y => to_distance (dd => f (12)))),
-									others		=> <>),
-								
-								log_threshold	=> log_threshold + 1
-								);
+								line			=> (line_tmp with width_tmp, layer_tmp),								
+								log_threshold	=> log_threshold + 1);
 
 						when 13 .. type_field_count'last => too_long;
 							
@@ -2469,18 +2502,14 @@ is
 							case cmd_field_count is
 								when 13 =>
 									add_line (
-										module_name => module,
-										net_name	=> to_net_name (f (5)),
-										layer		=> to_signal_layer (f (6)),
-										width		=> to_distance (f (8)),
-										device		=> to_device_name (f (9)),
-										terminal	=> to_terminal_name (f (10)),
-										end_point	=> type_vector_model (set (
-												x => to_distance (dd => f (12)),	 -- 35
-												y => to_distance (dd => f (13)))), -- 40
-										
-										log_threshold	=> log_threshold + 1
-										);
+										module_name 	=> module,
+										net_name		=> to_net_name (f (5)),
+										layer			=> to_signal_layer (f (6)),
+										width			=> to_distance (f (8)),
+										device			=> to_device_name (f (9)),
+										terminal		=> to_terminal_name (f (10)),
+										end_point		=> to_vector_model (f (12), f (13)), -- 35 40
+										log_threshold	=> log_threshold + 1);
 									
 								when 14 .. type_field_count'last =>
 									too_long;

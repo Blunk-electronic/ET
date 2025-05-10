@@ -3463,8 +3463,8 @@ package body et_canvas is
 					live_path.B := point;
 
 					-- insert a single line:
-					line.A := live_path.A;
-					line.B   := live_path.B;
+					set_A (line, live_path.A);
+					set_B (line, live_path.B);
 
 					-- Process the line further by the procedure given
 					-- by argument "process":
@@ -3476,8 +3476,8 @@ package body et_canvas is
 					-- See for example procedure draw_path in et_canvas_board_2-draw_assy_doc.
 
 					-- insert first line of the path:
-					line.A := live_path.A;
-					line.B   := live_path.bend_point;
+					set_A (line, live_path.A);
+					set_B (line, live_path.bend_point);
 
 					-- Process the line further by the procedure given
 					-- by argument "process":
@@ -3485,8 +3485,8 @@ package body et_canvas is
 					
 					-- insert second line of the path:
 					live_path.B := point;
-					line.A := live_path.bend_point;
-					line.B   := live_path.B;
+					set_A (line, live_path.bend_point);
+					set_B (line, live_path.B);
 
 					-- Process the line further by the procedure given
 					-- by argument "process":
@@ -3744,8 +3744,8 @@ package body et_canvas is
 				end if;
 			end if;
 
-			c1 := real_to_canvas (l.A, S);
-			c2 := real_to_canvas (l.B, S);
+			c1 := real_to_canvas (get_A (l), S);
+			c2 := real_to_canvas (get_B (l), S);
 
 			-- THESE DRAW OPERATIONS CONSUME THE MOST TIME:
 			if polyline then
@@ -4027,23 +4027,23 @@ package body et_canvas is
 		set_line_width (context, to_gdouble (to_distance (width)));
 
 		-- lower line from left to right:
-		l.A := rectangle.position;
-		l.B := rectangle.position + (rectangle.width, 0.0);
+		set_A (l, rectangle.position);
+		set_B (l, rectangle.position + (rectangle.width, 0.0));
 		draw_line (l, pos, width); -- no stroke, width doesn't matter
 
 		-- upper line from left to right:
-		l.A := rectangle.position + (0.0, rectangle.height);
-		l.B := rectangle.position + (rectangle.width, rectangle.height);
+		set_A (l, rectangle.position + (0.0, rectangle.height));
+		set_B (l, rectangle.position + (rectangle.width, rectangle.height));
 		draw_line (l, pos, width);
 
 		-- right line from bottom to top:
-		l.A := rectangle.position + (rectangle.width, 0.0);
-		l.B := rectangle.position + (rectangle.width, rectangle.height);
+		set_A (l, rectangle.position + (rectangle.width, 0.0));
+		set_B (l, rectangle.position + (rectangle.width, rectangle.height));
 		draw_line (l, pos, width);
 
 		-- left line from bottom to top:
-		l.A := rectangle.position;
-		l.B := rectangle.position + (0.0, rectangle.height);
+		set_A (l, rectangle.position);
+		set_B (l, rectangle.position + (0.0, rectangle.height));
 		draw_line (l, pos, width);
 		
 		stroke;
@@ -4062,14 +4062,14 @@ package body et_canvas is
 	is
 		l : type_line;
 	begin
-		l.A := (x => - origin_arm_length, y => 0.0);
-		l.B   := (x => + origin_arm_length, y => 0.0);
+		set_A (l, (x => - origin_arm_length, y => 0.0));
+		set_B (l, (x => + origin_arm_length, y => 0.0));
 
 		draw_line (l, position, origin_linewidth, do_stroke => true);
 
 		
-		l.A := (x => 0.0, y => - origin_arm_length);
-		l.B   := (x => 0.0, y => + origin_arm_length);
+		set_A (l, (x => 0.0, y => - origin_arm_length));
+		set_B (l, (x => 0.0, y => + origin_arm_length));
 
 		draw_line (l, position, origin_linewidth, do_stroke => true);
 	end draw_origin;

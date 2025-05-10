@@ -727,8 +727,18 @@ package et_geometry_2a is
 		line	: in out type_line;
 		B		: in type_vector_model);
 
+
 	
+	procedure move_A_by (
+		line	: in out type_line;
+		offset	: in type_vector_model);
+
 	
+	procedure move_B_by (
+		line	: in out type_line;
+		offset	: in type_vector_model);
+
+
 	
 	function is_selected (
 		line : in type_line)

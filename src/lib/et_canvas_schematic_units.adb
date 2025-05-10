@@ -936,7 +936,7 @@ package body et_canvas_schematic_units is
 					procedure query_segment (g : in pac_net_segments.cursor) is begin
 						log (text => to_string (element (g)));
 						
-						if element (g).A = element (p).position then
+						if get_A (g) = element (p).position then
 							segments_being_dragged.append ((
 -- 								net		=> n,
 -- 								strand	=> s,
@@ -946,7 +946,7 @@ package body et_canvas_schematic_units is
 							--log (text => "dg S" & to_string (element (g)), console => true);
 						end if;
 
-						if element (g).B = element (p).position then
+						if get_B (g) = element (p).position then
 							segments_being_dragged.append ((
 -- 								net		=> n,
 -- 								strand	=> s,
