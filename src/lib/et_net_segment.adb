@@ -188,6 +188,17 @@ package body et_net_segment is
 		return segment;
 	end to_net_segment;
 
+
+	
+	procedure reset_status (
+		segment : in out type_net_segment)
+	is begin	
+		pac_geometry_2.reset_status (line => type_line (segment));
+
+		-- CS reset junction and labels
+	end reset_status;
+
+
 	
 	
 	procedure move_net_labels (

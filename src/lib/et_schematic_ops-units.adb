@@ -3012,13 +3012,16 @@ package body et_schematic_ops.units is
 					port_positions : pac_points.list;
 					
 				begin
-					log (text => "unit " & to_string (unit_cursor), level => log_threshold + 2);
+					if is_selected (unit_cursor) then
+						log (text => "unit " & get_unit_name (unit_cursor),
+							 level => log_threshold + 2);
 
-					-- Get the port positions of the candidate unit:
-					port_positions := get_port_positions (device_cursor, unit_cursor);
+						-- Get the port positions of the candidate unit:
+						port_positions := get_port_positions (device_cursor, unit_cursor);
 
-					-- Iterate the port positions:
-					port_positions.iterate (query_position'access);
+						-- Iterate the port positions:
+						port_positions.iterate (query_position'access);
+					end if;
 				end query_unit;
 
 										 
@@ -3032,7 +3035,6 @@ package body et_schematic_ops.units is
 				log_indentation_down;
 			end query_device;
 			
-
 			
 		begin
 			-- Iterate through the devices:
@@ -3045,7 +3047,7 @@ package body et_schematic_ops.units is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " set net segments (connected with units) moving.",
+			& " set net segments (connected with selected units) moving.",
 			level => log_threshold);
 
 		log_indentation_up;

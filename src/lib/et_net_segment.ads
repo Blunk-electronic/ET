@@ -161,6 +161,10 @@ package et_net_segment is
 		A, B : in type_vector_model)
 		return type_net_segment;
 
+
+	-- Reset status flags of segment, junctions and labels:
+	overriding procedure reset_status (
+		segment : in out type_net_segment);
 	
 	
 	-- Moves the net labels of a segment.

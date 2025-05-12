@@ -64,6 +64,12 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
+	-- Clears the proposed-flag and the selected-flag of all net segments:
+	procedure reset_proposed_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+	
 	
 	-- Searches the module for an anonymous net with the lowest index available.
 	-- Example: If the module contains nets like N$2, N$4, N$5 and N$101 then

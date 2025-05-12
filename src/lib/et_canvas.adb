@@ -3715,6 +3715,14 @@ package body et_canvas is
 			attack (l, object_point_of_attack, get_object_tool_position);
 		end if;
 
+		if is_A_moving (l) then
+			move_A_by (l, object_displacement);
+		end if;
+
+		if is_B_moving (l) then
+			move_B_by (l, object_displacement);
+		end if;
+
 		
 		-- Get the bounding-box of line:
 		b := get_bounding_box (l, width);
