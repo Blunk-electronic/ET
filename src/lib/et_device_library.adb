@@ -524,6 +524,42 @@ package body et_device_library is
 
 
 
+
+	function get_symbol (
+		unit : in type_unit_cursors)
+		return et_symbols.type_symbol
+	is 
+		use pac_units_external;
+		use pac_units_internal;
+		
+		model_name : pac_symbol_model_file.bounded_string;
+		-- like libraries/symbols/NAND.sym
+		
+		symbol_cursor : et_symbols.pac_symbols.cursor;
+	begin
+		case unit.ext_int is
+			when EXT =>
+				-- put_line ("external unit");
+
+				-- If the unit is external, we must fetch the symbol 
+				-- via its model file:
+				model_name := element (unit.external).model;
+				locate_symbol (model_name, symbol_cursor);
+
+				return pac_symbols.element (symbol_cursor);
+
+			when INT =>
+				-- put_line ("internal unit");
+
+				-- If the unit is internal, we can fetch it the symbol 
+				-- directly from the unit:
+				return element (unit.internal).symbol;
+		end case;
+	end get_symbol;
+
+
+
+	
 	
 	function get_package_model (
 		device_cursor	: in pac_devices_lib.cursor;

@@ -242,6 +242,11 @@ package et_device_library is
 		return type_unit_cursors;
 
 
+	-- Maps from the given symbol cursor to the actual symbol:
+	function get_symbol (
+		unit : in type_unit_cursors)
+		return et_symbols.type_symbol;
+		
 	
 	-- Returns the name of the package model of the given device according to the given variant.
 	-- The given device must be real. Means appearance SCH_PCB.							  
