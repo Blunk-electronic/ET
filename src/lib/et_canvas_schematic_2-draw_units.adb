@@ -625,59 +625,6 @@ procedure draw_units is
 -- 	end moved_by_operator;
 
 	
--- 	-- Returns true if the given device matches the device indicated by "selected_unit"
--- 	-- AND if "selected_unit" does not point to particular unit. This way the whole
--- 	-- device is regarded as selected.
--- 	-- Returns true if the given device and unit match the device and unit indicated 
--- 	-- by variable "selected_unit". This way a single unit of a device is regarded as
--- 	-- selected:
--- 	function unit_is_selected (
--- 		d : in pac_devices_sch.cursor;
--- 		u : in pac_units.cursor)
--- 		return boolean
--- 	is
--- 		use pac_proposed_units;
--- 		use pac_unit_name;
--- 	begin
--- 		-- If there are no selected units at all, then there is nothing to do:
--- 		if is_empty (proposed_units) then
--- 			return false;
--- 		else
--- 			if selected_unit /= pac_proposed_units.no_element then
--- 				
--- 				-- Compare given device and device name of "selected_unit":
--- 				if key (d) = key (element (selected_unit).device) then
--- 
--- 					-- If "selected_unit" does not point to a specific unit
--- 					-- then we regard the whole device as selected:
--- 					if element (selected_unit).unit = pac_units.no_element then
--- 						return true;
--- 
--- 					-- If "selected_unit" points to the given unit then the
--- 					-- unit is regarded as selected:
--- 					elsif key (u) = key (element (selected_unit).unit) then
--- 						return true;
--- 						
--- 					else 
--- 						return false;
--- 					end if;
--- 					
--- 				else
--- 					return false;
--- 				end if;
--- 			else
--- 				return false;
--- 			end if;
--- 		end if;
--- 
--- 		--exception
--- 		--when event: others =>
--- 			--put_line ("invalid selected unit");
--- 			--return false;
--- 			
--- 	end unit_is_selected;
--- 
-
 	
 	
 	-- Returns true if the given placeholder is selected.
@@ -725,68 +672,31 @@ procedure draw_units is
 
 		brightness : type_brightness := NORMAL;
 
-		
-		procedure locate_symbol (unit_cursor : in type_unit_cursors) is
-			use pac_units_external;
-			use pac_units_internal;
 
-			use et_symbols;
-			symbol_model : pac_symbol_model_file.bounded_string; -- like libraries/symbols/NAND.sym
-			symbol_cursor : et_symbols.pac_symbols.cursor;
-		begin
-			case unit_cursor.ext_int is
-				when EXT =>
-					--put_line ("external unit");
-					-- If the unit is external, we must fetch the symbol 
-					-- via its model file:
-					symbol_model := element (unit_cursor.external).model;
-					locate_symbol (symbol_model, symbol_cursor);
-					draw_symbol (						
-						symbol		=> pac_symbols.element (symbol_cursor),
+		-- This procedure maps from the given unit cursor
+		-- to the actual symbol and draws the symbol:
+		procedure draw_unit (
+			unit_cursor : in type_unit_cursors) 
+		is begin
+			draw_symbol (						
+				symbol			=> get_symbol (unit_cursor),
 
-						device_name		=> device_name,
-						device_value	=> device_value,
-						device_purpose	=> device_purpose,
+				device_name		=> device_name,
+				device_value	=> device_value,
+				device_purpose	=> device_purpose,
 
-						unit_name		=> unit_name,
-						unit_count		=> unit_count,
-						
-						unit_position	=> unit_position,
-						unit_rotation	=> unit_rotation,
+				unit_name		=> unit_name,
+				unit_count		=> unit_count,
+				
+				unit_position	=> unit_position,
+				unit_rotation	=> unit_rotation,
 
-						sch_placeholder_name	=> sch_placeholder_name,
-						sch_placeholder_value	=> sch_placeholder_value,
-						sch_placeholder_purpose => sch_placeholder_purpose,
+				sch_placeholder_name	=> sch_placeholder_name,
+				sch_placeholder_value	=> sch_placeholder_value,
+				sch_placeholder_purpose => sch_placeholder_purpose,
 
-						brightness		=> brightness
-						);
-					
-				when INT =>
-					--put_line ("internal unit");						
-					-- If the unit is internal, we can fetch it the symbol 
-					-- directly from the unit:
-					draw_symbol (
-						symbol		=> element (unit_cursor.internal).symbol,
-
-						device_name		=> device_name,
-						device_value	=> device_value,
-						device_purpose	=> device_purpose,
-
-						unit_name		=> unit_name,
-						unit_count		=> unit_count,
-						
-						unit_position	=> unit_position,
-						unit_rotation	=> unit_rotation,
-
-						sch_placeholder_name	=> sch_placeholder_name,
-						sch_placeholder_value	=> sch_placeholder_value,
-						sch_placeholder_purpose => sch_placeholder_purpose,
-
-						brightness		=> brightness						
-						);
-			end case;
-		end locate_symbol;
-
+				brightness		=> brightness);
+		end draw_unit;
 
 		
 		
@@ -842,7 +752,8 @@ procedure draw_units is
 						-- Calculate the displacement (required for net segments
 						-- which are being dragged along):
 						object_displacement := unit_position - object_original_position;
-						
+
+						-- put_line ("object_displacement " & to_string (object_displacement));
 					end if;
 				end if;
 
@@ -956,12 +867,13 @@ procedure draw_units is
 				device_cursor_lib := get_device_model_cursor (device_model);
 				unit_count := get_unit_count (device_cursor_lib);
 
-				-- locate and draw the symbol:
-				locate_symbol (locate_unit (device_cursor_lib, unit_name));
+				-- locate and draw the unit:
+				draw_unit (locate_unit (device_cursor_lib, unit_name));
 			end if;
 
 			
-			-- CASE 2: The unit being moved changes the sheet:
+			-- CASE 2: The unit being moved changes the sheet.
+			-- CS: NOT TESTED !
 			if object_sheet_changes then
 				
 				if is_selected (unit_cursor) then
@@ -970,7 +882,7 @@ procedure draw_units is
 					brightness := BRIGHT;
 
 					-- overwrite position
-					if edit_process_running then
+					if is_moving (unit_cursor) then
 					
 						case object_tool is
 							when MOUSE =>
@@ -999,8 +911,8 @@ procedure draw_units is
 					device_cursor_lib := get_device_model_cursor (device_model);
 					unit_count := get_unit_count (device_cursor_lib);
 
-					-- locate and draw the symbol:
-					locate_symbol (locate_unit (device_cursor_lib, unit_name));
+					-- locate and draw the unit:
+					draw_unit (locate_unit (device_cursor_lib, unit_name));
 				end if;
 			end if;
 
