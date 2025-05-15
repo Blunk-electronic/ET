@@ -62,6 +62,14 @@ package et_scripting_interactive_schematic is
 	procedure unit_selected_on_fetch (
 		self : access gtk_menu_item_record'class);
 
+
+	type type_unit_being_deleted is record
+		device	: type_device_name := (others => <>); -- IC45
+		unit	: pac_unit_name.bounded_string; -- A
+	end record;
+
+	unit_delete : type_unit_being_deleted;
+	
 	
 	procedure menu_propose_units_on_delete (
 		device			: in type_device_name;

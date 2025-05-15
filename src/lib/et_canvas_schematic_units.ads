@@ -101,12 +101,12 @@ package et_canvas_schematic_units is
 	procedure clear_proposed_units;
 	
 	-- Collects all units in the vicinity of the given point:
-	function collect_units (
-		module			: in pac_generic_modules.cursor;
-		place			: in type_object_position; -- sheet/x/y
-		zone			: in type_zone_radius; -- the circular area around the place
-		log_threshold	: in type_log_level)
-		return pac_proposed_units.list;
+	-- function collect_units (
+	-- 	module			: in pac_generic_modules.cursor;
+	-- 	place			: in type_object_position; -- sheet/x/y
+	-- 	zone			: in type_zone_radius; -- the circular area around the place
+	-- 	log_threshold	: in type_log_level)
+	-- 	return pac_proposed_units.list;
 
 	-- Advances cursor selected_unit to next unit in list selected_units.
 	procedure clarify_unit;
@@ -122,14 +122,6 @@ package et_canvas_schematic_units is
 		& "to delete unit." 
 		& status_hint_for_abort;
 	
-
-	
-	type type_unit_being_deleted is record
-		device	: type_device_name := (others => <>); -- IC45
-		unit	: pac_unit_name.bounded_string; -- A
-	end record;
-
-	unit_delete : type_unit_being_deleted;
 
 
 	

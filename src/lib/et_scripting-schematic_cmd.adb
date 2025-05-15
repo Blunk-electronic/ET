@@ -2768,6 +2768,7 @@ is
 						case cmd_field_count is
 							when 4 =>
 								device_name_missing;
+
 								
 							when 5 => -- like "delete unit IC1"
 								unit_name_missing;
@@ -2776,11 +2777,12 @@ is
 
 								if exists (active_module, device_name) then
 
-									unit_delete.device := device_name;
+									-- unit_delete.device := device_name;
 
 									-- Propose units that are on the current active sheet:
 									menu_propose_units_on_delete (
-										device			=> unit_delete.device,
+										-- device			=> unit_delete.device,
+										device			=> device_name,
 										units			=> get_units_on_sheet (
 															active_module,
 															device_name,
@@ -2791,28 +2793,31 @@ is
 								else
 									device_not_found;
 								end if;
+
 								
 							when 6 => -- like "delete unit IC1 B"
 								device_name := to_device_name (f (5));
 								
 								if exists (active_module, device_name) then
 									
-									unit_delete.device := device_name;
+									--unit_delete.device := device_name;
 
 									unit_name := to_unit_name (f (6));
 
-									-- Test whether the unit is deployed on the current active sheet.
-									-- Deleting is possible if it is deployed and if it is on the current sheet.
-									if is_deployed (active_module, unit_delete.device, unit_name) then
+									-- Test whether the unit is deployed on the 
+									-- current active sheet.
+									-- Deleting is possible if it is deployed 
+									-- and if it is on the current sheet.
+									if is_deployed (active_module, device_name, unit_name) then
 
-										unit_delete.unit := unit_name;
+										-- unit_delete.unit := unit_name;
 										
-										if get_sheet (active_module, unit_delete.device, unit_delete.unit) = active_sheet then
+										if get_sheet (active_module, device_name, unit_name) = active_sheet then
 
 											delete_unit (
 												module_cursor	=> active_module,
-												device_name		=> unit_delete.device,
-												unit_name		=> unit_delete.unit,
+												device_name		=> device_name,
+												unit_name		=> unit_name,
 												log_threshold	=> log_threshold + 1);
 											
 											-- CS redraw;
@@ -2940,7 +2945,8 @@ is
 
 					when others => null; -- CS
 				end case;
-						
+
+				
 			when VERB_MOVE =>
 				case noun is
 					when NOUN_UNIT =>
@@ -3080,6 +3086,7 @@ is
 					when others => null; -- CS
 				end case;
 
+				
 			when VERB_ROTATE =>
 				case noun is
 					when NOUN_UNIT =>
@@ -3203,6 +3210,7 @@ is
 					when others => null; -- CS
 				end case;
 
+				
 			when VERB_SET =>
 				case noun is
 					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE =>
@@ -3240,6 +3248,7 @@ is
 					when others => null; -- CS
 				end case;
 
+				
 			when VERB_SHOW =>
 				case noun is
 					when NOUN_DEVICE =>
@@ -3275,10 +3284,10 @@ is
 
 					when others => null;
 				end case;
-				
+
+
 			when others => null; -- CS error message in status bar for other 
-								-- incomplete commands such as zoom, position, ...
-		
+							-- incomplete commands such as zoom, position, ...
 		end case;
 	end propose_arguments;
 
