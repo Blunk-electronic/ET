@@ -791,7 +791,7 @@ package body et_board_ops.vias is
 
 		
 		log (text => "module " & to_string (module_cursor)
-			& " net " & to_string (object.net_cursor)
+			& " net " & get_net_name (object.net_cursor)
 			& " moving via from" & to_string (get_position (object.via_cursor))
 			& " to" & to_string (new_position),
 			level => log_threshold);
@@ -836,7 +836,7 @@ package body et_board_ops.vias is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " net " & to_string (object.net_cursor)
+			& " net " & get_net_name (object.net_cursor)
 			& " deleting via at" & to_string (get_position (object.via_cursor)),
 			level => log_threshold);
 

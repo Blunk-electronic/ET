@@ -746,7 +746,6 @@ package body et_canvas_schematic_units is
 
 		-- Deletes the selected object:
 		procedure finalize is
-			use et_schematic_ops.nets;
 			use et_modes.schematic;
 			use et_undo_redo;
 			use et_commit;
@@ -789,7 +788,7 @@ package body et_canvas_schematic_units is
 			
 			reset_proposed_objects (active_module, log_threshold + 1);
 
-			reset_proposed_segments (active_module, log_threshold + 1);
+			et_schematic_ops.nets.reset_proposed_segments (active_module, log_threshold + 1);
 
 			reset_editing_process; -- prepare for a new editing process
 		end finalize;

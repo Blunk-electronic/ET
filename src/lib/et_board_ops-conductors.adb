@@ -509,6 +509,7 @@ package body et_board_ops.conductors is
 		
 		use et_devices_electrical;
 		device_cursor : pac_devices_sch.cursor;
+
 		
 		procedure make_line (terminal_position : in type_terminal_position_fine) is begin
 
@@ -590,7 +591,7 @@ package body et_board_ops.conductors is
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
 			& to_string (line.line_cursor, true) -- incl. width
-			& " in net " & to_string (line.net_cursor)
+			& " in net " & get_net_name (line.net_cursor)
 			& " / " & to_string (operation),
 			level => log_threshold);
 
@@ -1780,7 +1781,7 @@ package body et_board_ops.conductors is
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
 			& to_string (arc.arc_cursor, true) -- incl. width
-			& " in net " & to_string (arc.net_cursor)
+			& " in net " & get_net_name (arc.net_cursor)
 			& " / " & to_string (operation),
 			level => log_threshold);
 
@@ -2908,7 +2909,7 @@ package body et_board_ops.conductors is
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of "
 			& to_string (segment.segment)
-			& " net " & to_string (segment.net)
+			& " net " & get_net_name (segment.net)
 			& " / " & to_string (operation),
 			level => log_threshold);
 
@@ -3854,7 +3855,7 @@ package body et_board_ops.conductors is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " moving zone segment " & to_string (segment.segment)
-			& " of net " & to_string (segment.net)
+			& " of net " & get_net_name (segment.net)
 			& " point of attack " & to_string (point_of_attack)
 			& " to" & to_string (destination),
 			level => log_threshold);
@@ -4018,7 +4019,7 @@ package body et_board_ops.conductors is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			& " deleting zone segment " & to_string (segment.segment)
-			& " of net " & to_string (segment.net),
+			& " of net " & get_net_name (segment.net),
 			level => log_threshold);
 
 		log_indentation_up;

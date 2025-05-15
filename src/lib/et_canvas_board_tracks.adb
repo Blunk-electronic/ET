@@ -478,7 +478,7 @@ package body et_canvas_board_tracks is
 		praeamble : constant string := "selected: ";
 	begin
 		set_status (praeamble 
-			& "net " & et_nets.to_string (selected.net_cursor)
+			& "net " & et_nets.get_net_name (selected.net_cursor)
 			& " " & to_string (selected.wire_cursor) & ". " 
 			& status_next_object_clarification);
 	end show_selected_object;

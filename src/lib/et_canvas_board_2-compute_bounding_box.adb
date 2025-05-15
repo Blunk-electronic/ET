@@ -1763,7 +1763,7 @@ is
 
 				begin
 					if debug then
-						put_line (" " & to_string (c));
+						put_line (" " & get_net_name (c));
 					end if;
 
 					route.lines.iterate (query_line'access);

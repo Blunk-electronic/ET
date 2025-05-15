@@ -76,7 +76,7 @@ package body et_canvas_board_conductors is
 	begin
 		set_status (praeamble
 			& to_string (selected.line_cursor, true) -- start/end point/width/layer
-			& " net " & to_string (selected.net_cursor)
+			& " net " & get_net_name (selected.net_cursor)
 			& ". " & status_next_object_clarification);
 	end show_selected_line_net;
 
@@ -92,7 +92,7 @@ package body et_canvas_board_conductors is
 	begin
 		set_status (praeamble
 			& to_string (selected.arc_cursor, true) -- start/end point/width/layer
-			& " net " & to_string (selected.net_cursor)
+			& " net " & get_net_name (selected.net_cursor)
 			& ". " & status_next_object_clarification);
 	end show_selected_arc_net;
 
@@ -137,7 +137,7 @@ package body et_canvas_board_conductors is
 		use et_board_coordinates.pac_contours;
 	begin
 		set_status (praeamble & to_string (selected.segment)
-			& " net " & to_string (selected.net)
+			& " net " & get_net_name (selected.net)
 			-- & " layer" & to_string (selected.laface) & ". " 
 			-- CS read properties of zone to get the layer number
 			& status_next_object_clarification);

@@ -107,7 +107,7 @@ package et_nets is
 	-- Segments belong to each other because their start/end points meet.
 	-- A strand has coordinates. 
 	-- x/y position are the lowest values within the strand.
-	type type_strand is record
+	type type_strand is record -- CS make private ?
 	-- NOTE: ET does not provide a name for a strand.
 	-- As a strand is part of a net, there is no need for individual strand names.
 		position	: type_object_position; -- sheet and lowest x/y, rotation doesn't matter -> always zero
@@ -119,12 +119,27 @@ package et_nets is
 	function get_sheet (
 		strand	: in type_strand)
 		return type_sheet;
+
+
+
+	-- Returns the (sheet/x/y) position of the given strand:
+	function get_position (
+		strand : in type_strand)
+		return string;
+
 	
 	
 	package pac_strands is new doubly_linked_lists (type_strand);
 	use pac_strands;
 	
 
+	-- Returns the (sheet/x/y) position of the given strand:
+	function get_position (
+		strand : in pac_strands.cursor)
+		return string;
+
+
+	
 	-- Iterates the strands. 
 	-- Aborts the process when the proceed-flag goes false:
 	procedure iterate (
@@ -139,6 +154,8 @@ package et_nets is
 	-- Leaves the sheet number of the strand as it is.	
 	procedure set_strand_position (strand : in out type_strand);
 
+
+	
 	
 	-- Returns a cursor to the segment that is
 	-- on the lowest x/y position of the given strand:
@@ -231,15 +248,15 @@ package et_nets is
 
 	use pac_nets;
 	
-	
+
+	-- Returns the name of the given net:
 	function get_net_name (
 		net_cursor : in pac_nets.cursor)
 		return pac_net_name.bounded_string;
 	
 
-	-- Returns the name of the net indicated
-	-- by the given net cursor:
-	function to_string (
+	-- Returns the name of the given net:
+	function get_net_name (
 		net_cursor : in pac_nets.cursor)
 		return string;
 

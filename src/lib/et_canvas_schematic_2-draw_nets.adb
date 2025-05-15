@@ -496,33 +496,33 @@ procedure draw_nets is
 	-- Returns true if the given segment is selected.
 	-- Returns false if there are no proposed segments or
 	-- if the given segment is not selected.
-	function is_selected (
-		net		: in pac_nets.cursor;
-		strand	: in pac_strands.cursor;
-		segment	: in pac_net_segments.cursor)
-		return boolean
-	is
-		use pac_net_name;
-		ss : type_selected_segment;
-	begin
-		if is_empty (proposed_segments) then
-			return false;
-		else
-			if selected_segment /= pac_proposed_segments.no_element then
-				ss := element (selected_segment);
-
-				if key (ss.net) = key (net)
-				and element (ss.strand) = element (strand)
-				and element (ss.segment) = element (segment) then
-					return true;
-				else
-					return false;
-				end if;
-			else
-				return false;
-			end if;
-		end if;		
-	end is_selected;
+	-- function is_selected (
+	-- 	net		: in pac_nets.cursor;
+	-- 	strand	: in pac_strands.cursor;
+	-- 	segment	: in pac_net_segments.cursor)
+	-- 	return boolean
+	-- is
+	-- 	use pac_net_name;
+	-- 	ss : type_selected_segment;
+	-- begin
+	-- 	if is_empty (proposed_segments) then
+	-- 		return false;
+	-- 	else
+	-- 		if selected_segment /= pac_proposed_segments.no_element then
+	-- 			ss := element (selected_segment);
+ -- 
+	-- 			if key (ss.net) = key (net)
+	-- 			and element (ss.strand) = element (strand)
+	-- 			and element (ss.segment) = element (segment) then
+	-- 				return true;
+	-- 			else
+	-- 				return false;
+	-- 			end if;
+	-- 		else
+	-- 			return false;
+	-- 		end if;
+	-- 	end if;		
+	-- end is_selected;
 
 
 	
@@ -530,10 +530,10 @@ procedure draw_nets is
 	-- Reason: While draggin/moving segments temporarily segments are drawn.
 	--         During this time the original segments (as given in database)
 	--         must not be drawn.
-	package pac_already_drawn_segments is new doubly_linked_lists (type_net_segment);
-	use pac_already_drawn_segments;
-	-- This list keeps record of already drawn segments:
-	already_drawn_segments : pac_already_drawn_segments.list;
+	-- package pac_already_drawn_segments is new doubly_linked_lists (type_net_segment);
+	-- use pac_already_drawn_segments;
+	-- -- This list keeps record of already drawn segments:
+	-- already_drawn_segments : pac_already_drawn_segments.list;
 
 	
 	
@@ -541,318 +541,318 @@ procedure draw_nets is
 	-- if it has not already been drawn.
 	-- Draws also possible junctions that may exist at start or end point
 	-- of the segment.
-	procedure draw_fixed_segment (
-		s : in pac_net_segments.cursor) 
-	is begin
-		if not contains (already_drawn_segments, element (s)) then
-			
-			draw_line (
-				line		=> element (s),
-				pos			=> origin_zero_rotation,		  
-				width		=> net_line_width,
-				do_stroke	=> true);
-
-			draw_junctions (s);
-			
-		end if;
-	end draw_fixed_segment;
+-- 	procedure draw_fixed_segment (
+-- 		s : in pac_net_segments.cursor) 
+-- 	is begin
+-- 		if not contains (already_drawn_segments, element (s)) then
+-- 			
+-- 			draw_line (
+-- 				line		=> element (s),
+-- 				pos			=> origin_zero_rotation,		  
+-- 				width		=> net_line_width,
+-- 				do_stroke	=> true);
+-- 
+-- 			draw_junctions (s);
+-- 			
+-- 		end if;
+-- 	end draw_fixed_segment;
 
 
 	
 	-- Draws a net segment.
 	-- Draws also possible junctions that may exist at start or end point
 	-- of the segment.
-	procedure draw_preliminary_segment (
-		net		: in pac_nets.cursor;
-		strand	: in pac_strands.cursor;
-		segment : in type_net_segment) 
-	is begin
-		draw_line (
-			line		=> segment,
-			pos			=> origin_zero_rotation,		  
-			width		=> net_line_width,
-			do_stroke	=> true);
-
-		draw_junctions (segment);
-
-		draw_labels (net, strand, segment);
-	end draw_preliminary_segment;
-
-	
-	
-	-- Draws secondary nets which are attached to the primary net.
-	procedure draw_secondary_segments (
-		net_cursor			: in pac_nets.cursor;
-		strand_cursor		: in pac_strands.cursor;
-
-		-- The segment as it is according to database (before the drag)										  
-		original_segment	: in pac_net_segments.cursor;
-
-		-- The primary segment being drawn:
-		primary_segment		: in type_net_segment;
-
-		-- the zone being dragged:
-		zone				: in type_line_zone)
-	is
-		
-		procedure query_segment (c : in pac_net_segments.cursor) is
-			secondary_segment : type_net_segment;
-
-			-- Draw the secondary segment and mark it as drawn.
-			-- It must be marked as drawn so that procedure query_nets
-			-- does not draw it in its inital state according to the database.
-			procedure draw_and_mark is begin
-				draw_preliminary_segment (net_cursor, strand_cursor, secondary_segment);
-
-				-- mark segment as already drawn
-				already_drawn_segments.append (element (c));
-			end draw_and_mark;
-
-			
-			procedure drag_at_start is begin
-				if get_A (original_segment) = get_A (secondary_segment) then
-				-- Start point of secondary segment is attached to the start point of the original segment.
-					set_A (secondary_segment, get_A (primary_segment));
-
-					draw_and_mark;
-				end if;
-
-				if get_A (original_segment) = get_b (secondary_segment) then
-				-- end point of secondary net segment is attached to the start point of the original segment
-					set_B (secondary_segment, get_A (primary_segment));
-
-					draw_and_mark;
-				end if;
-			end drag_at_start;
-
-			
-			procedure drag_at_end is begin
-				if get_B (original_segment) = get_A (secondary_segment) then
-				-- Start point of secondary segment is attached to the end point of the original segment.
-					set_A (secondary_segment, get_B (primary_segment));
-
-					draw_and_mark;
-				end if;
-
-				if get_B (original_segment) = get_B (secondary_segment) then
-				-- end point of secondary segment is attached to the end point of the original segment
-					set_B (secondary_segment, get_B (primary_segment));
-
-					draw_and_mark;
-				end if;
-			end drag_at_end;
-
-			
-		begin -- query_segment
-			
-			-- Skip original segment. It has been drawn already by caller:
-			if element (c) /= element (original_segment) then
-
-				-- Take a copy of the current segment.
-				-- From now on we call it "secondary segment".
-				-- Depending on the zone we are dragging at (in the original segment),
-				-- the start or/and end point of the secondary segment will be overwritten.
-				secondary_segment := element (c);
-				
-				case zone is -- the zone of the original segment we are dragging at
-					when START_POINT => 
-						drag_at_start;
-						
-					when END_POINT =>
-						drag_at_end;
-		
-					when CENTER =>
-						drag_at_start;
-						drag_at_end;
-				end case;
-				
-			end if;
-		end query_segment;
-		
-
-	begin
-		-- Iterate all segments of the given strand.
-		-- Skip the original segment:
-		pac_net_segments.iterate (
-			container	=> element (strand_cursor).segments,
-			process		=> query_segment'access);
-		
-	end draw_secondary_segments;
-
+	-- procedure draw_preliminary_segment (
+	-- 	net		: in pac_nets.cursor;
+	-- 	strand	: in pac_strands.cursor;
+	-- 	segment : in type_net_segment) 
+	-- is begin
+	-- 	draw_line (
+	-- 		line		=> segment,
+	-- 		pos			=> origin_zero_rotation,		  
+	-- 		width		=> net_line_width,
+	-- 		do_stroke	=> true);
+ -- 
+	-- 	draw_junctions (segment);
+ -- 
+	-- 	draw_labels (net, strand, segment);
+	-- end draw_preliminary_segment;
 
 	
-	-- Draws the net segment being moved or dragged.
-	-- If we are dragging a segment, then other attached segments
-	-- will be dragged along.
-	-- If we are moving a single segment, then only the current segment
-	-- will be moved:
-	-- NOTE: The given original net segment (via cursor) is the segment
-	-- as given by the module database.
-	procedure draw_moving_segments (
-		net_cursor			: in pac_nets.cursor;
-		strand_cursor		: in pac_strands.cursor;
-		original_segment	: in pac_net_segments.cursor) 
-	is
-		use et_modes.schematic;
-		use et_schematic_ops.nets;
-
-
-		-- Calculate the zone where the original segment is being attacked:
-		zone : constant type_line_zone := get_zone (
-				point	=> object_point_of_attack,
-				line	=> element (original_segment));
-
-		destination : type_vector_model;
-		primary_segment : type_net_segment;
-
-		
-		-- Moves net labels of the primary segment.
-		-- Draws the primary segment.
-		-- Draws secondary segments.
-		-- Signals that the finalizing is granted (see et_canvas_schematic_nets.finalize_drag).
-		procedure move_labels_and_secondary_nets is begin
-			move_net_labels (
-				segment_before	=> element (original_segment),
-				segment_after	=> primary_segment,
-				zone			=> zone);
-			
-			-- Draw the primary segment in its temporarily state:
-			draw_preliminary_segment (net_cursor, strand_cursor, primary_segment);
-
-			-- Drawing attached secondary segments requires the original
-			-- net segment (before the drag operation):
-			draw_secondary_segments (
-				net_cursor			=> net_cursor,
-				strand_cursor		=> strand_cursor,
-				original_segment	=> original_segment,
-				primary_segment		=> primary_segment,
-				zone				=> zone);
-			
-			set_finalizing_granted;
-		end move_labels_and_secondary_nets;
-
-		
-	begin -- draw_moving_segments
-		
-		-- First test whether the original segment is movable at all.
-		-- Ports connected with the segment may prohibit moving the segment
-		-- as they belong to symbols which are not dragged along.
-		-- If the segment is not movable then it will be drawn as given by
-		-- the module database.
-		if is_movable (
-			module_cursor	=> active_module,
-			segment			=> element (original_segment),
-			zone			=> zone,
-			point_of_attack	=> to_position (object_point_of_attack, active_sheet),
-			log_threshold	=> log_threshold + 10) -- CS: avoids excessive log information. find a more elegant way.
-		then
-			-- segment is movable
-
-			-- Take a copy of the original net segment.
-			-- We call this copy from now on "primary segment" because other
-			-- segments (secondary segments) could be connected with it.
-			primary_segment := element (original_segment);
-
-			-- calculate the destination point according to the current drawing tool:
-			case object_tool is
-				when MOUSE =>
-					destination := snap_to_grid (get_mouse_position);
-
-				when KEYBOARD =>
-					destination := get_cursor_position;
-			end case;
-
-		
-			case verb is
-				when VERB_DRAG =>
-					attack (primary_segment, object_point_of_attack, destination);
-					move_labels_and_secondary_nets;
-
-				when others => null;
-			end case;
-		else
-			-- Not movable. Draw as given in database:
-			draw_fixed_segment (original_segment);
-			draw_labels (net_cursor, strand_cursor, element (original_segment));
-		end if;
-	end draw_moving_segments;
+	
+-- 	-- Draws secondary nets which are attached to the primary net.
+-- 	procedure draw_secondary_segments (
+-- 		net_cursor			: in pac_nets.cursor;
+-- 		strand_cursor		: in pac_strands.cursor;
+-- 
+-- 		-- The segment as it is according to database (before the drag)										  
+-- 		original_segment	: in pac_net_segments.cursor;
+-- 
+-- 		-- The primary segment being drawn:
+-- 		primary_segment		: in type_net_segment;
+-- 
+-- 		-- the zone being dragged:
+-- 		zone				: in type_line_zone)
+-- 	is
+-- 		
+-- 		procedure query_segment (c : in pac_net_segments.cursor) is
+-- 			secondary_segment : type_net_segment;
+-- 
+-- 			-- Draw the secondary segment and mark it as drawn.
+-- 			-- It must be marked as drawn so that procedure query_nets
+-- 			-- does not draw it in its inital state according to the database.
+-- 			procedure draw_and_mark is begin
+-- 				draw_preliminary_segment (net_cursor, strand_cursor, secondary_segment);
+-- 
+-- 				-- mark segment as already drawn
+-- 				already_drawn_segments.append (element (c));
+-- 			end draw_and_mark;
+-- 
+-- 			
+-- 			procedure drag_at_start is begin
+-- 				if get_A (original_segment) = get_A (secondary_segment) then
+-- 				-- Start point of secondary segment is attached to the start point of the original segment.
+-- 					set_A (secondary_segment, get_A (primary_segment));
+-- 
+-- 					draw_and_mark;
+-- 				end if;
+-- 
+-- 				if get_A (original_segment) = get_b (secondary_segment) then
+-- 				-- end point of secondary net segment is attached to the start point of the original segment
+-- 					set_B (secondary_segment, get_A (primary_segment));
+-- 
+-- 					draw_and_mark;
+-- 				end if;
+-- 			end drag_at_start;
+-- 
+-- 			
+-- 			procedure drag_at_end is begin
+-- 				if get_B (original_segment) = get_A (secondary_segment) then
+-- 				-- Start point of secondary segment is attached to the end point of the original segment.
+-- 					set_A (secondary_segment, get_B (primary_segment));
+-- 
+-- 					draw_and_mark;
+-- 				end if;
+-- 
+-- 				if get_B (original_segment) = get_B (secondary_segment) then
+-- 				-- end point of secondary segment is attached to the end point of the original segment
+-- 					set_B (secondary_segment, get_B (primary_segment));
+-- 
+-- 					draw_and_mark;
+-- 				end if;
+-- 			end drag_at_end;
+-- 
+-- 			
+-- 		begin -- query_segment
+-- 			
+-- 			-- Skip original segment. It has been drawn already by caller:
+-- 			if element (c) /= element (original_segment) then
+-- 
+-- 				-- Take a copy of the current segment.
+-- 				-- From now on we call it "secondary segment".
+-- 				-- Depending on the zone we are dragging at (in the original segment),
+-- 				-- the start or/and end point of the secondary segment will be overwritten.
+-- 				secondary_segment := element (c);
+-- 				
+-- 				case zone is -- the zone of the original segment we are dragging at
+-- 					when START_POINT => 
+-- 						drag_at_start;
+-- 						
+-- 					when END_POINT =>
+-- 						drag_at_end;
+-- 		
+-- 					when CENTER =>
+-- 						drag_at_start;
+-- 						drag_at_end;
+-- 				end case;
+-- 				
+-- 			end if;
+-- 		end query_segment;
+-- 		
+-- 
+-- 	begin
+-- 		-- Iterate all segments of the given strand.
+-- 		-- Skip the original segment:
+-- 		pac_net_segments.iterate (
+-- 			container	=> element (strand_cursor).segments,
+-- 			process		=> query_segment'access);
+-- 		
+-- 	end draw_secondary_segments;
 
 
 	
-
-	-- Draws the segments attached to a unit being dragged.
-	-- If the list segments_being_dragged is empty, nothing happens.
-	procedure draw_segment_being_dragged_along_with_unit (
-		s : in pac_net_segments.cursor) -- the original segment as given in database
-	is
-		tool_position : type_vector_model;
-		displacement : type_vector_model;
-
-		use et_canvas_schematic_units;
-		use pac_segments_being_dragged;
-
-		-- Tests if the segment being dragged is the same as the given segment.
-		-- If the segments are identical, then a copy of the original segment is
-		-- taken. According to the drag zone, the start or end point of this copy
-		-- is moved by the calculated displacement.
-		-- Finally the segment is marked as drawn so that is won't be drawn anew by
-		-- the callers.
-		procedure query_segment (g : in pac_segments_being_dragged.cursor) is
-			copy_of_original_segment : type_net_segment;
-		begin
-			if element (g).segment = element (s) then
-				--log (text => "segment" & to_string (element (g).segment), console => true);
-
-				copy_of_original_segment := element (s);
-
-				case element (g).zone is
-					when START_POINT =>
-						move_A_by (copy_of_original_segment, displacement);
-					
-					when END_POINT =>
-						move_B_by (copy_of_original_segment, displacement);
-				end case;
-
-				draw_line (
-					line		=> copy_of_original_segment,
-					pos			=> origin_zero_rotation,		  
-					width		=> net_line_width,
-					do_stroke	=> true);
-
-				-- mark segment as already drawn
-				already_drawn_segments.append (element (s));
-				
-			end if;
-		end query_segment;
-
-		
-	begin -- draw_segment_being_dragged_along_with_unit
-		if not is_empty (segments_being_dragged) then
-
-			-- Calculate the displacement of segments according to the
-			-- current drawing tool and the current displacement of the unit:
-			case object_tool is
-				when MOUSE =>
-					tool_position := snap_to_grid (get_mouse_position);
-
-				when KEYBOARD =>
-					tool_position := get_cursor_position;
-			end case;
-
-			-- This is the displacement of the attached segments:
-			displacement := get_distance_relative (object_original_position, tool_position);
-
--- 			log (text => "original    " & to_string (unit.original_position), console => true);
--- 			log (text => "displacement" & to_string (displacement), console => true);
--- 			log (text => "count       " & count_type'image (length (segments_being_dragged)), console => true);
-			
-			segments_being_dragged.iterate (query_segment'access);
-		end if;
-	end draw_segment_being_dragged_along_with_unit;
+-- 	-- Draws the net segment being moved or dragged.
+-- 	-- If we are dragging a segment, then other attached segments
+-- 	-- will be dragged along.
+-- 	-- If we are moving a single segment, then only the current segment
+-- 	-- will be moved:
+-- 	-- NOTE: The given original net segment (via cursor) is the segment
+-- 	-- as given by the module database.
+-- 	procedure draw_moving_segments (
+-- 		net_cursor			: in pac_nets.cursor;
+-- 		strand_cursor		: in pac_strands.cursor;
+-- 		original_segment	: in pac_net_segments.cursor) 
+-- 	is
+-- 		use et_modes.schematic;
+-- 		use et_schematic_ops.nets;
+-- 
+-- 
+-- 		-- Calculate the zone where the original segment is being attacked:
+-- 		zone : constant type_line_zone := get_zone (
+-- 				point	=> object_point_of_attack,
+-- 				line	=> element (original_segment));
+-- 
+-- 		destination : type_vector_model;
+-- 		primary_segment : type_net_segment;
+-- 
+-- 		
+-- 		-- Moves net labels of the primary segment.
+-- 		-- Draws the primary segment.
+-- 		-- Draws secondary segments.
+-- 		-- Signals that the finalizing is granted (see et_canvas_schematic_nets.finalize_drag).
+-- 		procedure move_labels_and_secondary_nets is begin
+-- 			move_net_labels (
+-- 				segment_before	=> element (original_segment),
+-- 				segment_after	=> primary_segment,
+-- 				zone			=> zone);
+-- 			
+-- 			-- Draw the primary segment in its temporarily state:
+-- 			draw_preliminary_segment (net_cursor, strand_cursor, primary_segment);
+-- 
+-- 			-- Drawing attached secondary segments requires the original
+-- 			-- net segment (before the drag operation):
+-- 			draw_secondary_segments (
+-- 				net_cursor			=> net_cursor,
+-- 				strand_cursor		=> strand_cursor,
+-- 				original_segment	=> original_segment,
+-- 				primary_segment		=> primary_segment,
+-- 				zone				=> zone);
+-- 			
+-- 			set_finalizing_granted;
+-- 		end move_labels_and_secondary_nets;
+-- 
+-- 		
+-- 	begin -- draw_moving_segments
+-- 		
+-- 		-- First test whether the original segment is movable at all.
+-- 		-- Ports connected with the segment may prohibit moving the segment
+-- 		-- as they belong to symbols which are not dragged along.
+-- 		-- If the segment is not movable then it will be drawn as given by
+-- 		-- the module database.
+-- 		if is_movable (
+-- 			module_cursor	=> active_module,
+-- 			segment			=> element (original_segment),
+-- 			zone			=> zone,
+-- 			point_of_attack	=> to_position (object_point_of_attack, active_sheet),
+-- 			log_threshold	=> log_threshold + 10) -- CS: avoids excessive log information. find a more elegant way.
+-- 		then
+-- 			-- segment is movable
+-- 
+-- 			-- Take a copy of the original net segment.
+-- 			-- We call this copy from now on "primary segment" because other
+-- 			-- segments (secondary segments) could be connected with it.
+-- 			primary_segment := element (original_segment);
+-- 
+-- 			-- calculate the destination point according to the current drawing tool:
+-- 			case object_tool is
+-- 				when MOUSE =>
+-- 					destination := snap_to_grid (get_mouse_position);
+-- 
+-- 				when KEYBOARD =>
+-- 					destination := get_cursor_position;
+-- 			end case;
+-- 
+-- 		
+-- 			case verb is
+-- 				when VERB_DRAG =>
+-- 					attack (primary_segment, object_point_of_attack, destination);
+-- 					move_labels_and_secondary_nets;
+-- 
+-- 				when others => null;
+-- 			end case;
+-- 		else
+-- 			-- Not movable. Draw as given in database:
+-- 			draw_fixed_segment (original_segment);
+-- 			draw_labels (net_cursor, strand_cursor, element (original_segment));
+-- 		end if;
+-- 	end draw_moving_segments;
 
 
 	
-	procedure query_nets (
+
+-- 	-- Draws the segments attached to a unit being dragged.
+-- 	-- If the list segments_being_dragged is empty, nothing happens.
+-- 	procedure draw_segment_being_dragged_along_with_unit (
+-- 		s : in pac_net_segments.cursor) -- the original segment as given in database
+-- 	is
+-- 		tool_position : type_vector_model;
+-- 		displacement : type_vector_model;
+-- 
+-- 		use et_canvas_schematic_units;
+-- 		use pac_segments_being_dragged;
+-- 
+-- 		-- Tests if the segment being dragged is the same as the given segment.
+-- 		-- If the segments are identical, then a copy of the original segment is
+-- 		-- taken. According to the drag zone, the start or end point of this copy
+-- 		-- is moved by the calculated displacement.
+-- 		-- Finally the segment is marked as drawn so that is won't be drawn anew by
+-- 		-- the callers.
+-- 		procedure query_segment (g : in pac_segments_being_dragged.cursor) is
+-- 			copy_of_original_segment : type_net_segment;
+-- 		begin
+-- 			if element (g).segment = element (s) then
+-- 				--log (text => "segment" & to_string (element (g).segment), console => true);
+-- 
+-- 				copy_of_original_segment := element (s);
+-- 
+-- 				case element (g).zone is
+-- 					when START_POINT =>
+-- 						move_A_by (copy_of_original_segment, displacement);
+-- 					
+-- 					when END_POINT =>
+-- 						move_B_by (copy_of_original_segment, displacement);
+-- 				end case;
+-- 
+-- 				draw_line (
+-- 					line		=> copy_of_original_segment,
+-- 					pos			=> origin_zero_rotation,		  
+-- 					width		=> net_line_width,
+-- 					do_stroke	=> true);
+-- 
+-- 				-- mark segment as already drawn
+-- 				already_drawn_segments.append (element (s));
+-- 				
+-- 			end if;
+-- 		end query_segment;
+-- 
+-- 		
+-- 	begin -- draw_segment_being_dragged_along_with_unit
+-- 		if not is_empty (segments_being_dragged) then
+-- 
+-- 			-- Calculate the displacement of segments according to the
+-- 			-- current drawing tool and the current displacement of the unit:
+-- 			case object_tool is
+-- 				when MOUSE =>
+-- 					tool_position := snap_to_grid (get_mouse_position);
+-- 
+-- 				when KEYBOARD =>
+-- 					tool_position := get_cursor_position;
+-- 			end case;
+-- 
+-- 			-- This is the displacement of the attached segments:
+-- 			displacement := get_distance_relative (object_original_position, tool_position);
+-- 
+-- -- 			log (text => "original    " & to_string (unit.original_position), console => true);
+-- -- 			log (text => "displacement" & to_string (displacement), console => true);
+-- -- 			log (text => "count       " & count_type'image (length (segments_being_dragged)), console => true);
+-- 			
+-- 			segments_being_dragged.iterate (query_segment'access);
+-- 		end if;
+-- 	end draw_segment_being_dragged_along_with_unit;
+
+
+	
+	procedure query_module (
 		module_name	: in pac_module_name.bounded_string;
 		module		: in type_generic_module) 
 	is
@@ -868,214 +868,228 @@ procedure draw_nets is
 		-- Draws the strands of the given net in "normal" mode.
 		-- "Normal" mode means, the whole net is not to be drawn highlighted.
 		-- This is the case when the verb VERB_SHOW is not active.
-		procedure query_strands_normal (
+		procedure query_net (
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net) 
 		is
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
+
+			procedure draw_segment (
+				s : in pac_net_segments.cursor) 
+			is begin
+				draw_line (
+					line		=> element (s),
+					pos			=> origin_zero_rotation,		  
+					width		=> net_line_width,
+					do_stroke	=> true);
+
+				-- draw_junctions (s);
+			end draw_segment;
+
 			
-			procedure query_segments (strand : in type_strand) is
+			procedure query_strand (strand : in type_strand) is
 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
 			begin
 				-- draw nets of the active sheet only:
 				if get_sheet (strand.position) = active_sheet then
 
-					-- First we draw selected segments or those being moved/dragged:
-					set_color_nets (BRIGHT);
-					
-					while segment_cursor /= pac_net_segments.no_element loop
-
-						-- CS test verb and noun ?
-						draw_segment_being_dragged_along_with_unit (segment_cursor);
-						-- (If segments_being_dragged is empty, then nothing happens.)
-						
-						-- CS test verb and noun ?						
-						if is_selected (net_cursor, strand_cursor, segment_cursor) then
-						
-							if edit_process_running then
-								-- Draw the net segments being moved or dragged.
-								-- If we are dragging a segment, then other attached segments
-								-- will be dragged along.
-								-- If we are moving a single segment, then only the current segment
-								-- will be moved.
-								draw_moving_segments (net_cursor, strand_cursor, segment_cursor);
-							else
-								-- Draw the net segment as it is according to module database:
-								draw_fixed_segment (segment_cursor);
-
-								draw_labels (net_cursor, strand_cursor, element (segment_cursor));
-
-								-- Draw the net label being moved. If no net label
-								-- is being moved, nothing happens here:
-								draw_label_being_moved;
-							end if;
-						end if;
-
-						-- Draw selected label. If no label selected, nothing happens here:
-						draw_selected_label (net_cursor, strand_cursor, segment_cursor);
-						
-						next (segment_cursor);
-					end loop;
-
+-- 					-- First we draw selected segments or those being moved/dragged:
+-- 					set_color_nets (BRIGHT);
+-- 					
+-- 					while segment_cursor /= pac_net_segments.no_element loop
+-- 
+-- 						-- CS test verb and noun ?
+-- 						draw_segment_being_dragged_along_with_unit (segment_cursor);
+-- 						-- (If segments_being_dragged is empty, then nothing happens.)
+-- 						
+-- 						-- CS test verb and noun ?						
+-- 						if is_selected (net_cursor, strand_cursor, segment_cursor) then
+-- 						
+-- 							if edit_process_running then
+-- 								-- Draw the net segments being moved or dragged.
+-- 								-- If we are dragging a segment, then other attached segments
+-- 								-- will be dragged along.
+-- 								-- If we are moving a single segment, then only the current segment
+-- 								-- will be moved.
+-- 								draw_moving_segments (net_cursor, strand_cursor, segment_cursor);
+-- 							else
+-- 								-- Draw the net segment as it is according to module database:
+-- 								draw_fixed_segment (segment_cursor);
+-- 
+-- 								draw_labels (net_cursor, strand_cursor, element (segment_cursor));
+-- 
+-- 								-- Draw the net label being moved. If no net label
+-- 								-- is being moved, nothing happens here:
+-- 								draw_label_being_moved;
+-- 							end if;
+-- 						end if;
+-- 
+-- 						-- Draw selected label. If no label selected, nothing happens here:
+-- 						draw_selected_label (net_cursor, strand_cursor, segment_cursor);
+-- 						
+-- 						next (segment_cursor);
+-- 					end loop;
+-- 
 					
 					-- Now we draw the remaining segments:
-					set_color_nets (NORMAL);
-					segment_cursor := strand.segments.first;
+					-- set_color_nets (NORMAL);
+					-- segment_cursor := strand.segments.first;
 					
 					while segment_cursor /= pac_net_segments.no_element loop
 
-						if not is_selected (net_cursor, strand_cursor, segment_cursor) then
+						-- if not is_selected (net_cursor, strand_cursor, segment_cursor) then
 
 							-- Draw the net segment as it is according to module database:
-							draw_fixed_segment (segment_cursor);
+							draw_segment (segment_cursor);
 
-							draw_labels (net_cursor, strand_cursor, element (segment_cursor));
-						end if;
+							-- draw_labels (net_cursor, strand_cursor, element (segment_cursor));
+						-- end if;
 
 						next (segment_cursor);
 					end loop;
 
 				end if;
-			end query_segments;
+			end query_strand;
 			
 			
-		begin -- query_strands_normal
+		begin
+			-- Iterate through the strands of the candidate net:
 			while strand_cursor /= pac_strands.no_element loop
 
 				query_element (
 					position	=> strand_cursor,
-					process		=> query_segments'access);
+					process		=> query_strand'access);
 				
 				next (strand_cursor);
 			end loop;
-		end query_strands_normal;
+		end query_net;
 
 		
-		-- Draws the whole net inclusive net labesl highlighted. 
-		-- This is the case when the verb VERB_SHOW is active.
-		procedure query_strands_show (
-			net_name	: in pac_net_name.bounded_string;
-			net			: in type_net)
-		is
-			strand_cursor : pac_strands.cursor := net.strands.first;
-
-			procedure query_segments (strand : in type_strand) is
-				segment_cursor : pac_net_segments.cursor := strand.segments.first;
-
-				use et_colors;
-				use et_colors.schematic;
-			begin
-				-- draw nets of the active sheet only:
-				if get_sheet (strand.position) = active_sheet then
-
-					set_color_nets (BRIGHT);
-					
-					while segment_cursor /= pac_net_segments.no_element loop
-
-						-- Draw the net segment as it is according to module database:
-						draw_fixed_segment (segment_cursor);
-
-						draw_labels (net_cursor, strand_cursor, element (segment_cursor));
-						
-						next (segment_cursor);
-					end loop;
-
-				end if;
-			end query_segments;
-
-			
-		begin -- query_strands_show
-			while strand_cursor /= pac_strands.no_element loop
-
-				query_element (
-					position	=> strand_cursor,
-					process		=> query_segments'access);
-				
-				next (strand_cursor);
-			end loop;
-		end query_strands_show;
-
+-- 		-- Draws the whole net inclusive net labesl highlighted. 
+-- 		-- This is the case when the verb VERB_SHOW is active.
+-- 		procedure query_strands_show (
+-- 			net_name	: in pac_net_name.bounded_string;
+-- 			net			: in type_net)
+-- 		is
+-- 			strand_cursor : pac_strands.cursor := net.strands.first;
+-- 
+-- 			procedure query_segments (strand : in type_strand) is
+-- 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
+-- 
+-- 				use et_colors;
+-- 				use et_colors.schematic;
+-- 			begin
+-- 				-- draw nets of the active sheet only:
+-- 				if get_sheet (strand.position) = active_sheet then
+-- 
+-- 					set_color_nets (BRIGHT);
+-- 					
+-- 					while segment_cursor /= pac_net_segments.no_element loop
+-- 
+-- 						-- Draw the net segment as it is according to module database:
+-- 						draw_fixed_segment (segment_cursor);
+-- 
+-- 						draw_labels (net_cursor, strand_cursor, element (segment_cursor));
+-- 						
+-- 						next (segment_cursor);
+-- 					end loop;
+-- 
+-- 				end if;
+-- 			end query_segments;
+-- 
+-- 			
+-- 		begin -- query_strands_show
+-- 			while strand_cursor /= pac_strands.no_element loop
+-- 
+-- 				query_element (
+-- 					position	=> strand_cursor,
+-- 					process		=> query_segments'access);
+-- 				
+-- 				next (strand_cursor);
+-- 			end loop;
+-- 		end query_strands_show;
+-- 
 		
 		-- A net can be drawn in "normal" mode or highlighted. This flag indicates
 		-- that a net has alredy been drawn highlighted so that it won't be drawn
 		-- again in "normal" mode.
-		net_already_drawn : boolean := false;
+		-- net_already_drawn : boolean := false;
 
 		
-		-- This procedure calls query_strands_show if the current net (indicated by net_cursor)
-		-- is selected for highlighting. It sets the flag net_already_drawn in that case.
-		procedure highlight_net is
-			use pac_net_name;
-			ss : type_selected_segment;
-		begin
-			-- The net selected for highlighting is to be found in the list proposed_segments.
-			-- The last element of the proposed_segments points to the net that is to 
-			-- be drawn highlighted.
-			-- So the list of proposed_segments must contain something:
-			if not is_empty (proposed_segments) then
-
-				-- There must be a selected segment (indicated by cursor selected_segment):
-				if selected_segment /= pac_proposed_segments.no_element then
-					ss := element (selected_segment);
-
-					-- The selected_segment must provide a cursor to a net:
-					if ss.net /= pac_nets.no_element then
-						
-						-- The net name of the selected segment must match the name of the
-						-- current net (indicated by net_cursor):
-						if key (ss.net) = key (net_cursor) then
-
-							-- Draw the whole net on the current sheet highlighted:
-							pac_nets.query_element (
-								position	=> net_cursor,
-								process		=> query_strands_show'access);
-
-							-- The net (indicated by net_cursor) must not be drawn again:
-							net_already_drawn := true;
-						end if;
-					end if;
-				end if;
-			end if;
-		end highlight_net;
+-- 		-- This procedure calls query_strands_show if the current net (indicated by net_cursor)
+-- 		-- is selected for highlighting. It sets the flag net_already_drawn in that case.
+-- 		procedure highlight_net is
+-- 			use pac_net_name;
+-- 			ss : type_selected_segment;
+-- 		begin
+-- 			-- The net selected for highlighting is to be found in the list proposed_segments.
+-- 			-- The last element of the proposed_segments points to the net that is to 
+-- 			-- be drawn highlighted.
+-- 			-- So the list of proposed_segments must contain something:
+-- 			if not is_empty (proposed_segments) then
+-- 
+-- 				-- There must be a selected segment (indicated by cursor selected_segment):
+-- 				if selected_segment /= pac_proposed_segments.no_element then
+-- 					ss := element (selected_segment);
+-- 
+-- 					-- The selected_segment must provide a cursor to a net:
+-- 					if ss.net /= pac_nets.no_element then
+-- 						
+-- 						-- The net name of the selected segment must match the name of the
+-- 						-- current net (indicated by net_cursor):
+-- 						if key (ss.net) = key (net_cursor) then
+-- 
+-- 							-- Draw the whole net on the current sheet highlighted:
+-- 							pac_nets.query_element (
+-- 								position	=> net_cursor,
+-- 								process		=> query_strands_show'access);
+-- 
+-- 							-- The net (indicated by net_cursor) must not be drawn again:
+-- 							net_already_drawn := true;
+-- 						end if;
+-- 					end if;
+-- 				end if;
+-- 			end if;
+-- 		end highlight_net;
 
 		
-	begin -- query_nets
+	begin -- query_module
 		set_color_nets;
 
 		-- iterate nets
 		while net_cursor /= pac_nets.no_element loop
 
-			net_already_drawn := false;
+			-- net_already_drawn := false;
 
 			-- If the show mode is active AND the net is selected for highlighting,
 			-- then highlight the net and set the flag net_already_drawn:
-			case verb is
-				when VERB_SHOW => 
-					case noun is
-						when NOUN_NET => highlight_net;
-
-						when others => null;
-					end case;
-		
-				when others => null;
-			end case;
+-- 			case verb is
+-- 				when VERB_SHOW => 
+-- 					case noun is
+-- 						when NOUN_NET => highlight_net;
+-- 
+-- 						when others => null;
+-- 					end case;
+-- 		
+-- 				when others => null;
+-- 			end case;
 
 			-- If the net (indicated by net_cursor) has been drawn already,
 			-- don't draw it again. Otherwise draw it in "normal" mode:
-			if not net_already_drawn then
+			-- if not net_already_drawn then
 
 				-- Draw the net in "normal" mode:
 				pac_nets.query_element (
 					position	=> net_cursor,
-					process		=> query_strands_normal'access);
+					process		=> query_net'access);
 
-			end if;
+			-- end if;
 			
 			next (net_cursor); -- advance to next net
 		end loop;
 
-	end query_nets;
+	end query_module;
 
 
 
@@ -1173,7 +1187,7 @@ begin
 	-- draw the nets
 	pac_generic_modules.query_element (
 		position	=> active_module,
-		process		=> query_nets'access);
+		process		=> query_module'access);
 
 
 	-- Draw a net that is being drawn. If no net is being drawn,

@@ -68,6 +68,24 @@ package body et_nets is
 	
 
 
+	function get_position (
+		strand : in type_strand)
+		return string
+	is begin
+		return to_string (strand.position);
+	end;
+
+
+
+	function get_position (
+		strand : in pac_strands.cursor)
+		return string
+	is begin
+		return get_position (element (strand));
+	end;
+
+
+	
 	
 	procedure iterate (
 		strands	: in pac_strands.list;
@@ -128,6 +146,8 @@ package body et_nets is
 
 
 
+
+	
 
 	
 	function get_first_segment (
@@ -411,12 +431,12 @@ package body et_nets is
 	
 
 	
-	function to_string (
+	function get_net_name (
 		net_cursor : in pac_nets.cursor)
 		return string
 	is begin
 		return to_string (key (net_cursor));
-	end to_string;
+	end get_net_name;
 
 
 	

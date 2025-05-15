@@ -196,7 +196,7 @@ is
 					net : type_net renames element (c);					
 				begin
 					if debug then
-						put_line (to_string (c));
+						put_line (get_net_name (c));
 						put_line ("processing strands on sheet" 
 							& to_string (active_sheet) & " ...");
 					end if;

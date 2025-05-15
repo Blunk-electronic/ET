@@ -338,7 +338,7 @@ package et_schematic_ops.units is
 
 	
 
-	-- Modifies that status flag of a unit:
+	-- Modifies the status flag of a unit:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		unit			: in type_object_unit;
