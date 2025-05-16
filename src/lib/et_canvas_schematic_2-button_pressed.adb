@@ -152,14 +152,14 @@ is
 						-- When dragging units, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
-						drag_object (MOUSE, snap_point);
+						et_canvas_schematic_units.drag_object (MOUSE, snap_point);
 						
 					when NOUN_NET => 
 						-- When dragging net segments, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
 						--drag_segment (MOUSE, point);
-						drag_segment (MOUSE, snap_point);
+						et_canvas_schematic_nets.drag_object (MOUSE, snap_point);
 		
 					when others => null;
 				end case;
@@ -347,22 +347,23 @@ is
 
 					when NOUN_UNIT =>
 						if clarification_pending then
-							clarify_object;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 						
 					when others => null;							
 				end case;
 
+				
 			when VERB_DRAG =>
 				case noun is
 					when NOUN_UNIT =>
 						if clarification_pending then
-							clarify_object;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 
 					when NOUN_NET => 
 						if clarification_pending then
-							clarify_net_segment;
+							et_canvas_schematic_nets.clarify_object;
 						end if;
 
 					when others => null;							
@@ -409,7 +410,7 @@ is
 
 					when NOUN_UNIT =>
 						if clarification_pending then
-							clarify_object;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 						
 					when NOUN_VALUE => 
@@ -420,6 +421,7 @@ is
 					when others => null;							
 				end case;
 
+				
 			when VERB_PLACE =>
 				case noun is
 					
@@ -436,6 +438,7 @@ is
 					when others => null;
 				end case;
 
+				
 			when VERB_RENAME =>
 				case noun is
 					when NOUN_DEVICE =>
@@ -450,7 +453,8 @@ is
 
 					when others => null;							
 				end case;
-						
+
+				
 			when VERB_ROTATE =>
 				case noun is
 					when NOUN_NAME | NOUN_VALUE | NOUN_PURPOSE => 
@@ -460,12 +464,13 @@ is
 
 					when NOUN_UNIT =>
 						if clarification_pending then
-							clarify_object;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 
 					when others => null;							
 				end case;
 
+				
 			when VERB_SET =>
 				case noun is
 					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE =>
@@ -476,6 +481,7 @@ is
 					when others => null;							
 				end case;
 
+				
 			when VERB_SHOW =>
 				case noun is
 					when NOUN_DEVICE =>
@@ -490,6 +496,7 @@ is
 						
 					when others => null;							
 				end case;
+
 				
 			when others => null; -- CS
 		end case;

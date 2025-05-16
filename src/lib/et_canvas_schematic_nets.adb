@@ -55,7 +55,7 @@ with et_board_ops.ratsnest;
 
 with et_undo_redo;
 with et_commit;
-
+with et_object_status;				use et_object_status;
 with et_canvas_schematic_preliminary_object;	use et_canvas_schematic_preliminary_object;
 
 
@@ -89,6 +89,7 @@ package body et_canvas_schematic_nets is
 															  
 					delete (strand.segments, s.segment);
 				end query_segments;
+
 				
 			begin -- query_strands
 				update_element (
@@ -122,6 +123,8 @@ package body et_canvas_schematic_nets is
 			log_indentation_down;
 		end query_net;
 
+
+		
 	begin
 		update_element (
 			container	=> generic_modules,
@@ -139,11 +142,15 @@ package body et_canvas_schematic_nets is
 	end delete_selected_segment;
 
 
+	
+
 	function selected_net return pac_net_name.bounded_string is
 		ss : constant type_selected_segment := element (selected_segment);
 	begin
 		return key (ss.net);
 	end selected_net;
+
+
 
 	
 	function get_strand_position return type_object_position is
@@ -152,11 +159,14 @@ package body et_canvas_schematic_nets is
 		return element (ss.strand).position;
 	end get_strand_position;
 
+
+
 	
 	procedure clear_proposed_segments is begin
 		clear (proposed_segments);
 		selected_segment := pac_proposed_segments.no_element;
 	end clear_proposed_segments;
+
 
 
 	
@@ -181,6 +191,8 @@ package body et_canvas_schematic_nets is
 		return net;
 	end first_net;
 
+
+
 	
 	function more_than_one (segments : in pac_proposed_segments.list) 
 		return boolean is 
@@ -191,6 +203,8 @@ package body et_canvas_schematic_nets is
 			return false;
 		end if;
 	end more_than_one;
+
+
 
 	
 	function all_belong_to_same_net (
@@ -224,6 +238,9 @@ package body et_canvas_schematic_nets is
 		return result;
 	end all_belong_to_same_net;
 
+
+
+	
 	
 	function between_A_and_B_of_sloping_segment (
 		point		: in type_vector_model;
@@ -250,6 +267,8 @@ package body et_canvas_schematic_nets is
 		return result;
 	end between_A_and_B_of_sloping_segment;
 	
+
+
 
 	
 	function collect_segments (
@@ -356,6 +375,7 @@ package body et_canvas_schematic_nets is
 
 
 	
+	
 	procedure delete_net_segment (
 		point : in type_vector_model) 
 	is 
@@ -433,6 +453,8 @@ package body et_canvas_schematic_nets is
 	end clarify_net_segment;
 
 
+
+	
 	
 	procedure delete_selected_net_segment is
 		use et_schematic_ops.nets;
@@ -1057,84 +1079,411 @@ package body et_canvas_schematic_nets is
 	end find_segments;
 
 
+
 	
-	procedure drag_segment (
-		tool		: in type_tool;
-		position	: in type_vector_model)
+
+
+	procedure show_selected_object (
+		object		: in type_object)
 	is 
-		use et_undo_redo;
-		use et_commit;
+		praeamble : constant string := "selected object: ";
+	begin
+		case object.cat is
+			when CAT_SEGMENT =>
+				null;
+				-- CS
+				-- set_status (praeamble & get_object_name (object.segment)
+				-- 	& ". " & status_next_object_clarification);
 
-		
-		-- Assigns the given destination after the drag to the selected segment:
-		procedure finalize_drag is
-			net_name : pac_net_name.bounded_string;
+			-- CS placeholders
+				
+			when CAT_VOID => null; -- CS
+		end case;
+	end show_selected_object;
+
+
+
+
+
+
+	
+	procedure clarify_object is 
+
+		procedure do_it is
+			use pac_objects;
 			
-			point_of_attack : type_object_position := 
-				to_position (object_point_of_attack, active_sheet);
+			-- Gather all proposed objects:
+			proposed_objects : constant pac_objects.list := 
+				get_objects (active_module, PROPOSED, log_threshold + 1);
+
+			proposed_object : pac_objects.cursor;
+
+			-- We start with the first object that is currently selected:
+			selected_object : type_object := 
+				get_first_object (active_module, SELECTED, log_threshold + 1);
+
 		begin
-			log (text => "finalizing drag ...", level => log_threshold + 1);
-			log_indentation_up;
+			log (text => "proposed objects total " 
+				& natural'image (get_count (proposed_objects)),
+				level => log_threshold + 2);
 
-			-- Finalize only if procedure et_canvas_schematic.draw_nets has
-			-- granted permission:
-			if finalizing_granted then
-		
-				if selected_segment /= pac_proposed_segments.no_element then
+			
+			-- Locate the selected object among the proposed objects:
+			proposed_object := proposed_objects.find (selected_object);
 
-					net_name := key (element (selected_segment).net);
+			-- Deselect the the proposed object:
+			modify_status (
+				module_cursor	=> active_module, 
+				operation		=> to_operation (CLEAR, SELECTED),
+				object_cursor	=> proposed_object, 
+				log_threshold	=> log_threshold + 1);
 
-					drag_segment (
-						module_cursor	=> active_module,
-						net_name		=> net_name,
-						point_of_attack	=> point_of_attack,
-						coordinates		=> ABSOLUTE,
-						destination		=> position,
-						log_threshold	=> log_threshold + 2);
+			-- Advance to the next proposed object:
+			next (proposed_object);
 
-				else
-					log (text => "nothing to do", level => log_threshold);
-				end if;
-					
-			else
-				log (text => "not granted", level => log_threshold);
+			-- If end of list reached, then proceed at 
+			-- the begin of the list:
+			if proposed_object = pac_objects.no_element then
+				proposed_object := proposed_objects.first;
 			end if;
 			
-			log_indentation_down;
+			-- Select the proposed object:
+			modify_status (
+				module_cursor	=> active_module, 
+				operation		=> to_operation (SET, SELECTED),
+				object_cursor	=> proposed_object, 
+				log_threshold	=> log_threshold + 1);
+
+			-- Display the object in the status bar:
+			show_selected_object (element (proposed_object));
+		end do_it;
+		
+		
+	begin
+		log (text => "clarify_object", level => log_threshold + 1);
+		log_indentation_up;		
+		do_it;		
+		log_indentation_down;
+	end clarify_object;
+
+
+
+	
+
+	
+
+
+	-- This procedure searches for the first selected object
+	-- and sets its status to "moving":
+	procedure set_first_selected_object_moving is
+		
+		procedure do_it is
+			-- Get the first selected object:
+			selected_object : constant type_object := 
+				get_first_object (active_module, SELECTED, log_threshold + 1);
+
+			-- Gather all selected objects:
+			objects : constant pac_objects.list :=
+				get_objects (active_module, SELECTED, log_threshold + 1);
+
+			c : pac_objects.cursor;
+		begin
+			-- Get a cursor to the candidate object
+			-- among all selected objects:
+			c := objects.find (selected_object);
 			
-			set_status (status_move);
-			
-			reset_preliminary_segment;
-		end finalize_drag;
+			modify_status (active_module, c, to_operation (SET, MOVING), log_threshold + 1);
+		end do_it;
+		
+		
+	begin
+		log (text => "set_first_selected_object_moving ...", level => log_threshold);
+		log_indentation_up;
+		do_it;
+		log_indentation_down;
+	end set_first_selected_object_moving;
+
+
+	
+	
+
+	
+	
+
+	procedure find_objects (
+		point : in type_vector_model)
+	is 
+		use et_modes.schematic;
+		
+		-- The total number of objects that have
+		-- been proposed:
+		count_total : natural := 0;
+
+
+		-- This procedure searches for the first proposed
+		-- object and marks it as "selected":
+		procedure select_first_proposed is
+			object : type_object := get_first_object (
+						active_module, PROPOSED, log_threshold + 1);
+		begin
+			modify_status (
+				active_module, object, to_operation (SET, SELECTED), log_threshold + 1);
+
+			-- If only one object found, then show it in the status bar:
+			if count_total = 1 then
+				show_selected_object (object);
+			end if;
+		end select_first_proposed;
 
 		
 	begin
+		log (text => "locating objects ...", level => log_threshold);
+		log_indentation_up;
+
+		-- CS propose objects according to
+		-- current verb.
+		
+		-- Propose net segments in the vicinity of the given point:
+		propose_segments (
+			module_cursor	=> active_module,
+			catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+			count			=> count_total,
+			log_threshold	=> log_threshold + 1);
+
+
+		-- CS net labels, junctions
+
+
+		log (text => "proposed objects total" & natural'image (count_total),
+			 level => log_threshold + 1);
+
+		
+		-- Evaluate the number of objects found here:
+		case count_total is
+			when 0 =>
+				null; -- nothing to do
+				
+			when 1 =>
+				set_edit_process_running;
+				select_first_proposed;
+
+				case verb is
+					-- when VERB_MOVE =>
+						-- set_first_selected_object_moving;
+						-- CS ? set_status (status_move);
+						
+					when VERB_DRAG =>
+						set_first_selected_object_moving;
+						
+						-- CS ? set_status (status_drag);
+
+						-- Set the net segments which are
+						-- connected with the selected segment
+						-- as "moving":
+						set_segments_moving (active_module, log_threshold + 1);
+
+					when others => null; -- CS
+				end case;
+				
+				reset_request_clarification;
+				
+			when others =>
+				--log (text => "many objects", level => log_threshold + 2);
+				set_request_clarification;
+				select_first_proposed;
+		end case;
+		
+		log_indentation_down;
+	end find_objects;
+
+
+	
+
+
+	
+-- 	procedure drag_segment (
+-- 		tool		: in type_tool;
+-- 		position	: in type_vector_model)
+-- 	is 
+-- 		use et_undo_redo;
+-- 		use et_commit;
+-- 
+-- 		
+-- 		-- Assigns the given destination after the drag to the selected segment:
+-- 		procedure finalize_drag is
+-- 			net_name : pac_net_name.bounded_string;
+-- 			
+-- 			point_of_attack : type_object_position := 
+-- 				to_position (object_point_of_attack, active_sheet);
+-- 		begin
+-- 			log (text => "finalizing drag ...", level => log_threshold + 1);
+-- 			log_indentation_up;
+-- 
+-- 			-- Finalize only if procedure et_canvas_schematic.draw_nets has
+-- 			-- granted permission:
+-- 			if finalizing_granted then
+-- 		
+-- 				if selected_segment /= pac_proposed_segments.no_element then
+-- 
+-- 					net_name := key (element (selected_segment).net);
+-- 
+-- 					drag_segment (
+-- 						module_cursor	=> active_module,
+-- 						net_name		=> net_name,
+-- 						point_of_attack	=> point_of_attack,
+-- 						coordinates		=> ABSOLUTE,
+-- 						destination		=> position,
+-- 						log_threshold	=> log_threshold + 2);
+-- 
+-- 				else
+-- 					log (text => "nothing to do", level => log_threshold);
+-- 				end if;
+-- 					
+-- 			else
+-- 				log (text => "not granted", level => log_threshold);
+-- 			end if;
+-- 			
+-- 			log_indentation_down;
+-- 			
+-- 			set_status (status_move);
+-- 			
+-- 			reset_preliminary_segment;
+-- 		end finalize_drag;
+-- 
+-- 		
+-- 	begin
+-- 		if not edit_process_running then
+-- 			
+-- 			-- Set the tool being used for dragging the net segment:
+-- 			object_tool := tool;
+-- 			
+-- 			if not clarification_pending then
+-- 				find_segments (position);
+-- 				object_point_of_attack := position;
+-- 			else
+-- 				set_edit_process_running;
+-- 				reset_request_clarification;
+-- 			end if;
+-- 
+-- 		else
+-- 			-- Commit the current state of the design:
+-- 			commit (PRE, verb, noun, log_threshold + 1);
+-- 			
+-- 			-- Finally assign the cursor position to the
+-- 			-- currently selected segment:
+-- 			finalize_drag;
+-- 
+-- 			-- Commit the new state of the design:
+-- 			commit (POST, verb, noun, log_threshold + 1);
+-- 		end if;		
+-- 	end drag_segment;
+-- 
+
+
+
+
+
+
+	procedure drag_object (
+		tool	: in type_tool;
+		point	: in type_vector_model)
+	is 
+
+		-- Drags the selected object:
+		procedure finalize is
+			use et_modes.schematic;
+			use et_undo_redo;
+			use et_commit;
+
+			object : constant type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+		begin
+			log (text => "finalizing drag ...", level => log_threshold);
+			log_indentation_up;
+
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+				
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+				
+				et_schematic_ops.nets.drag_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					point_of_attack	=> object_point_of_attack,
+					destination		=> point,
+					log_threshold	=> log_threshold + 1);
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+
+				-- -- If a segment has been dragged, then the board
+				-- -- must be redrawn:
+				-- if object.cat = CAT_SEGMENT then
+				-- 	redraw_board;
+				-- end if;
+				-- CS really required ? Redraw the schematic instead ?
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			
+			set_status (status_drag);
+			
+			reset_proposed_objects (active_module, log_threshold + 1);
+
+			reset_editing_process; -- prepare for a new editing process
+		end finalize;
+
+		
+	begin
+		-- Initially the editing process is not running:
 		if not edit_process_running then
 			
-			-- Set the tool being used for dragging the net segment:
+			-- Set the tool being used:
 			object_tool := tool;
+
+			object_point_of_attack := point;
+			
 			
 			if not clarification_pending then
-				find_segments (position);
-				object_point_of_attack := position;
+				-- Locate all objects in the vicinity of the given point:
+				find_objects (point);
+
+				-- NOTE: If many objects have been found, then
+				-- clarification is now pending.
+
+				-- If find_objects has found only one object,				
+				-- then the flag edit_process_running is set true.
 			else
+				-- Here the clarification procedure ends.
+				-- An object has been selected via procedure clarify_object.
+				-- By setting the status of the selected object
+				-- as "moving", the selected object
+				-- will be drawn according to the given point and 
+				-- the tool position.
+				set_first_selected_object_moving;
+				
+				-- Set the net segments which are
+				-- connected with the selected segment as "moving":
+				set_segments_moving (active_module, log_threshold + 1);
+
+				-- Furtheron, on the next call of this procedure
+				-- the selected object will be assigned its final position.
+
 				set_edit_process_running;
 				reset_request_clarification;
 			end if;
 
 		else
-			-- Commit the current state of the design:
-			commit (PRE, verb, noun, log_threshold + 1);
-			
-			-- Finally assign the cursor position to the
-			-- currently selected segment:
-			finalize_drag;
+			finalize;
+		end if;
+	end drag_object;
 
-			-- Commit the new state of the design:
-			commit (POST, verb, noun, log_threshold + 1);
-		end if;		
-	end drag_segment;
-
+	
 
 	
 	
@@ -1298,6 +1647,7 @@ package body et_canvas_schematic_nets is
 	
 	
 
+	
 	procedure delete_selected_label (
 		module_cursor	: in pac_generic_modules.cursor;
 		label			: in type_selected_label;
@@ -1399,6 +1749,8 @@ package body et_canvas_schematic_nets is
 		
 	end delete_selected_label;
 
+
+	
 	
 	function to_string (cat : in type_label_category) return string is 
 		use ada.characters.handling;
@@ -1406,6 +1758,8 @@ package body et_canvas_schematic_nets is
 		return to_lower (type_label_category'image (cat));
 	end to_string;
 
+
+	
 	
 	procedure delete_selected_label is begin
 		log (text => "deleting net label after clarification ...", level => log_threshold);
@@ -1420,6 +1774,8 @@ package body et_canvas_schematic_nets is
 	end delete_selected_label;
 
 
+
+	
 	
 	procedure delete_label (point : in type_vector_model) is begin
 		log (text => "deleting net label ...", level => log_threshold);
@@ -1491,6 +1847,9 @@ package body et_canvas_schematic_nets is
 			& ". " & status_next_object_clarification);
 		
 	end clarify_label;
+
+
+
 	
 	
 	procedure place_label (
@@ -1589,6 +1948,9 @@ package body et_canvas_schematic_nets is
 			process		=> query_nets'access);
 	end place_label;
 
+
+
+
 	
 	procedure finalize_place_label (
 		destination		: in type_vector_model;
@@ -1630,6 +1992,8 @@ package body et_canvas_schematic_nets is
 	end finalize_place_label;
 
 
+
+	
 	procedure place_label (
 		tool		: in type_tool;
 		position	: in type_vector_model)
@@ -1654,6 +2018,9 @@ package body et_canvas_schematic_nets is
 				log_threshold	=> log_threshold + 1);
 		end if;
 	end place_label;
+
+
+
 
 	
 	procedure find_labels (
@@ -1696,6 +2063,8 @@ package body et_canvas_schematic_nets is
 		
 		log_indentation_down;
 	end find_labels;
+
+
 
 	
 	
@@ -1772,6 +2141,9 @@ package body et_canvas_schematic_nets is
 
 	end move_selected_label;
 
+
+
+
 	
 	procedure finalize_move_label (
 		destination		: in type_vector_model;
@@ -1799,6 +2171,9 @@ package body et_canvas_schematic_nets is
 	end finalize_move_label;
 
 
+
+
+	
 	procedure move_label (
 		tool		: in type_tool;
 		position	: in type_vector_model)
@@ -1826,6 +2201,8 @@ package body et_canvas_schematic_nets is
 	end move_label;
 
 
+
+	
 	
 	procedure show_properties_of_selected_net is
 		ss	: constant type_selected_segment := element (selected_segment);
@@ -1841,6 +2218,8 @@ package body et_canvas_schematic_nets is
 			);
 		
 	end show_properties_of_selected_net;
+
+
 	
 end et_canvas_schematic_nets;
 

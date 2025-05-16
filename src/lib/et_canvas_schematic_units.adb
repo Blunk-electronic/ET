@@ -744,7 +744,7 @@ package body et_canvas_schematic_units is
 		point	: in type_vector_model)
 	is 
 
-		-- Deletes the selected object:
+		-- Drags the selected object:
 		procedure finalize is
 			use et_modes.schematic;
 			use et_undo_redo;
@@ -772,11 +772,11 @@ package body et_canvas_schematic_units is
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
 
-				-- If a unit has been deleted, then the board
+				-- If a unit has been dragged, then the board
 				-- must be redrawn:
 				if object.cat = CAT_UNIT then
 					redraw_board;
-				end if;
+				end if; -- CS really required ? Redraw the schematic instead ?
 				
 			else
 				log (text => "nothing to do", level => log_threshold);
@@ -784,7 +784,7 @@ package body et_canvas_schematic_units is
 				
 			log_indentation_down;			
 			
-			set_status (status_delete);
+			set_status (status_delete); -- CS correct ?
 			
 			reset_proposed_objects (active_module, log_threshold + 1);
 
@@ -819,8 +819,6 @@ package body et_canvas_schematic_units is
 				-- the tool position.
 				set_first_selected_object_moving;
 				
-				--find_attached_segments;
-
 				-- Set the net segments which are
 				-- connected with the selected unit
 				-- as "moving":

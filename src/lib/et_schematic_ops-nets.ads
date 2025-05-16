@@ -180,7 +180,22 @@ package et_schematic_ops.nets is
 	procedure drag_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		point_of_attack	: in type_object_position; -- sheet/x/y
+		point_of_attack	: in type_object_position;
+		coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model; -- x/y
+		log_threshold	: in type_log_level);
+
+
+	-- Drags a segment of a net.
+	-- If the segment meets a port, then the port will be connected with the net.
+	-- NOTE: If the segment meets another net, then these two nets will NOT be connected.
+	--       CS: The resulting overlapping segments should be detected by the ERC.
+	procedure drag_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor;
+		strand_cursor	: in pac_strands.cursor;
+		segment_cursor	: in pac_net_segments.cursor;
+		point_of_attack	: in type_vector_model;
 		coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
@@ -430,15 +445,31 @@ package et_schematic_ops.nets is
 	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+
+	-- Sets the start or end points of net segments which are 
+	-- connected with selected net segments to "moving":
+	procedure set_segments_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+	
+	procedure drag_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
 
 
 
-	procedure drag_object (
+	procedure delete_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
-		destination		: in type_vector_model;
 		log_threshold	: in type_log_level);
 
 	

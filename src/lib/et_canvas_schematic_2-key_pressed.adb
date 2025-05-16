@@ -113,12 +113,12 @@ is
 
 					when NOUN_NET => 
 						if clarification_pending then
-							clarify_net_segment;
+							et_canvas_schematic_nets.clarify_object;
 						end if;
 
 					when NOUN_UNIT =>
 						if clarification_pending then
-							clarify_object;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 
 					when others =>
@@ -159,13 +159,13 @@ is
 						-- When dragging net segments, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
-						drag_segment (KEYBOARD, get_cursor_position);						
+						et_canvas_schematic_nets.drag_object (KEYBOARD, get_cursor_position);						
 
 					when NOUN_UNIT =>
 						-- When dragging units, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
-						drag_object (KEYBOARD, get_cursor_position);
+						et_canvas_schematic_units.drag_object (KEYBOARD, get_cursor_position);
 
 					when others => null;
 						
@@ -176,12 +176,12 @@ is
 				case noun is
 					when NOUN_UNIT =>
 						if clarification_pending then
-							clarify_object;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 
 					when NOUN_NET => 
 						if clarification_pending then
-							clarify_net_segment;
+							et_canvas_schematic_nets.clarify_object;
 						end if;
 
 					when others => null;
@@ -191,6 +191,7 @@ is
 			when others => status_noun_invalid;
 		end case;
 	end drag;
+
 
 	
 	procedure draw is 
@@ -239,6 +240,7 @@ is
 			when others => status_noun_invalid;
 		end case;
 	end draw;
+
 
 	
 	procedure move is begin
@@ -367,6 +369,7 @@ is
 		end case;
 	end move;
 
+
 	
 	procedure place is begin
 		case key is
@@ -422,6 +425,7 @@ is
 			when others => status_noun_invalid;
 		end case;
 	end place;
+
 
 	
 	procedure rotate is begin
@@ -491,7 +495,7 @@ is
 
 					when NOUN_UNIT =>
 						if clarification_pending then
-							clarify_object;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 
 					when others => null;

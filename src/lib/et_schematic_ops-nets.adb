@@ -1712,6 +1712,27 @@ package body et_schematic_ops.nets is
 
 
 
+
+
+	procedure drag_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor;
+		strand_cursor	: in pac_strands.cursor;
+		segment_cursor	: in pac_net_segments.cursor;
+		point_of_attack	: in type_vector_model;
+		coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model; -- x/y
+		log_threshold	: in type_log_level)
+	is
+
+	begin
+		-- CS
+		null;
+	end drag_segment;
+
+
+
+	
 	
 
 	function get_first_net (
@@ -3869,6 +3890,7 @@ package body et_schematic_ops.nets is
 	procedure move_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
+		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is begin
@@ -3894,12 +3916,115 @@ package body et_schematic_ops.nets is
 
 
 
+
+
+	procedure set_segments_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net)
+			is 
+				strand_cursor : pac_strands.cursor := net.strands.first;
+				
+
+				procedure query_strand (strand : in type_strand) is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					-- Get the sheet where the candidate strand is:
+					sheet : type_sheet := get_sheet (strand);
+					
+					-- This procedure and sets start or end points of net 
+					-- segments which are connected with the given segment as "moving":
+					procedure query_segment (seg : in type_net_segment) is
+						position : type_object_position;
+					begin
+						if is_selected (seg) then
+							log (text => " is selected", level => log_threshold + 3);
+
+							-- Set segments which are connected with the start point
+							-- of the candidate segment as "moving":
+							position := to_position (get_A (seg), sheet);
+							set_segments_moving (module_cursor, position, log_threshold + 4);
+
+							-- Set segments which are connected with the end point
+							-- of the candidate segment as "moving":
+							position := to_position (get_B (seg), sheet);
+							set_segments_moving (module_cursor, position, log_threshold + 4);
+						end if;
+					end query_segment;
+
+					
+				begin
+					-- Iterate through the segments:
+					while has_element (segment_cursor) loop
+						log (text => "segment " & to_string (segment_cursor), level => log_threshold + 3);
+						log_indentation_up;
+						query_element (segment_cursor, query_segment'access);
+						log_indentation_down;
+						next (strand_cursor);
+					end loop;
+				end query_strand;
+				
+										 
+			begin				
+				-- Iterate through the strands:
+				while has_element (strand_cursor) loop
+					log (text => "strand " & get_position (strand_cursor), level => log_threshold + 2);
+					log_indentation_up;
+					query_element (strand_cursor, query_strand'access);
+					log_indentation_down;
+					next (strand_cursor);
+				end loop;
+			end query_net;
+			
+			
+		begin
+			-- Iterate through the nets:
+			while has_element (net_cursor) loop
+				log (text => "net " & get_net_name (net_cursor), level => log_threshold + 1);
+				log_indentation_up;
+				query_element (net_cursor, query_net'access);
+				log_indentation_down;
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " set net segments (connected with selected segments) moving.",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end set_segments_moving;
+
+
+
+	
 	
 
 
 	procedure drag_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
+		point_of_attack	: in type_vector_model;
 		destination		: in type_vector_model;
 		log_threshold	: in type_log_level)
 	is begin
@@ -3913,15 +4038,16 @@ package body et_schematic_ops.nets is
 
 		case object.cat is
 			when CAT_SEGMENT =>
-				null;
 				
-				-- drag_segment (
-				-- 	module_cursor	=> module_cursor,
-				-- 	net_name		=> key (object.unit.device_cursor),
-				-- 	unit_name		=> key (object.unit.unit_cursor),
-				-- 	coordinates		=> absolute,
-				-- 	destination		=> destination,
-				-- 	log_threshold	=> log_threshold + 1);
+				drag_segment (
+					module_cursor	=> module_cursor,
+					net_cursor		=> object.segment.net_cursor,
+					strand_cursor	=> object.segment.strand_cursor,
+					segment_cursor	=> object.segment.segment_cursor,
+					point_of_attack	=> point_of_attack,
+					coordinates		=> absolute,
+					destination		=> destination,
+					log_threshold	=> log_threshold + 1);
 
 
 			-- CS CAT_NANE, ...
