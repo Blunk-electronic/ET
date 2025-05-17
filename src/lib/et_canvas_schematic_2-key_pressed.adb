@@ -40,7 +40,6 @@ with et_modes.schematic;				use et_modes.schematic;
 with et_device_library;					use et_device_library;
 with et_device_placeholders;			use et_device_placeholders;
 with et_schematic_ops;					use et_schematic_ops;
-with et_schematic_ops.nets;				use et_schematic_ops.nets;
 with et_net_names;						use et_net_names;
 with et_net_labels;						use et_net_labels;
 with et_nets;							use et_nets;
@@ -70,32 +69,27 @@ is
 			-- EVALUATE KEY FOR NOUN:
 			when GDK_LC_l =>
 				noun := NOUN_LABEL;
-				set_status (et_canvas_schematic_nets.status_delete_label);
-			
+				set_status (et_canvas_schematic_nets.status_delete);
+
+				
 			when GDK_LC_u =>
 				noun := NOUN_UNIT;					
 				set_status (et_canvas_schematic_units.status_delete);
+
 				
 			when GDK_LC_n =>
 				noun := NOUN_NET;					
 				set_status (et_canvas_schematic_nets.status_delete);
 
+				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when GDK_Space =>
 				case noun is
 					when NOUN_LABEL =>
-						if not clarification_pending then
-							delete_label (get_cursor_position);
-						else
-							delete_selected_label;
-						end if;
+						et_canvas_schematic_nets.delete_object (point);
 					
 					when NOUN_NET => 
-						if not clarification_pending then
-							delete_net_segment (get_cursor_position);
-						else
-							delete_selected_net_segment;
-						end if;
+						et_canvas_schematic_nets.delete_object (point);
 
 					when NOUN_UNIT =>
 						et_canvas_schematic_units.delete_object (point);
@@ -103,12 +97,13 @@ is
 					when others => null;							
 				end case;
 
+				
 			-- If page down pressed, then the operator is clarifying:
 			when GDK_page_down =>
 				case noun is
 					when NOUN_LABEL => 
 						if clarification_pending then
-							clarify_label;
+							et_canvas_schematic_nets.clarify_object;
 						end if;
 
 					when NOUN_NET => 
@@ -125,11 +120,13 @@ is
 						null;
 						
 				end case;
+
 				
 			when others => status_noun_invalid;
 		end case;
 	end delete;
 
+	
 	
 	procedure drag is begin
 		case key is
@@ -141,6 +138,7 @@ is
 				-- When dragging net segments, we enforce the default grid
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
+
 				
 			when GDK_LC_u =>
 				noun := NOUN_UNIT;
@@ -150,10 +148,10 @@ is
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
 
+				
 			-- If space pressed then the operator wishes to operate
 			-- by keyboard:
-			when GDK_Space =>
-	
+			when GDK_Space =>	
 				case noun is
 					when NOUN_NET =>
 						-- When dragging net segments, we enforce the default grid
@@ -167,10 +165,10 @@ is
 						reset_grid_and_cursor;
 						et_canvas_schematic_units.drag_object (KEYBOARD, get_cursor_position);
 
-					when others => null;
-						
+					when others => null;						
 				end case;
 
+				
 			-- If page down pressed, then the operator is clarifying:
 			when GDK_page_down =>
 				case noun is
@@ -184,9 +182,9 @@ is
 							et_canvas_schematic_nets.clarify_object;
 						end if;
 
-					when others => null;
-						
+					when others => null;						
 				end case;
+
 				
 			when others => status_noun_invalid;
 		end case;
@@ -254,15 +252,15 @@ is
 
 			when GDK_LC_l =>
 				noun := NOUN_LABEL;
-				set_status (et_canvas_schematic_nets.status_move_label);
+				set_status (et_canvas_schematic_nets.status_move);
 
 			when GDK_LC_n =>
 				noun := NOUN_NAME;					
-				set_status (et_canvas_schematic_units.status_move_placeholder);
+				set_status (et_canvas_schematic_units.status_move);
 
 			when GDK_LC_p =>
 				noun := NOUN_PURPOSE;					
-				set_status (et_canvas_schematic_units.status_move_placeholder);
+				set_status (et_canvas_schematic_units.status_move);
 				
 			when GDK_LC_u =>
 				noun := NOUN_UNIT;
@@ -274,13 +272,12 @@ is
 				
 			when GDK_LC_v =>
 				noun := NOUN_VALUE;					
-				set_status (et_canvas_schematic_units.status_move_placeholder);
+				set_status (et_canvas_schematic_units.status_move);
 
 				
 			-- If space pressed then the operator wishes to operate
 			-- by keyboard:
-			when GDK_Space =>
-	
+			when GDK_Space =>	
 				case noun is
 -- CS
 -- 						when NOUN_NET =>
@@ -306,18 +303,10 @@ is
 -- 							end if;
 
 					when NOUN_LABEL =>
-						move_label (KEYBOARD, get_cursor_position);
-
+						et_canvas_schematic_nets.move_object (KEYBOARD, get_cursor_position);
 						
-					when NOUN_NAME =>
-						move_placeholder (KEYBOARD, get_cursor_position, NAME);
-						
-					when NOUN_PURPOSE =>
-						move_placeholder (KEYBOARD, get_cursor_position, PURPOSE);
-
-					when NOUN_VALUE =>
-						move_placeholder (KEYBOARD, get_cursor_position, VALUE);
-						
+					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
+						et_canvas_schematic_units.move_object (KEYBOARD, get_cursor_position);
 						
 					when NOUN_UNIT =>
 						-- When moving units, we enforce the default grid
@@ -332,22 +321,15 @@ is
 				
 			-- If page down pressed, then the operator is clarifying:
 			when GDK_page_down =>
-
 				case noun is
-
 					when NOUN_LABEL => 
 						if clarification_pending then
-							clarify_label;
+							et_canvas_schematic_nets.clarify_object;
 						end if;
 					
-					when NOUN_NAME => 
+					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE => 
 						if clarification_pending then
-							clarify_placeholder;
-						end if;
-
-					when NOUN_PURPOSE => 
-						if clarification_pending then
-							clarify_placeholder;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 
 					when NOUN_UNIT =>
@@ -355,14 +337,7 @@ is
 							et_canvas_schematic_units.clarify_object;
 						end if;
 						
-					when NOUN_VALUE => 
-						if clarification_pending then
-							clarify_placeholder;
-						end if;
-
-						
 					when others => null;
-						
 				end case;
 				
 			when others => status_noun_invalid;
@@ -506,6 +481,7 @@ is
 		end case;
 	end rotate;
 
+
 	
 	procedure add is 
 		use pac_devices_lib;
@@ -614,6 +590,7 @@ is
 	end fetch;
 
 	
+	
 	procedure set is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
@@ -662,6 +639,7 @@ is
 		end case;
 		
 	end set;
+
 
 	
 	procedure show is begin

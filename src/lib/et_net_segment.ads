@@ -179,6 +179,12 @@ package et_net_segment is
 	use pac_net_segments;
 	
 
+	function is_selected (
+		segment : in pac_net_segments.cursor)
+		return boolean;
+
+	
+	
 	function get_A (
 		segment : in pac_net_segments.cursor)
 		return type_vector_model;

@@ -80,6 +80,14 @@ package et_schematic_ops.nets is
 	end record;
 
 
+	-- Returns the net name and segment of the given object
+	-- as string in the form like "GND segment start x/y end x/y":
+	function to_string (
+		object	: in type_object_segment)
+		return string;
+
+
+	
 	-- Modifies the status flag of a net segment:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;

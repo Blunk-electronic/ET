@@ -6,7 +6,7 @@
 --                                                                          --
 --                               B o d y                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -42,7 +42,6 @@ with et_text;
 
 with et_device_model;
 with et_device_library;			use et_device_library;
--- with et_canvas_schematic_nets;
 with et_device_placeholders;
 
 
@@ -54,7 +53,7 @@ is
 	use et_modes.schematic;
 	
 	snap_point : constant type_vector_model := snap_to_grid (event.point);
-
+	-- CS rename to point
 
 	
 	procedure left_button is 
@@ -126,19 +125,11 @@ is
 			when VERB_DELETE =>
 				case noun is
 					when NOUN_LABEL =>
-						if not clarification_pending then
-							delete_label (event.point);
-						else
-							delete_selected_label;
-						end if;
+						et_canvas_schematic_nets.delete_object (snap_point);
 						
 					when NOUN_NET => 
-						if not clarification_pending then
-							delete_net_segment (event.point);
-						else
-							delete_selected_net_segment;
-						end if;
-
+						et_canvas_schematic_nets.delete_object (snap_point);
+						
 					when NOUN_UNIT =>
 						et_canvas_schematic_units.delete_object (snap_point);
 						
@@ -158,12 +149,12 @@ is
 						-- When dragging net segments, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
-						--drag_segment (MOUSE, point);
 						et_canvas_schematic_nets.drag_object (MOUSE, snap_point);
 		
 					when others => null;
 				end case;
 
+				
 				
 			when VERB_DRAW =>
 				case noun is
@@ -190,25 +181,16 @@ is
 			when VERB_MOVE =>
 				case noun is
 					when NOUN_LABEL =>
-						move_label (MOUSE, event.point); -- CS snap_point ?
-
+						et_canvas_schematic_nets.move_object (MOUSE, snap_point);
 						
-					when NOUN_NAME =>
-						move_placeholder (MOUSE, snap_point, NAME);
-
-					when NOUN_PURPOSE =>
-						move_placeholder (MOUSE, snap_point, PURPOSE);
-
-					when NOUN_VALUE =>
-						move_placeholder (MOUSE, snap_point, VALUE);
-
-						
+					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE =>
+						et_canvas_schematic_units.move_object (MOUSE, snap_point);
+				
 					when NOUN_UNIT =>
 						-- When moving units, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
-						--move_unit (MOUSE, snap_point);
-						move_object (MOUSE, snap_point);
+						et_canvas_schematic_units.move_object (MOUSE, snap_point);
 						
 					when others => null;							
 				end case;
@@ -337,12 +319,12 @@ is
 				case noun is
 					when NOUN_LABEL => 
 						if clarification_pending then
-							clarify_label;
+							et_canvas_schematic_nets.clarify_object;
 						end if;
 						
 					when NOUN_NET => 
 						if clarification_pending then
-							clarify_net_segment;
+							et_canvas_schematic_nets.clarify_object;
 						end if;
 
 					when NOUN_UNIT =>
@@ -392,30 +374,19 @@ is
 				
 			when VERB_MOVE =>
 				case noun is
-
 					when NOUN_LABEL => 
 						if clarification_pending then
-							clarify_label;
+							et_canvas_schematic_nets.clarify_object;
 						end if;
 					
-					when NOUN_NAME => 
+					when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE => 
 						if clarification_pending then
-							clarify_placeholder;
-						end if;
-
-					when NOUN_PURPOSE => 
-						if clarification_pending then
-							clarify_placeholder;
+							et_canvas_schematic_units.clarify_object;
 						end if;
 
 					when NOUN_UNIT =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
-						end if;
-						
-					when NOUN_VALUE => 
-						if clarification_pending then
-							clarify_placeholder;
 						end if;
 						
 					when others => null;							

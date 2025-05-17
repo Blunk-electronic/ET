@@ -271,6 +271,20 @@ package body et_net_segment is
 
 
 
+	function is_selected (
+		segment : in pac_net_segments.cursor)
+		return boolean
+	is begin
+		if is_selected (element (segment)) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+
+	
+
+
 	function get_A (
 		segment : in pac_net_segments.cursor)
 		return type_vector_model

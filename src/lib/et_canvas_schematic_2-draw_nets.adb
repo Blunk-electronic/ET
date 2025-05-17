@@ -875,14 +875,24 @@ procedure draw_nets is
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
 
-			procedure draw_segment (
-				s : in pac_net_segments.cursor) 
-			is begin
-				draw_line (
-					line		=> element (s),
-					pos			=> origin_zero_rotation,		  
-					width		=> net_line_width,
-					do_stroke	=> true);
+			procedure draw_segment (s : in pac_net_segments.cursor) is 
+				
+				procedure draw is begin
+					draw_line (
+						line		=> element (s),
+						pos			=> origin_zero_rotation,		  
+						width		=> net_line_width,
+						do_stroke	=> true);
+				end;
+
+			begin
+				if is_selected (s) then
+					set_color_nets (BRIGHT);
+					draw;
+					set_color_nets (NORMAL);
+				else
+					draw;
+				end if;				
 
 				-- draw_junctions (s);
 			end draw_segment;

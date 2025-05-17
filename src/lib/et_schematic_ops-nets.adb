@@ -291,6 +291,18 @@ package body et_schematic_ops.nets is
 
 
 
+	
+	function to_string (
+		object	: in type_object_segment)
+		return string
+	is begin
+		return get_net_name (object.net_cursor) 
+			-- CS strand coordinates ?
+			& " " & to_string (object.segment_cursor);
+	end;
+
+
+	
 
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -380,7 +392,9 @@ package body et_schematic_ops.nets is
 						seg : in out type_net_segment)
 					is begin
 						if in_catch_zone (catch_zone, seg, net_line_width) then
+							log (text => "in catch zone", level => log_threshold + 4);
 							set_proposed (seg);
+							count := count + 1;
 						end if;
 					end query_segment;
 
@@ -388,7 +402,7 @@ package body et_schematic_ops.nets is
 				begin
 					-- Iterate through the segments:
 					while has_element (segment_cursor) loop
-						log (text => "segment " & to_string (segment_cursor), level => log_threshold + 3);
+						log (text => to_string (segment_cursor), level => log_threshold + 3);
 						log_indentation_up;
 						strand.segments.update_element (segment_cursor, query_segment'access);
 						log_indentation_down;
@@ -423,7 +437,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " proposing segments in " & to_string (catch_zone),
+			& " proposing net segments in " & to_string (catch_zone),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -474,7 +488,7 @@ package body et_schematic_ops.nets is
 					procedure query_segment (seg : in type_net_segment) is
 
 						procedure set_result is begin
-							log (text => " in catch zone", level => log_threshold + 2);
+							log (text => "match", level => log_threshold + 2);
 							result.net_cursor		:= net_cursor;
 							result.strand_cursor	:= strand_cursor;
 							result.segment_cursor	:= segment_cursor;
@@ -501,7 +515,7 @@ package body et_schematic_ops.nets is
 				begin
 					-- Iterate through the segments:
 					while has_element (segment_cursor) and proceed loop
-						log (text => "segment " & to_string (segment_cursor), level => log_threshold + 2);
+						log (text => to_string (segment_cursor), level => log_threshold + 2);
 						log_indentation_up;
 						query_element (segment_cursor, query_segment'access);
 						log_indentation_down;
@@ -3968,11 +3982,11 @@ package body et_schematic_ops.nets is
 				begin
 					-- Iterate through the segments:
 					while has_element (segment_cursor) loop
-						log (text => "segment " & to_string (segment_cursor), level => log_threshold + 3);
+						log (text => to_string (segment_cursor), level => log_threshold + 3);
 						log_indentation_up;
 						query_element (segment_cursor, query_segment'access);
 						log_indentation_down;
-						next (strand_cursor);
+						next (segment_cursor);
 					end loop;
 				end query_strand;
 				

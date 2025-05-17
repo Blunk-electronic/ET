@@ -376,6 +376,16 @@ package et_canvas_schematic_nets is
 		tool	: in type_tool;
 		point	: in type_vector_model);
 
+
+
+	procedure move_object (
+		tool	: in type_tool;
+		point	: in type_vector_model);
+
+
+	procedure delete_object (
+		point	: in type_vector_model);
+
 	
 	
 -- NET LABELS

@@ -1090,10 +1090,8 @@ package body et_canvas_schematic_nets is
 	begin
 		case object.cat is
 			when CAT_SEGMENT =>
-				null;
-				-- CS
-				-- set_status (praeamble & get_object_name (object.segment)
-				-- 	& ". " & status_next_object_clarification);
+				set_status (praeamble & to_string (object.segment)
+					& ". " & status_next_object_clarification);
 
 			-- CS placeholders
 				
@@ -1268,14 +1266,12 @@ package body et_canvas_schematic_nets is
 				select_first_proposed;
 
 				case verb is
-					-- when VERB_MOVE =>
-						-- set_first_selected_object_moving;
-						-- CS ? set_status (status_move);
+					when VERB_MOVE =>
+						set_first_selected_object_moving;
+
 						
 					when VERB_DRAG =>
 						set_first_selected_object_moving;
-						
-						-- CS ? set_status (status_drag);
 
 						-- Set the net segments which are
 						-- connected with the selected segment
@@ -1408,7 +1404,7 @@ package body et_canvas_schematic_nets is
 				-- Commit the current state of the design:
 				commit (PRE, verb, noun, log_threshold + 1);
 				
-				et_schematic_ops.nets.drag_object (
+				drag_object (
 					module_cursor	=> active_module, 
 					object			=> object, 
 					point_of_attack	=> object_point_of_attack,
@@ -1485,6 +1481,186 @@ package body et_canvas_schematic_nets is
 
 	
 
+
+
+	procedure move_object (
+		tool	: in type_tool;
+		point	: in type_vector_model)
+	is 
+
+		-- Moves the selected object:
+		procedure finalize is
+			use et_modes.schematic;
+			use et_undo_redo;
+			use et_commit;
+
+			object : constant type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+		begin
+			log (text => "finalizing move ...", level => log_threshold);
+			log_indentation_up;
+
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+				
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+				
+				move_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					point_of_attack	=> object_point_of_attack,
+					destination		=> point,
+					log_threshold	=> log_threshold + 1);
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+
+				-- -- If a segment has been dragged, then the board
+				-- -- must be redrawn:
+				-- if object.cat = CAT_SEGMENT then
+				-- 	redraw_board;
+				-- end if;
+				-- CS really required ? Redraw the schematic instead ?
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			
+			set_status (status_move);
+			
+			reset_proposed_objects (active_module, log_threshold + 1);
+
+			reset_editing_process; -- prepare for a new editing process
+		end finalize;
+
+		
+	begin
+		-- Initially the editing process is not running:
+		if not edit_process_running then
+			
+			-- Set the tool being used:
+			object_tool := tool;
+
+			object_point_of_attack := point;
+			
+			
+			if not clarification_pending then
+				-- Locate all objects in the vicinity of the given point:
+				find_objects (point);
+
+				-- NOTE: If many objects have been found, then
+				-- clarification is now pending.
+
+				-- If find_objects has found only one object,				
+				-- then the flag edit_process_running is set true.
+			else
+				-- Here the clarification procedure ends.
+				-- An object has been selected via procedure clarify_object.
+				-- By setting the status of the selected object
+				-- as "moving", the selected object
+				-- will be drawn according to the given point and 
+				-- the tool position.
+				set_first_selected_object_moving;
+
+				-- Furtheron, on the next call of this procedure
+				-- the selected object will be assigned its final position.
+
+				set_edit_process_running;
+				reset_request_clarification;
+			end if;
+
+		else
+			finalize;
+		end if;
+	end move_object;
+
+
+
+
+
+
+	procedure delete_object (
+		point	: in type_vector_model)
+	is 
+
+		-- Deletes the selected object:
+		procedure finalize is
+			use et_modes.schematic;
+			use et_undo_redo;
+			use et_commit;
+
+			object : constant type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+		begin
+			log (text => "finalizing delete ...", level => log_threshold);
+			log_indentation_up;
+
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+				
+				-- Commit the current state of the design:
+				commit (PRE, verb, noun, log_threshold + 1);
+				
+				delete_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					log_threshold	=> log_threshold + 1);
+
+				-- Commit the new state of the design:
+				commit (POST, verb, noun, log_threshold + 1);
+
+				-- -- If a segment has been dragged, then the board
+				-- -- must be redrawn:
+				-- if object.cat = CAT_SEGMENT then
+				-- 	redraw_board;
+				-- end if;
+				-- CS really required ? Redraw the schematic instead ?
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			
+			set_status (status_delete);
+			
+			reset_proposed_objects (active_module, log_threshold + 1);
+
+			reset_editing_process; -- prepare for a new editing process
+		end finalize;
+
+		
+	begin
+		if not clarification_pending then
+			-- Locate all objects in the vicinity of the given point:
+			find_objects (point);
+			
+			-- NOTE: If many objects have been found, then
+			-- clarification is now pending.
+
+			-- If find_objects has found only one object
+			-- then the flag edit_process_running is set true.
+
+			if edit_process_running then
+				finalize;
+			end if;
+		else
+			-- Here the clarification procedure ends.
+			-- An object has been selected
+			-- via procedure clarify_object.
+
+			finalize;
+		end if;
+	end delete_object;
+
+
+
+	
 	
 	
 -- NET LABLES
