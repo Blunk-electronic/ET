@@ -1631,7 +1631,7 @@ package et_geometry_2a is
 	--
 	-- The position of the bar (|) in this drawing depends on the zone_division_factor.
 	-- The center length is twice the length of start/end point.
-	type type_line_zone is (START_POINT, END_POINT, CENTER);
+	type type_line_zone is (START_POINT, END_POINT, CENTER); -- CS rename to ZONE_A, ZONE_B, ZONE_CENTER
 	line_zone_division_factor : constant positive := 4;
 
 
