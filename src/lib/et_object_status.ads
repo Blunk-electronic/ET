@@ -127,6 +127,17 @@ package et_object_status is
 		action	: in type_action;
 		flag	: in type_flag)
 		return type_status_operation;
+
+
+	function get_action (
+		operation : in type_status_operation)
+		return type_action;
+
+
+	function get_flag (
+		operation : in type_status_operation)
+		return type_flag;
+
 	
 
 	procedure modify_status (

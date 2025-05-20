@@ -734,29 +734,9 @@ procedure draw_units is
 					-- increase brightness
 					brightness := BRIGHT;
 
-					-- overwrite position
+					-- overwrite position if unit is moving
 					if is_moving (unit_cursor) then
-					
-						-- In case the unit is being dragged, backup original position
-						-- in global variable object_original_position.
-						object_original_position := unit_position;
-
-						case object_tool is
-							when MOUSE =>
-								unit_position := snap_to_grid (get_mouse_position);
-								
-							when KEYBOARD =>
-								unit_position := get_cursor_position;
-						end case;
-
-						-- CS use unit_position := get_object_tool_position; instead
-						-- of case construct ?
-
-						-- Calculate the displacement (required for net segments
-						-- which are being dragged along):
-						object_displacement := unit_position - object_original_position;
-
-						-- put_line ("object_displacement " & to_string (object_displacement));
+						unit_position := get_object_tool_position;
 					end if;
 				end if;
 

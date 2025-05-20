@@ -174,6 +174,27 @@ package body et_object_status is
 		return (action, flag);
 	end;
 	
+
+
+
+
+	function get_action (
+		operation : in type_status_operation)
+		return type_action
+	is begin
+		return operation.action;
+	end;
+
+	
+
+	function get_flag (
+		operation : in type_status_operation)
+		return type_flag
+	is begin
+		return operation.flag;
+	end;
+
+
 	
 
 	procedure modify_status (

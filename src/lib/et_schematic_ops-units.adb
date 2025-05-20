@@ -2357,7 +2357,8 @@ package body et_schematic_ops.units is
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is			
+		is	
+			
 			procedure query_device (
 				device_name	: in type_device_name;
 				device		: in out type_device_sch)
@@ -2369,11 +2370,22 @@ package body et_schematic_ops.units is
 				is begin
 					modify_status (unit, operation);
 					-- log (text => "done", level => log_threshold + 1);
+
+					-- If the unit is set as moving, then
+					-- backup the original position:
+					if get_action (operation) = SET and
+					   get_flag (operation) = MOVING then
+
+					   object_original_position := get_place (get_position (unit));
+					end if;
+						
 				end query_unit;
+
 				
 			begin
 				device.units.update_element (unit.unit_cursor, query_unit'access);
 			end query_device;
+
 			
 		begin
 			module.devices.update_element (unit.device_cursor, query_device'access);

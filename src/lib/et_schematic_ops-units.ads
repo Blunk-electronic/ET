@@ -338,7 +338,10 @@ package et_schematic_ops.units is
 
 	
 
-	-- Modifies the status flag of a unit:
+	-- Modifies the status flag of a unit.
+	-- If the unit is set as moving, then its
+	-- original position will be backup
+	-- in global variable object_original_position:
 	procedure modify_status (
 		module_cursor	: in pac_generic_modules.cursor;
 		unit			: in type_object_unit;
