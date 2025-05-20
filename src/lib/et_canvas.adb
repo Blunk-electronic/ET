@@ -3706,23 +3706,28 @@ package body et_canvas is
 		-- Move the line to the given position:
 		move_by (l, (pos.place.x, pos.place.y));
 
+		-- Here we modify the line in case it is being moved:
+		--
 		-- If the line is set as "moving", then
 		-- its position will be modified according to the
 		-- object_point_of_attack and the current tool position.
-		-- Otherwise the line remains unchanged and will be drawn
-		-- as it is:
+		-- Otherwise, if the start/end point of the line is moving
+		-- then the line start/end points (A/B) will be moved
+		-- by the current object_displacement. If object_displacement 
+		-- is zero, then the line will be drawn as it is:
 		if is_moving (l) then
 			attack (l, object_point_of_attack, get_object_tool_position);
-		end if;
+		else
+			-- Move start/end point by global object_displacement:
+			if is_A_moving (l) then
+				move_A_by (l, object_displacement);
+			end if;
 
-		if is_A_moving (l) then
-			move_A_by (l, object_displacement);
+			if is_B_moving (l) then
+				move_B_by (l, object_displacement);
+			end if;
 		end if;
-
-		if is_B_moving (l) then
-			move_B_by (l, object_displacement);
-		end if;
-
+		
 		
 		-- Get the bounding-box of line:
 		b := get_bounding_box (l, width);

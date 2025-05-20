@@ -194,8 +194,12 @@ package et_net_segment is
 		segment : in pac_net_segments.cursor)
 		return type_vector_model;
 
-	
 
+	function is_moving (
+		segment : in pac_net_segments.cursor)
+		return boolean;
+
+	
 	-- Returns true if the start point of the 
 	-- given net segment is set as "moving":
 	function is_A_moving (

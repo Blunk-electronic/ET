@@ -675,6 +675,23 @@ package et_geometry_2a is
 	-- Here we store bounding-box related errors:
 	bounding_box_error : type_bounding_box_error;
 
+
+
+-- OBJECT ORIGINAL POSITION AND DISPLACEMENT
+
+
+	-- If an object being dragged, then we backup 
+	-- here its original position.
+	-- It is used in order to calculate 
+	-- the displacement of other attached objects:
+	object_original_position : type_vector_model := origin;
+
+
+	-- If an object is begin dragged, then other objects
+	-- might be dragged along (like net segments, or track segments)
+	-- These objects are subjected to a certain displacement:
+	object_displacement : type_vector_model := origin;
+
 	
 
 	
@@ -716,6 +733,11 @@ package et_geometry_2a is
 		return type_vector_model;
 
 
+	function get_center (
+		line : in type_line)
+		return type_vector_model;
+
+	
 	-- Sets the start point of a line:
 	procedure set_A (
 		line	: in out type_line;
@@ -1634,6 +1656,7 @@ package et_geometry_2a is
 	type type_line_zone is (START_POINT, END_POINT, CENTER); -- CS rename to ZONE_A, ZONE_B, ZONE_CENTER
 	line_zone_division_factor : constant positive := 4;
 
+	
 
 	function to_string (
 		zone : in type_line_zone)

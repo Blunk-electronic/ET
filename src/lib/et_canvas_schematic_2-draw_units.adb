@@ -749,6 +749,9 @@ procedure draw_units is
 								unit_position := get_cursor_position;
 						end case;
 
+						-- CS use unit_position := get_object_tool_position; instead
+						-- of case construct ?
+
 						-- Calculate the displacement (required for net segments
 						-- which are being dragged along):
 						object_displacement := unit_position - object_original_position;

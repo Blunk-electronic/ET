@@ -1191,6 +1191,21 @@ package body et_canvas_schematic_nets is
 			c := objects.find (selected_object);
 			
 			modify_status (active_module, c, to_operation (SET, MOVING), log_threshold + 1);
+
+			-- If we are dragging a net segment, then we regard is as primary segment.
+			-- Its start or/and ends (A/B) must be marked as "moving"
+			-- The current point of attack determines whether start or
+			-- end or both of the segment are affected.
+			-- Start/end points (A/B) of secondary segments which are 
+			-- connected with the primary segment must be marked as "moving" also:
+			if verb = VERB_DRAG then
+				set_primary_segment_AB_moving (
+					active_module, c, object_point_of_attack, log_threshold + 1);
+
+				set_secondary_segments_AB_moving (
+					active_module, c, log_threshold + 1);
+				
+			end if;
 		end do_it;
 		
 		
@@ -1273,10 +1288,6 @@ package body et_canvas_schematic_nets is
 					when VERB_DRAG =>
 						set_first_selected_object_moving;
 
-						-- Set the net segments which are
-						-- connected with the selected segment
-						-- as "moving":
-						set_segments_moving (active_module, log_threshold + 1);
 
 					when others => null; -- CS
 				end case;
@@ -1463,10 +1474,6 @@ package body et_canvas_schematic_nets is
 				-- the tool position.
 				set_first_selected_object_moving;
 				
-				-- Set the net segments which are
-				-- connected with the selected segment as "moving":
-				set_segments_moving (active_module, log_threshold + 1);
-
 				-- Furtheron, on the next call of this procedure
 				-- the selected object will be assigned its final position.
 

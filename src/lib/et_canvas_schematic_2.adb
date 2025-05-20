@@ -394,8 +394,18 @@ package body et_canvas_schematic_2 is
 		set_line_cap (context, cairo_line_cap_round);
 
 		draw_grid;		
-		
 		draw_drawing_origin;
+
+		
+		-- Compute the displacement in case objects are being moved or dragged.
+		-- Other objects could be dragged along if they are attached to the
+		-- primary object.
+		-- The displacement is requred for secondary objects which are
+		-- dragged or moved along with the primary object:
+		object_displacement := get_object_tool_position - object_original_position;
+		-- put_line ("object_displacement " & to_string (object_displacement));
+
+		
 		draw_drawing_frame;	
 		draw_cursor;
 		draw_zoom_area;

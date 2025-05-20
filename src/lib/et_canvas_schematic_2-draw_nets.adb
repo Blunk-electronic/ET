@@ -885,7 +885,7 @@ procedure draw_nets is
 						do_stroke	=> true);
 				end;
 
-			begin
+			begin				
 				if is_selected (s) then
 					set_color_nets (BRIGHT);
 					draw;

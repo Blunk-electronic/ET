@@ -1436,6 +1436,20 @@ package body et_geometry_2a is
 
 
 
+	function get_center (
+		line : in type_line)
+		return type_vector_model
+	is 
+		c : type_vector;
+		l : type_line_fine := to_line_fine (line);
+	begin
+		c := get_center (l);		
+		return to_vector_model (c);
+	end get_center;
+
+
+	
+
 	procedure set_A (
 		line	: in out type_line;
 		A		: in type_vector_model)

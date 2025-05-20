@@ -3638,8 +3638,30 @@ package body et_schematic_ops.nets is
 ------------------------------------------------------------------------------------------
 
 -- OBJECTS:
+
+	
+	function to_string (
+		object_cursor : in pac_objects.cursor)
+		return string
+	is
+		object : type_object := element (object_cursor);
+	begin
+		case object.cat is
+			when CAT_VOID =>
+				return "void";
+
+			when CAT_SEGMENT =>
+				return get_net_name (object.segment.net_cursor)
+				& " strand " & get_position (object.segment.strand_cursor)
+				& " " & to_string (object.segment.segment_cursor);
+
+		end case;
+	end to_string;
 	
 
+	
+
+	
 	function get_count (
 		objects : in pac_objects.list)
 		return natural
@@ -3648,6 +3670,41 @@ package body et_schematic_ops.nets is
 	end get_count;
 	
 	
+
+
+	function get_net (
+		object_cursor : in pac_objects.cursor)
+		return pac_nets.cursor
+	is
+		object : type_object := element (object_cursor);
+	begin
+		return object.segment.net_cursor;
+	end;
+
+
+	
+	function get_strand (
+		object_cursor : in pac_objects.cursor)
+		return pac_strands.cursor
+	is
+		object : type_object := element (object_cursor);
+	begin
+		return object.segment.strand_cursor;
+	end;
+	
+
+
+	function get_segment (
+		object_cursor : in pac_objects.cursor)
+		return pac_net_segments.cursor
+	is
+		object : type_object := element (object_cursor);
+	begin
+		return object.segment.segment_cursor;
+	end;
+
+
+
 	
 
 
@@ -4033,7 +4090,197 @@ package body et_schematic_ops.nets is
 
 	
 	
+	procedure set_primary_segment_AB_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor; -- must point to a net segment
+		point_of_attack	: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+	
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is 
+				
 
+				procedure query_strand (strand : in out type_strand) is
+
+					
+					procedure query_segment (seg : in out type_net_segment) is
+						-- Find the zone at which the segment
+						-- is being attacked:
+						zone : type_line_zone := get_zone (seg, point_of_attack);
+					begin
+						log (text => to_string (zone), level => log_threshold);
+						case zone is
+							when START_POINT =>
+								set_A_moving (seg);
+
+								object_original_position := get_A (seg);
+
+							when END_POINT =>
+								set_B_moving (seg);
+
+								object_original_position := get_B (seg);
+
+							when CENTER =>
+								set_A_moving (seg);
+								set_B_moving (seg);
+
+								object_original_position := point_of_attack;
+						end case;
+					end query_segment;
+
+					
+				begin
+					strand.segments.update_element (get_segment (object_cursor), query_segment'access);
+				end query_strand;
+				
+										 
+			begin				
+				net.strands.update_element (get_strand (object_cursor), query_strand'access);
+			end query_net;
+			
+			
+		begin
+			module.nets.update_element (get_net (object_cursor), query_net'access);
+		end query_module;
+
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " set A/B of primary segment moving " 
+			& " point of attack " & to_string (point_of_attack),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (module_cursor, query_module'access);
+
+		log_indentation_down;
+	end set_primary_segment_AB_moving;
+
+
+
+
+
+	
+	
+
+	procedure set_secondary_segments_AB_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor; -- the primary segment
+		log_threshold	: in type_log_level)
+	is 
+		-- The start and end point of the given primary segment:
+		primary_A, primary_B : type_vector_model;
+		
+		primary_A_moving, primary_B_moving : boolean := false;
+
+		
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is 
+				
+
+				procedure query_strand (strand : in out type_strand) is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+
+					-- This procedure queries a secondary segment and
+					-- tests whether it is connected with the primary segment:
+					procedure query_segment (sec : in out type_net_segment) is begin
+						-- Test the connection with the moving primary A end:
+						if primary_A_moving then
+							if get_A (sec) = primary_A then
+								set_A_moving (sec);
+							end if;
+
+							if get_B (sec) = primary_A then
+								set_B_moving (sec);
+							end if;
+						end if;
+							
+						-- Test the connection with the moving primary B end:
+						if primary_B_moving then
+							if get_A (sec) = primary_B then
+								set_A_moving (sec);
+							end if;
+
+							if get_B (sec) = primary_B then
+								set_B_moving (sec);
+							end if;
+						end if;
+					end query_segment;
+
+					
+				begin
+					-- Iterate through the segments of the strand
+					-- and skip the given primary segment, because we are
+					-- interested in secondary segments only:
+					while has_element (segment_cursor) loop
+						if segment_cursor /= get_segment (object_cursor) then -- skip primary segment
+							strand.segments.update_element (segment_cursor, query_segment'access);
+						end if;
+						
+						next (segment_cursor);							
+					end loop;
+				end query_strand;
+				
+										 
+			begin				
+				net.strands.update_element (get_strand (object_cursor), query_strand'access);
+			end query_net;
+			
+			
+		begin
+			module.nets.update_element (get_net (object_cursor), query_net'access);
+		end query_module;
+		
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " set A/B of secondary segments moving.",
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		log (text => "Primary segment: " & to_string (object_cursor),
+			 level => log_threshold + 1);
+
+		primary_A := get_A (get_segment (object_cursor));
+		primary_B := get_B (get_segment (object_cursor));
+
+		primary_A_moving := is_A_moving (get_segment (object_cursor));
+		primary_B_moving := is_B_moving (get_segment (object_cursor));
+		
+		generic_modules.update_element (module_cursor, query_module'access);
+		
+		log_indentation_down;
+	end set_secondary_segments_AB_moving;
+
+
+	
+
+	
+	
 
 	procedure drag_object (
 		module_cursor	: in pac_generic_modules.cursor;

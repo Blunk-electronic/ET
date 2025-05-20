@@ -393,7 +393,14 @@ package et_schematic_ops.nets is
 	
 	
 	package pac_objects is new indefinite_doubly_linked_lists (type_object);
+	use pac_objects;
 
+
+	function to_string (
+		object_cursor : in pac_objects.cursor)
+		return string;
+
+	
 
 	-- Returns the number of items stored in the given list:
 	function get_count (
@@ -401,6 +408,30 @@ package et_schematic_ops.nets is
 		return natural;
 
 
+
+	-- Returns the cursor to the net of the given
+	-- object. The object must be of CAT_SEGMENT:
+	function get_net (
+		object_cursor : in pac_objects.cursor)
+		return pac_nets.cursor;
+
+	
+	-- Returns the cursor to the strand of the given
+	-- object. The object must be of CAT_SEGMENT:
+	function get_strand (
+		object_cursor : in pac_objects.cursor)
+		return pac_strands.cursor;
+
+
+	-- Returns the cursor to the actual net segment of the given
+	-- object. The object must be of CAT_SEGMENT:
+	function get_segment (
+		object_cursor : in pac_objects.cursor)
+		return pac_net_segments.cursor;
+
+
+
+	
 
 	-- Returns the first object
 	-- according to the given flag.
@@ -465,6 +496,36 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
+	-- Sets the start or/and end point (A/B) of the given net segment
+	-- as moving according to the given point of attack.
+	-- Sets the global variable object_original_position.
+	-- In case the primary segment is to be dragged, then 
+	-- the object_original_position serves as a reference for other 
+	-- net segments which are attached to the primary segment.
+	-- - If a net segment is attacked at its start point (A), then
+	--   the object_original_position assumes A.
+	-- - If a net segment is attacked at its end point (B), then
+	--   the object_original_position assumes B.
+	-- - If a net segment is attacked at its center (between A and B), then
+	--   the object_original_position assumes the given point_of_attack:
+	procedure set_primary_segment_AB_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor; -- must point to a net segment
+		point_of_attack	: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+
+	-- Starting with a given primary segment (indicated by object_cursor),
+	-- Start/end points (A/B) of secondary segments which are 
+	-- connected with the primary segment are marked as "moving"
+	-- via this procedure:	
+	procedure set_secondary_segments_AB_moving (
+		module_cursor	: in pac_generic_modules.cursor;
+		object_cursor	: in pac_objects.cursor; -- must point to a primary net segment
+		log_threshold	: in type_log_level);
+
+
+	
 	
 	procedure drag_object (
 		module_cursor	: in pac_generic_modules.cursor;

@@ -405,8 +405,7 @@ package body et_canvas_schematic_units is
 						
 					when VERB_DRAG =>
 						set_first_selected_object_moving;
-						
-						--find_attached_segments;
+
 						-- CS ? set_status (status_drag);
 
 						-- Set the net segments which are
