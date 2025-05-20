@@ -864,18 +864,10 @@ procedure draw_units is
 					-- increase brightness
 					brightness := BRIGHT;
 
-					-- overwrite position
+					-- overwrite position if unit is moving
 					if is_moving (unit_cursor) then
-					
-						case object_tool is
-							when MOUSE =>
-								unit_position := snap_to_grid (get_mouse_position);
-								
-							when KEYBOARD =>
-								unit_position := get_cursor_position;
-						end case;
+						unit_position := get_object_tool_position;
 					end if;
-
 
 					-- get the rotation of the unit
 					unit_rotation := get_rotation (element (unit_cursor).position);
@@ -900,7 +892,6 @@ procedure draw_units is
 			end if;
 
 		end query_units;
-
 
 
 		
