@@ -46,6 +46,8 @@ with et_text;							use et_text;
 with et_schematic_text;					use et_schematic_text;
 
 with et_alignment;						use et_alignment;
+with et_object_status;					use et_object_status;
+
 with et_fonts;
 
 
@@ -60,6 +62,7 @@ package et_net_labels is
 		SIMPLE,	-- a label that shows just the name of the net
 		TAG 	-- a lable that shows the net name, the sheet name and the row/column
 		);		-- where the net continues
+	-- CS rename to type_label_category
 
 	
 	function to_string (appearance : in type_net_label_appearance) return string;
@@ -82,6 +85,7 @@ package et_net_labels is
 		
         size		: type_text_size := text_size_default;
 		width		: et_schematic_text.type_text_line_width := et_schematic_text.type_text_line_width'first;
+		status		: type_object_status;
 	end record;
 
 	
@@ -104,9 +108,77 @@ package et_net_labels is
 		end case;
 	end record;
 
+
+
+
+	procedure set_proposed (
+		label : in out type_net_label);
+
+	
+	procedure clear_proposed (
+		label : in out type_net_label);
+
+
+	function is_proposed (
+		label : in type_net_label)
+		return boolean;
+
+	
+
+
+	procedure set_selected (
+		label : in out type_net_label);
+
+	
+	procedure clear_selected (
+		label : in out type_net_label);
+
+
+	function is_selected (
+		label : in type_net_label)
+		return boolean;
+
+
+
+	
+	procedure set_moving (
+		label : in out type_net_label);
+
+	
+	procedure clear_moving (
+		label : in out type_net_label);
+
+
+	function is_moving (
+		label : in type_net_label)
+		return boolean;
+
+
+
+
+
+	
+	
 	package pac_net_labels is new indefinite_doubly_linked_lists (type_net_label);
+	use pac_net_labels;
+	
+
+	function is_proposed (
+		label : in pac_net_labels.cursor)
+		return boolean;
 
 
+	function is_selected (
+		label : in pac_net_labels.cursor)
+		return boolean;
+
+
+	function is_moving (
+		label : in pac_net_labels.cursor)
+		return boolean;
+
+
+	
 
 	use et_fonts;
 	

@@ -2959,8 +2959,8 @@ package body et_kicad_to_native is
 								position		=> simple_label_position,
 								rotation_simple	=> to_rotation (rk => element (simple_label_cursor).rotation),
 								size			=> element (simple_label_cursor).size,
-								width			=> element (simple_label_cursor).width)
-						);
+								width			=> element (simple_label_cursor).width,
+								others			=> <>));
 						
 						next (simple_label_cursor);
 					end loop;
@@ -2980,8 +2980,8 @@ package body et_kicad_to_native is
 								rotation_tag	=> element (tag_label_cursor).rotation,
 								size			=> element (tag_label_cursor).size,
 								width			=> element (tag_label_cursor).width,
-								direction		=> element (tag_label_cursor).direction)
-						);
+								direction		=> element (tag_label_cursor).direction,
+								others			=> <>));
 						
 						next (tag_label_cursor);
 					end loop;
