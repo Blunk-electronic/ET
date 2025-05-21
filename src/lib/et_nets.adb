@@ -55,6 +55,64 @@ package body et_nets is
 	end to_string;
 
 
+
+
+	procedure set_proposed (
+		strand : in out type_strand)
+	is begin
+		set_proposed (strand.status);
+	end;
+
+	
+	procedure clear_proposed (
+		strand : in out type_strand)
+	is begin
+		clear_proposed (strand.status);
+	end;
+		
+
+	function is_proposed (
+		strand : in type_strand)
+		return boolean
+	is begin
+		if is_proposed (strand.status) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_proposed;
+
+
+
+
+	procedure set_selected (
+		strand : in out type_strand)
+	is begin
+		set_selected (strand.status);
+	end;
+
+	
+	procedure clear_selected (
+		strand : in out type_strand)
+	is begin
+		clear_selected (strand.status);
+	end;
+		
+
+	function is_selected (
+		strand : in type_strand)
+		return boolean
+	is begin
+		if is_selected (strand.status) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+
+	
+
+
 	
 
 
@@ -76,6 +134,25 @@ package body et_nets is
 	end;
 
 
+
+	function is_proposed (
+		strand : in pac_strands.cursor)
+		return boolean
+	is begin
+		return is_proposed (element (strand));
+	end;
+
+	
+	function is_selected (
+		strand : in pac_strands.cursor)
+		return boolean
+	is begin
+		return is_selected (element (strand));
+	end;
+
+
+
+	
 
 	function get_position (
 		strand : in pac_strands.cursor)
@@ -184,6 +261,7 @@ package body et_nets is
 	end get_first_segment;
 
 
+	
 
 	
 
@@ -246,6 +324,67 @@ package body et_nets is
 
 
 	
+
+
+
+	procedure set_proposed (
+		net : in out type_net)
+	is begin
+		set_proposed (net.status);
+	end;
+
+	
+	procedure clear_proposed (
+		net : in out type_net)
+	is begin
+		clear_proposed (net.status);
+	end;
+		
+
+	function is_proposed (
+		net : in type_net)
+		return boolean
+	is begin
+		if is_proposed (net.status) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_proposed;
+
+
+
+
+	procedure set_selected (
+		net : in out type_net)
+	is begin
+		set_selected (net.status);
+	end;
+
+	
+	procedure clear_selected (
+		net : in out type_net)
+	is begin
+		clear_selected (net.status);
+	end;
+		
+
+	function is_selected (
+		net : in type_net)
+		return boolean
+	is begin
+		if is_selected (net.status) then
+			return true;
+		else
+			return false;
+		end if;
+	end is_selected;
+
+
+	
+	
+	
+
 	
 
 	function get_strand (
@@ -419,6 +558,28 @@ package body et_nets is
 
 	
 
+
+
+	function is_proposed (
+		net : in pac_nets.cursor)
+		return boolean
+	is begin
+		return is_proposed (element (net));
+	end;
+
+
+	function is_selected (
+		net : in pac_nets.cursor)
+		return boolean
+	is begin
+		return is_selected (element (net));
+	end;
+
+
+
+
+
+	
 
 	function get_net_name (
 		net_cursor : in pac_nets.cursor)

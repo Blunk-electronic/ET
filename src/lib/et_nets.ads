@@ -52,6 +52,7 @@ with et_pcb;
 with et_commit;
 with et_sheets;					use et_sheets;
 with et_net_segment;			use et_net_segment;
+with et_object_status;			use et_object_status;
 
 
 package et_nets is
@@ -96,7 +97,8 @@ package et_nets is
 	end record;
 
 
-	
+
+
 	
 
 
@@ -112,8 +114,45 @@ package et_nets is
 	-- As a strand is part of a net, there is no need for individual strand names.
 		position	: type_object_position; -- sheet and lowest x/y, rotation doesn't matter -> always zero
 		segments	: pac_net_segments.list;
+
+		status : type_object_status; 
+		-- IMPORTANT: status "moving" shall not be used. 
+		-- CS: Use precondition when modifying the status ?
 	end record;		
 
+
+
+	procedure set_proposed (
+		strand : in out type_strand);
+
+	
+	procedure clear_proposed (
+		strand : in out type_strand);
+
+
+	function is_proposed (
+		strand : in type_strand)
+		return boolean;
+
+	
+
+
+	procedure set_selected (
+		strand : in out type_strand);
+
+	
+	procedure clear_selected (
+		strand : in out type_strand);
+
+
+	function is_selected (
+		strand : in type_strand)
+		return boolean;
+
+
+
+
+	
 
 	-- Returns the sheet number where the given strand is on:
 	function get_sheet (
@@ -133,6 +172,18 @@ package et_nets is
 	use pac_strands;
 	
 
+	function is_proposed (
+		strand : in pac_strands.cursor)
+		return boolean;
+
+	
+	function is_selected (
+		strand : in pac_strands.cursor)
+		return boolean;
+
+	
+
+	
 	-- Returns the (sheet/x/y) position of the given strand:
 	function get_position (
 		strand : in pac_strands.cursor)
@@ -193,8 +244,46 @@ package et_nets is
 	type type_net is new type_net_base with record
 		strands		: pac_strands.list;
 		scope		: et_netlists.type_net_scope := et_netlists.LOCAL;
+
+		status : type_object_status; 
+		-- IMPORTANT: status "moving" shall not be used. 
+		-- CS: Use precondition when modifying the status ?
 	end record;
 
+
+
+
+	procedure set_proposed (
+		net : in out type_net);
+
+	
+	procedure clear_proposed (
+		net : in out type_net);
+
+
+	function is_proposed (
+		net : in type_net)
+		return boolean;
+
+	
+
+
+	procedure set_selected (
+		net : in out type_net);
+
+	
+	procedure clear_selected (
+		net : in out type_net);
+
+
+	function is_selected (
+		net : in type_net)
+		return boolean;
+
+
+
+
+	
 
 	
 	-- Returns the cursor to the strand at the given place.
@@ -247,8 +336,21 @@ package et_nets is
 		element_type	=> type_net);
 
 	use pac_nets;
+
 	
 
+	function is_proposed (
+		net : in pac_nets.cursor)
+		return boolean;
+
+
+	function is_selected (
+		net : in pac_nets.cursor)
+		return boolean;
+
+
+
+	
 	-- Returns the name of the given net:
 	function get_net_name (
 		net_cursor : in pac_nets.cursor)
