@@ -114,6 +114,78 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level)
 		return type_object_segment;
 
+
+
+
+	-- This composite type is meant to identify a strand
+	-- and its parent net in the schematic:
+	type type_object_strand is record
+		net_cursor		: pac_nets.cursor;
+		strand_cursor	: pac_strands.cursor;
+	end record;
+
+
+	-- Returns the net name and strand position of the given object
+	-- as string in the form like "GND strand sheet / start x/y end x/y":
+	function to_string (
+		object	: in type_object_strand)
+		return string;
+
+	
+
+	-- This composite type is meant to identify a net
+	-- in the schematic:
+	type type_object_net is record
+		net_cursor		: pac_nets.cursor;
+	end record;
+
+
+	-- Returns the net name of the given object
+	-- as string in the form like "GND":
+	function to_string (
+		object	: in type_object_net)
+		return string;
+
+
+
+	-- Clears the proposed-flag and the selected-flag of all nets:
+	procedure reset_proposed_nets (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+	
+
+	
+	-- Modifies the status flag of a complete net:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		net				: in type_object_net;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+	
+
+	-- Returns the first net according to the given flag.
+	-- If no net has been found, then the return is no_element:
+	function get_first_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_net;
+
+	
+	
+	-- Sets the proposed-flag of all nets which have a segment in the
+	-- given zone around the given place on the currently active sheet.
+	-- Adds to count the number of nets that have been found:
+	procedure propose_nets (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level);
+
+
+	-- CS propose_strands
 	
 	
 	-- Searches the module for an anonymous net with the lowest index available.
@@ -155,6 +227,15 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
+	
+	-- Shows/highlights a complete net:
+	-- Currently just sets the status of the
+	-- whole net as "selected":
+	procedure show_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor;
+		log_threshold	: in type_log_level);
+
 
 	
 	-- Deletes a segment of a net.
@@ -163,6 +244,9 @@ package et_schematic_ops.nets is
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		place			: in type_object_position; -- sheet/x/y
 		log_threshold	: in type_log_level);
+
+
+
 
 
 	
@@ -370,9 +454,9 @@ package et_schematic_ops.nets is
 
 	type type_object_category is (
 		CAT_VOID,
-		CAT_SEGMENT);
+		CAT_SEGMENT,
 		-- CAT_STRAND ?
-		-- CAT_NET ?
+		CAT_NET);
 		-- CAT_LABEL_SIMPLE ?
 		-- CAT_LABEL_TAG ?
 		-- CAT_JUNCTION ?
@@ -386,6 +470,9 @@ package et_schematic_ops.nets is
 			when CAT_SEGMENT =>
 				segment : type_object_segment;
 
+			when CAT_NET =>
+				net : type_object_net;
+				
 			-- CS
 		end case;
 	end record;
@@ -410,7 +497,7 @@ package et_schematic_ops.nets is
 
 
 	-- Returns the cursor to the net of the given
-	-- object. The object must be of CAT_SEGMENT:
+	-- object. The object must be of CAT_SEGMENT or CAT_NET:
 	function get_net (
 		object_cursor : in pac_objects.cursor)
 		return pac_nets.cursor;
@@ -537,6 +624,12 @@ package et_schematic_ops.nets is
 
 
 	procedure delete_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level);
+
+
+	procedure show_object (
 		module_cursor	: in pac_generic_modules.cursor;
 		object			: in type_object;
 		log_threshold	: in type_log_level);

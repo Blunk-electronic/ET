@@ -253,6 +253,8 @@ package et_nets is
 
 
 
+
+
 	procedure set_proposed (
 		net : in out type_net);
 
@@ -282,6 +284,13 @@ package et_nets is
 
 
 
+	procedure modify_status (
+		net			: in out type_net;
+		operation	: in type_status_operation);
+	
+
+	procedure reset_status (
+		net			: in out type_net);
 
 	
 

@@ -254,6 +254,8 @@ package body et_schematic_ops.nets is
 
 		
 	
+
+
 	
 	function get_lowest_available_anonymous_net (
 		module		: in pac_generic_modules.cursor)
@@ -414,10 +416,12 @@ package body et_schematic_ops.nets is
 			begin
 				-- Iterate through the strands:
 				while has_element (strand_cursor) loop
-					log (text => "strand " & get_position (strand_cursor), level => log_threshold + 2);
-					log_indentation_up;
-					net.strands.update_element (strand_cursor, query_strand'access);
-					log_indentation_down;
+					if get_sheet (strand_cursor) = active_sheet then
+						log (text => "strand " & get_position (strand_cursor), level => log_threshold + 2);
+						log_indentation_up;
+						net.strands.update_element (strand_cursor, query_strand'access);
+						log_indentation_down;
+					end if;
 					next (strand_cursor);
 				end loop;				
 			end query_net;
@@ -563,8 +567,246 @@ package body et_schematic_ops.nets is
 
 
 
+
+	function to_string (
+		object	: in type_object_strand)
+		return string
+	is begin
+		-- CS
+		return "";
+	end to_string;
+
 	
 
+
+	function to_string (
+		object	: in type_object_net)
+		return string
+	is begin
+		-- CS
+		return "";
+	end to_string;
+
+
+
+	
+
+
+
+	procedure reset_proposed_nets (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is begin
+				reset_status (net);
+			end query_net;
+
+			
+		begin
+			while has_element (net_cursor) loop
+				log (text => "net " & get_net_name (net_cursor), level => log_threshold + 1);
+				log_indentation_up;
+				module.nets.update_element (net_cursor, query_net'access);
+				log_indentation_down;
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " reset all nets (each one as a whole).",
+			level => log_threshold);
+
+		log_indentation_up;
+
+		generic_modules.update_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end reset_proposed_nets;
+
+
+	
+
+
+	
+	
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		net				: in type_object_net;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is			
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is begin
+				modify_status (net, operation);
+			end query_net;
+			
+		begin
+			module.nets.update_element (net.net_cursor, query_net'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of whole net "
+			& get_net_name (net.net_cursor) 
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,		   
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
+
+
+
+	
+
+	
+
+	function get_first_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_net
+	is 
+		result : type_object_net;
+	begin
+		null;
+		-- CS
+		return result;
+	end get_first_net;
+	
+
+
+	
+	
+
+	procedure propose_nets (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is 
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				-- As soon as a segment has been found, there is no
+				-- need to explore more strands or segments of the candidate net.
+				-- This flag indicates that the iteration through the strands
+				-- is to be aborted:
+				proceed : boolean := true;
+				
+			
+				procedure query_strand (strand : in out type_strand) is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure query_segment (
+						seg : in out type_net_segment)
+					is begin
+						if in_catch_zone (catch_zone, seg, net_line_width) then
+							log (text => "in catch zone", level => log_threshold + 4);
+							set_proposed (net);
+							proceed := false; -- no more segments need to be probed
+							count := count + 1;
+						end if;
+					end query_segment;
+
+					
+				begin
+					-- Iterate through the segments:
+					while has_element (segment_cursor) and proceed loop
+						log (text => to_string (segment_cursor), level => log_threshold + 3);
+						log_indentation_up;
+						strand.segments.update_element (segment_cursor, query_segment'access);
+						log_indentation_down;
+						next (segment_cursor);
+					end loop;
+				end query_strand;
+				
+				
+			begin
+				-- Iterate through the strands:
+				while has_element (strand_cursor) and proceed loop
+					if get_sheet (strand_cursor) = active_sheet then
+						log (text => "strand " & get_position (strand_cursor), level => log_threshold + 2);
+						log_indentation_up;
+						net.strands.update_element (strand_cursor, query_strand'access);
+						log_indentation_down;
+					end if;
+					next (strand_cursor);
+				end loop;				
+			end query_net;
+			
+	
+		begin
+			-- Iterate through the nets:
+			while has_element (net_cursor) loop
+				log (text => "net " & get_net_name (net_cursor), level => log_threshold + 1);
+				log_indentation_up;
+				module.nets.update_element (net_cursor, query_net'access);
+				log_indentation_down;
+				next (net_cursor);
+			end loop;
+		end query_module;
+			
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " proposing nets in " & to_string (catch_zone),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,		   
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_nets;
+
+
+
+	
 
 	
 	procedure rename_net (
@@ -1026,8 +1268,53 @@ package body et_schematic_ops.nets is
 
 
 
+
+
 	
 
+	procedure show_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is			
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is begin
+				set_selected (net);
+			end query_net;
+			
+		begin
+			module.nets.update_element (net_cursor, query_net'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " showing/highlighting whole net "
+			& get_net_name (net_cursor),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,		   
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end show_net;
+
+	
+	
+
+
+	
 	
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3655,6 +3942,9 @@ package body et_schematic_ops.nets is
 				& " strand " & get_position (object.segment.strand_cursor)
 				& " " & to_string (object.segment.segment_cursor);
 
+			when CAT_NET =>
+				return get_net_name (object.net.net_cursor);
+				
 		end case;
 	end to_string;
 	
@@ -3677,8 +3967,19 @@ package body et_schematic_ops.nets is
 		return pac_nets.cursor
 	is
 		object : type_object := element (object_cursor);
+
+		c : pac_nets.cursor := pac_nets.no_element;		
 	begin
-		return object.segment.net_cursor;
+		case object.cat is
+			when CAT_SEGMENT =>
+				return object.segment.net_cursor;
+
+			when CAT_NET =>
+				return object.net.net_cursor;
+
+			when others =>
+				return c; -- CS exception ?
+		end case;
 	end;
 
 
@@ -3716,6 +4017,7 @@ package body et_schematic_ops.nets is
 	is
 		result_category : type_object_category := CAT_VOID;
 		result_segment 	: type_object_segment;
+		result_net		: type_object_net;
 
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -3723,9 +4025,26 @@ package body et_schematic_ops.nets is
 			level => log_threshold);
 
 		log_indentation_up;
+		
+
+		-- SEARCH FOR THE FIRST NET:
+		
+		-- If a net has been found, then go to the end of this procedure:
+		result_net := get_first_net (module_cursor, flag, log_threshold + 1);
+
+		if has_element (result_net.net_cursor) then
+			-- A net has been found.
+			-- CS log ?
+			result_category := CAT_NET;
+		end if;
+		
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
 
 		
-		-- SEARCH FOR A NET SEGMENT:
+		-- SEARCH FOR THE FIRST NET SEGMENT:
 		
 		-- If a segment has been found, then go to the end of this procedure:
 		result_segment := get_first_segment (module_cursor, flag, log_threshold + 1);
@@ -3737,10 +4056,11 @@ package body et_schematic_ops.nets is
 		end if;
 		
 		-- If nothing has been found then the category is CAT_VOID.
-		log_indentation_down;
 
 
+	<<end_of_search>>
 		
+		log_indentation_down;
 		
 		case result_category is
 			when CAT_VOID =>
@@ -3748,6 +4068,9 @@ package body et_schematic_ops.nets is
 
 			when CAT_SEGMENT =>
 				return (CAT_SEGMENT, result_segment);
+
+			when CAT_NET =>
+				return (CAT_NET, result_net);
 
 		end case;
 	end get_first_object;
@@ -3773,97 +4096,162 @@ package body et_schematic_ops.nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			net_cursor : pac_nets.cursor := module.nets.first;
-			
 
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in type_net) 
-			is 
-				strand_cursor : pac_strands.cursor := net.strands.first;
 
+			procedure search_nets is
+				net_cursor : pac_nets.cursor := module.nets.first;
 				
-				procedure query_strand (strand : in type_strand) is
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;					
 
+				procedure query_net (
+					net_name	: in pac_net_name.bounded_string;
+					net			: in type_net) 
+				is 
 
-					procedure query_segment (seg : in type_net_segment) is
+					-- This procedure appends the matching
+					-- net cursor to the result:
+					procedure collect is begin
+						
+						result.append ((
+							cat	=> CAT_NET,
+							net	=> (net_cursor => net_cursor)));
 
-						-- This procedure appends the matching
-						-- net, strand and unit cursor to the result:
-						procedure collect is begin
-							-- log (text => get_unit_name (unit_cursor), level => log_threshold + 4);
+					end collect;
 							
-							result.append ((
-								cat		=> CAT_SEGMENT,
-								segment	=> (net_cursor, strand_cursor, segment_cursor)));
-
-						end collect;
-						
-						
-					begin
-						case flag is
-							when PROPOSED =>
-								if is_proposed (seg) then
-									collect;
-								end if;
-		
-							when SELECTED =>
-								if is_selected (seg) then
-									collect;
-								end if;
-		
-							when others => null; -- CS
-						end case;
-					end query_segment;
-
 					
 				begin
-					-- Iterate through the segments:
-					while has_element (segment_cursor) loop
-						log (text => "segment " & to_string (segment_cursor), level => log_threshold + 3);
-						log_indentation_up;
-						query_element (segment_cursor, query_segment'access);
-						log_indentation_down;
-						next (segment_cursor);
-					end loop;
-				end query_strand;
-		
+					case flag is
+						when PROPOSED =>
+							if is_proposed (net) then
+								collect;
+							end if;
+	
+						when SELECTED =>
+							if is_selected (net) then
+								collect;
+							end if;
+	
+						when others => null; -- CS
+					end case;
+				end query_net;
+
 				
 			begin
-				-- Iterate through the strands:
-				while has_element (strand_cursor) loop
-					log (text => "strand " & get_position (strand_cursor), level => log_threshold + 2);
+				log (text => "nets", level => log_threshold + 1);
+				log_indentation_up;
+				
+				-- Iterate through the nets:
+				while has_element (net_cursor) loop
+					log (text => "net " & get_net_name (net_cursor), level => log_threshold + 2);
 					log_indentation_up;
-					query_element (strand_cursor, query_strand'access);
+					query_element (net_cursor, query_net'access);
 					log_indentation_down;
-					next (strand_cursor);
+					next (net_cursor);
 				end loop;
-			end query_net;
 
+				log_indentation_down;				
+			end search_nets;
+
+
+
+			
+			procedure search_net_segments is
+				net_cursor : pac_nets.cursor := module.nets.first;
+				
+
+				procedure query_net (
+					net_name	: in pac_net_name.bounded_string;
+					net			: in type_net) 
+				is 
+					strand_cursor : pac_strands.cursor := net.strands.first;
+
+					
+					procedure query_strand (strand : in type_strand) is
+						segment_cursor : pac_net_segments.cursor := strand.segments.first;					
+
+
+						procedure query_segment (seg : in type_net_segment) is
+
+							-- This procedure appends the matching
+							-- net, strand and unit cursor to the result:
+							procedure collect is begin
+								-- log (text => get_unit_name (unit_cursor), level => log_threshold + 4);
+								
+								result.append ((
+									cat		=> CAT_SEGMENT,
+									segment	=> (net_cursor, strand_cursor, segment_cursor)));
+
+							end collect;
+							
+							
+						begin
+							case flag is
+								when PROPOSED =>
+									if is_proposed (seg) then
+										collect;
+									end if;
+			
+								when SELECTED =>
+									if is_selected (seg) then
+										collect;
+									end if;
+			
+								when others => null; -- CS
+							end case;
+						end query_segment;
+
+						
+					begin
+						-- Iterate through the segments:
+						while has_element (segment_cursor) loop
+							log (text => "segment " & to_string (segment_cursor), level => log_threshold + 3);
+							log_indentation_up;
+							query_element (segment_cursor, query_segment'access);
+							log_indentation_down;
+							next (segment_cursor);
+						end loop;
+					end query_strand;
+			
+					
+				begin
+					-- Iterate through the strands:
+					while has_element (strand_cursor) loop
+						log (text => "strand " & get_position (strand_cursor), level => log_threshold + 2);
+						log_indentation_up;
+						query_element (strand_cursor, query_strand'access);
+						log_indentation_down;
+						next (strand_cursor);
+					end loop;
+				end query_net;
+
+				
+			begin
+				log (text => "net segments", level => log_threshold + 1);
+				log_indentation_up;
+				
+				-- Iterate through the nets:
+				while has_element (net_cursor) loop
+					log (text => "net " & get_net_name (net_cursor), level => log_threshold + 2);
+					log_indentation_up;
+					query_element (net_cursor, query_net'access);
+					log_indentation_down;
+					next (net_cursor);
+				end loop;
+
+				log_indentation_down;				
+			end search_net_segments;
+		
 			
 		begin
-			log (text => "net segments", level => log_threshold + 1);
-			log_indentation_up;
+			search_nets; -- addresses whole nets
+		
+			search_net_segments;
 			
-			-- Iterate through the nets:
-			while has_element (net_cursor) loop
-				log (text => "net " & get_net_name (net_cursor), level => log_threshold + 2);
-				log_indentation_up;
-				query_element (net_cursor, query_net'access);
-				log_indentation_down;
-				next (net_cursor);
-			end loop;
-
-			log_indentation_down;
-
 			
 			-- log (text => "labels", level => log_threshold + 1);
 			-- log_indentation_up;
 			-- CS query net labels (simple, tag)
 			-- log_indentation_down;
 
-			-- CS junctions ?
 		end query_module;
 
 		
@@ -3907,7 +4295,10 @@ package body et_schematic_ops.nets is
 			when CAT_SEGMENT =>
 				modify_status (module_cursor, object.segment, operation, log_threshold + 1);
 
-			-- CS CAT_NANE, ...
+			when CAT_NET =>
+				modify_status (module_cursor, object.net, operation, log_threshold + 1);
+
+			-- CS labels
 				
 			when CAT_VOID =>
 				null; -- CS
@@ -3947,8 +4338,11 @@ package body et_schematic_ops.nets is
 			level => log_threshold);
 
 		log_indentation_up;
+		reset_proposed_nets (module_cursor, log_threshold + 1);
 		reset_proposed_segments (module_cursor, log_threshold + 1);
-		-- CS reset_proposed_labels, junctions
+		
+		-- CS reset_proposed_labels
+		
 		log_indentation_down;
 	end reset_proposed_objects;
 
@@ -3973,6 +4367,8 @@ package body et_schematic_ops.nets is
 
 		log_indentation_up;
 
+		-- CS
+		
 -- 		case object.cat is
 -- 
 -- 
@@ -4311,7 +4707,8 @@ package body et_schematic_ops.nets is
 					log_threshold	=> log_threshold + 1);
 
 
-			-- CS CAT_NANE, ...
+			when CAT_NET => 
+				null; -- CS
 				
 			when CAT_VOID =>
 				null;
@@ -4341,14 +4738,15 @@ package body et_schematic_ops.nets is
 		case object.cat is
 			when CAT_SEGMENT =>
 				null;
-				-- delete_unit (
-				-- 	module_cursor	=> module_cursor,
-				-- 	device_name		=> key (object.unit.device_cursor),
-				-- 	unit_name		=> key (object.unit.unit_cursor),
-				-- 	log_threshold	=> log_threshold + 1);
-    -- 
+				-- CS
 				
 
+			when CAT_NET => 
+				null; -- CS
+				-- delete_net (
+				-- 	module_cursor	=> module_cursor,
+				-- 	log_threshold	=> log_threshold + 1);
+				
 				
 			when CAT_VOID =>
 				null;
@@ -4357,7 +4755,38 @@ package body et_schematic_ops.nets is
 		log_indentation_down;
 	end delete_object;
 
+
 	
+
+
+	procedure show_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		log_threshold	: in type_log_level)
+	is begin
+		log (text => "module " & to_string (module_cursor)
+			& " showing object",
+			-- CS & to_string (object)
+			level => log_threshold);
+
+		log_indentation_up;
+
+		case object.cat is
+			when CAT_SEGMENT =>
+				null;
+				-- CS
+
+			when CAT_NET => 
+				show_net (module_cursor, object.net.net_cursor, log_threshold + 1);
+				
+			when CAT_VOID =>
+				null;
+		end case;		
+		
+		log_indentation_down;
+	end show_object;
+
+
 	
 end et_schematic_ops.nets;
 	

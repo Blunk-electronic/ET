@@ -1093,7 +1093,9 @@ package body et_canvas_schematic_nets is
 				set_status (praeamble & to_string (object.segment)
 					& ". " & status_next_object_clarification);
 
-			-- CS placeholders
+			when CAT_NET =>
+				set_status (praeamble & to_string (object.net)
+					& ". " & status_next_object_clarification);
 				
 			when CAT_VOID => null; -- CS
 		end case;
@@ -1253,19 +1255,36 @@ package body et_canvas_schematic_nets is
 		log (text => "locating objects ...", level => log_threshold);
 		log_indentation_up;
 
-		-- CS propose objects according to
-		-- current verb.
+		-- Propose objects according to current verb:
+		case verb is
+			when VERB_DRAG =>
+				
+				-- Propose net segments in the vicinity of the given point:
+				propose_segments (
+					module_cursor	=> active_module,
+					catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+					count			=> count_total,
+					log_threshold	=> log_threshold + 1);
+
+				
+			when VERB_SHOW =>
+				
+				-- Propose nets in the vicinity of the given point:
+				propose_nets (
+					module_cursor	=> active_module,
+					catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+					count			=> count_total,
+					log_threshold	=> log_threshold + 1);
+
+
+			when VERB_MOVE =>
+				null;
+				-- CS propose_labels
+
+			when others => null;
+		end case;
+
 		
-		-- Propose net segments in the vicinity of the given point:
-		propose_segments (
-			module_cursor	=> active_module,
-			catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
-			count			=> count_total,
-			log_threshold	=> log_threshold + 1);
-
-
-		-- CS net labels, junctions
-
 
 		log (text => "proposed objects total" & natural'image (count_total),
 			 level => log_threshold + 1);
@@ -1664,6 +1683,78 @@ package body et_canvas_schematic_nets is
 			finalize;
 		end if;
 	end delete_object;
+
+
+
+
+	
+
+
+	procedure show_object (
+		point	: in type_vector_model)
+	is 
+
+		-- Deletes the selected object:
+		procedure finalize is
+			use et_modes.schematic;
+			use et_undo_redo;
+			use et_commit;
+
+			object : constant type_object := get_first_object (
+					active_module, SELECTED, log_threshold + 1);
+		begin
+			log (text => "finalizing show ...", level => log_threshold);
+			log_indentation_up;
+
+			-- If a selected object has been found, then
+			-- we do the actual finalizing:
+			if object.cat /= CAT_VOID then
+				
+				show_object (
+					module_cursor	=> active_module, 
+					object			=> object, 
+					log_threshold	=> log_threshold + 1);
+
+				if object.cat = CAT_NET then
+					redraw_board;
+				end if;
+				
+			else
+				log (text => "nothing to do", level => log_threshold);
+			end if;
+				
+			log_indentation_down;			
+			
+			reset_proposed_objects (active_module, log_threshold + 1);
+
+			reset_editing_process; -- prepare for a new editing process
+			-- CS ? nothing is edited in show mode
+		end finalize;
+
+		
+	begin
+		if not clarification_pending then
+			-- Locate all objects in the vicinity of the given point:
+			find_objects (point);
+			
+			-- NOTE: If many objects have been found, then
+			-- clarification is now pending.
+
+			-- If find_objects has found only one object
+			-- then the flag edit_process_running is set true.
+
+			if edit_process_running then -- CS ? nothing is edited in show mode
+				finalize;
+			end if;
+		else
+			-- Here the clarification procedure ends.
+			-- An object has been selected
+			-- via procedure clarify_object.
+
+			finalize;
+		end if;
+	end show_object;
+
 
 
 

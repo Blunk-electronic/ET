@@ -387,6 +387,11 @@ package et_canvas_schematic_nets is
 		point	: in type_vector_model);
 
 	
+	procedure show_object (
+		point	: in type_vector_model);
+
+
+
 	
 -- NET LABELS
 

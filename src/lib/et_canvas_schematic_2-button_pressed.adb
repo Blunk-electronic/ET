@@ -288,10 +288,11 @@ is
 						else
 							show_properties_of_selected_device;
 						end if;
+
 						
 					when NOUN_NET =>
 						if not clarification_pending then
-							find_segments (event.point);
+							et_canvas_schematic_nets.show_object (snap_point);
 						else
 							show_properties_of_selected_net;
 						end if;

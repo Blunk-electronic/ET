@@ -665,7 +665,7 @@ is
 						
 					when NOUN_NET =>
 						if not clarification_pending then
-							find_segments (get_cursor_position);
+							et_canvas_schematic_nets.show_object (get_cursor_position);
 						else
 							show_properties_of_selected_net;
 						end if;

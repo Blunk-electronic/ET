@@ -383,6 +383,24 @@ package body et_nets is
 
 	
 	
+
+	procedure modify_status (
+		net			: in out type_net;
+		operation	: in type_status_operation)
+	is begin
+		modify_status (net.status, operation);
+	end;
+	
+
+
+
+
+	procedure reset_status (
+		net			: in out type_net)
+	is begin
+		reset_status (net.status);
+	end;
+	
 	
 
 	
