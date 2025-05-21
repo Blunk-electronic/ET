@@ -37,12 +37,12 @@
 --   history of changes:
 --
 
-with gnat;
-with gnat.exception_traces;
+-- with gnat;
+-- with gnat.exception_traces;
 
 with ada.exceptions;
-with ada.containers;						use ada.containers;
-with ada.containers.doubly_linked_lists;
+-- with ada.containers;						use ada.containers;
+-- with ada.containers.doubly_linked_lists;
 
 with et_text;								use et_text;
 with et_alignment;
@@ -64,431 +64,431 @@ procedure draw_nets is
 	use pac_net_segments;
 	use pac_net_labels;
 	
-	use pac_proposed_segments;
-	use pac_proposed_labels;
+	-- use pac_proposed_segments;
+	-- use pac_proposed_labels;
 
 	
-	-- Draws the junctions of a segment:
-	procedure draw_junctions (
-		s : in pac_net_segments.cursor)
-	is
-		j : type_circle := junction_symbol;
+-- 	-- Draws the junctions of a segment:
+-- 	procedure draw_junctions (
+-- 		s : in pac_net_segments.cursor)
+-- 	is
+-- 		j : type_circle := junction_symbol;
+-- 
+-- 		procedure draw is begin
+-- 			draw_circle (
+-- 				circle		=> type_circle (j),
+-- 				pos			=> origin_zero_rotation,
+-- 				filled		=> YES,
+-- 				width		=> zero,
+-- 				do_stroke	=> true);
+-- 		end draw;
+-- 		
+-- 	begin
+-- 		-- at start point of segment:
+-- 		if element (s).junctions.A then
+-- 			set_center (j, get_A (s));
+-- 			draw;
+-- 		end if;
+-- 
+-- 		-- at end point of segment:
+-- 		if element (s).junctions.B then
+-- 			set_center (j, get_B (s));
+-- 			draw;
+-- 		end if;
+-- 
+-- 	end draw_junctions;
+-- 
+-- 
+-- 	
+-- 	-- Draws the junctions of a segment:
+-- 	procedure draw_junctions (
+-- 		s : in type_net_segment)
+-- 	is
+-- 		j : type_circle := junction_symbol;
+-- 
+-- 		procedure draw is begin
+-- 			draw_circle (
+-- 				circle		=> type_circle (j),
+-- 				pos			=> origin_zero_rotation,
+-- 				filled		=> YES,
+-- 				width		=> zero,
+-- 				do_stroke	=> true);
+-- 		end draw;
+-- 		
+-- 	begin
+-- 		-- at start point of segment:
+-- 		if s.junctions.A then
+-- 			set_center (j, get_A (s));
+-- 			draw;
+-- 		end if;
+-- 
+-- 		-- at end point of segment:
+-- 		if s.junctions.B then
+-- 			set_center (j, get_B (s));
+-- 			draw;
+-- 		end if;
+-- 
+-- 	end draw_junctions;
 
-		procedure draw is begin
-			draw_circle (
-				circle		=> type_circle (j),
-				pos			=> origin_zero_rotation,
-				filled		=> YES,
-				width		=> zero,
-				do_stroke	=> true);
-		end draw;
-		
-	begin
-		-- at start point of segment:
-		if element (s).junctions.A then
-			set_center (j, get_A (s));
-			draw;
-		end if;
 
-		-- at end point of segment:
-		if element (s).junctions.B then
-			set_center (j, get_B (s));
-			draw;
-		end if;
 
-	end draw_junctions;
+-- 	-- This procedure draws a tag label:
+-- 	procedure draw_tag_label (
+-- 		net		: in pac_net_name.bounded_string;
+-- 		label	: in type_net_label)
+-- 	is
+-- 		use pac_net_name;
+-- 		use et_alignment;
+-- 
+-- 		box : type_area;
+-- 		
+-- 		content : pac_text_content.bounded_string := to_content (to_string (net));
+-- 		-- CS append to content the position of the net on the next sheet (strand position)
+-- 		-- using the quadrant bars.
+-- 		
+-- 		
+-- 		-- The text rotation must be either 0 or 90 degree (documentational text) and is thus
+-- 		-- to be calculated according to the rotation of the label:
+-- 		text_rotation : type_rotation;
+-- 
+-- 		-- The alignment is assigned as if the text were drawn at zero rotation.
+-- 		-- The vertical alignment is always CENTER. Horizontal alignment changes depending on 
+-- 		-- the rotation of the label:
+-- 		text_alignment : type_text_alignment := (vertical => ALIGN_CENTER, horizontal => <>);
+-- 
+-- 		-- The text position is not the same as the label position, thus it must be 
+-- 		-- calculated according to the label rotation and tag_label_text_offset:
+-- 		text_position : type_vector_model;
+-- 
+-- 		use pac_draw_text;
+-- 	begin
+-- 		-- Form a box that wraps around the net name:
+-- 		box := to_area (get_text_extents (content, label.size, net_label_font));
+-- 
+-- 		-- Expand the box so that there is some empty space between
+-- 		-- text and border:
+-- 		box.height := box.height * tag_label_height_to_size_ratio;
+-- 		box.width  := box.width  * tag_label_height_to_size_ratio;
+-- 		
+-- 		if label.rotation_tag = zero_rotation then
+-- 	
+-- 			box.position := set (
+-- 				get_x (label.position), 
+-- 				get_y (label.position) - box.height * 0.5);
+-- 
+-- 			text_rotation := zero_rotation;
+-- 			text_position := set (get_x (label.position) + tag_label_text_offset, get_y (label.position));
+-- 			text_alignment.horizontal := ALIGN_LEFT;
+-- 		end if;
+-- 
+-- 		
+-- 		if label.rotation_tag = 90.0 then
+-- 
+-- 			box.position := set (
+-- 				get_x (label.position) - box.height * 0.5,
+-- 				get_y (label.position));
+-- 
+-- 			swap_edges (box);
+-- 
+-- 			text_rotation := 90.0;
+-- 			text_position := set (get_x (label.position), get_y (label.position) + tag_label_text_offset);
+-- 			text_alignment.horizontal := ALIGN_LEFT;
+-- 		end if;
+-- 
+-- 		
+-- 		if label.rotation_tag = 180.0 then
+-- 
+-- 			box.position := set (
+-- 				get_x (label.position) - box.width,
+-- 				get_y (label.position) - box.height * 0.5);
+-- 
+-- 			text_rotation := zero_rotation;
+-- 			text_position := set (get_x (label.position) - tag_label_text_offset, get_y (label.position));
+-- 			text_alignment.horizontal := ALIGN_RIGHT;
+-- 		end if;
+-- 
+-- 		
+-- 		if label.rotation_tag = -90.0 then
+-- 
+-- 			box.position := set (
+-- 				get_x (label.position) - box.height * 0.5,
+-- 				get_y (label.position) - box.width);
+-- 			
+-- 			swap_edges (box);
+-- 
+-- 			text_rotation := 90.0;
+-- 			text_position := set (get_x (label.position), get_y (label.position) - tag_label_text_offset);
+-- 			text_alignment.horizontal := ALIGN_RIGHT;
+-- 		end if;
+-- 
+-- 
+-- 		-- Draw the box enshrouding the net name:
+-- 		draw_rectangle (
+-- 			rectangle	=> box, 
+-- 			width		=> tag_label_box_line_width);
+-- 
+-- 		-- Draw the actual net name:
+-- 		draw_text (
+-- 			content		=> content,
+-- 			size		=> label.size,
+-- 			font		=> net_label_font,
+-- 			anchor		=> text_position,
+-- 			origin		=> false, -- no origin for net names required
+-- 			
+-- 			-- Text rotation about its anchor point. This is documentational text.
+-- 			-- It is readable from the front or the right.
+-- 			rotation	=> text_rotation,
+-- 			alignment	=> text_alignment);
+-- 
+-- 	end draw_tag_label;
+-- 
+	
+
+-- 	-- Returns true if the given label is selected.
+-- 	-- Returns false if there are no proposed labels or
+-- 	-- if the given label is not selected.
+-- 	function is_selected (
+-- 		net		: in pac_nets.cursor;
+-- 		strand	: in pac_strands.cursor;
+-- 		segment	: in type_net_segment;
+-- 		label	: in pac_net_labels.cursor)
+-- 		return boolean 
+-- 	is
+-- 		use pac_net_name;
+-- 		sl : type_selected_label;
+-- 	begin
+-- 		if is_empty (proposed_labels) then
+-- 			return false;
+-- 		else
+-- 			if selected_label /= pac_proposed_labels.no_element then
+-- 
+-- 				sl := element (selected_label);
+-- 				
+-- 				if key (net) = key (sl.net)
+-- 				and element (strand) = element (sl.strand)
+-- 				and segment = element (sl.segment)
+-- 				and element (label) = element (sl.label)
+-- 				then
+-- 					return true;
+-- 				else
+-- 					return false;
+-- 				end if;
+-- 			else
+-- 				return false;
+-- 			end if;
+-- 		end if;		
+-- 	end is_selected;
 
 
 	
-	-- Draws the junctions of a segment:
-	procedure draw_junctions (
-		s : in type_net_segment)
-	is
-		j : type_circle := junction_symbol;
-
-		procedure draw is begin
-			draw_circle (
-				circle		=> type_circle (j),
-				pos			=> origin_zero_rotation,
-				filled		=> YES,
-				width		=> zero,
-				do_stroke	=> true);
-		end draw;
-		
-	begin
-		-- at start point of segment:
-		if s.junctions.A then
-			set_center (j, get_A (s));
-			draw;
-		end if;
-
-		-- at end point of segment:
-		if s.junctions.B then
-			set_center (j, get_B (s));
-			draw;
-		end if;
-
-	end draw_junctions;
-
-
-
-	-- This procedure draws a tag label:
-	procedure draw_tag_label (
-		net		: in pac_net_name.bounded_string;
-		label	: in type_net_label)
-	is
-		use pac_net_name;
-		use et_alignment;
-
-		box : type_area;
-		
-		content : pac_text_content.bounded_string := to_content (to_string (net));
-		-- CS append to content the position of the net on the next sheet (strand position)
-		-- using the quadrant bars.
-		
-		
-		-- The text rotation must be either 0 or 90 degree (documentational text) and is thus
-		-- to be calculated according to the rotation of the label:
-		text_rotation : type_rotation;
-
-		-- The alignment is assigned as if the text were drawn at zero rotation.
-		-- The vertical alignment is always CENTER. Horizontal alignment changes depending on 
-		-- the rotation of the label:
-		text_alignment : type_text_alignment := (vertical => ALIGN_CENTER, horizontal => <>);
-
-		-- The text position is not the same as the label position, thus it must be 
-		-- calculated according to the label rotation and tag_label_text_offset:
-		text_position : type_vector_model;
-
-		use pac_draw_text;
-	begin
-		-- Form a box that wraps around the net name:
-		box := to_area (get_text_extents (content, label.size, net_label_font));
-
-		-- Expand the box so that there is some empty space between
-		-- text and border:
-		box.height := box.height * tag_label_height_to_size_ratio;
-		box.width  := box.width  * tag_label_height_to_size_ratio;
-		
-		if label.rotation_tag = zero_rotation then
-	
-			box.position := set (
-				get_x (label.position), 
-				get_y (label.position) - box.height * 0.5);
-
-			text_rotation := zero_rotation;
-			text_position := set (get_x (label.position) + tag_label_text_offset, get_y (label.position));
-			text_alignment.horizontal := ALIGN_LEFT;
-		end if;
-
-		
-		if label.rotation_tag = 90.0 then
-
-			box.position := set (
-				get_x (label.position) - box.height * 0.5,
-				get_y (label.position));
-
-			swap_edges (box);
-
-			text_rotation := 90.0;
-			text_position := set (get_x (label.position), get_y (label.position) + tag_label_text_offset);
-			text_alignment.horizontal := ALIGN_LEFT;
-		end if;
-
-		
-		if label.rotation_tag = 180.0 then
-
-			box.position := set (
-				get_x (label.position) - box.width,
-				get_y (label.position) - box.height * 0.5);
-
-			text_rotation := zero_rotation;
-			text_position := set (get_x (label.position) - tag_label_text_offset, get_y (label.position));
-			text_alignment.horizontal := ALIGN_RIGHT;
-		end if;
-
-		
-		if label.rotation_tag = -90.0 then
-
-			box.position := set (
-				get_x (label.position) - box.height * 0.5,
-				get_y (label.position) - box.width);
-			
-			swap_edges (box);
-
-			text_rotation := 90.0;
-			text_position := set (get_x (label.position), get_y (label.position) - tag_label_text_offset);
-			text_alignment.horizontal := ALIGN_RIGHT;
-		end if;
-
-
-		-- Draw the box enshrouding the net name:
-		draw_rectangle (
-			rectangle	=> box, 
-			width		=> tag_label_box_line_width);
-
-		-- Draw the actual net name:
-		draw_text (
-			content		=> content,
-			size		=> label.size,
-			font		=> net_label_font,
-			anchor		=> text_position,
-			origin		=> false, -- no origin for net names required
-			
-			-- Text rotation about its anchor point. This is documentational text.
-			-- It is readable from the front or the right.
-			rotation	=> text_rotation,
-			alignment	=> text_alignment);
-
-	end draw_tag_label;
-
-	
-
-	-- Returns true if the given label is selected.
-	-- Returns false if there are no proposed labels or
-	-- if the given label is not selected.
-	function is_selected (
-		net		: in pac_nets.cursor;
-		strand	: in pac_strands.cursor;
-		segment	: in type_net_segment;
-		label	: in pac_net_labels.cursor)
-		return boolean 
-	is
-		use pac_net_name;
-		sl : type_selected_label;
-	begin
-		if is_empty (proposed_labels) then
-			return false;
-		else
-			if selected_label /= pac_proposed_labels.no_element then
-
-				sl := element (selected_label);
-				
-				if key (net) = key (sl.net)
-				and element (strand) = element (sl.strand)
-				and segment = element (sl.segment)
-				and element (label) = element (sl.label)
-				then
-					return true;
-				else
-					return false;
-				end if;
-			else
-				return false;
-			end if;
-		end if;		
-	end is_selected;
-
-
-	
-	-- Draws a single net label:
-	procedure draw_label (
-		net		: in pac_net_name.bounded_string;
-		label	: in pac_net_labels.cursor)
-	is 
-		use pac_net_name;
-		use pac_draw_text;
-		use et_alignment;
-	begin
-		case element (label).appearance is
-			when SIMPLE =>
-				draw_text (
-					content		=> to_content (to_string (net)),
-					size		=> element (label).size,
-					font		=> net_label_font,
-					anchor		=> element (label).position,
-					origin		=> true, -- CS must be false on export to image
-					
-					-- Text rotation about its anchor point.
-					-- This is documentational text.
-					-- It is readable from the front or the right.
-					rotation	=> pac_text.to_rotation (element (label).rotation_simple),
-					alignment	=> net_label_alignment);
-
-			when TAG =>
-				draw_tag_label (net, element (label));
-
-		end case;
-	end draw_label;
+-- 	-- Draws a single net label:
+-- 	procedure draw_label (
+-- 		net		: in pac_net_name.bounded_string;
+-- 		label	: in pac_net_labels.cursor)
+-- 	is 
+-- 		use pac_net_name;
+-- 		use pac_draw_text;
+-- 		use et_alignment;
+-- 	begin
+-- 		case element (label).appearance is
+-- 			when SIMPLE =>
+-- 				draw_text (
+-- 					content		=> to_content (to_string (net)),
+-- 					size		=> element (label).size,
+-- 					font		=> net_label_font,
+-- 					anchor		=> element (label).position,
+-- 					origin		=> true, -- CS must be false on export to image
+-- 					
+-- 					-- Text rotation about its anchor point.
+-- 					-- This is documentational text.
+-- 					-- It is readable from the front or the right.
+-- 					rotation	=> pac_text.to_rotation (element (label).rotation_simple),
+-- 					alignment	=> net_label_alignment);
+-- 
+-- 			when TAG =>
+-- 				draw_tag_label (net, element (label));
+-- 
+-- 		end case;
+-- 	end draw_label;
 
 
 	
 	-- Draws a single net label that is being moved:
-	procedure draw_simple_label_being_moved (
-		net		: in pac_net_name.bounded_string;
-		label	: in type_net_label)
-	is 
-		use pac_net_name;
-		use pac_draw_text;
-	begin
-		--case element (label).appearance is
-			--when SIMPLE =>
-				draw_text (
-					content		=> to_content (to_string (net)),
-					size		=> label.size,
-					font		=> net_label_font,
-					anchor		=> label.position,
-					origin		=> true, -- CS must be false on export to image
-					
-					-- Text rotation about its anchor point.
-					-- This is documentational text.
-					-- It is readable from the front or the right.
-					rotation	=> pac_text.to_rotation (label.rotation_simple),
-					alignment	=> net_label_alignment);
-
-			--when TAG =>
-				--draw_tag_label (self, in_area, context, net, element (label));
-
-		--end case;
-	end draw_simple_label_being_moved;
-
+-- 	procedure draw_simple_label_being_moved (
+-- 		net		: in pac_net_name.bounded_string;
+-- 		label	: in type_net_label)
+-- 	is 
+-- 		use pac_net_name;
+-- 		use pac_draw_text;
+-- 	begin
+-- 		--case element (label).appearance is
+-- 			--when SIMPLE =>
+-- 				draw_text (
+-- 					content		=> to_content (to_string (net)),
+-- 					size		=> label.size,
+-- 					font		=> net_label_font,
+-- 					anchor		=> label.position,
+-- 					origin		=> true, -- CS must be false on export to image
+-- 					
+-- 					-- Text rotation about its anchor point.
+-- 					-- This is documentational text.
+-- 					-- It is readable from the front or the right.
+-- 					rotation	=> pac_text.to_rotation (label.rotation_simple),
+-- 					alignment	=> net_label_alignment);
+-- 
+-- 			--when TAG =>
+-- 				--draw_tag_label (self, in_area, context, net, element (label));
+-- 
+-- 		--end case;
+-- 	end draw_simple_label_being_moved;
+-- 
+-- 
+-- 	
+-- 	-- Draws labels that are NOT selected:
+-- 	procedure draw_labels (
+-- 		net		: in pac_nets.cursor;
+-- 		strand	: in pac_strands.cursor;
+-- 		segment	: in type_net_segment)
+-- 	is 
+-- 		procedure draw_fixed (label : in pac_net_labels.cursor) is begin
+-- 			if not is_selected (net, strand, segment, label) then
+-- 				draw_label (key (net), label);
+-- 			end if;
+-- 		end draw_fixed;
+-- 		
+-- 	begin
+-- 		iterate (segment.labels, draw_fixed'access);
+-- 	end draw_labels;
 
 	
-	-- Draws labels that are NOT selected:
-	procedure draw_labels (
-		net		: in pac_nets.cursor;
-		strand	: in pac_strands.cursor;
-		segment	: in type_net_segment)
-	is 
-		procedure draw_fixed (label : in pac_net_labels.cursor) is begin
-			if not is_selected (net, strand, segment, label) then
-				draw_label (key (net), label);
-			end if;
-		end draw_fixed;
-		
-	begin
-		iterate (segment.labels, draw_fixed'access);
-	end draw_labels;
-
 	
-	
-	-- Draws the net label being moved. If no net label
-	-- is being moved, nothing happens here:
-	procedure draw_label_being_moved is
-		use et_modes.schematic;
-		use pac_net_name;
-		l : type_net_label (label.appearance);
-
-		use pac_draw_text;
-	begin
-		case verb is
-			when VERB_PLACE =>
-				if label.ready then
-
-					case label.tool is
-						when KEYBOARD	=> l.position := get_cursor_position;
-						when MOUSE		=> l.position := snap_to_grid (get_mouse_position);
-					end case;
-					
-					case label.appearance is
-						when SIMPLE =>
-
-							--l.rotation_simple := label.rotation_simple;
-							
-							draw_text (
-								content		=> to_content (to_string (selected_net)),
-								size		=> l.size,
-								font		=> net_label_font,
-								anchor		=> l.position,
-								origin		=> true, -- CS must be false on export to image
-								
-								-- Text rotation about its anchor point.
-								-- This is documentational text.
-								-- It is readable from the front or the right.
-								rotation	=> pac_text.to_rotation (label.rotation_simple),
-								alignment	=> net_label_alignment);
-							
-
-						when TAG =>
-
-							-- The current position must be tested whether it qualifies
-							-- for a tag label. If the position is suitable then the
-							-- flag label.finalizing_granted is set so that 
-							-- procedure finalize_place_label is allowed to do the final
-							-- placement of the label:
-							declare
-								use et_schematic_ops.nets;
-								s : constant type_stub := query_stub (
-										module_cursor	=> active_module,
-										net_name		=> selected_net,
-										position		=> to_position (type_vector_model (l.position), active_sheet),
-										log_threshold	=> log_threshold + 1);
-
-									-- CS use a function query_stub that take a module cursor and
-									-- a net cursor instead.
-
-							begin
-								if s.is_stub then
-									-- Set the rotation of the label according to the 
-									-- direction of the stub:
-									l.rotation_tag := to_label_rotation (s.direction);
-
-									label.finalizing_granted := true;
-								else
-									label.finalizing_granted := false;
-								end if;
-
-								draw_tag_label (selected_net, l);
-							end;
-							
-					end case;
-				end if;
-
-			when others => null;
-		end case;
-
-	end draw_label_being_moved;
-
+-- 	-- Draws the net label being moved. If no net label
+-- 	-- is being moved, nothing happens here:
+-- 	procedure draw_label_being_moved is
+-- 		use et_modes.schematic;
+-- 		use pac_net_name;
+-- 		l : type_net_label (label.appearance);
+-- 
+-- 		use pac_draw_text;
+-- 	begin
+-- 		case verb is
+-- 			when VERB_PLACE =>
+-- 				if label.ready then
+-- 
+-- 					case label.tool is
+-- 						when KEYBOARD	=> l.position := get_cursor_position;
+-- 						when MOUSE		=> l.position := snap_to_grid (get_mouse_position);
+-- 					end case;
+-- 					
+-- 					case label.appearance is
+-- 						when SIMPLE =>
+-- 
+-- 							--l.rotation_simple := label.rotation_simple;
+-- 							
+-- 							draw_text (
+-- 								content		=> to_content (to_string (selected_net)),
+-- 								size		=> l.size,
+-- 								font		=> net_label_font,
+-- 								anchor		=> l.position,
+-- 								origin		=> true, -- CS must be false on export to image
+-- 								
+-- 								-- Text rotation about its anchor point.
+-- 								-- This is documentational text.
+-- 								-- It is readable from the front or the right.
+-- 								rotation	=> pac_text.to_rotation (label.rotation_simple),
+-- 								alignment	=> net_label_alignment);
+-- 							
+-- 
+-- 						when TAG =>
+-- 
+-- 							-- The current position must be tested whether it qualifies
+-- 							-- for a tag label. If the position is suitable then the
+-- 							-- flag label.finalizing_granted is set so that 
+-- 							-- procedure finalize_place_label is allowed to do the final
+-- 							-- placement of the label:
+-- 							declare
+-- 								use et_schematic_ops.nets;
+-- 								s : constant type_stub := query_stub (
+-- 										module_cursor	=> active_module,
+-- 										net_name		=> selected_net,
+-- 										position		=> to_position (type_vector_model (l.position), active_sheet),
+-- 										log_threshold	=> log_threshold + 1);
+-- 
+-- 									-- CS use a function query_stub that take a module cursor and
+-- 									-- a net cursor instead.
+-- 
+-- 							begin
+-- 								if s.is_stub then
+-- 									-- Set the rotation of the label according to the 
+-- 									-- direction of the stub:
+-- 									l.rotation_tag := to_label_rotation (s.direction);
+-- 
+-- 									label.finalizing_granted := true;
+-- 								else
+-- 									label.finalizing_granted := false;
+-- 								end if;
+-- 
+-- 								draw_tag_label (selected_net, l);
+-- 							end;
+-- 							
+-- 					end case;
+-- 				end if;
+-- 
+-- 			when others => null;
+-- 		end case;
+-- 
+-- 	end draw_label_being_moved;
+-- 
 
 	
 	
 	-- Draws the net label as indicated by variable selected_label:
-	procedure draw_selected_label (
-		net		: in pac_nets.cursor;
-		strand	: in pac_strands.cursor;
-		segment	: in pac_net_segments.cursor)
-	is
-		procedure query_label (s : in type_net_segment) is
-			label_cursor : pac_net_labels.cursor := s.labels.first;
-
-			sl : type_net_label (SIMPLE);
-		begin
-			while label_cursor /= pac_net_labels.no_element loop
-
-				if is_selected (net, strand, element (segment), label_cursor) then
-
-					if label.ready then
-						-- Draw a copy of the label. Assign position
-						-- according to tool:
-						sl := element (label_cursor);
-						
-						case label.tool is
-							when KEYBOARD =>
-								sl.position := get_cursor_position;
-							when MOUSE =>
-								sl.position := snap_to_grid (get_mouse_position);
-						end case;
-
-						-- draw the temporarily label
-						draw_simple_label_being_moved (key (net), sl);
-					else
-						-- draw label as it is according to module database:
-						draw_label (key (net), label_cursor);
-					end if;
-														  
-					exit; -- there is only on selected label. no further search required
-				end if;
-
-				next (label_cursor);
-			end loop;
-		end query_label;
-
-		
-	begin
-		if not is_empty (proposed_labels) then
-			query_element (segment, query_label'access);
-		end if;
-	end draw_selected_label;
+-- 	procedure draw_selected_label (
+-- 		net		: in pac_nets.cursor;
+-- 		strand	: in pac_strands.cursor;
+-- 		segment	: in pac_net_segments.cursor)
+-- 	is
+-- 		procedure query_label (s : in type_net_segment) is
+-- 			label_cursor : pac_net_labels.cursor := s.labels.first;
+-- 
+-- 			sl : type_net_label (SIMPLE);
+-- 		begin
+-- 			while label_cursor /= pac_net_labels.no_element loop
+-- 
+-- 				if is_selected (net, strand, element (segment), label_cursor) then
+-- 
+-- 					if label.ready then
+-- 						-- Draw a copy of the label. Assign position
+-- 						-- according to tool:
+-- 						sl := element (label_cursor);
+-- 						
+-- 						case label.tool is
+-- 							when KEYBOARD =>
+-- 								sl.position := get_cursor_position;
+-- 							when MOUSE =>
+-- 								sl.position := snap_to_grid (get_mouse_position);
+-- 						end case;
+-- 
+-- 						-- draw the temporarily label
+-- 						draw_simple_label_being_moved (key (net), sl);
+-- 					else
+-- 						-- draw label as it is according to module database:
+-- 						draw_label (key (net), label_cursor);
+-- 					end if;
+-- 														  
+-- 					exit; -- there is only on selected label. no further search required
+-- 				end if;
+-- 
+-- 				next (label_cursor);
+-- 			end loop;
+-- 		end query_label;
+-- 
+-- 		
+-- 	begin
+-- 		if not is_empty (proposed_labels) then
+-- 			query_element (segment, query_label'access);
+-- 		end if;
+-- 	end draw_selected_label;
 
 	
 
@@ -517,29 +517,226 @@ procedure draw_nets is
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
 
-			procedure draw_segment (s : in pac_net_segments.cursor) is 
-				
-				procedure draw is begin
+			procedure query_segment (segment : in type_net_segment) is 
+				label_cursor : pac_net_labels.cursor := segment.labels.first;
+
+
+				-- This procedure draws a single net segment:
+				procedure draw_segment is begin
 					draw_line (
-						line		=> element (s),
-						pos			=> origin_zero_rotation,		  
+						line		=> segment,
 						width		=> net_line_width,
 						do_stroke	=> true);
-				end;
+				end draw_segment;
 
-			begin				
-				if is_selected (s) then
+
+				-- This procedure queries a net label and draws it
+				-- according to its appearance (SIMPLE or TAG label):
+				procedure query_label (label : in type_net_label) is
+					use pac_net_name;
+					use pac_draw_text;
+
+
+					-- This procedure draws a simple label:
+					procedure draw_simple is begin
+
+						-- CS overwrite position by get_object_tool_position
+						-- if the label is moving.
+						
+						draw_text (
+							content		=> to_content (to_string (net_name)),
+							size		=> label.size,
+							font		=> net_label_font,
+							anchor		=> label.position,
+							origin		=> true,
+							
+							-- Text rotation about its anchor point.
+							-- This is documentational text.
+							-- It is readable from the front or the right.
+							rotation	=> pac_text.to_rotation (label.rotation_simple),
+							alignment	=> net_label_alignment);					
+					end draw_simple;
+
+
+					-- This procedure draws a tag label:
+					procedure draw_tag is
+						use et_alignment;
+
+						box : type_area;
+						
+						content : pac_text_content.bounded_string := 
+							to_content (to_string (net_name));
+						-- CS: append to content the position of the net
+						-- on the next sheet (strand position) using the quadrant bars.
+												
+						-- The text rotation must be either 0 or 90 degree
+						-- (documentational text !) and is thus
+						-- to be calculated according to the rotation of the label:
+						text_rotation : type_rotation;
+
+						-- The alignment is assigned as if the text 
+						-- were drawn at zero rotation.
+						-- The vertical alignment is always CENTER. Horizontal alignment 
+						-- changes depending on the rotation of the label:
+						text_alignment : type_text_alignment := 
+							(vertical => ALIGN_CENTER, horizontal => <>);
+
+						-- The text position is not the same as the 
+						-- label position, thus it must be calculated according to 
+						-- the label rotation and tag_label_text_offset:
+						text_position : type_vector_model;
+
+					begin
+						-- Form a box that wraps around the net name:
+						box := to_area (get_text_extents (content, label.size, net_label_font));
+
+						-- Expand the box so that there is some empty space between
+						-- text and border:
+						box.height := box.height * tag_label_height_to_size_ratio;
+						box.width  := box.width  * tag_label_height_to_size_ratio;
+						
+						-- CS overwrite position if the label is moving.
+
+						
+						if label.rotation_tag = zero_rotation then
+					
+							box.position := set (
+								get_x (label.position), 
+								get_y (label.position) - box.height * 0.5);
+
+							text_rotation := zero_rotation;
+							text_position := set (get_x (label.position) + tag_label_text_offset, 
+												  get_y (label.position));
+							
+							text_alignment.horizontal := ALIGN_LEFT;
+						end if;
+
+						
+						if label.rotation_tag = 90.0 then
+
+							box.position := set (
+								get_x (label.position) - box.height * 0.5,
+								get_y (label.position));
+
+							swap_edges (box);
+
+							text_rotation := 90.0;
+							text_position := set (get_x (label.position), 
+												  get_y (label.position) + tag_label_text_offset);
+							
+							text_alignment.horizontal := ALIGN_LEFT;
+						end if;
+
+						
+						if label.rotation_tag = 180.0 then
+
+							box.position := set (
+								get_x (label.position) - box.width,
+								get_y (label.position) - box.height * 0.5);
+
+							text_rotation := zero_rotation;
+							text_position := set (get_x (label.position) - tag_label_text_offset, 
+												  get_y (label.position));
+							
+							text_alignment.horizontal := ALIGN_RIGHT;
+						end if;
+
+						
+						if label.rotation_tag = -90.0 then
+
+							box.position := set (
+								get_x (label.position) - box.height * 0.5,
+								get_y (label.position) - box.width);
+							
+							swap_edges (box);
+
+							text_rotation := 90.0;
+							text_position := set (get_x (label.position), 
+												  get_y (label.position) - tag_label_text_offset);
+							
+							text_alignment.horizontal := ALIGN_RIGHT;
+						end if;
+
+
+						-- Draw the box enshrouding the net name:
+						draw_rectangle (
+							rectangle	=> box, 
+							width		=> tag_label_box_line_width);
+
+						-- Draw the actual net name:
+						draw_text (
+							content		=> content,
+							size		=> label.size,
+							font		=> net_label_font,
+							anchor		=> text_position,
+							origin		=> false, -- no origin for net names required
+							
+							-- Text rotation about its anchor point. This is documentational text.
+							-- It is readable from the front or the right.
+							rotation	=> text_rotation,
+							alignment	=> text_alignment);
+
+					end draw_tag;
+
+					
+				begin
+					case label.appearance is
+						when SIMPLE	=> draw_simple;
+						when TAG	=> draw_tag;
+					end case;
+				end query_label;
+
+
+				
+				-- This procedure draws the junctions of the segment. 
+				-- Note: A junction can be at the start or the end (A/B)
+				-- of the segment, but never somewhere between.
+				procedure draw_junctions is
+					j : type_circle := junction_symbol;
+
+					procedure draw is begin
+						draw_circle (
+							circle		=> type_circle (j),
+							filled		=> YES,
+							width		=> zero,
+							do_stroke	=> true);
+					end draw;
+					
+				begin
+					-- Probe start point of segment:
+					if segment.junctions.A then
+						set_center (j, get_A (segment));
+						draw;
+					end if;
+
+					-- Probe end point of segment:
+					if segment.junctions.B then
+						set_center (j, get_B (segment));
+						draw;
+					end if;
+				end draw_junctions;
+
+				
+			begin			
+				-- Increase brightness if segment is selected:
+				if is_selected (segment) then
 					set_color_nets (BRIGHT);
-					draw;
-					set_color_nets (NORMAL);
-				else
-					draw;
 				end if;				
 
-				-- draw_junctions (s);
-				-- draw labels
-			end draw_segment;
+				draw_segment;				
+				
+				-- Iterate through the net labels:
+				while has_element (label_cursor) loop
+					query_element (label_cursor, query_label'access);
+					next (label_cursor);
+				end loop;
+				
+				draw_junctions;
 
+				set_color_nets (NORMAL);
+			end query_segment;
+
+			
 			
 			procedure query_strand (strand : in type_strand) is
 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
@@ -547,58 +744,11 @@ procedure draw_nets is
 				-- draw nets of the active sheet only:
 				if get_sheet (strand.position) = active_sheet then
 
--- 					-- First we draw selected segments or those being moved/dragged:
--- 					set_color_nets (BRIGHT);
--- 					
--- 					while segment_cursor /= pac_net_segments.no_element loop
--- 
--- 						-- CS test verb and noun ?
--- 						draw_segment_being_dragged_along_with_unit (segment_cursor);
--- 						-- (If segments_being_dragged is empty, then nothing happens.)
--- 						
--- 						-- CS test verb and noun ?						
--- 						if is_selected (net_cursor, strand_cursor, segment_cursor) then
--- 						
--- 							if edit_process_running then
--- 								-- Draw the net segments being moved or dragged.
--- 								-- If we are dragging a segment, then other attached segments
--- 								-- will be dragged along.
--- 								-- If we are moving a single segment, then only the current segment
--- 								-- will be moved.
--- 								draw_moving_segments (net_cursor, strand_cursor, segment_cursor);
--- 							else
--- 								-- Draw the net segment as it is according to module database:
--- 								draw_fixed_segment (segment_cursor);
--- 
--- 								draw_labels (net_cursor, strand_cursor, element (segment_cursor));
--- 
--- 								-- Draw the net label being moved. If no net label
--- 								-- is being moved, nothing happens here:
--- 								draw_label_being_moved;
--- 							end if;
--- 						end if;
--- 
--- 						-- Draw selected label. If no label selected, nothing happens here:
--- 						draw_selected_label (net_cursor, strand_cursor, segment_cursor);
--- 						
--- 						next (segment_cursor);
--- 					end loop;
--- 
-					
-					-- Now we draw the remaining segments:
-					-- set_color_nets (NORMAL);
-					-- segment_cursor := strand.segments.first;
-					
+					-- CS increase brightness if strand is selected
+
+					-- Iterate through the segments of the candidate strand:
 					while segment_cursor /= pac_net_segments.no_element loop
-
-						-- if not is_selected (net_cursor, strand_cursor, segment_cursor) then
-
-							-- Draw the net segment as it is according to module database:
-							draw_segment (segment_cursor);
-
-							-- draw_labels (net_cursor, strand_cursor, element (segment_cursor));
-						-- end if;
-
+						query_element (segment_cursor, query_segment'access);
 						next (segment_cursor);
 					end loop;
 
@@ -607,9 +757,11 @@ procedure draw_nets is
 			
 			
 		begin
+			-- CS increase brightness if net is selected
+			
 			-- Iterate through the strands of the candidate net:
 			while strand_cursor /= pac_strands.no_element loop
-
+			
 				query_element (
 					position	=> strand_cursor,
 					process		=> query_strand'access);
@@ -710,9 +862,10 @@ procedure draw_nets is
 	begin -- query_module
 		set_color_nets;
 
-		-- iterate nets
+		-- Iterate through the nets:
 		while net_cursor /= pac_nets.no_element loop
 
+			
 			-- net_already_drawn := false;
 
 			-- If the show mode is active AND the net is selected for highlighting,
