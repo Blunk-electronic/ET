@@ -399,6 +399,64 @@ package et_schematic_ops.nets is
 -- 		place			: in type_object_position; -- sheet/x/y, rotation doesn't matter
 -- 		log_threshold	: in type_log_level);
 
+
+
+-- LABELS:
+	
+
+	-- This composite type is meant to identify a net label
+	-- and its parent net in the schematic:
+	type type_object_label is record
+		net_cursor		: pac_nets.cursor;
+		strand_cursor	: pac_strands.cursor;
+		segment_cursor	: pac_net_segments.cursor;
+		label_cursor	: pac_net_labels.cursor;
+	end record;
+
+
+	-- Returns the net name and the position of the given object
+	-- as string in the form like "GND label at x/y":
+	function to_string (
+		object	: in type_object_label)
+		return string;
+
+
+	-- Resets the status flags of all net labels:
+	procedure reset_labels (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Modifies the status flag of a net label:
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		label			: in type_object_label;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Sets the proposed-flag of all net labels which are in the
+	-- given zone around the given place on the currently active sheet.
+	-- Adds to count the number of labels that have been found:
+	procedure propose_labels (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level);
+
+	
+
+	-- Returns the first net label according to the given flag.
+	-- If no label has been found, then the return is no_element:
+	function get_first_label (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_label;
+
+
 	
 	
 	-- Places a label next to a segment at position.
@@ -566,14 +624,6 @@ package et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
-	
-
-	procedure move_object (
-		module_cursor	: in pac_generic_modules.cursor;
-		object			: in type_object;
-		point_of_attack	: in type_vector_model;
-		destination		: in type_vector_model;
-		log_threshold	: in type_log_level);
 
 
 	-- Sets the start or end points of net segments which are 
@@ -611,6 +661,14 @@ package et_schematic_ops.nets is
 		object_cursor	: in pac_objects.cursor; -- must point to a primary net segment
 		log_threshold	: in type_log_level);
 
+
+
+	procedure move_object (
+		module_cursor	: in pac_generic_modules.cursor;
+		object			: in type_object;
+		point_of_attack	: in type_vector_model;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level);
 
 	
 	

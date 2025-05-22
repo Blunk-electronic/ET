@@ -110,6 +110,16 @@ package et_net_labels is
 
 
 
+	function get_position (
+		label : in type_net_label)
+		return type_vector_model;
+
+
+	function get_position (
+		label : in type_net_label)
+		return string;
+
+	
 
 	procedure set_proposed (
 		label : in out type_net_label);
@@ -155,7 +165,13 @@ package et_net_labels is
 
 
 
+	procedure modify_status (
+		label 		: in out type_net_label;
+		operation	: in type_status_operation);						
+	
 
+	procedure reset_status (
+		label : in out type_net_label);
 
 	
 	
@@ -163,6 +179,17 @@ package et_net_labels is
 	use pac_net_labels;
 	
 
+	function get_position (
+		label : in pac_net_labels.cursor)
+		return type_vector_model;
+
+
+	function get_position (
+		label : in pac_net_labels.cursor)
+		return string;
+
+	
+	
 	function is_proposed (
 		label : in pac_net_labels.cursor)
 		return boolean;

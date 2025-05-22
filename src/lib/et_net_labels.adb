@@ -55,6 +55,24 @@ package body et_net_labels is
 		return type_net_label_direction'value (direction);
 	end;
 
+
+
+	function get_position (
+		label : in type_net_label)
+		return type_vector_model
+	is begin
+		return label.position;
+	end;
+
+
+	function get_position (
+		label : in type_net_label)
+		return string
+	is begin
+		return to_string (label.position);
+	end;
+
+	
 	
 
 	procedure set_proposed (
@@ -140,6 +158,41 @@ package body et_net_labels is
 
 
 
+	procedure reset_status (
+		label : in out type_net_label)
+	is begin
+		reset_status (label.status);
+	end;
+
+
+
+	procedure modify_status (
+		label 		: in out type_net_label;
+		operation	: in type_status_operation)
+	is begin
+		modify_status (label.status, operation);
+	end;
+
+	
+	
+
+	function get_position (
+		label : in pac_net_labels.cursor)
+		return type_vector_model
+	is begin
+		return get_position (element (label));
+	end;
+
+
+	function get_position (
+		label : in pac_net_labels.cursor)
+		return string
+	is begin
+		return to_string (get_position (element (label)));
+	end;
+
+
+	
 
 	function is_proposed (
 		label : in pac_net_labels.cursor)
