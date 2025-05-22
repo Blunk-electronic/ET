@@ -35,6 +35,9 @@
 --
 --   history of changes:
 --
+--  ToDo:
+--  - highlight selected net (all segments, vias)
+--
 
 --with ada.text_io;					use ada.text_io;
 
@@ -926,6 +929,7 @@ procedure draw_conductors is
 					when KEYBOARD =>
 						set_center (circle, get_cursor_position);
 				end case;
+				-- CS use function get_object_tool_position 
 			end if;
 
 		end if;
