@@ -299,7 +299,7 @@ package body et_schematic_ops.nets is
 		return string
 	is begin
 		return get_net_name (object.net_cursor) 
-			-- CS strand coordinates ?
+			& " strand " & get_position (object.strand_cursor)
 			& " " & to_string (object.segment_cursor);
 	end;
 
@@ -346,7 +346,7 @@ package body et_schematic_ops.nets is
 		log (text => "module " & to_string (module_cursor)
 			& " modifying status of net segment "
 			& get_net_name (segment.net_cursor) 
-			-- CS coordinates of strand
+			& " strand " & get_position (segment.strand_cursor)
 			& " " & to_string (segment.segment_cursor)
 			& " / " & to_string (operation),
 			level => log_threshold);
@@ -475,7 +475,7 @@ package body et_schematic_ops.nets is
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
-			proceed : aliased boolean := true;
+			proceed : boolean := true;
 
 
 			procedure query_net (
@@ -492,10 +492,10 @@ package body et_schematic_ops.nets is
 					procedure query_segment (seg : in type_net_segment) is
 
 						procedure set_result is begin
-							log (text => "match", level => log_threshold + 2);
 							result.net_cursor		:= net_cursor;
 							result.strand_cursor	:= strand_cursor;
 							result.segment_cursor	:= segment_cursor;
+							log (text => "match: " & to_string (result), level => log_threshold + 2);
 							proceed := false; -- no further probing required
 						end set_result;
 						
@@ -572,8 +572,8 @@ package body et_schematic_ops.nets is
 		object	: in type_object_strand)
 		return string
 	is begin
-		-- CS
-		return "";
+		return get_net_name (object.net_cursor) 
+			& " strand " & get_position (object.strand_cursor);
 	end to_string;
 
 	
@@ -583,8 +583,7 @@ package body et_schematic_ops.nets is
 		object	: in type_object_net)
 		return string
 	is begin
-		-- CS
-		return "";
+		return get_net_name (object.net_cursor);
 	end to_string;
 
 
@@ -698,9 +697,68 @@ package body et_schematic_ops.nets is
 		return type_object_net
 	is 
 		result : type_object_net;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			use pac_nets;
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			proceed : boolean := true;
+
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net) 
+			is
+				
+				procedure set_result is begin
+					result.net_cursor := net_cursor;
+					log (text => "match: " & to_string (result), level => log_threshold + 1);
+					proceed := false; -- no further probing required
+				end set_result;
+						
+			begin
+				case flag is
+					when PROPOSED =>
+						if is_proposed (net) then
+							set_result;
+						end if;
+	
+					when SELECTED =>
+						if is_selected (net) then
+							set_result;
+						end if;
+	
+					when others => null; -- CS
+				end case;
+			end query_net;
+
+			
+		begin
+			-- Iterate through the nets:
+			while has_element (net_cursor) and proceed loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
 	begin
-		null;
-		-- CS
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first net (as a whole) / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+		
 		return result;
 	end get_first_net;
 	
@@ -3938,12 +3996,10 @@ package body et_schematic_ops.nets is
 				return "void";
 
 			when CAT_SEGMENT =>
-				return get_net_name (object.segment.net_cursor)
-				& " strand " & get_position (object.segment.strand_cursor)
-				& " " & to_string (object.segment.segment_cursor);
+				return to_string (object.segment);
 
 			when CAT_NET =>
-				return get_net_name (object.net.net_cursor);
+				return to_string (object.net);
 				
 		end case;
 	end to_string;

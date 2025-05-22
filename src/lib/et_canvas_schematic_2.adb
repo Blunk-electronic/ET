@@ -517,7 +517,7 @@ package body et_canvas_schematic_2 is
 
 			status_clear;
 
-			et_schematic_ops.nets.reset_proposed_segments (active_module, log_threshold + 1);
+			et_schematic_ops.nets.reset_proposed_objects (active_module, log_threshold + 1);
 			
 			et_schematic_ops.units.reset_proposed_objects (active_module, log_threshold + 1);
 			

@@ -1694,7 +1694,7 @@ package body et_canvas_schematic_nets is
 		point	: in type_vector_model)
 	is 
 
-		-- Deletes the selected object:
+		-- Shows the selected object:
 		procedure finalize is
 			use et_modes.schematic;
 			use et_undo_redo;
@@ -1725,14 +1725,14 @@ package body et_canvas_schematic_nets is
 				
 			log_indentation_down;			
 			
-			reset_proposed_objects (active_module, log_threshold + 1);
-
 			reset_editing_process; -- prepare for a new editing process
-			-- CS ? nothing is edited in show mode
 		end finalize;
 
 		
 	begin
+		-- Clear all previous selections:
+		reset_proposed_objects (active_module, log_threshold + 1);
+		
 		if not clarification_pending then
 			-- Locate all objects in the vicinity of the given point:
 			find_objects (point);
@@ -1743,7 +1743,7 @@ package body et_canvas_schematic_nets is
 			-- If find_objects has found only one object
 			-- then the flag edit_process_running is set true.
 
-			if edit_process_running then -- CS ? nothing is edited in show mode
+			if edit_process_running then
 				finalize;
 			end if;
 		else

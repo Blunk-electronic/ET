@@ -40,9 +40,7 @@
 -- with gnat;
 -- with gnat.exception_traces;
 
-with ada.exceptions;
--- with ada.containers;						use ada.containers;
--- with ada.containers.doubly_linked_lists;
+-- with ada.exceptions;
 
 with et_text;								use et_text;
 with et_alignment;
@@ -63,254 +61,6 @@ procedure draw_nets is
 	use pac_strands;
 	use pac_net_segments;
 	use pac_net_labels;
-	
-	-- use pac_proposed_segments;
-	-- use pac_proposed_labels;
-
-	
--- 	-- Draws the junctions of a segment:
--- 	procedure draw_junctions (
--- 		s : in pac_net_segments.cursor)
--- 	is
--- 		j : type_circle := junction_symbol;
--- 
--- 		procedure draw is begin
--- 			draw_circle (
--- 				circle		=> type_circle (j),
--- 				pos			=> origin_zero_rotation,
--- 				filled		=> YES,
--- 				width		=> zero,
--- 				do_stroke	=> true);
--- 		end draw;
--- 		
--- 	begin
--- 		-- at start point of segment:
--- 		if element (s).junctions.A then
--- 			set_center (j, get_A (s));
--- 			draw;
--- 		end if;
--- 
--- 		-- at end point of segment:
--- 		if element (s).junctions.B then
--- 			set_center (j, get_B (s));
--- 			draw;
--- 		end if;
--- 
--- 	end draw_junctions;
--- 
--- 
--- 	
--- 	-- Draws the junctions of a segment:
--- 	procedure draw_junctions (
--- 		s : in type_net_segment)
--- 	is
--- 		j : type_circle := junction_symbol;
--- 
--- 		procedure draw is begin
--- 			draw_circle (
--- 				circle		=> type_circle (j),
--- 				pos			=> origin_zero_rotation,
--- 				filled		=> YES,
--- 				width		=> zero,
--- 				do_stroke	=> true);
--- 		end draw;
--- 		
--- 	begin
--- 		-- at start point of segment:
--- 		if s.junctions.A then
--- 			set_center (j, get_A (s));
--- 			draw;
--- 		end if;
--- 
--- 		-- at end point of segment:
--- 		if s.junctions.B then
--- 			set_center (j, get_B (s));
--- 			draw;
--- 		end if;
--- 
--- 	end draw_junctions;
-
-
-
--- 	-- This procedure draws a tag label:
--- 	procedure draw_tag_label (
--- 		net		: in pac_net_name.bounded_string;
--- 		label	: in type_net_label)
--- 	is
--- 		use pac_net_name;
--- 		use et_alignment;
--- 
--- 		box : type_area;
--- 		
--- 		content : pac_text_content.bounded_string := to_content (to_string (net));
--- 		-- CS append to content the position of the net on the next sheet (strand position)
--- 		-- using the quadrant bars.
--- 		
--- 		
--- 		-- The text rotation must be either 0 or 90 degree (documentational text) and is thus
--- 		-- to be calculated according to the rotation of the label:
--- 		text_rotation : type_rotation;
--- 
--- 		-- The alignment is assigned as if the text were drawn at zero rotation.
--- 		-- The vertical alignment is always CENTER. Horizontal alignment changes depending on 
--- 		-- the rotation of the label:
--- 		text_alignment : type_text_alignment := (vertical => ALIGN_CENTER, horizontal => <>);
--- 
--- 		-- The text position is not the same as the label position, thus it must be 
--- 		-- calculated according to the label rotation and tag_label_text_offset:
--- 		text_position : type_vector_model;
--- 
--- 		use pac_draw_text;
--- 	begin
--- 		-- Form a box that wraps around the net name:
--- 		box := to_area (get_text_extents (content, label.size, net_label_font));
--- 
--- 		-- Expand the box so that there is some empty space between
--- 		-- text and border:
--- 		box.height := box.height * tag_label_height_to_size_ratio;
--- 		box.width  := box.width  * tag_label_height_to_size_ratio;
--- 		
--- 		if label.rotation_tag = zero_rotation then
--- 	
--- 			box.position := set (
--- 				get_x (label.position), 
--- 				get_y (label.position) - box.height * 0.5);
--- 
--- 			text_rotation := zero_rotation;
--- 			text_position := set (get_x (label.position) + tag_label_text_offset, get_y (label.position));
--- 			text_alignment.horizontal := ALIGN_LEFT;
--- 		end if;
--- 
--- 		
--- 		if label.rotation_tag = 90.0 then
--- 
--- 			box.position := set (
--- 				get_x (label.position) - box.height * 0.5,
--- 				get_y (label.position));
--- 
--- 			swap_edges (box);
--- 
--- 			text_rotation := 90.0;
--- 			text_position := set (get_x (label.position), get_y (label.position) + tag_label_text_offset);
--- 			text_alignment.horizontal := ALIGN_LEFT;
--- 		end if;
--- 
--- 		
--- 		if label.rotation_tag = 180.0 then
--- 
--- 			box.position := set (
--- 				get_x (label.position) - box.width,
--- 				get_y (label.position) - box.height * 0.5);
--- 
--- 			text_rotation := zero_rotation;
--- 			text_position := set (get_x (label.position) - tag_label_text_offset, get_y (label.position));
--- 			text_alignment.horizontal := ALIGN_RIGHT;
--- 		end if;
--- 
--- 		
--- 		if label.rotation_tag = -90.0 then
--- 
--- 			box.position := set (
--- 				get_x (label.position) - box.height * 0.5,
--- 				get_y (label.position) - box.width);
--- 			
--- 			swap_edges (box);
--- 
--- 			text_rotation := 90.0;
--- 			text_position := set (get_x (label.position), get_y (label.position) - tag_label_text_offset);
--- 			text_alignment.horizontal := ALIGN_RIGHT;
--- 		end if;
--- 
--- 
--- 		-- Draw the box enshrouding the net name:
--- 		draw_rectangle (
--- 			rectangle	=> box, 
--- 			width		=> tag_label_box_line_width);
--- 
--- 		-- Draw the actual net name:
--- 		draw_text (
--- 			content		=> content,
--- 			size		=> label.size,
--- 			font		=> net_label_font,
--- 			anchor		=> text_position,
--- 			origin		=> false, -- no origin for net names required
--- 			
--- 			-- Text rotation about its anchor point. This is documentational text.
--- 			-- It is readable from the front or the right.
--- 			rotation	=> text_rotation,
--- 			alignment	=> text_alignment);
--- 
--- 	end draw_tag_label;
--- 
-	
-
--- 	-- Returns true if the given label is selected.
--- 	-- Returns false if there are no proposed labels or
--- 	-- if the given label is not selected.
--- 	function is_selected (
--- 		net		: in pac_nets.cursor;
--- 		strand	: in pac_strands.cursor;
--- 		segment	: in type_net_segment;
--- 		label	: in pac_net_labels.cursor)
--- 		return boolean 
--- 	is
--- 		use pac_net_name;
--- 		sl : type_selected_label;
--- 	begin
--- 		if is_empty (proposed_labels) then
--- 			return false;
--- 		else
--- 			if selected_label /= pac_proposed_labels.no_element then
--- 
--- 				sl := element (selected_label);
--- 				
--- 				if key (net) = key (sl.net)
--- 				and element (strand) = element (sl.strand)
--- 				and segment = element (sl.segment)
--- 				and element (label) = element (sl.label)
--- 				then
--- 					return true;
--- 				else
--- 					return false;
--- 				end if;
--- 			else
--- 				return false;
--- 			end if;
--- 		end if;		
--- 	end is_selected;
-
-
-	
--- 	-- Draws a single net label:
--- 	procedure draw_label (
--- 		net		: in pac_net_name.bounded_string;
--- 		label	: in pac_net_labels.cursor)
--- 	is 
--- 		use pac_net_name;
--- 		use pac_draw_text;
--- 		use et_alignment;
--- 	begin
--- 		case element (label).appearance is
--- 			when SIMPLE =>
--- 				draw_text (
--- 					content		=> to_content (to_string (net)),
--- 					size		=> element (label).size,
--- 					font		=> net_label_font,
--- 					anchor		=> element (label).position,
--- 					origin		=> true, -- CS must be false on export to image
--- 					
--- 					-- Text rotation about its anchor point.
--- 					-- This is documentational text.
--- 					-- It is readable from the front or the right.
--- 					rotation	=> pac_text.to_rotation (element (label).rotation_simple),
--- 					alignment	=> net_label_alignment);
--- 
--- 			when TAG =>
--- 				draw_tag_label (net, element (label));
--- 
--- 		end case;
--- 	end draw_label;
-
 
 	
 	-- Draws a single net label that is being moved:
@@ -341,24 +91,6 @@ procedure draw_nets is
 -- 
 -- 		--end case;
 -- 	end draw_simple_label_being_moved;
--- 
--- 
--- 	
--- 	-- Draws labels that are NOT selected:
--- 	procedure draw_labels (
--- 		net		: in pac_nets.cursor;
--- 		strand	: in pac_strands.cursor;
--- 		segment	: in type_net_segment)
--- 	is 
--- 		procedure draw_fixed (label : in pac_net_labels.cursor) is begin
--- 			if not is_selected (net, strand, segment, label) then
--- 				draw_label (key (net), label);
--- 			end if;
--- 		end draw_fixed;
--- 		
--- 	begin
--- 		iterate (segment.labels, draw_fixed'access);
--- 	end draw_labels;
 
 	
 	
@@ -439,58 +171,6 @@ procedure draw_nets is
 -- 
 -- 	end draw_label_being_moved;
 -- 
-
-	
-	
-	-- Draws the net label as indicated by variable selected_label:
--- 	procedure draw_selected_label (
--- 		net		: in pac_nets.cursor;
--- 		strand	: in pac_strands.cursor;
--- 		segment	: in pac_net_segments.cursor)
--- 	is
--- 		procedure query_label (s : in type_net_segment) is
--- 			label_cursor : pac_net_labels.cursor := s.labels.first;
--- 
--- 			sl : type_net_label (SIMPLE);
--- 		begin
--- 			while label_cursor /= pac_net_labels.no_element loop
--- 
--- 				if is_selected (net, strand, element (segment), label_cursor) then
--- 
--- 					if label.ready then
--- 						-- Draw a copy of the label. Assign position
--- 						-- according to tool:
--- 						sl := element (label_cursor);
--- 						
--- 						case label.tool is
--- 							when KEYBOARD =>
--- 								sl.position := get_cursor_position;
--- 							when MOUSE =>
--- 								sl.position := snap_to_grid (get_mouse_position);
--- 						end case;
--- 
--- 						-- draw the temporarily label
--- 						draw_simple_label_being_moved (key (net), sl);
--- 					else
--- 						-- draw label as it is according to module database:
--- 						draw_label (key (net), label_cursor);
--- 					end if;
--- 														  
--- 					exit; -- there is only on selected label. no further search required
--- 				end if;
--- 
--- 				next (label_cursor);
--- 			end loop;
--- 		end query_label;
--- 
--- 		
--- 	begin
--- 		if not is_empty (proposed_labels) then
--- 			query_element (segment, query_label'access);
--- 		end if;
--- 	end draw_selected_label;
-
-	
 
 
 	
@@ -733,7 +413,9 @@ procedure draw_nets is
 				
 				draw_junctions;
 
-				set_color_nets (NORMAL);
+				if is_selected (segment) then
+					set_color_nets (NORMAL);
+				end if;
 			end query_segment;
 
 			
@@ -744,7 +426,10 @@ procedure draw_nets is
 				-- draw nets of the active sheet only:
 				if get_sheet (strand.position) = active_sheet then
 
-					-- CS increase brightness if strand is selected
+					-- Increase brightness if strand is selected
+					if is_selected (strand) then
+						set_color_nets (BRIGHT);
+					end if;
 
 					-- Iterate through the segments of the candidate strand:
 					while segment_cursor /= pac_net_segments.no_element loop
@@ -752,13 +437,19 @@ procedure draw_nets is
 						next (segment_cursor);
 					end loop;
 
+					if is_selected (strand) then
+						set_color_nets (NORMAL);
+					end if;					
 				end if;
 			end query_strand;
 			
 			
 		begin
-			-- CS increase brightness if net is selected
-			
+			-- Increase brightness if net is selected:
+			if is_selected (net) then
+				set_color_nets (BRIGHT);
+			end if;
+				
 			-- Iterate through the strands of the candidate net:
 			while strand_cursor /= pac_strands.no_element loop
 			
@@ -768,95 +459,12 @@ procedure draw_nets is
 				
 				next (strand_cursor);
 			end loop;
+
+			if is_selected (net) then
+				set_color_nets (NORMAL);
+			end if;
 		end query_net;
 
-		
--- 		-- Draws the whole net inclusive net labesl highlighted. 
--- 		-- This is the case when the verb VERB_SHOW is active.
--- 		procedure query_strands_show (
--- 			net_name	: in pac_net_name.bounded_string;
--- 			net			: in type_net)
--- 		is
--- 			strand_cursor : pac_strands.cursor := net.strands.first;
--- 
--- 			procedure query_segments (strand : in type_strand) is
--- 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
--- 
--- 				use et_colors;
--- 				use et_colors.schematic;
--- 			begin
--- 				-- draw nets of the active sheet only:
--- 				if get_sheet (strand.position) = active_sheet then
--- 
--- 					set_color_nets (BRIGHT);
--- 					
--- 					while segment_cursor /= pac_net_segments.no_element loop
--- 
--- 						-- Draw the net segment as it is according to module database:
--- 						draw_fixed_segment (segment_cursor);
--- 
--- 						draw_labels (net_cursor, strand_cursor, element (segment_cursor));
--- 						
--- 						next (segment_cursor);
--- 					end loop;
--- 
--- 				end if;
--- 			end query_segments;
--- 
--- 			
--- 		begin -- query_strands_show
--- 			while strand_cursor /= pac_strands.no_element loop
--- 
--- 				query_element (
--- 					position	=> strand_cursor,
--- 					process		=> query_segments'access);
--- 				
--- 				next (strand_cursor);
--- 			end loop;
--- 		end query_strands_show;
--- 
-		
-		-- A net can be drawn in "normal" mode or highlighted. This flag indicates
-		-- that a net has alredy been drawn highlighted so that it won't be drawn
-		-- again in "normal" mode.
-		-- net_already_drawn : boolean := false;
-
-		
--- 		-- This procedure calls query_strands_show if the current net (indicated by net_cursor)
--- 		-- is selected for highlighting. It sets the flag net_already_drawn in that case.
--- 		procedure highlight_net is
--- 			use pac_net_name;
--- 			ss : type_selected_segment;
--- 		begin
--- 			-- The net selected for highlighting is to be found in the list proposed_segments.
--- 			-- The last element of the proposed_segments points to the net that is to 
--- 			-- be drawn highlighted.
--- 			-- So the list of proposed_segments must contain something:
--- 			if not is_empty (proposed_segments) then
--- 
--- 				-- There must be a selected segment (indicated by cursor selected_segment):
--- 				if selected_segment /= pac_proposed_segments.no_element then
--- 					ss := element (selected_segment);
--- 
--- 					-- The selected_segment must provide a cursor to a net:
--- 					if ss.net /= pac_nets.no_element then
--- 						
--- 						-- The net name of the selected segment must match the name of the
--- 						-- current net (indicated by net_cursor):
--- 						if key (ss.net) = key (net_cursor) then
--- 
--- 							-- Draw the whole net on the current sheet highlighted:
--- 							pac_nets.query_element (
--- 								position	=> net_cursor,
--- 								process		=> query_strands_show'access);
--- 
--- 							-- The net (indicated by net_cursor) must not be drawn again:
--- 							net_already_drawn := true;
--- 						end if;
--- 					end if;
--- 				end if;
--- 			end if;
--- 		end highlight_net;
 
 		
 	begin -- query_module
@@ -865,40 +473,17 @@ procedure draw_nets is
 		-- Iterate through the nets:
 		while net_cursor /= pac_nets.no_element loop
 
-			
-			-- net_already_drawn := false;
-
-			-- If the show mode is active AND the net is selected for highlighting,
-			-- then highlight the net and set the flag net_already_drawn:
--- 			case verb is
--- 				when VERB_SHOW => 
--- 					case noun is
--- 						when NOUN_NET => highlight_net;
--- 
--- 						when others => null;
--- 					end case;
--- 		
--- 				when others => null;
--- 			end case;
-
-			-- If the net (indicated by net_cursor) has been drawn already,
-			-- don't draw it again. Otherwise draw it in "normal" mode:
-			-- if not net_already_drawn then
-
-				-- Draw the net in "normal" mode:
-				pac_nets.query_element (
-					position	=> net_cursor,
-					process		=> query_net'access);
-
-			-- end if;
+			pac_nets.query_element (
+				position	=> net_cursor,
+				process		=> query_net'access);
 			
 			next (net_cursor); -- advance to next net
 		end loop;
-
 	end query_module;
 
 
 
+	
 	
 	procedure draw_path is
 		use pac_path_and_bend;
