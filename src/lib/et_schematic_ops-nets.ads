@@ -421,7 +421,7 @@ package et_schematic_ops.nets is
 		return string;
 
 
-	-- Resets the status flags of all net labels:
+	-- Resets the status flags of all net labels (simple and tag labels):
 	procedure reset_labels (
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
@@ -460,29 +460,39 @@ package et_schematic_ops.nets is
 	
 	
 	-- Places a label next to a segment at position.
-	procedure place_net_label (
+	procedure place_net_label_simple (
 		module_cursor	: in pac_generic_modules.cursor;
 
+		-- CS size ?
+		
 		-- The reference point at the segment:
 		segment_position: in type_object_position; -- sheet/x/y
 
 		-- The position of the label relative to segment_position:
 		label_position	: in type_vector_model := origin; -- x/y
 
-		-- The rotation is relevant for simple labels only. The label will always be placed
+		-- The rotation is relevant for simple labels only. 
+		-- The label will always be placed
 		-- so that is is readable from the front or from the right.
-		-- Whatever angle you provide here, the final roation will be either 0 or 90 degrees.
-		-- If the labe is a tag then this parameter has no meaning. The rotation of a tag
-		-- label will be automatically determined by the direction of the stub it will be attached to.
+		-- Whatever angle you provide here, the final roation will 
+		-- be either 0 or 90 degrees.
 		rotation		: in et_schematic_coordinates.type_rotation_model := zero_rotation;
-		
-		appearance 		: in type_net_label_appearance; -- simple/tag label		
+		log_threshold	: in type_log_level);
 
-		-- The direction is relevant for tag labels only:
+
+	
+	procedure place_net_label_tag (
+		module_cursor	: in pac_generic_modules.cursor;
+
+		-- CS size ?
+		
+		-- The reference point at the segment:
+		segment_position: in type_object_position; -- sheet/x/y
 		direction		: in type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level);
 
 
+	
 	
 	-- Deletes a label.
 	procedure delete_net_label (

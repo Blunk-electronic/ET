@@ -6,7 +6,7 @@
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -99,6 +99,7 @@ package et_keywords is
 	
 	keyword_junction				: constant string := "junction";
 
+	keyword_tag_label				: constant string := "tag_label";
 	keyword_layer					: constant string := "layer";	
 	keyword_layers					: constant string := "layers";
 	keyword_layout					: constant string := "layout";	

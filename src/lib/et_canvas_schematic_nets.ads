@@ -482,39 +482,39 @@ package et_canvas_schematic_nets is
 
 	function to_string (cat : in type_label_category) return string;
 	
-	procedure delete_selected_label;
+	-- procedure delete_selected_label;
 
-	procedure delete_label (point : in type_vector_model);
+	-- procedure delete_label (point : in type_vector_model);
 	
 
-	procedure clarify_label;
+	-- procedure clarify_label;
 	
-	procedure finalize_place_label (
-		destination		: in type_vector_model;
-		log_threshold	: in type_log_level);
-
-	procedure place_label (
-		tool		: in type_tool;
-		position	: in type_vector_model);
+	-- procedure finalize_place_label (
+	-- 	destination		: in type_vector_model;
+	-- 	log_threshold	: in type_log_level);
+ -- 
+	-- procedure place_label (
+	-- 	tool		: in type_tool;
+	-- 	position	: in type_vector_model);
 
 
 	
-	procedure find_labels (
-		point		: in type_vector_model;
-		category	: in type_label_category);
+	-- procedure find_labels (
+	-- 	point		: in type_vector_model;
+	-- 	category	: in type_label_category);
 
-	procedure finalize_move_label (
-		destination		: in type_vector_model;
-		log_threshold	: in type_log_level);
+	-- procedure finalize_move_label (
+	-- 	destination		: in type_vector_model;
+	-- 	log_threshold	: in type_log_level);
 
 	
 	-- NOTE: Only simple labels can be moved.
 	-- Tag labels are always attached to a stub
 	-- and are moved along when the stub is moved.
 	-- This is about simple labels:
-	procedure move_label (
-		tool		: in type_tool;
-		position	: in type_vector_model);
+	-- procedure move_label (
+	-- 	tool		: in type_tool;
+	-- 	position	: in type_vector_model);
 
 
 	

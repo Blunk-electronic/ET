@@ -1790,143 +1790,143 @@ package body et_canvas_schematic_nets is
 	
 	-- This function collects net labels of a certain category
 	-- inside the catch zone around a place.
-	function collect_labels (
-		module			: in pac_generic_modules.cursor;
-		place			: in type_object_position; -- sheet/x/y
-		zone			: in type_zone_radius; -- the circular area around the place
-		category		: in type_label_category := BOTH; -- default is: collect all kinds of labels
-		log_threshold	: in type_log_level)
-		return pac_proposed_labels.list
-	is
-		result : pac_proposed_labels.list;
-
-		
-		procedure query_nets (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is
-			net_cursor : pac_nets.cursor := module.nets.first;
-
-			
-			procedure query_strands (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in type_net)
-			is
-				strand_cursor : pac_strands.cursor := net.strands.first;
-
-				procedure query_segments (strand : in type_strand) is
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-
-					procedure query_labels (segment : in type_net_segment) is
-						use pac_net_labels;
-						label_cursor : pac_net_labels.cursor := segment.labels.first;
-
-						-- Test distance between label and given place.
-						-- Appends the label if distance less or equal catch zone:
-						procedure test_distance is 
-							d : constant type_float_model := get_distance_absolute (
-								point_one	=> element (label_cursor).position,
-								point_two	=> place.place);
-						begin
-							-- If the label position is within the catch zone, append
-							-- the current net, stand, segment and label cursor to the result:
-							if d <= zone then
-
-								result.append ((net_cursor, strand_cursor, segment_cursor, label_cursor));
-								
-								log (text => space 
-									& to_string (element (label_cursor).appearance) 
-									& " label found at " 
-									& to_string (element (label_cursor).position),
-									level => log_threshold + 2);
-							end if;
-						end test_distance;
-
-						
-					begin -- query_labels
-						while label_cursor /= pac_net_labels.no_element loop
-
-							case category is
-								when BOTH => 
-									-- Label category does not matter. Test all kinds of labels:
-									test_distance;
-
-								when SIMPLE =>
-									-- Test only simple labels:
-									if element (label_cursor).appearance = SIMPLE then
-										test_distance;
-									end if;
-
-								when TAG =>
-									-- Test only tag labels:
-									if element (label_cursor).appearance = TAG then
-										test_distance;
-									end if;
-									
-							end case;
-							
-							next (label_cursor);
-						end loop;
-					end query_labels;
-					
-				begin -- query_segments
-					log (text => "probing strand at " & to_string (strand.position),
-						 level => log_threshold + 1);
-					
-					log_indentation_up;
-					
-					while segment_cursor /= pac_net_segments.no_element loop
-						log (text => "probing segment" & to_string (element (segment_cursor)),
-							level => log_threshold + 1);
-
-						query_element (segment_cursor, query_labels'access);
-
-						next (segment_cursor);
-					end loop;
-
-					log_indentation_down;
-				end query_segments;
-				
-			begin -- query_strands
-				while strand_cursor /= pac_strands.no_element loop
-
-					-- We are interested in strands on the given sheet only:
-					if get_sheet (element (strand_cursor).position) = get_sheet (place) then
-						query_element (strand_cursor, query_segments'access);
-					end if;
-
-					next (strand_cursor);
-				end loop;
-			end query_strands;
-			
-		begin -- query_nets
-			while net_cursor /= pac_nets.no_element loop
-
-				query_element (
-					position	=> net_cursor,
-					process		=> query_strands'access);
-
-				next (net_cursor);
-			end loop;
-		end query_nets;
-
-		
-	begin -- collect_labels
-		log (text => "looking up net labels" 
-			 & to_string (set_catch_zone (place.place, zone)),
-			 level => log_threshold);
-		-- CS output category of label
-		
-		log_indentation_up;
-		
-		query_element (
-			position	=> module,
-			process		=> query_nets'access);
-
-		log_indentation_down;
-		
-		return result;		
-	end collect_labels;
+-- 	function collect_labels (
+-- 		module			: in pac_generic_modules.cursor;
+-- 		place			: in type_object_position; -- sheet/x/y
+-- 		zone			: in type_zone_radius; -- the circular area around the place
+-- 		category		: in type_label_category := BOTH; -- default is: collect all kinds of labels
+-- 		log_threshold	: in type_log_level)
+-- 		return pac_proposed_labels.list
+-- 	is
+-- 		result : pac_proposed_labels.list;
+-- 
+-- 		
+-- 		procedure query_nets (
+-- 			module_name	: in pac_module_name.bounded_string;
+-- 			module		: in type_generic_module) 
+-- 		is
+-- 			net_cursor : pac_nets.cursor := module.nets.first;
+-- 
+-- 			
+-- 			procedure query_strands (
+-- 				net_name	: in pac_net_name.bounded_string;
+-- 				net			: in type_net)
+-- 			is
+-- 				strand_cursor : pac_strands.cursor := net.strands.first;
+-- 
+-- 				procedure query_segments (strand : in type_strand) is
+-- 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+-- 
+-- 					procedure query_labels (segment : in type_net_segment) is
+-- 						use pac_net_labels;
+-- 						label_cursor : pac_net_labels.cursor := segment.labels.first;
+-- 
+-- 						-- Test distance between label and given place.
+-- 						-- Appends the label if distance less or equal catch zone:
+-- 						procedure test_distance is 
+-- 							d : constant type_float_model := get_distance_absolute (
+-- 								point_one	=> element (label_cursor).position,
+-- 								point_two	=> place.place);
+-- 						begin
+-- 							-- If the label position is within the catch zone, append
+-- 							-- the current net, stand, segment and label cursor to the result:
+-- 							if d <= zone then
+-- 
+-- 								result.append ((net_cursor, strand_cursor, segment_cursor, label_cursor));
+-- 								
+-- 								log (text => space 
+-- 									& to_string (element (label_cursor).appearance) 
+-- 									& " label found at " 
+-- 									& to_string (element (label_cursor).position),
+-- 									level => log_threshold + 2);
+-- 							end if;
+-- 						end test_distance;
+-- 
+-- 						
+-- 					begin -- query_labels
+-- 						while label_cursor /= pac_net_labels.no_element loop
+-- 
+-- 							case category is
+-- 								when BOTH => 
+-- 									-- Label category does not matter. Test all kinds of labels:
+-- 									test_distance;
+-- 
+-- 								when SIMPLE =>
+-- 									-- Test only simple labels:
+-- 									if element (label_cursor).appearance = SIMPLE then
+-- 										test_distance;
+-- 									end if;
+-- 
+-- 								when TAG =>
+-- 									-- Test only tag labels:
+-- 									if element (label_cursor).appearance = TAG then
+-- 										test_distance;
+-- 									end if;
+-- 									
+-- 							end case;
+-- 							
+-- 							next (label_cursor);
+-- 						end loop;
+-- 					end query_labels;
+-- 					
+-- 				begin -- query_segments
+-- 					log (text => "probing strand at " & to_string (strand.position),
+-- 						 level => log_threshold + 1);
+-- 					
+-- 					log_indentation_up;
+-- 					
+-- 					while segment_cursor /= pac_net_segments.no_element loop
+-- 						log (text => "probing segment" & to_string (element (segment_cursor)),
+-- 							level => log_threshold + 1);
+-- 
+-- 						query_element (segment_cursor, query_labels'access);
+-- 
+-- 						next (segment_cursor);
+-- 					end loop;
+-- 
+-- 					log_indentation_down;
+-- 				end query_segments;
+-- 				
+-- 			begin -- query_strands
+-- 				while strand_cursor /= pac_strands.no_element loop
+-- 
+-- 					-- We are interested in strands on the given sheet only:
+-- 					if get_sheet (element (strand_cursor).position) = get_sheet (place) then
+-- 						query_element (strand_cursor, query_segments'access);
+-- 					end if;
+-- 
+-- 					next (strand_cursor);
+-- 				end loop;
+-- 			end query_strands;
+-- 			
+-- 		begin -- query_nets
+-- 			while net_cursor /= pac_nets.no_element loop
+-- 
+-- 				query_element (
+-- 					position	=> net_cursor,
+-- 					process		=> query_strands'access);
+-- 
+-- 				next (net_cursor);
+-- 			end loop;
+-- 		end query_nets;
+-- 
+-- 		
+-- 	begin -- collect_labels
+-- 		log (text => "looking up net labels" 
+-- 			 & to_string (set_catch_zone (place.place, zone)),
+-- 			 level => log_threshold);
+-- 		-- CS output category of label
+-- 		
+-- 		log_indentation_up;
+-- 		
+-- 		query_element (
+-- 			position	=> module,
+-- 			process		=> query_nets'access);
+-- 
+-- 		log_indentation_down;
+-- 		
+-- 		return result;		
+-- 	end collect_labels;
 
 	
 	
@@ -2044,446 +2044,446 @@ package body et_canvas_schematic_nets is
 
 
 	
-	
-	procedure delete_selected_label is begin
-		log (text => "deleting net label after clarification ...", level => log_threshold);
-		log_indentation_up;
-
-		delete_selected_label (
-			module_cursor	=> active_module,
-			label			=> element (selected_label),
-			log_threshold	=> log_threshold + 1);
-		
-		log_indentation_down;
-	end delete_selected_label;
-
-
-
-	
-	
-	procedure delete_label (point : in type_vector_model) is begin
-		log (text => "deleting net label ...", level => log_threshold);
-		log_indentation_up;
-		
-		-- Collect all net labels in the vicinity of the given point:
-		proposed_labels := collect_labels (
-			module			=> active_module,
-			place			=> to_position (point, active_sheet),
-			zone			=> get_catch_zone (catch_zone_radius_default),
-			log_threshold	=> log_threshold + 1);
-
-		
-		-- evaluate the number of lables found here:
-		case length (proposed_labels) is
-			when 0 =>
-				reset_request_clarification;
-				
-			when 1 =>
-				delete_selected_label (
-					module_cursor	=> active_module,
-					label			=> element (proposed_labels.first),
-					log_threshold	=> log_threshold + 1);
-					
-			when others =>
-				set_request_clarification;
-
-				-- preselect the first label
-				selected_label := proposed_labels.first;
-		end case;
-		
-		log_indentation_down;
-	end delete_label;
-
-	
-
-	procedure clarify_label is
-		use pac_net_labels;
-
-		s : pac_net_segments.cursor;
-		n : pac_net_name.bounded_string;
-
-		function info (c : in pac_net_labels.cursor) return string is 
-			l : type_net_label := element (c);
-		begin
-			return "label at" & to_string (l.position); -- CS other properties like appearance, direction ?
-		end info;
-		
-	begin
-		-- On every call of this procedure we must advance from one
-		-- label to the next in a circular manner. So if the end 
-		-- of the list is reached, then the cursor selected_label
-		-- moves back to the start of the label list.
-		if next (selected_label) /= pac_proposed_labels.no_element then
-			next (selected_label);
-		else
-			selected_label := proposed_labels.first;
-		end if;
-
-		-- get the segment of the net
-		s := element (selected_label).segment;
-		
-		-- get the name of the net
-		n := key (element (selected_label).net);
-		
-		set_status ("net " & to_string (n) & space 
-			--& to_string (s) 
-			& info (element (selected_label).label)
-			& ". " & status_next_object_clarification);
-		
-	end clarify_label;
+-- 	
+-- 	procedure delete_selected_label is begin
+-- 		log (text => "deleting net label after clarification ...", level => log_threshold);
+-- 		log_indentation_up;
+-- 
+-- 		delete_selected_label (
+-- 			module_cursor	=> active_module,
+-- 			label			=> element (selected_label),
+-- 			log_threshold	=> log_threshold + 1);
+-- 		
+-- 		log_indentation_down;
+-- 	end delete_selected_label;
 
 
 
 	
 	
-	procedure place_label (
-		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_selected_segment;
-		destination		: in type_vector_model; -- x/y
-		appearance 		: in type_net_label_appearance; -- simple/tag
-		log_threshold	: in type_log_level) 
-	is
-
-		procedure query_nets (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-
-			procedure query_strands (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is
-
-				procedure query_segments (strand : in out type_strand) is
-
-					procedure attach_label (segment : in out type_net_segment) is 
-						use pac_net_labels;
-						l : type_net_label_base;
-					begin
-						-- The label position is absolute:
-						l.position := destination;
-
-						case appearance is
-							when SIMPLE =>
-								append (
-									container	=> segment.labels,
-									new_item	=> (l with
-										appearance		=> SIMPLE,
-										rotation_simple	=> label.rotation_simple)
-									   );
-								
-							when TAG =>
-								-- A tag label can be attached to a stub only.
-								declare
-									s : constant type_stub := query_stub (
-										module_cursor	=> module_cursor,
-										net_name		=> net_name,
-										position		=> to_position (type_vector_model (destination), active_sheet),
-										log_threshold	=> log_threshold + 1);
-
-									-- CS use a function query_stub that take a module cursor and
-									-- a net cursor instead.
-								begin
-									append (
-										container	=> segment.labels,
-										new_item	=> (l with 
-											appearance		=> TAG,
-
-											-- derive the label rotation from the stub direction:
-											rotation_tag	=> to_label_rotation (s.direction),
-														
-											--direction		=> direction) -- the given signal direction
-											others			=> <>)
-										   );
-										
-								end;
-						end case;
-
-					end attach_label;
-					
-				begin
-					update_element (
-						container	=> strand.segments,
-						position	=> segment.segment,
-						process		=> attach_label'access);
-
-				end query_segments;
-				
-			begin -- query_strands
-				update_element (
-					container	=> net.strands,
-					position	=> segment.strand,
-					process		=> query_segments'access);
-
-			end query_strands;
-			
-		begin -- query_nets
-			update_element (
-				container	=> module.nets,
-				position	=> segment.net,
-				process		=> query_strands'access);
-			
-		end query_nets;
-		
-	begin
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_nets'access);
-	end place_label;
-
-
-
+-- 	procedure delete_label (point : in type_vector_model) is begin
+-- 		log (text => "deleting net label ...", level => log_threshold);
+-- 		log_indentation_up;
+-- 		
+-- 		-- Collect all net labels in the vicinity of the given point:
+-- 		proposed_labels := collect_labels (
+-- 			module			=> active_module,
+-- 			place			=> to_position (point, active_sheet),
+-- 			zone			=> get_catch_zone (catch_zone_radius_default),
+-- 			log_threshold	=> log_threshold + 1);
+-- 
+-- 		
+-- 		-- evaluate the number of lables found here:
+-- 		case length (proposed_labels) is
+-- 			when 0 =>
+-- 				reset_request_clarification;
+-- 				
+-- 			when 1 =>
+-- 				delete_selected_label (
+-- 					module_cursor	=> active_module,
+-- 					label			=> element (proposed_labels.first),
+-- 					log_threshold	=> log_threshold + 1);
+-- 					
+-- 			when others =>
+-- 				set_request_clarification;
+-- 
+-- 				-- preselect the first label
+-- 				selected_label := proposed_labels.first;
+-- 		end case;
+-- 		
+-- 		log_indentation_down;
+-- 	end delete_label;
 
 	
-	procedure finalize_place_label (
-		destination		: in type_vector_model;
-		log_threshold	: in type_log_level) is
-	begin
-		log (text => "finalizing place net label ...", level => log_threshold);
-		log_indentation_up;
 
-		-- A tag label can be placed once permission is granted by 
-		-- procedure et_canvas_schematic.draw_nets.
-		-- A simple label does not require permission and can be placed anywhere:
-		if (label.appearance = TAG and boolean (label.finalizing_granted))
-		or label.appearance = SIMPLE 
-		then
-			
-			if selected_segment /= pac_proposed_segments.no_element then
-
-				place_label (
-					module_cursor		=> active_module,
-					segment				=> element (selected_segment),
-					destination			=> destination,
-					appearance			=> label.appearance,
-					log_threshold		=> log_threshold + 1);
-				
-			else
-				log (text => "nothing to do", level => log_threshold);
-			end if;
-
-		else
-			log (text => "not granted", level => log_threshold);
-		end if;
-		
-		log_indentation_down;
-		
-		set_status (status_place_label);
-		
-		reset_label;
-
-	end finalize_place_label;
-
-
-
-	
-	procedure place_label (
-		tool		: in type_tool;
-		position	: in type_vector_model)
-	is begin
-		if not label.ready then
-			
-			-- Set the tool being used:
-			label.tool := tool;
-			
-			if not clarification_pending then
-				find_segments (position);
-			else
-				label.ready := true;
-				reset_request_clarification;
-			end if;
-			
-		else
-			-- Finally place the label at the current
-			-- cursor position:
-			finalize_place_label (
-				destination		=> position,
-				log_threshold	=> log_threshold + 1);
-		end if;
-	end place_label;
-
-
-
-
-	
-	procedure find_labels (
-		point		: in type_vector_model;
-		category	: in type_label_category)
-	is begin
-		log (text => "locating net labels ...", level => log_threshold);
-		-- CS output category if simple or tag.
-		
-		log_indentation_up;
-
-		-- Collect all net labels in the vicinity of the given point:
-		proposed_labels := collect_labels (
-			module			=> active_module,
-			place			=> to_position (point, active_sheet),
-			zone			=> get_catch_zone (catch_zone_radius_default),
-			category		=> category,
-			log_threshold	=> log_threshold + 1);
-
-		
-		-- evaluate the number of lables found here:
-		case length (proposed_labels) is
-			when 0 =>
-				reset_request_clarification;
-				
-			when 1 =>
-				label.ready := true;
-				selected_label := proposed_labels.first;
-				
-				set_status (status_move_label);
-				
-				reset_request_clarification;
-				
-			when others =>
-				set_request_clarification;
-
-				-- preselect the first label
-				selected_label := proposed_labels.first;
-		end case;
-		
-		log_indentation_down;
-	end find_labels;
+-- 	procedure clarify_label is
+-- 		use pac_net_labels;
+-- 
+-- 		s : pac_net_segments.cursor;
+-- 		n : pac_net_name.bounded_string;
+-- 
+-- 		function info (c : in pac_net_labels.cursor) return string is 
+-- 			l : type_net_label := element (c);
+-- 		begin
+-- 			return "label at" & to_string (l.position); -- CS other properties like appearance, direction ?
+-- 		end info;
+-- 		
+-- 	begin
+-- 		-- On every call of this procedure we must advance from one
+-- 		-- label to the next in a circular manner. So if the end 
+-- 		-- of the list is reached, then the cursor selected_label
+-- 		-- moves back to the start of the label list.
+-- 		if next (selected_label) /= pac_proposed_labels.no_element then
+-- 			next (selected_label);
+-- 		else
+-- 			selected_label := proposed_labels.first;
+-- 		end if;
+-- 
+-- 		-- get the segment of the net
+-- 		s := element (selected_label).segment;
+-- 		
+-- 		-- get the name of the net
+-- 		n := key (element (selected_label).net);
+-- 		
+-- 		set_status ("net " & to_string (n) & space 
+-- 			--& to_string (s) 
+-- 			& info (element (selected_label).label)
+-- 			& ". " & status_next_object_clarification);
+-- 		
+-- 	end clarify_label;
 
 
 
 	
 	
-	procedure move_selected_label (
-		module_cursor	: in pac_generic_modules.cursor;
-		label			: in type_selected_label;
-		destination		: in type_vector_model;
-		log_threshold	: in type_log_level)
-	is
-
-		procedure query_nets (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			procedure query_strands (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net)
-			is
-				procedure query_segments (strand : in out type_strand) is
-
-					procedure query_labels (segment : in out type_net_segment) is
-						use pac_net_labels;
-						
-						procedure move (label : in out type_net_label) is begin
-							label.position := destination;
-						end move;
-						
-					begin
-						update_element (
-							container	=> segment.labels,
-							position	=> label.label,
-							process		=> move'access);
-						
-					end query_labels;
-					
-				begin
-					update_element (
-						container	=> strand.segments,
-						position	=> label.segment,
-						process		=> query_labels'access);
-					
-				end query_segments;
-				
-			begin
-				update_element (
-					container	=> net.strands,
-					position	=> label.strand,
-					process		=> query_segments'access);
-				
-			end query_strands;
-			
-		begin
-			update_element (
-				container	=> module.nets,
-				position	=> label.net,
-				process		=> query_strands'access);
-
-		end query_nets;
-		
-	begin -- move_selected_label
-		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) 
-			 & " moving net label to"
-			 & to_string (destination) & " ...",
-			 level => log_threshold);
-
-		log_indentation_up;
-
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_nets'access);
-		
-		log_indentation_down;				
-
-	end move_selected_label;
-
-
-
-
-	
-	procedure finalize_move_label (
-		destination		: in type_vector_model;
-		log_threshold	: in type_log_level)
-	is
-		sl : type_selected_label;
-	begin
-		log (text => "finalizing move net label ...", level => log_threshold);
-		log_indentation_up;
-
-		if selected_label /= pac_proposed_labels.no_element then
-			sl := element (selected_label);
-
-			move_selected_label (active_module, sl, destination, log_threshold + 1);
-								
-		else
-			log (text => "nothing to do", level => log_threshold);
-		end if;
-			
-		log_indentation_down;
-
-		set_status (status_move_label);
-		
-		reset_label;
-	end finalize_move_label;
+-- 	procedure place_label (
+-- 		module_cursor	: in pac_generic_modules.cursor;
+-- 		segment			: in type_selected_segment;
+-- 		destination		: in type_vector_model; -- x/y
+-- 		appearance 		: in type_net_label_appearance; -- simple/tag
+-- 		log_threshold	: in type_log_level) 
+-- 	is
+-- 
+-- 		procedure query_nets (
+-- 			module_name	: in pac_module_name.bounded_string;
+-- 			module		: in out type_generic_module) 
+-- 		is
+-- 
+-- 			procedure query_strands (
+-- 				net_name	: in pac_net_name.bounded_string;
+-- 				net			: in out type_net) 
+-- 			is
+-- 
+-- 				procedure query_segments (strand : in out type_strand) is
+-- 
+-- 					procedure attach_label (segment : in out type_net_segment) is 
+-- 						use pac_net_labels;
+-- 						l : type_net_label_base;
+-- 					begin
+-- 						-- The label position is absolute:
+-- 						l.position := destination;
+-- 
+-- 						case appearance is
+-- 							when SIMPLE =>
+-- 								append (
+-- 									container	=> segment.labels,
+-- 									new_item	=> (l with
+-- 										appearance		=> SIMPLE,
+-- 										rotation_simple	=> label.rotation_simple)
+-- 									   );
+-- 								
+-- 							when TAG =>
+-- 								-- A tag label can be attached to a stub only.
+-- 								declare
+-- 									s : constant type_stub := query_stub (
+-- 										module_cursor	=> module_cursor,
+-- 										net_name		=> net_name,
+-- 										position		=> to_position (type_vector_model (destination), active_sheet),
+-- 										log_threshold	=> log_threshold + 1);
+-- 
+-- 									-- CS use a function query_stub that take a module cursor and
+-- 									-- a net cursor instead.
+-- 								begin
+-- 									append (
+-- 										container	=> segment.labels,
+-- 										new_item	=> (l with 
+-- 											appearance		=> TAG,
+-- 
+-- 											-- derive the label rotation from the stub direction:
+-- 											rotation_tag	=> to_label_rotation (s.direction),
+-- 														
+-- 											--direction		=> direction) -- the given signal direction
+-- 											others			=> <>)
+-- 										   );
+-- 										
+-- 								end;
+-- 						end case;
+-- 
+-- 					end attach_label;
+-- 					
+-- 				begin
+-- 					update_element (
+-- 						container	=> strand.segments,
+-- 						position	=> segment.segment,
+-- 						process		=> attach_label'access);
+-- 
+-- 				end query_segments;
+-- 				
+-- 			begin -- query_strands
+-- 				update_element (
+-- 					container	=> net.strands,
+-- 					position	=> segment.strand,
+-- 					process		=> query_segments'access);
+-- 
+-- 			end query_strands;
+-- 			
+-- 		begin -- query_nets
+-- 			update_element (
+-- 				container	=> module.nets,
+-- 				position	=> segment.net,
+-- 				process		=> query_strands'access);
+-- 			
+-- 		end query_nets;
+-- 		
+-- 	begin
+-- 		update_element (
+-- 			container	=> generic_modules,
+-- 			position	=> module_cursor,
+-- 			process		=> query_nets'access);
+-- 	end place_label;
 
 
 
 
 	
-	procedure move_label (
-		tool		: in type_tool;
-		position	: in type_vector_model)
-	is begin
-		if not label.ready then
+-- 	procedure finalize_place_label (
+-- 		destination		: in type_vector_model;
+-- 		log_threshold	: in type_log_level) is
+-- 	begin
+-- 		log (text => "finalizing place net label ...", level => log_threshold);
+-- 		log_indentation_up;
+-- 
+-- 		-- A tag label can be placed once permission is granted by 
+-- 		-- procedure et_canvas_schematic.draw_nets.
+-- 		-- A simple label does not require permission and can be placed anywhere:
+-- 		if (label.appearance = TAG and boolean (label.finalizing_granted))
+-- 		or label.appearance = SIMPLE 
+-- 		then
+-- 			
+-- 			if selected_segment /= pac_proposed_segments.no_element then
+-- 
+-- 				place_label (
+-- 					module_cursor		=> active_module,
+-- 					segment				=> element (selected_segment),
+-- 					destination			=> destination,
+-- 					appearance			=> label.appearance,
+-- 					log_threshold		=> log_threshold + 1);
+-- 				
+-- 			else
+-- 				log (text => "nothing to do", level => log_threshold);
+-- 			end if;
+-- 
+-- 		else
+-- 			log (text => "not granted", level => log_threshold);
+-- 		end if;
+-- 		
+-- 		log_indentation_down;
+-- 		
+-- 		set_status (status_place_label);
+-- 		
+-- 		reset_label;
+-- 
+-- 	end finalize_place_label;
 
-			-- Set the tool being used:
-			label.tool := tool;
 
-			if not clarification_pending then
-				find_labels (position, SIMPLE);
-			else
-				label.ready := true;
-				reset_request_clarification;
-			end if;
-			
-		else
-			-- Finally assign the cursor position to the
-			-- currently selected net label:
-			finalize_move_label (
-				destination		=> position,
-				log_threshold	=> log_threshold + 1);
 
-		end if;
-	end move_label;
+	
+-- 	procedure place_label (
+-- 		tool		: in type_tool;
+-- 		position	: in type_vector_model)
+-- 	is begin
+-- 		if not label.ready then
+-- 			
+-- 			-- Set the tool being used:
+-- 			label.tool := tool;
+-- 			
+-- 			if not clarification_pending then
+-- 				find_segments (position);
+-- 			else
+-- 				label.ready := true;
+-- 				reset_request_clarification;
+-- 			end if;
+-- 			
+-- 		else
+-- 			-- Finally place the label at the current
+-- 			-- cursor position:
+-- 			finalize_place_label (
+-- 				destination		=> position,
+-- 				log_threshold	=> log_threshold + 1);
+-- 		end if;
+-- 	end place_label;
 
+
+
+
+	
+-- 	procedure find_labels (
+-- 		point		: in type_vector_model;
+-- 		category	: in type_label_category)
+-- 	is begin
+-- 		log (text => "locating net labels ...", level => log_threshold);
+-- 		-- CS output category if simple or tag.
+-- 		
+-- 		log_indentation_up;
+-- 
+-- 		-- Collect all net labels in the vicinity of the given point:
+-- 		proposed_labels := collect_labels (
+-- 			module			=> active_module,
+-- 			place			=> to_position (point, active_sheet),
+-- 			zone			=> get_catch_zone (catch_zone_radius_default),
+-- 			category		=> category,
+-- 			log_threshold	=> log_threshold + 1);
+-- 
+-- 		
+-- 		-- evaluate the number of lables found here:
+-- 		case length (proposed_labels) is
+-- 			when 0 =>
+-- 				reset_request_clarification;
+-- 				
+-- 			when 1 =>
+-- 				label.ready := true;
+-- 				selected_label := proposed_labels.first;
+-- 				
+-- 				set_status (status_move_label);
+-- 				
+-- 				reset_request_clarification;
+-- 				
+-- 			when others =>
+-- 				set_request_clarification;
+-- 
+-- 				-- preselect the first label
+-- 				selected_label := proposed_labels.first;
+-- 		end case;
+-- 		
+-- 		log_indentation_down;
+-- 	end find_labels;
+
+
+
+	
+	
+-- 	procedure move_selected_label (
+-- 		module_cursor	: in pac_generic_modules.cursor;
+-- 		label			: in type_selected_label;
+-- 		destination		: in type_vector_model;
+-- 		log_threshold	: in type_log_level)
+-- 	is
+-- 
+-- 		procedure query_nets (
+-- 			module_name	: in pac_module_name.bounded_string;
+-- 			module		: in out type_generic_module) 
+-- 		is
+-- 			procedure query_strands (
+-- 				net_name	: in pac_net_name.bounded_string;
+-- 				net			: in out type_net)
+-- 			is
+-- 				procedure query_segments (strand : in out type_strand) is
+-- 
+-- 					procedure query_labels (segment : in out type_net_segment) is
+-- 						use pac_net_labels;
+-- 						
+-- 						procedure move (label : in out type_net_label) is begin
+-- 							label.position := destination;
+-- 						end move;
+-- 						
+-- 					begin
+-- 						update_element (
+-- 							container	=> segment.labels,
+-- 							position	=> label.label,
+-- 							process		=> move'access);
+-- 						
+-- 					end query_labels;
+-- 					
+-- 				begin
+-- 					update_element (
+-- 						container	=> strand.segments,
+-- 						position	=> label.segment,
+-- 						process		=> query_labels'access);
+-- 					
+-- 				end query_segments;
+-- 				
+-- 			begin
+-- 				update_element (
+-- 					container	=> net.strands,
+-- 					position	=> label.strand,
+-- 					process		=> query_segments'access);
+-- 				
+-- 			end query_strands;
+-- 			
+-- 		begin
+-- 			update_element (
+-- 				container	=> module.nets,
+-- 				position	=> label.net,
+-- 				process		=> query_strands'access);
+-- 
+-- 		end query_nets;
+-- 		
+-- 	begin -- move_selected_label
+-- 		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) 
+-- 			 & " moving net label to"
+-- 			 & to_string (destination) & " ...",
+-- 			 level => log_threshold);
+-- 
+-- 		log_indentation_up;
+-- 
+-- 		update_element (
+-- 			container	=> generic_modules,
+-- 			position	=> module_cursor,
+-- 			process		=> query_nets'access);
+-- 		
+-- 		log_indentation_down;				
+-- 
+-- 	end move_selected_label;
+
+
+
+
+	
+-- 	procedure finalize_move_label (
+-- 		destination		: in type_vector_model;
+-- 		log_threshold	: in type_log_level)
+-- 	is
+-- 		sl : type_selected_label;
+-- 	begin
+-- 		log (text => "finalizing move net label ...", level => log_threshold);
+-- 		log_indentation_up;
+-- 
+-- 		if selected_label /= pac_proposed_labels.no_element then
+-- 			sl := element (selected_label);
+-- 
+-- 			move_selected_label (active_module, sl, destination, log_threshold + 1);
+-- 								
+-- 		else
+-- 			log (text => "nothing to do", level => log_threshold);
+-- 		end if;
+-- 			
+-- 		log_indentation_down;
+-- 
+-- 		set_status (status_move_label);
+-- 		
+-- 		reset_label;
+-- 	end finalize_move_label;
+-- 
+
+
+
+	
+-- 	procedure move_label (
+-- 		tool		: in type_tool;
+-- 		position	: in type_vector_model)
+-- 	is begin
+-- 		if not label.ready then
+-- 
+-- 			-- Set the tool being used:
+-- 			label.tool := tool;
+-- 
+-- 			if not clarification_pending then
+-- 				find_labels (position, SIMPLE);
+-- 			else
+-- 				label.ready := true;
+-- 				reset_request_clarification;
+-- 			end if;
+-- 			
+-- 		else
+-- 			-- Finally assign the cursor position to the
+-- 			-- currently selected net label:
+-- 			finalize_move_label (
+-- 				destination		=> position,
+-- 				log_threshold	=> log_threshold + 1);
+-- 
+-- 		end if;
+-- 	end move_label;
+-- 
 
 
 	

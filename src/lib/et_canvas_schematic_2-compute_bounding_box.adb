@@ -152,13 +152,14 @@ is
 
 
 				procedure query_label (c : in pac_net_labels.cursor) is
-					label : type_net_label renames element (c);
+					label : type_net_label_simple renames element (c);
 				begin
 					null;
 					-- CS: The text or label size must be inquired similar to
 					-- the process of drawing texts (see package et_canvas.text).
 				end query_label;
 				
+
 				
 				procedure query_segment (c : in pac_net_segments.cursor) is
 					segment : type_net_segment renames element (c);
@@ -175,9 +176,13 @@ is
 					if debug then
 						put_line ("processing labels ...");
 					end if;
-					
+
+					-- Iterate though the simple labels:
 					iterate (segment.labels, query_label'access);
+
+					-- CS tag labels and junctions
 				end query_segment;
+
 				
 				
 				procedure query_strand (c : in pac_strands.cursor) is

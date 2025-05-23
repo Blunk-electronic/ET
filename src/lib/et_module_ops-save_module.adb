@@ -513,7 +513,7 @@ is
 				use pac_netchanger_ports;
 
 				
-				procedure query_labels (segment : in type_net_segment) is
+				procedure query_simple_labels (segment : in type_net_segment) is
 					use pac_net_labels;					
 					label_cursor : pac_net_labels.cursor := segment.labels.first;
 				begin
@@ -522,36 +522,33 @@ is
 						while label_cursor /= pac_net_labels.no_element loop
 							section_mark (section_label, HEADER);
 							
-							write (keyword => keyword_position, parameters => to_string (element (label_cursor).position, FORMAT_2));
+							write (keyword => keyword_position, 
+								parameters => to_string (element (label_cursor).position, FORMAT_2));
 
-							case element (label_cursor).appearance is
-								when SIMPLE =>
-									-- The simple label can be read from the front or from the right:
-									write (keyword => keyword_rotation, parameters => 
-										to_string (element (label_cursor).rotation_simple));
+							-- The simple label can be read from the front or from the right:
+							write (keyword => keyword_rotation, parameters => 
+								to_string (element (label_cursor).rotation));
 
-								when TAG =>
-									-- The tag label ran be rotated arbitrary:
-									write (keyword => keyword_rotation, parameters =>
-										to_string (element (label_cursor).rotation_tag));
-							end case;
-							
-							write (keyword => keyword_size, parameters => to_string (element (label_cursor).size));
-
-							write (keyword => keyword_appearance, parameters =>
-								to_string (appearance => element (label_cursor).appearance));
-							
-							-- a tag label also indicates a signal direction
-							if element (label_cursor).appearance = TAG then
-								write (keyword => keyword_direction, parameters => to_string (element (label_cursor).direction));
-							end if;
+							write (keyword => keyword_size,
+								parameters => to_string (element (label_cursor).size));
 							
 							section_mark (section_label, FOOTER);
 							next (label_cursor);
 						end loop;
 						section_mark (section_labels, FOOTER);
 					end if;
-				end query_labels;
+				end query_simple_labels;
+
+
+				procedure query_tag_labels (segment : in type_net_segment) is begin
+					if is_active (segment.tag_labels.A) then
+						write (keyword => keyword_tag_label, parameters => keyword_start); -- CS direction and rotation
+					end if;
+
+					if is_active (segment.tag_labels.B) then
+						write (keyword => keyword_tag_label, parameters => keyword_end); -- CS direction and rotation
+					end if;
+				end query_tag_labels;
 
 				
 				procedure query_junctions (segment : in type_net_segment) is begin
@@ -630,7 +627,8 @@ is
 					write (keyword => keyword_end,
 						parameters => "  " & to_string (get_B (segment_cursor), FORMAT_2));
 
-					query_element (segment_cursor, query_labels'access);
+					query_element (segment_cursor, query_simple_labels'access);
+					query_element (segment_cursor, query_tag_labels'access);
 					query_element (segment_cursor, query_junctions'access);
 
 					-- write ports there are any. otherwise leave out section ports.
@@ -670,6 +668,7 @@ is
 		end query_strands;
 
 
+		
 		
 		-- This is about routed tracks/traces and zones in the board:
 		procedure query_route (

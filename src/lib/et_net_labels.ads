@@ -38,7 +38,7 @@
 
 with ada.characters.handling;			use ada.characters.handling;
 with ada.containers; 					use ada.containers;
-with ada.containers.indefinite_doubly_linked_lists;
+with ada.containers.doubly_linked_lists;
 with cairo;
 
 with et_schematic_coordinates;			use et_schematic_coordinates;
@@ -79,103 +79,102 @@ package et_net_labels is
 
 
 	
-	type type_net_label_base is tagged record
-		-- The position of the label is absolute (relative to drawing origin):
-		position	: type_vector_model;
+	type type_net_label_base is tagged record -- CS rename to type_net_label
+		size		: type_text_size := text_size_default;
 		
-        size		: type_text_size := text_size_default;
 		width		: et_schematic_text.type_text_line_width := et_schematic_text.type_text_line_width'first;
+		-- CS probably no need ?
+		
 		status		: type_object_status;
 	end record;
 
-	
-	type type_net_label (appearance : type_net_label_appearance) is new type_net_label_base with record
-		case appearance is
-			when TAG => 
-				direction		: type_net_label_direction := net_label_direction_default;
 
-				-- A tag label can only be attached to a stub of a net, means to a dead end of a net segment.
-				-- The rotation of the label should depend on the direction of the stub. 
-				-- The rotation is about its own position. 
-				-- However, the shown text inside the label (net name and coordinates) is always readable
-				-- from the front or from the right.
-				rotation_tag	: type_rotation_relative := 0.0;
-
-			when SIMPLE =>
-				-- The simple label can be read from the front or from the right.
-				-- Its rotation can be HORIZONTAL or VERTICAL (0 or 90 degrees):
-				rotation_simple	: et_text.type_rotation_documentation := et_text.type_rotation_documentation'first;
-		end case;
-	end record;
-
-
-
-	function get_position (
-		label : in type_net_label)
-		return type_vector_model;
-
-
-	function get_position (
-		label : in type_net_label)
-		return string;
-
-	
 
 	procedure set_proposed (
-		label : in out type_net_label);
+		label : in out type_net_label_base);
 
 	
 	procedure clear_proposed (
-		label : in out type_net_label);
+		label : in out type_net_label_base);
 
 
 	function is_proposed (
-		label : in type_net_label)
+		label : in type_net_label_base)
 		return boolean;
 
 	
 
 
 	procedure set_selected (
-		label : in out type_net_label);
+		label : in out type_net_label_base);
 
 	
 	procedure clear_selected (
-		label : in out type_net_label);
+		label : in out type_net_label_base);
 
 
 	function is_selected (
-		label : in type_net_label)
+		label : in type_net_label_base)
 		return boolean;
 
 
-
 	
-	procedure set_moving (
-		label : in out type_net_label);
-
-	
-	procedure clear_moving (
-		label : in out type_net_label);
-
-
-	function is_moving (
-		label : in type_net_label)
-		return boolean;
-
-
 
 	procedure modify_status (
-		label 		: in out type_net_label;
+		label 		: in out type_net_label_base;
 		operation	: in type_status_operation);						
 	
 
 	procedure reset_status (
-		label : in out type_net_label);
+		label : in out type_net_label_base);
+
+
+
+-- SIMPLE LABEL:
+	
+	type type_net_label_simple is new type_net_label_base with record
+		-- The position of the label is absolute (relative to drawing origin):
+		position	: type_vector_model;
+
+		-- The simple label can be read from the front or from the right.
+		-- Its rotation can be HORIZONTAL or VERTICAL (0 or 90 degrees):
+		rotation	: et_text.type_rotation_documentation := et_text.type_rotation_documentation'first;
+	end record;
+
+
+
+
+	function get_position (
+		label : in type_net_label_simple)
+		return type_vector_model;
+
+
+	function get_position (
+		label : in type_net_label_simple)
+		return string;
+
+	
+
+
+	
+	procedure set_moving (
+		label : in out type_net_label_simple);
+
+	
+	procedure clear_moving (
+		label : in out type_net_label_simple);
+
+
+	function is_moving (
+		label : in type_net_label_simple)
+		return boolean;
+
+
+
 
 	
 	
-	package pac_net_labels is new indefinite_doubly_linked_lists (type_net_label);
+	package pac_net_labels is new doubly_linked_lists (type_net_label_simple);
 	use pac_net_labels;
 	
 
@@ -203,6 +202,56 @@ package et_net_labels is
 	function is_moving (
 		label : in pac_net_labels.cursor)
 		return boolean;
+
+
+
+
+
+
+-- TAG LABEL:	
+
+	
+	type type_net_label_tag (active : boolean)  -- CS default ?
+	is new type_net_label_base with record
+		case active is
+			when TRUE =>
+				direction	: type_net_label_direction := net_label_direction_default;
+
+				-- A tag label can only be attached to a stub of a net, means to a dead end of a net segment.
+				-- The rotation of the label should depend on the direction of the stub. 
+				-- The rotation is about its own position. 
+				-- However, the shown text inside the label (net name and coordinates) is always readable
+				-- from the front or from the right.
+				rotation	: type_rotation_relative := 0.0;
+				-- CS probably no need ?
+
+			when FALSE => null;
+		end case;
+	end record;
+
+
+
+	type type_tag_labels is record
+		A : type_net_label_tag (active => false);
+		B : type_net_label_tag (active => false);
+	end record;
+
+
+	procedure reset_status (
+		labels : in out type_tag_labels);
+	
+
+	function is_active (
+		label : in type_net_label_tag)
+		return boolean;
+
+
+	procedure set_active (
+		label : in out type_net_label_tag);
+	
+
+	procedure reset_tag_label (
+		label : in out type_net_label_tag);
 
 
 	

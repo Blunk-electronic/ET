@@ -201,72 +201,72 @@ package body et_net_segment is
 
 	
 	
-	procedure move_net_labels (
-		segment_before	: in type_net_segment;
-		segment_after	: in out type_net_segment;
-		zone			: in type_line_zone)
-	is 
-		-- Calculate the displacement of the start and end point:
-		
-		delta_start : constant type_vector_model :=
-			get_distance_relative (get_A (segment_before), get_A (segment_after));
-		
-		delta_end	: constant type_vector_model :=
-			get_distance_relative (get_B (segment_before), get_B (segment_after));
-															
-		use pac_net_labels;
-		label_cursor : pac_net_labels.cursor := segment_after.labels.first;
-
-		
-		procedure move (l : in out type_net_label) is begin
-			-- The position of a net label is absolute.
-			
-			case l.appearance is
-				when TAG => 
-					-- Moving the tag labels is quite simple because
-					-- they are always at start or end point.
-					-- So the label position change is just the displacement
-					-- of the start or end point:
-					case zone is
-						when START_POINT =>
-							if l.position = get_A (segment_before) then
-								move_by (l.position, delta_start);
-							end if;
-							
-						when END_POINT => 
-							if l.position = get_B (segment_before) then
-								move_by (l.position, delta_end);
-							end if;
-
-						when CENTER =>
-							if l.position = get_A (segment_before) then
-								move_by (l.position, delta_start);
-							end if;
-
-							if l.position = get_B (segment_before) then
-								move_by (l.position, delta_end);
-							end if;
-							
-					end case;
-
-					-- CS: change rotation of label ?
-					
-				when SIMPLE => null; -- CS
-					-- This requires a bit more math because simple labels
-					-- are mostly between start and end point.
-
-					-- CS: change rotation of label ?
-			end case;
-		end move;
-
-		
-	begin
-		while label_cursor /= pac_net_labels.no_element loop
-			update_element (segment_after.labels, label_cursor, move'access);
-			next (label_cursor);
-		end loop;
-		
-	end move_net_labels;
+-- 	procedure move_net_labels (
+-- 		segment_before	: in type_net_segment;
+-- 		segment_after	: in out type_net_segment;
+-- 		zone			: in type_line_zone)
+-- 	is 
+-- 		-- Calculate the displacement of the start and end point:
+-- 		
+-- 		delta_start : constant type_vector_model :=
+-- 			get_distance_relative (get_A (segment_before), get_A (segment_after));
+-- 		
+-- 		delta_end	: constant type_vector_model :=
+-- 			get_distance_relative (get_B (segment_before), get_B (segment_after));
+-- 															
+-- 		use pac_net_labels;
+-- 		label_cursor : pac_net_labels.cursor := segment_after.labels.first;
+-- 
+-- 		
+-- 		procedure move (l : in out type_net_label) is begin
+-- 			-- The position of a net label is absolute.
+-- 			
+-- 			case l.appearance is
+-- 				when TAG => 
+-- 					-- Moving the tag labels is quite simple because
+-- 					-- they are always at start or end point.
+-- 					-- So the label position change is just the displacement
+-- 					-- of the start or end point:
+-- 					case zone is
+-- 						when START_POINT =>
+-- 							if l.position = get_A (segment_before) then
+-- 								move_by (l.position, delta_start);
+-- 							end if;
+-- 							
+-- 						when END_POINT => 
+-- 							if l.position = get_B (segment_before) then
+-- 								move_by (l.position, delta_end);
+-- 							end if;
+-- 
+-- 						when CENTER =>
+-- 							if l.position = get_A (segment_before) then
+-- 								move_by (l.position, delta_start);
+-- 							end if;
+-- 
+-- 							if l.position = get_B (segment_before) then
+-- 								move_by (l.position, delta_end);
+-- 							end if;
+-- 							
+-- 					end case;
+-- 
+-- 					-- CS: change rotation of label ?
+-- 					
+-- 				when SIMPLE => null; -- CS
+-- 					-- This requires a bit more math because simple labels
+-- 					-- are mostly between start and end point.
+-- 
+-- 					-- CS: change rotation of label ?
+-- 			end case;
+-- 		end move;
+-- 
+-- 		
+-- 	begin
+-- 		while label_cursor /= pac_net_labels.no_element loop
+-- 			update_element (segment_after.labels, label_cursor, move'access);
+-- 			next (label_cursor);
+-- 		end loop;
+-- 		
+-- 	end move_net_labels;
 
 
 

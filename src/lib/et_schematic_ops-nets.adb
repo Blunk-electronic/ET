@@ -1730,10 +1730,11 @@ package body et_schematic_ops.nets is
 								end case;										
 						end case;
 
-						move_net_labels (
-							segment_before	=> segment_before,
-							segment_after	=> segment,
-							zone			=> zone);
+						-- CS
+						-- move_net_labels (
+						-- 	segment_before	=> segment_before,
+						-- 	segment_after	=> segment,
+						-- 	zone			=> zone);
 						
 					end move_targeted_segment;
 
@@ -1752,10 +1753,11 @@ package body et_schematic_ops.nets is
 								-- The connected segment is being dragged at its start point:
 								set_A (connected_segment, get_A (segment_cursor_target));
 
-								move_net_labels (
-									segment_before	=> segment_before,
-									segment_after	=> connected_segment,
-									zone			=> START_POINT);
+								-- CS
+								-- move_net_labels (
+								-- 	segment_before	=> segment_before,
+								-- 	segment_after	=> connected_segment,
+								-- 	zone			=> START_POINT);
 
 							end if;
 
@@ -1764,10 +1766,11 @@ package body et_schematic_ops.nets is
 								-- The connected segment is being dragged at its end point:
 								set_B (connected_segment, get_A (segment_cursor_target));
 
-								move_net_labels (
-									segment_before	=> segment_before,
-									segment_after	=> connected_segment,
-									zone			=> END_POINT);
+								-- CS
+								-- move_net_labels (
+								-- 	segment_before	=> segment_before,
+								-- 	segment_after	=> connected_segment,
+								-- 	zone			=> END_POINT);
 
 							end if;
 						end;
@@ -1779,10 +1782,11 @@ package body et_schematic_ops.nets is
 								-- The connected segment is being dragged at its start point:
 								set_A (connected_segment, get_B (segment_cursor_target));
 
-								move_net_labels (
-									segment_before	=> segment_before,
-									segment_after	=> connected_segment,
-									zone			=> START_POINT);
+								-- CS
+								-- move_net_labels (
+								-- 	segment_before	=> segment_before,
+								-- 	segment_after	=> connected_segment,
+								-- 	zone			=> START_POINT);
 
 							end if;
 
@@ -1791,10 +1795,11 @@ package body et_schematic_ops.nets is
 								
 								set_B (connected_segment, get_B (segment_cursor_target));
 
-								move_net_labels (
-									segment_before	=> segment_before,
-									segment_after	=> connected_segment,
-									zone			=> END_POINT);
+								-- CS
+								-- move_net_labels (
+								-- 	segment_before	=> segment_before,
+								-- 	segment_after	=> connected_segment,
+								-- 	zone			=> END_POINT);
 
 							end if;
 						end;
@@ -3603,7 +3608,7 @@ package body et_schematic_ops.nets is
 					is 
 						label_cursor : pac_net_labels.cursor := segment.labels.first;
 
-						procedure query_label (label : in out type_net_label) is begin
+						procedure query_label (label : in out type_net_label_simple) is begin
 							log (text => "label: " & get_position (label), level => log_threshold + 3);
 							reset_status (label);
 						end;
@@ -3617,7 +3622,10 @@ package body et_schematic_ops.nets is
 							segment.labels.update_element (label_cursor, query_label'access);
 							log_indentation_down;
 							next (label_cursor);
-						end loop;						
+						end loop;	
+
+						-- Reset status of tag labels:
+						reset_status (segment.tag_labels);
 					end query_segment;
 					
 						
@@ -3688,7 +3696,7 @@ package body et_schematic_ops.nets is
 
 					procedure query_segment (segment : in out type_net_segment) is 
 
-						procedure query_label (label : in out type_net_label) is begin
+						procedure query_label (label : in out type_net_label_simple) is begin
 							modify_status (label, operation);
 						end;
 							
@@ -3763,7 +3771,7 @@ package body et_schematic_ops.nets is
 						label_cursor : pac_net_labels.cursor := segment.labels.first;
 
 
-						procedure query_label (label : in out type_net_label) is begin
+						procedure query_label (label : in out type_net_label_simple) is begin
 							if in_catch_zone (catch_zone, get_position (label)) then
 								log (text => "in catch zone", level => log_threshold + 5);
 								set_proposed (label);
@@ -3874,7 +3882,7 @@ package body et_schematic_ops.nets is
 						label_cursor : pac_net_labels.cursor := segment.labels.first;
 
 						
-						procedure query_label (label : in type_net_label) is
+						procedure query_label (label : in type_net_label_simple) is
 
 							
 							procedure set_result is begin
@@ -3970,13 +3978,11 @@ package body et_schematic_ops.nets is
 
 	
 	
-	procedure place_net_label (
+	procedure place_net_label_simple (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment_position: in type_object_position; -- sheet/x/y
 		label_position	: in type_vector_model := origin; -- x/y
 		rotation		: in et_schematic_coordinates.type_rotation_model := zero_rotation; -- 0, 90, 180. Relevant for simple labels only.
-		appearance 		: in type_net_label_appearance; -- simple/tag label
-		direction		: in type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level) 
 	is
 		net_cursor : pac_nets.cursor; -- points to the net
@@ -3991,7 +3997,8 @@ package body et_schematic_ops.nets is
 		nets : pac_net_names.list;
 		net_name : pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 
-		procedure query_nets (
+		
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
@@ -3999,65 +4006,59 @@ package body et_schematic_ops.nets is
 			-- the targeted sheet has been found.
 			segment_found : boolean := false; -- to be returned
 
-			procedure query_strands (
+			
+			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is				
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
-				procedure query_segments (strand : in out type_strand) is
+				procedure query_strand (strand : in out type_strand) is
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
+					
 					procedure attach_label (segment : in out type_net_segment) is 
 						use pac_net_labels;
-						label : type_net_label_base;
+						label : type_net_label_simple;
 					begin
 						-- label_position is relative to segment_position
 						label.position := label_position;
 						move_by (label.position, segment_position.place);
 						-- now label.position is absolute
+
+						-- snap given rotation to either 0 or 90 degree
+						label.rotation := snap (rotation))
 						
-						-- CS: label size, style and line width assume default. could be provided by further
-						-- parameters passed to procedure place_net_label.
-
-						case appearance is
-							when SIMPLE =>
-								append (
-									container	=> segment.labels,
-									new_item	=> (label with
-										appearance		=> SIMPLE,
-
-										-- snap given rotation to either 0 or 90 degree
-										rotation_simple	=> snap (rotation))
-									   );
+						segment.labels.append (label);
 								
-							when TAG =>
-								-- A tag label can be attached to a stub only.
-								declare
-									s : constant type_stub := query_stub (module_cursor, net_name, segment_position, log_threshold + 1);
-								begin
-									if s.is_stub then
-									
-										append (
-											container	=> segment.labels,
-											new_item	=> (label with 
-												appearance		=> TAG,
-
-												-- derive the label rotation from the stub direction:
-												rotation_tag	=> to_label_rotation (s.direction),
-															
-												direction		=> direction) -- the given signal direction
-										   );
-										
-									else
-										log (WARNING, "Net has no stub at" & no_label_placed, console => true);
-									end if;
-								end;
-						end case;
+-- 							when TAG =>
+-- 								-- A tag label can be attached to a stub only.
+-- 								declare
+-- 									s : constant type_stub := query_stub (module_cursor, net_name, segment_position, log_threshold + 1);
+-- 								begin
+-- 									if s.is_stub then
+-- 									
+-- 										append (
+-- 											container	=> segment.labels,
+-- 											new_item	=> (label with 
+-- 												appearance		=> TAG,
+-- 
+-- 												-- derive the label rotation from the stub direction:
+-- 												rotation_tag	=> to_label_rotation (s.direction),
+-- 															
+-- 												direction		=> direction) -- the given signal direction
+-- 										   );
+-- 										
+-- 									else
+-- 										log (WARNING, "Net has no stub at" & no_label_placed, console => true);
+-- 									end if;
+-- 								end;
+-- 						end case;
 					end attach_label;
+
 					
-				begin -- query_segments
+				begin
 					while not segment_found and segment_cursor /= pac_net_segments.no_element loop
 
 						if on_line (
@@ -4075,43 +4076,34 @@ package body et_schematic_ops.nets is
 						
 						next (segment_cursor);
 					end loop;
-				end query_segments;
+				end query_strand;
+
 				
-			begin -- query_strands
+			begin
 				while not segment_found and strand_cursor /= pac_strands.no_element loop
 					
 					-- We pick out only the strands on the targeted sheet:
 					if get_sheet (element (strand_cursor).position) = get_sheet (segment_position) then
-
-						update_element (
-							container	=> net.strands,
-							position	=> strand_cursor,
-							process		=> query_segments'access);
-					
+						net.strands.update_element (strand_cursor, query_strand'access);					
 					end if;
 					
 					next (strand_cursor);
 				end loop;
-			end query_strands;
-			
-		begin -- query_nets
-			update_element (
-				container	=> module.nets,
-				position	=> net_cursor,
-				process		=> query_strands'access);
+			end query_net;
 
-		end query_nets;
+			
+		begin
+			module.nets.update_element (net_cursor, query_net'access);
+		end query_module;
 
 		
 	begin -- place_net_label
-		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
-			" labeling segment at"  &
+		log (text => "module " & to_string (module_cursor) &
+			" place simple label at segment at"  &
 			to_string (position => segment_position) &
-			" with " & to_string (appearance) & " label at" &
 			to_string (label_position) &
 			" rotation" & to_string (rotation),
 			level => log_threshold);
-		-- CS rework. log message does not need rotation in case of tag label.
 		
 		log_indentation_up;
 
@@ -4135,7 +4127,7 @@ package body et_schematic_ops.nets is
 				update_element (
 					container	=> generic_modules,
 					position	=> module_cursor,
-					process		=> query_nets'access);
+					process		=> query_module'access);
 
 			when others =>
 				log (WARNING, "more than one net found at" & no_label_placed);
@@ -4145,7 +4137,59 @@ package body et_schematic_ops.nets is
 		
 		log_indentation_down;		
 		
-	end place_net_label;
+	end place_net_label_simple;
+
+
+
+
+
+	procedure place_net_label_tag (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment_position: in type_object_position; -- sheet/x/y
+		direction		: in type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
+		log_threshold	: in type_log_level) 
+	is
+
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " place tag label at " & to_string (position => segment_position)
+			& " direction " & to_string (direction),
+			level => log_threshold);
+		
+		log_indentation_up;
+
+
+-- 		-- collect names of nets that cross the given segment_position
+-- 		nets := get_nets_at_place (module_cursor, segment_position, log_threshold + 1);
+-- 
+-- 		case length (nets) is
+-- 			when 0 =>
+-- 				log (WARNING, "no net found at" & no_label_placed);
+-- 
+-- 			when 1 => 
+-- 				net_name := element (nets.first);
+-- 				log (text => "net name " & to_string (net_name), level => log_threshold + 1);
+-- 				
+-- 				-- Set the cursor to the net.
+-- 				net_cursor := locate_net (module_cursor, net_name);
+-- 
+-- 				--log (text => "net name " & to_string (key (net_cursor)), level => log_threshold + 1);
+-- 				
+-- 				update_element (
+-- 					container	=> generic_modules,
+-- 					position	=> module_cursor,
+-- 					process		=> query_nets'access);
+-- 
+-- 			when others =>
+-- 				log (WARNING, "more than one net found at" & no_label_placed);
+-- 				-- CS show the net names
+-- 				
+-- 		end case;
+		
+		log_indentation_down;		
+	end place_net_label_tag;
+
+
 
 
 
@@ -4756,7 +4800,7 @@ package body et_schematic_ops.nets is
 							label_cursor : pac_net_labels.cursor := seg.labels.first;
 
 
-							procedure query_label (label : in type_net_label) is
+							procedure query_label (label : in type_net_label_simple) is
 
 								-- This procedure appends the matching
 								-- net, strand, segment and label cursor to the result:

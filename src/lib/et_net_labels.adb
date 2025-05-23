@@ -57,40 +57,24 @@ package body et_net_labels is
 
 
 
-	function get_position (
-		label : in type_net_label)
-		return type_vector_model
-	is begin
-		return label.position;
-	end;
-
-
-	function get_position (
-		label : in type_net_label)
-		return string
-	is begin
-		return to_string (label.position);
-	end;
-
-	
 	
 
 	procedure set_proposed (
-		label : in out type_net_label)
+		label : in out type_net_label_base)
 	is begin
 		set_proposed (label.status);
 	end;
 
 	
 	procedure clear_proposed (
-		label : in out type_net_label)
+		label : in out type_net_label_base)
 	is begin
 		clear_proposed (label.status);
 	end;
 		
 
 	function is_proposed (
-		label : in type_net_label)
+		label : in type_net_label_base)
 		return boolean
 	is begin
 		if is_proposed (label.status) then
@@ -104,21 +88,21 @@ package body et_net_labels is
 
 
 	procedure set_selected (
-		label : in out type_net_label)
+		label : in out type_net_label_base)
 	is begin
 		set_selected (label.status);
 	end;
 
 	
 	procedure clear_selected (
-		label : in out type_net_label)
+		label : in out type_net_label_base)
 	is begin
 		clear_selected (label.status);
 	end;
 		
 
 	function is_selected (
-		label : in type_net_label)
+		label : in type_net_label_base)
 		return boolean
 	is begin
 		if is_selected (label.status) then
@@ -130,23 +114,64 @@ package body et_net_labels is
 
 
 
+	procedure modify_status (
+		label 		: in out type_net_label_base;
+		operation	: in type_status_operation)
+	is begin
+		modify_status (label.status, operation);
+	end;
+
+	
+
+	procedure reset_status (
+		label : in out type_net_label_base)
+	is begin
+		reset_status (label.status);
+	end;
+
+
+
+
+	
+	
+
+	function get_position (
+		label : in type_net_label_simple)
+		return type_vector_model
+	is begin
+		return label.position;
+	end;
+
+
+	function get_position (
+		label : in type_net_label_simple)
+		return string
+	is begin
+		return to_string (label.position);
+	end;
+
+	
+	
+
+
+
 
 	procedure set_moving (
-		label : in out type_net_label)
+		label : in out type_net_label_simple)
 	is begin
 		set_moving (label.status);
 	end;
 
 	
 	procedure clear_moving (
-		label : in out type_net_label)
+		label : in out type_net_label_simple)
 	is begin
 		clear_moving (label.status);
 	end;
 		
 
 	function is_moving (
-		label : in type_net_label)
+		label : in type_net_label_simple)
 		return boolean
 	is begin
 		if is_moving (label.status) then
@@ -158,22 +183,6 @@ package body et_net_labels is
 
 
 
-	procedure reset_status (
-		label : in out type_net_label)
-	is begin
-		reset_status (label.status);
-	end;
-
-
-
-	procedure modify_status (
-		label 		: in out type_net_label;
-		operation	: in type_status_operation)
-	is begin
-		modify_status (label.status, operation);
-	end;
-
-	
 	
 
 	function get_position (
@@ -218,6 +227,40 @@ package body et_net_labels is
 	end;
 
 	
+
+
+	procedure reset_status (
+		labels : in out type_tag_labels)
+	is begin
+		reset_status (labels.A);
+		reset_status (labels.B);
+	end;
+	
+
+	
+
+	function is_active (
+		label : in type_net_label_tag)
+		return boolean
+	is begin
+		return label.active;
+	end;
+	
+
+	procedure set_active (
+		label : in out type_net_label_tag)
+	is begin
+		label := (active => true, others => <>);
+	end;
+
+
+	procedure reset_tag_label (
+		label : in out type_net_label_tag)
+	is begin
+		label := (active => false, others => <>);
+	end;
+
+
 	
 	
 end et_net_labels;

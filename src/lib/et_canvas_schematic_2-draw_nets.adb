@@ -210,9 +210,8 @@ procedure draw_nets is
 				end draw_segment;
 
 
-				-- This procedure queries a net label and draws it
-				-- according to its appearance (SIMPLE or TAG label):
-				procedure query_label (label : in type_net_label) is
+				-- This procedure queries a simple net label and draws it:
+				procedure query_label (label : in type_net_label_simple) is
 					use pac_net_name;
 					use pac_draw_text;
 
@@ -241,147 +240,9 @@ procedure draw_nets is
 							-- Text rotation about its anchor point.
 							-- This is documentational text.
 							-- It is readable from the front or the right.
-							rotation	=> pac_text.to_rotation (label.rotation_simple),
+							rotation	=> pac_text.to_rotation (label.rotation),
 							alignment	=> net_label_alignment);					
 					end draw_simple;
-
-
-					
-					-- This procedure draws a tag label:
-					procedure draw_tag is
-						use et_alignment;
-
-						box : type_area;
-						
-						content : pac_text_content.bounded_string := 
-							to_content (to_string (net_name));
-						-- CS: append to content the position of the net
-						-- on the next sheet (strand position) using the quadrant bars.
-
-						
-						procedure make_box is begin
-							-- Form a box that wraps around the net name:
-							box := to_area (get_text_extents (content, label.size, net_label_font));
-
-							-- Expand the box so that there is some empty space between
-							-- text and border:
-							box.height := box.height * tag_label_height_to_size_ratio;
-							box.width  := box.width  * tag_label_height_to_size_ratio;
-						end make_box;
-						
-
-						
-						-- The text rotation must be either 0 or 90 degree
-						-- (documentational text !) and is thus
-						-- to be calculated according to the rotation of the label:
-						text_rotation : type_rotation;
-
-						-- The alignment is assigned as if the text 
-						-- were drawn at zero rotation.
-						-- The vertical alignment is always CENTER. Horizontal alignment 
-						-- changes depending on the rotation of the label:
-						text_alignment : type_text_alignment := 
-							(vertical => ALIGN_CENTER, horizontal => <>);
-
-						-- The text position is not the same as the 
-						-- label position, thus it must be calculated according to 
-						-- the label rotation and tag_label_text_offset:
-						text_position : type_vector_model;
-
-						-- Temporarily we store here the position
-						-- of the label. In case it is moving, then it
-						-- will be moved the object_displacment:
-						position : type_vector_model renames label.position;
-						
-					begin
-						make_box;
-
-						-- -- Move position if the label is moving:
-						-- if is_moving (label) then
-						-- 	move_by (position, object_displacement);
-						-- end if;
-
-						
-						if label.rotation_tag = zero_rotation then
-					
-							box.position := set (
-								get_x (position), 
-								get_y (position) - box.height * 0.5);
-
-							text_rotation := zero_rotation;
-							text_position := set (get_x (position) + tag_label_text_offset, 
-												  get_y (position));
-							
-							text_alignment.horizontal := ALIGN_LEFT;
-						end if;
-
-						
-						if label.rotation_tag = 90.0 then
-
-							box.position := set (
-								get_x (position) - box.height * 0.5,
-								get_y (position));
-
-							swap_edges (box);
-
-							text_rotation := 90.0;
-							text_position := set (get_x (position), 
-												  get_y (position) + tag_label_text_offset);
-							
-							text_alignment.horizontal := ALIGN_LEFT;
-						end if;
-
-						
-						if label.rotation_tag = 180.0 then
-
-							box.position := set (
-								get_x (position) - box.width,
-								get_y (position) - box.height * 0.5);
-
-							text_rotation := zero_rotation;
-							text_position := set (get_x (position) - tag_label_text_offset, 
-												  get_y (position));
-							
-							text_alignment.horizontal := ALIGN_RIGHT;
-						end if;
-
-						
-						if label.rotation_tag = -90.0 then
-
-							box.position := set (
-								get_x (position) - box.height * 0.5,
-								get_y (position) - box.width);
-							
-							swap_edges (box);
-
-							text_rotation := 90.0;
-							text_position := set (get_x (position), 
-												  get_y (position) - tag_label_text_offset);
-							
-							text_alignment.horizontal := ALIGN_RIGHT;
-						end if;
-
-
-						-- Draw the box enshrouding the net name:
-						draw_rectangle (
-							rectangle	=> box, 
-							width		=> tag_label_box_line_width);
-
-						-- Draw the actual net name:
-						draw_text (
-							content		=> content,
-							size		=> label.size,
-							font		=> net_label_font,
-							anchor		=> text_position,
-							origin		=> false, -- no origin for net names required
-							
-							-- Text rotation about its anchor point. This is documentational text.
-							-- It is readable from the front or the right.
-							rotation	=> text_rotation,
-							alignment	=> text_alignment);
-
-					end draw_tag;
-
 					
 				begin
 					-- If the candidate label is selected, then
@@ -390,10 +251,11 @@ procedure draw_nets is
 						set_color_nets (BRIGHT);
 					end if;
 					
-					case label.appearance is
-						when SIMPLE	=> draw_simple;
-						when TAG	=> draw_tag;
-					end case;
+					-- case label.appearance is
+					-- 	when SIMPLE	=> draw_simple;
+					-- 	when TAG	=> draw_tag;
+					-- end case;
+					draw_simple;
 
 					if is_selected (label) then
 						set_color_nets (NORMAL);
@@ -401,6 +263,147 @@ procedure draw_nets is
 				end query_label;
 
 
+				procedure draw_tag_labels is begin
+					null;
+					
+					-- This procedure draws a tag label:
+-- 					procedure draw_tag is
+-- 						use et_alignment;
+-- 
+-- 						box : type_area;
+-- 						
+-- 						content : pac_text_content.bounded_string := 
+-- 							to_content (to_string (net_name));
+-- 						-- CS: append to content the position of the net
+-- 						-- on the next sheet (strand position) using the quadrant bars.
+-- 
+-- 						
+-- 						procedure make_box is begin
+-- 							-- Form a box that wraps around the net name:
+-- 							box := to_area (get_text_extents (content, label.size, net_label_font));
+-- 
+-- 							-- Expand the box so that there is some empty space between
+-- 							-- text and border:
+-- 							box.height := box.height * tag_label_height_to_size_ratio;
+-- 							box.width  := box.width  * tag_label_height_to_size_ratio;
+-- 						end make_box;
+-- 						
+-- 
+-- 						
+-- 						-- The text rotation must be either 0 or 90 degree
+-- 						-- (documentational text !) and is thus
+-- 						-- to be calculated according to the rotation of the label:
+-- 						text_rotation : type_rotation;
+-- 
+-- 						-- The alignment is assigned as if the text 
+-- 						-- were drawn at zero rotation.
+-- 						-- The vertical alignment is always CENTER. Horizontal alignment 
+-- 						-- changes depending on the rotation of the label:
+-- 						text_alignment : type_text_alignment := 
+-- 							(vertical => ALIGN_CENTER, horizontal => <>);
+-- 
+-- 						-- The text position is not the same as the 
+-- 						-- label position, thus it must be calculated according to 
+-- 						-- the label rotation and tag_label_text_offset:
+-- 						text_position : type_vector_model;
+-- 
+-- 						-- Temporarily we store here the position
+-- 						-- of the label. In case it is moving, then it
+-- 						-- will be moved the object_displacment:
+-- 						position : type_vector_model renames label.position;
+-- 						
+-- 					begin
+-- 						make_box;
+-- 
+-- 						-- -- Move position if the label is moving:
+-- 						-- if is_moving (label) then
+-- 						-- 	move_by (position, object_displacement);
+-- 						-- end if;
+-- 
+-- 						
+-- 						if label.rotation_tag = zero_rotation then
+-- 					
+-- 							box.position := set (
+-- 								get_x (position), 
+-- 								get_y (position) - box.height * 0.5);
+-- 
+-- 							text_rotation := zero_rotation;
+-- 							text_position := set (get_x (position) + tag_label_text_offset, 
+-- 												  get_y (position));
+-- 							
+-- 							text_alignment.horizontal := ALIGN_LEFT;
+-- 						end if;
+-- 
+-- 						
+-- 						if label.rotation_tag = 90.0 then
+-- 
+-- 							box.position := set (
+-- 								get_x (position) - box.height * 0.5,
+-- 								get_y (position));
+-- 
+-- 							swap_edges (box);
+-- 
+-- 							text_rotation := 90.0;
+-- 							text_position := set (get_x (position), 
+-- 												  get_y (position) + tag_label_text_offset);
+-- 							
+-- 							text_alignment.horizontal := ALIGN_LEFT;
+-- 						end if;
+-- 
+-- 						
+-- 						if label.rotation_tag = 180.0 then
+-- 
+-- 							box.position := set (
+-- 								get_x (position) - box.width,
+-- 								get_y (position) - box.height * 0.5);
+-- 
+-- 							text_rotation := zero_rotation;
+-- 							text_position := set (get_x (position) - tag_label_text_offset, 
+-- 												  get_y (position));
+-- 							
+-- 							text_alignment.horizontal := ALIGN_RIGHT;
+-- 						end if;
+-- 
+-- 						
+-- 						if label.rotation_tag = -90.0 then
+-- 
+-- 							box.position := set (
+-- 								get_x (position) - box.height * 0.5,
+-- 								get_y (position) - box.width);
+-- 							
+-- 							swap_edges (box);
+-- 
+-- 							text_rotation := 90.0;
+-- 							text_position := set (get_x (position), 
+-- 												  get_y (position) - tag_label_text_offset);
+-- 							
+-- 							text_alignment.horizontal := ALIGN_RIGHT;
+-- 						end if;
+-- 
+-- 
+-- 						-- Draw the box enshrouding the net name:
+-- 						draw_rectangle (
+-- 							rectangle	=> box, 
+-- 							width		=> tag_label_box_line_width);
+-- 
+-- 						-- Draw the actual net name:
+-- 						draw_text (
+-- 							content		=> content,
+-- 							size		=> label.size,
+-- 							font		=> net_label_font,
+-- 							anchor		=> text_position,
+-- 							origin		=> false, -- no origin for net names required
+-- 							
+-- 							-- Text rotation about its anchor point. This is documentational text.
+-- 							-- It is readable from the front or the right.
+-- 							rotation	=> text_rotation,
+-- 							alignment	=> text_alignment);
+-- 
+-- 					end draw_tag;
+					
+				end draw_tag_labels;
+				
+				
 				
 				-- This procedure draws the junctions of the segment. 
 				-- Note: A junction can be at the start or the end (A/B)
@@ -431,6 +434,7 @@ procedure draw_nets is
 				end draw_junctions;
 
 				
+				
 			begin			
 				-- Increase brightness if segment is selected:
 				if is_selected (segment) then
@@ -446,6 +450,7 @@ procedure draw_nets is
 				end loop;
 				
 				draw_junctions;
+				draw_tag_labels;
 
 				if is_selected (segment) then
 					set_color_nets (NORMAL);

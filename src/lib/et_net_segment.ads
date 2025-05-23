@@ -143,13 +143,14 @@ package et_net_segment is
 			radius 	=> junction_radius));
 
 
-	
+
 
 
 -- SEGMENTS:
 	
-	type type_net_segment is new type_line with record
+	type type_net_segment is new type_line with record		
 		labels		: pac_net_labels.list;
+		tag_labels	: type_tag_labels;
 		junctions	: type_junctions;
 		ports		: type_ports;
 	end record;
@@ -169,10 +170,10 @@ package et_net_segment is
 	
 	-- Moves the net labels of a segment.
 	-- CS: Currently moves only the tag labels
-	procedure move_net_labels (
-		segment_before	: in type_net_segment;		-- the segment before the move
-		segment_after	: in out type_net_segment;	-- the segment after the move
-		zone			: in type_line_zone);		-- the zone being moved
+	-- procedure move_net_labels (
+	-- 	segment_before	: in type_net_segment;		-- the segment before the move
+	-- 	segment_after	: in out type_net_segment;	-- the segment after the move
+	-- 	zone			: in type_line_zone);		-- the zone being moved
 
 	
 	package pac_net_segments is new doubly_linked_lists (type_net_segment);

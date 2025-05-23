@@ -2839,6 +2839,7 @@ package body et_kicad_to_native is
 			log_indentation_down;
 		end copy_components;
 
+
 		
 		
 		procedure copy_nets is
@@ -2879,6 +2880,7 @@ package body et_kicad_to_native is
 
 				use et_net_labels.pac_net_labels;
 				use et_net_segment.pac_device_ports;
+
 				
 				-- Copies from the given kicad net segment all simple and tag labels and returns
 				-- them in a single list.
@@ -2911,6 +2913,7 @@ package body et_kicad_to_native is
 					use et_kicad.schematic.type_tag_labels;
 					tag_label_cursor : et_kicad.schematic.type_tag_labels.cursor := segment.label_list_tag.first;
 
+					
 					-- Kicad label can be rotated by 180 or -90 degree. This function translates 
 					-- to native label rotation:
 					function to_rotation (rk : in type_rotation_relative) 
@@ -2940,6 +2943,7 @@ package body et_kicad_to_native is
 					
 				begin -- tag_and_simple_labels
 					log_indentation_up;
+
 					
 					-- simple labels
 					while simple_label_cursor /= et_kicad.schematic.type_simple_labels.no_element loop
@@ -2955,16 +2959,16 @@ package body et_kicad_to_native is
 						et_net_labels.pac_net_labels.append (
 							container	=> labels,
 							new_item	=> (
-								appearance		=> et_net_labels.SIMPLE,
-								position		=> simple_label_position,
-								rotation_simple	=> to_rotation (rk => element (simple_label_cursor).rotation),
-								size			=> element (simple_label_cursor).size,
-								width			=> element (simple_label_cursor).width,
-								others			=> <>));
+								position	=> simple_label_position,
+								rotation	=> to_rotation (rk => element (simple_label_cursor).rotation),
+								size		=> element (simple_label_cursor).size,
+								width		=> element (simple_label_cursor).width,
+								others		=> <>));
 						
 						next (simple_label_cursor);
 					end loop;
 
+					
 					-- tag labels
 					while tag_label_cursor /= et_kicad.schematic.type_tag_labels.no_element loop
 
@@ -2972,16 +2976,18 @@ package body et_kicad_to_native is
 							label => et_kicad.schematic.type_net_label (element (tag_label_cursor))),
 							 level => log_threshold + 5);
 
+						-- CS: Here we convert a tag label to a native simple label
+						-- as a makeshift. The tag label should be attached to the
+						-- corresponding net segment instead:
 						et_net_labels.pac_net_labels.append (
 							container	=> labels,
 							new_item	=> (
-								appearance		=> et_net_labels.TAG,
-								position		=> element (tag_label_cursor).coordinates,
-								rotation_tag	=> element (tag_label_cursor).rotation,
-								size			=> element (tag_label_cursor).size,
-								width			=> element (tag_label_cursor).width,
-								direction		=> element (tag_label_cursor).direction,
-								others			=> <>));
+								position	=> element (tag_label_cursor).coordinates,
+								-- rotation	=> element (tag_label_cursor).rotation,
+								size		=> element (tag_label_cursor).size,
+								width		=> element (tag_label_cursor).width,
+								-- direction	=> element (tag_label_cursor).direction,
+								others		=> <>));
 						
 						next (tag_label_cursor);
 					end loop;
@@ -2989,6 +2995,7 @@ package body et_kicad_to_native is
 					log_indentation_down;
 					return labels;
 				end tag_and_simple_labels;
+
 
 				
 				function read_net_junctions (segment : in et_kicad.schematic.type_net_segment)

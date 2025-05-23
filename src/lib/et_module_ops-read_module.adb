@@ -236,6 +236,7 @@ is
 	end set_meta;
 
 
+
 	
 	-- Reads basic meta data. If given line does not contain
 	-- basic meta stuff, returns a false.
@@ -754,14 +755,15 @@ is
 		end if;
 	end read_strand;
 	
-	
-	net_segments : et_net_segment.pac_net_segments.list;
-	net_segment	: et_net_segment.type_net_segment;
-	net_junctions : et_net_segment.type_junctions;
 
 	
-	procedure set_junction (place : in string) is 
-	begin
+	net_segments	: et_net_segment.pac_net_segments.list;
+	net_segment		: et_net_segment.type_net_segment;
+	net_junctions	: et_net_segment.type_junctions;
+	net_tag_labels	: et_net_labels.type_tag_labels;
+
+	
+	procedure set_junction (place : in string) is begin
 		if f (line, 2) = keyword_start then
 			net_junctions.A := true;
 		end if;
@@ -771,6 +773,30 @@ is
 		end if;
 	end set_junction;
 
+
+
+	procedure set_tag_label (place : in string) is 
+	-- example "tag_label start/end direction input/output"
+		use et_net_labels;
+	begin
+		if f (line, 2) = keyword_start then
+			set_active (net_tag_labels.A);
+
+			if f (line, 3) = keyword_direction then
+				net_tag_labels.A.direction := to_direction (f (line, 4));
+			end if;
+		end if;
+
+		if f (line, 2) = keyword_end then
+			set_active (net_tag_labels.B);
+
+			if f (line, 3) = keyword_direction then
+				net_tag_labels.B.direction := to_direction (f (line, 4));
+			end if;
+		end if;
+	end set_tag_label;
+
+	
 	
 	procedure read_net_segment is
 		use et_symbol_rw;
@@ -798,6 +824,11 @@ is
 		elsif kw = keyword_junction then -- "junction start/end"
 			expect_field_count (line, 2);
 			set_junction (f (line, 2));
+
+		elsif kw = keyword_tag_label then -- "tag_label start/end direction input/output"
+			expect_field_count (line, 4);
+			set_tag_label (f (line, 2));
+
 		else
 			invalid_keyword (kw);
 		end if;
@@ -805,15 +836,22 @@ is
 
 	
 	net_labels				: et_net_labels.pac_net_labels.list;
-	net_label 				: et_net_labels.type_net_label_base;
-	net_label_rotation		: et_schematic_coordinates.type_rotation_model := 0.0;
-	net_label_appearance	: et_net_labels.type_net_label_appearance := et_net_labels.type_net_label_appearance'first;
+	net_label 				: et_net_labels.type_net_label_simple;
+	
+	net_label_rotation		: et_text.type_rotation_documentation := 
+		et_text.type_rotation_documentation'first;
 
-	-- The net label direction is relevant if appearance is TAG:
-	net_label_direction : et_net_labels.type_net_label_direction := et_net_labels.type_net_label_direction'first;
+	-- The net label direction is relevant if it is a tag label:
+	net_label_direction : et_net_labels.type_net_label_direction := 
+		et_net_labels.type_net_label_direction'first;
+
+	-- CS warn about parameter "direction" being ignored
 
 	
-	procedure read_label is
+	procedure read_label is -- simple label
+		use et_schematic_text;
+		use pac_text_schematic;
+		
 		use et_symbol_rw;
 		use et_schematic_coordinates;	
 		use pac_geometry_2;
@@ -826,11 +864,13 @@ is
 
 			-- extract label position starting at field 2 of line
 			net_label.position := to_position (line, 2);
+
 			
 		elsif kw = keyword_rotation then -- rotation 0.0
 			expect_field_count (line, 2);
-			net_label_rotation := to_rotation (f (line, 2));
+			net_label_rotation := snap (to_rotation (f (line, 2)));
 
+			
 		elsif kw = keyword_size then -- size 1.3
 			expect_field_count (line, 2);
 			net_label.size := to_distance (f (line, 2));
@@ -839,18 +879,15 @@ is
 -- 										expect_field_count (line, 2);
 -- 										net_label.style := et_symbols.to_text_style (f (line, 2));
 
-		elsif kw = keyword_linewidth then -- linewidth 0.1
-			expect_field_count (line, 2);
-			net_label.width := to_distance (f (line, 2));
+		-- elsif kw = keyword_linewidth then -- linewidth 0.1
+		-- 	expect_field_count (line, 2);
+		-- 	net_label.width := to_distance (f (line, 2));
 
-		elsif kw = keyword_appearance then -- appearance tag/simple
-			expect_field_count (line, 2);
-			net_label_appearance := to_appearance (f (line, 2));
+		-- elsif kw = keyword_appearance then -- appearance tag/simple
+		-- 	expect_field_count (line, 2);
+		-- 	net_label_appearance := to_appearance (f (line, 2));
 
-		elsif kw = keyword_direction then -- direction input/output
-			expect_field_count (line, 2);
-			net_label_direction := to_direction (f (line, 2));
-			
+	
 		else
 			invalid_keyword (kw);
 		end if;
@@ -4834,8 +4871,7 @@ is
 			
 			procedure build_non_conductor_cutout (
 				face	: in et_pcb_sides.type_face) 
-			is 
-			begin
+			is begin
 				case stack.parent (degree => 2) is
 					when SEC_SILKSCREEN =>
 						insert_cutout (
@@ -4870,8 +4906,7 @@ is
 			
 			procedure build_non_conductor_fill_zone (
 				face	: in et_pcb_sides.type_face)
-			is
-			begin
+			is begin
 				case stack.parent (degree => 2) is
 					when SEC_SILKSCREEN =>
 						insert_polygon (
@@ -4903,6 +4938,7 @@ is
 			end build_non_conductor_fill_zone;
 
 
+			
 			
 			procedure build_non_conductor_text (
 				face : in et_pcb_sides.type_face)  -- TOP, BOTTOM
@@ -5002,6 +5038,7 @@ is
 				end case;
 			end build_non_conductor_text;
 
+
 			
 			procedure build_net_label is
 				use et_schematic_text;
@@ -5012,39 +5049,14 @@ is
 					when SEC_LABELS =>
 
 						-- insert label in label collection
-						case net_label_appearance is
-							when SIMPLE =>
 
-								-- insert a simple label
-								pac_net_labels.append (
-									container	=> net_labels,
-									new_item	=> (
-										net_label with
-										appearance		=> SIMPLE,
-										rotation_simple	=> snap (net_label_rotation)
-										));
-
-								-- CS warn about parameter "direction" being ignored
-								
-							when TAG =>
-
-								-- insert a tag label
-								pac_net_labels.append (
-									container	=> net_labels,
-									new_item	=> (
-										net_label with 
-										appearance		=> TAG,
-										direction		=> net_label_direction,
-										rotation_tag	=> net_label_rotation
-										));
-
-						end case;
+						-- insert a simple label
+						pac_net_labels.append (
+							container	=> net_labels,
+							new_item	=> net_label);
 
 						-- clean up for next label
 						net_label := (others => <>);
-						net_label_rotation := et_schematic_coordinates.pac_geometry_2.zero_rotation;
-						net_label_appearance := type_net_label_appearance'first;
-						net_label_direction := type_net_label_direction'first;
 
 					when others => invalid_section;
 				end case;
@@ -5065,7 +5077,8 @@ is
 						
 						when others => invalid_section;
 					end case;
-				
+
+					
 				when SEC_NET_CLASS =>
 					case stack.parent is
 						when SEC_NET_CLASSES =>
@@ -5079,12 +5092,14 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_NET_CLASSES =>
 					case stack.parent is
 						when SEC_INIT => null;
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_BOARD_LAYER_STACK =>
 					case stack.parent is
 						when SEC_INIT =>  -- CS clean up. separate procedures required
@@ -5102,12 +5117,14 @@ is
 							
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_DRAWING_GRID =>
 					case stack.parent is
 						when SEC_INIT => set_drawing_grid;
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_NET =>
 					case stack.parent is
@@ -5122,11 +5139,13 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_NETS =>
 					case stack.parent is
 						when SEC_INIT => null;
 						when others => invalid_section;
 					end case;
+
 					
 				when SEC_STRANDS =>
 					case stack.parent is
@@ -5139,6 +5158,7 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_ROUTE =>
 					case stack.parent is
 						when SEC_NET =>
@@ -5150,6 +5170,7 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_STRAND =>
 					case stack.parent is
 						when SEC_STRANDS => -- CS clean up. separate procedures required 
@@ -5192,6 +5213,7 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_SEGMENTS =>
 					case stack.parent is
 						when SEC_STRAND =>
@@ -5205,6 +5227,7 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_SEGMENT => -- CS clean up. separate procedures required
 					case stack.parent is
 						when SEC_SEGMENTS =>
@@ -5214,6 +5237,13 @@ is
 
 							-- Reset net_junctions for next net segment.
 							net_junctions := (others => <>);
+
+							-- Copy the tag lables into the segment.
+							net_segment.tag_labels := net_tag_labels;
+
+							-- Reset the tag labels for next net segment.
+							net_tag_labels := (others => <>);
+
 							
 							-- insert segment in segment collection
 							et_net_segment.pac_net_segments.append (
@@ -5226,6 +5256,7 @@ is
 						when others => invalid_section;
 					end case;
 
+					
 				when SEC_LABELS =>
 					case stack.parent is
 						when SEC_SEGMENT =>
@@ -6717,6 +6748,7 @@ is
 		
 	end process_line;
 
+	
 	
 	procedure read_submodule_files is
 	-- Pointer module_cursor points to the last module that has been read.

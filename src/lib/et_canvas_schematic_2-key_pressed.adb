@@ -351,22 +351,23 @@ is
 			-- EVALUATE KEY FOR NOUN:
 			when GDK_LC_l =>
 				noun := NOUN_LABEL;
-				label.appearance := SIMPLE;
-				set_status (et_canvas_schematic_nets.status_place_label_simple);
+				-- label.appearance := SIMPLE;
+				-- set_status (et_canvas_schematic_nets.status_place_label_simple);
 
 				-- For placing simple net labels, the fine grid is required:
 				-- CS self.set_grid (FINE);
 				
 			when GDK_L =>
 				noun := NOUN_LABEL;
-				label.appearance := TAG;
-				set_status (et_canvas_schematic_nets.status_place_label_tag);
+				-- label.appearance := TAG;
+				-- set_status (et_canvas_schematic_nets.status_place_label_tag);
 
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when GDK_Space =>
 				case noun is
 					when NOUN_LABEL =>
-						place_label (KEYBOARD, get_cursor_position);
+						null; -- CS
+						-- place_label (KEYBOARD, get_cursor_position);
 						
 					when others => null;							
 				end case;
@@ -389,9 +390,10 @@ is
 
 					when NOUN_LABEL =>
 						-- Rotate simple label:
-						if label.ready then
-							toggle_rotation (label.rotation_simple);
-						end if;
+						null; -- CS
+						-- if label.ready then
+						-- 	toggle_rotation (label.rotation_simple);
+						-- end if;
 
 					when others => null;
 						
