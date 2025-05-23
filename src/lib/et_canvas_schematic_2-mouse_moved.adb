@@ -75,25 +75,14 @@ begin
 			
 		when VERB_DRAG | VERB_MOVE | VERB_PLACE =>
 			case noun is
-				when NOUN_LABEL =>
-					if et_canvas_schematic_nets.label.ready then
-						redraw_schematic;
-					end if;
-
-					
 				when NOUN_NAME | NOUN_PURPOSE | NOUN_VALUE => 
 					if et_canvas_schematic_units.placeholder_move.being_moved then
 						redraw_schematic;
 					end if;
 
 					
-				when NOUN_NET =>
+				when NOUN_NET | NOUN_LABEL =>
 					if edit_process_running then
-
-						-- object_displacement := snap_to_grid (get_mouse_position) - object_original_position;
-
-						-- put_line ("object_displacement " & to_string (object_displacement));
-
 						redraw_schematic;
 					end if;
 

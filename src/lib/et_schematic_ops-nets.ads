@@ -514,10 +514,9 @@ package et_schematic_ops.nets is
 		CAT_VOID,
 		CAT_SEGMENT,
 		-- CAT_STRAND ?
-		CAT_NET);
-		-- CAT_LABEL_SIMPLE ?
-		-- CAT_LABEL_TAG ?
-		-- CAT_JUNCTION ?
+		CAT_NET,
+		CAT_LABEL);
+
 
 
 	-- This type wraps all kinds of objects into a single type:
@@ -531,7 +530,8 @@ package et_schematic_ops.nets is
 			when CAT_NET =>
 				net : type_object_net;
 				
-			-- CS
+			when CAT_LABEL =>
+				label : type_object_label;
 		end case;
 	end record;
 

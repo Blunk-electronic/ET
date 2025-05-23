@@ -165,12 +165,12 @@ package et_canvas_schematic_nets is
 -- DELETE SEGMENT
 
 	
-	status_delete : constant string := 
-		status_click_left 
-		& "or "
-		& status_press_space
-		& "to delete net segment." 
-		& status_hint_for_abort;
+	-- status_delete : constant string := 
+	-- 	status_click_left 
+	-- 	& "or "
+	-- 	& status_press_space
+	-- 	& "to delete net segment." 
+	-- 	& status_hint_for_abort;
 
 	
 	-- Deletes a net segment in the vicinity of given point.
@@ -289,15 +289,26 @@ package et_canvas_schematic_nets is
 		& status_press_space
 		& "to drag net segment." 
 		& status_hint_for_abort;
+
+
 	
 	status_move : constant string := 
 		status_click_left 
 		& "or "
 		& status_press_space
-		& "to move net segment." 
+		& "to move object." 
 		& status_hint_for_abort;
 
 
+
+	status_delete : constant string := 
+		status_click_left 
+		& "or "
+		& status_press_space
+		& "to delete object." 
+		& status_hint_for_abort;
+
+	
 
 
 	
@@ -310,6 +321,7 @@ package et_canvas_schematic_nets is
 		& "to rename a single strand." 
 		& status_hint_for_abort;	
 
+	
 	status_rename_net_sheet : constant string := 
 		status_click_left 
 		& "or "
@@ -317,6 +329,7 @@ package et_canvas_schematic_nets is
 		& "to rename all strands on this sheet." 
 		& status_hint_for_abort;	
 
+	
 	status_rename_net_everywhere : constant string := 
 		status_click_left 
 		& "or "

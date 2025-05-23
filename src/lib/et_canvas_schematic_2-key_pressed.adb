@@ -694,6 +694,7 @@ is
 		end case;
 	end show;
 
+
 	
 	procedure rename is 
 		use et_schematic_ops.nets;

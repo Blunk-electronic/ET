@@ -218,16 +218,24 @@ procedure draw_nets is
 
 
 					-- This procedure draws a simple label:
-					procedure draw_simple is begin
-
-						-- CS overwrite position by get_object_tool_position
+					procedure draw_simple is
+						-- Temporarily we store here the position
+						-- of the label. In case it is moving, then it
+						-- will be overwritten by the tool position:
+						position : type_vector_model := get_position (label);
+					begin
+						-- Overwrite position by get_object_tool_position
 						-- if the label is moving.
+						if is_moving (label) then
+							position := get_object_tool_position;
+							--put_line ("label pos" & to_string (position));
+						end if;
 						
 						draw_text (
 							content		=> to_content (to_string (net_name)),
 							size		=> label.size,
 							font		=> net_label_font,
-							anchor		=> label.position,
+							anchor		=> position,
 							origin		=> true,
 							
 							-- Text rotation about its anchor point.
@@ -360,10 +368,20 @@ procedure draw_nets is
 
 					
 				begin
+					-- If the candidate label is selected, then
+					-- draw it highlighted:
+					if is_selected (label) then
+						set_color_nets (BRIGHT);
+					end if;
+					
 					case label.appearance is
 						when SIMPLE	=> draw_simple;
 						when TAG	=> draw_tag;
 					end case;
+
+					if is_selected (label) then
+						set_color_nets (NORMAL);
+					end if;
 				end query_label;
 
 

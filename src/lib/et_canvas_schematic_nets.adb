@@ -1094,7 +1094,11 @@ package body et_canvas_schematic_nets is
 					& ". " & status_next_object_clarification);
 
 			when CAT_NET =>
-				set_status (praeamble & to_string (object.net)
+				set_status (praeamble & " net " & to_string (object.net)
+					& ". " & status_next_object_clarification);
+
+			when CAT_LABEL =>
+				set_status (praeamble & " label " & to_string (object.label)
 					& ". " & status_next_object_clarification);
 				
 			when CAT_VOID => null; -- CS
@@ -1278,8 +1282,14 @@ package body et_canvas_schematic_nets is
 
 
 			when VERB_MOVE =>
-				null;
-				-- CS propose_labels
+
+				-- Propose net labels in the vicinity of the given point:
+				propose_labels (
+					module_cursor	=> active_module,
+					catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+					count			=> count_total,
+					log_threshold	=> log_threshold + 1);
+
 
 			when others => null;
 		end case;
