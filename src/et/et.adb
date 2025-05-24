@@ -764,6 +764,8 @@ begin -- main
 		
 		close_report;
 	end if;
+
+	-- put_line ("exit");
 	
 	exception
 		when event: others =>

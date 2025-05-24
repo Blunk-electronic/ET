@@ -315,7 +315,7 @@ package body et_scripting is
 		exception when event: others =>
 			if is_open (file_handle) then close (file_handle); end if;
 			if is_open (previous_input) then set_input (previous_input); end if;
-
+  
 			raise;
 	end execute_nested_script;
 
@@ -490,6 +490,8 @@ package body et_scripting is
 							module_cursor	=> locate_module (module),
 							cmd_in			=> cmd,
 							log_threshold	=> log_threshold + 1);
+
+						log (text => "schematic command done", level => log_threshold);
 					else
 						command_incomplete;
 					end if;
@@ -516,6 +518,8 @@ package body et_scripting is
 							module_cursor	=> locate_module (module),
 							cmd_in			=> cmd,
 							log_threshold	=> log_threshold + 1);
+
+						log (text => "board command done", level => log_threshold);
 					else
 						command_incomplete;
 					end if;
@@ -538,11 +542,14 @@ package body et_scripting is
 		
 		log_indentation_down;
 
-		
-		exception when event: others => 
+		-- put_line ("execute_command done");
 
-			log_indentation_down;
-			raise;
+		log (text => "done", level => log_threshold);
+		
+		-- exception when event: others => 
+  -- 
+		-- 	log_indentation_down;
+		-- 	raise;
 		
 	end execute_command;
 
@@ -637,6 +644,7 @@ package body et_scripting is
 		
 		return exit_code;
 
+		
 		exception when event: others =>
 			if is_open (file_handle) then close (file_handle); end if;
 			set_input (standard_input);

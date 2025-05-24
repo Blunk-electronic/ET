@@ -1288,6 +1288,8 @@ is
 		case cmd_field_count is
 			when 10 =>
 				-- SIMPLE LABEL
+
+				-- example "schematic demo place label 1 70 80 0 1 0"
 				place_net_label_simple (
 					module_cursor		=> active_module,
 					segment_position	=> to_position (
@@ -1306,17 +1308,19 @@ is
 				
 			when 8 =>
 				-- TAG LABEL
+				
+				-- example "schematic demo place label 1 60 80 input"
 				place_net_label_tag (
-					module_cursor		=> active_module,
-					segment_position	=> to_position (
+					module_cursor	=> active_module,
+					position		=> to_position (
 											point => type_vector_model (set (
 												x => to_distance (f (6)),
 												y => to_distance (f (7)))),
 											sheet => to_sheet (f (5))), -- sheet number
     
 					-- A tag label requires specification of signal direction:
-					direction			=> to_direction (f (8)), -- INPUT, OUTPUT, PASSIVE, ...
-					log_threshold		=> log_threshold + 1);
+					direction		=> to_direction (f (8)), -- INPUT, OUTPUT, PASSIVE, ...
+					log_threshold	=> log_threshold + 1);
 
 				
 			when 11 .. type_field_count'last => too_long;
@@ -2561,6 +2565,12 @@ is
 			null;
 			
 		end if;
+
+
+		exception
+			when event: others =>
+				-- log (text => ada.exceptions.exception_information (event), console => true);
+				log (text => ada.exceptions.exception_information (event));
 		
 	end parse;		
 
@@ -3310,10 +3320,7 @@ begin -- schematic_cmd
 
 	-- Parse the command:
 	parse;
-	
-	-- In case parse throws an exception, then the following statements 
-	-- will be skipped.
-	
+
 	-- In graphical mode and cmd_entry_mode SINGLE_CMD the flag
 	-- single_cmd_status.complete can change to false. In that case
 	-- the interactive completiton starts here. 
@@ -3328,14 +3335,14 @@ begin -- schematic_cmd
 	-- 	canvas.grab_focus; -- NOTE ! calls "cb_draw"
 	-- end if;
 	
-	exception when event: others =>
+	-- exception when event: others =>
 
 			-- CS
 			-- evaluate_exception (
 			-- 	name	=> exception_name (event),
 			-- 	message	=> exception_message (event));
 
-			raise;
+			-- raise;
 			
 end schematic_cmd;
 	

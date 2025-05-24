@@ -306,7 +306,7 @@ package body et_gui_2 is
 		--et_canvas_schematic.pac_canvas.console.grab_focus;
 
 		
-		-- If a script was given on starup as argument, execute it now:
+		-- If a script was given on startup as argument, execute it now:
 		-- NOTE 1: The script execution must start AFTER BOTH schematic and board 
 		--         have been completely displayed.
 		-- NOTE 2: The procedure execute_script is available in gui_board and gui_schematic.

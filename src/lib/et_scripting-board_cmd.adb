@@ -3784,7 +3784,13 @@ is
 		if runmode /= MODE_HEADLESS then
 			null;
 		end if;
-			
+
+
+		exception
+			when event: others =>
+				-- log (text => ada.exceptions.exception_information (event), console => true);
+				log (text => ada.exceptions.exception_information (event));
+		
 	end parse;
 
 
@@ -3892,8 +3898,6 @@ begin -- board_cmd
 	-- parse the command:
 	parse;
 	
-	-- In case parse throws an exception, then the follwing statements 
-	-- will be skipped.
 	
 	-- In graphical mode and cmd_entry_mode SINGLE_CMD the flag
 	-- single_cmd_status.complete can change to false. In that case
