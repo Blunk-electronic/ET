@@ -1098,9 +1098,13 @@ package body et_canvas_schematic_nets is
 					& ". " & status_next_object_clarification);
 
 			when CAT_LABEL =>
-				set_status (praeamble & " label " & to_string (object.label)
+				set_status (praeamble & " simple label " & to_string (object.label)
 					& ". " & status_next_object_clarification);
-				
+
+			when CAT_LABEL_TAG =>
+				set_status (praeamble & " tag label " & to_string (object.label_tag)
+					& ". " & status_next_object_clarification);
+		
 			when CAT_VOID => null; -- CS
 		end case;
 	end show_selected_object;

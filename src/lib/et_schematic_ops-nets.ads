@@ -562,7 +562,8 @@ package et_schematic_ops.nets is
 		CAT_SEGMENT,
 		-- CAT_STRAND ?
 		CAT_NET,
-		CAT_LABEL);
+		CAT_LABEL, -- CS rename to CAT_LABEL_SIMPLE
+		CAT_LABEL_TAG);
 
 
 
@@ -577,8 +578,11 @@ package et_schematic_ops.nets is
 			when CAT_NET =>
 				net : type_object_net;
 				
-			when CAT_LABEL =>
-				label : type_object_label;
+			when CAT_LABEL => --  CS rename to CAT_LABEL_SIMPLE
+				label : type_object_label; -- CS rename to label_simple
+
+			when CAT_LABEL_TAG =>
+				label_tag : type_object_label_tag;
 		end case;
 	end record;
 
