@@ -692,8 +692,21 @@ package et_geometry_2a is
 	-- These objects are subjected to a certain displacement:
 	object_displacement : type_vector_model := origin;
 
-	
 
+-- START AND END POINT OF LINES AND ARCS:	
+
+	type type_start_end_point is (A, B);
+
+	function to_string (
+		point : in type_start_end_point)
+		return string;
+
+	
+	function to_start_end_point (
+		point : in string)
+		return type_start_end_point;
+
+	
 	
 -- LINE
 

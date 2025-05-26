@@ -237,12 +237,21 @@ package et_net_labels is
 	end record;
 
 
+	
+	procedure modify_status (
+		label 		: in out type_net_label_tag;
+		operation	: in type_status_operation);
 
+
+	
 	type type_tag_labels is record
 		A : type_net_label_tag; --(active => false);
 		B : type_net_label_tag; -- (active => false);
 	end record;
 
+
+
+	
 
 	procedure reset_status (
 		labels : in out type_tag_labels);
@@ -257,6 +266,54 @@ package et_net_labels is
 		label : in out type_net_label_tag);
 	
 
+
+	function is_proposed (
+		label : in type_net_label_tag)
+		return boolean;
+
+	
+							 
+	procedure set_proposed (
+		label : in out type_net_label_tag);
+
+
+	procedure clear_proposed (
+		label : in out type_net_label_tag);
+
+
+	
+
+	function is_selected (
+		label : in type_net_label_tag)
+		return boolean;
+
+	
+	procedure set_selected (
+		label : in out type_net_label_tag);
+
+
+	procedure clear_selected (
+		label : in out type_net_label_tag);
+
+
+
+
+
+	function is_moving (
+		label : in type_net_label_tag)
+		return boolean;
+
+	
+	procedure set_moving (
+		label : in out type_net_label_tag);
+
+
+	procedure clear_moving (
+		label : in out type_net_label_tag);
+
+	
+	
+	
 	procedure reset_tag_label (
 		label : in out type_net_label_tag);
 

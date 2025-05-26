@@ -233,6 +233,18 @@ package body et_net_labels is
 	
 
 
+
+	procedure modify_status (
+		label 		: in out type_net_label_tag;
+		operation	: in type_status_operation)
+	is begin
+		if label.active then
+			modify_status (label.status, operation);
+		end if;
+	end;
+
+	
+
 	procedure reset_status (
 		labels : in out type_tag_labels)
 	is begin
@@ -263,6 +275,105 @@ package body et_net_labels is
 	end;
 
 
+
+	function is_proposed (
+		label : in type_net_label_tag)
+		return boolean
+	is begin
+		if label.active then
+			return is_proposed (label.status);
+		else
+			return false;
+		end if;
+	end;
+
+	
+
+	procedure set_proposed (
+		label : in out type_net_label_tag)
+	is begin
+		if label.active then
+			set_proposed (label.status);
+		end if;
+	end;
+
+
+	procedure clear_proposed (
+		label : in out type_net_label_tag)
+	is begin
+		if label.active then
+			clear_proposed (label.status);
+		end if;
+	end;
+
+	
+
+
+
+	function is_selected (
+		label : in type_net_label_tag)
+		return boolean
+	is begin
+		if label.active then
+			return is_selected (label.status);
+		else
+			return false;
+		end if;
+	end;
+
+	
+
+	procedure set_selected (
+		label : in out type_net_label_tag)
+	is begin
+		if label.active then
+			set_selected (label.status);
+		end if;
+	end;
+
+
+	procedure clear_selected (
+		label : in out type_net_label_tag)
+	is begin
+		if label.active then
+			clear_selected (label.status);
+		end if;
+	end;
+
+
+
+
+	function is_moving (
+		label : in type_net_label_tag)
+		return boolean
+	is begin
+		if label.active then
+			return is_moving (label.status);
+		else
+			return false;
+		end if;
+	end;
+	
+
+	procedure set_moving (
+		label : in out type_net_label_tag)
+	is begin
+		if label.active then
+			set_moving (label.status);
+		end if;
+	end;
+
+
+	procedure clear_moving (
+		label : in out type_net_label_tag)
+	is begin
+		if label.active then
+			clear_moving (label.status);
+		end if;
+	end;
+	
+	
+	
 	procedure reset_tag_label (
 		label : in out type_net_label_tag)
 	is begin

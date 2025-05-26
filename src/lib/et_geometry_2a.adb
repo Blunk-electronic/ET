@@ -1382,6 +1382,25 @@ package body et_geometry_2a is
 	end merge_areas;
 
 
+
+
+	function to_string (
+		point : in type_start_end_point)
+		return string
+	is begin
+		return type_start_end_point'image (point);
+	end to_string;
+
+
+	
+	function to_start_end_point (
+		point : in string)
+		return type_start_end_point
+	is begin
+		return type_start_end_point'value (point);
+end;
+
+
 	
 
 -- LINE:	

@@ -3577,11 +3577,25 @@ package body et_schematic_ops.nets is
 		return string
 	is begin
 		return get_net_name (object.net_cursor)
-		 & " " & get_position (object.label_cursor);
+			& " simple label " & get_position (object.label_cursor);
+			-- CS other properties ?
 	end;
 
 	
+	
+	function to_string (
+		object	: in type_object_label_tag)
+		return string
+	is begin
+		return get_net_name (object.net_cursor)
+		& " tag label. Strand " & get_position (object.strand_cursor)
+		& " segment " & to_string (object.segment_cursor)
+		& to_string (object.start_end) & " point";
+		-- CS direction, rotation
+	end;
 
+	
+	
 
 	procedure reset_labels (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -3724,11 +3738,12 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " modifying status of net label "
+			& " modifying status of simple net label "
 			& get_net_name (label.net_cursor) 
 			& " strand " & get_position (label.strand_cursor)
 			& " " & to_string (label.segment_cursor)
 			& " " & get_position (label.label_cursor)
+			-- CS use to_string (label) -- see functin to_string above
 			& " / " & to_string (operation),
 			level => log_threshold);
 
@@ -3742,6 +3757,66 @@ package body et_schematic_ops.nets is
 		log_indentation_down;
 	end modify_status;
 
+
+
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		label			: in type_object_label_tag;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is			
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+
+				procedure query_strand (strand : in out type_strand) is
+
+					procedure query_segment (segment : in out type_net_segment) is begin
+						case label.start_end is
+							when A =>
+								modify_status (segment.tag_labels.A, operation);
+
+							when B =>
+								modify_status (segment.tag_labels.B, operation);
+						end case;
+					end query_segment;
+					
+				begin
+					strand.segments.update_element (label.segment_cursor, query_segment'access);
+				end query_strand;
+				
+			begin
+				net.strands.update_element (label.strand_cursor, query_strand'access);
+			end query_net;
+			
+		begin
+			module.nets.update_element (label.net_cursor, query_net'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " modifying status of " & to_string (label)
+			& " / " & to_string (operation),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,		   
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end modify_status;
 
 	
 
@@ -3851,6 +3926,106 @@ package body et_schematic_ops.nets is
 
 
 
+
+
+
+	procedure propose_labels_tag (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is 
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+			
+				procedure query_strand (strand : in out type_strand) is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure query_segment (segment : in out type_net_segment) is begin
+						-- Probe the A end of the segment:
+						if in_catch_zone (catch_zone, get_A (segment)) then
+							set_proposed (segment.tag_labels.A);
+							count := count + 1;
+							log (text => "A end" & to_string (get_A (segment)), level => log_threshold + 4);
+						end if;
+
+						-- Probe the B end of the segment:
+						if in_catch_zone (catch_zone, get_B (segment)) then
+							set_proposed (segment.tag_labels.B);
+							count := count + 1;
+							log (text => "B end" & to_string (get_B (segment)), level => log_threshold + 4);
+						end if;
+					end query_segment;
+
+					
+				begin
+					-- Iterate through the segments:
+					while has_element (segment_cursor) loop
+						log (text => to_string (segment_cursor), level => log_threshold + 3);
+						log_indentation_up;
+						strand.segments.update_element (segment_cursor, query_segment'access);
+						log_indentation_down;
+						next (segment_cursor);
+					end loop;
+				end query_strand;
+				
+				
+			begin
+				-- Iterate through the strands:
+				while has_element (strand_cursor) loop
+					if get_sheet (strand_cursor) = active_sheet then
+						log (text => "strand " & get_position (strand_cursor), level => log_threshold + 2);
+						log_indentation_up;
+						net.strands.update_element (strand_cursor, query_strand'access);
+						log_indentation_down;
+					end if;
+					next (strand_cursor);
+				end loop;				
+			end query_net;
+			
+	
+		begin
+			-- Iterate through the nets:
+			while has_element (net_cursor) loop
+				log (text => "net " & get_net_name (net_cursor), level => log_threshold + 1);
+				log_indentation_up;
+				module.nets.update_element (net_cursor, query_net'access);
+				log_indentation_down;
+				next (net_cursor);
+			end loop;
+		end query_module;
+			
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " proposing tag net labels in " & to_string (catch_zone),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,		   
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end propose_labels_tag;
+
+
+
+	
 	
 
 
@@ -3964,7 +4139,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " looking up the first net label / " & to_string (flag),
+			& " looking up the first simple net label / " & to_string (flag),
 			level => log_threshold);
 
 		log_indentation_up;
@@ -3981,6 +4156,139 @@ package body et_schematic_ops.nets is
 
 
 
+
+	
+
+	function get_first_label_tag (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_label_tag
+	is
+		result : type_object_label_tag;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			proceed : boolean := true;
+
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net) 
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (strand : in type_strand) is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+
+					procedure query_segment (segment : in type_net_segment) is
+						
+						start_end : type_start_end_point; -- A or B end
+						
+						
+						procedure query_label (label : in type_net_label_tag) is
+
+							procedure set_result is begin
+								result.net_cursor		:= net_cursor;
+								result.strand_cursor	:= strand_cursor;
+								result.segment_cursor	:= segment_cursor;
+								result.start_end		:= start_end;
+								log (text => "match: " & to_string (result), level => log_threshold + 3);
+								proceed := false; -- no further probing required
+							end set_result;
+
+							
+						begin
+							case flag is
+								when PROPOSED =>
+									if is_proposed (label) then
+										set_result;
+									end if;
+				
+								when SELECTED =>
+									if is_selected (label) then
+										set_result;
+									end if;
+				
+								when others => null; -- CS
+							end case;
+						end query_label;
+							
+						
+					begin
+						-- Probe the A end of the segment:
+						start_end := A;
+						log (text => "A end at " & to_string (get_A (segment)), level => log_threshold + 3);
+						query_label (segment.tag_labels.A);
+
+						-- Probe the B end of the segment if nothing found at A end:
+						if proceed then
+							start_end := B;
+							log (text => "B end at " & to_string (get_B (segment)), level => log_threshold + 3);
+							query_label (segment.tag_labels.B);
+						end if;
+					end query_segment;
+
+					
+				begin
+					-- Iterate through the segments:
+					while has_element (segment_cursor) and proceed loop
+						log (text => to_string (segment_cursor), level => log_threshold + 2);
+						log_indentation_up;
+						query_element (segment_cursor, query_segment'access);
+						log_indentation_down;
+						next (segment_cursor);
+					end loop;
+				end query_strand;
+
+				
+			begin
+				-- Iterate through the strands:
+				while has_element (strand_cursor) and proceed loop
+					log (text => "strand " & get_position (strand_cursor), level => log_threshold + 1);
+					log_indentation_up;
+					query_element (strand_cursor, query_strand'access);
+					log_indentation_down;
+					next (strand_cursor);
+				end loop;
+			end query_net;
+
+			
+		begin
+			-- Iterate through the nets:
+			while has_element (net_cursor) and proceed loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " looking up the first tag net label / " & to_string (flag),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_module'access);
+
+		log_indentation_down;
+		
+		return result;
+	end get_first_label_tag;
+
+
+
+	
 	
 	
 	procedure place_net_label_simple (
