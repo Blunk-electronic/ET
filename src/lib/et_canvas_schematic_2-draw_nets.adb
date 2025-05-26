@@ -412,16 +412,33 @@ procedure draw_nets is
 				begin
 					--put_line ("draw tag labels");
 					--put_line (to_string (segment));
-					
+ 					
+					-- Draw the label on the A end (if it exists):
 					if is_active (segment.tag_labels.A) then
 						--put_line ("A is active");
 						position := get_A (segment);
+
+						-- If the parent segment is moving
+						-- with its A end, then move the label accordingly:
+						if is_A_moving (segment) then
+							move_by (position, object_displacement);
+						end if;
+						
 						draw_tag (segment.tag_labels.A);
 					end if;
 
+					
+					-- Draw the label on the B end (if it exists):
 					if is_active (segment.tag_labels.B) then
 						--put_line ("B is active");
 						position := get_B (segment);
+
+						-- If the parent segment is moving
+						-- with its B end, then move the label accordingly:
+						if is_B_moving (segment) then
+							move_by (position, object_displacement);
+						end if;
+
 						draw_tag (segment.tag_labels.B);
 					end if;					
 				end draw_tag_labels;
