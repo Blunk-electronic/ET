@@ -211,10 +211,17 @@ package et_net_labels is
 -- TAG LABEL:	
 
 	
-	type type_net_label_tag (active : boolean)  -- CS default ?
-	is new type_net_label_base with record
+	type type_net_label_tag (active : boolean := false) is record
+	-- is new type_net_label_base with record
 		case active is
 			when TRUE =>
+				size		: type_text_size := text_size_default;
+				
+				-- width		: et_schematic_text.type_text_line_width := et_schematic_text.type_text_line_width'first;
+				-- CS probably no need ?
+				
+				status		: type_object_status;
+				
 				direction	: type_net_label_direction := net_label_direction_default;
 
 				-- A tag label can only be attached to a stub of a net, means to a dead end of a net segment.
@@ -232,8 +239,8 @@ package et_net_labels is
 
 
 	type type_tag_labels is record
-		A : type_net_label_tag (active => false);
-		B : type_net_label_tag (active => false);
+		A : type_net_label_tag; --(active => false);
+		B : type_net_label_tag; -- (active => false);
 	end record;
 
 

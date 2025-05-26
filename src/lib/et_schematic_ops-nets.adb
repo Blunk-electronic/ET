@@ -2215,9 +2215,8 @@ package body et_schematic_ops.nets is
 		log_threshold	: in type_log_level)
 		return pac_net_names.list 
 	is
-		nets : pac_net_names.list; -- to be returned
-
-		net_cursor : pac_nets.cursor; -- points to the net
+		use pac_net_names;
+		result : pac_net_names.list; -- to be returned
 
 		
 		procedure query_module (
@@ -2228,27 +2227,30 @@ package body et_schematic_ops.nets is
 			procedure query_nets (net_cursor : in pac_nets.cursor) is
 				net : type_net := element (net_cursor);
 
-				-- once a segment has been found at place, this flag goes true:
-				match : boolean := false;
+				-- Cnce a segment has been found at the given
+				-- place, then this flag is cleared so that
+				-- probing of segments of a strand is cancelled:
+				proceed : boolean := true;
 				
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
+				
 				procedure query_segments (strand : in type_strand) is
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 				begin
-					while segment_cursor /= pac_net_segments.no_element loop
-						log (text => "segment " & to_string (segment_cursor), level => log_threshold + 2);
+					while has_element (segment_cursor) loop
+						log (text => to_string (segment_cursor), level => log_threshold + 2);
 
 						if on_line (
 							point 	=> place.place,
 							line	=> element (segment_cursor)) then
 						
-							log (text => " match", level => log_threshold + 2);
+							log (text => "match", level => log_threshold + 2);
 
-							match := true; -- signals the calling unit to cancel the search
+							proceed := false; -- signals the calling unit to cancel the search
 
 							-- store net name in return value
-							pac_net_names.append (nets, key (net_cursor));
+							append (result, key (net_cursor));
 
 							exit; -- no need to search for more segments in this strand
 						end if;
@@ -2258,35 +2260,38 @@ package body et_schematic_ops.nets is
 				end query_segments;
 
 				
-			begin -- query_nets
-				-- Search in strands of net. Cancel search after the first matching segment.
-				while not match and strand_cursor /= pac_strands.no_element loop
+			begin
+				log (text => "net " & get_net_name (net_cursor), level => log_threshold + 1);
+				log_indentation_up;
+				
+				-- Iterate through in strands of the candidate net. 
+				-- Cancel the search after the first matching segment.
+				while has_element (strand_cursor) and proceed loop
 
 					-- Look at strands on the given sheet only:
-					if get_sheet (element (strand_cursor).position) = get_sheet (place) then
-
-						log (text => "net " & to_string (key (net_cursor)), level => log_threshold + 1);
-						log_indentation_up;
+					if get_sheet (strand_cursor) = get_sheet (place) then
+						log (text => "strand " & get_position (strand_cursor), level => log_threshold + 2);
 						
-						pac_strands.query_element (
-							position	=> strand_cursor,
-							process 	=> query_segments'access);
-
+						log_indentation_up;						
+						query_element (strand_cursor, query_segments'access);
 						log_indentation_down;
 					end if;
 					
 					next (strand_cursor);
 				end loop;
+				
+				log_indentation_down;
 			end query_nets;				
 
 			
-		begin -- query_module
+		begin
 			iterate (module.nets, query_nets'access);
 		end query_module;
+
 		
 	begin
-		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
-			 " locating nets at" & to_string (position => place),
+		log (text => "module " & to_string (module_cursor) &
+			 " identifying nets at" & to_string (position => place),
 			 level => log_threshold);
 
 		log_indentation_up;
@@ -2296,7 +2301,7 @@ package body et_schematic_ops.nets is
 			process		=> query_module'access);
 
 		log_indentation_down;
-		return nets;
+		return result;
 	end get_nets_at_place;
 
 
@@ -3988,10 +3993,10 @@ package body et_schematic_ops.nets is
 		net_cursor : pac_nets.cursor; -- points to the net
 
 		
-		function no_label_placed return string is begin
-			return (et_schematic_coordinates.to_string (position => segment_position) & " !" &
-				" No label placed ! Specify another position and try again.");
-		end;
+		-- function no_label_placed return string is begin
+		-- 	return (et_schematic_coordinates.to_string (position => segment_position) & " !" &
+		-- 		" No label placed ! Specify another position and try again.");
+		-- end;
 		
 		use pac_net_names;
 		nets : pac_net_names.list;
@@ -4002,9 +4007,9 @@ package body et_schematic_ops.nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
-			-- This flag goes true once the first segment of the targeted net at
-			-- the targeted sheet has been found.
-			segment_found : boolean := false; -- to be returned
+			-- This flag goes true once the first segment of the 
+			-- targeted net at the targeted sheet has been found.
+			segment_found : boolean := false;
 
 			
 			procedure query_net (
@@ -4018,7 +4023,7 @@ package body et_schematic_ops.nets is
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					
-					procedure attach_label (segment : in out type_net_segment) is 
+					procedure query_segment (segment : in out type_net_segment) is 
 						use pac_net_labels;
 						label : type_net_label_simple;
 					begin
@@ -4028,47 +4033,24 @@ package body et_schematic_ops.nets is
 						-- now label.position is absolute
 
 						-- snap given rotation to either 0 or 90 degree
-						label.rotation := snap (rotation))
+						label.rotation := snap (rotation);
 						
-						segment.labels.append (label);
-								
--- 							when TAG =>
--- 								-- A tag label can be attached to a stub only.
--- 								declare
--- 									s : constant type_stub := query_stub (module_cursor, net_name, segment_position, log_threshold + 1);
--- 								begin
--- 									if s.is_stub then
--- 									
--- 										append (
--- 											container	=> segment.labels,
--- 											new_item	=> (label with 
--- 												appearance		=> TAG,
--- 
--- 												-- derive the label rotation from the stub direction:
--- 												rotation_tag	=> to_label_rotation (s.direction),
--- 															
--- 												direction		=> direction) -- the given signal direction
--- 										   );
--- 										
--- 									else
--- 										log (WARNING, "Net has no stub at" & no_label_placed, console => true);
--- 									end if;
--- 								end;
--- 						end case;
-					end attach_label;
+						segment.labels.append (label);								
+					end query_segment;
 
 					
 				begin
-					while not segment_found and segment_cursor /= pac_net_segments.no_element loop
+					-- Iterate through the segments:
+					while has_element (segment_cursor) and not segment_found loop
 
+						-- If the given target position is on the
+						-- candidate segment, then the right segment has
+						-- been found:
 						if on_line (
 							point 	=> segment_position.place,
 							line	=> element (segment_cursor)) then
 							
-							update_element (
-								container	=> strand.segments,
-								position	=> segment_cursor,
-								process		=> attach_label'access);
+							strand.segments.update_element (segment_cursor, query_segment'access);
 
 							-- signal iterations in upper level to cancel
 							segment_found := true;
@@ -4080,10 +4062,11 @@ package body et_schematic_ops.nets is
 
 				
 			begin
-				while not segment_found and strand_cursor /= pac_strands.no_element loop
+				-- Iterate through the strands:
+				while has_element (strand_cursor) and not segment_found loop
 					
 					-- We pick out only the strands on the targeted sheet:
-					if get_sheet (element (strand_cursor).position) = get_sheet (segment_position) then
+					if get_sheet (strand_cursor) = get_sheet (segment_position) then
 						net.strands.update_element (strand_cursor, query_strand'access);					
 					end if;
 					
@@ -4099,7 +4082,7 @@ package body et_schematic_ops.nets is
 		
 	begin -- place_net_label
 		log (text => "module " & to_string (module_cursor) &
-			" place simple label at segment at"  &
+			" place simple label next to segment at"  &
 			to_string (position => segment_position) &
 			to_string (label_position) &
 			" rotation" & to_string (rotation),
@@ -4111,32 +4094,30 @@ package body et_schematic_ops.nets is
 		-- collect names of nets that cross the given segment_position
 		nets := get_nets_at_place (module_cursor, segment_position, log_threshold + 1);
 
+		log_indentation_up;
+		
+		
 		case length (nets) is
 			when 0 =>
-				log (WARNING, "no net found at" & no_label_placed);
+				log (WARNING, "No net found at " & to_string (segment_position), level => log_threshold + 1);
 
 			when 1 => 
 				net_name := element (nets.first);
-				log (text => "net name " & to_string (net_name), level => log_threshold + 1);
+				log (text => "Found net: " & to_string (net_name), level => log_threshold + 1);
 				
 				-- Set the cursor to the net.
 				net_cursor := locate_net (module_cursor, net_name);
-
-				--log (text => "net name " & to_string (key (net_cursor)), level => log_threshold + 1);
-				
-				update_element (
-					container	=> generic_modules,
-					position	=> module_cursor,
-					process		=> query_module'access);
+				--log (text => "net name " & to_string (key (net_cursor)), level => log_threshold + 1);				
+				generic_modules.update_element (module_cursor, query_module'access);
 
 			when others =>
-				log (WARNING, "more than one net found at" & no_label_placed);
+				log (WARNING, "More than one net found at" & to_string (segment_position), level => log_threshold + 1);
 				-- CS show the net names
 				
 		end case;
 		
 		log_indentation_down;		
-		
+		log_indentation_down;
 	end place_net_label_simple;
 
 
@@ -4145,48 +4126,153 @@ package body et_schematic_ops.nets is
 
 	procedure place_net_label_tag (
 		module_cursor	: in pac_generic_modules.cursor;
-		segment_position: in type_object_position; -- sheet/x/y
+		position		: in type_object_position; -- sheet/x/y
 		direction		: in type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level) 
 	is
+		net_cursor : pac_nets.cursor; -- points to the net
 
+		
+		-- function no_label_placed return string is begin
+		-- 	return (et_schematic_coordinates.to_string (position => position) & " !" &
+		-- 		" No label placed ! Specify another position and try again.");
+		-- end;
+		
+		use pac_net_names;
+		nets : pac_net_names.list;
+		net_name : pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			-- This flag goes true once the first segment of the 
+			-- targeted net at the targeted sheet has been found.
+			segment_found : boolean := false;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is				
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (strand : in out type_strand) is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure query_segment (segment : in out type_net_segment) is 
+						stub : constant type_stub := query_stub (
+							module_cursor, net_name, position, log_threshold + 1);
+
+						t : type_net_label_tag;
+						r : type_rotation_relative;
+					begin
+						-- A tag label can be attached to a stub only.
+						-- So we test wheter the given position matches either
+						-- the A or B end of the segment:
+						if stub.is_stub then
+							log (text => "stub found", level => log_threshold + 1);
+							log_indentation_up;
+							
+							if get_place (position) = get_A (segment) then
+								-- Enable the tag label on the A end:
+								log (text => "attach label to A end of segment", level => log_threshold + 2);
+								
+								-- Derive the label rotation from the stub direction:
+								r := to_label_rotation (stub.direction);
+								t := (active => true, rotation => r, direction => direction, others => <>); -- CS size, ...
+								segment.tag_labels.A := t;
+							end if;
+
+							if get_place (position) = get_B (segment) then
+								-- Enable the tag label on the B end:
+								log (text => "attach label to B end of segment", level => log_threshold + 2);
+								
+								-- Derive the label rotation from the stub direction:
+								r := to_label_rotation (stub.direction);
+								t := (active => true, rotation => r, direction => direction, others => <>); -- CS size, ...
+								segment.tag_labels.B := t;
+							end if;
+
+							log_indentation_down;
+							
+						else
+							--log (WARNING, "Net has no stub at" & to_string (position), console => true);
+							log (text => "No stub found. No label placed.", level => log_threshold + 1);
+						end if;
+
+						-- signal iterations in upper level to cancel
+						segment_found := true;						
+					end query_segment;
+
+					
+				begin
+					-- Iterate through the segments:
+					while has_element (segment_cursor) and not segment_found loop	
+						strand.segments.update_element (segment_cursor, query_segment'access);
+						next (segment_cursor);
+					end loop;
+				end query_strand;
+
+				
+			begin
+				-- Iterate through the strands:
+				while has_element (strand_cursor) and not segment_found loop
+					
+					-- We pick out only the strands on the targeted sheet:
+					if get_sheet (strand_cursor) = get_sheet (position) then
+						net.strands.update_element (strand_cursor, query_strand'access);					
+					end if;
+					
+					next (strand_cursor);
+				end loop;
+			end query_net;
+
+			
+		begin
+			module.nets.update_element (net_cursor, query_net'access);
+		end query_module;
+
+		
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " place tag label at " & to_string (position => segment_position)
+			& " place tag label at " & to_string (position => position)
 			& " direction " & to_string (direction),
 			level => log_threshold);
 		
 		log_indentation_up;
 
 
--- 		-- collect names of nets that cross the given segment_position
--- 		nets := get_nets_at_place (module_cursor, segment_position, log_threshold + 1);
--- 
--- 		case length (nets) is
--- 			when 0 =>
--- 				log (WARNING, "no net found at" & no_label_placed);
--- 
--- 			when 1 => 
--- 				net_name := element (nets.first);
--- 				log (text => "net name " & to_string (net_name), level => log_threshold + 1);
--- 				
--- 				-- Set the cursor to the net.
--- 				net_cursor := locate_net (module_cursor, net_name);
--- 
--- 				--log (text => "net name " & to_string (key (net_cursor)), level => log_threshold + 1);
--- 				
--- 				update_element (
--- 					container	=> generic_modules,
--- 					position	=> module_cursor,
--- 					process		=> query_nets'access);
--- 
--- 			when others =>
--- 				log (WARNING, "more than one net found at" & no_label_placed);
--- 				-- CS show the net names
--- 				
--- 		end case;
+		-- Collect names of nets that cross the given target position:
+		nets := get_nets_at_place (module_cursor, position, log_threshold + 1);
+
+		log_indentation_up;
 		
-		log_indentation_down;		
+
+		case length (nets) is
+			when 0 =>
+				log (WARNING, "No net found at" & to_string (position), level => log_threshold + 1);
+
+			when 1 => 
+				net_name := element (nets.first);
+				log (text => "Found net: " & to_string (net_name), level => log_threshold + 1);
+				
+				-- Set the cursor to the net.
+				net_cursor := locate_net (module_cursor, net_name);
+				--log (text => "net name " & to_string (key (net_cursor)), level => log_threshold + 1);
+				generic_modules.update_element (module_cursor, query_module'access);
+
+			when others =>
+				log (WARNING, "More than one net found at" & to_string (position), level => log_threshold + 1);
+				-- CS show the net names
+				
+		end case;
+		
+		log_indentation_down;
+		log_indentation_down;
 	end place_net_label_tag;
 
 

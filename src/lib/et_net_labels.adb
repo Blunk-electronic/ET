@@ -37,6 +37,10 @@
 --
 
 
+with ada.text_io;						use ada.text_io;
+
+
+
 package body et_net_labels is
 
 	function to_string (appearance : in type_net_label_appearance) return string is begin
@@ -232,8 +236,13 @@ package body et_net_labels is
 	procedure reset_status (
 		labels : in out type_tag_labels)
 	is begin
-		reset_status (labels.A);
-		reset_status (labels.B);
+		if labels.A.active then
+			reset_status (labels.A.status);
+		end if;
+		
+		if labels.B.active then
+			reset_status (labels.B.status);
+		end if;
 	end;
 	
 

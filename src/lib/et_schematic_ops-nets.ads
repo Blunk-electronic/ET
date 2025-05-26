@@ -326,7 +326,7 @@ package et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_object_position;
 		log_threshold	: in type_log_level)
-		return pac_net_names.list;
+		return pac_net_names.list; -- CS return a list of cursors ?
 
 
 	
@@ -483,11 +483,8 @@ package et_schematic_ops.nets is
 	
 	procedure place_net_label_tag (
 		module_cursor	: in pac_generic_modules.cursor;
-
 		-- CS size ?
-		
-		-- The reference point at the segment:
-		segment_position: in type_object_position; -- sheet/x/y
+		position		: in type_object_position; -- sheet/x/y
 		direction		: in type_net_label_direction; -- INPUT, OUTPUT, PASSIVE, ...
 		log_threshold	: in type_log_level);
 
@@ -504,7 +501,7 @@ package et_schematic_ops.nets is
 
 	
 	-- Queries the position of the given net. If a stub is at the
-	-- given position returns the direction of the stub.
+	-- given position, then returns the direction of the stub.
 	function query_stub (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
