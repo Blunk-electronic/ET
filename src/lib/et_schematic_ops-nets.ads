@@ -551,6 +551,22 @@ package et_schematic_ops.nets is
 
 
 
+	-- Shows/highlights a simple label by setting its 
+	-- status to "selected":
+	procedure show_label_simple (
+		module_cursor	: in pac_generic_modules.cursor;
+		label			: in type_object_label;
+		log_threshold	: in type_log_level);
+
+	
+	-- Shows/highlights a tag label by setting its 
+	-- status to "selected":
+	procedure show_label_tag (
+		module_cursor	: in pac_generic_modules.cursor;
+		label			: in type_object_label_tag;
+		log_threshold	: in type_log_level);
+
+	
 
 ------------------------------------------------------------------------------------------
 

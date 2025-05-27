@@ -291,21 +291,17 @@ is
 						end if;
 
 						
-					when NOUN_NET =>
-						if not clarification_pending then
-							et_canvas_schematic_nets.show_object (snap_point);
-						else
-							show_properties_of_selected_net;
-						end if;
+					when NOUN_NET | NOUN_LABEL =>
+						et_canvas_schematic_nets.show_object (snap_point);
 						
 					when others => null;
 				end case;
 				
 			when others => null; -- CS
-		end case;
-		
+		end case;		
 	end left_button;
 
+	
 
 	
 	-- If right button clicked, then the operator is clarifying:
@@ -462,9 +458,9 @@ is
 							clarify_unit;
 						end if;
 
-					when NOUN_NET =>
+					when NOUN_NET | NOUN_LABEL =>
 						if clarification_pending then
-							clarify_net_segment;
+							et_canvas_schematic_nets.clarify_object;
 						end if;
 						
 					when others => null;							
@@ -476,6 +472,7 @@ is
 
 	end right_button;
 
+	
 	
 begin -- button_pressed
 	log (text => "button_pressed (schematic) " 

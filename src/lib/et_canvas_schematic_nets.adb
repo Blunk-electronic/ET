@@ -1284,10 +1284,25 @@ package body et_canvas_schematic_nets is
 					count			=> count_total,
 					log_threshold	=> log_threshold + 1);
 
+				-- Propose simple label in the vicinity of the given point:
+				propose_labels (
+					module_cursor	=> active_module,
+					catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+					count			=> count_total,
+					log_threshold	=> log_threshold + 1);
 
+				-- Propose tag label in the vicinity of the given point:
+				propose_labels_tag (
+					module_cursor	=> active_module,
+					catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+					count			=> count_total,
+					log_threshold	=> log_threshold + 1);
+
+				
+				
 			when VERB_MOVE =>
 
-				-- Propose net labels in the vicinity of the given point:
+				-- Propose simple net labels in the vicinity of the given point:
 				propose_labels (
 					module_cursor	=> active_module,
 					catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),

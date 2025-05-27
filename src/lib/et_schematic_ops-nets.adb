@@ -1354,7 +1354,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " showing/highlighting whole net "
+			& " showing/highlight whole net "
 			& get_net_name (net_cursor),
 			level => log_threshold);
 
@@ -3588,9 +3588,10 @@ package body et_schematic_ops.nets is
 		return string
 	is begin
 		return get_net_name (object.net_cursor)
-		& " tag label. Strand " & get_position (object.strand_cursor)
-		& " segment " & to_string (object.segment_cursor)
-		& to_string (object.start_end) & " point";
+		& " tag label."; 
+		-- CS Strand " & get_position (object.strand_cursor)
+		-- & " segment " & to_string (object.segment_cursor)
+		-- & to_string (object.start_end) & " point";
 		-- CS direction, rotation
 	end;
 
@@ -4830,6 +4831,121 @@ package body et_schematic_ops.nets is
 
 
 
+
+
+	procedure show_label_simple (
+		module_cursor	: in pac_generic_modules.cursor;
+		label			: in type_object_label;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is			
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is 
+
+				procedure query_strand (strand : in out type_strand) is
+
+					procedure query_segment (segment : in out type_net_segment) is begin
+						set_selected (segment);
+					end query_segment;
+					
+				begin
+					strand.segments.update_element (label.segment_cursor, query_segment'access);
+				end;
+
+			begin
+				net.strands.update_element (label.strand_cursor, query_strand'access);
+			end query_net;
+			
+		begin
+			module.nets.update_element (label.net_cursor, query_net'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " showing/highlight simple label "
+			& to_string (label),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,		   
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end show_label_simple;
+		
+
+	
+
+	
+
+	procedure show_label_tag (
+		module_cursor	: in pac_generic_modules.cursor;
+		label			: in type_object_label_tag;
+		log_threshold	: in type_log_level)
+	is
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is			
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is 
+
+				procedure query_strand (strand : in out type_strand) is
+
+					procedure query_segment (segment : in out type_net_segment) is begin
+						case label.start_end is
+							when A => set_selected (segment.tag_labels.A);
+							when B => set_selected (segment.tag_labels.B);
+						end case;
+					end query_segment;
+					
+				begin
+					strand.segments.update_element (label.segment_cursor, query_segment'access);
+				end;
+
+				
+			begin
+				net.strands.update_element (label.strand_cursor, query_strand'access);
+			end query_net;
+
+			
+		begin
+			module.nets.update_element (label.net_cursor, query_net'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " showing/highlight tag label "
+			& to_string (label),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (
+			position	=> module_cursor,		   
+			process		=> query_module'access);
+
+		log_indentation_down;
+	end show_label_tag;
+
+
+	
 ------------------------------------------------------------------------------------------
 
 -- OBJECTS:
@@ -5971,10 +6087,10 @@ package body et_schematic_ops.nets is
 				show_net (module_cursor, object.net.net_cursor, log_threshold + 1);
 
 			when CAT_LABEL => 
-				null; -- CS
+				show_label_simple (module_cursor, object.label, log_threshold + 1);
 
 			when CAT_LABEL_TAG => 
-				null; -- CS
+				show_label_tag (module_cursor, object.label_tag, log_threshold + 1);
 				
 			when CAT_VOID =>
 				null;

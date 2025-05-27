@@ -650,10 +650,15 @@ is
 			when GDK_LC_d =>
 				noun := NOUN_DEVICE;
 				set_status (et_canvas_schematic_units.status_show_device);
-
+				
 			when GDK_LC_n =>
 				noun := NOUN_NET;
 				set_status (et_canvas_schematic_nets.status_show_net);
+
+			when GDK_LC_l =>
+				noun := NOUN_LABEL;
+				-- CS set_status (et_canvas_schematic_nets.status_show_label);
+
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when GDK_Space =>
@@ -664,17 +669,18 @@ is
 						else
 							show_properties_of_selected_device;
 						end if;
+
+
+					when NOUN_LABEL =>
+						et_canvas_schematic_nets.show_object (get_cursor_position);
 						
 					when NOUN_NET =>
-						if not clarification_pending then
-							et_canvas_schematic_nets.show_object (get_cursor_position);
-						else
-							show_properties_of_selected_net;
-						end if;
+						et_canvas_schematic_nets.show_object (get_cursor_position);
 						
 					when others => null;
 				end case;
 
+				
 			-- If page down pressed, then the operator is clarifying:
 			when GDK_page_down =>
 				case noun is
@@ -683,9 +689,9 @@ is
 							clarify_unit;
 						end if;
 
-					when NOUN_NET =>
+					when NOUN_NET | NOUN_LABEL =>
 						if clarification_pending then
-							clarify_net_segment;
+							et_canvas_schematic_nets.clarify_object;
 						end if;
 
 					when others => null;

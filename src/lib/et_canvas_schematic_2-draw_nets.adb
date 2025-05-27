@@ -388,6 +388,11 @@ procedure draw_nets is
 						end if;
 
 
+						if is_selected (label) then
+							set_color_nets (BRIGHT);
+						end if;				
+
+						
 						-- Draw the box enshrouding the net name:
 						draw_rectangle (
 							rectangle	=> box, 
@@ -406,6 +411,10 @@ procedure draw_nets is
 							rotation	=> text_rotation,
 							alignment	=> text_alignment);
 
+						
+						if is_selected (label) then
+							set_color_nets (NORMAL);
+						end if;
 					end draw_tag;
 
 					
