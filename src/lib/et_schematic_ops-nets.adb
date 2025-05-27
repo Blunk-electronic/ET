@@ -299,9 +299,9 @@ package body et_schematic_ops.nets is
 		object	: in type_object_segment)
 		return string
 	is begin
-		return get_net_name (object.net_cursor) 
-			& " strand " & get_position (object.strand_cursor)
-			& " " & to_string (object.segment_cursor);
+		return "net " & get_net_name (object.net_cursor) 
+			-- & " strand " & get_position (object.strand_cursor)
+			& " segment " & to_string (object.segment_cursor);
 	end;
 
 
@@ -572,7 +572,7 @@ package body et_schematic_ops.nets is
 		object	: in type_object_strand)
 		return string
 	is begin
-		return get_net_name (object.net_cursor) 
+		return "net " & get_net_name (object.net_cursor) 
 			& " strand " & get_position (object.strand_cursor);
 	end to_string;
 
@@ -583,7 +583,7 @@ package body et_schematic_ops.nets is
 		object	: in type_object_net)
 		return string
 	is begin
-		return get_net_name (object.net_cursor);
+		return "net " & get_net_name (object.net_cursor);
 	end to_string;
 
 
@@ -3576,8 +3576,8 @@ package body et_schematic_ops.nets is
 		object	: in type_object_label)
 		return string
 	is begin
-		return get_net_name (object.net_cursor)
-			& " simple label " & get_position (object.label_cursor);
+		return "net " & get_net_name (object.net_cursor)
+			& " simple label at " & get_position (object.label_cursor);
 			-- CS other properties ?
 	end;
 
@@ -3587,8 +3587,8 @@ package body et_schematic_ops.nets is
 		object	: in type_object_label_tag)
 		return string
 	is begin
-		return get_net_name (object.net_cursor)
-		& " tag label."; 
+		return "net " & get_net_name (object.net_cursor)
+			& " tag label"; 
 		-- CS Strand " & get_position (object.strand_cursor)
 		-- & " segment " & to_string (object.segment_cursor)
 		-- & to_string (object.start_end) & " point";

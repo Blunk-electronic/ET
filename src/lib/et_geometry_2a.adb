@@ -1428,10 +1428,12 @@ end;
 	
 
 	
-	function to_string (line : in type_line) return string is begin
-		return 
-			"line: S:" & to_string (line.A) 
-			& " / E:" & to_string (line.B);
+	function to_string (
+		line : in type_line) 
+		return string 
+	is begin
+		return "A: " & to_string (line.A) 
+			& " B: " & to_string (line.B);
 	end;
 
 
@@ -2047,12 +2049,14 @@ end;
 
 
 	
-	function to_string (arc : in type_arc) return string is begin
-		return "arc: "
-			& "C:" & to_string (arc.center) 
-			& " / S:" & to_string (arc.A) 
-			& " / E:" & to_string (arc.B)
-			& " / D: " & to_string (arc.direction);
+	function to_string (
+		arc : in type_arc) 
+		return string
+	is begin
+		return "A: " & to_string (arc.A) 
+			& " B: " & to_string (arc.B)
+			& " C: " & to_string (arc.center) 
+			& " D: " & to_string (arc.direction);
 	end to_string;
 
 
@@ -2584,10 +2588,12 @@ end;
 
 	
 	
-	function to_string (circle : in type_circle) return string is begin
-		return
-			"circle: C:" & to_string (circle.center) 
-			& " / R:" & to_string (circle.radius);
+	function to_string (
+		circle : in type_circle) 
+		return string 
+	is begin
+		return "C: " & to_string (circle.center) 
+			& " R: " & to_string (circle.radius);
 	end to_string;
 
 

@@ -351,11 +351,7 @@ package body et_net_segment is
 		segment : in pac_net_segments.cursor) 
 		return string 
 	is begin
-		return ("segment start" & 
-			to_string (get_A (segment)) &
-			" / end" &	
-			to_string (get_B (segment))
-			);
+		return to_string (element (segment));
 	end to_string;
 
 

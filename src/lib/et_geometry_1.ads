@@ -875,7 +875,9 @@ package et_geometry_1 is
 		line : in type_line_fine)
 		return type_line_vector;
 
-	
+
+	-- Returns the start and end point of
+	-- a line as string in the form "A: x/y B: x/y":
 	function to_string (
 		line	: in type_line_fine)
 		return string;
@@ -1071,6 +1073,9 @@ package et_geometry_1 is
 		return type_arc_fine;
 	
 
+	-- Returns the start, end point and angle of the given arc as string
+	-- in the form "A: x/y B: x/y" C: x/y D: x/y).
+	-- C is the center, D is the direction:
 	function to_string (
 		arc : in type_arc_fine)
 		return string;
@@ -1211,7 +1216,10 @@ package et_geometry_1 is
 		arc		: in type_arc_angles)
 		return type_direction_of_rotation;
 
-	
+
+	-- Returns the given arc as string in the form
+	-- "A: x/y B: x/y C: x/y D: d R: r"
+	-- C is center, D is direction, R is radius:
 	function to_string (
 		arc : in type_arc_angles)
 		return string;
@@ -1359,7 +1367,8 @@ package et_geometry_1 is
 		return type_float_positive;
 
 	
-	
+	-- Returns the center and radius of the given circle as string
+	-- in the form "C: x/y R: r". C is the center, R is the radius:
 	function to_string (
 		circle	: in type_circle_fine)
 		return string;

@@ -1857,9 +1857,8 @@ package body et_geometry_1 is
 		line	: in type_line_fine)
 		return string
 	is begin
-		return 
-			"line: S:" & to_string (line.A) 
-			& " / E:" & to_string (line.B);
+		return "A: " & to_string (line.A) 
+			& " B: " & to_string (line.B);
 	end to_string;
 
 
@@ -2332,11 +2331,10 @@ package body et_geometry_1 is
 		arc : in type_arc_fine)
 		return string 
 	is begin
-		return "arc: "
-			& "C:" & to_string (arc.center) 
-			& " / S:" & to_string (arc.A) 
-			& " / E:" & to_string (arc.B)
-			& " / D: " & to_string (arc.direction);
+		return "A: " & to_string (arc.A) 
+			& " B: " & to_string (arc.B)
+			& " C: " & to_string (arc.center) 
+			& " D: " & to_string (arc.direction);
 	end to_string;
 
 
@@ -2696,11 +2694,11 @@ package body et_geometry_1 is
 		arc : in type_arc_angles)
 		return string
 	is begin
-		return "C:" & to_string (arc.center)
-			& " R:" & to_string (arc.radius)
-			& " S:" & to_string (arc.angle_start)
-			& " E:" & to_string (arc.angle_end)
-			& " D: " & to_string (arc.direction);
+		return " A: " & to_string (arc.angle_start)
+			& " B: " & to_string (arc.angle_end)
+			& " C: " & to_string (arc.center)
+			& " D: " & to_string (arc.direction)
+			& " R: " & to_string (arc.radius);
 	end to_string;
 
 
@@ -3169,7 +3167,7 @@ package body et_geometry_1 is
 		circle	: in type_circle_fine)
 		return string
 	is begin
-		return "circle C: " & to_string (circle.center)
+		return "C: " & to_string (circle.center)
 			& " R: " & to_string (circle.radius);
 	end to_string;
 

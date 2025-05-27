@@ -730,17 +730,20 @@ package et_geometry_2a is
 		return type_line'class;
 						 
 	
-	-- Returns the start and end point of the given line as string.
-	function to_string (line : in type_line) return string;
+	-- Returns the start and end point of the given 
+	-- line as string in the form "A: x/y B: x/y":
+	function to_string (
+		line : in type_line) 
+		return string;
 
 
-	-- Returns ths start point of the given line:
+	-- Returns the start point of the given line:
 	function get_A (
 		line : in type_line)
 		return type_vector_model;
 
 	
-	-- Returns ths end point of the given line:
+	-- Returns the end point of the given line:
 	function get_B (
 		line : in type_line)
 		return type_vector_model;
@@ -1108,8 +1111,12 @@ package et_geometry_2a is
 
 
 	
-	-- Returns the start, end point and angle of the given arc as string.
-	function to_string (arc : in type_arc) return string;
+	-- Returns the start, end point and angle of the given arc as string
+	-- in the form "A: x/y B: x/y" C: x/y D: x/y).
+	-- C is the center, D is the direction:
+	function to_string (
+		arc : in type_arc) 
+		return string;
 
 	
 
@@ -1338,8 +1345,11 @@ package et_geometry_2a is
 
 	
 
-	-- Returns the center and radius of the given circle as string.
-	function to_string (circle : in type_circle) return string;
+	-- Returns the center and radius of the given circle as string
+	-- in the form "C: x/y R: r". C is the center, R is the radius:
+	function to_string (
+		circle : in type_circle) 
+		return string;
 
 
 
