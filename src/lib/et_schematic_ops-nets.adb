@@ -4851,8 +4851,14 @@ package body et_schematic_ops.nets is
 
 				procedure query_strand (strand : in out type_strand) is
 
-					procedure query_segment (segment : in out type_net_segment) is begin
-						set_selected (segment);
+					procedure query_segment (segment : in out type_net_segment) is 
+
+						procedure query_label (label : in out type_net_label_simple) is begin
+							set_selected (label);
+						end;
+
+					begin
+						segment.labels.update_element (label.label_cursor, query_label'access);
 					end query_segment;
 					
 				begin

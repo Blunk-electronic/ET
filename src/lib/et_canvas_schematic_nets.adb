@@ -1263,7 +1263,7 @@ package body et_canvas_schematic_nets is
 		log (text => "locating objects ...", level => log_threshold);
 		log_indentation_up;
 
-		-- Propose objects according to current verb:
+		-- Propose objects according to current verb and noun:
 		case verb is
 			when VERB_DRAG =>
 				
@@ -1276,28 +1276,34 @@ package body et_canvas_schematic_nets is
 
 				
 			when VERB_SHOW =>
-				
-				-- Propose nets in the vicinity of the given point:
-				propose_nets (
-					module_cursor	=> active_module,
-					catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
-					count			=> count_total,
-					log_threshold	=> log_threshold + 1);
 
-				-- Propose simple label in the vicinity of the given point:
-				propose_labels (
-					module_cursor	=> active_module,
-					catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
-					count			=> count_total,
-					log_threshold	=> log_threshold + 1);
+				case noun is
+					when NOUN_NET =>
+						-- Propose nets in the vicinity of the given point:
+						propose_nets (
+							module_cursor	=> active_module,
+							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+							count			=> count_total,
+							log_threshold	=> log_threshold + 1);
 
-				-- Propose tag label in the vicinity of the given point:
-				propose_labels_tag (
-					module_cursor	=> active_module,
-					catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
-					count			=> count_total,
-					log_threshold	=> log_threshold + 1);
+						
+					when NOUN_LABEL =>
+						-- Propose simple label in the vicinity of the given point:
+						propose_labels (
+							module_cursor	=> active_module,
+							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+							count			=> count_total,
+							log_threshold	=> log_threshold + 1);
 
+						-- Propose tag label in the vicinity of the given point:
+						propose_labels_tag (
+							module_cursor	=> active_module,
+							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+							count			=> count_total,
+							log_threshold	=> log_threshold + 1);
+
+					when others => null;						
+				end case;
 				
 				
 			when VERB_MOVE =>

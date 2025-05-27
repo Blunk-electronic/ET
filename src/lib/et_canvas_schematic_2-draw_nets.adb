@@ -243,6 +243,7 @@ procedure draw_nets is
 							rotation	=> pac_text.to_rotation (label.rotation),
 							alignment	=> net_label_alignment);					
 					end draw_simple;
+
 					
 				begin
 					-- If the candidate label is selected, then
@@ -314,18 +315,9 @@ procedure draw_nets is
 						-- the label rotation and tag_label_text_offset:
 						text_position : type_vector_model;
 
-						-- Temporarily we store here the position
-						-- of the label. In case it is moving, then it
-						-- will be moved the object_displacment:
-						--position : type_vector_model renames label.position;
 						
 					begin
 						make_box;
-
-						-- -- Move position if the label is moving:
-						-- if is_moving (label) then
-						-- 	move_by (position, object_displacement);
-						-- end if;
 
 						
 						if label.rotation = zero_rotation then
@@ -388,6 +380,7 @@ procedure draw_nets is
 						end if;
 
 
+						-- If the label is selected then draw it highlighted:
 						if is_selected (label) then
 							set_color_nets (BRIGHT);
 						end if;				
@@ -428,7 +421,8 @@ procedure draw_nets is
 						position := get_A (segment);
 
 						-- If the parent segment is moving
-						-- with its A end, then move the label accordingly:
+						-- with its A end, then move the label accordingly
+						-- by the current object_displacement:
 						if is_A_moving (segment) then
 							move_by (position, object_displacement);
 						end if;
@@ -443,7 +437,8 @@ procedure draw_nets is
 						position := get_B (segment);
 
 						-- If the parent segment is moving
-						-- with its B end, then move the label accordingly:
+						-- with its B end, then move the label accordingly
+						-- by the current object_displacement:
 						if is_B_moving (segment) then
 							move_by (position, object_displacement);
 						end if;
@@ -571,6 +566,7 @@ procedure draw_nets is
 
 
 
+	
 	
 	
 	procedure draw_path is
