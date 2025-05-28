@@ -252,18 +252,34 @@ package et_schematic_ops.nets is
 	
 
 	
-	-- Tests whether the zone of a net segment is movable.
+	-- Tests whether the given segment is movable.
+	-- Whether the A or B end (or both) are affected
+	-- is determined according to the given point of attack.
+	-- If the related segment is connected with a port of 
+	-- any device, then it can not be moved.
 	-- Returns true if movable, returns falso otherwise.
-	function is_movable (
+	function segment_is_movable (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_net_segment;
-		zone			: in type_line_zone;
 		point_of_attack	: in type_object_position;
 		log_threshold	: in type_log_level) 
 		return boolean;
 
 	
+	-- Tests whether the given segment is movable
+	-- at the given end point (A or B).
+	-- If the given end point is connected with a port of 
+	-- any device, then it can not be moved.
+	-- Returns true if movable, returns falso otherwise.
+	function segment_is_movable (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		AB_end			: in type_start_end_point;
+		log_threshold	: in type_log_level) 
+		return boolean;
 
+
+	
 	
 	-- Drags a segment of a net.
 	-- If the segment meets a port, then the port will be connected with the net.
@@ -711,11 +727,19 @@ package et_schematic_ops.nets is
 	-- - If a net segment is attacked at its end point (B), then
 	--   the object_original_position assumes B.
 	-- - If a net segment is attacked at its center (between A and B), then
-	--   the object_original_position assumes the given point_of_attack:
+	--   the object_original_position assumes the given point_of_attack.
+	-- If movable_test is true, then it tests whether the given
+	-- net segment is connected with a port of any device, netchanger
+	-- or submodule before setting the end point (A/B) to "moving".
+	-- If moving is allowed then the flag "granted" is set.
+	-- If the end can not be moved, then the flag "granted" is
+	-- cleared and nothing else happens.
 	procedure set_primary_segment_AB_moving (
 		module_cursor	: in pac_generic_modules.cursor;
 		object_cursor	: in pac_objects.cursor; -- must point to a net segment
 		point_of_attack	: in type_vector_model;
+		movable_test	: in boolean;
+		granted			: in out boolean;
 		log_threshold	: in type_log_level);
 
 

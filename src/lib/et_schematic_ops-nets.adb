@@ -1515,24 +1515,28 @@ package body et_schematic_ops.nets is
 	
 
 	
-	function is_movable (
+	function segment_is_movable (
 		module_cursor	: in pac_generic_modules.cursor;
 		segment			: in type_net_segment;
-		zone			: in type_line_zone;
 		point_of_attack	: in type_object_position;
 		log_threshold	: in type_log_level) 
 		return boolean 
 	is
-		result : boolean := true; -- to be returned. true means the zone is movable.
+		result : boolean := true;
 		-- Goes false once a port has been found in the given zone.
 
-		point : type_object_position;
+		-- The zone of the net being attacked:
+		zone	: type_line_zone;
 
-		procedure search_ports is
+		-- The actual point that is to be tested:
+		point	: type_object_position;
+		
+
 		-- Searches ports of devices, netchangers and submodules that sit on
 		-- the point of interest.	
 		-- On the first finding, sets result to false and finishes. If no 
 		-- finding, result remains true.	
+		procedure search_ports is
 			use pac_device_ports;
 			use pac_submodule_ports;
 
@@ -1565,6 +1569,7 @@ package body et_schematic_ops.nets is
 				next (device);
 			end loop;
 
+			
 			-- if no device port found, search in submodule ports
 			if result = true then
 
@@ -1588,6 +1593,7 @@ package body et_schematic_ops.nets is
 
 			end if;
 
+			
 			-- if no submodule port found, search in netchanger ports
 			if result = true then
 
@@ -1616,7 +1622,19 @@ package body et_schematic_ops.nets is
 
 		
 	begin
+		log (text => "module " & to_string (module_cursor)
+			& " test whether segment " & to_string (segment)
+			& " is movable at point of attack" & to_string (get_place (point_of_attack)),
+			level => log_threshold);
+	
 		log_indentation_up;
+		
+		-- Calculate the zone of attack:
+		zone := get_zone (
+			point	=> get_place (point_of_attack),
+			line	=> segment);
+
+		log (text => "attacked zone " & to_string (zone), level => log_threshold + 1);
 		
 		-- The point of interest is on the sheet specified in argument "point_of_attack".
 		-- The x/y coordinates are taken from the segment start or end point.
@@ -1628,6 +1646,7 @@ package body et_schematic_ops.nets is
 						sheet => get_sheet (point_of_attack));
 
 				search_ports; -- sets result to false if a port is connected with the start point
+
 				
 			when END_POINT =>
 				point := to_position (
@@ -1635,6 +1654,7 @@ package body et_schematic_ops.nets is
 						sheet => get_sheet (point_of_attack));
 
 				search_ports; -- sets result to false if a port is connected with the end point
+
 				
 			when CENTER =>
 				-- Both start and end point must be checked for any ports.
@@ -1659,11 +1679,178 @@ package body et_schematic_ops.nets is
 		log_indentation_down;
 		
 		return result;
-	end is_movable;
+	end segment_is_movable;
 
 
 
 
+
+	function segment_is_movable (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		AB_end			: in type_start_end_point;
+		log_threshold	: in type_log_level) 
+		return boolean
+	is
+		result : boolean := true;
+		-- Goes false once a port has been found in the given zone.
+		
+
+		-- Searches ports of devices, netchangers and submodules 
+		-- that sit on the point of interest.	
+		-- On the first finding, sets result to false and finishes. If no 
+		-- finding, result remains true.	
+		procedure search_ports (
+			segment	: in type_net_segment;
+			point	: in type_object_position) -- the actual location that is to be tested
+		is
+			
+			procedure iterate_device_ports is
+				use pac_device_ports;
+				device : pac_device_ports.cursor := segment.ports.devices.first;
+			begin
+				while has_element (device) loop
+
+					if get_position (
+						module_cursor	=> module_cursor,
+						device_name		=> element (device).device_name,
+						port_name		=> element (device).port_name,
+						log_threshold	=> log_threshold + 2) 
+						
+						= point then
+
+						result := false; -- not movable
+						exit;
+					end if;
+					
+					next (device);
+				end loop;
+			end iterate_device_ports;
+
+
+			
+			procedure iterate_netchanger_ports is
+				use et_schematic_ops.submodules;
+				use et_netlists;
+				use pac_netchanger_ports;
+				netchanger : pac_netchanger_ports.cursor := segment.ports.netchangers.first;
+			begin
+				while has_element (netchanger) loop
+
+					if get_netchanger_port_position ( -- CS use a similar function that takes only cursors ?
+						module_name		=> key (module_cursor),
+						index			=> element (netchanger).index,
+						port			=> element (netchanger).port,
+						log_threshold	=> log_threshold + 2) 
+						
+						= point then
+
+						result := false; -- not movable
+						exit;
+					end if;
+					
+					next (netchanger);
+				end loop;
+			end iterate_netchanger_ports;
+
+
+
+			procedure iterate_submodule_ports is
+				use et_schematic_ops.submodules;
+				use pac_submodule_ports;
+				submodule : pac_submodule_ports.cursor := segment.ports.submodules.first;
+			begin
+				-- Iterate through the submodule ports:
+				while has_element (submodule) loop
+
+					if get_submodule_port_position ( -- CS use a similar function that takes only cursors ?
+						module_name		=> key (module_cursor),
+						submod_name		=> element (submodule).module_name,
+						port_name		=> element (submodule).port_name,
+						log_threshold	=> log_threshold + 2) 
+						
+						= point then
+
+						result := false; -- not movable
+						exit;
+					end if;
+					
+					next (submodule);
+				end loop;
+			end iterate_submodule_ports;
+
+			
+			
+		begin -- search_ports
+			iterate_device_ports;
+			
+			-- if no device port found, search in submodule ports
+			if result = true then
+				iterate_submodule_ports;
+			end if;
+			
+			-- if no submodule port found, search in netchanger ports
+			if result = true then
+				iterate_netchanger_ports;
+			end if;
+
+			-- if no port found, result is still true
+		end search_ports;
+
+
+
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is			
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net)
+			is
+
+				procedure query_strand (strand : in type_strand) is
+					sheet : type_sheet := get_sheet (strand);
+
+					procedure query_segment (seg : in type_net_segment) is begin
+						case AB_end is
+							when A => search_ports (seg, to_position (get_A (seg), sheet));
+							when B => search_ports (seg, to_position (get_B (seg), sheet));
+						end case;
+					end query_segment;
+					
+				begin
+					query_element (segment.segment_cursor, query_segment'access);
+				end query_strand;
+				
+			begin
+				query_element (segment.strand_cursor, query_strand'access);
+			end query_net;
+			
+		begin
+			query_element (segment.net_cursor, query_net'access);
+		end query_module;
+
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " test whether " & to_string (segment)
+			& " is movable at " & to_string (AB_end),
+			level => log_threshold);
+	
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+		
+		return result;
+	end segment_is_movable;
+
+
+	
+	
 
 	
 	
@@ -1923,9 +2110,8 @@ package body et_schematic_ops.nets is
 								& " at " & type_line_zone'image (zone), level => log_threshold + 1);
 
 							-- Test whether the zone is movable. If not movable, nothing happens.
-							if is_movable (
-								module_cursor, element (segment_cursor),
-								zone, point_of_attack, log_threshold + 1)
+							if segment_is_movable (
+								module_cursor, element (segment_cursor), point_of_attack, log_threshold + 1)
 							then
 								
 								-- Backup the cursor of the targeted segment.
@@ -3062,7 +3248,7 @@ package body et_schematic_ops.nets is
 		end query_module;
 								
 	begin
-		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) 
+		log (text => "module " & to_string (module_cursor)
 			& " setting class of net " & enclose_in_quotes (to_string (net_name)) 
 			& " to " & enclose_in_quotes (to_string (net_class)),
 			level => log_threshold);
@@ -3571,6 +3757,7 @@ package body et_schematic_ops.nets is
 	
 
 
+	
 
 	function to_string (
 		object	: in type_object_label)
@@ -3693,6 +3880,7 @@ package body et_schematic_ops.nets is
 
 
 
+	
 
 
 	procedure modify_status (
@@ -3820,6 +4008,7 @@ package body et_schematic_ops.nets is
 	end modify_status;
 
 	
+
 
 	
 
@@ -4830,6 +5019,7 @@ package body et_schematic_ops.nets is
 	end query_stub;
 
 
+	
 
 
 
@@ -4894,6 +5084,7 @@ package body et_schematic_ops.nets is
 
 	
 
+	
 	procedure show_label_tag (
 		module_cursor	: in pac_generic_modules.cursor;
 		label			: in type_object_label_tag;
@@ -5747,13 +5938,38 @@ package body et_schematic_ops.nets is
 
 
 	
+
 	
 	procedure set_primary_segment_AB_moving (
 		module_cursor	: in pac_generic_modules.cursor;
 		object_cursor	: in pac_objects.cursor; -- must point to a net segment
 		point_of_attack	: in type_vector_model;
+		movable_test	: in boolean;
+		granted			: in out boolean;
 		log_threshold	: in type_log_level)
 	is
+
+		-- This function tests whether the given segment
+		-- can be moved at the given end (A/B).
+		-- It is required only in case the caller has requested
+		-- a "movable test":
+		function is_movable (AB : type_start_end_point) 
+			return boolean 
+		is begin
+			if segment_is_movable (
+				module_cursor, element (object_cursor).segment, AB, log_threshold + 1)
+			then
+				granted := true;
+				return true;
+			else
+				log (text => "Segment can not be moved at end " & to_string (AB),
+					 level => log_threshold + 1);
+
+				granted := false;
+				return false;
+			end if;
+		end;
+
 	
 		
 		procedure query_module (
@@ -5770,35 +5986,93 @@ package body et_schematic_ops.nets is
 
 				procedure query_strand (strand : in out type_strand) is
 
-					
-					procedure query_segment (seg : in out type_net_segment) is
+
+					-- This procedure queries a segment and sets
+					-- its A or B or both ends forcefully to "moving". It does not care
+					-- about ports which might be connected with the segment.
+					-- Use this procedure in case the caller of the main procedure
+					-- does not request a "movable test":
+					procedure query_segment_force (seg : in out type_net_segment) is
+						use pac_objects;
+						
 						-- Find the zone at which the segment
 						-- is being attacked:
 						zone : type_line_zone := get_zone (seg, point_of_attack);
 					begin
-						log (text => to_string (zone), level => log_threshold);
+						log (text => "attack at " & to_string (zone), level => log_threshold + 1);
+						
 						case zone is
 							when START_POINT =>
 								set_A_moving (seg);
-
 								object_original_position := get_A (seg);
-
+									
 							when END_POINT =>
 								set_B_moving (seg);
-
 								object_original_position := get_B (seg);
 
 							when CENTER =>
 								set_A_moving (seg);
 								set_B_moving (seg);
-
 								object_original_position := point_of_attack;
 						end case;
-					end query_segment;
+					end query_segment_force;
+
+
+
+					-- This procedure queries a segment and sets
+					-- its A or B or both ends to "moving" if the caller of the
+					-- main procedure has requested a "movable test"
+					-- and if the segmet is NOT connected with an port.
+					-- Use this procedure in case the caller of the main procedure
+					-- requests a "movable test":
+					procedure query_segment_movable (seg : in out type_net_segment) is
+						use pac_objects;
+						
+						-- Find the zone at which the segment
+						-- is being attacked:
+						zone : type_line_zone := get_zone (seg, point_of_attack);
+					begin
+						log (text => "attack at " & to_string (zone), level => log_threshold + 1);
+						log_indentation_up;
+						
+						case zone is
+							when START_POINT =>
+								if is_movable (A) then
+									put_line ("set A moving");
+									set_A_moving (seg);
+									object_original_position := get_A (seg);
+								else
+									put_line ("set A NOT moving");
+								end if;
+									
+							when END_POINT =>
+								if is_movable (B) then
+									set_B_moving (seg);
+									object_original_position := get_B (seg);
+								end if;
+
+							when CENTER =>
+								-- If the segment is attacked at its center,
+								-- then both ends must be movable:
+								if is_movable (A) and is_movable (B) then
+									set_A_moving (seg);
+									set_B_moving (seg);
+									object_original_position := point_of_attack;
+								end if;
+						end case;
+
+						log_indentation_down;
+					end query_segment_movable;
 
 					
 				begin
-					strand.segments.update_element (get_segment (object_cursor), query_segment'access);
+					if movable_test then -- caller requests a "movable test"
+						strand.segments.update_element (
+							get_segment (object_cursor), query_segment_movable'access);
+					else
+						strand.segments.update_element (
+							get_segment (object_cursor), query_segment_force'access);
+					end if;
 				end query_strand;
 				
 										 
@@ -5815,10 +6089,15 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			& " set A/B of primary segment moving " 
-			& " point of attack " & to_string (point_of_attack),
+			& " set A/B of primary segment moving." 
+			& " Point of attack " & to_string (point_of_attack),
 			level => log_threshold);
 
+		if movable_test then
+			log (text => " movable test requested by caller",
+				level => log_threshold);
+		end if;
+			
 		log_indentation_up;
 
 		generic_modules.update_element (module_cursor, query_module'access);

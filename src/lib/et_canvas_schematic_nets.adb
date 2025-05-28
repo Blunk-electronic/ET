@@ -1195,27 +1195,50 @@ package body et_canvas_schematic_nets is
 				get_objects (active_module, SELECTED, log_threshold + 1);
 
 			c : pac_objects.cursor;
+
+			drag_granted : boolean := false;
+			
 		begin
 			-- Get a cursor to the candidate object
 			-- among all selected objects:
 			c := objects.find (selected_object);
+
+
+			-- CS test noun ?
 			
-			modify_status (active_module, c, to_operation (SET, MOVING), log_threshold + 1);
+			case verb is
 
-			-- If we are dragging a net segment, then we regard is as primary segment.
-			-- Its start or/and ends (A/B) must be marked as "moving"
-			-- The current point of attack determines whether start or
-			-- end or both of the segment are affected.
-			-- Start/end points (A/B) of secondary segments which are 
-			-- connected with the primary segment must be marked as "moving" also:
-			if verb = VERB_DRAG then
-				set_primary_segment_AB_moving (
-					active_module, c, object_point_of_attack, log_threshold + 1);
+				-- If we are dragging a net segment, then we regard it as primary segment.
+				-- Its start or/and ends (A/B) must be marked as "moving"
+				-- The current point of attack determines whether start or
+				-- end or both of the segment are affected.
+				-- Start/end points (A/B) of secondary segments which are 
+				-- connected with the primary segment must be marked as "moving" also.
+				-- If dragging is not granted (due to connected ports) then nothing happens:
+				when VERB_DRAG =>
+					set_primary_segment_AB_moving (
+						module_cursor	=> active_module, 
+						object_cursor	=> c,
+						point_of_attack	=> object_point_of_attack,
+						movable_test	=> true, -- The segment must be testet whether it is movable.
+						granted			=> drag_granted,
+						log_threshold	=> log_threshold + 1);
 
-				set_secondary_segments_AB_moving (
-					active_module, c, log_threshold + 1);
-				
-			end if;
+					if drag_granted then
+						-- Set the whole segment as moving:
+						modify_status (active_module, c, to_operation (SET, MOVING), log_threshold + 1);
+
+						-- Set attached secondary segments as moving:
+						set_secondary_segments_AB_moving (
+							active_module, c, log_threshold + 1);
+
+					end if;
+
+					
+				when others =>
+					modify_status (active_module, c, to_operation (SET, MOVING), log_threshold + 1);
+			end case;
+			
 		end do_it;
 		
 		
