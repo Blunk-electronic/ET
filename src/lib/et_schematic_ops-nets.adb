@@ -2044,18 +2044,24 @@ package body et_schematic_ops.nets is
 	procedure drag_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		point_of_attack	: in type_object_position; -- sheet/x/y
+		-- point_of_attack	: in type_object_position; -- sheet/x/y
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
 		coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model; -- x/y, the new position 
 		log_threshold	: in type_log_level) 
 	is
 		net_cursor : pac_nets.cursor; -- points to the net
 
+		segment : type_object_segment;
+		
 
 		procedure no_segment is begin
-			log (WARNING, "No segment found at " & to_string (position => point_of_attack) &
-			 ". Check net name and position !");
+			-- log (WARNING, "No segment found at " & to_string (position => point_of_attack) &
+			--  ". Check net name and position !");
+			log (WARNING, "No segment found.", level => log_threshold);
 		end;
+
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -2089,7 +2095,7 @@ package body et_schematic_ops.nets is
 						case coordinates is
 							when ABSOLUTE =>
 								--log (text => "move targeted segment absolute", level => log_threshold + 3);
-								attack (segment, point_of_attack.place, destination);
+								attack (segment, get_center (catch_zone), destination);
 
 							when RELATIVE =>
 								--log (text => "move targeted segment relative", level => log_threshold + 3);
@@ -2234,7 +2240,7 @@ package body et_schematic_ops.nets is
 									module_cursor	=> module_cursor, 
 									place 			=> to_position (
 													point => get_A (segment),
-													sheet => get_sheet (point_of_attack)),
+													sheet => sheet),
 									log_threshold => log_threshold + 1
 									);
 
@@ -2247,7 +2253,7 @@ package body et_schematic_ops.nets is
 									module_cursor	=> module_cursor, 
 									place 			=> to_position (
 													point => get_B (segment),
-													sheet => get_sheet (point_of_attack)),
+													sheet => sheet),
 									log_threshold => log_threshold + 1
 									);
 
@@ -2260,7 +2266,7 @@ package body et_schematic_ops.nets is
 									module_cursor	=> module_cursor, 
 									place 			=> to_position (
 													point => get_A (segment),
-													sheet => get_sheet (point_of_attack)),
+													sheet => sheet),
 									log_threshold => log_threshold + 1
 									);
 
@@ -2271,7 +2277,7 @@ package body et_schematic_ops.nets is
 									module_cursor	=> module_cursor, 
 									place 			=> to_position (
 													point => get_B (segment),
-													sheet => get_sheet (point_of_attack)),
+													sheet => sheet),
 									log_threshold => log_threshold + 1
 									);
 								
@@ -2290,14 +2296,14 @@ package body et_schematic_ops.nets is
 						-- If segment crosses the given x/y position (in point_of_attack) then
 						-- the segment has been found:
 						if on_segment (
-							catch_zone	=> set_catch_zone (point_of_attack.place, accuracy_default),
+							catch_zone	=> catch_zone,
 							segment		=> segment_cursor)
 						then
 							--log (text => "point of attack sits on segment", level => log_threshold + 1);
 							
 							-- Calculate the zone of attack:
 							zone := get_zone (
-								point	=> point_of_attack.place,
+								point	=> get_center (catch_zone),
 								line	=> element (segment_cursor));
 
 							-- depending on zone, drag start point, end point or both
@@ -2306,7 +2312,9 @@ package body et_schematic_ops.nets is
 
 							-- Test whether the zone is movable. If not movable, nothing happens.
 							if segment_is_movable (
-								module_cursor, element (segment_cursor), point_of_attack, log_threshold + 1)
+								module_cursor, element (segment_cursor), 
+									to_position (get_center (catch_zone), sheet),
+									log_threshold + 1)
 							then
 								
 								-- Backup the cursor of the targeted segment.
@@ -2381,7 +2389,7 @@ package body et_schematic_ops.nets is
 				-- the given point of attack has been found.
 				while not segment_found and has_element (strand_cursor) loop
 					
-					if get_sheet (strand_cursor) = get_sheet (point_of_attack) then
+					if get_sheet (strand_cursor) = sheet then
 						log (text => "searching strand at" & get_position (strand_cursor),
 							level => log_threshold + 1);
 						
@@ -2414,8 +2422,7 @@ package body et_schematic_ops.nets is
 
 		praeamble : constant string := "module " & to_string (module_cursor)
 			& " dragging segment of net " & to_string (net_name)
-			& " / point of attack" & to_string (point_of_attack)
-			& " ";
+			& " / " & to_string (catch_zone);
 
 		
 	begin -- drag_segment
@@ -2431,6 +2438,9 @@ package body et_schematic_ops.nets is
 		end case;
 		
 
+		--segment := get_segments (module_cursor, sheet, catch_zone, log_threshold + 1);
+		
+		
 		-- locate the requested nets in the module
 		net_cursor := locate_net (module_cursor, net_name);
 

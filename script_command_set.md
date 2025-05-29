@@ -840,7 +840,7 @@ The commands are similar to the route restrict commands (see above) but the keyw
 'route_restrict' is to be replaced by 'via_restrict'.
 
 ### DRAGGING
-Dragging a net segment requires the net name, sheet and point of attack.
+Dragging a net segment requires the net name, sheet and point of attack and the radus of the catch zone.
 Dragging requires further-on an argument for relative/absolute movement followed by the x and y position.
 If movement is relative, x and y are handled as difference.
 In the example below the net motor_on is attacked on sheet 1 at x/y 120/100. The point 120/100
@@ -849,13 +849,13 @@ The decision whether the start or end point (or both) will be dragged depends on
 If the start or end point is tied to any port, no dragging will be performed.
 Dragging is not possible across sheets.
 ```
-schematic led_driver drag segment motor_on 1 110 100 relative 0 -10 # point of attack 110 100 by dx dy
+schematic led_driver drag segment motor_on 1 110 100 2 relative 0 -10 # point of attack 110 100 zone 2 by dx dy
 ```
 ```
-schematic led_driver drag segment motor_on 1 110 89 relative 0 10 # point of attack 120 100 by dx dy
+schematic led_driver drag segment motor_on 1 110 89 2 relative 0 10 # point of attack 120 100 zone 2 by dx dy
 ```
 ```
-schematic led_driver drag segment motor_on 1 100 80 absolute 120 90 # point of attack 100 80 to 120 90
+schematic led_driver drag segment motor_on 1 100 80 2 absolute 120 90 # point of attack 100 80 zone 2 to 120 90
 ```
 
 ### NAMING AND RENAMING

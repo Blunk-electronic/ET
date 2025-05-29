@@ -1440,28 +1440,27 @@ is
 
 	procedure drag_net_segment is
 		use et_sheets;
+		catch_zone : type_catch_zone;
 	begin
+		-- example: "drag segment GND 1 80 100 2 relative 10 0"
 		case cmd_field_count is
-			when 11 =>
-				drag_segment
-					(
+			when 12 =>
+
+				catch_zone := set_catch_zone (
+					center	=> to_vector_model (f (7), f (8)),
+					radius	=> to_zone_radius (f (9)));
+				
+				drag_segment (
 					module_cursor	=> active_module,
 					net_name		=> to_net_name (f (5)), -- RESET
-					point_of_attack	=> to_position (
-										point => type_vector_model (set (
-											x => to_distance (f (7)),
-											y => to_distance (f (8)))),
-										sheet => to_sheet (f (6))), -- sheet number
-					
-					coordinates		=> to_coordinates (f (9)), -- relative/absolute
-					
-					destination		=> type_vector_model (set (
-										x => to_distance (f (10)),
-										y => to_distance (f (11)))),
-					
+					sheet			=> to_sheet (f (6)), -- sheet number
+					catch_zone		=> catch_zone,					
+					coordinates		=> to_coordinates (f (10)), -- relative/absolute					
+					destination		=> to_vector_model (f (11), f (12)),
 					log_threshold	=> log_threshold + 1);
+					
 
-			when 12 .. type_field_count'last => too_long; 
+			when 13 .. type_field_count'last => too_long; 
 				
 			when others => command_incomplete;
 		end case;

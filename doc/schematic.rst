@@ -83,7 +83,7 @@ Devices and Units
 	|VNS| d u
 
 
-#. Fetche unit
+#. Fetch unit
 
 	.. code-block::
 
@@ -291,6 +291,14 @@ Nets and Net Labels
 	
 #. Drag net segment
 
+	This example command searches for a net segment in net GND
+	on sheet 1 that crosses the position 80/100 in a zone of
+	2mm radius. It drags the attacked end of the segment by 10/0mm:
+
+	.. code-block::
+
+		drag segment GND 1 80 100 2 relative 10 0
+	
 	|VNS| g n
 
 	

@@ -302,7 +302,7 @@ package et_schematic_ops.nets is
 	
 	
 	-- Drags a segment of a net. The segment to be modified
-	-- is searched for at the given point of attack.
+	-- is searched for in the given catch zone on the given sheet.
 	-- If the segment meets a port, then the port 
 	-- will be connected with the net.
 	-- NOTE: If the segment meets another net, then these 
@@ -311,8 +311,8 @@ package et_schematic_ops.nets is
 	procedure drag_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		point_of_attack	: in type_object_position;
-		-- CS ? catch_zone		: in type_catch_zone;
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
 		coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
