@@ -87,6 +87,9 @@ package et_schematic_ops.nets is
 		return string;
 
 
+	package pac_object_segments is new doubly_linked_lists (type_object_segment);
+
+	
 	
 	-- Modifies the status flag of a net segment:
 	procedure modify_status (
@@ -288,8 +291,14 @@ package et_schematic_ops.nets is
 		return boolean;
 	
 
-	-- function get_segments
-	
+	-- Returns a list of net segments which cross
+	-- the given catch zone:
+	function get_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
+		log_threshold	: in type_log_level)
+		return pac_object_segments.list;
 	
 	
 	-- Drags a segment of a net. The segment to be modified
@@ -303,6 +312,7 @@ package et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		point_of_attack	: in type_object_position;
+		-- CS ? catch_zone		: in type_catch_zone;
 		coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
