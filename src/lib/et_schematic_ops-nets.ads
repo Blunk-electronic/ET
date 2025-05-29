@@ -281,10 +281,13 @@ package et_schematic_ops.nets is
 
 	
 	
-	-- Drags a segment of a net.
-	-- If the segment meets a port, then the port will be connected with the net.
-	-- NOTE: If the segment meets another net, then these two nets will NOT be connected.
-	--       CS: The resulting overlapping segments should be detected by the ERC.
+	-- Drags a segment of a net. The segment to be modified
+	-- is searched for at the given point of attack.
+	-- If the segment meets a port, then the port 
+	-- will be connected with the net.
+	-- NOTE: If the segment meets another net, then these 
+	-- two nets will NOT be connected.
+	-- CS: The resulting overlapping segments should be detected by the ERC.
 	procedure drag_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF

@@ -1871,13 +1871,14 @@ package body et_schematic_ops.nets is
 			 ". Check net name and position !");
 		end;
 		
-		procedure query_net (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module)
 		is
 			
-			-- Searches the strands of the net for a segment that sits on given point_of_attack.
-			procedure query_strands (
+			-- Searches the strands of the given net 
+			-- for a segment that sits on given point_of_attack.
+			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
@@ -1885,7 +1886,7 @@ package body et_schematic_ops.nets is
 				segment_found, strand_found : boolean := false;
 
 				
-				procedure query_segments (strand : in out type_strand) is
+				procedure query_strand (strand : in out type_strand) is
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 					segment_cursor_target : pac_net_segments.cursor;
 					target_segment_before : type_net_segment;
@@ -1893,7 +1894,9 @@ package body et_schematic_ops.nets is
 					zone : type_line_zone;
 
 					
-					procedure move_targeted_segment (segment : in out type_net_segment) is 
+					procedure move_targeted_segment (
+						segment : in out type_net_segment) 
+					is 
 						-- backup the segment as it was before the move/drag:
 						segment_before : constant type_net_segment := segment;
 					begin
@@ -1926,9 +1929,12 @@ package body et_schematic_ops.nets is
 					end move_targeted_segment;
 
 					
+					
 					-- This procedure moves the start/end points of segments that are connected
 					-- with the target_segment_before.
-					procedure move_connected_segment (connected_segment : in out type_net_segment) is 
+					procedure move_connected_segment (
+						connected_segment : in out type_net_segment) 
+					is 
 
 						-- backup the segment as it was before the move/drag:
 						segment_before : constant type_net_segment := connected_segment;
@@ -2012,14 +2018,14 @@ package body et_schematic_ops.nets is
 					end move_connected_segment;
 
 					
-					procedure connect_ports (segment : in out type_net_segment) is
+					
 					-- Looks up ports of devices, netchangers or submodules that are 
 					-- to be connected with the segment. The place where ports are
 					-- searched depends on the zone that has been moved.
 					-- (The given segment sits already at the new position.)
+					procedure connect_ports (segment : in out type_net_segment) is
 						ports : type_ports;
 
-						procedure append_portlists is 
 						-- Append the portlists obtained from function ports_at_place
 						-- to the segment.
 						-- CS: Special threatment required if a port is among the portlists
@@ -2027,7 +2033,7 @@ package body et_schematic_ops.nets is
 						-- This particular port must be exempted from the appending.
 						-- Currently only the integrity check (procedure check_integrity)
 						-- detects this rare case.
-						begin
+						procedure append_portlists is begin
 							pac_device_ports.union (segment.ports.devices, ports.devices);
 							pac_submodule_ports.union (segment.ports.submodules, ports.submodules);
 							et_netlists.pac_netchanger_ports.union (segment.ports.netchangers, ports.netchangers);
@@ -2088,9 +2094,12 @@ package body et_schematic_ops.nets is
 					end connect_ports;						
 
 					
-				begin -- query_segments
+					
+				begin -- query_strand
+					-- Iterate through the segments of the candidate net:
+					
 					-- MOVE TARGETED SEGMENT
-					while segment_cursor /= pac_net_segments.no_element loop
+					while has_element (segment_cursor) loop
 
 						-- If segment crosses the given x/y position (in point_of_attack) then
 						-- the segment has been found:
@@ -2149,7 +2158,7 @@ package body et_schematic_ops.nets is
 						-- Iterate in segments. skip targeted segment because it has been dragged
 						-- already (see above).
 						segment_cursor := strand.segments.first; -- reset segment cursor
-						while segment_cursor /= pac_net_segments.no_element loop
+						while has_element (segment_cursor) loop
 							if segment_cursor /= segment_cursor_target then
 
 								pac_net_segments.update_element (
@@ -2175,28 +2184,25 @@ package body et_schematic_ops.nets is
 							process		=> connect_ports'access);
 
 					end if;
-				end query_segments;
+				end query_strand;
 
 				
-			begin -- query_strands
 				
-				-- Look at strands that are on the given sheet. This loop ends prematurely
-				-- as soon as a segment has been found.
-				while not segment_found and strand_cursor /= pac_strands.no_element loop
+			begin -- query_net
+				-- Iterate through the strands.
+				-- Look only at strands that are on the given sheet. 
+				-- This loop ends prematurely as soon as a segment at 
+				-- the given point of attack has been found.
+				while not segment_found and has_element (strand_cursor) loop
 					
-					if get_sheet (element (strand_cursor).position) = get_sheet (point_of_attack) then
-						log (text => "searching strand at" 
-							 & to_string (element (strand_cursor).position),
+					if get_sheet (strand_cursor) = get_sheet (point_of_attack) then
+						log (text => "searching strand at" & get_position (strand_cursor),
 							level => log_threshold + 1);
 						
-						-- signal the calling unit that a strand has been found:
+						-- Signal the that a strand has been found:
 						strand_found := true;
 
-						update_element (
-							container	=> net.strands,
-							position	=> strand_cursor,
-							process		=> query_segments'access);
-
+						net.strands.update_element (strand_cursor, query_strand'access);
 					end if;
 					
 					next (strand_cursor);
@@ -2207,24 +2213,24 @@ package body et_schematic_ops.nets is
 					no_segment;
 				end if;
 				
-			end query_strands;
+			end query_net;
 
 			
 		begin
-
 			-- query the affected strands
 			update_element (
 				container	=> module.nets,
 				position	=> net_cursor,
-				process		=> query_strands'access);
+				process		=> query_net'access);
 			
-		end query_net;
+		end query_module;
 
 
 		praeamble : constant string := "module " & to_string (module_cursor)
-			& " dragging segment of net " & enclose_in_quotes (to_string (net_name))
-			& " / point of attack" & to_string (position => point_of_attack)
+			& " dragging segment of net " & to_string (net_name)
+			& " / point of attack" & to_string (point_of_attack)
 			& " ";
+
 		
 	begin -- drag_segment
 		case coordinates is
@@ -2252,7 +2258,7 @@ package body et_schematic_ops.nets is
 		update_element (
 			container	=> generic_modules,
 			position	=> module_cursor,
-			process		=> query_net'access);
+			process		=> query_module'access);
 
 		update_ratsnest (module_cursor, log_threshold + 1);
 		
