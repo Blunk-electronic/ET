@@ -1556,6 +1556,7 @@ package body et_schematic_ops.units is
 			use pac_submodule_ports;
 			use pac_device_ports;
 			use et_netlists.pac_netchanger_ports;
+			use et_schematic_ops.nets;
 		begin
 			-- assemble the point to be probed
 			point := to_position (
@@ -1722,6 +1723,7 @@ package body et_schematic_ops.units is
 			use pac_submodule_ports;
 			use pac_device_ports;
 			use et_netlists.pac_netchanger_ports;
+			use et_schematic_ops.nets;
 		begin
 			-- assemble the point to be probed
 			point := to_position (

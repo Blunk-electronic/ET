@@ -219,11 +219,6 @@ package et_schematic_ops is
 		return type_ports;	
 	
 
-	-- Returns true if at given place a net segment starts or ends.
-	function net_segment_at_place (
-		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_object_position)
-		return boolean;
 	
 
 	procedure dragging_not_possible (

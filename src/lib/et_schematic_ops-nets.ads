@@ -279,6 +279,17 @@ package et_schematic_ops.nets is
 		return boolean;
 
 
+
+	-- Returns true if at the given place 
+	-- a net segment starts or ends:
+	function net_segment_at_place (
+		module_cursor	: in pac_generic_modules.cursor;
+		place			: in type_object_position)
+		return boolean;
+	
+
+	-- function get_segments
+	
 	
 	
 	-- Drags a segment of a net. The segment to be modified

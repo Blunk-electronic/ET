@@ -47,7 +47,7 @@ with et_device_appearance;
 with et_package_names;
 with et_module_ops;
 with et_schematic_ops.units;		use et_schematic_ops.units;
-
+with et_schematic_ops.nets;
 
 
 package body et_schematic_ops.submodules is
@@ -1252,8 +1252,9 @@ package body et_schematic_ops.submodules is
 
 		use et_netlists;
 		use pac_netchanger_ports;
-		
-	begin -- movable_test
+
+		use et_schematic_ops.nets;		
+	begin
 		log (text => "movable test ...", level => log_threshold);
 		log_indentation_up;
 
@@ -2298,6 +2299,7 @@ package body et_schematic_ops.submodules is
 				use et_net_segment.pac_submodule_ports;
 				use pac_device_ports;
 				use pac_netchanger_ports;
+				use et_schematic_ops.nets;
 			begin
 				-- If no net segments start or end at given point then this test won't
 				-- complain. If segments are meeting this point, no other ports must be

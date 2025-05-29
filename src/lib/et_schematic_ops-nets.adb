@@ -1849,9 +1849,108 @@ package body et_schematic_ops.nets is
 	end segment_is_movable;
 
 
+
 	
 	
 
+
+	function net_segment_at_place (
+		module_cursor	: in pac_generic_modules.cursor;
+		place			: in type_object_position)
+		return boolean 
+	is
+
+		-- This flag goes true once a segment has been found.
+		segment_found : boolean := false; -- to be returned
+		
+		procedure query_nets (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+
+			use pac_nets;			
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			procedure query_strands (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net)
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+				
+				procedure query_segments (strand : in type_strand) is
+					use pac_net_segments;
+
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure probe_segment (segment : in type_net_segment) is begin
+						-- if place is a start point of a segment
+						if get_A (segment) = place.place then
+							-- signal iterations in upper level to cancel
+							segment_found := true;
+						end if;
+
+						-- if place is an end point of a segment
+						if get_B (segment) = place.place then
+							-- signal iterations in upper level to cancel
+							segment_found := true;
+						end if;
+					end probe_segment;
+
+					
+				begin -- query_segments
+					while not segment_found and segment_cursor /= pac_net_segments.no_element loop
+						query_element (
+							position	=> segment_cursor,
+							process		=> probe_segment'access);
+						
+						next (segment_cursor);
+					end loop;
+				end query_segments;
+
+				
+			begin -- query_strands
+				while not segment_found and strand_cursor /= pac_strands.no_element loop
+					
+					-- We pick out only the strands on the targeted sheet:
+					if get_sheet (element (strand_cursor).position) = get_sheet (place) then
+
+						query_element (
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+					
+					end if;
+					
+					next (strand_cursor);
+				end loop;
+			end query_strands;
+
+			
+		begin -- query_nets
+			while not segment_found and net_cursor /= pac_nets.no_element loop
+
+				query_element (
+					position	=> net_cursor,
+					process		=> query_strands'access);
+
+				next (net_cursor);
+			end loop;
+		end query_nets;
+
+		
+	begin -- net_segment_at_place
+
+		query_element (
+			position	=> module_cursor,
+			process		=> query_nets'access);
+		
+		return segment_found;
+	end net_segment_at_place;
+
+	
+
+
+	
 	
 	
 	
