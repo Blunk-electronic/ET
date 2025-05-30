@@ -189,6 +189,8 @@ package body et_net_segment is
 	end to_net_segment;
 
 
+
+
 	
 	procedure reset_status (
 		segment : in out type_net_segment)
@@ -199,6 +201,48 @@ package body et_net_segment is
 	end reset_status;
 
 
+
+	
+
+
+	function get_connect_status (
+		primary 	: in type_net_segment;
+		AB_end		: in type_start_end_point;
+		secondary	: in type_net_segment)
+		return type_connect_status
+	is
+		result : type_connect_status;
+
+		-- The point where the test will take place:
+		reference : type_vector_model;
+	begin
+		-- Set the reference point according to which
+		-- end of the primary segment will be tested:
+		case AB_end is
+			when A => reference := get_A (primary);
+			when B => reference := get_B (primary);
+		end case;
+
+		-- Test A end of secondary segment:
+		if reference = get_A (secondary) then
+			-- A end of secondary segment is connected with primary segment:
+			result := CON_STS_A;
+
+			
+		-- Test B end of secondary segment:
+		elsif reference = get_B (secondary) then
+			-- B end of secondary segment is connected with primary segment:
+			result := CON_STS_B;
+
+		else
+			-- Secondary segment is NOT connected with primary segment:
+			result := CON_STS_NONE;
+		end if;
+
+		return result;
+	end get_connect_status;
+
+	
 	
 	
 -- 	procedure move_net_labels (
@@ -440,6 +484,25 @@ package body et_net_segment is
 	end on_segment;
 
 
+
+
+
+	
+	
+	function get_connect_status (
+		primary 	: in pac_net_segments.cursor;
+		AB_end		: in type_start_end_point;
+		secondary	: in pac_net_segments.cursor)
+		return type_connect_status
+	is 
+		result : type_connect_status;
+		
+		P : type_net_segment := element (primary);
+		S : type_net_segment := element (secondary);
+	begin
+		result := get_connect_status (P, AB_end, S);
+		return result;
+	end get_connect_status;
 	
 	
 end et_net_segment;

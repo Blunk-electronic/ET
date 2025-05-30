@@ -1851,6 +1851,152 @@ package body et_schematic_ops.nets is
 
 
 	
+
+	function segment_is_movable (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		zone			: in type_line_zone;
+		log_threshold	: in type_log_level) 
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " test whether " & to_string (segment)
+			& " is movable at " & to_string (zone),
+			level => log_threshold);
+
+		case zone is
+			when START_POINT =>
+				if segment_is_movable (module_cursor, segment, A, log_threshold + 1) then
+					result := true;
+				end if;
+
+			when END_POINT =>
+				if segment_is_movable (module_cursor, segment, B, log_threshold + 1) then
+					result := true;
+				end if;
+				
+			when CENTER =>
+				if  segment_is_movable (module_cursor, segment, A, log_threshold + 1) 
+				and segment_is_movable (module_cursor, segment, B, log_threshold + 1) 
+				then
+					result := true;
+				end if;
+		end case;
+
+		return result;
+	end segment_is_movable;
+
+
+	
+
+
+
+	procedure move_secondary_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		primary_segment	: in type_object_segment;
+		AB_end			: in type_start_end_point;
+		displacement	: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is			
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+
+				-- This procedure searches for segments which are connected
+				-- with the given primary segment.
+				procedure query_strand (strand : in out type_strand) is
+					secondary_segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure move_A_end (
+						secondary_segment : in out type_net_segment) 
+					is begin
+						move_start_by (secondary_segment, displacement);
+					end move_A_end;
+
+					
+					procedure move_B_end (
+						secondary_segment : in out type_net_segment) 
+					is begin
+						move_end_by (secondary_segment, displacement);
+					end move_B_end;
+
+					
+					status : type_connect_status;
+				begin
+					-- Iterate through the segments of the candidate strand
+					-- but skip the given primary segment, because we are 
+					-- interested in the segments which are connected with
+					-- the primary segment:
+					while has_element (secondary_segment_cursor) loop						
+						if secondary_segment_cursor /= primary_segment.segment_cursor then
+
+							-- Get the connection status of the secondary segment:
+							status := get_connect_status (
+								primary		=> primary_segment.segment_cursor,
+								AB_end		=> AB_end,							 
+								secondary	=> secondary_segment_cursor);
+
+							-- Depending on the connected end point
+							-- of the secondary segment, we now move
+							-- the end of the secondary segment.
+							-- If the secondary segment is not connected with
+							-- the primary segment then nothing happens:
+							if status = CON_STS_A then				
+								strand.segments.update_element (
+									secondary_segment_cursor, move_A_end'access);
+							end if;
+
+							if status = CON_STS_B then							
+								strand.segments.update_element (
+									secondary_segment_cursor, move_B_end'access);
+							end if;
+							
+						end if;
+						next (secondary_segment_cursor);
+					end loop;
+				end query_strand;
+
+				
+			begin
+				-- We care for the strand of the given primary segment only.
+				-- All other strands are irrelevant:
+				net.strands.update_element (
+					primary_segment.strand_cursor, query_strand'access);
+			end query_net;
+			
+		begin
+			module.nets.update_element (
+				primary_segment.net_cursor, query_net'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " move secondary net segments connected with primary segment " 
+			 & to_string (primary_segment),
+			level => log_threshold);
+
+		log (text => "at end point " & to_string (AB_end)
+			& " by " & to_string (displacement),
+			level => log_threshold);
+
+		log_indentation_up;
+		generic_modules.update_element (module_cursor, query_module'access);
+		log_indentation_down;		
+	end move_secondary_segments;
+
+
+	
 	
 
 
@@ -2040,20 +2186,27 @@ package body et_schematic_ops.nets is
 	
 	
 	
+
 	
 	procedure drag_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		-- point_of_attack	: in type_object_position; -- sheet/x/y
 		sheet			: in type_sheet;
 		catch_zone		: in type_catch_zone;
 		coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model; -- x/y, the new position 
 		log_threshold	: in type_log_level) 
 	is
-		net_cursor : pac_nets.cursor; -- points to the net
+		use pac_object_segments;
+		segments_in_zone : pac_object_segments.list;
+		primary_segment : type_object_segment; -- the segment being dragged
 
-		segment : type_object_segment;
+
+		displacement : type_vector_model;
+
+		-- The zone at which the segment is being attacked:
+		zone : type_line_zone;
+
 		
 
 		procedure no_segment is begin
@@ -2074,8 +2227,8 @@ package body et_schematic_ops.nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
-				strand_cursor : pac_strands.cursor := net.strands.first;
-				segment_found, strand_found : boolean := false;
+				-- strand_cursor : pac_strands.cursor := net.strands.first;
+				-- segment_found, strand_found : boolean := false;
 
 				
 				procedure query_strand (strand : in out type_strand) is
@@ -2111,13 +2264,6 @@ package body et_schematic_ops.nets is
 										move_end_by (segment, destination);
 								end case;										
 						end case;
-
-						-- CS
-						-- move_net_labels (
-						-- 	segment_before	=> segment_before,
-						-- 	segment_after	=> segment,
-						-- 	zone			=> zone);
-						
 					end move_targeted_segment;
 
 					
@@ -2331,7 +2477,7 @@ package body et_schematic_ops.nets is
 
 								-- Signal the caller to abort the search as a suitable
 								-- segment has been found now:
-								segment_found := true;
+								--segment_found := true;
 
 								-- no further search required
 								exit;
@@ -2346,7 +2492,7 @@ package body et_schematic_ops.nets is
 					end loop;
 
 					
-					if segment_found then
+					-- if segment_found then
 
 						-- MOVE SEGMENTS CONNECTED WITH THE TARGETED SEGMENT. 
 						-- Iterate in segments. skip targeted segment because it has been dragged
@@ -2377,46 +2523,88 @@ package body et_schematic_ops.nets is
 							position	=> segment_cursor_target,
 							process		=> connect_ports'access);
 
-					end if;
+					-- end if;
 				end query_strand;
 
+
 				
 				
-			begin -- query_net
-				-- Iterate through the strands.
-				-- Look only at strands that are on the given sheet. 
-				-- This loop ends prematurely as soon as a segment at 
-				-- the given point of attack has been found.
-				while not segment_found and has_element (strand_cursor) loop
-					
-					if get_sheet (strand_cursor) = sheet then
-						log (text => "searching strand at" & get_position (strand_cursor),
-							level => log_threshold + 1);
+				procedure query_strand_2 (strand : in out type_strand) is
+
+					-- This procedure moves the targeted primary segment
+					-- according to the attacked zone:
+					procedure query_segment (segment : in out type_net_segment) is
+
 						
-						-- Signal the that a strand has been found:
-						strand_found := true;
+						procedure move_primary_segment is begin
+							log_indentation_up;
+							
+							case coordinates is
+								when ABSOLUTE =>
+									log (text => "move primary segment absolute", level => log_threshold + 2);
+									attack (segment, get_center (catch_zone), destination);
 
-						net.strands.update_element (strand_cursor, query_strand'access);
-					end if;
+									-- Calculate the displacement required for
+									-- secondary segments which will be dragged along:
+									displacement := destination - get_center (catch_zone);
+
+									
+								when RELATIVE =>
+									log (text => "move primary segment relative", level => log_threshold + 2);
+									
+									case zone is
+										when START_POINT =>
+											move_start_by (segment, destination);
+
+										when END_POINT =>
+											move_end_by (segment, destination);
+											
+										when CENTER =>
+											move_start_by (segment, destination);
+											move_end_by (segment, destination);
+									end case;					
+									
+									-- Calculate the displacement required for
+									-- secondary segments which will be dragged along:
+									displacement := destination;
+							end case;
+
+							-- CS ? move simple net labels along with net segment ?
+							-- move_net_labels (
+							-- 	segment_before	=> segment_before,
+							-- 	segment_after	=> segment,
+							-- 	zone			=> zone);
+							
+							log_indentation_down;
+						end move_primary_segment;
+
+						
+					begin
+						-- Calculate the zone where the segment is being attacked:
+						zone := get_zone (segment, get_center (catch_zone));
+						log (text => "attack segment at " & to_string (zone), level => log_threshold + 1);
+
+						-- If the segment is movable then do the actual move:
+						if segment_is_movable (module_cursor, primary_segment, zone, log_threshold + 1) then
+							move_primary_segment;
+						else
+							log (text => "Segment is tied to a port. Dragging not possible !",
+								 level => log_threshold + 1);
+						end if;
+					end query_segment;
 					
-					next (strand_cursor);
-				end loop;
-
-				-- Issue warning if no strand or no net segment has been found.
-				if not strand_found or not segment_found then
-					no_segment;
-				end if;
+					
+				begin
+					strand.segments.update_element (primary_segment.segment_cursor, query_segment'access);
+				end query_strand_2;
 				
+				
+			begin
+				net.strands.update_element (primary_segment.strand_cursor, query_strand_2'access);
 			end query_net;
-
 			
 		begin
-			-- query the affected strands
-			update_element (
-				container	=> module.nets,
-				position	=> net_cursor,
-				process		=> query_net'access);
-			
+			module.nets.update_element (primary_segment.net_cursor, query_net'access);			
 		end query_module;
 
 
@@ -2438,31 +2626,46 @@ package body et_schematic_ops.nets is
 		end case;
 		
 
-		--segment := get_segments (module_cursor, sheet, catch_zone, log_threshold + 1);
-		
-		
-		-- locate the requested nets in the module
-		net_cursor := locate_net (module_cursor, net_name);
-
-		-- issue error if net does not exist:
-		if net_cursor = pac_nets.no_element then
-			net_not_found (net_name);
-		end if;
-
 		log_indentation_up;
 
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_module'access);
+		
+		-- Get all net segments which are in the given zone:
+		segments_in_zone := get_segments (module_cursor, sheet, catch_zone, log_threshold + 1);
 
-		update_ratsnest (module_cursor, log_threshold + 1);
+		-- Issue warning if nothing found in given zone.
+		-- Otherwise the first segment that has been found
+		-- will be subjected to a drag operation:
+		if is_empty (segments_in_zone) then
+			net_not_found (net_name);
+		else
+			primary_segment := first_element (segments_in_zone);		
+			generic_modules.update_element (module_cursor, query_module'access);
+
+
+			-- update strand position. CS: only if dragging took place
+			-- CS set_strand_position (strand);
+
+
+			-- move_secondary_segments (
+			-- 	module_cursor	=> module_cursor,
+			-- 	primary_segment	=> primary_segment,
+			-- 	AB_end			=> AB_end,
+			
+			-- In case new net-port connections are the 
+			-- outcome of the drag operation, then the ratsnest
+			-- in the board drawing must be updated:
+			update_ratsnest (module_cursor, log_threshold + 1);
+		end if;
+
 		
 		log_indentation_down;		
 	end drag_segment;
 
 
 
+
+
+	
 
 
 	procedure drag_segment (

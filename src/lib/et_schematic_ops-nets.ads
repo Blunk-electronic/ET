@@ -259,7 +259,7 @@ package et_schematic_ops.nets is
 	-- Whether the A or B end (or both) are affected
 	-- is determined according to the given point of attack.
 	-- If the related segment is connected with a port of 
-	-- any device, then it can not be moved.
+	-- any device, netchanger or submodule, then it can not be moved.
 	-- Returns true if movable, returns falso otherwise.
 	function segment_is_movable (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -272,7 +272,7 @@ package et_schematic_ops.nets is
 	-- Tests whether the given segment is movable
 	-- at the given end point (A or B).
 	-- If the given end point is connected with a port of 
-	-- any device, then it can not be moved.
+	-- any device, netchanger or submodule, then it can not be moved.
 	-- Returns true if movable, returns falso otherwise.
 	function segment_is_movable (
 		module_cursor	: in pac_generic_modules.cursor;
@@ -282,7 +282,31 @@ package et_schematic_ops.nets is
 		return boolean;
 
 
+	-- Tests whether the given segment is movable
+	-- at the given zone.
+	-- If the given end point is connected with a port of 
+	-- any device, netchanger or submodule, then it can not be moved.
+	-- Returns true if movable, returns falso otherwise.
+	function segment_is_movable (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		zone			: in type_line_zone;
+		log_threshold	: in type_log_level) 
+		return boolean;
 
+
+	-- This procedure takes a primary segment and
+	-- searches for secondary segments that are attached to
+	-- the A or B end and moves their ends by the given displacement:
+	procedure move_secondary_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		primary_segment	: in type_object_segment;
+		AB_end			: in type_start_end_point;
+		displacement	: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+		
+										  
 	-- Returns true if at the given place 
 	-- a net segment starts or ends:
 	function net_segment_at_place (

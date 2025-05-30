@@ -175,6 +175,31 @@ package et_net_segment is
 	-- 	segment_after	: in out type_net_segment;	-- the segment after the move
 	-- 	zone			: in type_line_zone);		-- the zone being moved
 
+
+	
+
+
+	
+-- CONNECT STATUS OF TWO SEGMENTS:
+
+	type type_connect_status is (CON_STS_A, CON_STS_B, CON_STS_NONE);
+
+	-- Tests whether the given primary segment is 
+	-- connected with the given secondary segment.
+	-- Starting at the primary segment and its end (A/B)
+	-- the ends of the secondary segment are tested:
+	function get_connect_status (
+		primary 	: in type_net_segment;
+		AB_end		: in type_start_end_point;
+		secondary	: in type_net_segment)
+		return type_connect_status;
+
+
+
+
+
+	
+	
 	
 	package pac_net_segments is new doubly_linked_lists (type_net_segment);
 	use pac_net_segments;
@@ -267,8 +292,21 @@ package et_net_segment is
 		segment 	: in pac_net_segments.cursor)
 		return boolean;
 
+
+
+
+
+	-- Similar to function get_connect_status (see above), 
+	-- but takes cursors to the primary and secondary segment:
+	function get_connect_status (
+		primary 	: in pac_net_segments.cursor;
+		AB_end		: in type_start_end_point;
+		secondary	: in pac_net_segments.cursor)
+		return type_connect_status;
 	
 
+
+	
 	net_line_width : constant type_distance_positive := 0.2;
 	-- CS rename to net_linewidth ?
 
