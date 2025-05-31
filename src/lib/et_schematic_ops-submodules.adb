@@ -1271,7 +1271,7 @@ package body et_schematic_ops.submodules is
 
 			-- Collect all ports of possible other devices, submodules and netchangers
 			-- at given point:
-			ports := ports_at_place (module_cursor, point, log_threshold + 1);
+			ports := get_ports (module_cursor, point, log_threshold + 1);
 
 			-- If no device or netchanger ports here:
 			if is_empty (ports.devices) and is_empty (ports.netchangers) then
@@ -2314,7 +2314,7 @@ package body et_schematic_ops.submodules is
 
 					-- Collect all ports of possible other devices, submodules and netchangers
 					-- at given point:
-					ports := ports_at_place (module_cursor, point, log_threshold + 2);
+					ports := get_ports (module_cursor, point, log_threshold + 2);
 
 					-- If no device and no submodule ports here:
 					if is_empty (ports.devices) and is_empty (ports.submodules) then

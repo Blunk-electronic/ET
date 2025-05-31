@@ -677,7 +677,7 @@ package body et_schematic_ops is
 
 	
 	
-	function ports_at_place (
+	function get_ports (
 		module_cursor	: in pac_generic_modules.cursor;
 		place			: in type_object_position;
 		log_threshold	: in type_log_level)
@@ -719,7 +719,7 @@ package body et_schematic_ops is
 							-- Insert the port in the portlist to be returned:
 							pac_device_ports.insert 
 								(
-								container	=> ports_at_place.ports.devices,
+								container	=> get_ports.ports.devices,
 								new_item	=> 
 									(
 									device_name => key (device_cursor),
@@ -791,7 +791,7 @@ package body et_schematic_ops is
 						-- Insert the port in the portlist to be returned:
 						pac_submodule_ports.insert 
 							(
-							container	=> ports_at_place.ports.submodules,
+							container	=> get_ports.ports.submodules,
 							new_item	=> 
 								(
 								module_name => key (submodule_cursor),
@@ -826,7 +826,7 @@ package body et_schematic_ops is
 				netchanger_position : type_object_position;
 				ports : et_submodules.type_netchanger_ports;
 				use et_netlists;
-			begin -- query_netchangers
+			begin
 				netchanger_position := element (netchanger_cursor).position_sch;
 
 				-- Look at netchangers on the given sheet of place:
@@ -851,7 +851,7 @@ package body et_schematic_ops is
 						-- Insert the port in the portlist to be returned:
 						pac_netchanger_ports.insert 
 							(
-							container	=> ports_at_place.ports.netchangers,
+							container	=> get_ports.ports.netchangers,
 							new_item	=> 
 								(
 								index	=> key (netchanger_cursor),
@@ -869,7 +869,7 @@ package body et_schematic_ops is
 						-- Insert the port in the portlist to be returned:
 						pac_netchanger_ports.insert 
 							(
-							container	=> ports_at_place.ports.netchangers,
+							container	=> get_ports.ports.netchangers,
 							new_item	=> 
 								(
 								index	=> key (netchanger_cursor),
@@ -890,21 +890,21 @@ package body et_schematic_ops is
 		end query_module;
 
 		
-	begin -- ports_at_place
-		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
-			 " locating ports at" & to_string (position => place),
-			 level => log_threshold);
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " locating ports at " & to_string (position => place),
+			level => log_threshold);
 
 		log_indentation_up;
 		
-
 		query_element (
 			position	=> module_cursor,
 			process		=> query_module'access);
 
 		log_indentation_down;
+		
 		return ports;
-	end ports_at_place;
+	end get_ports;
 
 
 	

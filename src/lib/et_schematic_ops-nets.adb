@@ -2201,12 +2201,17 @@ package body et_schematic_ops.nets is
 		segments_in_zone : pac_object_segments.list;
 		primary_segment : type_object_segment; -- the segment being dragged
 
-
+		-- When the primary segment has been moved, then we get
+		-- a certain displacement which is later required to move 
+		-- connected secondary segments along:
 		displacement : type_vector_model;
 
 		-- The zone at which the segment is being attacked:
 		zone : type_line_zone;
 
+		-- The point of attack at which the segment will be grabbed.
+		-- It is simply the center of the given catch zone:
+		POA : constant type_vector_model := get_center (catch_zone);
 		
 
 		procedure no_segment is begin
@@ -2231,7 +2236,7 @@ package body et_schematic_ops.nets is
 				-- segment_found, strand_found : boolean := false;
 
 				
-				procedure query_strand (strand : in out type_strand) is
+				procedure query_strand (strand : in out type_strand) is -- CS remove
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 					segment_cursor_target : pac_net_segments.cursor;
 					target_segment_before : type_net_segment;
@@ -2364,68 +2369,62 @@ package body et_schematic_ops.nets is
 					procedure connect_ports (segment : in out type_net_segment) is
 						ports : type_ports;
 
-						-- Append the portlists obtained from function ports_at_place
+						-- Append the portlists obtained via function get_ports
 						-- to the segment.
 						-- CS: Special threatment required if a port is among the portlists
 						-- that is already somewhere in the strand. 
 						-- This particular port must be exempted from the appending.
 						-- Currently only the integrity check (procedure check_integrity)
 						-- detects this rare case.
-						procedure append_portlists is begin
-							pac_device_ports.union (segment.ports.devices, ports.devices);
-							pac_submodule_ports.union (segment.ports.submodules, ports.submodules);
-							et_netlists.pac_netchanger_ports.union (segment.ports.netchangers, ports.netchangers);
+						procedure append_portlists is 
+							use pac_device_ports;
+							use pac_submodule_ports;
+							use et_netlists.pac_netchanger_ports;
+						begin
+							segment.ports.devices.union (ports.devices);
+							segment.ports.submodules.union (ports.submodules);
+							segment.ports.netchangers.union (ports.netchangers);
 						end append_portlists;
 
+
+						A_end : constant type_object_position := 
+							to_position (get_A (segment), sheet);
+
+						B_end : constant type_object_position := 
+							to_position (get_B (segment), sheet);
 						
-					begin -- connect_ports
+					begin
 						case zone is
 							when START_POINT =>
-								ports := ports_at_place 
-									(
+								ports := get_ports (
 									module_cursor	=> module_cursor, 
-									place 			=> to_position (
-													point => get_A (segment),
-													sheet => sheet),
-									log_threshold => log_threshold + 1
-									);
+									place 			=> A_end,
+									log_threshold	=> log_threshold + 1);
 
 								append_portlists;
 
 								
 							when END_POINT =>
-								ports := ports_at_place 
-									(
+								ports := get_ports (
 									module_cursor	=> module_cursor, 
-									place 			=> to_position (
-													point => get_B (segment),
-													sheet => sheet),
-									log_threshold => log_threshold + 1
-									);
+									place 			=> B_end,
+									log_threshold	=> log_threshold + 1);
 
 								append_portlists;
 
 								
 							when CENTER =>
-								ports := ports_at_place 
-									(
+								ports := get_ports (
 									module_cursor	=> module_cursor, 
-									place 			=> to_position (
-													point => get_A (segment),
-													sheet => sheet),
-									log_threshold => log_threshold + 1
-									);
+									place 			=> A_end,
+									log_threshold	=> log_threshold + 1);
 
 								append_portlists;
 								
-								ports := ports_at_place 
-									(
+								ports := get_ports (
 									module_cursor	=> module_cursor, 
-									place 			=> to_position (
-													point => get_B (segment),
-													sheet => sheet),
-									log_threshold => log_threshold + 1
-									);
+									place 			=> B_end,
+									log_threshold	=> log_threshold + 1);
 								
 								append_portlists;
 						end case;
@@ -2533,40 +2532,69 @@ package body et_schematic_ops.nets is
 
 					-- This procedure moves the targeted primary segment
 					-- according to the attacked zone:
-					procedure query_segment (segment : in out type_net_segment) is
+					procedure move_primary_segment (segment : in out type_net_segment) is
 
 						
-						procedure move_primary_segment is begin
+						procedure move_primary_segment is 
+
+							procedure move_absolute is
+								-- In order to compute the displacement of secondary
+								-- segments, we need a backup of the primary segment
+								-- as it is before the move operation:
+								segment_old : constant type_net_segment := segment;
+							begin
+								log (text => "move primary segment absolute", level => log_threshold + 2);
+
+								-- The displacement depends on which zone of the
+								-- segment is attacked. By the displacement the actual
+								-- end point (A/B) will then be moved:
+								case zone is
+									when START_POINT =>
+										displacement := destination - get_A (segment_old);
+										move_start_by (segment, displacement);
+										
+									when END_POINT =>
+										displacement := destination - get_B (segment_old);
+										move_end_by (segment, displacement);
+										
+									when CENTER =>
+										displacement := destination - POA;
+										move_start_by (segment, displacement);
+										move_end_by (segment, displacement);
+								end case;
+							end move_absolute;
+
+
+							
+							procedure move_relative is begin
+								log (text => "move primary segment relative", level => log_threshold + 2);
+								
+								-- Set the displacement required for
+								-- secondary segments which will be dragged along.
+								-- Since we are dragging relative, the displacement is
+								-- the same as the given destination:
+								displacement := destination;
+								
+								case zone is
+									when START_POINT =>
+										move_start_by (segment, displacement);
+
+									when END_POINT =>
+										move_end_by (segment, displacement);
+										
+									when CENTER =>
+										move_start_by (segment, displacement);
+										move_end_by (segment, displacement);
+								end case;					
+							end move_relative;
+
+							
+						begin
 							log_indentation_up;
 							
 							case coordinates is
-								when ABSOLUTE =>
-									log (text => "move primary segment absolute", level => log_threshold + 2);
-									attack (segment, get_center (catch_zone), destination);
-
-									-- Calculate the displacement required for
-									-- secondary segments which will be dragged along:
-									displacement := destination - get_center (catch_zone);
-
-									
-								when RELATIVE =>
-									log (text => "move primary segment relative", level => log_threshold + 2);
-									
-									case zone is
-										when START_POINT =>
-											move_start_by (segment, destination);
-
-										when END_POINT =>
-											move_end_by (segment, destination);
-											
-										when CENTER =>
-											move_start_by (segment, destination);
-											move_end_by (segment, destination);
-									end case;					
-									
-									-- Calculate the displacement required for
-									-- secondary segments which will be dragged along:
-									displacement := destination;
+								when ABSOLUTE	=> move_absolute;									
+								when RELATIVE	=> move_relative;							
 							end case;
 
 							-- CS ? move simple net labels along with net segment ?
@@ -2581,7 +2609,7 @@ package body et_schematic_ops.nets is
 						
 					begin
 						-- Calculate the zone where the segment is being attacked:
-						zone := get_zone (segment, get_center (catch_zone));
+						zone := get_zone (segment, POA);
 						log (text => "attack segment at " & to_string (zone), level => log_threshold + 1);
 
 						-- If the segment is movable then do the actual move:
@@ -2591,11 +2619,95 @@ package body et_schematic_ops.nets is
 							log (text => "Segment is tied to a port. Dragging not possible !",
 								 level => log_threshold + 1);
 						end if;
-					end query_segment;
+					end move_primary_segment;
 					
+
+
+					-- Looks up ports of devices, netchangers or submodules that are 
+					-- to be connected with the segment. The place where ports are
+					-- searched depends on the zone that has been moved.
+					-- (The given segment sits already at the new position.)
+					procedure connect_ports (segment : in out type_net_segment) is
+						ports : type_ports;
+
+						-- Append the portlists obtained via function get_ports
+						-- to the segment.
+						-- CS: Special threatment required if a port is among the portlists
+						-- that is already somewhere in the strand. 
+						-- This particular port must be exempted from the appending.
+						-- Currently only the integrity check (procedure check_integrity)
+						-- detects this rare case.
+						procedure append_portlists is 
+							use pac_device_ports;
+							use pac_submodule_ports;
+							use et_netlists.pac_netchanger_ports;
+						begin
+							segment.ports.devices.union (ports.devices);
+							segment.ports.submodules.union (ports.submodules);
+							segment.ports.netchangers.union (ports.netchangers);
+						end append_portlists;
+
+
+						A_end : constant type_object_position := 
+							to_position (get_A (segment), sheet);
+
+						B_end : constant type_object_position := 
+							to_position (get_B (segment), sheet);
+						
+					begin
+						case zone is
+							when START_POINT =>
+								ports := get_ports (
+									module_cursor	=> module_cursor, 
+									place 			=> A_end,
+									log_threshold	=> log_threshold + 1);
+
+								append_portlists;
+
+								
+							when END_POINT =>
+								ports := get_ports (
+									module_cursor	=> module_cursor, 
+									place 			=> B_end,
+									log_threshold	=> log_threshold + 1);
+
+								append_portlists;
+
+								
+							when CENTER =>
+								ports := get_ports (
+									module_cursor	=> module_cursor, 
+									place 			=> A_end,
+									log_threshold	=> log_threshold + 1);
+
+								append_portlists;
+								
+								ports := get_ports (
+									module_cursor	=> module_cursor, 
+									place 			=> B_end,
+									log_threshold	=> log_threshold + 1);
+								
+								append_portlists;
+						end case;
+					end connect_ports;
+
 					
 				begin
-					strand.segments.update_element (primary_segment.segment_cursor, query_segment'access);
+					strand.segments.update_element (
+						primary_segment.segment_cursor, move_primary_segment'access);
+
+					-- If a movement took place then look for ports
+					-- which must now be connected with the segment:
+					if displacement /= origin then
+						-- Look for ports at the start/end points of the segment.
+						-- The segment is now at the new position (either start point 
+						-- or end point or both).
+						-- If any port (of a device, netchanger or submodule) sits there,
+						-- then it must be connected with the segment. 
+						-- That means adding these ports to the segment.
+						strand.segments.update_element (
+							primary_segment.segment_cursor, connect_ports'access);
+					end if;
 				end query_strand_2;
 				
 				
@@ -2645,16 +2757,48 @@ package body et_schematic_ops.nets is
 			-- update strand position. CS: only if dragging took place
 			-- CS set_strand_position (strand);
 
+			-- Move connected secondary segments if the primary
+			-- segment has been moved. In this case the displacement is non-zero:
+			if displacement /= origin then
+				case zone is
+					when START_POINT =>
+						move_secondary_segments (
+							module_cursor	=> module_cursor,
+							primary_segment	=> primary_segment,
+							AB_end			=> A,
+							displacement	=> displacement,
+							log_threshold	=> log_threshold + 1);
+							
+					when END_POINT =>
+						move_secondary_segments (
+							module_cursor	=> module_cursor,
+							primary_segment	=> primary_segment,
+							AB_end			=> B,
+							displacement	=> displacement,
+							log_threshold	=> log_threshold + 1);
 
-			-- move_secondary_segments (
-			-- 	module_cursor	=> module_cursor,
-			-- 	primary_segment	=> primary_segment,
-			-- 	AB_end			=> AB_end,
-			
-			-- In case new net-port connections are the 
-			-- outcome of the drag operation, then the ratsnest
-			-- in the board drawing must be updated:
-			update_ratsnest (module_cursor, log_threshold + 1);
+					when CENTER =>
+						move_secondary_segments (
+							module_cursor	=> module_cursor,
+							primary_segment	=> primary_segment,
+							AB_end			=> A,
+							displacement	=> displacement,
+							log_threshold	=> log_threshold + 1);
+
+						move_secondary_segments (
+							module_cursor	=> module_cursor,
+							primary_segment	=> primary_segment,
+							AB_end			=> B,
+							displacement	=> displacement,
+							log_threshold	=> log_threshold + 1);
+				end case;
+
+				
+				-- In case new net-port connections are the 
+				-- outcome of the drag operation, then the ratsnest
+				-- in the board drawing must be updated:
+				update_ratsnest (module_cursor, log_threshold + 1);
+			end if;					
 		end if;
 
 		
@@ -3009,7 +3153,7 @@ package body et_schematic_ops.nets is
 			
 			-----------
 			-- look for any ports at start point of the new net segment
-			ports := ports_at_place (
+			ports := get_ports (
 					module_cursor	=> module_cursor, 
 					place			=> to_position (
 										sheet => sheet,
@@ -3020,7 +3164,7 @@ package body et_schematic_ops.nets is
 
 			-- look for any ports at end point of the new net segment
 			-- The end point is just x/y. The sheet must be derived from the start point.
-			ports := ports_at_place (
+			ports := get_ports (
 					module_cursor	=> module_cursor, 
 					place			=> to_position (
 										sheet => sheet,
@@ -3236,7 +3380,7 @@ package body et_schematic_ops.nets is
 				strand : type_strand; -- the new strand
 			begin				
 				-- look for any ports at start point of the new net segment
-				ports := ports_at_place (
+				ports := get_ports (
 						module_cursor	=> module_cursor, 
 						place			=> to_position (
 											sheet	=> sheet,
@@ -3246,7 +3390,7 @@ package body et_schematic_ops.nets is
 				assign_ports_to_segment;
 
 				-- look for any ports at end point of the new net segment
-				ports := ports_at_place (
+				ports := get_ports (
 						module_cursor	=> module_cursor, 
 						place			=> to_position (
 											sheet => sheet,
@@ -3413,7 +3557,7 @@ package body et_schematic_ops.nets is
 					if dead_end (strand_at_start) or junction_at_A.required then
 						
 						-- look for any ports at start point of the new segment
-						ports := ports_at_place (
+						ports := get_ports (
 								module_cursor	=> module_cursor, 
 								place			=> to_position (
 													sheet	=> sheet,
@@ -3449,7 +3593,7 @@ package body et_schematic_ops.nets is
 					if dead_end (strand_at_end) or junction_at_B.required then
 
 						-- look for any ports at end point of the new segment
-						ports := ports_at_place (
+						ports := get_ports (
 								module_cursor	=> module_cursor, 
 								place			=> to_position (
 													sheet => sheet,
@@ -5395,7 +5539,7 @@ package body et_schematic_ops.nets is
 		log (text => "querying stub at" & to_string (position), level => log_threshold);
 
 		-- Query ports at the given position.
-		ports := ports_at_place (module_cursor, position, log_threshold + 1);
+		ports := get_ports (module_cursor, position, log_threshold + 1);
 		
 		-- If there are no ports then examine the net further.
 		-- If there are devices, submodule or netchanger ports, then the given position
