@@ -1896,6 +1896,7 @@ package body et_schematic_ops.nets is
 	procedure move_secondary_segments (
 		module_cursor	: in pac_generic_modules.cursor;
 		primary_segment	: in type_object_segment;
+		original_segment: in type_net_segment;
 		AB_end			: in type_start_end_point;
 		displacement	: in type_vector_model;
 		log_threshold	: in type_log_level)
@@ -1931,21 +1932,30 @@ package body et_schematic_ops.nets is
 					end move_B_end;
 
 					
+					-- The connection status of original primary segment
+					-- and candidate secondary segment:
 					status : type_connect_status;
 				begin
 					-- Iterate through the segments of the candidate strand
 					-- but skip the given primary segment, because we are 
 					-- interested in the segments which are connected with
-					-- the primary segment:
+					-- the primary segment. The cursor to the primary segment
+					-- is used in order to identify it among the segments
+					-- of the strand. The actual segment state is the one AFTER
+					-- the drag operation (see specs of move_secondary_segments),
+					-- but the cursor still points to it.
 					while has_element (secondary_segment_cursor) loop						
 						if secondary_segment_cursor /= primary_segment.segment_cursor then
 
-							-- Get the connection status of the secondary segment:
+							-- In order to figure out whether the secondary segment
+							-- candidate is connected with the primary segment,
+							-- we use the original primary segment because it
+							-- provides the state BEFORE the drag operation:
 							status := get_connect_status (
-								primary		=> primary_segment.segment_cursor,
-								AB_end		=> AB_end,							 
-								secondary	=> secondary_segment_cursor);
-
+								primary		=> original_segment,
+								AB_end		=> AB_end, -- the end (A/B) of the primary segment								
+								secondary	=> element (secondary_segment_cursor));
+							
 							-- Depending on the connected end point
 							-- of the secondary segment, we now move
 							-- the end of the secondary segment.
@@ -1983,7 +1993,7 @@ package body et_schematic_ops.nets is
 	begin
 		log (text => "module " & to_string (module_cursor)
 			 & " move secondary net segments connected with primary segment " 
-			 & to_string (primary_segment),
+			 & to_string (original_segment),
 			level => log_threshold);
 
 		log (text => "at end point " & to_string (AB_end)
@@ -1991,7 +2001,12 @@ package body et_schematic_ops.nets is
 			level => log_threshold);
 
 		log_indentation_up;
+		
+		-- By means of the given primary segment we have prompt access 
+		-- to it, because we have a cursor to the net, the strand and to
+		-- the actual segment:
 		generic_modules.update_element (module_cursor, query_module'access);
+		
 		log_indentation_down;		
 	end move_secondary_segments;
 
@@ -2201,6 +2216,15 @@ package body et_schematic_ops.nets is
 		segments_in_zone : pac_object_segments.list;
 		primary_segment : type_object_segment; -- the segment being dragged
 
+
+		-- Other segments which might be connected with the segment
+		-- being attacked must be dragged along.
+		-- In order to compute the displacement of secondary
+		-- segments, we need a backup of the primary segment
+		-- as it was before the move operation:
+		segment_old : type_net_segment;
+
+		
 		-- When the primary segment has been moved, then we get
 		-- a certain displacement which is later required to move 
 		-- connected secondary segments along:
@@ -2537,12 +2561,7 @@ package body et_schematic_ops.nets is
 						
 						procedure move_primary_segment is 
 
-							procedure move_absolute is
-								-- In order to compute the displacement of secondary
-								-- segments, we need a backup of the primary segment
-								-- as it is before the move operation:
-								segment_old : constant type_net_segment := segment;
-							begin
+							procedure move_absolute is begin
 								log (text => "move primary segment absolute", level => log_threshold + 2);
 
 								-- The displacement depends on which zone of the
@@ -2590,7 +2609,14 @@ package body et_schematic_ops.nets is
 
 							
 						begin
+							-- In order to compute the displacement of secondary
+							-- segments, we need a backup of the primary segment
+							-- as it is before the move operation:
+							segment_old := segment;
+							
 							log_indentation_up;
+
+							
 							
 							case coordinates is
 								when ABSOLUTE	=> move_absolute;									
@@ -2765,6 +2791,7 @@ package body et_schematic_ops.nets is
 						move_secondary_segments (
 							module_cursor	=> module_cursor,
 							primary_segment	=> primary_segment,
+							original_segment=> segment_old,
 							AB_end			=> A,
 							displacement	=> displacement,
 							log_threshold	=> log_threshold + 1);
@@ -2773,6 +2800,7 @@ package body et_schematic_ops.nets is
 						move_secondary_segments (
 							module_cursor	=> module_cursor,
 							primary_segment	=> primary_segment,
+							original_segment=> segment_old,
 							AB_end			=> B,
 							displacement	=> displacement,
 							log_threshold	=> log_threshold + 1);
@@ -2781,6 +2809,7 @@ package body et_schematic_ops.nets is
 						move_secondary_segments (
 							module_cursor	=> module_cursor,
 							primary_segment	=> primary_segment,
+							original_segment=> segment_old,
 							AB_end			=> A,
 							displacement	=> displacement,
 							log_threshold	=> log_threshold + 1);
@@ -2788,6 +2817,7 @@ package body et_schematic_ops.nets is
 						move_secondary_segments (
 							module_cursor	=> module_cursor,
 							primary_segment	=> primary_segment,
+							original_segment=> segment_old,
 							AB_end			=> B,
 							displacement	=> displacement,
 							log_threshold	=> log_threshold + 1);

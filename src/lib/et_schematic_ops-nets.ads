@@ -297,11 +297,18 @@ package et_schematic_ops.nets is
 
 	-- This procedure takes a primary segment and
 	-- searches for secondary segments that are attached to
-	-- the A or B end and moves their ends by the given displacement:
+	-- the A or B end of the primary segment and moves their
+	-- ends by the given displacement.
+	-- The given primary segment is a composite type
+	-- that provides cursors to net, strand and segment AFTER
+	-- dragging of the the primary segment. So the state of the
+	-- primary segment BEFORE must also be known. For this reason
+	-- we also pass the original primary segment also:
 	procedure move_secondary_segments (
 		module_cursor	: in pac_generic_modules.cursor;
-		primary_segment	: in type_object_segment;
-		AB_end			: in type_start_end_point;
+		primary_segment	: in type_object_segment; -- new state of primary segment
+		original_segment: in type_net_segment; -- original state of the primary segment
+		AB_end			: in type_start_end_point; -- A/B of primary segment
 		displacement	: in type_vector_model;
 		log_threshold	: in type_log_level);
 
@@ -327,11 +334,16 @@ package et_schematic_ops.nets is
 	
 	-- Drags a segment of a net. The segment to be modified
 	-- is searched for in the given catch zone on the given sheet.
-	-- If the segment meets a port, then the port 
-	-- will be connected with the net.
+	-- We call this segment "primary segment". Other segments which
+	-- might be connected with it are called "secondary segments".
+	-- The secondary segments will be dragged along with the primary segment.
+	-- If the primary segment is dragged to a place where it meets a port
+	-- of a device, netchanger or submodule, then the segment will be 
+	-- connected with that port.
 	-- NOTE: If the segment meets another net, then these 
 	-- two nets will NOT be connected.
-	-- CS: The resulting overlapping segments should be detected by the ERC.
+	-- CS: The resulting overlapping segments should be detected by the ERC
+	-- or better the drag operation should be rejected.
 	procedure drag_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
