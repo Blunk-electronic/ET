@@ -87,6 +87,12 @@ package et_schematic_ops.nets is
 		return string;
 
 
+	-- Returns the sheet number of the given net segment:
+	function get_sheet (
+		object	: in type_object_segment)
+		return type_sheet;
+
+	
 	package pac_object_segments is new doubly_linked_lists (type_object_segment);
 
 	
@@ -340,15 +346,21 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 	
 
+	-- This procedure moves a given primary net segment
+	-- which is attacked by the point of attack (POA).
+	-- It computes the zone that is being attcked
+	-- and the displacement (useful for other segments
+	-- connected with the primary segment).
+	-- Outputs also the original old primary segment
+	-- (also required to drag secondary segments along):
 	procedure move_primary_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		primary_segment	: in type_object_segment;
-		sheet			: in type_sheet;
 		POA				: in type_vector_model;
 		coordinates		: in type_coordinates; -- relative/absolute
 		destination		: in type_vector_model; -- x/y, the new position 
-		zone			: in out type_line_zone;
-		displacement	: in out type_vector_model;
+		zone			: out type_line_zone;
+		displacement	: out type_vector_model;
 		segment_old		: in out type_net_segment;
 		log_threshold	: in type_log_level);
 
