@@ -339,6 +339,19 @@ package et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 	
+
+	procedure move_primary_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		primary_segment	: in type_object_segment;
+		sheet			: in type_sheet;
+		POA				: in type_vector_model;
+		coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model; -- x/y, the new position 
+		zone			: in out type_line_zone;
+		displacement	: in out type_vector_model;
+		segment_old		: in out type_net_segment;
+		log_threshold	: in type_log_level);
+
 	
 	-- Drags a segment of a net. The segment to be modified
 	-- is searched for in the given catch zone on the given sheet.
@@ -368,11 +381,8 @@ package et_schematic_ops.nets is
 	--       CS: The resulting overlapping segments should be detected by the ERC.
 	procedure drag_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_cursor		: in pac_nets.cursor;
-		strand_cursor	: in pac_strands.cursor;
-		segment_cursor	: in pac_net_segments.cursor;
-		point_of_attack	: in type_vector_model;
-		coordinates		: in type_coordinates; -- relative/absolute
+		primary_segment	: in type_object_segment;
+		POA				: in type_vector_model;
 		destination		: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level);
 
