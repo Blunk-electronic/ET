@@ -6459,13 +6459,11 @@ package body et_schematic_ops.nets is
 			if segment_is_movable (
 				module_cursor, element (object_cursor).segment, AB, log_threshold + 1)
 			then
-				granted := true;
 				return true;
 			else
 				log (text => "Segment can not be moved at end " & to_string (AB),
 					 level => log_threshold + 1);
 
-				granted := false;
 				return false;
 			end if;
 		end;
@@ -6534,6 +6532,12 @@ package body et_schematic_ops.nets is
 					begin
 						log (text => "attack at " & to_string (zone), level => log_threshold + 1);
 						log_indentation_up;
+
+						-- By default granting the drag operation is not allowed.
+						-- Depending on the attacked zone and the "movable-test"
+						-- this flag is set so that the caller gets feedback whether
+						-- dragging is allowed or not:
+						granted := false;
 						
 						case zone is
 							when START_POINT =>
@@ -6541,24 +6545,26 @@ package body et_schematic_ops.nets is
 									-- put_line ("set A moving");
 									set_A_moving (seg);
 									object_original_position := get_A (seg);
-								else
-									null;
-									-- put_line ("set A NOT moving");
+									granted := true;
 								end if;
 									
 							when END_POINT =>
 								if is_movable (B) then
+									-- put_line ("set B moving");
 									set_B_moving (seg);
 									object_original_position := get_B (seg);
+									granted := true;
 								end if;
 
 							when CENTER =>
 								-- If the segment is attacked at its center,
 								-- then both ends must be movable:
 								if is_movable (A) and is_movable (B) then
+									-- put_line ("set A and B moving");
 									set_A_moving (seg);
-									set_B_moving (seg);
+									set_B_moving (seg);									
 									object_original_position := point_of_attack;
+									granted := true;
 								end if;
 						end case;
 
