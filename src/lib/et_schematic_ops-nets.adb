@@ -2237,13 +2237,6 @@ package body et_schematic_ops.nets is
 		-- It is simply the center of the given catch zone:
 		POA : constant type_vector_model := get_center (catch_zone);
 		
-
-		procedure no_segment is begin
-			-- log (WARNING, "No segment found at " & to_string (position => point_of_attack) &
-			--  ". Check net name and position !");
-			log (WARNING, "No segment found.", level => log_threshold);
-		end;
-
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
@@ -2256,303 +2249,9 @@ package body et_schematic_ops.nets is
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
-				-- strand_cursor : pac_strands.cursor := net.strands.first;
-				-- segment_found, strand_found : boolean := false;
 
 				
-				procedure query_strand (strand : in out type_strand) is -- CS remove
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-					segment_cursor_target : pac_net_segments.cursor;
-					target_segment_before : type_net_segment;
-
-					zone : type_line_zone;
-
-					
-					procedure move_targeted_segment (
-						segment : in out type_net_segment) 
-					is 
-						-- backup the segment as it was before the move/drag:
-						segment_before : constant type_net_segment := segment;
-					begin
-						case coordinates is
-							when ABSOLUTE =>
-								--log (text => "move targeted segment absolute", level => log_threshold + 3);
-								attack (segment, get_center (catch_zone), destination);
-
-							when RELATIVE =>
-								--log (text => "move targeted segment relative", level => log_threshold + 3);
-								case zone is
-									when START_POINT =>
-										move_start_by (segment, destination);
-
-									when END_POINT =>
-										move_end_by (segment, destination);
-										
-									when CENTER =>
-										move_start_by (segment, destination);
-										move_end_by (segment, destination);
-								end case;										
-						end case;
-					end move_targeted_segment;
-
-					
-					
-					-- This procedure moves the start/end points of segments that are connected
-					-- with the target_segment_before.
-					procedure move_connected_segment (
-						connected_segment : in out type_net_segment) 
-					is 
-
-						-- backup the segment as it was before the move/drag:
-						segment_before : constant type_net_segment := connected_segment;
-
-						
-						procedure copy_A is begin
-							if get_A (connected_segment) = get_A (target_segment_before) then
-								
-								-- The connected segment is being dragged at its start point:
-								set_A (connected_segment, get_A (segment_cursor_target));
-
-								-- CS
-								-- move_net_labels (
-								-- 	segment_before	=> segment_before,
-								-- 	segment_after	=> connected_segment,
-								-- 	zone			=> START_POINT);
-
-							end if;
-
-							if get_B (connected_segment)= get_A (target_segment_before) then
-								
-								-- The connected segment is being dragged at its end point:
-								set_B (connected_segment, get_A (segment_cursor_target));
-
-								-- CS
-								-- move_net_labels (
-								-- 	segment_before	=> segment_before,
-								-- 	segment_after	=> connected_segment,
-								-- 	zone			=> END_POINT);
-
-							end if;
-						end;
-
-						
-						procedure copy_B is begin
-							if get_A (connected_segment) = get_B (target_segment_before) then
-
-								-- The connected segment is being dragged at its start point:
-								set_A (connected_segment, get_B (segment_cursor_target));
-
-								-- CS
-								-- move_net_labels (
-								-- 	segment_before	=> segment_before,
-								-- 	segment_after	=> connected_segment,
-								-- 	zone			=> START_POINT);
-
-							end if;
-
-							if get_B (connected_segment) = get_B (target_segment_before) then
-								-- The connected segment is being dragged at its end point:
-								
-								set_B (connected_segment, get_B (segment_cursor_target));
-
-								-- CS
-								-- move_net_labels (
-								-- 	segment_before	=> segment_before,
-								-- 	segment_after	=> connected_segment,
-								-- 	zone			=> END_POINT);
-
-							end if;
-						end;
-
-						
-					begin -- move_connected_segment
-						case zone is
-							when START_POINT => 
-								-- The segment start or end point moves to the targeted segment start point.
-								copy_A; 
-								
-							when END_POINT => 
-								-- The segment start or end point moves to the targeted segment end point.
-								copy_B;
-								
-							when CENTER => 
-								-- The segment start or end point moves to the targeted segment start point.
-								copy_A; 
-
-								-- The segment start or end point moves to the targeted segment end point.
-								copy_B;
-						end case;
-					end move_connected_segment;
-
-					
-					
-					-- Looks up ports of devices, netchangers or submodules that are 
-					-- to be connected with the segment. The place where ports are
-					-- searched depends on the zone that has been moved.
-					-- (The given segment sits already at the new position.)
-					procedure connect_ports (segment : in out type_net_segment) is
-						ports : type_ports;
-
-						-- Append the portlists obtained via function get_ports
-						-- to the segment.
-						-- CS: Special threatment required if a port is among the portlists
-						-- that is already somewhere in the strand. 
-						-- This particular port must be exempted from the appending.
-						-- Currently only the integrity check (procedure check_integrity)
-						-- detects this rare case.
-						procedure append_portlists is 
-							use pac_device_ports;
-							use pac_submodule_ports;
-							use et_netlists.pac_netchanger_ports;
-						begin
-							segment.ports.devices.union (ports.devices);
-							segment.ports.submodules.union (ports.submodules);
-							segment.ports.netchangers.union (ports.netchangers);
-						end append_portlists;
-
-
-						A_end : constant type_object_position := 
-							to_position (get_A (segment), sheet);
-
-						B_end : constant type_object_position := 
-							to_position (get_B (segment), sheet);
-						
-					begin
-						case zone is
-							when START_POINT =>
-								ports := get_ports (
-									module_cursor	=> module_cursor, 
-									place 			=> A_end,
-									log_threshold	=> log_threshold + 1);
-
-								append_portlists;
-
-								
-							when END_POINT =>
-								ports := get_ports (
-									module_cursor	=> module_cursor, 
-									place 			=> B_end,
-									log_threshold	=> log_threshold + 1);
-
-								append_portlists;
-
-								
-							when CENTER =>
-								ports := get_ports (
-									module_cursor	=> module_cursor, 
-									place 			=> A_end,
-									log_threshold	=> log_threshold + 1);
-
-								append_portlists;
-								
-								ports := get_ports (
-									module_cursor	=> module_cursor, 
-									place 			=> B_end,
-									log_threshold	=> log_threshold + 1);
-								
-								append_portlists;
-						end case;
-					end connect_ports;						
-
-					
-					
-				begin -- query_strand
-					-- Iterate through the segments of the candidate net:
-					
-					-- MOVE TARGETED SEGMENT
-					while has_element (segment_cursor) loop
-
-						-- If segment crosses the given x/y position (in point_of_attack) then
-						-- the segment has been found:
-						if on_segment (
-							catch_zone	=> catch_zone,
-							segment		=> segment_cursor)
-						then
-							--log (text => "point of attack sits on segment", level => log_threshold + 1);
-							
-							-- Calculate the zone of attack:
-							zone := get_zone (
-								point	=> get_center (catch_zone),
-								line	=> element (segment_cursor));
-
-							-- depending on zone, drag start point, end point or both
-							log (text => "dragging " & to_string (element (segment_cursor))
-								& " at " & type_line_zone'image (zone), level => log_threshold + 1);
-
-							-- Test whether the zone is movable. If not movable, nothing happens.
-							if segment_is_movable (
-								module_cursor, element (segment_cursor), 
-									to_position (get_center (catch_zone), sheet),
-									log_threshold + 1)
-							then
-								
-								-- Backup the cursor of the targeted segment.
-								-- Backup the segment as it was BEFORE the dragging.
-								-- They are required later.
-								segment_cursor_target := segment_cursor;
-								target_segment_before := element (segment_cursor);
-
-								-- move the targeted segment
-								pac_net_segments.update_element (
-									container	=> strand.segments,
-									position	=> segment_cursor,
-									process		=> move_targeted_segment'access);
-
-								-- Signal the caller to abort the search as a suitable
-								-- segment has been found now:
-								--segment_found := true;
-
-								-- no further search required
-								exit;
-
-							else
-								log (WARNING, "Segment is tied to a port. Dragging not possible !");
-							end if;
-
-						end if;
-
-						next (segment_cursor);
-					end loop;
-
-					
-					-- if segment_found then
-
-						-- MOVE SEGMENTS CONNECTED WITH THE TARGETED SEGMENT. 
-						-- Iterate in segments. skip targeted segment because it has been dragged
-						-- already (see above).
-						segment_cursor := strand.segments.first; -- reset segment cursor
-						while has_element (segment_cursor) loop
-							if segment_cursor /= segment_cursor_target then
-
-								pac_net_segments.update_element (
-									container	=> strand.segments,
-									position	=> segment_cursor,
-									process		=> move_connected_segment'access);
-
-							end if;
-
-							next (segment_cursor);
-						end loop;
-
-						-- update strand position
-						set_strand_position (strand);
-
-						-- Look for ports at the start/end points of the segment. The segment
-						-- is now at the new position (either start point or end point or both).
-						-- If any port (of a device, netchanger or submodule) sits there, it must be
-						-- connected with the segment. That means adding these ports to the segment.
-						update_element (
-							container	=> strand.segments,
-							position	=> segment_cursor_target,
-							process		=> connect_ports'access);
-
-					-- end if;
-				end query_strand;
-
-
-				
-				
-				procedure query_strand_2 (strand : in out type_strand) is
+				procedure query_strand (strand : in out type_strand) is
 
 					-- This procedure moves the targeted primary segment
 					-- according to the attacked zone:
@@ -2734,11 +2433,11 @@ package body et_schematic_ops.nets is
 						strand.segments.update_element (
 							primary_segment.segment_cursor, connect_ports'access);
 					end if;
-				end query_strand_2;
+				end query_strand;
 				
 				
 			begin
-				net.strands.update_element (primary_segment.strand_cursor, query_strand_2'access);
+				net.strands.update_element (primary_segment.strand_cursor, query_strand'access);
 			end query_net;
 			
 		begin
@@ -2763,9 +2462,7 @@ package body et_schematic_ops.nets is
 
 		end case;
 		
-
 		log_indentation_up;
-
 		
 		-- Get all net segments which are in the given zone:
 		segments_in_zone := get_segments (module_cursor, sheet, catch_zone, log_threshold + 1);
@@ -2774,11 +2471,12 @@ package body et_schematic_ops.nets is
 		-- Otherwise the first segment that has been found
 		-- will be subjected to a drag operation:
 		if is_empty (segments_in_zone) then
-			net_not_found (net_name);
+			log (text => "No segment found at given position !", level => log_threshold + 1);			
 		else
+			-- From the segments found at the given position, 
+			-- take the first one and subject it to the drag operation:
 			primary_segment := first_element (segments_in_zone);		
 			generic_modules.update_element (module_cursor, query_module'access);
-
 
 			-- update strand position. CS: only if dragging took place
 			-- CS set_strand_position (strand);
