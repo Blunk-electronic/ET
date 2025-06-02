@@ -331,6 +331,14 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level)
 		return pac_object_segments.list;
 	
+
+	-- After moving, dragging, deleting, adding of nets
+	-- or net segments, the positions of strands must be updated.
+	-- This procedure should be called for this purpose:
+	procedure update_strand_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+	
 	
 	-- Drags a segment of a net. The segment to be modified
 	-- is searched for in the given catch zone on the given sheet.

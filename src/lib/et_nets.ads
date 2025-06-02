@@ -160,8 +160,14 @@ package et_nets is
 		return type_sheet;
 
 
-
 	-- Returns the (sheet/x/y) position of the given strand:
+	function get_position (
+		strand : in type_strand)
+		return type_object_position;
+	
+
+	-- Returns the (sheet/x/y) position of the given strand
+	-- as string:
 	function get_position (
 		strand : in type_strand)
 		return string;

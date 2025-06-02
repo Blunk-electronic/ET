@@ -128,6 +128,15 @@ package body et_nets is
 
 	function get_position (
 		strand : in type_strand)
+		return type_object_position
+	is begin
+		return strand.position;
+	end;
+
+	
+
+	function get_position (
+		strand : in type_strand)
 		return string
 	is begin
 		return to_string (strand.position);

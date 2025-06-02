@@ -2198,8 +2198,82 @@ package body et_schematic_ops.nets is
 		return result;
 	end get_segments;
 	
+
+
+
 	
 	
+
+	procedure update_strand_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+	
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+				
+				
+				procedure query_strand (strand : in out type_strand) is 
+					old_position : type_object_position := get_position (strand);
+					new_position : type_object_position;
+				begin
+					log (text => "strand " & get_position (strand), level => log_threshold + 2);
+					
+					set_strand_position (strand); -- update strand position
+					new_position := get_position (strand);
+
+					-- If the position has changed then log
+					-- the new position:
+					if old_position /= new_position then
+						log (text => " new position " & to_string (new_position),
+							 level => log_threshold + 2);
+					end if;
+				end query_strand;
+				
+				
+			begin
+				while has_element (strand_cursor) loop
+					net.strands.update_element (strand_cursor, query_strand'access);
+					next (strand_cursor);
+				end loop;
+			end query_net;
+
+			
+		begin
+			while has_element (net_cursor) loop
+				log (text => "net " & get_net_name (net_cursor), level => log_threshold + 1);
+				log_indentation_up;
+				module.nets.update_element (net_cursor, query_net'access);
+				log_indentation_down;
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " update strand positions",
+			level => log_threshold);
+
+		log_indentation_up;
+		generic_modules.update_element (module_cursor, query_module'access);
+		log_indentation_down;		
+
+	end update_strand_positions;
+
+
+
 	
 
 	
@@ -2478,8 +2552,6 @@ package body et_schematic_ops.nets is
 			primary_segment := first_element (segments_in_zone);		
 			generic_modules.update_element (module_cursor, query_module'access);
 
-			-- update strand position. CS: only if dragging took place
-			-- CS set_strand_position (strand);
 
 			-- Move connected secondary segments if the primary
 			-- segment has been moved. In this case the displacement is non-zero:
@@ -2521,6 +2593,9 @@ package body et_schematic_ops.nets is
 							log_threshold	=> log_threshold + 1);
 				end case;
 
+
+				-- Update the strand positions:
+				update_strand_positions (module_cursor, log_threshold + 1);
 				
 				-- In case new net-port connections are the 
 				-- outcome of the drag operation, then the ratsnest
