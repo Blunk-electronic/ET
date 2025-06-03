@@ -301,7 +301,11 @@ Nets and Net Labels
 
 	This example command searches for a net segment
 	on sheet 1 that crosses the position 80/100 in a zone of
-	2mm radius. It drags the attacked end of the segment by 10/0mm:
+	2mm radius. It drags the attacked end of the segment by 10/0mm.
+	
+	If more than one segment has been found in the given zone,
+	then the first of them will be selected.
+
 
 	.. code-block::
 

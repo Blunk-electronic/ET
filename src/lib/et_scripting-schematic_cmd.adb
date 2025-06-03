@@ -1446,21 +1446,20 @@ is
 		use et_sheets;
 		catch_zone : type_catch_zone;
 	begin
-		-- example: "drag segment GND 1 80 100 2 relative 10 0"
+		-- example: "drag segment 1 80 100 2 relative 10 0"
 		case cmd_field_count is
-			when 12 =>
+			when 11 =>
 
 				catch_zone := set_catch_zone (
-					center	=> to_vector_model (f (7), f (8)),
-					radius	=> to_zone_radius (f (9)));
+					center	=> to_vector_model (f (6), f (7)),
+					radius	=> to_zone_radius (f (8)));
 				
 				drag_segment (
 					module_cursor	=> active_module,
-					net_name		=> to_net_name (f (5)), -- RESET
-					sheet			=> to_sheet (f (6)), -- sheet number
+					sheet			=> to_sheet (f (5)),
 					catch_zone		=> catch_zone,					
-					coordinates		=> to_coordinates (f (10)), -- relative/absolute					
-					destination		=> to_vector_model (f (11), f (12)),
+					coordinates		=> to_coordinates (f (9)), -- relative/absolute					
+					destination		=> to_vector_model (f (10), f (11)),
 					log_threshold	=> log_threshold + 1);
 					
 

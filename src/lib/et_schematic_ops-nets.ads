@@ -368,6 +368,8 @@ package et_schematic_ops.nets is
 	
 	-- Drags a segment of a net. The segment to be modified
 	-- is searched for in the given catch zone on the given sheet.
+	-- If more than one segment has been found in the given zone,
+	-- then the first of them will be selected.
 	-- We call this segment "primary segment". Other segments which
 	-- might be connected with it are called "secondary segments".
 	-- The secondary segments will be dragged along with the primary segment.
@@ -380,8 +382,6 @@ package et_schematic_ops.nets is
 	-- or better the drag operation should be rejected.
 	procedure drag_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		-- CS net name has no meaning. remove
 		sheet			: in type_sheet;
 		catch_zone		: in type_catch_zone;
 		coordinates		: in type_coordinates; -- relative/absolute

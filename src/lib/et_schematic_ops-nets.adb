@@ -2148,7 +2148,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & "collect net segments on sheet " & to_string (sheet)
+			 & " collect net segments on sheet " & to_string (sheet)
 			 & "  in zone " & to_string (catch_zone),
 			 level => log_threshold);
 
@@ -2491,7 +2491,6 @@ package body et_schematic_ops.nets is
 		
 	procedure drag_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		sheet			: in type_sheet;
 		catch_zone		: in type_catch_zone;
 		coordinates		: in type_coordinates; -- relative/absolute
@@ -2525,8 +2524,7 @@ package body et_schematic_ops.nets is
 		
 
 		praeamble : constant string := "module " & to_string (module_cursor)
-			& " dragging segment of net " & to_string (net_name)
-			& " / " & to_string (catch_zone);
+			& " dragging segment in " & to_string (catch_zone);
 
 		
 	begin
