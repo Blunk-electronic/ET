@@ -291,6 +291,14 @@ Nets and Net Labels
 	
 #. Drag net segment
 
+	When a net segment is being dragged, then other connected segments are
+	dragged along. If the ends of the net are dragged to a port of a
+	unit, netchanger or submodule, then a connection between port and
+	net segment is established.
+	
+	A segment which is connected with a port can not be dragged away 
+	anymore.
+
 	This example command searches for a net segment in net GND
 	on sheet 1 that crosses the position 80/100 in a zone of
 	2mm radius. It drags the attacked end of the segment by 10/0mm:
