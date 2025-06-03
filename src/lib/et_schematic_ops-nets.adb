@@ -1386,137 +1386,87 @@ package body et_schematic_ops.nets is
 	
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		place			: in type_object_position; -- sheet/x/y
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level) 
 	is
-		net_cursor : pac_nets.cursor; -- points to the net
-
-
-		procedure no_segment is begin
-			log (WARNING, "segment not found at" & to_string (position => place) &
-			 ". Check net name and position !");
-		end;
-
+		use pac_object_segments;
+		segments_in_zone : pac_object_segments.list;
 		
-		procedure query_net (
+		segment : type_object_segment; -- the segment ot be deleted
+		
+		
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
 			
-			-- Searches the strands of the net for a segment that sits on given place.
-			procedure query_strands (
+
+			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
-				strand_cursor : pac_strands.cursor := net.strands.first;
-				segment_found, strand_found : boolean := false;
 
 
-				procedure query_segments (strand : in out type_strand) is
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+				procedure query_strand (strand : in out type_strand) is
+					c : pac_net_segments.cursor := segment.segment_cursor;
 				begin
-					while segment_cursor /= pac_net_segments.no_element loop
-
-						-- If segment crosses the given x/y position (in place),
-						-- delete the segment.
-						if between_A_and_B (
-							catch_zone	=> set_catch_zone (center => place.place, radius => 0.0),
-							segment		=> segment_cursor) 
-						then
-							delete (strand.segments, segment_cursor);
-
-							-- signal the calling unit to abort the search
-							segment_found := true;
-
-							-- no further search required
-							exit;
-						end if;
-
-						next (segment_cursor);
-					end loop;
-
-					if not segment_found then
-						no_segment;
-					end if;
-					
-				end query_segments;
+					delete (strand.segments, c);
+				end query_strand;
 
 				
-			begin -- query_strands
+			begin
+				net.strands.update_element (segment.strand_cursor, query_strand'access);
+
+				-- CS
+				-- In case no more segments are left in the strand,
+				-- remove the now useless strand entirely.
+				-- if is_empty (element (strand_cursor).segments) then -- CS
+				-- 	delete (net.strands, strand_cursor);
+				-- end if;
+
 				
-				-- Look at strands that are on the given sheet. This loop ends prematurely
-				-- as soon as a segment has been found.
-				while not segment_found and strand_cursor /= pac_strands.no_element loop
-					
-					if get_sheet (element (strand_cursor).position) = get_sheet (place) then
-
-						-- signal the calling unit that a strand has been found:
-						strand_found := true;
-
-						update_element (
-							container	=> net.strands,
-							position	=> strand_cursor,
-							process		=> query_segments'access);
-
-						-- In case no more segments are left in the strand,
-						-- remove the now useless strand entirely.
-						if is_empty (element (strand_cursor).segments) then
-							delete (net.strands, strand_cursor);
-						end if;
-						
- 					end if;
-					next (strand_cursor);
-				end loop;
-
 				-- Issue warning if no strand has been found.
-				if not strand_found then
-					no_segment;
-				end if;
-				
-			end query_strands;
+				-- if not strand_found then
+				-- 	log (text => "No strand found at given sheet.", level => log_threshold + 1);
+				-- end if;				
+			end query_net;
 
 			
-		begin -- query_net
+		begin
+			module.nets.update_element (segment.net_cursor, query_net'access);
 
-			-- query the affected strands
-			update_element (
-				container	=> module.nets,
-				position	=> net_cursor,
-				process		=> query_strands'access);
-
+			-- CS
 			-- If the net has no strands anymore, delete it entirely because a
 			-- net without strands is useless.
-			if is_empty (element (net_cursor).strands) then
-				delete (module.nets, net_cursor);
-			end if;
-			
-		end query_net;
+			-- if is_empty (element (net_cursor).strands) then -- CS
+			-- 	delete (module.nets, net_cursor);
+			-- end if;			
+		end query_module;
 
 		
-	begin -- delete_segment
+	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " deleting in net " & enclose_in_quotes (to_string (net_name))
-			& " segment at" & enclose_in_quotes (to_string (position => place)),
+			& " deleting segment in " & to_string (catch_zone),
 			level => log_threshold);
-
-		-- locate the requested nets in the module
-		net_cursor := locate_net (module_cursor, net_name);
-
-		-- issue error if net does not exist:
-		if net_cursor = pac_nets.no_element then
-			net_not_found (net_name);
-		end if;
 
 		log_indentation_up;
 
-		update_element (
-			container	=> generic_modules,
-			position	=> module_cursor,
-			process		=> query_net'access);
+		-- Get all net segments which are in the given zone:
+		segments_in_zone := get_segments (module_cursor, sheet, catch_zone, log_threshold + 1);
 
-		update_ratsnest (module_cursor, log_threshold + 1);
-		
+		-- Issue warning if nothing found in given zone.
+		-- Otherwise the first segment that has been found
+		-- will be deleted:
+		if is_empty (segments_in_zone) then
+			log (text => "No segment found at given position !", level => log_threshold + 1);			
+		else
+			-- From the segments found at the given position, 
+			-- take the first one and delete it:
+			segment := first_element (segments_in_zone);			
+			generic_modules.update_element (module_cursor, query_module'access);
+		end if;
+			
 		log_indentation_down;		
 	end delete_segment;
 

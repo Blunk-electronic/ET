@@ -1414,20 +1414,22 @@ is
 
 
 
+	
 	procedure delete_net_segment is
 		use et_sheets;
+		catch_zone : type_catch_zone;
 	begin
 		case cmd_field_count is
+			-- example: "delete segment 1 97 99 2"
 			when 8 =>
-				delete_segment
-					(
+				catch_zone := set_catch_zone (
+					center	=> to_vector_model (f (6), f (7)),
+					radius	=> to_zone_radius (f (8)));
+				
+				delete_segment (
 					module_cursor	=> active_module,
-					net_name		=> to_net_name (f (5)), -- RESET
-					place			=> to_position (
-										point => type_vector_model (set (
-											x => to_distance (f (7)),
-											y => to_distance (f (8)))),
-										sheet => to_sheet (f (6))), -- sheet number
+					sheet			=> to_sheet (f (5)),
+					catch_zone		=> catch_zone,
 					log_threshold	=> log_threshold + 1);
 
 			when 9 .. type_field_count'last => too_long; 
@@ -1436,6 +1438,8 @@ is
 		end case;
 	end delete_net_segment;
 
+
+	
 	
 
 	procedure drag_net_segment is

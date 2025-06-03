@@ -299,13 +299,13 @@ Nets and Net Labels
 	A segment which is connected with a port can not be dragged away 
 	anymore.
 
-	This example command searches for a net segment in net GND
+	This example command searches for a net segment
 	on sheet 1 that crosses the position 80/100 in a zone of
 	2mm radius. It drags the attacked end of the segment by 10/0mm:
 
 	.. code-block::
 
-		drag segment GND 1 80 100 2 relative 10 0
+		drag segment 1 80 100 2 relative 10 0
 	
 	|VNS| g n
 
@@ -313,6 +313,16 @@ Nets and Net Labels
 	
 	
 #. Delete net segment
+
+	This example command searches for a net segment
+	on sheet 1 that crosses the position 80/100 in a zone of
+	2mm radius. If a segment exists there, then it will be deleted.
+	If more than one segment exists on the given spot, then
+	the first that has been found will be deleted.
+
+	.. code-block::
+		
+		delete segment 1 80 100 2
 
 	|VNS| del n
 

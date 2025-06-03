@@ -247,11 +247,12 @@ package et_schematic_ops.nets is
 
 
 	
-	-- Deletes a segment of a net.
+	-- Deletes the first net segment found
+	-- in the given zone:
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
-		place			: in type_object_position; -- sheet/x/y
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
 		log_threshold	: in type_log_level);
 
 
@@ -380,6 +381,7 @@ package et_schematic_ops.nets is
 	procedure drag_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
+		-- CS net name has no meaning. remove
 		sheet			: in type_sheet;
 		catch_zone		: in type_catch_zone;
 		coordinates		: in type_coordinates; -- relative/absolute
