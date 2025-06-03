@@ -1418,30 +1418,33 @@ package body et_schematic_ops.nets is
 			begin
 				net.strands.update_element (segment.strand_cursor, query_strand'access);
 
-				-- CS
-				-- In case no more segments are left in the strand,
-				-- remove the now useless strand entirely.
-				-- if is_empty (element (strand_cursor).segments) then -- CS
-				-- 	delete (net.strands, strand_cursor);
-				-- end if;
-
-				
-				-- Issue warning if no strand has been found.
-				-- if not strand_found then
-				-- 	log (text => "No strand found at given sheet.", level => log_threshold + 1);
-				-- end if;				
+				-- If the strand has no segments anymore, then
+				-- remove the now useless strand entirely:
+				if not has_segments (segment.strand_cursor) then
+					declare
+						c : pac_strands.cursor := segment.strand_cursor;
+					begin
+						-- CS log message
+						delete (net.strands, c);
+					end;
+				end if;
 			end query_net;
 
 			
 		begin
 			module.nets.update_element (segment.net_cursor, query_net'access);
-
-			-- CS
-			-- If the net has no strands anymore, delete it entirely because a
-			-- net without strands is useless.
-			-- if is_empty (element (net_cursor).strands) then -- CS
-			-- 	delete (module.nets, net_cursor);
-			-- end if;			
+			
+			-- If the net has no strands anymore, 
+			-- then delete it entirely because a
+			-- net without strands is useless:
+			if not has_strands (segment.net_cursor) then
+				declare
+					c : pac_nets.cursor := segment.net_cursor;
+				begin
+					-- CS log message
+					delete (module.nets, c);
+				end;
+			end if;			
 		end query_module;
 
 		
@@ -1465,6 +1468,10 @@ package body et_schematic_ops.nets is
 			-- take the first one and delete it:
 			segment := first_element (segments_in_zone);			
 			generic_modules.update_element (module_cursor, query_module'access);
+
+			update_strand_positions (module_cursor, log_threshold + 2);
+
+			update_ratsnest (module_cursor, log_threshold + 2);
 		end if;
 			
 		log_indentation_down;		
@@ -2487,6 +2494,7 @@ package body et_schematic_ops.nets is
 	
 
 
+	
 	
 		
 	procedure drag_segment (

@@ -56,6 +56,20 @@ package body et_nets is
 
 
 
+	function has_segments (
+		strand : in type_strand)
+		return boolean
+	is begin
+		if strand.segments.length > 0 then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+
+
+	
 
 	procedure set_proposed (
 		strand : in out type_strand)
@@ -143,6 +157,16 @@ package body et_nets is
 	end;
 
 
+
+	function has_segments (
+		strand : in pac_strands.cursor)
+		return boolean
+	is begin
+		return has_segments (element (strand));
+	end;
+
+
+	
 
 	function is_proposed (
 		strand : in pac_strands.cursor)
@@ -412,6 +436,19 @@ package body et_nets is
 	
 	
 
+
+	function has_strands (
+		net : in type_net)
+		return boolean
+	is begin
+		if net.strands.length > 0 then
+			return true;
+		else
+			return false;
+		end if;
+	end;
+
+	
 	
 
 	function get_strand (
@@ -724,6 +761,15 @@ package body et_nets is
 	end get_ports;
 
 
+
+
+
+	function has_strands (
+		net : in pac_nets.cursor)
+		return boolean
+	is begin
+		return has_strands (element (net));
+	end;
 	
 
 	

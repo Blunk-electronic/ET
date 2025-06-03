@@ -121,6 +121,11 @@ package et_nets is
 	end record;		
 
 
+	-- Returns true if the given strand has segments:
+	function has_segments (
+		strand : in type_strand)
+		return boolean;
+	
 
 	procedure set_proposed (
 		strand : in out type_strand);
@@ -178,6 +183,13 @@ package et_nets is
 	use pac_strands;
 	
 
+	-- Returns true if the given strand has segments:
+	function has_segments (
+		strand : in pac_strands.cursor)
+		return boolean;
+
+
+	
 	function is_proposed (
 		strand : in pac_strands.cursor)
 		return boolean;
@@ -300,6 +312,11 @@ package et_nets is
 
 	
 
+	-- Returns true if the given net has strands:
+	function has_strands (
+		net : in type_net)
+		return boolean;
+	
 	
 	-- Returns the cursor to the strand at the given place.
 	-- If no strand found then the return is no_element:
@@ -406,6 +423,13 @@ package et_nets is
 
 	
 
+	-- Returns true if the given net has strands:
+	function has_strands (
+		net : in pac_nets.cursor)
+		return boolean;
+
+
+	
 
 	-- Returns a cursor to the strand that is
 	-- on the lowest sheet and lowest x/y position:
