@@ -44,6 +44,7 @@ with et_net_names;						use et_net_names;
 with et_net_labels;						use et_net_labels;
 with et_nets;							use et_nets;
 with et_text;							use et_text;
+with et_schematic_verb_noun_keys;		use et_schematic_verb_noun_keys;
 
 
 separate (et_canvas_schematic_2)
@@ -67,23 +68,32 @@ is
 	procedure delete is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
-			when GDK_LC_l =>
+			when key_noun_label =>
 				noun := NOUN_LABEL;
 				set_status (et_canvas_schematic_nets.status_delete);
 
 				
-			when GDK_LC_u =>
+			when key_noun_unit =>
 				noun := NOUN_UNIT;					
 				set_status (et_canvas_schematic_units.status_delete);
-
 				
-			when GDK_LC_n =>
+			when key_noun_net =>
 				noun := NOUN_NET;					
 				set_status (et_canvas_schematic_nets.status_delete);
+				
+			when key_noun_strand =>
+				noun := NOUN_STRAND;					
+				set_status (et_canvas_schematic_nets.status_delete);
+				
+			when key_noun_segment =>
+				noun := NOUN_SEGMENT;					
+				set_status (et_canvas_schematic_nets.status_delete);
+
 
 				
+				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
-			when GDK_Space =>
+			when key_space =>
 				case noun is
 					when NOUN_LABEL =>
 						et_canvas_schematic_nets.delete_object (point);
@@ -91,6 +101,9 @@ is
 					when NOUN_NET => 
 						et_canvas_schematic_nets.delete_object (point);
 
+					when NOUN_SEGMENT => 
+						et_canvas_schematic_nets.delete_object (point);
+						
 					when NOUN_UNIT =>
 						et_canvas_schematic_units.delete_object (point);
 						
@@ -99,14 +112,9 @@ is
 
 				
 			-- If page down pressed, then the operator is clarifying:
-			when GDK_page_down =>
+			when key_clarify =>
 				case noun is
-					when NOUN_LABEL => 
-						if clarification_pending then
-							et_canvas_schematic_nets.clarify_object;
-						end if;
-
-					when NOUN_NET => 
+					when NOUN_LABEL | NOUN_NET | NOUN_SEGMENT => 
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
@@ -127,12 +135,13 @@ is
 	end delete;
 
 	
+
 	
 	procedure drag is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
-			when GDK_LC_n =>
-				noun := NOUN_NET;
+			when key_noun_net => -- CS better key_noun_segment ?
+				noun := NOUN_NET; -- CS NOUN_SEGMENT ?
 				set_status (et_canvas_schematic_nets.status_drag);
 
 				-- When dragging net segments, we enforce the default grid
@@ -140,7 +149,7 @@ is
 				reset_grid_and_cursor;
 
 				
-			when GDK_LC_u =>
+			when key_noun_unit =>
 				noun := NOUN_UNIT;
 				set_status (et_canvas_schematic_units.status_drag);
 
@@ -151,9 +160,9 @@ is
 				
 			-- If space pressed then the operator wishes to operate
 			-- by keyboard:
-			when GDK_Space =>	
+			when key_space =>	
 				case noun is
-					when NOUN_NET =>
+					when NOUN_NET => -- CS NOUN_SEGMENT ?
 						-- When dragging net segments, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
@@ -170,14 +179,14 @@ is
 
 				
 			-- If page down pressed, then the operator is clarifying:
-			when GDK_page_down =>
+			when key_clarify =>
 				case noun is
 					when NOUN_UNIT =>
 						if clarification_pending then
 							et_canvas_schematic_units.clarify_object;
 						end if;
 
-					when NOUN_NET => 
+					when NOUN_NET => -- CS NOUN_SEGMENT ?
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
@@ -192,12 +201,13 @@ is
 
 
 	
+	
 	procedure draw is 
 		use pac_path_and_bend;
 	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
-			when GDK_LC_n =>
+			when key_noun_net =>
 				noun := NOUN_NET;
 				
 				set_status (status_draw_net);
@@ -211,7 +221,7 @@ is
 
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:
-			when GDK_Space =>
+			when key_space =>
 				case noun is
 					when NOUN_NET =>
 						-- When drawing net segments, we enforce the default grid
@@ -226,7 +236,7 @@ is
 				
 			-- If B pressed, then a bend style is being selected.
 			-- this affects only certain modes and is ignored otherwise:
-			when GDK_LC_b =>
+			when key_bend_style =>
 				case noun is
 					when NOUN_NET =>
 						next_bend_style (live_path);
@@ -241,28 +251,29 @@ is
 
 
 	
+	
 	procedure move is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
--- 				when GDK_LC_n =>
+-- 				when key_noun_net =>
 -- 					noun := NOUN_NET;
 
 				-- CS
 				--set_status (et_canvas_schematic_nets.status_move);
 
-			when GDK_LC_l =>
+			when key_noun_label =>
 				noun := NOUN_LABEL;
 				set_status (et_canvas_schematic_nets.status_move);
 
-			when GDK_LC_n =>
+			when GDK_LC_n => -- CS
 				noun := NOUN_NAME;					
 				set_status (et_canvas_schematic_units.status_move);
 
-			when GDK_LC_p =>
+			when GDK_LC_p => -- CS
 				noun := NOUN_PURPOSE;					
 				set_status (et_canvas_schematic_units.status_move);
 				
-			when GDK_LC_u =>
+			when key_noun_unit =>
 				noun := NOUN_UNIT;
 				set_status (et_canvas_schematic_units.status_move);
 
@@ -270,14 +281,14 @@ is
 				-- and snap the cursor position to the default grid:
 				reset_grid_and_cursor;
 				
-			when GDK_LC_v =>
+			when GDK_LC_v => -- CS
 				noun := NOUN_VALUE;					
 				set_status (et_canvas_schematic_units.status_move);
 
 				
 			-- If space pressed then the operator wishes to operate
 			-- by keyboard:
-			when GDK_Space =>	
+			when key_space =>	
 				case noun is
 -- CS
 -- 						when NOUN_NET =>
@@ -320,7 +331,7 @@ is
 
 				
 			-- If page down pressed, then the operator is clarifying:
-			when GDK_page_down =>
+			when key_clarify =>
 				case noun is
 					when NOUN_LABEL => 
 						if clarification_pending then
@@ -349,7 +360,7 @@ is
 	procedure place is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
-			when GDK_LC_l =>
+			when GDK_LC_l => -- CS
 				noun := NOUN_LABEL;
 				-- label.appearance := SIMPLE;
 				-- set_status (et_canvas_schematic_nets.status_place_label_simple);
@@ -357,13 +368,13 @@ is
 				-- For placing simple net labels, the fine grid is required:
 				-- CS self.set_grid (FINE);
 				
-			when GDK_L =>
+			when GDK_L => -- CS
 				noun := NOUN_LABEL;
 				-- label.appearance := TAG;
 				-- set_status (et_canvas_schematic_nets.status_place_label_tag);
 
 			-- If space pressed, then the operator wishes to operate via keyboard:	
-			when GDK_Space =>
+			when key_space =>
 				case noun is
 					when NOUN_LABEL =>
 						null; -- CS
@@ -373,7 +384,7 @@ is
 				end case;
 
 			-- If page down pressed, then the operator is clarifying:
-			when GDK_page_down =>
+			when key_clarify =>
 				case noun is
 
 					when NOUN_LABEL => 
@@ -408,26 +419,26 @@ is
 	procedure rotate is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
-			when GDK_LC_n =>
+			when GDK_LC_n => -- CS
 				noun := NOUN_NAME;					
 				set_status (et_canvas_schematic_units.status_rotate_placeholder);
 
-			when GDK_LC_p =>
+			when GDK_LC_p => -- CS
 				noun := NOUN_PURPOSE;					
 				set_status (et_canvas_schematic_units.status_rotate_placeholder);
 
 				
-			when GDK_LC_u =>
+			when key_noun_unit =>
 				noun := NOUN_UNIT;					
 				set_status (et_canvas_schematic_units.status_rotate);
 
-			when GDK_LC_v =>
+			when GDK_LC_v => -- CS
 				noun := NOUN_VALUE;					
 				set_status (et_canvas_schematic_units.status_rotate_placeholder);
 
 
 			-- If space pressed, then the operator wishes to operate via keyboard:	
-			when GDK_Space =>
+			when key_space =>
 				case noun is
 					when NOUN_NAME =>
 						if not clarification_pending then
@@ -462,8 +473,9 @@ is
 					when others => null;
 				end case;
 
+				
 			-- If page down pressed, then the operator is clarifying:
-			when GDK_page_down =>
+			when key_clarify =>
 				case noun is
 					when NOUN_NAME | NOUN_VALUE | NOUN_PURPOSE => 
 						if clarification_pending then
@@ -484,13 +496,14 @@ is
 	end rotate;
 
 
+
 	
 	procedure add is 
 		use pac_devices_lib;
 	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
-			when GDK_LC_d =>
+			when key_noun_device =>
 				noun := NOUN_DEVICE;					
 				set_status (et_canvas_schematic_units.status_add);
 
@@ -503,7 +516,7 @@ is
 
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
-			when GDK_Space =>
+			when key_space =>
 				case noun is
 
 					when NOUN_DEVICE =>
@@ -545,13 +558,13 @@ is
 	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
-			when GDK_LC_u =>
+			when key_noun_unit =>
 				noun := NOUN_UNIT;					
 				set_status (et_canvas_schematic_units.status_fetch);
 				
 
 			-- If space pressed, then the operator wishes to operate via keyboard:	
-			when GDK_Space =>
+			when key_space =>
 				case noun is
 
 					when NOUN_UNIT =>
@@ -575,7 +588,7 @@ is
 				
 
 			-- If page down pressed, then the operator is clarifying:
-			when GDK_page_down =>
+			when key_clarify =>
 				case noun is
 
 					when NOUN_UNIT => 
@@ -613,7 +626,7 @@ is
 				set_status (et_canvas_schematic_units.status_set_variant);
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
-			when GDK_Space =>
+			when key_space =>
 				case noun is
 					
 					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE | NOUN_VARIANT =>
@@ -627,7 +640,7 @@ is
 				end case;
 
 			-- If page down pressed, then the operator is clarifying:
-			when GDK_page_down =>
+			when key_clarify =>
 				case noun is
 					when NOUN_PARTCODE | NOUN_PURPOSE | NOUN_VALUE | NOUN_VARIANT =>
 						if clarification_pending then
@@ -647,21 +660,21 @@ is
 	procedure show is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
-			when GDK_LC_d =>
+			when key_noun_device =>
 				noun := NOUN_DEVICE;
 				set_status (et_canvas_schematic_units.status_show_device);
 				
-			when GDK_LC_n =>
+			when key_noun_net =>
 				noun := NOUN_NET;
 				set_status (et_canvas_schematic_nets.status_show_net);
 
-			when GDK_LC_l =>
+			when GDK_LC_l =>  -- CS
 				noun := NOUN_LABEL;
 				-- CS set_status (et_canvas_schematic_nets.status_show_label);
 
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
-			when GDK_Space =>
+			when key_space =>
 				case noun is
 					when NOUN_DEVICE =>
 						if not clarification_pending then
@@ -682,7 +695,7 @@ is
 
 				
 			-- If page down pressed, then the operator is clarifying:
-			when GDK_page_down =>
+			when key_clarify =>
 				case noun is
 					when NOUN_DEVICE => 
 						if clarification_pending then
@@ -704,32 +717,37 @@ is
 
 
 	
+	
 	procedure rename is 
 		use et_schematic_ops.nets;
 	begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
-			when GDK_LC_d =>
+			when key_noun_device =>
 				noun := NOUN_DEVICE;
 				set_status (et_canvas_schematic_units.status_rename);
 
-			when GDK_LC_s => -- rename strand
+				
+			when key_noun_strand => -- rename strand
 				noun := NOUN_NET;
 				net_rename.scope := STRAND;
 				set_status (et_canvas_schematic_nets.status_rename_net_strand);
-			
-			when GDK_LC_n => -- rename all strands on current sheet
+
+				
+			when key_noun_net => -- rename all strands on current sheet
 				noun := NOUN_NET;
 				net_rename.scope := SHEET;
 				set_status (et_canvas_schematic_nets.status_rename_net_sheet);
 
-			when GDK_N => -- rename everywhere: all strands on all sheets
+				
+			when key_noun_net_global => -- rename everywhere: all strands on all sheets
 				noun := NOUN_NET;
 				net_rename.scope := EVERYWHERE;
 				set_status (et_canvas_schematic_nets.status_rename_net_everywhere);
+
 				
 			-- If space pressed, then the operator wishes to operate via keyboard:	
-			when GDK_Space =>
+			when key_space =>
 				case noun is
 					when NOUN_DEVICE =>
 						if not clarification_pending then
@@ -748,8 +766,9 @@ is
 					when others => null;
 				end case;
 
+				
 			-- If page down pressed, then the operator is clarifying:
-			when GDK_page_down =>
+			when key_clarify =>
 				case noun is
 					when NOUN_DEVICE =>
 						if clarification_pending then
@@ -770,6 +789,7 @@ is
 	end rename;
 
 	
+	
 begin -- key_pressed
 	log (text => "key_pressed (schematic) ", -- CS which key ?
 		 level => log_threshold);
@@ -788,7 +808,7 @@ begin -- key_pressed
 			--if single_cmd_status.finalization_pending and primary_tool = KEYBOARD then
 			if single_cmd_status.finalization_pending then
 			
-				if key = GDK_Space then
+				if key = key_space then
 						
 					case verb is
 						when VERB_DELETE	=> delete;
@@ -820,47 +840,47 @@ begin -- key_pressed
 
 						-- EVALUATE KEY FOR VERB:
 						case key is
-							when GDK_Delete =>
+							when key_verb_delete =>
 								verb := VERB_DELETE;
 								status_enter_noun;
 
-							when GDK_LC_a =>
+							when key_verb_add =>
 								verb := VERB_ADD;
 								status_enter_noun;
 								
-							when GDK_LC_g =>
+							when key_verb_drag =>
 								verb := VERB_DRAG;
 								status_enter_noun;
 
-							when GDK_LC_d =>
+							when key_verb_draw =>
 								verb := VERB_DRAW;
 								status_enter_noun;
 
-							when GDK_LC_h =>
+							when key_verb_show =>
 								verb := VERB_SHOW;
 								status_enter_noun;
 								
-							when GDK_LC_f =>
+							when key_verb_fetch =>
 								verb := VERB_FETCH;
 								status_enter_noun;
 								
-							when GDK_LC_m =>
+							when key_verb_move =>
 								verb := VERB_MOVE;
 								status_enter_noun;
 
-							when GDK_LC_n =>
+							when key_verb_rename =>
 								verb := VERB_RENAME;
 								status_enter_noun;
 								
-							when GDK_LC_p =>
+							when key_verb_place =>
 								verb := VERB_PLACE;
 								status_enter_noun;
 								
-							when GDK_LC_o =>
+							when key_verb_rotate =>
 								verb := VERB_ROTATE;
 								status_enter_noun;
 
-							when GDK_LC_s =>
+							when key_verb_set =>
 								verb := VERB_SET;
 								status_enter_noun;
 								

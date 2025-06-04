@@ -127,7 +127,7 @@ is
 					when NOUN_LABEL =>
 						et_canvas_schematic_nets.delete_object (snap_point);
 						
-					when NOUN_NET => 
+					when NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
 						et_canvas_schematic_nets.delete_object (snap_point);
 						
 					when NOUN_UNIT =>

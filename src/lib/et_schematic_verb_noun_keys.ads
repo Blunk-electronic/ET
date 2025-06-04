@@ -2,7 +2,7 @@
 --                                                                          --
 --                             SYSTEM ET                                    --
 --                                                                          --
---                       SCHEMATIC OPERATING MODES                          --
+--                      SCHEMATIC VERB AND NOUN KEYS                        --
 --                                                                          --
 --                               S p e c                                    --
 --                                                                          --
@@ -37,118 +37,54 @@
 --
 --   ToDo: 
 
-package et_modes.schematic is
 
-	type type_verb is (
-		VERB_NONE, -- means no verb entered
-						  
-		VERB_ADD,
-		VERB_BUILD,
-		VERB_CHECK,
-		VERB_COPY,
-		VERB_CREATE,
-		VERB_DELETE,
-		VERB_DESCRIBE,
-		VERB_DISPLAY,
-		VERB_DRAG,
-		VERB_DRAW,
-		VERB_EXECUTE,
-		VERB_EXIT,
-		VERB_FETCH,
-		VERB_MAKE,
-		VERB_MOVE,
-		VERB_MOUNT,
-		VERB_PLACE,
-		VERB_QUIT,
-		VERB_REMOVE,
-		VERB_RENAME,
-		VERB_RENUMBER,
-		VERB_ROTATE,
-		VERB_SAVE,
-		VERB_SET,
-		VERB_SHOW,
-		VERB_UNMOUNT,
-		VERB_WRITE,
-		VERB_ZOOM		
-		);
+with gdk.types;						use gdk.types;
+with gdk.types.keysyms;				use gdk.types.keysyms;
 
-	verb_default : constant type_verb := VERB_NONE;
+
+package et_schematic_verb_noun_keys is
+
+-- VERBS:
+
+	key_verb_add		: constant gdk_key_type := GDK_LC_a;
+	key_verb_delete		: constant gdk_key_type := GDK_Delete;
+	key_verb_drag		: constant gdk_key_type := GDK_LC_g;
+	key_verb_draw		: constant gdk_key_type := GDK_LC_d;
+	key_verb_fetch		: constant gdk_key_type := GDK_LC_f;
+
+	key_verb_move		: constant gdk_key_type := GDK_LC_m;
+	key_verb_rename		: constant gdk_key_type := GDK_LC_n;
+	key_verb_rotate		: constant gdk_key_type := GDK_LC_o;
+	key_verb_place		: constant gdk_key_type := GDK_LC_p;
+	-- key_verb_update		: constant gdk_key_type := GDK_LC_u;
+	key_verb_set		: constant gdk_key_type := GDK_LC_s;
+	key_verb_show		: constant gdk_key_type := GDK_LC_h;
+
+
 	
-	verb : type_verb := verb_default;
-	
-	function to_string (verb : in type_verb) return string;
-	function to_verb (verb : in string) return type_verb;
+-- NOUNS:	
+
+	key_noun_device		: constant gdk_key_type := GDK_LC_d;
+	key_noun_label 		: constant gdk_key_type := GDK_LC_l;
+	key_noun_unit 		: constant gdk_key_type := GDK_LC_u;
+	key_noun_net 		: constant gdk_key_type := GDK_LC_n;
+	key_noun_net_global	: constant gdk_key_type := GDK_N;
+	key_noun_strand		: constant gdk_key_type := GDK_LC_t;
+	key_noun_segment	: constant gdk_key_type := GDK_LC_s;
+
+	key_noun_text		: constant gdk_key_type := GDK_LC_x;
 
 
-	type type_noun is (
-		NOUN_NONE, -- means no noun entered
-						
-		NOUN_ALL,
-		NOUN_BOM,
-		NOUN_CENTER,
-		NOUN_CURSOR,
-		NOUN_CLASS,
-		NOUN_DEVICE,
-		NOUN_DEVICES,
-		--DEVICE_PARTCODE,
-		--DEVICE_PURPOSE,
-		--DEVICE_VALUE,
-		NOUN_GRID,
-		NOUN_INTEGRITY,
-		NOUN_JUNCTION,
-		NOUN_LABEL, -- CS rename to NOUN_NET_LABEL
-		NOUN_LEVEL,
-		NOUN_NAME,
-		NOUN_NAMES,
-		NOUN_MODULE,
-		NOUN_NET,
-		NOUN_NETS,
-		NOUN_NETCHANGER,
-		NOUN_NETLISTS,
-		NOUN_PARTCODE,
-		NOUN_PORT, -- of a submodule instance
-		NOUN_PORTS,
-		NOUN_PURPOSE,
-		NOUN_PURPOSES,		
-		NOUN_SCALE,
-		NOUN_SCOPE,
-		NOUN_SCRIPT,
-		NOUN_SEGMENT, -- net segment
-		NOUN_SHEET,
-		NOUN_STRAND,
-		NOUN_SUBMODULE,
-		NOUN_SUBMODULE_FILE,		
-		NOUN_SUBMODULES_TREE,
-		NOUN_TEXT,
-		NOUN_TEXTS,
-		NOUN_TEXT_SIZE,
-		NOUN_UNIT,
--- 		UNIT_NAME,
--- 		UNIT_PARTCODE,
--- 		UNIT_PURPOSE,
-		-- 		UNIT_VALUE
-		NOUN_VARIANT,
-		NOUN_VALUE,
-		NOUN_VALUES,
-		NOUN_ZOOM
-		);
 
-	noun_default : constant type_noun := NOUN_NONE;
 	
-	noun : type_noun := noun_default;
+-- MISCELLANEOUS:
 	
-	function to_string (noun : in type_noun) return string;
-	function to_noun (noun : in string) return type_noun;
+	key_space			: constant gdk_key_type := GDK_Space;
+	key_mode			: constant gdk_key_type := GDK_LC_m;
+	key_bend_style		: constant gdk_key_type := GDK_LC_b;
+	key_clarify			: constant gdk_key_type := GDK_page_down;
 
-
-	-- Resets verb and noun to default values:
-	procedure reset_verb_and_noun;
-	
-
-	expect_entry : type_expect_entry := expect_entry_default;
-	
-	
-end et_modes.schematic;
+end et_schematic_verb_noun_keys;
 
 -- Soli Deo Gloria
 
