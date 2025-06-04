@@ -140,8 +140,40 @@ package et_schematic_ops.nets is
 		object	: in type_object_strand)
 		return string;
 
-	
 
+	-- Clears the proposed-flag and the selected-flag of all strands:
+	procedure reset_strands (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level);
+	
+	
+	-- Sets the proposed-flag of all strands which are in the
+	-- given zone around the given place on the currently active sheet.
+	-- Adds to count the number of strands that have been found:
+	procedure propose_strands (
+		module_cursor	: in pac_generic_modules.cursor;
+		catch_zone		: in type_catch_zone;
+		count			: in out natural;
+		log_threshold	: in type_log_level);
+
+
+	procedure modify_status (
+		module_cursor	: in pac_generic_modules.cursor;
+		strand			: in type_object_strand;
+		operation		: in type_status_operation;
+		log_threshold	: in type_log_level);
+
+
+	-- Returns the first strand according to the given flag.
+	-- If no strand has been found, then the return is no_element:
+	function get_first_strand (
+		module_cursor	: in pac_generic_modules.cursor;
+		flag			: in type_flag;
+		log_threshold	: in type_log_level)
+		return type_object_strand;
+
+	
+	
 	-- This composite type is meant to identify a net
 	-- in the schematic:
 	type type_object_net is record
@@ -194,7 +226,6 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
-	-- CS propose_strands
 	
 	
 	-- Searches the module for an anonymous net with the lowest index available.

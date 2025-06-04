@@ -127,6 +127,24 @@ package body et_nets is
 	
 
 
+
+	procedure modify_status (
+		strand		: in out type_strand;
+		operation	: in type_status_operation)
+	is begin
+		modify_status (strand.status, operation);
+	end;
+
+	
+
+	procedure reset_status (
+		strand		: in out type_strand)
+	is begin
+		reset_status (strand.status);
+	end;
+
+
+	
 	
 
 

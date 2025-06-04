@@ -157,6 +157,16 @@ package et_nets is
 
 
 
+	procedure modify_status (
+		strand		: in out type_strand;
+		operation	: in type_status_operation);
+	
+
+	procedure reset_status (
+		strand		: in out type_strand);
+
+
+	
 	
 
 	-- Returns the sheet number where the given strand is on:
