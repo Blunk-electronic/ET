@@ -145,7 +145,7 @@ is
 						reset_grid_and_cursor;
 						et_canvas_schematic_units.drag_object (MOUSE, snap_point);
 						
-					when NOUN_NET => 
+					when NOUN_SEGMENT => 
 						-- When dragging net segments, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
@@ -341,7 +341,7 @@ is
 							et_canvas_schematic_units.clarify_object;
 						end if;
 
-					when NOUN_NET => 
+					when NOUN_SEGMENT => 
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;

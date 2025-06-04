@@ -311,7 +311,7 @@ Nets and Net Labels
 
 		drag segment 1 80 100 2 relative 10 0
 	
-	|VNS| g n
+	|VNS| g s
 
 	
 	

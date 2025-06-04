@@ -140,8 +140,8 @@ is
 	procedure drag is begin
 		case key is
 			-- EVALUATE KEY FOR NOUN:
-			when key_noun_net => -- CS better key_noun_segment ?
-				noun := NOUN_NET; -- CS NOUN_SEGMENT ?
+			when key_noun_segment =>
+				noun := NOUN_SEGMENT;
 				set_status (et_canvas_schematic_nets.status_drag);
 
 				-- When dragging net segments, we enforce the default grid
@@ -162,7 +162,7 @@ is
 			-- by keyboard:
 			when key_space =>	
 				case noun is
-					when NOUN_NET => -- CS NOUN_SEGMENT ?
+					when NOUN_SEGMENT =>
 						-- When dragging net segments, we enforce the default grid
 						-- and snap the cursor position to the default grid:
 						reset_grid_and_cursor;
@@ -186,7 +186,7 @@ is
 							et_canvas_schematic_units.clarify_object;
 						end if;
 
-					when NOUN_NET => -- CS NOUN_SEGMENT ?
+					when NOUN_SEGMENT =>
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
