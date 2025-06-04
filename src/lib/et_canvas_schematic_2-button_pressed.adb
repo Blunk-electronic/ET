@@ -124,10 +124,7 @@ is
 				
 			when VERB_DELETE =>
 				case noun is
-					when NOUN_LABEL =>
-						et_canvas_schematic_nets.delete_object (snap_point);
-						
-					when NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
+					when NOUN_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
 						et_canvas_schematic_nets.delete_object (snap_point);
 						
 					when NOUN_UNIT =>
@@ -315,12 +312,7 @@ is
 		case verb is
 			when VERB_DELETE =>
 				case noun is
-					when NOUN_LABEL => 
-						if clarification_pending then
-							et_canvas_schematic_nets.clarify_object;
-						end if;
-						
-					when NOUN_NET | NOUN_SEGMENT => 
+					when NOUN_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;

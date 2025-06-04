@@ -1093,6 +1093,10 @@ package body et_canvas_schematic_nets is
 				set_status (praeamble & to_string (object.segment)
 					& ". " & status_next_object_clarification);
 
+			when CAT_STRAND =>
+				set_status (praeamble & to_string (object.strand)
+					& ". " & status_next_object_clarification);
+				
 			when CAT_NET =>
 				set_status (praeamble & to_string (object.net)
 					& ". " & status_next_object_clarification);
@@ -1289,14 +1293,29 @@ package body et_canvas_schematic_nets is
 		-- Propose objects according to current verb and noun:
 		case verb is
 			when VERB_DELETE | VERB_DRAG =>
-				
-				-- Propose net segments in the vicinity of the given point:
-				propose_segments (
-					module_cursor	=> active_module,
-					catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
-					count			=> count_total,
-					log_threshold	=> log_threshold + 1);
 
+				case noun is
+					when NOUN_SEGMENT =>
+				
+						-- Propose net segments in the vicinity of the given point:
+						propose_segments (
+							module_cursor	=> active_module,
+							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+							count			=> count_total,
+							log_threshold	=> log_threshold + 1);
+
+					when NOUN_STRAND =>
+
+						-- Propose strands in the vicinity of the given point:
+						propose_strands (
+							module_cursor	=> active_module,
+							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+							count			=> count_total,
+							log_threshold	=> log_threshold + 1);
+
+					when others => null; -- CS
+				end case;
+				
 				
 			when VERB_SHOW =>
 
@@ -1502,12 +1521,8 @@ package body et_canvas_schematic_nets is
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
 
-				-- -- If a segment has been dragged, then the board
-				-- -- must be redrawn:
-				-- if object.cat = CAT_SEGMENT then
-				-- 	redraw_board;
-				-- end if;
-				-- CS really required ? Redraw the schematic instead ?
+				redraw_board; -- board is not always affected
+				-- CS Redraw schematic ?
 				
 			else
 				log (text => "nothing to do", level => log_threshold);
@@ -1601,12 +1616,8 @@ package body et_canvas_schematic_nets is
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
 
-				-- -- If a segment has been dragged, then the board
-				-- -- must be redrawn:
-				-- if object.cat = CAT_SEGMENT then
-				-- 	redraw_board;
-				-- end if;
-				-- CS really required ? Redraw the schematic instead ?
+				redraw_board; -- board is not always affected
+				-- CS redraw schematic ?
 				
 			else
 				log (text => "nothing to do", level => log_threshold);
@@ -1698,12 +1709,8 @@ package body et_canvas_schematic_nets is
 				-- Commit the new state of the design:
 				commit (POST, verb, noun, log_threshold + 1);
 
-				-- -- If a segment has been dragged, then the board
-				-- -- must be redrawn:
-				-- if object.cat = CAT_SEGMENT then
-				-- 	redraw_board;
-				-- end if;
-				-- CS really required ? Redraw the schematic instead ?
+				redraw_board; -- board is not always affected
+				-- CS redraw schematic ?
 				
 			else
 				log (text => "nothing to do", level => log_threshold);
@@ -1776,6 +1783,7 @@ package body et_canvas_schematic_nets is
 				if object.cat = CAT_NET then
 					redraw_board;
 				end if;
+				-- CS unit, device ?
 				
 			else
 				log (text => "nothing to do", level => log_threshold);

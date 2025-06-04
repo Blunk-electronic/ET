@@ -86,7 +86,7 @@ is
 				set_status (et_canvas_schematic_nets.status_delete);
 				
 			when key_noun_segment =>
-				noun := NOUN_SEGMENT;					
+				noun := NOUN_SEGMENT;				
 				set_status (et_canvas_schematic_nets.status_delete);
 
 
@@ -95,13 +95,7 @@ is
 			-- If space pressed, then the operator wishes to operate via keyboard:	
 			when key_space =>
 				case noun is
-					when NOUN_LABEL =>
-						et_canvas_schematic_nets.delete_object (point);
-					
-					when NOUN_NET => 
-						et_canvas_schematic_nets.delete_object (point);
-
-					when NOUN_SEGMENT => 
+					when NOUN_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
 						et_canvas_schematic_nets.delete_object (point);
 						
 					when NOUN_UNIT =>
@@ -114,7 +108,7 @@ is
 			-- If page down pressed, then the operator is clarifying:
 			when key_clarify =>
 				case noun is
-					when NOUN_LABEL | NOUN_NET | NOUN_SEGMENT => 
+					when NOUN_LABEL | NOUN_NET | NOUN_STRAND | NOUN_SEGMENT => 
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;

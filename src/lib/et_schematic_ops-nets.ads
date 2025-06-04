@@ -52,7 +52,10 @@ package et_schematic_ops.nets is
 		module		: in pac_generic_modules.cursor)
 		return type_net_count;
 
+	
 
+-- SEGMENTS:
+	
 
 	-- Sets the start or end points of
 	-- net segments which start or end
@@ -126,6 +129,10 @@ package et_schematic_ops.nets is
 
 
 
+	
+-- STRANDS:
+	
+
 	-- This composite type is meant to identify a strand
 	-- and its parent net in the schematic:
 	type type_object_strand is record
@@ -172,7 +179,17 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level)
 		return type_object_strand;
 
+
+	-- Deletes a strand:
+	procedure delete_strand (
+		module_cursor	: in pac_generic_modules.cursor;
+		strand			: in type_object_strand;
+		log_threshold	: in type_log_level);
+
+
 	
+
+-- NETS:
 	
 	-- This composite type is meant to identify a net
 	-- in the schematic:
@@ -722,7 +739,7 @@ package et_schematic_ops.nets is
 	type type_object_category is (
 		CAT_VOID,
 		CAT_SEGMENT,
-		-- CAT_STRAND ?
+		CAT_STRAND,
 		CAT_NET,
 		CAT_LABEL, -- CS rename to CAT_LABEL_SIMPLE
 		CAT_LABEL_TAG);
@@ -737,6 +754,9 @@ package et_schematic_ops.nets is
 			when CAT_SEGMENT =>
 				segment : type_object_segment;
 
+			when CAT_STRAND =>
+				strand : type_object_strand;
+				
 			when CAT_NET =>
 				net : type_object_net;
 				

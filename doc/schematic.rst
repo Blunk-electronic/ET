@@ -330,6 +330,13 @@ Nets and Net Labels
 
 	|VNS| del s
 
+
+	
+	
+#. Delete a strand of a net
+
+	|VNS| del t
+
 	
 	
 	

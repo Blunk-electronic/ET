@@ -936,6 +936,65 @@ package body et_schematic_ops.nets is
 
 	
 
+	
+
+	procedure delete_strand (
+		module_cursor	: in pac_generic_modules.cursor;
+		strand			: in type_object_strand;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is
+				c : pac_strands.cursor := strand.strand_cursor;
+			begin
+				delete (net.strands, c);
+				-- CS log message
+			end query_net;
+
+			
+		begin
+			module.nets.update_element (strand.net_cursor, query_net'access);
+			
+			-- If the net has no strands anymore, 
+			-- then delete it entirely because a
+			-- net without strands is useless:
+			if not has_strands (strand.net_cursor) then
+				declare
+					c : pac_nets.cursor := strand.net_cursor;
+				begin
+					-- CS log message
+					delete (module.nets, c);
+				end;
+			end if;			
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " deleting strand " & to_string (strand),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (module_cursor, query_module'access);
+		update_ratsnest (module_cursor, log_threshold + 2);
+			
+		log_indentation_down;		
+	end delete_strand;
+
+
+
+
+	
 
 	
 
@@ -5992,6 +6051,9 @@ package body et_schematic_ops.nets is
 			when CAT_SEGMENT =>
 				return to_string (object.segment);
 
+			when CAT_STRAND =>
+				return to_string (object.strand);
+				
 			when CAT_NET =>
 				return to_string (object.net);
 
@@ -6030,6 +6092,9 @@ package body et_schematic_ops.nets is
 			when CAT_SEGMENT =>
 				return object.segment.net_cursor;
 
+			when CAT_STRAND =>
+				return object.strand.net_cursor;
+				
 			when CAT_NET =>
 				return object.net.net_cursor;
 
@@ -6073,6 +6138,7 @@ package body et_schematic_ops.nets is
 	is
 		result_category : type_object_category := CAT_VOID;
 		result_segment 	: type_object_segment;		
+		result_strand	: type_object_strand;
 		result_net		: type_object_net;
 		result_label	: type_object_label; -- CS rename to result_label_simple
 		result_label_tag: type_object_label_tag;
@@ -6101,6 +6167,27 @@ package body et_schematic_ops.nets is
 		end if;
 
 
+
+
+		-- SEARCH FOR THE FIRST STRAND::
+		
+		-- If a strand has been found, then go to the end of this procedure:
+		result_strand := get_first_strand (module_cursor, flag, log_threshold + 1);
+
+		if has_element (result_strand.net_cursor) then
+			-- A strand has been found.
+			-- CS log ?
+			result_category := CAT_STRAND;
+		end if;
+		
+		if result_category /= CAT_VOID then
+			goto end_of_search;
+		end if;
+
+
+
+
+		
 		
 		-- SEARCH FOR THE FIRST NET SEGMENT:
 		
@@ -6117,6 +6204,9 @@ package body et_schematic_ops.nets is
 			goto end_of_search;
 		end if;
 
+
+
+		
 		
 
 		-- SEARCH FOR THE FIRST SIMPLE NET LABEL:
@@ -6134,6 +6224,8 @@ package body et_schematic_ops.nets is
 			goto end_of_search;
 		end if;
 
+
+		
 
 
 		-- SEARCH FOR THE FIRST TAG NET LABEL:
@@ -6167,6 +6259,9 @@ package body et_schematic_ops.nets is
 
 			when CAT_SEGMENT =>
 				return (CAT_SEGMENT, result_segment);
+
+			when CAT_STRAND =>
+				return (CAT_STRAND, result_strand);
 
 			when CAT_NET =>
 				return (CAT_NET, result_net);
@@ -6256,7 +6351,76 @@ package body et_schematic_ops.nets is
 				log_indentation_down;				
 			end search_nets;
 
+			----------------------------------------------------------------------------------------
+			
+			
+			procedure search_strands is
+				net_cursor : pac_nets.cursor := module.nets.first;
+				
 
+				procedure query_net (
+					net_name	: in pac_net_name.bounded_string;
+					net			: in type_net) 
+				is 
+					strand_cursor : pac_strands.cursor := net.strands.first;
+
+					
+					procedure query_strand (strand : in type_strand) is
+
+						-- This procedure appends the matching
+						-- net and strand cursor to the result:
+						procedure collect is begin							
+							result.append ((
+								cat		=> CAT_STRAND,
+								strand	=> (net_cursor, strand_cursor)));
+						end collect;
+							
+					begin
+						case flag is
+							when PROPOSED =>
+								if is_proposed (strand) then
+									collect;
+								end if;
+		
+							when SELECTED =>
+								if is_selected (strand) then
+									collect;
+								end if;
+		
+							when others => null; -- CS
+						end case;						
+					end query_strand;
+			
+					
+				begin
+					-- Iterate through the strands:
+					while has_element (strand_cursor) loop
+						log (text => "strand " & get_position (strand_cursor), level => log_threshold + 2);
+						log_indentation_up;
+						query_element (strand_cursor, query_strand'access);
+						log_indentation_down;
+						next (strand_cursor);
+					end loop;
+				end query_net;
+
+				
+			begin
+				log (text => "net segments", level => log_threshold + 1);
+				log_indentation_up;
+				
+				-- Iterate through the nets:
+				while has_element (net_cursor) loop
+					log (text => "net " & get_net_name (net_cursor), level => log_threshold + 2);
+					log_indentation_up;
+					query_element (net_cursor, query_net'access);
+					log_indentation_down;
+					next (net_cursor);
+				end loop;
+
+				log_indentation_down;				
+			end search_strands;
+		
+			
 
 			----------------------------------------------------------------------------------------
 			
@@ -6560,6 +6724,7 @@ package body et_schematic_ops.nets is
 			
 		begin
 			search_nets; -- addresses whole nets		
+			search_strands;
 			search_net_segments;			
 			search_net_labels; -- CS rename to search_net_labels_simple
 			search_net_labels_tag;
@@ -6606,6 +6771,9 @@ package body et_schematic_ops.nets is
 			when CAT_SEGMENT =>
 				modify_status (module_cursor, object.segment, operation, log_threshold + 1);
 
+			when CAT_STRAND =>
+				modify_status (module_cursor, object.strand, operation, log_threshold + 1);
+				
 			when CAT_NET =>
 				modify_status (module_cursor, object.net, operation, log_threshold + 1);
 
@@ -6653,8 +6821,10 @@ package body et_schematic_ops.nets is
 			level => log_threshold);
 
 		log_indentation_up;
-		reset_proposed_nets (module_cursor, log_threshold + 1);
 		reset_proposed_segments (module_cursor, log_threshold + 1);
+		reset_strands (module_cursor, log_threshold + 1);
+		reset_proposed_nets (module_cursor, log_threshold + 1);
+		
 		reset_labels (module_cursor, log_threshold + 1); -- simple and tag
 		
 		log_indentation_down;
@@ -7075,6 +7245,9 @@ package body et_schematic_ops.nets is
 			when CAT_SEGMENT =>
 				null; -- CS
 
+			when CAT_STRAND =>
+				null; -- CS
+				
 			when CAT_NET => 
 				null; -- CS
 
@@ -7121,9 +7294,11 @@ package body et_schematic_ops.nets is
 					destination		=> destination,
 					log_threshold	=> log_threshold + 1);
 
+			when CAT_STRAND =>
+				null; -- A strand can not be dragged.
 
 			when CAT_NET => 
-				null; -- CS
+				null; -- A whole net can not be dragged.
 
 			when CAT_LABEL => 
 				null; -- CS
@@ -7160,7 +7335,9 @@ package body et_schematic_ops.nets is
 			when CAT_SEGMENT =>
 				delete_segment (module_cursor, object.segment, log_threshold + 1);
 				
-
+			when CAT_STRAND =>
+				delete_strand (module_cursor, object.strand, log_threshold + 1);
+				
 			when CAT_NET => 
 				null; -- CS
 				-- delete_net (
@@ -7201,6 +7378,9 @@ package body et_schematic_ops.nets is
 			when CAT_SEGMENT =>
 				null;
 				-- CS
+
+			when CAT_STRAND =>
+				null; -- CS
 
 			when CAT_NET => 
 				show_net (module_cursor, object.net.net_cursor, log_threshold + 1);
