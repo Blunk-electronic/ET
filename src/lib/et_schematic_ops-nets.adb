@@ -1382,20 +1382,15 @@ package body et_schematic_ops.nets is
 	
 
 
-	
-	
+
+
+
 	procedure delete_segment (
 		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet;
-		catch_zone		: in type_catch_zone;
-		log_threshold	: in type_log_level) 
+		segment			: in type_object_segment;
+		log_threshold	: in type_log_level)
 	is
-		use pac_object_segments;
-		segments_in_zone : pac_object_segments.list;
-		
-		segment : type_object_segment; -- the segment ot be deleted
-		
-		
+
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -1450,6 +1445,36 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor) 
+			& " deleting segment " & to_string (segment),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (module_cursor, query_module'access);
+		update_strand_positions (module_cursor, log_threshold + 2);
+		update_ratsnest (module_cursor, log_threshold + 2);
+			
+		log_indentation_down;		
+	end delete_segment;
+
+
+
+
+
+
+	procedure delete_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
+		log_threshold	: in type_log_level) 
+	is
+		use pac_object_segments;
+		segments_in_zone : pac_object_segments.list;
+		
+		segment : type_object_segment; -- the segment to be deleted
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
 			& " deleting segment in " & to_string (catch_zone),
 			level => log_threshold);
 
@@ -1467,7 +1492,7 @@ package body et_schematic_ops.nets is
 			-- From the segments found at the given position, 
 			-- take the first one and delete it:
 			segment := first_element (segments_in_zone);			
-			generic_modules.update_element (module_cursor, query_module'access);
+			delete_segment (module_cursor, segment, log_threshold + 2);
 
 			update_strand_positions (module_cursor, log_threshold + 2);
 
@@ -1479,7 +1504,8 @@ package body et_schematic_ops.nets is
 
 
 
-
+	
+	
 	
 
 	
@@ -6783,8 +6809,7 @@ package body et_schematic_ops.nets is
 
 		case object.cat is
 			when CAT_SEGMENT =>
-				null;
-				-- CS
+				delete_segment (module_cursor, object.segment, log_threshold + 1);
 				
 
 			when CAT_NET => 

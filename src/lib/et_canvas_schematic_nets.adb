@@ -1288,7 +1288,7 @@ package body et_canvas_schematic_nets is
 
 		-- Propose objects according to current verb and noun:
 		case verb is
-			when VERB_DRAG =>
+			when VERB_DELETE | VERB_DRAG =>
 				
 				-- Propose net segments in the vicinity of the given point:
 				propose_segments (

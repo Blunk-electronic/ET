@@ -328,7 +328,7 @@ Nets and Net Labels
 		
 		delete segment 1 80 100 2
 
-	|VNS| del n
+	|VNS| del s
 
 	
 	

@@ -246,6 +246,13 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
+
+	-- Deletes a net segment:
+	procedure delete_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		log_threshold	: in type_log_level);
+
 	
 	-- Deletes the first net segment found
 	-- in the given zone:

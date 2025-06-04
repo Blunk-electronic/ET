@@ -320,7 +320,7 @@ is
 							et_canvas_schematic_nets.clarify_object;
 						end if;
 						
-					when NOUN_NET => 
+					when NOUN_NET | NOUN_SEGMENT => 
 						if clarification_pending then
 							et_canvas_schematic_nets.clarify_object;
 						end if;
