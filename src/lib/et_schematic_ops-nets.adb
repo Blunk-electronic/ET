@@ -1399,6 +1399,502 @@ package body et_schematic_ops.nets is
 
 	
 
+	procedure move_primary_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		primary_segment	: in type_object_segment;
+		POA				: in type_vector_model;
+		coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model; -- x/y, the new position 
+		zone			: out type_line_zone;
+		displacement	: out type_vector_model;
+		segment_old		: in out type_net_segment;
+		log_threshold	: in type_log_level) 
+	is
+
+		-- Get the sheet number of the segment:
+		sheet : constant type_sheet := get_sheet (primary_segment);
+
+		
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			
+			-- Searches the strands of the given net 
+			-- for a segment that sits on given point_of_attack.
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is
+
+				
+				procedure query_strand (strand : in out type_strand) is
+
+					-- This procedure moves the targeted primary segment
+					-- according to the attacked zone:
+					procedure move_primary_segment (segment : in out type_net_segment) is
+
+						
+						procedure move_primary_segment is 
+
+							procedure move_absolute is begin
+								log (text => "move primary segment absolute", level => log_threshold + 2);
+
+								-- The displacement depends on which zone of the
+								-- segment is attacked. By the displacement the actual
+								-- end point (A/B) will then be moved:
+								case zone is
+									when START_POINT =>
+										displacement := destination - get_A (segment_old);
+										move_start_by (segment, displacement);
+										
+									when END_POINT =>
+										displacement := destination - get_B (segment_old);
+										move_end_by (segment, displacement);
+										
+									when CENTER =>
+										displacement := destination - POA;
+										move_start_by (segment, displacement);
+										move_end_by (segment, displacement);
+								end case;
+							end move_absolute;
+
+
+							
+							procedure move_relative is begin
+								log (text => "move primary segment relative", level => log_threshold + 2);
+								
+								-- Set the displacement required for
+								-- secondary segments which will be dragged along.
+								-- Since we are dragging relative, the displacement is
+								-- the same as the given destination:
+								displacement := destination;
+								
+								case zone is
+									when START_POINT =>
+										move_start_by (segment, displacement);
+
+									when END_POINT =>
+										move_end_by (segment, displacement);
+										
+									when CENTER =>
+										move_start_by (segment, displacement);
+										move_end_by (segment, displacement);
+								end case;					
+							end move_relative;
+
+							
+						begin
+							-- In order to compute the displacement of secondary
+							-- segments, we need a backup of the primary segment
+							-- as it is before the move operation:
+							segment_old := segment;
+							
+							log_indentation_up;
+
+							
+							
+							case coordinates is
+								when ABSOLUTE	=> move_absolute;									
+								when RELATIVE	=> move_relative;							
+							end case;
+
+							-- CS ? move simple net labels along with net segment ?
+							-- move_net_labels (
+							-- 	segment_before	=> segment_before,
+							-- 	segment_after	=> segment,
+							-- 	zone			=> zone);
+							
+							log_indentation_down;
+						end move_primary_segment;
+
+						
+					begin
+						-- Calculate the zone where the segment is being attacked:
+						zone := get_zone (segment, POA);
+						log (text => "attack segment at " & to_string (zone), level => log_threshold + 1);
+
+						-- If the segment is movable then do the actual move:
+						if segment_is_movable (module_cursor, primary_segment, zone, log_threshold + 1) then
+							move_primary_segment;
+						else
+							log (text => "Segment is tied to a port. Dragging not possible !",
+								 level => log_threshold + 1);
+						end if;
+					end move_primary_segment;
+					
+
+
+					-- Looks up ports of devices, netchangers or submodules that are 
+					-- to be connected with the segment. The place where ports are
+					-- searched depends on the zone that has been moved.
+					-- (The given segment sits already at the new position.)
+					procedure connect_ports (segment : in out type_net_segment) is
+						ports : type_ports;
+
+						-- Append the portlists obtained via function get_ports
+						-- to the segment.
+						-- CS: Special threatment required if a port is among the portlists
+						-- that is already somewhere in the strand. 
+						-- This particular port must be exempted from the appending.
+						-- Currently only the integrity check (procedure check_integrity)
+						-- detects this rare case.
+						procedure append_portlists is 
+							use pac_device_ports;
+							use pac_submodule_ports;
+							use et_netlists.pac_netchanger_ports;
+						begin
+							segment.ports.devices.union (ports.devices);
+							segment.ports.submodules.union (ports.submodules);
+							segment.ports.netchangers.union (ports.netchangers);
+						end append_portlists;
+
+
+						A_end : constant type_object_position := 
+							to_position (get_A (segment), sheet);
+
+						B_end : constant type_object_position := 
+							to_position (get_B (segment), sheet);
+						
+					begin
+						case zone is
+							when START_POINT =>
+								ports := get_ports (
+									module_cursor	=> module_cursor, 
+									place 			=> A_end,
+									log_threshold	=> log_threshold + 1);
+
+								append_portlists;
+
+								
+							when END_POINT =>
+								ports := get_ports (
+									module_cursor	=> module_cursor, 
+									place 			=> B_end,
+									log_threshold	=> log_threshold + 1);
+
+								append_portlists;
+
+								
+							when CENTER =>
+								ports := get_ports (
+									module_cursor	=> module_cursor, 
+									place 			=> A_end,
+									log_threshold	=> log_threshold + 1);
+
+								append_portlists;
+								
+								ports := get_ports (
+									module_cursor	=> module_cursor, 
+									place 			=> B_end,
+									log_threshold	=> log_threshold + 1);
+								
+								append_portlists;
+						end case;
+					end connect_ports;
+
+					
+				begin
+					strand.segments.update_element (
+						primary_segment.segment_cursor, move_primary_segment'access);
+
+					-- If a movement took place then look for ports
+					-- which must now be connected with the segment:
+					if displacement /= origin then
+						-- Look for ports at the start/end points of the segment.
+						-- The segment is now at the new position (either start point 
+						-- or end point or both).
+						-- If any port (of a device, netchanger or submodule) sits there,
+						-- then it must be connected with the segment. 
+						-- That means adding these ports to the segment.
+						strand.segments.update_element (
+							primary_segment.segment_cursor, connect_ports'access);
+					end if;
+				end query_strand;
+				
+				
+			begin
+				net.strands.update_element (primary_segment.strand_cursor, query_strand'access);
+			end query_net;
+			
+		begin
+			module.nets.update_element (primary_segment.net_cursor, query_net'access);			
+		end query_module;
+
+
+		
+		praeamble : constant string := "module " & to_string (module_cursor)
+			& " move " & to_string (primary_segment);
+
+		
+	begin
+		case coordinates is
+			when ABSOLUTE =>
+				log (text => praeamble & " to" & to_string (destination),
+					level => log_threshold);
+
+			when RELATIVE =>
+				log (text => praeamble & " by" & to_string (destination),
+					level => log_threshold);
+
+		end case;
+		
+		log_indentation_up;
+		generic_modules.update_element (module_cursor, query_module'access);		
+		log_indentation_down;
+	end move_primary_segment;
+
+	
+
+
+
+	
+	
+		
+	procedure drag_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
+		coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model; -- x/y, the new position 
+		log_threshold	: in type_log_level) 
+	is
+		use pac_object_segments;
+		segments_in_zone : pac_object_segments.list;
+		primary_segment : type_object_segment; -- the segment being dragged
+
+
+		-- Other segments which might be connected with the segment
+		-- being attacked must be dragged along.
+		-- In order to compute the displacement of secondary
+		-- segments, we need a backup of the primary segment
+		-- as it was before the move operation:
+		segment_old : type_net_segment;
+
+		
+		-- When the primary segment has been moved, then we get
+		-- a certain displacement which is later required to move 
+		-- connected secondary segments along:
+		displacement : type_vector_model;
+
+		-- The zone at which the segment is being attacked:
+		zone : type_line_zone;
+
+		-- The point of attack at which the segment will be grabbed.
+		-- It is simply the center of the given catch zone:
+		POA : constant type_vector_model := get_center (catch_zone);
+		
+
+		praeamble : constant string := "module " & to_string (module_cursor)
+			& " dragging segment in " & to_string (catch_zone);
+
+		
+	begin
+		case coordinates is
+			when ABSOLUTE =>
+				log (text => praeamble & " to" & to_string (destination),
+					level => log_threshold);
+
+			when RELATIVE =>
+				log (text => praeamble & " by" & to_string (destination),
+					level => log_threshold);
+
+		end case;
+		
+		log_indentation_up;
+		
+		-- Get all net segments which are in the given zone:
+		segments_in_zone := get_segments (module_cursor, sheet, catch_zone, log_threshold + 1);
+
+		-- Issue warning if nothing found in given zone.
+		-- Otherwise the first segment that has been found
+		-- will be subjected to a drag operation:
+		if is_empty (segments_in_zone) then
+			log (text => "No segment found at given position !", level => log_threshold + 1);			
+		else
+			-- From the segments found at the given position, 
+			-- take the first one and subject it to the drag operation:
+			primary_segment := first_element (segments_in_zone);		
+			
+			move_primary_segment (
+				module_cursor	=> module_cursor,
+				primary_segment	=> primary_segment,
+				POA				=> POA,
+				coordinates		=> coordinates,
+				destination		=> destination,
+				zone			=> zone,
+				displacement	=> displacement,
+				segment_old		=> segment_old,
+				log_threshold	=> log_threshold + 2);
+
+			
+			-- Move connected secondary segments if the primary
+			-- segment has been moved. In this case the displacement is non-zero:
+			if displacement /= origin then
+				case zone is
+					when START_POINT =>
+						move_secondary_segments (
+							module_cursor	=> module_cursor,
+							primary_segment	=> primary_segment,
+							original_segment=> segment_old,
+							AB_end			=> A,
+							displacement	=> displacement,
+							log_threshold	=> log_threshold + 1);
+							
+					when END_POINT =>
+						move_secondary_segments (
+							module_cursor	=> module_cursor,
+							primary_segment	=> primary_segment,
+							original_segment=> segment_old,
+							AB_end			=> B,
+							displacement	=> displacement,
+							log_threshold	=> log_threshold + 1);
+
+					when CENTER =>
+						move_secondary_segments (
+							module_cursor	=> module_cursor,
+							primary_segment	=> primary_segment,
+							original_segment=> segment_old,
+							AB_end			=> A,
+							displacement	=> displacement,
+							log_threshold	=> log_threshold + 1);
+
+						move_secondary_segments (
+							module_cursor	=> module_cursor,
+							primary_segment	=> primary_segment,
+							original_segment=> segment_old,
+							AB_end			=> B,
+							displacement	=> displacement,
+							log_threshold	=> log_threshold + 1);
+				end case;
+
+
+				-- Update the strand positions:
+				update_strand_positions (module_cursor, log_threshold + 1);
+				
+				-- In case new net-port connections are the 
+				-- outcome of the drag operation, then the ratsnest
+				-- in the board drawing must be updated:
+				update_ratsnest (module_cursor, log_threshold + 1);
+			end if;					
+		end if;
+
+		
+		log_indentation_down;		
+	end drag_segment;
+
+
+
+	
+	
+
+
+	procedure drag_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		primary_segment	: in type_object_segment;
+		POA				: in type_vector_model;
+		destination		: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is	
+		-- Other segments which might be connected with the segment
+		-- being attacked must be dragged along.
+		-- In order to compute the displacement of secondary
+		-- segments, we need a backup of the primary segment
+		-- as it was before the move operation:
+		segment_old : type_net_segment;
+		
+		-- When the primary segment has been moved, then we get
+		-- a certain displacement which is later required to move 
+		-- connected secondary segments along:
+		displacement : type_vector_model;
+
+		-- The zone at which the segment is being attacked:
+		zone : type_line_zone;
+				
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " dragging segment " & to_string (primary_segment)
+			& " point of attack: " & to_string (POA)
+			& " to " & to_string (destination),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		-- Drag the given primary segment:
+		move_primary_segment (
+			module_cursor	=> module_cursor,
+			primary_segment	=> primary_segment,
+			POA				=> POA,
+			coordinates		=> ABSOLUTE,
+			destination		=> destination,
+			zone			=> zone,
+			displacement	=> displacement,
+			segment_old		=> segment_old,
+			log_threshold	=> log_threshold + 2);
+		
+
+		
+		-- Move connected secondary segments if the primary
+		-- segment has been moved. In this case the displacement is non-zero:
+		if displacement /= origin then
+			case zone is
+				when START_POINT =>
+					move_secondary_segments (
+						module_cursor	=> module_cursor,
+						primary_segment	=> primary_segment,
+						original_segment=> segment_old,
+						AB_end			=> A,
+						displacement	=> displacement,
+						log_threshold	=> log_threshold + 1);
+						
+				when END_POINT =>
+					move_secondary_segments (
+						module_cursor	=> module_cursor,
+						primary_segment	=> primary_segment,
+						original_segment=> segment_old,
+						AB_end			=> B,
+						displacement	=> displacement,
+						log_threshold	=> log_threshold + 1);
+
+				when CENTER =>
+					move_secondary_segments (
+						module_cursor	=> module_cursor,
+						primary_segment	=> primary_segment,
+						original_segment=> segment_old,
+						AB_end			=> A,
+						displacement	=> displacement,
+						log_threshold	=> log_threshold + 1);
+
+					move_secondary_segments (
+						module_cursor	=> module_cursor,
+						primary_segment	=> primary_segment,
+						original_segment=> segment_old,
+						AB_end			=> B,
+						displacement	=> displacement,
+						log_threshold	=> log_threshold + 1);
+			end case;
+
+
+			-- Update the strand positions:
+			update_strand_positions (module_cursor, log_threshold + 1);
+			
+			-- In case new net-port connections are the 
+			-- outcome of the drag operation, then the ratsnest
+			-- in the board drawing must be updated:
+			update_ratsnest (module_cursor, log_threshold + 1);
+		end if;					
+		
+
+		log_indentation_down;
+	end drag_segment;
+
+
+
+	
+
+	
+
 	
 
 	function to_string (
@@ -2689,497 +3185,6 @@ package body et_schematic_ops.nets is
 
 
 	
-	procedure move_primary_segment (
-		module_cursor	: in pac_generic_modules.cursor;
-		primary_segment	: in type_object_segment;
-		POA				: in type_vector_model;
-		coordinates		: in type_coordinates; -- relative/absolute
-		destination		: in type_vector_model; -- x/y, the new position 
-		zone			: out type_line_zone;
-		displacement	: out type_vector_model;
-		segment_old		: in out type_net_segment;
-		log_threshold	: in type_log_level) 
-	is
-
-		-- Get the sheet number of the segment:
-		sheet : constant type_sheet := get_sheet (primary_segment);
-
-		
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module)
-		is
-			
-			-- Searches the strands of the given net 
-			-- for a segment that sits on given point_of_attack.
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is
-
-				
-				procedure query_strand (strand : in out type_strand) is
-
-					-- This procedure moves the targeted primary segment
-					-- according to the attacked zone:
-					procedure move_primary_segment (segment : in out type_net_segment) is
-
-						
-						procedure move_primary_segment is 
-
-							procedure move_absolute is begin
-								log (text => "move primary segment absolute", level => log_threshold + 2);
-
-								-- The displacement depends on which zone of the
-								-- segment is attacked. By the displacement the actual
-								-- end point (A/B) will then be moved:
-								case zone is
-									when START_POINT =>
-										displacement := destination - get_A (segment_old);
-										move_start_by (segment, displacement);
-										
-									when END_POINT =>
-										displacement := destination - get_B (segment_old);
-										move_end_by (segment, displacement);
-										
-									when CENTER =>
-										displacement := destination - POA;
-										move_start_by (segment, displacement);
-										move_end_by (segment, displacement);
-								end case;
-							end move_absolute;
-
-
-							
-							procedure move_relative is begin
-								log (text => "move primary segment relative", level => log_threshold + 2);
-								
-								-- Set the displacement required for
-								-- secondary segments which will be dragged along.
-								-- Since we are dragging relative, the displacement is
-								-- the same as the given destination:
-								displacement := destination;
-								
-								case zone is
-									when START_POINT =>
-										move_start_by (segment, displacement);
-
-									when END_POINT =>
-										move_end_by (segment, displacement);
-										
-									when CENTER =>
-										move_start_by (segment, displacement);
-										move_end_by (segment, displacement);
-								end case;					
-							end move_relative;
-
-							
-						begin
-							-- In order to compute the displacement of secondary
-							-- segments, we need a backup of the primary segment
-							-- as it is before the move operation:
-							segment_old := segment;
-							
-							log_indentation_up;
-
-							
-							
-							case coordinates is
-								when ABSOLUTE	=> move_absolute;									
-								when RELATIVE	=> move_relative;							
-							end case;
-
-							-- CS ? move simple net labels along with net segment ?
-							-- move_net_labels (
-							-- 	segment_before	=> segment_before,
-							-- 	segment_after	=> segment,
-							-- 	zone			=> zone);
-							
-							log_indentation_down;
-						end move_primary_segment;
-
-						
-					begin
-						-- Calculate the zone where the segment is being attacked:
-						zone := get_zone (segment, POA);
-						log (text => "attack segment at " & to_string (zone), level => log_threshold + 1);
-
-						-- If the segment is movable then do the actual move:
-						if segment_is_movable (module_cursor, primary_segment, zone, log_threshold + 1) then
-							move_primary_segment;
-						else
-							log (text => "Segment is tied to a port. Dragging not possible !",
-								 level => log_threshold + 1);
-						end if;
-					end move_primary_segment;
-					
-
-
-					-- Looks up ports of devices, netchangers or submodules that are 
-					-- to be connected with the segment. The place where ports are
-					-- searched depends on the zone that has been moved.
-					-- (The given segment sits already at the new position.)
-					procedure connect_ports (segment : in out type_net_segment) is
-						ports : type_ports;
-
-						-- Append the portlists obtained via function get_ports
-						-- to the segment.
-						-- CS: Special threatment required if a port is among the portlists
-						-- that is already somewhere in the strand. 
-						-- This particular port must be exempted from the appending.
-						-- Currently only the integrity check (procedure check_integrity)
-						-- detects this rare case.
-						procedure append_portlists is 
-							use pac_device_ports;
-							use pac_submodule_ports;
-							use et_netlists.pac_netchanger_ports;
-						begin
-							segment.ports.devices.union (ports.devices);
-							segment.ports.submodules.union (ports.submodules);
-							segment.ports.netchangers.union (ports.netchangers);
-						end append_portlists;
-
-
-						A_end : constant type_object_position := 
-							to_position (get_A (segment), sheet);
-
-						B_end : constant type_object_position := 
-							to_position (get_B (segment), sheet);
-						
-					begin
-						case zone is
-							when START_POINT =>
-								ports := get_ports (
-									module_cursor	=> module_cursor, 
-									place 			=> A_end,
-									log_threshold	=> log_threshold + 1);
-
-								append_portlists;
-
-								
-							when END_POINT =>
-								ports := get_ports (
-									module_cursor	=> module_cursor, 
-									place 			=> B_end,
-									log_threshold	=> log_threshold + 1);
-
-								append_portlists;
-
-								
-							when CENTER =>
-								ports := get_ports (
-									module_cursor	=> module_cursor, 
-									place 			=> A_end,
-									log_threshold	=> log_threshold + 1);
-
-								append_portlists;
-								
-								ports := get_ports (
-									module_cursor	=> module_cursor, 
-									place 			=> B_end,
-									log_threshold	=> log_threshold + 1);
-								
-								append_portlists;
-						end case;
-					end connect_ports;
-
-					
-				begin
-					strand.segments.update_element (
-						primary_segment.segment_cursor, move_primary_segment'access);
-
-					-- If a movement took place then look for ports
-					-- which must now be connected with the segment:
-					if displacement /= origin then
-						-- Look for ports at the start/end points of the segment.
-						-- The segment is now at the new position (either start point 
-						-- or end point or both).
-						-- If any port (of a device, netchanger or submodule) sits there,
-						-- then it must be connected with the segment. 
-						-- That means adding these ports to the segment.
-						strand.segments.update_element (
-							primary_segment.segment_cursor, connect_ports'access);
-					end if;
-				end query_strand;
-				
-				
-			begin
-				net.strands.update_element (primary_segment.strand_cursor, query_strand'access);
-			end query_net;
-			
-		begin
-			module.nets.update_element (primary_segment.net_cursor, query_net'access);			
-		end query_module;
-
-
-		
-		praeamble : constant string := "module " & to_string (module_cursor)
-			& " move " & to_string (primary_segment);
-
-		
-	begin
-		case coordinates is
-			when ABSOLUTE =>
-				log (text => praeamble & " to" & to_string (destination),
-					level => log_threshold);
-
-			when RELATIVE =>
-				log (text => praeamble & " by" & to_string (destination),
-					level => log_threshold);
-
-		end case;
-		
-		log_indentation_up;
-		generic_modules.update_element (module_cursor, query_module'access);		
-		log_indentation_down;
-	end move_primary_segment;
-
-	
-
-
-	
-	
-		
-	procedure drag_segment (
-		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet;
-		catch_zone		: in type_catch_zone;
-		coordinates		: in type_coordinates; -- relative/absolute
-		destination		: in type_vector_model; -- x/y, the new position 
-		log_threshold	: in type_log_level) 
-	is
-		use pac_object_segments;
-		segments_in_zone : pac_object_segments.list;
-		primary_segment : type_object_segment; -- the segment being dragged
-
-
-		-- Other segments which might be connected with the segment
-		-- being attacked must be dragged along.
-		-- In order to compute the displacement of secondary
-		-- segments, we need a backup of the primary segment
-		-- as it was before the move operation:
-		segment_old : type_net_segment;
-
-		
-		-- When the primary segment has been moved, then we get
-		-- a certain displacement which is later required to move 
-		-- connected secondary segments along:
-		displacement : type_vector_model;
-
-		-- The zone at which the segment is being attacked:
-		zone : type_line_zone;
-
-		-- The point of attack at which the segment will be grabbed.
-		-- It is simply the center of the given catch zone:
-		POA : constant type_vector_model := get_center (catch_zone);
-		
-
-		praeamble : constant string := "module " & to_string (module_cursor)
-			& " dragging segment in " & to_string (catch_zone);
-
-		
-	begin
-		case coordinates is
-			when ABSOLUTE =>
-				log (text => praeamble & " to" & to_string (destination),
-					level => log_threshold);
-
-			when RELATIVE =>
-				log (text => praeamble & " by" & to_string (destination),
-					level => log_threshold);
-
-		end case;
-		
-		log_indentation_up;
-		
-		-- Get all net segments which are in the given zone:
-		segments_in_zone := get_segments (module_cursor, sheet, catch_zone, log_threshold + 1);
-
-		-- Issue warning if nothing found in given zone.
-		-- Otherwise the first segment that has been found
-		-- will be subjected to a drag operation:
-		if is_empty (segments_in_zone) then
-			log (text => "No segment found at given position !", level => log_threshold + 1);			
-		else
-			-- From the segments found at the given position, 
-			-- take the first one and subject it to the drag operation:
-			primary_segment := first_element (segments_in_zone);		
-			
-			move_primary_segment (
-				module_cursor	=> module_cursor,
-				primary_segment	=> primary_segment,
-				POA				=> POA,
-				coordinates		=> coordinates,
-				destination		=> destination,
-				zone			=> zone,
-				displacement	=> displacement,
-				segment_old		=> segment_old,
-				log_threshold	=> log_threshold + 2);
-
-			
-			-- Move connected secondary segments if the primary
-			-- segment has been moved. In this case the displacement is non-zero:
-			if displacement /= origin then
-				case zone is
-					when START_POINT =>
-						move_secondary_segments (
-							module_cursor	=> module_cursor,
-							primary_segment	=> primary_segment,
-							original_segment=> segment_old,
-							AB_end			=> A,
-							displacement	=> displacement,
-							log_threshold	=> log_threshold + 1);
-							
-					when END_POINT =>
-						move_secondary_segments (
-							module_cursor	=> module_cursor,
-							primary_segment	=> primary_segment,
-							original_segment=> segment_old,
-							AB_end			=> B,
-							displacement	=> displacement,
-							log_threshold	=> log_threshold + 1);
-
-					when CENTER =>
-						move_secondary_segments (
-							module_cursor	=> module_cursor,
-							primary_segment	=> primary_segment,
-							original_segment=> segment_old,
-							AB_end			=> A,
-							displacement	=> displacement,
-							log_threshold	=> log_threshold + 1);
-
-						move_secondary_segments (
-							module_cursor	=> module_cursor,
-							primary_segment	=> primary_segment,
-							original_segment=> segment_old,
-							AB_end			=> B,
-							displacement	=> displacement,
-							log_threshold	=> log_threshold + 1);
-				end case;
-
-
-				-- Update the strand positions:
-				update_strand_positions (module_cursor, log_threshold + 1);
-				
-				-- In case new net-port connections are the 
-				-- outcome of the drag operation, then the ratsnest
-				-- in the board drawing must be updated:
-				update_ratsnest (module_cursor, log_threshold + 1);
-			end if;					
-		end if;
-
-		
-		log_indentation_down;		
-	end drag_segment;
-
-
-
-
-
-	
-
-
-	procedure drag_segment (
-		module_cursor	: in pac_generic_modules.cursor;
-		primary_segment	: in type_object_segment;
-		POA				: in type_vector_model;
-		destination		: in type_vector_model;
-		log_threshold	: in type_log_level)
-	is	
-		-- Other segments which might be connected with the segment
-		-- being attacked must be dragged along.
-		-- In order to compute the displacement of secondary
-		-- segments, we need a backup of the primary segment
-		-- as it was before the move operation:
-		segment_old : type_net_segment;
-		
-		-- When the primary segment has been moved, then we get
-		-- a certain displacement which is later required to move 
-		-- connected secondary segments along:
-		displacement : type_vector_model;
-
-		-- The zone at which the segment is being attacked:
-		zone : type_line_zone;
-				
-	begin
-		log (text => "module " & to_string (module_cursor)
-			& " dragging segment " & to_string (primary_segment)
-			& " point of attack: " & to_string (POA)
-			& " to " & to_string (destination),
-			level => log_threshold);
-
-		log_indentation_up;
-
-		-- Drag the given primary segment:
-		move_primary_segment (
-			module_cursor	=> module_cursor,
-			primary_segment	=> primary_segment,
-			POA				=> POA,
-			coordinates		=> ABSOLUTE,
-			destination		=> destination,
-			zone			=> zone,
-			displacement	=> displacement,
-			segment_old		=> segment_old,
-			log_threshold	=> log_threshold + 2);
-		
-
-		
-		-- Move connected secondary segments if the primary
-		-- segment has been moved. In this case the displacement is non-zero:
-		if displacement /= origin then
-			case zone is
-				when START_POINT =>
-					move_secondary_segments (
-						module_cursor	=> module_cursor,
-						primary_segment	=> primary_segment,
-						original_segment=> segment_old,
-						AB_end			=> A,
-						displacement	=> displacement,
-						log_threshold	=> log_threshold + 1);
-						
-				when END_POINT =>
-					move_secondary_segments (
-						module_cursor	=> module_cursor,
-						primary_segment	=> primary_segment,
-						original_segment=> segment_old,
-						AB_end			=> B,
-						displacement	=> displacement,
-						log_threshold	=> log_threshold + 1);
-
-				when CENTER =>
-					move_secondary_segments (
-						module_cursor	=> module_cursor,
-						primary_segment	=> primary_segment,
-						original_segment=> segment_old,
-						AB_end			=> A,
-						displacement	=> displacement,
-						log_threshold	=> log_threshold + 1);
-
-					move_secondary_segments (
-						module_cursor	=> module_cursor,
-						primary_segment	=> primary_segment,
-						original_segment=> segment_old,
-						AB_end			=> B,
-						displacement	=> displacement,
-						log_threshold	=> log_threshold + 1);
-			end case;
-
-
-			-- Update the strand positions:
-			update_strand_positions (module_cursor, log_threshold + 1);
-			
-			-- In case new net-port connections are the 
-			-- outcome of the drag operation, then the ratsnest
-			-- in the board drawing must be updated:
-			update_ratsnest (module_cursor, log_threshold + 1);
-		end if;					
-		
-
-		log_indentation_down;
-	end drag_segment;
-
-
 
 	
 	
@@ -3393,6 +3398,7 @@ package body et_schematic_ops.nets is
 
 
 
+	
 	
 	
 	procedure insert_segment (
@@ -4076,8 +4082,8 @@ package body et_schematic_ops.nets is
 		net_cursor : pac_nets.cursor; -- points to the net
 		segment : type_net_segment;
 	begin
-		log (text => "module " & enclose_in_quotes (to_string (key (module_cursor))) &
-			" inserting net " & enclose_in_quotes (to_string (net_name)) &
+		log (text => "module " & to_string (module_cursor) &
+			" inserting net " & to_string (net_name) &
 			" segment from" & to_string (position => A) &
 			" to" & to_string (B), level => log_threshold);
 		

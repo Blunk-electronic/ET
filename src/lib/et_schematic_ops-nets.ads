@@ -223,6 +223,60 @@ package et_schematic_ops.nets is
 
 
 	
+	-- This procedure moves a given primary net segment
+	-- which is attacked by the point of attack (POA).
+	-- It computes the zone that is being attcked
+	-- and the displacement (useful for other segments
+	-- connected with the primary segment).
+	-- Outputs also the original old primary segment
+	-- (also required to drag secondary segments along):
+	procedure move_primary_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		primary_segment	: in type_object_segment;
+		POA				: in type_vector_model;
+		coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model; -- x/y, the new position 
+		zone			: out type_line_zone;
+		displacement	: out type_vector_model;
+		segment_old		: in out type_net_segment;
+		log_threshold	: in type_log_level);
+
+	
+	-- Drags a segment of a net. The segment to be modified
+	-- is searched for in the given catch zone on the given sheet.
+	-- If more than one segment has been found in the given zone,
+	-- then the first of them will be selected.
+	-- We call this segment "primary segment". Other segments which
+	-- might be connected with it are called "secondary segments".
+	-- The secondary segments will be dragged along with the primary segment.
+	-- If the primary segment is dragged to a place where it meets a port
+	-- of a device, netchanger or submodule, then the segment will be 
+	-- connected with that port.
+	-- NOTE: If the segment meets another net, then these 
+	-- two nets will NOT be connected.
+	-- CS: The resulting overlapping segments should be detected by the ERC
+	-- or better the drag operation should be rejected.
+	procedure drag_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
+		coordinates		: in type_coordinates; -- relative/absolute
+		destination		: in type_vector_model; -- x/y
+		log_threshold	: in type_log_level);
+
+
+	-- Drags a segment of a net.
+	-- If the segment meets a port, then the port will be connected with the net.
+	-- NOTE: If the segment meets another net, then these two nets will NOT be connected.
+	--       CS: The resulting overlapping segments should be detected by the ERC.
+	procedure drag_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		primary_segment	: in type_object_segment;
+		POA				: in type_vector_model;
+		destination		: in type_vector_model; -- x/y
+		log_threshold	: in type_log_level);
+
+
 	
 	
 -- STRANDS:
@@ -397,66 +451,6 @@ package et_schematic_ops.nets is
 		net_cursor		: in pac_nets.cursor;
 		log_threshold	: in type_log_level);
 
-
-
-	
-	
-	
-
-	
-
-	-- This procedure moves a given primary net segment
-	-- which is attacked by the point of attack (POA).
-	-- It computes the zone that is being attcked
-	-- and the displacement (useful for other segments
-	-- connected with the primary segment).
-	-- Outputs also the original old primary segment
-	-- (also required to drag secondary segments along):
-	procedure move_primary_segment (
-		module_cursor	: in pac_generic_modules.cursor;
-		primary_segment	: in type_object_segment;
-		POA				: in type_vector_model;
-		coordinates		: in type_coordinates; -- relative/absolute
-		destination		: in type_vector_model; -- x/y, the new position 
-		zone			: out type_line_zone;
-		displacement	: out type_vector_model;
-		segment_old		: in out type_net_segment;
-		log_threshold	: in type_log_level);
-
-	
-	-- Drags a segment of a net. The segment to be modified
-	-- is searched for in the given catch zone on the given sheet.
-	-- If more than one segment has been found in the given zone,
-	-- then the first of them will be selected.
-	-- We call this segment "primary segment". Other segments which
-	-- might be connected with it are called "secondary segments".
-	-- The secondary segments will be dragged along with the primary segment.
-	-- If the primary segment is dragged to a place where it meets a port
-	-- of a device, netchanger or submodule, then the segment will be 
-	-- connected with that port.
-	-- NOTE: If the segment meets another net, then these 
-	-- two nets will NOT be connected.
-	-- CS: The resulting overlapping segments should be detected by the ERC
-	-- or better the drag operation should be rejected.
-	procedure drag_segment (
-		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet;
-		catch_zone		: in type_catch_zone;
-		coordinates		: in type_coordinates; -- relative/absolute
-		destination		: in type_vector_model; -- x/y
-		log_threshold	: in type_log_level);
-
-
-	-- Drags a segment of a net.
-	-- If the segment meets a port, then the port will be connected with the net.
-	-- NOTE: If the segment meets another net, then these two nets will NOT be connected.
-	--       CS: The resulting overlapping segments should be detected by the ERC.
-	procedure drag_segment (
-		module_cursor	: in pac_generic_modules.cursor;
-		primary_segment	: in type_object_segment;
-		POA				: in type_vector_model;
-		destination		: in type_vector_model; -- x/y
-		log_threshold	: in type_log_level);
 
 	
 
