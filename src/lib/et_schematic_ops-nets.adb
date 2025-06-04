@@ -579,6 +579,828 @@ package body et_schematic_ops.nets is
 
 
 
+
+
+	procedure delete_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+			
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is
+
+
+				procedure query_strand (strand : in out type_strand) is
+					c : pac_net_segments.cursor := segment.segment_cursor;
+				begin
+					delete (strand.segments, c);
+				end query_strand;
+
+				
+			begin
+				net.strands.update_element (segment.strand_cursor, query_strand'access);
+
+				-- If the strand has no segments anymore, then
+				-- remove the now useless strand entirely:
+				if not has_segments (segment.strand_cursor) then
+					declare
+						c : pac_strands.cursor := segment.strand_cursor;
+					begin
+						-- CS log message
+						delete (net.strands, c);
+					end;
+				end if;
+			end query_net;
+
+			
+		begin
+			module.nets.update_element (segment.net_cursor, query_net'access);
+			
+			-- If the net has no strands anymore, 
+			-- then delete it entirely because a
+			-- net without strands is useless:
+			if not has_strands (segment.net_cursor) then
+				declare
+					c : pac_nets.cursor := segment.net_cursor;
+				begin
+					-- CS log message
+					delete (module.nets, c);
+				end;
+			end if;			
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " deleting segment " & to_string (segment),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		generic_modules.update_element (module_cursor, query_module'access);
+		update_strand_positions (module_cursor, log_threshold + 2);
+		update_ratsnest (module_cursor, log_threshold + 2);
+			
+		log_indentation_down;		
+	end delete_segment;
+
+
+
+
+
+
+	procedure delete_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
+		log_threshold	: in type_log_level) 
+	is
+		use pac_object_segments;
+		segments_in_zone : pac_object_segments.list;
+		
+		segment : type_object_segment; -- the segment to be deleted
+		
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			& " deleting segment in " & to_string (catch_zone),
+			level => log_threshold);
+
+		log_indentation_up;
+
+		-- Get all net segments which are in the given zone:
+		segments_in_zone := get_segments (module_cursor, sheet, catch_zone, log_threshold + 1);
+
+		-- Issue warning if nothing found in given zone.
+		-- Otherwise the first segment that has been found
+		-- will be deleted:
+		if is_empty (segments_in_zone) then
+			log (text => "No segment found at given position !", level => log_threshold + 1);			
+		else
+			-- From the segments found at the given position, 
+			-- take the first one and delete it:
+			segment := first_element (segments_in_zone);			
+			delete_segment (module_cursor, segment, log_threshold + 2);
+
+			update_strand_positions (module_cursor, log_threshold + 2);
+
+			update_ratsnest (module_cursor, log_threshold + 2);
+		end if;
+			
+		log_indentation_down;		
+	end delete_segment;
+
+
+	
+
+
+	
+	function segment_is_movable (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_net_segment;
+		point_of_attack	: in type_object_position;
+		log_threshold	: in type_log_level) 
+		return boolean 
+	is
+		result : boolean := true;
+		-- Goes false once a port has been found in the given zone.
+
+		-- The zone of the net being attacked:
+		zone	: type_line_zone;
+
+		-- The actual point that is to be tested:
+		point	: type_object_position;
+		
+
+		-- Searches ports of devices, netchangers and submodules that sit on
+		-- the point of interest.	
+		-- On the first finding, sets result to false and finishes. If no 
+		-- finding, result remains true.	
+		procedure search_ports is
+			use pac_device_ports;
+			use pac_submodule_ports;
+
+			use et_netlists;
+			use pac_netchanger_ports;
+
+			device : pac_device_ports.cursor := segment.ports.devices.first;
+			submodule : pac_submodule_ports.cursor := segment.ports.submodules.first;
+			netchanger : pac_netchanger_ports.cursor := segment.ports.netchangers.first;
+
+			use et_schematic_ops.submodules;
+
+			
+		begin -- search_ports
+			while device /= pac_device_ports.no_element loop
+
+				if get_position (
+					module_cursor	=> module_cursor,
+					device_name		=> element (device).device_name,
+					port_name		=> element (device).port_name,
+					log_threshold	=> log_threshold + 2) 
+					
+					= point then
+
+					result := false; -- not movable
+					exit;
+
+				end if;
+				
+				next (device);
+			end loop;
+
+			
+			-- if no device port found, search in submodule ports
+			if result = true then
+
+				while submodule /= pac_submodule_ports.no_element loop
+
+					if get_submodule_port_position ( -- CS use a similar function that takes only cursors ?
+						module_name		=> key (module_cursor),
+						submod_name		=> element (submodule).module_name,
+						port_name		=> element (submodule).port_name,
+						log_threshold	=> log_threshold + 2) 
+						
+						= point then
+
+						result := false; -- not movable
+						exit;
+
+					end if;
+					
+					next (submodule);
+				end loop;
+
+			end if;
+
+			
+			-- if no submodule port found, search in netchanger ports
+			if result = true then
+
+				while netchanger /= pac_netchanger_ports.no_element loop
+
+					if get_netchanger_port_position ( -- CS use a similar function that takes only cursors ?
+						module_name		=> key (module_cursor),
+						index			=> element (netchanger).index,
+						port			=> element (netchanger).port,
+						log_threshold	=> log_threshold + 2) 
+						
+						= point then
+
+						result := false; -- not movable
+						exit;
+
+					end if;
+					
+					next (netchanger);
+				end loop;
+
+			end if;
+
+			-- if no port found, result is still true
+		end search_ports;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " test whether segment " & to_string (segment)
+			& " is movable at point of attack" & to_string (get_place (point_of_attack)),
+			level => log_threshold);
+	
+		log_indentation_up;
+		
+		-- Calculate the zone of attack:
+		zone := get_zone (
+			point	=> get_place (point_of_attack),
+			line	=> segment);
+
+		log (text => "attacked zone " & to_string (zone), level => log_threshold + 1);
+		
+		-- The point of interest is on the sheet specified in argument "point_of_attack".
+		-- The x/y coordinates are taken from the segment start or end point.
+		
+		case zone is
+			when START_POINT =>
+				point := to_position (
+						point => get_A (segment),
+						sheet => get_sheet (point_of_attack));
+
+				search_ports; -- sets result to false if a port is connected with the start point
+
+				
+			when END_POINT =>
+				point := to_position (
+						point => get_B (segment),
+						sheet => get_sheet (point_of_attack));
+
+				search_ports; -- sets result to false if a port is connected with the end point
+
+				
+			when CENTER =>
+				-- Both start and end point must be checked for any ports.
+				-- First check the start point of the segment.
+				-- If start point is movable, then the end point must be checked too.
+				point := to_position (
+						point => get_A (segment),
+						sheet => get_sheet (point_of_attack));
+
+				search_ports; -- sets result to false if a port is connected with the start point
+
+				-- If start point is movable, check end point.
+				if result = true then
+					point := to_position (
+						point => get_B (segment),
+						sheet => get_sheet (point_of_attack));
+
+					search_ports; -- sets result to false if a port is connected with the end point
+				end if;
+		end case;
+
+		log_indentation_down;
+		
+		return result;
+	end segment_is_movable;
+
+
+
+
+
+	
+
+	function segment_is_movable (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		AB_end			: in type_start_end_point;
+		log_threshold	: in type_log_level) 
+		return boolean
+	is
+		result : boolean := true;
+		-- Goes false once a port has been found in the given zone.
+		
+
+		-- Searches ports of devices, netchangers and submodules 
+		-- that sit on the point of interest.	
+		-- On the first finding, sets result to false and finishes. If no 
+		-- finding, result remains true.	
+		procedure search_ports (
+			segment	: in type_net_segment;
+			point	: in type_object_position) -- the actual location that is to be tested
+		is
+			
+			procedure iterate_device_ports is
+				use pac_device_ports;
+				device : pac_device_ports.cursor := segment.ports.devices.first;
+			begin
+				while has_element (device) loop
+
+					if get_position (
+						module_cursor	=> module_cursor,
+						device_name		=> element (device).device_name,
+						port_name		=> element (device).port_name,
+						log_threshold	=> log_threshold + 2) 
+						
+						= point then
+
+						result := false; -- not movable
+						exit;
+					end if;
+					
+					next (device);
+				end loop;
+			end iterate_device_ports;
+
+
+			
+			procedure iterate_netchanger_ports is
+				use et_schematic_ops.submodules;
+				use et_netlists;
+				use pac_netchanger_ports;
+				netchanger : pac_netchanger_ports.cursor := segment.ports.netchangers.first;
+			begin
+				while has_element (netchanger) loop
+
+					if get_netchanger_port_position ( -- CS use a similar function that takes only cursors ?
+						module_name		=> key (module_cursor),
+						index			=> element (netchanger).index,
+						port			=> element (netchanger).port,
+						log_threshold	=> log_threshold + 2) 
+						
+						= point then
+
+						result := false; -- not movable
+						exit;
+					end if;
+					
+					next (netchanger);
+				end loop;
+			end iterate_netchanger_ports;
+
+
+
+			procedure iterate_submodule_ports is
+				use et_schematic_ops.submodules;
+				use pac_submodule_ports;
+				submodule : pac_submodule_ports.cursor := segment.ports.submodules.first;
+			begin
+				-- Iterate through the submodule ports:
+				while has_element (submodule) loop
+
+					if get_submodule_port_position ( -- CS use a similar function that takes only cursors ?
+						module_name		=> key (module_cursor),
+						submod_name		=> element (submodule).module_name,
+						port_name		=> element (submodule).port_name,
+						log_threshold	=> log_threshold + 2) 
+						
+						= point then
+
+						result := false; -- not movable
+						exit;
+					end if;
+					
+					next (submodule);
+				end loop;
+			end iterate_submodule_ports;
+
+			
+			
+		begin -- search_ports
+			iterate_device_ports;
+			
+			-- if no device port found, search in submodule ports
+			if result = true then
+				iterate_submodule_ports;
+			end if;
+			
+			-- if no submodule port found, search in netchanger ports
+			if result = true then
+				iterate_netchanger_ports;
+			end if;
+
+			-- if no port found, result is still true
+		end search_ports;
+
+
+
+		
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is			
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net)
+			is
+
+				procedure query_strand (strand : in type_strand) is
+					sheet : type_sheet := get_sheet (strand);
+
+					procedure query_segment (seg : in type_net_segment) is begin
+						case AB_end is
+							when A => search_ports (seg, to_position (get_A (seg), sheet));
+							when B => search_ports (seg, to_position (get_B (seg), sheet));
+						end case;
+					end query_segment;
+					
+				begin
+					query_element (segment.segment_cursor, query_segment'access);
+				end query_strand;
+				
+			begin
+				query_element (segment.strand_cursor, query_strand'access);
+			end query_net;
+			
+		begin
+			query_element (segment.net_cursor, query_net'access);
+		end query_module;
+
+		
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " test whether " & to_string (segment)
+			& " is movable at " & to_string (AB_end),
+			level => log_threshold);
+	
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+		
+		return result;
+	end segment_is_movable;
+
+
+	
+
+	
+
+	function segment_is_movable (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		zone			: in type_line_zone;
+		log_threshold	: in type_log_level) 
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		log (text => "module " & to_string (module_cursor)
+			& " test whether " & to_string (segment)
+			& " is movable at " & to_string (zone),
+			level => log_threshold);
+
+		case zone is
+			when START_POINT =>
+				if segment_is_movable (module_cursor, segment, A, log_threshold + 1) then
+					result := true;
+				end if;
+
+			when END_POINT =>
+				if segment_is_movable (module_cursor, segment, B, log_threshold + 1) then
+					result := true;
+				end if;
+				
+			when CENTER =>
+				if  segment_is_movable (module_cursor, segment, A, log_threshold + 1) 
+				and segment_is_movable (module_cursor, segment, B, log_threshold + 1) 
+				then
+					result := true;
+				end if;
+		end case;
+
+		return result;
+	end segment_is_movable;
+
+
+	
+
+	
+
+
+	procedure move_secondary_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		primary_segment	: in type_object_segment;
+		original_segment: in type_net_segment;
+		AB_end			: in type_start_end_point;
+		displacement	: in type_vector_model;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is			
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+
+				-- This procedure searches for segments which are connected
+				-- with the given primary segment.
+				procedure query_strand (strand : in out type_strand) is
+					secondary_segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure move_A_end (
+						secondary_segment : in out type_net_segment) 
+					is begin
+						move_start_by (secondary_segment, displacement);
+					end move_A_end;
+
+					
+					procedure move_B_end (
+						secondary_segment : in out type_net_segment) 
+					is begin
+						move_end_by (secondary_segment, displacement);
+					end move_B_end;
+
+					
+					-- The connection status of original primary segment
+					-- and candidate secondary segment:
+					status : type_connect_status;
+				begin
+					-- Iterate through the segments of the candidate strand
+					-- but skip the given primary segment, because we are 
+					-- interested in the segments which are connected with
+					-- the primary segment. The cursor to the primary segment
+					-- is used in order to identify it among the segments
+					-- of the strand. The actual segment state is the one AFTER
+					-- the drag operation (see specs of move_secondary_segments),
+					-- but the cursor still points to it.
+					while has_element (secondary_segment_cursor) loop						
+						if secondary_segment_cursor /= primary_segment.segment_cursor then
+
+							-- In order to figure out whether the secondary segment
+							-- candidate is connected with the primary segment,
+							-- we use the original primary segment because it
+							-- provides the state BEFORE the drag operation:
+							status := get_connect_status (
+								primary		=> original_segment,
+								AB_end		=> AB_end, -- the end (A/B) of the primary segment								
+								secondary	=> element (secondary_segment_cursor));
+							
+							-- Depending on the connected end point
+							-- of the secondary segment, we now move
+							-- the end of the secondary segment.
+							-- If the secondary segment is not connected with
+							-- the primary segment then nothing happens:
+							if status = CON_STS_A then				
+								strand.segments.update_element (
+									secondary_segment_cursor, move_A_end'access);
+							end if;
+
+							if status = CON_STS_B then							
+								strand.segments.update_element (
+									secondary_segment_cursor, move_B_end'access);
+							end if;
+							
+						end if;
+						next (secondary_segment_cursor);
+					end loop;
+				end query_strand;
+
+				
+			begin
+				-- We care for the strand of the given primary segment only.
+				-- All other strands are irrelevant:
+				net.strands.update_element (
+					primary_segment.strand_cursor, query_strand'access);
+			end query_net;
+			
+		begin
+			module.nets.update_element (
+				primary_segment.net_cursor, query_net'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " move secondary net segments connected with primary segment " 
+			 & to_string (original_segment),
+			level => log_threshold);
+
+		log (text => "at end point " & to_string (AB_end)
+			& " by " & to_string (displacement),
+			level => log_threshold);
+
+		log_indentation_up;
+		
+		-- By means of the given primary segment we have prompt access 
+		-- to it, because we have a cursor to the net, the strand and to
+		-- the actual segment:
+		generic_modules.update_element (module_cursor, query_module'access);
+		
+		log_indentation_down;		
+	end move_secondary_segments;
+
+
+	
+
+	
+
+
+	function net_segment_at_place (
+		module_cursor	: in pac_generic_modules.cursor;
+		place			: in type_object_position)
+		return boolean 
+	is
+
+		-- This flag goes true once a segment has been found.
+		segment_found : boolean := false; -- to be returned
+		
+		procedure query_nets (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+
+			use pac_nets;			
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			procedure query_strands (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net)
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+				
+				procedure query_segments (strand : in type_strand) is
+					use pac_net_segments;
+
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+
+					
+					procedure probe_segment (segment : in type_net_segment) is begin
+						-- if place is a start point of a segment
+						if get_A (segment) = place.place then
+							-- signal iterations in upper level to cancel
+							segment_found := true;
+						end if;
+
+						-- if place is an end point of a segment
+						if get_B (segment) = place.place then
+							-- signal iterations in upper level to cancel
+							segment_found := true;
+						end if;
+					end probe_segment;
+
+					
+				begin -- query_segments
+					while not segment_found and segment_cursor /= pac_net_segments.no_element loop
+						query_element (
+							position	=> segment_cursor,
+							process		=> probe_segment'access);
+						
+						next (segment_cursor);
+					end loop;
+				end query_segments;
+
+				
+			begin -- query_strands
+				while not segment_found and strand_cursor /= pac_strands.no_element loop
+					
+					-- We pick out only the strands on the targeted sheet:
+					if get_sheet (element (strand_cursor).position) = get_sheet (place) then
+
+						query_element (
+							position	=> strand_cursor,
+							process		=> query_segments'access);
+					
+					end if;
+					
+					next (strand_cursor);
+				end loop;
+			end query_strands;
+
+			
+		begin -- query_nets
+			while not segment_found and net_cursor /= pac_nets.no_element loop
+
+				query_element (
+					position	=> net_cursor,
+					process		=> query_strands'access);
+
+				next (net_cursor);
+			end loop;
+		end query_nets;
+
+		
+	begin
+		-- CS log message
+		
+		query_element (
+			position	=> module_cursor,
+			process		=> query_nets'access);
+		
+		return segment_found;
+	end net_segment_at_place;
+
+	
+
+	
+	
+	
+
+	function get_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
+		log_threshold	: in type_log_level)
+		return pac_object_segments.list
+	is
+		use pac_object_segments;
+		result : pac_object_segments.list;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net)
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+
+				
+				procedure query_strand (strand : in type_strand) is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+				begin
+					-- Iterate through the segments and test
+					-- each of them whether it crosses the given zone:
+					while has_element (segment_cursor) loop
+						log (text => "segment " & to_string (segment_cursor), level => log_threshold + 2);
+						
+						if on_segment (catch_zone, segment_cursor) then
+							log (text => " match", level => log_threshold + 2);
+							result.append ((net_cursor, strand_cursor, segment_cursor));
+						end if;
+						
+						next (segment_cursor);
+					end loop;
+				end query_strand;
+
+				
+			begin
+				log (text => "net " & to_string (net_name), level => log_threshold + 1);
+				log_indentation_up;
+				
+				-- Iterate through the strands:
+				while has_element (strand_cursor) loop
+					
+					-- We pick out only the strands on the given sheet:
+					if get_sheet (strand_cursor) = sheet then
+						query_element (strand_cursor, query_strand'access);					
+					end if;
+					
+					next (strand_cursor);
+				end loop;
+
+				log_indentation_down;
+			end query_net;
+
+			
+		begin
+			-- Iterate through the nets:
+			while has_element (net_cursor) loop
+				query_element (net_cursor, query_net'access);
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " collect net segments on sheet " & to_string (sheet)
+			 & "  in zone " & to_string (catch_zone),
+			 level => log_threshold);
+
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+
+		return result;
+	end get_segments;
+	
+
+
+
+
+
+	
+
+	
+
 	function to_string (
 		object	: in type_object_strand)
 		return string
@@ -993,6 +1815,81 @@ package body et_schematic_ops.nets is
 
 
 
+
+
+	
+
+
+	procedure update_strand_positions (
+		module_cursor	: in pac_generic_modules.cursor;
+		log_threshold	: in type_log_level)
+	is
+
+	
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module)
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net) 
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+				
+				
+				procedure query_strand (strand : in out type_strand) is 
+					old_position : type_object_position := get_position (strand);
+					new_position : type_object_position;
+				begin
+					log (text => "strand " & get_position (strand), level => log_threshold + 2);
+					
+					set_strand_position (strand); -- update strand position
+					new_position := get_position (strand);
+
+					-- If the position has changed then log
+					-- the new position:
+					if old_position /= new_position then
+						log (text => " new position " & to_string (new_position),
+							 level => log_threshold + 2);
+					end if;
+				end query_strand;
+				
+				
+			begin
+				while has_element (strand_cursor) loop
+					net.strands.update_element (strand_cursor, query_strand'access);
+					next (strand_cursor);
+				end loop;
+			end query_net;
+
+			
+		begin
+			while has_element (net_cursor) loop
+				log (text => "net " & get_net_name (net_cursor), level => log_threshold + 1);
+				log_indentation_up;
+				module.nets.update_element (net_cursor, query_net'access);
+				log_indentation_down;
+				next (net_cursor);
+			end loop;
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " update strand positions",
+			level => log_threshold);
+
+		log_indentation_up;
+		generic_modules.update_element (module_cursor, query_module'access);
+		log_indentation_down;		
+
+	end update_strand_positions;
+
+
+	
 
 	
 
@@ -1788,893 +2685,6 @@ package body et_schematic_ops.nets is
 
 	
 	
-
-
-
-
-
-	procedure delete_segment (
-		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;
-		log_threshold	: in type_log_level)
-	is
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			
-
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is
-
-
-				procedure query_strand (strand : in out type_strand) is
-					c : pac_net_segments.cursor := segment.segment_cursor;
-				begin
-					delete (strand.segments, c);
-				end query_strand;
-
-				
-			begin
-				net.strands.update_element (segment.strand_cursor, query_strand'access);
-
-				-- If the strand has no segments anymore, then
-				-- remove the now useless strand entirely:
-				if not has_segments (segment.strand_cursor) then
-					declare
-						c : pac_strands.cursor := segment.strand_cursor;
-					begin
-						-- CS log message
-						delete (net.strands, c);
-					end;
-				end if;
-			end query_net;
-
-			
-		begin
-			module.nets.update_element (segment.net_cursor, query_net'access);
-			
-			-- If the net has no strands anymore, 
-			-- then delete it entirely because a
-			-- net without strands is useless:
-			if not has_strands (segment.net_cursor) then
-				declare
-					c : pac_nets.cursor := segment.net_cursor;
-				begin
-					-- CS log message
-					delete (module.nets, c);
-				end;
-			end if;			
-		end query_module;
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor) 
-			& " deleting segment " & to_string (segment),
-			level => log_threshold);
-
-		log_indentation_up;
-		
-		generic_modules.update_element (module_cursor, query_module'access);
-		update_strand_positions (module_cursor, log_threshold + 2);
-		update_ratsnest (module_cursor, log_threshold + 2);
-			
-		log_indentation_down;		
-	end delete_segment;
-
-
-
-
-
-
-	procedure delete_segment (
-		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet;
-		catch_zone		: in type_catch_zone;
-		log_threshold	: in type_log_level) 
-	is
-		use pac_object_segments;
-		segments_in_zone : pac_object_segments.list;
-		
-		segment : type_object_segment; -- the segment to be deleted
-		
-	begin
-		log (text => "module " & to_string (module_cursor) 
-			& " deleting segment in " & to_string (catch_zone),
-			level => log_threshold);
-
-		log_indentation_up;
-
-		-- Get all net segments which are in the given zone:
-		segments_in_zone := get_segments (module_cursor, sheet, catch_zone, log_threshold + 1);
-
-		-- Issue warning if nothing found in given zone.
-		-- Otherwise the first segment that has been found
-		-- will be deleted:
-		if is_empty (segments_in_zone) then
-			log (text => "No segment found at given position !", level => log_threshold + 1);			
-		else
-			-- From the segments found at the given position, 
-			-- take the first one and delete it:
-			segment := first_element (segments_in_zone);			
-			delete_segment (module_cursor, segment, log_threshold + 2);
-
-			update_strand_positions (module_cursor, log_threshold + 2);
-
-			update_ratsnest (module_cursor, log_threshold + 2);
-		end if;
-			
-		log_indentation_down;		
-	end delete_segment;
-
-
-
-	
-	
-	
-
-	
-	function segment_is_movable (
-		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_net_segment;
-		point_of_attack	: in type_object_position;
-		log_threshold	: in type_log_level) 
-		return boolean 
-	is
-		result : boolean := true;
-		-- Goes false once a port has been found in the given zone.
-
-		-- The zone of the net being attacked:
-		zone	: type_line_zone;
-
-		-- The actual point that is to be tested:
-		point	: type_object_position;
-		
-
-		-- Searches ports of devices, netchangers and submodules that sit on
-		-- the point of interest.	
-		-- On the first finding, sets result to false and finishes. If no 
-		-- finding, result remains true.	
-		procedure search_ports is
-			use pac_device_ports;
-			use pac_submodule_ports;
-
-			use et_netlists;
-			use pac_netchanger_ports;
-
-			device : pac_device_ports.cursor := segment.ports.devices.first;
-			submodule : pac_submodule_ports.cursor := segment.ports.submodules.first;
-			netchanger : pac_netchanger_ports.cursor := segment.ports.netchangers.first;
-
-			use et_schematic_ops.submodules;
-
-			
-		begin -- search_ports
-			while device /= pac_device_ports.no_element loop
-
-				if get_position (
-					module_cursor	=> module_cursor,
-					device_name		=> element (device).device_name,
-					port_name		=> element (device).port_name,
-					log_threshold	=> log_threshold + 2) 
-					
-					= point then
-
-					result := false; -- not movable
-					exit;
-
-				end if;
-				
-				next (device);
-			end loop;
-
-			
-			-- if no device port found, search in submodule ports
-			if result = true then
-
-				while submodule /= pac_submodule_ports.no_element loop
-
-					if get_submodule_port_position ( -- CS use a similar function that takes only cursors ?
-						module_name		=> key (module_cursor),
-						submod_name		=> element (submodule).module_name,
-						port_name		=> element (submodule).port_name,
-						log_threshold	=> log_threshold + 2) 
-						
-						= point then
-
-						result := false; -- not movable
-						exit;
-
-					end if;
-					
-					next (submodule);
-				end loop;
-
-			end if;
-
-			
-			-- if no submodule port found, search in netchanger ports
-			if result = true then
-
-				while netchanger /= pac_netchanger_ports.no_element loop
-
-					if get_netchanger_port_position ( -- CS use a similar function that takes only cursors ?
-						module_name		=> key (module_cursor),
-						index			=> element (netchanger).index,
-						port			=> element (netchanger).port,
-						log_threshold	=> log_threshold + 2) 
-						
-						= point then
-
-						result := false; -- not movable
-						exit;
-
-					end if;
-					
-					next (netchanger);
-				end loop;
-
-			end if;
-
-			-- if no port found, result is still true
-		end search_ports;
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor)
-			& " test whether segment " & to_string (segment)
-			& " is movable at point of attack" & to_string (get_place (point_of_attack)),
-			level => log_threshold);
-	
-		log_indentation_up;
-		
-		-- Calculate the zone of attack:
-		zone := get_zone (
-			point	=> get_place (point_of_attack),
-			line	=> segment);
-
-		log (text => "attacked zone " & to_string (zone), level => log_threshold + 1);
-		
-		-- The point of interest is on the sheet specified in argument "point_of_attack".
-		-- The x/y coordinates are taken from the segment start or end point.
-		
-		case zone is
-			when START_POINT =>
-				point := to_position (
-						point => get_A (segment),
-						sheet => get_sheet (point_of_attack));
-
-				search_ports; -- sets result to false if a port is connected with the start point
-
-				
-			when END_POINT =>
-				point := to_position (
-						point => get_B (segment),
-						sheet => get_sheet (point_of_attack));
-
-				search_ports; -- sets result to false if a port is connected with the end point
-
-				
-			when CENTER =>
-				-- Both start and end point must be checked for any ports.
-				-- First check the start point of the segment.
-				-- If start point is movable, then the end point must be checked too.
-				point := to_position (
-						point => get_A (segment),
-						sheet => get_sheet (point_of_attack));
-
-				search_ports; -- sets result to false if a port is connected with the start point
-
-				-- If start point is movable, check end point.
-				if result = true then
-					point := to_position (
-						point => get_B (segment),
-						sheet => get_sheet (point_of_attack));
-
-					search_ports; -- sets result to false if a port is connected with the end point
-				end if;
-		end case;
-
-		log_indentation_down;
-		
-		return result;
-	end segment_is_movable;
-
-
-
-
-
-	function segment_is_movable (
-		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;
-		AB_end			: in type_start_end_point;
-		log_threshold	: in type_log_level) 
-		return boolean
-	is
-		result : boolean := true;
-		-- Goes false once a port has been found in the given zone.
-		
-
-		-- Searches ports of devices, netchangers and submodules 
-		-- that sit on the point of interest.	
-		-- On the first finding, sets result to false and finishes. If no 
-		-- finding, result remains true.	
-		procedure search_ports (
-			segment	: in type_net_segment;
-			point	: in type_object_position) -- the actual location that is to be tested
-		is
-			
-			procedure iterate_device_ports is
-				use pac_device_ports;
-				device : pac_device_ports.cursor := segment.ports.devices.first;
-			begin
-				while has_element (device) loop
-
-					if get_position (
-						module_cursor	=> module_cursor,
-						device_name		=> element (device).device_name,
-						port_name		=> element (device).port_name,
-						log_threshold	=> log_threshold + 2) 
-						
-						= point then
-
-						result := false; -- not movable
-						exit;
-					end if;
-					
-					next (device);
-				end loop;
-			end iterate_device_ports;
-
-
-			
-			procedure iterate_netchanger_ports is
-				use et_schematic_ops.submodules;
-				use et_netlists;
-				use pac_netchanger_ports;
-				netchanger : pac_netchanger_ports.cursor := segment.ports.netchangers.first;
-			begin
-				while has_element (netchanger) loop
-
-					if get_netchanger_port_position ( -- CS use a similar function that takes only cursors ?
-						module_name		=> key (module_cursor),
-						index			=> element (netchanger).index,
-						port			=> element (netchanger).port,
-						log_threshold	=> log_threshold + 2) 
-						
-						= point then
-
-						result := false; -- not movable
-						exit;
-					end if;
-					
-					next (netchanger);
-				end loop;
-			end iterate_netchanger_ports;
-
-
-
-			procedure iterate_submodule_ports is
-				use et_schematic_ops.submodules;
-				use pac_submodule_ports;
-				submodule : pac_submodule_ports.cursor := segment.ports.submodules.first;
-			begin
-				-- Iterate through the submodule ports:
-				while has_element (submodule) loop
-
-					if get_submodule_port_position ( -- CS use a similar function that takes only cursors ?
-						module_name		=> key (module_cursor),
-						submod_name		=> element (submodule).module_name,
-						port_name		=> element (submodule).port_name,
-						log_threshold	=> log_threshold + 2) 
-						
-						= point then
-
-						result := false; -- not movable
-						exit;
-					end if;
-					
-					next (submodule);
-				end loop;
-			end iterate_submodule_ports;
-
-			
-			
-		begin -- search_ports
-			iterate_device_ports;
-			
-			-- if no device port found, search in submodule ports
-			if result = true then
-				iterate_submodule_ports;
-			end if;
-			
-			-- if no submodule port found, search in netchanger ports
-			if result = true then
-				iterate_netchanger_ports;
-			end if;
-
-			-- if no port found, result is still true
-		end search_ports;
-
-
-
-		
-		
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is			
-
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in type_net)
-			is
-
-				procedure query_strand (strand : in type_strand) is
-					sheet : type_sheet := get_sheet (strand);
-
-					procedure query_segment (seg : in type_net_segment) is begin
-						case AB_end is
-							when A => search_ports (seg, to_position (get_A (seg), sheet));
-							when B => search_ports (seg, to_position (get_B (seg), sheet));
-						end case;
-					end query_segment;
-					
-				begin
-					query_element (segment.segment_cursor, query_segment'access);
-				end query_strand;
-				
-			begin
-				query_element (segment.strand_cursor, query_strand'access);
-			end query_net;
-			
-		begin
-			query_element (segment.net_cursor, query_net'access);
-		end query_module;
-
-		
-		
-	begin
-		log (text => "module " & to_string (module_cursor)
-			& " test whether " & to_string (segment)
-			& " is movable at " & to_string (AB_end),
-			level => log_threshold);
-	
-		log_indentation_up;
-		query_element (module_cursor, query_module'access);
-		log_indentation_down;
-		
-		return result;
-	end segment_is_movable;
-
-
-
-	
-
-	function segment_is_movable (
-		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;
-		zone			: in type_line_zone;
-		log_threshold	: in type_log_level) 
-		return boolean
-	is
-		result : boolean := false;
-	begin
-		log (text => "module " & to_string (module_cursor)
-			& " test whether " & to_string (segment)
-			& " is movable at " & to_string (zone),
-			level => log_threshold);
-
-		case zone is
-			when START_POINT =>
-				if segment_is_movable (module_cursor, segment, A, log_threshold + 1) then
-					result := true;
-				end if;
-
-			when END_POINT =>
-				if segment_is_movable (module_cursor, segment, B, log_threshold + 1) then
-					result := true;
-				end if;
-				
-			when CENTER =>
-				if  segment_is_movable (module_cursor, segment, A, log_threshold + 1) 
-				and segment_is_movable (module_cursor, segment, B, log_threshold + 1) 
-				then
-					result := true;
-				end if;
-		end case;
-
-		return result;
-	end segment_is_movable;
-
-
-	
-
-
-
-	procedure move_secondary_segments (
-		module_cursor	: in pac_generic_modules.cursor;
-		primary_segment	: in type_object_segment;
-		original_segment: in type_net_segment;
-		AB_end			: in type_start_end_point;
-		displacement	: in type_vector_model;
-		log_threshold	: in type_log_level)
-	is
-
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is			
-
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net)
-			is
-
-				-- This procedure searches for segments which are connected
-				-- with the given primary segment.
-				procedure query_strand (strand : in out type_strand) is
-					secondary_segment_cursor : pac_net_segments.cursor := strand.segments.first;
-
-					
-					procedure move_A_end (
-						secondary_segment : in out type_net_segment) 
-					is begin
-						move_start_by (secondary_segment, displacement);
-					end move_A_end;
-
-					
-					procedure move_B_end (
-						secondary_segment : in out type_net_segment) 
-					is begin
-						move_end_by (secondary_segment, displacement);
-					end move_B_end;
-
-					
-					-- The connection status of original primary segment
-					-- and candidate secondary segment:
-					status : type_connect_status;
-				begin
-					-- Iterate through the segments of the candidate strand
-					-- but skip the given primary segment, because we are 
-					-- interested in the segments which are connected with
-					-- the primary segment. The cursor to the primary segment
-					-- is used in order to identify it among the segments
-					-- of the strand. The actual segment state is the one AFTER
-					-- the drag operation (see specs of move_secondary_segments),
-					-- but the cursor still points to it.
-					while has_element (secondary_segment_cursor) loop						
-						if secondary_segment_cursor /= primary_segment.segment_cursor then
-
-							-- In order to figure out whether the secondary segment
-							-- candidate is connected with the primary segment,
-							-- we use the original primary segment because it
-							-- provides the state BEFORE the drag operation:
-							status := get_connect_status (
-								primary		=> original_segment,
-								AB_end		=> AB_end, -- the end (A/B) of the primary segment								
-								secondary	=> element (secondary_segment_cursor));
-							
-							-- Depending on the connected end point
-							-- of the secondary segment, we now move
-							-- the end of the secondary segment.
-							-- If the secondary segment is not connected with
-							-- the primary segment then nothing happens:
-							if status = CON_STS_A then				
-								strand.segments.update_element (
-									secondary_segment_cursor, move_A_end'access);
-							end if;
-
-							if status = CON_STS_B then							
-								strand.segments.update_element (
-									secondary_segment_cursor, move_B_end'access);
-							end if;
-							
-						end if;
-						next (secondary_segment_cursor);
-					end loop;
-				end query_strand;
-
-				
-			begin
-				-- We care for the strand of the given primary segment only.
-				-- All other strands are irrelevant:
-				net.strands.update_element (
-					primary_segment.strand_cursor, query_strand'access);
-			end query_net;
-			
-		begin
-			module.nets.update_element (
-				primary_segment.net_cursor, query_net'access);
-		end query_module;
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor)
-			 & " move secondary net segments connected with primary segment " 
-			 & to_string (original_segment),
-			level => log_threshold);
-
-		log (text => "at end point " & to_string (AB_end)
-			& " by " & to_string (displacement),
-			level => log_threshold);
-
-		log_indentation_up;
-		
-		-- By means of the given primary segment we have prompt access 
-		-- to it, because we have a cursor to the net, the strand and to
-		-- the actual segment:
-		generic_modules.update_element (module_cursor, query_module'access);
-		
-		log_indentation_down;		
-	end move_secondary_segments;
-
-
-	
-	
-
-
-	function net_segment_at_place (
-		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_object_position)
-		return boolean 
-	is
-
-		-- This flag goes true once a segment has been found.
-		segment_found : boolean := false; -- to be returned
-		
-		procedure query_nets (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is
-
-			use pac_nets;			
-			net_cursor : pac_nets.cursor := module.nets.first;
-
-			procedure query_strands (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in type_net)
-			is
-				strand_cursor : pac_strands.cursor := net.strands.first;
-				
-				procedure query_segments (strand : in type_strand) is
-					use pac_net_segments;
-
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-
-					
-					procedure probe_segment (segment : in type_net_segment) is begin
-						-- if place is a start point of a segment
-						if get_A (segment) = place.place then
-							-- signal iterations in upper level to cancel
-							segment_found := true;
-						end if;
-
-						-- if place is an end point of a segment
-						if get_B (segment) = place.place then
-							-- signal iterations in upper level to cancel
-							segment_found := true;
-						end if;
-					end probe_segment;
-
-					
-				begin -- query_segments
-					while not segment_found and segment_cursor /= pac_net_segments.no_element loop
-						query_element (
-							position	=> segment_cursor,
-							process		=> probe_segment'access);
-						
-						next (segment_cursor);
-					end loop;
-				end query_segments;
-
-				
-			begin -- query_strands
-				while not segment_found and strand_cursor /= pac_strands.no_element loop
-					
-					-- We pick out only the strands on the targeted sheet:
-					if get_sheet (element (strand_cursor).position) = get_sheet (place) then
-
-						query_element (
-							position	=> strand_cursor,
-							process		=> query_segments'access);
-					
-					end if;
-					
-					next (strand_cursor);
-				end loop;
-			end query_strands;
-
-			
-		begin -- query_nets
-			while not segment_found and net_cursor /= pac_nets.no_element loop
-
-				query_element (
-					position	=> net_cursor,
-					process		=> query_strands'access);
-
-				next (net_cursor);
-			end loop;
-		end query_nets;
-
-		
-	begin -- net_segment_at_place
-		-- CS log message
-		
-		query_element (
-			position	=> module_cursor,
-			process		=> query_nets'access);
-		
-		return segment_found;
-	end net_segment_at_place;
-
-	
-
-	
-	
-
-	function get_segments (
-		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet;
-		catch_zone		: in type_catch_zone;
-		log_threshold	: in type_log_level)
-		return pac_object_segments.list
-	is
-		use pac_object_segments;
-		result : pac_object_segments.list;
-
-		
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is
-			net_cursor : pac_nets.cursor := module.nets.first;
-
-			
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in type_net)
-			is
-				strand_cursor : pac_strands.cursor := net.strands.first;
-
-				
-				procedure query_strand (strand : in type_strand) is
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-				begin
-					-- Iterate through the segments and test
-					-- each of them whether it crosses the given zone:
-					while has_element (segment_cursor) loop
-						log (text => "segment " & to_string (segment_cursor), level => log_threshold + 2);
-						
-						if on_segment (catch_zone, segment_cursor) then
-							log (text => " match", level => log_threshold + 2);
-							result.append ((net_cursor, strand_cursor, segment_cursor));
-						end if;
-						
-						next (segment_cursor);
-					end loop;
-				end query_strand;
-
-				
-			begin
-				log (text => "net " & to_string (net_name), level => log_threshold + 1);
-				log_indentation_up;
-				
-				-- Iterate through the strands:
-				while has_element (strand_cursor) loop
-					
-					-- We pick out only the strands on the given sheet:
-					if get_sheet (strand_cursor) = sheet then
-						query_element (strand_cursor, query_strand'access);					
-					end if;
-					
-					next (strand_cursor);
-				end loop;
-
-				log_indentation_down;
-			end query_net;
-
-			
-		begin
-			-- Iterate through the nets:
-			while has_element (net_cursor) loop
-				query_element (net_cursor, query_net'access);
-				next (net_cursor);
-			end loop;
-		end query_module;
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor)
-			 & " collect net segments on sheet " & to_string (sheet)
-			 & "  in zone " & to_string (catch_zone),
-			 level => log_threshold);
-
-		log_indentation_up;
-		query_element (module_cursor, query_module'access);
-		log_indentation_down;
-
-		return result;
-	end get_segments;
-	
-
-
-
-	
-	
-
-	procedure update_strand_positions (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level)
-	is
-
-	
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module)
-		is
-			net_cursor : pac_nets.cursor := module.nets.first;
-
-			
-			procedure query_net (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is
-				strand_cursor : pac_strands.cursor := net.strands.first;
-				
-				
-				procedure query_strand (strand : in out type_strand) is 
-					old_position : type_object_position := get_position (strand);
-					new_position : type_object_position;
-				begin
-					log (text => "strand " & get_position (strand), level => log_threshold + 2);
-					
-					set_strand_position (strand); -- update strand position
-					new_position := get_position (strand);
-
-					-- If the position has changed then log
-					-- the new position:
-					if old_position /= new_position then
-						log (text => " new position " & to_string (new_position),
-							 level => log_threshold + 2);
-					end if;
-				end query_strand;
-				
-				
-			begin
-				while has_element (strand_cursor) loop
-					net.strands.update_element (strand_cursor, query_strand'access);
-					next (strand_cursor);
-				end loop;
-			end query_net;
-
-			
-		begin
-			while has_element (net_cursor) loop
-				log (text => "net " & get_net_name (net_cursor), level => log_threshold + 1);
-				log_indentation_up;
-				module.nets.update_element (net_cursor, query_net'access);
-				log_indentation_down;
-				next (net_cursor);
-			end loop;
-		end query_module;
-
-		
-	begin
-		log (text => "module " & to_string (module_cursor)
-			 & " update strand positions",
-			level => log_threshold);
-
-		log_indentation_up;
-		generic_modules.update_element (module_cursor, query_module'access);
-		log_indentation_down;		
-
-	end update_strand_positions;
-
-
 
 
 

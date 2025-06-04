@@ -128,7 +128,102 @@ package et_schematic_ops.nets is
 
 
 
+	-- Deletes a net segment:
+	procedure delete_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		log_threshold	: in type_log_level);
 
+	
+	-- Deletes the first net segment found
+	-- in the given zone:
+	procedure delete_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
+		log_threshold	: in type_log_level);
+
+
+
+	-- Tests whether the given segment is movable.
+	-- Whether the A or B end (or both) are affected
+	-- is determined according to the given point of attack.
+	-- If the related segment is connected with a port of 
+	-- any device, netchanger or submodule, then it can not be moved.
+	-- Returns true if movable, returns falso otherwise.
+	function segment_is_movable (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_net_segment;
+		point_of_attack	: in type_object_position;
+		log_threshold	: in type_log_level) 
+		return boolean;
+
+	
+	-- Tests whether the given segment is movable
+	-- at the given end point (A or B).
+	-- If the given end point is connected with a port of 
+	-- any device, netchanger or submodule, then it can not be moved.
+	-- Returns true if movable, returns falso otherwise.
+	function segment_is_movable (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		AB_end			: in type_start_end_point;
+		log_threshold	: in type_log_level) 
+		return boolean;
+
+
+	-- Tests whether the given segment is movable
+	-- at the given zone.
+	-- If the given end point is connected with a port of 
+	-- any device, netchanger or submodule, then it can not be moved.
+	-- Returns true if movable, returns falso otherwise.
+	function segment_is_movable (
+		module_cursor	: in pac_generic_modules.cursor;
+		segment			: in type_object_segment;
+		zone			: in type_line_zone;
+		log_threshold	: in type_log_level) 
+		return boolean;
+
+
+	-- This procedure takes a primary segment and
+	-- searches for secondary segments that are attached to
+	-- the A or B end of the primary segment and moves their
+	-- ends by the given displacement.
+	-- The given primary segment is a composite type
+	-- that provides cursors to net, strand and segment AFTER
+	-- dragging of the the primary segment. So the state of the
+	-- primary segment BEFORE must also be known. For this reason
+	-- we also pass the original primary segment also:
+	procedure move_secondary_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		primary_segment	: in type_object_segment; -- new state of primary segment
+		original_segment: in type_net_segment; -- original state of the primary segment
+		AB_end			: in type_start_end_point; -- A/B of primary segment
+		displacement	: in type_vector_model;
+		log_threshold	: in type_log_level);
+
+		
+										  
+	-- Returns true if at the given place 
+	-- a net segment starts or ends:
+	function net_segment_at_place (
+		module_cursor	: in pac_generic_modules.cursor;
+		place			: in type_object_position)
+		return boolean;
+	
+
+	-- Returns a list of net segments which cross
+	-- the given catch zone:
+	function get_segments (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
+		log_threshold	: in type_log_level)
+		return pac_object_segments.list;
+
+
+	
+	
 	
 -- STRANDS:
 	
@@ -184,6 +279,15 @@ package et_schematic_ops.nets is
 	procedure delete_strand (
 		module_cursor	: in pac_generic_modules.cursor;
 		strand			: in type_object_strand;
+		log_threshold	: in type_log_level);
+
+
+
+	-- After moving, dragging, deleting, adding of nets
+	-- or net segments, the positions of strands must be updated.
+	-- This procedure should be called for this purpose:
+	procedure update_strand_positions (
+		module_cursor	: in pac_generic_modules.cursor;
 		log_threshold	: in type_log_level);
 
 
@@ -295,111 +399,10 @@ package et_schematic_ops.nets is
 
 
 
-	-- Deletes a net segment:
-	procedure delete_segment (
-		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;
-		log_threshold	: in type_log_level);
-
 	
-	-- Deletes the first net segment found
-	-- in the given zone:
-	procedure delete_segment (
-		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet;
-		catch_zone		: in type_catch_zone;
-		log_threshold	: in type_log_level);
-
-
-
-
-
+	
 	
 
-	
-	-- Tests whether the given segment is movable.
-	-- Whether the A or B end (or both) are affected
-	-- is determined according to the given point of attack.
-	-- If the related segment is connected with a port of 
-	-- any device, netchanger or submodule, then it can not be moved.
-	-- Returns true if movable, returns falso otherwise.
-	function segment_is_movable (
-		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_net_segment;
-		point_of_attack	: in type_object_position;
-		log_threshold	: in type_log_level) 
-		return boolean;
-
-	
-	-- Tests whether the given segment is movable
-	-- at the given end point (A or B).
-	-- If the given end point is connected with a port of 
-	-- any device, netchanger or submodule, then it can not be moved.
-	-- Returns true if movable, returns falso otherwise.
-	function segment_is_movable (
-		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;
-		AB_end			: in type_start_end_point;
-		log_threshold	: in type_log_level) 
-		return boolean;
-
-
-	-- Tests whether the given segment is movable
-	-- at the given zone.
-	-- If the given end point is connected with a port of 
-	-- any device, netchanger or submodule, then it can not be moved.
-	-- Returns true if movable, returns falso otherwise.
-	function segment_is_movable (
-		module_cursor	: in pac_generic_modules.cursor;
-		segment			: in type_object_segment;
-		zone			: in type_line_zone;
-		log_threshold	: in type_log_level) 
-		return boolean;
-
-
-	-- This procedure takes a primary segment and
-	-- searches for secondary segments that are attached to
-	-- the A or B end of the primary segment and moves their
-	-- ends by the given displacement.
-	-- The given primary segment is a composite type
-	-- that provides cursors to net, strand and segment AFTER
-	-- dragging of the the primary segment. So the state of the
-	-- primary segment BEFORE must also be known. For this reason
-	-- we also pass the original primary segment also:
-	procedure move_secondary_segments (
-		module_cursor	: in pac_generic_modules.cursor;
-		primary_segment	: in type_object_segment; -- new state of primary segment
-		original_segment: in type_net_segment; -- original state of the primary segment
-		AB_end			: in type_start_end_point; -- A/B of primary segment
-		displacement	: in type_vector_model;
-		log_threshold	: in type_log_level);
-
-		
-										  
-	-- Returns true if at the given place 
-	-- a net segment starts or ends:
-	function net_segment_at_place (
-		module_cursor	: in pac_generic_modules.cursor;
-		place			: in type_object_position)
-		return boolean;
-	
-
-	-- Returns a list of net segments which cross
-	-- the given catch zone:
-	function get_segments (
-		module_cursor	: in pac_generic_modules.cursor;
-		sheet			: in type_sheet;
-		catch_zone		: in type_catch_zone;
-		log_threshold	: in type_log_level)
-		return pac_object_segments.list;
-	
-
-	-- After moving, dragging, deleting, adding of nets
-	-- or net segments, the positions of strands must be updated.
-	-- This procedure should be called for this purpose:
-	procedure update_strand_positions (
-		module_cursor	: in pac_generic_modules.cursor;
-		log_threshold	: in type_log_level);
 	
 
 	-- This procedure moves a given primary net segment
