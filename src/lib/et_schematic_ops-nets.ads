@@ -442,6 +442,16 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
+	-- Deletes a net on the given sheet. If everywhere is
+	-- true, then all nets on all sheets are deleted:
+	procedure delete_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net				: in type_object_net;
+		sheet			: in type_sheet;
+		everywhere		: in boolean := false;
+		log_threshold	: in type_log_level);
+
+
 	
 	-- Shows/highlights a complete net:
 	-- Currently just sets the status of the

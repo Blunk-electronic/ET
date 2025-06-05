@@ -3089,7 +3089,7 @@ package body et_schematic_ops.nets is
 		
 	begin -- delete_net		
 		log (text => "module " & to_string (module_cursor)
-			& " deleting net " & enclose_in_quotes (to_string (net_name)),
+			& " deleting net " & to_string (net_name),
 			level => log_threshold);
 
 		-- locate the requested nets in the module
@@ -3138,6 +3138,100 @@ package body et_schematic_ops.nets is
 
 
 
+
+
+	
+	procedure delete_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net				: in type_object_net;
+		sheet			: in type_sheet;
+		everywhere		: in boolean := false;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			-- This procedure deletes the whole net on
+			-- all sheets:
+			procedure delete_whole_net is
+				c : pac_nets.cursor := net.net_cursor;
+			begin
+				module.nets.delete (c);
+			end;
+
+
+			-- This procedure deletes all strands of
+			-- the given net on the given sheet only:
+			procedure delete_on_sheet is
+
+				procedure query_net (
+					net_name	: in pac_net_name.bounded_string;
+					net			: in out type_net) 
+				is
+					strands : pac_strands.list;
+				begin
+					-- Get the strands on the given sheet:
+					strands := get_strands (net, sheet);
+
+					-- Delete the strands on the given sheet:
+					delete_strands (net, strands);
+				end query_net;
+
+			begin
+				module.nets.update_element (net.net_cursor, query_net'access);
+				
+				-- If the net has no strands anymore, 
+				-- then delete it entirely because a
+				-- net without strands is useless:
+				if not has_strands (net.net_cursor) then
+					declare
+						c : pac_nets.cursor := net.net_cursor;
+					begin
+						-- CS log message
+						delete (module.nets, c);
+					end;
+				end if;
+			end delete_on_sheet;
+			
+			
+		begin
+			case everywhere is
+				when TRUE	=> delete_whole_net;
+				when FALSE	=> delete_on_sheet;
+			end case;			
+		end query_module;
+
+		
+	begin
+		if everywhere then
+			log (text => "module " & to_string (module_cursor)
+				& " deleting net " & to_string (net)
+				& " on all sheets.",
+				level => log_threshold);
+
+		else
+			log (text => "module " & to_string (module_cursor)
+				& " deleting net " & to_string (net)
+				& " on sheet " & to_string (sheet) & ".",
+				level => log_threshold);
+
+		end if;
+
+
+		log_indentation_up;
+		
+		generic_modules.update_element (module_cursor, query_module'access);
+		update_ratsnest (module_cursor, log_threshold + 2);
+			
+		log_indentation_down;		
+	end delete_net;
+
+
+
+	
 
 	
 
@@ -7355,10 +7449,12 @@ package body et_schematic_ops.nets is
 				delete_strand (module_cursor, object.strand, log_threshold + 1);
 				
 			when CAT_NET => 
-				null; -- CS
-				-- delete_net (
-				-- 	module_cursor	=> module_cursor,
-				-- 	log_threshold	=> log_threshold + 1);
+				delete_net (
+					module_cursor	=> module_cursor,
+					net				=> object.net,
+					sheet			=> active_sheet,
+					everywhere		=> false,
+					log_threshold	=> log_threshold + 1);
 
 				
 			when CAT_LABEL => 

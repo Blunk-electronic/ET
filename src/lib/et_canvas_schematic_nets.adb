@@ -1304,6 +1304,7 @@ package body et_canvas_schematic_nets is
 							count			=> count_total,
 							log_threshold	=> log_threshold + 1);
 
+						
 					when NOUN_STRAND =>
 
 						-- Propose strands in the vicinity of the given point:
@@ -1313,6 +1314,17 @@ package body et_canvas_schematic_nets is
 							count			=> count_total,
 							log_threshold	=> log_threshold + 1);
 
+
+					when NOUN_NET =>
+
+						-- Propose nets in the vicinity of the given point:
+						propose_nets (
+							module_cursor	=> active_module,
+							catch_zone		=> set_catch_zone (point, get_catch_zone (catch_zone_radius_default)),
+							count			=> count_total,
+							log_threshold	=> log_threshold + 1);
+
+						
 					when others => null; -- CS
 				end case;
 				

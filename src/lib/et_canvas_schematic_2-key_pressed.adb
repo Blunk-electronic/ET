@@ -77,6 +77,10 @@ is
 				noun := NOUN_UNIT;					
 				set_status (et_canvas_schematic_units.status_delete);
 				
+			-- when key_noun_net_global =>
+			-- 	noun := NOUN_NET;				
+			-- 	set_status (et_canvas_schematic_nets.status_delete);
+
 			when key_noun_net =>
 				noun := NOUN_NET;					
 				set_status (et_canvas_schematic_nets.status_delete);
