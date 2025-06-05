@@ -3099,9 +3099,105 @@ package body et_schematic_ops.nets is
 
 
 
+
+
+
 	
 	procedure delete_net (
-		-- See comment in procedure locate_strand.
+		module_cursor	: in pac_generic_modules.cursor;
+		net				: in type_object_net;
+		sheet			: in type_sheet;
+		all_sheets		: in boolean := false;
+		log_threshold	: in type_log_level)
+	is
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			-- This procedure deletes the whole net on
+			-- all sheets:
+			procedure delete_whole_net is
+				c : pac_nets.cursor := net.net_cursor;
+			begin
+				module.nets.delete (c);
+			end;
+
+
+			-- This procedure deletes all strands of
+			-- the given net on the given sheet only:
+			procedure delete_on_sheet is
+
+				procedure query_net (
+					net_name	: in pac_net_name.bounded_string;
+					net			: in out type_net) 
+				is
+					strands : pac_strands.list;
+				begin
+					-- Get the strands on the given sheet:
+					strands := get_strands (net, sheet);
+
+					-- Delete the strands on the given sheet:
+					delete_strands (net, strands);
+				end query_net;
+
+			begin
+				module.nets.update_element (net.net_cursor, query_net'access);
+				
+				-- If the net has no strands anymore, 
+				-- then delete it entirely because a
+				-- net without strands is useless:
+				if not has_strands (net.net_cursor) then
+					declare
+						c : pac_nets.cursor := net.net_cursor;
+					begin
+						-- CS log message
+						delete (module.nets, c);
+					end;
+				end if;
+			end delete_on_sheet;
+			
+			
+		begin
+			case all_sheets is
+				when TRUE	=> delete_whole_net;
+				when FALSE	=> delete_on_sheet;
+			end case;			
+		end query_module;
+
+		
+	begin
+		if all_sheets then
+			log (text => "module " & to_string (module_cursor)
+				& " deleting net " & to_string (net)
+				& " on all sheets.",
+				level => log_threshold);
+
+		else
+			log (text => "module " & to_string (module_cursor)
+				& " deleting net " & to_string (net)
+				& " on sheet " & to_string (sheet) & ".",
+				level => log_threshold);
+
+		end if;
+
+
+		log_indentation_up;
+		
+		generic_modules.update_element (module_cursor, query_module'access);
+		update_ratsnest (module_cursor, log_threshold + 1);
+			
+		log_indentation_down;		
+	end delete_net;
+
+
+
+
+
+
+	
+	procedure delete_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		scope			: in type_net_scope; -- strand, sheet, everywhere
@@ -3120,10 +3216,12 @@ package body et_schematic_ops.nets is
 				position	=> net_cursor);
 		end;
 
+		
 		procedure delete_on_sheet (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
+
 			
 			procedure delete_strands_of_sheet (
 			-- Removes the affected strands from the net.
@@ -3151,6 +3249,7 @@ package body et_schematic_ops.nets is
 						". Check net name and sheet number !");
 				end if;
 			end;
+
 			
 		begin -- delete_on_sheet
 
@@ -3168,6 +3267,7 @@ package body et_schematic_ops.nets is
 		end delete_on_sheet;
 		
 
+		
 		procedure delete_strand (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
@@ -3271,102 +3371,53 @@ package body et_schematic_ops.nets is
 
 
 
-
-
-
 	
+
+
 	procedure delete_net (
 		module_cursor	: in pac_generic_modules.cursor;
-		net				: in type_object_net;
+		net_name		: in pac_net_name.bounded_string;
 		sheet			: in type_sheet;
 		all_sheets		: in boolean := false;
 		log_threshold	: in type_log_level)
 	is
+		net : type_object_net;
 
-		procedure query_module (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-
-			-- This procedure deletes the whole net on
-			-- all sheets:
-			procedure delete_whole_net is
-				c : pac_nets.cursor := net.net_cursor;
-			begin
-				module.nets.delete (c);
-			end;
-
-
-			-- This procedure deletes all strands of
-			-- the given net on the given sheet only:
-			procedure delete_on_sheet is
-
-				procedure query_net (
-					net_name	: in pac_net_name.bounded_string;
-					net			: in out type_net) 
-				is
-					strands : pac_strands.list;
-				begin
-					-- Get the strands on the given sheet:
-					strands := get_strands (net, sheet);
-
-					-- Delete the strands on the given sheet:
-					delete_strands (net, strands);
-				end query_net;
-
-			begin
-				module.nets.update_element (net.net_cursor, query_net'access);
-				
-				-- If the net has no strands anymore, 
-				-- then delete it entirely because a
-				-- net without strands is useless:
-				if not has_strands (net.net_cursor) then
-					declare
-						c : pac_nets.cursor := net.net_cursor;
-					begin
-						-- CS log message
-						delete (module.nets, c);
-					end;
-				end if;
-			end delete_on_sheet;
-			
-			
-		begin
-			case all_sheets is
-				when TRUE	=> delete_whole_net;
-				when FALSE	=> delete_on_sheet;
-			end case;			
-		end query_module;
-
-		
 	begin
 		if all_sheets then
 			log (text => "module " & to_string (module_cursor)
-				& " deleting net " & to_string (net)
+				& " deleting net " & to_string (net_name)
 				& " on all sheets.",
 				level => log_threshold);
 
 		else
 			log (text => "module " & to_string (module_cursor)
-				& " deleting net " & to_string (net)
+				& " deleting net " & to_string (net_name)
 				& " on sheet " & to_string (sheet) & ".",
 				level => log_threshold);
 
 		end if;
 
-
 		log_indentation_up;
-		
-		generic_modules.update_element (module_cursor, query_module'access);
-		update_ratsnest (module_cursor, log_threshold + 1);
+
+		-- Locate the requested net in the module
+		net.net_cursor := locate_net (module_cursor, net_name);
+
+		-- If the requested net exists, then delete it. 
+		-- Otherwise nothing happens:
+		if has_element (net.net_cursor) then
+			delete_net (module_cursor, net, sheet, all_sheets, log_threshold + 1);			
+		else
+			log (text => "Net does not exist !", level => log_threshold);
+		end if;		
 			
-		log_indentation_down;		
+		log_indentation_down;
 	end delete_net;
 
 
 
 	
-
+	
 	
 
 	procedure show_net (

@@ -1360,56 +1360,28 @@ is
 		use et_sheets;
 	begin
 		case cmd_field_count is
+			-- example 1: "delete net RESET_N"
+			-- example 2: "delete net RESET_N 2"
 
-			-- If the statement has only 6 fields, the net scope is EVERYWHERE.
-			-- Place assumes default (sheet 1, x/y 0/0) and is further-on ignored 
-			-- by the called procedure:
 			when 5 =>
-				delete_net
-					(
+				delete_net (
 					module_cursor		=> active_module,
-					net_name			=> to_net_name (f (5)), -- RESET
-					scope				=> EVERYWHERE,
-					place				=> to_position (
-											point => origin,
-											sheet => 1),
+					net_name			=> to_net_name (f (5)), -- RESET_N
+					sheet				=> 1, -- no meaning
+					all_sheets			=> TRUE,
 					log_threshold		=> log_threshold + 1);
 
-			-- If the statement has 7 fields, the net scope is SHEET.
-			-- Sheet is set by the 7th argument. x and y assume default (0/0)
-			-- and are further-on ignored by the called procedure:
 			when 6 =>
-				delete_net
-					(
+				delete_net (
 					module_cursor		=> active_module,
 					net_name			=> to_net_name (f (5)), -- RESET
-					scope				=> SHEET,
-					place				=> to_position (
-											point => origin,
-											sheet => to_sheet (f (6))), -- sheet number
+					sheet				=> to_sheet (f (6)),
 					log_threshold		=> log_threshold + 1);
-
-			-- If the statement has 9 fields, the net scope is STRAND.
-			-- Place is set according to arguments 7..9.
-			when 8 =>
-				delete_net
-					(
-					module_cursor		=> active_module,
-					net_name			=> to_net_name (f (5)), -- RESET
-					scope				=> STRAND,
-					place				=> to_position (
-											point => type_vector_model (set (
-												x => to_distance (f (7)),
-												y => to_distance (f (8)))),
-											sheet => to_sheet (f (6))), -- sheet number
-					log_threshold		=> log_threshold + 1);
-
-				
-			when 9 .. type_field_count'last => too_long;
+			
+			when 7 .. type_field_count'last => too_long;
 				
 			when others => command_incomplete;
 		end case;
-
 	end delete_net;
 
 

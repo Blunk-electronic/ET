@@ -349,7 +349,12 @@ Nets and Net Labels
 
 	
 	
-#. Delete a net on the current sheet
+#. Delete a net on a certain sheet
+
+	.. code-block::
+
+		delete net RESET_N 2
+
 		
 	|VNS| del n
 	
@@ -357,13 +362,11 @@ Nets and Net Labels
 	
 #. Delete a whole net on all sheets
 
-	|VNS| del N
-	
-
 	.. code-block::
 
 		delete net RESET_N
 	
+	|VNS| del N
 	
 	
 	
