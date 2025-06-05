@@ -375,57 +375,6 @@ package body et_canvas_schematic_nets is
 
 
 	
-	
-	procedure delete_net_segment (
-		point : in type_vector_model) 
-	is 
-		use et_schematic_ops.nets;
-		segment_cursor : pac_proposed_segments.cursor;
-
-		use et_undo_redo;
-		use et_commit;
-	begin
-		log (text => "deleting net segment ...", level => log_threshold);
-		log_indentation_up;
-		
-		-- Collect all segments in the vicinity of the given point:
-		proposed_segments := collect_segments (
-			module			=> active_module,
-			place			=> to_position (point, active_sheet),
-			zone			=> get_catch_zone (catch_zone_radius_default),
-			log_threshold	=> log_threshold + 1);
-
-		
-		-- evaluate the number of segments found here:
-		case length (proposed_segments) is
-			when 0 =>
-				reset_request_clarification;
-				
-			when 1 =>
-				segment_cursor := proposed_segments.first;
-
-				-- Commit the current state of the design:
-				commit (PRE, verb, noun, log_threshold + 1);
-		
-				delete_selected_segment (
-					module_cursor	=> active_module,
-					segment			=> element (segment_cursor),
-					log_threshold	=> log_threshold + 1);
-
-				-- Commit the new state of the design:
-				commit (POST, verb, noun, log_threshold + 1);
-				
-			when others =>
-				--log (text => "many objects", level => log_threshold + 2);
-				set_request_clarification;
-
-				-- preselect the first segment
-				selected_segment := proposed_segments.first;
-		end case;
-		
-		log_indentation_down;
-	end delete_net_segment;
-
 
 	
 	procedure clarify_net_segment is
@@ -453,30 +402,6 @@ package body et_canvas_schematic_nets is
 	end clarify_net_segment;
 
 
-
-	
-	
-	procedure delete_selected_net_segment is
-		use et_schematic_ops.nets;
-		use et_undo_redo;
-		use et_commit;
-	begin
-		log (text => "deleting net segment after clarification ...", level => log_threshold);
-		log_indentation_up;
-
-		-- Commit the current state of the design:
-		commit (PRE, verb, noun, log_threshold + 1);
-
-		delete_selected_segment (
-			module_cursor	=> active_module,
-			segment			=> element (selected_segment),
-			log_threshold	=> log_threshold + 1);
-
-		-- Commit the new state of the design:
-		commit (POST, verb, noun, log_threshold + 1);
-		
-		log_indentation_down;
-	end delete_selected_net_segment;
 
 
 	
@@ -1414,85 +1339,6 @@ package body et_canvas_schematic_nets is
 
 	
 
-
-	
--- 	procedure drag_segment (
--- 		tool		: in type_tool;
--- 		position	: in type_vector_model)
--- 	is 
--- 		use et_undo_redo;
--- 		use et_commit;
--- 
--- 		
--- 		-- Assigns the given destination after the drag to the selected segment:
--- 		procedure finalize_drag is
--- 			net_name : pac_net_name.bounded_string;
--- 			
--- 			point_of_attack : type_object_position := 
--- 				to_position (object_point_of_attack, active_sheet);
--- 		begin
--- 			log (text => "finalizing drag ...", level => log_threshold + 1);
--- 			log_indentation_up;
--- 
--- 			-- Finalize only if procedure et_canvas_schematic.draw_nets has
--- 			-- granted permission:
--- 			if finalizing_granted then
--- 		
--- 				if selected_segment /= pac_proposed_segments.no_element then
--- 
--- 					net_name := key (element (selected_segment).net);
--- 
--- 					drag_segment (
--- 						module_cursor	=> active_module,
--- 						net_name		=> net_name,
--- 						point_of_attack	=> point_of_attack,
--- 						coordinates		=> ABSOLUTE,
--- 						destination		=> position,
--- 						log_threshold	=> log_threshold + 2);
--- 
--- 				else
--- 					log (text => "nothing to do", level => log_threshold);
--- 				end if;
--- 					
--- 			else
--- 				log (text => "not granted", level => log_threshold);
--- 			end if;
--- 			
--- 			log_indentation_down;
--- 			
--- 			set_status (status_move);
--- 			
--- 			reset_preliminary_segment;
--- 		end finalize_drag;
--- 
--- 		
--- 	begin
--- 		if not edit_process_running then
--- 			
--- 			-- Set the tool being used for dragging the net segment:
--- 			object_tool := tool;
--- 			
--- 			if not clarification_pending then
--- 				find_segments (position);
--- 				object_point_of_attack := position;
--- 			else
--- 				set_edit_process_running;
--- 				reset_request_clarification;
--- 			end if;
--- 
--- 		else
--- 			-- Commit the current state of the design:
--- 			commit (PRE, verb, noun, log_threshold + 1);
--- 			
--- 			-- Finally assign the cursor position to the
--- 			-- currently selected segment:
--- 			finalize_drag;
--- 
--- 			-- Commit the new state of the design:
--- 			commit (POST, verb, noun, log_threshold + 1);
--- 		end if;		
--- 	end drag_segment;
--- 
 
 
 

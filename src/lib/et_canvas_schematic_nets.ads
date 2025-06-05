@@ -143,12 +143,6 @@ package et_canvas_schematic_nets is
 		segments	: in pac_proposed_segments.list)
 		return boolean;
 
-	
--- 	-- Deletes a selected segment of a net.
--- 	procedure delete_selected_segment (
--- 		module_cursor	: in pac_generic_modules.cursor; -- motor_driver
--- 		segment			: in type_selected_segment; -- net/strand/segment
--- 		log_threshold	: in type_log_level);
 
 	
 	-- Collects all net segments in the vicinity of the given point:
@@ -172,21 +166,11 @@ package et_canvas_schematic_nets is
 	-- 	& "to delete net segment." 
 	-- 	& status_hint_for_abort;
 
-	
-	-- Deletes a net segment in the vicinity of given point.
-	-- If more than one segment near point found, then it sets the
-	-- cursor selected_segment to the first segment and requests
-	-- for clarification.
-	procedure delete_net_segment (
-		point : in type_vector_model);
 
 	
 	-- Advances cursor selected_segment to next segment in list proposed_segments.
 	procedure clarify_net_segment;
 
-	
-	-- Deletes the net segment being pointed at by cursor selected_segment.
-	procedure delete_selected_net_segment;
 
 
 	
@@ -247,33 +231,6 @@ package et_canvas_schematic_nets is
 		return boolean;
 
 	
-
--- DRAG/MOVE NET SEGMENT
-
-	-- type type_finalizing_granted is new boolean;
-
-	-- Global information for the GUI when a segment is being
-	-- moved or dragged:
-	-- type type_preliminary_segment is record
-		-- -- This flag tells the draw operations to draw the preliminary segment:
-		-- ready					: boolean := false;
-
-		-- This tells the GUI whether the mouse or the
-		-- cursor position is to be used when drawing the segment:
-		-- tool					: type_tool := MOUSE;
-
-		-- path					: type_path_live;
-		
-		-- net_name				: pac_net_name.bounded_string := no_name;
-
-		-- The point along the segment where the operator
-		-- grabs the segment:
-		-- point_of_attack			: type_vector_model;
-		
-		-- finalizing_granted		: type_finalizing_granted := false;
-	-- end record;
-
-	-- preliminary_segment : type_preliminary_segment;
 
 
 	-- This procedure:
@@ -378,12 +335,6 @@ package et_canvas_schematic_nets is
 		point : in type_vector_model);
 
 	
-	
-	-- procedure drag_segment (
-	-- 	tool		: in type_tool;
-	-- 	position	: in type_vector_model);
-
-
 
 	procedure drag_object (
 		tool	: in type_tool;
