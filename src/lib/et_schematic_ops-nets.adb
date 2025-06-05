@@ -3145,7 +3145,7 @@ package body et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		net				: in type_object_net;
 		sheet			: in type_sheet;
-		everywhere		: in boolean := false;
+		all_sheets		: in boolean := false;
 		log_threshold	: in type_log_level)
 	is
 
@@ -3198,7 +3198,7 @@ package body et_schematic_ops.nets is
 			
 			
 		begin
-			case everywhere is
+			case all_sheets is
 				when TRUE	=> delete_whole_net;
 				when FALSE	=> delete_on_sheet;
 			end case;			
@@ -3206,7 +3206,7 @@ package body et_schematic_ops.nets is
 
 		
 	begin
-		if everywhere then
+		if all_sheets then
 			log (text => "module " & to_string (module_cursor)
 				& " deleting net " & to_string (net)
 				& " on all sheets.",
@@ -3224,7 +3224,7 @@ package body et_schematic_ops.nets is
 		log_indentation_up;
 		
 		generic_modules.update_element (module_cursor, query_module'access);
-		update_ratsnest (module_cursor, log_threshold + 2);
+		update_ratsnest (module_cursor, log_threshold + 1);
 			
 		log_indentation_down;		
 	end delete_net;
@@ -7453,7 +7453,7 @@ package body et_schematic_ops.nets is
 					module_cursor	=> module_cursor,
 					net				=> object.net,
 					sheet			=> active_sheet,
-					everywhere		=> false,
+					all_sheets		=> modify_net_on_all_sheets,
 					log_threshold	=> log_threshold + 1);
 
 				

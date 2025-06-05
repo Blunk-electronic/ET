@@ -499,6 +499,7 @@ package et_canvas_schematic_nets is
 
 
 	
+	
 	-- procedure find_labels (
 	-- 	point		: in type_vector_model;
 	-- 	category	: in type_label_category);

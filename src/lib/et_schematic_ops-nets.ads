@@ -412,6 +412,11 @@ package et_schematic_ops.nets is
 
 
 
+	-- This flag indicates whether an operation
+	-- on a net affects the active sheet or all sheets:
+	modify_net_on_all_sheets : boolean := false;
+	
+	
 	
 	-- Renames a net. The scope determines whether to rename a certain strand,
 	-- all strands on a certain sheet or on all sheets.
@@ -442,13 +447,13 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
-	-- Deletes a net on the given sheet. If everywhere is
+	-- Deletes a net on the given sheet. If all_sheets is
 	-- true, then all nets on all sheets are deleted:
 	procedure delete_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net				: in type_object_net;
 		sheet			: in type_sheet;
-		everywhere		: in boolean := false;
+		all_sheets		: in boolean := false;
 		log_threshold	: in type_log_level);
 
 

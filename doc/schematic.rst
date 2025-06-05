@@ -338,13 +338,14 @@ Nets and Net Labels
 	|VNS| del t
 
 	
-#. Delete net on the current sheet
+	
+#. Delete a net on the current sheet
 		
 	|VNS| del n
 	
 	
 	
-#. Delete whole net on all sheets
+#. Delete a whole net on all sheets
 
 	|VNS| del N
 	

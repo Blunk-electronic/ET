@@ -39,7 +39,6 @@
 with et_modes.schematic;				use et_modes.schematic;
 with et_device_library;					use et_device_library;
 with et_device_placeholders;			use et_device_placeholders;
-with et_schematic_ops;					use et_schematic_ops;
 with et_net_names;						use et_net_names;
 with et_net_labels;						use et_net_labels;
 with et_nets;							use et_nets;
@@ -71,18 +70,19 @@ is
 			when key_noun_label =>
 				noun := NOUN_LABEL;
 				set_status (et_canvas_schematic_nets.status_delete);
-
 				
 			when key_noun_unit =>
 				noun := NOUN_UNIT;					
 				set_status (et_canvas_schematic_units.status_delete);
 				
-			-- when key_noun_net_global =>
-			-- 	noun := NOUN_NET;				
-			-- 	set_status (et_canvas_schematic_nets.status_delete);
+			when key_noun_net_all_sheets =>
+				noun := NOUN_NET;
+				et_schematic_ops.nets.modify_net_on_all_sheets := true;
+				set_status (et_canvas_schematic_nets.status_delete);
 
 			when key_noun_net =>
 				noun := NOUN_NET;					
+				et_schematic_ops.nets.modify_net_on_all_sheets := false;
 				set_status (et_canvas_schematic_nets.status_delete);
 				
 			when key_noun_strand =>
@@ -738,7 +738,7 @@ is
 				set_status (et_canvas_schematic_nets.status_rename_net_sheet);
 
 				
-			when key_noun_net_global => -- rename everywhere: all strands on all sheets
+			when key_noun_net_all_sheets => -- rename everywhere: all strands on all sheets
 				noun := NOUN_NET;
 				net_rename.scope := EVERYWHERE;
 				set_status (et_canvas_schematic_nets.status_rename_net_everywhere);
