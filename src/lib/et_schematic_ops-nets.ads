@@ -289,12 +289,27 @@ package et_schematic_ops.nets is
 		strand_cursor	: pac_strands.cursor;
 	end record;
 
-
+	
 	-- Returns the net name and strand position of the given object
 	-- as string in the form like "GND strand sheet / start x/y end x/y":
 	function to_string (
 		object	: in type_object_strand)
 		return string;
+
+
+	
+	package pac_object_strands is new doubly_linked_lists (type_object_strand);
+
+	
+	-- Returns a list of strands which cross
+	-- the given catch zone:
+	function get_strands (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
+		log_threshold	: in type_log_level)
+		return pac_object_strands.list;
+	
 
 
 	-- Clears the proposed-flag and the selected-flag of all strands:
@@ -329,13 +344,25 @@ package et_schematic_ops.nets is
 		return type_object_strand;
 
 
-	-- Deletes a strand:
+	-- Deletes a strand.
+	-- If the affected net has no strands anymore,
+	-- then the whole net will be deleted:
 	procedure delete_strand (
 		module_cursor	: in pac_generic_modules.cursor;
 		strand			: in type_object_strand;
 		log_threshold	: in type_log_level);
 
+	
+	-- Deletes the first strand found in the given zone.
+	-- If the affected net has no strands anymore,
+	-- then the whole net will be deleted:
+	procedure delete_strand (
+		module_cursor	: in pac_generic_modules.cursor;
+		sheet			: in type_sheet;
+		catch_zone		: in type_catch_zone;
+		log_threshold	: in type_log_level);
 
+	
 
 	-- After moving, dragging, deleting, adding of nets
 	-- or net segments, the positions of strands must be updated.

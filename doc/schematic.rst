@@ -335,6 +335,16 @@ Nets and Net Labels
 	
 #. Delete a strand of a net
 
+	This example command searches for a strand
+	on sheet 1 that crosses the position 80/100 in a zone of
+	2mm radius. If a strand exists there, then it will be deleted.
+	If more than one strand exists on the given spot, then
+	the first that has been found will be deleted.
+
+	.. code-block::
+		
+		delete strand 1 80 100 2
+
 	|VNS| del t
 
 	

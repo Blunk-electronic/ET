@@ -1439,6 +1439,32 @@ is
 	end delete_net_segment;
 
 
+
+
+	procedure delete_net_strand is
+		use et_sheets;
+		catch_zone : type_catch_zone;
+	begin
+		case cmd_field_count is
+			-- example: "delete strand 1 97 99 2"
+			when 8 =>
+				catch_zone := set_catch_zone (
+					center	=> to_vector_model (f (6), f (7)),
+					radius	=> to_zone_radius (f (8)));
+				
+				delete_strand (
+					module_cursor	=> active_module,
+					sheet			=> to_sheet (f (5)),
+					catch_zone		=> catch_zone,
+					log_threshold	=> log_threshold + 1);
+
+			when 9 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end delete_net_strand;
+
+
 	
 	
 
@@ -1878,6 +1904,9 @@ is
 					when NOUN_SEGMENT =>
 						delete_net_segment;
 						
+					when NOUN_STRAND =>
+						delete_net_strand;
+
 					when NOUN_SUBMODULE =>
 						delete_submodule;
 						
