@@ -50,7 +50,7 @@ with et_schematic_coordinates;
 with et_module_instance;				use et_module_instance;
 with et_unit_name;						use et_unit_name;
 with et_units;
-with et_sheets;
+with et_sheets;							use et_sheets;
 with et_net_labels;						use et_net_labels;
 with et_nets;							use et_nets;
 with et_net_class;						use et_net_class;
@@ -249,7 +249,6 @@ is
 	
 
 	procedure add_device is
-		use et_sheets;
 		use et_device_model_names;
 		use et_package_variant;
 	begin
@@ -304,7 +303,6 @@ is
 	
 	
 	procedure add_netchanger is
-		use et_sheets;
 		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
@@ -333,7 +331,6 @@ is
 
 
 	procedure move_netchanger is
-		use et_sheets;
 		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
@@ -402,7 +399,6 @@ is
 
 	
 	procedure rotate_netchanger is
-		use et_sheets;
 		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
@@ -520,7 +516,6 @@ is
 	
 	
 	procedure add_submodule is
-		use et_sheets;
 		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
@@ -554,7 +549,6 @@ is
 
 
 	procedure move_submodule is
-		use et_sheets;
 		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
@@ -603,7 +597,6 @@ is
 
 	
 	procedure copy_submodule is
-		use et_sheets;
 		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
@@ -652,7 +645,6 @@ is
 	
 
 	procedure rename_submodule is
-		use et_sheets;
 		use et_schematic_ops.submodules;
 	begin
 		case cmd_field_count is
@@ -792,7 +784,6 @@ is
 	
 
 	procedure copy_device is
-		use et_sheets;		
 	begin
 		case cmd_field_count is
 			when 9 =>
@@ -940,7 +931,6 @@ is
 					-- The unit name is empty because we will center just 
 					-- on the first unit on the current sheet:
 					location : type_unit_query := locate (to_unit_name (""));
-					use et_sheets;
 				begin
 					if location.exists then
 						if get_sheet (location.position) = active_sheet then
@@ -1030,7 +1020,6 @@ is
 
 
 	procedure move_unit is 
-		use et_sheets;
 	begin
 		case cmd_field_count is
 			when 10 =>
@@ -1076,7 +1065,6 @@ is
 
 
 	procedure fetch_unit is
-		use et_sheets;
 	begin
 		case cmd_field_count is
 			when 10 =>
@@ -1283,7 +1271,6 @@ is
 
 
 	procedure place_net_label is
-		use et_sheets;
 	begin
 		case cmd_field_count is
 			when 10 =>
@@ -1330,9 +1317,40 @@ is
 	end place_net_label;
 
 
+
+
+	
+
+	procedure draw_net is
+		A : type_object_position; -- start point of segment
+		B : type_vector_model; -- end point of segment
+	begin
+		case cmd_field_count is
+			when 10 =>
+				A := to_position (
+					point => to_vector_model (f (7), f (8)), -- x/y
+					sheet => to_sheet (f (6))); -- sheet number
+
+				B := to_vector_model (f (9), f (10)); -- x/y
+										 
+				insert_net (
+					module_cursor	=> active_module,
+					net_name		=> to_net_name (f (5)), -- RESET
+					A				=> A,					
+					B 				=> B,					
+					log_threshold	=> log_threshold + 1);
+
+			when 11 .. type_field_count'last => too_long; 
+				
+			when others => command_incomplete;
+		end case;
+	end draw_net;
+
+
+
+	
 	
 	procedure delete_net_label is
-		use et_sheets;
 	begin
 		case cmd_field_count is
 			when 7 =>
@@ -1357,7 +1375,6 @@ is
 
 
 	procedure delete_net is
-		use et_sheets;
 	begin
 		case cmd_field_count is
 			-- example 1: "delete net RESET_N"
@@ -1388,7 +1405,6 @@ is
 
 	
 	procedure delete_net_segment is
-		use et_sheets;
 		catch_zone : type_catch_zone;
 	begin
 		case cmd_field_count is
@@ -1414,7 +1430,6 @@ is
 
 
 	procedure delete_net_strand is
-		use et_sheets;
 		catch_zone : type_catch_zone;
 	begin
 		case cmd_field_count is
@@ -1441,7 +1456,6 @@ is
 	
 
 	procedure drag_net_segment is
-		use et_sheets;
 		catch_zone : type_catch_zone;
 	begin
 		-- example: "drag segment 1 80 100 2 relative 10 0"
@@ -1473,7 +1487,6 @@ is
 	-- sheet number and sets it active.
 	-- It updates the sheet number display accordingly:
 	procedure show_sheet is -- GUI related
-		use et_sheets;
 		sheet : type_sheet;
 
 		procedure show is
@@ -1551,7 +1564,6 @@ is
 
 		module : pac_module_name.bounded_string;
 
-		use et_sheets;
 		sheet : type_sheet := 1;
 
 		
@@ -1778,7 +1790,6 @@ is
 	
 	-- Parses the single_cmd_status.cmd:
 	procedure parse is 
-		use et_sheets;
 		use et_device_placeholders;
 		use et_assembly_variants;
 	begin
@@ -1939,29 +1950,7 @@ is
 				
 			when VERB_DRAW =>
 				case noun is
-					when NOUN_NET =>
-						case cmd_field_count is
-							when 10 =>
-								insert_net
-									(
-									module_cursor	=> active_module,
-									net_name		=> to_net_name (f (5)), -- RESET
-									A				=> to_position (
-															point => type_vector_model (set (
-																x => to_distance (f (7)),
-																y => to_distance (f (8)))),
-															sheet => to_sheet (f (6))), -- sheet number
-									
-									B 				=> type_vector_model (set (
-														x => to_distance (f (9)),
-														y => to_distance (f (10)))),
-									
-									log_threshold	=> log_threshold + 1);
-
-							when 11 .. type_field_count'last => too_long; 
-								
-							when others => command_incomplete;
-						end case;
+					when NOUN_NET => draw_net;
 						
 					when others => invalid_noun (to_string (noun));
 				end case;
@@ -2581,7 +2570,6 @@ is
 
 	
 	procedure propose_arguments is
-		use et_sheets;
 		use et_scripting_interactive_schematic;
 		use et_canvas_schematic_units;
 		use et_canvas_schematic_nets;
