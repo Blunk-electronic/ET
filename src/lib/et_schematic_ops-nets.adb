@@ -1879,7 +1879,7 @@ package body et_schematic_ops.nets is
 	
 	function get_strands (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string;
+		net_cursor		: in pac_nets.cursor;
 		place			: in type_object_position;
 		log_threshold	: in type_log_level)
 		return pac_object_strands.list
@@ -1891,7 +1891,6 @@ package body et_schematic_ops.nets is
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-			net_cursor : pac_nets.cursor := module.nets.first;
 
 			
 			procedure query_net (
@@ -1943,7 +1942,7 @@ package body et_schematic_ops.nets is
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
-			 & " looking up strands of net " & to_string (net_name)
+			 & " looking up strands of net " & get_net_name (net_cursor)
 			 & " at " & to_string (place),
 			 level => log_threshold);
 
@@ -4529,6 +4528,41 @@ package body et_schematic_ops.nets is
 		segment			: in type_net_segment;
 		log_threshold	: in type_log_level)
 	is
+
+		strands_at_A, strands_at_B : pac_object_strands.list;
+
+
+		procedure get_strands_AB is
+			place : type_object_position;
+		begin
+			place := to_position (get_A (segment), sheet);			
+			strands_at_A := get_strands (module_cursor, net_cursor, place, log_threshold + 1);
+
+			place := to_position (get_B (segment), sheet);
+			strands_at_B := get_strands (module_cursor, net_cursor, place, log_threshold + 1);
+		end get_strands_AB;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is
+
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in out type_net)
+			is
+			begin
+				null;
+			end query_net;
+			
+		begin
+			module.nets.update_element (net_cursor, query_net'access);
+		end query_module;
+		
+
+
+		
 	begin
 		log (text => "module " & to_string (module_cursor) 
 			 & " insert net segment " & to_string (segment)
@@ -4538,7 +4572,9 @@ package body et_schematic_ops.nets is
 
 		log_indentation_up;
 
+		get_strands_AB;
 
+		generic_modules.update_element (module_cursor, query_module'access);
 		
 		-- update_strand_positions (module_cursor, log_threshold + 2);
 		

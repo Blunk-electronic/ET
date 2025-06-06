@@ -310,7 +310,7 @@ package et_schematic_ops.nets is
 	-- will point to the same net:
 	function get_strands (
 		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string;
+		net_cursor		: in pac_nets.cursor;
 		place			: in type_object_position;
 		log_threshold	: in type_log_level)
 		return pac_object_strands.list;
