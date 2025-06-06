@@ -566,8 +566,11 @@ package et_schematic_ops.nets is
 
 	
 	
-	-- See description for procedure insert_segment.
-	procedure insert_net (
+	-- Inserts a net segment to a given net. If the given net does
+	-- not exist, then the net will be created.
+	-- Find more details in description of procedure insert_segment
+	-- above:
+	procedure insert_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		A				: in type_object_position; -- sheet/x/y

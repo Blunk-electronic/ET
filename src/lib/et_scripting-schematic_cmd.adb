@@ -1321,7 +1321,7 @@ is
 
 	
 
-	procedure draw_net is
+	procedure insert_net_segment is
 		A : type_object_position; -- start point of segment
 		B : type_vector_model; -- end point of segment
 	begin
@@ -1333,7 +1333,7 @@ is
 
 				B := to_vector_model (f (9), f (10)); -- x/y
 										 
-				insert_net (
+				insert_net_segment (
 					module_cursor	=> active_module,
 					net_name		=> to_net_name (f (5)), -- RESET
 					A				=> A,					
@@ -1344,7 +1344,7 @@ is
 				
 			when others => command_incomplete;
 		end case;
-	end draw_net;
+	end insert_net_segment;
 
 
 
@@ -1950,7 +1950,7 @@ is
 				
 			when VERB_DRAW =>
 				case noun is
-					when NOUN_NET => draw_net;
+					when NOUN_NET => insert_net_segment;
 						
 					when others => invalid_noun (to_string (noun));
 				end case;

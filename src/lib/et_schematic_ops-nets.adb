@@ -4349,43 +4349,59 @@ package body et_schematic_ops.nets is
 
 
 
+
 	
 	
-	procedure insert_net (
+	procedure insert_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string; -- RESET, MOTOR_ON_OFF
 		A				: in type_object_position; -- sheet/x/y
 		B				: in type_vector_model; -- x/y
 		log_threshold	: in type_log_level) 
 	is		
-		net_cursor : pac_nets.cursor; -- points to the net
+		net_cursor : pac_nets.cursor;
 		segment : type_net_segment;
 	begin
-		log (text => "module " & to_string (module_cursor) &
-			" inserting net " & to_string (net_name) &
-			" segment from" & to_string (position => A) &
-			" to" & to_string (B), level => log_threshold);
+		log (text => "module " & to_string (module_cursor) 
+			& " add segment to net " & to_string (net_name) 
+			& " on sheet " & to_string (get_sheet (A)),
+			level => log_threshold);
 		
-		-- The net can be in the module already. Locate the requested net in the module.
-		-- net_cursor will point to no_element if the net is not already there.
-		net_cursor := locate_net (module_cursor, net_name);
-
 		-- build the segment from given start and end point
 		set_A (segment, A.place);
 		set_B (segment, B);
-		
-		log_indentation_up;
 
+		log (text => " segment: " & to_string (segment), level => log_threshold);
+
+		log_indentation_up;
+		
+		-- The net can be in the module already. 
+		-- Locate the requested net in the module.
+		-- If the net does not exist yet, then net_cursor will
+		-- be no_element:
+		net_cursor := locate_net (module_cursor, net_name);
+
+		if not has_element (net_cursor) then
+			log (text => "Net " & to_string (net_name) & 
+				 " does not exist yet and will be created.",
+				 level => log_threshold + 1);
+			
+		end if;
+
+		
 		insert_segment (
 			module_cursor, net_cursor, get_sheet (A),
 			net_name, segment, log_threshold + 1);
 
+		update_strand_positions (module_cursor, log_threshold + 2);
+		
 		update_ratsnest (module_cursor, log_threshold + 2);
 		
 		log_indentation_down;		
-	end insert_net;
+	end insert_net_segment;
 
 
+	
 
 
 
