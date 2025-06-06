@@ -298,9 +298,24 @@ package et_schematic_ops.nets is
 		return string;
 
 
+
 	
 	package pac_object_strands is new doubly_linked_lists (type_object_strand);
 
+
+	-- Returns for a given net a list of strands
+	-- whose segments cross the given place:
+	-- the given catch zone. Since it is about a
+	-- given net, all selectors "net_cursor" in the result
+	-- will point to the same net:
+	function get_strands (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string;
+		place			: in type_object_position;
+		log_threshold	: in type_log_level)
+		return pac_object_strands.list;
+
+	
 	
 	-- Returns a list of strands which cross
 	-- the given catch zone:
@@ -311,7 +326,7 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level)
 		return pac_object_strands.list;
 	
-
+	
 
 	-- Clears the proposed-flag and the selected-flag of all strands:
 	procedure reset_strands (
@@ -440,13 +455,17 @@ package et_schematic_ops.nets is
 
 
 
-	-- Creates a new net. If the net exists already,
-	-- the the flag "exists_already" is set and nothing
-	-- else will be done:
+	-- Creates a new net. If the net does not exist already,
+	-- then it will be created and the flag "created" is set.
+	-- If the net does exist already, then "created" is cleared
+	-- and nothing else will be done.
+	-- net_cursor will be set so that it points to the
+	-- net in any case:
 	procedure create_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string;
-		exists_already	: out boolean;
+		created			: out boolean;
+		net_cursor		: out pac_nets.cursor;
 		log_threshold	: in type_log_level);
 
 
@@ -586,11 +605,20 @@ package et_schematic_ops.nets is
 		segment_new		: in type_net_segment;
 		log_threshold	: in type_log_level);
 
+
+
+	procedure insert_net_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor;
+		sheet			: in type_sheet;
+		segment			: in type_net_segment;
+		log_threshold	: in type_log_level);
+	
 	
 	
 	-- Inserts a net segment to a given net. If the given net does
 	-- not exist, then the net will be created.
-	-- Find more details in description of procedure insert_segment
+	-- Find more details in description of procedure insert_net_segment
 	-- above:
 	procedure insert_net_segment (
 		module_cursor	: in pac_generic_modules.cursor;

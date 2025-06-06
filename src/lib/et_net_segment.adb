@@ -486,6 +486,19 @@ package body et_net_segment is
 
 
 
+	function on_segment (
+		point		: in type_vector_model;
+		segment 	: in pac_net_segments.cursor)
+		return boolean
+	is 
+		s : type_net_segment := element (segment);
+	begin
+		return on_line (s, point);
+	end on_segment;
+	
+
+
+	
 
 	
 	

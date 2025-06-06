@@ -293,6 +293,12 @@ package et_net_segment is
 		return boolean;
 
 
+	-- Returns true if the given point sits on 
+	-- the given segment:
+	function on_segment (
+		point		: in type_vector_model;
+		segment 	: in pac_net_segments.cursor)
+		return boolean;
 
 
 

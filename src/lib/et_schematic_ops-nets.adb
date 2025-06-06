@@ -1873,6 +1873,92 @@ package body et_schematic_ops.nets is
 
 
 
+	
+
+	
+	
+	function get_strands (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string;
+		place			: in type_object_position;
+		log_threshold	: in type_log_level)
+		return pac_object_strands.list
+	is
+		result : pac_object_strands.list;
+
+
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is
+			net_cursor : pac_nets.cursor := module.nets.first;
+
+			
+			procedure query_net (
+				net_name	: in pac_net_name.bounded_string;
+				net			: in type_net)
+			is
+				strand_cursor : pac_strands.cursor := net.strands.first;
+				
+				
+				procedure query_strand (strand : in type_strand) is
+					segment_cursor : pac_net_segments.cursor := strand.segments.first;
+				begin
+					-- Iterate through the segments and test
+					-- each of them whether it crosses the given zone.
+					-- Abort the iteration on the first match:
+					while has_element (segment_cursor) loop
+						log (text => "segment " & to_string (segment_cursor), 
+							 level => log_threshold + 1);
+						
+						if on_segment (get_place (place), segment_cursor) then
+							log (text => " match", level => log_threshold + 1);							
+							result.append ((net_cursor, strand_cursor));
+							exit; -- no more probing required
+						end if;
+						
+						next (segment_cursor);
+					end loop;
+				end query_strand;
+
+				
+			begin
+				-- Iterate through the strands:
+				while has_element (strand_cursor) loop
+					
+					-- We pick out only the strands on the given sheet:
+					if get_sheet (strand_cursor) = get_sheet (place) then
+						query_element (strand_cursor, query_strand'access);					
+					end if;
+					
+					next (strand_cursor);
+				end loop;
+			end query_net;
+
+			
+		begin
+			query_element (net_cursor, query_net'access);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " looking up strands of net " & to_string (net_name)
+			 & " at " & to_string (place),
+			 level => log_threshold);
+
+		log_indentation_up;
+		query_element (module_cursor, query_module'access);
+		log_indentation_down;
+
+		return result;
+	end get_strands;
+
+
+
+
+	
+	
 
 
 	function get_strands (
@@ -2809,19 +2895,19 @@ package body et_schematic_ops.nets is
 	procedure create_net (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_name		: in pac_net_name.bounded_string;
-		exists_already	: out boolean;
+		created			: out boolean;
+		net_cursor		: out pac_nets.cursor;
 		log_threshold	: in type_log_level)
 	is
-		net_cursor : pac_nets.cursor;
-
 		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
-		is 
-			net : type_net;
-		begin
-			module.nets.insert (net_name, net);
+		is begin
+			module.nets.insert (
+				key			=> net_name,
+				position	=> net_cursor,
+				inserted	=> created);
 		end query_module;
 
 		
@@ -2838,10 +2924,14 @@ package body et_schematic_ops.nets is
 			log (text => "net already exists. Nothing to do.",
 				 level => log_threshold);
 			
-			exists_already := true;
+			created := false;
+			-- Cursor "net_cursor" points to the existing net.
 		else
+			-- create a new net:
 			generic_modules.update_element (module_cursor, query_module'access);
-			exists_already := false;
+
+			-- Flag "created" should be set now.
+			-- Cursor "net_cursor" should point to the new net now.
 		end if;
 		
 		log_indentation_down;
@@ -4430,6 +4520,34 @@ package body et_schematic_ops.nets is
 
 
 
+	
+
+	procedure insert_net_segment (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_cursor		: in pac_nets.cursor;
+		sheet			: in type_sheet;
+		segment			: in type_net_segment;
+		log_threshold	: in type_log_level)
+	is
+	begin
+		log (text => "module " & to_string (module_cursor) 
+			 & " insert net segment " & to_string (segment)
+			 & " in net " & get_net_name (net_cursor)
+			 & " on sheet " & to_string (sheet),
+			 level => log_threshold);
+
+		log_indentation_up;
+
+
+		
+		-- update_strand_positions (module_cursor, log_threshold + 2);
+		
+		-- update_ratsnest (module_cursor, log_threshold + 2);
+
+		log_indentation_down;
+	end insert_net_segment;
+
+	
 
 	
 	
@@ -4466,13 +4584,26 @@ package body et_schematic_ops.nets is
 			log (text => "Net " & to_string (net_name) & 
 				 " does not exist yet and will be created.",
 				 level => log_threshold + 1);
-			
+
+			declare
+				created : boolean;
+			begin
+				create_net (
+					module_cursor	=> module_cursor,
+					net_name		=> net_name,
+					created			=> created,
+					net_cursor		=> net_cursor,
+					log_threshold	=> log_threshold + 1);
+			end;						
 		end if;
 
 		
-		insert_segment (
-			module_cursor, net_cursor, get_sheet (A),
-			net_name, segment, log_threshold + 1);
+		-- insert_segment (
+		-- 	module_cursor, net_cursor, get_sheet (A),
+		-- 	net_name, segment, log_threshold + 1);
+
+		insert_net_segment (module_cursor, net_cursor,
+			get_sheet (A), segment, log_threshold + 2);					
 
 		update_strand_positions (module_cursor, log_threshold + 2);
 		
