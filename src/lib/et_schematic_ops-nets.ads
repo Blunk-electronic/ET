@@ -74,6 +74,7 @@ package et_schematic_ops.nets is
 		log_threshold	: in type_log_level);
 
 
+	
 	-- This composite type is meant to identify a net segment
 	-- and its parent net in the schematic:
 	type type_object_segment is record
@@ -425,6 +426,27 @@ package et_schematic_ops.nets is
 		module_cursor	: in pac_generic_modules.cursor;
 		catch_zone		: in type_catch_zone;
 		count			: in out natural;
+		log_threshold	: in type_log_level);
+
+
+	
+		
+	-- Returns a cursor to the requested net in the given module.
+	-- If the net could not be found, returns no_element:
+	function locate_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string)
+		return pac_nets.cursor;
+
+
+
+	-- Creates a new net. If the net exists already,
+	-- the the flag "exists_already" is set and nothing
+	-- else will be done:
+	procedure create_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string;
+		exists_already	: out boolean;
 		log_threshold	: in type_log_level);
 
 

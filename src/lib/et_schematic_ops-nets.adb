@@ -254,43 +254,9 @@ package body et_schematic_ops.nets is
 	end reset_proposed_segments;
 
 		
-	
-
 
 	
-	function get_lowest_available_anonymous_net (
-		module		: in pac_generic_modules.cursor)
-		return pac_net_name.bounded_string
-	is
-		net : pac_net_name.bounded_string; -- like N$56
-		cursor : pac_nets.cursor;
 
-		-- This flag goes true once a suitable net
-		-- name has been found:
-		candiate_found : boolean := false; 
-	begin
-		-- Propose net names like N$1, N$2, ... and locate them
-		-- in the module. The search ends once a net like N$56 can not
-		-- be located. This net name would be returned to the caller.
-		for i in type_anonymous_net_index'first .. type_anonymous_net_index'last loop
-
-			-- compose net name and locate it in module:
-			net := to_anonymous_net_name (i); -- N$1, N$2, ...
-			cursor := locate_net (module, net);
-
-			if cursor = pac_nets.no_element then -- not located
-				candiate_found := true;
-				exit;
-			end if;
-		end loop;
-
-		if not candiate_found then
-			raise constraint_error;
-		end if;
-		
-		return net;
-	end get_lowest_available_anonymous_net;
-	
 
 
 
@@ -2807,6 +2773,121 @@ package body et_schematic_ops.nets is
 		log_indentation_down;
 	end propose_nets;
 
+
+
+	
+
+
+	function locate_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string)		
+		return pac_nets.cursor 
+	is	
+		cursor : pac_nets.cursor;
+
+		procedure query_nets (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in type_generic_module) 
+		is begin
+			cursor := pac_nets.find (module.nets, net_name);
+		end query_nets;
+		
+	begin
+		query_element (
+			position	=> module_cursor,
+			process		=> query_nets'access);
+		
+		return cursor;
+	end locate_net;
+
+
+
+
+
+
+
+	procedure create_net (
+		module_cursor	: in pac_generic_modules.cursor;
+		net_name		: in pac_net_name.bounded_string;
+		exists_already	: out boolean;
+		log_threshold	: in type_log_level)
+	is
+		net_cursor : pac_nets.cursor;
+
+		
+		procedure query_module (
+			module_name	: in pac_module_name.bounded_string;
+			module		: in out type_generic_module) 
+		is 
+			net : type_net;
+		begin
+			module.nets.insert (net_name, net);
+		end query_module;
+
+		
+	begin
+		log (text => "module " & to_string (module_cursor)
+			 & " create net " & to_string (net_name),
+			level => log_threshold);
+
+		log_indentation_up;
+	
+		net_cursor := locate_net (module_cursor, net_name);
+		
+		if has_element (net_cursor) then
+			log (text => "net already exists. Nothing to do.",
+				 level => log_threshold);
+			
+			exists_already := true;
+		else
+			generic_modules.update_element (module_cursor, query_module'access);
+			exists_already := false;
+		end if;
+		
+		log_indentation_down;
+	end create_net;
+
+	
+	
+	
+
+
+	
+	function get_lowest_available_anonymous_net (
+		module		: in pac_generic_modules.cursor)
+		return pac_net_name.bounded_string
+	is
+		net : pac_net_name.bounded_string; -- like N$56
+		cursor : pac_nets.cursor;
+
+		-- This flag goes true once a suitable net
+		-- name has been found:
+		candiate_found : boolean := false; 
+	begin
+		-- Propose net names like N$1, N$2, ... and locate them
+		-- in the module. The search ends once a net like N$56 can not
+		-- be located. This net name would be returned to the caller.
+		for i in type_anonymous_net_index'first .. type_anonymous_net_index'last loop
+
+			-- compose net name and locate it in module:
+			net := to_anonymous_net_name (i); -- N$1, N$2, ...
+			cursor := locate_net (module, net);
+
+			if cursor = pac_nets.no_element then -- not located
+				candiate_found := true;
+				exit;
+			end if;
+		end loop;
+
+		if not candiate_found then
+			raise constraint_error;
+		end if;
+		
+		return net;
+	end get_lowest_available_anonymous_net;
+	
+
+	
 
 
 	

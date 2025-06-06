@@ -522,29 +522,6 @@ package body et_schematic_ops is
 	
 
 
-	function locate_net (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string)		
-		return pac_nets.cursor 
-	is	
-		cursor : pac_nets.cursor;
-
-		procedure query_nets (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in type_generic_module) 
-		is begin
-			cursor := pac_nets.find (module.nets, net_name);
-		end query_nets;
-		
-	begin -- locate_net
-		query_element (
-			position	=> module_cursor,
-			process		=> query_nets'access);
-		
-		return cursor;
-	end locate_net;
-
-
 
 	
 	

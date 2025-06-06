@@ -164,13 +164,6 @@ package et_schematic_ops is
 		log_threshold	: in type_log_level);
 
 	
-	
-	-- Returns a cursor to the requested net in the given module. If the net could
-	-- not be found, returns no_element.
-	function locate_net (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_name		: in pac_net_name.bounded_string)
-		return pac_nets.cursor;
 
 
 	-- Returns the name of the active assembly variant of the given module:
