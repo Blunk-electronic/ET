@@ -320,6 +320,14 @@ package et_nets is
 	procedure reset_status (
 		net			: in out type_net);
 
+
+
+	-- Creates a new strand. Inserts the given segment
+	-- in the strand. So a new strand with a single segment
+	-- is created in the given net:
+	procedure create_strand (
+		net			: in out type_net;
+		segment		: in type_net_segment);
 	
 
 	-- Returns true if the given net has strands:
@@ -343,6 +351,22 @@ package et_nets is
 		sheet	: in type_sheet)
 		return pac_strands.list;
 
+
+	
+	package pac_strand_cursors is new doubly_linked_lists (pac_strands.cursor);
+
+	-- Returns a list of cursors to strands that
+	-- exist at the given place. 
+	-- Usually strands do not cross each other (in a correct design).
+	-- So in the result there should be only one item:
+	function get_strands (
+		net		: in type_net;
+		place	: in type_object_position)
+		return pac_strand_cursors.list;
+
+
+	
+	
 
 	-- Deletes the given list of strands in the given net:
 	procedure delete_strands (

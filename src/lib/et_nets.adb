@@ -455,6 +455,22 @@ package body et_nets is
 	
 
 
+	procedure create_strand (
+		net			: in out type_net;
+		segment		: in type_net_segment)
+	is 
+		strand : type_strand; -- the new strand
+	begin
+		-- Insert the given segment in the new strand:
+		strand.segments.append (segment);
+
+		-- Add the new strand to the given net:
+		net.strands.append (strand);
+	end create_strand;
+
+
+	
+
 	function has_strands (
 		net : in type_net)
 		return boolean
@@ -515,6 +531,54 @@ package body et_nets is
 		return result;
 	end get_strands;
 
+
+
+
+
+	
+
+	function get_strands (
+		net		: in type_net;
+		place	: in type_object_position)
+		return pac_strand_cursors.list
+	is
+		result : pac_strand_cursors.list;
+
+		strand_cursor : pac_strands.cursor := net.strands.first;
+		
+		
+		procedure query_strand (strand : in type_strand) is 
+			proceed : aliased boolean := true;
+			
+			procedure query_segment (segment : in pac_net_segments.cursor) is begin
+				if on_segment (get_place (place), segment) then
+					result.append (strand_cursor);
+					proceed := false; -- no more probing required					
+				end if;
+			end query_segment;
+			
+
+		begin
+			-- Look at strands which are on the given sheet:
+			if get_sheet (strand) = get_sheet (place) then
+
+				-- Iterate the segments of the strand:
+				iterate (strand.segments, query_segment'access, proceed'access);
+			end if;
+		end query_strand;
+
+
+	begin
+		-- Iterate the strands of the net:
+		while has_element (strand_cursor) loop
+			query_element (strand_cursor, query_strand'access);
+			next (strand_cursor);
+		end loop;
+		
+		return result;
+	end get_strands;
+
+	
 
 
 	
