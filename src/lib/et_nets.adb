@@ -71,6 +71,22 @@ package body et_nets is
 
 	
 
+	procedure attach_segment (
+		strand	: in out type_strand;
+		segment	: in type_net_segment;
+		AB_end	: in type_start_end_point)
+	is 
+	begin
+		null;
+		-- CS
+	end attach_segment;
+
+
+
+	
+	
+	
+
 	procedure set_proposed (
 		strand : in out type_strand)
 	is begin

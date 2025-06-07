@@ -1882,58 +1882,22 @@ package body et_schematic_ops.nets is
 		net_cursor		: in pac_nets.cursor;
 		place			: in type_object_position;
 		log_threshold	: in type_log_level)
-		return pac_object_strands.list
+		return pac_strand_cursors.list
 	is
-		result : pac_object_strands.list;
+		use pac_strand_cursors;
+		result : pac_strand_cursors.list;
 
-
+		
 		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in type_generic_module) 
 		is
-
-			
 			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net)
-			is
-				strand_cursor : pac_strands.cursor := net.strands.first;
-				
-				
-				procedure query_strand (strand : in type_strand) is
-					segment_cursor : pac_net_segments.cursor := strand.segments.first;
-				begin
-					-- Iterate through the segments and test
-					-- each of them whether it crosses the given zone.
-					-- Abort the iteration on the first match:
-					while has_element (segment_cursor) loop
-						log (text => "segment " & to_string (segment_cursor), 
-							 level => log_threshold + 1);
-						
-						if on_segment (get_place (place), segment_cursor) then
-							log (text => " match", level => log_threshold + 1);							
-							result.append ((net_cursor, strand_cursor));
-							exit; -- no more probing required
-						end if;
-						
-						next (segment_cursor);
-					end loop;
-				end query_strand;
-
-				
-			begin
-				-- Iterate through the strands:
-				while has_element (strand_cursor) loop
-					
-					-- We pick out only the strands on the given sheet:
-					if get_sheet (strand_cursor) = get_sheet (place) then
-						query_element (strand_cursor, query_strand'access);					
-					end if;
-					
-					next (strand_cursor);
-				end loop;
+			is begin
+				result := get_strands (net, place);
 			end query_net;
-
 			
 		begin
 			query_element (net_cursor, query_net'access);
@@ -4539,8 +4503,8 @@ package body et_schematic_ops.nets is
 		segment			: in type_net_segment;
 		log_threshold	: in type_log_level)
 	is
-		use pac_object_strands;
-		strands_at_A, strands_at_B : pac_object_strands.list;
+		use pac_strand_cursors;
+		strands_at_A, strands_at_B : pac_strand_cursors.list;
 
 		-- This procedure searches for strands (of the given
 		-- net) that run across the A or B end of the
@@ -4566,19 +4530,26 @@ package body et_schematic_ops.nets is
 				net			: in out type_net)
 			is
 				type type_insert_mode is (
-					NEW_STRAND,
-					ATTACH_A,
-					ATTACH_B);
+					NEW_STRAND,	-- the given segment has no connection with any strand
+					ATTACH_A,	-- the segment will be connected at its A end
+					ATTACH_B);	-- the segment will be connected at its B end
 
 				insert_mode : type_insert_mode;
+
+				-- In case the segment is to be connected with a strand,
+				-- then this cursor will point to the target strand:
 				strand_cursor : pac_strands.cursor;
 
 
 				procedure query_strand (strand : in out type_strand) is
 				begin
-					null;
-					-- attach_segment (strand, segment, A/B);
-					-- CS Attach segment to strand.
+					if insert_mode = ATTACH_A then
+						attach_segment (strand, segment, A);
+					end if;
+						
+					if insert_mode = ATTACH_B then
+						attach_segment (strand, segment, B);
+					end if;
 				end;
 
 				
@@ -4616,14 +4587,14 @@ package body et_schematic_ops.nets is
 						-- Take the first strand that has been located at
 						-- the A end of the segment and insert the segment
 						-- in that strand:
-						strand_cursor := first_element (strands_at_A).strand_cursor;
+						strand_cursor := first_element (strands_at_A);
 						net.strands.update_element (strand_cursor, query_strand'access);
 
 					when ATTACH_B => -- CASE 3
 						-- Take the first strand that has been located at
 						-- the B end of the segment and insert the segment
 						-- in that strand:
-						strand_cursor := first_element (strands_at_B).strand_cursor;
+						strand_cursor := first_element (strands_at_B);
 						net.strands.update_element (strand_cursor, query_strand'access);
 
 				end case;

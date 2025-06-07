@@ -120,11 +120,23 @@ package et_nets is
 		-- CS: Use precondition when modifying the status ?
 	end record;		
 
-
+	
+	
 	-- Returns true if the given strand has segments:
 	function has_segments (
 		strand : in type_strand)
 		return boolean;
+
+
+	-- Attaches the given segment to the given strand.
+	-- AB_end indicates which end of the segment is 
+	-- to be connected:
+	procedure attach_segment (
+		strand	: in out type_strand;
+		segment	: in type_net_segment;
+		AB_end	: in type_start_end_point);
+
+
 	
 
 	procedure set_proposed (
@@ -335,6 +347,8 @@ package et_nets is
 		net : in type_net)
 		return boolean;
 	
+
+		
 	
 	-- Returns the cursor to the strand at the given place.
 	-- If no strand found then the return is no_element:

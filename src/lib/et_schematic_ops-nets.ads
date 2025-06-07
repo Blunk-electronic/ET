@@ -304,16 +304,13 @@ package et_schematic_ops.nets is
 
 
 	-- Returns for a given net a list of strands
-	-- whose segments cross the given place:
-	-- the given catch zone. Since it is about a
-	-- given net, all selectors "net_cursor" in the result
-	-- will point to the same net:
+	-- that cross the given place:
 	function get_strands (
 		module_cursor	: in pac_generic_modules.cursor;
 		net_cursor		: in pac_nets.cursor;
 		place			: in type_object_position;
 		log_threshold	: in type_log_level)
-		return pac_object_strands.list;
+		return pac_strand_cursors.list;
 
 	
 	
