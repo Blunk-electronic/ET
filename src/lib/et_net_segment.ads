@@ -279,6 +279,11 @@ package et_net_segment is
 		SLOPING);
 
 
+	-- Returns the orientation of a net segment.
+	function get_orientation (
+		segment : in type_net_segment) 
+		return type_net_segment_orientation;
+	
 	
 	-- Returns the orientation of a net segment.
 	function get_segment_orientation (

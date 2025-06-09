@@ -737,6 +737,15 @@ package et_geometry_2a is
 		return string;
 
 
+	-- Returns the end point of the given line
+	-- as requested by argument AB_end:
+	function get_end_point (
+		line 	: in type_line;
+		AB_end	: in type_start_end_point)
+		return type_vector_model;
+
+	
+
 	-- Returns the start point of the given line:
 	function get_A (
 		line : in type_line)

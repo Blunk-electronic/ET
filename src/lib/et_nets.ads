@@ -130,12 +130,25 @@ package et_nets is
 
 	-- Returns the first segment (among the given segments)
 	-- on which the given point sits between A and B end:
-	function get_segment (
+	function get_segment_to_split (
 		segments	: in pac_net_segments.list;
 		point		: in type_vector_model)
 		return pac_net_segments.cursor;
 
 
+	-- Returns the first segment (among the given segments)
+	-- which will be extended by the the given segment.
+	-- AB_end indicates which end of the segment is to 
+	-- be connected. A segment can only be extended if
+	-- it runs in the same direction as the given segment
+	-- AND if no ports exist at the attach point:
+	function get_segment_to_extend (
+		segments	: in pac_net_segments.list;
+		segment		: in type_net_segment;
+		AB_end		: in type_start_end_point)
+		return pac_net_segments.cursor;
+
+	
 	
 	-- Attaches the given segment to the given strand.
 	-- AB_end indicates which end of the segment is 

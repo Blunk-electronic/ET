@@ -70,7 +70,7 @@ package body et_nets is
 
 
 
-	function get_segment (
+	function get_segment_to_split (
 		segments	: in pac_net_segments.list;
 		point		: in type_vector_model)
 		return pac_net_segments.cursor
@@ -93,9 +93,51 @@ package body et_nets is
 		iterate (segments, query_segment'access, proceed'access);
 
 		return result;
-	end get_segment;
+	end get_segment_to_split;
 	
+
+
+
 	
+
+	function get_segment_to_extend (
+		segments	: in pac_net_segments.list;
+		segment		: in type_net_segment;
+		AB_end		: in type_start_end_point)
+		return pac_net_segments.cursor
+	is
+		result : pac_net_segments.cursor;
+
+		proceed : aliased boolean := true;
+
+		-- The point where the given segment will be attached:
+		point : type_vector_model := get_end_point (segment, AB_end);
+		
+		-- The direction of the given segment:
+		-- direction : type_net_segment_orientation := get_segment_orientation (segment);
+
+		
+		procedure query_segment (c : in pac_net_segments.cursor) is begin
+			null;
+			-- if between_A_and_B (element (c), point) then
+			-- 	proceed := false; -- no more test required
+			-- 	result := c;
+			-- end if;
+		end query_segment;
+		
+	begin
+		
+		-- Iterate the given segments. Abort on the
+		-- first matching segment. If no segment found,
+		-- then the result is no_element:
+		iterate (segments, query_segment'access, proceed'access);
+
+		return result;
+	end get_segment_to_extend;
+
+	
+
+
 	
 
 	procedure attach_segment (
@@ -103,8 +145,71 @@ package body et_nets is
 		segment	: in type_net_segment;
 		AB_end	: in type_start_end_point)
 	is 
+		target : pac_net_segments.cursor;
+
+		-- This is the place at which theh given
+		-- segment will be joined with the given strand:
+		point : type_vector_model;
+
+		-- There are several ways to attach the given segment
+		-- with the strand:
+		
+		type type_mode is (
+			-- A single target segment is to be split in two.
+			-- Between the two fragments the given segment
+			-- will be attached.
+			-- The target segment will be modified:							  
+			MODE_SPLIT, 
+
+			-- A target segment is to be extended by
+			-- the given segment. Both run into the same
+			-- direction and will be merged to a single segment.
+			-- The target segment will be modified:
+			MODE_EXTEND,
+
+			-- The given segment will be attached 
+			-- to the target segment. The joint
+			-- is a bend point. Both segments run perpedicular
+			-- to each other.
+			-- The given segment will simply be added
+			-- to the other segments of the strand:
+			MODE_MAKE_BEND,
+
+			-- The given segment will be attached to
+			-- an already existing joint where at least
+			-- two existing segments form a bend point.
+			-- At least two of the existing segments run
+			-- perpedicular to each other.
+			-- The given segment will simply be added
+			-- to the other segments of the strand:
+			MODE_JOIN_BEND,
+
+			-- The given segment will be attached to
+			-- an already existing segment that is
+			-- connected with a port.
+			-- The given segment will simply be added
+			-- to the other segments of the strand:
+			MODE_JOIN_PORT);
+
+
+		mode : type_mode;
+		
 	begin
-		null;
+		-- Build the point at which the segment
+		-- will be attached:
+		point := get_end_point (segment, AB_end);
+
+		-- Test case MODE_SPLIT: 
+		-- If the given segment joins another segment
+		-- between A and B. The target segment must be split
+		-- in two at the attach point.
+		target := get_segment_to_split (strand.segments, point);
+
+		if has_element (target) then
+			mode := MODE_SPLIT;
+		else
+			null;
+		end if;
 		-- CS
 	end attach_segment;
 

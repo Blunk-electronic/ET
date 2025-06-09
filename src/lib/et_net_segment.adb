@@ -427,6 +427,33 @@ package body et_net_segment is
 	
 
 
+
+
+	function get_orientation (
+		segment : in type_net_segment) 
+		return type_net_segment_orientation 
+	is		
+		result : type_net_segment_orientation;
+		
+		dx : constant type_distance_model := get_x (get_A (segment)) - get_x (get_B (segment));
+		dy : constant type_distance_model := get_y (get_A (segment)) - get_y (get_B (segment));
+	begin
+		if dx = zero then 
+			result := VERTICAL;
+		
+		elsif dy = zero then
+			result := HORIZONTAL;
+			
+		else 
+			result := SLOPING;
+		end if;
+
+		--put_line (type_net_segment_orientation'image (result));
+		return result;
+	end get_orientation;
+
+
+
 	
 	
 	function get_segment_orientation (

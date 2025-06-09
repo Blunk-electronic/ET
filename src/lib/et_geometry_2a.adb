@@ -1438,6 +1438,19 @@ end;
 
 
 
+	function get_end_point (
+		line 	: in type_line;
+		AB_end	: in type_start_end_point)
+		return type_vector_model
+	is begin
+		case AB_end is
+			when A => return line.A;
+			when B => return line.B;
+		end case;
+	end;
+
+
+	
 
 	function get_A (
 		line : in type_line)
