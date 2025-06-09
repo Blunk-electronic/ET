@@ -4072,7 +4072,7 @@ package body et_schematic_ops.nets is
 
 									-- It is not allowed to place a junction in a sloped segment,
 									-- because splitting sloping segments seems a rare, difficult and dangerous task.
-									if get_segment_orientation (segment_cursor) = SLOPING then
+									if get_segment_orientation (segment_cursor) = ORIENT_SLOPING then
 										junction_in_sloping_segment (place);
 									end if;
 									
@@ -4856,7 +4856,7 @@ package body et_schematic_ops.nets is
 				procedure query_segments (strand : in out type_strand) is
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 					old_segment : type_net_segment; -- here a backup of the old segment lives
-					old_segment_orientation : type_net_segment_orientation; -- horizontal, vertical, sloped
+					old_segment_orientation : type_line_orientation; -- horizontal, vertical, sloped
 
 					
 					procedure insert_two_new_segments is
@@ -4893,13 +4893,13 @@ package body et_schematic_ops.nets is
 							log_indentation_up;
 
 							case old_segment_orientation is
-								when HORIZONTAL =>
+								when ORIENT_HORIZONTAL =>
 									iterate (old_segment.labels, query_labels_horizontal'access);
 
-								when VERTICAL =>
+								when ORIENT_VERTICAL =>
 									iterate (old_segment.labels, query_labels_vertical'access);
 
-								when SLOPING => raise constraint_error; -- CS should never happen
+								when ORIENT_SLOPING => raise constraint_error; -- CS should never happen
 							end case;
 							log_indentation_down;
 						end update_labels;
@@ -5153,7 +5153,7 @@ package body et_schematic_ops.nets is
 
 							-- It is not allowed to place a junction in a sloped segment,
 							-- because splitting sloping segments seems a rare, difficult and dangerous task.
-							if old_segment_orientation = SLOPING then
+							if old_segment_orientation = ORIENT_SLOPING then
 								junction_in_sloping_segment (place);
 							end if;
 							

@@ -114,15 +114,19 @@ package body et_nets is
 		point : type_vector_model := get_end_point (segment, AB_end);
 		
 		-- The direction of the given segment:
-		-- direction : type_net_segment_orientation := get_segment_orientation (segment);
+		direction : type_line_orientation := get_orientation (segment);
 
 		
-		procedure query_segment (c : in pac_net_segments.cursor) is begin
-			null;
+		procedure query_segment (c : in pac_net_segments.cursor) is 
+			d : type_line_orientation;
+		begin
+			d := get_segment_orientation (c);
+			if d = direction then
+				null;
 			-- if between_A_and_B (element (c), point) then
 			-- 	proceed := false; -- no more test required
 			-- 	result := c;
-			-- end if;
+			end if;
 		end query_segment;
 		
 	begin
@@ -1111,7 +1115,7 @@ package body et_nets is
 	is
 		is_stub : boolean := true;
 		direction : type_stub_direction;
-		orientation : constant type_net_segment_orientation := 
+		orientation : constant type_line_orientation := 
 			get_segment_orientation (segment);
 
 		-- Get the start and end point of the segment:
@@ -1119,7 +1123,7 @@ package body et_nets is
 		B : constant type_vector_model := get_B (segment);
 	begin
 		case orientation is
-			when HORIZONTAL =>
+			when ORIENT_HORIZONTAL =>
 				if get_x (point) >= get_x (A) and
 					get_x (point) >= get_x (B) then
 					direction := RIGHT;
@@ -1130,7 +1134,7 @@ package body et_nets is
 					direction := LEFT;
 				end if;
 				
-			when VERTICAL =>
+			when ORIENT_VERTICAL =>
 				if get_y (point) >= get_y (A) and
 					get_y (point) >= get_y (B) then
 					direction := UP;
@@ -1141,7 +1145,7 @@ package body et_nets is
 					direction := DOWN;
 				end if;
 				
-			when SLOPING =>
+			when ORIENT_SLOPING =>
 				is_stub := false;
 		end case;
 

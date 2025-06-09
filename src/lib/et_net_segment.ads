@@ -270,25 +270,12 @@ package et_net_segment is
 		return boolean;
 
 
-	
-	
-	-- A net segment may run in those directions:
-	type type_net_segment_orientation is (
-		HORIZONTAL,
-		VERTICAL,
-		SLOPING);
-
-
-	-- Returns the orientation of a net segment.
-	function get_orientation (
-		segment : in type_net_segment) 
-		return type_net_segment_orientation;
-	
+		
 	
 	-- Returns the orientation of a net segment.
 	function get_segment_orientation (
 		segment : in pac_net_segments.cursor) 
-		return type_net_segment_orientation;
+		return type_line_orientation;
 
 
 

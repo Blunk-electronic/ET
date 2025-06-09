@@ -254,7 +254,7 @@ package body et_canvas_schematic_nets is
 		begin
 			if between_A_and_B (set_catch_zone (point, 0.0), s.segment) then
 
-				if get_segment_orientation (s.segment) = SLOPING then
+				if get_segment_orientation (s.segment) = ORIENT_SLOPING then
 					result := true;
 				end if;
 				
