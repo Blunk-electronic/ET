@@ -104,33 +104,45 @@ package body et_nets is
 		segments	: in pac_net_segments.list;
 		segment		: in type_net_segment;
 		AB_end		: in type_start_end_point)
-		return pac_net_segments.cursor
+		return type_segment_to_extend
 	is
-		result : pac_net_segments.cursor;
+		result : type_segment_to_extend;
 
 		proceed : aliased boolean := true;
 
 		-- The point where the given segment will be attached:
 		point : type_vector_model := get_end_point (segment, AB_end);
 		
-		-- The direction of the given segment:
-		direction : type_line_orientation := get_orientation (segment);
+		-- The orientation of the given segment:
+		orientation : type_line_orientation := get_orientation (segment);
 
 		
 		procedure query_segment (c : in pac_net_segments.cursor) is 
-			d : type_line_orientation;
+			-- Get the orientation of the candidate segment:
+			o : type_line_orientation := get_segment_orientation (c);
 		begin
-			d := get_segment_orientation (c);
-			if d = direction then
-				null;
-			-- if between_A_and_B (element (c), point) then
-			-- 	proceed := false; -- no more test required
-			-- 	result := c;
+			-- We pick out segments of same orientation as
+			-- the given segment:
+			if o = orientation then
+
+				-- Test the A end of the candidate segment:
+				if get_A (c) = point then
+					result.cursor := c;
+					result.AB_end := A;
+
+					proceed := false; -- no more test required
+
+				-- Test the B end of the candidate segment:
+				elsif get_B (c) = point then
+					result.cursor := c;
+					result.AB_end := B;
+
+					proceed := false; -- no more test required
+				end if;
 			end if;
 		end query_segment;
 		
-	begin
-		
+	begin		
 		-- Iterate the given segments. Abort on the
 		-- first matching segment. If no segment found,
 		-- then the result is no_element:

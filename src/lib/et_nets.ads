@@ -136,6 +136,13 @@ package et_nets is
 		return pac_net_segments.cursor;
 
 
+	
+	type type_segment_to_extend is record
+		cursor	: pac_net_segments.cursor;
+		AB_end	: type_start_end_point;
+	end record;
+	
+
 	-- Returns the first segment (among the given segments)
 	-- which will be extended by the the given segment.
 	-- AB_end indicates which end of the segment is to 
@@ -146,7 +153,7 @@ package et_nets is
 		segments	: in pac_net_segments.list;
 		segment		: in type_net_segment;
 		AB_end		: in type_start_end_point)
-		return pac_net_segments.cursor;
+		return type_segment_to_extend;
 
 	
 	
