@@ -1040,6 +1040,21 @@ package et_geometry_2a is
 
 
 
+	-- A line may run in those directions:
+	type type_line_orientation is (
+		ORIENT_HORIZONTAL,
+		ORIENT_VERTICAL,
+		ORIENT_SLOPING);
+	
+
+
+	-- Returns the orientation of a line.
+	function get_orientation (
+		line : in type_line) 
+		return type_line_orientation;
+
+	
+
 	
 -- ARC
 

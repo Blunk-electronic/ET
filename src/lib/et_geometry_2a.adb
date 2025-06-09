@@ -1947,6 +1947,35 @@ end;
 	end get_intersection;
 
 	
+
+
+
+	function get_orientation (
+		line : in type_line) 
+		return type_line_orientation 
+	is		
+		result : type_line_orientation;
+		
+		dx : constant type_distance := 
+			get_x (get_A (line)) - get_x (get_B (line));
+		
+		dy : constant type_distance := 
+			get_y (get_A (line)) - get_y (get_B (line));
+		
+	begin
+		if dx = zero then 
+			result := ORIENT_VERTICAL;
+		
+		elsif dy = zero then
+			result := ORIENT_HORIZONTAL;
+			
+		else 
+			result := ORIENT_SLOPING;
+		end if;
+
+		return result;
+	end get_orientation;
+
 	
 
 
