@@ -386,8 +386,8 @@ package body et_canvas_schematic_2 is
 		-- put_line (" visible " & to_string (visible_area));
 
 		-- Set the background color:
-		-- set_source_rgb (context, 0.0, 0.0, 0.0); -- black
-		set_source_rgb (context, 1.0, 1.0, 1.0); -- white
+		set_source_rgb (context, 0.0, 0.0, 0.0); -- black
+		-- set_source_rgb (context, 1.0, 1.0, 1.0); -- white
 		paint (context);
 
 		-- The ends of all kinds of lines are round:
