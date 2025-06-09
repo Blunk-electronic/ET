@@ -923,7 +923,9 @@ package et_geometry_2a is
 
 	
 	
-	-- Returns true if the given location vector lies on the given line.
+	-- Returns true if the given location vector 
+	-- lies on the given line. The A and B ends
+	-- are included in the test:
 	function on_line (
 		line	: in type_line;
 		vector	: in type_vector)
@@ -931,13 +933,21 @@ package et_geometry_2a is
 
 	
 	-- Returns true if the given point lies on the given line.
+	-- The A and B ends are included in the test:
 	function on_line (
 		line	: in type_line;
 		point	: in type_vector_model)
 		return boolean;
 
-
-
+	
+	-- Returns true if the given point lies on the
+	-- given line AND between A and B. If the point lies
+	-- either on A or B then result is false:
+	function between_A_and_B (
+		line	: in type_line;
+		point	: in type_vector_model)
+		return boolean;
+	
 	
 
 	-- Returns the location vector of the start point of a line:

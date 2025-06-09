@@ -128,6 +128,15 @@ package et_nets is
 		return boolean;
 
 
+	-- Returns the first segment (among the given segments)
+	-- on which the given point sits between A and B end:
+	function get_segment (
+		segments	: in pac_net_segments.list;
+		point		: in type_vector_model)
+		return pac_net_segments.cursor;
+
+
+	
 	-- Attaches the given segment to the given strand.
 	-- AB_end indicates which end of the segment is 
 	-- to be connected:

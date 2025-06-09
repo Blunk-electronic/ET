@@ -258,8 +258,11 @@ package et_net_segment is
 		
 
 
-	-- Returns true if given point sits between start and end point of given segment.
-	-- The catch zone is a means of reducing the accuracy. The greater the zone
+	
+	-- Returns true if given point sits between 
+	-- start and end point (A/B) of the given segment.
+	-- The catch zone is a means of reducing the accuracy. 
+	-- The greater the zone
 	-- the greater can be the distance to the segment:
 	function between_A_and_B (
 		catch_zone	: in type_catch_zone;

@@ -69,6 +69,33 @@ package body et_nets is
 
 
 
+
+	function get_segment (
+		segments	: in pac_net_segments.list;
+		point		: in type_vector_model)
+		return pac_net_segments.cursor
+	is
+		result : pac_net_segments.cursor;
+
+		proceed : aliased boolean := true;
+
+		procedure query_segment (c : in pac_net_segments.cursor) is begin
+			if between_A_and_B (element (c), point) then
+				proceed := false; -- no more test required
+				result := c;
+			end if;
+		end query_segment;
+		
+	begin
+		-- Iterate the given segments. Abort on the
+		-- first matching segment. If no segment found,
+		-- then the result is no_element:
+		iterate (segments, query_segment'access, proceed'access);
+
+		return result;
+	end get_segment;
+	
+	
 	
 
 	procedure attach_segment (

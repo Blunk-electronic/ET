@@ -401,6 +401,8 @@ package body et_net_segment is
 
 
 
+
+	
 	
 	function between_A_and_B (
 		catch_zone	: in type_catch_zone;

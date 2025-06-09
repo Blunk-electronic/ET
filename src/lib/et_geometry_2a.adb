@@ -1768,6 +1768,31 @@ end;
 	
 
 
+	function between_A_and_B (
+		line	: in type_line;
+		point	: in type_vector_model)
+		return boolean
+	is
+		result : boolean := false;
+	begin
+		-- If the point sits on either A or B then
+		-- nothing will be computed and the default false returned.
+		if point /= get_A (line) and point /= get_B (line) then
+
+			-- If the point lies on the the line
+			-- then return true. Otherwise the default 
+			-- false will be returned:
+			if on_line (line, point) then
+				result := true;
+			end if;
+		end if;
+
+		return result;
+	end between_A_and_B;
+
+	
+	
+
 	function get_start_vector (
 		line	: in type_line)
 		return type_vector 
