@@ -4581,12 +4581,14 @@ package body et_schematic_ops.nets is
 				case insert_mode is
 					when NEW_STRAND => -- CASE 1
 						-- Create a new strand that contains the given segment:
+						log (text => "Create new strand.", level => log_threshold + 1);
 						create_strand (net, segment);
 
 					when ATTACH_A => -- CASE 2
 						-- Take the first strand that has been located at
 						-- the A end of the segment and insert the segment
 						-- in that strand:
+						log (text => "Attach A end of segment to strand.", level => log_threshold + 1);
 						strand_cursor := first_element (strands_at_A);
 						net.strands.update_element (strand_cursor, query_strand'access);
 
@@ -4594,6 +4596,7 @@ package body et_schematic_ops.nets is
 						-- Take the first strand that has been located at
 						-- the B end of the segment and insert the segment
 						-- in that strand:
+						log (text => "Attach B end of segment to strand.", level => log_threshold + 1);
 						strand_cursor := first_element (strands_at_B);
 						net.strands.update_element (strand_cursor, query_strand'access);
 
@@ -4642,7 +4645,7 @@ package body et_schematic_ops.nets is
 		segment : type_net_segment;
 	begin
 		log (text => "module " & to_string (module_cursor) 
-			& " add segment to net " & to_string (net_name) 
+			& " insert net segment in net " & to_string (net_name) 
 			& " on sheet " & to_string (get_sheet (A)),
 			level => log_threshold);
 		
