@@ -6,7 +6,7 @@
 --                                                                          --
 --                              B o d y                                     --
 --                                                                          --
--- Copyright (C) 2017 - 2024                                                --
+-- Copyright (C) 2017 - 2025                                                --
 -- Mario Blunk / Blunk electronic                                           --
 -- Buchfinkenweg 3 / 99097 Erfurt / Germany                                 --
 --                                                                          --
@@ -54,7 +54,12 @@ package body et_device_appearance is
 		appearance	: in type_appearance;
 		verbose		: in boolean := false)
 		return string 
-	is begin
+	is 
+		-- Remove the prefix from appearance and 
+		-- return the remainder as string.
+		-- APPEARANCE_PCB becomes PCB.
+		s : string := type_appearance'image (appearance);
+	begin
 		if verbose then
 			case appearance is
 				when APPEARANCE_VIRTUAL =>
@@ -63,7 +68,7 @@ package body et_device_appearance is
 					return ("appears in schematic and layout");
 			end case;
 		else
-			return to_lower (type_appearance'image (appearance));
+			return s (appearance_prefix'length + 1 .. s'last);
 		end if;
 	end;
 

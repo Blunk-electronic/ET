@@ -707,13 +707,15 @@ is
 				use et_vias;
 				use pac_vias;
 
+				
 				procedure query_via (c : in pac_vias.cursor) is begin
 					section_mark (section_via, HEADER);
 
 					write (keyword => keyword_via_category, parameters => to_string (element (c).category));
-					--write (keyword => keyword_position, parameters => position (element (c).position));
-					write (keyword => keyword_position, parameters => to_string (element (c).position)); -- CS correct ?
+					write (keyword => keyword_position, parameters => to_string (element (c).position, FORMAT_2));
 					write (keyword => keyword_diameter, parameters => to_string (element (c).diameter));
+					-- CS function get_position (c) return string
+					-- CS also for category and diameter
 
 					case element (c).category is
 						when THROUGH =>
@@ -737,6 +739,7 @@ is
 					
 					section_mark (section_via, FOOTER);
 				end query_via;
+
 				
 			begin
 				net.route.vias.iterate (query_via'access);
@@ -749,10 +752,12 @@ is
 			while line_cursor /= pac_conductor_lines.no_element loop
 				section_mark (section_line, HEADER);
 				
-				write (keyword => keyword_start, parameters => to_string (get_A (line_cursor)));
-				write (keyword => keyword_end  , parameters => to_string (get_B (line_cursor)));
+				write (keyword => keyword_start, parameters => to_string (get_A (line_cursor), FORMAT_2));
+				write (keyword => keyword_end  , parameters => to_string (get_B (line_cursor), FORMAT_2));
 				write (keyword => keyword_layer, parameters => to_string (element (line_cursor).layer));
 				write (keyword => keyword_width, parameters => to_string (element (line_cursor).width));
+				-- CS functions required get_A (line_cursor) return string
+				-- also for layer, width, center, ...
 
 				section_mark (section_line, FOOTER);
 				next (line_cursor);
@@ -761,9 +766,9 @@ is
 			while arc_cursor /= pac_conductor_arcs.no_element loop
 				section_mark (section_arc, HEADER);
 
-				write (keyword => keyword_center, parameters => to_string (get_center (element (arc_cursor))));
-				write (keyword => keyword_start , parameters => to_string (get_A (element (arc_cursor))));
-				write (keyword => keyword_end   , parameters => to_string (get_B (element (arc_cursor))));
+				write (keyword => keyword_center, parameters => to_string (get_center (element (arc_cursor)), FORMAT_2));
+				write (keyword => keyword_start , parameters => to_string (get_A (arc_cursor), FORMAT_2));
+				write (keyword => keyword_end   , parameters => to_string (get_B (arc_cursor), FORMAT_2));
 				write (keyword => keyword_width , parameters => to_string (element (arc_cursor).width));
 				write (keyword => keyword_layer , parameters => to_string (element (arc_cursor).layer));
 				
@@ -1560,8 +1565,10 @@ is
 
 			write_fill_style (element (cursor).fill_style);
 
+			contours_begin;
 			write_polygon_segments (type_contour (element (cursor)));
-
+			contours_end;
+			
 			fill_zone_end;
 		end;
 
@@ -1582,8 +1589,10 @@ is
 			write_fill_style (element (cursor).fill_style);
 			write_spacing (element (cursor).spacing);
 
+			contours_begin;
 			write_polygon_segments (type_contour (element (cursor)));
-
+			contours_end;
+			
 			fill_zone_end;
 		end;
 
@@ -1593,7 +1602,11 @@ is
 		procedure write_cutout (cursor : in pac_cutouts.cursor) is begin
 			cutout_zone_begin;
 			write_signal_layer (element (cursor).layer);
+			
+			contours_begin; -- CS correct ?
 			write_polygon_segments (type_contour (element (cursor)));
+			contours_end; -- CS correct ?
+			
 			cutout_zone_end;
 		end;
 

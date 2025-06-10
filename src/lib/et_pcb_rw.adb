@@ -160,15 +160,15 @@ package body et_pcb_rw is
 
 	
 	procedure write_arc (arc : in type_arc'class) is begin
-		write (keyword => keyword_center, parameters => to_string (get_center (arc)));
-		write (keyword => keyword_start, parameters => to_string (get_A (arc)));
-		write (keyword => keyword_end, parameters => to_string (get_B (arc)));
+		write (keyword => keyword_center, parameters => to_string (get_center (arc), FORMAT_2));
+		write (keyword => keyword_start, parameters => to_string (get_A (arc), FORMAT_2));
+		write (keyword => keyword_end, parameters => to_string (get_B (arc), FORMAT_2));
 		write (keyword => keyword_direction, parameters => to_string (get_direction (arc)));
 	end write_arc;
 
 	
 	procedure write_circle (circle : in type_circle'class) is begin
-		write (keyword => keyword_center, parameters => to_string (get_center (circle)));
+		write (keyword => keyword_center, parameters => to_string (get_center (circle), FORMAT_2));
 		write (keyword => keyword_radius, parameters => to_string (get_radius (circle)));
 	end write_circle;
 
@@ -395,8 +395,8 @@ package body et_pcb_rw is
 	function position (point : in type_position'class) return string is
 		use ada.tags;
 
-		xy : constant string := space & keyword_x & to_string (get_x (point)) 
-				& space & keyword_y & to_string (get_y (point));
+		xy : constant string := space & keyword_x & space & to_string (get_x (point)) 
+				& space & keyword_y & space & to_string (get_y (point));
 	begin
 		--if point'tag = type_vector_model'tag then
 			--return xy;
@@ -404,12 +404,12 @@ package body et_pcb_rw is
 			
 		if point'tag = type_position'tag then
 			return xy 
-				& space & keyword_rotation & to_string (get_rotation (type_position (point)));
+				& space & keyword_rotation & space & to_string (get_rotation (type_position (point)));
 				-- x 162.560 y 98.240 rotation 180.00
 			
 		elsif point'tag = type_package_position'tag then
 			return xy
-				& space & keyword_rotation & to_string (get_rotation (type_position (point)))
+				& space & keyword_rotation & space & to_string (get_rotation (type_position (point)))
 				& space & keyword_face & to_string (get_face (type_package_position (point)));
 				-- x 162.560 y 98.240 rotation 180.00 face top
 		else

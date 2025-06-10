@@ -118,6 +118,10 @@ package et_net_segment is
 		return boolean;
 
 
+	type type_ports_AB is record
+		A, B : type_ports;
+	end record;
+	
 	
 
 -- JUNCTIONS:
@@ -152,6 +156,7 @@ package et_net_segment is
 		labels		: pac_net_labels.list;
 		tag_labels	: type_tag_labels;
 		junctions	: type_junctions;
+		--ports		: type_ports_AB; -- CS
 		ports		: type_ports;
 	end record;
 

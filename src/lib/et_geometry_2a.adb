@@ -440,7 +440,7 @@ package body et_geometry_2a is
 				return "x/y: " & to_string (v.x) & "/" & to_string (v.y);
 
 			when FORMAT_2 =>
-				return "x" & to_string (v.x) & " y" & to_string (v.y);
+				return "x " & to_string (v.x) & " y " & to_string (v.y);
 
 			when FORMAT_3 =>
 				return to_string (v.x) & " " & to_string (v.y);
