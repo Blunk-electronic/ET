@@ -144,11 +144,14 @@ package et_nets is
 	
 
 	-- Returns the first segment (among the given segments)
+	-- and its end (A/B)
 	-- which will be extended by the the given segment.
-	-- AB_end indicates which end of the segment is to 
+	-- AB_end indicates which end of the given segment is to 
 	-- be connected. A segment can only be extended if
 	-- it runs in the same direction as the given segment
-	-- AND if no ports exist at the attach point:
+	-- AND if no ports exist at the attach point.
+	-- If no suitable segment has been found, then the return
+	-- is no_element:
 	function get_segment_to_extend (
 		segments	: in pac_net_segments.list;
 		segment		: in type_net_segment;

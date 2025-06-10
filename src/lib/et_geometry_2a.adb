@@ -1979,6 +1979,45 @@ end;
 	
 
 
+
+	function split_line (
+		line 	: in type_line;
+		point	: in type_vector_model)
+		return type_split_line
+	is begin
+		-- If the given point eqals either the
+		-- start or the end point of the given line,
+		-- then there is nothing to split.
+		-- The return will be a single line which is
+		-- the given line without any modification:
+		if line.A = point or line.B = point then
+			declare
+				result : type_split_line (count => 1);
+			begin
+				result.segments (1) := line;
+				return result;
+			end;
+		else
+			
+		-- If the given point is neither A or B of the
+		-- given line, then the given line is broken down
+		-- in two lines:
+			declare
+				result : type_split_line (count => 2);
+			begin
+				result.segments (1).A := line.A;
+				result.segments (1).B := point;
+
+				result.segments (2).A := point;
+				result.segments (2).B := line.B;
+
+				return result;
+			end;
+		end if;
+	end split_line;
+
+
+	
 	
 -- ARC:
 

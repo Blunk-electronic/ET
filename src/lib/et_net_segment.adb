@@ -191,6 +191,21 @@ package body et_net_segment is
 
 
 
+	function split_segment (
+		segment	: in type_net_segment;
+		point	: in type_vector_model)
+		return type_split_segment
+	is
+		result : type_split_segment (count => 2);
+		--function do_it 
+		fragments : type_split_line := split_line (segment, point);
+	begin
+		-- CS
+		return result;
+	end split_segment;
+
+
+	
 	
 	procedure reset_status (
 		segment : in out type_net_segment)

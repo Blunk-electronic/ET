@@ -720,6 +720,9 @@ package et_geometry_2a is
 	
 	type type_line is tagged private;
 
+	type type_line_array is array (natural range <>) of type_line;
+
+	
 
 	procedure reset_line (
 		line : in out type_line);
@@ -1053,8 +1056,39 @@ package et_geometry_2a is
 		line : in type_line) 
 		return type_line_orientation;
 
+
+
+	-- When a line is to be split in two
+	-- fragments, then this type should be used for
+	-- the output of a split operation.
+	-- It is a parameterized type because the split
+	-- operation may result in a single line in case
+	-- the split point is the same as the A or B end
+	-- of the line:
+	type type_split_line (count : positive) is record
+		segments : type_line_array (1 .. count);
+	end record;
+
+
+	-- This function splits a line at the given point.
+	-- The result is two new lines which join each 
+	-- other at the given point.
+	-- Since the given point is not required to be on 
+	-- the given line, the resulting lines may run in 
+	-- to different directions.
+	-- If either A or B of the given line is the same
+	-- as the given split point, then the result is
+	-- a single line, namely the given line without any change:
+	function split_line (
+		line 	: in type_line;
+		point	: in type_vector_model)
+		return type_split_line;
+
 	
 
+
+
+	
 	
 -- ARC
 

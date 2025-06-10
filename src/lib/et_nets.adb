@@ -130,6 +130,8 @@ package body et_nets is
 					result.cursor := c;
 					result.AB_end := A;
 
+					-- CS test ports
+					
 					proceed := false; -- no more test required
 
 				-- Test the B end of the candidate segment:
@@ -137,6 +139,8 @@ package body et_nets is
 					result.cursor := c;
 					result.AB_end := B;
 
+					-- CS test ports
+					
 					proceed := false; -- no more test required
 				end if;
 			end if;
@@ -161,7 +165,8 @@ package body et_nets is
 		segment	: in type_net_segment;
 		AB_end	: in type_start_end_point)
 	is 
-		target : pac_net_segments.cursor;
+		target_to_split		: pac_net_segments.cursor;
+		target_to_extend	: type_segment_to_extend;
 
 		-- This is the place at which theh given
 		-- segment will be joined with the given strand:
@@ -208,7 +213,51 @@ package body et_nets is
 			MODE_JOIN_PORT);
 
 
-		mode : type_mode;
+		mode : type_mode := MODE_MAKE_BEND;
+
+
+		procedure split_segment is 
+
+			seg_1, seg_2 : type_net_segment;
+			
+			procedure query_segment (target : in out type_net_segment) is
+				-- Split the given segment:
+				fragments : type_split_segment := split_segment (target, point);
+			begin
+				null;
+				-- if fragments.count = 2 then
+				-- 	seg_1 := fragments.segments (1);
+				-- 	seg_2 := fragments.segments (2);
+    -- 
+				-- else
+				-- 	null; -- CS should never happen
+				-- end if;
+			end query_segment;
+			
+		begin
+			strand.segments.update_element (target_to_split, query_segment'access);
+		end split_segment;
+
+		
+
+		procedure extend_segment is 
+
+			procedure query_segment (target : in out type_net_segment) is
+			begin
+				null;
+			end query_segment;
+			
+		begin
+			strand.segments.update_element (target_to_extend.cursor, query_segment'access);
+		end extend_segment;
+
+
+
+		procedure append_segment is
+		begin
+			null;
+		end append_segment;
+		
 		
 	begin
 		-- Build the point at which the segment
@@ -216,17 +265,29 @@ package body et_nets is
 		point := get_end_point (segment, AB_end);
 
 		-- Test case MODE_SPLIT: 
-		-- If the given segment joins another segment
-		-- between A and B. The target segment must be split
-		-- in two at the attach point.
-		target := get_segment_to_split (strand.segments, point);
+		target_to_split := get_segment_to_split (strand.segments, point);
 
-		if has_element (target) then
+		if has_element (target_to_split) then
 			mode := MODE_SPLIT;
-		else
-			null;
+			goto label_attach;
 		end if;
-		-- CS
+
+		
+		-- Test case MODE_EXTEND: 
+		target_to_extend := get_segment_to_extend (strand.segments, segment, AB_end);
+
+		if has_element (target_to_extend.cursor) then
+			mode := MODE_EXTEND;
+			goto label_attach;
+		end if;
+
+
+	<<label_attach>>
+		case mode is 
+			when MODE_SPLIT => split_segment;
+			when MODE_EXTEND => extend_segment;
+			when others => append_segment;
+		end case;
 	end attach_segment;
 
 

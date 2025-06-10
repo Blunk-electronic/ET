@@ -156,6 +156,8 @@ package et_net_segment is
 	end record;
 
 
+	type type_segment_array is array (natural range <>) of type_net_segment;
+
 	-- Creates a bare net segment without labels, 
 	-- junctions and ports:
 	function to_net_segment (
@@ -163,6 +165,39 @@ package et_net_segment is
 		return type_net_segment;
 
 
+
+
+	-- When a segment is to be split in two
+	-- segments, then this type should be used for
+	-- the output of a split operation.
+	-- It is a parameterized type because the split
+	-- operation may result in a single segment in case
+	-- the split point is the same as the A or B end
+	-- of the given segment:
+	type type_split_segment (count : positive) is record
+		segments : type_segment_array (1 .. count);
+	end record;
+
+
+	-- This function splits a segment at the given point.
+	-- The result is two new segments which join each 
+	-- other at the given point.
+	-- Since the given point is not required to be on 
+	-- the given segment, the resulting segments may run in 
+	-- to different directions.
+	-- If either A or B of the given segment is the same
+	-- as the given split point, then the result is
+	-- a single segment, namely the given segment without any change:	
+	function split_segment (
+		segment	: in type_net_segment;
+		point	: in type_vector_model)
+		return type_split_segment;
+
+
+
+
+	
+	
 	-- Reset status flags of segment, junctions and labels:
 	overriding procedure reset_status (
 		segment : in out type_net_segment);
