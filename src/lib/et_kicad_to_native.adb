@@ -2137,10 +2137,10 @@ package body et_kicad_to_native is
 			
 			procedure query_ports (
 				net_name	: in pac_net_name.bounded_string;
-				ports		: in out et_kicad.schematic.type_ports_with_reference.set) 
+				ports		: in out et_kicad.schematic.pac_ports_with_reference.set) 
 			is
-				use et_kicad.schematic.type_ports_with_reference;
-				port_cursor : et_kicad.schematic.type_ports_with_reference.cursor := ports.first;
+				use et_kicad.schematic.pac_ports_with_reference;
+				port_cursor : et_kicad.schematic.pac_ports_with_reference.cursor := ports.first;
 				port : et_kicad.schematic.type_port_with_reference;
 				
 				use et_schematic_coordinates;
@@ -2153,7 +2153,7 @@ package body et_kicad_to_native is
 				log_indentation_up;
 
 				-- Loop in ports of given net and change path and y position.
-				while port_cursor /= et_kicad.schematic.type_ports_with_reference.no_element loop
+				while port_cursor /= et_kicad.schematic.pac_ports_with_reference.no_element loop
 					port := element (port_cursor); -- load the port as it currently is
 					
 					log (text => to_string (port.reference)
@@ -2178,7 +2178,7 @@ package body et_kicad_to_native is
 						level => log_threshold + 5);
 
 					-- replace old port by new port
-					et_kicad.schematic.type_ports_with_reference.replace_element (
+					et_kicad.schematic.pac_ports_with_reference.replace_element (
 						container		=> ports,
 						position		=> port_cursor,
 						new_item		=> port);
@@ -3047,14 +3047,17 @@ package body et_kicad_to_native is
 
 
 				
-				-- Returns the component ports connected with the given net segment.
-				function read_ports (segment : in et_kicad.schematic.type_net_segment)
+				-- Returns the component ports connected with the given net segment
+				-- at the given end (A or B):
+				function read_ports (
+					segment : in et_kicad.schematic.type_net_segment;
+					AB_end	: in et_schematic_coordinates.pac_geometry_2.type_start_end_point)
 					return et_net_segment.pac_device_ports.set 
 				is
 					use et_kicad.schematic;
-					use et_kicad.schematic.type_ports_with_reference;
-					port_cursor_kicad	: type_ports_with_reference.cursor;
-					all_ports_of_net	: type_ports_with_reference.set;
+					use et_kicad.schematic.pac_ports_with_reference;
+					port_cursor_kicad	: pac_ports_with_reference.cursor;
+					all_ports_of_net	: pac_ports_with_reference.set;
 					
 					ports_of_segment : et_net_segment.pac_device_ports.set; -- to be returned
 
@@ -3085,58 +3088,67 @@ package body et_kicad_to_native is
 					-- Select the ports which are on the same sheet as the current strand.
 					-- Select the ports which are connected with the given net segment.
 					port_cursor_kicad := all_ports_of_net.first;
-					while port_cursor_kicad /= type_ports_with_reference.no_element loop
+					while port_cursor_kicad /= pac_ports_with_reference.no_element loop
 
 						-- compare sheet numbers
 						if 	et_kicad_coordinates.sheet (element (port_cursor_kicad).coordinates) = 
 							et_kicad_coordinates.sheet (element (kicad_strand_cursor).position) then
 
--- 							-- calculate distance of port from segment
-
--- 							dist := geometry.distance_point_line (
--- 								point 		=> et_schematic_coordinates.geometry.type_vector_model (element (port_cursor_kicad).coordinates),
--- 								line_start	=> et_schematic_coordinates.geometry.type_vector_model (segment.coordinates_start),
--- 								line_end	=> et_schematic_coordinates.geometry.type_vector_model (segment.coordinates_end),
--- 								line_range	=> WITH_END_POINTS);
-							-- CS
-
-							-- CS this is a workaround in order to provide a line for function distance_point_line:
 							declare
 								line : pac_geometry_2.type_line := type_line (to_line (
 									A	=> et_kicad_coordinates.get_point (segment.coordinates_start), 
 									B	=> et_kicad_coordinates.get_point (segment.coordinates_end)));
+
+								-- Get the position of the port:
+								position : type_vector_model := 
+									et_kicad_coordinates.get_point (element (port_cursor_kicad).coordinates);
 							begin
-								dist := pac_geometry_2.get_distance (
-									point 		=> et_kicad_coordinates.get_point (element (port_cursor_kicad).coordinates),
-									line 		=> line,
-									line_range	=> WITH_END_POINTS);
+								-- If port sits on segment, append it to ports_of_segment.
+								if on_line (line, position) then				
+
+									-- Get the name of the unit:
+									terminal := to_terminal (
+											port			=> element (port_cursor_kicad),
+											module			=> key (module_cursor_kicad),  -- the name of the kicad module
+											log_threshold	=> log_threshold + 6);
+
+									log (text => to_string (element (port_cursor_kicad).reference) 
+										& " unit " & to_string (terminal.unit)
+										& " port "
+										& to_string (element (port_cursor_kicad).name)
+										& et_kicad_coordinates.to_string (
+												position	=> element (port_cursor_kicad).coordinates,
+												scope		=> et_kicad_coordinates.XY),
+										level => log_threshold + 5);
+
+
+									case AB_end is
+										when A =>
+											if get_A (line) = position then
+												
+												et_net_segment.pac_device_ports.insert (
+													container	=> ports_of_segment,
+													new_item	=> (
+														device_name	=> element (port_cursor_kicad).reference,
+														unit_name	=> terminal.unit, -- IO-BANK1, C, A, ...
+														port_name	=> element (port_cursor_kicad).name));
+
+											end if;
+
+										when B =>
+											if get_B (line) = position then
+
+												et_net_segment.pac_device_ports.insert (
+													container	=> ports_of_segment,
+													new_item	=> (
+														device_name	=> element (port_cursor_kicad).reference,
+														unit_name	=> terminal.unit, -- IO-BANK1, C, A, ...
+														port_name	=> element (port_cursor_kicad).name));
+
+											end if;
+									end case;
+								end if;
 							end;
-							
-							-- If port sits on segment, append it to ports_of_segment.
-							if (not out_of_range (dist)) and to_distance (get_distance (dist)) = zero then
-
-								-- Get the name of the unit:
-								terminal := to_terminal (
-										port			=> element (port_cursor_kicad),
-										module			=> key (module_cursor_kicad),  -- the name of the kicad module
-										log_threshold	=> log_threshold + 6);
-
-								log (text => to_string (element (port_cursor_kicad).reference) 
-									 & " unit " & to_string (terminal.unit)
-									 & " port "
-									 & to_string (element (port_cursor_kicad).name)
-									 & et_kicad_coordinates.to_string (
-											position	=> element (port_cursor_kicad).coordinates,
-											scope		=> et_kicad_coordinates.XY),
-									 level => log_threshold + 5);
-								
-								et_net_segment.pac_device_ports.insert (
-									container	=> ports_of_segment,
-									new_item	=> (
-										device_name	=> element (port_cursor_kicad).reference,
-										unit_name	=> terminal.unit, -- IO-BANK1, C, A, ...
-										port_name	=> element (port_cursor_kicad).name));
-							end if;
 
 						end if;
 						next (port_cursor_kicad);
@@ -3164,6 +3176,7 @@ package body et_kicad_to_native is
 					-- loop in segments of current strand
 					-- A kicad net segment has labels and junctions.
 					log_indentation_up;
+					
 					while kicad_segment_cursor /= et_kicad.schematic.type_net_segments.no_element loop
 
 						log (text => "segment" & et_kicad.schematic.to_string (
@@ -3181,11 +3194,17 @@ package body et_kicad_to_native is
 						-- read net junctions of the current segment
 						net_segment_native.junctions := read_net_junctions (element (kicad_segment_cursor));
 
-						-- read ports connected with the segment
-						net_segment_native.ports.devices := read_ports (element (kicad_segment_cursor));
+						
+						-- Read ports connected with the A and B end of the candiate segment:
+						net_segment_native.ports.A.devices := 
+							read_ports (element (kicad_segment_cursor), et_schematic_coordinates.pac_geometry_2.A);
 
+						net_segment_native.ports.B.devices := 
+							read_ports (element (kicad_segment_cursor), et_schematic_coordinates.pac_geometry_2.B);
+
+						
 						-- there are no ports of submodules
-						net_segment_native.ports.submodules := et_net_segment.pac_submodule_ports.empty_set;
+						-- CS net_segment_native.ports.submodules := et_net_segment.pac_submodule_ports.empty_set;
 						
 						-- Collect native net segment in list net_segments_native.
 						et_net_segment.pac_net_segments.append (
@@ -3194,11 +3213,12 @@ package body et_kicad_to_native is
 
 						next (kicad_segment_cursor);
 					end loop;
+					
 					log_indentation_down;
+					
 
 					-- copy net segments to native strand
 					strand_native.segments := net_segments_native;
-
 
 					
 					-- copy sheet number from kicad strand to native strand:
@@ -3225,6 +3245,8 @@ package body et_kicad_to_native is
 				log_indentation_down;
 			end insert_strands;
 
+
+			
 			
 			procedure copy_layout_stuff (
 				net_name	: in pac_net_name.bounded_string;

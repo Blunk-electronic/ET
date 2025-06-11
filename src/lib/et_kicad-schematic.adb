@@ -6403,11 +6403,11 @@ package body et_kicad.schematic is
 			
 			procedure query_ports (
 				net_name	: in pac_net_name.bounded_string;
-				ports 		: in type_ports_with_reference.set) 
+				ports 		: in pac_ports_with_reference.set) 
 			is
 				use et_erc;
-				use type_ports_with_reference;
-				port_cursor : type_ports_with_reference.cursor := ports.first;
+				use pac_ports_with_reference;
+				port_cursor : pac_ports_with_reference.cursor := ports.first;
 
 				-- for counting ports by direction
 				input_count 	: natural := 0;
@@ -6449,7 +6449,7 @@ package body et_kicad.schematic is
 
 			begin -- query_ports
 
-				while port_cursor /= type_ports_with_reference.no_element loop
+				while port_cursor /= pac_ports_with_reference.no_element loop
 			
 					-- log reference, port and direction (all in one line)
 					log (text => "reference " & to_string (element (port_cursor).reference)
@@ -6673,11 +6673,11 @@ package body et_kicad.schematic is
 			
 			procedure query_ports (
 				net_name	: in pac_net_name.bounded_string;
-				ports		: in type_ports_with_reference.set) 
+				ports		: in pac_ports_with_reference.set) 
 			is
-				port_cursor : type_ports_with_reference.cursor;
+				port_cursor : pac_ports_with_reference.cursor;
 				use pac_port_name;
-				use type_ports_with_reference;
+				use pac_ports_with_reference;
 			begin
 				log (text => "querying ports ...", level => log_threshold + 2);
 				log_indentation_up;
@@ -6685,9 +6685,9 @@ package body et_kicad.schematic is
 				-- If the net has any ports, search for the given port.
 				-- Flag net_found goes true on match which terminates the
 				-- loop that picks up the nets (see main of procedure query_nets).
-				if not type_ports_with_reference.is_empty (ports) then
+				if not pac_ports_with_reference.is_empty (ports) then
 					port_cursor := ports.first;
-					while port_cursor /= type_ports_with_reference.no_element loop
+					while port_cursor /= pac_ports_with_reference.no_element loop
 						log (text => to_string (element (port_cursor)), level => log_threshold + 3); -- show port name
 
 						if element (port_cursor).reference = port.reference then
@@ -6871,13 +6871,13 @@ package body et_kicad.schematic is
 							procedure add_port (
 							-- Adds the port (indicated by cursor "port" to the portlist of the net being built.
 								net_name	: in pac_net_name.bounded_string;
-								ports		: in out type_ports_with_reference.set) is
+								ports		: in out pac_ports_with_reference.set) is
 								inserted : boolean;
-								cursor : type_ports_with_reference.cursor;
+								cursor : pac_ports_with_reference.cursor;
 							begin -- add_port
 								-- If a port sits on the point where two segments meet, the same port should be inserted only once.
 								-- Thus we have the obligatory flag "inserted". 
-								type_ports_with_reference.insert (
+								pac_ports_with_reference.insert (
 									container	=> ports,
 									position	=> cursor,
 									inserted	=> inserted,
@@ -7003,7 +7003,7 @@ package body et_kicad.schematic is
 					type_netlist.insert (
 						container	=> netlist,
 						key 		=> key (net_cursor),
-						new_item 	=> type_ports_with_reference.empty_set,
+						new_item 	=> pac_ports_with_reference.empty_set,
 						position 	=> net_in_netlist,
 						inserted 	=> net_created);
 
@@ -7610,14 +7610,14 @@ package body et_kicad.schematic is
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in pac_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in type_log_level)
-		return type_ports_with_reference.set 
+		return pac_ports_with_reference.set 
 	is
 		use et_string_processing;
 		use type_modules;
 
 		module_cursor : type_modules.cursor;
 		
-		ports : type_ports_with_reference.set; -- to be returned
+		ports : pac_ports_with_reference.set; -- to be returned
 
 		
 		-- Locates the given net in the netlist of the given module.
@@ -7627,7 +7627,7 @@ package body et_kicad.schematic is
 			module 		: in type_module) 
 		is
 			net_cursor 	: type_netlist.cursor;
-			port_cursor : type_ports_with_reference.cursor;
+			port_cursor : pac_ports_with_reference.cursor;
 			port 		: type_port_with_reference;
 			terminal 	: et_package_variant.type_terminal;
 			port_count 	: count_type;
@@ -7643,7 +7643,7 @@ package body et_kicad.schematic is
 
 				-- copy ports of net to "ports" (which is returned to the caller)
 				ports := type_netlist.element (net_cursor);
-				port_count := type_ports_with_reference.length (ports);
+				port_count := pac_ports_with_reference.length (ports);
 
 				-- show component ports, units, coordinates and terminal names
 				if log_level > log_threshold + 2 then
@@ -7654,11 +7654,11 @@ package body et_kicad.schematic is
 					-- If there are ports in the given net, set port cursor to first port in net
 					-- and log ports one after another.
 					-- If no ports in net, issue a warning.
-					if not type_ports_with_reference.is_empty (ports) then
+					if not pac_ports_with_reference.is_empty (ports) then
 						port_cursor := ports.first;
-						--while port_cursor /= type_ports_with_reference.no_element loop
-						while type_ports_with_reference."/=" (port_cursor, type_ports_with_reference.no_element) loop
-							port := type_ports_with_reference.element (port_cursor); -- load the port
+						--while port_cursor /= pac_ports_with_reference.no_element loop
+						while pac_ports_with_reference."/=" (port_cursor, pac_ports_with_reference.no_element) loop
+							port := pac_ports_with_reference.element (port_cursor); -- load the port
 
 							-- Depending on the appearance of the component we output just the 
 							-- port name or both the terminal name and the port name.
@@ -7672,7 +7672,7 @@ package body et_kicad.schematic is
 									log (text => to_string (port => port));
 							end case;
 								
-							type_ports_with_reference.next (port_cursor);
+							pac_ports_with_reference.next (port_cursor);
 						end loop;
 					else
 						log (WARNING, "net " & to_string (net) & " is not connected with any ports !");
@@ -7723,14 +7723,14 @@ package body et_kicad.schematic is
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in pac_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in type_log_level)
-		return type_ports_with_reference.set 
+		return pac_ports_with_reference.set 
 	is
 		use et_string_processing;
 		use type_modules;
 
 		module_cursor : type_modules.cursor;
 		
-		ports_real : type_ports_with_reference.set; -- to be returned
+		ports_real : pac_ports_with_reference.set; -- to be returned
 
 		
 		-- Locates the given net in the netlist of the given module.
@@ -7740,8 +7740,8 @@ package body et_kicad.schematic is
 			module 		: in type_module) 
 		is
 			net_cursor	: type_netlist.cursor;
-			port_cursor : type_ports_with_reference.cursor;
-			ports_all 	: type_ports_with_reference.set; -- all ports of the net
+			port_cursor : pac_ports_with_reference.cursor;
+			ports_all 	: pac_ports_with_reference.set; -- all ports of the net
 			port 		: type_port_with_reference;
 			terminal 	: et_package_variant.type_terminal;
 
@@ -7760,10 +7760,10 @@ package body et_kicad.schematic is
 
 				-- If there are ports in the given net, set port cursor to first port in net,
 				-- loop in list of all ports and filter out the real ports.
-				if not type_ports_with_reference.is_empty (ports_all) then
+				if not pac_ports_with_reference.is_empty (ports_all) then
 					port_cursor := ports_all.first;
-					while type_ports_with_reference."/=" (port_cursor, type_ports_with_reference.no_element) loop
-						port := type_ports_with_reference.element (port_cursor); -- load the port
+					while pac_ports_with_reference."/=" (port_cursor, pac_ports_with_reference.no_element) loop
+						port := pac_ports_with_reference.element (port_cursor); -- load the port
 					
 						if port.appearance = APPEARANCE_PCB then
 							ports_real.insert (port); -- insert real port in list to be returned
@@ -7775,7 +7775,7 @@ package body et_kicad.schematic is
 								 level => log_threshold + 2);
 						end if;
 							
-						type_ports_with_reference.next (port_cursor);
+						pac_ports_with_reference.next (port_cursor);
 					end loop;
 				else
 					log (WARNING, "net " & to_string (net) & " is not connected with any ports !");

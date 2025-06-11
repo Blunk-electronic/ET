@@ -417,7 +417,7 @@ package et_kicad.schematic is
 
 	
 	-- This is a set of ports as we need in the netlist.
-	package type_ports_with_reference is new ordered_sets (
+	package pac_ports_with_reference is new ordered_sets (
 		element_type 	=> type_port_with_reference,
 		"<" 			=> compare_ports);
 
@@ -427,8 +427,8 @@ package et_kicad.schematic is
 	package type_netlist is new ordered_maps (
 		key_type		=> pac_net_name.bounded_string, -- net name like "MCU_CLOCK"
 		"<"				=> pac_net_name."<",
-		"="				=> type_ports_with_reference."=",
-		element_type	=> type_ports_with_reference.set); -- the list of ports connected with the net
+		"="				=> pac_ports_with_reference."=",
+		element_type	=> pac_ports_with_reference.set); -- the list of ports connected with the net
 
 
 	function simple_name (net_name : in pac_net_name.bounded_string) 
@@ -936,14 +936,14 @@ package et_kicad.schematic is
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in pac_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in type_log_level)
-		return type_ports_with_reference.set;
+		return pac_ports_with_reference.set;
 	-- Returns a list of component ports that are connected with the given net.
 	
 	function real_components_in_net (
 		module 			: in type_submodule_name.bounded_string; -- nucleo_core
 		net				: in pac_net_name.bounded_string; -- motor_on_off
 		log_threshold	: in type_log_level)
-		return type_ports_with_reference.set;
+		return pac_ports_with_reference.set;
 	-- Returns a list of real component ports that are connected with the given net.
 
 	
