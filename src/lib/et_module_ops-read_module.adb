@@ -896,19 +896,21 @@ is
 
 	
 	net_device_port : et_net_segment.type_device_port;
-	net_device_ports : et_net_segment.pac_device_ports.set;
+	-- net_device_ports : et_net_segment.pac_device_ports.set;
 
 	net_submodule_port : et_net_segment.type_submodule_port;
-	net_submodule_ports : et_net_segment.pac_submodule_ports.set;
+	-- net_submodule_ports : et_net_segment.pac_submodule_ports.set;
 
 	net_netchanger_port : et_netlists.type_port_netchanger;
-	net_netchanger_ports : et_netlists.pac_netchanger_ports.set;
+	-- net_netchanger_ports : et_netlists.pac_netchanger_ports.set;
 
+	net_segment_ports : et_net_segment.type_ports_AB;
+	
 	
 	-- read port parameters
 	-- NOTE: A device, submodule or netchanger port is defined by a
 	-- single line.
-	-- Upon reading the line like "device/submodule/netchanger x port 1" 
+	-- Upon reading the line like "A/B device/submodule/netchanger x port 1" 
 	-- the port is appended to the corresponding port collection 
 	-- immediately when the line is read. See main code of process_line.
 	procedure read_ports is
@@ -919,89 +921,141 @@ is
 		use et_nets;
 		use et_net_segment;
 		use pac_net_name;
-		kw : constant string := f (line, 1);
+
+		use et_schematic_coordinates;
+		use pac_geometry_2;
+		
+		AB_end : type_start_end_point;
+		
+		kw : constant string := f (line, 2);
 	begin
-		if kw = keyword_device then -- device R1 port 1
-			expect_field_count (line, 4);
+		AB_end := to_start_end_point (f (line, 1));
+		
+		if kw = keyword_device then -- A/B device R1 port 1
+			expect_field_count (line, 5);
 
-			net_device_port.device_name := to_device_name (f (line, 2)); -- IC3
+			net_device_port.device_name := to_device_name (f (line, 3)); -- IC3
 
-			if f (line, 3) = keyword_port then -- port
-				net_device_port.port_name := to_port_name (f (line, 4)); -- CE
+			if f (line, 4) = keyword_port then -- port
+				net_device_port.port_name := to_port_name (f (line, 5)); -- CE
 
+				-- CS really required ?
 				-- Insert port in port collection of device ports. First make sure it is
 				-- not already in the net segment.
-				if pac_device_ports.contains (net_device_ports, net_device_port) then
-					log (ERROR, "device " & to_string (net_device_port.device_name) &
-						" port " & to_string (net_device_port.port_name) & 
-						" already in net segment !", console => true);
-					raise constraint_error;
-				end if;
+				-- if pac_device_ports.contains (net_device_ports, net_device_port) then
+				-- 	log (ERROR, "device " & to_string (net_device_port.device_name) &
+				-- 		" port " & to_string (net_device_port.port_name) & 
+				-- 		" already in net segment !", console => true);
+				-- 	raise constraint_error;
+				-- end if;
 
-				pac_device_ports.insert (net_device_ports, net_device_port); 
+				case AB_end is
+					when A => net_segment_ports.A.devices.insert (net_device_port); 
+					when B => net_segment_ports.B.devices.insert (net_device_port); 
+				end case;
 
+				net_device_port := (others => <>);
 			else
-				invalid_keyword (f (line, 3));
+				invalid_keyword (f (line, 4));
 			end if;
 
 			
-		elsif kw = keyword_submodule then -- submodule motor_driver port mot_on_off
-			expect_field_count (line, 4);
+		elsif kw = keyword_submodule then -- A/B submodule motor_driver port mot_on_off
+			expect_field_count (line, 5);
 			
-			net_submodule_port.module_name := to_instance_name (f (line, 2)); -- motor_driver
+			net_submodule_port.module_name := to_instance_name (f (line, 3)); -- motor_driver
 
-			if f (line, 3) = keyword_port then -- port
-				net_submodule_port.port_name := to_net_name (f (line, 4)); -- A
+			if f (line, 4) = keyword_port then -- port
+				net_submodule_port.port_name := to_net_name (f (line, 5)); -- A
 
+				-- CS really required ?
 				-- Insert submodule port in collection of submodule ports. First make sure it is
 				-- not already in the net segment.
-				if pac_submodule_ports.contains (net_submodule_ports, net_submodule_port) then
-					log (ERROR, "submodule " & to_string (net_submodule_port.module_name) &
-						" port " & to_string (net_submodule_port.port_name) & 
-						" already in net segment !", console => true);
-					raise constraint_error;
-				end if;
+				-- if pac_submodule_ports.contains (net_submodule_ports, net_submodule_port) then
+				-- 	log (ERROR, "submodule " & to_string (net_submodule_port.module_name) &
+				-- 		" port " & to_string (net_submodule_port.port_name) & 
+				-- 		" already in net segment !", console => true);
+				-- 	raise constraint_error;
+				-- end if;
 				
-				pac_submodule_ports.insert (net_submodule_ports, net_submodule_port);
-
+				case AB_end is
+					when A => net_segment_ports.A.submodules.insert (net_submodule_port); 
+					when B => net_segment_ports.B.submodules.insert (net_submodule_port); 
+				end case;
+				
 				-- clean up for next submodule port
 				net_submodule_port := (others => <>);
-
 			else
-				invalid_keyword (f (line, 3));
+				invalid_keyword (f (line, 4));
 			end if;
 
 			
-		elsif kw = keyword_netchanger then -- netchanger 1 port master/slave
-			expect_field_count (line, 4);
 			
-			net_netchanger_port.index := et_submodules.to_netchanger_id (f (line, 2)); -- 1
+		elsif kw = keyword_netchanger then -- A/B netchanger 1 port master/slave
+			expect_field_count (line, 5);
+			
+			net_netchanger_port.index := et_submodules.to_netchanger_id (f (line, 3)); -- 1
 
-			if f (line, 3) = keyword_port then -- port
-				net_netchanger_port.port := et_submodules.to_port_name (f (line, 4)); -- MASTER, SLAVE
+			if f (line, 4) = keyword_port then -- port
+				net_netchanger_port.port := et_submodules.to_port_name (f (line, 5)); -- MASTER, SLAVE
 
+				-- CS really required ?
 				-- Insert netchanger port in collection of netchanger ports. First make sure it is
 				-- not already in the net segment.
-				if et_netlists.pac_netchanger_ports.contains (net_netchanger_ports, net_netchanger_port) then
-					log (ERROR, "netchanger" & et_submodules.to_string (net_netchanger_port.index) &
-						et_submodules.to_string (net_netchanger_port.port) & " port" & 
-						" already in net segment !", console => true);
-					raise constraint_error;
-				end if;
+				-- if et_netlists.pac_netchanger_ports.contains (net_netchanger_ports, net_netchanger_port) then
+				-- 	log (ERROR, "netchanger" & et_submodules.to_string (net_netchanger_port.index) &
+				-- 		et_submodules.to_string (net_netchanger_port.port) & " port" & 
+				-- 		" already in net segment !", console => true);
+				-- 	raise constraint_error;
+				-- end if;
 				
-				et_netlists.pac_netchanger_ports.insert (net_netchanger_ports, net_netchanger_port);
-
+				-- et_netlists.pac_netchanger_ports.insert (net_netchanger_ports, net_netchanger_port);
+				case AB_end is
+					when A => net_segment_ports.A.netchangers.insert (net_netchanger_port); 
+					when B => net_segment_ports.B.netchangers.insert (net_netchanger_port); 
+				end case;
+				
 				-- clean up for next netchanger port
 				net_netchanger_port := (others => <>);
-
 			else
-				invalid_keyword (f (line, 3));
+				invalid_keyword (f (line, 4));
 			end if;
 			
 		else
 			invalid_keyword (kw);
 		end if;
 	end read_ports;
+
+
+
+	
+	procedure insert_ports_in_net_segment is begin
+		-- NOTE: A device, submodule or netchanger port is defined by a
+		-- single line.
+		-- Upon reading the a line like 
+		--   "device/submodule/netchanger x port 1/4/slave/master" 
+		-- the port is appended to the corresponding port collection 
+		-- immediately when the line is read. See main code of process_line.
+		-- There is no section for a single port like [PORT BEGIN].
+
+		-- insert port collection in segment
+	-- CS net_segment.ports.devices := net_device_ports;
+
+		-- insert submodule ports in segment
+	-- CS net_segment.ports.submodules := net_submodule_ports;
+
+		-- insert netchanger ports in segment
+		-- CS net_segment.ports.netchangers := net_netchanger_ports;
+
+		net_segment.ports := net_segment_ports;
+		
+		-- clean up for next port collections (of another net segment)
+		net_segment_ports := (others => <>);
+		
+		-- et_net_segment.pac_device_ports.clear (net_device_ports);
+		-- et_net_segment.pac_submodule_ports.clear (net_submodule_ports);
+		-- et_netlists.pac_netchanger_ports.clear (net_netchanger_ports);
+	end insert_ports_in_net_segment;
 
 
 	
@@ -2504,6 +2558,7 @@ is
 	
 	-- temporarily storage place for user settings
 	user_settings_board : et_pcb.type_user_settings;
+
 
 	
 	procedure read_user_settings_vias is
@@ -5270,31 +5325,12 @@ is
 						when others => invalid_section;
 					end case;
 
-				when SEC_PORTS =>  -- CS clean up. separate procedures required
+					
+				when SEC_PORTS =>
 					case stack.parent is
 						when SEC_SEGMENT =>
+							insert_ports_in_net_segment;
 
-							-- NOTE: A device, submodule or netchanger port is defined by a
-							-- single line.
-							-- Upon reading the a line like 
-							--   "device/submodule/netchanger x port 1/4/slave/master" 
-							-- the port is appended to the corresponding port collection 
-							-- immediately when the line is read. See main code of process_line.
-							-- There is no section for a single port like [PORT BEGIN].
-
-							-- insert port collection in segment
-							net_segment.ports.devices := net_device_ports;
-
-							-- insert submodule ports in segment
-							net_segment.ports.submodules := net_submodule_ports;
-
-							-- insert netchanger ports in segment
-							net_segment.ports.netchangers := net_netchanger_ports;
-							
-							-- clean up for next port collections (of another net segment)
-							et_net_segment.pac_device_ports.clear (net_device_ports);
-							et_net_segment.pac_submodule_ports.clear (net_submodule_ports);
-							et_netlists.pac_netchanger_ports.clear (net_netchanger_ports);
 
 						when SEC_SUBMODULE =>
 							-- copy collection of ports to submodule
@@ -5305,7 +5341,8 @@ is
 							
 						when others => invalid_section;
 					end case;
-							
+
+					
 				when SEC_LABEL =>
 					build_net_label;
 					

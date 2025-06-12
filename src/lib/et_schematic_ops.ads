@@ -131,12 +131,12 @@ package et_schematic_ops is
 	
 	-- Deletes ports of the given device in module.nets.
 	-- The port names are relevant here. Their x/x positions are irrelevant.
-	procedure delete_ports (
-		module			: in pac_generic_modules.cursor;		-- the module
-		device			: in type_device_name;			-- the device
-		ports			: in pac_ports.map := pac_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
-		sheets			: in pac_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
-		log_threshold	: in type_log_level);
+	-- procedure delete_ports (
+	-- 	module			: in pac_generic_modules.cursor;		-- the module
+	-- 	device			: in type_device_name;			-- the device
+	-- 	ports			: in pac_ports.map := pac_ports.empty_map; -- the ports (if empty, all ports of the device will be deleted)
+	-- 	sheets			: in pac_unit_positions.map;	-- the sheet numbers where the units can be found. CS implementation required
+	-- 	log_threshold	: in type_log_level);
 
 	
 
@@ -148,13 +148,13 @@ package et_schematic_ops is
 	-- because the docking to net segments is possible on segment ends/starts only.
 	-- CS: Automatic splitting the segment into two and placing a junction is not supported
 	-- jet and probably not a good idea.
-	procedure insert_ports (
-		module			: in pac_generic_modules.cursor;		-- the module
-		device			: in type_device_name;					-- the device
-		unit			: in pac_unit_name.bounded_string;	-- the unit name like A, C, PWR
-		ports			: in pac_ports.map; -- the ports to be inserted
-		sheet			: in type_sheet;				-- the sheet to look at
-		log_threshold	: in type_log_level);
+	-- procedure insert_ports (
+	-- 	module			: in pac_generic_modules.cursor;		-- the module
+	-- 	device			: in type_device_name;					-- the device
+	-- 	unit			: in pac_unit_name.bounded_string;	-- the unit name like A, C, PWR
+	-- 	ports			: in pac_ports.map; -- the ports to be inserted
+	-- 	sheet			: in type_sheet;				-- the sheet to look at
+	-- 	log_threshold	: in type_log_level);
 
 	
 	
@@ -224,11 +224,11 @@ package et_schematic_ops is
 	-- Raises exception if name before equals name after.
 	-- Raises exception if prefix changes. For example renaming from
 	-- R1 to C1 is forbidden as this would change the device category.
-	procedure rename_device (
-		module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
-		device_name_before	: in type_device_name; -- IC1
-		device_name_after	: in type_device_name; -- IC23
-		log_threshold		: in type_log_level);
+	-- procedure rename_device (
+	-- 	module_name			: in pac_module_name.bounded_string; -- motor_driver (without extension *.mod)
+	-- 	device_name_before	: in type_device_name; -- IC1
+	-- 	device_name_after	: in type_device_name; -- IC23
+	-- 	log_threshold		: in type_log_level);
 
 	-- CS procedure rename_device that takes a module cursor and a device 
 	-- cursor for device_name_before.

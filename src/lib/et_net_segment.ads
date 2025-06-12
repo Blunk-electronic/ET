@@ -111,6 +111,23 @@ package et_net_segment is
 	end record;
 
 
+
+	-- Returns true if the given netchanger port
+	-- is among the given ports:
+	function in_ports (
+		ports	: in type_ports;
+		port	: in et_netlists.type_port_netchanger)
+		return boolean;
+	
+
+	-- Returns true if the given submodule port
+	-- is among the given ports:
+	function in_ports (
+		ports	: in type_ports;
+		port	: in type_submodule_port)
+		return boolean;
+
+	
 	
 	-- Returns true if the given record of ports is completely emtpty.
 	function no_ports (
@@ -124,6 +141,7 @@ package et_net_segment is
 	
 	
 
+	
 -- JUNCTIONS:
 	
 	procedure junction_in_sloping_segment (
@@ -156,8 +174,8 @@ package et_net_segment is
 		labels		: pac_net_labels.list;
 		tag_labels	: type_tag_labels;
 		junctions	: type_junctions;
-		--ports		: type_ports_AB; -- CS
-		ports		: type_ports;
+		ports		: type_ports_AB; -- CS
+		--ports		: type_ports;
 	end record;
 
 
@@ -170,7 +188,71 @@ package et_net_segment is
 		return type_net_segment;
 
 
+	-- Returns true if the given netchanger port
+	-- is connected with the given segment:
+	function is_connected (
+		segment	: in type_net_segment;
+		port	: in et_netlists.type_port_netchanger)
+		return boolean;
 
+
+	-- Inserts in the given segment at the given
+	-- end the given netchanger port.
+	-- If the port is alrady there then nothing happens:
+	procedure insert_netchanger_port (
+		segment	: in out type_net_segment;
+		AB_end	: in type_start_end_point;
+		port	: in et_netlists.type_port_netchanger);
+
+
+	
+	-- Inserts in the given segment at the given
+	-- end the given submodule port.
+	-- If the port is alrady there then nothing happens:
+	procedure insert_submodule_port (
+		segment	: in out type_net_segment;
+		AB_end	: in type_start_end_point;
+		port	: in type_submodule_port);
+
+
+	procedure delete_netchanger_port (
+		segment	: in out type_net_segment;
+		port	: in et_netlists.type_port_netchanger;
+		deleted : out boolean);
+
+	
+	procedure delete_submodule_port (
+		segment	: in out type_net_segment;
+		port	: in type_submodule_port;
+		deleted : out boolean);
+
+	
+	
+	
+	-- Returns true if the net segment
+	-- has any ports (devices, submodules, netchangers)
+	-- on the given end (A or B):
+	function has_ports (
+		segment : in type_net_segment;
+		AB_end	: in type_start_end_point)				   
+		return boolean;
+
+	
+	-- Returns true if the net segment
+	-- has any ports (devices, submodules, netchangers):
+	function has_ports (
+		segment : in type_net_segment)
+		return boolean;
+
+
+	-- Appends to a segment the given ports at the given
+	-- end (A/B):
+	procedure append_ports (
+		segment : in out type_net_segment;
+		ports	: in type_ports;						   
+		AB_end	: in type_start_end_point);
+
+	
 
 	-- When a segment is to be split in two
 	-- segments, then this type should be used for
@@ -245,6 +327,14 @@ package et_net_segment is
 	use pac_net_segments;
 	
 
+	-- Returns true if the net segment
+	-- has any ports (devices, submodules, netchangers):
+	function has_ports (
+		segment : in pac_net_segments.cursor)
+		return boolean;
+
+
+	
 	function is_selected (
 		segment : in pac_net_segments.cursor)
 		return boolean;

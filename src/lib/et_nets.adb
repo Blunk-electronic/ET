@@ -1014,6 +1014,7 @@ package body et_nets is
 		return type_ports 
 	is
 		result : type_ports; -- to be returned
+
 		
 		procedure query_segments (segment_cursor : in pac_net_segments.cursor) is
 			use pac_device_ports;
@@ -1021,6 +1022,7 @@ package body et_nets is
 			use et_netlists;
 			use pac_netchanger_ports;			
 			use pac_submodule_ports;
+
 			
 			-- Inserts the device/port in result.devices. Skips the device/port
 			-- according to the given assembly variant.
@@ -1047,14 +1049,19 @@ package body et_nets is
 			
 		begin
 			-- Collect device ports of segment according to given assembly variant.
-			iterate (element (segment_cursor).ports.devices, query_devices'access);
+			iterate (element (segment_cursor).ports.A.devices, query_devices'access);
+			iterate (element (segment_cursor).ports.B.devices, query_devices'access);
 
 			-- Ports of netchangers and submodules go into the result right away
 			-- because they are not affected by any assembly variants.
-			union (result.netchangers, element (segment_cursor).ports.netchangers);
-			union (result.submodules, element (segment_cursor).ports.submodules);
+			union (result.netchangers, element (segment_cursor).ports.A.netchangers);
+			union (result.netchangers, element (segment_cursor).ports.B.netchangers);
+			
+			union (result.submodules, element (segment_cursor).ports.A.submodules);
+			union (result.submodules, element (segment_cursor).ports.B.submodules);
 		end query_segments;
 
+		
 		
 		procedure query_strands (strand_cursor : in pac_strands.cursor) is begin
 			iterate (element (strand_cursor).segments, query_segments'access);
@@ -1068,6 +1075,7 @@ package body et_nets is
 	end get_ports;
 
 
+	
 
 
 

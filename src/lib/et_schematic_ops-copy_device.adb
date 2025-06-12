@@ -285,15 +285,16 @@ is
 			end if;
 			
 			move_ports (ports, destination);
-			
+
+			-- CS
 			-- Insert the new unit ports in the nets (type_generic_module.nets):
-			insert_ports (
-				module			=> module_cursor,
-				device			=> next_name,
-				unit			=> unit_name,
-				ports			=> ports,
-				sheet			=> get_sheet (destination),
-				log_threshold	=> log_threshold + 2);
+			-- insert_ports (
+			-- 	module			=> module_cursor,
+			-- 	device			=> next_name,
+			-- 	unit			=> unit_name,
+			-- 	ports			=> ports,
+			-- 	sheet			=> get_sheet (destination),
+			-- 	log_threshold	=> log_threshold + 2);
 			
 			log_indentation_down;
 			log_indentation_down;

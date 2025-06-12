@@ -677,103 +677,9 @@ package body et_schematic_ops.nets is
 		return boolean 
 	is
 		result : boolean := true;
-		-- Goes false once a port has been found in the given zone.
 
 		-- The zone of the net being attacked:
-		zone	: type_line_zone;
-
-		-- The actual point that is to be tested:
-		point	: type_object_position;
-		
-
-		-- Searches ports of devices, netchangers and submodules that sit on
-		-- the point of interest.	
-		-- On the first finding, sets result to false and finishes. If no 
-		-- finding, result remains true.	
-		procedure search_ports is
-			use pac_device_ports;
-			use pac_submodule_ports;
-
-			use et_netlists;
-			use pac_netchanger_ports;
-
-			device : pac_device_ports.cursor := segment.ports.devices.first;
-			submodule : pac_submodule_ports.cursor := segment.ports.submodules.first;
-			netchanger : pac_netchanger_ports.cursor := segment.ports.netchangers.first;
-
-			use et_schematic_ops.submodules;
-
-			
-		begin -- search_ports
-			while device /= pac_device_ports.no_element loop
-
-				if get_position (
-					module_cursor	=> module_cursor,
-					device_name		=> element (device).device_name,
-					port_name		=> element (device).port_name,
-					log_threshold	=> log_threshold + 2) 
-					
-					= point then
-
-					result := false; -- not movable
-					exit;
-
-				end if;
-				
-				next (device);
-			end loop;
-
-			
-			-- if no device port found, search in submodule ports
-			if result = true then
-
-				while submodule /= pac_submodule_ports.no_element loop
-
-					if get_submodule_port_position ( -- CS use a similar function that takes only cursors ?
-						module_name		=> key (module_cursor),
-						submod_name		=> element (submodule).module_name,
-						port_name		=> element (submodule).port_name,
-						log_threshold	=> log_threshold + 2) 
-						
-						= point then
-
-						result := false; -- not movable
-						exit;
-
-					end if;
-					
-					next (submodule);
-				end loop;
-
-			end if;
-
-			
-			-- if no submodule port found, search in netchanger ports
-			if result = true then
-
-				while netchanger /= pac_netchanger_ports.no_element loop
-
-					if get_netchanger_port_position ( -- CS use a similar function that takes only cursors ?
-						module_name		=> key (module_cursor),
-						index			=> element (netchanger).index,
-						port			=> element (netchanger).port,
-						log_threshold	=> log_threshold + 2) 
-						
-						= point then
-
-						result := false; -- not movable
-						exit;
-
-					end if;
-					
-					next (netchanger);
-				end loop;
-
-			end if;
-
-			-- if no port found, result is still true
-		end search_ports;
-
+		zone : type_line_zone;
 		
 	begin
 		log (text => "module " & to_string (module_cursor)
@@ -789,45 +695,19 @@ package body et_schematic_ops.nets is
 			line	=> segment);
 
 		log (text => "attacked zone " & to_string (zone), level => log_threshold + 1);
-		
-		-- The point of interest is on the sheet specified in argument "point_of_attack".
-		-- The x/y coordinates are taken from the segment start or end point.
-		
+
+		-- Depending on the attached zone we test whether
+		-- the A or B end or both ends have any ports:
 		case zone is
 			when START_POINT =>
-				point := to_position (
-						point => get_A (segment),
-						sheet => get_sheet (point_of_attack));
-
-				search_ports; -- sets result to false if a port is connected with the start point
-
+				result := not has_ports (segment, A);
 				
 			when END_POINT =>
-				point := to_position (
-						point => get_B (segment),
-						sheet => get_sheet (point_of_attack));
-
-				search_ports; -- sets result to false if a port is connected with the end point
-
+				result := not has_ports (segment, B);
 				
 			when CENTER =>
-				-- Both start and end point must be checked for any ports.
-				-- First check the start point of the segment.
-				-- If start point is movable, then the end point must be checked too.
-				point := to_position (
-						point => get_A (segment),
-						sheet => get_sheet (point_of_attack));
-
-				search_ports; -- sets result to false if a port is connected with the start point
-
-				-- If start point is movable, check end point.
-				if result = true then
-					point := to_position (
-						point => get_B (segment),
-						sheet => get_sheet (point_of_attack));
-
-					search_ports; -- sets result to false if a port is connected with the end point
-				end if;
+				result := (not has_ports (segment, A)) and (not has_ports (segment, B));
+				-- movable if no ports at A and no ports at B
 		end case;
 
 		log_indentation_down;
@@ -849,112 +729,6 @@ package body et_schematic_ops.nets is
 		return boolean
 	is
 		result : boolean := true;
-		-- Goes false once a port has been found in the given zone.
-		
-
-		-- Searches ports of devices, netchangers and submodules 
-		-- that sit on the point of interest.	
-		-- On the first finding, sets result to false and finishes. If no 
-		-- finding, result remains true.	
-		procedure search_ports (
-			segment	: in type_net_segment;
-			point	: in type_object_position) -- the actual location that is to be tested
-		is
-			
-			procedure iterate_device_ports is
-				use pac_device_ports;
-				device : pac_device_ports.cursor := segment.ports.devices.first;
-			begin
-				while has_element (device) loop
-
-					if get_position (
-						module_cursor	=> module_cursor,
-						device_name		=> element (device).device_name,
-						port_name		=> element (device).port_name,
-						log_threshold	=> log_threshold + 2) 
-						
-						= point then
-
-						result := false; -- not movable
-						exit;
-					end if;
-					
-					next (device);
-				end loop;
-			end iterate_device_ports;
-
-
-			
-			procedure iterate_netchanger_ports is
-				use et_schematic_ops.submodules;
-				use et_netlists;
-				use pac_netchanger_ports;
-				netchanger : pac_netchanger_ports.cursor := segment.ports.netchangers.first;
-			begin
-				while has_element (netchanger) loop
-
-					if get_netchanger_port_position ( -- CS use a similar function that takes only cursors ?
-						module_name		=> key (module_cursor),
-						index			=> element (netchanger).index,
-						port			=> element (netchanger).port,
-						log_threshold	=> log_threshold + 2) 
-						
-						= point then
-
-						result := false; -- not movable
-						exit;
-					end if;
-					
-					next (netchanger);
-				end loop;
-			end iterate_netchanger_ports;
-
-
-
-			procedure iterate_submodule_ports is
-				use et_schematic_ops.submodules;
-				use pac_submodule_ports;
-				submodule : pac_submodule_ports.cursor := segment.ports.submodules.first;
-			begin
-				-- Iterate through the submodule ports:
-				while has_element (submodule) loop
-
-					if get_submodule_port_position ( -- CS use a similar function that takes only cursors ?
-						module_name		=> key (module_cursor),
-						submod_name		=> element (submodule).module_name,
-						port_name		=> element (submodule).port_name,
-						log_threshold	=> log_threshold + 2) 
-						
-						= point then
-
-						result := false; -- not movable
-						exit;
-					end if;
-					
-					next (submodule);
-				end loop;
-			end iterate_submodule_ports;
-
-			
-			
-		begin -- search_ports
-			iterate_device_ports;
-			
-			-- if no device port found, search in submodule ports
-			if result = true then
-				iterate_submodule_ports;
-			end if;
-			
-			-- if no submodule port found, search in netchanger ports
-			if result = true then
-				iterate_netchanger_ports;
-			end if;
-
-			-- if no port found, result is still true
-		end search_ports;
-
-
-
 		
 		
 		procedure query_module (
@@ -971,10 +745,7 @@ package body et_schematic_ops.nets is
 					sheet : type_sheet := get_sheet (strand);
 
 					procedure query_segment (seg : in type_net_segment) is begin
-						case AB_end is
-							when A => search_ports (seg, to_position (get_A (seg), sheet));
-							when B => search_ports (seg, to_position (get_B (seg), sheet));
-						end case;
+						result := not has_ports (seg, AB_end);
 					end query_segment;
 					
 				begin
@@ -988,7 +759,6 @@ package body et_schematic_ops.nets is
 		begin
 			query_element (segment.net_cursor, query_net'access);
 		end query_module;
-
 		
 		
 	begin
@@ -1506,16 +1276,6 @@ package body et_schematic_ops.nets is
 						-- This particular port must be exempted from the appending.
 						-- Currently only the integrity check (procedure check_integrity)
 						-- detects this rare case.
-						procedure append_portlists is 
-							use pac_device_ports;
-							use pac_submodule_ports;
-							use et_netlists.pac_netchanger_ports;
-						begin
-							segment.ports.devices.union (ports.devices);
-							segment.ports.submodules.union (ports.submodules);
-							segment.ports.netchangers.union (ports.netchangers);
-						end append_portlists;
-
 
 						A_end : constant type_object_position := 
 							to_position (get_A (segment), sheet);
@@ -1531,7 +1291,7 @@ package body et_schematic_ops.nets is
 									place 			=> A_end,
 									log_threshold	=> log_threshold + 1);
 
-								append_portlists;
+								append_ports (segment, ports, A);
 
 								
 							when END_POINT =>
@@ -1540,7 +1300,7 @@ package body et_schematic_ops.nets is
 									place 			=> B_end,
 									log_threshold	=> log_threshold + 1);
 
-								append_portlists;
+								append_ports (segment, ports, B);
 
 								
 							when CENTER =>
@@ -1549,14 +1309,14 @@ package body et_schematic_ops.nets is
 									place 			=> A_end,
 									log_threshold	=> log_threshold + 1);
 
-								append_portlists;
+								append_ports (segment, ports, A);
 								
 								ports := get_ports (
 									module_cursor	=> module_cursor, 
 									place 			=> B_end,
 									log_threshold	=> log_threshold + 1);
 								
-								append_portlists;
+								append_ports (segment, ports, B);
 						end case;
 					end connect_ports;
 
@@ -3825,671 +3585,671 @@ package body et_schematic_ops.nets is
 	
 	
 	
-	procedure insert_segment (
-		module_cursor	: in pac_generic_modules.cursor;
-		net_cursor		: in out pac_nets.cursor;
-		sheet			: in type_sheet;
-		net_name		: in pac_net_name.bounded_string;
-		segment_new		: in type_net_segment;
-		log_threshold	: in type_log_level)
-	is 
-		-- The segment being processed.
-		-- Initially it is just a copy of the given bare segment. 
-		-- In the course of this procedure ports of devices, submodules 
-		-- and netchangers will be attached to it:
-		segment : type_net_segment := segment_new;
-		
-		point : type_object_position;
-
-		type type_junction is record
-			required	: boolean := false;
-			place		: type_object_position;
-		end record;
-
-		junction_at_A : type_junction;
-		junction_at_B	: type_junction;
-		
-		use pac_net_names;
-		net_names : pac_net_names.list;
-
-		
-		-- Returns the content of net_names in a single string.
-		function list_nets return string is 
-			net_cursor : pac_net_names.cursor := net_names.first;
-			use ada.strings.unbounded;
-			names : ada.strings.unbounded.unbounded_string;
-		begin
-			while net_cursor /= pac_net_names.no_element loop
-				names := names & to_string (element (net_cursor)) & space;
-				next (net_cursor);
-			end loop;
-			return to_string (names);
-		end;
-
-		
-		procedure collision (point : in type_object_position) is begin
-			raise semantic_error_1 with
-				"ERROR: Net segment collides at" & to_string (position => point) 
-				& " with net(s): " & list_nets & " !";
-		end collision;
-		
-		ports : type_ports;
-
-		
-		-- Attaches the ports to the segment being processed:
-		procedure assign_ports_to_segment is begin
-			pac_device_ports.union (segment.ports.devices, ports.devices);
-			pac_submodule_ports.union (segment.ports.submodules, ports.submodules);
-			et_netlists.pac_netchanger_ports.union (segment.ports.netchangers, ports.netchangers);
-		end;
-
-		
-		procedure create_net (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module)
-		is
-			inserted : boolean;
-			strand : type_strand;
-			net : type_net;
-
-			-- Issues error message and raises constraint_error if net_names contains
-			-- any foreign net names.
-			procedure evaluate_net_names (point : in type_object_position) is 
-			begin
-				if not is_empty (net_names) then
-					collision (point);
-				end if;
-			end;
-			
-		begin -- create_net
-		
-			------------
-			-- Test whether any foreign nets cross the start point of the segment:
-			point := to_position (
-					sheet => sheet,
-					point => get_A (segment_new));
-			
-			net_names := get_nets_at_place (
-					module_cursor	=> module_cursor,
-					place			=> point,
-					log_threshold	=> log_threshold);
-
-			evaluate_net_names (point);
-			
-			-- Test whether any foreign nets cross the end point of the segment:
-			point := to_position (
-					sheet => sheet,
-					point => get_B (segment_new));
-			
-			net_names := get_nets_at_place (
-					module_cursor	=> module_cursor,
-					place			=> point,
-					log_threshold	=> log_threshold);
-
-			evaluate_net_names (point);
-			-------------
-			
-
-
-			
-			-----------
-			-- look for any ports at start point of the new net segment
-			ports := get_ports (
-					module_cursor	=> module_cursor, 
-					place			=> to_position (
-										sheet => sheet,
-										point => get_A (segment_new)),
-					log_threshold	=> log_threshold);
-
-			assign_ports_to_segment;
-
-			-- look for any ports at end point of the new net segment
-			-- The end point is just x/y. The sheet must be derived from the start point.
-			ports := get_ports (
-					module_cursor	=> module_cursor, 
-					place			=> to_position (
-										sheet => sheet,
-										point => get_B (segment_new)),
-					log_threshold	=> log_threshold);
-
-			assign_ports_to_segment;
-			------------
-
-
-			
-			-- insert segment in strand
-			pac_net_segments.append (
-				container	=> strand.segments,
-				new_item	=> segment);
-
-			-- set the sheet number of the strand
-			set_sheet (strand.position, sheet);
-			
-			-- set lowest x/y position of strand
-			set_strand_position (strand);
-
-			-- insert the strand in the net
-			pac_strands.append (
-				container	=> net.strands,
-				new_item	=> strand);
-			
-			-- insert the net in the module
-			insert (
-				container	=> module.nets,
-				key			=> net_name,
-				inserted	=> inserted,
-				new_item	=> net,
-				position	=> net_cursor);
-						
-		end create_net;
-
-		
-		procedure extend_net (
-			module_name	: in pac_module_name.bounded_string;
-			module		: in out type_generic_module) 
-		is
-			attach_to_strand : boolean := false;
-
-			-- Issues error message and raises constraint_error if net_names contains
-			-- any net names but the given net_name.
-			-- If net_names contains the given net_name, then the flag attach_to_strand
-			-- is set. The strand will be extended later by the segment specified by 
-			-- A and B.
-			procedure evaluate_net_names (point : in type_object_position) is 
-			begin
-				if is_empty (net_names) then -- no nets here
-					null;
-					
-				else -- there are nets
-					if contains (net_names, net_name) then
-						-- segment will be attached to an already existing strand
-						attach_to_strand := true; 
-						
-					else
-						-- Segment collides with foreign nets.
-						collision (point);
-					end if;
-				end if;
-			end evaluate_net_names;
-
-			
-			type type_which_strand is record
-				cursor				: pac_strands.cursor;
-				junction_required	: boolean := false;
-			end record;
-
-			strand_at_start : type_which_strand;
-			strand_at_end   : type_which_strand;
-
-			
-			-- Required to test whether the new segment will be a dead end
-			-- at its start or end point:
-			function dead_end (strand : in type_which_strand) return boolean is begin
-				if strand.cursor = pac_strands.no_element then
-					return true;
-				else 
-					return false;
-				end if;
-			end dead_end;
-
-			
-			-- Returns a cursor to the strand at place and a flag whether to place
-			-- a junction at the given place.
-			function which_strand (place : in type_object_position) 
-				return type_which_strand 
-			is
-				result : type_which_strand; -- to be returned
-
-				-- Searches strands of given net for a segment that crosses place.
-				-- Cancels search on first match.
-				procedure query_strands (
-					net_name	: in pac_net_name.bounded_string;
-					net			: in type_net) is
-					segment_found : boolean := false;
-					
-					-- Iterate segments until first match.
-					procedure query_segments (strand : in type_strand) is
-						segment_cursor : pac_net_segments.cursor := strand.segments.first;
-					begin
-						while segment_cursor /= pac_net_segments.no_element loop
-
-							-- Test if place sits on segment.
-							if on_line (
-								point 	=> place.place,
-								line	=> element (segment_cursor)) then
-
--- 								-- It is not allowed to place a junction in a sloped segment,
--- 								-- because splitting sloping segments seems a rare, difficult and dangerous task.
--- 								if segment_orientation (segment_cursor) = SLOPING then
--- 									junction_in_sloping_segment (place);
+-- 	procedure insert_segment (
+-- 		module_cursor	: in pac_generic_modules.cursor;
+-- 		net_cursor		: in out pac_nets.cursor;
+-- 		sheet			: in type_sheet;
+-- 		net_name		: in pac_net_name.bounded_string;
+-- 		segment_new		: in type_net_segment;
+-- 		log_threshold	: in type_log_level)
+-- 	is 
+-- 		-- The segment being processed.
+-- 		-- Initially it is just a copy of the given bare segment. 
+-- 		-- In the course of this procedure ports of devices, submodules 
+-- 		-- and netchangers will be attached to it:
+-- 		segment : type_net_segment := segment_new;
+-- 		
+-- 		point : type_object_position;
+-- 
+-- 		type type_junction is record
+-- 			required	: boolean := false;
+-- 			place		: type_object_position;
+-- 		end record;
+-- 
+-- 		junction_at_A : type_junction;
+-- 		junction_at_B	: type_junction;
+-- 		
+-- 		use pac_net_names;
+-- 		net_names : pac_net_names.list;
+-- 
+-- 		
+-- 		-- Returns the content of net_names in a single string.
+-- 		function list_nets return string is 
+-- 			net_cursor : pac_net_names.cursor := net_names.first;
+-- 			use ada.strings.unbounded;
+-- 			names : ada.strings.unbounded.unbounded_string;
+-- 		begin
+-- 			while net_cursor /= pac_net_names.no_element loop
+-- 				names := names & to_string (element (net_cursor)) & space;
+-- 				next (net_cursor);
+-- 			end loop;
+-- 			return to_string (names);
+-- 		end;
+-- 
+-- 		
+-- 		procedure collision (point : in type_object_position) is begin
+-- 			raise semantic_error_1 with
+-- 				"ERROR: Net segment collides at" & to_string (position => point) 
+-- 				& " with net(s): " & list_nets & " !";
+-- 		end collision;
+-- 		
+-- 		ports : type_ports;
+-- 
+-- 		
+-- 		-- Attaches the ports to the segment being processed:
+-- 		procedure assign_ports_to_segment is begin
+-- 			pac_device_ports.union (segment.ports.devices, ports.devices);
+-- 			pac_submodule_ports.union (segment.ports.submodules, ports.submodules);
+-- 			et_netlists.pac_netchanger_ports.union (segment.ports.netchangers, ports.netchangers);
+-- 		end;
+-- 
+-- 		
+-- 		procedure create_net (
+-- 			module_name	: in pac_module_name.bounded_string;
+-- 			module		: in out type_generic_module)
+-- 		is
+-- 			inserted : boolean;
+-- 			strand : type_strand;
+-- 			net : type_net;
+-- 
+-- 			-- Issues error message and raises constraint_error if net_names contains
+-- 			-- any foreign net names.
+-- 			procedure evaluate_net_names (point : in type_object_position) is 
+-- 			begin
+-- 				if not is_empty (net_names) then
+-- 					collision (point);
+-- 				end if;
+-- 			end;
+-- 			
+-- 		begin -- create_net
+-- 		
+-- 			------------
+-- 			-- Test whether any foreign nets cross the start point of the segment:
+-- 			point := to_position (
+-- 					sheet => sheet,
+-- 					point => get_A (segment_new));
+-- 			
+-- 			net_names := get_nets_at_place (
+-- 					module_cursor	=> module_cursor,
+-- 					place			=> point,
+-- 					log_threshold	=> log_threshold);
+-- 
+-- 			evaluate_net_names (point);
+-- 			
+-- 			-- Test whether any foreign nets cross the end point of the segment:
+-- 			point := to_position (
+-- 					sheet => sheet,
+-- 					point => get_B (segment_new));
+-- 			
+-- 			net_names := get_nets_at_place (
+-- 					module_cursor	=> module_cursor,
+-- 					place			=> point,
+-- 					log_threshold	=> log_threshold);
+-- 
+-- 			evaluate_net_names (point);
+-- 			-------------
+-- 			
+-- 
+-- 
+-- 			
+-- 			-----------
+-- 			-- look for any ports at start point of the new net segment
+-- 			ports := get_ports (
+-- 					module_cursor	=> module_cursor, 
+-- 					place			=> to_position (
+-- 										sheet => sheet,
+-- 										point => get_A (segment_new)),
+-- 					log_threshold	=> log_threshold);
+-- 
+-- 			assign_ports_to_segment;
+-- 
+-- 			-- look for any ports at end point of the new net segment
+-- 			-- The end point is just x/y. The sheet must be derived from the start point.
+-- 			ports := get_ports (
+-- 					module_cursor	=> module_cursor, 
+-- 					place			=> to_position (
+-- 										sheet => sheet,
+-- 										point => get_B (segment_new)),
+-- 					log_threshold	=> log_threshold);
+-- 
+-- 			assign_ports_to_segment;
+-- 			------------
+-- 
+-- 
+-- 			
+-- 			-- insert segment in strand
+-- 			pac_net_segments.append (
+-- 				container	=> strand.segments,
+-- 				new_item	=> segment);
+-- 
+-- 			-- set the sheet number of the strand
+-- 			set_sheet (strand.position, sheet);
+-- 			
+-- 			-- set lowest x/y position of strand
+-- 			set_strand_position (strand);
+-- 
+-- 			-- insert the strand in the net
+-- 			pac_strands.append (
+-- 				container	=> net.strands,
+-- 				new_item	=> strand);
+-- 			
+-- 			-- insert the net in the module
+-- 			insert (
+-- 				container	=> module.nets,
+-- 				key			=> net_name,
+-- 				inserted	=> inserted,
+-- 				new_item	=> net,
+-- 				position	=> net_cursor);
+-- 						
+-- 		end create_net;
+-- 
+-- 		
+-- 		procedure extend_net (
+-- 			module_name	: in pac_module_name.bounded_string;
+-- 			module		: in out type_generic_module) 
+-- 		is
+-- 			attach_to_strand : boolean := false;
+-- 
+-- 			-- Issues error message and raises constraint_error if net_names contains
+-- 			-- any net names but the given net_name.
+-- 			-- If net_names contains the given net_name, then the flag attach_to_strand
+-- 			-- is set. The strand will be extended later by the segment specified by 
+-- 			-- A and B.
+-- 			procedure evaluate_net_names (point : in type_object_position) is 
+-- 			begin
+-- 				if is_empty (net_names) then -- no nets here
+-- 					null;
+-- 					
+-- 				else -- there are nets
+-- 					if contains (net_names, net_name) then
+-- 						-- segment will be attached to an already existing strand
+-- 						attach_to_strand := true; 
+-- 						
+-- 					else
+-- 						-- Segment collides with foreign nets.
+-- 						collision (point);
+-- 					end if;
+-- 				end if;
+-- 			end evaluate_net_names;
+-- 
+-- 			
+-- 			type type_which_strand is record
+-- 				cursor				: pac_strands.cursor;
+-- 				junction_required	: boolean := false;
+-- 			end record;
+-- 
+-- 			strand_at_start : type_which_strand;
+-- 			strand_at_end   : type_which_strand;
+-- 
+-- 			
+-- 			-- Required to test whether the new segment will be a dead end
+-- 			-- at its start or end point:
+-- 			function dead_end (strand : in type_which_strand) return boolean is begin
+-- 				if strand.cursor = pac_strands.no_element then
+-- 					return true;
+-- 				else 
+-- 					return false;
+-- 				end if;
+-- 			end dead_end;
+-- 
+-- 			
+-- 			-- Returns a cursor to the strand at place and a flag whether to place
+-- 			-- a junction at the given place.
+-- 			function which_strand (place : in type_object_position) 
+-- 				return type_which_strand 
+-- 			is
+-- 				result : type_which_strand; -- to be returned
+-- 
+-- 				-- Searches strands of given net for a segment that crosses place.
+-- 				-- Cancels search on first match.
+-- 				procedure query_strands (
+-- 					net_name	: in pac_net_name.bounded_string;
+-- 					net			: in type_net) is
+-- 					segment_found : boolean := false;
+-- 					
+-- 					-- Iterate segments until first match.
+-- 					procedure query_segments (strand : in type_strand) is
+-- 						segment_cursor : pac_net_segments.cursor := strand.segments.first;
+-- 					begin
+-- 						while segment_cursor /= pac_net_segments.no_element loop
+-- 
+-- 							-- Test if place sits on segment.
+-- 							if on_line (
+-- 								point 	=> place.place,
+-- 								line	=> element (segment_cursor)) then
+-- 
+-- -- 								-- It is not allowed to place a junction in a sloped segment,
+-- -- 								-- because splitting sloping segments seems a rare, difficult and dangerous task.
+-- -- 								if segment_orientation (segment_cursor) = SLOPING then
+-- -- 									junction_in_sloping_segment (place);
+-- -- 								end if;
+-- 
+-- -- 								-- signal "strand iterator" to abort search prematurely
+-- -- 								segment_found := true;
+-- 								
+-- 								-- test whether a junction is required at place
+-- 								if between_A_and_B (set_catch_zone (place.place, 0.0), segment_cursor) then
+-- 
+-- 									-- It is not allowed to place a junction in a sloped segment,
+-- 									-- because splitting sloping segments seems a rare, difficult and dangerous task.
+-- 									if get_segment_orientation (segment_cursor) = ORIENT_SLOPING then
+-- 										junction_in_sloping_segment (place);
+-- 									end if;
+-- 									
+-- 									result.junction_required := true;
 -- 								end if;
-
+-- 
 -- 								-- signal "strand iterator" to abort search prematurely
 -- 								segment_found := true;
-								
-								-- test whether a junction is required at place
-								if between_A_and_B (set_catch_zone (place.place, 0.0), segment_cursor) then
-
-									-- It is not allowed to place a junction in a sloped segment,
-									-- because splitting sloping segments seems a rare, difficult and dangerous task.
-									if get_segment_orientation (segment_cursor) = ORIENT_SLOPING then
-										junction_in_sloping_segment (place);
-									end if;
-									
-									result.junction_required := true;
-								end if;
-
-								-- signal "strand iterator" to abort search prematurely
-								segment_found := true;
-								
-								exit; -- no further search required. 
-								
-								-- segment_cursor points to the segment just found
-							end if;
-							
-							next (segment_cursor);
-						end loop;
-					end query_segments;
-
-					
-				begin -- query_strands
-					result.cursor := net.strands.first;
-
-					-- Iterate strands. Cancel prematurely once a segment has been found.
-					-- Look at strands on the relevant sheet only.
-					while result.cursor /= pac_strands.no_element loop
-						if get_sheet (element (result.cursor).position) = get_sheet (place) then
-
-							pac_strands.query_element (
-								position	=> result.cursor,
-								process		=> query_segments'access);
-
-							if segment_found then exit; end if;
-							
-						end if;
-						next (result.cursor);
-					end loop;
-				end query_strands;
-
-				
-			begin -- which_strand
-				query_element (
-					position	=> net_cursor,
-					process		=> query_strands'access);
-				
-				return result;
-			end which_strand;
-
-			
-			procedure append_segment (strand : in out type_strand) is begin
-				pac_net_segments.append (strand.segments, segment);
-				set_strand_position (strand);
-			end append_segment;
-
-			
-			-- Locates the strand (indicated by strand_at_start)
-			-- and appends the new segment to it. 
-			procedure extend_strand_start (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is begin
-				pac_strands.update_element (
-					container	=> net.strands,
-					position	=> strand_at_start.cursor,
-					process		=> append_segment'access);
-			end extend_strand_start;
-
-			
-			-- Locates the strand (indicated by strand_at_end)
-			-- and appends the new segment to it. 
-			procedure extend_strand_end (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is begin
-				pac_strands.update_element (
-					container	=> net.strands,
-					position	=> strand_at_end.cursor,
-					process		=> append_segment'access);
-			end extend_strand_end;
-
-			
-			-- Creates a new strand that contains the segment.
-			procedure create_strand (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is
-				strand : type_strand; -- the new strand
-			begin				
-				-- look for any ports at start point of the new net segment
-				ports := get_ports (
-						module_cursor	=> module_cursor, 
-						place			=> to_position (
-											sheet	=> sheet,
-											point	=> get_A (segment_new)),
-						log_threshold	=> log_threshold + 2);
-
-				assign_ports_to_segment;
-
-				-- look for any ports at end point of the new net segment
-				ports := get_ports (
-						module_cursor	=> module_cursor, 
-						place			=> to_position (
-											sheet => sheet,
-											point => get_B (segment_new)),
-						log_threshold	=> log_threshold + 2);
-
-				assign_ports_to_segment;
-				
-
-				-- insert the given segment in the new strand
-				pac_net_segments.append (
-					container	=> strand.segments,
-					new_item	=> segment);
-
-				-- set the sheet number of the strand
-				set_sheet (strand.position, sheet);
-				
-				-- set lowest x/y position of strand
-				set_strand_position (strand);
-
-				-- insert the strand in the net
-				pac_strands.append (
-					container	=> net.strands,
-					new_item	=> strand);
-
-			end create_strand;
-
-			
-			-- Merges two strands indicated by strand_at_start and strand_at_end.
-			-- The strand_at_start will merge into strand_at_end.
-			-- strand_at_start will be gone in the end. All its segments will move to 
-			-- strand_at_end.
-			procedure merge_strands (
-				net_name	: in pac_net_name.bounded_string;
-				net			: in out type_net) 
-			is
-				-- Get the segments of the strand that will be removed. These segments will
-				-- move into the final strand.
-				segments_source : pac_net_segments.list := element (strand_at_start.cursor).segments;
-				
-				procedure merge (strand : in out type_strand) is begin
-				-- Appends to the segments of strand at start point
-				-- the segments_source.
-					pac_net_segments.splice (
-						target	=> strand.segments,
-						before	=> pac_net_segments.no_element, -- default, means just appending after target
-						source	=> segments_source);
-
-					-- update strand position
-					set_strand_position (strand);
-				end merge;
-					
-			begin -- merge_strands
-				log (text => "merging strands ...", level => log_threshold + 2);
-				
-				-- Append segments_source to the strand indicated by strand_at_end:
-				pac_strands.update_element (
-					container	=> net.strands,
-					position	=> strand_at_end.cursor,
-					process		=> merge'access);
-
-				-- Delete the "source" strand. Its segments are already part of strand_at_end.
-				pac_strands.delete (
-					container	=> net.strands,
-					position	=> strand_at_start.cursor);
-				
-			end merge_strands;	
-
-			-- Returns true when strand at start and strand at end are equal.
-			-- This is the case when the operator tries to draw multiple/redundant
-			-- connections in a strand:
-			function redundant_connection return boolean is begin
-
-				-- 1st condition: Both ends of the new segment must connect
-				-- with a strand.
-				if strand_at_start.cursor /= pac_strands.no_element and
-					strand_at_end.cursor /= pac_strands.no_element then
-
-					-- 2nd condition: Both ends of the new segment must connect
-					-- with the same strand:
-					if element (strand_at_start.cursor) = element (strand_at_end.cursor) then
-						return true;
-					else
-						return false;
-					end if;
-
-				else
-					return false;
-				end if;
-			end redundant_connection;
-			
-			
-		begin -- extend_net
-			------------
-			-- Obtain the names of nets that cross the START point of the segment:
-			point := to_position (
-					sheet => sheet,
-					point => get_A (segment_new));
-
-			net_names := get_nets_at_place (
-					module_cursor	=> module_cursor,
-					place			=> point,
-					log_threshold	=> log_threshold);
-
-			evaluate_net_names (point); -- modifies the attach_to_strand flag
-			
-			-- Obtain the names of nets that cross the END point of the segment:
-			point := to_position (
-					sheet => sheet,
-					point => get_B (segment_new));
-			
-			net_names := get_nets_at_place (
-					module_cursor	=> module_cursor,
-					place			=> point,
-					log_threshold	=> log_threshold);
-
-			evaluate_net_names (point); -- modifies the attach_to_strand flag
-			-------------
-
-			-- 1. Now we know the segment_new is acceptable and valid. Means the start
-			--    and end points do not collide with foreign nets.
-			-- 2. We also know whether to attach the segment to an existing strand
-			--    or whether the segment is going to start a new strand.
-			
-			if attach_to_strand then
-				log (text => "attaching segment to strand ...", level => log_threshold + 1);
-				log_indentation_up;
-
-				-- The START point of the new segment could join a strand.				
-				-- Obtain the cursor to the strand that crosses the START point:
-				strand_at_start := which_strand (to_position (
-									sheet	=> sheet,
-									point	=> get_A (segment_new)));
-
-				-- The END point of the new segment could join a strand.
-				-- Obtain the cursor to the strand that crosses the END point:
-				strand_at_end := which_strand (to_position (
-									sheet => sheet,
-									point => get_B (segment_new)));
-
-				-- The new segment must not be a redundant connection inside a strand:
-				if not redundant_connection then
-				
-					-- Determine whether a junction will be placed here later:
-					if not dead_end (strand_at_start) then
-						-- The start point will be connected with a strand:
-						log (text => "with its start point at " & 
-							to_string (position => to_position (
-														sheet	=> sheet,
-														point	=> get_A (segment_new))),
-							level => log_threshold + 2);
-
-						-- If required, prepare placing a junction at start point of segment.
-						-- The junction will be placed later.
-						if strand_at_start.junction_required then
-							junction_at_A.required := true;
-							junction_at_A.place := to_position (
-														sheet	=> sheet,
-														point	=> get_A (segment_new));
-						end if;
-					end if;
-
-					-- collect ports at dead end or where a junction is to be placed:
-					if dead_end (strand_at_start) or junction_at_A.required then
-						
-						-- look for any ports at start point of the new segment
-						ports := get_ports (
-								module_cursor	=> module_cursor, 
-								place			=> to_position (
-													sheet	=> sheet,
-													point	=> get_A (segment_new)),
-								log_threshold	=> log_threshold + 2);
-
-						assign_ports_to_segment;
-					end if;
-					----------
-					
-
-					-- Determine whether a junction will be placed here later:
-					if not dead_end (strand_at_end) then
-						-- The end point will be connected with a strand:
-						log (text => "with its end point at " & to_string (
-									position => to_position (
-										sheet => sheet,
-										point => get_B (segment_new))
-										),
-							level => log_threshold + 2);
-
-						-- If required, prepare placing a junction at end point of segment.
-						-- The junction will be placed later.
-						if strand_at_end.junction_required then
-							junction_at_B.required := true;
-							junction_at_B.place := to_position (
-										sheet => sheet,
-										point => get_B (segment_new));
-						end if;
-					end if;
-					
-					-- collect ports at dead end or where a junction is to be placed:
-					if dead_end (strand_at_end) or junction_at_B.required then
-
-						-- look for any ports at end point of the new segment
-						ports := get_ports (
-								module_cursor	=> module_cursor, 
-								place			=> to_position (
-													sheet => sheet,
-													point => get_B (segment_new)),
-								log_threshold	=> log_threshold + 2);
-
-						assign_ports_to_segment;
-					end if;
-
-					-- If segment_new is to extend a strand
-					-- then the strands at start or/and end point must be extended
-					-- by segment_new.
-					if not dead_end (strand_at_start) xor not dead_end (strand_at_end) then
-						if not dead_end (strand_at_start) then
-							pac_nets.update_element (
-								container	=> module.nets,
-								position	=> net_cursor,
-								process		=> extend_strand_start'access);
-						end if;
-
-						if not dead_end (strand_at_end) then
-							pac_nets.update_element (
-								container	=> module.nets,
-								position	=> net_cursor,
-								process		=> extend_strand_end'access);
-						end if;
-					end if;
-					-----------
-
-					-- If both ends are to be connected with a strand,
-					-- we have to merge both strands:
-					if not dead_end (strand_at_start) and not dead_end (strand_at_end) then
-						log_indentation_up;
-
-						-- The new segment must first be attached to one of the
-						-- two strands.
-						pac_nets.update_element (
-							container	=> module.nets,
-							position	=> net_cursor,
-							process		=> extend_strand_start'access);
-						
-						-- Merge the two strands indicated by 
-						-- strand_at_start and strand_at_end:
-						pac_nets.update_element (
-							container	=> module.nets,
-							position	=> net_cursor,
-							process		=> merge_strands'access);
-
-						log_indentation_down;
-					end if;
-
-				else
-					raise semantic_error_1 with
-						"ERROR: Attempt to draw redundant connection rejected !";
-				end if;
-				
-				log_indentation_down;
-				
-			else
-				-- A new strand must be created in the net.
-				-- The strand will contain the new segment:
-				pac_nets.update_element (
-					container	=> module.nets,
-					position	=> net_cursor,
-					process		=> create_strand'access);
-				
-			end if;
-			
-		end extend_net;
-
-		
-	begin -- insert_segment
-
-		-- If no net named after net_name exists yet, notify operator that a 
-		-- new net will be created.
-		-- If the net already exists, extend it by the given net segment segment_new.
-		if net_cursor = pac_nets.no_element then
-
-			-- net does not exist yet
-			log (text => "creating new net " & to_string (net_name), level => log_threshold);
-
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> create_net'access);
-		else
-			-- net exists. extend the net by the given net segment
-			log (text => "extending net " & to_string (net_name), level => log_threshold);
-			log_indentation_up;
-			
-			update_element (
-				container	=> generic_modules,
-				position	=> module_cursor,
-				process		=> extend_net'access);
-
-			-- place junctions if required
-			if junction_at_A.required then
-				place_junction (
-					module_cursor	=> module_cursor,
-					place			=> junction_at_A.place,
-					log_threshold	=> log_threshold + 1);
-			end if;
-
-			if junction_at_B.required then
-				place_junction (
-					module_cursor	=> module_cursor,
-					place			=> junction_at_B.place,
-					log_threshold	=> log_threshold + 1);
-			end if;
-
-			
-			log_indentation_down;
-		end if;
-
-	end insert_segment;
+-- 								
+-- 								exit; -- no further search required. 
+-- 								
+-- 								-- segment_cursor points to the segment just found
+-- 							end if;
+-- 							
+-- 							next (segment_cursor);
+-- 						end loop;
+-- 					end query_segments;
+-- 
+-- 					
+-- 				begin -- query_strands
+-- 					result.cursor := net.strands.first;
+-- 
+-- 					-- Iterate strands. Cancel prematurely once a segment has been found.
+-- 					-- Look at strands on the relevant sheet only.
+-- 					while result.cursor /= pac_strands.no_element loop
+-- 						if get_sheet (element (result.cursor).position) = get_sheet (place) then
+-- 
+-- 							pac_strands.query_element (
+-- 								position	=> result.cursor,
+-- 								process		=> query_segments'access);
+-- 
+-- 							if segment_found then exit; end if;
+-- 							
+-- 						end if;
+-- 						next (result.cursor);
+-- 					end loop;
+-- 				end query_strands;
+-- 
+-- 				
+-- 			begin -- which_strand
+-- 				query_element (
+-- 					position	=> net_cursor,
+-- 					process		=> query_strands'access);
+-- 				
+-- 				return result;
+-- 			end which_strand;
+-- 
+-- 			
+-- 			procedure append_segment (strand : in out type_strand) is begin
+-- 				pac_net_segments.append (strand.segments, segment);
+-- 				set_strand_position (strand);
+-- 			end append_segment;
+-- 
+-- 			
+-- 			-- Locates the strand (indicated by strand_at_start)
+-- 			-- and appends the new segment to it. 
+-- 			procedure extend_strand_start (
+-- 				net_name	: in pac_net_name.bounded_string;
+-- 				net			: in out type_net) 
+-- 			is begin
+-- 				pac_strands.update_element (
+-- 					container	=> net.strands,
+-- 					position	=> strand_at_start.cursor,
+-- 					process		=> append_segment'access);
+-- 			end extend_strand_start;
+-- 
+-- 			
+-- 			-- Locates the strand (indicated by strand_at_end)
+-- 			-- and appends the new segment to it. 
+-- 			procedure extend_strand_end (
+-- 				net_name	: in pac_net_name.bounded_string;
+-- 				net			: in out type_net) 
+-- 			is begin
+-- 				pac_strands.update_element (
+-- 					container	=> net.strands,
+-- 					position	=> strand_at_end.cursor,
+-- 					process		=> append_segment'access);
+-- 			end extend_strand_end;
+-- 
+-- 			
+-- 			-- Creates a new strand that contains the segment.
+-- 			procedure create_strand (
+-- 				net_name	: in pac_net_name.bounded_string;
+-- 				net			: in out type_net) 
+-- 			is
+-- 				strand : type_strand; -- the new strand
+-- 			begin				
+-- 				-- look for any ports at start point of the new net segment
+-- 				ports := get_ports (
+-- 						module_cursor	=> module_cursor, 
+-- 						place			=> to_position (
+-- 											sheet	=> sheet,
+-- 											point	=> get_A (segment_new)),
+-- 						log_threshold	=> log_threshold + 2);
+-- 
+-- 				assign_ports_to_segment;
+-- 
+-- 				-- look for any ports at end point of the new net segment
+-- 				ports := get_ports (
+-- 						module_cursor	=> module_cursor, 
+-- 						place			=> to_position (
+-- 											sheet => sheet,
+-- 											point => get_B (segment_new)),
+-- 						log_threshold	=> log_threshold + 2);
+-- 
+-- 				assign_ports_to_segment;
+-- 				
+-- 
+-- 				-- insert the given segment in the new strand
+-- 				pac_net_segments.append (
+-- 					container	=> strand.segments,
+-- 					new_item	=> segment);
+-- 
+-- 				-- set the sheet number of the strand
+-- 				set_sheet (strand.position, sheet);
+-- 				
+-- 				-- set lowest x/y position of strand
+-- 				set_strand_position (strand);
+-- 
+-- 				-- insert the strand in the net
+-- 				pac_strands.append (
+-- 					container	=> net.strands,
+-- 					new_item	=> strand);
+-- 
+-- 			end create_strand;
+-- 
+-- 			
+-- 			-- Merges two strands indicated by strand_at_start and strand_at_end.
+-- 			-- The strand_at_start will merge into strand_at_end.
+-- 			-- strand_at_start will be gone in the end. All its segments will move to 
+-- 			-- strand_at_end.
+-- 			procedure merge_strands (
+-- 				net_name	: in pac_net_name.bounded_string;
+-- 				net			: in out type_net) 
+-- 			is
+-- 				-- Get the segments of the strand that will be removed. These segments will
+-- 				-- move into the final strand.
+-- 				segments_source : pac_net_segments.list := element (strand_at_start.cursor).segments;
+-- 				
+-- 				procedure merge (strand : in out type_strand) is begin
+-- 				-- Appends to the segments of strand at start point
+-- 				-- the segments_source.
+-- 					pac_net_segments.splice (
+-- 						target	=> strand.segments,
+-- 						before	=> pac_net_segments.no_element, -- default, means just appending after target
+-- 						source	=> segments_source);
+-- 
+-- 					-- update strand position
+-- 					set_strand_position (strand);
+-- 				end merge;
+-- 					
+-- 			begin -- merge_strands
+-- 				log (text => "merging strands ...", level => log_threshold + 2);
+-- 				
+-- 				-- Append segments_source to the strand indicated by strand_at_end:
+-- 				pac_strands.update_element (
+-- 					container	=> net.strands,
+-- 					position	=> strand_at_end.cursor,
+-- 					process		=> merge'access);
+-- 
+-- 				-- Delete the "source" strand. Its segments are already part of strand_at_end.
+-- 				pac_strands.delete (
+-- 					container	=> net.strands,
+-- 					position	=> strand_at_start.cursor);
+-- 				
+-- 			end merge_strands;	
+-- 
+-- 			-- Returns true when strand at start and strand at end are equal.
+-- 			-- This is the case when the operator tries to draw multiple/redundant
+-- 			-- connections in a strand:
+-- 			function redundant_connection return boolean is begin
+-- 
+-- 				-- 1st condition: Both ends of the new segment must connect
+-- 				-- with a strand.
+-- 				if strand_at_start.cursor /= pac_strands.no_element and
+-- 					strand_at_end.cursor /= pac_strands.no_element then
+-- 
+-- 					-- 2nd condition: Both ends of the new segment must connect
+-- 					-- with the same strand:
+-- 					if element (strand_at_start.cursor) = element (strand_at_end.cursor) then
+-- 						return true;
+-- 					else
+-- 						return false;
+-- 					end if;
+-- 
+-- 				else
+-- 					return false;
+-- 				end if;
+-- 			end redundant_connection;
+-- 			
+-- 			
+-- 		begin -- extend_net
+-- 			------------
+-- 			-- Obtain the names of nets that cross the START point of the segment:
+-- 			point := to_position (
+-- 					sheet => sheet,
+-- 					point => get_A (segment_new));
+-- 
+-- 			net_names := get_nets_at_place (
+-- 					module_cursor	=> module_cursor,
+-- 					place			=> point,
+-- 					log_threshold	=> log_threshold);
+-- 
+-- 			evaluate_net_names (point); -- modifies the attach_to_strand flag
+-- 			
+-- 			-- Obtain the names of nets that cross the END point of the segment:
+-- 			point := to_position (
+-- 					sheet => sheet,
+-- 					point => get_B (segment_new));
+-- 			
+-- 			net_names := get_nets_at_place (
+-- 					module_cursor	=> module_cursor,
+-- 					place			=> point,
+-- 					log_threshold	=> log_threshold);
+-- 
+-- 			evaluate_net_names (point); -- modifies the attach_to_strand flag
+-- 			-------------
+-- 
+-- 			-- 1. Now we know the segment_new is acceptable and valid. Means the start
+-- 			--    and end points do not collide with foreign nets.
+-- 			-- 2. We also know whether to attach the segment to an existing strand
+-- 			--    or whether the segment is going to start a new strand.
+-- 			
+-- 			if attach_to_strand then
+-- 				log (text => "attaching segment to strand ...", level => log_threshold + 1);
+-- 				log_indentation_up;
+-- 
+-- 				-- The START point of the new segment could join a strand.				
+-- 				-- Obtain the cursor to the strand that crosses the START point:
+-- 				strand_at_start := which_strand (to_position (
+-- 									sheet	=> sheet,
+-- 									point	=> get_A (segment_new)));
+-- 
+-- 				-- The END point of the new segment could join a strand.
+-- 				-- Obtain the cursor to the strand that crosses the END point:
+-- 				strand_at_end := which_strand (to_position (
+-- 									sheet => sheet,
+-- 									point => get_B (segment_new)));
+-- 
+-- 				-- The new segment must not be a redundant connection inside a strand:
+-- 				if not redundant_connection then
+-- 				
+-- 					-- Determine whether a junction will be placed here later:
+-- 					if not dead_end (strand_at_start) then
+-- 						-- The start point will be connected with a strand:
+-- 						log (text => "with its start point at " & 
+-- 							to_string (position => to_position (
+-- 														sheet	=> sheet,
+-- 														point	=> get_A (segment_new))),
+-- 							level => log_threshold + 2);
+-- 
+-- 						-- If required, prepare placing a junction at start point of segment.
+-- 						-- The junction will be placed later.
+-- 						if strand_at_start.junction_required then
+-- 							junction_at_A.required := true;
+-- 							junction_at_A.place := to_position (
+-- 														sheet	=> sheet,
+-- 														point	=> get_A (segment_new));
+-- 						end if;
+-- 					end if;
+-- 
+-- 					-- collect ports at dead end or where a junction is to be placed:
+-- 					if dead_end (strand_at_start) or junction_at_A.required then
+-- 						
+-- 						-- look for any ports at start point of the new segment
+-- 						ports := get_ports (
+-- 								module_cursor	=> module_cursor, 
+-- 								place			=> to_position (
+-- 													sheet	=> sheet,
+-- 													point	=> get_A (segment_new)),
+-- 								log_threshold	=> log_threshold + 2);
+-- 
+-- 						assign_ports_to_segment;
+-- 					end if;
+-- 					----------
+-- 					
+-- 
+-- 					-- Determine whether a junction will be placed here later:
+-- 					if not dead_end (strand_at_end) then
+-- 						-- The end point will be connected with a strand:
+-- 						log (text => "with its end point at " & to_string (
+-- 									position => to_position (
+-- 										sheet => sheet,
+-- 										point => get_B (segment_new))
+-- 										),
+-- 							level => log_threshold + 2);
+-- 
+-- 						-- If required, prepare placing a junction at end point of segment.
+-- 						-- The junction will be placed later.
+-- 						if strand_at_end.junction_required then
+-- 							junction_at_B.required := true;
+-- 							junction_at_B.place := to_position (
+-- 										sheet => sheet,
+-- 										point => get_B (segment_new));
+-- 						end if;
+-- 					end if;
+-- 					
+-- 					-- collect ports at dead end or where a junction is to be placed:
+-- 					if dead_end (strand_at_end) or junction_at_B.required then
+-- 
+-- 						-- look for any ports at end point of the new segment
+-- 						ports := get_ports (
+-- 								module_cursor	=> module_cursor, 
+-- 								place			=> to_position (
+-- 													sheet => sheet,
+-- 													point => get_B (segment_new)),
+-- 								log_threshold	=> log_threshold + 2);
+-- 
+-- 						assign_ports_to_segment;
+-- 					end if;
+-- 
+-- 					-- If segment_new is to extend a strand
+-- 					-- then the strands at start or/and end point must be extended
+-- 					-- by segment_new.
+-- 					if not dead_end (strand_at_start) xor not dead_end (strand_at_end) then
+-- 						if not dead_end (strand_at_start) then
+-- 							pac_nets.update_element (
+-- 								container	=> module.nets,
+-- 								position	=> net_cursor,
+-- 								process		=> extend_strand_start'access);
+-- 						end if;
+-- 
+-- 						if not dead_end (strand_at_end) then
+-- 							pac_nets.update_element (
+-- 								container	=> module.nets,
+-- 								position	=> net_cursor,
+-- 								process		=> extend_strand_end'access);
+-- 						end if;
+-- 					end if;
+-- 					-----------
+-- 
+-- 					-- If both ends are to be connected with a strand,
+-- 					-- we have to merge both strands:
+-- 					if not dead_end (strand_at_start) and not dead_end (strand_at_end) then
+-- 						log_indentation_up;
+-- 
+-- 						-- The new segment must first be attached to one of the
+-- 						-- two strands.
+-- 						pac_nets.update_element (
+-- 							container	=> module.nets,
+-- 							position	=> net_cursor,
+-- 							process		=> extend_strand_start'access);
+-- 						
+-- 						-- Merge the two strands indicated by 
+-- 						-- strand_at_start and strand_at_end:
+-- 						pac_nets.update_element (
+-- 							container	=> module.nets,
+-- 							position	=> net_cursor,
+-- 							process		=> merge_strands'access);
+-- 
+-- 						log_indentation_down;
+-- 					end if;
+-- 
+-- 				else
+-- 					raise semantic_error_1 with
+-- 						"ERROR: Attempt to draw redundant connection rejected !";
+-- 				end if;
+-- 				
+-- 				log_indentation_down;
+-- 				
+-- 			else
+-- 				-- A new strand must be created in the net.
+-- 				-- The strand will contain the new segment:
+-- 				pac_nets.update_element (
+-- 					container	=> module.nets,
+-- 					position	=> net_cursor,
+-- 					process		=> create_strand'access);
+-- 				
+-- 			end if;
+-- 			
+-- 		end extend_net;
+-- 
+-- 		
+-- 	begin -- insert_segment
+-- 
+-- 		-- If no net named after net_name exists yet, notify operator that a 
+-- 		-- new net will be created.
+-- 		-- If the net already exists, extend it by the given net segment segment_new.
+-- 		if net_cursor = pac_nets.no_element then
+-- 
+-- 			-- net does not exist yet
+-- 			log (text => "creating new net " & to_string (net_name), level => log_threshold);
+-- 
+-- 			update_element (
+-- 				container	=> generic_modules,
+-- 				position	=> module_cursor,
+-- 				process		=> create_net'access);
+-- 		else
+-- 			-- net exists. extend the net by the given net segment
+-- 			log (text => "extending net " & to_string (net_name), level => log_threshold);
+-- 			log_indentation_up;
+-- 			
+-- 			update_element (
+-- 				container	=> generic_modules,
+-- 				position	=> module_cursor,
+-- 				process		=> extend_net'access);
+-- 
+-- 			-- place junctions if required
+-- 			if junction_at_A.required then
+-- 				place_junction (
+-- 					module_cursor	=> module_cursor,
+-- 					place			=> junction_at_A.place,
+-- 					log_threshold	=> log_threshold + 1);
+-- 			end if;
+-- 
+-- 			if junction_at_B.required then
+-- 				place_junction (
+-- 					module_cursor	=> module_cursor,
+-- 					place			=> junction_at_B.place,
+-- 					log_threshold	=> log_threshold + 1);
+-- 			end if;
+-- 
+-- 			
+-- 			log_indentation_down;
+-- 		end if;
+-- 
+-- 	end insert_segment;
 
 
 
@@ -4912,47 +4672,47 @@ package body et_schematic_ops.nets is
 							use et_symbols;
 
 							
-							procedure query_ports (cursor : in pac_device_ports.cursor) is
-								device_name 	: type_device_name; -- IC23
-								port_name		: pac_port_name.bounded_string; -- CE
-								port_position 	: type_vector_model; -- the xy-position of the port
-							begin
-								device_name	:= element (cursor).device_name;
-								port_name	:= element (cursor).port_name;
-
-								-- locate the port by module, device and port name:
-								port_position := get_position (module_cursor, device_name, port_name, log_threshold + 1).place;
-								log_indentation_up;
-								
-								log (text => "device " & to_string (device_name) & " port " & to_string (port_name) &
-									" at" & to_string (port_position),
-									level => log_threshold + 1);
-
-								-- If the port was at the start point of the old segment, then
-								-- it goes into segment_1.
-								if port_position = get_A (old_segment) then
-									insert (segment_1.ports.devices, element (cursor));
-
-								-- If the port was at the end point of the old segment, then
-								-- it goes into segment_2.
-								elsif port_position = get_B (old_segment) then
-									insert (segment_2.ports.devices, element (cursor));
-
-								-- If port was somewhere else, we have a problem. This should never happen.
-								else
-									log (ERROR, "port not on segment !");
-									raise constraint_error;
-								end if;
-								
-								log_indentation_down;
-							end query_ports;
+-- 							procedure query_ports (cursor : in pac_device_ports.cursor) is
+-- 								device_name 	: type_device_name; -- IC23
+-- 								port_name		: pac_port_name.bounded_string; -- CE
+-- 								port_position 	: type_vector_model; -- the xy-position of the port
+-- 							begin
+-- 								device_name	:= element (cursor).device_name;
+-- 								port_name	:= element (cursor).port_name;
+-- 
+-- 								-- locate the port by module, device and port name:
+-- 								port_position := get_position (module_cursor, device_name, port_name, log_threshold + 1).place;
+-- 								log_indentation_up;
+-- 								
+-- 								log (text => "device " & to_string (device_name) & " port " & to_string (port_name) &
+-- 									" at" & to_string (port_position),
+-- 									level => log_threshold + 1);
+-- 
+-- 								-- If the port was at the start point of the old segment, then
+-- 								-- it goes into segment_1.
+-- 								if port_position = get_A (old_segment) then
+-- 									insert (segment_1.ports.devices, element (cursor));
+-- 
+-- 								-- If the port was at the end point of the old segment, then
+-- 								-- it goes into segment_2.
+-- 								elsif port_position = get_B (old_segment) then
+-- 									insert (segment_2.ports.devices, element (cursor));
+-- 
+-- 								-- If port was somewhere else, we have a problem. This should never happen.
+-- 								else
+-- 									log (ERROR, "port not on segment !");
+-- 									raise constraint_error;
+-- 								end if;
+-- 								
+-- 								log_indentation_down;
+-- 							end query_ports;
 							
 							
 						begin -- update_device_ports
 							log (text => "updating device ports ...", level => log_threshold + 1);
 							log_indentation_up;
 							
-							iterate (old_segment.ports.devices, query_ports'access);
+							-- CS iterate (old_segment.ports.devices, query_ports'access);
 							log_indentation_down;
 						end update_device_ports;
 
@@ -4963,48 +4723,48 @@ package body et_schematic_ops.nets is
 							use pac_submodule_ports;
 
 							
-							procedure query_ports (cursor : in pac_submodule_ports.cursor) is
-								use et_schematic_ops.submodules;
-								submod_name 	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
-								port_name		: pac_net_name.bounded_string; -- RESET
-								port_position 	: type_vector_model; -- the xy-position of the port
-							begin
-								submod_name	:= element (cursor).module_name; -- CLOCK_GENERATOR
-								port_name	:= element (cursor).port_name;	-- RESET
-
-								-- locate the port by module, submodule and port name:
-								port_position := get_submodule_port_position (module_name, submod_name, port_name, log_threshold + 1).place;
-								log_indentation_up;
-								
-								log (text => "submodule " & to_string (submod_name) & " port " & to_string (port_name) &
-									" at" & to_string (port_position),
-									level => log_threshold + 1);
-
-								-- If the port was at the start point of the old segment, then
-								-- it goes into segment_1.
-								if port_position = get_A (old_segment) then
-									insert (segment_1.ports.submodules, element (cursor));
-
-								-- If the port was at the end point of the old segment, then
-								-- it goes into segment_2.
-								elsif port_position = get_B (old_segment) then
-									insert (segment_2.ports.submodules, element (cursor));
-
-								-- If port was somewhere else, we have a problem. This should never happen.
-								else
-									log (ERROR, "port not on segment !");
-									raise constraint_error;
-								end if;
-								
-								log_indentation_down;
-							end query_ports;
+-- 							procedure query_ports (cursor : in pac_submodule_ports.cursor) is
+-- 								use et_schematic_ops.submodules;
+-- 								submod_name 	: pac_module_instance_name.bounded_string; -- MOT_DRV_3
+-- 								port_name		: pac_net_name.bounded_string; -- RESET
+-- 								port_position 	: type_vector_model; -- the xy-position of the port
+-- 							begin
+-- 								submod_name	:= element (cursor).module_name; -- CLOCK_GENERATOR
+-- 								port_name	:= element (cursor).port_name;	-- RESET
+-- 
+-- 								-- locate the port by module, submodule and port name:
+-- 								port_position := get_submodule_port_position (module_name, submod_name, port_name, log_threshold + 1).place;
+-- 								log_indentation_up;
+-- 								
+-- 								log (text => "submodule " & to_string (submod_name) & " port " & to_string (port_name) &
+-- 									" at" & to_string (port_position),
+-- 									level => log_threshold + 1);
+-- 
+-- 								-- If the port was at the start point of the old segment, then
+-- 								-- it goes into segment_1.
+-- 								if port_position = get_A (old_segment) then
+-- 									insert (segment_1.ports.submodules, element (cursor));
+-- 
+-- 								-- If the port was at the end point of the old segment, then
+-- 								-- it goes into segment_2.
+-- 								elsif port_position = get_B (old_segment) then
+-- 									insert (segment_2.ports.submodules, element (cursor));
+-- 
+-- 								-- If port was somewhere else, we have a problem. This should never happen.
+-- 								else
+-- 									log (ERROR, "port not on segment !");
+-- 									raise constraint_error;
+-- 								end if;
+-- 								
+-- 								log_indentation_down;
+-- 							end query_ports;
 
 							
 						begin -- update_submodule_ports
 							log (text => "updating submodule ports ...", level => log_threshold + 1);
 							log_indentation_up;
 							
-							iterate (old_segment.ports.submodules, query_ports'access);
+							-- CS iterate (old_segment.ports.submodules, query_ports'access);
 							log_indentation_down;
 						end update_submodule_ports;
 
@@ -5017,49 +4777,49 @@ package body et_schematic_ops.nets is
 							use et_submodules;
 
 							
-							procedure query_ports (cursor : in pac_netchanger_ports.cursor) is
-								index			: type_netchanger_id; -- 1,2,3,...
-								port			: type_netchanger_port_name; -- SLAVE/MASTER
-								port_position 	: type_vector_model; -- the xy-position of the port
-							begin
-								index := element (cursor).index;
-								port := element (cursor).port;
-
-								-- locate the port by module, netchanger index and port:
-								port_position := et_schematic_ops.submodules.get_netchanger_port_position (
-									module_name, index, port, log_threshold + 1).place;
-								
-								log_indentation_up;
-								
-								log (text => "netchanger " & to_string (index) & " port " & to_string (port) &
-									" at" & to_string (port_position),
-									level => log_threshold + 1);
-
-								-- If the port was at the start point of the old segment, then
-								-- it goes into segment_1.
-								if port_position = get_A (old_segment) then
-									insert (segment_1.ports.netchangers, element (cursor));
-
-								-- If the port was at the end point of the old segment, then
-								-- it goes into segment_2.
-								elsif port_position = get_B (old_segment) then
-									insert (segment_2.ports.netchangers, element (cursor));
-
-								-- If port was somewhere else, we have a problem. This should never happen.
-								else
-									log (ERROR, "port not on segment !");
-									raise constraint_error;
-								end if;
-								
-								log_indentation_down;
-							end query_ports;
+-- 							procedure query_ports (cursor : in pac_netchanger_ports.cursor) is
+-- 								index			: type_netchanger_id; -- 1,2,3,...
+-- 								port			: type_netchanger_port_name; -- SLAVE/MASTER
+-- 								port_position 	: type_vector_model; -- the xy-position of the port
+-- 							begin
+-- 								index := element (cursor).index;
+-- 								port := element (cursor).port;
+-- 
+-- 								-- locate the port by module, netchanger index and port:
+-- 								port_position := et_schematic_ops.submodules.get_netchanger_port_position (
+-- 									module_name, index, port, log_threshold + 1).place;
+-- 								
+-- 								log_indentation_up;
+-- 								
+-- 								log (text => "netchanger " & to_string (index) & " port " & to_string (port) &
+-- 									" at" & to_string (port_position),
+-- 									level => log_threshold + 1);
+-- 
+-- 								-- If the port was at the start point of the old segment, then
+-- 								-- it goes into segment_1.
+-- 								if port_position = get_A (old_segment) then
+-- 									insert (segment_1.ports.netchangers, element (cursor));
+-- 
+-- 								-- If the port was at the end point of the old segment, then
+-- 								-- it goes into segment_2.
+-- 								elsif port_position = get_B (old_segment) then
+-- 									insert (segment_2.ports.netchangers, element (cursor));
+-- 
+-- 								-- If port was somewhere else, we have a problem. This should never happen.
+-- 								else
+-- 									log (ERROR, "port not on segment !");
+-- 									raise constraint_error;
+-- 								end if;
+-- 								
+-- 								log_indentation_down;
+-- 							end query_ports;
 
 							
 						begin -- update_netchanger_ports
 							log (text => "updating netchanger ports ...", level => log_threshold + 1);
 							log_indentation_up;
 							
-							iterate (old_segment.ports.netchangers, query_ports'access);
+							-- CS iterate (old_segment.ports.netchangers, query_ports'access);
 							log_indentation_down;
 						end update_netchanger_ports;
 

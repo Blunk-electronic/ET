@@ -135,6 +135,54 @@ package body et_net_segment is
 
 
 
+	
+
+	function in_ports (
+		ports	: in type_ports;
+		port	: in et_netlists.type_port_netchanger)
+		return boolean
+	is
+		result : boolean := false;
+
+		use et_netlists;
+		use pac_netchanger_ports;
+		port_cursor : pac_netchanger_ports.cursor;
+	begin
+		port_cursor := ports.netchangers.find (port);
+		
+		if has_element (port_cursor) then
+			result := true;
+		end if;
+
+		return result;
+	end in_ports;
+
+
+
+
+
+	function in_ports (
+		ports	: in type_ports;
+		port	: in type_submodule_port)
+		return boolean
+	is
+		result : boolean := false;
+
+		use pac_submodule_ports;
+		port_cursor : pac_submodule_ports.cursor;
+	begin
+		port_cursor := ports.submodules.find (port);
+		
+		if has_element (port_cursor) then
+			result := true;
+		end if;
+
+		return result;
+	end in_ports;
+
+
+
+	
 
 	function no_ports (
 		ports : in type_ports) 
@@ -190,6 +238,217 @@ package body et_net_segment is
 
 
 
+	
+
+	function is_connected (
+		segment	: in type_net_segment;
+		port	: in et_netlists.type_port_netchanger)
+		return boolean
+	is
+	begin
+		if 	in_ports (segment.ports.A, port) or 
+			in_ports (segment.ports.B, port) then
+
+			return true;
+		else
+			return false;
+		end if;
+	end is_connected;
+
+
+
+
+	procedure insert_netchanger_port (
+		segment	: in out type_net_segment;
+		AB_end	: in type_start_end_point;
+		port	: in et_netlists.type_port_netchanger)
+	is
+		use et_netlists;
+		position : pac_netchanger_ports.cursor;
+		inserted : boolean;
+	begin
+		case AB_end is
+			when A =>
+				segment.ports.A.netchangers.insert (port, position, inserted);
+
+			when B =>
+				segment.ports.B.netchangers.insert (port, position, inserted);
+		end case;
+	end insert_netchanger_port;
+
+
+	
+
+	procedure insert_submodule_port (
+		segment	: in out type_net_segment;
+		AB_end	: in type_start_end_point;
+		port	: in type_submodule_port)
+	is 
+		position : pac_submodule_ports.cursor;
+		inserted : boolean;
+	begin
+		case AB_end is
+			when A =>
+				segment.ports.A.submodules.insert (port, position, inserted);
+
+			when B =>
+				segment.ports.B.submodules.insert (port, position, inserted);
+		end case;
+	end insert_submodule_port;
+
+
+
+
+
+
+	procedure delete_netchanger_port (
+		segment	: in out type_net_segment;
+		port	: in et_netlists.type_port_netchanger;
+		deleted : out boolean)
+	is
+		use et_netlists;
+		use pac_netchanger_ports;
+		cursor : pac_netchanger_ports.cursor;
+	begin
+		deleted := false;
+
+		
+		-- Search port at A end:
+		cursor := find (segment.ports.A.netchangers, port);
+
+		if has_element (cursor) then
+			segment.ports.A.netchangers.delete (cursor);
+			deleted := true;
+		end if;
+
+
+		-- If not found or not deleted then search at B end:
+		if not deleted then
+			cursor := find (segment.ports.B.netchangers, port);
+
+			if has_element (cursor) then
+				segment.ports.B.netchangers.delete (cursor);
+				deleted := true;
+			end if;
+		end if;
+	end delete_netchanger_port;
+
+	
+	
+
+	procedure delete_submodule_port (
+		segment	: in out type_net_segment;
+		port	: in type_submodule_port;
+		deleted : out boolean)
+	is
+		use pac_submodule_ports;
+		cursor : pac_submodule_ports.cursor;
+	begin
+		deleted := false;
+
+		
+		-- Search port at A end:
+		cursor := find (segment.ports.A.submodules, port);
+
+		if has_element (cursor) then
+			segment.ports.A.submodules.delete (cursor);
+			deleted := true;
+		end if;
+
+
+		-- If not found or not deleted then search at B end:
+		if not deleted then
+			cursor := find (segment.ports.B.submodules, port);
+
+			if has_element (cursor) then
+				segment.ports.B.submodules.delete (cursor);
+				deleted := true;
+			end if;
+		end if;
+	end delete_submodule_port;
+
+
+		
+
+	function has_ports (
+		segment : in type_net_segment;
+		AB_end	: in type_start_end_point)				   
+		return boolean
+	is 
+		count : count_type := 0;
+	begin
+		case AB_end is
+			when A =>
+				count := segment.ports.A.devices.length;
+				count := count + segment.ports.A.netchangers.length;
+				count := count + segment.ports.A.submodules.length;
+
+			when B =>
+				count := segment.ports.B.devices.length;
+				count := count + segment.ports.B.netchangers.length;
+				count := count + segment.ports.B.submodules.length;
+		end case;
+
+		if count = 0 then
+			return false;
+		else
+			return true;
+		end if;
+	end has_ports;
+
+	
+				
+	
+	function has_ports (
+		segment : in type_net_segment)
+		return boolean
+	is 
+		count : count_type := 0;
+	begin
+		count := segment.ports.A.devices.length;
+		count := count + segment.ports.B.devices.length;
+
+		count := count + segment.ports.A.netchangers.length;
+		count := count + segment.ports.B.netchangers.length;
+
+		count := count + segment.ports.A.submodules.length;
+		count := count + segment.ports.B.submodules.length;
+		
+		if count = 0 then
+			return false;
+		else
+			return true;
+		end if;
+	end has_ports;
+
+
+
+
+	procedure append_ports (
+		segment : in out type_net_segment;
+		ports	: in type_ports;						   
+		AB_end	: in type_start_end_point)
+	is
+		use pac_device_ports;
+		use pac_submodule_ports;
+		use et_netlists.pac_netchanger_ports;
+	begin
+		case AB_end is
+			when A =>
+				segment.ports.A.devices.union (ports.devices);
+				segment.ports.A.submodules.union (ports.submodules);
+				segment.ports.A.netchangers.union (ports.netchangers);
+
+			when B =>
+				segment.ports.B.devices.union (ports.devices);
+				segment.ports.B.submodules.union (ports.submodules);
+				segment.ports.B.netchangers.union (ports.netchangers);
+		end case;
+	end append_ports;
+
+
+	
+	
 
 	function split_segment (
 		segment	: in type_net_segment;
@@ -329,6 +588,18 @@ package body et_net_segment is
 
 
 
+	function has_ports (
+		segment : in pac_net_segments.cursor)
+		return boolean
+	is 
+		s : type_net_segment := element (segment);
+	begin
+		return has_ports (s);
+	end has_ports;
+
+
+
+	
 
 	function is_selected (
 		segment : in pac_net_segments.cursor)

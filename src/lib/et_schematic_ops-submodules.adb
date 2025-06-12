@@ -82,6 +82,7 @@ package body et_schematic_ops.submodules is
 		raise constraint_error;
 	end;
 
+
 	
 
 	function port_connected (
@@ -89,7 +90,8 @@ package body et_schematic_ops.submodules is
 		port	: in et_netlists.type_port_netchanger)
 		return boolean 
 	is
-		result : boolean := false; -- to be returned. goes true on the first (and only) match.
+		result : boolean := false; 
+		-- to be returned. goes true on the first (and only) match.
 
 		use et_nets;
 		
@@ -101,6 +103,7 @@ package body et_schematic_ops.submodules is
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
+			
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in type_net) 
@@ -108,29 +111,18 @@ package body et_schematic_ops.submodules is
 				use pac_strands;
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
+				
 				procedure query_segments (strand : in type_strand) is
 					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
-					procedure query_ports (segment : in type_net_segment) is 
-						use et_submodules;
-
-						use et_netlists;
-						use pac_netchanger_ports;
-						port_cursor : pac_netchanger_ports.cursor := segment.ports.netchangers.first;
-					begin
-						while port_cursor /= pac_netchanger_ports.no_element loop
-							if element (port_cursor) = port then
-								result := true;
-								exit; -- no more searching for netchanger ports required
-							end if;
-							next (port_cursor);
-						end loop;
+					procedure query_ports (segment : in type_net_segment) is begin
+						result := is_connected (segment, port);
 					end query_ports;
 					
 					
-				begin -- query_segments
-					while result = false and segment_cursor /= pac_net_segments.no_element loop
+				begin
+					while (not result) and (has_element (segment_cursor)) loop
 						
 						query_element (
 							position	=> segment_cursor,
@@ -141,8 +133,8 @@ package body et_schematic_ops.submodules is
 				end query_segments;
 
 				
-			begin -- query_strands
-				while result = false and strand_cursor /= pac_strands.no_element loop
+			begin
+				while (not result) and (has_element (strand_cursor)) loop
 
 					query_element (
 						position	=> strand_cursor,
@@ -153,8 +145,8 @@ package body et_schematic_ops.submodules is
 			end query_strands;
 
 			
-		begin -- query_nets
-			while result = false and net_cursor /= pac_nets.no_element loop
+		begin
+			while (not result) and (has_element (net_cursor)) loop
 
 				pac_nets.query_element (
 					position	=> net_cursor,
@@ -164,9 +156,9 @@ package body et_schematic_ops.submodules is
 			end loop;
 			
 		end query_nets;
-		
-	begin -- port_not_connected
 
+		
+	begin
 		pac_generic_modules.query_element (
 			position	=> module,
 			process		=> query_nets'access);
@@ -189,83 +181,100 @@ package body et_schematic_ops.submodules is
 		-- suitable netchanger found.
 
 		use et_nets;
+
 		
-		procedure query_strands (
+		procedure query_net (
 			net_name	: in pac_net_name.bounded_string;
 			net			: in type_net)
 		is
 			use pac_strands;
 			strand_cursor : pac_strands.cursor := net.strands.first;
 
-			procedure query_segments (strand : in type_strand) is
+			
+			procedure query_strand (strand : in type_strand) is
 				use pac_net_segments;
 				segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
-				procedure query_ports (segment : in type_net_segment) is 
+				
+				procedure query_segment (segment : in type_net_segment) is 
 					use et_submodules;
 
 					use et_netlists;
 					use pac_netchanger_ports;
-					port_cursor : pac_netchanger_ports.cursor := segment.ports.netchangers.first;
-				begin
-					while port_cursor /= pac_netchanger_ports.no_element loop
+					port_cursor : pac_netchanger_ports.cursor;
 
-						-- If the given direction is MASTER, then we must look for a SLAVE netchanger
-						-- port (and vice versa) in the net segment.
-						if element (port_cursor).port = opposide_port (direction) then 
+					
+					procedure iterate_ports is begin
+						while has_element (port_cursor) loop
 
-							-- The opposide port must be not connected. In that case 
-							-- suitable netchanger has been found:
-							if not port_connected (
-								module	=> module,
-								port	=> (index	=> element (port_cursor).index,
-											port	=> direction)) then
-								
-								result := true;
-								exit; -- no more searching for netchanger ports required
+							-- If the given direction is MASTER, then we must look for a SLAVE netchanger
+							-- port (and vice versa) in the net segment.
+							if element (port_cursor).port = opposide_port (direction) then 
+
+								-- The opposide port must be not connected. In that case 
+								-- suitable netchanger has been found:
+								if not port_connected (
+									module	=> module,
+									port	=> (index	=> element (port_cursor).index,
+												port	=> direction)) then
+									
+									result := true;
+									exit; -- no more searching for netchanger ports required
+								end if;
+
 							end if;
+							
+							next (port_cursor);
+						end loop;
+					end iterate_ports;
 
-						end if;
-						
-						next (port_cursor);
-					end loop;
-				end query_ports;
+					
+				begin
+					port_cursor := segment.ports.A.netchangers.first;
+					iterate_ports;
+					
+					if not result then
+						port_cursor := segment.ports.B.netchangers.first;
+						iterate_ports;
+					end if;						
+				end query_segment;
 
 				
-			begin -- query_segments
+			begin
 				while result = false and segment_cursor /= pac_net_segments.no_element loop
 					
 					query_element (
 						position	=> segment_cursor,
-						process		=> query_ports'access);
+						process		=> query_segment'access);
 					
 					next (segment_cursor);
 				end loop;
-			end query_segments;
+			end query_strand;
 
 			
-		begin -- query_strands
+		begin
 			while result = false and strand_cursor /= pac_strands.no_element loop
 
 				query_element (
 					position	=> strand_cursor,
-					process		=> query_segments'access);
+					process		=> query_strand'access);
 				
 				next (strand_cursor);
 			end loop;
-		end query_strands;
+		end query_net;
 
 		
-	begin -- netchanger_as_port_available
+	begin
 		pac_nets.query_element (
 			position	=> net,
-			process		=> query_strands'access);
+			process		=> query_net'access);
 		
 		return result;
 	end netchanger_as_port_available;
 
 	
 
+	
 
 	function submodule_port_exists (
 		module			: in et_submodules.pac_submodules.cursor;
@@ -531,7 +540,7 @@ package body et_schematic_ops.submodules is
 		log_threshold	: in type_log_level) 
 	is
 
-		procedure query_nets (
+		procedure query_module (
 			module_name	: in pac_module_name.bounded_string;
 			module		: in out type_generic_module) 
 		is
@@ -543,50 +552,42 @@ package body et_schematic_ops.submodules is
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
-			procedure query_strands (
+			
+			procedure query_net (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
 			is
 				strand_cursor : pac_strands.cursor := net.strands.first;
 
 				
-				procedure query_segments (strand : in out type_strand) is
+				procedure query_strand (strand : in out type_strand) is
 					use pac_net_segments;
 					segment_cursor : pac_net_segments.cursor := strand.segments.first;
 
 					
-					procedure change_segment (segment : in out type_net_segment) is begin
-						-- If port sits on start OR end point of segment AND if it
-						-- is not already in the segment then append it to the 
-						-- portlist of the segment.
-						if 	get_A (segment) = get_place (position) or
-							get_B (segment) = get_place (position)
-						then
+					procedure change_segment (
+						segment : in out type_net_segment) 
+					is begin
+						-- If port sits on the A or B end of the segment,
+						-- then insert it at this end:
+						if 	get_A (segment) = get_place (position) then
+							insert_submodule_port (segment, A, (instance, port)); -- OSC1, clock_output
 
-							-- If port not already in segment, append it.
-							-- Otherwise it must not be appended again. constraint_error would arise.
-							if pac_submodule_ports.contains (
-								container	=> segment.ports.submodules,
-								item		=> (instance, port) -- OSC1, clock_output
-								) then
-
-								log (text => " already there -> skipped", level => log_threshold + 3);
-							else
-								pac_submodule_ports.insert (
-									container	=> segment.ports.submodules,
-									new_item	=> (instance, port)); -- OSC1, clock_output
-
-								log (text => " sits on segment -> inserted", level => log_threshold + 3);
-							end if;
-							
 							-- signal iterations in upper levels to cancel
 							port_processed := true;
 						end if;
+
 						
+						if get_B (segment) = get_place (position) then
+							insert_submodule_port (segment, B, (instance, port)); -- OSC1, clock_output
+
+							-- signal iterations in upper levels to cancel
+							port_processed := true;
+						end if;
 					end change_segment;
 
 					
-				begin -- query_segments
+				begin -- query_strand
 					log_indentation_up;
 
 					-- On the first segment, where the port sits on, this loop ends prematurely.
@@ -602,10 +603,10 @@ package body et_schematic_ops.submodules is
 					end loop;
 
 					log_indentation_down;
-				end query_segments;
+				end query_strand;
 
 				
-			begin -- query_strands
+			begin -- query_net
 				log_indentation_up;
 				
 				while not port_processed and strand_cursor /= pac_strands.no_element loop
@@ -621,7 +622,7 @@ package body et_schematic_ops.submodules is
 						update_element (
 							container	=> net.strands,
 							position	=> strand_cursor,
-							process		=> query_segments'access);
+							process		=> query_strand'access);
 					
 						log_indentation_down;
 					end if;
@@ -630,20 +631,20 @@ package body et_schematic_ops.submodules is
 				end loop;
 				
 				log_indentation_down;
-			end query_strands;
+			end query_net;
 
 			
-		begin -- query_nets
+		begin -- query_module
 			while not port_processed and net_cursor /= pac_nets.no_element loop
 				
 				update_element (
 					container	=> module.nets,
 					position	=> net_cursor,
-					process		=> query_strands'access);
+					process		=> query_net'access);
 			
 				next (net_cursor);
 			end loop;
-		end query_nets;
+		end query_module;
 
 		
 	begin -- insert_port
@@ -654,7 +655,7 @@ package body et_schematic_ops.submodules is
 		update_element (
 			container	=> generic_modules,
 			position	=> module,
-			process		=> query_nets'access);
+			process		=> query_module'access);
 
 		log_indentation_down;
 
@@ -842,6 +843,7 @@ package body et_schematic_ops.submodules is
 			use pac_nets;
 			net_cursor : pac_nets.cursor := module.nets.first;
 
+			
 			procedure query_strands (
 				net_name	: in pac_net_name.bounded_string;
 				net			: in out type_net) 
@@ -855,19 +857,14 @@ package body et_schematic_ops.submodules is
 
 					
 					procedure change_segment (segment : in out type_net_segment) is
-						use pac_submodule_ports;
-						port_cursor : pac_submodule_ports.cursor;
+						deleted : boolean := false;
 					begin
 						-- Search for the port and delete it if existing:
-						port_cursor := find (
-							container	=> segment.ports.submodules,
-							item		=> port); -- OSC1, clock_output
+						delete_submodule_port (segment, port, deleted);
 
-						if port_cursor /= pac_submodule_ports.no_element then
-							delete (segment.ports.submodules, port_cursor);
+						if deleted then
 							port_processed := true;
 						end if;
-						
 					end change_segment;
 
 					
@@ -1903,31 +1900,23 @@ package body et_schematic_ops.submodules is
 						procedure change_segment (segment : in out type_net_segment) is
 							use et_netlists;
 						begin
-							-- If port sits on start OR end point of segment AND if it
-							-- is not already in the segment then append it to the 
-							-- portlist of the segment.
-							if 	get_A (segment) = port or
-								get_B (segment) = port then
+							-- If port sits on the A or B end of the segment,
+							-- then insert it at this end:
+							if get_A (segment) = port then
+								insert_netchanger_port (segment, A, (index, name));  -- 1,2,3, .. / master/slave
 
-								-- If port not already in segment, append it.
-								-- Otherwise it must not be appended again. constraint_error would arise.
-								if pac_netchanger_ports.contains (
-									container	=> segment.ports.netchangers,
-									item		=> (index, name)
-									) then
-
-									log (text => " already there -> skipped", level => log_threshold + 5);
-								else
-									pac_netchanger_ports.insert (
-										container	=> segment.ports.netchangers,
-										new_item	=> (index, name)); -- 1,2,3, .. / master/slave
-
-									log (text => " sits on segment -> inserted", level => log_threshold + 5);
-								end if;
-								
 								-- signal iterations in upper levels to cancel
 								port_processed := true;
-							end if;							
+							end if;
+
+							
+							if get_B (segment) = port then
+								insert_netchanger_port (segment, B, (index, name));  -- 1,2,3, .. / master/slave
+
+								-- signal iterations in upper levels to cancel
+								port_processed := true;
+							end if;
+							
 						end change_segment;
 						
 
@@ -2008,7 +1997,7 @@ package body et_schematic_ops.submodules is
 		end query_nets;
 
 		
-	begin --insert_ports
+	begin
 		log (text => "inserting netchanger ports in nets on sheet" & 
 			 to_string (sheet) & " ...", level => log_threshold);
 		log_indentation_up;
@@ -2534,10 +2523,9 @@ package body et_schematic_ops.submodules is
 
 					
 					procedure query_ports (segment : in out type_net_segment) is
-						use et_netlists;
-						use pac_netchanger_ports;
 						use et_submodules;
-						port_cursor : pac_netchanger_ports.cursor;
+
+						deleted : boolean := false;
 
 						
 						procedure delete_port is begin
@@ -2545,25 +2533,26 @@ package body et_schematic_ops.submodules is
 								to_string (key (net_cursor)) & " " &
 								to_string (segment_cursor),
 								level => log_threshold + 1);
-							delete (segment.ports.netchangers, port_cursor);
 						end;
 
 						
 					begin -- query_ports
 						-- Search for the master port if it has not been deleted yet:
 						if not deleted_ports.master then
-							port_cursor := find (segment.ports.netchangers, (index, MASTER));
-							if port_cursor /= pac_netchanger_ports.no_element then
-								delete_port;
+							delete_port;
+							delete_netchanger_port (segment, (index, MASTER), deleted);
+							
+							if deleted then
 								deleted_ports.master := true;
 							end if;
 						end if;
 
 						-- Search for the slave port if it has not been deleted yet:
 						if not deleted_ports.slave then
-							port_cursor := find (segment.ports.netchangers, (index, SLAVE));
-							if port_cursor /= pac_netchanger_ports.no_element then
-								delete_port;
+							delete_port;
+							delete_netchanger_port (segment, (index, SLAVE), deleted);
+							
+							if deleted then
 								deleted_ports.slave := true;
 							end if;
 						end if;
@@ -2632,6 +2621,7 @@ package body et_schematic_ops.submodules is
 	end delete_ports;
 
 
+	
 	
 
 	procedure move_netchanger (

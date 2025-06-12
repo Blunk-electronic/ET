@@ -540,6 +540,7 @@ is
 				end query_simple_labels;
 
 
+				
 				procedure query_tag_labels (segment : in type_net_segment) is begin
 					if is_active (segment.tag_labels.A) then
 						write (keyword => keyword_tag_label, parameters => keyword_start); -- CS direction and rotation
@@ -549,6 +550,7 @@ is
 						write (keyword => keyword_tag_label, parameters => keyword_end); -- CS direction and rotation
 					end if;
 				end query_tag_labels;
+
 
 				
 				procedure query_junctions (segment : in type_net_segment) is begin
@@ -561,60 +563,111 @@ is
 					end if;
 				end query_junctions;
 
+
 				
 				procedure query_device_ports (segment : in type_net_segment) is
 					use et_port_names;
 					use et_symbol_ports;
-					port_cursor : pac_device_ports.cursor := segment.ports.devices.first;
 					use et_device_model;
+					
+					port_cursor : pac_device_ports.cursor;
+					AB_end : type_start_end_point := A;
+
+					-- Writes something like "A/B device IC1 port PD4"
+					procedure iterate_ports is begin
+						while has_element (port_cursor) loop
+							write (
+								keyword 	=> to_string (AB_end) & space & keyword_device, 
+								parameters	=> space & to_string (element (port_cursor).device_name)
+									& space & keyword_port & space
+									& to_string (element (port_cursor).port_name));
+							
+							next (port_cursor);
+						end loop;
+					end iterate_ports;
+					
 				begin
-					while port_cursor /= pac_device_ports.no_element loop
-						write (keyword => keyword_device, parameters => 
-							space & to_string (element (port_cursor).device_name)
-							& space & keyword_port & space
-							& to_string (element (port_cursor).port_name)
-							); -- device IC1 port A
-						next (port_cursor);
-					end loop;
+					-- Write the ports connected with the A end of the segment:
+					port_cursor := segment.ports.A.devices.first;
+					iterate_ports;
+
+					-- Write the ports connected with the B end of the segment:
+					AB_end := B;
+					port_cursor := segment.ports.B.devices.first;
+					iterate_ports;					
 				end query_device_ports;
+				
+
 
 				
 				procedure query_submodule_ports (segment : in type_net_segment) is
 					use et_symbols;
 					use et_symbol_ports;
 					use et_module_instance;
-					port_cursor : pac_submodule_ports.cursor := segment.ports.submodules.first;
+					
+					port_cursor : pac_submodule_ports.cursor;
+					AB_end : type_start_end_point := A;
+
+					-- Writes something like "A/B submodule CLK_GENERATOR port out"
+					procedure iterate_ports is begin
+						while has_element (port_cursor) loop
+							write (
+								keyword		=> to_string (AB_end) & space & keyword_submodule,
+								parameters	=> space & to_string (element (port_cursor).module_name)
+									& space & keyword_port & space
+									& to_string (element (port_cursor).port_name)); 
+
+							next (port_cursor);
+						end loop;							
+					end iterate_ports;
+				
 				begin
-					while port_cursor /= pac_submodule_ports.no_element loop
+					-- Write the ports connected with the A end of the segment:
+					port_cursor := segment.ports.A.submodules.first;
+					iterate_ports;
 
-						write (keyword => keyword_submodule, parameters => 
-							space & to_string (element (port_cursor).module_name)
-							& space & keyword_port & space
-							& to_string (element (port_cursor).port_name)
-							); -- submodule CLK_GENERATOR port out
-
-						next (port_cursor);
-					end loop;
+					-- Write the ports connected with the B end of the segment:
+					AB_end := B;
+					port_cursor := segment.ports.B.submodules.first;
+					iterate_ports;					
 				end query_submodule_ports;
+
+				
 
 				
 				procedure query_netchanger_ports (segment : in type_net_segment) is
 					use et_symbols;
 					use et_symbol_ports;
-					port_cursor : pac_netchanger_ports.cursor := segment.ports.netchangers.first;
+
+					port_cursor : pac_netchanger_ports.cursor;
+					AB_end : type_start_end_point := A;
+
+					-- Writes something like "A/B netchanger 1 port master/slave"
+					procedure iterate_ports is begin
+						while has_element (port_cursor) loop
+							write (
+								keyword		=> to_string (AB_end) & space & keyword_netchanger, 
+								parameters	=> et_submodules.to_string (element (port_cursor).index)
+									& space & keyword_port
+									& et_submodules.to_string (element (port_cursor).port));
+
+							next (port_cursor);
+						end loop;
+					end iterate_ports;
+				
 				begin
-					while port_cursor /= pac_netchanger_ports.no_element loop
+					-- Write the ports connected with the A end of the segment:
+					port_cursor := segment.ports.A.netchangers.first;
+					iterate_ports;
 
-						write (keyword => keyword_netchanger, parameters => 
-							et_submodules.to_string (element (port_cursor).index)
-							& space & keyword_port
-							& et_submodules.to_string (element (port_cursor).port)
-							); -- netchanger 1 port master/slave
-
-						next (port_cursor);
-					end loop;
+					-- Write the ports connected with the B end of the segment:
+					AB_end := B;
+					port_cursor := segment.ports.B.netchangers.first;
+					iterate_ports;					
 				end query_netchanger_ports;
 
+				
+				
 				
 			begin -- query_segments
 				section_mark (section_segments, HEADER);
@@ -631,12 +684,8 @@ is
 					query_element (segment_cursor, query_tag_labels'access);
 					query_element (segment_cursor, query_junctions'access);
 
-					-- write ports there are any. otherwise leave out section ports.
-					if 	is_empty (element (segment_cursor).ports.devices) and
-						is_empty (element (segment_cursor).ports.submodules) and
-						is_empty (element (segment_cursor).ports.netchangers) then
-						null;
-					else
+					-- Write ports if there are any. Otherwise leave out section ports.
+					if has_ports (segment_cursor) then
 						section_mark (section_ports, HEADER);
 						query_element (segment_cursor, query_device_ports'access);
 						query_element (segment_cursor, query_submodule_ports'access);
